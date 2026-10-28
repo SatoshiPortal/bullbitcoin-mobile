@@ -64,7 +64,10 @@ Future<void> registerBackgroundTasks() async {
       taskName: task.name,
       requiresNetwork: true,
       frequency: frequency,
-      // iOS ignores the frequency: the delay is its "not before" hint.
+      // iOS ignores the frequency: the delay is its "not before" hint. The
+      // plugin (workmanager_apple 0.9.11) captures the delay when it first
+      // registers its launch handler in a process, so a changed interval is
+      // fully applied from the next app start.
       initialDelay: Platform.isIOS ? frequency : null,
     );
   }
