@@ -1,4 +1,7 @@
 enum BackgroundTask {
+  walletsSync('wallets-sync', 'com.bullbitcoin.mobile.wallets-sync-id'),
+  // Replaced by walletsSync; kept so a run the previous version scheduled
+  // still completes, and so their schedules can be cancelled by name.
   bitcoinSync('bitcoin-sync', 'com.bullbitcoin.mobile.bitcoin-sync-id'),
   liquidSync('liquid-sync', 'com.bullbitcoin.mobile.liquid-sync-id'),
   swapsSync('swaps-sync', 'com.bullbitcoin.mobile.swaps-sync-id'),

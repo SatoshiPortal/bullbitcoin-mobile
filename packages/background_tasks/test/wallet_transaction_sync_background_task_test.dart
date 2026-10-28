@@ -978,6 +978,55 @@ void main() {
     );
   });
 
+  test('one run syncs both chains under one budget', () async {
+    final directory = await Directory.systemTemp.createTemp('background_tasks');
+    final gateway = _Gateway();
+    final outbox = SqliteNotificationOutbox(
+      databasePath: '${directory.path}/n.sqlite',
+    );
+    final queue = SqliteWalletSyncJobQueue(
+      databasePath: '${directory.path}/q.sqlite',
+    );
+    addTearDown(() async {
+      await queue.close();
+      outbox.dispose();
+      await directory.delete(recursive: true);
+    });
+    final synced = <String>[];
+    WalletTransactionSyncBackgroundJob job(String chain) {
+      final key = WalletNetworkKey('w', chain, 'testnet');
+      return WalletTransactionSyncBackgroundJob(
+        key: key,
+        synchronize: () async {
+          synced.add(chain);
+          return Ok(_outcome(key, const []));
+        },
+      );
+    }
+
+    WalletTransactionSyncBackgroundTask task({Duration? budget}) =>
+        WalletTransactionSyncBackgroundTask(
+          notifications: NotificationsFacade(gateway: gateway, outbox: outbox),
+          queue: queue,
+          jobs: [job('bitcoin'), job('liquid')],
+          runBudget: budget,
+          copy: (_, _) => (title: 'Incoming', body: 'Payment received'),
+        );
+
+    expect(
+      (await task().executeAll()).status,
+      BackgroundTaskExecutionStatus.success,
+    );
+    expect(synced, ['bitcoin', 'liquid']);
+
+    synced.clear();
+    expect(
+      (await task(budget: Duration.zero).executeAll()).status,
+      BackgroundTaskExecutionStatus.success,
+    );
+    expect(synced, isEmpty);
+  });
+
   test('logging sink failure cannot alter a successful batch', () async {
     final directory = await Directory.systemTemp.createTemp('background_tasks');
     final outbox = SqliteNotificationOutbox(

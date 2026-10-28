@@ -41,6 +41,7 @@ final class BackgroundTaskRunner {
   /// successful no-op for tasks persisted by older releases.
   factory BackgroundTaskRunner.compatibility({
     required BackgroundTaskLogger logger,
+    required BackgroundTaskHandler walletsSync,
     required BackgroundTaskHandler bitcoinSync,
     required BackgroundTaskHandler liquidSync,
     required Future<void> Function() pruneLogs,
@@ -48,6 +49,7 @@ final class BackgroundTaskRunner {
   }) => BackgroundTaskRunner(
     logger: logger,
     handlers: {
+      BackgroundTask.walletsSync: walletsSync,
       BackgroundTask.bitcoinSync: bitcoinSync,
       BackgroundTask.liquidSync: liquidSync,
       BackgroundTask.logsPrune: () async {

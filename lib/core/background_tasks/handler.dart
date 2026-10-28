@@ -52,16 +52,20 @@ Future<void> registerBackgroundTasks() async {
   final interval = await const SharedPreferencesBackgroundSyncIntervalStore()
       .read();
   await adapter.initialize(backgroundTasksHandler);
-  await adapter.cancelByUniqueName(BackgroundTask.swapsSync.id);
+  for (final obsolete in [
+    BackgroundTask.swapsSync,
+    BackgroundTask.bitcoinSync,
+    BackgroundTask.liquidSync,
+  ]) {
+    await adapter.cancelByUniqueName(obsolete.id);
+  }
   final frequency = interval.frequency;
-  for (final task in [BackgroundTask.bitcoinSync, BackgroundTask.liquidSync]) {
-    if (frequency == null) {
-      await adapter.cancelByUniqueName(task.id);
-      continue;
-    }
+  if (frequency == null) {
+    await adapter.cancelByUniqueName(BackgroundTask.walletsSync.id);
+  } else {
     await adapter.registerPeriodicTask(
-      uniqueName: task.id,
-      taskName: task.name,
+      uniqueName: BackgroundTask.walletsSync.id,
+      taskName: BackgroundTask.walletsSync.name,
       requiresNetwork: true,
       frequency: frequency,
       // iOS ignores the frequency: the delay is its "not before" hint. The
@@ -82,17 +86,12 @@ Future<void> registerBackgroundTasks() async {
 }
 
 /// Desktop has no headless engine: while the app runs, the chosen interval
-/// drives the app's own sync of that chain.
+/// drives the app's own sync of both chains.
 final _desktopScheduler = TimerBackgroundTaskScheduler(
-  onTick: (taskName) async {
-    final kind = taskName == BackgroundTask.liquidSync.name
-        ? SyncKind.liquid
-        : SyncKind.bitcoin;
-    await locator<SyncCoordinator>().sync(
-      only: {kind},
-      trigger: SyncTrigger.scheduled,
-    );
-  },
+  onTick: (_) => locator<SyncCoordinator>().sync(
+    only: {SyncKind.bitcoin, SyncKind.liquid},
+    trigger: SyncTrigger.scheduled,
+  ),
 );
 
 @pragma('vm:entry-point')
@@ -200,6 +199,14 @@ Future<BackgroundTaskRunner> _bootstrapBackgroundRunner() async {
 
   return BackgroundTaskRunner.compatibility(
     logger: LoggerBackgroundTaskLogger(log),
+    walletsSync: () => WalletTransactionSyncBackgroundTask(
+      notifications: notifications,
+      jobs: jobs,
+      queue: syncQueue,
+      copy: copy,
+      maxConcurrentJobs: _backgroundWalletSyncConcurrency,
+      runBudget: _backgroundRunBudget,
+    ).executeAll(),
     bitcoinSync: () => WalletTransactionSyncBackgroundTask(
       notifications: notifications,
       jobs: jobs,

@@ -79,11 +79,40 @@ final class WalletTransactionSyncBackgroundTask {
   /// overstays (about 30 s on iOS) and its unfinished work would be lost.
   final Duration? runBudget;
 
-  Future<BackgroundTaskExecutionResult> execute({required String chain}) async {
+  /// Bitcoin then Liquid in one run, under one budget: a single platform job
+  /// keeps the network for both, where two jobs in one process lost it as
+  /// soon as the first one finished.
+  Future<BackgroundTaskExecutionResult> executeAll() async {
+    final clock = Stopwatch()..start();
+    var retry = false;
+    var permanent = false;
+    for (final chain in const ['bitcoin', 'liquid']) {
+      final result = await execute(chain: chain, clock: clock);
+      switch (result.status) {
+        case BackgroundTaskExecutionStatus.retry:
+          retry = true;
+        case BackgroundTaskExecutionStatus.permanentFailure:
+          permanent = true;
+        case BackgroundTaskExecutionStatus.success:
+          break;
+      }
+    }
+    if (retry) return const BackgroundTaskExecutionResult.retry();
+    if (permanent) {
+      return const BackgroundTaskExecutionResult.permanentFailure();
+    }
+    return const BackgroundTaskExecutionResult.success();
+  }
+
+  /// [clock] carries the elapsed budget across chains of one run.
+  Future<BackgroundTaskExecutionResult> execute({
+    required String chain,
+    Stopwatch? clock,
+  }) async {
     if (chain != 'bitcoin' && chain != 'liquid') {
       return const BackgroundTaskExecutionResult.permanentFailure();
     }
-    final stopwatch = Stopwatch()..start();
+    final stopwatch = clock ?? (Stopwatch()..start());
     var retry = false;
     var permanent = false;
     var newIncoming = 0;
