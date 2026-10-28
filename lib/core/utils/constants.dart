@@ -1,3 +1,4 @@
+import 'package:bull_pricer/bull_pricer.dart' show SupportedCurrency;
 import 'package:flutter/material.dart';
 
 class Device {
@@ -44,19 +45,11 @@ class AssetConstants {
 }
 
 class CurrencyConstants {
-  /// Currencies supported by [CurrencyBottomSheet]'s flag/name lookup.
-  /// Single source of truth for both the pre-init wizard's currency
-  /// picker (which has no locator access) and the exchange-rate
-  /// datasource's hardcoded fallback (until the API supports
-  /// fetching the list dynamically).
-  static const List<String> supportedFiat = [
-    'USD',
-    'CAD',
-    'MXN',
-    'CRC',
-    'EUR',
-    'ARS',
-    'COP',
+  /// The fiat currencies the pricer quotes, in the order the pickers show
+  /// them. Read directly by the pre-init wizard's currency picker, which has
+  /// no locator access.
+  static final List<String> supportedFiat = [
+    for (final currency in SupportedCurrency.values) currency.code,
   ];
 }
 
