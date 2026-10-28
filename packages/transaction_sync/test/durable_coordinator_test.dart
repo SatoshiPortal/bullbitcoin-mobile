@@ -656,6 +656,47 @@ void main() {
   );
 
   test(
+    'a sync requested just after a process died is admitted in time',
+    () async {
+      // Defaults as in production: the dead request's heartbeat is fresh, so
+      // it blocks admission until it is purged as stale.
+      final coordinator = DurableWalletSourceOperationCoordinator(
+        databasePath: path,
+      );
+      await coordinator.runExclusive(
+        const WalletSourceKey('schema-bootstrap', 'bitcoin', 'testnet'),
+        (_) async {},
+      );
+      final db = sqlite3.open(path);
+      final now = DateTime.now().toUtc().millisecondsSinceEpoch;
+      db.execute(
+        '''INSERT INTO requests
+      (request_token, key_hash, kind, priority, status, requested_at, heartbeat_at)
+      VALUES (?,?,?,?,?,?,?)''',
+        [
+          'killed-process-request',
+          sha256.convert('killed bitcoin testnet'.codeUnits).toString(),
+          'synchronize',
+          'foreground',
+          'pending',
+          now,
+          now,
+        ],
+      );
+      db.dispose();
+
+      final entered = await coordinator.runExclusive(
+        const WalletSourceKey('next-run', 'liquid', 'testnet'),
+        (_) async => true,
+        kind: WalletOperationKind.synchronize,
+        priority: WalletOperationPriority.background,
+      );
+      expect(entered, isTrue);
+    },
+    timeout: const Timeout(Duration(seconds: 60)),
+  );
+
+  test(
     'cooperative isolate teardown releases the mutex for a later coordinator',
     () async {
       final ready = ReceivePort();

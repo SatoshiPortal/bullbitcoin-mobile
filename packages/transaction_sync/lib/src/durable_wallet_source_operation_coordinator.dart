@@ -48,7 +48,11 @@ final class DurableWalletSourceOperationCoordinator
     required this.databasePath,
     String? lockDirectoryPath,
     this.busyTimeout = const Duration(milliseconds: 250),
-    this.pendingHeartbeatTimeout = const Duration(seconds: 30),
+    // Well under the acquisition timeout: a request left by a killed process
+    // blocks admission until it is purged. A waiting request refreshes its
+    // heartbeat every few milliseconds and is restored if purged while
+    // suspended.
+    this.pendingHeartbeatTimeout = const Duration(seconds: 5),
     this.acquisitionTimeout = const Duration(seconds: 30),
     this.maxActiveSynchronizations = 2,
     this.logSink,
