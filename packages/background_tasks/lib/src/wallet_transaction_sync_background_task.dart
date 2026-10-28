@@ -46,6 +46,7 @@ final class WalletTransactionSyncBackgroundTask {
     required this.queue,
     this.maxJobsPerRun = 2,
     this.renewalInterval = const Duration(minutes: 5),
+    this.runBudget,
     WalletSyncLogSink? logSink,
   }) : _sink = logSink ?? const BullLoggerWalletSyncLogSink() {
     if (maxConcurrentJobs <= 0) {
@@ -74,6 +75,10 @@ final class WalletTransactionSyncBackgroundTask {
 
   final WalletSyncLogSink _sink;
 
+  /// Once spent, no further wallet is started: the platform stops a run that
+  /// overstays (about 30 s on iOS) and its unfinished work would be lost.
+  final Duration? runBudget;
+
   Future<BackgroundTaskExecutionResult> execute({required String chain}) async {
     if (chain != 'bitcoin' && chain != 'liquid') {
       return const BackgroundTaskExecutionResult.permanentFailure();
@@ -98,8 +103,13 @@ final class WalletTransactionSyncBackgroundTask {
     );
     var nextJob = 0;
 
+    bool budgetSpent() {
+      final budget = runBudget;
+      return budget != null && stopwatch.elapsed >= budget;
+    }
+
     Future<void> runWorker() async {
-      while (nextJob < claims.length) {
+      while (nextJob < claims.length && !budgetSpent()) {
         final index = nextJob++;
         final claim = claims[index];
         final job = jobsByKey[claim.key];
@@ -216,6 +226,21 @@ final class WalletTransactionSyncBackgroundTask {
         ? maxConcurrentJobs
         : claims.length;
     await Future.wait(List.generate(workerCount, (_) => runWorker()));
+    if (nextJob < claims.length) {
+      final unstarted = claims.sublist(nextJob);
+      for (final claim in unstarted) {
+        try {
+          await queue.release(claim);
+        } catch (_) {
+          retry = true;
+        }
+      }
+      _safeLog(
+        WalletSyncLogLevel.fine,
+        'Wallet sync run budget reached: chain=$chain '
+        'released=${unstarted.length}',
+      );
+    }
     _safeLog(
       WalletSyncLogLevel.fine,
       'Wallet sync queue completion: chain=$chain claimed=${claims.length} '

@@ -130,6 +130,23 @@ void main() {
     },
   );
 
+  test('a released claim is claimable again without a penalty', () async {
+    final current = queue();
+    final claim = (await current.reconcileAndClaim([
+      _registration(0),
+    ], chain: 'bitcoin')).single;
+
+    expect(await current.release(claim), isTrue);
+
+    // Immediately, without waiting for the lease or a backoff.
+    final again = await current.reconcileAndClaim([
+      _registration(0),
+    ], chain: 'bitcoin');
+    expect(again.map((claim) => claim.key.walletId), ['wallet-0']);
+    expect(await current.release(claim), isFalse);
+    await current.close();
+  });
+
   test('a wallet whose worker never completes stops starving others', () async {
     final current = queue();
     Future<List<String>> claim() async => (await current.reconcileAndClaim([

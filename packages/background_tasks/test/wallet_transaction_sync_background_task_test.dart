@@ -833,6 +833,67 @@ void main() {
     );
   });
 
+  test('a run stops starting wallets once its budget is spent', () async {
+    final directory = await Directory.systemTemp.createTemp('background_tasks');
+    final outbox = SqliteNotificationOutbox(
+      databasePath: '${directory.path}/n.sqlite',
+    );
+    final queue = SqliteWalletSyncJobQueue(
+      databasePath: '${directory.path}/q.sqlite',
+    );
+    final messages = <String>[];
+    addTearDown(() async {
+      await queue.close();
+      outbox.dispose();
+      await directory.delete(recursive: true);
+    });
+    final started = <String>[];
+    WalletTransactionSyncBackgroundJob job(String id) {
+      final key = WalletNetworkKey(id, 'bitcoin', 'mainnet');
+      return WalletTransactionSyncBackgroundJob(
+        key: key,
+        synchronize: () async {
+          started.add(id);
+          await Future<void>.delayed(const Duration(milliseconds: 80));
+          return Ok(_outcome(key, const []));
+        },
+      );
+    }
+
+    final task = WalletTransactionSyncBackgroundTask(
+      notifications: NotificationsFacade(gateway: _Gateway(), outbox: outbox),
+      queue: queue,
+      jobs: [job('a'), job('b')],
+      maxConcurrentJobs: 1,
+      runBudget: const Duration(milliseconds: 20),
+      copy: (_, _) => (title: 'Incoming', body: 'Payment received'),
+      logSink: _Sink(messages),
+    );
+
+    expect(
+      (await task.execute(chain: 'bitcoin')).status,
+      BackgroundTaskExecutionStatus.success,
+    );
+    expect(started, hasLength(1));
+    expect(
+      messages,
+      contains('Wallet sync run budget reached: chain=bitcoin released=1'),
+    );
+
+    // The wallet left over is first in line next run.
+    final next = await queue.reconcileAndClaim([
+      (
+        key: WalletNetworkKey(
+          started.single == 'a' ? 'b' : 'a',
+          'bitcoin',
+          'mainnet',
+        ),
+        revision: 'legacy-electrum-v1',
+      ),
+    ], chain: 'bitcoin');
+    expect(next, hasLength(1));
+  });
+
   test('logging sink failure cannot alter a successful batch', () async {
     final directory = await Directory.systemTemp.createTemp('background_tasks');
     final outbox = SqliteNotificationOutbox(

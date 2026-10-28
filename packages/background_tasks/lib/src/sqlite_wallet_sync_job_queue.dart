@@ -52,6 +52,10 @@ abstract interface class WalletSyncJobQueue {
     WalletSyncJobClaim claim, {
     required bool permanent,
   });
+
+  /// Gives back a claim that was never worked on: it is claimable again at
+  /// once and its claim does not count as an attempt.
+  Future<bool> release(WalletSyncJobClaim claim);
   Future<void> close();
 }
 
@@ -351,6 +355,12 @@ final class SqliteWalletSyncJobQueue implements WalletSyncJobQueue {
       rethrow;
     }
   }
+
+  @override
+  Future<bool> release(WalletSyncJobClaim claim) => _mutate(
+    'UPDATE wallet_sync_jobs SET attempts = MAX(0, attempts - 1), next_attempt_at = ?, lease_token = NULL, lease_expires_at = NULL WHERE job_id = ? AND lease_token = ?',
+    [now().toUtc().microsecondsSinceEpoch, claim.jobId, claim.leaseToken],
+  );
 
   /// Doubles from [retryBase] per attempt, up to [retryMaximum].
   Duration _backoff(int attempts) {

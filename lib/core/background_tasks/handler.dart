@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'dart:ui' show Locale;
 
 import 'package:background_tasks/background_tasks.dart';
@@ -29,6 +31,12 @@ import 'package:transaction_sync/transaction_sync.dart';
 // leaves background scans one slot across both tasks: a second worker would
 // only wait for it.
 const _backgroundWalletSyncConcurrency = 1;
+
+// iOS ends a refresh task after about 30 s, Android a worker after 10 min;
+// the budget leaves room for startup and for delivering notifications.
+final _backgroundRunBudget = Platform.isIOS
+    ? const Duration(seconds: 20)
+    : const Duration(minutes: 8);
 
 /// Schedules the periodic background tasks and removes the obsolete swap task.
 Future<void> registerBackgroundTasks() async {
@@ -163,6 +171,7 @@ Future<BackgroundTaskRunner> _bootstrapBackgroundRunner() async {
       queue: syncQueue,
       copy: copy,
       maxConcurrentJobs: _backgroundWalletSyncConcurrency,
+      runBudget: _backgroundRunBudget,
     ).execute(chain: 'bitcoin'),
     liquidSync: () => WalletTransactionSyncBackgroundTask(
       notifications: notifications,
@@ -170,6 +179,7 @@ Future<BackgroundTaskRunner> _bootstrapBackgroundRunner() async {
       queue: syncQueue,
       copy: copy,
       maxConcurrentJobs: _backgroundWalletSyncConcurrency,
+      runBudget: _backgroundRunBudget,
     ).execute(chain: 'liquid'),
     pruneLogs: log.prune,
     onFinished: () => _runAllCleanups([
