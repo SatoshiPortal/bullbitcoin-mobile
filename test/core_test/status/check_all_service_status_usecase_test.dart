@@ -116,7 +116,7 @@ void main() {
       () => electrum.checkServersInUseAreOnlineForNetwork(any()),
     ).thenAnswer((_) async => true);
     final bitcoinPriceRepository = _MockBitcoinPriceRepository();
-    // The datasource reports an unreachable pricer as a zero rate.
+    // The price repository reports an unreachable pricer as a zero rate.
     when(
       () => bitcoinPriceRepository.getCurrencyValue(
         amountSat: any(named: 'amountSat'),

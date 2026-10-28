@@ -1073,7 +1073,7 @@ void main() {
           exchangeRate: 70000,
         ),
       );
-      // The datasource reports an unreachable pricer as a zero rate.
+      // The price repository reports an unreachable pricer as a zero rate.
       when(
         () => convertSatsUsecase.execute(currencyCode: 'CAD'),
       ).thenAnswer((_) async => 0);

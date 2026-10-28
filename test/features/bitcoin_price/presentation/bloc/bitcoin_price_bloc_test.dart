@@ -173,7 +173,7 @@ void main() {
           online = false;
           return 100000;
         }
-        // The datasource reports an unreachable pricer as a zero rate.
+        // The price repository reports an unreachable pricer as a zero rate.
         return 0;
       });
       return buildBloc();
