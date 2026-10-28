@@ -2,9 +2,10 @@ import 'package:bb_mobile/core/price/domain/usecases/convert_sats_to_currency_am
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/features/receive/domain/receive_failure.dart';
+import 'package:bull_pricer/bull_pricer.dart' show PricerUnexpectedFailure;
 import 'package:meta/meta.dart';
 
-/// Receive-owned boundary for the shared rate conversion, which still throws.
+/// Receive-owned boundary for the shared rate conversion.
 class ConvertReceiveAmountUsecase {
   final ConvertSatsToCurrencyAmountUsecase _convertSatsToCurrencyAmountUsecase;
 
@@ -15,23 +16,18 @@ class ConvertReceiveAmountUsecase {
     BigInt? amountSat,
     String? currencyCode,
   }) async {
-    try {
-      return Ok(
-        await _convertSatsToCurrencyAmountUsecase.execute(
-          amountSat: amountSat,
-          currencyCode: currencyCode,
-        ),
-      );
-    } on Object catch (e, st) {
-      // Logged HERE, at the boundary that owns the raw reason. The failure's
-      // logMessage stays secondary (equality, debug): if a caller chooses not
-      // to log, the diagnostic must still exist.
-      log.severe(
-        message: 'Failed to convert an amount for receive',
-        error: e,
-        trace: st,
-      );
-      return Err(ReceiveUnexpectedFailure(e.toString()));
+    switch (await _convertSatsToCurrencyAmountUsecase.execute(
+      amountSat: amountSat,
+      currencyCode: currencyCode,
+    )) {
+      case Ok(:final value):
+        return Ok(value);
+      case Err(:final failure) when failure is PricerUnexpectedFailure:
+        log.warning('Receive price conversion failed: ${failure.logMessage}');
+        return Err(ReceiveUnexpectedFailure(failure.logMessage));
+      case Err(:final failure):
+        log.warning('Receive price unavailable: ${failure.runtimeType}');
+        return const Ok(0);
     }
   }
 }

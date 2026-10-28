@@ -1,7 +1,10 @@
-import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/price/domain/repositories/bitcoin_price_repository.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
+import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
+import 'package:bull_pricer/bull_pricer.dart';
+import 'package:meta/meta.dart';
+import 'package:primitives/primitives.dart';
 
 class ConvertSatsToCurrencyAmountUsecase {
   final BitcoinPriceRepository _mainnetBitcoinPriceRepository;
@@ -14,31 +17,27 @@ class ConvertSatsToCurrencyAmountUsecase {
     required this._settingsRepository,
   });
 
-  Future<double> execute({BigInt? amountSat, String? currencyCode}) async {
+  /// [amountSat] in [currencyCode], or the settings currency when none is
+  /// given. Without an amount, the price of one bitcoin.
+  @useResult
+  Future<Result<double, PricerFailure>> execute({
+    BigInt? amountSat,
+    String? currencyCode,
+  }) async {
+    final SettingsEntity settings;
     try {
-      final settings = await _settingsRepository.fetch();
-      final currency = currencyCode ?? settings.currencyCode;
-      final isTestnet = settings.environment.isTestnet;
-      final repo = isTestnet
-          ? _testnetBitcoinPriceRepository
-          : _mainnetBitcoinPriceRepository;
-      final availableCurrencies = await repo.availableCurrencies;
-
-      if (!availableCurrencies.contains(currency)) {
-        throw ConvertSatsToCurrencyAmountException('Currency not available');
-      }
-
-      // If no amount is specified, return the price of one Bitcoin
-      return repo.getCurrencyValue(
-        amountSat: amountSat ?? ConversionConstants.satsAmountOfOneBitcoin,
-        currency: currency,
+      settings = await _settingsRepository.fetch();
+    } on Exception catch (e) {
+      return Err(
+        PricerUnexpectedFailure('Settings unavailable: ${e.runtimeType}'),
       );
-    } catch (e) {
-      throw ConvertSatsToCurrencyAmountException(e.toString());
     }
+    final repo = settings.environment.isTestnet
+        ? _testnetBitcoinPriceRepository
+        : _mainnetBitcoinPriceRepository;
+    return repo.getCurrencyValue(
+      amountSat: amountSat ?? ConversionConstants.satsAmountOfOneBitcoin,
+      currency: currencyCode ?? settings.currencyCode,
+    );
   }
-}
-
-class ConvertSatsToCurrencyAmountException extends BullException {
-  ConvertSatsToCurrencyAmountException(super.message);
 }

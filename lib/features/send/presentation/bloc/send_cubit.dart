@@ -70,6 +70,7 @@ import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 
 import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
+import 'package:bull_pricer/bull_pricer.dart' show PricerFailure;
 import 'package:bull_logger/bull_logger.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -772,7 +773,7 @@ class SendCubit extends Cubit<SendState>
       state.copyWith(
         fiatCurrencyCodes: fiatCurrencies,
         fiatCurrencyCode: fiatCurrency,
-        exchangeRate: exchangeRate,
+        exchangeRate: _rateOrZero(exchangeRate),
         bitcoinUnit: bitcoinUnit,
         inputAmountCurrencyCode: bitcoinUnit.code,
         payjoinGloballyEnabled: payjoinEnabled,
@@ -886,22 +887,24 @@ class SendCubit extends Cubit<SendState>
       );
       // No price for that currency: stay on the current one rather than take
       // a fiat input that cannot be converted.
-      if (rate <= 0) return;
-      fiatCurrencyCode = currencyCode;
-      exchangeRate = rate;
+      if (rate case Ok(:final value)) {
+        fiatCurrencyCode = currencyCode;
+        exchangeRate = value;
+      } else {
+        return;
+      }
     } else {
       // If the currency is a bitcoin unit, set the fiat currency and exchange
       //  rate back to the currency from the settings.
-      final currencyValues = await Future.wait([
+      final (settings, rate, payjoinEnabled) = await (
         _getSettingsUsecase.execute(),
         _convertSatsToCurrencyAmountUsecase.execute(),
         _getSendPayjoinEnabledUsecase.execute(),
-      ]);
+      ).wait;
 
-      final settings = currencyValues[0] as SettingsEntity;
       fiatCurrencyCode = settings.currencyCode;
-      exchangeRate = currencyValues[1] as double;
-      payjoinGloballyEnabled = currencyValues[2] as bool;
+      exchangeRate = _rateOrZero(rate);
+      payjoinGloballyEnabled = payjoinEnabled;
     }
 
     emit(
@@ -2576,7 +2579,19 @@ class SendCubit extends Cubit<SendState>
       currencyCode: currencyCode ?? state.fiatCurrencyCode,
     );
 
-    emit(state.copyWith(exchangeRate: exchangeRate));
+    emit(state.copyWith(exchangeRate: _rateOrZero(exchangeRate)));
+  }
+
+  /// Send shows a zero rate as no fiat value, so a price the pricer could not
+  /// give becomes zero here.
+  static double _rateOrZero(Result<double, PricerFailure> rate) {
+    switch (rate) {
+      case Ok(:final value):
+        return value;
+      case Err(:final failure):
+        log.warning('Send price unavailable: ${failure.runtimeType}');
+        return 0;
+    }
   }
 
   void _watchOrderSwap(String localId) {

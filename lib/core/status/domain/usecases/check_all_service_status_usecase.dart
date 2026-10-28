@@ -213,7 +213,7 @@ class CheckAllServiceStatusUsecase {
     // A price under a minute old is served without asking the pricer, so an
     // online pricer is dated by its last real answer. A failure is never
     // cached: that one is a fresh attempt.
-    final isOnline = price > 0;
+    final isOnline = price is Ok;
     return ServiceStatusInfo(
       status: isOnline ? ServiceStatus.online : ServiceStatus.offline,
       name: 'Pricer',

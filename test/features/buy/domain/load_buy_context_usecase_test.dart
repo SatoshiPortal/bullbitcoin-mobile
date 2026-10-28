@@ -10,6 +10,7 @@ import 'package:bb_mobile/core/wallet/domain/usecases/get_receive_address_usecas
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/features/buy/domain/buy_failure.dart';
 import 'package:bb_mobile/features/buy/domain/load_buy_context_usecase.dart';
+import 'package:bull_pricer/bull_pricer.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';
@@ -160,24 +161,26 @@ void main() {
         amountSat: any(named: 'amountSat'),
         currencyCode: any(named: 'currencyCode'),
       ),
-    ).thenAnswer((_) async => 42.5);
+    ).thenAnswer((_) async => const Ok(42.5));
 
     final result = await usecase.satsToCurrency(currencyCode: 'CAD');
 
     expect((result as Ok<double, BuyFailure>).value, 42.5);
   });
 
-  test('a failed conversion is sanitized', () async {
+  test('an unavailable price is a quote unavailable failure', () async {
     when(
       () => convertSatsToCurrency.execute(
         amountSat: any(named: 'amountSat'),
         currencyCode: any(named: 'currencyCode'),
       ),
-    ).thenThrow(Exception(_rawReason));
+    ).thenAnswer((_) async => const Err(PricerNetworkFailure('Timed out')));
 
     expect(
-      await usecase.satsToCurrency(currencyCode: 'CAD'),
-      isA<Err<double, BuyFailure>>(),
+      (await usecase.satsToCurrency(currencyCode: 'CAD')
+              as Err<double, BuyFailure>)
+          .failure,
+      isA<BuyQuoteUnavailableFailure>(),
     );
   });
 }

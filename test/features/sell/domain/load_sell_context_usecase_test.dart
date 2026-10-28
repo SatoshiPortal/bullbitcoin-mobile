@@ -9,6 +9,7 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_address_at_index_usecase.dart';
 import 'package:bb_mobile/features/sell/domain/load_sell_context_usecase.dart';
 import 'package:bb_mobile/features/sell/domain/sell_failure.dart';
+import 'package:bull_pricer/bull_pricer.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';
@@ -155,7 +156,7 @@ void main() {
           amountSat: any(named: 'amountSat'),
           currencyCode: any(named: 'currencyCode'),
         ),
-      ).thenAnswer((_) async => 42.5);
+      ).thenAnswer((_) async => const Ok(42.5));
 
       final result = await usecase.satsToCurrency(currencyCode: 'CAD');
 
@@ -163,34 +164,18 @@ void main() {
     });
 
     test('an unavailable price is a failure, not a zero rate', () async {
-      // The datasource reports an unreachable pricer as a zero rate; the sell
-      // estimate would then need zero sats and pass any balance check.
       when(
         () => convertSatsToCurrency.execute(
           amountSat: any(named: 'amountSat'),
           currencyCode: any(named: 'currencyCode'),
         ),
-      ).thenAnswer((_) async => 0);
+      ).thenAnswer((_) async => const Err(PricerNetworkFailure('Timed out')));
 
       final result = await usecase.satsToCurrency(currencyCode: 'CAD');
 
       expect(
         (result as Err<double, SellFailure>).failure,
         isA<SellQuoteUnavailableFailure>(),
-      );
-    });
-
-    test('sanitizes a conversion failure', () async {
-      when(
-        () => convertSatsToCurrency.execute(
-          amountSat: any(named: 'amountSat'),
-          currencyCode: any(named: 'currencyCode'),
-        ),
-      ).thenThrow(Exception(_rawReason));
-
-      expect(
-        await usecase.satsToCurrency(currencyCode: 'CAD'),
-        isA<Err<double, SellFailure>>(),
       );
     });
   });

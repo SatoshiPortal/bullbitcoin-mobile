@@ -244,7 +244,10 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
           bitcoinNetworkFees: bitcoinNetworkFees,
           liquidNetworkFees: liquidNetworkFees,
           fiatCurrencyCode: settings.currencyCode,
-          exchangeRate: exchangeRate,
+          exchangeRate: switch (exchangeRate) {
+            Ok(:final value) => value,
+            Err() => null,
+          },
         ),
       );
 

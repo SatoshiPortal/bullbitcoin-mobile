@@ -101,20 +101,15 @@ class LoadBuyContextUsecase {
     BigInt? amountSat,
     String? currencyCode,
   }) async {
-    try {
-      return Ok(
-        await _convertSatsToCurrencyAmountUsecase.execute(
-          amountSat: amountSat,
-          currencyCode: currencyCode,
-        ),
-      );
-    } catch (e, st) {
-      log.severe(
-        message: 'Failed to convert sats to the display currency',
-        error: e,
-        trace: st,
-      );
-      return Err(BuyUnexpectedFailure('$e'));
+    final price = await _convertSatsToCurrencyAmountUsecase.execute(
+      amountSat: amountSat,
+      currencyCode: currencyCode,
+    );
+    if (price case Err(:final failure)) {
+      log.warning('Buy price unavailable: ${failure.runtimeType}');
     }
+    return price.mapErr(
+      (failure) => BuyQuoteUnavailableFailure(failure.logMessage),
+    );
   }
 }

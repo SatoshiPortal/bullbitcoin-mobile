@@ -13,9 +13,10 @@ import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:bull_tor/tor.dart';
 import 'package:clock/clock.dart';
+import 'package:bull_pricer/bull_pricer.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:primitives/primitives.dart' show Ok;
+import 'package:primitives/primitives.dart' show Err, Ok;
 
 class _MockElectrumConnectivityPort extends Mock
     implements ElectrumConnectivityPort {}
@@ -72,7 +73,7 @@ void main() {
         amountSat: any(named: 'amountSat'),
         currency: any(named: 'currency'),
       ),
-    ).thenAnswer((_) async => 70000);
+    ).thenAnswer((_) async => const Ok(70000));
     when(
       () => bitcoinPriceRepository.priceFetchedAt('USD'),
     ).thenReturn(fetchedAt);
@@ -122,7 +123,7 @@ void main() {
         amountSat: any(named: 'amountSat'),
         currency: any(named: 'currency'),
       ),
-    ).thenAnswer((_) async => 0);
+    ).thenAnswer((_) async => const Err(PricerNetworkFailure('Timed out')));
     final feesRepository = _MockFeesRepository();
     when(
       () => feesRepository.getNetworkFees(network: any(named: 'network')),

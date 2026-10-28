@@ -1,3 +1,7 @@
+import 'package:bull_pricer/bull_pricer.dart';
+import 'package:meta/meta.dart';
+import 'package:primitives/primitives.dart';
+
 abstract interface class BitcoinPriceRepository {
   Future<List<String>> get availableCurrencies;
 
@@ -6,18 +10,22 @@ abstract interface class BitcoinPriceRepository {
   /// request, so this is when the pricer last answered for it.
   DateTime? priceFetchedAt(String currency);
 
-  Future<double> getCurrencyValue({
+  @useResult
+  Future<Result<double, PricerFailure>> getCurrencyValue({
     required BigInt amountSat,
     required String currency,
   });
-  Future<BigInt> getSatsValue({
+
+  @useResult
+  Future<Result<BigInt, PricerFailure>> getSatsValue({
     required double amountFiat,
     required String currency,
   });
 
   /// Convert an amount from one fiat currency to another using BTC as intermediary.
   /// Returns the converted amount in the target currency.
-  Future<double> convertFiatToFiat({
+  @useResult
+  Future<Result<double, PricerFailure>> convertFiatToFiat({
     required double amount,
     required String fromCurrency,
     required String toCurrency,
