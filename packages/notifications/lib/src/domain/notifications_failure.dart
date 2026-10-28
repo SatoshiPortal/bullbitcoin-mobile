@@ -12,8 +12,8 @@ final class NotificationsGatewayFailure extends NotificationsFailure {
   const NotificationsGatewayFailure();
 }
 
-/// The OS will not show notifications for the app, so pending ones are kept
-/// for a later run instead of being marked delivered.
+/// The OS will not show notifications for the app: pending ones are settled
+/// without being shown, so granting the permission later replays nothing.
 final class NotificationsPermissionDeniedFailure extends NotificationsFailure {
   const NotificationsPermissionDeniedFailure();
 }
