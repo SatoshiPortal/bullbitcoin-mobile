@@ -100,7 +100,7 @@ void main() {
           language: 'en',
           currency: 'EUR',
           dcaEnabled: true,
-          autoBuyEnabled: 'true',
+          autoBuyEnabled: true,
           emailNotificationsEnabled: true,
         ),
       ).called(1);

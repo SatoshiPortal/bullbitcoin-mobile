@@ -3,6 +3,7 @@ import 'package:bb_mobile/core/status/status_locator.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/sync/sync_locator.dart';
 import 'package:bb_mobile/core/sync/sync_coordinator.dart';
+import 'package:bb_mobile/bbx_api_setup.dart';
 import 'package:bb_mobile/payjoin_setup.dart';
 import 'package:bb_mobile/features/address_view/address_view_locator.dart';
 import 'package:bb_mobile/features/all_seed_view/all_seed_view_locator.dart';
@@ -76,6 +77,7 @@ class AppLocator {
     // Register core dependencies first
     CoreLocator.register(locator, database);
     await CoreLocator.registerDatasources(locator);
+    BbxApiSetup.setup(locator);
     // Note: since the WalletLocator repositories depend on ports for electrum servers,
     // we need to make sure the ports are registered before the repositories
     // This is a hack though as normally repositories should not depend on ports

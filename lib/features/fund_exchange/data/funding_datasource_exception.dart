@@ -53,25 +53,4 @@ final class FundingRpcException extends FundingDatasourceException {
   /// shared from the logs screen, so that sentence is not written to it.
   @override
   String toString() => 'FundingRpcException(apiCode: $apiCode)';
-
-  factory FundingRpcException.fromJson(Map<String, dynamic> json) {
-    final data = json['data'];
-    final dataMap = data is Map
-        ? Map<String, dynamic>.from(data)
-        : const <String, dynamic>{};
-    final apiErrorValue = dataMap['apiError'];
-    final apiError = apiErrorValue is Map
-        ? Map<String, dynamic>.from(apiErrorValue)
-        : const <String, dynamic>{};
-
-    // Read the code tolerantly: a hard `as String?` would throw a TypeError on
-    // a numeric code, escape the boundary and demote an otherwise mappable
-    // error to the generic catch-all.
-    final code = apiError['code'];
-
-    return FundingRpcException(
-      apiCode: code?.toString(),
-      logMessage: apiError['en']?.toString() ?? json['message']?.toString(),
-    );
-  }
 }

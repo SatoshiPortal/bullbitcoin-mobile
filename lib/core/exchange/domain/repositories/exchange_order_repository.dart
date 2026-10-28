@@ -60,6 +60,4 @@ abstract class ExchangeOrderRepository {
     required DcaNetwork network,
     required String address,
   });
-  Future<Map<String, dynamic>> getBuyLimits();
-  Future<Map<String, dynamic>> getSellLimits();
 }

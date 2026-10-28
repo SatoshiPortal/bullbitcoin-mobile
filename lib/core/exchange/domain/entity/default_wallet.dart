@@ -15,17 +15,6 @@ enum WalletAddressType {
     }
   }
 
-  String get recipientTypeValue {
-    switch (this) {
-      case WalletAddressType.bitcoin:
-        return 'OUT_BITCOIN_ADDRESS';
-      case WalletAddressType.lightning:
-        return 'OUT_LIGHTNING_ADDRESS';
-      case WalletAddressType.liquid:
-        return 'OUT_LIQUID_ADDRESS';
-    }
-  }
-
   String get addressHint {
     switch (this) {
       case WalletAddressType.bitcoin:

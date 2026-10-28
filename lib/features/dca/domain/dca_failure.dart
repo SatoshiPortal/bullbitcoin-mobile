@@ -14,14 +14,9 @@ sealed class DcaFailure extends Failure {
 /// The exchange account summary could not be loaded, so the flow cannot
 /// start (no balances, no currency, no default lightning address).
 ///
-/// Deliberately coarse: it also covers not-logged-in (the core repository
-/// returns null rather than throwing when no API key is stored) and a lost
-/// connection. Splitting a connectivity variant out is not possible from
-/// here — `ExchangeUserRepositoryImpl` stringifies every cause into
-/// `Exception('Failed to fetch user summary: $e')`, so no typed exception
-/// survives to be classified. The user-facing string is worded to fit all
-/// three causes; the split becomes possible once that core repository
-/// returns a `Result` (#1895 core phase).
+/// Deliberately coarse: it also covers not-logged-in and a lost connection,
+/// although `ExchangeUserRepository` reports those as separate failures. The
+/// user-facing string is worded to fit all three causes.
 final class DcaAccountUnavailableFailure extends DcaFailure {
   const DcaAccountUnavailableFailure([super.logMessage]);
 }

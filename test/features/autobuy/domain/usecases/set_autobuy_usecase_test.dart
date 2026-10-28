@@ -165,7 +165,7 @@ void main() {
         language: 'FR',
         currency: 'CAD',
         dcaEnabled: true,
-        autoBuyEnabled: 'false',
+        autoBuyEnabled: false,
         emailNotificationsEnabled: false,
       ),
     ).called(1);
@@ -184,7 +184,7 @@ void main() {
         language: 'FR',
         currency: 'CAD',
         dcaEnabled: true,
-        autoBuyEnabled: 'true',
+        autoBuyEnabled: true,
         emailNotificationsEnabled: false,
       ),
     ).called(1);

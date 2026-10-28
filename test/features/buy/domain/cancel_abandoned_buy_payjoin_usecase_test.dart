@@ -92,7 +92,7 @@ void main() {
     OrderPayinStatus.awaitingConfirmation,
   ]) {
     test(
-      'does not cancel a receiver when the payin is ${status.value}',
+      'does not cancel a receiver when the payin is ${status.name}',
       () async {
         expect(
           await usecase.execute(_order(payinStatus: status, bip21URI: uri)),

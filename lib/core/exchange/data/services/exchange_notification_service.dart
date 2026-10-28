@@ -1,9 +1,9 @@
 import 'dart:async';
 
 import 'package:bb_mobile/core/exchange/data/datasources/exchange_notification_datasource.dart';
-import 'package:bb_mobile/core/exchange/data/models/notification_message_model.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/notification_message.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
+import 'package:bbx_api/bbx_api.dart' as bbx;
 
 /// Primary/driving adapter that receives WebSocket notification events
 /// and exposes them as a stream for the application to consume.
@@ -18,8 +18,8 @@ class ExchangeNotificationService {
   final StreamController<NotificationMessage> _messageController =
       StreamController<NotificationMessage>.broadcast();
 
-  StreamSubscription<Map<String, dynamic>>? _mainnetSubscription;
-  StreamSubscription<Map<String, dynamic>>? _testnetSubscription;
+  StreamSubscription<bbx.NotificationMessage>? _mainnetSubscription;
+  StreamSubscription<bbx.NotificationMessage>? _testnetSubscription;
   bool _isTestnet = false;
 
   ExchangeNotificationService({
@@ -32,19 +32,13 @@ class ExchangeNotificationService {
 
   void _setupInternalListeners() {
     // Listen to mainnet and forward messages only when on mainnet
-    _mainnetSubscription = _mainnetDatasource.messageStream.listen((json) {
-      if (!_isTestnet) {
-        final entity = NotificationMessageModel.fromJson(json).toEntity();
-        _messageController.add(entity);
-      }
+    _mainnetSubscription = _mainnetDatasource.messageStream.listen((message) {
+      if (!_isTestnet) _messageController.add(_toEntity(message));
     });
 
     // Listen to testnet and forward messages only when on testnet
-    _testnetSubscription = _testnetDatasource.messageStream.listen((json) {
-      if (_isTestnet) {
-        final entity = NotificationMessageModel.fromJson(json).toEntity();
-        _messageController.add(entity);
-      }
+    _testnetSubscription = _testnetDatasource.messageStream.listen((message) {
+      if (_isTestnet) _messageController.add(_toEntity(message));
     });
   }
 
@@ -88,4 +82,25 @@ class ExchangeNotificationService {
     _testnetSubscription?.cancel();
     _messageController.close();
   }
+
+  static NotificationMessage _toEntity(bbx.NotificationMessage message) =>
+      NotificationMessage(
+        kind: switch (message.type) {
+          bbx.NotificationType.balance => NotificationMessageKind.balance,
+          bbx.NotificationType.group => NotificationMessageKind.group,
+          bbx.NotificationType.kyc => NotificationMessageKind.kyc,
+          bbx.NotificationType.userPreferences =>
+            NotificationMessageKind.userPreferences,
+          bbx.NotificationType.message => NotificationMessageKind.message,
+          bbx.NotificationType.order => NotificationMessageKind.order,
+          bbx.NotificationType.limitOrder => NotificationMessageKind.limitOrder,
+          bbx.NotificationType.recipient => NotificationMessageKind.recipient,
+          bbx.NotificationType.notification ||
+          bbx.NotificationType.announcement ||
+          bbx.NotificationType.unknown => NotificationMessageKind.unknown,
+        },
+        orderId: message.orderId,
+        event: message.event,
+        rawData: message.data,
+      );
 }

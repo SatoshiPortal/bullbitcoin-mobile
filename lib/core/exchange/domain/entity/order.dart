@@ -50,29 +50,19 @@ enum FiatCurrency {
 }
 
 enum OrderType {
-  buy('Buy Bitcoin'),
-  sell('Sell Bitcoin'),
-  sellUsdt('Sell USDT'),
-  fiatPayment('Fiat Payment'),
-  funding('Funding'),
-  withdraw('Withdraw'),
-  reward('Reward'),
-  refund('Refund'),
-  balanceAdjustment('Balance Adjustment'),
+  buy,
+  sell,
+  sellUsdt,
+  fiatPayment,
+  funding,
+  withdraw,
+  reward,
+  refund,
+  balanceAdjustment,
   // Order types added server-side after this build shipped. The raw string is
   // carried on [GenericOrder.orderTypeName] instead of here, since an enum
   // member can't be parameterized — same trade-off as [OrderPaymentMethod].
-  unknown('Unknown');
-
-  final String value;
-  const OrderType(this.value);
-
-  static OrderType fromValue(String value) {
-    return OrderType.values.firstWhere(
-      (e) => e.value == value,
-      orElse: () => OrderType.unknown,
-    );
-  }
+  unknown,
 }
 
 enum OrderBitcoinNetwork {
@@ -112,69 +102,39 @@ class BitcoinAmount extends OrderAmount {
 }
 
 enum OrderStatus {
-  canceled('Canceled'),
+  canceled,
   // The server sends both of these as distinct statuses: `expired` is the
   // pay-in deadline lapsing, `orderExpired` the order itself expiring.
-  expired('Payment deadline expired'),
-  orderExpired('Expired'),
-  inProgress('In progress'),
-  awaitingConfirmation('Awaiting confirmation'),
-  completed('Completed'),
-  rejected('Rejected'),
-  failed('Failed'),
-  unknown('Unknown');
-
-  final String value;
-  const OrderStatus(this.value);
-
-  static OrderStatus fromValue(String value) {
-    return OrderStatus.values.firstWhere(
-      (e) => e.value == value,
-      orElse: () => OrderStatus.unknown,
-    );
-  }
+  expired,
+  orderExpired,
+  inProgress,
+  awaitingConfirmation,
+  completed,
+  rejected,
+  failed,
+  unknown,
 }
 
 enum OrderPayinStatus {
-  notStarted('Not started'),
-  awaitingPayment('Awaiting payment'),
-  inProgress('In progress'),
-  underReview('Under review'),
-  awaitingConfirmation('Awaiting confirmation'),
-  completed('Completed'),
-  rejected('Rejected'),
-  unknown('Unknown');
-
-  final String value;
-  const OrderPayinStatus(this.value);
-
-  static OrderPayinStatus fromValue(String value) {
-    return OrderPayinStatus.values.firstWhere(
-      (e) => e.value == value,
-      orElse: () => OrderPayinStatus.unknown,
-    );
-  }
+  notStarted,
+  awaitingPayment,
+  inProgress,
+  underReview,
+  awaitingConfirmation,
+  completed,
+  rejected,
+  unknown,
 }
 
 enum OrderPayoutStatus {
-  notStarted('Not started'),
-  inProgress('In progress'),
-  scheduled('Scheduled'),
-  awaitingClaim('Awaiting claim'),
-  completed('Completed'),
-  canceled('Canceled'),
-  failed('Failed'),
-  unknown('Unknown');
-
-  final String value;
-  const OrderPayoutStatus(this.value);
-
-  static OrderPayoutStatus fromValue(String value) {
-    return OrderPayoutStatus.values.firstWhere(
-      (e) => e.value == value,
-      orElse: () => OrderPayoutStatus.unknown,
-    );
-  }
+  notStarted,
+  inProgress,
+  scheduled,
+  awaitingClaim,
+  completed,
+  canceled,
+  failed,
+  unknown,
 }
 
 // enum WithdrawalPaymentProcessor {
@@ -213,45 +173,40 @@ enum OrderPayoutStatus {
 // }
 
 enum OrderPaymentMethod {
-  eTransfer('Interac e-Transfer (CAD)'),
-  eTransferArs('Bank Transfer CBU (ARS)'),
-  bankTransferCop('PSE Colombia (COP)'),
-  billPayment('Bill Payment (CAD)'),
-  bankTransfer('Bank Transfer EFT (CAD)'),
-  sepa('SEPA Transfer (EUR)'),
-  ibanCrc('SINPE IBAN (CRC)'),
-  ibanUsd('SINPE IBAN (USD)'),
-  sinpe('SINPE Móvil (CRC)'),
-  cadBalance('CAD Balance'),
-  eurBalance('EUR Balance'),
-  mxnBalance('MXN Balance'),
-  arsBalance('ARS Balance'),
-  copBalance('COP Balance'),
-  crcBalance('CRC Balance'),
-  usdBalance('USD Balance'),
-  bitcoin('Bitcoin On-Chain'),
-  liquid('Liquid Network'),
-  lnAddress('Lightning Address (LNURL-PAY)'),
-  lnInvoice('Lightning Invoice (BOLT11)'),
-  lnUrl('LNURL-Withdraw'),
-  referralCad('Referral Payout CAD'),
-  referralEur('Referral Payout EUR'),
-  referralMxn('Referral Payout MXN'),
-  referralUsd('Referral Payout USD'),
-  referralCrc('Referral Payout CRC'),
-  referralArs('Referral Payout ARS'),
-  referralCop('Referral Payout COP'),
-  spei('SPEI transfer (MXN)'),
-  thinAir('Thin Air'),
-  refundCrc('Refund to CRC Balance'),
-  refundUsd('Refund to USD Balance'),
-  loadhub('Canada Post In-Person Deposit (CAD)'),
-  unknown(
-    'Unknown', // If we want this value to be parameterizable with the value of the unknown payment method, we shouldn't use an enum but classes with factory constructor
-  );
-
-  final String value;
-  const OrderPaymentMethod(this.value);
+  eTransfer,
+  eTransferArs,
+  bankTransferCop,
+  billPayment,
+  bankTransfer,
+  sepa,
+  ibanCrc,
+  ibanUsd,
+  sinpe,
+  cadBalance,
+  eurBalance,
+  mxnBalance,
+  arsBalance,
+  copBalance,
+  crcBalance,
+  usdBalance,
+  bitcoin,
+  liquid,
+  lnAddress,
+  lnInvoice,
+  lnUrl,
+  referralCad,
+  referralEur,
+  referralMxn,
+  referralUsd,
+  referralCrc,
+  referralArs,
+  referralCop,
+  spei,
+  thinAir,
+  refundCrc,
+  refundUsd,
+  loadhub,
+  unknown;
 
   /// The payin/payout methods that debit or credit one of the user's in-app
   /// fiat balances instead of an external account. Refund-to-balance methods
@@ -267,13 +222,6 @@ enum OrderPaymentMethod {
   };
 
   bool get isBalance => balanceMethods.contains(this);
-
-  static OrderPaymentMethod fromValue(String value) {
-    return OrderPaymentMethod.values.firstWhere(
-      (e) => e.value == value,
-      orElse: () => OrderPaymentMethod.unknown,
-    );
-  }
 }
 
 class OrderMessage {
@@ -685,13 +633,6 @@ sealed class Order with _$Order {
       orderStatus == OrderStatus.expired ||
       orderStatus == OrderStatus.orderExpired;
   bool isPending() => orderStatus == OrderStatus.awaitingConfirmation;
-
-  /// Label for the order type. A [GenericOrder] reports the server-sent string,
-  /// so a type this build doesn't know still reads correctly in the UI.
-  String get orderTypeLabel => switch (this) {
-    final GenericOrder order => order.orderTypeName,
-    _ => orderType.value,
-  };
 
   /// Whether [amountAndCurrencyToDisplay] returns a fiat amount rather than sats.
   bool get displaysFiatAmount => amountAndCurrencyToDisplay().$2 != 'sats';

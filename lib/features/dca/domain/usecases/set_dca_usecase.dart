@@ -144,7 +144,7 @@ class SetDcaUsecase {
           language: summary.language,
           currency: summary.currency,
           dcaEnabled: true,
-          autoBuyEnabled: summary.autoBuy.isActive.toString(),
+          autoBuyEnabled: summary.autoBuy.isActive,
           emailNotificationsEnabled: summary.emailNotificationsEnabled,
         )
         case Err(:final failure)) {

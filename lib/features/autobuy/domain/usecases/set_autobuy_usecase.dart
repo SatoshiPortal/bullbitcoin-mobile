@@ -96,7 +96,7 @@ class SetAutoBuyUsecase {
       language: summary.language,
       currency: summary.currency,
       dcaEnabled: summary.dca.isActive,
-      autoBuyEnabled: enabled.toString(),
+      autoBuyEnabled: enabled,
       emailNotificationsEnabled: summary.emailNotificationsEnabled,
     );
     // The repository is the boundary and has already logged the raw reason.

@@ -8,7 +8,6 @@ enum NotificationMessageKind {
   message,
   order,
   limitOrder,
-  user,
   recipient,
   unknown,
 }

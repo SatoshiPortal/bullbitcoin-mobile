@@ -59,3 +59,7 @@ final class BuyQuoteUnavailableFailure extends BuyFailure {
 final class BuyUnexpectedFailure extends BuyFailure {
   const BuyUnexpectedFailure([super.logMessage]);
 }
+
+final class BuyOutcomeUnknownFailure extends BuyFailure {
+  const BuyOutcomeUnknownFailure() : super('Buy order outcome unknown');
+}

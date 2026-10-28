@@ -73,7 +73,7 @@ class SyncExchangeCurrencyUsecase {
       language: summary.language,
       currency: currency.code,
       dcaEnabled: summary.dca.isActive,
-      autoBuyEnabled: summary.autoBuy.isActive.toString(),
+      autoBuyEnabled: summary.autoBuy.isActive,
       emailNotificationsEnabled: summary.emailNotificationsEnabled,
     );
     if (saved case Err(:final failure)) {

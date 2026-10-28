@@ -392,7 +392,7 @@ void main() {
           language: 'en',
           currency: 'CAD',
           dcaEnabled: true,
-          autoBuyEnabled: 'true',
+          autoBuyEnabled: true,
           emailNotificationsEnabled: true,
         ),
       ).called(1);

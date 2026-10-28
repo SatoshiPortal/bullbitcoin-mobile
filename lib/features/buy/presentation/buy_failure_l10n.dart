@@ -4,6 +4,7 @@ import 'package:flutter/widgets.dart';
 
 extension BuyFailureL10n on BuyFailure {
   String toTranslated(BuildContext context) => switch (this) {
+    BuyOutcomeUnknownFailure() => context.loc.buyOrderOutcomeUnknownError,
     BuyUnauthenticatedFailure() => context.loc.buyUnauthenticatedError,
     BuyBelowMinAmountFailure() => context.loc.buyBelowMinAmountError,
     BuyAboveMaxAmountFailure() => context.loc.buyAboveMaxAmountError,

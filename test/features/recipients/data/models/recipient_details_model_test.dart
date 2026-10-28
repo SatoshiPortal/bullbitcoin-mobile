@@ -1,6 +1,8 @@
 import 'package:bb_mobile/features/recipients/domain/entities/recipient_details.dart';
 import 'package:bb_mobile/features/recipients/domain/entities/sepa_virtual_payee_status.dart';
 import 'package:bb_mobile/features/recipients/data/models/recipient_details_model.dart';
+import 'package:bb_mobile/features/recipients/data/models/sepa_virtual_payee_model.dart';
+import 'package:bbx_api/bbx_api.dart' as bbx;
 import 'package:flutter_test/flutter_test.dart';
 
 Map<String, dynamic> _sepaJson({String? virtualPayeeStatus}) => {
@@ -14,8 +16,7 @@ Map<String, dynamic> _sepaJson({String? virtualPayeeStatus}) => {
 };
 
 SepaVirtualPayeeStatus _statusOf(Map<String, dynamic> json) =>
-    (RecipientDetailsModel.fromJson(json).toDomain() as SepaEurDetails)
-        .virtualPayeeStatus;
+    sepaVirtualPayeeStatusFrom(bbx.RecipientModel.fromJson(json).virtualPayee);
 
 void main() {
   group('virtual payee status from the api', () {

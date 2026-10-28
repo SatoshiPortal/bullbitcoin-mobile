@@ -1,5 +1,7 @@
-import 'package:bb_mobile/core/exchange/data/models/order_model.dart';
+import 'package:bb_mobile/bbx_api_setup.dart';
+import 'package:bb_mobile/core/exchange/data/mappers/bbx_api_mapper.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
+import 'package:bbx_api/bbx_api.dart' as bbx;
 import 'package:flutter_test/flutter_test.dart';
 
 /// The exchange reports a payjoin on an order through two fields: `bip21URI`,
@@ -11,13 +13,22 @@ import 'package:flutter_test/flutter_test.dart';
 /// transaction, or an order from a backend that predates the fields, must map to
 /// null rather than to something a screen could read as a completed payjoin.
 void main() {
+  bbx.OrderSummary summaryOf(Map<String, dynamic> json) =>
+      bbx.OrderSummaryModel.fromJson(
+        json,
+        fallbacks: BbxApiSetup.orderSummaryParsing.fallbacks,
+      );
+
+  Order orderOf(Map<String, dynamic> json) =>
+      BbxApiMapper.orderFromSummary(summaryOf(json), isTestnet: true);
+
   Map<String, dynamic> orderJson({
-    required OrderType type,
+    required String type,
     String? bip21URI,
     Map<String, dynamic>? payjoinDetails,
   }) => {
     'orderId': 'order-1',
-    'orderType': type.value,
+    'orderType': type,
     'orderNumber': 1,
     'exchangeRateAmount': 100000,
     'exchangeRateCurrency': 'CAD',
@@ -25,14 +36,14 @@ void main() {
     'payinCurrency': 'CAD',
     'payoutAmount': 0.001,
     'payoutCurrency': 'BTC',
-    'orderStatus': OrderStatus.inProgress.value,
-    'payinStatus': OrderPayinStatus.awaitingPayment.value,
-    'payoutStatus': OrderPayoutStatus.notStarted.value,
+    'orderStatus': 'In progress',
+    'payinStatus': 'Awaiting payment',
+    'payoutStatus': 'Not started',
     'createdAt': '2026-07-28T12:00:00.000Z',
     'confirmationDeadline': '2026-07-28T12:05:00.000Z',
     'message': <String, dynamic>{'code': '', 'message': ''},
-    'payinMethod': OrderPaymentMethod.cadBalance.value,
-    'payoutMethod': OrderPaymentMethod.bitcoin.value,
+    'payinMethod': 'CAD Balance',
+    'payoutMethod': 'Bitcoin On-Chain',
     'triggerType': 'MANUAL',
     'bip21URI': ?bip21URI,
     'payjoinDetails': ?payjoinDetails,
@@ -62,16 +73,16 @@ void main() {
 
   // Every order type that can carry a payjoin: buy makes the app the receiver,
   // sell and payment make it the sender.
-  for (final type in [OrderType.buy, OrderType.sell, OrderType.fiatPayment]) {
-    group('${type.value} order', () {
+  for (final type in ['Buy Bitcoin', 'Sell Bitcoin', 'Fiat Payment']) {
+    group('$type order', () {
       test('carries the endpoint and the payjoin txid', () {
-        final order = OrderModel.fromJson(
+        final order = orderOf(
           orderJson(
             type: type,
             bip21URI: uri,
             payjoinDetails: {'txid': payjoinTxId},
           ),
-        ).toEntity(isTestnet: true);
+        );
 
         final payjoin = payjoinOf(order);
         expect(payjoin.uri, equals(uri));
@@ -79,9 +90,7 @@ void main() {
       });
 
       test('maps to null when the exchange reports no payjoin', () {
-        final order = OrderModel.fromJson(
-          orderJson(type: type),
-        ).toEntity(isTestnet: true);
+        final order = orderOf(orderJson(type: type));
 
         final payjoin = payjoinOf(order);
         expect(payjoin.uri, isNull);
@@ -96,13 +105,13 @@ void main() {
         // The exchange knows about the payjoin and has not observed the
         // transaction yet. That is distinct from "no payjoin at all": the object
         // exists, its txid does not.
-        final order = OrderModel.fromJson(
+        final order = orderOf(
           orderJson(
             type: type,
             bip21URI: uri,
             payjoinDetails: <String, dynamic>{'txid': null},
           ),
-        ).toEntity(isTestnet: true);
+        );
 
         final payjoin = payjoinOf(order);
         expect(payjoin.details, isNotNull);
@@ -113,9 +122,7 @@ void main() {
 
   group('the endpoint survives mapping byte for byte', () {
     test('no re-encoding of the pj parameter', () {
-      final order = OrderModel.fromJson(
-        orderJson(type: OrderType.sell, bip21URI: uri),
-      ).toEntity(isTestnet: true);
+      final order = orderOf(orderJson(type: 'Sell Bitcoin', bip21URI: uri));
 
       // The URI goes to the payjoin PDK verbatim; percent-encoding the `://` of
       // the endpoint is exactly how it gets corrupted.
@@ -125,44 +132,49 @@ void main() {
     });
   });
 
-  group('OrderModel.matchesTxId', () {
-    OrderModel model({
+  group('matching an order by txid', () {
+    bool matches(
+      String txId, {
       String? bitcoinTransactionId,
       String? liquidTransactionId,
       Map<String, dynamic>? payjoinDetails,
-    }) => OrderModel.fromJson({
-      ...orderJson(type: OrderType.sell, payjoinDetails: payjoinDetails),
-      'bitcoinTransactionId': ?bitcoinTransactionId,
-      'liquidTransactionId': ?liquidTransactionId,
-    });
+    }) => BbxApiMapper.orderMatchesTxId(
+      summaryOf({
+        ...orderJson(type: 'Sell Bitcoin', payjoinDetails: payjoinDetails),
+        'bitcoinTransactionId': ?bitcoinTransactionId,
+        'liquidTransactionId': ?liquidTransactionId,
+      }),
+      txId,
+    );
 
     test('matches the payjoin txid', () {
       // The order's own txid is the original transaction, which a payjoin
       // replaces — without this the payjoin send loses its order.
       expect(
-        model(payjoinDetails: {'txid': payjoinTxId}).matchesTxId(payjoinTxId),
+        matches(payjoinTxId, payjoinDetails: {'txid': payjoinTxId}),
         isTrue,
       );
     });
 
     test('still matches the bitcoin and liquid txids', () {
-      expect(model(bitcoinTransactionId: 'a' * 64).matchesTxId('a' * 64), true);
-      expect(model(liquidTransactionId: 'c' * 64).matchesTxId('c' * 64), true);
+      expect(matches('a' * 64, bitcoinTransactionId: 'a' * 64), true);
+      expect(matches('c' * 64, liquidTransactionId: 'c' * 64), true);
     });
 
     test('does not match an unrelated txid', () {
       expect(
-        model(
+        matches(
+          'd' * 64,
           bitcoinTransactionId: 'a' * 64,
           payjoinDetails: {'txid': payjoinTxId},
-        ).matchesTxId('d' * 64),
+        ),
         isFalse,
       );
     });
 
     test('a null payjoin txid never matches', () {
       expect(
-        model(payjoinDetails: <String, dynamic>{'txid': null}).matchesTxId(''),
+        matches('', payjoinDetails: <String, dynamic>{'txid': null}),
         isFalse,
       );
     });

@@ -19,7 +19,7 @@ abstract interface class ExchangeUserRepository {
     String? language,
     String? currency,
     bool? dcaEnabled,
-    String? autoBuyEnabled,
+    bool? autoBuyEnabled,
     bool? emailNotificationsEnabled,
   });
 

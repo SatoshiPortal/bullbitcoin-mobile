@@ -1,7 +1,7 @@
-import 'package:bb_mobile/core/exchange/data/datasources/bullbitcoin_api_datasource.dart';
+import 'package:bb_mobile/core/exchange/data/datasources/bbx_api_datasource.dart';
+import 'package:bb_mobile/core/exchange/data/repository/bbx_api_exchange_kyc_repository.dart';
 import 'package:bb_mobile/core/exchange/data/datasources/bullbitcoin_api_key_datasource.dart';
-import 'package:bb_mobile/core/exchange/data/repository/exchange_kyc_repository_impl.dart';
-import 'package:bb_mobile/core/exchange/data/repository/exchange_order_stats_repository_impl.dart';
+import 'package:bb_mobile/core/exchange/data/repository/bbx_api_exchange_order_stats_repository.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_kyc_repository.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_stats_repository.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
@@ -30,44 +30,44 @@ class ExchangeSettingsLocator {
 
   static void _registerRepositories(GetIt locator) {
     locator.registerLazySingleton<ExchangeKycRepository>(
-      () => ExchangeKycRepositoryImpl(
-        bullbitcoinApiDatasource: locator<BullbitcoinApiDatasource>(
-          instanceName: 'mainnetExchangeApiDatasource',
+      () => BbxApiExchangeKycRepository(
+        api: locator<BbxApiDatasource>(
+          instanceName: BbxApiDatasource.mainnetInstanceName,
         ),
-        bullbitcoinApiKeyDatasource: locator<BullbitcoinApiKeyDatasource>(),
+        apiKeyDatasource: locator<BullbitcoinApiKeyDatasource>(),
         isTestnet: false,
       ),
       instanceName: 'mainnet',
     );
 
     locator.registerLazySingleton<ExchangeKycRepository>(
-      () => ExchangeKycRepositoryImpl(
-        bullbitcoinApiDatasource: locator<BullbitcoinApiDatasource>(
-          instanceName: 'testnetExchangeApiDatasource',
+      () => BbxApiExchangeKycRepository(
+        api: locator<BbxApiDatasource>(
+          instanceName: BbxApiDatasource.testnetInstanceName,
         ),
-        bullbitcoinApiKeyDatasource: locator<BullbitcoinApiKeyDatasource>(),
+        apiKeyDatasource: locator<BullbitcoinApiKeyDatasource>(),
         isTestnet: true,
       ),
       instanceName: 'testnet',
     );
 
     locator.registerLazySingleton<ExchangeOrderStatsRepository>(
-      () => ExchangeOrderStatsRepositoryImpl(
-        bullbitcoinApiDatasource: locator<BullbitcoinApiDatasource>(
-          instanceName: 'mainnetExchangeApiDatasource',
+      () => BbxApiExchangeOrderStatsRepository(
+        api: locator<BbxApiDatasource>(
+          instanceName: BbxApiDatasource.mainnetInstanceName,
         ),
-        bullbitcoinApiKeyDatasource: locator<BullbitcoinApiKeyDatasource>(),
+        apiKeyDatasource: locator<BullbitcoinApiKeyDatasource>(),
         isTestnet: false,
       ),
       instanceName: 'mainnet',
     );
 
     locator.registerLazySingleton<ExchangeOrderStatsRepository>(
-      () => ExchangeOrderStatsRepositoryImpl(
-        bullbitcoinApiDatasource: locator<BullbitcoinApiDatasource>(
-          instanceName: 'testnetExchangeApiDatasource',
+      () => BbxApiExchangeOrderStatsRepository(
+        api: locator<BbxApiDatasource>(
+          instanceName: BbxApiDatasource.testnetInstanceName,
         ),
-        bullbitcoinApiKeyDatasource: locator<BullbitcoinApiKeyDatasource>(),
+        apiKeyDatasource: locator<BullbitcoinApiKeyDatasource>(),
         isTestnet: true,
       ),
       instanceName: 'testnet',

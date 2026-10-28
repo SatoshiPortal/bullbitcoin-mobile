@@ -1,4 +1,6 @@
+import 'package:bb_mobile/core/errors/exchange_errors.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
+import 'package:bb_mobile/core/exchange/domain/exchange_api_failure.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
@@ -191,4 +193,83 @@ void main() {
     expect(logged, isNot(contains('tb1qexampleaddress')));
     expect(logged, isNot(contains('private-directory')));
   });
+
+  test('an uncertain buy keeps its Payjoin receiver alive', () async {
+    final orders = _MockOrderRepository();
+    final settings = _MockSettingsRepository();
+    final receiver = _MockPayjoinReceiver();
+    final policy = _MockPayjoinPolicyAccess();
+    when(() => settings.fetch()).thenAnswer(
+      (_) async => const SettingsEntity(
+        environment: Environment.testnet,
+        bitcoinUnit: BitcoinUnit.sats,
+        currencyCode: 'CAD',
+      ),
+    );
+    when(() => policy.load()).thenAnswer(
+      (_) async => Ok(
+        PayjoinPolicy(
+          sendEnabled: false,
+          receiveEnabled: false,
+          buyEnabled: true,
+          sellEnabled: false,
+          minimumAmount: PayjoinPolicy.minimumAllowedAmount,
+          sessionLifetime: PayjoinPolicy.minimumSessionLifetime,
+        ),
+      ),
+    );
+    const uri =
+        'bitcoin:tb1qexample?amount=0.001&pj=https://example.test/session';
+    final now = DateTime.now();
+    when(() => receiver.start(any())).thenAnswer(
+      (_) async => Ok(
+        PayjoinReceiverSession(
+          status: PayjoinStatus.started,
+          id: 'receiver-1',
+          network: BitcoinNetwork.testnet,
+          walletId: 'wallet-1',
+          payjoinUri: uri,
+          createdAt: now,
+          expiresAt: now.add(const Duration(minutes: 6)),
+        ),
+      ),
+    );
+    when(
+      () => orders.placeBuyOrder(
+        toAddress: 'address',
+        orderAmount: const FiatAmount(100),
+        currency: FiatCurrency.cad,
+        network: OrderBitcoinNetwork.bitcoin,
+        isOwner: true,
+        payjoinBip21: uri,
+      ),
+    ).thenThrow(const _OutcomeUnknown());
+    final result =
+        await CreateBuyOrderUsecase(
+          mainnetExchangeOrderRepository: orders,
+          testnetExchangeOrderRepository: orders,
+          settingsRepository: settings,
+          payjoinReceiver: receiver,
+          payjoinPolicy: policy,
+        ).execute(
+          toAddress: 'address',
+          orderAmount: const FiatAmount(100),
+          currency: FiatCurrency.cad,
+          isLiquid: false,
+          isOwner: true,
+          payjoinWalletId: 'wallet-1',
+          payjoinAmountSat: 100000,
+        );
+    expect(
+      (result as Err<BuyOrder, BuyFailure>).failure,
+      isA<BuyOutcomeUnknownFailure>(),
+    );
+    verifyNever(() => receiver.cancel(any()));
+  });
+}
+
+class _OutcomeUnknown extends ExchangeApiException {
+  const _OutcomeUnknown();
+  @override
+  ExchangeApiFailure get failure => const ExchangeApiOutcomeUnknownFailure();
 }

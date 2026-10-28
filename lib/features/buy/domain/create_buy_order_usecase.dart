@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/exchange/domain/exchange_api_failure.dart';
 import 'package:bb_mobile/core/errors/exchange_errors.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
@@ -133,7 +134,11 @@ class CreateBuyOrderUsecase {
             ? order.copyWith(bip21URI: payjoinBip21)
             : order;
         return Ok(orderWithPayjoin);
-      } catch (_) {
+      } catch (error) {
+        if (error is ExchangeApiException &&
+            error.failure is ExchangeApiOutcomeUnknownFailure) {
+          rethrow;
+        }
         // The session would otherwise sit and poll the directory for a day for
         // an order that never existed.
         if (payjoinId != null) {
@@ -144,6 +149,14 @@ class CreateBuyOrderUsecase {
         }
         rethrow;
       }
+    } on ExchangeApiException catch (e) {
+      if (e.failure is ExchangeApiOutcomeUnknownFailure) {
+        return const Err(BuyOutcomeUnknownFailure());
+      }
+      if (e.failure is ExchangeApiUnauthenticatedFailure) {
+        return Err(BuyUnauthenticatedFailure(e.failure.logMessage));
+      }
+      return Err(BuyUnexpectedFailure(e.failure.logMessage));
     } on ApiKeyException catch (e, st) {
       // Severe: a session that expired mid-flow is not something the user did
       // wrong, and it is the one failure here worth finding in Sentry.

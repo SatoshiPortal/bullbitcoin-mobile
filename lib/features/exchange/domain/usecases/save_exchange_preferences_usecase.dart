@@ -31,7 +31,7 @@ class SaveExchangePreferencesUsecase {
     String? currency,
     bool? emailNotificationsEnabled,
     bool? dcaEnabled,
-    String? autoBuyEnabled,
+    bool? autoBuyEnabled,
   }) async {
     final Environment environment;
     switch (await readExchangeEnvironment(
@@ -66,7 +66,7 @@ class SaveExchangePreferencesUsecase {
       language: language ?? summary.language,
       currency: currency ?? summary.currency,
       dcaEnabled: dcaEnabled ?? summary.dca.isActive,
-      autoBuyEnabled: autoBuyEnabled ?? summary.autoBuy.isActive.toString(),
+      autoBuyEnabled: autoBuyEnabled ?? summary.autoBuy.isActive,
       emailNotificationsEnabled:
           emailNotificationsEnabled ?? summary.emailNotificationsEnabled,
     );

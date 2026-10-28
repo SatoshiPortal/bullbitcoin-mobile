@@ -15,15 +15,6 @@ final class LimitOrderRateModel {
     required this.precision,
   });
 
-  factory LimitOrderRateModel.fromJson(Map<String, dynamic> json) {
-    return LimitOrderRateModel(
-      currencyCode: json['fromCurrency'] as String? ?? '',
-      indexPrice: json['indexPrice'] as num,
-      userPrice: json['userPrice'] as num,
-      precision: json['precision'] as int? ?? 2,
-    );
-  }
-
   LimitOrderRate toEntity() {
     final divisor = pow(10, precision);
     return LimitOrderRate(

@@ -30,6 +30,10 @@ dependencies:
   screen_privacy:
   bull_logger:
   bull_logs:
+  bbx_api:
+    git:
+      url: https://github.com/SatoshiPortal/bbx_api
+      ref: 56179ba996161a6cf1e1daa6da90f766ad446533
   flutter_bloc: ^9.1.1
   get_it: ^9.1.1
   flutter_svg: ^2.2.4

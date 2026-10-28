@@ -1,6 +1,6 @@
-import 'package:bb_mobile/core/exchange/data/datasources/bullbitcoin_api_datasource.dart';
+import 'package:bb_mobile/core/exchange/data/datasources/bbx_api_datasource.dart';
 import 'package:bb_mobile/core/exchange/data/datasources/bullbitcoin_api_key_datasource.dart';
-import 'package:bb_mobile/core/exchange/data/repository/exchange_recipient_repository_impl.dart';
+import 'package:bb_mobile/core/exchange/data/repository/bbx_api_exchange_recipient_repository.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_recipient_repository.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/delete_default_wallet_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_default_wallets_usecase.dart';
@@ -12,22 +12,22 @@ import 'package:get_it/get_it.dart';
 class DefaultWalletsLocator {
   static void setup(GetIt locator) {
     locator.registerLazySingleton<ExchangeRecipientRepository>(
-      () => ExchangeRecipientRepositoryImpl(
-        bullbitcoinApiDatasource: locator<BullbitcoinApiDatasource>(
-          instanceName: 'mainnetExchangeApiDatasource',
+      () => BbxApiExchangeRecipientRepository(
+        api: locator<BbxApiDatasource>(
+          instanceName: BbxApiDatasource.mainnetInstanceName,
         ),
-        bullbitcoinApiKeyDatasource: locator<BullbitcoinApiKeyDatasource>(),
+        apiKeyDatasource: locator<BullbitcoinApiKeyDatasource>(),
         isTestnet: false,
       ),
       instanceName: 'mainnet',
     );
 
     locator.registerLazySingleton<ExchangeRecipientRepository>(
-      () => ExchangeRecipientRepositoryImpl(
-        bullbitcoinApiDatasource: locator<BullbitcoinApiDatasource>(
-          instanceName: 'testnetExchangeApiDatasource',
+      () => BbxApiExchangeRecipientRepository(
+        api: locator<BbxApiDatasource>(
+          instanceName: BbxApiDatasource.testnetInstanceName,
         ),
-        bullbitcoinApiKeyDatasource: locator<BullbitcoinApiKeyDatasource>(),
+        apiKeyDatasource: locator<BullbitcoinApiKeyDatasource>(),
         isTestnet: true,
       ),
       instanceName: 'testnet',

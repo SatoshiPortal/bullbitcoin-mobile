@@ -16,18 +16,14 @@ class UploadKycDocumentUsecase {
   Future<FileUploadResult> execute({
     required List<int> fileBytes,
     required String fileName,
-    String docType = 'ID',
-    String sourceDetail = 'SECURE_UPLOAD',
   }) async {
     final settings = await _settingsRepository.fetch();
     final isTestnet = settings.environment.isTestnet;
 
     final repository = isTestnet ? _testnetRepository : _mainnetRepository;
-    return repository.uploadDocument(
+    return repository.uploadSecureIdDocument(
       fileBytes: fileBytes,
       fileName: fileName,
-      docType: docType,
-      sourceDetail: sourceDetail,
     );
   }
 }

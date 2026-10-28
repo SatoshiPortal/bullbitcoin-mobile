@@ -1,5 +1,3 @@
-import 'package:bb_mobile/features/recipients/domain/entities/recipient_details_input.dart';
-import 'package:bb_mobile/features/recipients/data/models/sepa_virtual_payee_model.dart';
 import 'package:bb_mobile/features/recipients/domain/entities/recipient_details.dart';
 import 'package:bb_mobile/features/recipients/domain/entities/recipient_type.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -39,8 +37,6 @@ sealed class RecipientDetailsModel with _$RecipientDetailsModel {
     String? firstname,
     String? lastname,
     String? corporateName,
-    // ignore: invalid_annotation_target
-    @JsonKey(includeToJson: false) String? virtualPayeeStatus,
     String? clabe,
     String? institutionCode,
     String? phone,
@@ -239,47 +235,5 @@ sealed class RecipientDetailsModel with _$RecipientDetailsModel {
         );
       }(),
     };
-  }
-
-  /// Convert from model to domain value object via input
-  RecipientDetails toDomain() {
-    final input = RecipientDetailsInput(
-      recipientType: RecipientType.fromValue(recipientTypeFiat),
-      isOwner: isOwner,
-      label: label,
-      isDefault: isDefault,
-      email: email,
-      name: name,
-      securityQuestion: securityQuestion,
-      securityAnswer: securityAnswer,
-      payeeName: payeeName,
-      payeeCode: payeeCode,
-      payeeAccountNumber: payeeAccountNumber,
-      institutionNumber: institutionNumber,
-      transitNumber: transitNumber,
-      accountNumber: accountNumber,
-      defaultComment: defaultComment,
-      iban: iban,
-      isCorporate: isCorporate,
-      firstname: firstname,
-      lastname: lastname,
-      corporateName: corporateName,
-      virtualPayeeStatus: sepaVirtualPayeeStatusFromApi(virtualPayeeStatus),
-      clabe: clabe,
-      institutionCode: institutionCode,
-      phone: phone,
-      debitcard: debitcard,
-      ownerName: ownerName,
-      phoneNumber: phoneNumber,
-      claveUniform: claveUniform,
-      bankCode: bankCode,
-      accountType: accountType,
-      bankAccount: bankAccount,
-      bankName: bankName,
-      documentId: documentId,
-      documentType: documentType,
-    );
-
-    return input.toDomain();
   }
 }

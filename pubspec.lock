@@ -113,6 +113,15 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.1"
+  bbx_api:
+    dependency: "direct main"
+    description:
+      path: "."
+      ref: "56179ba996161a6cf1e1daa6da90f766ad446533"
+      resolved-ref: "56179ba996161a6cf1e1daa6da90f766ad446533"
+      url: "https://github.com/SatoshiPortal/bbx_api"
+    source: git
+    version: "0.0.1"
   bdk_dart:
     dependency: transitive
     description:
@@ -670,6 +679,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.2.8"
+  equatable:
+    dependency: transitive
+    description:
+      name: equatable
+      sha256: "3bce007a596ff8b3119c45d68aaef631272537c03d30e5d4534dd24bf4c5eaa2"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.1.0"
   extension_google_sign_in_as_googleapis_auth:
     dependency: "direct main"
     description:

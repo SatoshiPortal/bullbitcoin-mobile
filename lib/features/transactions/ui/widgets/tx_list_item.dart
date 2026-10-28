@@ -4,6 +4,7 @@ import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/lists/tx_list_item.dart' as core;
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
+import 'package:bb_mobile/features/transactions/presentation/order_l10n.dart';
 import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
 import 'package:flutter/material.dart';
@@ -77,7 +78,7 @@ class TransactionListItem extends StatelessWidget {
           : null,
       labels: labels.isEmpty ? const [] : [LabelsWidget(labels: labels)],
       networkLabel: isOrderType
-          ? transaction.order!.orderTypeLabel
+          ? transaction.order!.typeLabel(context)
           : isLnSwap
           ? context.loc.transactionNetworkLightning
           : isChainSwap
@@ -164,7 +165,7 @@ class _TransactionStatus extends StatelessWidget {
     if (isOrderType && tx.order!.isCompleted() && date != null) {
       return core.StatusRow(label: date, icon: Icons.check_circle);
     } else if (isOrderType) {
-      return core.StatusRow(label: tx.order!.orderStatus.value);
+      return core.StatusRow(label: tx.order!.orderStatus.label(context));
     } else if (tx.isSwap &&
         (tx.swap?.completionTime != null ||
             tx.swap?.status == SwapStatus.completed ||

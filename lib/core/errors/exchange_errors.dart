@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/exchange/domain/exchange_api_failure.dart';
 import 'package:bb_mobile/core/errors/bull_exception.dart';
 
 class ApiKeyException extends BullException {
@@ -60,11 +61,14 @@ class BullBitcoinApiConfidentialSepaNotActivatedException implements Exception {
 /// message or data, which can contain account details.
 class BullBitcoinApiOrderException implements Exception {
   final String? apiCode;
-  final int? rpcCode;
 
-  const BullBitcoinApiOrderException({this.apiCode, this.rpcCode});
+  const BullBitcoinApiOrderException({this.apiCode});
 
   @override
-  String toString() =>
-      'BullBitcoinApiOrderException(apiCode: $apiCode, rpcCode: $rpcCode)';
+  String toString() => 'BullBitcoinApiOrderException(apiCode: $apiCode)';
+}
+
+abstract class ExchangeApiException implements Exception {
+  const ExchangeApiException();
+  ExchangeApiFailure get failure;
 }
