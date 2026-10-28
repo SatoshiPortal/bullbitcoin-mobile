@@ -238,10 +238,13 @@ final class SqliteWalletSyncJobQueue implements WalletSyncJobQueue {
                 [chain, timestamp, timestamp, chain, timestamp, timestamp],
               ).single['eligible_count']
               as int;
+      // Fewest consecutive attempts first: a wallet whose runs keep failing or
+      // being stopped does not starve the others.
       final rows = _database.select(
         '''SELECT job_id, attempts FROM wallet_sync_jobs
         WHERE $eligibility
-        ORDER BY CASE WHEN last_successful_at IS NULL THEN 0 ELSE 1 END,
+        ORDER BY attempts,
+          CASE WHEN last_successful_at IS NULL THEN 0 ELSE 1 END,
           last_successful_at, inserted_at, job_id LIMIT ?''',
         [chain, timestamp, timestamp, chain, timestamp, timestamp, maxJobs],
       );

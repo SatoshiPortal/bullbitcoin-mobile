@@ -116,15 +116,15 @@ void main() {
       expect(await current.completeSuccess(duringBackoff.single), isTrue);
       clock.advance(const Duration(minutes: 1));
 
-      // An attempted wallet no longer keeps the synced ones out of the run;
-      // it still goes first.
+      // An attempted wallet no longer keeps the synced ones out of the run,
+      // and goes after them: one that keeps failing cannot starve the others.
       final retry = await current.reconcileAndClaim([
         _registration(0),
         _registration(1),
       ], chain: 'bitcoin');
       expect(retry.map((claim) => claim.key.walletId), [
-        'wallet-1',
         'wallet-0',
+        'wallet-1',
       ]);
       await current.close();
     },
@@ -163,7 +163,7 @@ void main() {
     // completing, so only the lease expiry frees it.
     expect(await claim(), ['wallet-1']);
     clock.advance(const Duration(minutes: 11));
-    expect(await claim(), ['wallet-1', 'wallet-0']);
+    expect(await claim(), ['wallet-0', 'wallet-1']);
 
     // Every dead claim backs the wallet off further, until it waits longer
     // than a lease and the other wallet runs alone.
@@ -316,6 +316,31 @@ void main() {
     );
     await current.close();
   });
+
+  test(
+    'a wallet whose run keeps being stopped does not starve the next',
+    () async {
+      // The platform stops the run while wallet-0 syncs, every time: its
+      // claim is never completed and its lease expires.
+      final current = queue();
+      final registrations = [_registration(0), _registration(1)];
+      final first = await current.reconcileAndClaim(
+        registrations,
+        chain: 'bitcoin',
+        maxJobs: 1,
+      );
+      expect(first.single.key.walletId, 'wallet-0');
+      clock.advance(const Duration(minutes: 11));
+
+      final next = await current.reconcileAndClaim(
+        registrations,
+        chain: 'bitcoin',
+        maxJobs: 1,
+      );
+      expect(next.single.key.walletId, 'wallet-1');
+      await current.close();
+    },
+  );
 }
 
 ({WalletNetworkKey key, String revision}) _registration(
