@@ -1479,7 +1479,7 @@ void main() {
     );
 
     test('a currency whose price does not come is not taken', () async {
-      // The datasource reports an unreachable pricer as a zero rate.
+      // The price repository reports an unreachable pricer as a zero rate.
       when(
         () => convertSatsToCurrency.execute(
           amountSat: any(named: 'amountSat'),
