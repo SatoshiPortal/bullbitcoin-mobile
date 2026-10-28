@@ -865,7 +865,6 @@ void main() {
         key: key,
         synchronize: () async {
           started.add(id);
-          await Future<void>.delayed(const Duration(milliseconds: 80));
           return Ok(_outcome(key, const []));
         },
       );
@@ -875,8 +874,8 @@ void main() {
       notifications: NotificationsFacade(gateway: _Gateway(), outbox: outbox),
       queue: queue,
       jobs: [job('a'), job('b')],
-      maxConcurrentJobs: 1,
-      runBudget: const Duration(milliseconds: 20),
+      // Spent before any wallet starts, as when startup took the budget.
+      runBudget: Duration.zero,
       copy: (_, _) => (title: 'Incoming', body: 'Payment received'),
       logSink: _Sink(messages),
     );
@@ -885,24 +884,58 @@ void main() {
       (await task.execute(chain: 'bitcoin')).status,
       BackgroundTaskExecutionStatus.success,
     );
-    expect(started, hasLength(1));
+    expect(started, isEmpty);
     expect(
       messages,
-      contains('Wallet sync run budget reached: chain=bitcoin released=1'),
+      contains('Wallet sync run budget reached: chain=bitcoin released=2'),
     );
 
-    // The wallet left over is first in line next run.
+    // Given back without a penalty: both are claimable at once.
     final next = await queue.reconcileAndClaim([
-      (
-        key: WalletNetworkKey(
-          started.single == 'a' ? 'b' : 'a',
-          'bitcoin',
-          'mainnet',
+      for (final id in ['a', 'b'])
+        (
+          key: WalletNetworkKey(id, 'bitcoin', 'mainnet'),
+          revision: 'legacy-electrum-v1',
         ),
-        revision: 'legacy-electrum-v1',
-      ),
     ], chain: 'bitcoin');
-    expect(next, hasLength(1));
+    expect(next, hasLength(2));
+  });
+
+  test('a sync outlasting the budget does not hold the run', () async {
+    final directory = await Directory.systemTemp.createTemp('background_tasks');
+    final outbox = SqliteNotificationOutbox(
+      databasePath: '${directory.path}/n.sqlite',
+    );
+    final queue = SqliteWalletSyncJobQueue(
+      databasePath: '${directory.path}/q.sqlite',
+    );
+    addTearDown(() async {
+      await queue.close();
+      outbox.dispose();
+      await directory.delete(recursive: true);
+    });
+    final key = const WalletNetworkKey('slow', 'bitcoin', 'mainnet');
+    final task = WalletTransactionSyncBackgroundTask(
+      notifications: NotificationsFacade(gateway: _Gateway(), outbox: outbox),
+      queue: queue,
+      jobs: [
+        WalletTransactionSyncBackgroundJob(
+          key: key,
+          synchronize: () async {
+            await Future<void>.delayed(const Duration(seconds: 2));
+            return Ok(_outcome(key, const []));
+          },
+        ),
+      ],
+      runBudget: const Duration(milliseconds: 100),
+      copy: (_, _) => (title: 'Incoming', body: 'Payment received'),
+    );
+
+    final stopwatch = Stopwatch()..start();
+    final result = await task.execute(chain: 'bitcoin');
+
+    expect(stopwatch.elapsed, lessThan(const Duration(seconds: 1)));
+    expect(result.status, BackgroundTaskExecutionStatus.retry);
   });
 
   test('logging sink failure cannot alter a successful batch', () async {

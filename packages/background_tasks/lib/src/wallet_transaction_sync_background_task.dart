@@ -149,7 +149,12 @@ final class WalletTransactionSyncBackgroundTask {
           renewal = Timer.periodic(renewalInterval, (_) {
             activeRenewal ??= renewLease();
           });
-          final sync = await job.synchronize();
+          final budget = runBudget;
+          // Bounded by what is left: reconciliation and delivery must still
+          // run before the platform ends the task. A timeout is retried.
+          final sync = budget == null
+              ? await job.synchronize()
+              : await job.synchronize().timeout(budget - stopwatch.elapsed);
           await stopRenewal();
           switch (sync) {
             case Err(failure: InitialScanRequiredFailure()):
