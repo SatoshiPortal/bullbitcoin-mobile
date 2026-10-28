@@ -925,28 +925,44 @@ void main() {
     );
   });
 
-  test('a caller isolate killed mid-operation releases the source', () async {
-    // As when Android stops a WorkManager job and its engine is destroyed
-    // while an operation holds the source.
-    const key = WalletSourceKey('killed-caller', 'bitcoin', 'testnet');
-    final ready = ReceivePort();
-    final exited = ReceivePort();
-    final caller = await Isolate.spawn(_holdUntilKilled, [
-      path,
-      ready.sendPort,
-    ], onExit: exited.sendPort);
-    await ready.first;
-    caller.kill(priority: Isolate.immediate);
-    await exited.first;
-    ready.close();
-    exited.close();
+  test(
+    'a caller isolate killed mid-operation releases the source after a grace',
+    () async {
+      // As when Android stops a WorkManager job and its engine is destroyed
+      // while an operation holds the source: native work the caller started
+      // may still be writing, so the source stays held for the grace.
+      const key = WalletSourceKey('killed-caller', 'bitcoin', 'testnet');
+      const grace = Duration(seconds: 3);
+      final ready = ReceivePort();
+      final exited = ReceivePort();
+      final caller = await Isolate.spawn(_holdUntilKilled, [
+        path,
+        ready.sendPort,
+        grace.inMilliseconds,
+      ], onExit: exited.sendPort);
+      await ready.first;
+      caller.kill(priority: Isolate.immediate);
+      await exited.first;
+      final killedAt = Stopwatch()..start();
+      ready.close();
+      exited.close();
 
-    final next = DurableWalletSourceOperationCoordinator(
-      databasePath: path,
-      acquisitionTimeout: const Duration(seconds: 2),
-    );
-    expect(await next.runExclusive(key, (_) async => 42), 42);
-  });
+      await expectLater(
+        DurableWalletSourceOperationCoordinator(
+          databasePath: path,
+          acquisitionTimeout: const Duration(seconds: 1),
+        ).runExclusive(key, (_) async => 42),
+        throwsA(isA<TimeoutException>()),
+      );
+
+      final next = DurableWalletSourceOperationCoordinator(
+        databasePath: path,
+        acquisitionTimeout: const Duration(seconds: 10),
+      );
+      expect(await next.runExclusive(key, (_) async => 42), 42);
+      expect(killedAt.elapsed, greaterThanOrEqualTo(grace));
+    },
+  );
 
   test(
     'a caller killed while waiting for admission releases the source',
@@ -1721,6 +1737,7 @@ Future<void> _holdUntilKilled(List<Object> args) async {
   final never = ReceivePort();
   await DurableWalletSourceOperationCoordinator(
     databasePath: args[0] as String,
+    orphanedOperationGrace: Duration(milliseconds: args[2] as int),
   ).runExclusive<void>(
     const WalletSourceKey('killed-caller', 'bitcoin', 'testnet'),
     (_) async {

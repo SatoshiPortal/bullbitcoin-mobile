@@ -44,6 +44,11 @@ final class DurableWalletSourceOperationCoordinator
   @visibleForTesting
   final bool killWorkerBeforeReady;
 
+  /// How long a source stays held after its caller died mid-operation:
+  /// native work the caller started (a `compute` scan, a Rust task) can
+  /// outlive it and still write the wallet.
+  final Duration orphanedOperationGrace;
+
   DurableWalletSourceOperationCoordinator({
     required this.databasePath,
     String? lockDirectoryPath,
@@ -61,6 +66,7 @@ final class DurableWalletSourceOperationCoordinator
     @visibleForTesting this.failReleaseCleanup = false,
     @visibleForTesting this.killWorkerAfterReady = false,
     @visibleForTesting this.killWorkerBeforeReady = false,
+    this.orphanedOperationGrace = const Duration(seconds: 60),
   }) : lockDirectoryPath =
            lockDirectoryPath ??
            '${File(databasePath).parent.path}/wallet-source-locks' {
@@ -144,6 +150,7 @@ final class DurableWalletSourceOperationCoordinator
         failReleaseCleanup: failReleaseCleanup,
         killWorkerAfterReady: killWorkerAfterReady,
         killWorkerBeforeReady: killWorkerBeforeReady,
+        orphanedOperationGrace: orphanedOperationGrace,
       );
     } catch (error) {
       _emitLog(
@@ -414,6 +421,7 @@ final class _DurableActor {
     required bool failReleaseCleanup,
     required bool killWorkerAfterReady,
     required bool killWorkerBeforeReady,
+    required Duration orphanedOperationGrace,
   }) async {
     final global =
         kind == WalletOperationKind.synchronize ||
@@ -480,6 +488,7 @@ final class _DurableActor {
         locks.exitPort.sendPort,
         // Without capabilities: the worker may only watch the caller exit.
         Isolate(Isolate.current.controlPort),
+        orphanedOperationGrace.inMilliseconds,
       ]);
     } catch (_) {
       responses.close();
@@ -829,10 +838,17 @@ Future<void> _workerMain(List<Object?> args) async {
   final commands = ReceivePort();
   // A caller destroyed with its engine, as when Android stops a background
   // job, never closes these connections, so their locks would outlive it
-  // until the process dies. The worker then releases and closes them itself.
+  // until the process dies. The worker then releases and closes them itself:
+  // at once if the caller died before admission, after the grace otherwise.
   final caller = args[19] as Isolate;
-  caller.addOnExitListener(commands.sendPort, response: _callerExited);
+  final orphanedOperationGrace = Duration(milliseconds: args[20] as int);
+  final callerExit = ReceivePort();
+  caller.addOnExitListener(callerExit.sendPort, response: _callerExited);
   var callerExited = false;
+  callerExit.listen((_) {
+    callerExited = true;
+    commands.sendPort.send(_callerExited);
+  });
   ReceivePort? registrationReply;
   Database? mutex;
   Database? slot;
@@ -901,6 +917,10 @@ Future<void> _workerMain(List<Object?> args) async {
       Isolate.current.kill(priority: Isolate.immediate);
       return;
     }
+    // The synchronous wait above queues a caller exit; let it arrive. A
+    // caller that died before admission started nothing: release now.
+    await Future<void>.delayed(Duration.zero);
+    if (callerExited) return;
     claim = _activate(
       dbPath,
       busy,
@@ -918,7 +938,9 @@ Future<void> _workerMain(List<Object?> args) async {
     }
     await for (final message in commands) {
       if (message == _callerExited) {
-        callerExited = true;
+        if (!awaitingTermination) {
+          await Future<void>.delayed(orphanedOperationGrace);
+        }
         break;
       }
       final reply = message[0] as int;
@@ -973,7 +995,8 @@ Future<void> _workerMain(List<Object?> args) async {
     }
   } finally {
     closeLocks();
-    caller.removeOnExitListener(commands.sendPort);
+    caller.removeOnExitListener(callerExit.sendPort);
+    callerExit.close();
     if (callerExited) {
       for (final connection in lockConnections) {
         connection.dispose();
