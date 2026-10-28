@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:bb_mobile/features/wizard/data/datasource/wizard_local_datasource.dart';
 import 'package:bb_mobile/features/wizard/data/repository/wizard_repository_impl.dart';
+import 'package:bb_mobile/features/wizard/domain/repository/wizard_repository.dart';
 import 'package:bb_mobile/features/wizard/domain/usecase/answer_permissions_usecase.dart';
 import 'package:bb_mobile/features/wizard/domain/usecase/take_permissions_intro_usecase.dart';
 import 'package:bb_mobile/features/wizard/presentation/permissions_cubit.dart';
@@ -103,4 +104,41 @@ void main() {
 
     expect(await _intro(gateway).execute(), isFalse);
   });
+
+  test('an unreadable permission state keeps the intro for later', () async {
+    final gateway = _Gateway()
+      ..enabled = const Err(NotificationsGatewayFailure());
+    expect(await _intro(gateway).execute(), isFalse);
+
+    gateway.enabled = const Ok(false);
+
+    expect(await _intro(gateway).execute(), isTrue);
+  });
+
+  test('an answer that cannot be saved still frees the page', () async {
+    final gateway = _Gateway();
+    final cubit = PermissionsCubit(
+      answer: AnswerPermissionsUsecase(
+        permissions: NotificationPermissionsFacade(gateway: gateway),
+        repository: _UnwritableRepository(),
+      ),
+    );
+    addTearDown(cubit.close);
+
+    expect(await cubit.answer(allowNotifications: true), isTrue);
+    expect(cubit.state, isFalse);
+    expect(gateway.requests, 1);
+  });
+}
+
+final class _UnwritableRepository implements WizardRepository {
+  @override
+  Future<bool> arePermissionsIntroduced() async => false;
+
+  @override
+  Future<void> markPermissionsIntroduced() async =>
+      throw StateError('preferences unavailable');
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }

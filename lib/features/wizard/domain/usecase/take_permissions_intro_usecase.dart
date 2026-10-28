@@ -16,10 +16,13 @@ class TakePermissionsIntroUsecase {
 
   Future<bool> execute() async {
     if (await _repository.arePermissionsIntroduced()) return false;
-    await _repository.markPermissionsIntroduced();
-    return switch (await _permissions.isEnabled()) {
-      Ok(:final value) => !value,
-      Err() => false,
-    };
+    // An unreadable state is skipped this time, not consumed: a passing
+    // failure must not cancel the only offer.
+    final enabled = await _permissions.isEnabled();
+    if (enabled case Ok(:final value)) {
+      await _repository.markPermissionsIntroduced();
+      return !value;
+    }
+    return false;
   }
 }

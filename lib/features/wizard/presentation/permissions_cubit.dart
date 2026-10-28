@@ -12,8 +12,11 @@ class PermissionsCubit extends Cubit<bool> {
   Future<bool> answer({required bool allowNotifications}) async {
     if (state) return false;
     emit(true);
-    await _answer.execute(allowNotifications: allowNotifications);
-    if (!isClosed) emit(false);
+    try {
+      await _answer.execute(allowNotifications: allowNotifications);
+    } finally {
+      if (!isClosed) emit(false);
+    }
     return true;
   }
 }

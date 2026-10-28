@@ -16,7 +16,12 @@ class AnswerPermissionsUsecase {
   final WizardRepository _repository;
 
   Future<void> execute({required bool allowNotifications}) async {
-    await _repository.markPermissionsIntroduced();
+    try {
+      await _repository.markPermissionsIntroduced();
+    } catch (error) {
+      // The answer still counts; the page may only be offered once more.
+      log.warning('Permissions answer not saved: ${error.runtimeType}');
+    }
     if (!allowNotifications) return;
     switch (await _permissions.request()) {
       case Ok(:final value):
