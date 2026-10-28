@@ -26,12 +26,14 @@ void main() {
   late _Store store;
   late int reschedules;
   late bool failReschedule;
+  Completer<void>? pendingReschedule;
 
   BackgroundSyncCubit cubit() {
     final repository = BackgroundSyncRepositoryImpl(
       store: store,
       reschedule: () async {
         reschedules++;
+        await pendingReschedule?.future;
         if (failReschedule) throw StateError('workmanager');
       },
     );
@@ -49,7 +51,29 @@ void main() {
     store = _Store();
     reschedules = 0;
     failReschedule = false;
+    pendingReschedule = null;
   });
+
+  test(
+    'an unsaved choice made while another applies shows what is stored',
+    () async {
+      final subject = cubit();
+      addTearDown(subject.close);
+      await subject.load();
+      pendingReschedule = Completer<void>();
+
+      final first = subject.choose(BackgroundSyncInterval.minutes15);
+      await Future<void>.delayed(Duration.zero);
+      store.failWrite = true;
+      await subject.choose(BackgroundSyncInterval.off);
+      pendingReschedule?.complete();
+      await first;
+
+      expect(store.value, BackgroundSyncInterval.minutes15);
+      expect(subject.state.interval, store.value);
+      expect(subject.state.failure, isA<SettingsStorageFailure>());
+    },
+  );
 
   test('a choice is saved and applied to the schedule', () async {
     final subject = cubit();

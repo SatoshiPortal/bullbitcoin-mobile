@@ -60,7 +60,15 @@ class BackgroundSyncCubit extends Cubit<BackgroundSyncState> {
       case Ok():
         log.config('Background sync interval chosen=${interval.name}');
       case Err(failure: final SettingsStorageFailure failure):
-        emit(BackgroundSyncState(interval: _saved, failure: failure));
+        // An earlier choice may have been saved meanwhile: show what is
+        // stored, not what this cubit last saw saved.
+        final stored = await _get.execute();
+        if (isClosed || choice != _latestChoice) return;
+        final interval = switch (stored) {
+          Ok(:final value) => _saved = value,
+          Err() => _saved,
+        };
+        emit(BackgroundSyncState(interval: interval, failure: failure));
       case Err(:final failure):
         // Saved, so it applies at the next start even though the schedule
         // could not be changed right now.
