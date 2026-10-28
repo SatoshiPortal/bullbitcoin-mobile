@@ -82,9 +82,10 @@ final class WalletTransactionSyncBackgroundTask {
 
   /// Bitcoin then Liquid in one run, under one budget: a single platform job
   /// keeps the network for both, where two jobs in one process lost it as
-  /// soon as the first one finished.
-  Future<BackgroundTaskExecutionResult> executeAll() async {
-    final clock = Stopwatch()..start();
+  /// soon as the first one finished. [clock], started when the platform
+  /// launched the run, makes the budget include startup.
+  Future<BackgroundTaskExecutionResult> executeAll({Stopwatch? clock}) async {
+    clock ??= Stopwatch()..start();
     var retry = false;
     var permanent = false;
     final budget = runBudget;

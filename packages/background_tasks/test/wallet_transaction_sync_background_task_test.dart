@@ -955,6 +955,46 @@ void main() {
     await execution;
   });
 
+  test('a run whose startup used the budget starts no wallet', () async {
+    final directory = await Directory.systemTemp.createTemp('background_tasks');
+    final outbox = SqliteNotificationOutbox(
+      databasePath: '${directory.path}/n.sqlite',
+    );
+    final queue = SqliteWalletSyncJobQueue(
+      databasePath: '${directory.path}/q.sqlite',
+    );
+    addTearDown(() async {
+      await queue.close();
+      outbox.dispose();
+      await directory.delete(recursive: true);
+    });
+    final started = <String>[];
+    WalletTransactionSyncBackgroundJob job(String id, String chain) {
+      final key = WalletNetworkKey(id, chain, 'mainnet');
+      return WalletTransactionSyncBackgroundJob(
+        key: key,
+        synchronize: () async {
+          started.add(id);
+          return Ok(_outcome(key, const []));
+        },
+      );
+    }
+
+    final task = WalletTransactionSyncBackgroundTask(
+      notifications: NotificationsFacade(gateway: _Gateway(), outbox: outbox),
+      queue: queue,
+      jobs: [job('a', 'bitcoin'), job('b', 'liquid')],
+      runBudget: const Duration(milliseconds: 20),
+      copy: (_, _) => (title: 'Incoming', body: 'Payment received'),
+    );
+    final bootstrap = Stopwatch()..start();
+    await Future<void>.delayed(const Duration(milliseconds: 40));
+
+    await task.executeAll(clock: bootstrap);
+
+    expect(started, isEmpty);
+  });
+
   test('a long failure name is logged as a short fixed label', () async {
     final directory = await Directory.systemTemp.createTemp('background_tasks');
     final outbox = SqliteNotificationOutbox(

@@ -100,6 +100,8 @@ void backgroundTasksHandler() {
 }
 
 Future<BackgroundTaskRunner> _bootstrapBackgroundRunner() async {
+  // The run budget counts from here: the platform's limit includes startup.
+  final clock = Stopwatch()..start();
   final bullDirectory = await getApplicationDocumentsDirectory();
   await initializeLogging(
     directory: bullDirectory,
@@ -108,10 +110,13 @@ Future<BackgroundTaskRunner> _bootstrapBackgroundRunner() async {
   );
   // The dispatcher turns a bootstrap exception into a retry without a trace,
   // so the failing stage is logged here before it propagates.
-  final clock = Stopwatch()..start();
   var stage = 'native';
   try {
-    return await _buildBackgroundRunner(bullDirectory, (next) => stage = next);
+    return await _buildBackgroundRunner(
+      bullDirectory,
+      (next) => stage = next,
+      clock,
+    );
   } catch (error) {
     log.warning(
       'Background task bootstrap failed stage=$stage '
@@ -126,6 +131,7 @@ Future<BackgroundTaskRunner> _bootstrapBackgroundRunner() async {
 Future<BackgroundTaskRunner> _buildBackgroundRunner(
   Directory bullDirectory,
   void Function(String) enter,
+  Stopwatch clock,
 ) async {
   await initFlutterRustBridgeDependencies();
 
@@ -235,7 +241,7 @@ Future<BackgroundTaskRunner> _buildBackgroundRunner(
       copy: copy,
       maxConcurrentJobs: _backgroundWalletSyncConcurrency,
       runBudget: _backgroundRunBudget,
-    ).executeAll(),
+    ).executeAll(clock: clock),
     bitcoinSync: () => WalletTransactionSyncBackgroundTask(
       notifications: notifications,
       jobs: jobs,
