@@ -5,7 +5,11 @@ import 'package:bb_mobile/features/wizard/data/datasource/wizard_local_datasourc
 import 'package:bb_mobile/features/wizard/data/repository/wizard_repository_impl.dart';
 import 'package:bb_mobile/features/wizard/domain/entity/wizard_choices.dart';
 import 'package:bb_mobile/features/wizard/domain/repository/wizard_repository.dart';
+import 'package:background_tasks/background_tasks.dart';
 import 'package:bb_mobile/features/wizard/domain/usecase/answer_permissions_usecase.dart';
+import 'package:bb_mobile/features/wizard/domain/usecase/open_battery_settings_usecase.dart';
+import 'package:bb_mobile/features/wizard/domain/usecase/read_background_activity_usecase.dart';
+import 'package:bb_mobile/features/wizard/presentation/background_activity_cubit.dart';
 import 'package:bb_mobile/features/wizard/domain/usecase/mark_wizard_complete_usecase.dart';
 import 'package:bb_mobile/features/wizard/domain/usecase/save_pending_wizard_choices_usecase.dart';
 import 'package:bb_mobile/features/wizard/presentation/bloc/wizard_bloc.dart';
@@ -49,6 +53,16 @@ class WizardApp extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider<WizardBloc>(create: (_) => _createBloc(repository)),
+        BlocProvider<BackgroundActivityCubit>(
+          create: (_) => BackgroundActivityCubit(
+            read: ReadBackgroundActivityUsecase(
+              gateway: const PermissionHandlerBackgroundActivityGateway(),
+            ),
+            open: OpenBatterySettingsUsecase(
+              gateway: const PermissionHandlerBackgroundActivityGateway(),
+            ),
+          ),
+        ),
         BlocProvider<PermissionsCubit>(
           create: (_) => PermissionsCubit(
             answer: AnswerPermissionsUsecase(

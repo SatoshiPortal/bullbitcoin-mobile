@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
+import 'package:bb_mobile/features/wizard/presentation/background_activity_cubit.dart';
 import 'package:bb_mobile/features/wizard/presentation/permissions_cubit.dart';
 import 'package:bb_mobile/features/wizard/ui/widgets/permissions_choice_row.dart';
 import 'package:bb_mobile/features/wizard/ui/widgets/permissions_step.dart';
@@ -16,8 +17,11 @@ class PermissionsIntroScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final hPad = Device.screen.width * 0.06;
-    return BlocProvider(
-      create: (_) => locator<PermissionsCubit>(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (_) => locator<PermissionsCubit>()),
+        BlocProvider(create: (_) => locator<BackgroundActivityCubit>()),
+      ],
       child: Scaffold(
         backgroundColor: context.appColors.background,
         body: SafeArea(
