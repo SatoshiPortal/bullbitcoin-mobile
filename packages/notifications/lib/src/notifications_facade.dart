@@ -99,7 +99,16 @@ final class NotificationsFacade {
       case Ok(:final value):
         for (final claimed in value) {
           final event = claimed.notification;
-          if (show) {
+          // Claimed before the app showed these payments: settle silently.
+          final bool alreadySeen;
+          switch (await outbox.isSeen(event.eventId)) {
+            case Ok(:final value):
+              alreadySeen = value;
+            case Err(:final failure):
+              await outbox.release(event.eventId, claimed.claimToken);
+              return Err(failure);
+          }
+          if (show && !alreadySeen) {
             final shown = await gateway.show(
               event,
               platformId: claimed.platformId,

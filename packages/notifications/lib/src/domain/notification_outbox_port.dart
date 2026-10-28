@@ -49,6 +49,9 @@ abstract interface class NotificationOutboxPort {
     aggregateEvent,
   );
 
+  /// Whether every payment this aggregate announces was seen in the app.
+  Future<Result<bool, NotificationsFailure>> isSeen(String eventId);
+
   Future<Result<List<ClaimedNotification>, NotificationsFailure>> claimPending({
     DateTime? now,
   });

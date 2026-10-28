@@ -1,8 +1,10 @@
 import 'dart:io';
+import 'dart:isolate';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:notifications/notifications.dart';
 import 'package:primitives/primitives.dart';
+import 'package:sqlite3/sqlite3.dart';
 
 final class FakeGateway implements LocalNotificationGateway {
   final List<int> shownIds = [];
@@ -64,6 +66,9 @@ final class FailingResponseOutbox implements NotificationOutboxPort {
     List<LocalNotification> observedEvents,
   ) async => const Ok(null);
   @override
+  Future<Result<bool, NotificationsFailure>> isSeen(String eventId) async =>
+      const Ok(false);
+  @override
   Future<Result<NotificationReconcileResult, NotificationsFailure>>
   reconcileTopic(
     String topicId,
@@ -101,6 +106,12 @@ final class FailingResponseOutbox implements NotificationOutboxPort {
   Future<Result<String?, NotificationsFailure>> consumeResponse() async =>
       Ok(responses.isEmpty ? null : responses.removeAt(0));
 }
+
+/// Top-level so the isolate closure captures only [path].
+Future<bool> _openElsewhere(String path) => Isolate.run(() {
+  SqliteNotificationOutbox(databasePath: path).dispose();
+  return true;
+});
 
 LocalNotification event(String id) => LocalNotification(
   eventId: id,
@@ -219,6 +230,61 @@ void main() {
       expect((await outbox.claimPending() as Ok).value, isEmpty);
     },
   );
+
+  test(
+    'a claimed aggregate is not shown once its payments were seen',
+    () async {
+      outbox.dispose();
+      outbox = SqliteNotificationOutbox(
+        databasePath: '${directory.path}/notifications.sqlite',
+        claimLease: Duration.zero,
+      );
+      final gateway = FakeGateway();
+      final facade = NotificationsFacade(gateway: gateway, outbox: outbox);
+      await facade.recordObserved('a', []);
+      await facade.reconcileTopicsAndEnqueue([
+        NotificationTopicObservation('a', [event('a1')]),
+      ], (events) => event('aggregate'));
+      // A background run claims it, then the app shows the payment.
+      expect((await outbox.claimPending() as Ok).value, hasLength(1));
+      await facade.recordObserved('a', [event('a1')]);
+
+      expect(await facade.deliverPending(), isA<Ok>());
+      expect(gateway.shownIds, isEmpty);
+    },
+  );
+
+  test('upgrading schema 1 forgets its silent baselines', () async {
+    outbox.dispose();
+    final path = '${directory.path}/v1.sqlite';
+    final legacy = sqlite3.open(path);
+    legacy.execute('''CREATE TABLE notification_outbox (
+      event_id TEXT PRIMARY KEY, title TEXT NOT NULL, body TEXT NOT NULL,
+      destination TEXT NOT NULL, created_at INTEGER NOT NULL,
+      status TEXT NOT NULL CHECK(status IN ('pending','delivering','delivered')),
+      claim_token TEXT, lease_until INTEGER, platform_id INTEGER NOT NULL UNIQUE,
+      topic_id TEXT)''');
+    legacy.execute(
+      'CREATE TABLE notification_topics (topic_id TEXT PRIMARY KEY, initialized_at INTEGER NOT NULL)',
+    );
+    legacy.execute("INSERT INTO notification_topics VALUES ('silent', 1)");
+    legacy.execute(
+      "INSERT INTO notification_outbox VALUES ('old-aggregate','t','b','wallet_home',1,'pending',NULL,NULL,7,NULL)",
+    );
+    legacy.execute('PRAGMA user_version = 1');
+    legacy.dispose();
+
+    // Two engines upgrading the same file at once.
+    final opened = await Future.wait([
+      for (var i = 0; i < 2; i++) _openElsewhere(path),
+    ]);
+    expect(opened, [true, true]);
+
+    outbox = SqliteNotificationOutbox(databasePath: path);
+    expect((await outbox.isTopicInitialized('silent') as Ok).value, isFalse);
+    expect((await outbox.claimPending() as Ok).value, isEmpty);
+    expect(await outbox.recordObserved('silent', [event('x')]), isA<Ok>());
+  });
 
   test('reconciliation is idempotent and pending survives reopen', () async {
     await outbox.recordObserved('topic', [event('stable')]);

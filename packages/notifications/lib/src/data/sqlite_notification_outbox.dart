@@ -30,35 +30,55 @@ final class SqliteNotificationOutbox implements NotificationOutboxPort {
       // The foreground keeps its outbox open for the process lifetime while
       // a background run writes to the same file.
       _database.execute('PRAGMA busy_timeout = 5000');
-      final version =
-          (_database.select('PRAGMA user_version').single['user_version']
-              as int);
-      if (version > _schemaVersion) {
-        throw StateError('Unsupported notification schema');
+      // One transaction: an app and a background engine opening an old file
+      // at once must not both upgrade it.
+      _database.execute('BEGIN IMMEDIATE');
+      try {
+        _migrate();
+        _database.execute('COMMIT');
+      } catch (_) {
+        _database.execute('ROLLBACK');
+        rethrow;
       }
-      _database.execute('''
+    } catch (_) {
+      database.dispose();
+      rethrow;
+    }
+  }
+
+  void _migrate() {
+    final version =
+        _database.select('PRAGMA user_version').single['user_version'] as int;
+    if (version > _schemaVersion) {
+      throw StateError('Unsupported notification schema');
+    }
+    _database.execute('''
       CREATE TABLE IF NOT EXISTS notification_outbox (
         event_id TEXT PRIMARY KEY, title TEXT NOT NULL, body TEXT NOT NULL,
         destination TEXT NOT NULL, created_at INTEGER NOT NULL,
         status TEXT NOT NULL CHECK(status IN ('pending','delivering','delivered')),
         claim_token TEXT, lease_until INTEGER, platform_id INTEGER NOT NULL UNIQUE,
-        topic_id TEXT
+        topic_id TEXT, seen_at INTEGER
       )
     ''');
-      _database.execute('PRAGMA user_version = 1');
-      _database.execute('''
+    _database.execute('''
       CREATE TABLE IF NOT EXISTS notification_responses (
         id INTEGER PRIMARY KEY AUTOINCREMENT, payload TEXT NOT NULL,
         consumed INTEGER NOT NULL DEFAULT 0
       )
     ''');
-      _database.execute('''
+    _database.execute('''
       CREATE TABLE IF NOT EXISTS notification_topics (
         topic_id TEXT PRIMARY KEY, initialized_at INTEGER NOT NULL
       )
     ''');
-      // Version 2: which payments an aggregate announces, and when the
-      // foreground saw a payment. Guarded so a rerun changes nothing.
+    _database.execute('''
+      CREATE TABLE IF NOT EXISTS notification_aggregate_members (
+        aggregate_event_id TEXT NOT NULL, member_event_id TEXT NOT NULL,
+        PRIMARY KEY (aggregate_event_id, member_event_id)
+      )
+    ''');
+    if (version == 1) {
       final columns = _database
           .select('PRAGMA table_info(notification_outbox)')
           .map((row) => row['name'] as String)
@@ -68,17 +88,15 @@ final class SqliteNotificationOutbox implements NotificationOutboxPort {
           'ALTER TABLE notification_outbox ADD COLUMN seen_at INTEGER',
         );
       }
-      _database.execute('''
-      CREATE TABLE IF NOT EXISTS notification_aggregate_members (
-        aggregate_event_id TEXT NOT NULL, member_event_id TEXT NOT NULL,
-        PRIMARY KEY (aggregate_event_id, member_event_id)
-      )
-    ''');
-      _database.execute('PRAGMA user_version = $_schemaVersion');
-    } catch (_) {
-      database.dispose();
-      rethrow;
+      // Version 1 initialized a topic with a silent background baseline and
+      // kept no aggregate members: neither can be trusted any more, so the
+      // foreground records topics again and old aggregates are settled.
+      _database.execute('DELETE FROM notification_topics');
+      _database.execute(
+        "UPDATE notification_outbox SET status='delivered', claim_token=NULL, lease_until=NULL WHERE topic_id IS NULL AND status!='delivered'",
+      );
     }
+    _database.execute('PRAGMA user_version = $_schemaVersion');
   }
 
   @override
@@ -340,6 +358,27 @@ final class SqliteNotificationOutbox implements NotificationOutboxPort {
       try {
         _database.execute('ROLLBACK');
       } catch (_) {}
+      return const Err(NotificationsStorageFailure());
+    }
+  }
+
+  @override
+  Future<Result<bool, NotificationsFailure>> isSeen(String eventId) async {
+    try {
+      final unseen = _database.select(
+        '''
+        SELECT 1 FROM notification_aggregate_members m
+        LEFT JOIN notification_outbox e ON e.event_id=m.member_event_id
+        WHERE m.aggregate_event_id=? AND (e.seen_at IS NULL)
+        LIMIT 1''',
+        [eventId],
+      );
+      final members = _database.select(
+        'SELECT 1 FROM notification_aggregate_members WHERE aggregate_event_id=? LIMIT 1',
+        [eventId],
+      );
+      return Ok(members.isNotEmpty && unseen.isEmpty);
+    } catch (_) {
       return const Err(NotificationsStorageFailure());
     }
   }
