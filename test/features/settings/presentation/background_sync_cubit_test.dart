@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:background_tasks/background_tasks.dart';
 import 'package:bb_mobile/features/settings/data/background_sync_repository_impl.dart';
 import 'package:bb_mobile/features/settings/domain/settings_failure.dart';
@@ -88,4 +90,37 @@ void main() {
     expect(subject.state.interval, BackgroundSyncInterval.minutes30);
     expect(subject.state.failure, isNotNull);
   });
+
+  test(
+    'a late failure of an earlier choice does not undo a later one',
+    () async {
+      final firstReschedule = Completer<void>();
+      var calls = 0;
+      final repository = BackgroundSyncRepositoryImpl(
+        store: store,
+        reschedule: () {
+          calls++;
+          return calls == 1 ? firstReschedule.future : Future.value();
+        },
+      );
+      final subject = BackgroundSyncCubit(
+        getBackgroundSyncIntervalUsecase: GetBackgroundSyncIntervalUsecase(
+          repository: repository,
+        ),
+        setBackgroundSyncIntervalUsecase: SetBackgroundSyncIntervalUsecase(
+          repository: repository,
+        ),
+      );
+      addTearDown(subject.close);
+      await subject.load();
+
+      final first = subject.choose(BackgroundSyncInterval.minutes15);
+      await subject.choose(BackgroundSyncInterval.hours6);
+      firstReschedule.completeError(StateError('workmanager'));
+      await first;
+
+      expect(subject.state.interval, BackgroundSyncInterval.hours6);
+      expect(subject.state.failure, isNull);
+    },
+  );
 }

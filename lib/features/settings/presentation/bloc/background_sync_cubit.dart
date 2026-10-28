@@ -35,12 +35,17 @@ class BackgroundSyncCubit extends Cubit<BackgroundSyncState> {
     });
   }
 
+  /// Only the latest choice may update the state: an earlier one finishing
+  /// late must not overwrite it.
+  int _latestChoice = 0;
+
   Future<void> choose(BackgroundSyncInterval interval) async {
     final previous = state.interval;
     if (interval == previous) return;
+    final choice = ++_latestChoice;
     emit(BackgroundSyncState(interval: interval));
     final result = await _set.execute(interval);
-    if (isClosed) return;
+    if (isClosed || choice != _latestChoice) return;
     switch (result) {
       case Ok():
         log.config('Background sync interval chosen=${interval.name}');
