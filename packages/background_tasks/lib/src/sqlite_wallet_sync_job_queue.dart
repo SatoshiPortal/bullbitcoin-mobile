@@ -44,6 +44,7 @@ abstract interface class WalletSyncJobQueue {
     Iterable<({WalletNetworkKey key, String revision})> jobs, {
     required String chain,
     int maxJobs = 2,
+    Iterable<WalletNetworkKey> excluding = const [],
   });
 
   Future<bool> renew(WalletSyncJobClaim claim, {Duration? lease});
@@ -140,6 +141,7 @@ final class SqliteWalletSyncJobQueue implements WalletSyncJobQueue {
     Iterable<({WalletNetworkKey key, String revision})> jobs, {
     required String chain,
     int maxJobs = 2,
+    Iterable<WalletNetworkKey> excluding = const [],
   }) async {
     _ensureOpen();
     if (maxJobs <= 0) throw ArgumentError.value(maxJobs, 'maxJobs');
@@ -238,15 +240,28 @@ final class SqliteWalletSyncJobQueue implements WalletSyncJobQueue {
                 [chain, timestamp, timestamp, chain, timestamp, timestamp],
               ).single['eligible_count']
               as int;
+      final excludedIds = [for (final key in excluding) _id(key)];
+      final exclusion = excludedIds.isEmpty
+          ? ''
+          : 'AND job_id NOT IN (${List.filled(excludedIds.length, '?').join(',')})';
       // Fewest consecutive attempts first: a wallet whose runs keep failing or
       // being stopped does not starve the others.
       final rows = _database.select(
         '''SELECT job_id, attempts FROM wallet_sync_jobs
-        WHERE $eligibility
+        WHERE $eligibility $exclusion
         ORDER BY attempts,
           CASE WHEN last_successful_at IS NULL THEN 0 ELSE 1 END,
           last_successful_at, inserted_at, job_id LIMIT ?''',
-        [chain, timestamp, timestamp, chain, timestamp, timestamp, maxJobs],
+        [
+          chain,
+          timestamp,
+          timestamp,
+          chain,
+          timestamp,
+          timestamp,
+          ...excludedIds,
+          maxJobs,
+        ],
       );
       final claims = <WalletSyncJobClaim>[];
       for (final row in rows) {

@@ -341,6 +341,30 @@ void main() {
       await current.close();
     },
   );
+
+  test('a claim skips the wallets a run already handled', () async {
+    // A wallet completed in this run is due again at once; the run must not
+    // sync it twice.
+    final current = queue();
+    final registrations = [_registration(0)];
+    final first = await current.reconcileAndClaim(
+      registrations,
+      chain: 'bitcoin',
+      maxJobs: 1,
+    );
+    expect(await current.completeSuccess(first.single), isTrue);
+
+    expect(
+      await current.reconcileAndClaim(
+        registrations,
+        chain: 'bitcoin',
+        maxJobs: 1,
+        excluding: [first.single.key],
+      ),
+      isEmpty,
+    );
+    await current.close();
+  });
 }
 
 ({WalletNetworkKey key, String revision}) _registration(

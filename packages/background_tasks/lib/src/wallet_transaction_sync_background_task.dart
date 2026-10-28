@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:crypto/crypto.dart';
 import 'package:notifications/notifications.dart';
@@ -131,27 +132,49 @@ final class WalletTransactionSyncBackgroundTask {
     var retried = 0;
     var permanentlyFailed = 0;
     final eligibleJobs = jobs.where((job) => job.key.chain == chain).toList();
-    final claims = await queue.reconcileAndClaim(
-      eligibleJobs.map((job) => (key: job.key, revision: job.queueRevision)),
-      chain: chain,
-      maxJobs: maxJobsPerRun,
-    );
+    final registrations = [
+      for (final job in eligibleJobs)
+        (key: job.key, revision: job.queueRevision),
+    ];
     final jobsByKey = {for (final job in eligibleJobs) job.key: job};
-    final observations = List<NotificationTopicObservation?>.filled(
-      claims.length,
-      null,
-    );
-    var nextJob = 0;
+    final observations = <NotificationTopicObservation>[];
+    final handled = <WalletNetworkKey>{};
+    var claimed = 0;
+    var budgetReached = false;
 
     bool budgetSpent() {
       final budget = admissionLimit ?? runBudget;
       return budget != null && stopwatch.elapsed >= budget;
     }
 
+    // A wallet is claimed only when a worker is about to start it: a claim
+    // counts as an attempt, so one claimed but never started would be backed
+    // off, and keep its lease, if the platform stops the run.
+    Future<WalletSyncJobClaim?> claimNext() async {
+      if (claimed >= maxJobsPerRun) return null;
+      if (budgetSpent()) {
+        budgetReached = true;
+        return null;
+      }
+      claimed++;
+      final claims = await queue.reconcileAndClaim(
+        registrations,
+        chain: chain,
+        maxJobs: 1,
+        excluding: handled,
+      );
+      if (claims.isEmpty) {
+        claimed--;
+        return null;
+      }
+      handled.add(claims.single.key);
+      return claims.single;
+    }
+
     Future<void> runWorker() async {
-      while (nextJob < claims.length && !budgetSpent()) {
-        final index = nextJob++;
-        final claim = claims[index];
+      while (true) {
+        final claim = await claimNext();
+        if (claim == null) break;
         final job = jobsByKey[claim.key];
         if (job == null) {
           retry = true;
@@ -233,7 +256,7 @@ final class WalletTransactionSyncBackgroundTask {
               if (completed) {
                 succeeded++;
                 newIncoming += value.newIncomingTransactions.length;
-                observations[index] = _observationFor(job, value);
+                observations.add(_observationFor(job, value));
               }
               if (renewalFailed || !completed) {
                 retry = true;
@@ -262,35 +285,26 @@ final class WalletTransactionSyncBackgroundTask {
       }
     }
 
-    final workerCount = maxConcurrentJobs < claims.length
-        ? maxConcurrentJobs
-        : claims.length;
+    final workerCount = [
+      maxConcurrentJobs,
+      maxJobsPerRun,
+      eligibleJobs.length,
+    ].reduce(min);
     await Future.wait(List.generate(workerCount, (_) => runWorker()));
-    if (nextJob < claims.length) {
-      final unstarted = claims.sublist(nextJob);
-      for (final claim in unstarted) {
-        try {
-          await queue.release(claim);
-        } catch (_) {
-          retry = true;
-        }
-      }
+    if (budgetReached) {
       _safeLog(
         WalletSyncLogLevel.fine,
-        'Wallet sync run budget reached: chain=$chain '
-        'released=${unstarted.length}',
+        'Wallet sync run budget reached: chain=$chain',
       );
     }
     _safeLog(
       WalletSyncLogLevel.fine,
-      'Wallet sync queue completion: chain=$chain claimed=${claims.length} '
+      'Wallet sync queue completion: chain=$chain claimed=$claimed '
       'succeeded=$succeeded retried=$retried permanent=$permanentlyFailed '
       'new_incoming=$newIncoming elapsed_ms=${stopwatch.elapsedMilliseconds}',
     );
 
-    final completedObservations = observations
-        .whereType<NotificationTopicObservation>()
-        .toList();
+    final completedObservations = observations;
     if (completedObservations.isNotEmpty) {
       final reconciled = await notifications.reconcileTopicsAndEnqueue(
         completedObservations,

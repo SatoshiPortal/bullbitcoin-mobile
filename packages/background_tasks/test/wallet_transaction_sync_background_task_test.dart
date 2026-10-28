@@ -886,10 +886,7 @@ void main() {
       BackgroundTaskExecutionStatus.success,
     );
     expect(started, hasLength(1));
-    expect(
-      messages,
-      contains('Wallet sync run budget reached: chain=bitcoin released=1'),
-    );
+    expect(messages, contains('Wallet sync run budget reached: chain=bitcoin'));
 
     // The wallet left over is first in line next run.
     final next = await queue.reconcileAndClaim([
@@ -903,6 +900,59 @@ void main() {
       ),
     ], chain: 'bitcoin');
     expect(next, hasLength(1));
+  });
+
+  test('a wallet waiting for a worker is not claimed', () async {
+    // If the platform stops the run while the first wallet syncs, the second
+    // must keep its turn: no attempt counted, no lease held.
+    final directory = await Directory.systemTemp.createTemp('background_tasks');
+    final outbox = SqliteNotificationOutbox(
+      databasePath: '${directory.path}/n.sqlite',
+    );
+    final queue = SqliteWalletSyncJobQueue(
+      databasePath: '${directory.path}/q.sqlite',
+    );
+    addTearDown(() async {
+      await queue.close();
+      outbox.dispose();
+      await directory.delete(recursive: true);
+    });
+    final started = <String>[];
+    final firstStarted = Completer<void>();
+    final release = Completer<void>();
+    WalletTransactionSyncBackgroundJob job(String id) {
+      final key = WalletNetworkKey(id, 'bitcoin', 'mainnet');
+      return WalletTransactionSyncBackgroundJob(
+        key: key,
+        synchronize: () async {
+          started.add(id);
+          if (!firstStarted.isCompleted) firstStarted.complete();
+          await release.future;
+          return Ok(_outcome(key, const []));
+        },
+      );
+    }
+
+    final task = WalletTransactionSyncBackgroundTask(
+      notifications: NotificationsFacade(gateway: _Gateway(), outbox: outbox),
+      queue: queue,
+      jobs: [job('a'), job('b')],
+      maxConcurrentJobs: 1,
+      copy: (_, _) => (title: 'Incoming', body: 'Payment received'),
+    );
+    final execution = task.execute(chain: 'bitcoin');
+    await firstStarted.future;
+
+    final waiting = started.single == 'a' ? 'b' : 'a';
+    final claimable = await queue.reconcileAndClaim([
+      (
+        key: WalletNetworkKey(waiting, 'bitcoin', 'mainnet'),
+        revision: 'legacy-electrum-v1',
+      ),
+    ], chain: 'bitcoin');
+    expect(claimable, hasLength(1));
+    release.complete();
+    await execution;
   });
 
   test('a long failure name is logged as a short fixed label', () async {
