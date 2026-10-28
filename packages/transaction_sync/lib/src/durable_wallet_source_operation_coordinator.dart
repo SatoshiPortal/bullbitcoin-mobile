@@ -1192,6 +1192,7 @@ Future<({Database key, Database? slot})> _acquire(
       [request],
     ),
   );
+  var claimCheckedAt = DateTime.fromMillisecondsSinceEpoch(0);
 
   while (true) {
     if (deadline != null && !DateTime.now().isBefore(deadline)) {
@@ -1203,6 +1204,12 @@ Future<({Database key, Database? slot})> _acquire(
     if (callerExited()) {
       leaveQueue();
       throw StateError('caller exited while waiting');
+    }
+    if (global &&
+        DateTime.now().difference(claimCheckedAt) >=
+            const Duration(seconds: 1)) {
+      claimCheckedAt = DateTime.now();
+      _dropOrphanedClaim(central, busy, hash, key);
     }
     if (_admit(central, busy, row, request, stale, global)) {
       Database? slot;
@@ -1223,6 +1230,36 @@ Future<({Database key, Database? slot})> _acquire(
       rollback(key);
     }
     await Future<void>.delayed(const Duration(milliseconds: 20));
+  }
+}
+
+/// A claim has no heartbeat: a process killed mid-operation leaves it, and it
+/// keeps its key out of global admission. Its owner holds the key mutex for
+/// the whole operation, so a free mutex proves the claim orphaned.
+void _dropOrphanedClaim(String central, int busy, String hash, Database key) {
+  var claimed = false;
+  _central(central, busy, (db) {
+    claimed = db.select('SELECT 1 FROM claims WHERE key_hash=?', [
+      hash,
+    ]).isNotEmpty;
+  });
+  if (!claimed) return;
+  try {
+    key.execute('BEGIN IMMEDIATE');
+  } catch (error) {
+    if (!_isRetryable(error)) rethrow;
+    return;
+  }
+  try {
+    _central(
+      central,
+      busy,
+      (db) => db.execute('DELETE FROM claims WHERE key_hash=?', [hash]),
+    );
+  } finally {
+    try {
+      key.execute('ROLLBACK');
+    } catch (_) {}
   }
 }
 

@@ -1054,6 +1054,71 @@ void main() {
   );
 
   test(
+    'a claim left by a killed process does not hold back a foreground sync',
+    () async {
+      // A claim has no heartbeat: only its key mutex shows its owner alive.
+      const orphaned = WalletSourceKey('orphaned', 'bitcoin', 'testnet');
+      final hash = sha256
+          .convert('orphaned\u0000bitcoin\u0000testnet'.codeUnits)
+          .toString();
+      final coordinator = DurableWalletSourceOperationCoordinator(
+        databasePath: path,
+        acquisitionTimeout: const Duration(milliseconds: 1500),
+      );
+      await coordinator.runExclusive(orphaned, (_) async {});
+      final db = sqlite3.open(path);
+      db.execute('INSERT INTO claims VALUES (?,?,?,?,?,?)', [
+        hash,
+        7,
+        'dead-owner',
+        'synchronize',
+        'background',
+        1,
+      ]);
+      db.dispose();
+
+      // A background sync holds the background slot and another waits for
+      // it, so a global candidate is always pending.
+      final release = Completer<void>();
+      final held = Completer<void>();
+      final background = coordinator.runExclusive(
+        const WalletSourceKey('busy', 'bitcoin', 'testnet'),
+        (_) async {
+          held.complete();
+          await release.future;
+        },
+        kind: WalletOperationKind.synchronize,
+        priority: WalletOperationPriority.background,
+        timeout: null,
+      );
+      await held.future;
+      final waiting =
+          DurableWalletSourceOperationCoordinator(
+            databasePath: path,
+          ).runExclusive(
+            const WalletSourceKey('waiting', 'bitcoin', 'testnet'),
+            (_) async {},
+            kind: WalletOperationKind.synchronize,
+            priority: WalletOperationPriority.background,
+            timeout: null,
+          );
+      await Future<void>.delayed(const Duration(milliseconds: 100));
+
+      final outcome = await coordinator
+          .runExclusive(
+            orphaned,
+            (_) async => 42,
+            kind: WalletOperationKind.synchronize,
+          )
+          .then<Object>((value) => value, onError: (Object error) => error);
+      release.complete();
+      await background;
+      await waiting;
+      expect(outcome, 42);
+    },
+  );
+
+  test(
     'a caller killed while waiting for admission releases the source',
     () async {
       const key = WalletSourceKey('killed-caller', 'bitcoin', 'testnet');
