@@ -257,6 +257,26 @@ void main() {
     await pumpEventQueue();
   });
 
+  test('a scheduled desktop sync runs while the window is hidden', () async {
+    when(
+      () => getWallets.execute(onlyBitcoin: true),
+    ).thenAnswer((_) async => Ok(<Wallet>[]));
+    TestWidgetsFlutterBinding.instance.handleAppLifecycleStateChanged(
+      AppLifecycleState.hidden,
+    );
+
+    await coordinator.sync(
+      only: {SyncKind.bitcoin},
+      trigger: SyncTrigger.scheduled,
+    );
+
+    verify(() => getWallets.execute(onlyBitcoin: true)).called(1);
+    TestWidgetsFlutterBinding.instance.handleAppLifecycleStateChanged(
+      AppLifecycleState.resumed,
+    );
+    await pumpEventQueue();
+  });
+
   group('SyncKind.sp', () {
     test('sync() invokes the registered syncSp once', () async {
       when(

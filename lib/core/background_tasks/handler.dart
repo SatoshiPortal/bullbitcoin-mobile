@@ -17,6 +17,7 @@ import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/generated/l10n/localization.dart';
 import 'package:bb_mobile/core/sync/sync_coordinator.dart';
 import 'package:bb_mobile/core/sync/sync_kind.dart';
+import 'package:bb_mobile/core/sync/sync_trigger.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/native_libraries.dart';
 import 'package:bb_mobile/payjoin_setup.dart' show payjoinDatabaseFilename;
@@ -84,7 +85,10 @@ final _desktopScheduler = TimerBackgroundTaskScheduler(
     final kind = taskName == BackgroundTask.liquidSync.name
         ? SyncKind.liquid
         : SyncKind.bitcoin;
-    await locator<SyncCoordinator>().sync(only: {kind});
+    await locator<SyncCoordinator>().sync(
+      only: {kind},
+      trigger: SyncTrigger.scheduled,
+    );
   },
 );
 

@@ -185,7 +185,7 @@ class SyncCoordinator {
   /// does right after.
   static Set<SyncKind> _defaultKinds(SyncTrigger trigger) => switch (trigger) {
     SyncTrigger.user => const {SyncKind.bitcoin, SyncKind.liquid},
-    SyncTrigger.automatic => const {
+    SyncTrigger.automatic || SyncTrigger.scheduled => const {
       SyncKind.bitcoin,
       SyncKind.liquid,
       SyncKind.sp,
@@ -196,8 +196,8 @@ class SyncCoordinator {
   /// 'gated' (app not resumed), 'throttled' (synced within [_minSyncInterval]),
   /// or 'pending' (already running or queued).
   String? _enqueue(SyncKind kind, {required SyncTrigger trigger}) {
-    if (!_isAppResumed) return 'gated';
-    if (trigger == SyncTrigger.automatic) {
+    if (!_isAppResumed && trigger != SyncTrigger.scheduled) return 'gated';
+    if (trigger != SyncTrigger.user) {
       final last = _lastSuccessAt[kind];
       if (last != null && DateTime.now().difference(last) < _minSyncInterval) {
         return 'throttled';
