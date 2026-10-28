@@ -1214,7 +1214,7 @@ void main() {
     ).thenAnswer((_) async => _feeOptions());
     when(
       () => convertSats.execute(currencyCode: 'USD'),
-    ).thenAnswer((_) async => 1.0);
+    ).thenAnswer((_) async => const Ok(1.0));
     when(
       () => watchOrder.execute('local-1'),
     ).thenAnswer((_) => const Stream.empty());
@@ -1245,7 +1245,7 @@ void main() {
     ).thenAnswer((_) async => _feeOptions());
     when(
       () => convertSats.execute(currencyCode: 'USD'),
-    ).thenAnswer((_) async => 1.0);
+    ).thenAnswer((_) async => const Ok(1.0));
     when(
       () => watchOrder.execute('local-1'),
     ).thenAnswer((_) => const Stream.empty());
@@ -1281,7 +1281,7 @@ void main() {
     ).thenAnswer((_) async => _feeOptions());
     when(
       () => convertSats.execute(currencyCode: 'USD'),
-    ).thenAnswer((_) async => 1.0);
+    ).thenAnswer((_) async => const Ok(1.0));
     when(
       () => watchOrder.execute('local-1'),
     ).thenAnswer((_) => const Stream.empty());
@@ -1313,7 +1313,7 @@ void main() {
     ).thenAnswer((_) async => _feeOptions());
     when(
       () => convertSats.execute(currencyCode: 'USD'),
-    ).thenAnswer((_) async => 1.0);
+    ).thenAnswer((_) async => const Ok(1.0));
     when(() => watchOrder.execute('local-1')).thenAnswer(
       (_) =>
           Stream.value(const Err(SwapStorageFailure('database unavailable'))),
@@ -1382,7 +1382,7 @@ void main() {
       ).thenAnswer((_) async => _feeOptions());
       when(
         () => convertSats.execute(currencyCode: 'USD'),
-      ).thenAnswer((_) async => 1.0);
+      ).thenAnswer((_) async => const Ok(1.0));
 
       bloc.add(const TransferEvent.started());
       await bloc.stream.firstWhere((state) => !state.isStarting);

@@ -7,6 +7,7 @@ import 'package:bb_mobile/features/pay/domain/load_pay_network_fees_usecase.dart
 import 'package:bb_mobile/features/pay/domain/pay_failure.dart';
 import 'package:bb_mobile/features/pay/domain/prepare_pay_bitcoin_payin_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/prepare_pay_liquid_payin_usecase.dart';
+import 'package:bull_pricer/bull_pricer.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';
@@ -51,13 +52,11 @@ void main() {
   });
 
   // The estimate converts the fiat amount to sats to check the balance and
-  // build a throwaway payin. With no price there is nothing to estimate with:
-  // a zero rate made every balance look sufficient for a zero-sat payin.
+  // build a throwaway payin. With no price there is nothing to estimate with.
   test('an unavailable price fails the estimate', () async {
-    // The datasource reports an unreachable pricer as a zero rate.
     when(
       () => convertSatsToCurrency.execute(currencyCode: 'CAD'),
-    ).thenAnswer((_) async => 0);
+    ).thenAnswer((_) async => const Err(PricerNetworkFailure('Timed out')));
 
     final result = await usecase.execute(
       wallet: wallet,

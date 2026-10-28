@@ -55,22 +55,14 @@ class EstimatePayPayinFeesUsecase {
     required String currencyCode,
   }) async {
     final double exchangeRateEstimate;
-    try {
-      exchangeRateEstimate = await _convertSatsToCurrencyAmountUsecase.execute(
-        currencyCode: currencyCode,
-      );
-    } catch (e, st) {
-      log.severe(
-        message: 'Failed to read the exchange rate for the pay payin estimate',
-        error: e,
-        trace: st,
-      );
-      return Err(PayUnexpectedFailure('$e'));
-    }
-    // The pricer reports an unavailable price as zero: there is nothing to
-    // estimate with, and a zero rate would pass any balance check.
-    if (!exchangeRateEstimate.isFinite || exchangeRateEstimate <= 0) {
-      return const Err(PayQuoteUnavailableFailure('No price for the estimate'));
+    switch (await _convertSatsToCurrencyAmountUsecase.execute(
+      currencyCode: currencyCode,
+    )) {
+      case Ok(:final value):
+        exchangeRateEstimate = value;
+      case Err(:final failure):
+        log.warning('Pay price unavailable: ${failure.runtimeType}');
+        return Err(PayQuoteUnavailableFailure(failure.logMessage));
     }
 
     final requiredAmountSat = ConvertAmount.fiatToSats(

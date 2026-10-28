@@ -26,6 +26,12 @@ Future<void> main({bool isInitialized = false}) async {
     };
   }
 
+  /// The converted value, or a test failure when there is no price.
+  T converted<T>(Result<T, PricerFailure> result) => switch (result) {
+    Ok(:final value) => value,
+    Err(:final failure) => fail('No price: $failure'),
+  };
+
   final getAvailableCurrenciesUsecase =
       locator<GetAvailableCurrenciesUsecase>();
   final convertCurrencyToSatsAmountUsecase =
@@ -73,9 +79,11 @@ Future<void> main({bool isInitialized = false}) async {
       test('that get the price of one bitcoin', () async {
         final amountSat = ConversionConstants.satsAmountOfOneBitcoin;
 
-        final amount = await convertSatsToCurrencyAmountUsecase.execute(
-          currencyCode: currency,
-          amountSat: amountSat,
+        final amount = converted(
+          await convertSatsToCurrencyAmountUsecase.execute(
+            currencyCode: currency,
+            amountSat: amountSat,
+          ),
         );
         final bitcoinPrice = await indexPrice(currency);
 
@@ -90,9 +98,11 @@ Future<void> main({bool isInitialized = false}) async {
       test('that converts currency to sats', () async {
         const amount = 123.0;
 
-        final sats = await convertCurrencyToSatsAmountUsecase.execute(
-          currencyCode: currency,
-          amountFiat: amount,
+        final sats = converted(
+          await convertCurrencyToSatsAmountUsecase.execute(
+            currencyCode: currency,
+            amountFiat: amount,
+          ),
         );
         final bitcoinPrice = await indexPrice(currency);
 
@@ -106,9 +116,11 @@ Future<void> main({bool isInitialized = false}) async {
       test('that converts sats to currency', () async {
         final sats = BigInt.from(150000);
 
-        final amount = await convertSatsToCurrencyAmountUsecase.execute(
-          currencyCode: currency,
-          amountSat: sats,
+        final amount = converted(
+          await convertSatsToCurrencyAmountUsecase.execute(
+            currencyCode: currency,
+            amountSat: sats,
+          ),
         );
         final bitcoinPrice = await indexPrice(currency);
 

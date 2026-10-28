@@ -27,6 +27,11 @@ final class _FakeIndexPrice {
 void main() {
   final oneBtc = BigInt.from(100000000);
 
+  T value<T>(Result<T, PricerFailure> result) => switch (result) {
+    Ok(:final value) => value,
+    Err(:final failure) => fail('Expected a price, got $failure'),
+  };
+
   late _FakeIndexPrice pricer;
   late BitcoinPriceRepositoryImpl repository;
 
@@ -40,11 +45,13 @@ void main() {
 
   test('converts with the index price', () async {
     expect(
-      await repository.getCurrencyValue(amountSat: oneBtc, currency: 'USD'),
+      value(
+        await repository.getCurrencyValue(amountSat: oneBtc, currency: 'USD'),
+      ),
       70000,
     );
     expect(
-      await repository.getSatsValue(amountFiat: 700, currency: 'usd'),
+      value(await repository.getSatsValue(amountFiat: 700, currency: 'usd')),
       BigInt.from(1000000),
     );
   });
@@ -63,19 +70,23 @@ void main() {
     ));
   });
 
-  test('a failed read gives no price', () async {
+  test('a failed read is the pricer\'s failure, not a zero price', () async {
     pricer.answer = (_) => const Err(PricerNetworkFailure('Timed out'));
 
     expect(
       await repository.getCurrencyValue(amountSat: oneBtc, currency: 'USD'),
-      0,
+      isA<Err<double, PricerFailure>>().having(
+        (err) => err.failure,
+        'failure',
+        isA<PricerNetworkFailure>(),
+      ),
     );
   });
 
-  test('a currency the pricer does not support gives no price', () async {
+  test('a currency the pricer does not support is a failure', () async {
     expect(
       await repository.getCurrencyValue(amountSat: oneBtc, currency: 'JPY'),
-      0,
+      isA<Err<double, PricerFailure>>(),
     );
     expect(pricer.asked, isEmpty);
   });

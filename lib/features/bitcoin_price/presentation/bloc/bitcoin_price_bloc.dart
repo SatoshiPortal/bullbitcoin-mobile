@@ -8,6 +8,7 @@ import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/settings/domain/watch_currency_changes_usecase.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bull_logger/bull_logger.dart';
+import 'package:primitives/primitives.dart' show Err, Ok;
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -98,7 +99,7 @@ class BitcoinPriceBloc extends Bloc<BitcoinPriceEvent, BitcoinPriceState> {
     );
 
     try {
-      final price = await _convertSatsToCurrencyAmountUsecase.execute(
+      final result = await _convertSatsToCurrencyAmountUsecase.execute(
         currencyCode: currency,
       );
 
@@ -106,16 +107,22 @@ class BitcoinPriceBloc extends Bloc<BitcoinPriceEvent, BitcoinPriceState> {
       // old one, and the change has fetched its own.
       if (state.currency != currency) return;
 
-      if (price <= 0) {
-        log.warning('Fiat rate invalid or zero for $currency');
-        emit(
-          state.copyWith(
-            loadingPrice: false,
-            startupFailed: true,
-            failure: null,
-          ),
-        );
-        return;
+      final double price;
+      switch (result) {
+        case Ok(:final value):
+          price = value;
+        case Err(:final failure):
+          log.warning(
+            'Fiat rate unavailable for $currency: ${failure.runtimeType}',
+          );
+          emit(
+            state.copyWith(
+              loadingPrice: false,
+              startupFailed: true,
+              failure: null,
+            ),
+          );
+          return;
       }
 
       emit(
@@ -156,7 +163,7 @@ class BitcoinPriceBloc extends Bloc<BitcoinPriceEvent, BitcoinPriceState> {
     }
 
     try {
-      final price = await _convertSatsToCurrencyAmountUsecase.execute(
+      final result = await _convertSatsToCurrencyAmountUsecase.execute(
         currencyCode: currency,
       );
 
@@ -164,17 +171,21 @@ class BitcoinPriceBloc extends Bloc<BitcoinPriceEvent, BitcoinPriceState> {
       // old one, and the change has fetched its own.
       if (state.currency != currency) return;
 
-      // A refresh only reaches the pricer once the price repository's rate is
-      // over a minute old, so the price on screen is outdated: with no answer,
-      // show no price rather than that one.
-      if (price <= 0) {
-        emit(
-          state.copyWith(
-            bitcoinPrice: null,
-            failure: const BitcoinPriceInvalidRateFailure(),
-          ),
-        );
-        return;
+      // A refresh only reaches the pricer once the cached price is over a
+      // minute old, so the price on screen is outdated: with no answer, show
+      // no price rather than that one.
+      final double price;
+      switch (result) {
+        case Ok(:final value):
+          price = value;
+        case Err():
+          emit(
+            state.copyWith(
+              bitcoinPrice: null,
+              failure: const BitcoinPriceInvalidRateFailure(),
+            ),
+          );
+          return;
       }
 
       emit(
@@ -213,15 +224,16 @@ class BitcoinPriceBloc extends Bloc<BitcoinPriceEvent, BitcoinPriceState> {
       emit(state.copyWith(loadingPrice: true));
 
       final currency = event.currencyCode;
-      final price = await _convertSatsToCurrencyAmountUsecase.execute(
+      final result = await _convertSatsToCurrencyAmountUsecase.execute(
         currencyCode: currency,
       );
       if (!isLatest()) return;
 
-      if (price <= 0) {
-        log.warning(
-          'Fiat rate invalid or zero after currency change to $currency',
-        );
+      final double price;
+      if (result case Ok(:final value)) {
+        price = value;
+      } else {
+        log.warning('Fiat rate unavailable after currency change to $currency');
         emit(
           state.copyWith(
             bitcoinPrice: null,

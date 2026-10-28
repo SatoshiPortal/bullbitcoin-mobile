@@ -59,6 +59,7 @@ import 'package:bb_mobile/features/send/domain/usecases/validate_sp_amount_for_s
 import 'package:bb_mobile/features/send/domain/usecases/validate_sp_recipient_for_send_usecase.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_cubit.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';
+import 'package:bull_pricer/bull_pricer.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
@@ -1073,10 +1074,9 @@ void main() {
           exchangeRate: 70000,
         ),
       );
-      // The price repository reports an unreachable pricer as a zero rate.
       when(
         () => convertSatsUsecase.execute(currencyCode: 'CAD'),
-      ).thenAnswer((_) async => 0);
+      ).thenAnswer((_) async => const Err(PricerNetworkFailure('Timed out')));
 
       await cubit.onCurrencyChanged('CAD');
 

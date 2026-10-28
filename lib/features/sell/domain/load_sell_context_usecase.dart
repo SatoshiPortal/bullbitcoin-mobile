@@ -98,27 +98,16 @@ class LoadSellContextUsecase {
     BigInt? amountSat,
     String? currencyCode,
   }) async {
-    try {
-      final value = await _convertSatsToCurrencyAmountUsecase.execute(
-        amountSat: amountSat,
-        currencyCode: currencyCode,
-      );
-      // The pricer reports an unavailable price as zero. The sell estimate
-      // would then need zero sats and pass any balance check.
-      if (!value.isFinite || value <= 0) {
-        return const Err(
-          SellQuoteUnavailableFailure('No price for the estimate'),
-        );
-      }
-      return Ok(value);
-    } catch (e, st) {
-      log.severe(
-        message: 'Failed to convert sats to the display currency',
-        error: e,
-        trace: st,
-      );
-      return Err(SellUnexpectedFailure('$e'));
+    final price = await _convertSatsToCurrencyAmountUsecase.execute(
+      amountSat: amountSat,
+      currencyCode: currencyCode,
+    );
+    if (price case Err(:final failure)) {
+      log.warning('Sell price unavailable: ${failure.runtimeType}');
     }
+    return price.mapErr(
+      (failure) => SellQuoteUnavailableFailure(failure.logMessage),
+    );
   }
 
   @useResult
