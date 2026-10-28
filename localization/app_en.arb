@@ -15840,5 +15840,142 @@
   "replaceByFeeUnverifiableTransaction": "This transaction could not be verified yet, so acceleration is disabled. Wait for the wallet to finish syncing.",
   "@replaceByFeeUnverifiableTransaction": {
     "description": "Shown on the fee-bump screen when the original transaction's signatures could not be verified (not proof of manipulation); the bump is refused."
+  },
+  "backgroundNotificationBitcoinSingular": "1 Bitcoin transaction received",
+  "@backgroundNotificationBitcoinSingular": {
+    "description": "Privacy-preserving notification body for one newly received Bitcoin transaction"
+  },
+  "backgroundNotificationLiquidSingular": "1 Liquid transaction received",
+  "@backgroundNotificationLiquidSingular": {
+    "description": "Privacy-preserving notification body for one newly received Liquid transaction"
+  },
+  "backgroundNotificationTransactionsPlural": "{count} transactions received",
+  "@backgroundNotificationTransactionsPlural": {
+    "description": "Privacy-preserving notification body for multiple newly received transactions",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsPermissionsTitle": "Permissions",
+  "@settingsPermissionsTitle": {
+    "description": "Title of the settings page and entry listing the optional OS permissions"
+  },
+  "settingsSearchPermissionsKeywords": "permissions, notifications, alerts, allow",
+  "@settingsSearchPermissionsKeywords": {
+    "description": "Comma-separated search keywords for the Permissions settings entry"
+  },
+  "permissionsIntro": "Optional permissions. Bull works without them.",
+  "@permissionsIntro": {
+    "description": "Introduction at the top of the Permissions page"
+  },
+  "permissionsNotificationsTitle": "Payment notifications",
+  "@permissionsNotificationsTitle": {
+    "description": "Name of the payment notifications permission"
+  },
+  "permissionsNotificationsDescription": "Get notified about incoming payments while Bull is closed. Notifications may be delayed and can appear on your lock screen. They never show amounts or addresses.",
+  "@permissionsNotificationsDescription": {
+    "description": "What payment notifications do; must not promise instant delivery"
+  },
+  "permissionsStatusAllowed": "Allowed",
+  "@permissionsStatusAllowed": {
+    "description": "Status shown when the OS allows the permission"
+  },
+  "permissionsStatusOff": "Off",
+  "@permissionsStatusOff": {
+    "description": "Status shown when the OS does not allow the permission"
+  },
+  "permissionsStatusUnavailable": "Status unavailable",
+  "@permissionsStatusUnavailable": {
+    "description": "Status shown when the permission state could not be read"
+  },
+  "permissionsAllowNotifications": "Allow notifications",
+  "@permissionsAllowNotifications": {
+    "description": "Button that shows the OS notification prompt"
+  },
+  "permissionsOpenSystemSettings": "Open system settings",
+  "@permissionsOpenSystemSettings": {
+    "description": "Button that opens the app page in the system settings"
+  },
+  "permissionsNotNow": "Not now",
+  "@permissionsNotNow": {
+    "description": "Button that skips an optional permission"
+  },
+  "permissionsNotificationsOffHint": "Notifications are off. You can still receive payments. To turn them on, open the system settings.",
+  "@permissionsNotificationsOffHint": {
+    "description": "Shown when notifications stay off after the OS prompt"
+  },
+  "wizardPermissionsSettingsHint": "You can change this at any time in the app settings, under Permissions.",
+  "@wizardPermissionsSettingsHint": {
+    "description": "Tells the user where to change optional permissions later"
+  },
+  "settingsBackgroundSyncTitle": "Background checks",
+  "@settingsBackgroundSyncTitle": {
+    "description": "Settings entry and screen title for how often payments are checked in the background"
+  },
+  "settingsSearchBackgroundSyncKeywords": "background, sync, interval, battery, notifications, frequency",
+  "@settingsSearchBackgroundSyncKeywords": {
+    "description": "Search keywords for the background checks setting"
+  },
+  "backgroundSyncDescription": "Bull checks for incoming payments while it is closed, so it can notify you. Checking more often uses more battery. This is the interval requested from the system, which may delay or skip checks.",
+  "@backgroundSyncDescription": {
+    "description": "Explains background checks; mention battery only, never promise timing"
+  },
+  "backgroundSyncEvery15Minutes": "Every 15 minutes",
+  "@backgroundSyncEvery15Minutes": {
+    "description": "Background check interval option"
+  },
+  "backgroundSyncEvery30Minutes": "Every 30 minutes",
+  "@backgroundSyncEvery30Minutes": {
+    "description": "Background check interval option"
+  },
+  "backgroundSyncEveryHour": "Every hour",
+  "@backgroundSyncEveryHour": {
+    "description": "Background check interval option"
+  },
+  "backgroundSyncEvery6Hours": "Every 6 hours",
+  "@backgroundSyncEvery6Hours": {
+    "description": "Background check interval option"
+  },
+  "backgroundSyncEveryDay": "Once a day",
+  "@backgroundSyncEveryDay": {
+    "description": "Background check interval option"
+  },
+  "backgroundSyncOff": "Off",
+  "@backgroundSyncOff": {
+    "description": "Background check interval option that disables background checks"
+  },
+  "backgroundSyncOffHint": "No background checks: Bull only learns of payments when you open it, and cannot notify you.",
+  "@backgroundSyncOffHint": {
+    "description": "Shown when background checks are off"
+  },
+  "backgroundSyncSaveFailed": "The interval could not be applied now. It will apply the next time Bull starts.",
+  "@backgroundSyncSaveFailed": {
+    "description": "Shown when the chosen background check interval could not be applied"
+  },
+  "permissionsBackgroundTitle": "Background activity",
+  "@permissionsBackgroundTitle": {
+    "description": "Name of the background activity (battery) permission"
+  },
+  "permissionsBackgroundDescription": "To save battery, some phones stop Bull from checking for payments while it is closed. If notifications do not arrive, allow unrestricted battery use.",
+  "@permissionsBackgroundDescription": {
+    "description": "Why unrestricted battery use matters for payment notifications"
+  },
+  "permissionsBackgroundHint": "In Bull’s settings, open Battery and choose Unrestricted.",
+  "@permissionsBackgroundHint": {
+    "description": "Where to find the setting once the app settings page is open"
+  },
+  "permissionsStatusUnrestricted": "Unrestricted",
+  "@permissionsStatusUnrestricted": {
+    "description": "Status when the app may run in the background"
+  },
+  "permissionsStatusRestricted": "Optimized",
+  "@permissionsStatusRestricted": {
+    "description": "Status when Android restricts the app in the background"
+  },
+  "permissionsOpenBatterySettings": "Open battery settings",
+  "@permissionsOpenBatterySettings": {
+    "description": "Button that opens the app settings to change battery use"
   }
 }

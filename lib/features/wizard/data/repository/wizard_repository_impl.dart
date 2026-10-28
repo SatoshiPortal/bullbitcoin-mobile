@@ -94,4 +94,12 @@ class WizardRepositoryImpl implements WizardRepository {
 
   @override
   Future<void> clearPending() => _datasource.clearAllPending();
+
+  @override
+  Future<bool> arePermissionsIntroduced() =>
+      _datasource.readPermissionsIntroduced();
+
+  @override
+  Future<void> markPermissionsIntroduced() =>
+      _datasource.writePermissionsIntroduced();
 }

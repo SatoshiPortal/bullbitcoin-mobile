@@ -21,6 +21,8 @@ import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/wallet/wallet_locator.dart';
 import 'package:bull_tor/tor_adapter.dart' as bull_tor;
 import 'package:get_it/get_it.dart';
+import 'package:bb_mobile/core/notification_configuration.dart';
+import 'package:notifications/notifications.dart';
 
 class CoreLocator {
   static void register(GetIt locator, SqliteDatabase database) {
@@ -91,7 +93,7 @@ class CoreLocator {
     SeedLocator.registerRepositories(locator);
     RecoverbullLocator.registerRepositories(locator);
     SwapsLocator.registerRepositories(locator);
-    WalletLocator.registerRepositories(locator);
+    await WalletLocator.registerRepositories(locator);
     Bip85DerivationsLocator.registerRepositories(locator);
     LedgerLocator.registerRepositories(locator);
     BitBoxCoreLocator.registerRepositories(locator);
@@ -125,6 +127,13 @@ class CoreLocator {
 
   static void registerFacades(GetIt locator) {
     LabelsLocator.registerFacade(locator);
+    locator.registerLazySingleton<NotificationPermissionsFacade>(
+      () => NotificationPermissionsFacade(
+        gateway: FlutterNotificationPermissionGateway(
+          channelId: paymentNotificationChannelId,
+        ),
+      ),
+    );
   }
 
   static void registerFrameworks(GetIt locator) {

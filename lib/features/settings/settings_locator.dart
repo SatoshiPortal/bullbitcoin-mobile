@@ -1,9 +1,23 @@
+import 'package:background_tasks/background_tasks.dart';
+import 'package:bb_mobile/core/background_tasks/background_activity_channel_gateway.dart';
+import 'package:bb_mobile/core/background_tasks/handler.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_user_repository.dart';
+import 'package:bb_mobile/features/settings/data/background_sync_repository_impl.dart';
+import 'package:bb_mobile/features/settings/domain/repositories/background_sync_repository.dart';
+import 'package:bb_mobile/features/settings/domain/usecases/get_background_sync_interval_usecase.dart';
+import 'package:bb_mobile/features/settings/domain/usecases/set_background_sync_interval_usecase.dart';
+import 'package:bb_mobile/features/settings/presentation/bloc/background_activity_cubit.dart';
+import 'package:bb_mobile/features/settings/presentation/bloc/background_sync_cubit.dart';
+import 'package:bb_mobile/features/settings/domain/usecases/get_background_activity_usecase.dart';
+import 'package:bb_mobile/features/settings/domain/usecases/open_background_activity_settings_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/features/settings/data/payjoin_disclaimer_repository_impl.dart';
 import 'package:bb_mobile/features/settings/domain/repositories/payjoin_disclaimer_repository.dart';
+import 'package:bb_mobile/features/settings/domain/usecases/get_notification_permission_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/get_payjoin_disclaimer_shown_usecase.dart';
+import 'package:bb_mobile/features/settings/domain/usecases/open_notification_settings_usecase.dart';
+import 'package:bb_mobile/features/settings/domain/usecases/request_notification_permission_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/mark_payjoin_disclaimer_shown_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/check_sp_wallet_setup_for_settings_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/revoke_sp_wallet_for_settings_usecase.dart';
@@ -24,10 +38,12 @@ import 'package:bb_mobile/features/settings/domain/usecases/set_payjoin_min_amou
 import 'package:bb_mobile/features/settings/domain/usecases/set_theme_mode_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/sync_exchange_currency_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/watch_payjoin_policy_usecase.dart';
+import 'package:bb_mobile/features/settings/presentation/bloc/notification_permission_cubit.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/public/settings_facade.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:get_it/get_it.dart';
+import 'package:notifications/notifications.dart';
 
 class SettingsLocator {
   static void setup(GetIt locator) {
@@ -87,6 +103,67 @@ class SettingsLocator {
     locator.registerFactory<SetErrorReportingUsecase>(
       () => SetErrorReportingUsecase(
         settingsRepository: locator<SettingsRepository>(),
+      ),
+    );
+
+    locator.registerLazySingleton<BackgroundSyncRepository>(
+      () => const BackgroundSyncRepositoryImpl(
+        store: SharedPreferencesBackgroundSyncIntervalStore(),
+        reschedule: registerBackgroundTasks,
+      ),
+    );
+    locator.registerFactory<GetBackgroundSyncIntervalUsecase>(
+      () => GetBackgroundSyncIntervalUsecase(
+        repository: locator<BackgroundSyncRepository>(),
+      ),
+    );
+    locator.registerFactory<SetBackgroundSyncIntervalUsecase>(
+      () => SetBackgroundSyncIntervalUsecase(
+        repository: locator<BackgroundSyncRepository>(),
+      ),
+    );
+    locator.registerFactory<BackgroundSyncCubit>(
+      () => BackgroundSyncCubit(
+        getBackgroundSyncIntervalUsecase:
+            locator<GetBackgroundSyncIntervalUsecase>(),
+        setBackgroundSyncIntervalUsecase:
+            locator<SetBackgroundSyncIntervalUsecase>(),
+      ),
+    );
+    locator.registerFactory<BackgroundActivityCubit>(
+      () => BackgroundActivityCubit(
+        getBackgroundActivityUsecase: const GetBackgroundActivityUsecase(
+          gateway: ChannelBackgroundActivityGateway(),
+        ),
+        openBackgroundActivitySettingsUsecase:
+            const OpenBackgroundActivitySettingsUsecase(
+              gateway: ChannelBackgroundActivityGateway(),
+            ),
+      ),
+    );
+    locator.registerFactory<GetNotificationPermissionUsecase>(
+      () => GetNotificationPermissionUsecase(
+        permissions: locator<NotificationPermissionsFacade>(),
+      ),
+    );
+    locator.registerFactory<RequestNotificationPermissionUsecase>(
+      () => RequestNotificationPermissionUsecase(
+        permissions: locator<NotificationPermissionsFacade>(),
+      ),
+    );
+    locator.registerFactory<OpenNotificationSettingsUsecase>(
+      () => OpenNotificationSettingsUsecase(
+        permissions: locator<NotificationPermissionsFacade>(),
+      ),
+    );
+    locator.registerFactory<NotificationPermissionCubit>(
+      () => NotificationPermissionCubit(
+        getNotificationPermissionUsecase:
+            locator<GetNotificationPermissionUsecase>(),
+        requestNotificationPermissionUsecase:
+            locator<RequestNotificationPermissionUsecase>(),
+        openNotificationSettingsUsecase:
+            locator<OpenNotificationSettingsUsecase>(),
       ),
     );
 

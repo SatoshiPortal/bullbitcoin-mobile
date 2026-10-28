@@ -7,6 +7,7 @@ import 'package:bb_mobile/core/sync/sync_coordinator.dart';
 import 'package:bb_mobile/core/sync/sync_kind.dart';
 import 'package:bb_mobile/core/sync/sync_trigger.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/sync_wallet_usecase.dart';
 import 'package:bull_logger/bull_logger.dart';
@@ -256,6 +257,26 @@ void main() {
     await pumpEventQueue();
   });
 
+  test('a scheduled desktop sync runs while the window is hidden', () async {
+    when(
+      () => getWallets.execute(onlyBitcoin: true),
+    ).thenAnswer((_) async => Ok(<Wallet>[]));
+    TestWidgetsFlutterBinding.instance.handleAppLifecycleStateChanged(
+      AppLifecycleState.hidden,
+    );
+
+    await coordinator.sync(
+      only: {SyncKind.bitcoin},
+      trigger: SyncTrigger.scheduled,
+    );
+
+    verify(() => getWallets.execute(onlyBitcoin: true)).called(1);
+    TestWidgetsFlutterBinding.instance.handleAppLifecycleStateChanged(
+      AppLifecycleState.resumed,
+    );
+    await pumpEventQueue();
+  });
+
   group('SyncKind.sp', () {
     test('sync() invokes the registered syncSp once', () async {
       when(
@@ -378,6 +399,174 @@ void main() {
         throwsA(isA<SyncCoordinatorException>()),
       );
       expect(reporter.errors, hasLength(1));
+    });
+
+    test('each kind is timed in the support log with its scan mode', () async {
+      when(
+        () => getWallets.execute(onlyBitcoin: true),
+      ).thenAnswer((_) async => Ok(<Wallet>[]));
+      when(() => getWallets.execute(onlyLiquid: true)).thenAnswer(
+        (_) async =>
+            Err<List<Wallet>, WalletFailure>(const WalletStorageFailure()),
+      );
+
+      await expectLater(
+        coordinator.sync(trigger: SyncTrigger.user),
+        throwsA(isA<SyncCoordinatorException>()),
+      );
+
+      final lines = await log.readLogs();
+      expect(
+        lines,
+        contains(
+          matches(
+            RegExp(
+              r'\tFINE\t\[SyncCoordinator\] bitcoin ok discover=true in \d+ms',
+            ),
+          ),
+        ),
+      );
+      expect(
+        lines,
+        contains(
+          matches(
+            RegExp(
+              r'\tWARNING\t\[SyncCoordinator\] liquid failed discover=false '
+              r'\(WalletStorageFailure\) in \d+ms',
+            ),
+          ),
+        ),
+      );
+    });
+  });
+
+  group('bitcoin discovery', () {
+    final bitcoinWallet = Wallet(
+      origin: 'bitcoin-wallet',
+      label: 'Bitcoin',
+      network: Network.bitcoinMainnet,
+      isDefault: true,
+      masterFingerprint: 'abcd1234',
+      xpubFingerprint: 'abcd1234',
+      scriptType: ScriptType.bip84,
+      xpub: 'xpub',
+      externalPublicDescriptor: 'desc',
+      internalPublicDescriptor: 'desc',
+      signer: SignerEntity.local,
+      signerDevice: null,
+      balanceSat: BigInt.zero,
+    );
+    final passes = <bool>[];
+    late List<Completer<void>> gates;
+
+    setUpAll(() => registerFallbackValue(bitcoinWallet));
+
+    setUp(() {
+      passes.clear();
+      gates = [];
+      when(() => getWallets.execute(onlyBitcoin: true)).thenAnswer(
+        (_) async => Ok<List<Wallet>, WalletFailure>([bitcoinWallet]),
+      );
+      when(() => getWallets.execute(onlyLiquid: true)).thenAnswer(
+        (_) async => Ok<List<Wallet>, WalletFailure>([bitcoinWallet]),
+      );
+      when(
+        () => syncWallet.execute(
+          any(),
+          discoverHistory: any(named: 'discoverHistory'),
+        ),
+      ).thenAnswer((invocation) {
+        passes.add(invocation.namedArguments[#discoverHistory] as bool);
+        final gate = Completer<void>();
+        gates.add(gate);
+        return gate.future;
+      });
+    });
+
+    Future<void> releaseAll() async {
+      for (var i = 0; i < 10 && gates.any((g) => !g.isCompleted); i++) {
+        for (final gate in gates) {
+          if (!gate.isCompleted) gate.complete();
+        }
+        await pumpEventQueue();
+      }
+    }
+
+    test('only a user sync discovers, and only for bitcoin', () async {
+      final automatic = coordinator.sync(only: {SyncKind.bitcoin});
+      await pumpEventQueue();
+      await releaseAll();
+      await automatic;
+      expect(passes, [false]);
+
+      final user = coordinator.sync(trigger: SyncTrigger.user);
+      await pumpEventQueue();
+      await releaseAll();
+      await user;
+      // Bitcoin discovers; the liquid pass runs with the same mock and does not.
+      expect(passes, [false, true, false]);
+    });
+
+    test('a user sync during an automatic bitcoin pass waits for a '
+        'discovering pass', () async {
+      final automatic = coordinator.sync(only: {SyncKind.bitcoin});
+      await pumpEventQueue();
+      expect(passes, [false]);
+
+      var userDone = false;
+      final user = coordinator
+          .sync(only: {SyncKind.bitcoin}, trigger: SyncTrigger.user)
+          .then((_) => userDone = true);
+      gates.first.complete();
+      await automatic;
+      await pumpEventQueue();
+
+      expect(userDone, isFalse, reason: 'the discovering pass is running');
+      expect(passes, [false, true]);
+      await releaseAll();
+      await user;
+      expect(userDone, isTrue);
+    });
+
+    test('a user sync that joins a discovery leaves the next automatic '
+        'sync routine', () async {
+      final first = coordinator.sync(
+        only: {SyncKind.bitcoin},
+        trigger: SyncTrigger.user,
+      );
+      final second = coordinator.sync(
+        only: {SyncKind.bitcoin},
+        trigger: SyncTrigger.user,
+      );
+      await pumpEventQueue();
+      await releaseAll();
+      await Future.wait([first, second]);
+
+      // Past the automatic throttle, so the next pass actually runs.
+      await Future<void>.delayed(const Duration(milliseconds: 2100));
+      final automatic = coordinator.sync(only: {SyncKind.bitcoin});
+      await pumpEventQueue();
+      await releaseAll();
+      await automatic;
+
+      expect(passes, [true, false]);
+    });
+
+    test('a user sync during a discovering pass joins it', () async {
+      final first = coordinator.sync(
+        only: {SyncKind.bitcoin},
+        trigger: SyncTrigger.user,
+      );
+      await pumpEventQueue();
+      final second = coordinator.sync(
+        only: {SyncKind.bitcoin},
+        trigger: SyncTrigger.user,
+      );
+      await pumpEventQueue();
+      await releaseAll();
+      await Future.wait([first, second]);
+
+      expect(passes, [true]);
     });
   });
 }

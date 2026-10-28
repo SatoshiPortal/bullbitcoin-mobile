@@ -30,6 +30,7 @@
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_connection.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/bdk_facade.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/bdk_wallet_datasource.dart';
@@ -146,47 +147,47 @@ void main() {
             as PublicBdkWalletModel;
 
     // Build the wallet once here to fund it, then persist so the
-    // datasource's own (separate) `BdkFacade.createWallet` call sees the
+    // datasource's own (separate) scoped call sees the
     // exact same UTXOs when the test invokes `buildPsbt`.
-    final wallet = await BdkFacade.createWallet(walletModel);
+    await BdkFacade.withWallet(walletModel, (wallet) async {
+      final addr0 = wallet.revealNextAddress(
+        keychain: bdk.KeychainKind.external_,
+      );
+      final addr1 = wallet.revealNextAddress(
+        keychain: bdk.KeychainKind.external_,
+      );
 
-    final addr0 = wallet.revealNextAddress(
-      keychain: bdk.KeychainKind.external_,
-    );
-    final addr1 = wallet.revealNextAddress(
-      keychain: bdk.KeychainKind.external_,
-    );
+      final fundingTxBytes = _buildFundingTx([
+        (script: addr0.address.scriptPubkey(), amountSat: utxoLargeAmountSat),
+        (script: addr1.address.scriptPubkey(), amountSat: utxoSmallAmountSat),
+      ]);
+      final fundingTx = bdk.Transaction(transactionBytes: fundingTxBytes);
+      final fundingTxid = fundingTx.computeTxid().toString();
 
-    final fundingTxBytes = _buildFundingTx([
-      (script: addr0.address.scriptPubkey(), amountSat: utxoLargeAmountSat),
-      (script: addr1.address.scriptPubkey(), amountSat: utxoSmallAmountSat),
-    ]);
-    final fundingTx = bdk.Transaction(transactionBytes: fundingTxBytes);
-    final fundingTxid = fundingTx.computeTxid().toString();
+      wallet.applyUnconfirmedTxs(
+        unconfirmedTxs: [
+          bdk.UnconfirmedTx(
+            tx: fundingTx,
+            lastSeen: DateTime.now().millisecondsSinceEpoch ~/ 1000,
+          ),
+        ],
+      );
 
-    wallet.applyUnconfirmedTxs(
-      unconfirmedTxs: [
-        bdk.UnconfirmedTx(
-          tx: fundingTx,
-          lastSeen: DateTime.now().millisecondsSinceEpoch ~/ 1000,
-        ),
-      ],
-    );
+      // Sanity-check the funding actually landed before persisting, so a
+      // failure here points clearly at the test's own setup rather than at
+      // `buildPsbt`.
+      final utxos = wallet.listUnspent();
+      expect(
+        utxos.length,
+        2,
+        reason: 'test setup: expected exactly 2 synthetic UTXOs after funding',
+      );
 
-    // Sanity-check the funding actually landed before persisting, so a
-    // failure here points clearly at the test's own setup rather than at
-    // `buildPsbt`.
-    final utxos = wallet.listUnspent();
-    expect(
-      utxos.length,
-      2,
-      reason: 'test setup: expected exactly 2 synthetic UTXOs after funding',
-    );
+      utxoLargeTxId = fundingTxid;
+      utxoLargeVout = 0;
 
-    utxoLargeTxId = fundingTxid;
-    utxoLargeVout = 0;
-
-    await BdkFacade.saveWallet(wallet, walletModel.hexId);
+      await BdkFacade.saveWallet(wallet, walletModel.hexId);
+    });
   });
 
   tearDown(() async {
@@ -385,4 +386,166 @@ void main() {
       );
     },
   );
+
+  // `addUtxos` makes a coin required, not exclusive: without
+  // `manuallySelectedOnly`, BDK tops a short selection up with a coin the user
+  // left unselected, linking it on-chain.
+  test(
+    'buildPsbt does not top up a short manual selection with an unselected coin',
+    () async {
+      final datasource = BdkWalletDatasource();
+
+      await expectLater(
+        datasource.buildPsbt(
+          wallet: walletModel,
+          address: _externalTestnetAddress,
+          amountSat: utxoSmallAmountSat,
+          networkFee: const NetworkFee.relativeSatPerKwu(1000),
+          selected: [
+            WalletUtxoModel.bitcoin(
+              txId: utxoLargeTxId,
+              vout: utxoSmallVout,
+              amountSat: BigInt.from(utxoSmallAmountSat),
+              scriptPubkey: Uint8List(0),
+              address: '',
+              isExternalKeyChain: true,
+            ),
+          ],
+        ),
+        throwsA(isA<InsufficientFundsException>()),
+      );
+    },
+  );
+
+  // MAX with coin control drains only the picked coins.
+  test('buildPsbt drains only the manually selected coin', () async {
+    final datasource = BdkWalletDatasource();
+
+    final psbt = await datasource.buildPsbt(
+      wallet: walletModel,
+      address: _externalTestnetAddress,
+      networkFee: const NetworkFee.relativeSatPerKwu(1000),
+      drain: true,
+      selected: [
+        WalletUtxoModel.bitcoin(
+          txId: utxoLargeTxId,
+          vout: utxoSmallVout,
+          amountSat: BigInt.from(utxoSmallAmountSat),
+          scriptPubkey: Uint8List(0),
+          address: '',
+          isExternalKeyChain: true,
+        ),
+      ],
+    );
+
+    final inputs = bdk.Psbt(psbtBase64: psbt).extractTx().input();
+    expect(inputs, hasLength(1));
+    expect(inputs.single.previousOutput.txid.toString(), utxoLargeTxId);
+    expect(inputs.single.previousOutput.vout, utxoSmallVout);
+  });
+
+  test('selectTransactionAndPrevouts performs only targeted lookups', () {
+    final transactionsById = {
+      'unrelated': (txId: 'unrelated', previousTxIds: <String>[]),
+      'prevout': (txId: 'prevout', previousTxIds: <String>[]),
+      'requested': (
+        txId: 'requested',
+        previousTxIds: ['prevout', 'prevout', 'missing'],
+      ),
+    };
+    final lookups = <String>[];
+
+    final requestedTransactions = selectTransactionAndPrevouts(
+      'requested',
+      transactionById: (txId) {
+        lookups.add(txId);
+        return transactionsById[txId];
+      },
+      previousTxIdsOf: (transaction) => transaction.previousTxIds,
+    );
+    final missingTransactions = selectTransactionAndPrevouts(
+      'unknown',
+      transactionById: (txId) {
+        lookups.add(txId);
+        return transactionsById[txId];
+      },
+      previousTxIdsOf: (transaction) => transaction.previousTxIds,
+    );
+
+    expect(requestedTransactions.map((transaction) => transaction.txId), [
+      'requested',
+      'prevout',
+    ]);
+    expect(lookups, ['requested', 'prevout', 'missing', 'unknown']);
+    expect(missingTransactions, isEmpty);
+  });
+
+  test('isMine accepts a fresh receiving address, like BDK', () async {
+    late Uint8List fresh;
+    late Uint8List lookahead;
+    late bool bdkSaysFreshIsMine;
+    await BdkFacade.withWallet(walletModel, (wallet) async {
+      fresh = wallet
+          .revealNextAddress(keychain: bdk.KeychainKind.external_)
+          .address
+          .scriptPubkey()
+          .toBytes();
+      lookahead = wallet
+          .peekAddress(keychain: bdk.KeychainKind.internal, index: 10)
+          .address
+          .scriptPubkey()
+          .toBytes();
+      bdkSaysFreshIsMine = wallet.isMine(
+        script: bdk.Script(rawOutputScript: fresh),
+      );
+      await BdkFacade.saveWallet(wallet, walletModel.hexId);
+    });
+
+    final isMine = await BdkWalletDatasource().createIsMineChecker(
+      wallet: walletModel,
+    );
+
+    expect(bdkSaysFreshIsMine, isTrue);
+    expect(isMine(fresh), isTrue);
+    expect(isMine(lookahead), isTrue);
+    expect(
+      isMine(Uint8List.fromList([0x00, 0x14, ...List.filled(20, 7)])),
+      isFalse,
+    );
+  });
+
+  test('a finished discovery does not satisfy the next one', () async {
+    final datasource = BdkWalletDatasource();
+    const unreachable = ElectrumConnection(
+      url: 'tcp://127.0.0.1:1',
+      retry: 0,
+      timeout: 1,
+      stopGap: 20,
+      validateDomain: false,
+      isCustom: true,
+    );
+    Future<void> discover() => datasource
+        .sync(
+          wallet: walletModel,
+          electrumServer: unreachable,
+          discoverHistory: true,
+        )
+        .catchError((Object _) {});
+
+    await discover();
+    await discover();
+
+    expect(datasource.syncExecutions[walletModel.id], 2);
+    expect(datasource.isWalletSyncing(), isFalse);
+  });
+
+  test('scans the stop gap for a new chain or an explicit discovery', () {
+    BdkSyncMode mode(int height, {bool discover = false}) =>
+        bdkSyncModeFor(checkpointHeight: height, discoverHistory: discover);
+
+    expect(mode(0), BdkSyncMode.fullScan);
+    expect(mode(1), BdkSyncMode.sync);
+    expect(mode(849999), BdkSyncMode.sync);
+    expect(mode(849999, discover: true), BdkSyncMode.fullScan);
+  });
 }

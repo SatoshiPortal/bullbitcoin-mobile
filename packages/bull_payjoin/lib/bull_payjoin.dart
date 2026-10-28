@@ -22,6 +22,7 @@ export 'src/domain/payjoin_policy.dart'
 export 'src/domain/payjoin_ports.dart'
     show
         PayjoinWalletPort,
+        PayjoinWalletSession,
         PayjoinBlockchainPort,
         PayjoinTransactionPort,
         PayjoinLabelsPort,

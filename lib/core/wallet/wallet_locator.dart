@@ -38,7 +38,20 @@ import 'package:bb_mobile/core/wallet/domain/usecases/watch_started_wallet_syncs
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_transaction_by_address_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_transaction_by_tx_id_usecase.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
+import 'package:bull_logger/bull_logger.dart';
+import 'package:bb_mobile/core/background_tasks/wallet_payment_observation_adapter.dart';
 import 'package:get_it/get_it.dart';
+import 'package:notifications/notifications.dart';
+import 'package:path/path.dart' as path;
+import 'package:path_provider/path_provider.dart';
+import 'package:transaction_sync/transaction_sync.dart'
+    show
+        DurableWalletSourceOperationCoordinator,
+        SqliteWalletSyncMetadataStore,
+        WalletCoordinationLogEvent,
+        WalletCoordinationLogLevel,
+        WalletSourceOperationCoordinator,
+        WalletSyncMetadataPort;
 
 class WalletLocator {
   static Future<void> registerDatasources(GetIt locator) async {
@@ -58,13 +71,29 @@ class WalletLocator {
     );
   }
 
-  static void registerRepositories(GetIt locator) {
+  static Future<void> registerRepositories(GetIt locator) async {
+    final documentsDirectory = await getApplicationDocumentsDirectory();
+    final syncMetadata = await SqliteWalletSyncMetadataStore.open(
+      databasePath: syncMetadataDatabasePath(documentsDirectory.path),
+    );
+    locator.registerSingleton<WalletSyncMetadataPort>(
+      syncMetadata,
+      dispose: (_) => syncMetadata.close(),
+    );
+    locator.registerLazySingleton<WalletSourceOperationCoordinator>(
+      () => DurableWalletSourceOperationCoordinator(
+        databasePath: coordinationDatabasePath(documentsDirectory.path),
+        logSink: logWalletCoordination,
+      ),
+    );
+
     locator.registerLazySingleton<BitcoinWalletRepository>(
       () => BitcoinWalletRepository(
         walletMetadataDatasource: locator<WalletMetadataDatasource>(),
         bdkWalletDatasource: locator<BdkWalletDatasource>(),
         seedDatasource: locator<SeedDatasource>(),
         frozenWalletUtxoDatasource: locator<FrozenWalletUtxoDatasource>(),
+        coordinator: locator<WalletSourceOperationCoordinator>(),
       ),
     );
 
@@ -73,6 +102,7 @@ class WalletLocator {
         walletMetadataDatasource: locator<WalletMetadataDatasource>(),
         seedDatasource: locator<SeedDatasource>(),
         lwkWalletDatasource: locator<LwkWalletDatasource>(),
+        coordinator: locator<WalletSourceOperationCoordinator>(),
       ),
     );
 
@@ -82,6 +112,13 @@ class WalletLocator {
         bdkWalletDatasource: locator<BdkWalletDatasource>(),
         lwkWalletDatasource: locator<LwkWalletDatasource>(),
         serversPort: locator<ElectrumServersPort>(),
+        coordinator: locator<WalletSourceOperationCoordinator>(),
+        syncMetadata: locator<WalletSyncMetadataPort>(),
+        paymentObservation: WalletPaymentObservationAdapter(
+          () => locator.isRegistered<NotificationsFacade>()
+              ? locator<NotificationsFacade>()
+              : null,
+        ),
       ),
     );
 
@@ -92,6 +129,7 @@ class WalletLocator {
         lwkWalletDatasource: locator<LwkWalletDatasource>(),
         frozenWalletUtxoDatasource: locator<FrozenWalletUtxoDatasource>(),
         labelsFacade: locator<LabelsFacade>(),
+        coordinator: locator<WalletSourceOperationCoordinator>(),
       ),
     );
 
@@ -101,6 +139,7 @@ class WalletLocator {
         bdkWalletDatasource: locator<BdkWalletDatasource>(),
         lwkWalletDatasource: locator<LwkWalletDatasource>(),
         labelsFacade: locator<LabelsFacade>(),
+        coordinator: locator<WalletSourceOperationCoordinator>(),
       ),
     );
 
@@ -111,9 +150,19 @@ class WalletLocator {
         bdkWalletTransactionDatasource: locator<BdkWalletDatasource>(),
         lwkWalletTransactionDatasource: locator<LwkWalletDatasource>(),
         serversPort: locator<ElectrumServersPort>(),
+        coordinator: locator<WalletSourceOperationCoordinator>(),
       ),
     );
   }
+
+  static String coordinationDatabasePath(String documentsDirectoryPath) =>
+      path.join(
+        documentsDirectoryPath,
+        'wallet_transaction_sync_coordination.sqlite',
+      );
+
+  static String syncMetadataDatabasePath(String documentsDirectoryPath) =>
+      path.join(documentsDirectoryPath, 'wallet_sync_metadata.sqlite');
 
   static void registerUsecases(GetIt locator) {
     locator.registerFactory<CreateDefaultWalletsUsecase>(
@@ -223,5 +272,17 @@ class WalletLocator {
     locator.registerFactory<SyncWalletUsecase>(
       () => SyncWalletUsecase(walletRepository: locator<WalletRepository>()),
     );
+  }
+}
+
+/// Persists wallet coordination and source events in the support log.
+void logWalletCoordination(WalletCoordinationLogEvent event) {
+  switch (event.level) {
+    case WalletCoordinationLogLevel.config:
+      log.config(event.message);
+    case WalletCoordinationLogLevel.fine:
+      log.fine(event.message);
+    case WalletCoordinationLogLevel.warning:
+      log.warning(event.message);
   }
 }

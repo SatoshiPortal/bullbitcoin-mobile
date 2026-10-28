@@ -19,7 +19,39 @@ import 'package:test/test.dart';
 
 class _MockPdkPayjoinDatasource extends Mock implements PdkPayjoinDatasource {}
 
-class _MockWalletPort extends Mock implements PayjoinWalletPort {}
+class _MockWalletPort extends Mock implements PayjoinWalletPort {
+  /// What the receiver sees of its wallet for the duration of one operation.
+  _TestWalletSession session = _TestWalletSession();
+
+  @override
+  Future<T> withReceiverWallet<T>({
+    required String walletId,
+    required BitcoinNetwork network,
+    required Future<T> Function(PayjoinWalletSession session) operation,
+  }) => operation(session);
+}
+
+final class _TestWalletSession implements PayjoinWalletSession {
+  @override
+  final List<PayjoinUtxo> spendableUtxos;
+  final bool ownsOutpoints;
+  final bool hasReceiverOutputs;
+
+  _TestWalletSession({
+    this.spendableUtxos = const [],
+    this.ownsOutpoints = false,
+    this.hasReceiverOutputs = false,
+  });
+
+  @override
+  bool ownsOutpoint(Outpoint outpoint) => ownsOutpoints;
+
+  @override
+  bool hasReceiverOutput(Uint8List script) => hasReceiverOutputs;
+
+  @override
+  String processPsbt(String psbt) => psbt;
+}
 
 class _MockBlockchainPort extends Mock implements PayjoinBlockchainPort {}
 
@@ -572,12 +604,6 @@ void main() {
           ),
         ).thenAnswer((_) async {});
         final wallet = _MockWalletPort();
-        when(
-          () => wallet.spendableUtxos(
-            walletId: any(named: 'walletId'),
-            network: any(named: 'network'),
-          ),
-        ).thenAnswer((_) async => []);
         engine = PayjoinRepositoryImpl(
           localPayjoinDatasource: local,
           pdkPayjoinDatasource: pdk,
@@ -766,13 +792,8 @@ void main() {
       registerFallbackValue((Outpoint _) => true);
       registerFallbackValue((Uint8List _) => true);
       registerFallbackValue((String psbt) => psbt);
-      when(
-        () => wallet.spendableUtxos(
-          walletId: model.walletId,
-          network: BitcoinNetwork.testnet,
-        ),
-      ).thenAnswer(
-        (_) async => [
+      wallet.session = _TestWalletSession(
+        spendableUtxos: [
           PayjoinUtxo(
             outpoint: (txId: 'wallet-utxo', vout: 0),
             value: Sats.fromInt(100000),
@@ -780,33 +801,8 @@ void main() {
             confirmed: true,
           ),
         ],
-      );
-      when(
-        () => wallet.createOwnershipChecker(
-          walletId: model.walletId,
-          network: BitcoinNetwork.testnet,
-        ),
-      ).thenAnswer(
-        (_) async =>
-            (Uint8List _) => true,
-      );
-      when(
-        () => wallet.createOutpointOwnershipChecker(
-          walletId: model.walletId,
-          network: BitcoinNetwork.testnet,
-        ),
-      ).thenAnswer(
-        (_) async =>
-            (Outpoint _) => true,
-      );
-      when(
-        () => wallet.createPsbtProcessor(
-          walletId: model.walletId,
-          network: BitcoinNetwork.testnet,
-        ),
-      ).thenAnswer(
-        (_) async =>
-            (String psbt) => psbt,
+        ownsOutpoints: true,
+        hasReceiverOutputs: true,
       );
       when(
         () => pdk.proposePayjoin(
