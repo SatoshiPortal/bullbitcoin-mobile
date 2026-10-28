@@ -40,6 +40,7 @@ import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_transaction_b
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/background_tasks/wallet_payment_observation_adapter.dart';
+import 'package:flutter/widgets.dart';
 import 'package:get_it/get_it.dart';
 import 'package:notifications/notifications.dart';
 import 'package:path/path.dart' as path;
@@ -118,6 +119,9 @@ class WalletLocator {
           () => locator.isRegistered<NotificationsFacade>()
               ? locator<NotificationsFacade>()
               : null,
+          isAppVisible: () =>
+              WidgetsBinding.instance.lifecycleState ==
+              AppLifecycleState.resumed,
         ),
       ),
     );
