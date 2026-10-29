@@ -14,7 +14,16 @@ import 'package:transaction_sync/transaction_sync.dart';
 
 enum _Phase { headers, filters, blocks }
 
-enum _Interruption { pause, ownerDestruction, lease, overflow, tor, walletSet }
+enum _Interruption {
+  pause,
+  ownerDestruction,
+  lease,
+  overflow,
+  tor,
+  walletSet,
+  stall,
+  networkFlaps,
+}
 
 final class _PersistedUpdate implements BdkCbfUpdate {
   final int height;
@@ -137,6 +146,7 @@ Future<void> _until(bool Function() condition) async {
 
 final class _Harness {
   final Directory directory;
+  final Duration stallTimeout;
   final Map<String, dynamic> descriptors;
   final coordinator = InMemoryWalletSourceOperationCoordinator();
   final nodes = <_RecoveryNode>[];
@@ -147,13 +157,16 @@ final class _Harness {
   late BdkCbfService service;
   StreamSubscription<BitcoinSyncProgress>? subscription;
 
-  _Harness(this.directory, this.descriptors);
+  _Harness(this.directory, this.descriptors, this.stallTimeout);
 
-  static Future<_Harness> open(Map<String, dynamic> descriptors) async {
+  static Future<_Harness> open(
+    Map<String, dynamic> descriptors, {
+    Duration stallTimeout = const Duration(minutes: 3),
+  }) async {
     final directory = await Directory.systemTemp.createTemp(
       'cbf-resume-policy-',
     );
-    final result = _Harness(directory, descriptors);
+    final result = _Harness(directory, descriptors, stallTimeout);
     await result._open();
     return result;
   }
@@ -164,6 +177,7 @@ final class _Harness {
     );
     service = BdkCbfService(
       metadata: metadata,
+      stallTimeout: stallTimeout,
       coordinator: coordinator,
       pollInterval: const Duration(milliseconds: 5),
       joinTimeout: const Duration(milliseconds: 5),
@@ -374,7 +388,12 @@ void main() {
         'persisted recovery matches uninterrupted after ${interruption.name} during ${phase.name}',
         () async {
           final baseline = await _Harness.open(descriptors);
-          final interrupted = await _Harness.open(descriptors);
+          final interrupted = await _Harness.open(
+            descriptors,
+            stallTimeout: interruption == _Interruption.stall
+                ? const Duration(milliseconds: 800)
+                : const Duration(minutes: 3),
+          );
           try {
             Future<void> firstBoundary(_Harness harness) async {
               final request = harness.registration(
@@ -402,6 +421,7 @@ void main() {
             await _until(() => interrupted.nodes.last.infos.isEmpty);
             final initialCount = interrupted.nodes.length;
             var resumeHeight = 500000;
+            var expectedNodes = initialCount + 1;
             switch (interruption) {
               case _Interruption.pause:
                 interrupted.service.setForegroundActive(false);
@@ -449,6 +469,29 @@ void main() {
                   ]),
                   isA<Ok>(),
                 );
+              case _Interruption.stall:
+                // Peer contact remains recorded, but a missing next filter or
+                // block must not leave the running node stuck forever.
+                break;
+              case _Interruption.networkFlaps:
+                expectedNodes = initialCount + 3;
+                for (var cycle = 0; cycle < 3; cycle++) {
+                  interrupted.service.setForegroundActive(false);
+                  expect(
+                    await interrupted.service.reconcile([
+                      interrupted.registration(),
+                    ]),
+                    isA<Err>(),
+                  );
+                  expect(await interrupted.service.pause(), isA<Ok>());
+                  interrupted.service.setForegroundActive(true);
+                  expect(
+                    await interrupted.service.reconcile([
+                      interrupted.registration(),
+                    ]),
+                    isA<Ok>(),
+                  );
+                }
               case _Interruption.walletSet:
                 expect(
                   await interrupted.service.reconcile([
@@ -458,7 +501,7 @@ void main() {
                   isA<Ok>(),
                 );
             }
-            await _until(() => interrupted.nodes.length == initialCount + 1);
+            await _until(() => interrupted.nodes.length == expectedNodes);
             expect(interrupted.nodes.first.disposed, isTrue);
             expect(interrupted.loaded.last.first, resumeHeight);
             expect(await interrupted.complete(), isFalse);

@@ -201,6 +201,14 @@ class WalletTransactionSyncFacade {
     _cbfService?.nativeOwnerMonitor = monitor;
   }
 
+  void setCbfNetworkAdmission(bool Function() admission) {
+    _cbfService?.networkAdmission = admission;
+  }
+
+  void setCbfOwnerPoll(void Function()? poll) {
+    _cbfService?.ownerPoll = poll;
+  }
+
   void setCbfForegroundActive(bool active) =>
       _cbfService?.setForegroundActive(active);
 

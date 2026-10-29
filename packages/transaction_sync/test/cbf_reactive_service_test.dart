@@ -350,6 +350,7 @@ void main() {
 
   BdkCbfService createService({
     Duration peerTimeout = const Duration(milliseconds: 30),
+    Duration stallTimeout = const Duration(minutes: 3),
   }) => BdkCbfService(
     metadata: metadata,
     coordinator: coordinator,
@@ -357,6 +358,7 @@ void main() {
     pollInterval: const Duration(milliseconds: 5),
     broadcastTimeout: const Duration(seconds: 1),
     peerTimeout: peerTimeout,
+    stallTimeout: stallTimeout,
     nodeFactory: (wallets, configuration) {
       ids.clear();
       for (final wallet in wallets) {
@@ -394,7 +396,7 @@ void main() {
             sourceKind: registration.sourceKind,
             capabilities: value.observation.capabilities,
             sourceTip: value.observation.sourceTip,
-            complete: true,
+            complete: value.observation.complete,
             evidenceLevel: value.observation.evidenceLevel,
           ),
         ),
@@ -1387,6 +1389,179 @@ void main() {
       expect(await service.reconcile([request]), isA<Ok>());
       expect(loadedHeights.last, BitcoinSyncCheckpoint.segwit.height);
       expect(metadata.policies, isEmpty);
+    },
+  );
+
+  test(
+    'a connected stalled recovery rebuilds from its durable boundary',
+    () async {
+      await service.dispose();
+      service = createService(stallTimeout: const Duration(milliseconds: 80));
+      final request = registration('a');
+      await service.reconcile([request]);
+      nodes.single.syncedToTip = false;
+      nodes.single.batches.add({ids.single: _Update(500000)});
+      await _until(() => published.isNotEmpty);
+      await _until(() => nodes.length >= 2);
+      expect(loadedHeights.last, 500000);
+      expect(metadata.policies, isEmpty);
+    },
+  );
+
+  test(
+    'header filter and block advances reset the stall bound while duplicate handshakes do not',
+    () async {
+      await service.dispose();
+      service = createService(stallTimeout: const Duration(milliseconds: 150));
+      final request = registration('a');
+      await service.reconcile([request]);
+      final node = nodes.single..syncedToTip = false;
+      node.batches.add({ids.single: _Update(500000)});
+      await _until(() => published.isNotEmpty);
+      for (var index = 1; index <= 6; index++) {
+        node.infos.add(
+          bdk.CfHeadersProgressInfo(
+            chainHeight: 510000,
+            headersHeight: 500000 + index,
+            fraction: 0.5,
+          ),
+        );
+        node.infos.add(
+          bdk.FiltersProgressInfo(
+            chainHeight: 510000,
+            filtersHeight: 500000 + index,
+            fraction: 0.5,
+          ),
+        );
+        node.infos.add(bdk.BlockReceivedInfo('block-$index'));
+        await Future<void>.delayed(const Duration(milliseconds: 35));
+        expect(nodes, hasLength(1));
+      }
+      for (var index = 0; index < 8; index++) {
+        node.infos.add(bdk.SuccessfulHandshakeInfo());
+        await Future<void>.delayed(const Duration(milliseconds: 35));
+      }
+      await _until(() => nodes.length >= 2);
+      expect(loadedHeights.last, 500000);
+    },
+  );
+
+  test(
+    'an idle wallet at tip does not stall or reopen recovery on stale diagnostics',
+    () async {
+      await service.dispose();
+      service = createService(stallTimeout: const Duration(milliseconds: 80));
+      final request = registration('a');
+      await service.reconcile([request]);
+      nodes.single.batches.add({ids.single: _Update(500000)});
+      await _until(() => metadata.policies.isNotEmpty);
+      nodes.single.infos.add(bdk.BlockReceivedInfo('old-block'));
+      nodes.single.infos.add(
+        bdk.CfHeadersProgressInfo(
+          chainHeight: 500000,
+          headersHeight: 500000,
+          fraction: 1,
+        ),
+      );
+      await Future<void>.delayed(const Duration(milliseconds: 160));
+      expect(nodes, hasLength(1));
+      expect(
+        (await service.watchBitcoinSyncProgress(request.key).first).phase,
+        BitcoinSyncPhase.done,
+      );
+    },
+  );
+
+  test(
+    'network admission blocks new nodes and foreground suspension cancels a pending retry',
+    () async {
+      var allowed = false;
+      service.networkAdmission = () => allowed;
+      final request = registration('a');
+      expect(await service.reconcile([request]), isA<Err>());
+      expect(nodes, isEmpty);
+      allowed = true;
+      expect(await service.reconcile([request]), isA<Ok>());
+      nodes.single.expired = true;
+      await _until(() => nodes.length == 2);
+      nodes.last.expired = true;
+      await _until(() => nodes.last.disposed);
+      service.setForegroundActive(false);
+      allowed = false;
+      expect(await service.pause(), isA<Ok>());
+      await Future<void>.delayed(const Duration(milliseconds: 30));
+      expect(nodes, hasLength(2));
+      service.setForegroundActive(true);
+      expect(await service.reconcile([request]), isA<Err>());
+      allowed = true;
+      expect(await service.reconcile([request]), isA<Ok>());
+      expect(nodes, hasLength(3));
+    },
+  );
+
+  test(
+    'a transient native transport error reconnects without ending recovery',
+    () async {
+      final request = registration('a');
+      final events = <BitcoinSyncProgress>[];
+      final subscription = service
+          .watchBitcoinSyncProgress(request.key)
+          .listen(events.add);
+      try {
+        await service.reconcile([request]);
+        nodes.single.syncedToTip = false;
+        nodes.single.batches.add({ids.single: _Update(500000)});
+        await _until(() => published.isNotEmpty);
+        nodes.single.onEmpty = () =>
+            throw const FormatException('transport lost');
+        await _until(() => nodes.length >= 2);
+        expect(loadedHeights.last, 500000);
+        expect(
+          events.where((event) => event.failure != null),
+          isEmpty,
+          reason: 'automatic reconnection must keep the recovery owner alive',
+        );
+      } finally {
+        await subscription.cancel();
+      }
+    },
+  );
+
+  test(
+    'background resumes an incomplete recovery only after durable progress and keeps its budget',
+    () async {
+      final request = registration('a');
+      await service.reconcile([request]);
+      nodes.single.syncedToTip = false;
+      nodes.single.batches.add({ids.single: _Update(500000)});
+      await _until(() => published.isNotEmpty);
+      await service.stop();
+      nodes.clear();
+      final run = service.catchUp([
+        request,
+      ], DateTime.now().toUtc().add(const Duration(seconds: 2)));
+      await _until(() => nodes.isNotEmpty);
+      expect(loadedHeights.last, 500000);
+      nodes.single.syncedToTip = false;
+      nodes.single.batches.add({ids.single: _Update(501000)});
+      final outcomes = await run;
+      expect(outcomes[request.key], isA<Ok>());
+      expect(
+        (outcomes[request.key]
+                as Ok<
+                  WalletTransactionSyncOutcome,
+                  WalletTransactionSyncFailure
+                >)
+            .value
+            .snapshot
+            .complete,
+        isFalse,
+      );
+      expect(metadata.policies, isEmpty);
+      await service.reconcile([request]);
+      expect(loadedHeights.last, 501000);
+      nodes.last.batches.add({ids.single: _Update(510000)});
+      await _until(() => metadata.policies.isNotEmpty);
     },
   );
 

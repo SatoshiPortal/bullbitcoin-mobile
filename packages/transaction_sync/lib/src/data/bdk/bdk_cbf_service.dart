@@ -3,6 +3,7 @@ import '../../domain/repositories/cbf_transaction_repository.dart';
 import 'dart:async';
 import 'dart:io';
 import 'dart:isolate';
+import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:bull_sdk/bdk.dart' as bdk;
@@ -49,6 +50,15 @@ final class BdkCbfService
   final Duration pollInterval;
   final Duration joinTimeout;
   final Duration peerTimeout;
+  final Duration stallTimeout;
+  final Duration retryBase;
+  final Duration retryLimit;
+  final double Function() jitter;
+  bool Function()? networkAdmission;
+  void Function()? ownerPoll;
+  bool get _networkAllowed => networkAdmission?.call() ?? true;
+  final _retryCounts = <String, int>{};
+  final _retryWaits = <Completer<void>>{};
   final Duration broadcastTimeout;
   final Map<String, _NetworkNode> _nodes = {};
   final Map<WalletNetworkKey, BitcoinSyncProgress> _last = {};
@@ -78,7 +88,15 @@ final class BdkCbfService
   bool _foregroundActive = true;
 
   void setForegroundActive(bool value) {
+    if (value && !_foregroundActive) _retryCounts.clear();
     _foregroundActive = value;
+    if (!value) _wakeRetries();
+  }
+
+  void _wakeRetries() {
+    for (final wake in _retryWaits.toList()) {
+      if (!wake.isCompleted) wake.complete();
+    }
   }
 
   int _operationId = 0;
@@ -96,8 +114,12 @@ final class BdkCbfService
     this.pollInterval = BdkCbfConfiguration.ownerPollInterval,
     this.joinTimeout = const Duration(seconds: 1),
     this.peerTimeout = const Duration(minutes: 10),
+    this.stallTimeout = const Duration(minutes: 3),
+    this.retryBase = const Duration(seconds: 1),
+    this.retryLimit = const Duration(seconds: 30),
+    double Function()? jitter,
     this.broadcastTimeout = const Duration(seconds: 30),
-  });
+  }) : jitter = jitter ?? Random().nextDouble;
 
   @override
   Stream<BitcoinSyncProgress> watchBitcoinSyncProgress(WalletNetworkKey key) =>
@@ -176,6 +198,7 @@ final class BdkCbfService
     return _serialize(() async {
       if (_disposed ||
           !_foregroundActive ||
+          !_networkAllowed ||
           _pauseOperation != null ||
           epoch != _epoch) {
         return const Err(WalletSyncDeferredFailure());
@@ -285,15 +308,17 @@ final class BdkCbfService
             _remaining(configuration);
             // A missing/replaced SDK store cannot inherit a completion marker.
             if (!allowInitialScan &&
-                (!complete ||
-                    !File(configuration.databaseFilePath).existsSync())) {
+                !File(configuration.databaseFilePath).existsSync()) {
               throw const _Failure(InitialScanRequiredFailure());
             }
             final opened = _OpenWallet.open(configuration);
             var transferred = false;
             try {
               entry.recovery = !complete || _height(opened.wallet) == 0;
-              if (entry.recovery && !allowInitialScan) {
+              if (entry.recovery &&
+                  !allowInitialScan &&
+                  (_height(opened.wallet) == 0 ||
+                      !_savedRecoveryProgress(configuration))) {
                 throw const _Failure(InitialScanRequiredFailure());
               }
               if (entry.recovery) {
@@ -355,7 +380,10 @@ final class BdkCbfService
           reached: entry.persistedHeight,
         );
       }
-      if (_disposed || !_foregroundActive || epoch != _epoch) {
+      if (_disposed ||
+          !_foregroundActive ||
+          !_networkAllowed ||
+          epoch != _epoch) {
         return const Err(WalletSyncDeferredFailure());
       }
       for (final registration in registrations) {
@@ -407,7 +435,10 @@ final class BdkCbfService
           throw const _Failure(CbfNodeDidNotStopFailure());
         }
       }
-      if (_disposed || !_foregroundActive || epoch != _epoch) {
+      if (_disposed ||
+          !_foregroundActive ||
+          !_networkAllowed ||
+          epoch != _epoch) {
         throw const _Failure(WalletSyncDeferredFailure());
       }
       node.run();
@@ -541,7 +572,7 @@ final class BdkCbfService
     bool allowInactive = false,
   }) async =>
       !_disposed &&
-      (_foregroundActive || allowInactive) &&
+      ((_foregroundActive && _networkAllowed) || allowInactive) &&
       (isCurrent == null || await isCurrent?.call(registration) == true);
 
   /// No caller holds a source session while waiting for the first boundary.
@@ -611,17 +642,18 @@ final class BdkCbfService
                 return const WalletSyncDeferredFailure();
               }
               _remaining(configuration);
-              if (!await metadata.isCbfDiscoveryComplete(
-                    registration.key,
-                    configuration.scanPolicyFingerprint,
-                  ) ||
-                  !File(configuration.databaseFilePath).existsSync()) {
+              final complete = await metadata.isCbfDiscoveryComplete(
+                registration.key,
+                configuration.scanPolicyFingerprint,
+              );
+              if (!File(configuration.databaseFilePath).existsSync()) {
                 return const InitialScanRequiredFailure();
               }
               _remaining(configuration);
               final opened = _OpenWallet.open(configuration);
               try {
-                return _height(opened.wallet) > 0
+                return _height(opened.wallet) > 0 &&
+                        (complete || _savedRecoveryProgress(configuration))
                     ? null
                     : const InitialScanRequiredFailure();
               } finally {
@@ -1180,11 +1212,11 @@ final class BdkCbfService
     if (active.stopping || active.rebuilding || active.pausing) return;
     try {
       active.node.renewLease();
+      ownerPoll?.call();
     } on bdk.NodeStoppedCbfException {
       // Expired and overflowed nodes still retain complete prepared batches.
     } on Exception {
-      _fail(active, const CbfNoPeersFailure());
-      _requestStop(active);
+      _reconnect(active);
       return;
     }
     if (!active.polling) {
@@ -1198,6 +1230,10 @@ final class BdkCbfService
       while (!active.stopping) {
         final batch = active.node.pollUpdateBatch();
         if (batch == null) break;
+        if (batch.scannedHeight > active.filterHeight) {
+          active.filterHeight = batch.scannedHeight;
+          _advanced(active);
+        }
         try {
           if (active.stopping) break;
           for (final item in batch.updates.entries) {
@@ -1211,10 +1247,7 @@ final class BdkCbfService
               (session) => _application(() async {
                 session.ensureOpen();
                 if (active.stopping ||
-                    !await _current(
-                      entry.registration,
-                      allowInactive: active.pausing,
-                    ) ||
+                    !await _current(entry.registration, allowInactive: true) ||
                     active.stopping) {
                   return const Err<
                     WalletTransactionSyncOutcome,
@@ -1320,6 +1353,7 @@ final class BdkCbfService
             update.dispose();
           }
         }
+        if (!active.stopping) _advanced(active);
       }
       if (active.stopping || active.pausing) return;
       _drainInfo(active);
@@ -1334,10 +1368,16 @@ final class BdkCbfService
         }
         active.rebuilding = true;
         unawaited(_rebuild(active));
-      } else if (!active.peers.isCompleted &&
-          active.age.elapsed >= peerTimeout) {
-        _fail(active, const CbfNoPeersFailure());
-        _requestStop(active);
+      } else if ((!active.peers.isCompleted &&
+              active.age.elapsed >= peerTimeout) ||
+          (active.peers.isCompleted &&
+              active.entries.any(
+                (entry) =>
+                    _last[entry.registration.key]?.phase !=
+                    BitcoinSyncPhase.done,
+              ) &&
+              active.idle.elapsed >= stallTimeout)) {
+        _reconnect(active);
       }
     } on TimeoutException {
       if (!active.stopping) {
@@ -1350,26 +1390,76 @@ final class BdkCbfService
         _requestStop(active);
       }
     } on Exception {
-      if (!active.stopping) {
-        _fail(active, const CbfNoPeersFailure());
-        _requestStop(active);
-      }
+      if (!active.stopping) _reconnect(active);
     }
+  }
+
+  void _reconnect(_NetworkNode active) {
+    if (active.stopping || active.rebuilding && !active.pausing) return;
+    if (active.pausing) {
+      _fail(active, const CbfNoPeersFailure());
+      _requestStop(active);
+      return;
+    }
+    for (final entry in active.entries) {
+      _emit(entry, phase: BitcoinSyncPhase.findingPeers, peers: 0);
+    }
+    active.rebuilding = true;
+    unawaited(_rebuild(active));
   }
 
   Future<void> _rebuild(_NetworkNode active) => _serialize(() async {
     if (_disposed ||
         !_foregroundActive ||
+        !_networkAllowed ||
         active.pausing ||
         active.epoch != _epoch ||
         !identical(_nodes[active.network], active)) {
       return;
     }
+    await _drainNode(active);
+    if (_disposed || active.epoch != _epoch || _pauseOperation != null) return;
+    active.pausing = false;
     if (!await _stop(active)) {
       _fail(active, const CbfNodeDidNotStopFailure());
       return;
     }
+    final drainFailure = active.drainFailure;
+    if (drainFailure != null) {
+      _fail(active, drainFailure);
+      return;
+    }
     _nodes.remove(active.network);
+    final attempt = _retryCounts.update(
+      active.network,
+      (value) => value + 1,
+      ifAbsent: () => 0,
+    );
+    if (attempt > 0) {
+      final exponential =
+          retryBase.inMilliseconds * pow(2, min(attempt - 1, 10));
+      final ceiling = min(exponential, retryLimit.inMilliseconds);
+      final delay = Duration(
+        milliseconds: (ceiling * (0.5 + jitter().clamp(0, 1) * 0.5)).round(),
+      );
+      final wake = Completer<void>();
+      _retryWaits.add(wake);
+      final timer = Timer(delay, () {
+        if (!wake.isCompleted) wake.complete();
+      });
+      try {
+        await wake.future;
+      } finally {
+        timer.cancel();
+        _retryWaits.remove(wake);
+      }
+    }
+    if (_disposed ||
+        !_foregroundActive ||
+        !_networkAllowed ||
+        active.epoch != _epoch) {
+      return;
+    }
     await _start(
       active.network,
       active.registrations,
@@ -1393,6 +1483,10 @@ final class BdkCbfService
       for (final entry in active.entries) {
         final previous = _last[entry.registration.key];
         if (event is bdk.NewChainHeightInfo) {
+          if (event.chainHeight > active.chainHeight) {
+            active.chainHeight = event.chainHeight;
+            _advanced(active);
+          }
           if (previous?.phase == BitcoinSyncPhase.done &&
               event.chainHeight <= (previous?.reachedHeight ?? 0)) {
             continue;
@@ -1402,7 +1496,25 @@ final class BdkCbfService
             phase: BitcoinSyncPhase.checkingBlocks,
             target: event.chainHeight,
           );
+        } else if (event is bdk.CfHeadersProgressInfo) {
+          if (previous?.phase == BitcoinSyncPhase.done &&
+              event.headersHeight <= (previous?.reachedHeight ?? 0)) {
+            continue;
+          }
+          if (event.headersHeight > active.headerHeight) {
+            active.headerHeight = event.headersHeight;
+            _advanced(active);
+          }
+          _emit(
+            entry,
+            phase: BitcoinSyncPhase.checkingBlocks,
+            target: event.chainHeight,
+          );
         } else if (event is bdk.FiltersProgressInfo) {
+          if (event.filtersHeight > active.filterHeight) {
+            active.filterHeight = event.filtersHeight;
+            _advanced(active);
+          }
           if (previous?.phase == BitcoinSyncPhase.done &&
               event.filtersHeight <= (previous?.reachedHeight ?? 0)) {
             continue;
@@ -1417,10 +1529,20 @@ final class BdkCbfService
             fraction: event.fraction.clamp(0, 0.999999),
           );
         } else if (event is bdk.BlockReceivedInfo) {
+          if (previous?.phase == BitcoinSyncPhase.done) continue;
+          if (active.lastBlock != event.v0) {
+            active.lastBlock = event.v0;
+            _advanced(active);
+          }
           _emit(entry, phase: BitcoinSyncPhase.downloadingTransactions);
         }
       }
     }
+  }
+
+  void _advanced(_NetworkNode active) {
+    active.idle.reset();
+    _retryCounts.remove(active.network);
   }
 
   void _fail(_NetworkNode active, WalletTransactionSyncFailure failure) {
@@ -1491,20 +1613,9 @@ final class BdkCbfService
 
   Future<Result<void, WalletTransactionSyncFailure>> _pause() async {
     _epoch++;
+    _wakeRetries();
     final activeNodes = _nodes.values.toList();
-    for (final active in activeNodes) {
-      active.pausing = true;
-      active.timer?.cancel();
-      try {
-        active.node.shutdown();
-      } on Exception {
-        /* Still drain/join. */
-      }
-    }
-    for (final active in activeNodes) {
-      await active.loop;
-      if (!active.stopping) await _poll(active, finalDrain: true);
-    }
+    await Future.wait(activeNodes.map(_drainNode));
     final result = await stop();
     if (result is Err) return result;
     final failure = activeNodes
@@ -1514,9 +1625,25 @@ final class BdkCbfService
     return failure == null ? const Ok(null) : Err(failure);
   }
 
+  Future<void> _drainNode(_NetworkNode active) =>
+      active.drain ??= _drainStoppedNode(active);
+
+  Future<void> _drainStoppedNode(_NetworkNode active) async {
+    active.pausing = true;
+    active.timer?.cancel();
+    try {
+      active.node.shutdown();
+    } on Exception {
+      /* Still drain/join. */
+    }
+    await active.loop;
+    if (!active.stopping) await _poll(active, finalDrain: true);
+  }
+
   /// Invalidate immediately; callers may already hold a wallet/source lock.
   Future<Result<void, WalletTransactionSyncFailure>> stop() async {
     _epoch++;
+    _wakeRetries();
     final activeNodes = _nodes.values.toList();
     for (final active in activeNodes) {
       _requestStop(active);
@@ -1545,6 +1672,16 @@ final class BdkCbfService
     await Future.wait(loops);
     await _drainApplications();
     await _events.close();
+  }
+}
+
+bool _savedRecoveryProgress(BdkCbfConfiguration configuration) {
+  if (!File(cbfRecoveryFilePath(configuration)).existsSync()) return false;
+  final scan = _OpenWallet.open(configuration, recovery: true);
+  try {
+    return _height(scan.wallet) > configuration.checkpoint.height;
+  } finally {
+    scan.dispose();
   }
 }
 
@@ -1712,7 +1849,13 @@ final class _NetworkNode {
   final bool allowInitialScan;
   final int epoch;
   final age = Stopwatch()..start();
+  final idle = Stopwatch()..start();
+  int chainHeight = 0;
+  int headerHeight = 0;
+  int filterHeight = 0;
+  String? lastBlock;
   Future<void>? loop;
+  Future<void>? drain;
   Timer? timer;
   bool polling = false;
   bool rebuilding = false;
