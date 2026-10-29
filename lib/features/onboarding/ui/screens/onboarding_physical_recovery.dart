@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'package:bb_mobile/features/wallet_sync/public/wallet_sync_facade.dart';
+import 'package:bb_mobile/locator.dart';
 
 import 'package:screen_privacy/screen_privacy.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
@@ -23,6 +25,7 @@ class OnboardingPhysicalRecovery extends StatefulWidget {
 class _OnboardingPhysicalRecoveryState extends State<OnboardingPhysicalRecovery>
     with PrivacyScreen {
   late final Future<void> _privacyFuture = enableScreenPrivacy();
+  bool _choosingSync = false;
 
   @override
   void dispose() {
@@ -79,12 +82,27 @@ class _OnboardingPhysicalRecoveryState extends State<OnboardingPhysicalRecovery>
                               allowLabel: false,
                               allowPassphrase: false,
                               submitLabel: context.loc.onboardingRecover,
-                              onSubmit: (mnemonic) {
-                                context.read<OnboardingBloc>().add(
-                                  OnboardingRecoverWalletClicked(
-                                    mnemonic: mnemonic,
-                                  ),
-                                );
+                              onSubmit: (mnemonic) async {
+                                if (_choosingSync) return;
+                                _choosingSync = true;
+                                try {
+                                  final selection =
+                                      await locator<WalletSyncFacade>().choose(
+                                        context,
+                                      );
+                                  if (selection == null || !context.mounted) {
+                                    return;
+                                  }
+                                  context.read<OnboardingBloc>().add(
+                                    OnboardingRecoverWalletClicked(
+                                      mnemonic: mnemonic,
+                                      birthday: selection.birthday,
+                                      bitcoinSyncSource: selection.source,
+                                    ),
+                                  );
+                                } finally {
+                                  _choosingSync = false;
+                                }
                               },
                             ),
                           ),

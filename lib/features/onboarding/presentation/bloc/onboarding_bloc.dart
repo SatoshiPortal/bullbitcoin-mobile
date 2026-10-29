@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/onboarding/domain/onboarding_failure.dart';
@@ -74,6 +75,8 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
     );
     switch (await _recoverOnboardingWalletUsecase.execute(
       mnemonicWords: event.mnemonic.words,
+      birthday: event.birthday,
+      bitcoinSyncSource: event.bitcoinSyncSource,
     )) {
       case Ok():
         emit(

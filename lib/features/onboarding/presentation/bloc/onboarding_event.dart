@@ -23,7 +23,14 @@ class OnboardingRecoveryWordChanged extends OnboardingEvent {
 }
 
 class OnboardingRecoverWalletClicked extends OnboardingEvent {
-  const OnboardingRecoverWalletClicked({required this.mnemonic});
+  const OnboardingRecoverWalletClicked({
+    required this.mnemonic,
+    this.birthday,
+    this.bitcoinSyncSource = BitcoinSyncSource.electrum,
+  });
+
+  final WalletBirthday? birthday;
+  final BitcoinSyncSource bitcoinSyncSource;
 
   final ({
     List<String> words,
