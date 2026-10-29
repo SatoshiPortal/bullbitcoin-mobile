@@ -2,6 +2,8 @@ import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:transaction_sync/transaction_sync.dart'
+    show BitcoinSyncScriptType;
 import 'package:satoshifier/satoshifier.dart' as satoshifier;
 
 part 'watch_only_wallet_entity.freezed.dart';
@@ -85,6 +87,14 @@ abstract class WatchOnlyWalletEntity with _$WatchOnlyWalletEntity {
   Network get network => when(
     descriptor: (x, _, _) => Network.fromName(x.descriptor.network.name),
     xpub: (x, _, _) => Network.fromName(x.extendedPubkey.network.name),
+  );
+
+  BitcoinSyncScriptType get scanScriptType => when(
+    descriptor: (x, _, _) =>
+        BitcoinSyncScriptType.fromDescriptor(x.descriptor.combined),
+    xpub: (x, _, _) => x.extendedPubkey.derivation.name == 'bip44'
+        ? BitcoinSyncScriptType.preSegwit
+        : BitcoinSyncScriptType.segwitV0,
   );
 
   ScriptType get scriptType => when(

@@ -76,3 +76,8 @@ final class InvalidPaginationFailure extends WalletTransactionSyncFailure {
 final class InitialScanRequiredFailure extends WalletTransactionSyncFailure {
   const InitialScanRequiredFailure();
 }
+
+/// A supplied birthday is later than the explicit reference clock.
+final class InvalidWalletBirthdayFailure extends WalletTransactionSyncFailure {
+  const InvalidWalletBirthdayFailure();
+}

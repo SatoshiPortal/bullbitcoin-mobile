@@ -31,3 +31,7 @@ export 'src/durable_wallet_source_operation_coordinator.dart';
 export 'src/data/sqlite_wallet_sync_metadata_store.dart';
 export 'src/wallet_source_session.dart';
 export 'src/wallet_transaction_sync_facade.dart';
+export 'src/domain/bitcoin_sync_checkpoint.dart';
+export 'src/domain/bitcoin_sync_checkpoint_resolver.dart';
+export 'src/domain/bitcoin_sync_script_type.dart';
+export 'src/domain/usecases/resolve_bitcoin_sync_checkpoint_usecase.dart';

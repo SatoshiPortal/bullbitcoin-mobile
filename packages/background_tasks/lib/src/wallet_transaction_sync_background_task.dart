@@ -417,6 +417,7 @@ final class WalletTransactionSyncBackgroundTask {
         DeletionFailure() => 'deletion',
         SnapshotExpiredFailure() => 'snapshot_expired',
         InvalidPaginationFailure() => 'invalid_pagination',
+        InvalidWalletBirthdayFailure() => 'invalid_birthday',
         InitialScanRequiredFailure() => 'initial_scan_required',
       };
 
@@ -469,6 +470,7 @@ final class WalletTransactionSyncBackgroundTask {
     SourceObservationMismatchFailure() ||
     ExtractionFailure() ||
     DeletionFailure() ||
+    InvalidWalletBirthdayFailure() ||
     InvalidPaginationFailure() => onPermanent(),
     // Neither: the foreground scans it, then background runs resume.
     InitialScanRequiredFailure() => null,

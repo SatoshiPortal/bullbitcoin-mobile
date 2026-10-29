@@ -995,45 +995,57 @@ void main() {
     expect(started, isEmpty);
   });
 
-  test('a long failure name is logged as a short fixed label', () async {
-    final directory = await Directory.systemTemp.createTemp('background_tasks');
-    final outbox = SqliteNotificationOutbox(
-      databasePath: '${directory.path}/n.sqlite',
-    );
-    final queue = SqliteWalletSyncJobQueue(
-      databasePath: '${directory.path}/q.sqlite',
-    );
-    final messages = <String>[];
-    addTearDown(() async {
-      await queue.close();
-      outbox.dispose();
-      await directory.delete(recursive: true);
-    });
-    final task = WalletTransactionSyncBackgroundTask(
-      notifications: NotificationsFacade(gateway: _Gateway(), outbox: outbox),
-      queue: queue,
-      jobs: [
-        WalletTransactionSyncBackgroundJob(
-          key: const WalletNetworkKey('w', 'bitcoin', 'mainnet'),
-          synchronize: () async =>
-              const Err(WalletSourceStateIncompatibleFailure()),
-        ),
-      ],
-      copy: (_, _) => (title: 'Incoming', body: 'Payment received'),
-      logSink: _Sink(messages),
-    );
+  for (final (failure, category) in <(WalletTransactionSyncFailure, String)>[
+    (const WalletSourceStateIncompatibleFailure(), 'source_state_incompatible'),
+    (const InvalidWalletBirthdayFailure(), 'invalid_birthday'),
+  ]) {
+    test(
+      'a long failure name is logged as a short fixed label ($category)',
+      () async {
+        final directory = await Directory.systemTemp.createTemp(
+          'background_tasks',
+        );
+        final outbox = SqliteNotificationOutbox(
+          databasePath: '${directory.path}/n.sqlite',
+        );
+        final queue = SqliteWalletSyncJobQueue(
+          databasePath: '${directory.path}/q.sqlite',
+        );
+        final messages = <String>[];
+        addTearDown(() async {
+          await queue.close();
+          outbox.dispose();
+          await directory.delete(recursive: true);
+        });
+        final task = WalletTransactionSyncBackgroundTask(
+          notifications: NotificationsFacade(
+            gateway: _Gateway(),
+            outbox: outbox,
+          ),
+          queue: queue,
+          jobs: [
+            WalletTransactionSyncBackgroundJob(
+              key: const WalletNetworkKey('w', 'bitcoin', 'mainnet'),
+              synchronize: () async => Err(failure),
+            ),
+          ],
+          copy: (_, _) => (title: 'Incoming', body: 'Payment received'),
+          logSink: _Sink(messages),
+        );
 
-    await task.execute(chain: 'bitcoin');
+        await task.execute(chain: 'bitcoin');
 
-    // The support log redacts runs of 32 or more letters as secrets.
-    expect(
-      messages,
-      contains(
-        'Wallet sync permanent failure chain=bitcoin '
-        'category=source_state_incompatible',
-      ),
+        // The support log redacts runs of 32 or more letters as secrets.
+        expect(
+          messages,
+          contains(
+            'Wallet sync permanent failure chain=bitcoin '
+            'category=$category',
+          ),
+        );
+      },
     );
-  });
+  }
 
   test('one run syncs both chains under one budget', () async {
     final directory = await Directory.systemTemp.createTemp('background_tasks');
