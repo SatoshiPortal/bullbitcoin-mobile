@@ -54,6 +54,7 @@ import 'package:bb_mobile/features/test_wallet_backup/test_wallet_backup_locator
 import 'package:bb_mobile/features/tor_settings/tor_settings_locator.dart';
 import 'package:bb_mobile/features/transactions/transactions_locator.dart';
 import 'package:bb_mobile/features/wallet/wallet_locator.dart';
+import 'package:bb_mobile/features/wallet_sync/wallet_sync_locator.dart';
 import 'package:bb_mobile/features/withdraw/withdraw_locator.dart';
 import 'package:bb_mobile/features/wizard/wizard_locator.dart';
 import 'package:get_it/get_it.dart';
@@ -84,6 +85,7 @@ class AppLocator {
     await CoreLocator.registerRepositories(locator);
     CoreLocator.registerServices(locator);
     CoreLocator.registerUsecases(locator);
+    WalletSyncLocator.setup(locator);
     CoreLocator.registerFrameworks(locator);
     CoreLocator.registerFacades(locator);
     PayjoinSetup.setup(

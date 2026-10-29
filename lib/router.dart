@@ -1,4 +1,5 @@
 import 'package:bb_mobile/features/wallet/domain/usecases/resolve_notification_wallet_usecase.dart';
+import 'package:bb_mobile/features/wallet_sync/wallet_sync_router.dart';
 import 'dart:async';
 import 'dart:io';
 
@@ -203,6 +204,7 @@ class AppRouter {
       OnboardingRouter.route,
       AppUnlockRouter.route,
       WalletRouter.walletDetailRoute,
+      WalletSyncRouter.route,
       ConsolidationRouter.route,
       SettingsRouter.route,
       TransactionsRouter.transactionsRoute,

@@ -13662,7 +13662,7 @@
   "@torSettingsEmbeddedTitle": {
     "description": "Heading for embedded Tor settings"
   },
-  "torSettingsEmbeddedDescription": "Bull’s built-in Tor routing protects RecoverBull and Bitcoin Electrum .onion servers. Other app traffic is not routed through Tor.",
+  "torSettingsEmbeddedDescription": "Bull’s built-in Tor protects RecoverBull and Bitcoin Electrum .onion servers. CBF wallets do not currently use built-in Tor: without a configured local SOCKS5 proxy, their peer connections are direct. Other app traffic is not routed through built-in Tor.",
   "@torSettingsEmbeddedDescription": {
     "description": "Explains which traffic uses embedded Tor"
   },
@@ -13707,7 +13707,7 @@
   "@torSettingsExternalProxyTitle": {
     "description": "Heading for the optional Orbot override"
   },
-  "torSettingsExternalProxyDescription": "You can use Orbot in VPN mode to route Bull’s network traffic through Tor. Configuring Orbot’s SOCKS port below only routes RecoverBull and Bitcoin Electrum .onion traffic through Tor.",
+  "torSettingsExternalProxyDescription": "You can use Orbot in VPN mode to route Bull’s network traffic through Tor. The local SOCKS5 proxy below routes RecoverBull, Bitcoin Electrum .onion servers and private peer-to-peer (CBF) wallet connections. CBF wallets stop connecting if the configured proxy is unavailable.",
   "@torSettingsExternalProxyDescription": {
     "description": "Explains the scope of the external Tor proxy override: Bitcoin Electrum (onion and clearnet) plus the RecoverBull key server, never Liquid"
   },
@@ -13984,7 +13984,7 @@
   "@torSettingsLocalProxyTitle": {
     "description": "Heading for the optional user-managed local SOCKS5 proxy."
   },
-  "torSettingsLocalProxyDescription": "You can use Orbot in VPN mode to route Bull’s network traffic through Tor. Configuring Orbot’s SOCKS port below only routes RecoverBull and Bitcoin Electrum .onion traffic through Tor.",
+  "torSettingsLocalProxyDescription": "You can use Orbot in VPN mode to route Bull’s network traffic through Tor. The local SOCKS5 proxy below routes RecoverBull, Bitcoin Electrum .onion servers and private peer-to-peer (CBF) wallet connections. CBF wallets stop connecting if the configured proxy is unavailable.",
   "@torSettingsLocalProxyDescription": {
     "description": "Explains how Orbot VPN mode and the configured SOCKS port route traffic through Tor."
   },
@@ -15978,14 +15978,337 @@
   "@permissionsOpenBatterySettings": {
     "description": "Button that opens the app settings to change battery use"
   },
-  "notificationPaymentConfirmed": "{count, plural, one{Payment confirmed} other{{count} payments confirmed}}",
-  "@notificationPaymentConfirmed": {
+  "syncMethod": "Sync method",
+  "@syncMethod": {
+    "description": "Bitcoin wallet synchronization choices, before any address-history request."
+  },
+  "syncFastTitle": "Fast server sync",
+  "@syncFastTitle": {
+    "description": "Bitcoin wallet synchronization choices, before any address-history request."
+  },
+  "syncFastDescription": "Your balance updates in seconds and payments show as soon as they are sent. The server can see your wallet’s addresses.",
+  "@syncFastDescription": {
+    "description": "Bitcoin wallet synchronization choices, before any address-history request."
+  },
+  "syncPrivateTitle": "Private peer-to-peer sync",
+  "@syncPrivateTitle": {
+    "description": "Bitcoin wallet synchronization choices, before any address-history request."
+  },
+  "syncPrivateDescription": "No server learns your addresses. The first sync takes longer and uses more data, and incoming payments show once confirmed, usually within an hour.",
+  "@syncPrivateDescription": {
+    "description": "Bitcoin wallet synchronization choices, before any address-history request."
+  },
+  "syncElectrumProtocol": "Electrum",
+  "@syncElectrumProtocol": {
+    "description": "Bitcoin wallet synchronization choices, before any address-history request."
+  },
+  "syncCbfProtocol": "Compact block filters",
+  "@syncCbfProtocol": {
+    "description": "Bitcoin wallet synchronization choices, before any address-history request."
+  },
+  "syncChangeLater": "You can change this later in the wallet settings.",
+  "@syncChangeLater": {
+    "description": "Bitcoin wallet synchronization choices, before any address-history request."
+  },
+  "syncScriptHelp": "Not sure? Most wallets made after 2018 use Native SegWit. You can add another type later.",
+  "@syncScriptHelp": {
+    "description": "Bitcoin wallet synchronization choices, before any address-history request."
+  },
+  "syncBirthdayTitle": "When did you start using this wallet?",
+  "@syncBirthdayTitle": {
+    "description": "Bitcoin wallet synchronization choices, before any address-history request."
+  },
+  "syncBirthdayHelp": "Pick an earlier month if unsure. Too late hides older transactions; too early only takes longer.",
+  "@syncBirthdayHelp": {
+    "description": "Bitcoin wallet synchronization choices, before any address-history request."
+  },
+  "syncMonth": "Month",
+  "@syncMonth": {
+    "description": "Bitcoin wallet synchronization choices, before any address-history request."
+  },
+  "syncYear": "Year",
+  "@syncYear": {
+    "description": "Bitcoin wallet synchronization choices, before any address-history request."
+  },
+  "syncUnknown": "I don’t know",
+  "@syncUnknown": {
+    "description": "Bitcoin wallet synchronization choices, before any address-history request."
+  },
+  "syncUnknownWarning": "We’ll scan from August 2017, when today’s address types began. This can take a long time and download several GB. Connect to Wi-Fi and keep the app open.",
+  "@syncUnknownWarning": {
+    "description": "Bitcoin wallet synchronization choices, before any address-history request."
+  },
+  "syncScanFrom2017": "Scan from 2017",
+  "@syncScanFrom2017": {
+    "description": "Bitcoin wallet synchronization choices, before any address-history request."
+  },
+  "syncPickDate": "Pick a date",
+  "@syncPickDate": {
+    "description": "Bitcoin wallet synchronization choices, before any address-history request."
+  },
+  "syncMonthsToCheck": "{months, plural, =0{About 0 months of blocks to check.} =1{About 1 month of blocks to check.} other{About {months} months of blocks to check.}}",
+  "@syncMonthsToCheck": {
+    "description": "Bitcoin wallet synchronization choices, before any address-history request.",
+    "placeholders": {
+      "months": {
+        "type": "int"
+      }
+    }
+  },
+  "syncUseMonth": "Use {date}",
+  "@syncUseMonth": {
+    "description": "Bitcoin wallet synchronization choices, before any address-history request.",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "syncBack": "Back",
+  "@syncBack": {
+    "description": "Bitcoin wallet synchronization choices, before any address-history request."
+  },
+  "syncSwitchToPrivateWarning": "The server already saw this wallet’s addresses; switching protects future activity only.",
+  "@syncSwitchToPrivateWarning": {
+    "description": "Bitcoin wallet synchronization choices, before any address-history request."
+  },
+  "syncSwitchToServerWarning": "The server will learn all of this wallet’s addresses, including past ones. Switch?",
+  "@syncSwitchToServerWarning": {
+    "description": "Bitcoin wallet synchronization choices, before any address-history request."
+  },
+  "syncHistoryStarts": "History starts",
+  "@syncHistoryStarts": {
+    "description": "Bitcoin wallet synchronization choices, before any address-history request."
+  },
+  "syncEarlierDate": "Scan from an earlier date",
+  "@syncEarlierDate": {
+    "description": "Bitcoin wallet synchronization choices, before any address-history request."
+  },
+  "syncUnknownDate": "{date} (unknown date)",
+  "@syncUnknownDate": {
+    "description": "Bitcoin wallet synchronization choices, before any address-history request.",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "syncSectionTitle": "Sync",
+  "@syncSectionTitle": {
+    "description": "Bitcoin wallet synchronization choices, before any address-history request."
+  },
+  "syncServerOnly": "Server sync",
+  "@syncServerOnly": {
+    "description": "Bitcoin wallet synchronization choices, before any address-history request."
+  },
+  "syncRescanHelp": "Your existing history stays available while earlier transactions are added.",
+  "@syncRescanHelp": {
+    "description": "Bitcoin wallet synchronization choices, before any address-history request."
+  },
+  "syncNativeSegwit": "Native SegWit",
+  "@syncNativeSegwit": {
+    "description": "Bitcoin address type selected locally, without a balance preview."
+  },
+  "syncNestedSegwit": "Nested SegWit",
+  "@syncNestedSegwit": {
+    "description": "Bitcoin address type selected locally, without a balance preview."
+  },
+  "syncScanningFrom": "Scanning from {date}",
+  "@syncScanningFrom": {
+    "description": "Private synchronization and payment status.",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "syncFindingPeers": "Finding peers",
+  "@syncFindingPeers": {
+    "description": "Private synchronization and payment status."
+  },
+  "syncStillFindingPeers": "Still looking for peers that support private sync. This can take a few minutes.",
+  "@syncStillFindingPeers": {
+    "description": "Private synchronization and payment status."
+  },
+  "syncCheckingBlocks": "Checking blocks",
+  "@syncCheckingBlocks": {
+    "description": "Private synchronization and payment status."
+  },
+  "syncBlocksChecked": "{total, plural, one{{checked} of {total} block} other{{checked} of {total} blocks}}",
+  "@syncBlocksChecked": {
+    "description": "Private synchronization and payment status.",
+    "placeholders": {
+      "checked": {
+        "type": "int",
+        "format": "decimalPattern"
+      },
+      "total": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "syncDownloadingTransactions": "Downloading your transactions",
+  "@syncDownloadingTransactions": {
+    "description": "Private synchronization and payment status."
+  },
+  "syncWalletRestored": "Wallet restored",
+  "@syncWalletRestored": {
+    "description": "Private synchronization and payment status."
+  },
+  "syncIncomplete": "Incomplete — still checking older blocks",
+  "@syncIncomplete": {
+    "description": "Private synchronization and payment status."
+  },
+  "syncKeepOpen": "Keep the app open for the fastest sync",
+  "@syncKeepOpen": {
+    "description": "Private synchronization and payment status."
+  },
+  "syncEtaMinutes": "{minutes, plural, one{About 1 min left} other{About {minutes} min left}}",
+  "@syncEtaMinutes": {
+    "description": "Private synchronization and payment status.",
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "syncProgressSemantics": "{phase}, {percent} percent",
+  "@syncProgressSemantics": {
+    "description": "Private synchronization and payment status.",
+    "placeholders": {
+      "phase": {
+        "type": "String"
+      },
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "syncStatusTitle": "Status",
+  "@syncStatusTitle": {
+    "description": "Private synchronization and payment status."
+  },
+  "syncNetworkStatus": "Network status",
+  "@syncNetworkStatus": {
+    "description": "Private synchronization and payment status."
+  },
+  "syncUpToDate": "Up to date · block {height} · {time}",
+  "@syncUpToDate": {
+    "description": "Private synchronization and payment status.",
+    "placeholders": {
+      "height": {
+        "type": "String"
+      },
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "syncLastSuccessful": "Last successful sync: {time}",
+  "@syncLastSuccessful": {
+    "description": "Private synchronization and payment status.",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "syncBlockHeight": "Tip height: {height}",
+  "@syncBlockHeight": {
+    "description": "Private synchronization and payment status.",
+    "placeholders": {
+      "height": {
+        "type": "String"
+      }
+    }
+  },
+  "syncConnectedPeers": "{count, plural, one{1 connected peer} other{{count} connected peers}}",
+  "@syncConnectedPeers": {
     "description": "Private synchronization and payment status.",
     "placeholders": {
       "count": {
         "type": "int"
       }
     }
+  },
+  "syncTorOn": "Tor: on",
+  "@syncTorOn": {
+    "description": "Private synchronization and payment status."
+  },
+  "syncTorOff": "Tor: off",
+  "@syncTorOff": {
+    "description": "Private synchronization and payment status."
+  },
+  "syncNoPeers": "Couldn’t reach the Bitcoin network privately. Your balance is from {time}.",
+  "@syncNoPeers": {
+    "description": "Private synchronization and payment status.",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "syncUnknownTime": "an unknown time",
+  "@syncUnknownTime": {
+    "description": "Private synchronization and payment status."
+  },
+  "syncTorPaused": "Tor isn’t connected, so private sync is paused.",
+  "@syncTorPaused": {
+    "description": "Private synchronization and payment status."
+  },
+  "syncPaused": "Sync paused — will resume",
+  "@syncPaused": {
+    "description": "Private synchronization and payment status."
+  },
+  "syncNoTransactions": "No transactions found since {date}. If you used this wallet earlier, scan from an earlier date.",
+  "@syncNoTransactions": {
+    "description": "Private synchronization and payment status.",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "syncSettingsAction": "Sync settings",
+  "@syncSettingsAction": {
+    "description": "Private synchronization and payment status."
+  },
+  "syncTorAction": "Open Tor settings",
+  "@syncTorAction": {
+    "description": "Private synchronization and payment status."
+  },
+  "syncReceiveNote": "Private sync: this payment will appear once confirmed, usually within an hour.",
+  "@syncReceiveNote": {
+    "description": "Private synchronization and payment status."
+  },
+  "syncSendRoute": "Sent through a random Bitcoin node",
+  "@syncSendRoute": {
+    "description": "Private synchronization and payment status."
+  },
+  "syncSendRouteTor": "Sent through a random Bitcoin node over Tor",
+  "@syncSendRouteTor": {
+    "description": "Private synchronization and payment status."
+  },
+  "syncBroadcastFailure": "Couldn’t reach a node to send this transaction. It’s saved; try again.",
+  "@syncBroadcastFailure": {
+    "description": "Private synchronization and payment status."
+  },
+  "syncSendIncomplete": "Your balance is incomplete while older blocks are checked. Sending may be unavailable until the current sync operation finishes.",
+  "@syncSendIncomplete": {
+    "description": "Private synchronization and payment status."
+  },
+  "syncUnknownFee": "Fee: unknown",
+  "@syncUnknownFee": {
+    "description": "Private synchronization and payment status."
+  },
+  "syncSwapUnavailable": "Swap recovery isn’t available yet for wallets using private sync. Use an Electrum wallet as the destination.",
+  "@syncSwapUnavailable": {
+    "description": "Private synchronization and payment status."
+  },
+  "syncSelectSourceWallet": "Choose the source wallet for this transaction",
+  "@syncSelectSourceWallet": {
+    "description": "Private synchronization and payment status."
   },
   "notificationPaymentsChannel": "Incoming payments",
   "@notificationPaymentsChannel": {
@@ -15994,6 +16317,15 @@
   "notificationPaymentsChannelDescription": "Payment alerts. Amounts, addresses and wallet names are never shown.",
   "@notificationPaymentsChannelDescription": {
     "description": "Private synchronization and payment status."
+  },
+  "notificationPaymentConfirmed": "{count, plural, one{Payment confirmed} other{{count} payments confirmed}}",
+  "@notificationPaymentConfirmed": {
+    "description": "Private synchronization and payment status.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   },
   "notificationTransactionsReceived": "{chain, select, bitcoin{{count, plural, one{1 Bitcoin payment received} other{{count} Bitcoin payments received}}} liquid{{count, plural, one{1 Liquid payment received} other{{count} Liquid payments received}}} other{{count, plural, one{1 payment received} other{{count} payments received}}}}",
   "@notificationTransactionsReceived": {
@@ -16006,5 +16338,139 @@
         "type": "int"
       }
     }
+  },
+  "syncJustNow": "just now",
+  "@syncJustNow": {},
+  "syncMinutesAgo": "{count, plural, one{1 min ago} other{{count} min ago}}",
+  "@syncMinutesAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "syncHoursAgo": "{count, plural, one{1 hour ago} other{{count} hours ago}}",
+  "@syncHoursAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "syncDaysAgo": "{count, plural, one{1 day ago} other{{count} days ago}}",
+  "@syncDaysAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "syncSourceTitle": "How should this wallet sync?",
+  "@syncSourceTitle": {
+    "description": "Heading of the wallet sync source selection sheet."
+  },
+  "syncUnknownScriptStart": "We’ll scan from {date}, when this address type began.",
+  "@syncUnknownScriptStart": {
+    "description": "Bitcoin private recovery history and cost guidance",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "syncUnknownHdStart": "We’ll scan from {date}, when the HD wallet standard (BIP32) was published.",
+  "@syncUnknownHdStart": {
+    "description": "Bitcoin private recovery history and cost guidance",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "syncUnknownTestnetStart": "We’ll scan from this test network’s genesis block.",
+  "@syncUnknownTestnetStart": {
+    "description": "Bitcoin private recovery history and cost guidance"
+  },
+  "syncUnknownSegwitCost": "A full recovery can take about an hour and 12 GB on a recent phone over Wi-Fi. This is based on a measured SegWit recovery; your wallet and connection may differ.",
+  "@syncUnknownSegwitCost": {
+    "description": "Bitcoin private recovery history and cost guidance"
+  },
+  "syncUnknownEstimatedCost": "Estimated from block counts: about {minutes, plural, one{1 minute} other{{minutes} minutes}} and {gigabytes, plural, one{1 GB} other{{gigabytes} GB}}. This scales a SegWit recovery measured on October 28, 2026; this address type was not measured. Actual time and data may differ.",
+  "@syncUnknownEstimatedCost": {
+    "description": "Bitcoin private recovery history and cost guidance",
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      },
+      "gigabytes": {
+        "type": "int"
+      }
+    }
+  },
+  "syncRecoveryPreparation": "Use Wi-Fi, connect your phone to a charger and keep the app open.",
+  "@syncRecoveryPreparation": {
+    "description": "Bitcoin private recovery history and cost guidance"
+  },
+  "syncScanFromDate": "Scan from {date}",
+  "@syncScanFromDate": {
+    "description": "Bitcoin private recovery history and cost guidance",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "syncBirthdayClamped": "This is earlier than the supported history for this HD wallet. The scan will start from {date}.",
+  "@syncBirthdayClamped": {
+    "description": "Bitcoin private recovery history and cost guidance",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "replaceByFeeUnknownOriginalFee": "The original fee is unknown, so this transaction cannot be accelerated safely.",
+  "@replaceByFeeUnknownOriginalFee": {
+    "description": "RBF refusal when missing parent outputs make the original fee unavailable"
+  },
+  "syncEarlierDateAtFloor": "History already starts at the earliest supported point for this wallet type.",
+  "@syncEarlierDateAtFloor": {
+    "description": "Hint below the disabled earlier scan action when the resolved checkpoint is already at the script-specific floor."
+  },
+  "syncEarlierDateAtGenesis": "History already starts at this network’s genesis block.",
+  "@syncEarlierDateAtGenesis": {
+    "description": "Hint below the disabled earlier scan action when the resolved checkpoint is already at test-network genesis."
+  },
+  "transactionNotBroadcast": "Not broadcast",
+  "@transactionNotBroadcast": {
+    "description": "Manual recovery of a locally staged CBF transaction."
+  },
+  "transactionNotBroadcastDescription": "This transaction has not been relayed. Retry sending the same transaction, or cancel it to free its inputs.",
+  "@transactionNotBroadcastDescription": {
+    "description": "Manual recovery of a locally staged CBF transaction."
+  },
+  "transactionCancelUnbroadcastTitle": "Cancel this transaction?",
+  "@transactionCancelUnbroadcastTitle": {
+    "description": "Manual recovery of a locally staged CBF transaction."
+  },
+  "transactionCancelUnbroadcastDescription": "This removes the transaction from this wallet and frees its inputs. If you shared it elsewhere, it may still be confirmed.",
+  "@transactionCancelUnbroadcastDescription": {
+    "description": "Manual recovery of a locally staged CBF transaction."
+  },
+  "transactionKeepTransaction": "Keep transaction",
+  "@transactionKeepTransaction": {
+    "description": "Manual recovery of a locally staged CBF transaction."
+  },
+  "transactionCbfRecoveryFailed": "The transaction could not be updated. Check your connection and try again.",
+  "@transactionCbfRecoveryFailed": {
+    "description": "Manual recovery of a locally staged CBF transaction."
+  },
+  "transactionCbfUnavailable": "This transaction cannot be retried or canceled right now. Refresh its details.",
+  "@transactionCbfUnavailable": {
+    "description": "Manual recovery of a locally staged CBF transaction."
+  },
+  "transactionCbfTorUnavailable": "Tor is unavailable. Restore the Tor connection, then retry.",
+  "@transactionCbfTorUnavailable": {
+    "description": "Manual recovery of a locally staged CBF transaction."
   }
 }
