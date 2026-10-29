@@ -223,6 +223,26 @@ void main() {
   tearDown(() => bloc.close());
 
   test(
+    'confirmation without a source wallet fails locally and clears its busy state',
+    () async {
+      bloc.emit(const TransferState(signedPsbt: 'signed-psbt'));
+      final finished = bloc.stream.firstWhere(
+        (state) =>
+            state.swapFailure is SwapUnexpectedFailure && !state.isConfirming,
+      );
+      bloc.add(const TransferEvent.confirmed());
+      await finished;
+      verifyNever(
+        () => broadcastBitcoin.execute(
+          any(),
+          isPsbt: any(named: 'isPsbt'),
+          walletId: any(named: 'walletId'),
+        ),
+      );
+    },
+  );
+
+  test(
     'exposes insufficient funds when same-chain creation raises a shortfall',
     () async {
       final source = _wallet(balanceSat: BigInt.from(2000));
@@ -372,7 +392,11 @@ void main() {
       );
       expect(bloc.state.signedPsbt, isEmpty);
       verifyNever(
-        () => broadcastBitcoin.execute(any(), isPsbt: any(named: 'isPsbt')),
+        () => broadcastBitcoin.execute(
+          any(),
+          isPsbt: any(named: 'isPsbt'),
+          walletId: any(named: 'walletId'),
+        ),
       );
     },
   );
@@ -394,7 +418,11 @@ void main() {
         () => refreshOrder.execute('local-1'),
       ).thenAnswer((_) async => Ok(broadcasting));
       when(
-        () => broadcastBitcoin.execute('signed-psbt', isPsbt: true),
+        () => broadcastBitcoin.execute(
+          'signed-psbt',
+          isPsbt: true,
+          walletId: any(named: 'walletId'),
+        ),
       ).thenAnswer((_) async => 'txid-1');
       when(
         () =>
@@ -418,7 +446,11 @@ void main() {
       await subscription.cancel();
       verify(() => markUnknown.execute('local-1')).called(1);
       verify(
-        () => broadcastBitcoin.execute('signed-psbt', isPsbt: true),
+        () => broadcastBitcoin.execute(
+          'signed-psbt',
+          isPsbt: true,
+          walletId: any(named: 'walletId'),
+        ),
       ).called(1);
       verify(
         () =>
@@ -641,7 +673,11 @@ void main() {
       expect(bloc.state.signedPsbt, isEmpty);
       expect(bloc.state.buildTransactionException, isNotNull);
       verifyNever(
-        () => broadcastBitcoin.execute('old-signed-psbt', isPsbt: true),
+        () => broadcastBitcoin.execute(
+          'old-signed-psbt',
+          isPsbt: true,
+          walletId: any(named: 'walletId'),
+        ),
       );
     },
   );
@@ -720,7 +756,11 @@ void main() {
       expect(bloc.state.feePreviewCache.fastest.isCacheReady, isFalse);
       expect(bloc.state.buildTransactionException, isNotNull);
       verifyNever(
-        () => broadcastBitcoin.execute('old-signed-psbt', isPsbt: true),
+        () => broadcastBitcoin.execute(
+          'old-signed-psbt',
+          isPsbt: true,
+          walletId: any(named: 'walletId'),
+        ),
       );
     },
   );
@@ -762,7 +802,11 @@ void main() {
       );
       expect(bloc.state.feePreviewCache.fastest.isCacheReady, isFalse);
       verifyNever(
-        () => broadcastBitcoin.execute(any(), isPsbt: any(named: 'isPsbt')),
+        () => broadcastBitcoin.execute(
+          any(),
+          isPsbt: any(named: 'isPsbt'),
+          walletId: any(named: 'walletId'),
+        ),
       );
     },
   );
@@ -1174,7 +1218,11 @@ void main() {
       () => markUnknown.execute('local-1'),
     ).thenAnswer((_) async => Ok(broadcasting));
     when(
-      () => broadcastBitcoin.execute('signed-psbt', isPsbt: true),
+      () => broadcastBitcoin.execute(
+        'signed-psbt',
+        isPsbt: true,
+        walletId: any(named: 'walletId'),
+      ),
     ).thenAnswer((_) async => 'txid-1');
     when(
       () => markBroadcast.execute(localId: 'local-1', transactionId: 'txid-1'),
@@ -1352,7 +1400,11 @@ void main() {
       verify(() => refreshOrder.execute('local-1')).called(1);
       verifyNever(() => markUnknown.execute(any()));
       verifyNever(
-        () => broadcastBitcoin.execute(any(), isPsbt: any(named: 'isPsbt')),
+        () => broadcastBitcoin.execute(
+          any(),
+          isPsbt: any(named: 'isPsbt'),
+          walletId: any(named: 'walletId'),
+        ),
       );
       expect(bloc.state.orderSwap, refreshed);
     },
@@ -1393,7 +1445,11 @@ void main() {
       bloc.add(const TransferEvent.confirmed());
       await Future<void>.delayed(Duration.zero);
       verifyNever(
-        () => broadcastBitcoin.execute(any(), isPsbt: any(named: 'isPsbt')),
+        () => broadcastBitcoin.execute(
+          any(),
+          isPsbt: any(named: 'isPsbt'),
+          walletId: any(named: 'walletId'),
+        ),
       );
     },
   );
@@ -1405,7 +1461,11 @@ void main() {
         () => markUnknown.execute('local-1'),
       ).thenAnswer((_) async => Ok(prepared));
       when(
-        () => broadcastBitcoin.execute('signed-psbt', isPsbt: true),
+        () => broadcastBitcoin.execute(
+          'signed-psbt',
+          isPsbt: true,
+          walletId: any(named: 'walletId'),
+        ),
       ).thenThrow(
         DioException(
           requestOptions: RequestOptions(path: '/broadcast'),

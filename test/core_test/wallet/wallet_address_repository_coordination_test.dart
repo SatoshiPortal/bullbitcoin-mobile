@@ -1,3 +1,6 @@
+import 'package:primitives/primitives.dart' show BitcoinSyncSource, Ok;
+import 'package:bb_mobile/core/wallet/data/bitcoin_sync_routing.dart';
+import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'dart:async';
 
 import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart';
@@ -11,7 +14,11 @@ import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:transaction_sync/transaction_sync.dart'
-    show InMemoryWalletSourceOperationCoordinator, WalletSourceKey;
+    show
+        InMemoryWalletSourceOperationCoordinator,
+        WalletSourceKey,
+        WalletTransactionSyncFacade,
+        WalletNetworkKey;
 
 class _MockWalletMetadataDatasource extends Mock
     implements WalletMetadataDatasource {}
@@ -21,6 +28,10 @@ class _MockBdkWalletDatasource extends Mock implements BdkWalletDatasource {}
 class _MockLwkWalletDatasource extends Mock implements LwkWalletDatasource {}
 
 class _MockLabelsFacade extends Mock implements LabelsFacade {}
+
+class _SyncFacade extends Mock implements WalletTransactionSyncFacade {}
+
+class _Settings extends Mock implements SettingsRepository {}
 
 const _walletId = 'wpkh([73c5da0a/84h/1h/0h])';
 const _otherWalletId = 'wpkh([deadbeef/84h/1h/0h])';
@@ -40,6 +51,9 @@ WalletMetadataModel _metadata(String id) => WalletMetadataModel(
 
 void main() {
   setUpAll(() {
+    registerFallbackValue(
+      const WalletNetworkKey('public', 'bitcoin', 'testnet'),
+    );
     registerFallbackValue(
       const WalletModel.publicBdk(
         id: _walletId,
@@ -107,4 +121,64 @@ void main() {
     await waiting;
     await held;
   });
+  for (final generateNew in [false, true]) {
+    test(
+      'CBF receive $generateNew checks script coverage after releasing its source',
+      () async {
+        final metadata = _MockWalletMetadataDatasource(),
+            bdk = _MockBdkWalletDatasource(),
+            labels = _MockLabelsFacade(),
+            facade = _SyncFacade();
+        final coordinator = InMemoryWalletSourceOperationCoordinator();
+        when(() => metadata.fetch(_walletId)).thenAnswer(
+          (_) async => _metadata(
+            _walletId,
+          ).copyWith(bitcoinSyncSource: BitcoinSyncSource.compactBlockFilters),
+        );
+        when(() => labels.fetchByReference(any())).thenAnswer((_) async => []);
+        when(
+          () => bdk.getNewAddress(wallet: any(named: 'wallet')),
+        ).thenAnswer((_) async => (index: 1000, address: 'tb1q-public'));
+        when(
+          () => bdk.getLastRevealedAddressOrNew(wallet: any(named: 'wallet')),
+        ).thenAnswer((_) async => (index: 1000, address: 'tb1q-public'));
+        var checked = false;
+        when(() => facade.ensureCbfScriptCoverage(any())).thenAnswer((
+          invocation,
+        ) async {
+          final key = invocation.positionalArguments.single as WalletNetworkKey;
+          expect(key.walletId, _walletId);
+          await coordinator.runExclusive(
+            WalletSourceKey(_walletId, 'bitcoin', 'testnet'),
+            (_) async {
+              checked = true;
+            },
+          );
+          return const Ok(null);
+        });
+        final repository = WalletAddressRepository(
+          walletMetadataDatasource: metadata,
+          bdkWalletDatasource: bdk,
+          lwkWalletDatasource: _MockLwkWalletDatasource(),
+          labelsFacade: labels,
+          coordinator: coordinator,
+          bitcoinSyncRouting: BitcoinSyncRouting(
+            facade: facade,
+            settings: _Settings(),
+            tor: () => throw StateError('unused'),
+          ),
+        );
+        final address =
+            await (generateNew
+                    ? repository.generateNewReceiveAddress(walletId: _walletId)
+                    : repository.getLastRevealedReceiveAddress(
+                        walletId: _walletId,
+                      ))
+                .timeout(const Duration(seconds: 1));
+        expect(address.index, 1000);
+        expect(checked, isTrue);
+        verify(() => facade.ensureCbfScriptCoverage(any())).called(1);
+      },
+    );
+  }
 }

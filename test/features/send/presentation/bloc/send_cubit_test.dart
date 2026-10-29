@@ -656,6 +656,7 @@ void main() {
           () => broadcastBitcoinTxUsecase.execute(
             any(),
             isPsbt: any(named: 'isPsbt'),
+            walletId: any(named: 'walletId'),
           ),
         );
       },
@@ -980,6 +981,7 @@ void main() {
         () => broadcastBitcoinTxUsecase.execute(
           any(),
           isPsbt: any(named: 'isPsbt'),
+          walletId: any(named: 'walletId'),
         ),
       ).thenAnswer((_) async => 'broadcast-txid');
     }
@@ -995,7 +997,11 @@ void main() {
         await cubit.broadcastTransaction();
 
         verify(
-          () => broadcastBitcoinTxUsecase.execute('signed-psbt', isPsbt: true),
+          () => broadcastBitcoinTxUsecase.execute(
+            'signed-psbt',
+            isPsbt: true,
+            walletId: 'w1',
+          ),
         ).called(1);
         expect(cubit.state.txId, 'broadcast-txid');
         expect(cubit.state.step, SendStep.success);
@@ -1012,7 +1018,11 @@ void main() {
       await cubit.broadcastTransaction();
 
       verify(
-        () => broadcastBitcoinTxUsecase.execute('signed-psbt', isPsbt: true),
+        () => broadcastBitcoinTxUsecase.execute(
+          'signed-psbt',
+          isPsbt: true,
+          walletId: 'w1',
+        ),
       ).called(1);
       expect(cubit.state.txId, 'broadcast-txid');
       expect(cubit.state.step, SendStep.success);
@@ -1056,6 +1066,7 @@ void main() {
         () => broadcastBitcoinTxUsecase.execute(
           any(),
           isPsbt: any(named: 'isPsbt'),
+          walletId: any(named: 'walletId'),
         ),
       );
     },

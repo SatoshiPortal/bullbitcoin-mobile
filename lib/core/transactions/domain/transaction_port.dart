@@ -10,5 +10,5 @@ abstract class TransactionPort {
   ///
   /// The returned transaction's outputs can be used to look up
   /// the value of an input that references this transaction.
-  Future<Transaction> fetch({required String txid});
+  Future<Transaction> fetch({required String txid, String? walletId});
 }

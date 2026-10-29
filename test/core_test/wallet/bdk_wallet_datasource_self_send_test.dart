@@ -16,6 +16,7 @@ import 'dart:typed_data';
 import 'package:bb_mobile/core/wallet/data/datasources/bdk_facade.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/bdk_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
+import 'package:bb_mobile/core/wallet/data/mappers/wallet_transaction_mapper.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_transaction_model.dart';
 import 'package:bull_sdk/bdk.dart' as bdk;
 import 'package:flutter/services.dart';
@@ -252,6 +253,44 @@ void main() {
       (transaction) => transaction.txId == tx.computeTxid().toString(),
     );
   }
+
+  test(
+    'incoming transaction without a parent preserves an unknown fee',
+    () async {
+      final txId = await BdkFacade.withWallet(walletModel, (wallet) async {
+        final tx = _rawTx(
+          inputs: [(txId: '11' * 32, vout: 0)],
+          outputs: [(script: receive2, amountSat: 12345)],
+        );
+        wallet.applyUnconfirmedTxs(
+          unconfirmedTxs: [
+            bdk.UnconfirmedTx(
+              tx: tx,
+              lastSeen: DateTime.now().millisecondsSinceEpoch ~/ 1000,
+            ),
+          ],
+        );
+        await BdkFacade.saveWallet(wallet, walletModel.hexId);
+        return tx.computeTxid().toString();
+      });
+      final transactions = await BdkWalletDatasource().getTransactions(
+        wallet: walletModel,
+      );
+      final received = transactions.singleWhere((tx) => tx.txId == txId);
+      expect(received.isIncoming, isTrue);
+      expect(received.amountSat, 12345);
+      expect(received.feeUnavailable, isTrue);
+      final entity = WalletTransactionMapper.toEntity(
+        received,
+        walletId: walletModel.id,
+        inputs: const [],
+        outputs: const [],
+        isRbf: received.isRbf,
+      );
+      expect(entity.knownFeeSat, isNull);
+      expect(entity.feeUnavailable, isTrue);
+    },
+  );
 
   test(
     'a send to self records the amount paid, not the utxo consumed',

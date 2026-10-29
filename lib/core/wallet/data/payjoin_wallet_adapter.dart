@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/wallet/domain/bitcoin_sync_operation_exception.dart';
 import 'dart:typed_data';
 
 import 'package:bb_mobile/core/seed/data/datasources/seed_datasource.dart';
@@ -10,7 +11,11 @@ import 'package:bb_mobile/core/wallet/data/models/wallet_utxo_model.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:primitives/primitives.dart';
 import 'package:transaction_sync/transaction_sync.dart'
-    show WalletSourceKey, WalletSourceOperationCoordinator;
+    show
+        WalletSourceKey,
+        WalletSourceOperationCoordinator,
+        BitcoinSyncSource,
+        CbfRemoteLookupForbiddenFailure;
 
 final class PayjoinWalletAdapter implements PayjoinWalletPort {
   final SeedDatasource _seed;
@@ -103,6 +108,11 @@ final class PayjoinWalletAdapter implements PayjoinWalletPort {
     final metadata = await _metadata.fetch(walletId);
     if (metadata == null || !metadata.isBitcoin) {
       throw StateError('Bitcoin wallet metadata not found');
+    }
+    if (metadata.bitcoinSyncSource == BitcoinSyncSource.compactBlockFilters) {
+      throw const BitcoinSyncOperationException(
+        CbfRemoteLookupForbiddenFailure(),
+      );
     }
     if (metadata.isTestnet == network.isMainnet) {
       throw StateError('Wallet network does not match Payjoin network');

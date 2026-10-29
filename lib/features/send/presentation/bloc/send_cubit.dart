@@ -2186,6 +2186,7 @@ class SendCubit extends Cubit<SendState>
           persistedPayin ??
               (isPsbt ? state.signedBitcoinPsbt! : state.signedBitcoinTx!),
           isPsbt: persistedPayinIsPsbt ?? isPsbt,
+          walletId: wallet.id,
         );
       }
       if (!isClosed) emit(state.copyWith(txId: txId));

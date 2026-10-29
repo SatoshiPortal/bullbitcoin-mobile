@@ -609,7 +609,13 @@ class BdkWalletDatasource {
           final sentAndReceived = bdkWallet.sentAndReceived(tx: tx.transaction);
           final received = sentAndReceived.received.toSat();
           final sent = sentAndReceived.sent.toSat();
-          final fee = bdkWallet.calculateFee(tx: tx.transaction).toSat();
+          var fee = 0;
+          var feeUnavailable = false;
+          try {
+            fee = bdkWallet.calculateFee(tx: tx.transaction).toSat();
+          } on bdk.MissingTxOutCalculateFeeException {
+            feeUnavailable = true;
+          }
           final chainPosition = tx.chainPosition;
           int? confirmationTime;
           if (chainPosition is bdk.ConfirmedChainPosition) {
@@ -632,7 +638,8 @@ class BdkWalletDatasource {
             txId: transactionId,
             isIncoming: isIncoming,
             amountSat: netAmountSat.toInt(),
-            feeSat: fee.toInt(),
+            feeSat: fee,
+            feeUnavailable: feeUnavailable,
             vsize: tx.transaction.vsize().toInt(),
             confirmationTimestamp: confirmationTime,
             isToSelf: isToSelf,

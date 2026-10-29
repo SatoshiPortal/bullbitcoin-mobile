@@ -1,3 +1,6 @@
+import 'package:primitives/primitives.dart' show Err, Ok;
+import '../bitcoin_sync_routing.dart';
+import '../../domain/bitcoin_sync_operation_exception.dart';
 import 'package:bb_mobile/core/electrum/domain/ports/electrum_servers_port.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_network.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
@@ -14,7 +17,17 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:transaction_sync/transaction_sync.dart'
-    show WalletOperationKind, WalletSourceKey, WalletSourceOperationCoordinator;
+    show
+        WalletNetworkKey,
+        WalletOperationKind,
+        WalletSourceKey,
+        WalletSourceOperationCoordinator,
+        BitcoinSyncSource,
+        CbfRemoteLookupForbiddenFailure,
+        WalletSyncDeferredFailure,
+        RefreshLocalSnapshotRequest,
+        WalletTransactionSyncOutcome,
+        WalletTransactionSyncFailure;
 
 class WalletTransactionRepositoryImpl implements WalletTransactionRepository {
   final WalletMetadataDatasource _walletMetadataDatasource;
@@ -25,6 +38,7 @@ class WalletTransactionRepositoryImpl implements WalletTransactionRepository {
   //  the syncing should be extracted from fetching the data
   final ElectrumServersPort _serversPort;
   final WalletSourceOperationCoordinator _coordinator;
+  final BitcoinSyncRouting? bitcoinSyncRouting;
 
   WalletTransactionRepositoryImpl({
     required this._walletMetadataDatasource,
@@ -32,6 +46,7 @@ class WalletTransactionRepositoryImpl implements WalletTransactionRepository {
     required this._bdkWalletTransactionDatasource,
     required this._lwkWalletTransactionDatasource,
     required this._serversPort,
+    this.bitcoinSyncRouting,
     required WalletSourceOperationCoordinator coordinator,
   }) : _coordinator = coordinator; // ignore: prefer_initializing_formals
 
@@ -106,6 +121,52 @@ class WalletTransactionRepositoryImpl implements WalletTransactionRepository {
       walletTransactionModelsByWallet.indexed.map((entry) async {
         final (walletIndex, walletTransactionModels) = entry;
         final walletModel = walletModels[walletIndex];
+        var notBroadcastTxids = <String>{};
+        if (walletModel is PublicBdkWalletModel) {
+          final metadata = await _walletMetadataDatasource.fetch(
+            walletModel.id,
+          );
+          final routing = bitcoinSyncRouting;
+          if (routing != null) {
+            await routing.facade.recordCbfConfirmations(
+              WalletNetworkKey(
+                walletModel.id,
+                'bitcoin',
+                walletModel.isTestnet ? 'testnet' : 'mainnet',
+              ),
+              walletTransactionModels
+                  .where((tx) => tx.confirmationTimestamp != null)
+                  .map((tx) => tx.txId),
+            );
+          }
+          if (metadata?.bitcoinSyncSource ==
+                  BitcoinSyncSource.compactBlockFilters &&
+              metadata != null &&
+              routing != null) {
+            final registration = await routing.registration(
+              metadata,
+              verifyTor: false,
+            );
+            final result = await routing.facade.refreshLocalSnapshot(
+              RefreshLocalSnapshotRequest(registration),
+            );
+            if (result case Err(:final failure)) {
+              throw BitcoinSyncOperationException(failure);
+            }
+            notBroadcastTxids =
+                (result
+                        as Ok<
+                          WalletTransactionSyncOutcome,
+                          WalletTransactionSyncFailure
+                        >)
+                    .value
+                    .snapshot
+                    .transactions
+                    .where((tx) => tx.isNotBroadcast)
+                    .map((tx) => tx.txid)
+                    .toSet();
+          }
+        }
         return Future.wait(
           walletTransactionModels.map((walletTransactionModel) async {
             final (inputs, outputs, labels) = await (
@@ -151,6 +212,9 @@ class WalletTransactionRepositoryImpl implements WalletTransactionRepository {
               outputs: outputs,
               labels: labels,
               isRbf: walletTransactionModel.isRbf,
+              isNotBroadcast: notBroadcastTxids.contains(
+                walletTransactionModel.txId,
+              ),
             );
           }).toList(),
         );
@@ -203,21 +267,50 @@ class WalletTransactionRepositoryImpl implements WalletTransactionRepository {
     String? txId,
     String? toAddress,
     required bool sync,
-  }) {
+  }) async {
+    if (sync) {
+      final current = await _walletMetadataDatasource.fetch(wallet.id);
+      if (current?.bitcoinSyncSource == BitcoinSyncSource.compactBlockFilters) {
+        final routing = bitcoinSyncRouting;
+        if (routing == null || current == null) {
+          throw const BitcoinSyncOperationException(
+            CbfRemoteLookupForbiddenFailure(),
+          );
+        }
+        final result = await routing.synchronize(current, null);
+        if (result case Err(:final failure)) {
+          throw BitcoinSyncOperationException(failure);
+        }
+        return _getBdkWalletTransactionModels(
+          wallet: wallet,
+          txId: txId,
+          toAddress: toAddress,
+          sync: false,
+        );
+      }
+    }
     return _coordinator.runExclusive(
       _sourceKey(wallet),
-      (_) async {
+      (session) async {
         if (sync) {
-          await _serversPort.runWithFallback<void>(
-            network: ElectrumServerNetwork.fromEnvironment(
-              isTestnet: wallet.isTestnet,
-              isLiquid: false,
-            ),
-            operation: (connection) => _bdkWalletTransactionDatasource.sync(
-              wallet: wallet,
-              electrumServer: connection,
-            ),
-          );
+          final metadata = await _walletMetadataDatasource.fetch(wallet.id);
+          if (metadata?.bitcoinSyncSource ==
+              BitcoinSyncSource.compactBlockFilters) {
+            throw const BitcoinSyncOperationException(
+              WalletSyncDeferredFailure(),
+            );
+          } else {
+            await _serversPort.runWithFallback<void>(
+              network: ElectrumServerNetwork.fromEnvironment(
+                isTestnet: wallet.isTestnet,
+                isLiquid: false,
+              ),
+              operation: (connection) => _bdkWalletTransactionDatasource.sync(
+                wallet: wallet,
+                electrumServer: connection,
+              ),
+            );
+          }
         }
         return _bdkWalletTransactionDatasource.getTransactions(
           wallet: wallet,

@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/wallet/data/cbf_privacy_guard.dart';
 import 'package:bb_mobile/core/electrum/domain/errors/electrum_fallback_exception.dart';
 import 'package:bb_mobile/core/electrum/domain/ports/electrum_servers_port.dart';
 import 'package:bb_mobile/core/electrum/domain/ports/environment_port.dart';
@@ -19,15 +20,27 @@ class ElectrumTransactionPortAdapter implements TransactionPort {
   final ElectrumServersPort _serversPort;
   final ElectrumTransactionRepository _repository;
   final EnvironmentPort _environmentPort;
+  final CbfPrivacyGuard? privacy;
 
   const ElectrumTransactionPortAdapter({
     required this._serversPort,
     required this._repository,
     required this._environmentPort,
+    this.privacy,
   });
 
   @override
-  Future<Transaction> fetch({required String txid}) async {
+  Future<Transaction> fetch({required String txid, String? walletId}) async {
+    final guard = privacy;
+    if (guard != null) {
+      return walletId == null
+          ? guard.runUnattributedElectrum(() => _fetch(txid))
+          : guard.runElectrum([walletId], () => _fetch(txid));
+    }
+    return _fetch(txid);
+  }
+
+  Future<Transaction> _fetch(String txid) async {
     final environment = await _environmentPort.getEnvironment();
     final network = ElectrumServerNetwork.fromEnvironment(
       isTestnet: environment.isTestnet,

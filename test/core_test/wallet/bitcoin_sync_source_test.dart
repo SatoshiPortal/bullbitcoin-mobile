@@ -1,6 +1,6 @@
+import 'dart:async';
 import 'dart:typed_data';
 import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
-import 'dart:async';
 
 import 'package:bb_mobile/core/electrum/domain/ports/electrum_servers_port.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
@@ -10,6 +10,7 @@ import 'package:bb_mobile/core/wallet/data/datasources/bdk_wallet_datasource.dar
 import 'package:bb_mobile/core/wallet/data/datasources/lwk_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/electrum_sync_source_guard.dart';
+import 'package:bb_mobile/core/wallet/data/cbf_privacy_guard.dart';
 import 'package:bb_mobile/core/wallet/data/models/balance_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
@@ -256,8 +257,21 @@ void main() {
     verifyZeroInteractions(servers);
   });
 
+  test('reactive wallet registry isolates unavailable source rows', () async {
+    await db.customStatement(
+      "UPDATE wallet_metadatas SET bitcoin_sync_source = 'future-source' WHERE id = ?",
+      [_id],
+    );
+    final wallets = await metadata.watchSyncPolicies().first;
+    expect(
+      wallets.map((wallet) => wallet.id),
+      unorderedEquals([_other, _liquid]),
+    );
+    await expectLater(metadata.fetch(_id), throwsFormatException);
+  });
+
   test(
-    'an unavailable source isolates one wallet and rejects strict reads',
+    'an unavailable source isolates one wallet and keeps anonymous guards closed',
     () async {
       await db.customStatement(
         "UPDATE wallet_metadatas SET bitcoin_sync_source = 'future-source' WHERE id = ?",
@@ -272,7 +286,14 @@ void main() {
         );
       }
       expect(await repository.getWallet(_id), isA<Err>());
-      await expectLater(metadata.fetchAll(), throwsFormatException);
+      var requested = false;
+      await expectLater(
+        CbfPrivacyGuard(metadata).runUnattributedElectrum(() async {
+          requested = true;
+        }),
+        throwsFormatException,
+      );
+      expect(requested, isFalse);
       verifyZeroInteractions(servers);
     },
   );
@@ -292,12 +313,12 @@ void main() {
         birthday: WalletBirthday(DateTime.utc(2020)),
       );
       expect(
-        await metadata.updateBitcoinSyncSettings(
-          first.id,
-          BitcoinSyncSource.compactBlockFilters,
-          DateTime.utc(2019),
+        await repository.updateBitcoinSyncSettings(
+          walletId: first.id,
+          source: BitcoinSyncSource.compactBlockFilters,
+          birthday: WalletBirthday(DateTime.utc(2019)),
         ),
-        isTrue,
+        isA<Ok>(),
       );
       final returned = await repository.createWallet(
         seed: seed,
@@ -431,4 +452,130 @@ void main() {
       verifyZeroInteractions(servers);
     });
   }
+
+  test(
+    'source and birthday save together and survive stale metadata writes',
+    () async {
+      final stale = await metadata.fetch(_id);
+      expect(stale, isNotNull);
+      final birthday = WalletBirthday(DateTime.utc(2019, 3));
+      expect(
+        await repository.updateBitcoinSyncSettings(
+          walletId: _id,
+          source: BitcoinSyncSource.compactBlockFilters,
+          birthday: birthday,
+        ),
+        isA<Ok>(),
+      );
+      if (stale == null) return;
+      await metadata.store(stale.copyWith(label: 'Backup completed'));
+      final saved = await metadata.fetch(_id);
+      expect(saved?.bitcoinSyncSource, BitcoinSyncSource.compactBlockFilters);
+      expect(saved?.birthday, birthday.dateTime);
+      verifyZeroInteractions(servers);
+    },
+  );
+
+  for (final (descriptor, type) in [
+    ('pkh(public/0/*)', BitcoinSyncScriptType.preSegwit),
+    ('tr(public/0/*)', BitcoinSyncScriptType.taproot),
+  ]) {
+    test(
+      'earlier-only $type cannot request history before its unknown floor',
+      () async {
+        const id = 'wpkh([aabbccdd/84h/0h/0h])';
+        await metadata.store(
+          _metadata(
+            id,
+          ).copyWith(externalPublicDescriptor: descriptor, birthday: null),
+        );
+        final settings = await repository.getSyncSettings(id);
+        switch (settings) {
+          case Ok(:final value):
+            expect(value.scanScriptType, type);
+          case Err():
+            fail('Expected local settings');
+        }
+        expect(
+          await repository.updateBitcoinSyncSettings(
+            walletId: id,
+            source: BitcoinSyncSource.compactBlockFilters,
+            birthday: WalletBirthday(
+              type == BitcoinSyncScriptType.preSegwit
+                  ? DateTime.utc(2015)
+                  : DateTime.utc(2016),
+            ),
+            earlierOnly: true,
+          ),
+          isA<Err>(),
+        );
+        expect((await metadata.fetch(id))?.birthday, isNull);
+        verifyZeroInteractions(servers);
+      },
+    );
+  }
+
+  test(
+    'earlier-only settings preserve history and reject equal or later months',
+    () async {
+      final original = await metadata.fetch(_id);
+      for (final date in [
+        DateTime.utc(2020),
+        DateTime.utc(2020, 1, 2),
+        DateTime.utc(2021),
+      ]) {
+        expect(
+          await repository.updateBitcoinSyncSettings(
+            walletId: _id,
+            source: BitcoinSyncSource.electrum,
+            birthday: WalletBirthday(date),
+            earlierOnly: true,
+          ),
+          isA<Err>(),
+        );
+        expect(await metadata.fetch(_id), original);
+      }
+      final earlier = WalletBirthday(DateTime.utc(2019, 12));
+      expect(
+        await repository.updateBitcoinSyncSettings(
+          walletId: _id,
+          source: BitcoinSyncSource.electrum,
+          birthday: earlier,
+          earlierOnly: true,
+        ),
+        isA<Ok>(),
+      );
+      final saved = await metadata.fetch(_id);
+      expect(saved?.id, original?.id);
+      expect(saved?.birthday, earlier.dateTime);
+      verifyZeroInteractions(bdk);
+      verifyZeroInteractions(servers);
+    },
+  );
+
+  test(
+    'an earlier-only request cannot restore an obsolete Electrum choice',
+    () async {
+      expect(
+        await update.execute(
+          walletId: _id,
+          source: BitcoinSyncSource.compactBlockFilters,
+        ),
+        isA<Ok>(),
+      );
+      expect(
+        await repository.updateBitcoinSyncSettings(
+          walletId: _id,
+          source: BitcoinSyncSource.electrum,
+          birthday: WalletBirthday(DateTime.utc(2019, 12)),
+          earlierOnly: true,
+        ),
+        isA<Ok>(),
+      );
+      final saved = await metadata.fetch(_id);
+      expect(saved?.bitcoinSyncSource, BitcoinSyncSource.compactBlockFilters);
+      expect(saved?.birthday, DateTime.utc(2019, 12));
+      verifyZeroInteractions(servers);
+    },
+  );
 }

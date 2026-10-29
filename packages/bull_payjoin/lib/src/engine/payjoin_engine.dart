@@ -679,16 +679,28 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
 
       PayjoinModel? model;
       if (payjoin is PayjoinReceiver) {
-        await _blockchain.broadcastTransaction(
-          network: network,
-          transaction: payjoin.originalTxBytes!,
-        );
+        final original = payjoin.originalTxBytes;
+        if (original == null) return null;
+        final blockchain = _blockchain;
+        if (blockchain is api.PayjoinWalletBlockchainPort) {
+          await (blockchain).broadcastWalletTransaction(
+            walletId: payjoin.walletId,
+            network: network,
+            transaction: original,
+          );
+        } else {
+          await blockchain.broadcastTransaction(
+            network: network,
+            transaction: original,
+          );
+        }
         broadcasted = true;
 
         model = await _localPayjoinDatasource.fetchReceiver(payjoin.id);
       } else {
         payjoin as PayjoinSender;
-        await _blockchain.broadcastPsbt(
+        await _broadcastWalletPsbt(
+          walletId: payjoin.walletId,
           network: network,
           psbt: payjoin.originalPsbt,
         );
@@ -1764,12 +1776,31 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
         .toList();
   }
 
+  Future<void> _broadcastWalletPsbt({
+    required String walletId,
+    required primitives.BitcoinNetwork network,
+    required String psbt,
+  }) {
+    final blockchain = _blockchain;
+    return blockchain is api.PayjoinWalletBlockchainPort
+        ? (blockchain).broadcastWalletPsbt(
+            walletId: walletId,
+            network: network,
+            psbt: psbt,
+          )
+        : blockchain.broadcastPsbt(network: network, psbt: psbt);
+  }
+
   Future<PayjoinSender> _broadcastPsbt({
     required PayjoinSenderModel payjoinModel,
     required String finalizedPsbt,
     required primitives.BitcoinNetwork network,
   }) async {
-    await _blockchain.broadcastPsbt(network: network, psbt: finalizedPsbt);
+    await _broadcastWalletPsbt(
+      walletId: payjoinModel.walletId,
+      network: network,
+      psbt: finalizedPsbt,
+    );
 
     // From this point the real payjoin is on the network. Local persistence,
     // syncing and watcher setup must never throw back to the caller's fallback

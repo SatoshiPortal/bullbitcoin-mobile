@@ -1,3 +1,5 @@
+import 'package:transaction_sync/transaction_sync.dart';
+import 'package:bb_mobile/core/wallet/domain/bitcoin_sync_operation_exception.dart';
 import 'package:bb_mobile/core/electrum/domain/errors/electrum_fallback_exception.dart';
 import 'package:bb_mobile/core/electrum/domain/ports/electrum_servers_port.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_network.dart';
@@ -21,7 +23,13 @@ class CheckWalletStatusUsecase {
   Future<({BigInt satoshis, int transactions})> call({
     required bip39.Mnemonic mnemonic,
     required ScriptType scriptType,
+    BitcoinSyncSource bitcoinSyncSource = BitcoinSyncSource.electrum,
   }) async {
+    if (bitcoinSyncSource == BitcoinSyncSource.compactBlockFilters) {
+      throw const BitcoinSyncOperationException(
+        CbfRemoteLookupForbiddenFailure(),
+      );
+    }
     try {
       final settings = await _settingsRepository.fetch();
       final isTestnet = settings.environment.isTestnet;

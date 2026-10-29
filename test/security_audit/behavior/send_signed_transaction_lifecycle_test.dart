@@ -483,7 +483,11 @@ void main() {
     test('a cubit closed mid-broadcast still records the send', () async {
       final broadcast = Completer<String>();
       when(
-        () => broadcastBitcoinTx.execute(any(), isPsbt: any(named: 'isPsbt')),
+        () => broadcastBitcoinTx.execute(
+          any(),
+          isPsbt: any(named: 'isPsbt'),
+          walletId: _wallet.id,
+        ),
       ).thenAnswer((_) => broadcast.future);
       when(() => labelsFacade.store(any())).thenAnswer(
         (invocation) async =>

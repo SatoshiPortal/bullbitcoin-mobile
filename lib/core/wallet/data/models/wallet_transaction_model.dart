@@ -11,6 +11,7 @@ sealed class WalletTransactionModel with _$WalletTransactionModel {
     required bool isIncoming,
     required int amountSat,
     required int feeSat,
+    @Default(false) bool feeUnavailable,
     required int vsize,
     required List<TransactionInputModel> inputs,
     required List<TransactionOutputModel> outputs,

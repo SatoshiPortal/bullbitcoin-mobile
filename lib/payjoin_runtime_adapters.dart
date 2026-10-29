@@ -1,3 +1,7 @@
+import 'package:bb_mobile/core/wallet/data/cbf_privacy_guard.dart';
+import 'package:bb_mobile/core/wallet/domain/bitcoin_sync_operation_exception.dart';
+import 'package:transaction_sync/transaction_sync.dart'
+    show BitcoinSyncSource, CbfRemoteLookupForbiddenFailure;
 import 'dart:async';
 import 'dart:typed_data';
 
@@ -14,37 +18,92 @@ import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:dio/dio.dart';
 import 'package:primitives/primitives.dart';
 
-final class AppPayjoinBlockchainAdapter implements PayjoinBlockchainPort {
+final class AppPayjoinBlockchainAdapter implements PayjoinWalletBlockchainPort {
   final BdkBitcoinBlockchainDatasource _blockchain;
   final ElectrumServersPort _servers;
+  final CbfPrivacyGuard? privacy;
 
-  const AppPayjoinBlockchainAdapter(this._blockchain, this._servers);
+  const AppPayjoinBlockchainAdapter(
+    this._blockchain,
+    this._servers, {
+    this.privacy,
+  });
+
+  @override
+  Future<void> broadcastWalletTransaction({
+    required String walletId,
+    required BitcoinNetwork network,
+    required Uint8List transaction,
+  }) async {
+    Future<void> operation() => _servers.runWithFallback<void>(
+      network: ElectrumServerNetwork.fromEnvironment(
+        isTestnet: !network.isMainnet,
+        isLiquid: false,
+      ),
+      operation: (connection) =>
+          _blockchain.broadcastTransaction(transaction, connection: connection),
+    );
+    final guard = privacy;
+    if (guard == null) return operation();
+    return guard.runElectrum([walletId], operation);
+  }
+
+  @override
+  Future<void> broadcastWalletPsbt({
+    required String walletId,
+    required BitcoinNetwork network,
+    required String psbt,
+  }) async {
+    Future<void> operation() => _servers.runWithFallback<void>(
+      network: ElectrumServerNetwork.fromEnvironment(
+        isTestnet: !network.isMainnet,
+        isLiquid: false,
+      ),
+      operation: (connection) =>
+          _blockchain.broadcastPsbt(psbt, connection: connection),
+    );
+    final guard = privacy;
+    if (guard == null) return operation();
+    return guard.runElectrum([walletId], operation);
+  }
 
   @override
   Future<void> broadcastTransaction({
     required BitcoinNetwork network,
     required Uint8List transaction,
-  }) => _servers.runWithFallback<void>(
-    network: ElectrumServerNetwork.fromEnvironment(
-      isTestnet: !network.isMainnet,
-      isLiquid: false,
-    ),
-    operation: (connection) =>
-        _blockchain.broadcastTransaction(transaction, connection: connection),
-  );
+  }) async {
+    Future<void> operation() => _servers.runWithFallback<void>(
+      network: ElectrumServerNetwork.fromEnvironment(
+        isTestnet: !network.isMainnet,
+        isLiquid: false,
+      ),
+      operation: (connection) =>
+          _blockchain.broadcastTransaction(transaction, connection: connection),
+    );
+    final guard = privacy;
+    return guard == null
+        ? operation()
+        : guard.runUnattributedElectrum(operation);
+  }
 
   @override
   Future<void> broadcastPsbt({
     required BitcoinNetwork network,
     required String psbt,
-  }) => _servers.runWithFallback<void>(
-    network: ElectrumServerNetwork.fromEnvironment(
-      isTestnet: !network.isMainnet,
-      isLiquid: false,
-    ),
-    operation: (connection) =>
-        _blockchain.broadcastPsbt(psbt, connection: connection),
-  );
+  }) async {
+    Future<void> operation() => _servers.runWithFallback<void>(
+      network: ElectrumServerNetwork.fromEnvironment(
+        isTestnet: !network.isMainnet,
+        isLiquid: false,
+      ),
+      operation: (connection) =>
+          _blockchain.broadcastPsbt(psbt, connection: connection),
+    );
+    final guard = privacy;
+    return guard == null
+        ? operation()
+        : guard.runUnattributedElectrum(operation);
+  }
 }
 
 final class AppPayjoinFeesAdapter implements PayjoinFeesPort {
@@ -73,6 +132,7 @@ final class AppPayjoinTransactionAdapter implements PayjoinTransactionPort {
   final ElectrumServersPort _servers;
   // Pacing between two wallet syncs of [_reconcileWallet]; tests shorten it.
   final Duration reconcileDelay;
+  final CbfPrivacyGuard? privacy;
 
   const AppPayjoinTransactionAdapter(
     this._wallets,
@@ -80,6 +140,7 @@ final class AppPayjoinTransactionAdapter implements PayjoinTransactionPort {
     this._blockchain,
     this._servers, {
     this.reconcileDelay = const Duration(seconds: 5),
+    this.privacy,
   });
 
   @override
@@ -112,9 +173,14 @@ final class AppPayjoinTransactionAdapter implements PayjoinTransactionPort {
       (failure) =>
           throw Exception('Payjoin wallet unavailable: ${failure.runtimeType}'),
     );
+    if (wallet.bitcoinSyncSource == BitcoinSyncSource.compactBlockFilters) {
+      throw const BitcoinSyncOperationException(
+        CbfRemoteLookupForbiddenFailure(),
+      );
+    }
     final bool isKnownRemotely;
     try {
-      isKnownRemotely = await _servers.runWithFallback<bool>(
+      Future<bool> query() => _servers.runWithFallback<bool>(
         network: ElectrumServerNetwork.fromEnvironment(
           isTestnet: wallet.isTestnet,
           isLiquid: false,
@@ -127,6 +193,10 @@ final class AppPayjoinTransactionAdapter implements PayjoinTransactionPort {
         isTransient: (e) =>
             e is Exception && e is! UnrecognizedElectrumReplyException,
       );
+      final guard = privacy;
+      isKnownRemotely = await (guard == null
+          ? query()
+          : guard.runElectrum([walletId], query));
     } on UnrecognizedElectrumReplyException {
       // A server we cannot classify (Electrum Personal Server, bitcoind
       // without txindex): take the slow road of a script-based wallet sync

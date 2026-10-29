@@ -1,3 +1,6 @@
+import 'package:bull_tor/tor.dart';
+import 'package:bb_mobile/core/settings/data/settings_repository.dart';
+import 'package:bb_mobile/core/wallet/data/bitcoin_sync_routing.dart';
 import 'package:bb_mobile/core/wallet/data/electrum_sync_source_guard.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_sync_settings_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/update_bitcoin_sync_source_usecase.dart';
@@ -5,7 +8,6 @@ import 'package:bb_mobile/core/electrum/domain/ports/electrum_servers_port.dart'
 import 'package:bb_mobile/core/seed/data/datasources/seed_datasource.dart';
 import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
 import 'package:bb_mobile/core/seed/data/services/mnemonic_generator.dart';
-import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
@@ -55,7 +57,8 @@ import 'package:transaction_sync/transaction_sync.dart'
         WalletCoordinationLogEvent,
         WalletCoordinationLogLevel,
         WalletSourceOperationCoordinator,
-        WalletSyncMetadataPort;
+        WalletSyncMetadataPort,
+        WalletTransactionSyncFacade;
 
 class WalletLocator {
   static Future<void> registerDatasources(GetIt locator) async {
@@ -91,6 +94,36 @@ class WalletLocator {
           logSink: logWalletCoordination,
         ),
         metadata: locator<WalletMetadataDatasource>(),
+        allowCbfRouting: true,
+      ),
+    );
+
+    locator.registerLazySingleton<WalletTransactionSyncFacade>(
+      () => WalletTransactionSyncFacade.bdkElectrum(
+        metadata: syncMetadata,
+        coordinator: locator<WalletSourceOperationCoordinator>(),
+        logSink: logWalletCoordination,
+        onCbfTransactionChanged: (key) =>
+            locator<WalletRepository>().onCbfSnapshot(key),
+        onCbfSnapshot: (outcome, session) async {
+          await locator<WalletRepository>().onCbfSnapshot(
+            outcome.snapshot.key,
+            txids: outcome.snapshot.transactions.map((tx) => tx.txid).toList(),
+          );
+        },
+        isCbfPolicyCurrent: (registration) =>
+            locator<BitcoinSyncRouting>().isCurrent(registration),
+      ),
+      dispose: (facade) => facade.dispose(),
+    );
+    locator.registerLazySingleton<BitcoinSyncRouting>(
+      () => BitcoinSyncRouting(
+        facade: locator<WalletTransactionSyncFacade>(),
+        settings: locator<SettingsRepository>(),
+        tor: () => locator<Tor>(),
+        allWallets: () => locator<WalletMetadataDatasource>().fetchAll(
+          skipUnavailableSources: true,
+        ),
       ),
     );
 
@@ -115,6 +148,7 @@ class WalletLocator {
 
     locator.registerLazySingleton<WalletRepository>(
       () => WalletRepository(
+        bitcoinSyncRouting: locator<BitcoinSyncRouting>(),
         walletMetadataDatasource: locator<WalletMetadataDatasource>(),
         bdkWalletDatasource: locator<BdkWalletDatasource>(),
         lwkWalletDatasource: locator<LwkWalletDatasource>(),
@@ -159,11 +193,13 @@ class WalletLocator {
         lwkWalletDatasource: locator<LwkWalletDatasource>(),
         labelsFacade: locator<LabelsFacade>(),
         coordinator: locator<WalletSourceOperationCoordinator>(),
+        bitcoinSyncRouting: locator<BitcoinSyncRouting>(),
       ),
     );
 
     locator.registerLazySingleton<WalletTransactionRepository>(
       () => WalletTransactionRepositoryImpl(
+        bitcoinSyncRouting: locator<BitcoinSyncRouting>(),
         walletMetadataDatasource: locator<WalletMetadataDatasource>(),
         labelsFacade: locator<LabelsFacade>(),
         bdkWalletTransactionDatasource: locator<BdkWalletDatasource>(),

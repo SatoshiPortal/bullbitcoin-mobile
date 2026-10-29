@@ -293,7 +293,11 @@ void main() {
       )),
     );
     when(
-      () => broadcastPayPayin.bitcoin(any(), isPsbt: any(named: 'isPsbt')),
+      () => broadcastPayPayin.bitcoin(
+        any(),
+        isPsbt: any(named: 'isPsbt'),
+        walletId: any(named: 'walletId'),
+      ),
     ).thenAnswer((_) async => Ok<String, PayFailure>(expectedTxid));
     when(
       () => getNetworkFees.execute(isLiquid: any(named: 'isLiquid')),
@@ -545,7 +549,11 @@ void main() {
       );
       verify(() => watchPayjoin.execute(bip21)).called(1);
       verifyNever(
-        () => broadcastPayPayin.bitcoin(any(), isPsbt: any(named: 'isPsbt')),
+        () => broadcastPayPayin.bitcoin(
+          any(),
+          isPsbt: any(named: 'isPsbt'),
+          walletId: any(named: 'walletId'),
+        ),
       );
     });
 
@@ -677,7 +685,11 @@ void main() {
         await Future<void>.delayed(const Duration(milliseconds: 100));
 
         verify(
-          () => broadcastPayPayin.bitcoin(any(), isPsbt: any(named: 'isPsbt')),
+          () => broadcastPayPayin.bitcoin(
+            any(),
+            isPsbt: any(named: 'isPsbt'),
+            walletId: any(named: 'walletId'),
+          ),
         ).called(1);
         verify(
           () => preparePayBitcoinPayin.execute(
@@ -1004,7 +1016,11 @@ void main() {
       // The exchange expires the order at its deadline and does not credit a
       // payin sent after it.
       verifyNever(
-        () => broadcastPayPayin.bitcoin(any(), isPsbt: any(named: 'isPsbt')),
+        () => broadcastPayPayin.bitcoin(
+          any(),
+          isPsbt: any(named: 'isPsbt'),
+          walletId: any(named: 'walletId'),
+        ),
       );
       // A fresh quote is asked for instead.
       verify(
@@ -1256,7 +1272,11 @@ void main() {
       bloc.add(const PayEvent.sendPaymentConfirmed());
       await Future<void>.delayed(const Duration(milliseconds: 50));
       verifyNever(
-        () => broadcastPayPayin.bitcoin(any(), isPsbt: any(named: 'isPsbt')),
+        () => broadcastPayPayin.bitcoin(
+          any(),
+          isPsbt: any(named: 'isPsbt'),
+          walletId: any(named: 'walletId'),
+        ),
       );
     });
 
@@ -1483,7 +1503,11 @@ void main() {
         // hardcoded Fastest rate must appear nowhere.
         expect(capturedBuildFees(), everyElement(equals(feeOptions.slow)));
         verify(
-          () => broadcastPayPayin.bitcoin(any(), isPsbt: any(named: 'isPsbt')),
+          () => broadcastPayPayin.bitcoin(
+            any(),
+            isPsbt: any(named: 'isPsbt'),
+            walletId: any(named: 'walletId'),
+          ),
         ).called(1);
       },
       timeout: const Timeout(Duration(seconds: 60)),

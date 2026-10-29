@@ -20,6 +20,20 @@ class UnrecognizedElectrumReplyException implements Exception {
 class BdkBitcoinBlockchainDatasource {
   const BdkBitcoinBlockchainDatasource();
 
+  Uint8List extractFinalizedPsbt(String encoded) {
+    final psbt = bdk.Psbt(psbtBase64: encoded);
+    try {
+      final tx = psbt.extractTx();
+      try {
+        return tx.serialize();
+      } finally {
+        tx.dispose();
+      }
+    } finally {
+      psbt.dispose();
+    }
+  }
+
   Future<String> broadcastPsbt(
     String finalizedPsbt, {
     required ElectrumConnection connection,

@@ -1631,9 +1631,17 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
       if (signedPsbt.isEmpty) return;
 
       final fromWallet = state.fromWallet;
-      if (fromWallet != null &&
-          !fromWallet.isLiquid &&
-          state.selectedUtxos.isNotEmpty) {
+      if (fromWallet == null) {
+        emit(
+          state.copyWith(
+            swapFailure: const SwapUnexpectedFailure(
+              'source wallet unavailable',
+            ),
+          ),
+        );
+        return;
+      }
+      if (!fromWallet.isLiquid && state.selectedUtxos.isNotEmpty) {
         await _validateBitcoinSelectionUsecase.execute(
           walletId: fromWallet.id,
           selectedInputs: state.selectedUtxos,
@@ -1675,6 +1683,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
           txId = await _broadcastBitcoinTxUsecase.execute(
             broadcasting.signedPayinTransaction!,
             isPsbt: broadcasting.payinIsPsbt!,
+            walletId: fromWallet.id,
           );
         }
         final broadcastResult = await _markOrderSwapPayinBroadcastUsecase
@@ -1699,6 +1708,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
         txId = await _broadcastBitcoinTxUsecase.execute(
           signedPsbt,
           isPsbt: true,
+          walletId: fromWallet.id,
         );
         unawaited(
           _syncWalletsAfterBroadcast([

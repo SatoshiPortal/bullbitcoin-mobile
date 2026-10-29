@@ -1,3 +1,7 @@
+import 'package:transaction_sync/transaction_sync.dart'
+    show WalletSourceOperationCoordinator;
+import 'package:bb_mobile/core/wallet/data/cbf_privacy_guard.dart';
+import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_value_storage_datasource.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
@@ -38,6 +42,10 @@ class SwapsLocator {
   static void registerRepositories(GetIt locator) {
     locator.registerLazySingleton<BoltzSwapRepository>(
       () => BoltzSwapRepository(
+        privacy: CbfPrivacyGuard(
+          locator<WalletMetadataDatasource>(),
+          locator<WalletSourceOperationCoordinator>(),
+        ),
         boltz: BoltzDatasource(boltzStore: locator<BoltzStorageDatasource>()),
         isTestnet: false,
       ),

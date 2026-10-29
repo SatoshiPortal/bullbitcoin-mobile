@@ -786,6 +786,7 @@ class PayBloc extends Bloc<PayEvent, PayState>
           switch (await _broadcastPayPayinUsecase.bitcoin(
             signedTx.signedPsbt,
             isPsbt: true,
+            walletId: wallet.id,
           )) {
             case Err(:final failure):
               _emitSendPaymentError(emit, failure);

@@ -1,3 +1,6 @@
+import 'package:bb_mobile/core/wallet/data/bitcoin_sync_routing.dart';
+import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasource.dart';
+import 'package:transaction_sync/transaction_sync.dart';
 import 'package:bb_mobile/core/blockchain/data/datasources/bdk_bitcoin_blockchain_datasource.dart';
 import 'package:bb_mobile/core/blockchain/data/datasources/lwk_liquid_blockchain_datasource.dart';
 import 'package:bb_mobile/core/blockchain/data/repository/bitcoin_blockchain_repository.dart';
@@ -23,6 +26,9 @@ class BlockchainLocator {
   static void registerRepositories(GetIt locator) {
     locator.registerLazySingleton<BitcoinBlockchainRepository>(
       () => BitcoinBlockchainRepository(
+        metadata: locator<WalletMetadataDatasource>(),
+        bitcoinSyncRouting: locator<BitcoinSyncRouting>(),
+        coordinator: locator<WalletSourceOperationCoordinator>(),
         blockchainDatasource: locator<BdkBitcoinBlockchainDatasource>(),
         serversPort: locator<ElectrumServersPort>(),
       ),

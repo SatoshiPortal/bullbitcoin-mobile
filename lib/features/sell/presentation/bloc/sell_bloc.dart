@@ -980,6 +980,7 @@ class SellBloc extends Bloc<SellEvent, SellState>
           final broadcast = await _broadcastSellPayinUsecase.bitcoin(
             signedTx.signedPsbt,
             isPsbt: true,
+            walletId: wallet.id,
           );
           if (broadcast case Err(:final failure)) {
             _emitSendPaymentError(emit, failure);

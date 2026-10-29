@@ -1,3 +1,7 @@
+import 'package:primitives/primitives.dart' show BitcoinSyncSource, Err;
+import 'package:bb_mobile/core/wallet/data/bitcoin_sync_routing.dart';
+import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_model.dart';
+import 'package:bb_mobile/core/wallet/domain/bitcoin_sync_operation_exception.dart';
 import 'dart:math';
 
 import 'package:bb_mobile/features/labels/labels_facade.dart';
@@ -10,7 +14,11 @@ import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_error.dart';
 import 'package:transaction_sync/transaction_sync.dart'
-    show WalletSourceKey, WalletSourceOperationCoordinator;
+    show
+        WalletSourceKey,
+        WalletSourceOperationCoordinator,
+        WalletNetworkKey,
+        CbfRemoteLookupForbiddenFailure;
 
 class WalletAddressRepository {
   final WalletMetadataDatasource _walletMetadataDatasource;
@@ -18,6 +26,7 @@ class WalletAddressRepository {
   final LwkWalletDatasource _lwkWallet;
   final LabelsFacade _labelsFacade;
   final WalletSourceOperationCoordinator _coordinator;
+  final BitcoinSyncRouting? bitcoinSyncRouting;
 
   WalletAddressRepository({
     required this._walletMetadataDatasource,
@@ -25,6 +34,7 @@ class WalletAddressRepository {
     required LwkWalletDatasource lwkWalletDatasource,
     required this._labelsFacade,
     required this._coordinator,
+    this.bitcoinSyncRouting,
   }) : _bdkWallet = bdkWalletDatasource,
        _lwkWallet = lwkWalletDatasource;
 
@@ -38,7 +48,9 @@ class WalletAddressRepository {
     }
 
     final walletModel = WalletModel.fromMetadata(metadata);
-    return _coordinator.runExclusive(_sourceKey(walletModel), (_) async {
+    final result = await _coordinator.runExclusive(_sourceKey(walletModel), (
+      _,
+    ) async {
       int index;
       String address;
       if (walletModel is PublicBdkWalletModel) {
@@ -78,6 +90,8 @@ class WalletAddressRepository {
         labels: labels,
       );
     });
+    if (walletModel is PublicBdkWalletModel) await _ensureCbfScripts(walletId);
+    return result;
   }
 
   Future<WalletAddress> generateNewReceiveAddress({
@@ -90,7 +104,9 @@ class WalletAddressRepository {
     }
 
     final walletModel = WalletModel.fromMetadata(metadata);
-    return _coordinator.runExclusive(_sourceKey(walletModel), (_) async {
+    final result = await _coordinator.runExclusive(_sourceKey(walletModel), (
+      _,
+    ) async {
       int index;
       String address;
       if (walletModel is PublicBdkWalletModel) {
@@ -132,6 +148,33 @@ class WalletAddressRepository {
         labels: labels,
       );
     });
+    if (walletModel is PublicBdkWalletModel) await _ensureCbfScripts(walletId);
+    return result;
+  }
+
+  Future<void> _ensureCbfScripts(String walletId) async {
+    final current = await _walletMetadataDatasource.fetch(walletId);
+    if (current == null) throw WalletError.notFound(walletId);
+    if (!current.isBitcoin ||
+        current.bitcoinSyncSource != BitcoinSyncSource.compactBlockFilters) {
+      return;
+    }
+    final routing = bitcoinSyncRouting;
+    if (routing == null) {
+      throw const BitcoinSyncOperationException(
+        CbfRemoteLookupForbiddenFailure(),
+      );
+    }
+    final result = await routing.facade.ensureCbfScriptCoverage(
+      WalletNetworkKey(
+        walletId,
+        'bitcoin',
+        current.isTestnet ? 'testnet' : 'mainnet',
+      ),
+    );
+    if (result case Err(:final failure)) {
+      throw BitcoinSyncOperationException(failure);
+    }
   }
 
   Future<List<WalletAddress>> getGeneratedReceiveAddresses(

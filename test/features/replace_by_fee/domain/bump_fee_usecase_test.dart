@@ -51,7 +51,11 @@ void main() {
         ),
       ).thenAnswer((_) async => 'signed-psbt');
       when(
-        () => broadcastUsecase.execute('signed-psbt', isPsbt: true),
+        () => broadcastUsecase.execute(
+          'signed-psbt',
+          isPsbt: true,
+          walletId: 'w1',
+        ),
       ).thenAnswer((_) async => 'new-txid');
 
       final result = await usecase.execute(

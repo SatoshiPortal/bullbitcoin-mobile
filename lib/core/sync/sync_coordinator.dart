@@ -1,3 +1,6 @@
+import 'package:bb_mobile/core/wallet/domain/bitcoin_sync_operation_exception.dart';
+import 'package:transaction_sync/transaction_sync.dart'
+    show InitialScanRequiredFailure, WalletSyncDeferredFailure;
 import 'dart:async';
 import 'dart:collection';
 
@@ -35,10 +38,10 @@ import 'package:flutter/widgets.dart'
 ///    revealed. A user request that finds an automatic bitcoin pass running
 ///    queues a discovering pass behind it and waits for that one.
 ///
-/// Background tasks (`lib/core/background_tasks/handler.dart`) intentionally
+/// Mobile headless tasks (`lib/core/background_tasks/handler.dart`) intentionally
 /// do **not** use this coordinator — they run in a separate Dart isolate with
 /// their own GetIt and no widget binding, so the lifecycle gate would actively
-/// block them. They keep calling the underlying usecases directly.
+/// block them. The desktop scheduled trigger uses this queue with CBF initial recovery disabled; a foreground request upgrades a queued pass or waits for a subsequent foreground-capable pass.
 class SyncCoordinator {
   SyncCoordinator({
     required GetWalletsUsecase getWalletsUsecase,
@@ -102,6 +105,9 @@ class SyncCoordinator {
   /// Kinds whose next pass must discover history, and whether the running
   /// pass does.
   final Set<SyncKind> _discoveryRequested = <SyncKind>{};
+  final Set<SyncKind> _initialScanRequested = <SyncKind>{};
+  final Set<SyncKind> _lastSuccessInitialAllowed = <SyncKind>{};
+  bool _runningInitialScanAllowed = false;
   bool _runningDiscovery = false;
 
   /// Schedule `kinds` (or the trigger's default kinds when `only` is null) and
@@ -137,6 +143,7 @@ class SyncCoordinator {
         (_waiters[kind] ??= <_Waiter>[]).add((
           completer: completer,
           needsDiscovery: _discovers(kind, trigger),
+          needsInitialScan: _allowsInitial(kind, trigger),
         ));
         waits[kind] = completer.future;
       } else {
@@ -197,9 +204,12 @@ class SyncCoordinator {
   /// or 'pending' (already running or queued).
   String? _enqueue(SyncKind kind, {required SyncTrigger trigger}) {
     if (!_isAppResumed && trigger != SyncTrigger.scheduled) return 'gated';
+    final needsInitial = _allowsInitial(kind, trigger);
     if (trigger != SyncTrigger.user) {
       final last = _lastSuccessAt[kind];
-      if (last != null && DateTime.now().difference(last) < _minSyncInterval) {
+      if (last != null &&
+          (!needsInitial || _lastSuccessInitialAllowed.contains(kind)) &&
+          DateTime.now().difference(last) < _minSyncInterval) {
         return 'throttled';
       }
     }
@@ -208,14 +218,23 @@ class SyncCoordinator {
     // for one already running, which would leak into the next routine sync.
     if (_enqueued.contains(kind)) {
       if (discover) _discoveryRequested.add(kind);
+      if (needsInitial) _initialScanRequested.add(kind);
       return 'pending';
     }
-    if (_running == kind && (!discover || _runningDiscovery)) return 'pending';
+    if (_running == kind &&
+        (!discover || _runningDiscovery) &&
+        (!needsInitial || _runningInitialScanAllowed)) {
+      return 'pending';
+    }
+    if (needsInitial) _initialScanRequested.add(kind);
     if (discover) _discoveryRequested.add(kind);
     _enqueued.add(kind);
     _queue.add(kind);
     return null;
   }
+
+  static bool _allowsInitial(SyncKind kind, SyncTrigger trigger) =>
+      kind == SyncKind.bitcoin && trigger != SyncTrigger.scheduled;
 
   static bool _discovers(SyncKind kind, SyncTrigger trigger) =>
       kind == SyncKind.bitcoin && trigger == SyncTrigger.user;
@@ -244,6 +263,8 @@ class SyncCoordinator {
         _running = kind;
         final discover = _discoveryRequested.remove(kind);
         _runningDiscovery = discover;
+        final allowInitialScan = _initialScanRequested.remove(kind);
+        _runningInitialScanAllowed = allowInitialScan;
         final started = DateTime.now();
         String elapsed() =>
             '${DateTime.now().difference(started).inMilliseconds}ms';
@@ -251,13 +272,22 @@ class SyncCoordinator {
           // A wallet read failure fails the round without being thrown: it is
           // settled as the error and, like a throw, never stamps
           // _lastSuccessAt.
-          final failure = await _runTask(kind, discover: discover);
+          final failure = await _runTask(
+            kind,
+            discover: discover,
+            allowInitialScan: allowInitialScan,
+          );
           if (failure != null) {
             log.warning(
               '[SyncCoordinator] ${kind.name} failed discover=$discover '
               '(${failure.runtimeType}) in ${elapsed()}',
             );
-            _settle(kind, failure, discovered: discover);
+            _settle(
+              kind,
+              failure,
+              discovered: discover,
+              initialScanAllowed: allowInitialScan,
+            );
             continue;
           }
           log.fine(
@@ -265,7 +295,17 @@ class SyncCoordinator {
             'in ${elapsed()}',
           );
           _lastSuccessAt[kind] = DateTime.now();
-          _settle(kind, null, discovered: discover);
+          if (allowInitialScan) {
+            _lastSuccessInitialAllowed.add(kind);
+          } else {
+            _lastSuccessInitialAllowed.remove(kind);
+          }
+          _settle(
+            kind,
+            null,
+            discovered: discover,
+            initialScanAllowed: allowInitialScan,
+          );
         } catch (e) {
           log.warning(
             '[SyncCoordinator] ${kind.name} failed discover=$discover '
@@ -273,10 +313,16 @@ class SyncCoordinator {
           );
           // Delivered to any sync() awaiting this kind; the single sanitized
           // summary is logged by sync().
-          _settle(kind, e, discovered: discover);
+          _settle(
+            kind,
+            e,
+            discovered: discover,
+            initialScanAllowed: allowInitialScan,
+          );
         } finally {
           _running = null;
           _runningDiscovery = false;
+          _runningInitialScanAllowed = false;
         }
       }
     } finally {
@@ -289,12 +335,18 @@ class SyncCoordinator {
   /// is delivered as the completer's value, so awaiting a waiter never throws.
   /// A waiter that asked for discovery stays registered until a discovering
   /// pass settles.
-  void _settle(SyncKind kind, Object? error, {required bool discovered}) {
+  void _settle(
+    SyncKind kind,
+    Object? error, {
+    required bool discovered,
+    required bool initialScanAllowed,
+  }) {
     final waiters = _waiters.remove(kind);
     if (waiters == null) return;
     final remaining = <_Waiter>[];
     for (final waiter in waiters) {
-      if (waiter.needsDiscovery && !discovered) {
+      if ((waiter.needsDiscovery && !discovered) ||
+          (waiter.needsInitialScan && !initialScanAllowed)) {
         remaining.add(waiter);
       } else if (!waiter.completer.isCompleted) {
         waiter.completer.complete(error);
@@ -314,11 +366,24 @@ class SyncCoordinator {
   Future<WalletFailure?> _syncAll(
     Future<Result<List<Wallet>, WalletFailure>> read, {
     bool discover = false,
+    bool allowInitialScan = true,
   }) async {
     switch (await read) {
       case Ok(:final value):
         for (final wallet in value) {
-          await _syncWallet.execute(wallet, discoverHistory: discover);
+          try {
+            await _syncWallet.execute(
+              wallet,
+              discoverHistory: discover,
+              allowInitialScan: allowInitialScan,
+            );
+          } on BitcoinSyncOperationException catch (error) {
+            if (allowInitialScan ||
+                (error.failure is! InitialScanRequiredFailure &&
+                    error.failure is! WalletSyncDeferredFailure)) {
+              rethrow;
+            }
+          }
         }
         return null;
       case Err(:final failure):
@@ -331,12 +396,14 @@ class SyncCoordinator {
   Future<WalletFailure?> _runTask(
     SyncKind kind, {
     required bool discover,
+    required bool allowInitialScan,
   }) async {
     switch (kind) {
       case SyncKind.bitcoin:
         return _syncAll(
           _getWallets.execute(onlyBitcoin: true),
           discover: discover,
+          allowInitialScan: allowInitialScan,
         );
       case SyncKind.liquid:
         return _syncAll(_getWallets.execute(onlyLiquid: true));
@@ -407,4 +474,8 @@ class SyncCoordinatorException implements Exception {
       'SyncCoordinatorException(${failures.entries.map((e) => '${e.key}: ${e.value.runtimeType}').join(', ')})';
 }
 
-typedef _Waiter = ({Completer<Object?> completer, bool needsDiscovery});
+typedef _Waiter = ({
+  Completer<Object?> completer,
+  bool needsDiscovery,
+  bool needsInitialScan,
+});

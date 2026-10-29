@@ -36,7 +36,15 @@ import 'package:transaction_sync/transaction_sync.dart'
         WalletSourceSession;
 
 class _MockWalletMetadataDatasource extends Mock
-    implements WalletMetadataDatasource {}
+    implements WalletMetadataDatasource {
+  _MockWalletMetadataDatasource() {
+    when(() => fetch(any())).thenAnswer(
+      (invocation) async => _metadata.copyWith(
+        id: invocation.positionalArguments.single as String,
+      ),
+    );
+  }
+}
 
 class _MockBdkWalletDatasource extends Mock implements BdkWalletDatasource {}
 

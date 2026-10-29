@@ -125,7 +125,7 @@ class CsvTransactionExportFormatter implements TransactionExportFormatter {
     // server-controlled figure when the real one is known locally. The
     // provider value stays as the fallback for a leg whose miner fee the
     // wallet never saw (0 = unknown here, a broadcast tx always pays a fee).
-    final onChainFeeSat = wt?.feeSat ?? 0;
+    final onChainFeeSat = wt?.knownFeeSat ?? 0;
     final feeSat = isChainSwap
         ? (wt?.isOutgoing == true
               ? (onChainFeeSat > 0
@@ -158,7 +158,7 @@ class CsvTransactionExportFormatter implements TransactionExportFormatter {
       direction: direction,
       amountSats: amountSat.toString(),
       amountBtc: _btc(amountSat),
-      feeSats: feeSat.toString(),
+      feeSats: wt?.feeUnavailable == true ? '' : feeSat.toString(),
       status: status,
       txid: tx.txId ?? '',
       network: network,
@@ -219,6 +219,7 @@ class CsvTransactionExportFormatter implements TransactionExportFormatter {
     if (wt != null) {
       return switch (wt.status) {
         WalletTransactionStatus.pending => 'pending',
+        WalletTransactionStatus.notBroadcast => 'not_broadcast',
         WalletTransactionStatus.confirmed => 'confirmed',
       };
     }

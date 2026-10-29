@@ -18,6 +18,7 @@ class WalletTransactionMapper {
           walletTransaction.direction == WalletTransactionDirection.incoming,
       amountSat: walletTransaction.amountSat,
       feeSat: walletTransaction.feeSat,
+      feeUnavailable: walletTransaction.feeUnavailable,
       inputs: walletTransaction.inputs
           .map((input) => TransactionInputMapper.fromEntity(input))
           .toList(),
@@ -43,6 +44,7 @@ class WalletTransactionMapper {
     required List<TransactionOutput> outputs,
     List<Label>? labels,
     required bool isRbf,
+    bool isNotBroadcast = false,
   }) {
     return WalletTransaction(
       walletId: walletId,
@@ -54,11 +56,14 @@ class WalletTransactionMapper {
           ? WalletTransactionDirection.incoming
           : WalletTransactionDirection.outgoing,
       status: walletTransactionModel.confirmationTimestamp == null
-          ? WalletTransactionStatus.pending
+          ? isNotBroadcast
+                ? WalletTransactionStatus.notBroadcast
+                : WalletTransactionStatus.pending
           : WalletTransactionStatus.confirmed,
       txId: walletTransactionModel.txId,
       amountSat: walletTransactionModel.amountSat,
       feeSat: walletTransactionModel.feeSat,
+      feeUnavailable: walletTransactionModel.feeUnavailable,
       confirmationTime: walletTransactionModel.confirmationTimestamp != null
           ? DateTime.fromMillisecondsSinceEpoch(
               walletTransactionModel.confirmationTimestamp! * 1000,

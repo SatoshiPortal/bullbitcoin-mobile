@@ -18,12 +18,14 @@ class BroadcastSellPayinUsecase {
   Future<Result<String, SellFailure>> bitcoin(
     String transaction, {
     required bool isPsbt,
+    String? walletId,
   }) async {
     try {
       return Ok(
         await _broadcastBitcoinTransactionUsecase.execute(
           transaction,
           isPsbt: isPsbt,
+          walletId: walletId,
         ),
       );
     } catch (e, st) {

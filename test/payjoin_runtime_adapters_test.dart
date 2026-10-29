@@ -1,3 +1,12 @@
+import 'package:bb_mobile/core/wallet/data/cbf_privacy_guard.dart';
+import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasource.dart';
+import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_model.dart';
+import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart';
+import 'package:bb_mobile/core/wallet/domain/bitcoin_sync_operation_exception.dart';
+import 'package:transaction_sync/transaction_sync.dart'
+    show
+        InMemoryWalletSourceOperationCoordinator,
+        CbfRemoteLookupForbiddenFailure;
 import 'dart:io';
 
 import 'package:bull_logger/bull_logger.dart';
@@ -27,7 +36,11 @@ class _MockWalletTransactionRepository extends Mock
 
 class _MockBlockchain extends Mock implements BdkBitcoinBlockchainDatasource {}
 
-class _MockWallet extends Mock implements Wallet {}
+class _MockWallet extends Mock implements Wallet {
+  _MockWallet() {
+    when(() => bitcoinSyncSource).thenReturn(BitcoinSyncSource.electrum);
+  }
+}
 
 /// One server; like the real runner, a transient failure ends up wrapped and
 /// a permanent one is rethrown as is.
@@ -65,7 +78,60 @@ const _walletId = 'wallet';
 const _txId =
     'bb71279aa030b144a12329126f0b44e6954225834d3dafaab6328bfd48939325';
 
+class _MockMetadata extends Mock implements WalletMetadataDatasource {}
+
+class _MockServers extends Mock implements ElectrumServersPort {}
+
 void main() {
+  test(
+    'wallet-aware Payjoin broadcast rejects CBF without an Electrum call',
+    () async {
+      const id = 'wpkh([deadbeef/84h/0h/0h])';
+      final metadata = _MockMetadata();
+      when(() => metadata.fetch(id)).thenAnswer(
+        (_) async => const WalletMetadataModel(
+          id: id,
+          masterFingerprint: 'deadbeef',
+          xpubFingerprint: 'public',
+          isEncryptedVaultTested: false,
+          isPhysicalBackupTested: false,
+          xpub: 'public',
+          externalPublicDescriptor: 'public-external',
+          internalPublicDescriptor: 'public-internal',
+          signer: Signer.none,
+          isDefault: false,
+          bitcoinSyncSource: BitcoinSyncSource.compactBlockFilters,
+        ),
+      );
+      final servers = _MockServers();
+      final blockchain = _MockBlockchain();
+      final adapter = AppPayjoinBlockchainAdapter(
+        blockchain,
+        servers,
+        privacy: CbfPrivacyGuard(
+          metadata,
+          InMemoryWalletSourceOperationCoordinator(),
+        ),
+      );
+      await expectLater(
+        adapter.broadcastWalletPsbt(
+          walletId: id,
+          network: BitcoinNetwork.mainnet,
+          psbt: 'public-placeholder',
+        ),
+        throwsA(
+          isA<BitcoinSyncOperationException>().having(
+            (error) => error.failure,
+            'failure',
+            isA<CbfRemoteLookupForbiddenFailure>(),
+          ),
+        ),
+      );
+      verifyZeroInteractions(servers);
+      verifyZeroInteractions(blockchain);
+    },
+  );
+
   late _MockWalletRepository wallets;
   late _MockWalletTransactionRepository transactions;
   late _MockBlockchain blockchain;

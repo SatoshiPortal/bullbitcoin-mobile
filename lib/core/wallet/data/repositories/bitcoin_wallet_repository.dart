@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/wallet/domain/bitcoin_sync_operation_exception.dart';
 import 'dart:typed_data';
 
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
@@ -295,7 +296,13 @@ class BitcoinWalletRepository implements BitcoinSendPort {
     required ScriptType scriptType,
     required bool isTestnet,
     required ElectrumConnection electrumServer,
+    BitcoinSyncSource bitcoinSyncSource = BitcoinSyncSource.electrum,
   }) {
+    if (bitcoinSyncSource == BitcoinSyncSource.compactBlockFilters) {
+      throw const BitcoinSyncOperationException(
+        CbfRemoteLookupForbiddenFailure(),
+      );
+    }
     return _bdkWallet.dryScan(
       entropy: entropy,
       passphrase: passphrase,

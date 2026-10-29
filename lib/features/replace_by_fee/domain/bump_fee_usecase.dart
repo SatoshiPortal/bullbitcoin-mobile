@@ -78,6 +78,7 @@ class BumpFeeUsecase {
       final broadcastedTxid = await _broadcastBitcoinTransactionUsecase.execute(
         psbt,
         isPsbt: true,
+        walletId: walletId,
       );
       return Ok(broadcastedTxid);
     } on ManipulatedTransactionException catch (e, st) {

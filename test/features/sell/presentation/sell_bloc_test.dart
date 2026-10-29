@@ -314,7 +314,11 @@ void main() {
       )),
     );
     when(
-      () => broadcastSellPayin.bitcoin(any(), isPsbt: any(named: 'isPsbt')),
+      () => broadcastSellPayin.bitcoin(
+        any(),
+        isPsbt: any(named: 'isPsbt'),
+        walletId: any(named: 'walletId'),
+      ),
     ).thenAnswer((_) async => Ok<String, SellFailure>(expectedTxid));
     when(
       () => labelsFacade.store(any()),
@@ -606,7 +610,11 @@ void main() {
       );
       verify(() => watchPayjoin.execute(bip21)).called(1);
       verifyNever(
-        () => broadcastSellPayin.bitcoin(any(), isPsbt: any(named: 'isPsbt')),
+        () => broadcastSellPayin.bitcoin(
+          any(),
+          isPsbt: any(named: 'isPsbt'),
+          walletId: any(named: 'walletId'),
+        ),
       );
     });
 
@@ -908,7 +916,11 @@ void main() {
           ),
         ).called(1);
         verifyNever(
-          () => broadcastSellPayin.bitcoin(any(), isPsbt: any(named: 'isPsbt')),
+          () => broadcastSellPayin.bitcoin(
+            any(),
+            isPsbt: any(named: 'isPsbt'),
+            walletId: any(named: 'walletId'),
+          ),
         );
 
         bloc.add(const SellEvent.sendPaymentConfirmed());
@@ -942,7 +954,11 @@ void main() {
         await Future<void>.delayed(const Duration(seconds: 6));
 
         verify(
-          () => broadcastSellPayin.bitcoin(any(), isPsbt: any(named: 'isPsbt')),
+          () => broadcastSellPayin.bitcoin(
+            any(),
+            isPsbt: any(named: 'isPsbt'),
+            walletId: any(named: 'walletId'),
+          ),
         ).called(1);
         verify(
           () => prepareSellBitcoinPayin.execute(
@@ -1100,7 +1116,11 @@ void main() {
       ),
     ).called(1);
     verifyNever(
-      () => broadcastSellPayin.bitcoin(any(), isPsbt: any(named: 'isPsbt')),
+      () => broadcastSellPayin.bitcoin(
+        any(),
+        isPsbt: any(named: 'isPsbt'),
+        walletId: any(named: 'walletId'),
+      ),
     );
 
     final state = bloc.state as SellPaymentState;
@@ -1357,7 +1377,11 @@ void main() {
       bloc.add(const SellEvent.sendPaymentConfirmed());
       await Future<void>.delayed(const Duration(milliseconds: 50));
       verifyNever(
-        () => broadcastSellPayin.bitcoin(any(), isPsbt: any(named: 'isPsbt')),
+        () => broadcastSellPayin.bitcoin(
+          any(),
+          isPsbt: any(named: 'isPsbt'),
+          walletId: any(named: 'walletId'),
+        ),
       );
     });
 
@@ -1529,7 +1553,11 @@ void main() {
       await Future<void>.delayed(const Duration(milliseconds: 100));
 
       verifyNever(
-        () => broadcastSellPayin.bitcoin(any(), isPsbt: any(named: 'isPsbt')),
+        () => broadcastSellPayin.bitcoin(
+          any(),
+          isPsbt: any(named: 'isPsbt'),
+          walletId: any(named: 'walletId'),
+        ),
       );
       expect((bloc.state as SellPaymentState).isConfirmingPayment, isFalse);
     });

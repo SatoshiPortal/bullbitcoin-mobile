@@ -12,10 +12,12 @@ enum WalletTransactionDirection { incoming, outgoing }
 
 enum WalletTransactionStatus {
   pending,
+  notBroadcast,
   confirmed;
 
   String displayName(BuildContext context) {
     switch (this) {
+      case WalletTransactionStatus.notBroadcast:
       case WalletTransactionStatus.pending:
         return context.loc.coreWalletTransactionStatusPending;
       case WalletTransactionStatus.confirmed:
@@ -34,6 +36,7 @@ sealed class WalletTransaction with _$WalletTransaction {
     required String txId,
     required int amountSat,
     required int feeSat,
+    @Default(false) bool feeUnavailable,
     required int vsize,
     required List<TransactionInput> inputs,
     required List<TransactionOutput> outputs,
@@ -46,13 +49,16 @@ sealed class WalletTransaction with _$WalletTransaction {
 
   const WalletTransaction._();
 
+  int? get knownFeeSat => feeUnavailable ? null : feeSat;
+
   bool get isBitcoin => network.isBitcoin;
   bool get isLiquid => network.isLiquid;
   bool get isTestnet => network.isTestnet;
   bool get isMainnet => network.isMainnet;
   bool get isIncoming => direction == WalletTransactionDirection.incoming;
   bool get isOutgoing => direction == WalletTransactionDirection.outgoing;
-  bool get isPending => status == WalletTransactionStatus.pending;
+  bool get isPending => status != WalletTransactionStatus.confirmed;
+  bool get isNotBroadcast => status == WalletTransactionStatus.notBroadcast;
   bool get isConfirmed => status == WalletTransactionStatus.confirmed;
 
   TransactionOutput? get destinationOutput {

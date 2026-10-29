@@ -225,6 +225,38 @@ void main() {
     replaceByFee: replaceByFee,
   );
 
+  test(
+    'a held CBF recovery session delays construction of an existing-coins spend',
+    () async {
+      when(() => metadataDatasource.fetch(_walletId)).thenAnswer(
+        (_) async => metadata.copyWith(
+          bitcoinSyncSource: BitcoinSyncSource.compactBlockFilters,
+        ),
+      );
+      final entered = Completer<void>();
+      final release = Completer<void>();
+      final recovery = coordinator.runExclusive(
+        const WalletSourceKey(_walletId, 'bitcoin', 'testnet'),
+        (_) async {
+          entered.complete();
+          await release.future;
+        },
+        kind: WalletOperationKind.synchronize,
+      );
+      await entered.future;
+      final send = buildPsbt();
+      try {
+        await pumpEventQueue();
+        verifyZeroInteractions(bdkDatasource);
+      } finally {
+        release.complete();
+        await recovery;
+        await send;
+      }
+      expect(capturedReplaceByFee(), isTrue);
+    },
+  );
+
   group('D7 — frozen store is read live at build time', () {
     test('a coin frozen in the store rejects the selection even when '
         'the caller passes NO unspendable list', () async {

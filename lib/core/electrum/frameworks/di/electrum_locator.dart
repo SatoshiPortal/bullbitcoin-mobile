@@ -1,3 +1,7 @@
+import 'package:transaction_sync/transaction_sync.dart'
+    show WalletSourceOperationCoordinator;
+import 'package:bb_mobile/core/wallet/data/cbf_privacy_guard.dart';
+import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/core/electrum/adapters/drift_electrum_server_repository.dart';
 import 'package:bb_mobile/core/electrum/adapters/drift_electrum_settings_repository.dart';
 import 'package:bb_mobile/core/electrum/adapters/drift_electrum_transaction_repository.dart';
@@ -91,6 +95,10 @@ class ElectrumLocator {
     );
     locator.registerLazySingleton<TransactionPort>(
       () => ElectrumTransactionPortAdapter(
+        privacy: CbfPrivacyGuard(
+          locator<WalletMetadataDatasource>(),
+          locator<WalletSourceOperationCoordinator>(),
+        ),
         serversPort: locator<ElectrumServersPort>(),
         repository: locator<ElectrumTransactionRepository>(),
         environmentPort: locator<EnvironmentPort>(),

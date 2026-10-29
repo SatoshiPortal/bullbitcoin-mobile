@@ -22,6 +22,7 @@ WalletTransaction _walletTx({
   Network network = Network.bitcoinMainnet,
   WalletTransactionDirection direction = WalletTransactionDirection.incoming,
   int feeSat = 0,
+  bool feeUnavailable = false,
   DateTime? confirmationTime,
 }) {
   return WalletTransaction(
@@ -32,6 +33,7 @@ WalletTransaction _walletTx({
     txId: txId,
     amountSat: amountSat,
     feeSat: feeSat,
+    feeUnavailable: feeUnavailable,
     vsize: 110,
     inputs: const [],
     outputs: const [],
@@ -149,6 +151,20 @@ void main() {
     expect(row[4], '0.00500000');
     expect(row[7], 'abc');
     expect(row[8], 'bitcoin');
+  });
+
+  test('an unavailable fee is blank rather than zero in the export', () async {
+    stub([
+      Transaction(
+        walletTransaction: _walletTx(
+          txId: 'public-tx',
+          amountSat: 100,
+          feeUnavailable: true,
+        ),
+      ),
+    ]);
+    final csv = await buildCsv();
+    expect(csv.trim().split('\n')[1].split(',')[5], isEmpty);
   });
 
   test('marks liquid transactions with the liquid network and type', () async {

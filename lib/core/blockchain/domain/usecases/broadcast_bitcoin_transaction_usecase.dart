@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/wallet/domain/bitcoin_sync_operation_exception.dart';
 import 'package:bb_mobile/core/blockchain/data/repository/bitcoin_blockchain_repository.dart';
 import 'package:bb_mobile/core/errors/send_errors.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
@@ -12,7 +13,11 @@ class BroadcastBitcoinTransactionUsecase {
     required this._settingsRepository,
   }) : _bitcoinBlockchain = bitcoinBlockchainRepository;
 
-  Future<String> execute(String transaction, {required bool isPsbt}) async {
+  Future<String> execute(
+    String transaction, {
+    required bool isPsbt,
+    String? walletId,
+  }) async {
     try {
       final settings = await _settingsRepository.fetch();
       final isTestnet = settings.environment.isTestnet;
@@ -21,12 +26,16 @@ class BroadcastBitcoinTransactionUsecase {
         return await _bitcoinBlockchain.broadcastPsbt(
           transaction,
           isTestnet: isTestnet,
+          walletId: walletId,
         );
       }
       return await _bitcoinBlockchain.broadcastTransaction(
         hex.decode(transaction),
         isTestnet: isTestnet,
+        walletId: walletId,
       );
+    } on BitcoinSyncOperationException {
+      rethrow;
     } catch (e) {
       throw BroadcastTransactionException(e.toString());
     }

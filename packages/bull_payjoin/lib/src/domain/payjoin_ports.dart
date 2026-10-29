@@ -35,6 +35,21 @@ abstract interface class PayjoinBlockchainPort {
   });
 }
 
+/// Wallet-aware hosts retain source-policy exclusion through remote I/O.
+abstract interface class PayjoinWalletBlockchainPort
+    implements PayjoinBlockchainPort {
+  Future<void> broadcastWalletTransaction({
+    required String walletId,
+    required BitcoinNetwork network,
+    required Uint8List transaction,
+  });
+  Future<void> broadcastWalletPsbt({
+    required String walletId,
+    required BitcoinNetwork network,
+    required String psbt,
+  });
+}
+
 /// Live network fee estimation, used only to bound the receiver's exposure.
 ///
 /// Kept apart from [PayjoinBlockchainPort]: broadcasting talks to the chain,

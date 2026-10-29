@@ -10,3 +10,5 @@ export 'src/timer_background_task_scheduler.dart';
 export 'src/wallet_transaction_sync_background_task.dart';
 export 'src/wallet_payment_notification_identity.dart';
 export 'src/sqlite_wallet_sync_job_queue.dart';
+
+export 'src/admit_wallet_sync_usecase.dart';

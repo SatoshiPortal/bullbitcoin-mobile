@@ -1,3 +1,6 @@
+import 'package:bb_mobile/core/wallet/domain/bitcoin_sync_operation_exception.dart';
+import 'package:transaction_sync/transaction_sync.dart'
+    show InitialScanRequiredFailure;
 import 'dart:async';
 import 'dart:io';
 import 'package:bb_mobile/core/utils/result.dart';
@@ -457,12 +460,14 @@ void main() {
       balanceSat: BigInt.zero,
     );
     final passes = <bool>[];
+    final initialPasses = <bool>[];
     late List<Completer<void>> gates;
 
     setUpAll(() => registerFallbackValue(bitcoinWallet));
 
     setUp(() {
       passes.clear();
+      initialPasses.clear();
       gates = [];
       when(() => getWallets.execute(onlyBitcoin: true)).thenAnswer(
         (_) async => Ok<List<Wallet>, WalletFailure>([bitcoinWallet]),
@@ -474,14 +479,122 @@ void main() {
         () => syncWallet.execute(
           any(),
           discoverHistory: any(named: 'discoverHistory'),
+          allowInitialScan: any(named: 'allowInitialScan'),
         ),
       ).thenAnswer((invocation) {
+        initialPasses.add(invocation.namedArguments[#allowInitialScan] as bool);
         passes.add(invocation.namedArguments[#discoverHistory] as bool);
         final gate = Completer<void>();
         gates.add(gate);
         return gate.future;
       });
     });
+
+    test(
+      'scheduled recovery deferral preserves Liquid and does not throttle foreground',
+      () async {
+        when(
+          () => getWallets.execute(onlyLiquid: true),
+        ).thenAnswer((_) async => const Ok<List<Wallet>, WalletFailure>([]));
+        when(
+          () => syncWallet.execute(
+            any(),
+            discoverHistory: any(named: 'discoverHistory'),
+            allowInitialScan: any(named: 'allowInitialScan'),
+          ),
+        ).thenAnswer((invocation) async {
+          final allowed = invocation.namedArguments[#allowInitialScan] as bool;
+          initialPasses.add(allowed);
+          if (!allowed) {
+            throw const BitcoinSyncOperationException(
+              InitialScanRequiredFailure(),
+            );
+          }
+        });
+        await coordinator.sync(
+          only: {SyncKind.bitcoin, SyncKind.liquid},
+          trigger: SyncTrigger.scheduled,
+        );
+        verify(() => getWallets.execute(onlyLiquid: true)).called(1);
+        await coordinator.sync(
+          only: {SyncKind.bitcoin},
+          trigger: SyncTrigger.automatic,
+        );
+        expect(initialPasses, [false, true]);
+      },
+    );
+
+    test(
+      'automatic request behind scheduled waits for a foreground-capable pass',
+      () async {
+        final scheduled = coordinator.sync(
+          only: {SyncKind.bitcoin},
+          trigger: SyncTrigger.scheduled,
+        );
+        await pumpEventQueue();
+        var foregroundDone = false;
+        final automatic = coordinator
+            .sync(only: {SyncKind.bitcoin}, trigger: SyncTrigger.automatic)
+            .then((_) {
+              foregroundDone = true;
+            });
+        await pumpEventQueue();
+        expect(initialPasses, [false]);
+        gates[0].complete();
+        await pumpEventQueue();
+        expect(initialPasses, [false, true]);
+        expect(foregroundDone, isFalse);
+        gates[1].complete();
+        await scheduled;
+        await automatic;
+      },
+    );
+
+    test('scheduled request can join an active foreground pass', () async {
+      final automatic = coordinator.sync(
+        only: {SyncKind.bitcoin},
+        trigger: SyncTrigger.automatic,
+      );
+      await pumpEventQueue();
+      final scheduled = coordinator.sync(
+        only: {SyncKind.bitcoin},
+        trigger: SyncTrigger.scheduled,
+      );
+      await pumpEventQueue();
+      expect(initialPasses, [true]);
+      gates[0].complete();
+      await automatic;
+      await scheduled;
+      expect(initialPasses, [true]);
+    });
+
+    test(
+      'a queued scheduled pass is promoted by a foreground request',
+      () async {
+        final liquid = coordinator.sync(
+          only: {SyncKind.liquid},
+          trigger: SyncTrigger.user,
+        );
+        await pumpEventQueue();
+        final scheduled = coordinator.sync(
+          only: {SyncKind.bitcoin},
+          trigger: SyncTrigger.scheduled,
+        );
+        final automatic = coordinator.sync(
+          only: {SyncKind.bitcoin},
+          trigger: SyncTrigger.automatic,
+        );
+        await pumpEventQueue();
+        gates[0].complete();
+        await pumpEventQueue();
+        expect(initialPasses, [true, true]);
+        gates[1].complete();
+        await liquid;
+        await scheduled;
+        await automatic;
+        expect(initialPasses, [true, true]);
+      },
+    );
 
     Future<void> releaseAll() async {
       for (var i = 0; i < 10 && gates.any((g) => !g.isCompleted); i++) {
