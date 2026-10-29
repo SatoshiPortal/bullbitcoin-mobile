@@ -24,6 +24,7 @@ class CreateDefaultWalletsUsecase {
   Future<List<Wallet>> execute({
     List<String>? mnemonicWords,
     String? passphrase,
+    WalletBirthday? birthday,
   }) async {
     try {
       final settings = await _settingsRepository.fetch();
@@ -53,7 +54,9 @@ class CreateDefaultWalletsUsecase {
 
       final isGenerated = mnemonicWords == null;
       final mnemonic = mnemonicWords ?? _mnemonicGenerator.generate();
-      final DateTime? birthday = isGenerated ? DateTime.now().toUtc() : null;
+      final effectiveBirthday = isGenerated
+          ? WalletBirthday(DateTime.now())
+          : birthday;
       final seed = await _seedRepository.createFromMnemonic(
         mnemonicWords: mnemonic,
         passphrase: passphrase,
@@ -68,7 +71,7 @@ class CreateDefaultWalletsUsecase {
               network: bitcoinNetwork,
               scriptType: scriptType,
               isDefault: true,
-              birthday: birthday,
+              birthday: effectiveBirthday,
             ),
           );
         }
@@ -79,7 +82,7 @@ class CreateDefaultWalletsUsecase {
               network: liquidNetwork,
               scriptType: scriptType,
               isDefault: true,
-              birthday: birthday,
+              birthday: effectiveBirthday,
             ),
           );
         }

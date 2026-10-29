@@ -1,3 +1,4 @@
+import 'package:primitives/primitives.dart' show WalletBirthday;
 import 'package:bb_mobile/core/recoverbull/domain/entity/decrypted_vault.dart';
 import 'package:bb_mobile/core/recoverbull/domain/recoverbull_failure.dart';
 import 'package:bull_logger/bull_logger.dart';
@@ -20,6 +21,7 @@ class RestoreVaultUsecase {
   // the boundary, mapping any failure to a sanitized core failure.
   Future<Result<Null, RecoverBullCoreFailure>> execute({
     required DecryptedVault decryptedVault,
+    WalletBirthday? birthday,
   }) async {
     try {
       final mnemonic = bip39.Mnemonic.fromWords(
@@ -30,6 +32,7 @@ class RestoreVaultUsecase {
 
       final restoredWallets = await _createDefaultWallets.execute(
         mnemonicWords: mnemonic.words,
+        birthday: birthday,
       );
 
       for (final wallet in restoredWallets) {

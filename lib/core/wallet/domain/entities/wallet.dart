@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
+export 'package:primitives/primitives.dart' show WalletBirthday;
+
 part 'wallet.freezed.dart';
 
 enum Network {
@@ -98,6 +100,7 @@ abstract class Wallet with _$Wallet {
   const factory Wallet({
     required String origin,
     String? label,
+    DateTime? birthday,
     required Network network,
     @Default(false) bool isDefault,
     // The fingerprint of the BIP32 root/master key (if a seed was used to derive the wallet)

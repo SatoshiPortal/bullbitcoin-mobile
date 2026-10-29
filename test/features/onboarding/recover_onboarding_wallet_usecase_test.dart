@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/create_default_wallets_usecase.dart';
 import 'package:bb_mobile/features/onboarding/complete_physical_backup_verification_usecase.dart';
@@ -34,6 +35,41 @@ void main() {
   });
 
   group('RecoverOnboardingWalletUsecase', () {
+    for (final birthday in <WalletBirthday?>[
+      null,
+      WalletBirthday(DateTime.parse('2020-03-02T01:30:00+02:00')),
+    ]) {
+      test(
+        'carries a known UTC birthday or preserves unknown (${birthday?.dateTime})',
+        () async {
+          when(
+            () => completePhysicalBackupVerificationUsecase.execute(),
+          ).thenAnswer((_) async {});
+          when(
+            () => createDefaultWalletsUsecase.execute(
+              mnemonicWords: any(named: 'mnemonicWords'),
+              birthday: birthday,
+            ),
+          ).thenAnswer((_) async => []);
+          final result = await usecase.execute(
+            mnemonicWords: const [],
+            birthday: birthday,
+          );
+          expect(result, isA<Ok<void, OnboardingFailure>>());
+          verify(
+            () => createDefaultWalletsUsecase.execute(
+              mnemonicWords: any(named: 'mnemonicWords'),
+              birthday: birthday,
+            ),
+          ).called(1);
+          if (birthday != null) {
+            expect(birthday.dateTime.isUtc, isTrue);
+            expect(birthday.dateTime, DateTime.utc(2020, 3, 1, 23, 30));
+          }
+        },
+      );
+    }
+
     test(
       'maps a foreign wallet-setup failure during recovery to OnboardingWalletSetupFailure '
       'without leaking the raw exception',

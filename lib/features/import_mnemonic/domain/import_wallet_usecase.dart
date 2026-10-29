@@ -27,6 +27,7 @@ class ImportWalletUsecase {
     ScriptType scriptType = ScriptType.bip84,
     String passphrase = '',
     String? label,
+    WalletBirthday? birthday,
   }) async {
     switch (await _checkDuplicateMnemonicUsecase.execute(
       mnemonicWords: mnemonicWords,
@@ -70,6 +71,7 @@ class ImportWalletUsecase {
         isDefault: false,
         sync: false,
         label: label,
+        birthday: birthday,
       );
 
       log.fine('Wallet imported');

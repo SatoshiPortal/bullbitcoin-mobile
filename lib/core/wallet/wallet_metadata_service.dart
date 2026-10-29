@@ -106,7 +106,7 @@ class WalletMetadataService {
     required ScriptType scriptType,
     String? label,
     required bool isDefault,
-    DateTime? birthday,
+    WalletBirthday? birthday,
   }) async {
     final xpub = await Bip32Derivation.getAccountXpub(
       seedBytes: seed.bytes,
@@ -164,7 +164,7 @@ class WalletMetadataService {
       label: label,
       isPhysicalBackupTested: false,
       isEncryptedVaultTested: false,
-      birthday: birthday,
+      birthday: birthday?.dateTime,
     );
   }
 
@@ -173,6 +173,7 @@ class WalletMetadataService {
     required Network network,
     required ScriptType scriptType,
     String label = '',
+    WalletBirthday? birthday,
   }) async {
     if (network.isLiquid) {
       throw UnimplementedError(
@@ -206,6 +207,7 @@ class WalletMetadataService {
         network: network,
         scriptType: scriptType,
       ),
+      birthday: birthday?.dateTime,
       xpubFingerprint: bip32Xpub.fingerprintHex,
       signer: Signer.none,
       signerDevice: null,
@@ -221,20 +223,23 @@ class WalletMetadataService {
   }
 
   static Future<WalletMetadataModel> fromDescriptor(
-    WatchOnlyDescriptorEntity entity,
-  ) async {
+    WatchOnlyDescriptorEntity entity, {
+    WalletBirthday? birthday,
+  }) async {
     return WalletMetadataModel(
       id: WalletMetadataService.encodeOrigin(
         fingerprint: entity.masterFingerprint,
         network: entity.network,
         scriptType: entity.scriptType,
       ),
+      birthday: birthday?.dateTime,
       masterFingerprint: entity.masterFingerprint,
       xpubFingerprint: entity.pubkeyFingerprint,
       signer: Signer.fromEntity(entity.signer),
-      signerDevice: entity.signerDevice != null
-          ? SignerDevice.fromEntity(entity.signerDevice!)
-          : null,
+      signerDevice: switch (entity.signerDevice) {
+        final device? => SignerDevice.fromEntity(device),
+        null => null,
+      },
       xpub: entity.pubkey,
       externalPublicDescriptor: entity.descriptor.external,
       internalPublicDescriptor: entity.descriptor.internal,

@@ -95,7 +95,7 @@ class WalletRepository {
     String? label,
     bool isDefault = false,
     bool sync = false,
-    DateTime? birthday,
+    WalletBirthday? birthday,
   }) async {
     // Derive and store the wallet metadata
     final walletLabel =
@@ -137,6 +137,7 @@ class WalletRepository {
 
     return Wallet(
       origin: metadata.id,
+      birthday: metadata.birthday?.toUtc(),
       label: metadata.label,
       network: network,
       isDefault: metadata.isDefault,
@@ -156,9 +157,11 @@ class WalletRepository {
   Future<Wallet> importDescriptor({
     required WatchOnlyDescriptorEntity watchOnlyDescriptor,
     bool sync = false,
+    WalletBirthday? birthday,
   }) async {
     final metadata = await WalletMetadataService.fromDescriptor(
       watchOnlyDescriptor,
+      birthday: birthday,
     );
 
     final allWallets = await _readWallets();
@@ -180,6 +183,7 @@ class WalletRepository {
     // Return the created wallet entity
     return Wallet(
       origin: metadata.id,
+      birthday: metadata.birthday?.toUtc(),
       label: metadata.label,
       network: Network.fromEnvironment(
         isTestnet: metadata.isTestnet,
@@ -204,6 +208,7 @@ class WalletRepository {
     required Network network,
     required ScriptType scriptType,
     required String label,
+    WalletBirthday? birthday,
     bool sync = false,
   }) async {
     final metadata = await WalletMetadataService.deriveFromXpub(
@@ -211,6 +216,7 @@ class WalletRepository {
       network: network,
       scriptType: scriptType,
       label: label,
+      birthday: birthday,
     );
 
     final allWallets = await _readWallets();
@@ -232,6 +238,7 @@ class WalletRepository {
     // Return the created wallet entity
     return Wallet(
       origin: metadata.id,
+      birthday: metadata.birthday?.toUtc(),
       label: metadata.label,
       network: Network.fromEnvironment(
         isTestnet: metadata.isTestnet,
@@ -281,6 +288,7 @@ class WalletRepository {
     // Return the wallet entity
     return Wallet(
       origin: metadata.id,
+      birthday: metadata.birthday?.toUtc(),
       label: metadata.label,
       network: Network.fromEnvironment(
         isTestnet: metadata.isTestnet,
@@ -390,6 +398,7 @@ class WalletRepository {
         .map(
           (entry) => Wallet(
             origin: entry.value.id,
+            birthday: entry.value.birthday?.toUtc(),
             label: entry.value.label,
             network: Network.fromEnvironment(
               isTestnet: entry.value.isTestnet,

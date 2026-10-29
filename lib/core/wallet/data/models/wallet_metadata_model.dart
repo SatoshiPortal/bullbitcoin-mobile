@@ -64,7 +64,7 @@ extension WalletMetadataModelMapper on WalletMetadataModel {
     label: Value(label),
     syncedAt: Value(syncedAt),
     signerDevice: Value(signerDevice),
-    birthday: Value(birthday),
+    birthday: Value(birthday?.toUtc()),
   );
 
   static WalletMetadataModel fromSqlite(WalletMetadataRow row) =>
@@ -84,6 +84,6 @@ extension WalletMetadataModelMapper on WalletMetadataModel {
         label: row.label,
         syncedAt: row.syncedAt,
         signerDevice: row.signerDevice,
-        birthday: row.birthday,
+        birthday: row.birthday?.toUtc(),
       );
 }

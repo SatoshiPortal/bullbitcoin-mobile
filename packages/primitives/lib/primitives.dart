@@ -13,3 +13,4 @@ export 'src/outpoint.dart';
 export 'src/result.dart';
 export 'src/script_type.dart';
 export 'src/xpub_type.dart';
+export 'src/wallet_birthday.dart';

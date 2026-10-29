@@ -19,6 +19,7 @@ class ImportWatchOnlyXpubUsecase {
   @useResult
   Future<Result<Wallet, ImportWatchOnlyFailure>> execute({
     required WatchOnlyXpubEntity watchOnlyXpub,
+    WalletBirthday? birthday,
   }) async {
     try {
       final wallet = await _wallet.importWatchOnlyXpub(
@@ -26,6 +27,7 @@ class ImportWatchOnlyXpubUsecase {
         network: watchOnlyXpub.network,
         scriptType: watchOnlyXpub.scriptType,
         label: watchOnlyXpub.label,
+        birthday: birthday,
       );
       return Ok(wallet);
     } catch (e, st) {

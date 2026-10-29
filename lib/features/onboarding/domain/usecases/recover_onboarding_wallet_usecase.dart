@@ -1,3 +1,4 @@
+import 'package:primitives/primitives.dart' show WalletBirthday;
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/create_default_wallets_usecase.dart';
@@ -18,9 +19,13 @@ class RecoverOnboardingWalletUsecase {
   @useResult
   Future<Result<void, OnboardingFailure>> execute({
     required List<String> mnemonicWords,
+    WalletBirthday? birthday,
   }) async {
     try {
-      await _createDefaultWalletsUsecase.execute(mnemonicWords: mnemonicWords);
+      await _createDefaultWalletsUsecase.execute(
+        mnemonicWords: mnemonicWords,
+        birthday: birthday,
+      );
     } catch (e, st) {
       log.severe(
         message: 'Onboarding: wallet recovery failed',

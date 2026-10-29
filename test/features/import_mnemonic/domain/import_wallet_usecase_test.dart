@@ -97,6 +97,63 @@ void main() {
   });
 
   group('ImportWalletUsecase', () {
+    for (final birthday in <WalletBirthday?>[
+      null,
+      WalletBirthday(DateTime.parse('2020-03-02T01:30:00+02:00')),
+    ]) {
+      test(
+        'carries a known UTC birthday or preserves unknown (${birthday?.dateTime})',
+        () async {
+          when(
+            () => checkDuplicate.execute(
+              mnemonicWords: any(named: 'mnemonicWords'),
+              passphrase: any(named: 'passphrase'),
+            ),
+          ).thenAnswer((_) async => const Ok(null));
+          when(
+            () => settingsRepository.fetch(),
+          ).thenAnswer((_) async => fakeSettings);
+          when(
+            () => seedRepository.createFromMnemonic(
+              mnemonicWords: any(named: 'mnemonicWords'),
+              passphrase: any(named: 'passphrase'),
+            ),
+          ).thenAnswer((_) async => fakeSeed);
+          when(
+            () => walletRepository.createWallet(
+              seed: any(named: 'seed'),
+              network: any(named: 'network'),
+              scriptType: any(named: 'scriptType'),
+              isDefault: false,
+              sync: false,
+              label: null,
+              birthday: birthday,
+            ),
+          ).thenAnswer((_) async => MockWallet());
+          final result = await usecase.execute(
+            mnemonicWords: const [],
+            birthday: birthday,
+          );
+          expect(result, isA<Ok<Wallet, ImportMnemonicFailure>>());
+          verify(
+            () => walletRepository.createWallet(
+              seed: any(named: 'seed'),
+              network: any(named: 'network'),
+              scriptType: any(named: 'scriptType'),
+              isDefault: false,
+              sync: false,
+              label: null,
+              birthday: birthday,
+            ),
+          ).called(1);
+          if (birthday != null) {
+            expect(birthday.dateTime.isUtc, isTrue);
+            expect(birthday.dateTime, DateTime.utc(2020, 3, 1, 23, 30));
+          }
+        },
+      );
+    }
+
     test('returns Ok(wallet) on success', () async {
       final fakeWallet = MockWallet();
       when(

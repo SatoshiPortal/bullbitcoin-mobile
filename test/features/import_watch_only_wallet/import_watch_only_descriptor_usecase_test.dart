@@ -37,6 +37,38 @@ void main() {
   });
 
   group('ImportWatchOnlyDescriptorUsecase', () {
+    for (final birthday in <WalletBirthday?>[
+      null,
+      WalletBirthday(DateTime.parse('2020-03-02T01:30:00+02:00')),
+    ]) {
+      test(
+        'carries a known UTC birthday or preserves unknown (${birthday?.dateTime})',
+        () async {
+          when(
+            () => repository.importDescriptor(
+              watchOnlyDescriptor: entity,
+              birthday: birthday,
+            ),
+          ).thenAnswer((_) async => _MockWallet());
+          final result = await usecase.execute(
+            watchOnlyDescriptor: entity,
+            birthday: birthday,
+          );
+          expect(result, isA<Ok<Wallet, ImportWatchOnlyFailure>>());
+          verify(
+            () => repository.importDescriptor(
+              watchOnlyDescriptor: entity,
+              birthday: birthday,
+            ),
+          ).called(1);
+          if (birthday != null) {
+            expect(birthday.dateTime.isUtc, isTrue);
+            expect(birthday.dateTime, DateTime.utc(2020, 3, 1, 23, 30));
+          }
+        },
+      );
+    }
+
     test('rejects Liquid descriptors before persistence', () async {
       when(
         () => descriptor.network,
