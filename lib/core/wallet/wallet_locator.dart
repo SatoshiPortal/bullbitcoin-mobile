@@ -1,3 +1,6 @@
+import 'package:bb_mobile/core/wallet/data/electrum_sync_source_guard.dart';
+import 'package:bb_mobile/core/wallet/domain/repositories/wallet_sync_settings_repository.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/update_bitcoin_sync_source_usecase.dart';
 import 'package:bb_mobile/core/electrum/domain/ports/electrum_servers_port.dart';
 import 'package:bb_mobile/core/seed/data/datasources/seed_datasource.dart';
 import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
@@ -82,9 +85,12 @@ class WalletLocator {
       dispose: (_) => syncMetadata.close(),
     );
     locator.registerLazySingleton<WalletSourceOperationCoordinator>(
-      () => DurableWalletSourceOperationCoordinator(
-        databasePath: coordinationDatabasePath(documentsDirectory.path),
-        logSink: logWalletCoordination,
+      () => ElectrumSyncSourceGuard(
+        coordinator: DurableWalletSourceOperationCoordinator(
+          databasePath: coordinationDatabasePath(documentsDirectory.path),
+          logSink: logWalletCoordination,
+        ),
+        metadata: locator<WalletMetadataDatasource>(),
       ),
     );
 
@@ -123,6 +129,15 @@ class WalletLocator {
               WidgetsBinding.instance.lifecycleState ==
               AppLifecycleState.resumed,
         ),
+      ),
+    );
+
+    locator.registerLazySingleton<WalletSyncSettingsRepository>(
+      () => locator<WalletRepository>(),
+    );
+    locator.registerFactory<UpdateBitcoinSyncSourceUsecase>(
+      () => UpdateBitcoinSyncSourceUsecase(
+        repository: locator<WalletSyncSettingsRepository>(),
       ),
     );
 

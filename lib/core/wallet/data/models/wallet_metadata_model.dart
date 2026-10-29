@@ -28,6 +28,7 @@ abstract class WalletMetadataModel with _$WalletMetadataModel {
     DateTime? syncedAt,
     SignerDevice? signerDevice,
     DateTime? birthday,
+    @Default(BitcoinSyncSource.electrum) BitcoinSyncSource bitcoinSyncSource,
   }) = _WalletMetadataModel;
 
   const WalletMetadataModel._();
@@ -65,6 +66,11 @@ extension WalletMetadataModelMapper on WalletMetadataModel {
     syncedAt: Value(syncedAt),
     signerDevice: Value(signerDevice),
     birthday: Value(birthday?.toUtc()),
+    bitcoinSyncSource: Value(
+      id.startsWith('el')
+          ? BitcoinSyncSource.electrum.name
+          : bitcoinSyncSource.name,
+    ),
   );
 
   static WalletMetadataModel fromSqlite(WalletMetadataRow row) =>
@@ -85,5 +91,18 @@ extension WalletMetadataModelMapper on WalletMetadataModel {
         syncedAt: row.syncedAt,
         signerDevice: row.signerDevice,
         birthday: row.birthday?.toUtc(),
+        bitcoinSyncSource: row.id.startsWith('el')
+            ? BitcoinSyncSource.electrum
+            : switch (row.bitcoinSyncSource) {
+                'electrum' => BitcoinSyncSource.electrum,
+                'compactBlockFilters' => BitcoinSyncSource.compactBlockFilters,
+                _ => throw const UnknownBitcoinSyncSourceException(),
+              },
       );
+}
+
+/// Persisted policy cannot be interpreted safely. Never default it to Electrum.
+final class UnknownBitcoinSyncSourceException extends FormatException {
+  const UnknownBitcoinSyncSourceException()
+    : super('Unknown Bitcoin sync source');
 }

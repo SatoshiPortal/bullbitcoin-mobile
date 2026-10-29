@@ -28,6 +28,7 @@ class ImportWalletUsecase {
     String passphrase = '',
     String? label,
     WalletBirthday? birthday,
+    BitcoinSyncSource bitcoinSyncSource = BitcoinSyncSource.electrum,
   }) async {
     switch (await _checkDuplicateMnemonicUsecase.execute(
       mnemonicWords: mnemonicWords,
@@ -72,6 +73,7 @@ class ImportWalletUsecase {
         sync: false,
         label: label,
         birthday: birthday,
+        bitcoinSyncSource: bitcoinSyncSource,
       );
 
       log.fine('Wallet imported');

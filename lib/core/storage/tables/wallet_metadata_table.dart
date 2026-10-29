@@ -90,6 +90,8 @@ class WalletMetadatas extends Table {
   TextColumn get label => text().nullable()();
   DateTimeColumn get syncedAt => dateTime().nullable()();
   DateTimeColumn get birthday => dateTime().nullable()();
+  TextColumn get bitcoinSyncSource =>
+      text().withDefault(const Constant('electrum'))();
 
   @override
   Set<Column> get primaryKey => {id};

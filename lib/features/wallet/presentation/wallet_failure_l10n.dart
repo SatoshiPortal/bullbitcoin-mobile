@@ -21,12 +21,14 @@ extension WalletFailureL10n on WalletFailure {
     WalletNotFoundFailure() => context.loc.walletDeletionErrorWalletNotFound,
     // The list loaded; only the sync behind it failed. Saying "could not be
     // loaded" above a visibly loaded list would contradict the screen.
+    WalletSyncSourceUnavailableFailure() ||
     WalletSyncFailure() => context.loc.walletBalancesMayBeStale,
     WalletStorageFailure() ||
     WalletTransactionLookupFailure() ||
     WalletLwkStatusConflictFailure() ||
     NoWalletsFoundFailure() => context.loc.walletLoadFailed,
     // Never `logMessage`: the reason is for the log, not the screen.
+    WalletUnsupportedSyncSourceFailure() ||
     WalletUnexpectedFailure() => context.loc.oopsSomethingWentWrong,
   };
 }

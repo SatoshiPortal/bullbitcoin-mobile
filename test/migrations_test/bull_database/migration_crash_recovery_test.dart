@@ -15,6 +15,8 @@ import 'generated/schema_v11.dart' as v11;
 import 'generated/schema_v12.dart' as v12;
 import 'generated/schema_v13.dart' as v13;
 import 'generated/schema_v14.dart' as v14;
+import 'generated/schema_v15.dart' as v15;
+import 'generated/schema_v16.dart' as v16;
 import 'generated/schema_v2.dart' as v2;
 import 'generated/schema_v3.dart' as v3;
 import 'generated/schema_v4.dart' as v4;
@@ -39,6 +41,8 @@ final _fixtures = <int, GeneratedDatabase Function(QueryExecutor)>{
   12: v12.DatabaseAtV12.new,
   13: v13.DatabaseAtV13.new,
   14: v14.DatabaseAtV14.new,
+  15: v15.DatabaseAtV15.new,
+  16: v16.DatabaseAtV16.new,
 };
 
 const _labelCount = 3;
@@ -70,6 +74,7 @@ class _ReleasedMigrationOrder extends SqliteDatabase {
       from12To13: Schema12To13.migrate,
       from13To14: Schema13To14.migrate,
       from14To15: Schema14To15.migrate,
+      from15To16: Schema15To16.migrate,
     ),
   );
 }

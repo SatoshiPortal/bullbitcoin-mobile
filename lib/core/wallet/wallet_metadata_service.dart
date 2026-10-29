@@ -107,6 +107,7 @@ class WalletMetadataService {
     String? label,
     required bool isDefault,
     WalletBirthday? birthday,
+    BitcoinSyncSource bitcoinSyncSource = BitcoinSyncSource.electrum,
   }) async {
     final xpub = await Bip32Derivation.getAccountXpub(
       seedBytes: seed.bytes,
@@ -165,6 +166,9 @@ class WalletMetadataService {
       isPhysicalBackupTested: false,
       isEncryptedVaultTested: false,
       birthday: birthday?.dateTime,
+      bitcoinSyncSource: network.isBitcoin
+          ? bitcoinSyncSource
+          : BitcoinSyncSource.electrum,
     );
   }
 
@@ -174,6 +178,7 @@ class WalletMetadataService {
     required ScriptType scriptType,
     String label = '',
     WalletBirthday? birthday,
+    BitcoinSyncSource bitcoinSyncSource = BitcoinSyncSource.electrum,
   }) async {
     if (network.isLiquid) {
       throw UnimplementedError(
@@ -208,6 +213,9 @@ class WalletMetadataService {
         scriptType: scriptType,
       ),
       birthday: birthday?.dateTime,
+      bitcoinSyncSource: network.isBitcoin
+          ? bitcoinSyncSource
+          : BitcoinSyncSource.electrum,
       xpubFingerprint: bip32Xpub.fingerprintHex,
       signer: Signer.none,
       signerDevice: null,
@@ -225,6 +233,7 @@ class WalletMetadataService {
   static Future<WalletMetadataModel> fromDescriptor(
     WatchOnlyDescriptorEntity entity, {
     WalletBirthday? birthday,
+    BitcoinSyncSource bitcoinSyncSource = BitcoinSyncSource.electrum,
   }) async {
     return WalletMetadataModel(
       id: WalletMetadataService.encodeOrigin(
@@ -233,6 +242,9 @@ class WalletMetadataService {
         scriptType: entity.scriptType,
       ),
       birthday: birthday?.dateTime,
+      bitcoinSyncSource: entity.network.isBitcoin
+          ? bitcoinSyncSource
+          : BitcoinSyncSource.electrum,
       masterFingerprint: entity.masterFingerprint,
       xpubFingerprint: entity.pubkeyFingerprint,
       signer: Signer.fromEntity(entity.signer),

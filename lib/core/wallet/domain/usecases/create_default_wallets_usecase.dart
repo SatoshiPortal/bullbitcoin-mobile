@@ -25,6 +25,7 @@ class CreateDefaultWalletsUsecase {
     List<String>? mnemonicWords,
     String? passphrase,
     WalletBirthday? birthday,
+    BitcoinSyncSource bitcoinSyncSource = BitcoinSyncSource.electrum,
   }) async {
     try {
       final settings = await _settingsRepository.fetch();
@@ -72,6 +73,7 @@ class CreateDefaultWalletsUsecase {
               scriptType: scriptType,
               isDefault: true,
               birthday: effectiveBirthday,
+              bitcoinSyncSource: bitcoinSyncSource,
             ),
           );
         }

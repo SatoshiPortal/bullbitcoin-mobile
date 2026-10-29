@@ -546,6 +546,7 @@ void main() {
       );
       final key = WalletSourceKey(derived.id, 'bitcoin', 'testnet');
       await coordinator.runExclusive(key, (session) async => session.retire());
+      when(() => metadata.fetch(derived.id)).thenAnswer((_) async => derived);
       var storeFailures = 1;
       when(() => bdk.walletSyncStartedStream).thenAnswer((_) => Stream.empty());
       when(

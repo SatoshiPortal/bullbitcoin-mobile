@@ -1,3 +1,5 @@
+import 'package:bb_mobile/core/wallet/domain/repositories/wallet_sync_settings_repository.dart';
+import 'package:bb_mobile/core/wallet/data/electrum_sync_source_guard.dart';
 import 'dart:async';
 
 import 'package:async/async.dart' hide Result;
@@ -33,7 +35,7 @@ import 'package:transaction_sync/transaction_sync.dart'
         WalletSourceOperationCoordinator,
         WalletSyncMetadataPort;
 
-class WalletRepository {
+class WalletRepository implements WalletSyncSettingsRepository {
   final WalletMetadataDatasource _walletMetadataDatasource;
   final BdkWalletDatasource _bdkWallet;
   final LwkWalletDatasource _lwkWallet;
@@ -96,6 +98,7 @@ class WalletRepository {
     bool isDefault = false,
     bool sync = false,
     WalletBirthday? birthday,
+    BitcoinSyncSource bitcoinSyncSource = BitcoinSyncSource.electrum,
   }) async {
     // Derive and store the wallet metadata
     final walletLabel =
@@ -109,13 +112,14 @@ class WalletRepository {
         ? 'Instant Payments'
         : label;
 
-    final metadata = await WalletMetadataService.deriveFromSeed(
+    var metadata = await WalletMetadataService.deriveFromSeed(
       seed: seed,
       network: network,
       scriptType: scriptType,
       label: walletLabel,
       isDefault: isDefault,
       birthday: birthday,
+      bitcoinSyncSource: bitcoinSyncSource,
     );
 
     if (isDefault) {
@@ -132,12 +136,18 @@ class WalletRepository {
       sync: sync,
       revalidateMetadata: false,
       allowRetired: true,
-      finalizeSource: () => _walletMetadataDatasource.store(metadata),
+      finalizeSource: () async {
+        await _walletMetadataDatasource.store(metadata);
+        final stored = await _walletMetadataDatasource.fetch(metadata.id);
+        if (stored == null) throw WalletError.notFound(metadata.id);
+        metadata = stored;
+      },
     );
 
     return Wallet(
       origin: metadata.id,
       birthday: metadata.birthday?.toUtc(),
+      bitcoinSyncSource: metadata.bitcoinSyncSource,
       label: metadata.label,
       network: network,
       isDefault: metadata.isDefault,
@@ -158,10 +168,12 @@ class WalletRepository {
     required WatchOnlyDescriptorEntity watchOnlyDescriptor,
     bool sync = false,
     WalletBirthday? birthday,
+    BitcoinSyncSource bitcoinSyncSource = BitcoinSyncSource.electrum,
   }) async {
-    final metadata = await WalletMetadataService.fromDescriptor(
+    var metadata = await WalletMetadataService.fromDescriptor(
       watchOnlyDescriptor,
       birthday: birthday,
+      bitcoinSyncSource: bitcoinSyncSource,
     );
 
     final allWallets = await _readWallets();
@@ -177,13 +189,19 @@ class WalletRepository {
       sync: sync,
       revalidateMetadata: false,
       allowRetired: true,
-      finalizeSource: () => _walletMetadataDatasource.store(metadata),
+      finalizeSource: () async {
+        await _walletMetadataDatasource.store(metadata);
+        final stored = await _walletMetadataDatasource.fetch(metadata.id);
+        if (stored == null) throw WalletError.notFound(metadata.id);
+        metadata = stored;
+      },
     );
 
     // Return the created wallet entity
     return Wallet(
       origin: metadata.id,
       birthday: metadata.birthday?.toUtc(),
+      bitcoinSyncSource: metadata.bitcoinSyncSource,
       label: metadata.label,
       network: Network.fromEnvironment(
         isTestnet: metadata.isTestnet,
@@ -209,14 +227,16 @@ class WalletRepository {
     required ScriptType scriptType,
     required String label,
     WalletBirthday? birthday,
+    BitcoinSyncSource bitcoinSyncSource = BitcoinSyncSource.electrum,
     bool sync = false,
   }) async {
-    final metadata = await WalletMetadataService.deriveFromXpub(
+    var metadata = await WalletMetadataService.deriveFromXpub(
       xpub: xpub,
       network: network,
       scriptType: scriptType,
       label: label,
       birthday: birthday,
+      bitcoinSyncSource: bitcoinSyncSource,
     );
 
     final allWallets = await _readWallets();
@@ -232,13 +252,19 @@ class WalletRepository {
       sync: sync,
       revalidateMetadata: false,
       allowRetired: true,
-      finalizeSource: () => _walletMetadataDatasource.store(metadata),
+      finalizeSource: () async {
+        await _walletMetadataDatasource.store(metadata);
+        final stored = await _walletMetadataDatasource.fetch(metadata.id);
+        if (stored == null) throw WalletError.notFound(metadata.id);
+        metadata = stored;
+      },
     );
 
     // Return the created wallet entity
     return Wallet(
       origin: metadata.id,
       birthday: metadata.birthday?.toUtc(),
+      bitcoinSyncSource: metadata.bitcoinSyncSource,
       label: metadata.label,
       network: Network.fromEnvironment(
         isTestnet: metadata.isTestnet,
@@ -289,6 +315,7 @@ class WalletRepository {
     return Wallet(
       origin: metadata.id,
       birthday: metadata.birthday?.toUtc(),
+      bitcoinSyncSource: metadata.bitcoinSyncSource,
       label: metadata.label,
       network: Network.fromEnvironment(
         isTestnet: metadata.isTestnet,
@@ -353,6 +380,9 @@ class WalletRepository {
   ///   failure, not a read failure: the stored wallet is fine, only its
   ///   balance is stale, and the remedy is the server settings.
   WalletFailure _classify(Object e, String operation) {
+    if (e is BitcoinSyncSourceUnavailableException) {
+      return const WalletSyncSourceUnavailableFailure();
+    }
     if ((e is lwk.LwkError && e.msg.contains('UpdateOnDifferentStatus')) ||
         e.toString().contains('UpdateOnDifferentStatus')) {
       return WalletLwkStatusConflictFailure('$operation: lwk status conflict');
@@ -370,7 +400,9 @@ class WalletRepository {
     bool? onlyLiquid,
     bool sync = false,
   }) async {
-    final metadatas = await _walletMetadataDatasource.fetchAll();
+    final metadatas = await _walletMetadataDatasource.fetchAll(
+      skipUnavailableSources: true,
+    );
     if (metadatas.isEmpty) return [];
 
     final filteredWallets = metadatas
@@ -399,6 +431,7 @@ class WalletRepository {
           (entry) => Wallet(
             origin: entry.value.id,
             birthday: entry.value.birthday?.toUtc(),
+            bitcoinSyncSource: entry.value.bitcoinSyncSource,
             label: entry.value.label,
             network: Network.fromEnvironment(
               isTestnet: entry.value.isTestnet,
@@ -430,6 +463,44 @@ class WalletRepository {
           ),
         )
         .toList();
+  }
+
+  @override
+  @useResult
+  Future<Result<void, WalletFailure>> updateBitcoinSyncSource({
+    required String walletId,
+    required BitcoinSyncSource source,
+  }) async {
+    try {
+      final initial = await _walletMetadataDatasource.fetch(walletId);
+      if (initial == null) return const Err(WalletNotFoundFailure());
+      final key = WalletSourceKey(
+        walletId,
+        initial.isLiquid ? 'liquid' : 'bitcoin',
+        initial.isTestnet ? 'testnet' : 'mainnet',
+      );
+      return await _coordinator.runExclusive<Result<void, WalletFailure>>(key, (
+        _,
+      ) async {
+        final current = await _walletMetadataDatasource.fetch(walletId);
+        if (current == null) return const Err(WalletNotFoundFailure());
+        if (current.isLiquid && source != BitcoinSyncSource.electrum) {
+          return const Err(WalletUnsupportedSyncSourceFailure());
+        }
+        final changed = await _walletMetadataDatasource.updateBitcoinSyncSource(
+          walletId,
+          source,
+        );
+        return changed ? const Ok(null) : const Err(WalletNotFoundFailure());
+      }, allowRetired: true);
+    } on Exception catch (e, st) {
+      log.severe(
+        message: 'updateBitcoinSyncSource failed',
+        error: e.runtimeType,
+        trace: st,
+      );
+      return const Err(WalletStorageFailure());
+    }
   }
 
   Future<void> updateEncryptedBackupTime({
@@ -535,7 +606,9 @@ class WalletRepository {
 
   // used only to delete lwk db - required for UpdateOnDifferentStatusError
   Future<void> deleteLwkDb() async {
-    final metadatas = await _walletMetadataDatasource.fetchAll();
+    final metadatas = await _walletMetadataDatasource.fetchAll(
+      skipUnavailableSources: true,
+    );
 
     final liquidDefaultWallets = metadatas.where(
       (metadata) => metadata.isDefault && metadata.isLiquid,
@@ -571,6 +644,12 @@ class WalletRepository {
     bool allowRetired = false,
     Future<void> Function()? finalizeSource,
   }) async {
+    if (sync &&
+        metadata.isBitcoin &&
+        metadata.bitcoinSyncSource == BitcoinSyncSource.compactBlockFilters) {
+      throw const BitcoinSyncSourceUnavailableException();
+    }
+
     BalanceModel balance;
     if (metadata.isLiquid) {
       final wallet = WalletModel.publicLwk(

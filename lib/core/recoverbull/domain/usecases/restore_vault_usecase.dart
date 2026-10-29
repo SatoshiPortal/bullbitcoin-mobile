@@ -1,4 +1,4 @@
-import 'package:primitives/primitives.dart' show WalletBirthday;
+import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/recoverbull/domain/entity/decrypted_vault.dart';
 import 'package:bb_mobile/core/recoverbull/domain/recoverbull_failure.dart';
 import 'package:bull_logger/bull_logger.dart';
@@ -22,6 +22,7 @@ class RestoreVaultUsecase {
   Future<Result<Null, RecoverBullCoreFailure>> execute({
     required DecryptedVault decryptedVault,
     WalletBirthday? birthday,
+    BitcoinSyncSource bitcoinSyncSource = BitcoinSyncSource.electrum,
   }) async {
     try {
       final mnemonic = bip39.Mnemonic.fromWords(
@@ -33,6 +34,7 @@ class RestoreVaultUsecase {
       final restoredWallets = await _createDefaultWallets.execute(
         mnemonicWords: mnemonic.words,
         birthday: birthday,
+        bitcoinSyncSource: bitcoinSyncSource,
       );
 
       for (final wallet in restoredWallets) {

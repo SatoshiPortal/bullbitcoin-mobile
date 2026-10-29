@@ -135,11 +135,11 @@ void _seedUserData(File file) {
       'INSERT INTO wallet_metadatas (id, master_fingerprint, xpub_fingerprint, '
       'is_encrypted_vault_tested, is_physical_backup_tested, xpub, '
       'external_public_descriptor, internal_public_descriptor, signer, '
-      'signer_device, is_default, label, birthday) VALUES '
+      'signer_device, is_default, label, birthday, bitcoin_sync_source) VALUES '
       "('73c5da0a/84h/0h/0h', '73c5da0a', 'e0b0c1d2', 1, 0, 'xpub6C', "
       "'wpkh([73c5da0a/84h/0h/0h]xpub6C/0/*)', "
       "'wpkh([73c5da0a/84h/0h/0h]xpub6C/1/*)', 'local', NULL, 1, 'Savings', "
-      "'2024-04-20T00:00:00.000')",
+      "'2024-04-20T00:00:00.000', 'compactBlockFilters')",
     );
     db.execute(
       'INSERT INTO swaps (id, type, direction, status, is_testnet, key_index, '
@@ -174,6 +174,7 @@ void _expectUserData(File file) {
     expect(wallet['id'], '73c5da0a/84h/0h/0h');
     expect(wallet['signer'], 'local');
     expect(wallet['birthday'], '2024-04-20T00:00:00.000');
+    expect(wallet['bitcoin_sync_source'], 'compactBlockFilters');
     expect(
       db
           .select('SELECT id, status FROM swaps ORDER BY id')

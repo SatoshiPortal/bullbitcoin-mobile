@@ -62,3 +62,13 @@ final class WalletLwkStatusConflictFailure extends WalletFailure {
 final class WalletUnexpectedFailure extends WalletFailure {
   const WalletUnexpectedFailure([super.logMessage]);
 }
+
+/// The selected transport cannot yet synchronize; never fall back implicitly.
+final class WalletSyncSourceUnavailableFailure extends WalletFailure {
+  const WalletSyncSourceUnavailableFailure();
+}
+
+/// Compact block filters are a Bitcoin-only transport.
+final class WalletUnsupportedSyncSourceFailure extends WalletFailure {
+  const WalletUnsupportedSyncSourceFailure();
+}

@@ -1,4 +1,4 @@
-import 'package:primitives/primitives.dart' show WalletBirthday;
+import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/create_default_wallets_usecase.dart';
@@ -20,11 +20,13 @@ class RecoverOnboardingWalletUsecase {
   Future<Result<void, OnboardingFailure>> execute({
     required List<String> mnemonicWords,
     WalletBirthday? birthday,
+    BitcoinSyncSource bitcoinSyncSource = BitcoinSyncSource.electrum,
   }) async {
     try {
       await _createDefaultWalletsUsecase.execute(
         mnemonicWords: mnemonicWords,
         birthday: birthday,
+        bitcoinSyncSource: bitcoinSyncSource,
       );
     } catch (e, st) {
       log.severe(

@@ -31,6 +31,7 @@ void main() {
     registerFallbackValue(seed);
     registerFallbackValue(Network.bitcoinMainnet);
     registerFallbackValue(ScriptType.bip84);
+    registerFallbackValue(BitcoinSyncSource.electrum);
   });
 
   for (final generated in [false, true]) {
@@ -66,6 +67,7 @@ void main() {
             ),
           ).thenAnswer((_) async => seed);
           final birthdays = <WalletBirthday?>[];
+          final sources = <BitcoinSyncSource>[];
           when(
             () => wallets.createWallet(
               seed: seed,
@@ -73,11 +75,16 @@ void main() {
               scriptType: ScriptType.bip84,
               isDefault: true,
               birthday: any(named: 'birthday'),
+              bitcoinSyncSource: any(named: 'bitcoinSyncSource'),
             ),
           ).thenAnswer((invocation) async {
             final birthday =
                 invocation.namedArguments[#birthday] as WalletBirthday?;
             birthdays.add(birthday);
+            sources.add(
+              invocation.namedArguments[#bitcoinSyncSource]
+                  as BitcoinSyncSource,
+            );
             return Wallet(
               origin: 'public',
               network: invocation.namedArguments[#network] as Network,
@@ -102,9 +109,14 @@ void main() {
               ).execute(
                 mnemonicWords: generated ? null : const [],
                 birthday: supplied,
+                bitcoinSyncSource: BitcoinSyncSource.compactBlockFilters,
               );
           expect(result, hasLength(2));
           expect(birthdays, hasLength(2));
+          expect(sources, [
+            BitcoinSyncSource.compactBlockFilters,
+            BitcoinSyncSource.electrum,
+          ]);
           expect(birthdays[0], birthdays[1]);
           if (generated) {
             for (final birthday in birthdays) {

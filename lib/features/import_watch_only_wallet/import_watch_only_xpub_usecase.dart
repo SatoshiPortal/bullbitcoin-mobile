@@ -20,6 +20,7 @@ class ImportWatchOnlyXpubUsecase {
   Future<Result<Wallet, ImportWatchOnlyFailure>> execute({
     required WatchOnlyXpubEntity watchOnlyXpub,
     WalletBirthday? birthday,
+    BitcoinSyncSource bitcoinSyncSource = BitcoinSyncSource.electrum,
   }) async {
     try {
       final wallet = await _wallet.importWatchOnlyXpub(
@@ -28,6 +29,7 @@ class ImportWatchOnlyXpubUsecase {
         scriptType: watchOnlyXpub.scriptType,
         label: watchOnlyXpub.label,
         birthday: birthday,
+        bitcoinSyncSource: bitcoinSyncSource,
       );
       return Ok(wallet);
     } catch (e, st) {

@@ -13,3 +13,4 @@ export 'package:bb_mobile/core/storage/migrations/schema_6_to_7.dart';
 export 'package:bb_mobile/core/storage/migrations/schema_7_to_8.dart';
 export 'package:bb_mobile/core/storage/migrations/schema_8_to_9.dart';
 export 'package:bb_mobile/core/storage/migrations/schema_9_to_10.dart';
+export 'package:bb_mobile/core/storage/migrations/schema_15_to_16.dart';

@@ -35,39 +35,44 @@ void main() {
   });
 
   group('RecoverOnboardingWalletUsecase', () {
-    for (final birthday in <WalletBirthday?>[
-      null,
-      WalletBirthday(DateTime.parse('2020-03-02T01:30:00+02:00')),
-    ]) {
-      test(
-        'carries a known UTC birthday or preserves unknown (${birthday?.dateTime})',
-        () async {
-          when(
-            () => completePhysicalBackupVerificationUsecase.execute(),
-          ).thenAnswer((_) async {});
-          when(
-            () => createDefaultWalletsUsecase.execute(
-              mnemonicWords: any(named: 'mnemonicWords'),
+    for (final source in BitcoinSyncSource.values) {
+      for (final birthday in <WalletBirthday?>[
+        null,
+        WalletBirthday(DateTime.parse('2020-03-02T01:30:00+02:00')),
+      ]) {
+        test(
+          'carries a known UTC birthday or preserves unknown (${birthday?.dateTime}, $source)',
+          () async {
+            when(
+              () => completePhysicalBackupVerificationUsecase.execute(),
+            ).thenAnswer((_) async {});
+            when(
+              () => createDefaultWalletsUsecase.execute(
+                mnemonicWords: any(named: 'mnemonicWords'),
+                birthday: birthday,
+                bitcoinSyncSource: source,
+              ),
+            ).thenAnswer((_) async => []);
+            final result = await usecase.execute(
+              mnemonicWords: const [],
               birthday: birthday,
-            ),
-          ).thenAnswer((_) async => []);
-          final result = await usecase.execute(
-            mnemonicWords: const [],
-            birthday: birthday,
-          );
-          expect(result, isA<Ok<void, OnboardingFailure>>());
-          verify(
-            () => createDefaultWalletsUsecase.execute(
-              mnemonicWords: any(named: 'mnemonicWords'),
-              birthday: birthday,
-            ),
-          ).called(1);
-          if (birthday != null) {
-            expect(birthday.dateTime.isUtc, isTrue);
-            expect(birthday.dateTime, DateTime.utc(2020, 3, 1, 23, 30));
-          }
-        },
-      );
+              bitcoinSyncSource: source,
+            );
+            expect(result, isA<Ok<void, OnboardingFailure>>());
+            verify(
+              () => createDefaultWalletsUsecase.execute(
+                mnemonicWords: any(named: 'mnemonicWords'),
+                birthday: birthday,
+                bitcoinSyncSource: source,
+              ),
+            ).called(1);
+            if (birthday != null) {
+              expect(birthday.dateTime.isUtc, isTrue);
+              expect(birthday.dateTime, DateTime.utc(2020, 3, 1, 23, 30));
+            }
+          },
+        );
+      }
     }
 
     test(

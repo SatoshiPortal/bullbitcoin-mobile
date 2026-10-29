@@ -1,5 +1,7 @@
 library;
 
+export 'src/domain/bitcoin_sync_source.dart';
+
 export 'src/domain/entities/wallet_transaction.dart';
 export 'src/domain/entities/transaction_chain.dart';
 export 'src/domain/entities/transaction_input.dart';

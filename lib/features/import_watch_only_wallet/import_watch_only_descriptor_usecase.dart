@@ -20,6 +20,7 @@ class ImportWatchOnlyDescriptorUsecase {
   Future<Result<Wallet, ImportWatchOnlyFailure>> execute({
     required WatchOnlyDescriptorEntity watchOnlyDescriptor,
     WalletBirthday? birthday,
+    BitcoinSyncSource bitcoinSyncSource = BitcoinSyncSource.electrum,
   }) async {
     if (!watchOnlyDescriptor.network.isBitcoin) {
       return const Err(InvalidFormatFailure());
@@ -28,6 +29,7 @@ class ImportWatchOnlyDescriptorUsecase {
       final wallet = await _wallet.importDescriptor(
         watchOnlyDescriptor: watchOnlyDescriptor,
         birthday: birthday,
+        bitcoinSyncSource: bitcoinSyncSource,
       );
       return Ok(wallet);
     } catch (e, st) {

@@ -1,3 +1,4 @@
+import 'package:primitives/primitives.dart' show BitcoinSyncSource;
 import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:flutter/material.dart';
@@ -5,6 +6,7 @@ import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 export 'package:primitives/primitives.dart' show WalletBirthday;
+export 'package:primitives/primitives.dart' show BitcoinSyncSource;
 
 part 'wallet.freezed.dart';
 
@@ -101,6 +103,7 @@ abstract class Wallet with _$Wallet {
     required String origin,
     String? label,
     DateTime? birthday,
+    @Default(BitcoinSyncSource.electrum) BitcoinSyncSource bitcoinSyncSource,
     required Network network,
     @Default(false) bool isDefault,
     // The fingerprint of the BIP32 root/master key (if a seed was used to derive the wallet)

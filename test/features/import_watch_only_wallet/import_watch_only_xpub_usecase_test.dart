@@ -42,42 +42,47 @@ void main() {
   });
 
   group('ImportWatchOnlyXpubUsecase', () {
-    for (final birthday in <WalletBirthday?>[
-      null,
-      WalletBirthday(DateTime.parse('2020-03-02T01:30:00+02:00')),
-    ]) {
-      test(
-        'carries a known UTC birthday or preserves unknown (${birthday?.dateTime})',
-        () async {
-          when(
-            () => repository.importWatchOnlyXpub(
-              xpub: any(named: 'xpub'),
-              network: any(named: 'network'),
-              scriptType: any(named: 'scriptType'),
-              label: any(named: 'label'),
+    for (final source in BitcoinSyncSource.values) {
+      for (final birthday in <WalletBirthday?>[
+        null,
+        WalletBirthday(DateTime.parse('2020-03-02T01:30:00+02:00')),
+      ]) {
+        test(
+          'carries a known UTC birthday or preserves unknown (${birthday?.dateTime}, $source)',
+          () async {
+            when(
+              () => repository.importWatchOnlyXpub(
+                xpub: any(named: 'xpub'),
+                network: any(named: 'network'),
+                scriptType: any(named: 'scriptType'),
+                label: any(named: 'label'),
+                birthday: birthday,
+                bitcoinSyncSource: source,
+              ),
+            ).thenAnswer((_) async => _MockWallet());
+            final result = await usecase.execute(
+              watchOnlyXpub: entity,
               birthday: birthday,
-            ),
-          ).thenAnswer((_) async => _MockWallet());
-          final result = await usecase.execute(
-            watchOnlyXpub: entity,
-            birthday: birthday,
-          );
-          expect(result, isA<Ok<Wallet, ImportWatchOnlyFailure>>());
-          verify(
-            () => repository.importWatchOnlyXpub(
-              xpub: any(named: 'xpub'),
-              network: any(named: 'network'),
-              scriptType: any(named: 'scriptType'),
-              label: any(named: 'label'),
-              birthday: birthday,
-            ),
-          ).called(1);
-          if (birthday != null) {
-            expect(birthday.dateTime.isUtc, isTrue);
-            expect(birthday.dateTime, DateTime.utc(2020, 3, 1, 23, 30));
-          }
-        },
-      );
+              bitcoinSyncSource: source,
+            );
+            expect(result, isA<Ok<Wallet, ImportWatchOnlyFailure>>());
+            verify(
+              () => repository.importWatchOnlyXpub(
+                xpub: any(named: 'xpub'),
+                network: any(named: 'network'),
+                scriptType: any(named: 'scriptType'),
+                label: any(named: 'label'),
+                birthday: birthday,
+                bitcoinSyncSource: source,
+              ),
+            ).called(1);
+            if (birthday != null) {
+              expect(birthday.dateTime.isUtc, isTrue);
+              expect(birthday.dateTime, DateTime.utc(2020, 3, 1, 23, 30));
+            }
+          },
+        );
+      }
     }
 
     test('maps an existing wallet to WalletAlreadyExistsFailure', () async {
