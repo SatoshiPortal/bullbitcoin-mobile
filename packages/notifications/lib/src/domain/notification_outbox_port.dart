@@ -66,7 +66,11 @@ abstract interface class NotificationOutboxPort {
     String claimToken,
   );
 
-  Result<void, NotificationsFailure> persistResponse(String payload);
+  /// Restoring an interrupted tap must not supersede a newer pending tap.
+  Result<void, NotificationsFailure> persistResponse(
+    String payload, {
+    bool onlyIfNonePending = false,
+  });
 
   Future<Result<String?, NotificationsFailure>> consumeResponse();
 }

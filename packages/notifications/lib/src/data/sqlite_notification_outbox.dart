@@ -1,3 +1,4 @@
+import '../domain/notification_payload_codec.dart';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
@@ -17,6 +18,7 @@ final class SqliteNotificationOutbox implements NotificationOutboxPort {
   late final Database _database;
   final Duration claimLease;
   static const _schemaVersion = 2;
+  static const _codec = NotificationPayloadCodec();
   static const _maxPlatformId = 0x7fffffff;
 
   SqliteNotificationOutbox({
@@ -121,7 +123,7 @@ final class SqliteNotificationOutbox implements NotificationOutboxPort {
             event.eventId,
             event.title,
             event.body,
-            event.destination.wireValue,
+            _storedDestination(event.destination),
             event.createdAt.toUtc().millisecondsSinceEpoch,
             platformId,
           ],
@@ -166,7 +168,7 @@ final class SqliteNotificationOutbox implements NotificationOutboxPort {
             event.eventId,
             event.title,
             event.body,
-            event.destination.wireValue,
+            _storedDestination(event.destination),
             event.createdAt.toUtc().millisecondsSinceEpoch,
             'pending',
             platformId,
@@ -218,7 +220,7 @@ final class SqliteNotificationOutbox implements NotificationOutboxPort {
               event.eventId,
               event.title,
               event.body,
-              event.destination.wireValue,
+              _storedDestination(event.destination),
               event.createdAt.toUtc().millisecondsSinceEpoch,
               platformId,
               observation.topicId,
@@ -243,7 +245,7 @@ final class SqliteNotificationOutbox implements NotificationOutboxPort {
               event.eventId,
               event.title,
               event.body,
-              event.destination.wireValue,
+              _storedDestination(event.destination),
               event.createdAt.toUtc().millisecondsSinceEpoch,
               platformId,
             ],
@@ -318,7 +320,7 @@ final class SqliteNotificationOutbox implements NotificationOutboxPort {
             event.eventId,
             event.title,
             event.body,
-            event.destination.wireValue,
+            _storedDestination(event.destination),
             event.createdAt.toUtc().millisecondsSinceEpoch,
             _allocatePlatformId(event.eventId),
             topicId,
@@ -399,9 +401,13 @@ final class SqliteNotificationOutbox implements NotificationOutboxPort {
         [current.millisecondsSinceEpoch],
       );
       for (final row in rows) {
-        final destination = NotificationDestination.fromWire(
-          row['destination'] as String,
-        );
+        final storedDestination = row['destination'] as String;
+        final destination =
+            NotificationDestination.fromWire(storedDestination) ??
+            switch (_codec.decode(storedDestination)) {
+              Ok(:final value) => value,
+              Err() => null,
+            };
         if (destination == null) continue;
         final token = _claimToken();
         _database.execute(
@@ -471,10 +477,16 @@ final class SqliteNotificationOutbox implements NotificationOutboxPort {
   }
 
   @override
-  Result<void, NotificationsFailure> persistResponse(String payload) {
+  Result<void, NotificationsFailure> persistResponse(
+    String payload, {
+    bool onlyIfNonePending = false,
+  }) {
     try {
       _database.execute(
-        'INSERT INTO notification_responses(payload) VALUES (?)',
+        onlyIfNonePending
+            ? 'INSERT INTO notification_responses(payload) SELECT ? '
+                  'WHERE NOT EXISTS (SELECT 1 FROM notification_responses WHERE consumed=0)'
+            : 'INSERT INTO notification_responses(payload) VALUES (?)',
         [payload],
       );
       return const Ok(null);
@@ -534,3 +546,8 @@ final class SqliteNotificationOutbox implements NotificationOutboxPort {
   String _claimToken() =>
       '${Random.secure().nextInt(1 << 32)}-${DateTime.now().microsecondsSinceEpoch}';
 }
+
+String _storedDestination(NotificationDestination destination) =>
+    destination is WalletHomeNotificationDestination
+    ? destination.wireValue
+    : const NotificationPayloadCodec().encode(destination);

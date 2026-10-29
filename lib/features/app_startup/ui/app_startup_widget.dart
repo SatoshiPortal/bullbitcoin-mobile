@@ -70,14 +70,20 @@ class AppStartupListener extends StatelessWidget {
     return MultiBlocListener(
       listeners: [
         BlocListener<AppStartupBloc, AppStartupState>(
+          listenWhen: (_, current) => current is! AppStartupSuccess,
+          listener: (_, _) => AppRouter.suspendNotificationRouting(),
+        ),
+        BlocListener<AppStartupBloc, AppStartupState>(
           listenWhen: (previous, current) =>
               current is AppStartupSuccess && previous != current,
           listener: (context, state) async {
             // Onboarding wins over the PIN, as before this listener awaited
             // the post-unlock routing.
             if (state is AppStartupSuccess && !state.hasDefaultWallets) {
+              AppRouter.suspendNotificationRouting();
               AppRouter.router.go(OnboardingRoute.onboarding.path);
             } else if (state is AppStartupSuccess && state.isPinCodeSet) {
+              AppRouter.suspendNotificationRouting();
               AppRouter.router.go(AppUnlockRoute.appUnlock.path);
             } else if (state is AppStartupSuccess) {
               await AppRouter.routeAfterUnlock();

@@ -1,3 +1,5 @@
+import 'package:bb_mobile/router.dart';
+import 'dart:async';
 import 'dart:io';
 
 import 'package:bb_mobile/bloc_observer.dart';
@@ -17,7 +19,6 @@ import 'package:bb_mobile/report_logger_adapter.dart';
 import 'package:bb_mobile/startup_wizard.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bull_tor/tor.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:notifications/notifications.dart';
 import 'package:path/path.dart' as p;
@@ -92,19 +93,24 @@ Future<void> _initForegroundNotifications(
     outbox = SqliteNotificationOutbox(
       databasePath: p.join(bullDirectory.path, notificationOutboxFilename),
     );
+    final localized = await AppLocalizations.delegate.load(
+      resolveNotificationLocale(storedSettings.language?.locale),
+    );
     final facade = NotificationsFacade(
       gateway: FlutterLocalNotificationGateway(
         channelId: paymentNotificationChannelId,
-        channelName: (await AppLocalizations.delegate.load(
-          storedSettings.language?.locale ?? const Locale('en'),
-        )).receivePaymentReceived,
+        channelName: localized.notificationPaymentsChannel,
+        channelDescription: localized.notificationPaymentsChannelDescription,
         androidIconResource: androidNotificationIconResource,
       ),
       outbox: outbox,
     );
     locator.registerSingleton<NotificationsFacade>(facade);
     registered = true;
-    final result = await facade.initialize();
+    final result = await facade.initialize(
+      onResponsePersisted: () =>
+          unawaited(AppRouter.routePendingNotificationIfUnlocked()),
+    );
     if (result case Err()) {
       log.warning('Notification initialization failed');
     }

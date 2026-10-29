@@ -19,12 +19,17 @@ final class NotificationsFacade {
 
   NotificationsFacade({required this.gateway, required this.outbox});
 
-  Future<Result<void, NotificationsFailure>> initialize() =>
-      gateway.initialize((payload) {
-        final persisted = outbox.persistResponse(payload);
-        if (persisted case Err()) _unpersistedResponses.add(payload);
-        return persisted;
-      });
+  Future<Result<void, NotificationsFailure>> initialize({
+    void Function()? onResponsePersisted,
+  }) => gateway.initialize((payload) {
+    final persisted = outbox.persistResponse(payload);
+    if (persisted case Err()) {
+      _unpersistedResponses.add(payload);
+    } else {
+      onResponsePersisted?.call();
+    }
+    return persisted;
+  });
 
   Future<Result<void, NotificationsFailure>> retryUnpersistedResponses() async {
     NotificationsFailure? firstFailure;
@@ -137,6 +142,36 @@ final class NotificationsFacade {
       case Ok(:final value):
         if (value == null) return const Ok(null);
         return decodeDestination(value).map((destination) => destination);
+    }
+  }
+
+  /// The latest tap wins; older taps must not redirect a later unlock or tap.
+  Future<Result<NotificationDestination?, NotificationsFailure>>
+  consumeLatestPendingDestination() async {
+    NotificationDestination? latest;
+    NotificationsFailure? invalid;
+    while (true) {
+      switch (await outbox.consumeResponse()) {
+        case Err(:final failure):
+          if (latest != null) {
+            final restored = outbox.persistResponse(
+              encodeDestination(latest),
+              onlyIfNonePending: true,
+            );
+            if (restored case Err(:final failure)) return Err(failure);
+          }
+          return Err(failure);
+        case Ok(value: null):
+          if (latest != null) return Ok(latest);
+          return invalid == null ? const Ok(null) : Err(invalid);
+        case Ok(value: final payload?):
+          switch (decodeDestination(payload)) {
+            case Ok(:final value):
+              latest = value;
+            case Err(:final failure):
+              invalid = failure;
+          }
+      }
     }
   }
 

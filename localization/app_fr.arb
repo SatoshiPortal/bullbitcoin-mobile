@@ -5012,5 +5012,9 @@
   "permissionsBackgroundHint": "Dans les réglages de Bull, ouvrez Batterie et choisissez Non restreinte.",
   "permissionsStatusUnrestricted": "Sans restriction",
   "permissionsStatusRestricted": "Optimisée",
-  "permissionsOpenBatterySettings": "Ouvrir les réglages de batterie"
+  "permissionsOpenBatterySettings": "Ouvrir les réglages de batterie",
+  "notificationPaymentConfirmed": "{count, plural, one{Paiement confirmé} other{{count} paiements confirmés}}",
+  "notificationPaymentsChannel": "Paiements entrants",
+  "notificationPaymentsChannelDescription": "Alertes de paiement. Les montants, adresses et noms des portefeuilles ne sont jamais affichés.",
+  "notificationTransactionsReceived": "{chain, select, bitcoin{{count, plural, one{1 paiement Bitcoin reçu} other{{count} paiements Bitcoin reçus}}} liquid{{count, plural, one{1 paiement Liquid reçu} other{{count} paiements Liquid reçus}}} other{{count, plural, one{1 paiement reçu} other{{count} paiements reçus}}}}"
 }

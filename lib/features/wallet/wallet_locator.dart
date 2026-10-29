@@ -1,3 +1,4 @@
+import 'domain/usecases/resolve_notification_wallet_usecase.dart';
 import 'package:bb_mobile/core/seed/domain/repositories/seed_store_type_repository.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/check_legacy_seed_storage_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
@@ -31,6 +32,9 @@ import 'package:get_it/get_it.dart';
 class WalletLocator {
   static void setup(GetIt locator) {
     // Usecase
+    locator.registerFactory<ResolveNotificationWalletUsecase>(
+      () => ResolveNotificationWalletUsecase(get: locator<GetWalletsUsecase>()),
+    );
     locator.registerFactory<GetUnconfirmedIncomingBalanceUsecase>(
       () => GetUnconfirmedIncomingBalanceUsecase(
         boltzSwapRepository: locator<BoltzSwapRepository>(

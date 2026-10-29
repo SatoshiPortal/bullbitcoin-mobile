@@ -15977,5 +15977,34 @@
   "permissionsOpenBatterySettings": "Open battery settings",
   "@permissionsOpenBatterySettings": {
     "description": "Button that opens the app settings to change battery use"
+  },
+  "notificationPaymentConfirmed": "{count, plural, one{Payment confirmed} other{{count} payments confirmed}}",
+  "@notificationPaymentConfirmed": {
+    "description": "Private synchronization and payment status.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "notificationPaymentsChannel": "Incoming payments",
+  "@notificationPaymentsChannel": {
+    "description": "Private synchronization and payment status."
+  },
+  "notificationPaymentsChannelDescription": "Payment alerts. Amounts, addresses and wallet names are never shown.",
+  "@notificationPaymentsChannelDescription": {
+    "description": "Private synchronization and payment status."
+  },
+  "notificationTransactionsReceived": "{chain, select, bitcoin{{count, plural, one{1 Bitcoin payment received} other{{count} Bitcoin payments received}}} liquid{{count, plural, one{1 Liquid payment received} other{{count} Liquid payments received}}} other{{count, plural, one{1 payment received} other{{count} payments received}}}}",
+  "@notificationTransactionsReceived": {
+    "description": "Private synchronization and payment status.",
+    "placeholders": {
+      "chain": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
   }
 }

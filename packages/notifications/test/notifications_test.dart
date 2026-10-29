@@ -96,9 +96,12 @@ final class FailingResponseOutbox implements NotificationOutboxPort {
     String claimToken,
   ) async => const Ok(null);
   @override
-  Result<void, NotificationsFailure> persistResponse(String payload) {
+  Result<void, NotificationsFailure> persistResponse(
+    String payload, {
+    bool onlyIfNonePending = false,
+  }) {
     if (fail) return const Err(NotificationsStorageFailure());
-    responses.add(payload);
+    if (!onlyIfNonePending || responses.isEmpty) responses.add(payload);
     return const Ok(null);
   }
 
@@ -594,6 +597,66 @@ void main() {
     expect(await facade.deliverPending(), isA<Ok>());
   });
 
+  test('wallet payload contains only an opaque key and round trips', () {
+    final destination = NotificationDestination.wallet('ab' * 32);
+    final payload = NotificationsFacade.encodeDestination(destination);
+    expect(payload, contains('"walletKey"'));
+    expect(payload, isNot(contains('walletId')));
+    final result = NotificationsFacade.decodeDestination(payload);
+    expect((result as Ok).value, destination);
+    for (final payload in [
+      '{"destination":"wallet"}',
+      '{"destination":"wallet","walletKey":"raw-wallet-id"}',
+      '{"destination":"wallet","walletKey":42}',
+    ]) {
+      expect(NotificationsFacade.decodeDestination(payload), isA<Err>());
+    }
+  });
+  test(
+    'wallet destinations survive queued storage and response reopening',
+    () async {
+      final destination = NotificationDestination.wallet('cd' * 32);
+      await outbox.enqueue(
+        LocalNotification(
+          eventId: 'wallet-event',
+          title: 'Payment confirmed',
+          body: 'Incoming payments',
+          destination: destination,
+          createdAt: DateTime.utc(2026),
+        ),
+      );
+      outbox.dispose();
+      outbox = SqliteNotificationOutbox(
+        databasePath: '${directory.path}/notifications.sqlite',
+      );
+      final claims = await outbox.claimPending();
+      if (claims case Ok(:final value)) {
+        expect(value.single.notification.destination, destination);
+      } else {
+        fail('Stored wallet event must remain readable');
+      }
+      expect(
+        outbox.persistResponse(
+          NotificationsFacade.encodeDestination(destination),
+        ),
+        isA<Ok>(),
+      );
+      outbox.dispose();
+      outbox = SqliteNotificationOutbox(
+        databasePath: '${directory.path}/notifications.sqlite',
+      );
+      final facade = NotificationsFacade(
+        gateway: FakeGateway(),
+        outbox: outbox,
+      );
+      expect(
+        (await facade.consumePendingDestination() as Ok).value,
+        destination,
+      );
+      expect((await facade.consumePendingDestination() as Ok).value, isNull);
+    },
+  );
+
   test('destination payload is stable and rejects unknown values', () {
     final payload = NotificationsFacade.encodeDestination(
       NotificationDestination.walletHome,
@@ -625,6 +688,39 @@ void main() {
       expect((consumed as Ok).value, NotificationDestination.walletHome);
       final empty = await facade.consumePendingDestination();
       expect((empty as Ok).value, isNull);
+    },
+  );
+  test(
+    'latest response skips malformed payloads and drains older taps',
+    () async {
+      final destination = NotificationDestination.wallet('ab' * 32);
+      expect(
+        outbox.persistResponse(
+          NotificationsFacade.encodeDestination(
+            NotificationDestination.walletHome,
+          ),
+        ),
+        isA<Ok>(),
+      );
+      expect(outbox.persistResponse('invalid-json'), isA<Ok>());
+      expect(
+        outbox.persistResponse(
+          NotificationsFacade.encodeDestination(destination),
+        ),
+        isA<Ok>(),
+      );
+      final facade = NotificationsFacade(
+        gateway: FakeGateway(),
+        outbox: outbox,
+      );
+      expect(
+        (await facade.consumeLatestPendingDestination() as Ok).value,
+        destination,
+      );
+      expect(
+        (await facade.consumeLatestPendingDestination() as Ok).value,
+        isNull,
+      );
     },
   );
 }

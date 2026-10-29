@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/wallet/domain/usecases/resolve_notification_wallet_usecase.dart';
 import 'dart:async';
 import 'dart:io';
 
@@ -247,9 +248,48 @@ class AppRouter {
     errorBuilder: (context, state) => const RouteErrorScreen(),
   );
 
+  static bool _notificationRoutingEnabled = false;
+  static int _notificationAuthGeneration = 0;
+  static Future<void> _notificationNavigation = Future<void>.value();
+
+  static void suspendNotificationRouting() {
+    _notificationRoutingEnabled = false;
+    _notificationAuthGeneration++;
+  }
+
+  static Future<void> routePendingNotificationIfUnlocked() =>
+      _notificationRoutingEnabled
+      ? _queueNotificationNavigation(goHomeWhenEmpty: false)
+      : Future<void>.value();
+
+  static Future<void> _queueNotificationNavigation({
+    required bool goHomeWhenEmpty,
+  }) {
+    final generation = _notificationAuthGeneration;
+    _notificationNavigation = _notificationNavigation
+        .then((_) async {
+          if (_notificationRoutingEnabled &&
+              generation == _notificationAuthGeneration) {
+            await _routeToNotificationDestination(
+              goHomeWhenEmpty: goHomeWhenEmpty,
+              authGeneration: generation,
+            );
+          }
+        })
+        .catchError((Object _) {
+          log.warning('Notification navigation failed');
+        });
+    return _notificationNavigation;
+  }
+
   static Future<void> routeAfterUnlock() async {
-    await _routeToNotificationDestination();
-    await _offerPermissionsOnce();
+    _notificationRoutingEnabled = true;
+    final generation = ++_notificationAuthGeneration;
+    await _queueNotificationNavigation(goHomeWhenEmpty: true);
+    if (_notificationRoutingEnabled &&
+        generation == _notificationAuthGeneration) {
+      await _offerPermissionsOnce();
+    }
   }
 
   /// Users who installed before the wizard had a Permissions page see it
@@ -264,7 +304,10 @@ class AppRouter {
     }
   }
 
-  static Future<void> _routeToNotificationDestination() async {
+  static Future<void> _routeToNotificationDestination({
+    required bool goHomeWhenEmpty,
+    required int authGeneration,
+  }) async {
     if (locator.isRegistered<NotificationsFacade>()) {
       final notifications = locator<NotificationsFacade>();
 
@@ -277,25 +320,78 @@ class AppRouter {
       }
 
       try {
-        final result = await notifications.consumePendingDestination();
+        final result = await notifications.consumeLatestPendingDestination();
         switch (result) {
           case Ok(:final value):
+            if (!_notificationRoutingEnabled ||
+                authGeneration != _notificationAuthGeneration) {
+              if (value != null &&
+                  notifications.outbox.persistResponse(
+                        NotificationsFacade.encodeDestination(value),
+                        onlyIfNonePending: true,
+                      )
+                      is Err) {
+                log.warning('Notification destination could not be deferred');
+              }
+              return;
+            }
             switch (value) {
-              case NotificationDestination.walletHome:
-              case null:
+              case WalletNotificationDestination(:final walletKey):
+                final walletId =
+                    await locator<ResolveNotificationWalletUsecase>().execute(
+                      walletKey,
+                    );
+                if (!_notificationRoutingEnabled ||
+                    authGeneration != _notificationAuthGeneration) {
+                  if (notifications.outbox.persistResponse(
+                        NotificationsFacade.encodeDestination(value),
+                        onlyIfNonePending: true,
+                      )
+                      is Err) {
+                    log.warning(
+                      'Notification destination could not be deferred',
+                    );
+                  }
+                  return;
+                }
+                if (walletId == null) {
+                  router.goNamed(WalletRoute.walletHome.name);
+                } else {
+                  router.goNamed(
+                    WalletRoute.walletDetail.name,
+                    pathParameters: {'walletId': walletId},
+                  );
+                }
+              case WalletHomeNotificationDestination():
                 router.goNamed(WalletRoute.walletHome.name);
+              case null:
+                if (goHomeWhenEmpty) {
+                  router.goNamed(WalletRoute.walletHome.name);
+                }
             }
           case Err():
             log.warning('Notification destination consumption failed');
-            router.goNamed(WalletRoute.walletHome.name);
+            if (goHomeWhenEmpty &&
+                _notificationRoutingEnabled &&
+                authGeneration == _notificationAuthGeneration) {
+              router.goNamed(WalletRoute.walletHome.name);
+            }
         }
       } catch (_) {
         log.warning('Notification destination consumption failed');
-        router.goNamed(WalletRoute.walletHome.name);
+        if (goHomeWhenEmpty &&
+            _notificationRoutingEnabled &&
+            authGeneration == _notificationAuthGeneration) {
+          router.goNamed(WalletRoute.walletHome.name);
+        }
       }
       return;
     }
 
-    router.goNamed(WalletRoute.walletHome.name);
+    if (goHomeWhenEmpty &&
+        _notificationRoutingEnabled &&
+        authGeneration == _notificationAuthGeneration) {
+      router.goNamed(WalletRoute.walletHome.name);
+    }
   }
 }

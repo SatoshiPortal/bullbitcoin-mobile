@@ -86,6 +86,7 @@ final class FlutterLocalNotificationGateway
             channelId,
             channelName,
             channelDescription: channelDescription,
+            visibility: NotificationVisibility.private,
           ),
           iOS: DarwinNotificationDetails(),
         ),
