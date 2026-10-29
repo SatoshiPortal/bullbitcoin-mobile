@@ -82,10 +82,10 @@ final class BdkCbfConfiguration extends BdkElectrumConfiguration {
   /// Finite count per keychain, not an Electrum stop gap. A larger window improves discovery completeness at the cost of more false-positive blocks.
   static const int recoveryScriptCount = 1000;
 
-  /// Twenty polling opportunities per lease; frozen engines intentionally expire.
+  /// Fifty polling opportunities per lease; frozen engines intentionally expire.
   static const _ownerLeaseSeconds = 5;
   static const ownerLease = Duration(seconds: _ownerLeaseSeconds);
-  static const ownerPollInterval = Duration(milliseconds: 250);
+  static const ownerPollInterval = Duration(milliseconds: 100);
 
   /// Allows cancellation scheduling after expiry; DNS still requires a join proof.
   static const nativeTerminationBoundAfterOwnerExit = Duration(

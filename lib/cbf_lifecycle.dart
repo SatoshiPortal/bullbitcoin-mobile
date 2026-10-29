@@ -8,6 +8,7 @@ import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasourc
 import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter/foundation.dart';
 import 'package:transaction_sync/transaction_sync.dart';
 
 /// Foreground composition: observation only; the package owns node lifetimes.
@@ -15,6 +16,11 @@ final class CbfLifecycle {
   final BitcoinSyncRouting routing;
   final WalletMetadataDatasource metadata;
   final Stream<void>? transportChanges;
+  final TargetPlatform _platform;
+  bool get _desktop =>
+      _platform == TargetPlatform.linux ||
+      _platform == TargetPlatform.macOS ||
+      _platform == TargetPlatform.windows;
   StreamSubscription<List<WalletMetadataModel>>? _wallets;
   StreamSubscription<void>? _transports;
   bool _resumed = false;
@@ -27,11 +33,13 @@ final class CbfLifecycle {
     required this.routing,
     required this.metadata,
     this.transportChanges,
-  });
+    TargetPlatform? platform,
+  }) : _platform = platform ?? defaultTargetPlatform;
 
   void start(AppLifecycleState? state) {
     routing.facade.setCbfNativeOwnerMonitor(_presence.trackNativeNode);
     _resumed =
+        (_desktop && state != AppLifecycleState.detached) ||
         state == null ||
         state == AppLifecycleState.resumed ||
         state == AppLifecycleState.inactive;
@@ -72,7 +80,9 @@ final class CbfLifecycle {
     // Focus loss (notification shade, system prompts) keeps the app visible.
     // Preserve either foreground or background ownership until visibility changes.
     if (state == AppLifecycleState.inactive) return;
-    final resumed = state == AppLifecycleState.resumed;
+    final resumed =
+        state == AppLifecycleState.resumed ||
+        (_desktop && state != AppLifecycleState.detached);
     if (_resumed == resumed) return;
     _resumed = resumed;
     refresh();
@@ -89,7 +99,7 @@ final class CbfLifecycle {
     );
     routing.facade.setCbfForegroundActive(false);
     // Stop intent precedes async route verification and invalidates late batches.
-    final stopped = routing.facade.stopCbfNodes();
+    final stopped = routing.facade.pauseCbfNodes();
     unawaited(() async {
       try {
         final result = await stopped;

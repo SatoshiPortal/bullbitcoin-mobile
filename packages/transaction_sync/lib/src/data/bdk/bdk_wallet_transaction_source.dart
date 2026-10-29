@@ -1,5 +1,6 @@
 import 'bdk_cbf_node.dart';
 import 'bdk_cbf_service.dart';
+import 'cbf_recovery_files.dart';
 import '../../domain/entities/bitcoin_sync_progress.dart';
 import 'dart:io';
 
@@ -79,6 +80,13 @@ final class BdkWalletTransactionSource
             networkOperation: false,
             discover: false,
             compactBlockFilters: configuration is BdkCbfConfiguration,
+            complete:
+                configuration is! BdkCbfConfiguration ||
+                await reactive?.metadata.isCbfDiscoveryComplete(
+                      registration.key,
+                      configuration.scanPolicyFingerprint,
+                    ) ==
+                    true,
             notBroadcastTxids: configuration is BdkCbfConfiguration
                 ? unrelayed
                 : const <String>{},
@@ -293,6 +301,7 @@ final class BdkWalletTransactionSource
     if (configuration == null) {
       return const Err(WalletSourceStateMissingFailure());
     }
+    await deleteCbfRecoveryFiles(configuration.databaseFilePath);
     BdkElectrumCache.delete(configuration.databaseFilePath);
     final file = File(configuration.databaseFilePath);
     if (!await file.exists()) return const Ok(null);

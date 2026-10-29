@@ -224,6 +224,9 @@ class WalletTransactionSyncFacade {
     WalletNetworkKey key,
   ) async => _cbfService?.ensureScriptCoverage(key) ?? const Ok(null);
 
+  Future<Result<void, WalletTransactionSyncFailure>> pauseCbfNodes() async =>
+      await _cbfService?.pause() ?? const Ok(null);
+
   Future<Result<void, WalletTransactionSyncFailure>> stopCbfNodes() async =>
       _cbfService?.stop() ?? const Ok(null);
 

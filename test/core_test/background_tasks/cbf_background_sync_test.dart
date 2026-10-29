@@ -118,6 +118,9 @@ void main() {
             registration.key: const Err(InitialScanRequiredFailure()),
         };
       });
+      when(
+        () => facade.pauseCbfNodes(),
+      ).thenAnswer((_) => facade.stopCbfNodes());
       final batch = CbfBackgroundSync(
         routing: BitcoinSyncRouting(
           facade: facade,
@@ -153,6 +156,9 @@ void main() {
         if (!pending.isCompleted) pending.complete({});
         return const Ok(null);
       });
+      when(
+        () => facade.pauseCbfNodes(),
+      ).thenAnswer((_) => facade.stopCbfNodes());
       final batch = CbfBackgroundSync(
         routing: BitcoinSyncRouting(
           facade: facade,
@@ -170,7 +176,7 @@ void main() {
       expect((await result as Err).failure, isA<WalletSyncDeferredFailure>());
       expect(await acknowledged, isTrue);
       verify(() => facade.setCbfForegroundActive(false)).called(1);
-      verify(() => facade.stopCbfNodes()).called(2);
+      verify(() => facade.pauseCbfNodes()).called(2);
     },
   );
   test(
@@ -180,6 +186,9 @@ void main() {
       await presence.setActive(true);
       final facade = _Facade();
       try {
+        when(
+          () => facade.pauseCbfNodes(),
+        ).thenAnswer((_) => facade.stopCbfNodes());
         final batch = CbfBackgroundSync(
           routing: BitcoinSyncRouting(
             facade: facade,
@@ -236,6 +245,12 @@ void main() {
       when(
         () => metadata.watchSyncPolicies(),
       ).thenAnswer((_) => wallets.stream);
+      when(
+        () => background.pauseCbfNodes(),
+      ).thenAnswer((_) => background.stopCbfNodes());
+      when(
+        () => foreground.pauseCbfNodes(),
+      ).thenAnswer((_) => foreground.stopCbfNodes());
       final batch = CbfBackgroundSync(
         routing: BitcoinSyncRouting(
           facade: background,

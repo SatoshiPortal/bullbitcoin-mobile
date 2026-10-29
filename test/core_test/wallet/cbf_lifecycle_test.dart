@@ -27,9 +27,12 @@ void main() {
       'visible lifecycle preserves CBF nodes from initial $initial',
       () async {
         final facade = _Facade(), metadata = _Metadata();
+        when(
+          () => facade.stopCbfNodes(),
+        ).thenAnswer((_) async => const Ok(null));
         final wallets = StreamController<List<WalletMetadataModel>>();
         var stops = 0, starts = 0;
-        when(() => facade.stopCbfNodes()).thenAnswer((_) async {
+        when(() => facade.pauseCbfNodes()).thenAnswer((_) async {
           stops++;
           return const Ok(null);
         });
@@ -41,6 +44,7 @@ void main() {
           () => metadata.watchSyncPolicies(),
         ).thenAnswer((_) => wallets.stream);
         final lifecycle = CbfLifecycle(
+          platform: TargetPlatform.android,
           routing: BitcoinSyncRouting(
             facade: facade,
             settings: _Settings(),
@@ -87,14 +91,66 @@ void main() {
     );
   }
 
+  for (final platform in [
+    TargetPlatform.linux,
+    TargetPlatform.macOS,
+    TargetPlatform.windows,
+  ]) {
+    test('hidden desktop $platform keeps its owner until detached', () async {
+      final facade = _Facade(), metadata = _Metadata();
+      final wallets = StreamController<List<WalletMetadataModel>>();
+      var starts = 0, stops = 0;
+      when(() => facade.stopCbfNodes()).thenAnswer((_) async => const Ok(null));
+      when(() => facade.pauseCbfNodes()).thenAnswer((_) async {
+        stops++;
+        return const Ok(null);
+      });
+      when(() => facade.reconcileCbfWallets(any())).thenAnswer((_) async {
+        starts++;
+        return const Ok(null);
+      });
+      when(
+        () => metadata.watchSyncPolicies(),
+      ).thenAnswer((_) => wallets.stream);
+      final lifecycle = CbfLifecycle(
+        platform: platform,
+        routing: BitcoinSyncRouting(
+          facade: facade,
+          settings: _Settings(),
+          tor: () => throw StateError('unused'),
+        ),
+        metadata: metadata,
+      );
+      try {
+        lifecycle.start(AppLifecycleState.resumed);
+        wallets.add([]);
+        for (var i = 0; i < 300 && starts == 0; i++) {
+          await Future<void>.delayed(const Duration(milliseconds: 5));
+        }
+        expect(starts, 1);
+        final before = stops;
+        lifecycle.onStateChange(AppLifecycleState.hidden);
+        lifecycle.onStateChange(AppLifecycleState.paused);
+        lifecycle.onStateChange(AppLifecycleState.resumed);
+        expect(stops, before);
+        lifecycle.onStateChange(AppLifecycleState.detached);
+        expect(stops, before + 1);
+      } finally {
+        await lifecycle.dispose();
+        await wallets.close();
+      }
+    });
+  }
+
   test(
     'Tor transport changes immediately stop nodes before reverifying routes',
     () async {
       final facade = _Facade(), metadata = _Metadata();
+      when(() => facade.stopCbfNodes()).thenAnswer((_) async => const Ok(null));
       final wallets = StreamController<List<WalletMetadataModel>>();
       final transports = StreamController<void>.broadcast(sync: true);
       var stops = 0;
-      when(() => facade.stopCbfNodes()).thenAnswer((_) async {
+      when(() => facade.pauseCbfNodes()).thenAnswer((_) async {
         stops++;
         return const Ok(null);
       });
@@ -105,6 +161,7 @@ void main() {
         () => metadata.watchSyncPolicies(),
       ).thenAnswer((_) => wallets.stream);
       final lifecycle = CbfLifecycle(
+        platform: TargetPlatform.android,
         routing: BitcoinSyncRouting(
           facade: facade,
           settings: _Settings(),
@@ -128,12 +185,16 @@ void main() {
     'initial foreground gate closes before the first async wallet policy arrives',
     () async {
       final facade = _Facade(), metadata = _Metadata();
-      final wallets = StreamController<List<WalletMetadataModel>>();
       when(() => facade.stopCbfNodes()).thenAnswer((_) async => const Ok(null));
+      final wallets = StreamController<List<WalletMetadataModel>>();
+      when(
+        () => facade.pauseCbfNodes(),
+      ).thenAnswer((_) async => const Ok(null));
       when(
         () => metadata.watchSyncPolicies(),
       ).thenAnswer((_) => wallets.stream);
       final lifecycle = CbfLifecycle(
+        platform: TargetPlatform.android,
         routing: BitcoinSyncRouting(
           facade: facade,
           settings: _Settings(),

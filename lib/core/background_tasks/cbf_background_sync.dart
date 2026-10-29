@@ -96,7 +96,7 @@ final class CbfBackgroundSync {
       onStop: () async {
         cancelled = true;
         routing.facade.setCbfForegroundActive(false);
-        return await routing.facade.stopCbfNodes() is Ok;
+        return await routing.facade.pauseCbfNodes() is Ok;
       },
     );
     if (owner == null) {
@@ -121,7 +121,7 @@ final class CbfBackgroundSync {
     } on TimeoutException {
       cancelled = true;
       routing.facade.setCbfForegroundActive(false);
-      await routing.facade.stopCbfNodes();
+      await routing.facade.pauseCbfNodes();
       return const {};
     } finally {
       Future<void> release() async {
@@ -129,14 +129,14 @@ final class CbfBackgroundSync {
         await owner.release();
       }
 
-      final stopped = await routing.facade.stopCbfNodes();
+      final stopped = await routing.facade.pauseCbfNodes();
       if (stopped is Ok) {
         await release();
       } else {
         // Keep the addressable barrier alive until a real native join. The
         // foreground must not create a replacement after a failed join.
         unawaited(() async {
-          while (await routing.facade.stopCbfNodes() is Err) {
+          while (await routing.facade.pauseCbfNodes() is Err) {
             await Future<void>.delayed(const Duration(seconds: 1));
           }
           await release();

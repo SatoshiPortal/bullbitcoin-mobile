@@ -19,6 +19,7 @@ import '../../domain/wallet_transaction_sync_failure.dart';
 import '../../wallet_source_operation_coordinator.dart';
 import '../../wallet_source_session.dart';
 import 'bdk_cbf_node.dart';
+import 'cbf_recovery_files.dart';
 import 'bdk_wallet_transaction_mapper.dart';
 
 typedef CbfOutcome =
@@ -72,6 +73,7 @@ final class BdkCbfService
     }
   }
 
+  Future<Result<void, WalletTransactionSyncFailure>>? _pauseOperation;
   bool _disposed = false;
   bool _foregroundActive = true;
 
@@ -125,7 +127,14 @@ final class BdkCbfService
       phase: phase ?? previous?.phase ?? BitcoinSyncPhase.findingPeers,
       reachedHeight: reached ?? previous?.reachedHeight,
       targetHeight: target ?? previous?.targetHeight,
-      fraction: fraction,
+      fraction: phase == BitcoinSyncPhase.done
+          ? 1
+          : _fraction(
+                  entry,
+                  reached ?? previous?.reachedHeight ?? entry.persistedHeight,
+                  target ?? previous?.targetHeight,
+                ) ??
+                fraction,
       connectedPeers: peers ?? previous?.connectedPeers,
       isRecovery: entry.recovery,
       operationId: entry.operationId,
@@ -145,6 +154,12 @@ final class BdkCbfService
     if (failure != null) onFailure?.call(value.key, failure);
   }
 
+  double? _fraction(_Wallet entry, int reached, int? tip) {
+    final start = entry.configuration.checkpoint.height;
+    if (tip == null || tip <= start) return null;
+    return ((reached - start) / (tip - start)).clamp(0, 0.999999);
+  }
+
   Future<T> _serialize<T>(Future<T> Function() action) {
     final result = _changes.then((_) => action());
     _changes = result.then<void>((_) {}, onError: (Object _, StackTrace _) {});
@@ -159,7 +174,10 @@ final class BdkCbfService
   }) {
     final epoch = _epoch;
     return _serialize(() async {
-      if (_disposed || !_foregroundActive || epoch != _epoch) {
+      if (_disposed ||
+          !_foregroundActive ||
+          _pauseOperation != null ||
+          epoch != _epoch) {
         return const Err(WalletSyncDeferredFailure());
       }
       final groups = <String, List<WalletSourceRegistration>>{};
@@ -186,18 +204,19 @@ final class BdkCbfService
           _tick(old);
           await old.loop;
         }
+        var refreshRecoveryScripts = false;
         if (old != null &&
             old.matches(wanted) &&
             !old.stopping &&
-            _running(old) &&
-            await _coversScripts(
-              old,
-              deadline: wanted.firstOrNull == null
-                  ? null
-                  : (wanted.first.configuration as BdkCbfConfiguration)
-                        .deadline,
-            )) {
-          continue;
+            _running(old)) {
+          final covered = await _coversScripts(
+            old,
+            deadline: wanted.firstOrNull == null
+                ? null
+                : (wanted.first.configuration as BdkCbfConfiguration).deadline,
+          );
+          if (covered) continue;
+          refreshRecoveryScripts = true;
         }
         if (old != null) {
           // Each node owns immutable script indexes and prepared batches.
@@ -214,6 +233,7 @@ final class BdkCbfService
           allowInitialScan,
           priority,
           epoch,
+          refreshRecoveryScripts: refreshRecoveryScripts,
         );
         if (result case Err(:final failure)) return Err(failure);
       }
@@ -226,8 +246,9 @@ final class BdkCbfService
     List<WalletSourceRegistration> registrations,
     bool allowInitialScan,
     WalletOperationPriority priority,
-    int epoch,
-  ) async {
+    int epoch, {
+    bool refreshRecoveryScripts = false,
+  }) async {
     final prepared = <_Prepared>[];
     final entries = <_Wallet>[];
     _NetworkNode? candidate;
@@ -276,37 +297,47 @@ final class BdkCbfService
                 throw const _Failure(InitialScanRequiredFailure());
               }
               if (entry.recovery) {
-                _insert(opened, configuration);
-                // A changed birthday on a wallet already at tip cannot lower its
-                // latest checkpoint. Build a separate watch-only chain anchor;
-                // all real transactions and user data stay in the durable store.
-                final anchor = _OpenWallet.open(configuration, memory: true);
+                // Persist the scan wallet independently of an already-ahead
+                // source wallet (for an intentionally earlier birthday). It is
+                // recovery state only; application history reads the source.
+                if (_height(opened.wallet) == 0) {
+                  final stale = File(cbfRecoveryFilePath(configuration));
+                  if (stale.existsSync()) stale.deleteSync();
+                }
+                final anchor = _OpenWallet.open(configuration, recovery: true);
                 var anchorTransferred = false;
                 try {
-                  _insert(anchor, configuration);
-                  for (final keychain in [
-                    bdk.KeychainKind.external_,
-                    bdk.KeychainKind.internal,
-                  ]) {
-                    final index = opened.wallet.nextDerivationIndex(
-                      keychain: keychain,
-                    );
-                    if (index > 0) {
-                      final addresses = anchor.wallet.revealAddressesTo(
+                  final initializing = _height(anchor.wallet) == 0;
+                  if (initializing) {
+                    _insert(anchor, configuration, persist: false);
+                  }
+                  if (initializing || refreshRecoveryScripts) {
+                    for (final keychain in [
+                      bdk.KeychainKind.external_,
+                      bdk.KeychainKind.internal,
+                    ]) {
+                      final index = opened.wallet.nextDerivationIndex(
                         keychain: keychain,
-                        index: index - 1,
                       );
-                      for (final info in addresses) {
-                        info.address.dispose();
+                      if (index > 0) {
+                        for (final info in anchor.wallet.revealAddressesTo(
+                          keychain: keychain,
+                          index: index - 1,
+                        )) {
+                          info.address.dispose();
+                        }
                       }
                     }
+                    anchor.wallet.persist(persister: anchor.persister);
                   }
+                  entry.persistedHeight = _height(anchor.wallet);
                   anchorTransferred = true;
                   return _Prepared(anchor, entry);
                 } finally {
                   if (!anchorTransferred) anchor.dispose();
                 }
               }
+              entry.persistedHeight = _height(opened.wallet);
               transferred = true;
               return _Prepared(opened, entry);
             } finally {
@@ -318,7 +349,11 @@ final class BdkCbfService
           priority: priority,
         );
         prepared.add(snapshot);
-        _emit(entry, phase: BitcoinSyncPhase.findingPeers);
+        _emit(
+          entry,
+          phase: BitcoinSyncPhase.findingPeers,
+          reached: entry.persistedHeight,
+        );
       }
       if (_disposed || !_foregroundActive || epoch != _epoch) {
         return const Err(WalletSyncDeferredFailure());
@@ -496,6 +531,7 @@ final class BdkCbfService
         true,
         active.priority,
         epoch,
+        refreshRecoveryScripts: true,
       );
     });
   }
@@ -627,6 +663,11 @@ final class BdkCbfService
           );
         }),
       );
+      await Future.wait(
+        _nodes.values.expand((node) => node.entries).map((entry) async {
+          results[entry.registration.key] = await entry.settled.future;
+        }),
+      );
       // Catch-up callers receive the first boundary, but any prepared backlog
       // must be persisted before their finally can stop the shared node.
       await Future.wait(_nodes.values.map((node) => node.loop).nonNulls);
@@ -649,7 +690,7 @@ final class BdkCbfService
         );
       }
     } finally {
-      final stopped = await stop();
+      final stopped = await pause();
       await running;
       await _drainApplications();
       if (stopped case Err(:final failure)) {
@@ -1136,7 +1177,7 @@ final class BdkCbfService
   }
 
   void _tick(_NetworkNode active) {
-    if (active.stopping || active.rebuilding) return;
+    if (active.stopping || active.rebuilding || active.pausing) return;
     try {
       active.node.renewLease();
     } on bdk.NodeStoppedCbfException {
@@ -1155,11 +1196,11 @@ final class BdkCbfService
   Future<void> _poll(_NetworkNode active, {bool finalDrain = false}) async {
     try {
       while (!active.stopping) {
-        final batch = active.node.pollUpdates();
+        final batch = active.node.pollUpdateBatch();
         if (batch == null) break;
         try {
           if (active.stopping) break;
-          for (final item in batch.entries) {
+          for (final item in batch.updates.entries) {
             final entry = active.byDescriptor[item.key];
             if (entry == null) {
               throw const _Failure(SourceObservationMismatchFailure());
@@ -1170,7 +1211,10 @@ final class BdkCbfService
               (session) => _application(() async {
                 session.ensureOpen();
                 if (active.stopping ||
-                    !await _current(entry.registration) ||
+                    !await _current(
+                      entry.registration,
+                      allowInactive: active.pausing,
+                    ) ||
                     active.stopping) {
                   return const Err<
                     WalletTransactionSyncOutcome,
@@ -1184,7 +1228,21 @@ final class BdkCbfService
                   ).map((tx) => tx.txid).toSet();
                   item.value.apply(opened.wallet);
                   opened.wallet.persist(persister: opened.persister);
-                  final reached = _height(opened.wallet);
+                  var reached = _height(opened.wallet);
+                  if (entry.recovery) {
+                    final scan = _OpenWallet.open(
+                      entry.configuration,
+                      recovery: true,
+                    );
+                    try {
+                      item.value.apply(scan.wallet);
+                      scan.wallet.persist(persister: scan.persister);
+                      reached = _height(scan.wallet);
+                    } finally {
+                      scan.dispose();
+                    }
+                  }
+                  entry.persistedHeight = reached;
                   final observation = WalletSourceSyncObservation(
                     observation: mapBdkObservation(
                       opened.wallet,
@@ -1192,6 +1250,7 @@ final class BdkCbfService
                       networkOperation: true,
                       discover: entry.recovery,
                       compactBlockFilters: true,
+                      complete: batch.syncedToTip,
                       notBroadcastTxids: await notBroadcastTxids(
                         opened.wallet,
                         entry.registration,
@@ -1210,7 +1269,7 @@ final class BdkCbfService
                         WalletTransactionSyncOutcome,
                         WalletTransactionSyncFailure
                       >) {
-                    if (entry.recovery) {
+                    if (entry.recovery && batch.syncedToTip) {
                       await metadata.completeCbfDiscovery(
                         entry.registration.key,
                         entry.configuration.scanPolicyFingerprint,
@@ -1218,12 +1277,14 @@ final class BdkCbfService
                     }
                     _emit(
                       entry,
-                      phase: BitcoinSyncPhase.done,
-                      fraction: 1,
+                      phase: batch.syncedToTip
+                          ? BitcoinSyncPhase.done
+                          : BitcoinSyncPhase.checkingBlocks,
+                      fraction: batch.syncedToTip ? 1 : null,
                       reached: reached,
-                      target: reached,
+                      target: batch.syncedToTip ? reached : null,
                     );
-                    entry.recovery = false;
+                    if (batch.syncedToTip) entry.recovery = false;
                   }
                   return result;
                 } on Exception {
@@ -1244,19 +1305,23 @@ final class BdkCbfService
             );
             entry.last = result;
             if (!entry.first.isCompleted) entry.first.complete(result);
+            if (batch.syncedToTip && !entry.settled.isCompleted) {
+              entry.settled.complete(result);
+            }
             if (result case Err(:final failure)) {
+              if (active.pausing) active.drainFailure ??= failure;
               _emit(entry, failure: failure);
               _requestStop(active);
               break;
             }
           }
         } finally {
-          for (final update in batch.values) {
+          for (final update in batch.updates.values) {
             update.dispose();
           }
         }
       }
-      if (active.stopping) return;
+      if (active.stopping || active.pausing) return;
       _drainInfo(active);
       active.node.drainWarnings();
       final running = _running(active);
@@ -1295,6 +1360,7 @@ final class BdkCbfService
   Future<void> _rebuild(_NetworkNode active) => _serialize(() async {
     if (_disposed ||
         !_foregroundActive ||
+        active.pausing ||
         active.epoch != _epoch ||
         !identical(_nodes[active.network], active)) {
       return;
@@ -1344,7 +1410,9 @@ final class BdkCbfService
           _emit(
             entry,
             phase: BitcoinSyncPhase.checkingBlocks,
-            reached: event.filtersHeight,
+            reached: event.filtersHeight < entry.persistedHeight
+                ? entry.persistedHeight
+                : event.filtersHeight,
             target: event.chainHeight,
             fraction: event.fraction.clamp(0, 0.999999),
           );
@@ -1356,10 +1424,12 @@ final class BdkCbfService
   }
 
   void _fail(_NetworkNode active, WalletTransactionSyncFailure failure) {
+    if (active.pausing) active.drainFailure ??= failure;
     for (final entry in active.entries) {
       final CbfOutcome result = Err(failure);
       entry.last = result;
       if (!entry.first.isCompleted) entry.first.complete(result);
+      if (!entry.settled.isCompleted) entry.settled.complete(result);
       _emit(entry, failure: failure);
     }
   }
@@ -1371,6 +1441,11 @@ final class BdkCbfService
     active.timer = null;
     if (!active.peers.isCompleted) active.peers.complete(false);
     for (final entry in active.entries) {
+      if (!entry.settled.isCompleted) {
+        entry.settled.complete(
+          entry.last ?? const Err(WalletSyncDeferredFailure()),
+        );
+      }
       if (!entry.first.isCompleted) {
         entry.first.complete(const Err(WalletSyncDeferredFailure()));
       }
@@ -1407,6 +1482,36 @@ final class BdkCbfService
     // A resolver on Tokio's blocking pool may outlive cancellation. Keep handles
     // and the registry barrier until synchronous termination is acknowledged.
     return false;
+  }
+
+  /// Lifecycle/background pause: stop production, then save all polled batches.
+  /// Call without a wallet source lock; invalidation/deletion uses stop().
+  Future<Result<void, WalletTransactionSyncFailure>> pause() =>
+      _pauseOperation ??= _pause().whenComplete(() => _pauseOperation = null);
+
+  Future<Result<void, WalletTransactionSyncFailure>> _pause() async {
+    _epoch++;
+    final activeNodes = _nodes.values.toList();
+    for (final active in activeNodes) {
+      active.pausing = true;
+      active.timer?.cancel();
+      try {
+        active.node.shutdown();
+      } on Exception {
+        /* Still drain/join. */
+      }
+    }
+    for (final active in activeNodes) {
+      await active.loop;
+      if (!active.stopping) await _poll(active, finalDrain: true);
+    }
+    final result = await stop();
+    if (result is Err) return result;
+    final failure = activeNodes
+        .map((node) => node.drainFailure)
+        .nonNulls
+        .firstOrNull;
+    return failure == null ? const Ok(null) : Err(failure);
   }
 
   /// Invalidate immediately; callers may already hold a wallet/source lock.
@@ -1491,7 +1596,11 @@ Duration? _remaining(BdkCbfConfiguration configuration) {
   return remaining;
 }
 
-void _insert(_OpenWallet opened, BdkCbfConfiguration configuration) {
+void _insert(
+  _OpenWallet opened,
+  BdkCbfConfiguration configuration, {
+  bool persist = true,
+}) {
   final hash = bdk.BlockHash.fromString(
     hex: configuration.checkpoint.blockHash,
   );
@@ -1499,7 +1608,7 @@ void _insert(_OpenWallet opened, BdkCbfConfiguration configuration) {
     opened.wallet.insertCheckpoint(
       blockId: bdk.BlockId(height: configuration.checkpoint.height, hash: hash),
     );
-    opened.wallet.persist(persister: opened.persister);
+    if (persist) opened.wallet.persist(persister: opened.persister);
   } finally {
     hash.dispose();
   }
@@ -1512,14 +1621,16 @@ final class _OpenWallet {
 
   static _OpenWallet open(
     BdkCbfConfiguration configuration, {
-    bool memory = false,
+    bool recovery = false,
   }) {
-    final file = File(configuration.databaseFilePath);
+    final file = File(
+      recovery
+          ? cbfRecoveryFilePath(configuration)
+          : configuration.databaseFilePath,
+    );
     file.parent.createSync(recursive: true);
-    final exists = !memory && file.existsSync();
-    final persister = memory
-        ? bdk.Persister.newInMemory()
-        : bdk.Persister.newSqlite(path: file.path);
+    final exists = file.existsSync();
+    final persister = bdk.Persister.newSqlite(path: file.path);
     bdk.Descriptor? external;
     bdk.Descriptor? internal;
     try {
@@ -1578,7 +1689,9 @@ final class _Wallet {
   final int operationId;
   final DateTime startedAt = DateTime.now().toUtc();
   final Completer<CbfOutcome> first = Completer();
+  final Completer<CbfOutcome> settled = Completer();
   bool recovery = false;
+  int persistedHeight = 0;
   late final int externalEnd;
   late final int internalEnd;
   CbfOutcome? last;
@@ -1605,6 +1718,8 @@ final class _NetworkNode {
   bool rebuilding = false;
   bool disposed = false;
   bool stopping = false;
+  bool pausing = false;
+  WalletTransactionSyncFailure? drainFailure;
   _NetworkNode(
     this.network,
     this.node,

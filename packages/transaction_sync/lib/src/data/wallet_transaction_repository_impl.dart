@@ -536,7 +536,7 @@ final class WalletTransactionRepositoryImpl
       if (receipt?.contentFingerprint == fingerprint) {
         durable = receipt?.successfulAt;
       }
-    } else {
+    } else if (observation.complete) {
       final receipt = WalletSyncReceipt(
         key: key,
         successfulAt: observed,
@@ -548,6 +548,8 @@ final class WalletTransactionRepositoryImpl
       } catch (_) {
         warning = const MetadataPersistenceWarning();
       }
+    } else {
+      durable = await metadata.readLastSuccessfulSyncAt(key);
     }
 
     final snapshot = WalletTransactionSnapshot(

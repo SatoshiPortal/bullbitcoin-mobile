@@ -106,6 +106,7 @@ WalletSourceObservation mapBdkObservation(
   required bool networkOperation,
   required bool discover,
   bool compactBlockFilters = false,
+  bool complete = true,
   Set<String> notBroadcastTxids = const {},
 }) {
   final checkpoint = wallet.latestCheckpoint();
@@ -123,6 +124,7 @@ WalletSourceObservation mapBdkObservation(
     ),
     capabilities: capabilities,
     sourceTip: '${checkpoint.height}:${checkpoint.hash}',
+    complete: complete,
     evidenceLevel: networkOperation
         ? WalletEvidenceLevel.walletSourceReported
         : WalletEvidenceLevel.localSourceState,

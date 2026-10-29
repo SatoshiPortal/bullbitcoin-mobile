@@ -15,6 +15,7 @@ import 'package:transaction_sync/transaction_sync.dart';
 
 final class _Metadata implements WalletCbfMetadataPort {
   final policies = <String>{};
+  bool interruptCompletion = false;
   final relayStates = <WalletNetworkKey, Map<String, CbfRelayState>>{};
   @override
   Future<Map<String, CbfRelayState>> readCbfRelayStates(
@@ -44,6 +45,7 @@ final class _Metadata implements WalletCbfMetadataPort {
   ) async => policies.contains('${key.walletId}:$policy');
   @override
   Future<void> completeCbfDiscovery(WalletNetworkKey key, String policy) async {
+    if (interruptCompletion) throw const FormatException('process interrupted');
     policies.add('${key.walletId}:$policy');
   }
 }
@@ -74,6 +76,7 @@ final class _Update implements BdkCbfUpdate {
 
 final class _Node implements BdkCbfReactiveNode {
   final batches = Queue<Map<String, BdkCbfUpdate>>();
+  bool syncedToTip = true;
   final infos = Queue<bdk.Info>();
   final stopped = Completer<void>();
   final joined = Completer<void>();
@@ -129,7 +132,7 @@ final class _Node implements BdkCbfReactiveNode {
   }
 
   @override
-  Map<String, BdkCbfUpdate>? pollUpdates() {
+  BdkCbfBatch? pollUpdateBatch() {
     calls++;
     if (batches.isEmpty) {
       final callback = onEmpty;
@@ -137,7 +140,13 @@ final class _Node implements BdkCbfReactiveNode {
       callback?.call();
       return null;
     }
-    return batches.removeFirst();
+    final updates = batches.removeFirst();
+    return BdkCbfBatch(
+      updates: updates,
+      scannedHeight:
+          updates.values.whereType<_Update>().firstOrNull?.height ?? 0,
+      syncedToTip: syncedToTip,
+    );
   }
 
   @override
@@ -1190,7 +1199,7 @@ void main() {
       );
       final progress = await service
           .watchBitcoinSyncProgress(request.key)
-          .firstWhere((value) => value.fraction == 0.5);
+          .firstWhere((value) => value.reachedHeight == 490000);
       expect(progress.phase, BitcoinSyncPhase.checkingBlocks);
       expect(metadata.policies, isEmpty);
     },
@@ -1271,7 +1280,7 @@ void main() {
       await service.reconcile([registration('a', tor: true, port: 9050)]);
       await _until(() => events.any((event) => event.operationId != oldId));
       final fresh = events.firstWhere((event) => event.operationId != oldId);
-      expect(fresh.reachedHeight, isNull);
+      expect(fresh.reachedHeight, 500000);
       expect(fresh.targetHeight, isNull);
       expect(fresh.connectedPeers, isNull);
       await subscription.cancel();
@@ -1314,6 +1323,73 @@ void main() {
       },
     );
   }
+  test(
+    'interrupted recovery resumes its persisted boundary before tip',
+    () async {
+      final request = registration('a');
+      // A process interruption between wallet commit and completion must keep
+      // the committed chain available to the next owner.
+      metadata.interruptCompletion = true;
+      await service.reconcile([request]);
+      nodes.single.batches.add({ids.single: _Update(482000)});
+      await _until(() => published.length == 1);
+      await service.stop();
+      await service.dispose();
+      metadata.interruptCompletion = false;
+      service = createService();
+      await service.reconcile([request]);
+      expect(
+        loadedHeights.last,
+        482000,
+        reason: 'an incomplete recovery must resume the durable checkpoint',
+      );
+      nodes.last.batches.add({ids.single: _Update(500000)});
+      await _until(() => metadata.policies.length == 1);
+      expect(heights.last, 500000);
+    },
+  );
+
+  for (final keychain in [
+    bdk.KeychainKind.external_,
+    bdk.KeychainKind.internal,
+  ]) {
+    test(
+      'recovery script coverage rebuild for $keychain preserves its cursor and new window',
+      () async {
+        final request = registration('a');
+        await service.reconcile([request]);
+        nodes.single.syncedToTip = false;
+        nodes.single.batches.add({ids.single: _Update(500000)});
+        await _until(() => published.length == 1);
+        await reveal(request, keychain, 1000);
+        expect(await service.ensureScriptCoverage(request.key), isA<Ok>());
+        expect(nodes, hasLength(2));
+        expect(loadedHeights.last, 500000);
+        expect(await service.ensureScriptCoverage(request.key), isA<Ok>());
+        expect(nodes, hasLength(2));
+        expect(metadata.policies, isEmpty);
+      },
+    );
+  }
+
+  test(
+    'a missing source store cannot inherit an advanced recovery cursor',
+    () async {
+      final request = registration('a');
+      await service.reconcile([request]);
+      nodes.single.syncedToTip = false;
+      nodes.single.batches.add({ids.single: _Update(500000)});
+      await _until(() => published.length == 1);
+      await service.stop();
+      await File(
+        (request.configuration as BdkCbfConfiguration).databaseFilePath,
+      ).delete();
+      expect(await service.reconcile([request]), isA<Ok>());
+      expect(loadedHeights.last, BitcoinSyncCheckpoint.segwit.height);
+      expect(metadata.policies, isEmpty);
+    },
+  );
+
   test(
     'expired lease rebuilds from the last persisted wallet checkpoint',
     () async {

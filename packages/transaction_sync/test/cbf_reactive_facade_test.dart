@@ -39,11 +39,13 @@ final class _Node extends Fake implements BdkCbfReactiveNode {
   @override
   void renewLease() {}
   @override
-  Map<String, BdkCbfUpdate>? pollUpdates() {
+  BdkCbfBatch? pollUpdateBatch() {
     if (networkFailure.isCompleted) throw const FormatException('network');
     final value = batch;
     batch = null;
-    return value;
+    return value == null
+        ? null
+        : BdkCbfBatch(updates: value, scannedHeight: 500000, syncedToTip: true);
   }
 
   @override

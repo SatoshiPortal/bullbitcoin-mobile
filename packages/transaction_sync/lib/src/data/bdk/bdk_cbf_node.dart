@@ -20,11 +20,23 @@ final class _NativeCbfUpdate implements BdkCbfUpdate {
   void dispose() => update.dispose();
 }
 
+/// One FIFO boundary. Its frontier is safe only after every Update is saved.
+final class BdkCbfBatch {
+  final Map<String, BdkCbfUpdate> updates;
+  final int scannedHeight;
+  final bool syncedToTip;
+  const BdkCbfBatch({
+    required this.updates,
+    required this.scannedHeight,
+    required this.syncedToTip,
+  });
+}
+
 abstract interface class BdkCbfReactiveNode {
   void run();
   Future<SendPort?> prepare();
   void renewLease();
-  Map<String, BdkCbfUpdate>? pollUpdates();
+  BdkCbfBatch? pollUpdateBatch();
   List<bdk.Info> drainInfo();
   void drainWarnings();
   bdk.CbfStatus status();
@@ -102,9 +114,22 @@ final class NativeBdkCbfReactiveNode implements BdkCbfReactiveNode {
   @override
   void renewLease() => _components.client.renewLease();
   @override
-  Map<String, BdkCbfUpdate>? pollUpdates() => _components.client
-      .pollUpdates()
-      ?.map((id, update) => MapEntry(id, _NativeCbfUpdate(update)));
+  BdkCbfBatch? pollUpdateBatch() {
+    final batch = _components.client.pollUpdateBatch();
+    if (batch == null) return null;
+    try {
+      return BdkCbfBatch(
+        updates: batch.updates.map(
+          (id, update) => MapEntry(id, _NativeCbfUpdate(update)),
+        ),
+        scannedHeight: batch.scannedTip.height,
+        syncedToTip: batch.syncedToTip,
+      );
+    } finally {
+      batch.scannedTip.hash.dispose();
+    }
+  }
+
   @override
   List<bdk.Info> drainInfo() => _components.client.drainInfo();
   @override
