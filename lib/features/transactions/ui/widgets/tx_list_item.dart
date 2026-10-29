@@ -161,6 +161,9 @@ class _TransactionStatus extends StatelessWidget {
         ? (tx.timestamp != null ? timeago.format(tx.timestamp!) : null)
         : null;
 
+    if (tx.walletTransaction?.isNotBroadcast == true) {
+      return core.StatusRow(label: context.loc.transactionNotBroadcast);
+    }
     if (isOrderType && tx.order!.isCompleted() && date != null) {
       return core.StatusRow(label: date, icon: Icons.check_circle);
     } else if (isOrderType) {

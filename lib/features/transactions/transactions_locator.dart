@@ -1,3 +1,10 @@
+import 'presentation/blocs/cbf_recovery_cubit.dart';
+import 'package:bb_mobile/core/wallet/data/bitcoin_sync_routing.dart';
+import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasource.dart';
+import 'data/cbf_recovery_repository_impl.dart';
+import 'domain/repositories/cbf_recovery_repository.dart';
+import 'domain/usecases/retry_unrelayed_transaction_usecase.dart';
+import 'domain/usecases/cancel_unrelayed_transaction_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_order_usercase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/list_all_orders_usecase.dart';
@@ -47,6 +54,12 @@ import 'package:bull_payjoin/bull_payjoin.dart';
 
 class TransactionsLocator {
   static void registerUsecases(GetIt locator) {
+    locator.registerFactory<RetryUnrelayedTransactionUsecase>(
+      () => RetryUnrelayedTransactionUsecase(locator<CbfRecoveryRepository>()),
+    );
+    locator.registerFactory<CancelUnrelayedTransactionUsecase>(
+      () => CancelUnrelayedTransactionUsecase(locator<CbfRecoveryRepository>()),
+    );
     locator.registerFactory<GetPayjoinByIdUsecase>(
       () => GetPayjoinByIdUsecase(locator<PayjoinSessions>()),
     );
@@ -162,6 +175,12 @@ class TransactionsLocator {
   }
 
   static void registerAdapters(GetIt locator) {
+    locator.registerFactory<CbfRecoveryRepository>(
+      () => CbfRecoveryRepositoryImpl(
+        locator<WalletMetadataDatasource>(),
+        locator<BitcoinSyncRouting>(),
+      ),
+    );
     locator.registerLazySingleton<TransactionExportFormatter>(
       CsvTransactionExportFormatter.new,
     );
@@ -172,6 +191,12 @@ class TransactionsLocator {
   }
 
   static void registerBlocs(GetIt locator) {
+    locator.registerFactory<CbfRecoveryCubit>(
+      () => CbfRecoveryCubit(
+        locator<RetryUnrelayedTransactionUsecase>(),
+        locator<CancelUnrelayedTransactionUsecase>(),
+      ),
+    );
     // Bloc
     locator.registerFactoryParam<TransactionsCubit, String?, bool?>(
       (walletId, exchangeOnly) => TransactionsCubit(

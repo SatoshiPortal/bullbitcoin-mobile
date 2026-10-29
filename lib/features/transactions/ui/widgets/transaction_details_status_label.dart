@@ -29,7 +29,9 @@ class TransactionDetailsStatusLabel extends StatelessWidget {
           bloc.state.transaction?.displayPayjoinStatus,
     );
 
-    final label = orderSwap != null
+    final label = transaction?.walletTransaction?.isNotBroadcast == true
+        ? context.loc.transactionNotBroadcast
+        : orderSwap != null
         ? switch (orderSwap.localStatus) {
             OrderSwapLocalStatus.completed =>
               context.loc.coreSwapsStatusCompleted,

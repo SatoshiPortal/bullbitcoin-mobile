@@ -65,3 +65,15 @@ final class TransactionSwapRetryFailure extends TransactionFailure {
 final class TransactionUnexpectedFailure extends TransactionFailure {
   const TransactionUnexpectedFailure([super.logMessage]);
 }
+
+final class TransactionCbfRecoveryFailure extends TransactionFailure {
+  const TransactionCbfRecoveryFailure();
+}
+
+final class TransactionCbfTorFailure extends TransactionFailure {
+  const TransactionCbfTorFailure();
+}
+
+final class TransactionCbfUnavailableFailure extends TransactionFailure {
+  const TransactionCbfUnavailableFailure();
+}

@@ -19,6 +19,9 @@ extension TransactionFailureL10n on TransactionFailure {
     TransactionLabelLimitFailure() => context.loc.transactionLabelLimitReached,
     TransactionSwapRetryFailure() =>
       context.loc.transactionDetailSwapRetryFailed,
+    TransactionCbfRecoveryFailure() => context.loc.transactionCbfRecoveryFailed,
+    TransactionCbfTorFailure() => context.loc.transactionCbfTorUnavailable,
+    TransactionCbfUnavailableFailure() => context.loc.transactionCbfUnavailable,
     // Never `logMessage`.
     TransactionUnexpectedFailure() || TransactionPayjoinVerificationFailure() =>
       context.loc.oopsSomethingWentWrong,

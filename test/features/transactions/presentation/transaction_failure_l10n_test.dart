@@ -13,6 +13,9 @@ const _address = 'bc1qar0srrr7xfkvy5l643lydnw9re59gtzzwf5mdq';
 const _rawReason = 'StateError: no swap for tx $_txid paying to $_address';
 
 const _everyFailure = <TransactionFailure>[
+  TransactionCbfRecoveryFailure(),
+  TransactionCbfTorFailure(),
+  TransactionCbfUnavailableFailure(),
   TransactionAggregationFailure(_rawReason),
   TransactionNotFoundFailure(_rawReason),
   TransactionSwapUnavailableFailure(_rawReason),

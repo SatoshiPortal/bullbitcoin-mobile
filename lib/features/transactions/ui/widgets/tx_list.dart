@@ -27,13 +27,15 @@ class TxList extends StatelessWidget {
       (TransactionsCubit cubit) => cubit.state.failure,
     );
 
-    final refreshLabels = context.read<TransactionsCubit>().refreshLabels;
+    final reloadTransactions = context.read<TransactionsCubit>().loadTxs;
 
     if (failure != null) {
       return TransactionsByDayList<Transaction>(
         itemsByDay: const {},
-        itemBuilder: (context, tx) =>
-            TransactionListItem.transaction(tx, onDetailsClosed: refreshLabels),
+        itemBuilder: (context, tx) => TransactionListItem.transaction(
+          tx,
+          onDetailsClosed: reloadTransactions,
+        ),
         loadingMessage: context.loc.transactionListLoadingTransactions,
         emptyMessage: context.loc.transactionListNoTransactions,
         errorMessage: failure.toTranslated(context),
@@ -53,15 +55,17 @@ class TxList extends StatelessWidget {
 
     return TransactionsByDayList<Transaction>(
       itemsByDay: txsByDay,
-      itemBuilder: (context, tx) =>
-          TransactionListItem.transaction(tx, onDetailsClosed: refreshLabels),
+      itemBuilder: (context, tx) => TransactionListItem.transaction(
+        tx,
+        onDetailsClosed: reloadTransactions,
+      ),
       loadingMessage: context.loc.transactionListLoadingTransactions,
       emptyMessage: context.loc.transactionListNoTransactions,
       header:
           showOngoingSwaps && ongoingSwaps != null && ongoingSwaps.isNotEmpty
           ? OngoingSwapsWidget(
               ongoingSwaps: ongoingSwaps,
-              onDetailsClosed: refreshLabels,
+              onDetailsClosed: reloadTransactions,
             )
           : null,
       sliver: sliver,

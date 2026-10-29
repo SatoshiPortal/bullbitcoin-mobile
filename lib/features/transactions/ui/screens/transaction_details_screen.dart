@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/transactions/ui/widgets/unrelayed_transaction_actions.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
@@ -120,6 +121,16 @@ class TransactionDetailsScreen extends StatelessWidget {
       ],
       amount: const TransactionDetailsAmount(),
       beforeDetails: [
+        if (walletTransaction != null && walletTransaction.isNotBroadcast) ...[
+          UnrelayedTransactionActions(
+            key: ValueKey((walletTransaction.walletId, walletTransaction.txId)),
+            walletId: walletTransaction.walletId,
+            txid: walletTransaction.txId,
+            onRetried: () => context.read<TransactionDetailsCubit>().refresh(),
+            onCanceled: closeScreen,
+          ),
+          const Gap(24),
+        ],
         if (isOngoingSwap == true && swap != null) ...[
           SwapStatusDescription(swap: swap),
           if (swap.requiresAction) ...[

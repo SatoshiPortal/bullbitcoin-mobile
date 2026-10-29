@@ -31,21 +31,21 @@ class WalletDetailTxsList extends StatelessWidget {
         failure: state.failure,
       ),
       builder: (context, selected) {
-        final refreshLabels = context.read<TransactionsCubit>().refreshLabels;
+        final reloadTransactions = context.read<TransactionsCubit>().loadTxs;
         final ongoingSwaps = selected.ongoingSwaps;
 
         return TransactionsByDayList<Transaction>(
           itemsByDay: selected.txsByDay,
           itemBuilder: (context, tx) => TransactionListItem.transaction(
             tx,
-            onDetailsClosed: refreshLabels,
+            onDetailsClosed: reloadTransactions,
           ),
           loadingMessage: context.loc.transactionListLoadingTransactions,
           emptyMessage: context.loc.transactionListNoTransactions,
           header: ongoingSwaps != null && ongoingSwaps.isNotEmpty
               ? OngoingSwapsWidget(
                   ongoingSwaps: ongoingSwaps,
-                  onDetailsClosed: refreshLabels,
+                  onDetailsClosed: reloadTransactions,
                 )
               : null,
           errorMessage: selected.failure?.toTranslated(context),
