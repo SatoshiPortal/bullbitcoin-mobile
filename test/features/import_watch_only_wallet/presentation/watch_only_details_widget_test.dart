@@ -1,4 +1,8 @@
 import 'package:bb_mobile/core/entities/signer_device_entity.dart';
+import 'dart:async';
+import 'package:bb_mobile/features/wallet_sync/public/wallet_sync_facade.dart';
+import 'package:bb_mobile/locator.dart';
+import 'package:primitives/primitives.dart' show BitcoinNetwork;
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/presentation/cubit/import_watch_only_cubit.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/presentation/cubit/import_watch_only_state.dart';
@@ -19,10 +23,28 @@ class _MockWatchOnlyDescriptor extends Mock
 
 class _MockDescriptor extends Mock implements satoshifier.Descriptor {}
 
+class _Choices extends Fake implements WalletSyncFacade {
+  final pending = Completer<WalletSyncSelection?>();
+  int calls = 0;
+
+  @override
+  Future<WalletSyncSelection?> choose(
+    BuildContext context, {
+    BitcoinNetwork? network,
+    bool askScriptType = false,
+    WalletSyncSelection initial = const WalletSyncSelection(),
+    bool changingSource = false,
+  }) {
+    calls++;
+    return pending.future;
+  }
+}
+
 Future<_MockImportWatchOnlyCubit> _pumpDetails(
   WidgetTester tester, {
   required satoshifier.Network network,
 }) async {
+  locator.registerSingleton<WalletSyncFacade>(_Choices());
   final descriptor = _MockDescriptor();
   when(() => descriptor.network).thenReturn(network);
   when(() => descriptor.combined).thenReturn('wpkh(test)');
@@ -34,13 +56,16 @@ Future<_MockImportWatchOnlyCubit> _pumpDetails(
   final wallet = WatchOnlyWalletEntity.descriptor(
     watchOnlyDescriptor: watchOnlyDescriptor,
     signerDevice: SignerDeviceEntity.seedsigner,
+    label: 'Public fixture',
   );
   final cubit = _MockImportWatchOnlyCubit();
   when(
     () => cubit.state,
   ).thenReturn(ImportWatchOnlyState(watchOnlyWallet: wallet));
   when(() => cubit.stream).thenAnswer((_) => const Stream.empty());
+  when(() => cubit.isClosed).thenReturn(false);
   when(() => cubit.import()).thenAnswer((_) async {});
+  when(() => cubit.validateImport()).thenAnswer((_) async => true);
 
   await tester.pumpWidget(
     BlocProvider<ImportWatchOnlyCubit>.value(
@@ -62,6 +87,10 @@ Future<_MockImportWatchOnlyCubit> _pumpDetails(
 }
 
 void main() {
+  setUp(() async {
+    await locator.reset();
+  });
+  tearDown(locator.reset);
   testWidgets('reviews descriptor details and delegates import actions', (
     tester,
   ) async {
@@ -95,6 +124,14 @@ void main() {
 
     await tester.ensureVisible(find.text('Import'));
     await tester.tap(find.text('Import'));
+    await tester.pump();
+    verifyNever(() => cubit.import());
+    final choices = locator<WalletSyncFacade>();
+    if (choices is _Choices) {
+      expect(choices.calls, 1);
+      choices.pending.complete(const WalletSyncSelection());
+    }
+    await tester.pumpAndSettle();
     verify(() => cubit.import()).called(1);
   });
 
@@ -107,4 +144,23 @@ void main() {
       expect(find.text(label), findsOneWidget);
     });
   }
+
+  testWidgets('changing the key while choosing sync cancels the old import', (
+    tester,
+  ) async {
+    final cubit = await _pumpDetails(
+      tester,
+      network: satoshifier.Network.bitcoinMainnet,
+    );
+    await tester.ensureVisible(find.text('Import'));
+    await tester.tap(find.text('Import'));
+    await tester.pump();
+    final choices = locator<WalletSyncFacade>();
+    when(() => cubit.state).thenReturn(const ImportWatchOnlyState());
+    if (choices is _Choices) {
+      choices.pending.complete(const WalletSyncSelection());
+    }
+    await tester.pumpAndSettle();
+    verifyNever(() => cubit.import());
+  });
 }

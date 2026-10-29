@@ -1,4 +1,8 @@
 import 'package:bb_mobile/core/entities/signer_device_entity.dart';
+import 'package:bb_mobile/features/wallet_sync/public/wallet_sync_facade.dart';
+import 'package:bb_mobile/locator.dart';
+import 'package:bb_mobile/features/import_watch_only_wallet/presentation/import_watch_only_failure_l10n.dart';
+import 'package:primitives/primitives.dart' show BitcoinNetwork;
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
@@ -39,7 +43,13 @@ class _DescriptorDetailsWidget extends StatelessWidget {
         .watch<ImportWatchOnlyCubit>()
         .state
         .watchOnlyWallet;
-    final entity = watchOnlyWallet! as WatchOnlyDescriptorEntity;
+    if (watchOnlyWallet is! WatchOnlyDescriptorEntity) {
+      return BullText(
+        context.loc.oopsSomethingWentWrong,
+        style: context.font.bodyMedium,
+      );
+    }
+    final entity = watchOnlyWallet;
     final networkLabel = switch (entity.network) {
       Network.bitcoinMainnet =>
         context.loc.importWatchOnlyNetworkBitcoinMainnet,
@@ -107,10 +117,10 @@ class _DescriptorDetailsWidget extends StatelessWidget {
               ),
             ],
           ),
-        if (entity.signerDevice != null)
+        if (entity.signerDevice case final device?)
           BullLabeledTextInput(
             label: context.loc.importWatchOnlySigningDevice,
-            value: entity.signerDevice!.displayName,
+            value: device.displayName,
             onChanged: null,
           ),
         const Gap(24),
@@ -121,9 +131,21 @@ class _DescriptorDetailsWidget extends StatelessWidget {
           onChanged: cubit.updateLabel,
           maxLines: 1,
         ),
+        if (context.watch<ImportWatchOnlyCubit>().state.failure
+            case final failure?) ...[
+          const Gap(8),
+          Semantics(
+            liveRegion: true,
+            child: BullText(
+              failure.toTranslated(context),
+              style: context.font.bodyMedium,
+              color: context.appColors.error,
+            ),
+          ),
+        ],
         const Gap(24),
         BullButton.big(
-          onPressed: cubit.import,
+          onPressed: () => _chooseAndImport(context, entity.network),
           label: context.loc.importWatchOnlyImport,
           bgColor: context.appColors.onSurface,
           textColor: context.appColors.surface,
@@ -144,7 +166,13 @@ class _XpubDetailsWidget extends StatelessWidget {
         .watch<ImportWatchOnlyCubit>()
         .state
         .watchOnlyWallet;
-    final entity = watchOnlyWallet! as WatchOnlyXpubEntity;
+    if (watchOnlyWallet is! WatchOnlyXpubEntity) {
+      return BullText(
+        context.loc.oopsSomethingWentWrong,
+        style: context.font.bodyMedium,
+      );
+    }
+    final entity = watchOnlyWallet;
     final isXpub = entity.pubkey.startsWith('xpub');
 
     return Column(
@@ -226,9 +254,21 @@ class _XpubDetailsWidget extends StatelessWidget {
           value: entity.label,
           maxLines: 1,
         ),
+        if (context.watch<ImportWatchOnlyCubit>().state.failure
+            case final failure?) ...[
+          const Gap(8),
+          Semantics(
+            liveRegion: true,
+            child: BullText(
+              failure.toTranslated(context),
+              style: context.font.bodyMedium,
+              color: context.appColors.error,
+            ),
+          ),
+        ],
         const Gap(24),
         BullButton.big(
-          onPressed: cubit.import,
+          onPressed: () => _chooseAndImport(context, entity.network),
           label: context.loc.importWatchOnlyImport,
           bgColor: context.appColors.primary,
           textColor: context.appColors.onPrimary,
@@ -237,4 +277,34 @@ class _XpubDetailsWidget extends StatelessWidget {
       ],
     );
   }
+}
+
+Future<void> _chooseAndImport(BuildContext context, Network network) async {
+  final cubit = context.read<ImportWatchOnlyCubit>();
+  final selectedWallet = cubit.state.watchOnlyWallet;
+  if (!await cubit.validateImport() || !context.mounted || cubit.isClosed) {
+    return;
+  }
+  if (selectedWallet == null ||
+      selectedWallet.network != network ||
+      cubit.state.watchOnlyWallet != selectedWallet) {
+    return;
+  }
+  final selection = await locator<WalletSyncFacade>().choose(
+    context,
+    initial: WalletSyncSelection(scanScriptType: selectedWallet.scanScriptType),
+    network: network.isMainnet
+        ? BitcoinNetwork.mainnet
+        : BitcoinNetwork.testnet,
+  );
+  if (selection == null ||
+      !context.mounted ||
+      cubit.isClosed ||
+      cubit.state.watchOnlyWallet != selectedWallet) {
+    return;
+  }
+  await cubit.import(
+    birthday: selection.birthday,
+    bitcoinSyncSource: selection.source,
+  );
 }

@@ -2,7 +2,7 @@ import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bb_mobile/core/settings/data/settings_repository.dart';
+import 'package:bb_mobile/features/import_watch_only_wallet/domain/validate_watch_only_import_usecase.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/domain/import_watch_only_failure.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_descriptor_usecase.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_xpub_usecase.dart';
@@ -16,14 +16,15 @@ class ImportWatchOnlyCubit extends Cubit<ImportWatchOnlyState> {
   final ImportWatchOnlyDescriptorUsecase _importWatchOnlyDescriptorUsecase;
   final ImportWatchOnlyXpubUsecase _importWatchOnlyXpubUsecase;
   final ParseWatchOnlyInputUsecase _parseWatchOnlyInputUsecase;
-  final SettingsRepository _settingsRepository;
+  final ValidateWatchOnlyImportUsecase _validateImport;
+  int _selectionGeneration = 0;
 
   ImportWatchOnlyCubit({
     WatchOnlyWalletEntity? watchOnlyWallet,
     required this._importWatchOnlyDescriptorUsecase,
     required this._importWatchOnlyXpubUsecase,
     required this._parseWatchOnlyInputUsecase,
-    required this._settingsRepository,
+    required this._validateImport,
   }) : super(ImportWatchOnlyState(watchOnlyWallet: watchOnlyWallet));
 
   void init() {
@@ -33,40 +34,55 @@ class ImportWatchOnlyCubit extends Cubit<ImportWatchOnlyState> {
   }
 
   void updateLabel(String label) {
-    if (state.watchOnlyWallet == null) return;
-    final watchOnlyWallet = state.watchOnlyWallet!.copyWith(label: label);
-    emit(state.copyWith(watchOnlyWallet: watchOnlyWallet));
+    final selected = state.watchOnlyWallet;
+    if (selected == null) return;
+    _selectionGeneration++;
+    final watchOnlyWallet = selected.copyWith(label: label);
+    emit(state.copyWith(watchOnlyWallet: watchOnlyWallet, failure: null));
   }
 
-  Future<void> import() async {
+  Future<WatchOnlyWalletEntity?> _validatedWallet() async {
     emit(state.copyWith(failure: null));
+    final generation = _selectionGeneration;
+    final result = await _validateImport.execute(state.watchOnlyWallet);
+    if (isClosed || generation != _selectionGeneration) return null;
+    switch (result) {
+      case Ok(:final value):
+        return value;
+      case Err(:final failure):
+        emit(state.copyWith(failure: failure));
+        return null;
+    }
+  }
 
-    final wallet = state.watchOnlyWallet;
-    if (wallet == null) {
-      emit(state.copyWith(failure: const NoWalletSelectedFailure()));
-      return;
-    }
-    if (wallet.label.isEmpty) {
-      emit(state.copyWith(failure: const LabelRequiredFailure()));
-      return;
-    }
-    final settings = await _settingsRepository.fetch();
-    if (wallet.network.isMainnet != settings.environment.isMainnet) {
-      emit(state.copyWith(failure: const NetworkMismatchFailure()));
-      return;
-    }
+  Future<bool> validateImport() async => await _validatedWallet() != null;
+
+  Future<void> import({
+    WalletBirthday? birthday,
+    BitcoinSyncSource bitcoinSyncSource = BitcoinSyncSource.electrum,
+  }) async {
+    final generation = _selectionGeneration;
+    final wallet = await _validatedWallet();
+    if (wallet == null) return;
 
     final Result<Wallet, ImportWatchOnlyFailure> result;
     if (wallet is WatchOnlyDescriptorEntity) {
       result = await _importWatchOnlyDescriptorUsecase.execute(
         watchOnlyDescriptor: wallet,
+        birthday: birthday,
+        bitcoinSyncSource: bitcoinSyncSource,
       );
     } else if (wallet is WatchOnlyXpubEntity) {
-      result = await _importWatchOnlyXpubUsecase.execute(watchOnlyXpub: wallet);
+      result = await _importWatchOnlyXpubUsecase.execute(
+        watchOnlyXpub: wallet,
+        birthday: birthday,
+        bitcoinSyncSource: bitcoinSyncSource,
+      );
     } else {
       return;
     }
 
+    if (isClosed || generation != _selectionGeneration) return;
     switch (result) {
       case Ok(:final value):
         emit(state.copyWith(importedWallet: value));
@@ -76,10 +92,13 @@ class ImportWatchOnlyCubit extends Cubit<ImportWatchOnlyState> {
   }
 
   Future<void> parsePastedInput(String input) async {
+    final generation = ++_selectionGeneration;
     final trimmed = input.trim();
-    emit(state.copyWith(input: trimmed));
+    emit(state.copyWith(input: trimmed, watchOnlyWallet: null, failure: null));
     if (trimmed.length >= 111) {
-      switch (await _parseWatchOnlyInputUsecase.execute(trimmed)) {
+      final parsed = await _parseWatchOnlyInputUsecase.execute(trimmed);
+      if (isClosed || generation != _selectionGeneration) return;
+      switch (parsed) {
         case Ok(:final value):
           emit(state.copyWith(watchOnlyWallet: value));
         case Err(:final failure):
@@ -89,30 +108,28 @@ class ImportWatchOnlyCubit extends Cubit<ImportWatchOnlyState> {
   }
 
   void onSignerChanged(SignerEntity? value) {
-    if (value == null) return;
-    final watchOnlyWallet = state.watchOnlyWallet!.copyWith(signer: value);
-    emit(state.copyWith(watchOnlyWallet: watchOnlyWallet));
+    final selected = state.watchOnlyWallet;
+    if (value == null || selected == null) return;
+    _selectionGeneration++;
+    final watchOnlyWallet = selected.copyWith(signer: value);
+    emit(state.copyWith(watchOnlyWallet: watchOnlyWallet, failure: null));
   }
 
   void onSignerDeviceChanged(SignerDeviceEntity? device) {
-    if (state.watchOnlyWallet == null) return;
-    if (state.watchOnlyWallet is! WatchOnlyDescriptorEntity) return;
-
-    final entity = state.watchOnlyWallet! as WatchOnlyDescriptorEntity;
+    final entity = state.watchOnlyWallet;
+    if (entity is! WatchOnlyDescriptorEntity) return;
+    _selectionGeneration++;
 
     final watchOnlyWallet = entity.copyWith(
       signerDevice: device,
       signer: device == null ? SignerEntity.none : SignerEntity.remote,
     );
-    emit(state.copyWith(watchOnlyWallet: watchOnlyWallet));
+    emit(state.copyWith(watchOnlyWallet: watchOnlyWallet, failure: null));
   }
 
   void onDerivationChanged(satoshifier.Derivation? value) {
-    if (state.watchOnlyWallet == null) return;
-    if (state.watchOnlyWallet is! WatchOnlyXpubEntity) return;
-    if (value == null) return;
-
-    final entity = state.watchOnlyWallet! as WatchOnlyXpubEntity;
+    final entity = state.watchOnlyWallet;
+    if (entity is! WatchOnlyXpubEntity || value == null) return;
     final newPubkey = switch (value) {
       satoshifier.Derivation.bip84 => satoshifier.Bip32Utils.convertToZpub(
         entity.extendedPubkey.pubkey,

@@ -12,6 +12,7 @@ import 'package:bb_mobile/features/import_watch_only_wallet/watch_only_wallet_en
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/locator.dart';
+import 'package:bb_mobile/features/import_watch_only_wallet/domain/validate_watch_only_import_usecase.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
@@ -32,7 +33,7 @@ class ImportWatchOnlyScreen extends StatelessWidget {
             locator<ImportWatchOnlyDescriptorUsecase>(),
         importWatchOnlyXpubUsecase: locator<ImportWatchOnlyXpubUsecase>(),
         parseWatchOnlyInputUsecase: locator<ParseWatchOnlyInputUsecase>(),
-        settingsRepository: locator(),
+        validateImport: locator<ValidateWatchOnlyImportUsecase>(),
       )..init(),
       child: Scaffold(
         appBar: AppBar(
@@ -48,10 +49,10 @@ class ImportWatchOnlyScreen extends StatelessWidget {
               context.read<WalletBloc>().add(const WalletStarted());
               context.goNamed(WalletRoute.walletHome.name);
             }
-            if (state.failure != null) {
+            if (state.failure case final failure?) {
               BullSnackBar.show(
                 context,
-                message: state.failure!.toTranslated(context),
+                message: failure.toTranslated(context),
               );
             }
           },
@@ -65,20 +66,18 @@ class ImportWatchOnlyScreen extends StatelessWidget {
                   child: Column(
                     children: [
                       const Gap(32),
-                      if (state.watchOnlyWallet != null)
-                        WatchOnlyDetailsWidget(
-                          watchOnlyWallet: state.watchOnlyWallet!,
-                        )
+                      if (state.watchOnlyWallet case final wallet?)
+                        WatchOnlyDetailsWidget(watchOnlyWallet: wallet)
                       else ...[
                         BullPasteInput(
                           text: state.input,
                           hint: context.loc.importWatchOnlyPasteHint,
                           onChanged: cubit.parsePastedInput,
                         ),
-                        if (state.failure != null)
+                        if (state.failure case final failure?)
                           Center(
                             child: BullText(
-                              state.failure!.toTranslated(context),
+                              failure.toTranslated(context),
                               style: TextStyle(color: context.appColors.error),
                             ),
                           ),
