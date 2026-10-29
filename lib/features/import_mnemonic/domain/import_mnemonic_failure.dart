@@ -17,6 +17,11 @@ final class ImportMnemonicNullMnemonicFailure extends ImportMnemonicFailure {
   const ImportMnemonicNullMnemonicFailure();
 }
 
+final class ImportMnemonicSourceNotConfirmedFailure
+    extends ImportMnemonicFailure {
+  const ImportMnemonicSourceNotConfirmedFailure();
+}
+
 /// Catch-all. [logMessage] is for logs/Sentry ONLY and MUST never reach the UI.
 final class ImportMnemonicUnexpectedFailure extends ImportMnemonicFailure {
   const ImportMnemonicUnexpectedFailure([super.logMessage]);

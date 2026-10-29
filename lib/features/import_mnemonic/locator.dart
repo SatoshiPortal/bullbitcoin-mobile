@@ -6,6 +6,7 @@ import 'package:bb_mobile/features/import_mnemonic/domain/check_duplicate_mnemon
 import 'package:bb_mobile/features/import_mnemonic/domain/import_wallet_usecase.dart';
 import 'package:bb_mobile/features/import_mnemonic/presentation/cubit.dart';
 import 'package:get_it/get_it.dart';
+import 'package:bb_mobile/features/import_mnemonic/domain/discover_mnemonic_wallets_usecase.dart';
 
 class ImportMnemonicLocator {
   static void setup(GetIt locator) {
@@ -29,7 +30,9 @@ class ImportMnemonicLocator {
     locator.registerFactory<ImportMnemonicCubit>(
       () => ImportMnemonicCubit(
         importWalletUsecase: locator<ImportWalletUsecase>(),
-        checkWalletUsecase: locator<CheckWalletStatusUsecase>(),
+        discovery: DiscoverMnemonicWalletsUsecase(
+          check: locator<CheckWalletStatusUsecase>(),
+        ),
         checkDuplicateMnemonicUsecase: locator<CheckDuplicateMnemonicUsecase>(),
       ),
     );

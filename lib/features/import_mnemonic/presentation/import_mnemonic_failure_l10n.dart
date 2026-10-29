@@ -9,6 +9,8 @@ extension ImportMnemonicFailureL10n on ImportMnemonicFailure {
     ImportMnemonicEmptyLabelFailure() =>
       context.loc.importMnemonicEmptyLabelError,
     ImportMnemonicNullMnemonicFailure() => context.loc.oopsSomethingWentWrong,
+    ImportMnemonicSourceNotConfirmedFailure() =>
+      context.loc.oopsSomethingWentWrong,
     ImportMnemonicUnexpectedFailure() => context.loc.oopsSomethingWentWrong,
   };
 }

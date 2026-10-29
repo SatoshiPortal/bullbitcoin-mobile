@@ -17,6 +17,9 @@ sealed class ImportMnemonicState with _$ImportMnemonicState {
   const factory ImportMnemonicState({
     @Default(null) Mnemonic? mnemonic,
     @Default(ScriptType.bip84) ScriptType scriptType,
+    @Default(BitcoinSyncSource.electrum) BitcoinSyncSource source,
+    @Default(false) bool sourceConfirmed,
+    WalletBirthday? birthday,
     @Default(false) bool isLoading,
     @Default(null) Wallet? wallet,
     @Default(null) ({BigInt satoshis, int transactions})? bip44Status,

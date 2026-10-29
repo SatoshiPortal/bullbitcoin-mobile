@@ -28,11 +28,8 @@ class SelectScriptTypePage extends StatelessWidget {
       ),
       body: BlocConsumer<ImportMnemonicCubit, ImportMnemonicState>(
         listener: (context, state) {
-          if (state.failure != null) {
-            BullSnackBar.show(
-              context,
-              message: state.failure!.toTranslated(context),
-            );
+          if (state.failure case final failure?) {
+            BullSnackBar.show(context, message: failure.toTranslated(context));
           }
         },
         builder: (context, state) {
@@ -139,11 +136,11 @@ class _WalletTypeCard extends StatelessWidget {
                     ),
                   ),
 
-                  if (status != null) ...[
+                  if (status case final preview?) ...[
                     const Gap(8),
                     BullText(
                       context.loc.importMnemonicBalanceLabel(
-                        status!.satoshis.toString(),
+                        preview.satoshis.toString(),
                       ),
                       style: context.font.bodyMedium?.copyWith(
                         color: context.appColors.textMuted,
@@ -152,7 +149,7 @@ class _WalletTypeCard extends StatelessWidget {
                     const Gap(4),
                     BullText(
                       context.loc.importMnemonicTransactionsLabel(
-                        status!.transactions.toString(),
+                        preview.transactions.toString(),
                       ),
                       style: context.font.bodyMedium?.copyWith(
                         color: context.appColors.textMuted,
