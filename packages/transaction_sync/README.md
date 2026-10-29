@@ -15,7 +15,8 @@ The package owns:
 - replaying synchronization state;
 - registration mismatch and deletion lifecycle;
 - shared serialization of access to persisted wallet-source state;
-- BDK and LWK source adapters.
+- BDK Electrum/compact-filter and LWK Electrum source adapters.
+- retained multi-wallet CBF nodes and peer-to-peer broadcast, persisting pending transactions before route verification or network access.
 - the package-owned durable SQLite metadata adapter, storing hashed keys and non-sensitive synchronization state only; its database path is injected by the production shell.
 - the BDK Electrum download cache: a `<wallet database>.parents.sqlite` sidecar holding the public parent transactions of the wallet's transactions, never read as transaction history.
 
@@ -25,7 +26,7 @@ The package does not own:
 - LWK's wollet state;
 - a second durable transaction database;
 - labels, swaps, exchange-order enrichment, or presentation mapping;
-- spend construction, signing, broadcast, key material, or UI.
+- spend construction, signing, Electrum broadcast, key material, or UI.
 
 BDK and LWK remain the durable authorities. A package snapshot is a reconstructible read model for one process.
 
@@ -44,6 +45,46 @@ The public library is `lib/transaction_sync.dart`. Domain entities, requests, fa
 
 SDK types are confined to `src/data/bdk/` and `src/data/lwk/`; they never cross the repository or facade boundary. The separate `lib/bdk_electrum_cache.dart` library exposes `BdkElectrumCache` to the application's legacy BDK sync until that sync runs behind the facade; it takes SDK types by design and is not part of the facade contract.
 
+## Bitcoin import policy inputs
+
+`BitcoinSyncSource` lives in `primitives` and is re-exported here for compatibility. The preference is stored in application wallet metadata. Electrum remains the default and Liquid always uses it; CBF is confirmed-only.
+
+The shell rereads saved policy for dispatch; the reactive adapter revalidates it inside each short storage session. CBF network waits hold no wallet source session. `BdkCbfConfiguration` supplies the exact checkpoint and required-Tor flag. Missing required SOCKS routing produces a typed refusal, never a direct connection or Electrum fallback.
+
+The shell's legacy coordinator guard covers history synchronization/discovery only. Other remote operations need a wallet-attributed privacy guard.
+
+`BitcoinSyncCheckpoint` supplies height, hash and block timestamp. The offline resolver clamps stored future birthdays to its reference clock, rounds to the UTC day, subtracts seven days and chooses a verified monthly predecessor. It never queries a server or substitutes import time for unknown history.
+
+The mainnet catalogue covers February 2012 through October 2026. `ResolveBitcoinSyncCheckpointUsecase.execute` takes `scriptType: BitcoinSyncScriptType`; derive it from the output descriptor with `BitcoinSyncScriptType.fromDescriptor`, rather than its key-origin BIP purpose. Unknown birthdays and dates before a script's supported start use its exact floor: Taproot block 709631 (before activation block 709632), SegWit v0 including nested SegWit block 481823, and pre-SegWit HD wallets block 164780 (last header timestamp strictly before BIP32 publication, February 1, 2012 UTC). The optional parameter defaults to SegWit v0 for compatibility; callers with a descriptor must supply its actual kind. Test networks retain their own genesis. Known dates keep the seven-day margin and choose a monthly checkpoint, clamped upwards to the script floor. Header timestamps do not prove wall-clock activity time.
+
+The 67 additional monthly records were verified on October 28–29, 2026 using only public block data from [Bull's explorer](https://mempool.bullbitcoin.com/api) and [mempool.space](https://mempool.space/api), following the [REST API reference](https://mempool.space/docs/api/rest). At both sources, fetch `/block-height/<height>` then `/block/<hash>` for the predecessor and successor; require identical hash, height, header time, median time and parent hash, linked blocks, and `predecessor.timestamp < monthStart <= successor.timestamp`. Timestamp lookup is only a search hint: the February 2012 hint returned block 164750, which failed bracketing and was rejected. Matching `/blocks/<height>` batches locate an upper bound with median time on/after the cutoff; scan all intervening heights backwards to the last timestamp strictly before the cutoff, without assuming monotonic header timestamps. The monotonically advancing median time bounds later blocks. Recheck the exact selected pair with height/hash and block endpoints. Verify consecutive month cutoffs, increasing selected heights/times, and a newest cutoff at least fourteen days old.
+
+BIP32's pair is 164780 (`000000000000087bb253be417ce7df3235a812350d1e05a4c224c4fc448cceef`, timestamp 1328053905) → 164781 (1328054418), bracketing 1328054400. Taproot's pair is 709631 (`000000000000000000013712fc242ee6dd28476d0e9c931c75f83e6974c6bccc`, timestamp 1636865834) → 709632 (1636866927). Both explorers matched; SegWit's existing floor was rechecked. Adding the small offline monthly extension avoids years of unnecessary scanning for a known 2015 birthday, with no runtime explorer request.
+
+## Compact block filters
+
+`BdkCbfConfiguration` shares the existing BDK identity fingerprint and registration kind (`bdk_electrum`) so changing transport preserves authoritative wallet state. Its configuration type and snapshot capabilities identify CBF; the historical registration kind does not select transport. SDK objects remain inside `src/data/bdk/`. The temporary root binding override is for the stacked integration; the final upstream change must update `bull_sdk` to consume the corrected binding revision.
+
+The foreground retains one native node per Bitcoin network while visible and at least one CBF wallet exists. Transient `inactive` focus loss preserves the node; `hidden`, `paused` and `detached` stop it. `CbfBuilder.buildWithWallets` uses the default `SyncScanType`; one 250 ms Dart timer renews a 5-second native owner lease and drains `pollUpdates()` in FIFO order. The twenty renewal opportunities tolerate scheduling jitter; an Android engine frozen beyond the lease intentionally expires and rebuilds from persisted checkpoints on resume. Each complete batch is applied, persisted and disposed before the next batch. Overflow at eight batches stops native work; the app drains the retained batches before joining and rebuilding. Each wallet update reloads the authoritative store in a short coordinator session, applies and persists the update, publishes a snapshot, records the visible-payment baseline, then updates discovery metadata and progress. Info/warnings are drained synchronously for progress, and bounded synchronous `isTerminated` polling acknowledges shutdown. No streaming receive or native termination future is retained by the owner. The node owns cloned public indexes and never holds a wallet writer for its lifetime. Late native updates from a stopped generation are discarded; a failed storage batch stops the node rather than consuming another batch that would not replay its transactions.
+
+A survivor isolate owns each native termination witness and asynchronous package submission; submission callbacks therefore remain alive when their application owner dies. Both foreground and headless registries arm a 7-second owner-exit bound (5-second TTL plus 2 seconds for cancellation scheduling) and register every witness before native run. After that interval, replacement still requires all witnesses to acknowledge actual native termination. An OS DNS resolver on Tokio’s blocking pool can outlive cancellation, so an absent acknowledgement keeps the owner quarantined until the resolver returns. The bound never substitutes for a failed native join.
+
+Recovering wallets load with lookahead 1000 and receive a durable birthday checkpoint before construction. For a wallet already at tip, a separate memory-only watch-only chain anchor lowers the node's starting checkpoint without deleting its real history. Revealed derivation bounds are copied into that snapshot. Only a per-wallet marker matching identity, checkpoint, script count and policy version authorizes catch-up. Height alone and an empty replacement store cannot authorize it. A marker is written only after that wallet's returned tip boundary has been persisted and published. Deletion clears it; explicit discovery can revive a retired source.
+
+Wallet-set, source and Tor on/off/port changes stop and join the old node before replacement. An earlier birthday starts a replacement recovery immediately. Each node owns immutable script indexes and its prepared batches; rebuilding at the exact checkpoint prevents an older queued boundary from falsely completing the new policy. Ordinary blocks and user refreshes keep the node and its peers.
+
+The script window is **1000 per keychain** beyond the captured revealed bound. It is finite, not arbitrary gap discovery. Before exposing a receive script outside that window, and before relaying a transaction that may reveal change, the shell checks the current SDK derivation bounds and rebuilds only when coverage is exceeded. Both keychains are checked. History outside the supported window still needs a wider recovery policy. Confirmed chain data and locally saved pending transactions remain distinct; pending does not prove mempool acceptance.
+
+`watchBitcoinSyncProgress(key)` replays SDK-free phases `findingPeers`, `checkingBlocks`, `downloadingTransactions`, and `done`. Fractions count filters, not headers. `SyncedInfo` is a prepared native boundary, not durable success; `done` follows application persistence while the node stays connected. Old queued heights do not regress a durable boundary. New node generations reset peer/tip counters. Reactive failures also update `watchWalletState`, retaining the last successful snapshot.
+
+Foreground recovery has no whole-history timeout; initial peer admission is bounded to ten minutes without evidence of contact. Every current native Info variant records peer contact; retained progress, the durable dropped-Info counter and the durable synced tip preserve that evidence even if the handshake diagnostic is evicted. Admission records observed contact, not a current peer count or a successful broadcast: only the native transaction-payload relay acknowledgement completes broadcast. Request deadlines are never retained as node lifetime policy. `catchUpCbfWallets` runs one bounded multi-wallet background batch, excludes initial recoveries and missing stores individually, caches each first outcome, then stops the node before returning. The shell reserves join time per network and time for Liquid. Cached results can settle queue claims without starting new network work after network admission ends. Foreground/headless handoff uses a stop/termination acknowledgement and an active-foreground marker, preventing a worker started after resume from creating another node.
+
+Shutdown requests stop the native node, then join it. Three bounded join waits can return `CbfNodeDidNotStopFailure`; the network barrier and native handles remain until actual termination, including during foreground/headless handoff. Native OS DNS teardown can therefore outlive a platform budget; no unconditional OS deadline or isolate-kill guarantee is claimed. Admitted storage/publication callbacks keep their source session and are drained before dependencies close. Other wallet reads and spending remain available while native networking waits.
+
+`stageCbfTransaction` saves pending before the shell verifies Tor. `broadcastCbfTransaction` reuses the network's running node, starting it with the complete wallet registry if needed, waits for an established peer, and submits a singleton package. Its total 30-second budget includes route preparation and handshake. Acknowledgement means transmission to a peer, not mempool acceptance; timeout or Tor refusal preserves pending and never falls back to Electrum. CBF network requests enter without an already-admitted source session; legacy admitted Electrum operations retain their existing contract.
+
+Peer persistence is deliberately absent. The bindings expose `peerCount`, `peerInfo`, `connect`, builder `peers` and `onlyConfiguredPeers` for diagnostics or explicitly selected seeds. They do not expose import/export of the complete discovered address book. Reusing peers across restarts needs a privacy decision and additional native support.
+
 ## Public operations
 
 | Operation | Network | Purpose |
@@ -53,9 +94,16 @@ SDK types are confined to `src/data/bdk/` and `src/data/lwk/`; they never cross 
 | `refreshLocalSnapshot` | No | Reconstruct a snapshot only from already-persisted BDK/LWK state. |
 | `lookupLocal` | No | Look up one transaction in the current in-memory revision. |
 | `listLocal` | No | Read one revision through deterministic, revision-bound pagination. |
+| `watchBitcoinSyncProgress` | No | Observe replaying per-wallet CBF filter progress without initiating network work. |
+| `reconcileCbfWallets` | Yes | Maintain the complete foreground CBF wallet registry and node generations. |
+| `ensureCbfScriptCoverage` | If needed | Rebuild when a revealed receive/change script exceeds the captured window. |
+| `catchUpCbfWallets` | Yes | Run a bounded multi-wallet background catch-up and return outcomes per wallet. |
+| `stageCbfTransaction` | No | Save pending before route verification. |
+| `broadcastCbfTransaction` | Yes | Persist pending and relay through the retained P2P node with required Tor. |
+| `stopCbfNodes` | No new work | Stop/join all network nodes, retaining an unacknowledged network barrier. |
 | `watchWalletState` | No | Replay and observe package state transitions; it never initiates synchronization. |
 | `deleteWallet` | No | Evict the snapshot, delete source state through the adapter, clear metadata, and retire the source key. |
-| `dispose` | No | Close package state streams. |
+| `dispose` | No new work | Stop nodes, drain admitted publication callbacks, and close state streams. |
 
 Local reads mean “what this wallet knew after its last persisted source observation,” not current blockchain or mempool truth.
 
@@ -168,4 +216,4 @@ The dated benchmarks, Red-Green reproductions, commit chain, Android measurement
 
 ## Verification
 
-Use the repository makefile and pinned Flutter SDK. The package tests mirror behavior across source mapping, fingerprint stability, pagination, watchers, deletion, lifecycle, concurrency, and immutability. The optional network discovery test remains explicit and is not part of the default deterministic suite.
+Use the repository makefile and pinned Flutter SDK. The package tests mirror behavior across source mapping, fingerprint stability, pagination, watchers, deletion, lifecycle, concurrency, and immutability. The optional network discovery tests remain explicit and are not part of the default deterministic suite. `CBF_LIVE_TESTS=1 fvm flutter test test/cbf_live_recovery_test.dart` (from this package) recovers the public account-0 BIP84 descriptors from a recent exact checkpoint, compares confirmed transaction sets with Electrum, and performs a warm catch-up. Only this opt-in comparison intentionally uses both transports; production CBF operations never do.
