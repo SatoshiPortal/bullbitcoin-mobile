@@ -1,4 +1,6 @@
 import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/features/wallet_sync/public/wallet_sync_facade.dart';
+import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/core/widgets/loading/progress_screen.dart';
 import 'package:bb_mobile/features/recoverbull/presentation/bloc.dart';
 import 'package:bb_mobile/features/recoverbull/domain/recoverbull_failure.dart';
@@ -30,6 +32,7 @@ class FetchVaultKeyPage extends StatefulWidget {
 
 class _FetchVaultKeyPageState extends State<FetchVaultKeyPage> {
   bool _hasNavigatedAway = false;
+  bool _choosingSync = false;
 
   @override
   void initState() {
@@ -83,7 +86,7 @@ class _FetchVaultKeyPageState extends State<FetchVaultKeyPage> {
                 previous.decryptedVault != current.decryptedVault ||
             current.vaultKey != null && previous.vaultKey != current.vaultKey ||
             previous.isFlowFinished != current.isFlowFinished,
-        listener: (context, state) {
+        listener: (context, state) async {
           if (state.failure != null) {
             if (state.failure is ExternalTorProxyUnavailableFailure) {
               final router = GoRouter.of(context);
@@ -103,6 +106,26 @@ class _FetchVaultKeyPageState extends State<FetchVaultKeyPage> {
               state.isFlowFinished) {
             _hasNavigatedAway = true;
             context.goNamed(WalletRoute.walletHome.name);
+            return;
+          }
+          if (state.flow == RecoverBullFlow.recoverVault &&
+              state.decryptedVault != null &&
+              !_choosingSync) {
+            _choosingSync = true;
+            final bloc = context.read<RecoverBullBloc>();
+            final selection = await locator<WalletSyncFacade>().choose(context);
+            if (!context.mounted || bloc.isClosed) return;
+            if (selection == null) {
+              bloc.add(const OnVaultRecoveryCancelled());
+              Navigator.of(context).pop();
+            } else {
+              bloc.add(
+                OnVaultRecoveryConfirmed(
+                  birthday: selection.birthday,
+                  bitcoinSyncSource: selection.source,
+                ),
+              );
+            }
             return;
           }
           if (state.decryptedVault != null && state.vaultKey != null) {

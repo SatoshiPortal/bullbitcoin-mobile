@@ -36,6 +36,20 @@ class OnVaultDecryption extends RecoverBullEvent {
   final String vaultKey;
 }
 
+class OnVaultRecoveryConfirmed extends RecoverBullEvent {
+  final WalletBirthday? birthday;
+  final BitcoinSyncSource bitcoinSyncSource;
+
+  const OnVaultRecoveryConfirmed({
+    this.birthday,
+    this.bitcoinSyncSource = BitcoinSyncSource.electrum,
+  });
+}
+
+class OnVaultRecoveryCancelled extends RecoverBullEvent {
+  const OnVaultRecoveryCancelled();
+}
+
 class OnServerCheck extends RecoverBullEvent {
   const OnServerCheck();
 }

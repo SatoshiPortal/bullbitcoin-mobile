@@ -1,4 +1,7 @@
 import 'dart:async';
+import 'package:bb_mobile/core/recoverbull/domain/entity/decrypted_vault.dart';
+import 'package:primitives/primitives.dart' show WalletBirthday;
+import 'package:transaction_sync/transaction_sync.dart' show BitcoinSyncSource;
 
 import 'package:bb_mobile/core/recoverbull/domain/entity/encrypted_vault.dart';
 import 'package:bb_mobile/core/recoverbull/domain/entity/vault_provider.dart';
@@ -142,6 +145,150 @@ void main() {
     updateLatestEncryptedVaultTestUsecase: updateLatest,
     watchTorConnectionUsecase: watchTor,
   );
+
+  group('explicit recovery sync choices', () {
+    test('decrypt waits for choices; cancel creates no wallets', () async {
+      final vault = _MockEncryptedVault();
+      const decoded = DecryptedVault(masterFingerprint: 'deadbeef');
+      when(
+        () => decrypt.execute(vault: vault, vaultKey: 'public-test-fixture'),
+      ).thenReturn(const Ok(decoded));
+      when(
+        () => updateLatest.execute(decryptedVault: decoded),
+      ).thenAnswer((_) async => const Ok(null));
+      final bloc = buildBloc(
+        flow: RecoverBullFlow.recoverVault,
+        preSelectedVault: vault,
+      );
+      addTearDown(bloc.close);
+      bloc.add(const OnVaultDecryption(vaultKey: 'public-test-fixture'));
+      await pumpEventQueue();
+      expect(bloc.state.decryptedVault, decoded);
+      expect(bloc.state.isFlowFinished, isFalse);
+      verifyZeroInteractions(restore);
+      verifyZeroInteractions(walletBloc);
+      bloc.add(const OnVaultRecoveryCancelled());
+      await pumpEventQueue();
+      expect(bloc.state.decryptedVault, isNull);
+      verifyZeroInteractions(restore);
+      verifyZeroInteractions(walletBloc);
+    });
+
+    test(
+      'confirmation forwards private source and birthday once, then starts the wallet',
+      () async {
+        final vault = _MockEncryptedVault();
+        const decoded = DecryptedVault(masterFingerprint: 'deadbeef');
+        final birthday = WalletBirthday(DateTime.utc(2021, 3));
+        final pending = Completer<Result<Null, core.RecoverBullCoreFailure>>();
+        when(
+          () => decrypt.execute(vault: vault, vaultKey: 'public-test-fixture'),
+        ).thenReturn(const Ok(decoded));
+        when(
+          () => updateLatest.execute(decryptedVault: decoded),
+        ).thenAnswer((_) async => const Ok(null));
+        when(
+          () => restore.execute(
+            decryptedVault: decoded,
+            birthday: birthday,
+            bitcoinSyncSource: BitcoinSyncSource.compactBlockFilters,
+          ),
+        ).thenAnswer((_) => pending.future);
+        final bloc = buildBloc(
+          flow: RecoverBullFlow.recoverVault,
+          preSelectedVault: vault,
+        );
+        addTearDown(bloc.close);
+        bloc.add(const OnVaultDecryption(vaultKey: 'public-test-fixture'));
+        await pumpEventQueue();
+        bloc.add(
+          OnVaultRecoveryConfirmed(
+            birthday: birthday,
+            bitcoinSyncSource: BitcoinSyncSource.compactBlockFilters,
+          ),
+        );
+        await pumpEventQueue();
+        bloc.add(
+          OnVaultRecoveryConfirmed(
+            birthday: birthday,
+            bitcoinSyncSource: BitcoinSyncSource.compactBlockFilters,
+          ),
+        );
+        await pumpEventQueue();
+        verify(
+          () => restore.execute(
+            decryptedVault: decoded,
+            birthday: birthday,
+            bitcoinSyncSource: BitcoinSyncSource.compactBlockFilters,
+          ),
+        ).called(1);
+        verifyZeroInteractions(walletBloc);
+        pending.complete(const Ok(null));
+        await pumpEventQueue();
+        expect(bloc.state.isFlowFinished, isTrue);
+        expect(bloc.state.decryptedVault, isNull);
+        verify(() => walletBloc.add(const WalletStarted())).called(1);
+      },
+    );
+
+    test('missing vault and missing decrypted vault are recoverable', () async {
+      final bloc = buildBloc(flow: RecoverBullFlow.recoverVault);
+      addTearDown(bloc.close);
+      bloc.add(const OnVaultDecryption(vaultKey: 'public-test-fixture'));
+      await pumpEventQueue();
+      expect(bloc.state.failure, isA<VaultNotSetFailure>());
+      bloc.add(const OnVaultRecoveryConfirmed());
+      await pumpEventQueue();
+      expect(bloc.state.failure, isA<VaultNotSetFailure>());
+      verifyZeroInteractions(decrypt);
+      verifyZeroInteractions(restore);
+    });
+
+    test(
+      'failed restore clears the decoded vault before a same-key retry',
+      () async {
+        final vault = _MockEncryptedVault();
+        const decoded = DecryptedVault(masterFingerprint: 'deadbeef');
+        when(
+          () => decrypt.execute(vault: vault, vaultKey: 'public-test-fixture'),
+        ).thenReturn(const Ok(decoded));
+        when(
+          () => updateLatest.execute(decryptedVault: decoded),
+        ).thenAnswer((_) async => const Ok(null));
+        when(() => restore.execute(decryptedVault: decoded)).thenAnswer(
+          (_) async =>
+              const Err(core.RecoverBullUnexpectedCoreFailure('fixture')),
+        );
+        final bloc = buildBloc(
+          flow: RecoverBullFlow.recoverVault,
+          preSelectedVault: vault,
+        );
+        addTearDown(bloc.close);
+        bloc.add(const OnVaultDecryption(vaultKey: 'public-test-fixture'));
+        await pumpEventQueue();
+        bloc.add(const OnVaultRecoveryConfirmed());
+        await pumpEventQueue();
+        expect(bloc.state.decryptedVault, isNull);
+        bloc.add(const OnVaultDecryption(vaultKey: 'public-test-fixture'));
+        await pumpEventQueue();
+        expect(bloc.state.decryptedVault, decoded);
+        expect(bloc.state.failure, isNull);
+        when(
+          () => fetchKey.execute(
+            vault: vault,
+            password: 'public-test-fixture',
+            route: any(named: 'route'),
+          ),
+        ).thenAnswer(
+          (_) async => const Err(core.KeyServerUnavailableFailure()),
+        );
+        bloc.add(const OnVaultPasswordSet(password: 'public-test-fixture'));
+        await pumpEventQueue();
+        expect(bloc.state.decryptedVault, isNull);
+        verifyZeroInteractions(walletBloc);
+      },
+    );
+  });
 
   group('OnVaultPasswordSet guard', () {
     test('no vault set -> VaultNotSetFailure, password not stored, key never '

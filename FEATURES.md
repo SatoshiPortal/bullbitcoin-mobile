@@ -108,6 +108,7 @@ graph TB
     IMPORT_MNEMONIC --> WALLET_SYNC
     IMPORT_WATCH_ONLY --> WALLET_SYNC
     ONBOARDING --> WALLET_SYNC
+    RECOVERBULL --> WALLET_SYNC
 
     %% Feature-to-feature dependencies (extracted from draw.io diagram)
     ADDRESS_MGMT --> LABELS

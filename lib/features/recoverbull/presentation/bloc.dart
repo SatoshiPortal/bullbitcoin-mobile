@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'package:primitives/primitives.dart' show WalletBirthday;
+import 'package:transaction_sync/transaction_sync.dart' show BitcoinSyncSource;
 
 import 'package:bb_mobile/core/recoverbull/domain/entity/decrypted_vault.dart';
 import 'package:bb_mobile/core/recoverbull/domain/entity/encrypted_vault.dart';
@@ -96,6 +98,14 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
     on<OnVaultPasswordSet>(_onVaultPasswordSet);
     on<OnVaultCreation>(_onVaultCreation);
     on<OnVaultDecryption>(_onVaultDecryption);
+    on<OnVaultRecoveryConfirmed>(
+      _onVaultRecoveryConfirmed,
+      transformer: droppable(),
+    );
+    on<OnVaultRecoveryCancelled>(
+      (event, emit) =>
+          emit(state.copyWith(decryptedVault: null, vaultKey: null)),
+    );
     on<OnServerCheck>(_onServerCheck, transformer: droppable());
     on<OnTorInitialization>(_onTorInitialization, transformer: droppable());
     on<OnNewCircuit>(_onNewCircuit, transformer: droppable());
@@ -613,7 +623,14 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
     try {
       if (state.flow == RecoverBullFlow.secureVault) return;
 
-      emit(state.copyWith(isLoading: true, vaultKey: null));
+      emit(
+        state.copyWith(
+          isLoading: true,
+          vaultKey: null,
+          decryptedVault: null,
+          failure: null,
+        ),
+      );
 
       final fetched = await _borrowRoute(
         (route) => _fetchVaultKeyFromServerUsecase.execute(
@@ -639,16 +656,18 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
     OnVaultDecryption event,
     Emitter<RecoverBullState> emit,
   ) async {
-    if (state.vault == null) {
+    final vault = state.vault;
+    if (vault == null) {
       emit(state.copyWith(failure: const VaultNotSetFailure()));
       return;
     }
 
     final vaultKey = event.vaultKey;
-    final vault = state.vault!;
 
     try {
-      emit(state.copyWith(isLoading: true));
+      emit(
+        state.copyWith(isLoading: true, decryptedVault: null, failure: null),
+      );
 
       final DecryptedVault decryptedVault;
       switch (_decryptVaultUsecase.execute(vault: vault, vaultKey: vaultKey)) {
@@ -670,7 +689,6 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
           }
           emit(state.copyWith(decryptedVault: decryptedVault));
         case RecoverBullFlow.recoverVault:
-          emit(state.copyWith(decryptedVault: decryptedVault));
           final updated = await _updateLatestEncryptedVaultTestUsecase.execute(
             decryptedVault: decryptedVault,
           );
@@ -678,7 +696,7 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
             emit(state.copyWith(failure: const VaultDecryptionFailure()));
             return;
           }
-          await _restoreAndStart(decryptedVault, emit);
+          emit(state.copyWith(decryptedVault: decryptedVault));
           return;
         case RecoverBullFlow.secureVault:
           throw UnimplementedError();
@@ -696,26 +714,45 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
     }
   }
 
-  // Persists the recovered wallets, kicks off the real WalletBloc sync, and
-  // marks the flow finished so `FetchVaultKeyPage` can navigate straight to
-  // the wallet home. Replaces the deprecated dry-scan preview screen, which
-  // showed a balance/tx preview gated behind a manual "Continue" button.
-  Future<void> _restoreAndStart(
-    DecryptedVault decryptedVault,
+  // Only explicit source/birthday confirmation admits wallet creation.
+  Future<void> _onVaultRecoveryConfirmed(
+    OnVaultRecoveryConfirmed event,
     Emitter<RecoverBullState> emit,
   ) async {
+    if (state.isLoading ||
+        state.isFlowFinished ||
+        state.flow != RecoverBullFlow.recoverVault) {
+      return;
+    }
+    final decryptedVault = state.decryptedVault;
+    if (decryptedVault == null) {
+      emit(state.copyWith(failure: const VaultNotSetFailure()));
+      return;
+    }
+    emit(state.copyWith(isLoading: true, failure: null));
     switch (await _restoreVaultUsecase.execute(
       decryptedVault: decryptedVault,
+      birthday: event.birthday,
+      bitcoinSyncSource: event.bitcoinSyncSource,
     )) {
       case Ok():
         _walletBloc.add(const WalletStarted());
         log.fine('Vault recovered');
-        emit(state.copyWith(isFlowFinished: true, isLoading: false));
+        emit(
+          state.copyWith(
+            isFlowFinished: true,
+            isLoading: false,
+            decryptedVault: null,
+            vaultKey: null,
+          ),
+        );
       case Err():
         emit(
           state.copyWith(
             failure: const VaultRecoveryFailure(),
             isLoading: false,
+            decryptedVault: null,
+            vaultKey: null,
           ),
         );
     }
