@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/wallet_sync/public/wallet_sync_facade.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/bottom_sheet/disclosure_bottom_sheet.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
@@ -99,6 +100,12 @@ class WalletDetailScreen extends StatelessWidget {
                         syncingIndicator: const TxsSyncingIndicator(),
                       ),
                     ),
+                    if (wallet.isBitcoin)
+                      SliverToBoxAdapter(
+                        child: locator<WalletSyncFacade>().recoveryForWallet(
+                          wallet.id,
+                        ),
+                      ),
                     if (wallet.isLiquid)
                       SliverToBoxAdapter(
                         child: ConsolidationBanner(wallet: wallet),

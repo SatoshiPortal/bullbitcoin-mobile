@@ -13,7 +13,9 @@ class WalletCard extends StatelessWidget {
     required this.balanceSat,
     this.onTap,
     this.isSyncing = false,
+    this.showSyncIndicator = true,
     this.fiatCurrency,
+    this.footer,
   });
 
   final Color tagColor;
@@ -21,8 +23,10 @@ class WalletCard extends StatelessWidget {
   final String description;
   final int balanceSat;
   final bool isSyncing;
+  final bool showSyncIndicator;
   final void Function()? onTap;
   final String? fiatCurrency;
+  final Widget? footer;
 
   @override
   Widget build(BuildContext context) {
@@ -37,86 +41,98 @@ class WalletCard extends StatelessWidget {
           color: context.appColors.background,
           borderRadius: BorderRadius.circular(2),
           child: Container(
-            height: 90,
             decoration: BoxDecoration(
               color: context.appColors.background,
               border: Border(left: BorderSide(color: tagColor, width: 4)),
               borderRadius: BorderRadius.circular(2),
             ),
-            child: Stack(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 8,
-                  ),
-                  child: Row(
-                    mainAxisAlignment: .spaceBetween,
+                SizedBox(
+                  height: 90,
+                  child: Stack(
                     children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: .start,
-                          mainAxisAlignment: .center,
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 8,
+                        ),
+                        child: Row(
+                          mainAxisAlignment: .spaceBetween,
                           children: [
-                            Row(
-                              mainAxisAlignment: .spaceBetween,
-                              children: [
-                                BullText(
-                                  title,
-                                  style: context.font.bodyLarge,
-                                  color: context.appColors.secondary,
-                                ),
-                                const Gap(4),
-                                CurrencyText(
-                                  balanceSat,
-                                  showFiat: false,
-                                  style: context.font.bodyLarge,
-                                  color: context.appColors.secondary,
-                                ),
-                              ],
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: .start,
+                                mainAxisAlignment: .center,
+                                children: [
+                                  Row(
+                                    mainAxisAlignment: .spaceBetween,
+                                    children: [
+                                      BullText(
+                                        title,
+                                        style: context.font.bodyLarge,
+                                        color: context.appColors.secondary,
+                                      ),
+                                      const Gap(4),
+                                      CurrencyText(
+                                        balanceSat,
+                                        showFiat: false,
+                                        style: context.font.bodyLarge,
+                                        color: context.appColors.secondary,
+                                      ),
+                                    ],
+                                  ),
+                                  const Gap(4),
+                                  Row(
+                                    mainAxisAlignment: .spaceBetween,
+                                    children: [
+                                      BullText(
+                                        description,
+                                        style: context.font.labelMedium,
+                                        color:
+                                            context.appColors.onSurfaceVariant,
+                                      ),
+                                      const Gap(4),
+                                      CurrencyText(
+                                        balanceSat,
+                                        showFiat: true,
+                                        fiatCurrency: fiatCurrency,
+                                        style: context.font.labelMedium,
+                                        color:
+                                            context.appColors.onSurfaceVariant,
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
                             ),
-                            const Gap(4),
-                            Row(
-                              mainAxisAlignment: .spaceBetween,
-                              children: [
-                                BullText(
-                                  description,
-                                  style: context.font.labelMedium,
-                                  color: context.appColors.onSurfaceVariant,
-                                ),
-                                const Gap(4),
-                                CurrencyText(
-                                  balanceSat,
-                                  showFiat: true,
-                                  fiatCurrency: fiatCurrency,
-                                  style: context.font.labelMedium,
-                                  color: context.appColors.onSurfaceVariant,
-                                ),
-                              ],
+                            const Gap(8),
+                            Icon(
+                              Icons.chevron_right,
+                              color: context.appColors.onSurfaceVariant,
+                              size: 24,
                             ),
                           ],
                         ),
                       ),
-                      const Gap(8),
-                      Icon(
-                        Icons.chevron_right,
-                        color: context.appColors.onSurfaceVariant,
-                        size: 24,
-                      ),
+                      if (showSyncIndicator)
+                        Positioned(
+                          bottom: 0,
+                          left: 0,
+                          right: 0,
+                          child: BullFadingLinearProgress(
+                            trigger: isSyncing,
+                            backgroundColor: context.appColors.transparent,
+                            foregroundColor: context.appColors.secondary,
+                            height: 3.0,
+                          ),
+                        ),
                     ],
                   ),
                 ),
-                Positioned(
-                  bottom: 0,
-                  left: 0,
-                  right: 0,
-                  child: BullFadingLinearProgress(
-                    trigger: isSyncing,
-                    backgroundColor: context.appColors.transparent,
-                    foregroundColor: context.appColors.secondary,
-                    height: 3.0,
-                  ),
-                ),
+                ?footer,
               ],
             ),
           ),

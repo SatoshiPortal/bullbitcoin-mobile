@@ -1,4 +1,6 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/features/wallet_sync/public/wallet_sync_facade.dart';
+import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bull_logger/bull_logger.dart' show log;
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
@@ -117,6 +119,8 @@ class WalletDetailsScreen extends StatelessWidget {
                         wallet.signerDevice?.displayName ??
                         context.loc.walletDetailsSignerDeviceNotSupported,
                   ),
+                  const Gap(32),
+                  locator<WalletSyncFacade>().settingsForWallet(wallet.id),
                   const Gap(32),
                   BBButton.big(
                     label: context.loc.addressViewAddressesTitle,

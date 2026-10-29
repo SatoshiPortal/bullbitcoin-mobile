@@ -1,3 +1,5 @@
+import 'package:bb_mobile/features/wallet_sync/public/wallet_sync_facade.dart';
+import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
@@ -76,8 +78,15 @@ class WalletCards extends StatelessWidget {
               description: w.walletTypeString,
               balanceSat: w.balanceSat.toInt(),
               isSyncing: syncStatus[w.id] ?? false,
+              showSyncIndicator: !w.isBitcoin,
               fiatCurrency: fiatCurrency,
               onTap: () => onTap?.call(w),
+              footer: w.isBitcoin
+                  ? locator<WalletSyncFacade>().cardSyncForWallet(
+                      w.id,
+                      isSyncing: syncStatus[w.id] ?? false,
+                    )
+                  : null,
             ),
           ],
           if (showSpWallet) ...[
