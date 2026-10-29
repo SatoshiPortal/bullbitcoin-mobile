@@ -23,6 +23,13 @@ workspace:
   - packages/bull_logger
   - features/logs
 
+# Temporary stacked integration pin; the final upstream PR must bump bull_sdk.
+dependency_overrides:
+  bdk_dart:
+    git:
+      url: https://github.com/ethicnology-agent/bdk-dart
+      ref: 127933f8abdc8751303aa89c50f0ced2479ea4d2
+
 dependencies:
   flutter:
     sdk: flutter

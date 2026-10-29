@@ -114,12 +114,12 @@ packages:
     source: hosted
     version: "2.0.1"
   bdk_dart:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
       path: "."
-      ref: "757d4e81a55d920fdf5c9d48d65723aa8790e6bd"
-      resolved-ref: "757d4e81a55d920fdf5c9d48d65723aa8790e6bd"
-      url: "https://github.com/ethicnology/bdk-dart"
+      ref: "127933f8abdc8751303aa89c50f0ced2479ea4d2"
+      resolved-ref: "127933f8abdc8751303aa89c50f0ced2479ea4d2"
+      url: "https://github.com/ethicnology-agent/bdk-dart"
     source: git
     version: "1.0.1"
   bech32:
