@@ -117,8 +117,8 @@ packages:
     dependency: "direct overridden"
     description:
       path: "."
-      ref: "127933f8abdc8751303aa89c50f0ced2479ea4d2"
-      resolved-ref: "127933f8abdc8751303aa89c50f0ced2479ea4d2"
+      ref: "dbd4454ce1b062905dd6e8dafe1097a0e63170c3"
+      resolved-ref: "dbd4454ce1b062905dd6e8dafe1097a0e63170c3"
       url: "https://github.com/ethicnology-agent/bdk-dart"
     source: git
     version: "1.0.1"

@@ -28,7 +28,7 @@ dependency_overrides:
   bdk_dart:
     git:
       url: https://github.com/ethicnology-agent/bdk-dart
-      ref: 127933f8abdc8751303aa89c50f0ced2479ea4d2
+      ref: dbd4454ce1b062905dd6e8dafe1097a0e63170c3
 
 dependencies:
   flutter:
