@@ -140,7 +140,9 @@ final class CbfSyncNetworkPolicy implements CbfNetworkPolicyPort {
     final revision = ++_networkRevision;
     List<ConnectivityResult>? transports;
     try {
-      transports = await _readConnectivity();
+      transports = await _readConnectivity().timeout(
+        const Duration(seconds: 2),
+      );
     } on Exception {
       // A missing desktop D-Bus/plugin is unknown, not an Internet outage.
     }
@@ -148,9 +150,13 @@ final class CbfSyncNetworkPolicy implements CbfNetworkPolicyPort {
     try {
       final reader = _readSignal ?? _linuxSignals?.read;
       if (reader != null) {
-        native = await reader();
+        native = await reader().timeout(const Duration(seconds: 2));
       } else if (_nativeSignals) {
-        native = _parseSignal(await _channel.invokeMethod<Object?>('read'));
+        native = _parseSignal(
+          await _channel
+              .invokeMethod<Object?>('read')
+              .timeout(const Duration(seconds: 2)),
+        );
       }
     } on Exception {
       // Older host runners fall back to connectivity_plus, without probing.
@@ -160,7 +166,7 @@ final class CbfSyncNetworkPolicy implements CbfNetworkPolicyPort {
     _networkKnown = true;
     _network =
         native ??
-        (values == null
+        (values == null || _linuxSignals != null
             ? (available: true, metered: null)
             : (
                 available: values.any(

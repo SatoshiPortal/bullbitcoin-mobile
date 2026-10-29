@@ -1,3 +1,8 @@
+import 'package:bb_mobile/cbf_foreground_service.dart';
+import 'package:bb_mobile/cbf_foreground_sync.dart';
+import 'package:bb_mobile/cbf_background_persistence.dart';
+import 'package:notifications/notifications.dart';
+import 'package:bull_tor/tor.dart' as tor_api;
 import 'package:bb_mobile/core/background_tasks/cbf_sync_network_policy.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/cbf_lifecycle.dart';
@@ -54,15 +59,48 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
   void initState() {
     super.initState();
 
+    _torLifecycleController = locator<tor.TorLifecycleController>()..start();
     if (locator.isRegistered<BitcoinSyncRouting>()) {
+      final foreground = defaultTargetPlatform == TargetPlatform.android
+          ? CbfForegroundSync(
+              service: AndroidCbfForegroundService(
+                permissions: NotificationPermissionsFacade(
+                  gateway: FlutterNotificationPermissionGateway(
+                    channelId: 'cbf_sync',
+                  ),
+                ),
+              ),
+              labels: () async {
+                final settings = await locator<SettingsRepository>().fetch();
+                final language = settings.language ?? Language.fromKeyboard();
+                final localized = await AppLocalizations.delegate.load(
+                  language.locale,
+                );
+                return (
+                  title: localized.syncServiceTitle,
+                  body: localized.syncServiceBody,
+                );
+              },
+              onProtectionChanged: () => _cbfLifecycle?.protectionChanged(),
+            )
+          : null;
       _cbfLifecycle = CbfLifecycle(
         routing: locator<BitcoinSyncRouting>(),
         metadata: locator<WalletMetadataDatasource>(),
         networkPolicy: locator<CbfSyncNetworkPolicy>(),
+        foregroundSync: foreground,
+        backgroundPersistence: defaultTargetPlatform == TargetPlatform.iOS
+            ? CbfBackgroundPersistence()
+            : null,
+        onBackgroundProtectionChanged:
+            _torLifecycleController.setBackgroundActive,
+        proxyChanges: locator<tor_api.Tor>().embedded.states
+            .map((state) => state.isReady)
+            .distinct()
+            .map((_) {}),
         transportChanges: locator<SettingsRepository>().torPolicyChanges,
       )..start(WidgetsBinding.instance.lifecycleState);
     }
-    _torLifecycleController = locator<tor.TorLifecycleController>()..start();
     // Initialize the AppLifecycleListener class and pass callbacks
     _listener = AppLifecycleListener(onStateChange: _onStateChanged);
   }

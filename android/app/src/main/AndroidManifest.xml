@@ -1,6 +1,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission
@@ -57,6 +59,11 @@
         android:allowBackup="false"
         android:memtagMode="async"
     >
+        <service
+            android:name="com.bullbitcoin.mobile.CbfSyncService"
+            android:exported="false"
+            android:foregroundServiceType="dataSync"
+        />
         <activity
             android:name="com.bullbitcoin.mobile.MainActivity"
             android:exported="true"
