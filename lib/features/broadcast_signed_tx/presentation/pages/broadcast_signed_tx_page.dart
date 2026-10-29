@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/bitcoin_tx.dart' as btc_utils;
 import 'package:bb_mobile/features/broadcast_signed_tx/presentation/transaction_review_cubit.dart';
@@ -16,7 +17,15 @@ import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullButton, BullPasteInput, BullText, BullTopBar, Gap;
+    show
+        BullButton,
+        BullPasteInput,
+        BullText,
+        BullTopBar,
+        BullSelectableList,
+        BullSelectableListItem,
+        BullShimmerLine,
+        Gap;
 import 'package:gif/gif.dart';
 import 'package:go_router/go_router.dart';
 
@@ -40,7 +49,9 @@ class BroadcastSignedTxPage extends StatelessWidget {
           BlocBuilder<BroadcastSignedTxCubit, BroadcastSignedTxState>(
             builder: (context, state) {
               final showActions =
-                  state.transaction != null && !state.isBroadcasted;
+                  state.transaction != null &&
+                  state.sourceWallet != null &&
+                  !state.isBroadcasted;
               if (!showActions) return const SizedBox.shrink();
               return const SafeArea(child: _BroadcastActions());
             },
@@ -48,11 +59,13 @@ class BroadcastSignedTxPage extends StatelessWidget {
       body: BlocBuilder<BroadcastSignedTxCubit, BroadcastSignedTxState>(
         builder: (context, state) {
           final cubit = context.read<BroadcastSignedTxCubit>();
+          final transaction = state.transaction;
+          final sourceWallet = state.sourceWallet;
 
           return SingleChildScrollView(
             child: Column(
               children: [
-                if (state.transaction == null) ...[
+                if (transaction == null) ...[
                   Padding(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 16,
@@ -113,21 +126,51 @@ class BroadcastSignedTxPage extends StatelessWidget {
                   ),
                 ],
 
+                if (transaction != null && !state.isBroadcasted) ...[
+                  BullText(
+                    context.loc.syncSelectSourceWallet,
+                    style: context.font.bodyMedium,
+                  ),
+                  if (state.loadingWallets) const BullShimmerLine(),
+                  if (state.failure case final failure?)
+                    _BroadcastError(failure: failure),
+                  if (!state.loadingWallets && state.wallets.isEmpty)
+                    BullButton.big(
+                      label: context.loc.retry,
+                      onPressed: cubit.loadWallets,
+                      bgColor: context.appColors.primary,
+                      textColor: context.appColors.onPrimary,
+                    ),
+                  BullSelectableList(
+                    selectedValue: state.sourceWallet?.id ?? '',
+                    onChanged: cubit.selectSourceWallet,
+                    items: [
+                      for (final wallet in state.wallets)
+                        BullSelectableListItem(
+                          title: wallet.displayLabel(context),
+                          subtitle1:
+                              wallet.bitcoinSyncSource ==
+                                  BitcoinSyncSource.compactBlockFilters
+                              ? context.loc.syncPrivateTitle
+                              : context.loc.syncFastTitle,
+                          subtitle2: '',
+                          value: wallet.id,
+                        ),
+                    ],
+                  ),
+                ],
                 // Transaction review using TransactionReviewView
-                if (state.transaction != null &&
+                if (transaction != null &&
+                    sourceWallet != null &&
                     state.isBroadcasted == false) ...[
                   BlocProvider(
+                    key: _SourceWalletKey(state.sourceWallet?.id ?? ''),
                     create: (_) => locator<TransactionReviewCubit>(),
                     child: _TransactionReviewSection(
-                      bitcoinTx: state.transaction!.tx,
+                      bitcoinTx: transaction.tx,
+                      wallet: sourceWallet,
                     ),
                   ),
-                  // Broadcast failure is shown here in the scroll content so
-                  // the pinned action buttons stay put when it toggles.
-                  if (state.failure != null) ...[
-                    const Gap(16),
-                    _BroadcastError(failure: state.failure!),
-                  ],
                 ],
 
                 if (state.isBroadcasted == true) ...[
@@ -163,28 +206,12 @@ class _BroadcastActions extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cubit = context.read<BroadcastSignedTxCubit>();
-    final pushTxUri = context.select(
-      (BroadcastSignedTxCubit c) => c.state.pushTxUri,
-    );
     final isBroadcasting = context.select(
       (BroadcastSignedTxCubit c) => c.state.isBroadcasting,
     );
 
     return Row(
       children: [
-        if (pushTxUri != null)
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: BullButton.big(
-                label: context.loc.broadcastSignedTxPushTxButton,
-                bgColor: context.appColors.primary,
-                textColor: context.appColors.onPrimary,
-                onPressed: cubit.pushTxUri,
-                disabled: isBroadcasting,
-              ),
-            ),
-          ),
         Expanded(
           child: Padding(
             padding: const EdgeInsets.all(16),
@@ -234,9 +261,13 @@ class _BroadcastError extends StatelessWidget {
 }
 
 class _TransactionReviewSection extends StatefulWidget {
-  const _TransactionReviewSection({required this.bitcoinTx});
+  const _TransactionReviewSection({
+    required this.bitcoinTx,
+    required this.wallet,
+  });
 
   final btc_utils.BitcoinTx bitcoinTx;
+  final Wallet wallet;
 
   @override
   State<_TransactionReviewSection> createState() =>
@@ -252,6 +283,8 @@ class _TransactionReviewSectionState extends State<_TransactionReviewSection> {
     context.read<TransactionReviewCubit>().loadFromBitcoinTx(
       widget.bitcoinTx,
       isTestnet: isTestnet,
+      walletId: widget.wallet.id,
+      source: widget.wallet.bitcoinSyncSource,
     );
   }
 
@@ -259,6 +292,14 @@ class _TransactionReviewSectionState extends State<_TransactionReviewSection> {
   Widget build(BuildContext context) {
     // Actions are rendered in the page's bottomNavigationBar (pinned), not
     // here, so they don't shift with the scroll content.
-    return const TransactionReviewView();
+    return TransactionReviewView(
+      fromLabel: widget.wallet.displayLabel(context),
+    );
   }
+}
+
+class _SourceWalletKey extends ValueKey<String> {
+  const _SourceWalletKey(super.value);
+  @override
+  String toString() => 'BroadcastSourceWalletKey';
 }

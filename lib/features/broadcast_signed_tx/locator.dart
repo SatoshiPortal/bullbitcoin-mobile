@@ -1,3 +1,5 @@
+import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
+import 'domain/usecases/load_broadcast_wallets_usecase.dart';
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/core/transactions/domain/transaction_port.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/application/build_reviewable_transaction_usecase.dart';
@@ -12,6 +14,9 @@ class BroadcastSignedTxLocator {
   }
 
   static void registerUsecases(GetIt locator) {
+    locator.registerFactory<LoadBroadcastWalletsUsecase>(
+      () => LoadBroadcastWalletsUsecase(get: locator<GetWalletsUsecase>()),
+    );
     locator.registerLazySingleton<BuildReviewableTransactionUsecase>(
       () => BuildReviewableTransactionUsecase(
         transactionPort: locator<TransactionPort>(),
@@ -25,7 +30,8 @@ class BroadcastSignedTxLocator {
         broadcastBitcoinTransactionUsecase:
             locator<BroadcastBitcoinTransactionUsecase>(),
         unsignedPsbt: unsignedPsbt,
-      ),
+        loadWallets: locator<LoadBroadcastWalletsUsecase>(),
+      )..loadWallets(),
     );
     locator.registerFactory<TransactionReviewCubit>(
       () => TransactionReviewCubit(

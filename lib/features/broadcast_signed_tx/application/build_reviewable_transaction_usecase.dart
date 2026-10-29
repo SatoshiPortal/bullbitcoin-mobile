@@ -1,3 +1,4 @@
+import 'package:transaction_sync/transaction_sync.dart' show BitcoinSyncSource;
 import 'package:bb_mobile/core/transactions/domain/domain_errors.dart';
 import 'package:bb_mobile/core/transactions/domain/entities/transaction.dart';
 import 'package:bb_mobile/core/transactions/domain/transaction_port.dart';
@@ -22,13 +23,23 @@ class BuildReviewableTransactionUsecase {
   /// returns a [Result]. The presentation layer never sees a foreign type.
   @useResult
   Future<Result<ReviewableTransaction, TransactionReviewFailure>> execute(
-    Transaction tx,
-  ) async {
+    Transaction tx, {
+    String? walletId,
+    BitcoinSyncSource source = BitcoinSyncSource.electrum,
+  }) async {
+    if (source == BitcoinSyncSource.compactBlockFilters) {
+      return Ok(
+        ReviewableTransaction(transaction: tx, resolvedInputs: const []),
+      );
+    }
     final resolvedInputs = <ResolvedInput>[];
 
     for (final input in tx.inputs) {
       try {
-        final parentTx = await _transactionPort.fetch(txid: input.previousTxId);
+        final parentTx = await _transactionPort.fetch(
+          txid: input.previousTxId,
+          walletId: walletId,
+        );
 
         if (parentTx.txid != input.previousTxId) {
           return Err(

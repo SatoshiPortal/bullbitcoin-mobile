@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/bbqr/bbqr.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/domain/broadcast_signed_tx_failure.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/type.dart';
@@ -9,6 +10,9 @@ part 'broadcast_signed_tx_state.freezed.dart';
 abstract class BroadcastSignedTxState with _$BroadcastSignedTxState {
   const factory BroadcastSignedTxState({
     required Bbqr bbqr,
+    @Default([]) List<Wallet> wallets,
+    Wallet? sourceWallet,
+    @Default(false) bool loadingWallets,
     @Default(null) ParsedTx? transaction,
     @Default(null) String? unsignedPsbt,
     @Default(false) bool isBroadcasting,

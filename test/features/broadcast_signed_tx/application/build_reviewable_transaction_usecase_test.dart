@@ -1,3 +1,4 @@
+import 'package:transaction_sync/transaction_sync.dart' show BitcoinSyncSource;
 import 'package:bb_mobile/core/transactions/domain/domain_errors.dart';
 import 'package:bb_mobile/core/transactions/domain/entities/transaction.dart';
 import 'package:bb_mobile/core/transactions/domain/transaction_port.dart';
@@ -36,6 +37,37 @@ void main() {
   }
 
   group('BuildReviewableTransactionUsecase', () {
+    test(
+      'rejects a parent with a different identity before reading outputs',
+      () async {
+        final tx = txSpending('parenttxid', 0);
+        final parent = _MockTransaction();
+        when(() => parent.txid).thenReturn('different-parent');
+        when(
+          () => port.fetch(txid: 'parenttxid', walletId: 'public-wallet'),
+        ).thenAnswer((_) async => parent);
+        final result = await usecase.execute(tx, walletId: 'public-wallet');
+        expect(
+          result,
+          isA<Err<ReviewableTransaction, TransactionReviewFailure>>(),
+        );
+        if (result case Err(:final failure)) {
+          expect(failure, isA<TransactionReviewInputResolutionFailure>());
+          if (failure case TransactionReviewInputResolutionFailure(
+            :final parentTxId,
+            :final vout,
+          )) {
+            expect(parentTxId, 'parenttxid');
+            expect(vout, 0);
+          }
+        }
+        verifyNever(() => parent.outputs);
+        verify(
+          () => port.fetch(txid: 'parenttxid', walletId: 'public-wallet'),
+        ).called(1);
+      },
+    );
+
     test('maps a TransactionPort fetch failure to a sanitized review failure '
         'without leaking the raw reason', () async {
       final tx = txSpending('parenttxid', 0);
@@ -81,6 +113,35 @@ void main() {
         );
       },
     );
+
+    test(
+      'private review performs no remote input resolution and keeps the fee unknown',
+      () async {
+        final result = await usecase.execute(
+          txSpending('parenttxid', 0),
+          walletId: 'private-wallet',
+          source: BitcoinSyncSource.compactBlockFilters,
+        );
+        expect(
+          result,
+          isA<Ok<ReviewableTransaction, TransactionReviewFailure>>(),
+        );
+        if (result case Ok(:final value)) {
+          expect(value.resolvedInputs, isEmpty);
+          expect(value.feeSat, isNull);
+        }
+        verifyZeroInteractions(port);
+      },
+    );
+    test('an empty input set never proves a zero fee', () {
+      final tx = _MockTransaction();
+      when(() => tx.inputs).thenReturn([]);
+      when(() => tx.totalOutputsSat).thenReturn(0);
+      expect(
+        ReviewableTransaction(transaction: tx, resolvedInputs: const []).feeSat,
+        isNull,
+      );
+    });
 
     test('resolves the input value and returns Ok on success', () async {
       final tx = txSpending('parenttxid', 0);

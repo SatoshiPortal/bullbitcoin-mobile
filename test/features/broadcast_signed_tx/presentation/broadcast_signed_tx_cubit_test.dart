@@ -1,3 +1,4 @@
+import '../wallet_fixture.dart';
 import 'package:bb_mobile/core/bbqr/bbqr.dart';
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/domain/broadcast_signed_tx_failure.dart';
@@ -23,9 +24,14 @@ void main() {
     ).combine(other: bdk.Psbt(psbtBase64: secondSignedTrimmedPsbt)).serialize();
     final broadcast = _MockBroadcastBitcoinTransactionUsecase();
     when(
-      () => broadcast.execute(any(), isPsbt: any(named: 'isPsbt')),
+      () => broadcast.execute(
+        any(),
+        isPsbt: any(named: 'isPsbt'),
+        walletId: 'public-wallet',
+      ),
     ).thenAnswer((_) async => 'txid');
     final cubit = BroadcastSignedTxCubit(
+      loadWallets: LoadPublicBroadcastWallets(),
       broadcastBitcoinTransactionUsecase: broadcast,
       unsignedPsbt: unsignedPsbt,
     );
@@ -40,15 +46,25 @@ void main() {
     expect(finalizedTransaction.length, greaterThan(500));
 
     await cubit.broadcastTransaction();
+    expect(cubit.state.failure, isA<SourceWalletRequiredFailure>());
+    verifyZeroInteractions(broadcast);
+    await cubit.loadWallets();
+    cubit.selectSourceWallet('public-wallet');
+    await cubit.broadcastTransaction();
 
     verify(
-      () => broadcast.execute(finalizedTransaction, isPsbt: false),
+      () => broadcast.execute(
+        finalizedTransaction,
+        isPsbt: false,
+        walletId: 'public-wallet',
+      ),
     ).called(1);
     expect(cubit.state.isBroadcasted, isTrue);
   });
 
   test('rejects a combined PSBT that cannot be finalized', () async {
     final cubit = BroadcastSignedTxCubit(
+      loadWallets: LoadPublicBroadcastWallets(),
       broadcastBitcoinTransactionUsecase:
           _MockBroadcastBitcoinTransactionUsecase(),
       unsignedPsbt: unsignedPsbt,

@@ -37,6 +37,11 @@ class ReviewableTransaction {
   /// Transaction fee in satoshis.
   /// For Liquid, uses the explicit fee field. For Bitcoin, computed as inputs − outputs.
   int? get feeSat {
+    if (transaction is! LiquidTransaction &&
+        (resolvedInputs.isEmpty ||
+            resolvedInputs.length != transaction.inputs.length)) {
+      return null;
+    }
     final fee = switch (transaction) {
       LiquidTransaction(:final feeSat) => feeSat,
       _ => totalInputsSat - totalOutputsSat,
@@ -45,21 +50,19 @@ class ReviewableTransaction {
   }
 
   /// Fee rate in sat/vbyte, or null if vsize is zero.
-  double? get feeRate => transaction.vsize > 0 && feeSat != null
-      ? feeSat! / transaction.vsize
-      : null;
+  double? get feeRate {
+    final fee = feeSat;
+    return transaction.vsize > 0 && fee != null
+        ? fee / transaction.vsize
+        : null;
+  }
 
-  /// Whether the change output is known.
-  bool get hasChange => changeOutputIndex != null;
-
-  /// The change amount in satoshis, if change output is known.
-  int? get changeAmountSat =>
-      hasChange ? transaction.outputs[changeOutputIndex!].valueSat : null;
-
-  /// Send amount = total outputs minus change.
-  /// Null if change is unknown (external transaction).
-  int? get sendAmountSat =>
-      hasChange ? totalOutputsSat - changeAmountSat! : null;
+  bool get hasChange => changeOutput != null;
+  int? get changeAmountSat => changeOutput?.valueSat;
+  int? get sendAmountSat {
+    final change = changeAmountSat;
+    return change == null ? null : totalOutputsSat - change;
+  }
 
   /// Recipient outputs = all non-change outputs.
   /// If change is unknown, all outputs are shown.
@@ -68,8 +71,11 @@ class ReviewableTransaction {
       : transaction.outputs;
 
   /// The change output, if known.
-  TxOutput? get changeOutput =>
-      hasChange ? transaction.outputs[changeOutputIndex!] : null;
+  TxOutput? get changeOutput => switch (changeOutputIndex) {
+    final index? when index >= 0 && index < transaction.outputs.length =>
+      transaction.outputs[index],
+    _ => null,
+  };
 
   /// The transaction ID.
   String get txid => transaction.txid;

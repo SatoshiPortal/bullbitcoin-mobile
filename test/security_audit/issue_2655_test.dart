@@ -14,15 +14,26 @@ void main() {
       ).readAsStringSync();
       expect(
         source,
-        contains(
-          'final parentTx = await _transactionPort.fetch(txid: input.previousTxId);',
+        matches(
+          RegExp(
+            r'final parentTx = await _transactionPort.fetch\(\s*'
+            r'txid: input.previousTxId,\s*walletId: walletId,\s*\);',
+          ),
         ),
       );
       expect(
         source,
         contains('final parentOutput = parentTx.outputs[input.previousVout];'),
       );
-      expect(source, contains('parentTx.txid != input.previousTxId'));
+      final fetch = source.indexOf('final parentTx = await');
+      final identity = source.indexOf('parentTx.txid != input.previousTxId');
+      final output = source.indexOf('final parentOutput = parentTx.outputs');
+      expect(identity, greaterThan(fetch));
+      expect(output, greaterThan(identity));
+      expect(
+        source.substring(identity, output),
+        contains('TransactionReviewInputResolutionFailure('),
+      );
     });
   });
 }

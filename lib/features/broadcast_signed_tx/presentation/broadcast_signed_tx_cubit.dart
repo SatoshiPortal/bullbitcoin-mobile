@@ -1,3 +1,6 @@
+import '../domain/usecases/load_broadcast_wallets_usecase.dart';
+import '../domain/usecases/broadcast_imported_transaction_usecase.dart';
+import 'package:primitives/primitives.dart';
 import 'dart:convert';
 
 import 'package:bb_mobile/core/bbqr/bbqr.dart';
@@ -13,15 +16,42 @@ import 'package:convert/convert.dart';
 import 'package:crypto/crypto.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_nfc_kit/flutter_nfc_kit.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class BroadcastSignedTxCubit extends Cubit<BroadcastSignedTxState> {
   final BroadcastBitcoinTransactionUsecase _broadcastBitcoinTransactionUsecase;
+  final LoadBroadcastWalletsUsecase _loadWallets;
+  late final _broadcast = BroadcastImportedTransactionUsecase(
+    broadcast: _broadcastBitcoinTransactionUsecase,
+  );
 
   BroadcastSignedTxCubit({
     required this._broadcastBitcoinTransactionUsecase,
+    required this._loadWallets,
     String? unsignedPsbt,
   }) : super(BroadcastSignedTxState(bbqr: Bbqr(), unsignedPsbt: unsignedPsbt));
+
+  Future<void> loadWallets() async {
+    if (state.loadingWallets) return;
+    emit(state.copyWith(loadingWallets: true));
+    final result = await _loadWallets.execute();
+    if (isClosed) return;
+    switch (result) {
+      case Ok(:final value):
+        emit(state.copyWith(wallets: value, loadingWallets: false));
+      case Err(:final failure):
+        emit(state.copyWith(failure: failure, loadingWallets: false));
+    }
+  }
+
+  void selectSourceWallet(String walletId) {
+    if (state.isBroadcasting || state.isBroadcasted) return;
+    for (final wallet in state.wallets) {
+      if (wallet.id == walletId) {
+        emit(state.copyWith(sourceWallet: wallet, failure: null));
+        return;
+      }
+    }
+  }
 
   Future<void> onQrScanned(String payload) async {
     try {
@@ -78,7 +108,11 @@ class BroadcastSignedTxCubit extends Cubit<BroadcastSignedTxState> {
   }
 
   Future<void> resetState() async => emit(
-    BroadcastSignedTxState(bbqr: Bbqr(), unsignedPsbt: state.unsignedPsbt),
+    BroadcastSignedTxState(
+      bbqr: Bbqr(),
+      unsignedPsbt: state.unsignedPsbt,
+      wallets: state.wallets,
+    ),
   );
 
   Future<void> onNfcScanned(NFCTag tag) async {
@@ -135,22 +169,8 @@ class BroadcastSignedTxCubit extends Cubit<BroadcastSignedTxState> {
     }
   }
 
-  Future<void> pushTxUri() async {
-    if (state.pushTxUri == null) return;
-
-    try {
-      final launched = await launchUrl(
-        state.pushTxUri!,
-        mode: LaunchMode.externalApplication,
-      );
-      if (!launched) {
-        throw Exception('Unable to open PushTx URI');
-      }
-    } catch (e, st) {
-      log.warning('Failed to open PushTx URI', error: e, trace: st);
-      emit(state.copyWith(failure: BroadcastUnexpectedFailure(e.toString())));
-    }
-  }
+  // PushTx carries a signed transaction. Respect the selected wallet transport instead of opening a third-party broadcast URL.
+  Future<void> pushTxUri() => broadcastTransaction();
 
   Future<void> tryParseTransaction(String input) async {
     emit(state.copyWith(failure: null));
@@ -181,37 +201,26 @@ class BroadcastSignedTxCubit extends Cubit<BroadcastSignedTxState> {
   }
 
   Future<void> broadcastTransaction() async {
-    if (state.isBroadcasting ||
-        state.isBroadcasted ||
-        state.transaction == null) {
+    if (state.isBroadcasting || state.isBroadcasted) return;
+    final transaction = state.transaction;
+    if (transaction == null) return;
+    final wallet = state.sourceWallet;
+    if (wallet == null) {
+      emit(state.copyWith(failure: const SourceWalletRequiredFailure()));
       return;
     }
-    // Clear any error from a previous failed attempt so the stale message
-    // doesn't linger under the spinner while the retry is in flight.
     emit(state.copyWith(isBroadcasting: true, failure: null));
-    try {
-      await _broadcastBitcoinTransactionUsecase.execute(
-        state.transaction!.data,
-        isPsbt: state.transaction!.format == TxFormat.psbt,
-      );
-      emit(state.copyWith(isBroadcasted: true, isBroadcasting: false));
-    } catch (e, st) {
-      // Keep the raw infra detail (Electrum server / node rejection) in the
-      // logs instead of leaking it to the UI; the screen shows a generic
-      // localized message. A rejected broadcast is an expected user-facing
-      // condition (already confirmed, fee too low, server down), so this is a
-      // warning, not a Sentry-reported severe.
-      log.warning(
-        'Failed to broadcast signed transaction',
-        error: e,
-        trace: st,
-      );
-      emit(
-        state.copyWith(
-          failure: const BroadcastFailedFailure(),
-          isBroadcasting: false,
-        ),
-      );
+    final result = await _broadcast.execute(
+      transaction.data,
+      isPsbt: transaction.format == TxFormat.psbt,
+      walletId: wallet.id,
+    );
+    if (isClosed) return;
+    switch (result) {
+      case Ok():
+        emit(state.copyWith(isBroadcasted: true, isBroadcasting: false));
+      case Err(:final failure):
+        emit(state.copyWith(failure: failure, isBroadcasting: false));
     }
   }
 }

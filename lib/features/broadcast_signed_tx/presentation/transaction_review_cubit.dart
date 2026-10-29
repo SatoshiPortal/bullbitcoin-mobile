@@ -1,3 +1,4 @@
+import 'package:transaction_sync/transaction_sync.dart' show BitcoinSyncSource;
 import 'package:bb_mobile/core/transactions/adapters/transaction_mapper.dart';
 import 'package:bb_mobile/core/transactions/domain/entities/transaction.dart';
 import 'package:bb_mobile/core/utils/bitcoin_tx.dart' as btc_utils;
@@ -22,6 +23,8 @@ class TransactionReviewCubit extends Cubit<TransactionReviewState> {
   Future<void> loadFromBitcoinTx(
     btc_utils.BitcoinTx bitcoinTx, {
     required bool isTestnet,
+    String? walletId,
+    BitcoinSyncSource source = BitcoinSyncSource.electrum,
   }) async {
     if (state is TransactionReviewLoading) return;
     emit(const TransactionReviewState.loading());
@@ -46,7 +49,13 @@ class TransactionReviewCubit extends Cubit<TransactionReviewState> {
       return;
     }
 
-    switch (await _buildReviewableTransactionUsecase.execute(tx)) {
+    final result = await _buildReviewableTransactionUsecase.execute(
+      tx,
+      walletId: walletId,
+      source: source,
+    );
+    if (isClosed) return;
+    switch (result) {
       case Ok(:final value):
         emit(TransactionReviewState.loaded(transaction: value));
       case Err(:final failure):

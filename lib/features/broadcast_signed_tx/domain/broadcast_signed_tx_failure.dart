@@ -32,3 +32,20 @@ final class PsbtFinalizationFailure extends BroadcastSignedTxFailure {
 final class BroadcastUnexpectedFailure extends BroadcastSignedTxFailure {
   const BroadcastUnexpectedFailure([super.logMessage]);
 }
+
+final class SourceWalletRequiredFailure extends BroadcastSignedTxFailure {
+  const SourceWalletRequiredFailure();
+}
+
+final class BroadcastWalletsUnavailableFailure
+    extends BroadcastSignedTxFailure {
+  const BroadcastWalletsUnavailableFailure();
+}
+
+final class PrivateBroadcastFailedFailure extends BroadcastSignedTxFailure {
+  const PrivateBroadcastFailedFailure();
+}
+
+final class PrivateBroadcastTorFailure extends BroadcastSignedTxFailure {
+  const PrivateBroadcastTorFailure();
+}

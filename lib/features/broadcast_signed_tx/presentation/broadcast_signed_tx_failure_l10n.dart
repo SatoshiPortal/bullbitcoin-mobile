@@ -7,6 +7,10 @@ import 'package:flutter/widgets.dart';
 /// raw `logMessage`.
 extension BroadcastSignedTxFailureL10n on BroadcastSignedTxFailure {
   String toTranslated(BuildContext context) => switch (this) {
+    SourceWalletRequiredFailure() => context.loc.syncSelectSourceWallet,
+    BroadcastWalletsUnavailableFailure() => context.loc.oopsSomethingWentWrong,
+    PrivateBroadcastFailedFailure() => context.loc.syncBroadcastFailure,
+    PrivateBroadcastTorFailure() => context.loc.syncTorPaused,
     InvalidTransactionFailure() =>
       context.loc.broadcastSignedTxErrorInvalidTransaction,
     PsbtFinalizationFailure() =>
