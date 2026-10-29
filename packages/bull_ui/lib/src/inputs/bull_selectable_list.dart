@@ -28,7 +28,7 @@ class BullSelectableListItem {
   /// Second subtitle line.
   final String subtitle2;
 
-  /// The value returned via `Navigator.pop` when this row is tapped.
+  /// The value reported to `onChanged` or `Navigator.pop` when tapped.
   final String value;
 
   /// Renders a shimmering placeholder in place of [subtitle2] while the value
@@ -38,14 +38,13 @@ class BullSelectableListItem {
 
 /// A vertical list of single-select cards.
 ///
-/// Tapping a row pops the enclosing route with that row's
-/// [BullSelectableListItem.value]; the row matching [selectedValue] is shown
-/// elevated and with a filled radio glyph.
+/// Tapping a row reports its [BullSelectableListItem.value] to [onChanged], or pops the enclosing route when no callback is provided. The row matching [selectedValue] is shown elevated and with a filled radio glyph.
 class BullSelectableList extends StatelessWidget {
   const BullSelectableList({
     super.key,
     required this.items,
     required this.selectedValue,
+    this.onChanged,
   });
 
   /// The rows to render.
@@ -53,6 +52,9 @@ class BullSelectableList extends StatelessWidget {
 
   /// The currently selected row's value.
   final String selectedValue;
+
+  /// Select in place when provided; otherwise preserve the picker pop behavior.
+  final ValueChanged<String>? onChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -63,7 +65,14 @@ class BullSelectableList extends StatelessWidget {
           _BullSelectableRow(
             key: ValueKey(item.title),
             item: item,
-            onSelected: () => Navigator.pop(context, item.value),
+            onSelected: () {
+              final callback = onChanged;
+              if (callback != null) {
+                callback(item.value);
+              } else {
+                Navigator.pop(context, item.value);
+              }
+            },
             isSelected: item.value == selectedValue,
           ),
           const Gap(16),
@@ -88,57 +97,64 @@ class _BullSelectableRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.bull;
-    return InkWell(
-      radius: 2,
-      onTap: onSelected,
-      child: Material(
-        elevation: isSelected ? 4 : 1,
-        borderRadius: BorderRadius.circular(BullRadius.xxs),
-        clipBehavior: Clip.hardEdge,
-        color: colors.surface,
-        shadowColor: colors.border,
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              if (item.iconPath != null)
-                Image.asset(item.iconPath!, width: 24, height: 24),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    BullText(
-                      item.title,
-                      style: Theme.of(context).textTheme.headlineLarge,
-                    ),
-                    const Gap(4),
-                    BullText(
-                      item.subtitle1,
-                      style: Theme.of(context).textTheme.labelMedium,
-                    ),
-                    const Gap(2),
-                    if (item.isSubtitle2Loading)
-                      const BullShimmerLine(
-                        width: 160,
-                        height: 12,
-                        padding: EdgeInsets.zero,
-                      )
-                    else
+    return Semantics(
+      selected: isSelected,
+      inMutuallyExclusiveGroup: true,
+      button: true,
+      child: InkWell(
+        radius: 2,
+        onTap: onSelected,
+        child: Material(
+          elevation: isSelected ? 4 : 1,
+          borderRadius: BorderRadius.circular(BullRadius.xxs),
+          clipBehavior: Clip.hardEdge,
+          color: colors.surface,
+          shadowColor: colors.border,
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (item.iconPath case final iconPath?)
+                  Image.asset(iconPath, width: 24, height: 24),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
                       BullText(
-                        item.subtitle2,
+                        item.title,
+                        style: Theme.of(context).textTheme.headlineLarge,
+                      ),
+                      const Gap(4),
+                      BullText(
+                        item.subtitle1,
                         style: Theme.of(context).textTheme.labelMedium,
                       ),
-                  ],
+                      const Gap(2),
+                      if (item.isSubtitle2Loading)
+                        const BullShimmerLine(
+                          width: 160,
+                          height: 12,
+                          padding: EdgeInsets.zero,
+                        )
+                      else
+                        BullText(
+                          item.subtitle2,
+                          style: Theme.of(context).textTheme.labelMedium,
+                        ),
+                    ],
+                  ),
                 ),
-              ),
-              const Gap(8),
-              Icon(
-                Icons.radio_button_checked_outlined,
-                color: isSelected ? colors.primary : colors.textMuted,
-              ),
-            ],
+                const Gap(8),
+                Icon(
+                  isSelected
+                      ? Icons.radio_button_checked_outlined
+                      : Icons.radio_button_unchecked,
+                  color: isSelected ? colors.primary : colors.textMuted,
+                ),
+              ],
+            ),
           ),
         ),
       ),

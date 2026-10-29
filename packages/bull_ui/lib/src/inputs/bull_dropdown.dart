@@ -3,8 +3,7 @@ import 'package:flutter/material.dart';
 
 /// A themed [DropdownButtonFormField].
 ///
-/// Generic over the item value type [T]. Items are left-aligned and the menu
-/// is capped at 240px tall.
+/// Generic over the item value type [T]. Items follow the reading direction; the menu is capped at 240px tall.
 class BullDropdown<T> extends StatelessWidget {
   const BullDropdown({
     super.key,
@@ -58,7 +57,7 @@ class BullDropdown<T> extends StatelessWidget {
                 value: item.value,
                 child: Container(
                   width: double.infinity,
-                  alignment: Alignment.centerLeft,
+                  alignment: AlignmentDirectional.centerStart,
                   child: item.child,
                 ),
               );
@@ -69,7 +68,7 @@ class BullDropdown<T> extends StatelessWidget {
             dropdownColor: colors.onSecondary,
             menuMaxHeight: 240,
             itemHeight: height,
-            alignment: Alignment.center,
+            alignment: AlignmentDirectional.centerStart,
             isExpanded: true,
             decoration: InputDecoration(
               filled: true,

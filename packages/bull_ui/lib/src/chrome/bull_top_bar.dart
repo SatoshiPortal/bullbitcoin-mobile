@@ -12,6 +12,7 @@ class BullTopBar extends StatelessWidget {
     super.key,
     required this.title,
     this.onBack,
+    this.backLabel,
     this.onAction,
     this.actionIcon,
     this.actionBadge = false,
@@ -24,6 +25,9 @@ class BullTopBar extends StatelessWidget {
 
   /// Back-button callback. When null, no back button is shown.
   final VoidCallback? onBack;
+
+  /// Localized tooltip and accessibility label for the back button.
+  final String? backLabel;
 
   /// Trailing-action callback. When null, no trailing action is shown.
   final VoidCallback? onAction;
@@ -55,6 +59,7 @@ class BullTopBar extends StatelessWidget {
             IconButton(
               icon: const BullIcon(BullIcons.arrowBack),
               onPressed: onBack,
+              tooltip: backLabel,
               iconSize: 24,
               color: colors.text,
               visualDensity: VisualDensity.compact,

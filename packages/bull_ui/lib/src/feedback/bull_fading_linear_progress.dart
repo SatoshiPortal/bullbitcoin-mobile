@@ -6,6 +6,7 @@ class BullFadingLinearProgress extends StatefulWidget {
     super.key,
     required this.trigger,
     this.height = 1.5,
+    this.value,
     this.backgroundColor,
     this.foregroundColor,
     this.duration = const Duration(milliseconds: 1000),
@@ -13,6 +14,9 @@ class BullFadingLinearProgress extends StatefulWidget {
 
   /// When true the bar is shown; when false it fades out.
   final bool trigger;
+
+  /// Null animates indeterminate progress; otherwise the checked fraction.
+  final double? value;
 
   /// Bar thickness.
   final double height;
@@ -63,6 +67,7 @@ class _BullFadingLinearProgressState extends State<BullFadingLinearProgress> {
         child: TickerMode(
           enabled: _tickerEnabled,
           child: LinearProgressIndicator(
+            value: widget.value,
             backgroundColor: widget.backgroundColor,
             color: widget.foregroundColor,
           ),
