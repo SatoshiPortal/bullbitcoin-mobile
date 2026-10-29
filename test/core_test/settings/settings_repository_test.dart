@@ -33,6 +33,36 @@ void main() {
 
   setUp(() => datasource = _MockDatasource());
 
+  test(
+    'successful Tor on off and port writes synchronously invalidate nodes',
+    () async {
+      final repository = build();
+      var changes = 0;
+      final subscription = repository.torPolicyChanges.listen((_) => changes++);
+      when(
+        () => datasource.setTorProxy(
+          enabled: any(named: 'enabled'),
+          port: any(named: 'port'),
+        ),
+      ).thenAnswer((_) async {});
+      for (final choice in [(true, 9050), (true, 9150), (false, 9150)]) {
+        final before = changes;
+        expect(
+          await repository.setTorProxy(enabled: choice.$1, port: choice.$2),
+          isA<Ok<void, SettingsStoreFailure>>(),
+        );
+        expect(changes, before + 1);
+      }
+      when(
+        () => datasource.setTorProxy(enabled: true, port: 1),
+      ).thenThrow(const FormatException('failed'));
+      await repository.setTorProxy(enabled: true, port: 1);
+      expect(changes, 3);
+      await subscription.cancel();
+      await repository.close();
+    },
+  );
+
   group('write failures are sanitized', () {
     test('a throwing datasource becomes a typed failure', () async {
       when(

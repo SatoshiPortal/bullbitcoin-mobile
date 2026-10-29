@@ -1,3 +1,7 @@
+import 'package:bb_mobile/core/settings/data/settings_repository.dart';
+import 'package:bb_mobile/cbf_lifecycle.dart';
+import 'package:bb_mobile/core/wallet/data/bitcoin_sync_routing.dart';
+import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasource.dart';
 import 'dart:async';
 
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
@@ -41,6 +45,7 @@ class BullBitcoinWalletApp extends StatefulWidget {
 
 class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
   late final AppLifecycleListener _listener;
+  CbfLifecycle? _cbfLifecycle;
   late final tor.TorLifecycleController _torLifecycleController;
   // final router = AppRouter.router;
 
@@ -48,6 +53,13 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
   void initState() {
     super.initState();
 
+    if (locator.isRegistered<BitcoinSyncRouting>()) {
+      _cbfLifecycle = CbfLifecycle(
+        routing: locator<BitcoinSyncRouting>(),
+        metadata: locator<WalletMetadataDatasource>(),
+        transportChanges: locator<SettingsRepository>().torPolicyChanges,
+      )..start(WidgetsBinding.instance.lifecycleState);
+    }
     _torLifecycleController = locator<tor.TorLifecycleController>()..start();
     // Initialize the AppLifecycleListener class and pass callbacks
     _listener = AppLifecycleListener(onStateChange: _onStateChanged);
@@ -57,6 +69,7 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
   void dispose() {
     // Do not forget to dispose the listener
     _listener.dispose();
+    unawaited(_cbfLifecycle?.dispose());
     if (locator.isRegistered<PayjoinLifecycle>()) {
       unawaited(locator<PayjoinLifecycle>().dispose());
     }
@@ -69,6 +82,7 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
   // AppLifecycleListener — see lib/core/sync/sync_coordinator.dart.
   void _onStateChanged(AppLifecycleState state) {
     log.info(state.name);
+    _cbfLifecycle?.onStateChange(state);
     if (locator.isRegistered<PayjoinLifecycle>()) {
       resumePayjoinsOnAppResume(state, locator<PayjoinLifecycle>());
     }

@@ -41,18 +41,20 @@ WalletTransaction _transaction(
   String txid,
   TransactionDirection? direction, {
   bool? selfTransfer,
+  TransactionPosition position = const UnknownPosition(),
 }) => WalletTransaction(
   txid: txid,
   amountSats: 1,
   direction: direction,
   selfTransfer: selfTransfer,
-  position: const UnknownPosition(),
+  position: position,
 );
 
 WalletTransactionSyncOutcome _outcome(
   WalletNetworkKey key,
-  List<WalletTransaction> transactions,
-) => WalletTransactionSyncOutcome(
+  List<WalletTransaction> transactions, {
+  Set<String> capabilities = const {},
+}) => WalletTransactionSyncOutcome(
   WalletTransactionSnapshot(
     key: key,
     revision: 1,
@@ -61,7 +63,7 @@ WalletTransactionSyncOutcome _outcome(
     observedAt: DateTime.utc(2026, 1, 1),
     lastSuccessfulSyncAt: DateTime.utc(2026, 1, 1),
     sourceKind: 'fake',
-    capabilities: const {},
+    capabilities: capabilities,
     sourceTip: null,
     complete: true,
     evidenceLevel: WalletEvidenceLevel.localSourceState,
@@ -240,7 +242,7 @@ void main() {
   );
 
   test(
-    'aggregates new transactions across wallets for the selected chain',
+    'keeps wallet destinations separate and deduplicates each wallet',
     () async {
       final directory = await Directory.systemTemp.createTemp(
         'background_tasks',
@@ -316,6 +318,14 @@ void main() {
       await second.execute(chain: 'liquid');
       expect(gateway.shown, hasLength(1));
       expect(gateway.shown.single.body, '1 liquid transaction received');
+      expect(
+        gateway.shown.single.destination,
+        NotificationDestination.wallet(
+          WalletPaymentNotificationIdentity.topicId(
+            const WalletNetworkKey('one', 'liquid', 'testnet'),
+          ),
+        ),
+      );
 
       final third = WalletTransactionSyncBackgroundTask(
         notifications: NotificationsFacade(gateway: gateway, outbox: outbox),
@@ -334,10 +344,106 @@ void main() {
         ),
       );
       await third.execute(chain: 'liquid');
-      expect(gateway.shown, hasLength(2));
-      expect(gateway.shown.last.body, '2 transactions received');
+      expect(gateway.shown, hasLength(3));
+      expect(
+        gateway.shown.skip(1).map((event) => event.body),
+        everyElement('1 liquid transaction received'),
+      );
+      expect(gateway.shown.skip(1).map((event) => event.destination).toSet(), {
+        NotificationDestination.wallet(
+          WalletPaymentNotificationIdentity.topicId(
+            const WalletNetworkKey('one', 'liquid', 'testnet'),
+          ),
+        ),
+        NotificationDestination.wallet(
+          WalletPaymentNotificationIdentity.topicId(
+            const WalletNetworkKey('two', 'liquid', 'testnet'),
+          ),
+        ),
+      });
       await third.execute(chain: 'liquid');
-      expect(gateway.shown, hasLength(2));
+      expect(gateway.shown, hasLength(3));
+    },
+  );
+
+  test(
+    'private notifications require a confirmed position and use confirmed copy',
+    () async {
+      final directory = await Directory.systemTemp.createTemp(
+        'private_notifications',
+      );
+      final gateway = _Gateway();
+      final outbox = SqliteNotificationOutbox(
+        databasePath: '${directory.path}/n.sqlite',
+      );
+      addTearDown(() async {
+        outbox.dispose();
+        await directory.delete(recursive: true);
+      });
+      const key = WalletNetworkKey('private-wallet', 'bitcoin', 'mainnet');
+      await _baseline(outbox, key);
+      final task = WalletTransactionSyncBackgroundTask(
+        notifications: NotificationsFacade(gateway: gateway, outbox: outbox),
+        queue: SqliteWalletSyncJobQueue(
+          databasePath: '${directory.path}/q.sqlite',
+        ),
+        jobs: [
+          WalletTransactionSyncBackgroundJob(
+            key: key,
+            synchronize: () async => Ok(
+              _outcome(
+                key,
+                [
+                  _transaction(
+                    'anchored',
+                    TransactionDirection.incoming,
+                    position: AnchoredPosition(
+                      'public-block',
+                      100,
+                      DateTime.utc(2026),
+                    ),
+                  ),
+                  _transaction(
+                    'reported',
+                    TransactionDirection.incoming,
+                    position: const SourceReportedConfirmedPosition(101, null),
+                  ),
+                  _transaction(
+                    'pending',
+                    TransactionDirection.incoming,
+                    position: UnconfirmedPosition(
+                      DateTime.utc(2026),
+                      DateTime.utc(2026),
+                    ),
+                  ),
+                  _transaction('unknown', TransactionDirection.incoming),
+                ],
+                capabilities: {'confirmedOnly', 'compactBlockFilters'},
+              ),
+            ),
+          ),
+        ],
+        copy: (count, _) => (title: 'received', body: '$count'),
+        confirmedCopy: (count, _) =>
+            (title: '$count payments confirmed', body: 'Incoming payments'),
+      );
+      expect(
+        (await task.execute(chain: 'bitcoin')).status,
+        BackgroundTaskExecutionStatus.success,
+      );
+      expect(gateway.shown.single.title, '2 payments confirmed');
+      expect(
+        gateway.shown.single.destination,
+        NotificationDestination.wallet(
+          WalletPaymentNotificationIdentity.topicId(key),
+        ),
+      );
+      expect(
+        NotificationsFacade.encodeDestination(gateway.shown.single.destination),
+        isNot(contains('private-wallet')),
+      );
+      await task.execute(chain: 'bitcoin');
+      expect(gateway.shown, hasLength(1));
     },
   );
 
@@ -793,56 +899,63 @@ void main() {
     },
   );
 
-  test('a wallet awaiting its first scan is skipped, not retried', () async {
-    final directory = await Directory.systemTemp.createTemp('background_tasks');
-    final outbox = SqliteNotificationOutbox(
-      databasePath: '${directory.path}/n.sqlite',
-    );
-    final queue = SqliteWalletSyncJobQueue(
-      databasePath: '${directory.path}/q.sqlite',
-    );
-    final messages = <String>[];
-    addTearDown(() async {
-      await queue.close();
-      outbox.dispose();
-      await directory.delete(recursive: true);
+  for (final failure in const [
+    InitialScanRequiredFailure(),
+    WalletSyncDeferredFailure(),
+  ]) {
+    test('${failure.runtimeType} defers without retry or backoff', () async {
+      final directory = await Directory.systemTemp.createTemp(
+        'background_tasks',
+      );
+      final outbox = SqliteNotificationOutbox(
+        databasePath: '${directory.path}/n.sqlite',
+      );
+      final queue = SqliteWalletSyncJobQueue(
+        databasePath: '${directory.path}/q.sqlite',
+      );
+      final messages = <String>[];
+      addTearDown(() async {
+        await queue.close();
+        outbox.dispose();
+        await directory.delete(recursive: true);
+      });
+      final task = WalletTransactionSyncBackgroundTask(
+        notifications: NotificationsFacade(gateway: _Gateway(), outbox: outbox),
+        queue: queue,
+        jobs: [
+          WalletTransactionSyncBackgroundJob(
+            key: const WalletNetworkKey('fresh', 'bitcoin', 'mainnet'),
+            synchronize: () async => Err(failure),
+          ),
+        ],
+        copy: (_, _) => (title: 'Incoming', body: 'Payment received'),
+        logSink: _Sink(messages),
+      );
+
+      expect(
+        (await task.execute(chain: 'bitcoin')).status,
+        BackgroundTaskExecutionStatus.success,
+      );
+      expect(
+        messages,
+        contains(
+          'Wallet sync skipped: chain=bitcoin '
+          'reason=${failure is WalletSyncDeferredFailure ? 'run_budget' : 'initial_scan_in_foreground'}',
+        ),
+      );
+
+      // No backoff: once the app has scanned it, the very next run syncs it.
+      expect(
+        await queue.reconcileAndClaim([
+          (
+            key: const WalletNetworkKey('fresh', 'bitcoin', 'mainnet'),
+            revision: 'legacy-electrum-v1',
+          ),
+        ], chain: 'bitcoin'),
+        hasLength(1),
+      );
     });
-    final task = WalletTransactionSyncBackgroundTask(
-      notifications: NotificationsFacade(gateway: _Gateway(), outbox: outbox),
-      queue: queue,
-      jobs: [
-        WalletTransactionSyncBackgroundJob(
-          key: const WalletNetworkKey('fresh', 'bitcoin', 'mainnet'),
-          synchronize: () async => const Err(InitialScanRequiredFailure()),
-        ),
-      ],
-      copy: (_, _) => (title: 'Incoming', body: 'Payment received'),
-      logSink: _Sink(messages),
-    );
-
-    expect(
-      (await task.execute(chain: 'bitcoin')).status,
-      BackgroundTaskExecutionStatus.success,
-    );
-    expect(
-      messages,
-      contains(
-        'Wallet sync skipped: chain=bitcoin '
-        'reason=initial_scan_in_foreground',
-      ),
-    );
-
-    // No backoff: once the app has scanned it, the very next run syncs it.
-    expect(
-      await queue.reconcileAndClaim([
-        (
-          key: const WalletNetworkKey('fresh', 'bitcoin', 'mainnet'),
-          revision: 'legacy-electrum-v1',
-        ),
-      ], chain: 'bitcoin'),
-      hasLength(1),
-    );
-  });
+  }
 
   test('a run stops starting wallets once its budget is spent', () async {
     final directory = await Directory.systemTemp.createTemp('background_tasks');
@@ -1095,6 +1208,60 @@ void main() {
     );
     expect(synced, isEmpty);
   });
+
+  test(
+    'cached multi-wallet results settle after network admission ends',
+    () async {
+      final directory = await Directory.systemTemp.createTemp(
+        'background-cbf-cache',
+      );
+      final outbox = SqliteNotificationOutbox(
+        databasePath: '${directory.path}/n.sqlite',
+      );
+      final queue = SqliteWalletSyncJobQueue(
+        databasePath: '${directory.path}/q.sqlite',
+      );
+      addTearDown(() async {
+        await queue.close();
+        outbox.dispose();
+        await directory.delete(recursive: true);
+      });
+      var ready = false, networkCalls = 0;
+      final settled = <String>[];
+      final jobs = [
+        for (final id in ['first', 'second'])
+          WalletTransactionSyncBackgroundJob(
+            key: WalletNetworkKey(id, 'bitcoin', 'testnet'),
+            hasCachedResult: () => ready,
+            synchronize: () async {
+              if (!ready) {
+                networkCalls++;
+                await Future<void>.delayed(const Duration(milliseconds: 200));
+                ready = true;
+              }
+              settled.add(id);
+              return Ok(
+                _outcome(WalletNetworkKey(id, 'bitcoin', 'testnet'), const []),
+              );
+            },
+          ),
+      ];
+      final task = WalletTransactionSyncBackgroundTask(
+        notifications: NotificationsFacade(gateway: _Gateway(), outbox: outbox),
+        queue: queue,
+        jobs: jobs,
+        maxConcurrentJobs: 1,
+        runBudget: const Duration(seconds: 2),
+        copy: (_, _) => (title: 'Incoming', body: 'Payment received'),
+      );
+      await task.execute(
+        chain: 'bitcoin',
+        admissionLimit: const Duration(milliseconds: 100),
+      );
+      expect(networkCalls, 1);
+      expect(settled.toSet(), {'first', 'second'});
+    },
+  );
 
   test('bitcoin leaves liquid half of the budget', () async {
     final directory = await Directory.systemTemp.createTemp('background_tasks');

@@ -1,6 +1,6 @@
+import 'package:bb_mobile/core/background_tasks/cbf_background_sync.dart';
+import 'package:bb_mobile/core/wallet/data/bitcoin_sync_routing.dart';
 import 'dart:io';
-
-import 'dart:ui' show Locale;
 
 import 'package:background_tasks/background_tasks.dart';
 import 'package:bb_mobile/core/electrum/domain/ports/electrum_servers_port.dart';
@@ -11,7 +11,7 @@ import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasourc
 import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/wallet_locator.dart'
-    show logWalletCoordination;
+    show WalletLocator, logWalletCoordination;
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/generated/l10n/localization.dart';
@@ -184,7 +184,8 @@ Future<BackgroundTaskRunner> _buildBackgroundRunner(
   final notifications = NotificationsFacade(
     gateway: FlutterLocalNotificationGateway(
       channelId: paymentNotificationChannelId,
-      channelName: localized.receivePaymentReceived,
+      channelName: localized.notificationPaymentsChannel,
+      channelDescription: localized.notificationPaymentsChannelDescription,
       androidIconResource: androidNotificationIconResource,
     ),
     outbox: outbox,
@@ -192,26 +193,37 @@ Future<BackgroundTaskRunner> _buildBackgroundRunner(
   enter('notifications');
   await _initializeNotifications(notifications);
 
+  late final BitcoinSyncRouting backgroundRouting;
   final bdk = WalletTransactionSyncFacade.bdkElectrum(
     metadata: syncMetadata,
     coordinator: coordination,
     logSink: logWalletCoordination,
+    isCbfPolicyCurrent: (registration) =>
+        backgroundRouting.isCurrent(registration),
+  );
+  backgroundRouting = BitcoinSyncRouting(
+    facade: bdk,
+    settings: headless<SettingsRepository>(),
+    tor: () => headless<BitcoinSyncRouting>().tor(),
+    allWallets: () => metadata.fetchAll(skipUnavailableSources: true),
   );
   final lwk = WalletTransactionSyncFacade.lwkElectrum(
     metadata: syncMetadata,
     coordinator: coordination,
     logSink: logWalletCoordination,
   );
-  NotificationCopy copy(int count, String chain) => (
-    title: localized.receivePaymentReceived,
-    body: count == 1
-        ? chain == 'liquid'
-              ? localized.backgroundNotificationLiquidSingular
-              : localized.backgroundNotificationBitcoinSingular
-        : localized.backgroundNotificationTransactionsPlural(count),
-  );
+  NotificationCopy copy(int count, String chain) =>
+      paymentNotificationCopy(localized, count, chain);
+  NotificationCopy confirmedCopy(int count, String chain) =>
+      paymentNotificationCopy(localized, count, chain, confirmedOnly: true);
   enter('wallets');
-  final wallets = await metadata.fetchAll();
+  final wallets = await metadata.fetchAll(skipUnavailableSources: true);
+  final cbfBatch = CbfBackgroundSync(
+    routing: backgroundRouting,
+    wallets: () => metadata.fetchAll(skipUnavailableSources: true),
+    deadline: () =>
+        DateTime.now().toUtc().add((_backgroundRunBudget ~/ 2) - clock.elapsed),
+  );
   final jobs = <WalletTransactionSyncBackgroundJob>[];
   for (final wallet in wallets) {
     final model = WalletModel.fromMetadata(wallet);
@@ -221,13 +233,78 @@ Future<BackgroundTaskRunner> _buildBackgroundRunner(
     jobs.add(
       WalletTransactionSyncBackgroundJob(
         key: key,
-        queueRevision: 'legacy-electrum-v1',
-        synchronize: () => _synchronize(
-          model: model,
-          key: key,
-          facade: wallet.isLiquid ? lwk : bdk,
-          servers: headless<ElectrumServersPort>(),
-        ),
+        queueRevision: 'source-${wallet.bitcoinSyncSource.name}-cbf-v1',
+        hasCachedResult: () => cbfBatch.hasCachedResult(key),
+        synchronize: () async {
+          if (cbfBatch.hasCachedResult(key)) return cbfBatch.synchronize(key);
+          final currentPolicy = await metadata.fetch(wallet.id);
+          if (currentPolicy == null) return const Err(DeletedWalletFailure());
+          if (currentPolicy.isBitcoin &&
+              currentPolicy.bitcoinSyncSource ==
+                  BitcoinSyncSource.compactBlockFilters) {
+            return cbfBatch.synchronize(key);
+          }
+          final sourceKey = WalletSourceKey(
+            key.walletId,
+            key.chain,
+            key.network,
+          );
+          Future<
+            Result<WalletTransactionSyncOutcome, WalletTransactionSyncFailure>
+          >
+          operation(WalletSourceSession session) async {
+            final current = await metadata.fetch(wallet.id);
+            if (current == null) {
+              return const Err<
+                WalletTransactionSyncOutcome,
+                WalletTransactionSyncFailure
+              >(DeletedWalletFailure());
+            }
+            if (current.isBitcoin &&
+                current.bitcoinSyncSource ==
+                    BitcoinSyncSource.compactBlockFilters) {
+              // Policy changed while waiting for legacy admission. The next
+              // batch reads it outside this session; never nest a CBF writer.
+              return const Err(WalletSyncDeferredFailure());
+            }
+            return _synchronize(
+              model: model,
+              key: key,
+              facade: current.isLiquid ? lwk : bdk,
+              servers: headless<ElectrumServersPort>(),
+              session: session,
+            );
+          }
+
+          if (wallet.isBitcoin) {
+            // Bound admission too, including a source changed while queued. Electrum keeps its existing transport and cache once admitted.
+            final remaining =
+                (_backgroundRunBudget ~/ 2) -
+                clock.elapsed -
+                const Duration(seconds: 3);
+            return AdmitWalletSyncUsecase(
+              coordinatorForTimeout: (timeout) =>
+                  DurableWalletSourceOperationCoordinator(
+                    databasePath: WalletLocator.coordinationDatabasePath(
+                      bullDirectory.path,
+                    ),
+                    acquisitionTimeout: timeout,
+                    logSink: logWalletCoordination,
+                  ),
+            ).execute(
+              key: sourceKey,
+              deadline: DateTime.now().toUtc().add(remaining),
+              operation: operation,
+            );
+          }
+          return coordination.runExclusive(
+            sourceKey,
+            operation,
+            kind: WalletOperationKind.synchronize,
+            priority: WalletOperationPriority.background,
+            timeout: null,
+          );
+        },
       ),
     );
   }
@@ -239,7 +316,9 @@ Future<BackgroundTaskRunner> _buildBackgroundRunner(
       jobs: jobs,
       queue: syncQueue,
       copy: copy,
+      confirmedCopy: confirmedCopy,
       maxConcurrentJobs: _backgroundWalletSyncConcurrency,
+      maxJobsPerRun: jobs.length < 2 ? 2 : jobs.length,
       runBudget: _backgroundRunBudget,
     ).executeAll(clock: clock),
     bitcoinSync: () => WalletTransactionSyncBackgroundTask(
@@ -247,7 +326,9 @@ Future<BackgroundTaskRunner> _buildBackgroundRunner(
       jobs: jobs,
       queue: syncQueue,
       copy: copy,
+      confirmedCopy: confirmedCopy,
       maxConcurrentJobs: _backgroundWalletSyncConcurrency,
+      maxJobsPerRun: jobs.length < 2 ? 2 : jobs.length,
       runBudget: _backgroundRunBudget,
     ).execute(chain: 'bitcoin'),
     liquidSync: () => WalletTransactionSyncBackgroundTask(
@@ -255,7 +336,9 @@ Future<BackgroundTaskRunner> _buildBackgroundRunner(
       jobs: jobs,
       queue: syncQueue,
       copy: copy,
+      confirmedCopy: confirmedCopy,
       maxConcurrentJobs: _backgroundWalletSyncConcurrency,
+      maxJobsPerRun: jobs.length < 2 ? 2 : jobs.length,
       runBudget: _backgroundRunBudget,
     ).execute(chain: 'liquid'),
     pruneLogs: log.prune,
@@ -276,6 +359,7 @@ _synchronize({
   required WalletNetworkKey key,
   required WalletTransactionSyncFacade facade,
   required ElectrumServersPort servers,
+  required WalletSourceSession session,
 }) async {
   final network = ElectrumServerNetwork.fromEnvironment(
     isTestnet: model.isTestnet,
@@ -327,6 +411,7 @@ _synchronize({
             registration,
             priority: WalletOperationPriority.background,
             allowInitialScan: false,
+            session: session,
           ),
         );
         if (result case Err(:final failure)
@@ -351,7 +436,7 @@ Future<void> _initializeNotifications(NotificationsFacade notifications) async {
 
 Future<AppLocalizations> _notificationLocalization(GetIt headless) async {
   final settings = await headless<SettingsRepository>().fetch();
-  final locale = settings.language?.locale ?? const Locale('en');
+  final locale = resolveNotificationLocale(settings.language?.locale);
   return AppLocalizations.delegate.load(locale);
 }
 

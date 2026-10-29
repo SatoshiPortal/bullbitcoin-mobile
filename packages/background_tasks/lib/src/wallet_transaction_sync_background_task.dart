@@ -23,10 +23,15 @@ final class WalletTransactionSyncBackgroundJob {
   final SyncJobOperation synchronize;
   final String queueRevision;
 
+  /// True only when synchronize returns an already-produced result without
+  /// starting network work. Cached settlement may finish after admission ends.
+  final bool Function()? hasCachedResult;
+
   const WalletTransactionSyncBackgroundJob({
     required this.key,
     required this.synchronize,
     this.queueRevision = 'legacy-electrum-v1',
+    this.hasCachedResult,
   });
 }
 
@@ -34,6 +39,7 @@ final class WalletTransactionSyncBackgroundTask {
   final NotificationsFacade notifications;
   final List<WalletTransactionSyncBackgroundJob> jobs;
   final NotificationCopyBuilder copy;
+  final NotificationCopyBuilder? confirmedCopy;
   final int maxConcurrentJobs;
   final WalletSyncJobQueue queue;
   final int maxJobsPerRun;
@@ -43,6 +49,7 @@ final class WalletTransactionSyncBackgroundTask {
     required this.notifications,
     required this.jobs,
     required this.copy,
+    this.confirmedCopy,
     this.maxConcurrentJobs = 2,
     required this.queue,
     this.maxJobsPerRun = 2,
@@ -138,7 +145,8 @@ final class WalletTransactionSyncBackgroundTask {
         (key: job.key, revision: job.queueRevision),
     ];
     final jobsByKey = {for (final job in eligibleJobs) job.key: job};
-    final observations = <NotificationTopicObservation>[];
+    final observations =
+        <({NotificationTopicObservation topic, bool confirmedOnly})>[];
     final handled = <WalletNetworkKey>{};
     var claimed = 0;
     var budgetReached = false;
@@ -153,16 +161,30 @@ final class WalletTransactionSyncBackgroundTask {
     // off, and keep its lease, if the platform stops the run.
     Future<WalletSyncJobClaim?> claimNext() async {
       if (claimed >= maxJobsPerRun) return null;
+      final unavailable = <WalletNetworkKey>{};
       if (budgetSpent()) {
         budgetReached = true;
-        return null;
+        final totalBudget = runBudget;
+        if (admissionLimit == null ||
+            totalBudget == null ||
+            stopwatch.elapsed >= totalBudget) {
+          return null;
+        }
+        for (final job in eligibleJobs) {
+          if (job.hasCachedResult?.call() != true) unavailable.add(job.key);
+        }
+        if (eligibleJobs.every(
+          (job) => handled.contains(job.key) || unavailable.contains(job.key),
+        )) {
+          return null;
+        }
       }
       claimed++;
       final claims = await queue.reconcileAndClaim(
         registrations,
         chain: chain,
         maxJobs: 1,
-        excluding: handled,
+        excluding: {...handled, ...unavailable},
       );
       if (claims.isEmpty) {
         claimed--;
@@ -216,7 +238,9 @@ final class WalletTransactionSyncBackgroundTask {
           final sync = await job.synchronize();
           await stopRenewal();
           switch (sync) {
-            case Err(failure: InitialScanRequiredFailure()):
+            case Err(:final failure)
+                when failure is InitialScanRequiredFailure ||
+                    failure is WalletSyncDeferredFailure:
               // A whole-history scan does not fit a background run: the
               // foreground does it, then this wallet is synced here again.
               // Settled like a success, so no backoff outlives that scan and
@@ -227,7 +251,7 @@ final class WalletTransactionSyncBackgroundTask {
               _safeLog(
                 WalletSyncLogLevel.fine,
                 'Wallet sync skipped: chain=$chain '
-                'reason=initial_scan_in_foreground',
+                'reason=${failure is WalletSyncDeferredFailure ? 'run_budget' : 'initial_scan_in_foreground'}',
               );
             case Err(:final failure):
               _classifySync(
@@ -257,7 +281,12 @@ final class WalletTransactionSyncBackgroundTask {
               if (completed) {
                 succeeded++;
                 newIncoming += value.newIncomingTransactions.length;
-                observations.add(_observationFor(job, value));
+                observations.add((
+                  topic: _observationFor(job, value),
+                  confirmedOnly: value.snapshot.capabilities.contains(
+                    'confirmedOnly',
+                  ),
+                ));
               }
               if (renewalFailed || !completed) {
                 retry = true;
@@ -306,13 +335,16 @@ final class WalletTransactionSyncBackgroundTask {
     );
 
     final completedObservations = observations;
-    if (completedObservations.isNotEmpty) {
+    for (final completed in completedObservations) {
       final reconciled = await notifications.reconcileTopicsAndEnqueue(
-        completedObservations,
+        [completed.topic],
         (newEvents) {
           final eventIds = newEvents.map((event) => event.eventId).toList()
             ..sort();
-          final text = copy(newEvents.length, chain);
+          final text = (completed.confirmedOnly ? confirmedCopy ?? copy : copy)(
+            newEvents.length,
+            chain,
+          );
           return LocalNotification(
             eventId: sha256
                 .convert(
@@ -323,7 +355,9 @@ final class WalletTransactionSyncBackgroundTask {
                 .toString(),
             title: text.title,
             body: text.body,
-            destination: NotificationDestination.walletHome,
+            destination: NotificationDestination.wallet(
+              completed.topic.topicId,
+            ),
             createdAt: newEvents
                 .map((event) => event.createdAt)
                 .reduce((a, b) => a.isAfter(b) ? a : b),
@@ -442,7 +476,10 @@ final class WalletTransactionSyncBackgroundTask {
         .where(
           (transaction) =>
               transaction.direction == TransactionDirection.incoming &&
-              transaction.selfTransfer != true,
+              transaction.selfTransfer != true &&
+              (!outcome.snapshot.capabilities.contains('confirmedOnly') ||
+                  transaction.position is AnchoredPosition ||
+                  transaction.position is SourceReportedConfirmedPosition),
         )
         .map(
           (transaction) => WalletPaymentNotificationIdentity.event(

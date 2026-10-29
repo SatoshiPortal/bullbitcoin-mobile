@@ -14,6 +14,9 @@ import 'package:bull_tor/tor.dart';
 class SettingsRepository implements domain.SettingsRepository {
   final SettingsDatasource _settingsDatasource;
   final StreamController<String> _currencyChangeController;
+  final _torPolicyChanges = StreamController<void>.broadcast(sync: true);
+
+  Stream<void> get torPolicyChanges => _torPolicyChanges.stream;
 
   SettingsRepository({required this._settingsDatasource})
     : _currencyChangeController = StreamController<String>.broadcast();
@@ -22,7 +25,14 @@ class SettingsRepository implements domain.SettingsRepository {
   Stream<String> get currencyChangeStream => _currencyChangeController.stream;
 
   @override
-  Future<void> close() => _currencyChangeController.close();
+  Future<void> close() async {
+    await _currencyChangeController.close();
+    await _torPolicyChanges.close();
+  }
+
+  void _torPolicyChanged() {
+    if (!_torPolicyChanges.isClosed) _torPolicyChanges.add(null);
+  }
 
   @override
   Future<Result<void, SettingsStoreFailure>> store({
@@ -66,6 +76,7 @@ class SettingsRepository implements domain.SettingsRepository {
           exchangeTestnetBasicAuthPassword: exchangeTestnetBasicAuthPassword,
         ),
       );
+      _torPolicyChanged();
       return const Ok(null);
     } catch (e, st) {
       log.severe(
@@ -247,6 +258,7 @@ class SettingsRepository implements domain.SettingsRepository {
   }) async {
     try {
       await _settingsDatasource.setTorProxy(enabled: enabled, port: port);
+      _torPolicyChanged();
       return const Ok(null);
     } catch (e, st) {
       log.severe(
