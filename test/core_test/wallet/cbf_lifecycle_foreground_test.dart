@@ -32,10 +32,20 @@ final class _Service implements CbfForegroundService {
   Stream<void> get protectionLost => lost.stream;
 
   @override
-  Future<bool> start({required String title, required String body}) async {
+  Future<bool> start({
+    required String title,
+    required String body,
+    int? percentage,
+  }) async {
     starts++;
     return active = granted;
   }
+
+  @override
+  Future<void> updateProgress({
+    required String body,
+    required int? percentage,
+  }) async {}
 
   @override
   Future<bool> renew() async {
@@ -96,7 +106,11 @@ final class _Harness {
     when(() => metadata.watchSyncPolicies()).thenAnswer((_) => wallets.stream);
     foreground = CbfForegroundSync(
       service: service,
-      labels: () async => (title: 'Bull Bitcoin', body: 'Syncing wallet'),
+      labels: () async => (
+        title: 'Bull Bitcoin',
+        body: 'Syncing wallet',
+        progressBody: (percent) => 'Syncing wallet · $percent%',
+      ),
       onProtectionChanged: () => lifecycle.protectionChanged(),
     );
     lifecycle = CbfLifecycle(

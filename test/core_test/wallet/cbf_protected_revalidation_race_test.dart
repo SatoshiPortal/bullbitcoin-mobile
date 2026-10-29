@@ -36,8 +36,16 @@ final class _Service implements CbfForegroundService {
   @override
   Stream<void> get protectionLost => _lost.stream;
   @override
-  Future<bool> start({required String title, required String body}) async =>
-      _active = true;
+  Future<bool> start({
+    required String title,
+    required String body,
+    int? percentage,
+  }) async => _active = true;
+  @override
+  Future<void> updateProgress({
+    required String body,
+    required int? percentage,
+  }) async {}
   @override
   Future<bool> renew() async => _active;
   @override
@@ -114,7 +122,11 @@ void main() {
       CbfLifecycle? lifecycle;
       final sync = CbfForegroundSync(
         service: service,
-        labels: () async => (title: 'Bull Bitcoin', body: 'Syncing wallet'),
+        labels: () async => (
+          title: 'Bull Bitcoin',
+          body: 'Syncing wallet',
+          progressBody: (percent) => 'Syncing wallet · $percent%',
+        ),
         onProtectionChanged: () => lifecycle?.protectionChanged(),
       );
       final activeLifecycle = CbfLifecycle(

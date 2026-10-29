@@ -21,6 +21,7 @@ class CbfSyncService : Service() {
     private var owner: String? = null
     private var expiresAt = 0L
     private var wakeLock: PowerManager.WakeLock? = null
+    private var notification: Notification.Builder? = null
     private val handler = Handler(Looper.getMainLooper())
     private val expiry = object : Runnable {
         override fun run() {
@@ -45,6 +46,7 @@ class CbfSyncService : Service() {
         main.removeCallbacks(request.timeout)
         val title = intent?.getStringExtra("title")
         val body = intent?.getStringExtra("body")
+        val percentage = intent?.getIntExtra("percentage", -1)?.takeIf { it in 0..100 }
         if (title.isNullOrBlank() || body.isNullOrBlank() || !notificationsAllowed(this)) {
             request.complete(false)
             stopSelf()
@@ -63,7 +65,7 @@ class CbfSyncService : Service() {
                 stopSelf()
                 return START_NOT_STICKY
             }
-            val notification = Notification.Builder(this, CHANNEL_ID)
+            val builder = Notification.Builder(this, CHANNEL_ID)
                 .setSmallIcon(applicationInfo.icon)
                 .setContentTitle(title)
                 .setContentText(body)
@@ -71,11 +73,12 @@ class CbfSyncService : Service() {
                 .setOnlyAlertOnce(true)
                 .setOngoing(true)
                 .setCategory(Notification.CATEGORY_PROGRESS)
-                .build()
+                .setProgress(100, percentage ?: 0, percentage == null)
+            notification = builder
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                startForeground(NOTIFICATION_ID, notification, ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC)
+                startForeground(NOTIFICATION_ID, builder.build(), ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC)
             } else {
-                startForeground(NOTIFICATION_ID, notification)
+                startForeground(NOTIFICATION_ID, builder.build())
             }
             expiresAt = 0L
             owner = requestedOwner
@@ -110,6 +113,7 @@ class CbfSyncService : Service() {
         handler.removeCallbacks(expiry)
         wakeLock?.let { if (it.isHeld) it.release() }
         wakeLock = null
+        notification = null
         if (previousOwner != null) listeners[previousOwner]?.invoke("serviceDestroyed")
         super.onDestroy()
     }
@@ -129,6 +133,24 @@ class CbfSyncService : Service() {
         return true
     }
 
+    private fun updateProgress(requestedOwner: String, body: String, percentage: Int?) {
+        if (owner != requestedOwner) return
+        if (SystemClock.elapsedRealtime() >= expiresAt) {
+            finish("ownerExpired")
+            return
+        }
+        val builder = notification ?: return
+        try {
+            getSystemService(NotificationManager::class.java).notify(
+                NOTIFICATION_ID,
+                builder.setContentText(body)
+                    .setProgress(100, percentage ?: 0, percentage == null)
+                    .build())
+        } catch (_: RuntimeException) {
+            finish("notificationFailed")
+        }
+    }
+
     private fun finish(reason: String?) {
         val previousOwner = owner
         owner = null
@@ -137,6 +159,7 @@ class CbfSyncService : Service() {
         handler.removeCallbacks(expiry)
         wakeLock?.let { if (it.isHeld) it.release() }
         wakeLock = null
+        notification = null
         stopForeground(STOP_FOREGROUND_REMOVE)
         stopSelf()
         if (reason != null && previousOwner != null) listeners[previousOwner]?.invoke(reason)
@@ -156,7 +179,7 @@ class CbfSyncService : Service() {
         fun observe(owner: String, listener: (String) -> Unit) { listeners[owner] = listener }
         fun forget(owner: String) { listeners.remove(owner) }
 
-        fun start(context: Context, owner: String, title: String, body: String, complete: (Boolean) -> Unit) {
+        fun start(context: Context, owner: String, title: String, body: String, percentage: Int?, complete: (Boolean) -> Unit) {
             if (owner.isBlank() || running != null || pending != null || !notificationsAllowed(context)) {
                 complete(false)
                 return
@@ -172,7 +195,8 @@ class CbfSyncService : Service() {
             main.postDelayed(timeout, 3_000)
             try {
                 context.startForegroundService(Intent(context, CbfSyncService::class.java)
-                    .putExtra("owner", owner).putExtra("title", title).putExtra("body", body))
+                    .putExtra("owner", owner).putExtra("title", title).putExtra("body", body)
+                    .putExtra("percentage", percentage ?: -1))
             } catch (_: RuntimeException) {
                 pending = null
                 main.removeCallbacks(timeout)
@@ -181,6 +205,10 @@ class CbfSyncService : Service() {
         }
 
         fun renew(owner: String): Boolean = running?.renew(owner) ?: false
+
+        fun updateProgress(owner: String, body: String, percentage: Int?) {
+            running?.updateProgress(owner, body, percentage)
+        }
 
         fun stop(owner: String) {
             pending?.let {

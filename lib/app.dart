@@ -79,6 +79,7 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
                 return (
                   title: localized.syncServiceTitle,
                   body: localized.syncServiceBody,
+                  progressBody: localized.syncServiceProgressBody,
                 );
               },
               onProtectionChanged: () => _cbfLifecycle?.protectionChanged(),

@@ -23,10 +23,20 @@ final class FakeForegroundService implements CbfForegroundService {
   Stream<void> get protectionLost => lost.stream;
 
   @override
-  Future<bool> start({required String title, required String body}) async {
+  Future<bool> start({
+    required String title,
+    required String body,
+    int? percentage,
+  }) async {
     starts++;
     return active = await (startGate?.future ?? Future.value(grantsStart));
   }
+
+  @override
+  Future<void> updateProgress({
+    required String body,
+    required int? percentage,
+  }) async {}
 
   @override
   Future<void> stop() async {
@@ -87,7 +97,11 @@ void main() {
     service = FakeForegroundService();
     sync = CbfForegroundSync(
       service: service,
-      labels: () async => (title: 'Bull Bitcoin', body: 'Syncing wallet'),
+      labels: () async => (
+        title: 'Bull Bitcoin',
+        body: 'Syncing wallet',
+        progressBody: (percent) => 'Syncing wallet · $percent%',
+      ),
       onProtectionChanged: () => changes++,
       elapsed: () => elapsed,
     );
@@ -301,7 +315,7 @@ void main() {
     'removed demand during asynchronous labels never starts service',
     () async {
       await sync.dispose();
-      final text = Completer<({String title, String body})>();
+      final text = Completer<CbfSyncNotificationLabels>();
       sync = CbfForegroundSync(
         service: service = FakeForegroundService(),
         labels: () => text.future,
@@ -310,7 +324,11 @@ void main() {
       );
       sync.observe(progress(recovery: true));
       sync.cancel(key);
-      text.complete((title: 'Bull Bitcoin', body: 'Syncing wallet'));
+      text.complete((
+        title: 'Bull Bitcoin',
+        body: 'Syncing wallet',
+        progressBody: (percent) => 'Syncing wallet · $percent%',
+      ));
       await settle();
       expect(service.starts, 0);
     },

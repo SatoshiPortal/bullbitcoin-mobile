@@ -9,7 +9,12 @@ import 'package:primitives/primitives.dart';
 abstract interface class CbfForegroundService {
   bool get isActive;
   Stream<void> get protectionLost;
-  Future<bool> start({required String title, required String body});
+  Future<bool> start({
+    required String title,
+    required String body,
+    int? percentage,
+  });
+  Future<void> updateProgress({required String body, required int? percentage});
   Future<bool> renew();
   Future<void> stop();
   Future<void> dispose();
@@ -58,7 +63,11 @@ final class AndroidCbfForegroundService implements CbfForegroundService {
   Stream<void> get protectionLost => _lost.stream;
 
   @override
-  Future<bool> start({required String title, required String body}) async {
+  Future<bool> start({
+    required String title,
+    required String body,
+    int? percentage,
+  }) async {
     if (_disposed || _platform != TargetPlatform.android) return false;
     if (_owner != null) return renew();
     final generation = ++_generation;
@@ -84,6 +93,7 @@ final class AndroidCbfForegroundService implements CbfForegroundService {
         'owner': owner,
         'title': title,
         'body': body,
+        'percentage': percentage,
       });
       if (generation != _generation || _disposed) {
         await _channel.invokeMethod<void>('stop', {'owner': owner});
@@ -97,6 +107,20 @@ final class AndroidCbfForegroundService implements CbfForegroundService {
       if (generation == _generation) await stop();
       return false;
     }
+  }
+
+  @override
+  Future<void> updateProgress({
+    required String body,
+    required int? percentage,
+  }) async {
+    final owner = _owner;
+    if (_disposed || owner == null) return;
+    await _channel.invokeMethod<void>('progress', {
+      'owner': owner,
+      'body': body,
+      'percentage': percentage,
+    });
   }
 
   /// Call from the existing owner poll, at most once per second. This must not

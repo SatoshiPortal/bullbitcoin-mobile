@@ -5112,5 +5112,6 @@
   "syncContinueMobileData": "Continuer sur données mobiles",
   "syncPausedOffline": "Synchronisation en pause : aucune connexion Internet. La progression enregistrée reprendra à la reconnexion.",
   "syncServiceTitle": "Bull Bitcoin",
-  "syncServiceBody": "Synchronisation du portefeuille"
+  "syncServiceBody": "Synchronisation du portefeuille",
+  "syncServiceProgressBody": "Synchronisation du portefeuille · {percent} %"
 }

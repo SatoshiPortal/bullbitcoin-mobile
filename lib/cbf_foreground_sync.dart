@@ -4,14 +4,21 @@ import 'package:transaction_sync/transaction_sync.dart';
 
 import 'cbf_foreground_service.dart';
 
+typedef CbfSyncNotificationLabels = ({
+  String title,
+  String body,
+  String Function(int) progressBody,
+});
+
 /// Protects the existing owner while it has recovery or substantial catch-up.
 /// Heartbeats come from that isolate's native polls and supervised retry/offline waits.
 final class CbfForegroundSync {
   final CbfForegroundService service;
-  final Future<({String title, String body})> Function() labels;
+  final Future<CbfSyncNotificationLabels> Function() labels;
   final void Function() onProtectionChanged;
   final Duration Function() _elapsed;
   final _pending = <WalletNetworkKey>{};
+  final _progress = <WalletNetworkKey, BitcoinSyncProgress>{};
   final _subscriptions =
       <WalletNetworkKey, StreamSubscription<BitcoinSyncProgress>>{};
   late final StreamSubscription<void> _lost;
@@ -22,6 +29,9 @@ final class CbfForegroundSync {
   bool _renewing = false;
   bool _disposed = false;
   Duration? _lastHeartbeat;
+  Duration? _lastNotification;
+  int? _lastPercentage;
+  CbfSyncNotificationLabels? _notificationLabels;
   int _revision = 0;
   int _serviceGeneration = 0;
 
@@ -60,6 +70,7 @@ final class CbfForegroundSync {
     if (_disposed) return;
     if (progress.failure != null || progress.phase == BitcoinSyncPhase.done) {
       _pending.remove(progress.key);
+      _progress.remove(progress.key);
     } else {
       final target = progress.targetHeight;
       final reached = progress.reachedHeight;
@@ -68,6 +79,7 @@ final class CbfForegroundSync {
         // A long catch-up retains protection until its persisted tip/failure.
         _pending.add(progress.key);
       }
+      if (_pending.contains(progress.key)) _progress[progress.key] = progress;
     }
     _revision++;
     unawaited(_update());
@@ -99,12 +111,14 @@ final class CbfForegroundSync {
   void _remove(WalletNetworkKey key) {
     unawaited(_subscriptions.remove(key)?.cancel());
     _pending.remove(key);
+    _progress.remove(key);
   }
 
   void _loseProtection() {
     if (_disposed) return;
     _denied = true;
     _lastHeartbeat = null;
+    _resetNotification();
     _serviceGeneration++;
     onProtectionChanged();
   }
@@ -113,8 +127,51 @@ final class CbfForegroundSync {
     final wasProtected = protected;
     _serviceGeneration++;
     _lastHeartbeat = null;
+    _resetNotification();
     await service.stop();
     if (wasProtected && !_disposed) onProtectionChanged();
+  }
+
+  // Reuse the recovery view's checkpoint-to-tip fraction, never raw heights.
+  // A shared notification follows the least complete wallet still needing it.
+  int? get _percentage {
+    int? least;
+    for (final key in _pending) {
+      final progress = _progress[key];
+      final fraction = progress?.fraction;
+      if (progress?.targetHeight == null ||
+          fraction == null ||
+          !fraction.isFinite) {
+        return null;
+      }
+      final percentage = (fraction.clamp(0, 1) * 100).floor().clamp(0, 99);
+      if (least == null || percentage < least) least = percentage;
+    }
+    return least;
+  }
+
+  void _resetNotification() {
+    _lastNotification = null;
+    _lastPercentage = null;
+    _notificationLabels = null;
+  }
+
+  Future<void> _updateNotification() async {
+    final text = _notificationLabels;
+    if (text == null) return;
+    final percentage = _percentage;
+    final now = _elapsed();
+    final last = _lastNotification;
+    if (percentage == _lastPercentage ||
+        last != null && now - last < const Duration(seconds: 5)) {
+      return;
+    }
+    _lastNotification = now;
+    _lastPercentage = percentage;
+    await service.updateProgress(
+      body: percentage == null ? text.body : text.progressBody(percentage),
+      percentage: percentage,
+    );
   }
 
   Future<void> _update() async {
@@ -130,17 +187,29 @@ final class CbfForegroundSync {
           final text = await labels();
           if (_disposed || !_allowed || _pending.isEmpty || !_visible) continue;
           final generation = ++_serviceGeneration;
+          final percentage = _percentage;
           final started = await service.start(
             title: text.title,
-            body: text.body,
+            body: percentage == null
+                ? text.body
+                : text.progressBody(percentage),
+            percentage: percentage,
           );
           if (generation != _serviceGeneration || _disposed) {
             if (started) await service.stop();
             continue;
           }
           _lastHeartbeat = null;
-          if (!started) _denied = true;
+          if (!started) {
+            _denied = true;
+          } else {
+            _notificationLabels = text;
+            _lastPercentage = percentage;
+            _lastNotification = _elapsed();
+          }
           onProtectionChanged();
+        } else if (protected) {
+          await _updateNotification();
         }
       } while (!_disposed && revision != _revision);
     } on Exception {
@@ -161,6 +230,9 @@ final class CbfForegroundSync {
       return;
     }
     final now = _elapsed();
+    // Flush the latest throttled value even when no new progress event arrives.
+    // This reuses owner supervision and never creates a notification timer.
+    unawaited(_update());
     final last = _lastHeartbeat;
     if (last != null && now - last < const Duration(seconds: 1)) return;
     _lastHeartbeat = now;
@@ -193,6 +265,9 @@ final class CbfForegroundSync {
     _disposed = true;
     _revision++;
     _serviceGeneration++;
+    _resetNotification();
+    _progress.clear();
+    _pending.clear();
     await _lost.cancel();
     await Future.wait(
       _subscriptions.values.map((subscription) => subscription.cancel()),

@@ -36,7 +36,9 @@ class CbfSyncPlugin : FlutterPlugin, MethodChannel.MethodCallHandler {
                 val appContext = context
                 val title = call.argument<String>("title")
                 val body = call.argument<String>("body")
-                if (appContext == null || requestedOwner.isNullOrBlank() || title == null || body == null || owner != null) {
+                val percentage = call.argument<Int>("percentage")
+                if (appContext == null || requestedOwner.isNullOrBlank() || title == null || body == null || owner != null ||
+                    percentage != null && percentage !in 0..100) {
                     result.success(false)
                     return
                 }
@@ -48,7 +50,7 @@ class CbfSyncPlugin : FlutterPlugin, MethodChannel.MethodCallHandler {
                         channel?.invokeMethod("lost", mapOf("owner" to requestedOwner, "reason" to reason))
                     }
                 }
-                CbfSyncService.start(appContext, requestedOwner, title, body) { started ->
+                CbfSyncService.start(appContext, requestedOwner, title, body, percentage) { started ->
                     if (!started && owner == requestedOwner) {
                         owner = null
                         CbfSyncService.forget(requestedOwner)
@@ -57,6 +59,15 @@ class CbfSyncPlugin : FlutterPlugin, MethodChannel.MethodCallHandler {
                 }
             }
             "renew" -> result.success(requestedOwner != null && owner == requestedOwner && CbfSyncService.renew(requestedOwner))
+            "progress" -> {
+                val body = call.argument<String>("body")
+                val percentage = call.argument<Int>("percentage")
+                if (requestedOwner != null && owner == requestedOwner && !body.isNullOrBlank() &&
+                    (percentage == null || percentage in 0..100)) {
+                    CbfSyncService.updateProgress(requestedOwner, body, percentage)
+                }
+                result.success(null)
+            }
             "stop" -> {
                 if (requestedOwner != null && owner == requestedOwner) {
                     owner = null

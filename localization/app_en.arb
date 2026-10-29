@@ -16486,5 +16486,14 @@
   "syncServiceTitle": "Bull Bitcoin",
   "@syncServiceTitle": {},
   "syncServiceBody": "Syncing wallet",
-  "@syncServiceBody": {}
+  "@syncServiceBody": {},
+  "syncServiceProgressBody": "Syncing wallet · {percent}%",
+  "@syncServiceProgressBody": {
+    "description": "Android foreground sync notification showing only the recovery percentage.",
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  }
 }
