@@ -68,6 +68,7 @@ class _CountingCoordinator implements WalletSourceOperationCoordinator {
     WalletSourceKey key,
     Future<T> Function(WalletSourceSession session) operation, {
     Duration? timeout = const Duration(seconds: 30),
+    DateTime? admissionDeadline,
     bool allowRetired = false,
     WalletOperationKind kind = WalletOperationKind.refresh,
     WalletOperationPriority priority = WalletOperationPriority.foreground,

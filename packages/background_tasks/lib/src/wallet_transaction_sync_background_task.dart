@@ -419,6 +419,13 @@ final class WalletTransactionSyncBackgroundTask {
         InvalidPaginationFailure() => 'invalid_pagination',
         InvalidWalletBirthdayFailure() => 'invalid_birthday',
         InitialScanRequiredFailure() => 'initial_scan_required',
+        WalletSyncDeferredFailure() => 'deferred',
+        CbfNoPeersFailure() => 'cbf_no_peers',
+        CbfTorUnavailableFailure() => 'cbf_tor_unavailable',
+        CbfTransactionNotRecoverableFailure() ||
+        CbfBroadcastNotRelayedFailure() => 'cbf_not_relayed',
+        CbfNodeDidNotStopFailure() => 'cbf_not_stopped',
+        CbfRemoteLookupForbiddenFailure() => 'cbf_remote_forbidden',
       };
 
   static bool _isPermanent(WalletTransactionSyncFailure failure) {
@@ -460,7 +467,12 @@ final class WalletTransactionSyncBackgroundTask {
     SourceFailure(reason: SourceFailureReason.unknown) ||
     SourceStorageFailure() ||
     CoordinationTimeoutFailure() ||
-    SnapshotExpiredFailure() => onRetry(),
+    SnapshotExpiredFailure() ||
+    CbfNoPeersFailure() ||
+    CbfTorUnavailableFailure() ||
+    CbfTransactionNotRecoverableFailure() ||
+    CbfBroadcastNotRelayedFailure() ||
+    CbfNodeDidNotStopFailure() => onRetry(),
     SnapshotNotInitializedFailure() ||
     WalletRegistrationMismatchFailure() ||
     WalletSourceStateMissingFailure() ||
@@ -471,9 +483,10 @@ final class WalletTransactionSyncBackgroundTask {
     ExtractionFailure() ||
     DeletionFailure() ||
     InvalidWalletBirthdayFailure() ||
-    InvalidPaginationFailure() => onPermanent(),
+    InvalidPaginationFailure() ||
+    CbfRemoteLookupForbiddenFailure() => onPermanent(),
     // Neither: the foreground scans it, then background runs resume.
-    InitialScanRequiredFailure() => null,
+    InitialScanRequiredFailure() || WalletSyncDeferredFailure() => null,
   };
 
   static void _classifyNotification(

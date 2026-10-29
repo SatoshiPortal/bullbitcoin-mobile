@@ -81,3 +81,35 @@ final class InitialScanRequiredFailure extends WalletTransactionSyncFailure {
 final class InvalidWalletBirthdayFailure extends WalletTransactionSyncFailure {
   const InvalidWalletBirthdayFailure();
 }
+
+final class CbfNoPeersFailure extends WalletTransactionSyncFailure {
+  const CbfNoPeersFailure();
+}
+
+final class CbfTorUnavailableFailure extends WalletTransactionSyncFailure {
+  const CbfTorUnavailableFailure();
+}
+
+final class CbfBroadcastNotRelayedFailure extends WalletTransactionSyncFailure {
+  const CbfBroadcastNotRelayedFailure();
+}
+
+final class CbfNodeDidNotStopFailure extends WalletTransactionSyncFailure {
+  const CbfNodeDidNotStopFailure();
+}
+
+final class WalletSyncDeferredFailure extends WalletTransactionSyncFailure {
+  const WalletSyncDeferredFailure();
+}
+
+/// A remote lookup has no privacy-preserving implementation for this source.
+final class CbfRemoteLookupForbiddenFailure
+    extends WalletTransactionSyncFailure {
+  const CbfRemoteLookupForbiddenFailure();
+}
+
+/// Recovery is only available for a locally staged, definitely unrelayed spend.
+final class CbfTransactionNotRecoverableFailure
+    extends WalletTransactionSyncFailure {
+  const CbfTransactionNotRecoverableFailure();
+}

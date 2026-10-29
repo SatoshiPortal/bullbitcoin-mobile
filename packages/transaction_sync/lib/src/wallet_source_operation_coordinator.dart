@@ -47,6 +47,7 @@ abstract interface class WalletSourceOperationCoordinator {
     WalletSourceKey key,
     Future<T> Function(WalletSourceSession session) operation, {
     Duration? timeout = const Duration(seconds: 30),
+    DateTime? admissionDeadline,
     bool allowRetired = false,
     WalletOperationKind kind = WalletOperationKind.refresh,
     WalletOperationPriority priority = WalletOperationPriority.foreground,
@@ -68,6 +69,7 @@ final class InMemoryWalletSourceOperationCoordinator
     WalletSourceKey key,
     Future<T> Function(WalletSourceSession session) operation, {
     Duration? timeout = const Duration(seconds: 30),
+    DateTime? admissionDeadline,
     bool allowRetired = false,
     WalletOperationKind kind = WalletOperationKind.refresh,
     WalletOperationPriority priority = WalletOperationPriority.foreground,
@@ -80,6 +82,15 @@ final class InMemoryWalletSourceOperationCoordinator
         ? defaultTimeout
         : timeout;
     Timer? timer;
+    final admissionTimer = admissionDeadline == null
+        ? null
+        : Timer(admissionDeadline.difference(DateTime.now().toUtc()), () {
+            if (!result.isCompleted) {
+              result.completeError(
+                TimeoutException('Wallet source admission timed out'),
+              );
+            }
+          });
     Future<void> finish() async {
       timer?.cancel();
       if (!done.isCompleted) done.complete();
@@ -89,6 +100,14 @@ final class InMemoryWalletSourceOperationCoordinator
     Future<void>(() async {
       try {
         await previous;
+        admissionTimer?.cancel();
+        // Keep the cancelled queue position behind its predecessor: releasing
+        // it early would let a later caller overlap the still-active holder.
+        if (result.isCompleted ||
+            (admissionDeadline != null &&
+                !DateTime.now().toUtc().isBefore(admissionDeadline))) {
+          throw TimeoutException('Wallet source admission timed out');
+        }
         if (_retired.contains(key) && !allowRetired) {
           throw StateError('wallet source is retired');
         }
@@ -125,6 +144,7 @@ final class InMemoryWalletSourceOperationCoordinator
               await finish();
             });
       } catch (error, stack) {
+        admissionTimer?.cancel();
         if (!result.isCompleted) result.completeError(error, stack);
         await finish();
       }
@@ -133,9 +153,10 @@ final class InMemoryWalletSourceOperationCoordinator
   }
 }
 
-final class _MemorySession implements WalletSourceSession {
+final class _MemorySession implements WalletSourceLifetimeSession {
   final void Function() onRetire, onReactivate;
   bool _closed = false;
+  final List<Future<void>> _holds = [];
   _MemorySession({required this.onRetire, required this.onReactivate});
   @override
   bool get isClosed => _closed;
@@ -157,7 +178,14 @@ final class _MemorySession implements WalletSourceSession {
   }
 
   @override
+  void retainUntil(Future<void> termination) {
+    ensureOpen();
+    _holds.add(termination);
+  }
+
+  @override
   Future<void> close() async {
     _closed = true;
+    await Future.wait(_holds);
   }
 }

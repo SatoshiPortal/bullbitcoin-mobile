@@ -1,17 +1,18 @@
 import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasource.dart';
 import 'package:transaction_sync/transaction_sync.dart';
 
-/// Rejects legacy Electrum history operations after admission, under the same
-/// lock used to change the persisted preference. Queued jobs must not use a
-/// stale Electrum selection. Local reads and deletion remain available.
+/// Guards only legacy history synchronization/discovery after source admission. Other remote operations need their own wallet-attributed privacy guard.
+/// [allowCbfRouting] belongs only on a shell that rereads saved policy and dispatches CBF under this same session.
 final class ElectrumSyncSourceGuard
     implements WalletSourceOperationCoordinator {
   final WalletSourceOperationCoordinator _coordinator;
   final WalletMetadataDatasource _metadata;
+  final bool allowCbfRouting;
 
   ElectrumSyncSourceGuard({
     required this._coordinator,
     required this._metadata,
+    this.allowCbfRouting = false,
   });
 
   @override
@@ -19,13 +20,15 @@ final class ElectrumSyncSourceGuard
     WalletSourceKey key,
     Future<T> Function(WalletSourceSession session) operation, {
     Duration? timeout = const Duration(seconds: 30),
+    DateTime? admissionDeadline,
     bool allowRetired = false,
     WalletOperationKind kind = WalletOperationKind.refresh,
     WalletOperationPriority priority = WalletOperationPriority.foreground,
   }) => _coordinator.runExclusive(
     key,
     (session) async {
-      if (key.chain == 'bitcoin' &&
+      if (!allowCbfRouting &&
+          key.chain == 'bitcoin' &&
           (kind == WalletOperationKind.synchronize ||
               kind == WalletOperationKind.discover)) {
         final metadata = await _metadata.fetch(key.walletId);
@@ -37,14 +40,14 @@ final class ElectrumSyncSourceGuard
       return operation(session);
     },
     timeout: timeout,
+    admissionDeadline: admissionDeadline,
     allowRetired: allowRetired,
     kind: kind,
     priority: priority,
   );
 }
 
-/// The CBF transport is deliberately unavailable until its bindings are wired.
-/// Never route this outcome to an Electrum fallback.
+/// A legacy history request reached a coordinator without CBF routing. This does not describe the native transport's availability and never authorizes an Electrum fallback.
 final class BitcoinSyncSourceUnavailableException implements Exception {
   const BitcoinSyncSourceUnavailableException();
 

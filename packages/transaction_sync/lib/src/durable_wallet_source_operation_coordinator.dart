@@ -84,6 +84,7 @@ final class DurableWalletSourceOperationCoordinator
     WalletSourceKey sourceKey,
     Future<T> Function(WalletSourceSession session) operation, {
     Duration? timeout = const Duration(seconds: 30),
+    DateTime? admissionDeadline,
     bool allowRetired = false,
     WalletOperationKind kind = WalletOperationKind.refresh,
     WalletOperationPriority priority = WalletOperationPriority.foreground,
@@ -95,6 +96,7 @@ final class DurableWalletSourceOperationCoordinator
           sourceKey,
           operation,
           timeout,
+          admissionDeadline,
           allowRetired,
           kind,
           priority,
@@ -111,6 +113,7 @@ final class DurableWalletSourceOperationCoordinator
     WalletSourceKey sourceKey,
     Future<T> Function(WalletSourceSession session) operation,
     Duration? timeout,
+    DateTime? admissionDeadline,
     bool allowRetired,
     WalletOperationKind kind,
     WalletOperationPriority priority,
@@ -147,6 +150,7 @@ final class DurableWalletSourceOperationCoordinator
                 priority == WalletOperationPriority.foreground
             ? null
             : acquisitionTimeout,
+        admissionDeadline: admissionDeadline,
         maxActiveSynchronizations: maxActiveSynchronizations,
         keyHash: keyHash,
         kind: kind,
@@ -181,6 +185,10 @@ final class DurableWalletSourceOperationCoordinator
     try {
       late Future<T> future;
       try {
+        if (admissionDeadline != null &&
+            !DateTime.now().toUtc().isBefore(admissionDeadline)) {
+          throw TimeoutException('Wallet source admission timed out');
+        }
         future = operation(session);
       } catch (error, stack) {
         future = Future<T>.error(error, stack);
@@ -206,8 +214,17 @@ final class DurableWalletSourceOperationCoordinator
         operationStack = stack;
       }
       finished = true;
+      // A bounded native join may report failure while teardown continues. Return that typed result now; release below still waits for the hold.
+      if (session.hasHolds && !result.isCompleted) {
+        if (operationError != null) {
+          result.completeError(operationError, operationStack);
+        } else {
+          result.complete(value);
+        }
+      }
     } finally {
       timer?.cancel();
+      await session.waitForNativeTermination();
       // Only now has the callback settled: a dead worker's locks may go.
       actor.endOperation();
       Object? cleanupError;
@@ -302,13 +319,25 @@ String _errorCategory(Object error) => switch (error) {
   _ => 'unexpected',
 };
 
-final class _DurableSession implements WalletSourceClaimedSession {
+final class _DurableSession
+    implements WalletSourceClaimedSession, WalletSourceLifetimeSession {
   final _DurableActor _actor;
   final WalletSourceClaim _sourceClaim;
   final List<Future<void>> _commands = [];
   bool _closed = false;
+  final List<Future<void>> _holds = [];
 
   _DurableSession(this._actor) : _sourceClaim = _actor.claim;
+
+  bool get hasHolds => _holds.isNotEmpty;
+
+  @override
+  void retainUntil(Future<void> termination) {
+    ensureOpen();
+    _holds.add(termination);
+  }
+
+  Future<void> waitForNativeTermination() => Future.wait(_holds);
 
   @override
   WalletSourceClaim get claim => _sourceClaim;
@@ -418,6 +447,7 @@ final class _DurableActor {
     required Duration busyTimeout,
     required Duration pendingHeartbeatTimeout,
     required Duration? acquisitionTimeout,
+    required DateTime? admissionDeadline,
     required int maxActiveSynchronizations,
     required String keyHash,
     required WalletOperationKind kind,
@@ -429,6 +459,10 @@ final class _DurableActor {
     required bool killWorkerBeforeReady,
     required Duration orphanedOperationGrace,
   }) async {
+    if (admissionDeadline != null &&
+        !DateTime.now().toUtc().isBefore(admissionDeadline)) {
+      throw TimeoutException('Wallet source admission timed out');
+    }
     final global =
         kind == WalletOperationKind.synchronize ||
         kind == WalletOperationKind.discover;
@@ -465,6 +499,12 @@ final class _DurableActor {
       giveUpRegistration();
       rethrow;
     }
+    if (admissionDeadline != null &&
+        !DateTime.now().toUtc().isBefore(admissionDeadline)) {
+      locks.abandon();
+      giveUpRegistration();
+      throw TimeoutException('Wallet source admission timed out');
+    }
     final responses = ReceivePort();
     final exitPort = ReceivePort();
     final handshakeExit = ReceivePort();
@@ -495,6 +535,7 @@ final class _DurableActor {
         // Without capabilities: the worker may only watch the caller exit.
         Isolate(Isolate.current.controlPort),
         orphanedOperationGrace.inMilliseconds,
+        admissionDeadline?.millisecondsSinceEpoch,
       ]);
     } catch (_) {
       responses.close();
@@ -527,6 +568,7 @@ final class _DurableActor {
       } else if (message is List &&
           message.isNotEmpty &&
           message[0] == 'ready') {
+        locks.adoptClaim(keyHash, message[2] as int, message[3] as String);
         ready.complete(message.cast<Object?>());
         subscription.cancel();
       } else if (message is List &&
@@ -537,8 +579,10 @@ final class _DurableActor {
       }
     });
     try {
-      final data = await ready.future;
-      locks.adoptClaim(keyHash, data[2] as int, data[3] as String);
+      final remaining = admissionDeadline?.difference(DateTime.now().toUtc());
+      final data = await (remaining == null
+          ? ready.future
+          : ready.future.timeout(remaining));
       final actor = _DurableActor(
         data[1] as SendPort,
         responseStream,
@@ -823,6 +867,7 @@ Future<void> _workerMain(List<Object?> args) async {
   final busy = args[3] as int;
   final stale = args[4] as int;
   final acquisition = args[5] as int?;
+  final admissionDeadline = args[21] as int?;
   final maxActiveSynchronizations = args[6] as int;
   final hash = args[7] as String;
   final initializationDelay = args[11] as int;
@@ -898,7 +943,7 @@ Future<void> _workerMain(List<Object?> args) async {
     );
     out.send(['registered']);
     if (initializationDelay > 0) {
-      sleep(Duration(milliseconds: initializationDelay));
+      await Future<void>.delayed(Duration(milliseconds: initializationDelay));
     }
     final acquired = await _acquire(
       dbPath,
@@ -915,6 +960,7 @@ Future<void> _workerMain(List<Object?> args) async {
       key: lockConnections.first,
       slots: lockConnections.skip(1).toList(),
       callerExited: () => callerExited,
+      admissionDeadline: admissionDeadline,
     );
     final keyLock = acquired.key;
     final slotLock = acquired.slot;
@@ -928,6 +974,9 @@ Future<void> _workerMain(List<Object?> args) async {
     // caller that died before admission started nothing: release now.
     await Future<void>.delayed(Duration.zero);
     if (callerExited) return;
+    if (admissionDeadline != null && _now() >= admissionDeadline) {
+      throw TimeoutException('Wallet source admission timed out');
+    }
     claim = _activate(
       dbPath,
       busy,
@@ -1162,10 +1211,14 @@ Future<({Database key, Database? slot})> _acquire(
   required Database key,
   required List<Database> slots,
   required bool Function() callerExited,
+  required int? admissionDeadline,
 }) async {
-  final deadline = timeout == null
-      ? null
-      : DateTime.now().add(Duration(milliseconds: timeout));
+  final relativeDeadline = timeout == null ? null : _now() + timeout;
+  final deadline = relativeDeadline == null
+      ? admissionDeadline
+      : admissionDeadline == null
+      ? relativeDeadline
+      : min(relativeDeadline, admissionDeadline);
   final global =
       kind == WalletOperationKind.synchronize.name ||
       kind == WalletOperationKind.discover.name;
@@ -1195,7 +1248,7 @@ Future<({Database key, Database? slot})> _acquire(
   var claimCheckedAt = DateTime.fromMillisecondsSinceEpoch(0);
 
   while (true) {
-    if (deadline != null && !DateTime.now().isBefore(deadline)) {
+    if (deadline != null && _now() >= deadline) {
       leaveQueue();
       throw TimeoutException('Wallet source admission timed out');
     }

@@ -57,6 +57,7 @@ class _RecordingCoordinator implements WalletSourceOperationCoordinator {
     WalletSourceKey key,
     Future<T> Function(WalletSourceSession) operation, {
     Duration? timeout = const Duration(seconds: 30),
+    DateTime? admissionDeadline,
     bool allowRetired = false,
     WalletOperationKind kind = WalletOperationKind.refresh,
     WalletOperationPriority priority = WalletOperationPriority.foreground,
@@ -68,6 +69,7 @@ class _RecordingCoordinator implements WalletSourceOperationCoordinator {
       key,
       operation,
       timeout: timeout,
+      admissionDeadline: admissionDeadline,
       allowRetired: allowRetired,
       kind: kind,
       priority: priority,
