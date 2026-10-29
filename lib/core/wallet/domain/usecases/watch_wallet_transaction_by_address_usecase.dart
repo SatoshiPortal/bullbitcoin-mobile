@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'dart:async';
 
 import 'package:bull_logger/bull_logger.dart';
@@ -20,7 +21,7 @@ class WatchWalletTransactionByAddressUsecase {
   }) {
     return _walletRepository.walletSyncFinishedStream
         .where((wallet) => wallet.id == walletId)
-        .asyncMap((wallet) async {
+        .asyncMap<List<WalletTransaction>>((wallet) async {
           try {
             final txs = await _walletTransactionRepository
                 .getWalletTransactions(
@@ -28,17 +29,21 @@ class WatchWalletTransactionByAddressUsecase {
                   toAddress: toAddress,
                 );
 
-            if (txs.isEmpty) {
-              return null;
-            }
-
-            return txs.last;
+            final candidates = txs
+                .where(
+                  (tx) =>
+                      tx.walletId == walletId &&
+                      (wallet.bitcoinSyncSource !=
+                              BitcoinSyncSource.compactBlockFilters ||
+                          tx.isConfirmed),
+                )
+                .toList();
+            return candidates.isEmpty ? const [] : [candidates.last];
           } catch (e) {
             log.severe(error: e, trace: StackTrace.current);
-            return null;
+            return const [];
           }
         })
-        .where((event) => event != null)
-        .map((event) => event!);
+        .expand((events) => events);
   }
 }

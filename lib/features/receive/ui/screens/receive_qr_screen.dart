@@ -1,3 +1,5 @@
+import 'package:bb_mobile/features/wallet_sync/public/wallet_sync_facade.dart';
+import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
@@ -233,6 +235,10 @@ class ReceiveQRDetails extends StatelessWidget {
               ],
             ),
           ),
+          if (isBitcoin && selectedWallet != null) ...[
+            Gap(gap),
+            locator<WalletSyncFacade>().receiveNote(selectedWallet.id),
+          ],
           // Payjoin toggle directly under the address (self-gating: renders
           // nothing on Liquid/Lightning or non-payjoin-capable wallets).
           ReceivePayjoinToggleTile(topGap: gap),

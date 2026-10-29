@@ -260,7 +260,16 @@ abstract class ReceiveState with _$ReceiveState {
   bool get isPaymentReceived {
     switch (type) {
       case ReceiveType.bitcoin:
-        return tx != null;
+        final payment = tx;
+        final receivingWallet = wallet;
+        if (payment == null ||
+            receivingWallet == null ||
+            payment.walletId != receivingWallet.id) {
+          return false;
+        }
+        return receivingWallet.bitcoinSyncSource !=
+                BitcoinSyncSource.compactBlockFilters ||
+            payment.isConfirmed;
       case ReceiveType.lightning:
         return orderSwap?.localStatus == OrderSwapLocalStatus.completed ||
             (lightningSwap != null &&
@@ -330,7 +339,9 @@ abstract class ReceiveState with _$ReceiveState {
   /// and a missed one hangs the receive screen with no way out. ReceiveBloc
   /// already knows the answer as a fact, so it records it.
   bool get isPayjoinLoading =>
-      type == ReceiveType.bitcoin && !payjoinAttemptSettled;
+      type == ReceiveType.bitcoin &&
+      wallet?.bitcoinSyncSource != BitcoinSyncSource.compactBlockFilters &&
+      !payjoinAttemptSettled;
 
   /// True when payjoin is enabled globally and this wallet can sign
   /// locally, but it has no balance yet — so ReceiveBloc did not
@@ -338,9 +349,13 @@ abstract class ReceiveState with _$ReceiveState {
   /// Lets the receive screen explain why payjoin isn't active despite being
   /// turned on, instead of silently doing nothing.
   bool get isPayjoinAwaitingFunds {
-    if (type != ReceiveType.bitcoin) return false;
-    return wallet != null &&
-        wallet!.signsLocally &&
+    if (type != ReceiveType.bitcoin ||
+        wallet?.bitcoinSyncSource == BitcoinSyncSource.compactBlockFilters) {
+      return false;
+    }
+    final receivingWallet = wallet;
+    return receivingWallet != null &&
+        receivingWallet.signsLocally &&
         payjoinGloballyEnabled == true &&
         !hasUtxos &&
         payjoin == null;

@@ -151,6 +151,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
   StreamSubscription<Result<PayjoinSession, ReceiveFailure>>?
   _payjoinSubscription;
   StreamSubscription<WalletTransaction>? _walletTransactionSubscription;
+  int _paymentWatchGeneration = 0;
   StreamSubscription<Result<OrderSwapRecord, ReceiveFailure>>?
   _orderSwapSubscription;
   late final StreamSubscription<bool> _payjoinSettingChangeSubscription;
@@ -213,7 +214,10 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
   /// original when an observed payjoin transaction never confirms, which
   /// belongs to the deferred watch-for-broadcast work.
   bool _isPayjoinEligible(Wallet wallet, bool payjoinEnabled) =>
-      wallet.signsLocally && payjoinEnabled && wallet.balanceSat > BigInt.zero;
+      wallet.bitcoinSyncSource != BitcoinSyncSource.compactBlockFilters &&
+      wallet.signsLocally &&
+      payjoinEnabled &&
+      wallet.balanceSat > BigInt.zero;
 
   Future<void> _onBitcoinStarted(
     ReceiveBitcoinStarted event,
@@ -1224,7 +1228,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     Emitter<ReceiveState> emit,
   ) async {
     final tx = event.tx;
-
+    if (tx.walletId != state.wallet?.id) return;
     emit(state.copyWith(tx: tx));
   }
 
@@ -1332,13 +1336,17 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     required String walletId,
     required String address,
   }) {
-    // Cancel the previous subscription if it exists
+    final generation = ++_paymentWatchGeneration;
     _walletTransactionSubscription?.cancel();
     _walletTransactionSubscription = _watchWalletTransactionByAddressUsecase
         .execute(walletId: walletId, toAddress: address)
         .listen((tx) {
           // See _watchPayjoin's guard above for why this is needed.
-          if (isClosed) return;
+          if (isClosed ||
+              generation != _paymentWatchGeneration ||
+              state.wallet?.id != walletId) {
+            return;
+          }
           add(ReceiveTransactionReceived(tx));
         });
   }

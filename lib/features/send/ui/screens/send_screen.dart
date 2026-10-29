@@ -1,3 +1,6 @@
+import 'package:bb_mobile/locator.dart';
+import 'package:bb_mobile/features/send/presentation/send_wallet_view.dart';
+import 'package:bb_mobile/features/wallet_sync/public/wallet_sync_facade.dart';
 import 'dart:math' as math;
 
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
@@ -1017,6 +1020,9 @@ class _OnchainTransactionReview extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
+        if (selectedWallet is SendWalletBitcoin &&
+            selectedWallet.wallet.isBitcoin)
+          locator<WalletSyncFacade>().sendReviewForWallet(selectedWallet.id),
         CommonOnchainSendInfoSection(
           sendWalletLabel: selectedWallet?.displayLabel(context) ?? '',
           receiveWalletLabel: paymentRequestAddress,

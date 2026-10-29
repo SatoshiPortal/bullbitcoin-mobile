@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/send/domain/usecases/broadcast_send_transaction_usecase.dart';
 import 'package:primitives/primitives.dart' show Sats;
 import 'dart:async';
 
@@ -164,6 +165,9 @@ class SendCubit extends Cubit<SendState>
   final SignLiquidTxUsecase _signLiquidTxUsecase;
   final BroadcastLiquidTransactionUsecase _broadcastLiquidTxUsecase;
   final BroadcastBitcoinTransactionUsecase _broadcastBitcoinTxUsecase;
+  late final _broadcastSend = BroadcastSendTransactionUsecase(
+    broadcast: _broadcastBitcoinTxUsecase,
+  );
   final SendWithPayjoinUsecase _sendWithPayjoinUsecase;
   final WatchPayjoinUsecase _watchPayjoinUsecase;
   final UpdatePaidSendSwapUsecase _updatePaidSendSwapUsecase;
@@ -2182,12 +2186,28 @@ class SendCubit extends Cubit<SendState>
         // top of this method returns before reaching here. Only plain Bitcoin
         // sends and Exchange payins broadcast at this point; a BIP21 `pj`
         // advertisement alone is not proof a payjoin was attempted.
-        txId = await _broadcastBitcoinTxUsecase.execute(
-          persistedPayin ??
-              (isPsbt ? state.signedBitcoinPsbt! : state.signedBitcoinTx!),
+        final signed =
+            persistedPayin ??
+            (isPsbt ? state.signedBitcoinPsbt : state.signedBitcoinTx);
+        if (signed == null) throw StateError('Signed transaction missing');
+        switch (await _broadcastSend.execute(
+          signed,
           isPsbt: persistedPayinIsPsbt ?? isPsbt,
           walletId: wallet.id,
-        );
+        )) {
+          case Ok(:final value):
+            txId = value;
+          case Err(:final failure):
+            if (!isClosed) {
+              emit(
+                state.copyWith(
+                  failure: failure,
+                  broadcastingTransaction: false,
+                ),
+              );
+            }
+            return;
+        }
       }
       if (!isClosed) emit(state.copyWith(txId: txId));
 

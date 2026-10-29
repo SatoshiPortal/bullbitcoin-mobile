@@ -56,6 +56,8 @@ extension SendFailureL10n on SendFailure {
       isBroadcastFailure
           ? context.loc.sendErrorBroadcastFailed
           : context.loc.sendErrorConfirmationFailed,
+    SendPrivateBroadcastFailure() => context.loc.syncBroadcastFailure,
+    SendPrivateTorFailure() => context.loc.syncTorPaused,
     SendUnexpectedFailure() => context.loc.oopsSomethingWentWrong,
   };
 }

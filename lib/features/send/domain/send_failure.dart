@@ -120,3 +120,11 @@ final class SendTransactionConfirmationFailure extends SendFailure {
 final class SendUnexpectedFailure extends SendFailure {
   const SendUnexpectedFailure([super.logMessage]);
 }
+
+final class SendPrivateBroadcastFailure extends SendFailure {
+  const SendPrivateBroadcastFailure();
+}
+
+final class SendPrivateTorFailure extends SendFailure {
+  const SendPrivateTorFailure();
+}
