@@ -41,7 +41,90 @@ void main() {
     );
   });
 
+  group('validateOriginalFee', () {
+    test('unknown fee returns the typed localized failure', () {
+      final result = usecase.validateOriginalFee(null);
+      expect(result, isA<Err<int, ReplaceByFeeFailure>>());
+      if (result case Err(:final failure)) {
+        expect(failure, isA<ReplaceByFeeUnknownOriginalFeeFailure>());
+      }
+      verifyZeroInteractions(walletRepository);
+      verifyZeroInteractions(broadcastUsecase);
+      verifyZeroInteractions(getNetworkFeesUsecase);
+    });
+
+    for (final fee in [0, 200]) {
+      test('known original fee $fee remains eligible', () {
+        final result = usecase.validateOriginalFee(fee);
+        expect(result, isA<Ok<int, ReplaceByFeeFailure>>());
+        if (result case Ok(:final value)) {
+          expect(value, fee);
+        }
+      });
+    }
+  });
+
   group('execute', () {
+    test(
+      'unknown original fee refuses replacement before any side effects',
+      () async {
+        final result = await usecase.execute(
+          walletId: 'w1',
+          txid: 'old-txid',
+          newFeeRate: const RelativeFee(1250),
+          originalFeeSat: null,
+        );
+        expect(result, isA<Err<String, ReplaceByFeeFailure>>());
+        if (result case Err(:final failure)) {
+          expect(failure, isA<ReplaceByFeeUnknownOriginalFeeFailure>());
+        }
+        verifyZeroInteractions(walletRepository);
+        verifyZeroInteractions(broadcastUsecase);
+        verifyZeroInteractions(getNetworkFeesUsecase);
+      },
+    );
+
+    test('known zero original fee retains replacement and broadcast', () async {
+      when(
+        () => walletRepository.bumpFee(
+          walletId: 'w1',
+          txid: 'old-txid',
+          newFeeRate: const RelativeFee(1250),
+        ),
+      ).thenAnswer((_) async => 'signed-psbt');
+      when(
+        () => broadcastUsecase.execute(
+          'signed-psbt',
+          isPsbt: true,
+          walletId: 'w1',
+        ),
+      ).thenAnswer((_) async => 'new-txid');
+      final result = await usecase.execute(
+        walletId: 'w1',
+        txid: 'old-txid',
+        newFeeRate: const RelativeFee(1250),
+        originalFeeSat: 0,
+      );
+      expect(result, isA<Ok<String, ReplaceByFeeFailure>>());
+      if (result case Ok(:final value)) {
+        expect(value, 'new-txid');
+      }
+      verify(
+        () => walletRepository.bumpFee(
+          walletId: 'w1',
+          txid: 'old-txid',
+          newFeeRate: const RelativeFee(1250),
+        ),
+      ).called(1);
+      verify(
+        () => broadcastUsecase.execute(
+          'signed-psbt',
+          isPsbt: true,
+          walletId: 'w1',
+        ),
+      ).called(1);
+    });
+
     test('returns Ok with txid on success', () async {
       when(
         () => walletRepository.bumpFee(
@@ -61,6 +144,7 @@ void main() {
       final result = await usecase.execute(
         walletId: 'w1',
         txid: 'old-txid',
+        originalFeeSat: 200,
         newFeeRate: const RelativeFee(1250),
       );
 
@@ -82,6 +166,7 @@ void main() {
         final result = await usecase.execute(
           walletId: 'w1',
           txid: 'old-txid',
+          originalFeeSat: 200,
           newFeeRate: const RelativeFee(250),
         );
 
@@ -107,6 +192,7 @@ void main() {
         final result = await usecase.execute(
           walletId: 'w1',
           txid: 'old-txid',
+          originalFeeSat: 200,
           newFeeRate: const RelativeFee(1250),
         );
 
@@ -135,6 +221,7 @@ void main() {
         final result = await usecase.execute(
           walletId: 'w1',
           txid: 'old-txid',
+          originalFeeSat: 200,
           newFeeRate: const RelativeFee(1250),
         );
 
@@ -160,6 +247,7 @@ void main() {
         final result = await usecase.execute(
           walletId: 'w1',
           txid: 'old-txid',
+          originalFeeSat: 200,
           newFeeRate: const RelativeFee(1250),
         );
 

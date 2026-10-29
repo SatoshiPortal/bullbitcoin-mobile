@@ -39,7 +39,7 @@ void main() {
 
   late _MockBumpFeeUsecase bumpFee;
 
-  Future<ReplaceByFeeCubit> buildCubit() async {
+  Future<ReplaceByFeeCubit> buildCubit({WalletTransaction? transaction}) async {
     when(
       () => bumpFee.verifyOriginalTransaction(
         walletId: any(named: 'walletId'),
@@ -48,7 +48,7 @@ void main() {
     ).thenAnswer((_) async => const Ok(null));
     when(() => bumpFee.getNetworkFees()).thenAnswer((_) async => Ok(_fees()));
     final cubit = ReplaceByFeeCubit(
-      originalTransaction: _tx(),
+      originalTransaction: transaction ?? _tx(),
       bumpFeeUsecase: bumpFee,
     );
     // init() is async in the constructor — let it settle.
@@ -58,6 +58,60 @@ void main() {
 
   setUp(() {
     bumpFee = _MockBumpFeeUsecase();
+    when(
+      () => bumpFee.validateOriginalFee(null),
+    ).thenReturn(const Err(ReplaceByFeeUnknownOriginalFeeFailure()));
+    when(() => bumpFee.validateOriginalFee(0)).thenReturn(const Ok(0));
+    when(() => bumpFee.validateOriginalFee(200)).thenReturn(const Ok(200));
+  });
+
+  group('unknown original fee', () {
+    test('does not prefill a fee rate or request network fees', () async {
+      final cubit = await buildCubit(
+        transaction: _tx().copyWith(feeSat: 0, feeUnavailable: true),
+      );
+      addTearDown(cubit.close);
+      expect(cubit.state.newFeeRate, isNull);
+      expect(cubit.state.failure, isA<ReplaceByFeeUnknownOriginalFeeFailure>());
+      verifyNever(() => bumpFee.getNetworkFees());
+    });
+    test('a known zero fee retains the valid replacement path', () async {
+      final cubit = await buildCubit(transaction: _tx().copyWith(feeSat: 0));
+      addTearDown(cubit.close);
+      expect(cubit.state.failure, isNull);
+      expect(cubit.state.newFeeRate, isNotNull);
+      verify(() => bumpFee.getNetworkFees()).called(1);
+    });
+    test('refuses broadcast even after a custom rate is selected', () async {
+      when(
+        () => bumpFee.execute(
+          walletId: any(named: 'walletId'),
+          txid: any(named: 'txid'),
+          newFeeRate: any(named: 'newFeeRate'),
+          originalFeeSat: any(named: 'originalFeeSat'),
+        ),
+      ).thenAnswer((_) async => const Ok('replacement'));
+      final cubit = await buildCubit(
+        transaction: _tx().copyWith(feeSat: 0, feeUnavailable: true),
+      );
+      addTearDown(cubit.close);
+      cubit.onChangeFee(
+        const FeeEntity(type: FeeType.custom, feeRate: RelativeFee(1000)),
+      );
+      expect(cubit.state.newFeeRate, isNull);
+      expect(cubit.state.failure, isA<ReplaceByFeeUnknownOriginalFeeFailure>());
+      await cubit.broadcast();
+      expect(cubit.state.txid, isNull);
+      expect(cubit.state.failure, isA<ReplaceByFeeUnknownOriginalFeeFailure>());
+      verifyNever(
+        () => bumpFee.execute(
+          walletId: any(named: 'walletId'),
+          txid: any(named: 'txid'),
+          newFeeRate: any(named: 'newFeeRate'),
+          originalFeeSat: any(named: 'originalFeeSat'),
+        ),
+      );
+    });
   });
 
   group('ReplaceByFeeCubit — manipulated transaction guard', () {
@@ -153,6 +207,7 @@ void main() {
           walletId: any(named: 'walletId'),
           txid: any(named: 'txid'),
           newFeeRate: any(named: 'newFeeRate'),
+          originalFeeSat: any(named: 'originalFeeSat'),
         ),
       );
     });
@@ -171,6 +226,7 @@ void main() {
           walletId: any(named: 'walletId'),
           txid: any(named: 'txid'),
           newFeeRate: any(named: 'newFeeRate'),
+          originalFeeSat: any(named: 'originalFeeSat'),
         ),
       ).thenAnswer((_) async => const Ok('txid-1'));
 

@@ -22,6 +22,15 @@ class BumpFeeUsecase {
     required this._getNetworkFeesUsecase,
   });
 
+  /// A replacement can only be priced when the original fee is known.
+  /// Zero is a known fee and must retain the replacement path.
+  @useResult
+  Result<int, ReplaceByFeeFailure> validateOriginalFee(int? knownFeeSat) =>
+      switch (knownFeeSat) {
+        null => const Err(ReplaceByFeeUnknownOriginalFeeFailure()),
+        final fee => Ok(fee),
+      };
+
   @useResult
   Future<Result<FeeOptions, ReplaceByFeeFailure>> getNetworkFees() async {
     try {
@@ -68,7 +77,14 @@ class BumpFeeUsecase {
     required String walletId,
     required String txid,
     required RelativeFee newFeeRate,
+    required int? originalFeeSat,
   }) async {
+    switch (validateOriginalFee(originalFeeSat)) {
+      case Err(:final failure):
+        return Err(failure);
+      case Ok():
+        break;
+    }
     try {
       final psbt = await _bitcoinWalletRepository.bumpFee(
         walletId: walletId,

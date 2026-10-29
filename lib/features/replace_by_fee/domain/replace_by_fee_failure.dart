@@ -12,6 +12,12 @@ final class ReplaceByFeeFeeRateTooLowFailure extends ReplaceByFeeFailure {
   const ReplaceByFeeFeeRateTooLowFailure();
 }
 
+/// Missing foreign prevouts can leave the original fee unknown even when
+/// wallet-owned input signatures verify. A replacement cannot be priced safely.
+final class ReplaceByFeeUnknownOriginalFeeFailure extends ReplaceByFeeFailure {
+  const ReplaceByFeeUnknownOriginalFeeFailure();
+}
+
 final class ReplaceByFeeNetworkFeesFailure extends ReplaceByFeeFailure {
   const ReplaceByFeeNetworkFeesFailure();
 }

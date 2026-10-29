@@ -206,8 +206,10 @@ class TransactionDetailsScreen extends StatelessWidget {
           ),
         const Gap(16),
         if (isOutgoing == true &&
+            walletTransaction?.isNotBroadcast != true &&
             walletTransaction?.isConfirmed == false &&
             walletTransaction?.isRbf == true &&
+            walletTransaction?.knownFeeSat != null &&
             walletTransaction?.isBitcoin == true &&
             wallet?.signsLocally == true &&
             tx?.txId != null &&

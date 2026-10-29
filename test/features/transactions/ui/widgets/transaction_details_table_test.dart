@@ -1,3 +1,5 @@
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
@@ -21,6 +23,74 @@ class _MockTransactionDetailsCubit extends Mock
 class _MockSettingsCubit extends Mock implements SettingsCubit {}
 
 void main() {
+  testWidgets(
+    'an incoming payment with unavailable fee shows unknown, never zero',
+    (tester) async {
+      final detailsCubit = _MockTransactionDetailsCubit();
+      final settingsCubit = _MockSettingsCubit();
+      when(() => detailsCubit.state).thenReturn(
+        TransactionDetailsState(
+          transaction: Transaction(
+            walletTransaction: const WalletTransaction(
+              walletId: 'public-wallet',
+              network: Network.bitcoinMainnet,
+              direction: WalletTransactionDirection.incoming,
+              status: WalletTransactionStatus.confirmed,
+              txId: 'public-tx',
+              amountSat: 100,
+              feeSat: 0,
+              feeUnavailable: true,
+              vsize: 100,
+              inputs: [],
+              outputs: [],
+              isRbf: false,
+            ),
+          ),
+        ),
+      );
+      when(
+        () => detailsCubit.stream,
+      ).thenAnswer((_) => const Stream<TransactionDetailsState>.empty());
+      when(() => settingsCubit.state).thenReturn(
+        const SettingsState(
+          storedSettings: SettingsEntity(
+            environment: Environment.mainnet,
+            bitcoinUnit: BitcoinUnit.sats,
+            currencyCode: 'USD',
+          ),
+        ),
+      );
+      when(
+        () => settingsCubit.stream,
+      ).thenAnswer((_) => const Stream<SettingsState>.empty());
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.themeData(AppThemeType.light),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: MultiBlocProvider(
+            providers: [
+              BlocProvider<TransactionDetailsCubit>.value(value: detailsCubit),
+              BlocProvider<SettingsCubit>.value(value: settingsCubit),
+            ],
+            child: const Scaffold(
+              body: SingleChildScrollView(child: TransactionDetailsTable()),
+            ),
+          ),
+        ),
+      );
+      final row = find.ancestor(
+        of: find.text('Unknown'),
+        matching: find.byType(BullDetailsTableItem),
+      );
+      expect(row, findsOneWidget);
+      expect(
+        find.descendant(of: row, matching: find.textContaining('0 SAT')),
+        findsNothing,
+      );
+    },
+  );
+
   testWidgets('copies the exact order swap order number', (tester) async {
     String? copiedText;
     tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(

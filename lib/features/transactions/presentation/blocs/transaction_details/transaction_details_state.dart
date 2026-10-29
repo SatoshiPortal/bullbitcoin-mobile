@@ -118,7 +118,7 @@ sealed class TransactionDetailsState with _$TransactionDetailsState {
   /// actual fee (older swaps didn't record it).
   int? get swapSendNetworkFeeSat {
     final lockupFee = swap?.fees?.lockupFee ?? 0;
-    return lockupFee > 0 ? lockupFee : walletTransaction?.feeSat;
+    return lockupFee > 0 ? lockupFee : walletTransaction?.knownFeeSat;
   }
 
   /*

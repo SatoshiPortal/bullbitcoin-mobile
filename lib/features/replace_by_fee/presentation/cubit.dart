@@ -19,6 +19,16 @@ class ReplaceByFeeCubit extends Cubit<ReplaceByFeeState> {
   }
 
   Future<void> init() async {
+    final int originalFee;
+    switch (bumpFeeUsecase.validateOriginalFee(
+      originalTransaction.knownFeeSat,
+    )) {
+      case Err(:final failure):
+        emit(state.copyWith(failure: failure));
+        return;
+      case Ok(:final value):
+        originalFee = value;
+    }
     // GHSA-6jp4-8v48-cc5v: a transaction whose signatures don't verify was
     // planted by the Electrum server — never offer to bump it.
     switch (await bumpFeeUsecase.verifyOriginalTransaction(
@@ -53,7 +63,7 @@ class ReplaceByFeeCubit extends Cubit<ReplaceByFeeState> {
               type: FeeType.custom,
               feeRate: RelativeFee(
                 NetworkFeeRelayPolicy.replacementPrefillSatPerKwu(
-                  feeSat: originalTransaction.feeSat,
+                  feeSat: originalFee,
                   vsize: originalTransaction.vsize,
                 ),
               ),
@@ -67,9 +77,19 @@ class ReplaceByFeeCubit extends Cubit<ReplaceByFeeState> {
   }
 
   Future<void> broadcast() async {
+    switch (bumpFeeUsecase.validateOriginalFee(
+      originalTransaction.knownFeeSat,
+    )) {
+      case Err(:final failure):
+        emit(state.copyWith(failure: failure));
+        return;
+      case Ok():
+        break;
+    }
     emit(state.copyWith(failure: null));
 
-    if (state.newFeeRate == null) {
+    final newFeeRate = state.newFeeRate;
+    if (newFeeRate == null) {
       emit(
         state.copyWith(failure: const ReplaceByFeeNoFeeRateSelectedFailure()),
       );
@@ -87,7 +107,8 @@ class ReplaceByFeeCubit extends Cubit<ReplaceByFeeState> {
     switch (await bumpFeeUsecase.execute(
       walletId: originalTransaction.walletId,
       txid: originalTransaction.txId,
-      newFeeRate: state.newFeeRate!.feeRate,
+      newFeeRate: newFeeRate.feeRate,
+      originalFeeSat: originalTransaction.knownFeeSat,
     )) {
       case Ok(:final value):
         emit(state.copyWith(txid: value));
@@ -98,9 +119,24 @@ class ReplaceByFeeCubit extends Cubit<ReplaceByFeeState> {
 
   /// A valid (above-floor) selection — from a custom keystroke or the Fastest
   /// tile. Clears any prior below-floor flag and any broadcast failure.
-  void onChangeFee(FeeEntity fee) => emit(
-    state.copyWith(newFeeRate: fee, customFeeBelowFloor: false, failure: null),
-  );
+  void onChangeFee(FeeEntity fee) {
+    switch (bumpFeeUsecase.validateOriginalFee(
+      originalTransaction.knownFeeSat,
+    )) {
+      case Err(:final failure):
+        emit(state.copyWith(failure: failure));
+        return;
+      case Ok():
+        break;
+    }
+    emit(
+      state.copyWith(
+        newFeeRate: fee,
+        customFeeBelowFloor: false,
+        failure: null,
+      ),
+    );
+  }
 
   /// The custom field went below the relay floor or was emptied. Keep
   /// [newFeeRate] (the last valid value / init sentinel) but flag the field so

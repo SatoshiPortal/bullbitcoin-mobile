@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/transactions/presentation/wallet_transaction_status_l10n.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
@@ -61,7 +62,8 @@ class TransactionDetailsTable extends StatelessWidget {
         transaction?.toAddress;
     final payjoin = transaction?.payjoin;
     final order = transaction?.order;
-    final txFee = transaction?.payjoinSenderFeeSat ?? walletTransaction?.feeSat;
+    final txFee =
+        transaction?.payjoinSenderFeeSat ?? walletTransaction?.knownFeeSat;
     final swapSendNetworkFee = context.select(
       (TransactionDetailsCubit cubit) => cubit.state.swapSendNetworkFeeSat,
     );
@@ -190,18 +192,27 @@ class TransactionDetailsTable extends StatelessWidget {
                       ConvertAmount.satsToBtc(amountReceived),
                     ).toUpperCase(),
             ),
-          if (transaction?.isOutgoing == true && transaction?.isSwap != true)
+          if (walletTransaction.feeUnavailable)
             BullDetailsTableItem(
               label: context.loc.transactionDetailLabelTransactionFee,
-              displayValue: bitcoinUnit == BitcoinUnit.sats
-                  ? FormatAmount.sats(txFee ?? 0).toUpperCase()
+              displayValue: context.loc.coreScreensUnknown,
+            ),
+          if (!walletTransaction.feeUnavailable &&
+              transaction?.isOutgoing == true &&
+              transaction?.isSwap != true)
+            BullDetailsTableItem(
+              label: context.loc.transactionDetailLabelTransactionFee,
+              displayValue: txFee == null
+                  ? context.loc.coreScreensUnknown
+                  : bitcoinUnit == BitcoinUnit.sats
+                  ? FormatAmount.sats(txFee).toUpperCase()
                   : FormatAmount.btc(
-                      ConvertAmount.satsToBtc(txFee ?? 0),
+                      ConvertAmount.satsToBtc(txFee),
                     ).toUpperCase(),
             ),
           BullDetailsTableItem(
             label: context.loc.transactionDetailLabelStatus,
-            displayValue: walletTransaction.status.displayName(context),
+            displayValue: walletTransaction.status.toTranslated(context),
           ),
           if (walletTransaction.confirmationTime != null)
             BullDetailsTableItem(

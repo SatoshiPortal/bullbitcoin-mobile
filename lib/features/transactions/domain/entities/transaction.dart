@@ -153,7 +153,12 @@ sealed class Transaction with _$Transaction {
   int? get payjoinSenderFeeSat {
     final p = payjoin;
     final wt = walletTransaction;
-    if (p is! PayjoinSenderSession || wt == null || !wt.isOutgoing) return null;
+    if (p is! PayjoinSenderSession ||
+        wt == null ||
+        !wt.isOutgoing ||
+        wt.feeUnavailable) {
+      return null;
+    }
     final senderFee = wt.amountSat + wt.feeSat - p.amountSat;
     return senderFee >= 0 ? senderFee : null;
   }

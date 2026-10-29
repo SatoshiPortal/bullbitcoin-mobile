@@ -58,6 +58,19 @@ class _ReplaceByFeeHomePageState extends State<ReplaceByFeeHomePage> {
           builder: (context, state) {
             final cubit = context.read<ReplaceByFeeCubit>();
 
+            final originalFee = widget.tx.knownFeeSat;
+            if (originalFee == null) {
+              return Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: BullText(
+                    context.loc.replaceByFeeUnknownOriginalFee,
+                    style: context.font.bodyMedium,
+                    color: context.appColors.error,
+                  ),
+                ),
+              );
+            }
             final failure = state.failure;
             if (failure != null && state.newFeeRate == null) {
               return Center(
@@ -96,7 +109,7 @@ class _ReplaceByFeeHomePageState extends State<ReplaceByFeeHomePage> {
               return const Center(child: CircularProgressIndicator());
             }
 
-            final originalFeeRate = widget.tx.feeSat / widget.tx.vsize;
+            final originalFeeRate = originalFee / widget.tx.vsize;
 
             return SingleChildScrollView(
               child: Padding(
