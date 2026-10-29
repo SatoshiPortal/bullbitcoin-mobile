@@ -8,7 +8,10 @@ import '../../domain/entities/wallet_transaction_observation.dart';
 import '../../domain/entities/wallet_source_observation.dart';
 import '../../domain/wallet_source_registration.dart';
 
-List<WalletTransaction> mapBdkTransactions(bdk.Wallet wallet) {
+List<WalletTransaction> mapBdkTransactions(
+  bdk.Wallet wallet, {
+  Set<String> notBroadcastTxids = const {},
+}) {
   final transactions = wallet.transactions();
   final outputsByOutpoint = <String, bdk.LocalOutput>{
     for (final output in wallet.listOutput())
@@ -20,6 +23,7 @@ List<WalletTransaction> mapBdkTransactions(bdk.Wallet wallet) {
         wallet,
         canonical,
         outputsByOutpoint: outputsByOutpoint,
+        notBroadcastTxids: notBroadcastTxids,
       ),
   ];
 }
@@ -28,6 +32,7 @@ WalletTransaction mapBdkTransaction(
   bdk.Wallet wallet,
   bdk.CanonicalTx canonical, {
   required Map<String, bdk.LocalOutput> outputsByOutpoint,
+  Set<String> notBroadcastTxids = const {},
 }) {
   final transaction = canonical.transaction;
   final txid = transaction.computeTxid().toString();
@@ -35,7 +40,11 @@ WalletTransaction mapBdkTransaction(
   final received = sentAndReceived.received.toSat();
   final sent = sentAndReceived.sent.toSat();
   var fee = 0;
-  final evidence = <String, Object?>{};
+  final evidence = <String, Object?>{
+    if (canonical.chainPosition is! bdk.ConfirmedChainPosition &&
+        notBroadcastTxids.contains(txid))
+      'cbfNotBroadcast': true,
+  };
   try {
     fee = wallet.calculateFee(tx: transaction).toSat();
   } catch (_) {
@@ -96,14 +105,22 @@ WalletSourceObservation mapBdkObservation(
   required WalletSourceRegistration registration,
   required bool networkOperation,
   required bool discover,
+  bool compactBlockFilters = false,
+  Set<String> notBroadcastTxids = const {},
 }) {
   final checkpoint = wallet.latestCheckpoint();
-  final capabilities = <String>{'electrum'};
+  final capabilities = <String>{
+    compactBlockFilters ? 'compactBlockFilters' : 'electrum',
+    if (compactBlockFilters) 'confirmedOnly',
+  };
   if (discover) capabilities.add('fullScan');
   return WalletSourceObservation(
     key: registration.key,
     registration: registration,
-    transactions: mapBdkTransactions(wallet),
+    transactions: mapBdkTransactions(
+      wallet,
+      notBroadcastTxids: notBroadcastTxids,
+    ),
     capabilities: capabilities,
     sourceTip: '${checkpoint.height}:${checkpoint.hash}',
     evidenceLevel: networkOperation

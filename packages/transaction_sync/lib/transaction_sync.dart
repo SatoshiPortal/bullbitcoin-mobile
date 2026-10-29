@@ -1,6 +1,10 @@
 library;
 
 export 'src/domain/bitcoin_sync_source.dart';
+export 'src/domain/bitcoin_sync_checkpoint.dart';
+export 'src/domain/bitcoin_sync_script_type.dart';
+export 'src/domain/bitcoin_sync_checkpoint_resolver.dart';
+export 'src/domain/usecases/resolve_bitcoin_sync_checkpoint_usecase.dart';
 
 export 'src/domain/entities/wallet_transaction.dart';
 export 'src/domain/entities/transaction_chain.dart';
@@ -31,7 +35,14 @@ export 'src/durable_wallet_source_operation_coordinator.dart';
 export 'src/data/sqlite_wallet_sync_metadata_store.dart';
 export 'src/wallet_source_session.dart';
 export 'src/wallet_transaction_sync_facade.dart';
-export 'src/domain/bitcoin_sync_checkpoint.dart';
-export 'src/domain/bitcoin_sync_checkpoint_resolver.dart';
-export 'src/domain/bitcoin_sync_script_type.dart';
-export 'src/domain/usecases/resolve_bitcoin_sync_checkpoint_usecase.dart';
+
+export 'src/domain/entities/bitcoin_sync_progress.dart';
+export 'src/domain/usecases/watch_bitcoin_sync_progress_usecase.dart';
+
+export 'src/domain/requests/broadcast_cbf_transaction_request.dart';
+export 'src/domain/usecases/broadcast_cbf_transaction_usecase.dart';
+
+export 'src/domain/entities/cbf_relay_state.dart';
+export 'src/domain/repositories/cbf_transaction_repository.dart';
+export 'src/domain/usecases/retry_cbf_transaction_usecase.dart';
+export 'src/domain/usecases/cancel_cbf_transaction_usecase.dart';

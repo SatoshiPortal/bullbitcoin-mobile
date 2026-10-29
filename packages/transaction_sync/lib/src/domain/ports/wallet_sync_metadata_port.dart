@@ -1,3 +1,4 @@
+import '../entities/cbf_relay_state.dart';
 import '../wallet_network_key.dart';
 import '../wallet_source_registration.dart';
 import '../entities/wallet_sync_receipt.dart';
@@ -34,4 +35,17 @@ abstract interface class WalletSyncMetadataPort {
     WalletDeletionPhase phase,
   );
   Future<void> clear(WalletNetworkKey key);
+}
+
+/// Discovery completion is per wallet and policy, independent of chain height.
+abstract interface class WalletCbfMetadataPort {
+  Future<Map<String, CbfRelayState>> readCbfRelayStates(WalletNetworkKey key);
+  Future<void> stageCbfTransaction(WalletNetworkKey key, String txid);
+  Future<void> writeCbfRelayState(
+    WalletNetworkKey key,
+    String txid,
+    CbfRelayState state,
+  );
+  Future<bool> isCbfDiscoveryComplete(WalletNetworkKey key, String policy);
+  Future<void> completeCbfDiscovery(WalletNetworkKey key, String policy);
 }

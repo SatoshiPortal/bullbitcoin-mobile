@@ -1,3 +1,4 @@
+import '../requests/broadcast_cbf_transaction_request.dart';
 import 'package:primitives/primitives.dart';
 import 'package:meta/meta.dart';
 import '../entities/wallet_transaction_observation.dart';
@@ -9,6 +10,11 @@ import '../wallet_transaction_sync_failure.dart';
 import '../wallet_transaction_sync_state.dart';
 
 abstract interface class WalletTransactionRepository {
+  @useResult
+  Future<Result<String, WalletTransactionSyncFailure>> broadcastCbf(
+    BroadcastCbfTransactionRequest request,
+  );
+
   @useResult
   Future<Result<WalletTransactionSyncOutcome, WalletTransactionSyncFailure>>
   refresh(RefreshLocalSnapshotRequest request);

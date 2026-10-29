@@ -212,7 +212,7 @@ void main() {
     );
     await initial.close();
     final database = sqlite3.open(path);
-    database.execute('PRAGMA user_version = 3');
+    database.execute('PRAGMA user_version = 5');
     database.dispose();
     expect(
       () => SqliteWalletSyncMetadataStore.open(databasePath: path),

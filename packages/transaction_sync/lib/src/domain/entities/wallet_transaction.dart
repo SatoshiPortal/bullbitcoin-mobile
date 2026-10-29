@@ -17,6 +17,9 @@ class WalletTransaction {
   final Map<String, Object?> evidence;
   final Map<String, Object?> details;
 
+  bool get isNotBroadcast =>
+      position is! AnchoredPosition && evidence['cbfNotBroadcast'] == true;
+
   WalletTransaction({
     required this.txid,
     required this.amountSats,

@@ -1,3 +1,4 @@
+import '../domain/entities/cbf_relay_state.dart';
 import 'dart:async';
 import 'dart:io';
 import 'dart:isolate';
@@ -22,7 +23,8 @@ const _metadataGate = WalletSourceKey(
 const _metadataTestZoneKey = 'transaction_sync.metadata_test_config';
 
 /// Durable metadata storage. Its SQLite connection never exists in the caller isolate.
-final class SqliteWalletSyncMetadataStore implements WalletSyncMetadataPort {
+final class SqliteWalletSyncMetadataStore
+    implements WalletSyncMetadataPort, WalletCbfMetadataPort {
   final _MetadataActor _actor;
   final DurableWalletSourceOperationCoordinator _coordinator;
   bool _closed = false;
@@ -177,6 +179,41 @@ final class SqliteWalletSyncMetadataStore implements WalletSyncMetadataPort {
   @override
   Future<void> clear(WalletNetworkKey key) =>
       _mutate('clear', [walletSourceKeyHash(key)]);
+
+  @override
+  Future<bool> isCbfDiscoveryComplete(
+    WalletNetworkKey key,
+    String policy,
+  ) async =>
+      await _mutate<bool>('cbf_read', [walletSourceKeyHash(key), policy]);
+
+  @override
+  Future<void> completeCbfDiscovery(WalletNetworkKey key, String policy) =>
+      _mutate('cbf_complete', [walletSourceKeyHash(key), policy]);
+
+  @override
+  Future<Map<String, CbfRelayState>> readCbfRelayStates(
+    WalletNetworkKey key,
+  ) async {
+    final rows = await _mutate<List<Object?>>('cbf_relay_read', [
+      walletSourceKeyHash(key),
+    ]);
+    return {
+      for (final row in rows.cast<List<Object?>>())
+        row[0] as String: CbfRelayState.values.byName(row[1] as String),
+    };
+  }
+
+  @override
+  Future<void> stageCbfTransaction(WalletNetworkKey key, String txid) =>
+      _mutate('cbf_stage', [walletSourceKeyHash(key), txid]);
+
+  @override
+  Future<void> writeCbfRelayState(
+    WalletNetworkKey key,
+    String txid,
+    CbfRelayState state,
+  ) => _mutate('cbf_relay_write', [walletSourceKeyHash(key), txid, state.name]);
 
   Future<void> close() async {
     final existing = _closeFuture;
@@ -478,7 +515,7 @@ Object? _metadataCommand(
     try {
       final version =
           db.select('PRAGMA user_version').single['user_version'] as int;
-      if (version > 2) throw StateError('future schema');
+      if (version > 4) throw StateError('future schema');
       db.execute(
         '''CREATE TABLE IF NOT EXISTS wallet_sync_metadata (key_hash TEXT PRIMARY KEY, source_kind TEXT NOT NULL, configuration_fingerprint TEXT NOT NULL, last_attempted_at INTEGER, last_successful_at INTEGER, content_fingerprint TEXT, deletion_pending INTEGER NOT NULL DEFAULT 0, deletion_phase TEXT)''',
       );
@@ -488,13 +525,33 @@ Object? _metadataCommand(
       db.execute(
         '''CREATE TABLE IF NOT EXISTS wallet_sync_pending_legacy_success (key_hash TEXT PRIMARY KEY, successful_at INTEGER NOT NULL)''',
       );
-      db.execute('PRAGMA user_version = 2');
+      db.execute(
+        'CREATE TABLE IF NOT EXISTS wallet_cbf_discovery (key_hash TEXT NOT NULL, policy TEXT NOT NULL, PRIMARY KEY (key_hash, policy))',
+      );
+      db.execute(
+        'CREATE TABLE IF NOT EXISTS wallet_cbf_relay (key_hash TEXT NOT NULL, txid TEXT NOT NULL, state TEXT NOT NULL, PRIMARY KEY (key_hash, txid))',
+      );
+      db.execute('PRAGMA user_version = 4');
       db.execute('COMMIT');
       return null;
     } catch (_) {
       db.execute('ROLLBACK');
       rethrow;
     }
+  }
+  if (command == 'cbf_relay_read') {
+    return db
+        .select('SELECT txid, state FROM wallet_cbf_relay WHERE key_hash=?', a)
+        .map((row) => <Object?>[row['txid'], row['state']])
+        .toList();
+  }
+  if (command == 'cbf_read') {
+    return db
+        .select(
+          'SELECT 1 FROM wallet_cbf_discovery WHERE key_hash=? AND policy=?',
+          a,
+        )
+        .isNotEmpty;
   }
   if (command == 'read') return _row(db, a[0]);
   if (command == 'receipt') {
@@ -526,6 +583,25 @@ Object? _metadataCommand(
   db.execute('BEGIN');
   try {
     switch (command) {
+      case 'cbf_stage':
+        db.execute(
+          "UPDATE wallet_cbf_relay SET state='notBroadcast' WHERE key_hash=? AND txid=? AND state='canceled'",
+          a,
+        );
+        db.execute(
+          "INSERT OR IGNORE INTO wallet_cbf_relay VALUES (?, ?, 'notBroadcast')",
+          a,
+        );
+      case 'cbf_relay_write':
+        db.execute(
+          "UPDATE wallet_cbf_relay SET state=? WHERE key_hash=? AND txid=? AND state!='relayed'",
+          [a[2], a[0], a[1]],
+        );
+      case 'cbf_complete':
+        db.execute(
+          'INSERT OR IGNORE INTO wallet_cbf_discovery VALUES (?,?)',
+          a,
+        );
       case 'registration':
         db.execute(
           'INSERT OR IGNORE INTO wallet_sync_metadata (key_hash,source_kind,configuration_fingerprint) VALUES (?,?,?)',
@@ -595,6 +671,8 @@ Object? _metadataCommand(
           [a[1], a[0]],
         );
       case 'clear':
+        db.execute('DELETE FROM wallet_cbf_relay WHERE key_hash=?', a);
+        db.execute('DELETE FROM wallet_cbf_discovery WHERE key_hash=?', a);
         db.execute('DELETE FROM wallet_sync_receipts WHERE key_hash=?', a);
         db.execute('DELETE FROM wallet_sync_metadata WHERE key_hash=?', a);
         db.execute(

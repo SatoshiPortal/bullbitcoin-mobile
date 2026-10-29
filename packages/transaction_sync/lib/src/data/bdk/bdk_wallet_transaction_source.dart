@@ -1,3 +1,6 @@
+import 'bdk_cbf_node.dart';
+import 'bdk_cbf_service.dart';
+import '../../domain/entities/bitcoin_sync_progress.dart';
 import 'dart:io';
 
 import 'package:bull_sdk/bdk.dart' as bdk;
@@ -19,13 +22,31 @@ import '../../wallet_source_session.dart';
 import 'bdk_electrum_cache.dart';
 import 'bdk_wallet_transaction_mapper.dart';
 
-final class BdkWalletTransactionSource implements WalletTransactionSourcePort {
+final class BdkWalletTransactionSource
+    implements WalletTransactionSourcePort, BitcoinSyncProgressRepository {
   final Map<WalletNetworkKey, BdkElectrumConfiguration> _configurations = {};
 
   /// Receives one line per scan and per failed server, without identifiers.
   final WalletCoordinationLogSink? _logSink;
 
-  BdkWalletTransactionSource({this._logSink});
+  BdkCbfService? reactive;
+  final BdkCbfReactiveNodeFactory cbfNodeFactory;
+
+  BdkWalletTransactionSource({
+    this._logSink,
+    this.cbfNodeFactory = NativeBdkCbfReactiveNode.create,
+  });
+
+  void rememberRegistration(WalletSourceRegistration registration) {
+    final configuration = registration.configuration;
+    if (configuration is BdkElectrumConfiguration) {
+      _configurations[registration.key] = configuration;
+    }
+  }
+
+  @override
+  Stream<BitcoinSyncProgress> watchBitcoinSyncProgress(WalletNetworkKey key) =>
+      reactive?.watchBitcoinSyncProgress(key) ?? const Stream.empty();
 
   @override
   Future<Result<WalletSourceObservation, WalletTransactionSyncFailure>>
@@ -48,12 +69,19 @@ final class BdkWalletTransactionSource implements WalletTransactionSourcePort {
         create: false,
       );
       try {
+        final unrelayed =
+            await reactive?.notBroadcastTxids(open.wallet, registration) ??
+            const <String>{};
         return Ok(
           mapBdkObservation(
             open.wallet,
             registration: registration,
             networkOperation: false,
             discover: false,
+            compactBlockFilters: configuration is BdkCbfConfiguration,
+            notBroadcastTxids: configuration is BdkCbfConfiguration
+                ? unrelayed
+                : const <String>{},
           ),
         );
       } finally {
@@ -73,6 +101,13 @@ final class BdkWalletTransactionSource implements WalletTransactionSourcePort {
     bool allowInitialScan = true,
   }) async {
     session.ensureOpen();
+    if (registration.configuration
+        case final BdkCbfConfiguration configuration) {
+      _configurations[registration.key] = configuration;
+      // A caller holding this session must return before the service can
+      // acquire short update sessions. CBF network work enters via the facade.
+      return const Err(WalletSyncDeferredFailure());
+    }
     final configuration = _configuration(registration);
     _configurations[registration.key] = configuration;
     final file = File(configuration.databaseFilePath);
@@ -249,6 +284,8 @@ final class BdkWalletTransactionSource implements WalletTransactionSourcePort {
     WalletSourceRegistration? registration,
   }) async {
     session.ensureOpen();
+    final stopped = await reactive?.stop();
+    if (stopped case Err(:final failure)) return Err(failure);
     final provided = registration?.configuration;
     final configuration = provided is BdkElectrumConfiguration
         ? provided

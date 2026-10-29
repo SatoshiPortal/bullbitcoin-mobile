@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'bitcoin_sync_checkpoint.dart';
 
 import 'package:crypto/crypto.dart';
 
@@ -21,7 +22,7 @@ sealed class WalletSourceConfiguration {
   Map<String, Object?> toMap();
 }
 
-final class BdkElectrumConfiguration extends WalletSourceConfiguration {
+base class BdkElectrumConfiguration extends WalletSourceConfiguration {
   final String externalPublicDescriptor;
   final String internalPublicDescriptor;
   final bool isTestnet;
@@ -69,6 +70,56 @@ final class BdkElectrumConfiguration extends WalletSourceConfiguration {
   @override
   String toString() =>
       'BdkElectrumConfiguration(testnet: $isTestnet, urls: ${electrumUrls.length})';
+}
+
+/// Same persisted BDK identity as Electrum; transport is mutable wallet policy.
+final class BdkCbfConfiguration extends BdkElectrumConfiguration {
+  final BitcoinSyncCheckpoint checkpoint;
+  final bool torRequired;
+  final int? socksPort;
+  final DateTime? deadline;
+
+  /// Finite count per keychain, not an Electrum stop gap. A larger window improves discovery completeness at the cost of more false-positive blocks.
+  static const int recoveryScriptCount = 1000;
+
+  /// Twenty polling opportunities per lease; frozen engines intentionally expire.
+  static const _ownerLeaseSeconds = 5;
+  static const ownerLease = Duration(seconds: _ownerLeaseSeconds);
+  static const ownerPollInterval = Duration(milliseconds: 250);
+
+  /// Allows cancellation scheduling after expiry; DNS still requires a join proof.
+  static const nativeTerminationBoundAfterOwnerExit = Duration(
+    seconds: _ownerLeaseSeconds + 2,
+  );
+
+  const BdkCbfConfiguration({
+    required super.externalPublicDescriptor,
+    required super.internalPublicDescriptor,
+    required super.isTestnet,
+    required super.databaseFilePath,
+    required this.checkpoint,
+    this.torRequired = false,
+    this.socksPort,
+    this.deadline,
+  }) : super(
+         electrumUrls: const [],
+         stopGap: recoveryScriptCount,
+         validateDomain: true,
+       );
+
+  String get scanPolicyFingerprint => sha256
+      .convert(
+        utf8.encode(
+          'cbf-v1:$fingerprint:${checkpoint.height}:${checkpoint.blockHash}:$recoveryScriptCount',
+        ),
+      )
+      .toString();
+
+  @override
+  Map<String, Object?> toMap() => identityMap();
+
+  @override
+  String toString() => 'BdkCbfConfiguration(testnet: $isTestnet)';
 }
 
 final class LwkElectrumConfiguration extends WalletSourceConfiguration {
