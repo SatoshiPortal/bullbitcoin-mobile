@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/wallet/domain/bitcoin_sync_operation_exception.dart';
 import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
@@ -94,6 +95,8 @@ class RescueSwapUsecase {
         btcElectrumUrl: btcElectrumUrl,
         lbtcElectrumUrl: lbtcElectrumUrl,
       );
+    } on BitcoinSyncOperationException {
+      rethrow;
     } on RescueSwapException {
       rethrow;
     } catch (e) {

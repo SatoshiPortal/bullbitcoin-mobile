@@ -31,3 +31,8 @@ final class SettingsExchangeSyncFailure extends SettingsFailure {
 final class SettingsUnexpectedFailure extends SettingsFailure {
   const SettingsUnexpectedFailure([super.logMessage]);
 }
+
+/// The native swap recovery stack still requires Electrum.
+final class SettingsSwapRecoveryUnavailableFailure extends SettingsFailure {
+  const SettingsSwapRecoveryUnavailableFailure();
+}

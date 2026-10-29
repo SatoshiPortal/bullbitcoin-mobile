@@ -8,6 +8,7 @@ extension SettingsFailureL10n on SettingsFailure {
     SettingsConsentFailure() => context.loc.settingsErrorConsentNotGiven,
     SettingsLogsFailure() => context.loc.settingsErrorLoadingLogs,
     SettingsExchangeSyncFailure() => context.loc.settingsErrorSavingSetting,
+    SettingsSwapRecoveryUnavailableFailure() => context.loc.syncSwapUnavailable,
     SettingsUnexpectedFailure() => context.loc.oopsSomethingWentWrong,
   };
 }

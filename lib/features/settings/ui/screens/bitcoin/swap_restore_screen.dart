@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/settings/presentation/settings_failure_l10n.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/restored_swap.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
@@ -50,7 +51,8 @@ class _SwapRestoreBody extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.all(24),
             child: BullText(
-              state.error ?? context.loc.swapRestoreFailed,
+              state.failure?.toTranslated(context) ??
+                  context.loc.swapRestoreFailed,
               style: context.font.bodyMedium,
               color: context.bull.textMuted,
               textAlign: .center,

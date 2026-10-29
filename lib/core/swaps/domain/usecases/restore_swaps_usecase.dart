@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/wallet/domain/bitcoin_sync_operation_exception.dart';
 import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
@@ -41,6 +42,8 @@ class RestoreSwapsUsecase {
         );
       }
       return result;
+    } on BitcoinSyncOperationException {
+      rethrow;
     } catch (e) {
       log.warning('SWAP_RESTORE: failed: $e');
       throw RestoreSwapsException('$e');
