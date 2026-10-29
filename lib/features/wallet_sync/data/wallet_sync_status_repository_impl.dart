@@ -13,6 +13,7 @@ class WalletSyncStatusRepositoryImpl implements WalletSyncStatusRepository {
   final SettingsRepository _settings;
   final WalletTransactionSyncFacade _sync;
   final WalletSyncMetadataPort _metadata;
+  final CbfNetworkPolicyPort? _networkPolicy;
   final _preferenceTimers = <Timer>{};
   bool _disposed = false;
   final _lastFailures = <String, WalletSyncOptionsFailure>{};
@@ -27,6 +28,7 @@ class WalletSyncStatusRepositoryImpl implements WalletSyncStatusRepository {
     required this._settings,
     required this._sync,
     required this._metadata,
+    this._networkPolicy,
   });
 
   @override
@@ -54,8 +56,13 @@ class WalletSyncStatusRepositoryImpl implements WalletSyncStatusRepository {
     final engineSubscriptions = <StreamSubscription<Object?>>[];
     void emit(WalletSyncStatus status) {
       if (cancelled || _disposed) return;
-      current = status;
-      controller.add(status);
+      final value = status.copyWith(
+        networkPolicy: _networkPolicy?.current,
+        etaMinutes: status.etaMinutes,
+        rateObservedAt: status.rateObservedAt,
+      );
+      current = value;
+      controller.add(value);
     }
 
     Future<void> reload() async {
@@ -259,6 +266,18 @@ class WalletSyncStatusRepositoryImpl implements WalletSyncStatusRepository {
             ),
           ),
         );
+    final network = _networkPolicy?.watch().listen((policy) {
+      final status = current;
+      if (status != null && !cancelled && !_disposed) {
+        emit(
+          status.copyWith(
+            networkPolicy: policy,
+            etaMinutes: status.etaMinutes,
+            rateObservedAt: status.rateObservedAt,
+          ),
+        );
+      }
+    });
     unawaited(reload());
     controller.onCancel = () async {
       cancelled = true;
@@ -267,6 +286,7 @@ class WalletSyncStatusRepositoryImpl implements WalletSyncStatusRepository {
       generation++;
       await changes.cancel();
       await failures.cancel();
+      await network?.cancel();
       for (final subscription in engineSubscriptions) {
         await subscription.cancel();
       }

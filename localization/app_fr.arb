@@ -5105,5 +5105,12 @@
   "transactionKeepTransaction": "Conserver la transaction",
   "transactionCbfRecoveryFailed": "La transaction n’a pas pu être mise à jour. Vérifiez votre connexion et réessayez.",
   "transactionCbfUnavailable": "Cette transaction ne peut pas être renvoyée ou annulée pour le moment. Actualisez ses détails.",
-  "transactionCbfTorUnavailable": "Tor est indisponible. Rétablissez la connexion Tor, puis réessayez."
+  "transactionCbfTorUnavailable": "Tor est indisponible. Rétablissez la connexion Tor, puis réessayez.",
+  "syncWifiOnly": "Wi-Fi seulement",
+  "syncWifiOnlyHelp": "Mettre la synchronisation privée en pause sur les connexions facturées à l’usage, y compris les points d’accès Wi-Fi. Vous pouvez continuer sur données mobiles pour cette session.",
+  "syncPausedMobileData": "Synchronisation en pause pour économiser les données mobiles.",
+  "syncContinueMobileData": "Continuer sur données mobiles",
+  "syncPausedOffline": "Synchronisation en pause : aucune connexion Internet. La progression enregistrée reprendra à la reconnexion.",
+  "syncServiceTitle": "Bull Bitcoin",
+  "syncServiceBody": "Synchronisation du portefeuille"
 }

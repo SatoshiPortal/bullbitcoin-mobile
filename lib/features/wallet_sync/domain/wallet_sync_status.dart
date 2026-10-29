@@ -13,6 +13,7 @@ final class WalletSyncStatus {
   final WalletSyncOptionsFailure? failure;
   final int? etaMinutes;
   final DateTime? rateObservedAt;
+  final CbfNetworkPolicyState? networkPolicy;
 
   const WalletSyncStatus({
     this.source = BitcoinSyncSource.compactBlockFilters,
@@ -25,6 +26,7 @@ final class WalletSyncStatus {
     this.failure,
     this.etaMinutes,
     this.rateObservedAt,
+    this.networkPolicy,
   });
 
   bool get isPrivate => source == BitcoinSyncSource.compactBlockFilters;
@@ -49,6 +51,7 @@ final class WalletSyncStatus {
   int? etaAt(DateTime now) {
     final observed = rateObservedAt;
     return failure == null &&
+            networkPolicy?.pauseReason == null &&
             progress?.phase == BitcoinSyncPhase.checkingBlocks &&
             observed != null &&
             now.difference(observed) <= const Duration(seconds: 10)
@@ -66,6 +69,7 @@ final class WalletSyncStatus {
     bool clearFailure = false,
     int? etaMinutes,
     DateTime? rateObservedAt,
+    CbfNetworkPolicyState? networkPolicy,
   }) => WalletSyncStatus(
     source: source,
     progress: progress ?? this.progress,
@@ -77,6 +81,7 @@ final class WalletSyncStatus {
     failure: clearFailure ? null : failure ?? this.failure,
     etaMinutes: etaMinutes,
     rateObservedAt: rateObservedAt,
+    networkPolicy: networkPolicy ?? this.networkPolicy,
   );
 }
 

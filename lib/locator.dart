@@ -1,3 +1,6 @@
+import 'package:bb_mobile/core/background_tasks/cbf_sync_network_policy.dart';
+import 'package:transaction_sync/transaction_sync.dart'
+    show CbfNetworkPolicyPort;
 import 'package:bb_mobile/core/core_locator.dart';
 import 'package:bb_mobile/core/status/status_locator.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
@@ -85,6 +88,13 @@ class AppLocator {
     await CoreLocator.registerRepositories(locator);
     CoreLocator.registerServices(locator);
     CoreLocator.registerUsecases(locator);
+    locator.registerLazySingleton<CbfSyncNetworkPolicy>(
+      () => CbfSyncNetworkPolicy(),
+      dispose: (policy) => policy.dispose(),
+    );
+    locator.registerLazySingleton<CbfNetworkPolicyPort>(
+      () => locator<CbfSyncNetworkPolicy>(),
+    );
     WalletSyncLocator.setup(locator);
     CoreLocator.registerFrameworks(locator);
     CoreLocator.registerFacades(locator);

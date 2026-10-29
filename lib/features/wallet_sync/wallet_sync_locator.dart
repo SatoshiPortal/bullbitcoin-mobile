@@ -5,6 +5,9 @@ import 'package:transaction_sync/transaction_sync.dart';
 import 'data/wallet_sync_status_repository_impl.dart';
 import 'domain/repositories/wallet_sync_status_repository.dart';
 import 'domain/usecases/start_wallet_sync_usecase.dart';
+import 'domain/usecases/watch_cbf_network_policy_usecase.dart';
+import 'domain/usecases/set_cbf_wifi_only_usecase.dart';
+import 'domain/usecases/continue_cbf_on_mobile_data_usecase.dart';
 import 'domain/usecases/watch_wallet_sync_status_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_sync_settings_repository.dart';
@@ -22,6 +25,7 @@ class WalletSyncLocator {
         settings: locator<SettingsRepository>(),
         sync: locator<WalletTransactionSyncFacade>(),
         metadata: locator<WalletSyncMetadataPort>(),
+        networkPolicy: locator<CbfNetworkPolicyPort>(),
       ),
       dispose: (repository) =>
           (repository as WalletSyncStatusRepositoryImpl).dispose(),
@@ -42,6 +46,15 @@ class WalletSyncLocator {
       () => WalletSyncFacade(
         watch: locator<WatchWalletSyncStatusUsecase>(),
         start: locator<StartWalletSyncUsecase>(),
+        watchNetwork: WatchCbfNetworkPolicyUsecase(
+          policy: locator<CbfNetworkPolicyPort>(),
+        ),
+        setWifiOnly: SetCbfWifiOnlyUsecase(
+          policy: locator<CbfNetworkPolicyPort>(),
+        ),
+        continueOnMobileData: ContinueCbfOnMobileDataUsecase(
+          policy: locator<CbfNetworkPolicyPort>(),
+        ),
         network: GetWalletSyncNetworkUsecase(
           settings: locator<SettingsRepository>(),
         ),

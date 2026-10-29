@@ -26,6 +26,7 @@ class WalletSyncSettingsSection extends StatelessWidget {
   final LoadWalletSyncSettingsUsecase load;
   final SaveWalletSyncSettingsUsecase save;
   final ChooseWalletSync choose;
+  final Widget? networkPreferences;
 
   const WalletSyncSettingsSection({
     super.key,
@@ -33,6 +34,7 @@ class WalletSyncSettingsSection extends StatelessWidget {
     required this.load,
     required this.save,
     required this.choose,
+    this.networkPreferences,
   });
 
   @override
@@ -107,6 +109,13 @@ class WalletSyncSettingsSection extends StatelessWidget {
           children: [
             _SyncSectionHeading(context.loc.syncSectionTitle),
             const Gap(BullSpacing.md),
+            if ((settings.source, networkPreferences) case (
+              BitcoinSyncSource.compactBlockFilters,
+              final preferences?,
+            )) ...[
+              preferences,
+              const Gap(BullSpacing.md),
+            ],
             _SyncInfoField(
               label: context.loc.syncMethod,
               editable: true,

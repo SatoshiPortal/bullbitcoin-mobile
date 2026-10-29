@@ -10,6 +10,7 @@ import 'package:go_router/go_router.dart';
 import '../domain/usecases/watch_wallet_sync_status_usecase.dart';
 import '../domain/wallet_sync_status.dart';
 import '../domain/usecases/start_wallet_sync_usecase.dart';
+import '../domain/usecases/continue_cbf_on_mobile_data_usecase.dart';
 import '../presentation/wallet_sync_status_cubit.dart';
 import '../presentation/wallet_sync_status_l10n.dart';
 import 'widgets/wallet_recovery_panel.dart';
@@ -33,6 +34,7 @@ class WalletSyncStatusView extends StatefulWidget {
   final bool isSyncing;
   final VoidCallback onSettings;
   final VoidCallback onNetwork;
+  final ContinueCbfOnMobileDataUsecase? continueOnMobileData;
   const WalletSyncStatusView({
     super.key,
     required this.walletId,
@@ -42,6 +44,7 @@ class WalletSyncStatusView extends StatefulWidget {
     this.isSyncing = false,
     required this.onSettings,
     required this.onNetwork,
+    this.continueOnMobileData,
   });
   @override
   State<WalletSyncStatusView> createState() => _WalletSyncStatusViewState();
@@ -114,6 +117,7 @@ class _WalletSyncStatusViewState extends State<WalletSyncStatusView> {
       walletId: widget.walletId,
       watch: widget.watch,
       start: widget.start,
+      continueOnMobileData: widget.continueOnMobileData,
     ),
     child: BlocConsumer<WalletSyncStatusCubit, WalletSyncStatus?>(
       listener: _onStatus,
@@ -123,8 +127,16 @@ class _WalletSyncStatusViewState extends State<WalletSyncStatusView> {
         final now = DateTime.now().toUtc();
         return switch (widget.kind) {
           WalletSyncViewKind.card =>
-            status.incomplete
-                ? WalletIncompleteBalance(status: status)
+            (status.incomplete ||
+                    (status.isPrivate &&
+                        status.networkPolicy?.pauseReason != null))
+                ? WalletIncompleteBalance(
+                    status: status,
+                    onContinueOnMobileData: context
+                        .read<WalletSyncStatusCubit>()
+                        .continueOnMobileData,
+                    onSettings: widget.onSettings,
+                  )
                 : widget.isSyncing
                 ? BullFadingLinearProgress(
                     trigger: true,
@@ -137,6 +149,9 @@ class _WalletSyncStatusViewState extends State<WalletSyncStatusView> {
             status: status,
             onRetry: context.read<WalletSyncStatusCubit>().retry,
             onSettings: widget.onSettings,
+            onContinueOnMobileData: context
+                .read<WalletSyncStatusCubit>()
+                .continueOnMobileData,
             onTorSettings: () async {
               await context.pushNamed(
                 const TorSettingsFacade().settingsRouteName,

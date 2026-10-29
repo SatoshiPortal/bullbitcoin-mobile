@@ -117,8 +117,8 @@ packages:
     dependency: "direct overridden"
     description:
       path: "."
-      ref: "dbd4454ce1b062905dd6e8dafe1097a0e63170c3"
-      resolved-ref: "dbd4454ce1b062905dd6e8dafe1097a0e63170c3"
+      ref: dbd4454ce1b062905dd6e8dafe1097a0e63170c3
+      resolved-ref: dbd4454ce1b062905dd6e8dafe1097a0e63170c3
       url: "https://github.com/ethicnology-agent/bdk-dart"
     source: git
     version: "1.0.1"
@@ -471,7 +471,7 @@ packages:
     source: hosted
     version: "3.0.0"
   connectivity_plus:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: connectivity_plus
       sha256: "762c99f890ca8bf87f7337236f99edd42793843bc6c3631da294a76653a54bd0"
@@ -1486,7 +1486,7 @@ packages:
     source: hosted
     version: "1.0.0"
   nm:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: nm
       sha256: "2c9aae4127bdc8993206464fcc063611e0e36e72018696cd9631023a31b24254"

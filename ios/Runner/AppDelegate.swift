@@ -9,6 +9,9 @@ import workmanager_apple
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
   ) -> Bool {
     GeneratedPluginRegistrant.register(with: self)
+    if let registrar = registrar(forPlugin: "CbfMobileRuntimePlugin") {
+      CbfMobileRuntimePlugin.register(with: registrar)
+    }
     excludeSensitiveFilesFromBackup()
 
     // workmanager_apple spawns a separate FlutterEngine per background task

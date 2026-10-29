@@ -1,3 +1,4 @@
+import 'cbf_sync_network_policy.dart';
 import 'package:bb_mobile/core/background_tasks/cbf_background_sync.dart';
 import 'package:bb_mobile/core/wallet/data/bitcoin_sync_routing.dart';
 import 'dart:io';
@@ -219,6 +220,7 @@ Future<BackgroundTaskRunner> _buildBackgroundRunner(
   enter('wallets');
   final wallets = await metadata.fetchAll(skipUnavailableSources: true);
   final cbfBatch = CbfBackgroundSync(
+    networkPolicy: CbfSyncNetworkPolicy(),
     routing: backgroundRouting,
     wallets: () => metadata.fetchAll(skipUnavailableSources: true),
     deadline: () =>

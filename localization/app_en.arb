@@ -16472,5 +16472,19 @@
   "transactionCbfTorUnavailable": "Tor is unavailable. Restore the Tor connection, then retry.",
   "@transactionCbfTorUnavailable": {
     "description": "Manual recovery of a locally staged CBF transaction."
-  }
+  },
+  "syncWifiOnly": "Wi-Fi only",
+  "@syncWifiOnly": {},
+  "syncWifiOnlyHelp": "Pause private sync on metered connections, including metered Wi-Fi hotspots. You can continue on mobile data for this session.",
+  "@syncWifiOnlyHelp": {},
+  "syncPausedMobileData": "Sync paused to save mobile data.",
+  "@syncPausedMobileData": {},
+  "syncContinueMobileData": "Continue on mobile data",
+  "@syncContinueMobileData": {},
+  "syncPausedOffline": "Sync paused: no internet connection. Saved progress will resume when connected.",
+  "@syncPausedOffline": {},
+  "syncServiceTitle": "Bull Bitcoin",
+  "@syncServiceTitle": {},
+  "syncServiceBody": "Syncing wallet",
+  "@syncServiceBody": {}
 }

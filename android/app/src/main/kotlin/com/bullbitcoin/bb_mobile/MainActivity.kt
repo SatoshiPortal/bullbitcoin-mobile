@@ -11,6 +11,7 @@ import io.flutter.plugin.common.MethodChannel
 class MainActivity : FlutterActivity() {
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
+        flutterEngine.plugins.add(CbfNetworkPlugin())
         // Reading the battery optimization state needs no permission, unlike
         // requesting an exemption, which Google Play restricts.
         MethodChannel(

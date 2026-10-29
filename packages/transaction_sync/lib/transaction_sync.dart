@@ -46,3 +46,5 @@ export 'src/domain/entities/cbf_relay_state.dart';
 export 'src/domain/repositories/cbf_transaction_repository.dart';
 export 'src/domain/usecases/retry_cbf_transaction_usecase.dart';
 export 'src/domain/usecases/cancel_cbf_transaction_usecase.dart';
+
+export 'src/domain/ports/cbf_network_policy_port.dart';

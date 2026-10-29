@@ -2,6 +2,10 @@ import 'package:go_router/go_router.dart';
 import '../domain/usecases/watch_wallet_sync_status_usecase.dart';
 import '../domain/usecases/start_wallet_sync_usecase.dart';
 import '../ui/wallet_sync_status_view.dart';
+import '../domain/usecases/watch_cbf_network_policy_usecase.dart';
+import '../domain/usecases/set_cbf_wifi_only_usecase.dart';
+import '../domain/usecases/continue_cbf_on_mobile_data_usecase.dart';
+import '../ui/wallet_sync_network_preferences.dart';
 import '../wallet_sync_router.dart';
 import 'package:bb_mobile/features/wallet_sync/domain/usecases/get_wallet_sync_network_usecase.dart';
 import 'package:bb_mobile/features/wallet_sync/domain/usecases/load_wallet_sync_settings_usecase.dart';
@@ -22,6 +26,9 @@ class WalletSyncFacade {
   final SaveWalletSyncSettingsUsecase _save;
   final WatchWalletSyncStatusUsecase _watch;
   final StartWalletSyncUsecase _start;
+  final WatchCbfNetworkPolicyUsecase? _watchNetwork;
+  final SetCbfWifiOnlyUsecase? _setWifiOnly;
+  final ContinueCbfOnMobileDataUsecase? _continueOnMobileData;
 
   WalletSyncFacade({
     required this._network,
@@ -29,6 +36,9 @@ class WalletSyncFacade {
     required this._save,
     required this._watch,
     required this._start,
+    this._watchNetwork,
+    this._setWifiOnly,
+    this._continueOnMobileData,
   });
 
   Widget settingsForWallet(String walletId) => Column(
@@ -41,6 +51,19 @@ class WalletSyncFacade {
         load: _load,
         save: _save,
         choose: choose,
+        networkPreferences: switch ((
+          _watchNetwork,
+          _setWifiOnly,
+          _continueOnMobileData,
+        )) {
+          (final watch?, final set?, final resume?) =>
+            WalletSyncNetworkPreferences(
+              watch: watch,
+              set: set,
+              continueOnMobileData: resume,
+            ),
+          _ => null,
+        },
       ),
     ],
   );
@@ -69,6 +92,7 @@ class WalletSyncFacade {
       walletId: walletId,
       watch: _watch,
       start: _start,
+      continueOnMobileData: _continueOnMobileData,
       kind: kind,
       isSyncing: isSyncing,
       onSettings: () => openSettings(context, walletId),

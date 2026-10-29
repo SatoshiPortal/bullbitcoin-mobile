@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/background_tasks/cbf_sync_network_policy.dart';
 import 'package:bb_mobile/core/background_tasks/cbf_background_sync.dart'
     show stopActiveCbfBackgroundSync, CbfForegroundPresence;
 import 'package:primitives/primitives.dart' show Err, Ok;
@@ -16,6 +17,12 @@ final class CbfLifecycle {
   final BitcoinSyncRouting routing;
   final WalletMetadataDatasource metadata;
   final Stream<void>? transportChanges;
+  final CbfSyncNetworkPolicy? networkPolicy;
+  StreamSubscription<CbfNetworkPolicyState>? _network;
+  bool _checkingNetwork = false;
+  int _networkValidation = 0;
+  bool get _canRun =>
+      _resumed && !_checkingNetwork && (networkPolicy?.current.canSync ?? true);
   final TargetPlatform _platform;
   bool get _desktop =>
       _platform == TargetPlatform.linux ||
@@ -33,11 +40,31 @@ final class CbfLifecycle {
     required this.routing,
     required this.metadata,
     this.transportChanges,
+    this.networkPolicy,
     TargetPlatform? platform,
   }) : _platform = platform ?? defaultTargetPlatform;
 
   void start(AppLifecycleState? state) {
     routing.facade.setCbfNativeOwnerMonitor(_presence.trackNativeNode);
+    final policy = networkPolicy;
+    if (policy != null) {
+      routing.facade.setCbfNetworkAdmission(
+        () => !_checkingNetwork && policy.current.canSync,
+      );
+      var allowed = policy.current.canSync;
+      _network = policy.watch().listen((state) {
+        if (state.canSync == allowed) return;
+        allowed = state.canSync;
+        refresh();
+      });
+      unawaited(
+        policy.start().then((result) {
+          if (result is Err) {
+            log.warning('Unable to load compact filter network preference');
+          }
+        }),
+      );
+    }
     _resumed =
         (_desktop && state != AppLifecycleState.detached) ||
         state == null ||
@@ -77,14 +104,31 @@ final class CbfLifecycle {
   }
 
   void onStateChange(AppLifecycleState state) {
-    // Focus loss (notification shade, system prompts) keeps the app visible.
-    // Preserve either foreground or background ownership until visibility changes.
     if (state == AppLifecycleState.inactive) return;
     final resumed =
         state == AppLifecycleState.resumed ||
         (_desktop && state != AppLifecycleState.detached);
+    final policy = networkPolicy;
+    if (resumed && !_resumed && policy != null) {
+      _resumed = true;
+      _checkingNetwork = true;
+      final validation = ++_networkValidation;
+      // Android may suppress network callbacks while suspended. Close admission
+      // synchronously before loading the current cost/validation capabilities.
+      refresh();
+      unawaited(() async {
+        final result = await policy.reloadPreference();
+        await policy.refresh();
+        if (validation != _networkValidation || !_resumed) return;
+        _checkingNetwork = result is Err;
+        refresh();
+      }());
+      return;
+    }
     if (_resumed == resumed) return;
     _resumed = resumed;
+    _networkValidation++;
+    _checkingNetwork = false;
     refresh();
   }
 
@@ -112,20 +156,18 @@ final class CbfLifecycle {
           unawaited(_retryAfterTermination(revision));
           return;
         }
-        if (!_resumed) {
+        if (!_canRun) {
           await _presence.setActive(false);
           return;
         }
-        if (!await _presence.armNative() ||
-            revision != _revision ||
-            !_resumed) {
+        if (!await _presence.armNative() || revision != _revision || !_canRun) {
           return;
         }
         routing.facade.setCbfForegroundActive(true);
         final registrations = <WalletSourceRegistration>[];
         for (final wallet in _current) {
           registrations.add(await routing.registration(wallet));
-          if (revision != _revision || !_resumed) return;
+          if (revision != _revision || !_canRun) return;
         }
         final started = await routing.facade.reconcileCbfWallets(registrations);
         if (started is Err) log.warning('Unable to start compact filter nodes');
@@ -150,9 +192,11 @@ final class CbfLifecycle {
 
   Future<void> dispose() async {
     _resumed = false;
+    _networkValidation++;
     _revision++;
     await _wallets?.cancel();
     await _transports?.cancel();
+    await _network?.cancel();
     while (await routing.facade.stopCbfNodes() is Err) {
       await Future<void>.delayed(const Duration(seconds: 1));
     }

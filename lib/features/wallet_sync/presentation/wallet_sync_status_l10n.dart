@@ -17,6 +17,13 @@ String syncRelativeTime(BuildContext context, DateTime? at, DateTime now) {
 
 extension WalletSyncStatusL10n on WalletSyncStatus {
   String message(BuildContext context, DateTime now) {
+    final reason = isPrivate ? networkPolicy?.pauseReason : null;
+    if (reason == CbfNetworkPauseReason.offline) {
+      return context.loc.syncPausedOffline;
+    }
+    if (reason == CbfNetworkPauseReason.mobileData) {
+      return context.loc.syncPausedMobileData;
+    }
     final error = failure;
     if (error is WalletSyncNoPeersFailure) {
       return context.loc.syncNoPeers(

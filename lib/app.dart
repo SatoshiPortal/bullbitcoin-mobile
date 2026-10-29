@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/background_tasks/cbf_sync_network_policy.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/cbf_lifecycle.dart';
 import 'package:bb_mobile/core/wallet/data/bitcoin_sync_routing.dart';
@@ -57,6 +58,7 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
       _cbfLifecycle = CbfLifecycle(
         routing: locator<BitcoinSyncRouting>(),
         metadata: locator<WalletMetadataDatasource>(),
+        networkPolicy: locator<CbfSyncNetworkPolicy>(),
         transportChanges: locator<SettingsRepository>().torPolicyChanges,
       )..start(WidgetsBinding.instance.lifecycleState);
     }

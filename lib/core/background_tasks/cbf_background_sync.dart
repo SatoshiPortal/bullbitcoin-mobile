@@ -1,3 +1,4 @@
+import 'cbf_sync_network_policy.dart';
 import 'dart:async';
 import 'dart:isolate';
 import 'dart:ui' show IsolateNameServer;
@@ -67,6 +68,7 @@ final class CbfBackgroundSync {
   final BitcoinSyncRouting routing;
   final Future<List<WalletMetadataModel>> Function() wallets;
   final DateTime Function() deadline;
+  final CbfSyncNetworkPolicy? networkPolicy;
   Future<Map<WalletNetworkKey, CbfBackgroundOutcome>>? _batch;
   Map<WalletNetworkKey, CbfBackgroundOutcome>? _results;
 
@@ -77,6 +79,7 @@ final class CbfBackgroundSync {
     required this.routing,
     required this.wallets,
     required this.deadline,
+    this.networkPolicy,
   });
 
   Future<CbfBackgroundOutcome> synchronize(WalletNetworkKey key) async =>
@@ -90,6 +93,15 @@ final class CbfBackgroundSync {
     if (IsolateNameServer.lookupPortByName(_cbfForegroundPort) != null) {
       return const {};
     }
+    final policy = networkPolicy;
+    if (policy != null) {
+      final result = await policy.start();
+      if (result is Err || !policy.current.canSync) {
+        await policy.dispose();
+        return const {};
+      }
+      routing.facade.setCbfNetworkAdmission(() => policy.current.canSync);
+    }
     var cancelled = false;
     final owner = await CbfOwnerRegistration.acquire(
       _cbfBackgroundPort,
@@ -100,8 +112,15 @@ final class CbfBackgroundSync {
       },
     );
     if (owner == null) {
+      await policy?.dispose();
       return const {};
     }
+    final network = policy?.watch().listen((state) {
+      if (state.canSync) return;
+      cancelled = true;
+      routing.facade.setCbfForegroundActive(false);
+      unawaited(routing.facade.pauseCbfNodes());
+    });
     try {
       if (cancelled ||
           IsolateNameServer.lookupPortByName(_cbfForegroundPort) != null) {
@@ -124,6 +143,8 @@ final class CbfBackgroundSync {
       await routing.facade.pauseCbfNodes();
       return const {};
     } finally {
+      await network?.cancel();
+      await policy?.dispose();
       Future<void> release() async {
         await owner.nativeStopped();
         await owner.release();
