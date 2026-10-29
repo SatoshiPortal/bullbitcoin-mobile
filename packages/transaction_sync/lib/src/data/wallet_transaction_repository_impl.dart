@@ -192,6 +192,10 @@ final class WalletTransactionRepositoryImpl
         // The resumed deletion cleared the stored registration; re-read so a
         // revival with a replacement registration is not judged against it.
         existing = await metadata.read(key);
+        if (discover && existing == null) {
+          await metadata.writeRegistration(registration);
+          existing = await metadata.read(key);
+        }
       }
       if (_state(key) is WalletStateDeleted && !discover) {
         return Err(const DeletedWalletFailure());
