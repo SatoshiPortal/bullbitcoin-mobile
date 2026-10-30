@@ -1,20 +1,37 @@
-import 'package:bb_mobile/core/price/data/datasources/bullbitcoin_price_datasource.dart';
 import 'package:bb_mobile/core/price/domain/usecases/convert_currency_to_sats_amount_usecase.dart';
 import 'package:bb_mobile/core/price/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
 import 'package:bb_mobile/core/price/domain/usecases/get_available_currencies_usecase.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/init.dart';
+import 'package:bull_pricer/bull_pricer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:primitives/primitives.dart';
 
 Future<void> main({bool isInitialized = false}) async {
   TestWidgetsFlutterBinding.ensureInitialized();
   if (!isInitialized) await Bull.init();
 
-  final bitcoinPriceDatasource = locator<BullbitcoinPriceDatasource>(
-    instanceName: 'mainnetBullbitcoinPriceDatasource',
-  );
+  /// The index price of one bitcoin, straight from the pricer.
+  Future<double> indexPrice(String currencyCode) async {
+    final currency = SupportedCurrency.tryFromCode(currencyCode);
+    if (currency == null) fail('$currencyCode is not a pricer currency');
+    return switch (await Pricer.getIndexPrice(
+      network: BitcoinNetwork.mainnet,
+      currency: currency,
+    )) {
+      Ok(:final value) => value.fiatAmount,
+      Err(:final failure) => fail('No price for $currencyCode: $failure'),
+    };
+  }
+
+  /// The converted value, or a test failure when there is no price.
+  T converted<T>(Result<T, PricerFailure> result) => switch (result) {
+    Ok(:final value) => value,
+    Err(:final failure) => fail('No price: $failure'),
+  };
+
   final getAvailableCurrenciesUsecase =
       locator<GetAvailableCurrenciesUsecase>();
   final convertCurrencyToSatsAmountUsecase =
@@ -42,7 +59,7 @@ Future<void> main({bool isInitialized = false}) async {
         final currencies = await getAvailableCurrenciesUsecase.execute();
         for (final currency in currencies) {
           try {
-            final price = await bitcoinPriceDatasource.getPrice(currency);
+            final price = await indexPrice(currency);
             debugPrint('Price for $currency: $price');
 
             expect(price, isNonZero);
@@ -62,11 +79,13 @@ Future<void> main({bool isInitialized = false}) async {
       test('that get the price of one bitcoin', () async {
         final amountSat = ConversionConstants.satsAmountOfOneBitcoin;
 
-        final amount = await convertSatsToCurrencyAmountUsecase.execute(
-          currencyCode: currency,
-          amountSat: amountSat,
+        final amount = converted(
+          await convertSatsToCurrencyAmountUsecase.execute(
+            currencyCode: currency,
+            amountSat: amountSat,
+          ),
         );
-        final bitcoinPrice = await bitcoinPriceDatasource.getPrice(currency);
+        final bitcoinPrice = await indexPrice(currency);
 
         debugPrint(
           'Converted $amountSat sats to $amount $currency '
@@ -79,11 +98,13 @@ Future<void> main({bool isInitialized = false}) async {
       test('that converts currency to sats', () async {
         const amount = 123.0;
 
-        final sats = await convertCurrencyToSatsAmountUsecase.execute(
-          currencyCode: currency,
-          amountFiat: amount,
+        final sats = converted(
+          await convertCurrencyToSatsAmountUsecase.execute(
+            currencyCode: currency,
+            amountFiat: amount,
+          ),
         );
-        final bitcoinPrice = await bitcoinPriceDatasource.getPrice(currency);
+        final bitcoinPrice = await indexPrice(currency);
 
         debugPrint('Converted $amount $currency to $sats sats');
 
@@ -95,11 +116,13 @@ Future<void> main({bool isInitialized = false}) async {
       test('that converts sats to currency', () async {
         final sats = BigInt.from(150000);
 
-        final amount = await convertSatsToCurrencyAmountUsecase.execute(
-          currencyCode: currency,
-          amountSat: sats,
+        final amount = converted(
+          await convertSatsToCurrencyAmountUsecase.execute(
+            currencyCode: currency,
+            amountSat: sats,
+          ),
         );
-        final bitcoinPrice = await bitcoinPriceDatasource.getPrice(currency);
+        final bitcoinPrice = await indexPrice(currency);
 
         debugPrint('Converted $sats sats to $amount $currency');
 

@@ -15,6 +15,7 @@ import 'package:bb_mobile/features/receive/domain/usecases/get_receive_currencie
 import 'package:bb_mobile/features/receive/domain/usecases/get_receive_settings_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/get_receive_wallets_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/prepare_receive_address_usecase.dart';
+import 'package:bull_pricer/bull_pricer.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart' hide ScriptType;
@@ -160,24 +161,44 @@ void main() {
   });
 
   group('ConvertReceiveAmountUsecase', () {
-    test('converts a throw into a sanitized failure', () async {
+    Future<Result<double, ReceiveFailure>> convertWhenPriceIs(
+      Result<double, PricerFailure> price,
+    ) {
       final inner = _MockConvertSatsToCurrencyAmountUsecase();
       when(
         () => inner.execute(
           amountSat: any(named: 'amountSat'),
           currencyCode: any(named: 'currencyCode'),
         ),
-      ).thenThrow(Exception(_rawReason));
+      ).thenAnswer((_) async => price);
+      return ConvertReceiveAmountUsecase(inner).execute();
+    }
 
-      final result = await ConvertReceiveAmountUsecase(inner).execute();
+    test('forwards the converted amount', () async {
+      final result = await convertWhenPriceIs(const Ok(70000));
 
-      switch (result) {
-        case Ok():
-          fail('a throw must not be reported as a rate');
-        case Err(:final failure):
-          expect(failure, isA<ReceiveUnexpectedFailure>());
-          expect(failure.logMessage, contains('app.sqlite'));
-      }
+      expect((result as Ok<double, ReceiveFailure>).value, 70000);
+    });
+
+    // Receive keeps watching its address with no rate, so a pricer outage is
+    // its existing "no rate yet", not a failure that would stop the screen.
+    test('no price is a zero rate, not a failure', () async {
+      final result = await convertWhenPriceIs(
+        const Err(PricerNetworkFailure('Timed out')),
+      );
+
+      expect((result as Ok<double, ReceiveFailure>).value, 0);
+    });
+
+    test('an unexpected failure is reported, not hidden as no rate', () async {
+      final result = await convertWhenPriceIs(
+        const Err(PricerUnexpectedFailure('Settings unavailable')),
+      );
+
+      expect(
+        (result as Err<double, ReceiveFailure>).failure,
+        isA<ReceiveUnexpectedFailure>(),
+      );
     });
   });
 

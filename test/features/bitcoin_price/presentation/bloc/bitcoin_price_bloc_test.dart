@@ -8,6 +8,8 @@ import 'package:bb_mobile/core/settings/domain/watch_currency_changes_usecase.da
 import 'package:bb_mobile/features/bitcoin_price/domain/bitcoin_price_failure.dart';
 import 'package:bb_mobile/features/bitcoin_price/presentation/bloc/bitcoin_price_bloc.dart';
 import 'package:bloc_test/bloc_test.dart';
+import 'package:bull_pricer/bull_pricer.dart';
+import 'package:primitives/primitives.dart' show Err, Ok, Result;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -37,10 +39,11 @@ void main() {
     watchCurrencyChangesUsecase: watchCurrencyChanges,
   );
 
+  /// [answer] gives the USD price; a zero stands for no price.
   void stubPrice(Future<double> Function() answer) {
     when(
       () => convertSatsToCurrency.execute(currencyCode: 'USD'),
-    ).thenAnswer((_) => answer());
+    ).thenAnswer((_) async => _priceResult(await answer()));
   }
 
   setUp(() {
@@ -173,7 +176,7 @@ void main() {
           online = false;
           return 100000;
         }
-        // The datasource reports an unreachable pricer as a zero rate.
+        // The price repository reports an unreachable pricer as a zero rate.
         return 0;
       });
       return buildBloc();
@@ -207,7 +210,7 @@ void main() {
       });
       when(
         () => convertSatsToCurrency.execute(currencyCode: 'EUR'),
-      ).thenAnswer((_) async => 90000);
+      ).thenAnswer((_) async => _priceResult(90000));
       return buildBloc();
     },
     act: (bloc) async {
@@ -236,7 +239,7 @@ void main() {
       stubPrice(() => slowUsdStart.future);
       when(
         () => convertSatsToCurrency.execute(currencyCode: 'EUR'),
-      ).thenAnswer((_) async => 90000);
+      ).thenAnswer((_) async => _priceResult(90000));
       return buildBloc();
     },
     act: (bloc) async {
@@ -288,7 +291,7 @@ void main() {
       });
       when(
         () => convertSatsToCurrency.execute(currencyCode: 'EUR'),
-      ).thenAnswer((_) async => 90000);
+      ).thenAnswer((_) async => _priceResult(90000));
       return buildBloc();
     },
     act: (bloc) async {
@@ -354,7 +357,7 @@ void main() {
         stubPrice(() => ++usdCalls == 1 ? first.future : second.future);
         when(
           () => convertSatsToCurrency.execute(currencyCode: 'CAD'),
-        ).thenAnswer((_) async => 95000);
+        ).thenAnswer((_) async => _priceResult(95000));
         final bloc = buildBloc();
         addTearDown(bloc.close);
 
@@ -382,7 +385,7 @@ void main() {
       stubPrice(() => usd.future);
       when(
         () => convertSatsToCurrency.execute(currencyCode: 'CAD'),
-      ).thenAnswer((_) async => 95000);
+      ).thenAnswer((_) async => _priceResult(95000));
       final bloc = buildBloc();
       addTearDown(bloc.close);
 
@@ -437,7 +440,7 @@ void main() {
       stubPrice(() async => 70000);
       when(
         () => convertSatsToCurrency.execute(currencyCode: 'CAD'),
-      ).thenAnswer((_) => cad.future);
+      ).thenAnswer((_) async => _priceResult(await cad.future));
       final bloc = buildBloc();
       addTearDown(bloc.close);
       bloc.add(const BitcoinPriceStarted());
@@ -455,3 +458,8 @@ void main() {
     });
   });
 }
+
+/// A zero price stands for the pricer failing to give one.
+Result<double, PricerFailure> _priceResult(num price) => price > 0
+    ? Ok(price.toDouble())
+    : const Err(PricerNetworkFailure('No price'));
