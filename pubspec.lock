@@ -81,6 +81,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.0.0"
+  bark_bitcoin:
+    dependency: transitive
+    description:
+      name: bark_bitcoin
+      sha256: "65028ba2f06d8bab75b93ef35ae529608046bdfee2b54ab5a1b6bd4a59536abe"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.26.1+bark-0.8.0"
   base85:
     dependency: transitive
     description:

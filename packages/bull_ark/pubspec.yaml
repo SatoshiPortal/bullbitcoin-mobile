@@ -1,0 +1,20 @@
+name: bull_ark
+description: Pure-Dart Ark wallet capability for Bull Bitcoin, built on Second's bark.
+publish_to: "none"
+version: 0.0.1
+
+environment:
+  sdk: "3.12.2"
+
+resolution: workspace
+
+dependencies:
+  # Second's official bindings (publisher second.tech). The native library is
+  # compiled from source by the package's build hook: needs rustup and protoc.
+  bark_bitcoin: 0.26.1+bark-0.8.0
+  meta: ^1.17.0
+  primitives:
+
+dev_dependencies:
+  lints: ^6.0.0
+  test: ^1.26.3
