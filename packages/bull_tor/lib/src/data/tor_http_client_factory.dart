@@ -49,7 +49,9 @@ final class TorHttpClientFactory {
                   ? connection.then(
                       (value) => value.secure(
                         uri.host,
-                        onBadCertificate: allowBadCertificate ? (_) => true : null,
+                        onBadCertificate: allowBadCertificate
+                            ? (_) => true
+                            : null,
                       ),
                     )
                   : connection)

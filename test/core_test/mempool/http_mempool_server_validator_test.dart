@@ -98,4 +98,48 @@ void main() {
 
     expect(result, isA<Ok<void, MempoolFailure>>());
   });
+
+  test(
+    'a TLS exception does not follow a redirect to another server',
+    () async {
+      final target = await HttpServer.bindSecure(
+        InternetAddress.loopbackIPv4,
+        0,
+        fixture.securityContext,
+      );
+      addTearDown(() => target.close(force: true));
+      var targetRequests = 0;
+      target.listen((request) async {
+        targetRequests++;
+        request.response.statusCode = HttpStatus.notFound;
+        await request.response.close();
+      });
+
+      final server = await HttpServer.bindSecure(
+        InternetAddress.loopbackIPv4,
+        0,
+        fixture.securityContext,
+      );
+      addTearDown(() => server.close(force: true));
+      server.listen((request) async {
+        await request.response.redirect(
+          Uri.parse('https://localhost:${target.port}${request.uri.path}'),
+          status: HttpStatus.temporaryRedirect,
+        );
+      });
+
+      final validator = HttpMempoolServerValidator(
+        torSessionPort: _UnusedTorSessionPort(),
+        torHttpClientFactory: const TorHttpClientFactory(),
+      );
+      final result = await validator.validateServer(
+        url: '127.0.0.1:${server.port}',
+        network: MempoolServerNetwork.bitcoinMainnet,
+        validateDomain: false,
+      );
+
+      expect(result, isA<Err<void, MempoolFailure>>());
+      expect(targetRequests, 0);
+    },
+  );
 }
