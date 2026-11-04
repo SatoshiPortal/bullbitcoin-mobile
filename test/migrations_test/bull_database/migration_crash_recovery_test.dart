@@ -55,6 +55,9 @@ class _ReleasedMigrationOrder extends SqliteDatabase {
   _ReleasedMigrationOrder(super.executor);
 
   @override
+  int get schemaVersion => 15;
+
+  @override
   MigrationStrategy get migration => MigrationStrategy(
     onCreate: Schema0To1.onCreate,
     onUpgrade: stepByStep(
