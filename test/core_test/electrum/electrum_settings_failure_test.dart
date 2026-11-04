@@ -468,15 +468,13 @@ void main() {
         ),
       ).thenAnswer((_) async => ElectrumServerStatus.online);
       when(
-        () => serverRepo.save(any()),
-      ).thenAnswer((_) async => const Ok(null));
-      when(
-        () => electrumSettingsRepo.save(any()),
+        () => serverRepo.saveCustom(any()),
       ).thenAnswer((_) async => const Ok(null));
 
       final result = await usecase.execute(request());
 
       expect(result, isA<Ok>());
+      verify(() => serverRepo.saveCustom(any())).called(1);
       verify(() => appSettingsRepository.fetch()).called(greaterThan(0));
       verify(
         () => torSessionPort.open(
