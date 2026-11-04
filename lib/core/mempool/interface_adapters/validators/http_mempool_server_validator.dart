@@ -80,11 +80,12 @@ class HttpMempoolServerValidator implements MempoolServerValidatorPort {
           connectTimeout: timeout,
           receiveTimeout: timeout,
           sendTimeout: timeout,
+          followRedirects: false,
         ),
       );
       final adapter = dio.httpClientAdapter as IOHttpClientAdapter;
-      if (torClient != null) {
-        adapter.createHttpClient = () => torClient!;
+      if (torClient case final client?) {
+        adapter.createHttpClient = () => client;
       } else if (!validateDomain) {
         adapter.createHttpClient = () =>
             HttpClient()..badCertificateCallback = (_, _, _) => true;
