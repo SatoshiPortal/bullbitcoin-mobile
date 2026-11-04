@@ -1,8 +1,8 @@
 import 'package:bb_mobile/core/utils/result.dart';
-import 'package:bb_mobile/features/recipients/data/bullbitcoin_api_sepa_virtual_payee_datasource.dart';
+import 'package:bb_mobile/features/recipients/data/datasources/bullbitcoin_api_sepa_virtual_payee_datasource.dart';
 import 'package:bb_mobile/features/recipients/domain/recipients_failure.dart';
 import 'package:bb_mobile/features/recipients/domain/repositories/sepa_virtual_payee_repository.dart';
-import 'package:bb_mobile/features/recipients/domain/value_objects/sepa_virtual_payee_status.dart';
+import 'package:bb_mobile/features/recipients/domain/entities/sepa_virtual_payee_status.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:dio/dio.dart';
 

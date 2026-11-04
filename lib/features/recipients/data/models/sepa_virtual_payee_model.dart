@@ -1,4 +1,4 @@
-import 'package:bb_mobile/features/recipients/domain/value_objects/sepa_virtual_payee_status.dart';
+import 'package:bb_mobile/features/recipients/domain/entities/sepa_virtual_payee_status.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'sepa_virtual_payee_model.freezed.dart';

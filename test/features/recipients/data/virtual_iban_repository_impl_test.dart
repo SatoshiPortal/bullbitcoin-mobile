@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/utils/result.dart';
-import 'package:bb_mobile/features/recipients/data/bullbitcoin_api_virtual_iban_datasource.dart';
+import 'package:bb_mobile/features/recipients/data/datasources/bullbitcoin_api_virtual_iban_datasource.dart';
 import 'package:bb_mobile/features/recipients/data/virtual_iban_repository_impl.dart';
 import 'package:bb_mobile/features/recipients/domain/entities/virtual_iban.dart';
 import 'package:bb_mobile/features/recipients/domain/recipients_failure.dart';

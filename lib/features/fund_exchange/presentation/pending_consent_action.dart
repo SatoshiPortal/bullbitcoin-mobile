@@ -1,4 +1,4 @@
-import 'package:bb_mobile/features/fund_exchange/domain/value_objects/funding_method.dart';
+import 'package:bb_mobile/features/fund_exchange/domain/entities/funding_method.dart';
 
 /// Represents the action that was interrupted by the scam warning consent.
 /// After the user consents, this action is re-dispatched.

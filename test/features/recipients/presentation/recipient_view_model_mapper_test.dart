@@ -1,6 +1,6 @@
 import 'package:bb_mobile/features/recipients/domain/entities/recipient.dart';
-import 'package:bb_mobile/features/recipients/domain/value_objects/recipient_details.dart';
-import 'package:bb_mobile/features/recipients/domain/value_objects/sepa_virtual_payee_status.dart';
+import 'package:bb_mobile/features/recipients/domain/entities/recipient_details.dart';
+import 'package:bb_mobile/features/recipients/domain/entities/sepa_virtual_payee_status.dart';
 import 'package:bb_mobile/features/recipients/presentation/recipient_view_model_mapper.dart';
 import 'package:bb_mobile/features/recipients/public/recipients_facade.dart';
 import 'package:flutter_test/flutter_test.dart';
