@@ -96,6 +96,13 @@ void main() {
     saveFile = _MockSaveFile();
     createVault = _MockCreateVault();
     walletRepository = _MockWalletRepository();
+    when(
+      () => walletRepository.updateEncryptedBackupTime(
+        time: any(named: 'time'),
+        walletId: 'wallet-id',
+        updateTestedStatus: false,
+      ),
+    ).thenAnswer((_) async {});
     storeKey = _MockStoreKey();
     checkConnection = _MockCheckConnection();
     when(
@@ -259,6 +266,7 @@ void main() {
           () => walletRepository.updateEncryptedBackupTime(
             time: any(named: 'time'),
             walletId: 'wallet-id',
+            updateTestedStatus: false,
           ),
         );
 
@@ -266,7 +274,7 @@ void main() {
       },
     );
 
-    test('records completion after the file and key are stored', () async {
+    test('records the saved vault without marking it tested', () async {
       final vault = _MockEncryptedVault();
       when(() => vault.toFile()).thenReturn('{}');
       when(() => vault.filename).thenReturn('vault.json');
@@ -287,12 +295,6 @@ void main() {
           vaultKey: any(named: 'vaultKey'),
         ),
       ).thenAnswer((_) async => const Ok(null));
-      when(
-        () => walletRepository.updateEncryptedBackupTime(
-          time: any(named: 'time'),
-          walletId: 'wallet-id',
-        ),
-      ).thenAnswer((_) async {});
       final bloc = buildBloc(flow: RecoverBullFlow.secureVault);
 
       bloc.add(const OnVaultPasswordSet(password: 'pw'));
@@ -307,6 +309,7 @@ void main() {
         () => walletRepository.updateEncryptedBackupTime(
           time: any(named: 'time'),
           walletId: 'wallet-id',
+          updateTestedStatus: false,
         ),
       ).called(1);
 
@@ -833,9 +836,9 @@ void main() {
       when(
         () => checkConnection.execute(route: route),
       ).thenAnswer((_) async => const Ok(true));
-      when(
-        () => createVault.execute(),
-      ).thenAnswer((_) async => Ok((vault: vault, vaultKey: 'key')));
+      when(() => createVault.execute()).thenAnswer(
+        (_) async => Ok((vault: vault, vaultKey: 'key', walletId: 'wallet-id')),
+      );
       when(
         () => connectDrive.execute(),
       ).thenAnswer((_) async => const Ok(null));
@@ -1213,9 +1216,10 @@ void main() {
           when(
             () => checkConnection.execute(route: route),
           ).thenAnswer((_) async => const Ok(true));
-          when(
-            () => createVault.execute(),
-          ).thenAnswer((_) async => Ok((vault: vault, vaultKey: 'key')));
+          when(() => createVault.execute()).thenAnswer(
+            (_) async =>
+                Ok((vault: vault, vaultKey: 'key', walletId: 'wallet-id')),
+          );
           when(
             () => saveFile.execute(content: 'vault', filename: 'backup.json'),
           ).thenAnswer((_) => picker.future);
@@ -1314,9 +1318,9 @@ void main() {
       when(
         () => checkConnection.execute(route: route),
       ).thenAnswer((_) async => const Ok(true));
-      when(
-        () => createVault.execute(),
-      ).thenAnswer((_) async => Ok((vault: vault, vaultKey: 'key')));
+      when(() => createVault.execute()).thenAnswer(
+        (_) async => Ok((vault: vault, vaultKey: 'key', walletId: 'wallet-id')),
+      );
       when(
         () => saveFile.execute(
           content: any(named: 'content'),

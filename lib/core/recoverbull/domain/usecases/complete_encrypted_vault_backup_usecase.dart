@@ -15,9 +15,11 @@ class CompleteEncryptedVaultBackupUsecase {
       await _walletRepository.updateEncryptedBackupTime(
         time: DateTime.now(),
         walletId: walletId,
+        updateTestedStatus: false,
       );
       return const Ok(null);
     } catch (e, st) {
+      if (e is Error) rethrow;
       log.severe(
         message: 'completeEncryptedVaultBackup failed',
         error: e,

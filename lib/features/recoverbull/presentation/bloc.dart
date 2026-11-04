@@ -597,8 +597,8 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
           vaultKey: vaultKey,
         ),
       );
-      if (!isCurrent()) return;
       if (keyStored case Err(:final failure)) {
+        if (!isCurrent()) return;
         // Keep the typed key-server detail (rate-limit cooldown, invalid
         // credentials) instead of collapsing it to the generic creation error.
         emit(state.copyWith(failure: _storeKeyFailure(failure)));
