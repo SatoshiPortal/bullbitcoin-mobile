@@ -7,7 +7,6 @@ import 'package:bb_mobile/core/wallet/domain/insufficient_funds_exception.dart';
 import 'package:bb_mobile/core/wallet/domain/no_spendable_utxo_exception.dart';
 import 'package:bb_mobile/core/wallet/domain/consolidation_required_exception.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/check_liquid_consolidation_usecase.dart';
-import 'package:bb_mobile/core/price/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
 import 'package:bb_mobile/core/fees/domain/fee_preview_cache.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/fees/domain/get_network_fees_usecase.dart';
@@ -37,6 +36,7 @@ import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_pres
 import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/sign_bitcoin_tx_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/sign_liquid_tx_usecase.dart';
+import 'package:bb_mobile/features/swap/domain/usecases/get_swap_exchange_rate_usecase.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/create_order_swap_usecase.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/get_order_swap_quote_usecase.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/get_pending_order_swaps_usecase.dart';
@@ -87,7 +87,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
     required this._detectBitcoinStringUsecase,
     required this._getReceiveAddressUsecase,
     required this._getWalletUtxosUsecase,
-    required this._convertSatsToCurrencyAmountUsecase,
+    required this._getSwapExchangeRateUsecase,
     required this._previewBitcoinFeeUsecase,
     required this._previewBitcoinFeePresetsUsecase,
     required this._checkLiquidConsolidationUsecase,
@@ -144,7 +144,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
   final DetectBitcoinStringUsecase _detectBitcoinStringUsecase;
   final GetReceiveAddressUsecase _getReceiveAddressUsecase;
   final GetWalletUtxosUsecase _getWalletUtxosUsecase;
-  final ConvertSatsToCurrencyAmountUsecase _convertSatsToCurrencyAmountUsecase;
+  final GetSwapExchangeRateUsecase _getSwapExchangeRateUsecase;
   final PreviewBitcoinFeeUsecase _previewBitcoinFeeUsecase;
   final PreviewBitcoinFeePresetsUsecase _previewBitcoinFeePresetsUsecase;
   final CheckLiquidConsolidationUsecase _checkLiquidConsolidationUsecase;
@@ -178,7 +178,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
         _getWalletsUsecase.execute(),
         _getNetworkFeesUsecase.execute(isLiquid: true),
         _getNetworkFeesUsecase.execute(isLiquid: false),
-        _convertSatsToCurrencyAmountUsecase.execute(
+        _getSwapExchangeRateUsecase.execute(
           currencyCode: settings.currencyCode,
         ),
       ).wait;

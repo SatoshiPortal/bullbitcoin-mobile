@@ -1,3 +1,4 @@
+import 'package:bull_pricer/bull_pricer.dart';
 import 'package:primitives/primitives.dart' show Sats;
 import 'dart:async';
 
@@ -5,8 +6,6 @@ import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_bitcoin_tran
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_liquid_transaction_usecase.dart';
 import 'package:bb_mobile/core/errors/send_errors.dart'
     show BroadcastTransactionException;
-import 'package:bb_mobile/core/price/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
-import 'package:bb_mobile/core/price/domain/usecases/get_available_currencies_usecase.dart';
 import 'package:bb_mobile/core/fees/domain/fee_preview_cache.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/fees/domain/get_network_fees_usecase.dart';
@@ -37,6 +36,7 @@ import 'package:bb_mobile/features/send/domain/usecases/calculate_liquid_pset_si
 import 'package:bb_mobile/features/send/domain/usecases/create_send_cross_chain_swap_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/create_send_swap_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/get_send_cross_chain_quote_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/get_send_exchange_rate_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/get_send_swap_quote_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/detect_bitcoin_string_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/get_send_payjoin_enabled_usecase.dart';
@@ -83,10 +83,9 @@ class SendCubit extends Cubit<SendState>
     required this._bestWalletUsecase,
     required this._detectBitcoinStringUsecase,
     required this._getSettingsUsecase,
-    required this._convertSatsToCurrencyAmountUsecase,
+    required this._getSendExchangeRateUsecase,
     required this._getNetworkFeesUsecase,
     required this._getWalletUtxosUsecase,
-    required this._getAvailableCurrenciesUsecase,
     required this._prepareBitcoinSendUsecase,
     required this._validateBitcoinSelectionUsecase,
     required this._prepareLiquidSendUsecase,
@@ -141,10 +140,9 @@ class SendCubit extends Cubit<SendState>
   final LabelsFacade _labelsFacade;
   final SelectBestWalletUsecase _bestWalletUsecase;
   final DetectBitcoinStringUsecase _detectBitcoinStringUsecase;
-  final GetAvailableCurrenciesUsecase _getAvailableCurrenciesUsecase;
   final GetSettingsUsecase _getSettingsUsecase;
   final GetSendPayjoinEnabledUsecase _getSendPayjoinEnabledUsecase;
-  final ConvertSatsToCurrencyAmountUsecase _convertSatsToCurrencyAmountUsecase;
+  final GetSendExchangeRateUsecase _getSendExchangeRateUsecase;
   final GetNetworkFeesUsecase _getNetworkFeesUsecase;
   final GetWalletUtxosUsecase _getWalletUtxosUsecase;
   final GetWalletsUsecase _getWalletsUsecase;
@@ -760,19 +758,16 @@ class SendCubit extends Cubit<SendState>
     final settings = await _getSettingsUsecase.execute();
     final payjoinEnabled = await _getSendPayjoinEnabledUsecase.execute();
 
-    final (exchangeRate, fiatCurrencies) = await (
-      _convertSatsToCurrencyAmountUsecase.execute(),
-      _getAvailableCurrenciesUsecase.execute(),
-    ).wait;
+    final exchangeRate = await _getSendExchangeRateUsecase.execute();
 
     final bitcoinUnit = settings.bitcoinUnit;
     final fiatCurrency = settings.currencyCode;
 
     emit(
       state.copyWith(
-        fiatCurrencyCodes: fiatCurrencies,
+        fiatCurrencyCodes: SupportedCurrency.codes,
         fiatCurrencyCode: fiatCurrency,
-        exchangeRate: exchangeRate,
+        exchangeRate: exchangeRate ?? 0,
         bitcoinUnit: bitcoinUnit,
         inputAmountCurrencyCode: bitcoinUnit.code,
         payjoinGloballyEnabled: payjoinEnabled,
@@ -881,27 +876,26 @@ class SendCubit extends Cubit<SendState>
     if (![BitcoinUnit.btc.code, BitcoinUnit.sats.code].contains(currencyCode)) {
       // If the currency is a fiat currency, retrieve the exchange rate and replace
       //  the current exchange rate and fiat currency code.
-      final rate = await _convertSatsToCurrencyAmountUsecase.execute(
+      final rate = await _getSendExchangeRateUsecase.execute(
         currencyCode: currencyCode,
       );
       // No price for that currency: stay on the current one rather than take
       // a fiat input that cannot be converted.
-      if (rate <= 0) return;
+      if (rate == null) return;
       fiatCurrencyCode = currencyCode;
       exchangeRate = rate;
     } else {
       // If the currency is a bitcoin unit, set the fiat currency and exchange
       //  rate back to the currency from the settings.
-      final currencyValues = await Future.wait([
+      final (settings, rate, payjoinEnabled) = await (
         _getSettingsUsecase.execute(),
-        _convertSatsToCurrencyAmountUsecase.execute(),
+        _getSendExchangeRateUsecase.execute(),
         _getSendPayjoinEnabledUsecase.execute(),
-      ]);
+      ).wait;
 
-      final settings = currencyValues[0] as SettingsEntity;
       fiatCurrencyCode = settings.currencyCode;
-      exchangeRate = currencyValues[1] as double;
-      payjoinGloballyEnabled = currencyValues[2] as bool;
+      exchangeRate = rate ?? 0;
+      payjoinGloballyEnabled = payjoinEnabled;
     }
 
     emit(
@@ -2572,11 +2566,11 @@ class SendCubit extends Cubit<SendState>
   }
 
   Future<void> getExchangeRate({String? currencyCode}) async {
-    final exchangeRate = await _convertSatsToCurrencyAmountUsecase.execute(
+    final exchangeRate = await _getSendExchangeRateUsecase.execute(
       currencyCode: currencyCode ?? state.fiatCurrencyCode,
     );
 
-    emit(state.copyWith(exchangeRate: exchangeRate));
+    emit(state.copyWith(exchangeRate: exchangeRate ?? 0));
   }
 
   void _watchOrderSwap(String localId) {

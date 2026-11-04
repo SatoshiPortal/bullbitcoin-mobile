@@ -1,37 +1,66 @@
-import 'package:bb_mobile/core/price/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
+import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
+import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/features/receive/domain/receive_failure.dart';
+import 'package:bull_pricer/bull_pricer.dart';
 import 'package:meta/meta.dart';
+import 'package:primitives/primitives.dart' show BitcoinNetwork;
 
-/// Receive-owned boundary for the shared rate conversion, which still throws.
+/// [amountSat] in [currencyCode], or in the settings currency when none is
+/// given. Without an amount, the price of one bitcoin.
 class ConvertReceiveAmountUsecase {
-  final ConvertSatsToCurrencyAmountUsecase _convertSatsToCurrencyAmountUsecase;
+  final GetSettingsUsecase _getSettingsUsecase;
+  final IndexPriceReader _getIndexPrice;
 
-  const ConvertReceiveAmountUsecase(this._convertSatsToCurrencyAmountUsecase);
+  const ConvertReceiveAmountUsecase({
+    required this._getSettingsUsecase,
+    required this._getIndexPrice,
+  });
 
   @useResult
   Future<Result<double, ReceiveFailure>> execute({
     BigInt? amountSat,
     String? currencyCode,
   }) async {
+    final SettingsEntity settings;
     try {
-      return Ok(
-        await _convertSatsToCurrencyAmountUsecase.execute(
-          amountSat: amountSat,
-          currencyCode: currencyCode,
-        ),
-      );
+      settings = await _getSettingsUsecase.execute();
     } on Object catch (e, st) {
       // Logged HERE, at the boundary that owns the raw reason. The failure's
       // logMessage stays secondary (equality, debug): if a caller chooses not
       // to log, the diagnostic must still exist.
       log.severe(
-        message: 'Failed to convert an amount for receive',
+        message: 'Failed to read the settings for the receive price',
         error: e,
         trace: st,
       );
       return Err(ReceiveUnexpectedFailure(e.toString()));
+    }
+    final code = currencyCode ?? settings.currencyCode;
+    final currency = SupportedCurrency.tryFromCode(code);
+    if (currency == null) {
+      return Err(ReceiveUnexpectedFailure('Currency not available: $code'));
+    }
+    final price = await _getIndexPrice(
+      network: settings.environment.isTestnet
+          ? BitcoinNetwork.testnet
+          : BitcoinNetwork.mainnet,
+      currency: currency,
+    );
+    switch (price) {
+      case Ok(:final value):
+        return Ok(
+          value.fiatValueOf(
+            amountSat ?? ConversionConstants.satsAmountOfOneBitcoin,
+          ),
+        );
+      // Receiving works without a price: a zero rate shows no fiat value,
+      // where a failure would stop the screen before it watches the address.
+      case Err(:final failure):
+        log.warning('Receive price unavailable: ${failure.runtimeType}');
+        return const Ok(0);
     }
   }
 }

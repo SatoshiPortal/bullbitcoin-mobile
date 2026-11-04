@@ -11,7 +11,6 @@ import 'package:bb_mobile/features/receive/domain/receive_failure.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/convert_receive_amount_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/fetch_receive_note_suggestions_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/get_receive_address_at_index_usecase.dart';
-import 'package:bb_mobile/features/receive/domain/usecases/get_receive_currencies_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/get_receive_settings_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/get_receive_wallets_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/load_receive_address_label_usecase.dart';
@@ -37,9 +36,6 @@ import 'package:primitives/primitives.dart' show BitcoinNetwork;
 
 class _MockGetReceiveWalletsUsecase extends Mock
     implements GetReceiveWalletsUsecase {}
-
-class _MockGetReceiveCurrenciesUsecase extends Mock
-    implements GetReceiveCurrenciesUsecase {}
 
 class _MockGetReceiveSettingsUsecase extends Mock
     implements GetReceiveSettingsUsecase {}
@@ -216,7 +212,6 @@ PayjoinReceiverSession _receiver({
 void main() {
   late _MockGetReceiveWalletsUsecase getWallets;
   late _MockGetReceiveSettingsUsecase getSettings;
-  late _MockGetReceiveCurrenciesUsecase getAvailableCurrencies;
   late _MockConvertReceiveAmountUsecase convertSatsToCurrency;
   late _MockPrepareReceiveAddressUsecase getReceiveAddress;
   late _MockReceiveWithPayjoinUsecase receiveWithPayjoin;
@@ -242,7 +237,6 @@ void main() {
   ReceiveBloc buildBloc({Wallet? wallet, bool withPresetWallet = true}) =>
       ReceiveBloc(
         getReceiveWalletsUsecase: getWallets,
-        getReceiveCurrenciesUsecase: getAvailableCurrencies,
         getReceiveSettingsUsecase: getSettings,
         convertReceiveAmountUsecase: convertSatsToCurrency,
         prepareReceiveAddressUsecase: getReceiveAddress,
@@ -273,7 +267,6 @@ void main() {
       () => getWallets.execute(onlyBitcoin: true),
     ).thenAnswer((_) async => Ok([_testWallet(origin: 'default-btc')]));
     getSettings = _MockGetReceiveSettingsUsecase();
-    getAvailableCurrencies = _MockGetReceiveCurrenciesUsecase();
     convertSatsToCurrency = _MockConvertReceiveAmountUsecase();
     getReceiveAddress = _MockPrepareReceiveAddressUsecase();
     receiveWithPayjoin = _MockReceiveWithPayjoinUsecase();
@@ -320,9 +313,6 @@ void main() {
         ),
       ),
     );
-    when(
-      () => getAvailableCurrencies.execute(),
-    ).thenAnswer((_) async => const Ok(<String>[]));
     when(
       () => convertSatsToCurrency.execute(
         amountSat: any(named: 'amountSat'),
@@ -773,20 +763,6 @@ void main() {
       await pumpEventQueue();
 
       expect(bloc.state.failure, isA<ReceiveAddressUnavailableFailure>());
-      expect(bloc.state.payjoinAttemptSettled, isTrue);
-    });
-
-    test('when the currency list cannot be read', () async {
-      when(() => getAvailableCurrencies.execute()).thenAnswer(
-        (_) async => const Err(ReceiveUnexpectedFailure('exchange 503')),
-      );
-
-      final bloc = buildBloc();
-      addTearDown(bloc.close);
-      bloc.add(const ReceiveBitcoinStarted(null));
-      await pumpEventQueue();
-
-      expect(bloc.state.failure, isA<ReceiveUnexpectedFailure>());
       expect(bloc.state.payjoinAttemptSettled, isTrue);
     });
 

@@ -5,6 +5,7 @@ import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
+import 'package:bull_pricer/bull_pricer.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/utils/string_formatting.dart';
@@ -20,7 +21,6 @@ import 'package:bb_mobile/features/receive/domain/receive_failure.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/convert_receive_amount_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/fetch_receive_note_suggestions_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/get_receive_address_at_index_usecase.dart';
-import 'package:bb_mobile/features/receive/domain/usecases/get_receive_currencies_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/get_receive_settings_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/get_receive_wallets_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/load_receive_address_label_usecase.dart';
@@ -46,7 +46,6 @@ part 'receive_state.dart';
 class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
   ReceiveBloc({
     required this._getReceiveWalletsUsecase,
-    required this._getReceiveCurrenciesUsecase,
     required this._getReceiveSettingsUsecase,
     required this._convertReceiveAmountUsecase,
     required this._prepareReceiveAddressUsecase,
@@ -126,7 +125,6 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
   }
 
   final GetReceiveWalletsUsecase _getReceiveWalletsUsecase;
-  final GetReceiveCurrenciesUsecase _getReceiveCurrenciesUsecase;
   final GetReceiveSettingsUsecase _getReceiveSettingsUsecase;
   final ConvertReceiveAmountUsecase _convertReceiveAmountUsecase;
   final PrepareReceiveAddressUsecase _prepareReceiveAddressUsecase;
@@ -323,14 +321,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     }
 
     if (state.fiatCurrencyCodes.isEmpty) {
-      // If the fiat currency codes are not set yet, we need to get them from the settings
-      switch (await _getReceiveCurrenciesUsecase.execute()) {
-        case Ok(:final value):
-          emit(state.copyWith(fiatCurrencyCodes: value));
-        case Err(:final failure):
-          emit(state.copyWith(failure: failure, payjoinAttemptSettled: true));
-          return;
-      }
+      emit(state.copyWith(fiatCurrencyCodes: SupportedCurrency.codes));
     }
 
     var bitcoinAddress = state.bitcoinAddress;
@@ -501,14 +492,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     }
 
     if (state.fiatCurrencyCodes.isEmpty) {
-      // If the fiat currency codes are not set yet, we need to get them from the settings
-      switch (await _getReceiveCurrenciesUsecase.execute()) {
-        case Ok(:final value):
-          emit(state.copyWith(fiatCurrencyCodes: value));
-        case Err(:final failure):
-          emit(state.copyWith(failure: failure));
-          return;
-      }
+      emit(state.copyWith(fiatCurrencyCodes: SupportedCurrency.codes));
     }
 
     // If no wallet is passed through the constructor, get the default liquid wallet,
@@ -600,14 +584,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     }
 
     if (state.fiatCurrencyCodes.isEmpty) {
-      // If the fiat currency codes are not set yet, we need to get them from the settings
-      switch (await _getReceiveCurrenciesUsecase.execute()) {
-        case Ok(:final value):
-          emit(state.copyWith(fiatCurrencyCodes: value));
-        case Err(:final failure):
-          emit(state.copyWith(failure: failure));
-          return;
-      }
+      emit(state.copyWith(fiatCurrencyCodes: SupportedCurrency.codes));
     }
 
     // If no liquid wallet is passed through the constructor, get the

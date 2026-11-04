@@ -5,7 +5,6 @@ import 'dart:typed_data';
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_liquid_transaction_usecase.dart';
 import 'package:bb_mobile/core/errors/send_errors.dart';
-import 'package:bb_mobile/core/price/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
 import 'package:bb_mobile/core/fees/domain/get_network_fees_usecase.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
@@ -38,6 +37,7 @@ import 'package:bb_mobile/features/send/domain/usecases/sign_liquid_tx_usecase.d
 import 'package:bb_mobile/features/swap/domain/entities/order_swap_network.dart';
 import 'package:bb_mobile/features/swap/domain/entities/order_swap.dart';
 import 'package:bb_mobile/features/swap/domain/entities/order_swap_record.dart';
+import 'package:bb_mobile/features/swap/domain/usecases/get_swap_exchange_rate_usecase.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/create_order_swap_usecase.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/get_order_swap_quote_usecase.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/get_pending_order_swaps_usecase.dart';
@@ -117,8 +117,7 @@ class _MockGetReceiveAddress extends Mock implements GetReceiveAddressUsecase {}
 
 class _MockGetUtxos extends Mock implements GetWalletUtxosUsecase {}
 
-class _MockConvertSats extends Mock
-    implements ConvertSatsToCurrencyAmountUsecase {}
+class _MockGetExchangeRate extends Mock implements GetSwapExchangeRateUsecase {}
 
 class _MockPreviewFee extends Mock implements PreviewBitcoinFeeUsecase {}
 
@@ -141,7 +140,7 @@ void main() {
   late _MockGetSettings getSettings;
   late _MockGetWallets getWallets;
   late _MockGetNetworkFees getNetworkFees;
-  late _MockConvertSats convertSats;
+  late _MockGetExchangeRate getExchangeRate;
   late _MockWatchOrder watchOrder;
   late _MockGetWallet getWallet;
   late _MockPrepareBitcoin prepareBitcoin;
@@ -164,7 +163,7 @@ void main() {
     getSettings = _MockGetSettings();
     getWallets = _MockGetWallets();
     getNetworkFees = _MockGetNetworkFees();
-    convertSats = _MockConvertSats();
+    getExchangeRate = _MockGetExchangeRate();
     watchOrder = _MockWatchOrder();
     getWallet = _MockGetWallet();
     prepareBitcoin = _MockPrepareBitcoin();
@@ -213,7 +212,7 @@ void main() {
       detectBitcoinStringUsecase: _MockDetectBitcoin(),
       getReceiveAddressUsecase: getReceiveAddress,
       getWalletUtxosUsecase: getUtxos,
-      convertSatsToCurrencyAmountUsecase: convertSats,
+      getSwapExchangeRateUsecase: getExchangeRate,
       previewBitcoinFeeUsecase: _MockPreviewFee(),
       previewBitcoinFeePresetsUsecase: _MockPreviewPresets(),
       checkLiquidConsolidationUsecase: _MockCheckConsolidation(),
@@ -1213,7 +1212,7 @@ void main() {
       () => getNetworkFees.execute(isLiquid: any(named: 'isLiquid')),
     ).thenAnswer((_) async => _feeOptions());
     when(
-      () => convertSats.execute(currencyCode: 'USD'),
+      () => getExchangeRate.execute(currencyCode: 'USD'),
     ).thenAnswer((_) async => 1.0);
     when(
       () => watchOrder.execute('local-1'),
@@ -1244,7 +1243,7 @@ void main() {
       () => getNetworkFees.execute(isLiquid: any(named: 'isLiquid')),
     ).thenAnswer((_) async => _feeOptions());
     when(
-      () => convertSats.execute(currencyCode: 'USD'),
+      () => getExchangeRate.execute(currencyCode: 'USD'),
     ).thenAnswer((_) async => 1.0);
     when(
       () => watchOrder.execute('local-1'),
@@ -1280,7 +1279,7 @@ void main() {
       () => getNetworkFees.execute(isLiquid: any(named: 'isLiquid')),
     ).thenAnswer((_) async => _feeOptions());
     when(
-      () => convertSats.execute(currencyCode: 'USD'),
+      () => getExchangeRate.execute(currencyCode: 'USD'),
     ).thenAnswer((_) async => 1.0);
     when(
       () => watchOrder.execute('local-1'),
@@ -1312,7 +1311,7 @@ void main() {
       () => getNetworkFees.execute(isLiquid: any(named: 'isLiquid')),
     ).thenAnswer((_) async => _feeOptions());
     when(
-      () => convertSats.execute(currencyCode: 'USD'),
+      () => getExchangeRate.execute(currencyCode: 'USD'),
     ).thenAnswer((_) async => 1.0);
     when(() => watchOrder.execute('local-1')).thenAnswer(
       (_) =>
@@ -1381,7 +1380,7 @@ void main() {
         () => getNetworkFees.execute(isLiquid: any(named: 'isLiquid')),
       ).thenAnswer((_) async => _feeOptions());
       when(
-        () => convertSats.execute(currencyCode: 'USD'),
+        () => getExchangeRate.execute(currencyCode: 'USD'),
       ).thenAnswer((_) async => 1.0);
 
       bloc.add(const TransferEvent.started());

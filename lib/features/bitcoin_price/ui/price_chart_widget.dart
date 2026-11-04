@@ -1,16 +1,14 @@
 import 'dart:math' as math;
 
-import 'package:bb_mobile/core/price/domain/rate.dart';
-import 'package:bb_mobile/core/price/domain/usecases/get_available_currencies_usecase.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/price_input/price_input.dart';
 import 'package:bb_mobile/features/bitcoin_price/presentation/bitcoin_price_failure_l10n.dart';
 import 'package:bb_mobile/features/bitcoin_price/presentation/bloc/bitcoin_price_bloc.dart';
 import 'package:bb_mobile/features/bitcoin_price/presentation/cubit/price_chart_cubit.dart';
+import 'package:bull_pricer/bull_pricer.dart';
 import 'package:bull_ui/bull_ui.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
-import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
@@ -160,28 +158,18 @@ class PriceChartWidget extends StatelessWidget {
 class _PriceDisplay extends StatelessWidget {
   const _PriceDisplay({required this.rate, required this.currency});
 
-  final Rate rate;
+  final PricePoint rate;
   final String currency;
 
   Future<void> _openCurrencyBottomSheet(BuildContext context) async {
-    List<String> availableCurrencies;
-
-    try {
-      final blocState = context.read<BitcoinPriceBloc>().state;
-      if (blocState.availableCurrencies != null &&
-          blocState.availableCurrencies!.isNotEmpty) {
-        availableCurrencies = blocState.availableCurrencies!;
-      } else {
-        final usecase = locator<GetAvailableCurrenciesUsecase>();
-        availableCurrencies = await usecase.execute();
-      }
-    } catch (e) {
-      return;
-    }
-
-    if (availableCurrencies.isEmpty || !context.mounted) {
-      return;
-    }
+    final blocCurrencies = context
+        .read<BitcoinPriceBloc>()
+        .state
+        .availableCurrencies;
+    final availableCurrencies =
+        blocCurrencies != null && blocCurrencies.isNotEmpty
+        ? blocCurrencies
+        : SupportedCurrency.codes;
 
     final selectedCurrency = await BullBottomSheet.show<String?>(
       context: context,
@@ -200,9 +188,9 @@ class _PriceDisplay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final price = rate.indexPrice ?? rate.price ?? 0.0;
+    final price = rate.fiatAmount;
     final dateFormat = DateFormat('MMM d, yyyy HH:mm');
-    final date = rate.createdAt;
+    final date = rate.time;
 
     return Builder(
       builder: (builderContext) {
@@ -292,7 +280,7 @@ class _Chart extends StatefulWidget {
     required this.onTap,
   });
 
-  final List<Rate> rates;
+  final List<PricePoint> rates;
   final int? selectedIndex;
   final ValueChanged<int> onTap;
 
@@ -352,7 +340,7 @@ class _ChartState extends State<_Chart> with TickerProviderStateMixin {
     final rates = widget.rates;
     if (rates.isEmpty) return const SizedBox.shrink();
 
-    final prices = rates.map((r) => r.indexPrice ?? r.price ?? 0.0).toList();
+    final prices = rates.map((r) => r.fiatAmount).toList();
     final minPrice = prices.reduce(math.min);
     final maxPrice = prices.reduce(math.max);
     final priceRange = maxPrice - minPrice;

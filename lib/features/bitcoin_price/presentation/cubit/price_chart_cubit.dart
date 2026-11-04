@@ -1,11 +1,11 @@
-import 'package:bb_mobile/core/price/domain/rate.dart';
-import 'package:bb_mobile/core/price/domain/usecases/get_price_history_usecase.dart';
-import 'package:bb_mobile/core/price/domain/usecases/refresh_price_history_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
-import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/features/bitcoin_price/domain/bitcoin_price_failure.dart';
+import 'package:bb_mobile/features/bitcoin_price/domain/usecases/get_price_history_usecase.dart';
+import 'package:bull_logger/bull_logger.dart';
+import 'package:bull_pricer/bull_pricer.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:primitives/primitives.dart';
 
 part 'price_chart_cubit.freezed.dart';
 part 'price_chart_state.dart';
@@ -16,109 +16,54 @@ class PriceChartCubit extends Cubit<PriceChartState> {
 
   PriceChartCubit({
     required this._getPriceHistoryUsecase,
-    required this._refreshPriceHistoryUsecase,
     required this._getSettingsUsecase,
   }) : super(const PriceChartState());
 
   final GetPriceHistoryUsecase _getPriceHistoryUsecase;
-  final RefreshPriceHistoryUsecase _refreshPriceHistoryUsecase;
   final GetSettingsUsecase _getSettingsUsecase;
 
-  Future<void> loadPriceHistory({
-    String? currency,
-    RateTimelineInterval? interval,
-  }) async {
+  Future<void> loadPriceHistory({String? currency}) async {
     emit(state.copyWith(isLoading: true, failure: null));
 
-    String? selectedCurrency;
+    final String selectedCurrency;
     try {
       final settings = await _getSettingsUsecase.execute();
       selectedCurrency = currency ?? settings.currencyCode;
-
-      final localDayPrices = await _getPriceHistoryUsecase.execute(
-        fromCurrency: 'BTC',
-        toCurrency: selectedCurrency,
-        interval: RateTimelineInterval.day,
-      );
-
-      final localFifteenPrices = await _getPriceHistoryUsecase.execute(
-        fromCurrency: 'BTC',
-        toCurrency: selectedCurrency,
-        interval: RateTimelineInterval.fifteen,
-      );
-
-      final localAllPrices = <Rate>[];
-      if (localFifteenPrices.isNotEmpty) {
-        localAllPrices.addAll(localFifteenPrices);
-      }
-      if (localDayPrices.isNotEmpty) {
-        localAllPrices.addAll(localDayPrices);
-      }
-
-      localAllPrices.sort((a, b) => a.createdAt.compareTo(b.createdAt));
-
-      if (localAllPrices.length >= _minPoints) {
-        emit(
-          state.copyWith(
-            isLoading: false,
-            prices: localAllPrices,
-            currency: selectedCurrency,
-            failure: null,
-          ),
-        );
-      }
-
-      final refreshedDayPrices = await _refreshPriceHistoryUsecase.execute(
-        fromCurrency: 'BTC',
-        toCurrency: selectedCurrency,
-        interval: RateTimelineInterval.day,
-      );
-
-      final refreshedFifteenPrices = await _refreshPriceHistoryUsecase.execute(
-        fromCurrency: 'BTC',
-        toCurrency: selectedCurrency,
-        interval: RateTimelineInterval.fifteen,
-      );
-
-      final refreshedAllPrices = <Rate>[];
-      if (refreshedFifteenPrices.isNotEmpty) {
-        refreshedAllPrices.addAll(refreshedFifteenPrices);
-      }
-      if (refreshedDayPrices.isNotEmpty) {
-        refreshedAllPrices.addAll(refreshedDayPrices);
-      }
-
-      refreshedAllPrices.sort((a, b) => a.createdAt.compareTo(b.createdAt));
-
-      if (refreshedAllPrices.length >= _minPoints) {
-        emit(
-          state.copyWith(
-            isLoading: false,
-            prices: refreshedAllPrices,
-            currency: selectedCurrency,
-            failure: null,
-          ),
-        );
-      } else if (localAllPrices.length < _minPoints) {
-        emit(
-          state.copyWith(
-            isLoading: false,
-            prices: [],
-            currency: selectedCurrency,
-            failure: const PriceChartLoadFailure(),
-          ),
-        );
-      }
     } catch (e) {
       log.warning('loadPriceHistory failed', error: e);
       emit(
         state.copyWith(
           isLoading: false,
           failure: PriceChartUnexpectedFailure(e.toString()),
-          currency: selectedCurrency ?? state.currency,
         ),
       );
+      return;
     }
+
+    final history = await _getPriceHistoryUsecase.execute(
+      currencyCode: selectedCurrency,
+    );
+    emit(switch (history) {
+      Ok(:final value) when value.length >= _minPoints => state.copyWith(
+        isLoading: false,
+        prices: value,
+        currency: selectedCurrency,
+        failure: null,
+      ),
+      // A single point is no chart.
+      Ok() => state.copyWith(
+        isLoading: false,
+        prices: [],
+        currency: selectedCurrency,
+        failure: const PriceChartLoadFailure(),
+      ),
+      Err(:final failure) => state.copyWith(
+        isLoading: false,
+        prices: [],
+        currency: selectedCurrency,
+        failure: failure,
+      ),
+    });
   }
 
   void selectDataPoint(int? index) {

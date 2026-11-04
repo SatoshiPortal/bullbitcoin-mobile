@@ -1,5 +1,4 @@
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
-import 'package:bb_mobile/core/price/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_order_usercase.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
@@ -7,10 +6,12 @@ import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
 import 'package:bb_mobile/core/fees/domain/get_network_fees_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_address_at_index_usecase.dart';
 import 'package:bb_mobile/features/sell/domain/sell_failure.dart';
 import 'package:bull_logger/bull_logger.dart';
+import 'package:bull_pricer/bull_pricer.dart';
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
 
@@ -20,7 +21,7 @@ class LoadSellContextUsecase {
   final GetSettingsUsecase _getSettingsUsecase;
   final GetNetworkFeesUsecase _getNetworkFeesUsecase;
   final GetAddressAtIndexUsecase _getAddressAtIndexUsecase;
-  final ConvertSatsToCurrencyAmountUsecase _convertSatsToCurrencyAmountUsecase;
+  final IndexPriceReader _getIndexPrice;
   final GetOrderUsecase _getOrderUsecase;
 
   const LoadSellContextUsecase({
@@ -28,7 +29,7 @@ class LoadSellContextUsecase {
     required this._getSettingsUsecase,
     required this._getNetworkFeesUsecase,
     required this._getAddressAtIndexUsecase,
-    required this._convertSatsToCurrencyAmountUsecase,
+    required this._getIndexPrice,
     required this._getOrderUsecase,
   });
 
@@ -93,31 +94,47 @@ class LoadSellContextUsecase {
     }
   }
 
+  /// [amountSat] in [currencyCode], or in the settings currency when none is
+  /// given. Without an amount, the price of one bitcoin.
   @useResult
   Future<Result<double, SellFailure>> satsToCurrency({
     BigInt? amountSat,
     String? currencyCode,
   }) async {
+    final SettingsEntity settings;
     try {
-      final value = await _convertSatsToCurrencyAmountUsecase.execute(
-        amountSat: amountSat,
-        currencyCode: currencyCode,
-      );
-      // The pricer reports an unavailable price as zero. The sell estimate
-      // would then need zero sats and pass any balance check.
-      if (!value.isFinite || value <= 0) {
-        return const Err(
-          SellQuoteUnavailableFailure('No price for the estimate'),
-        );
-      }
-      return Ok(value);
+      settings = await _getSettingsUsecase.execute();
     } catch (e, st) {
       log.severe(
-        message: 'Failed to convert sats to the display currency',
+        message: 'Failed to read the settings for the sell price',
         error: e,
         trace: st,
       );
       return Err(SellUnexpectedFailure('$e'));
+    }
+    final code = currencyCode ?? settings.currencyCode;
+    final currency = SupportedCurrency.tryFromCode(code);
+    if (currency == null) {
+      return Err(SellUnexpectedFailure('Currency not available: $code'));
+    }
+    final price = await _getIndexPrice(
+      network: settings.environment.isTestnet
+          ? BitcoinNetwork.testnet
+          : BitcoinNetwork.mainnet,
+      currency: currency,
+    );
+    switch (price) {
+      case Ok(:final value):
+        return Ok(
+          value.fiatValueOf(
+            amountSat ?? ConversionConstants.satsAmountOfOneBitcoin,
+          ),
+        );
+      // Without a price there is no estimate: a zero rate would need zero
+      // sats and pass any balance check.
+      case Err(:final failure):
+        log.warning('Sell price unavailable: ${failure.runtimeType}');
+        return Err(SellQuoteUnavailableFailure(failure.logMessage));
     }
   }
 
