@@ -330,7 +330,7 @@ void main() {
     );
 
     test(
-      'rolls back the server when the relaxed policy cannot be saved',
+      'propagates a failure to save the custom server and its policy',
       () async {
         when(
           () => serverRepo.fetchByUrl(any()),
@@ -348,27 +348,15 @@ void main() {
             proxyEndpoint: any(named: 'proxyEndpoint'),
           ),
         ).thenAnswer((_) async => ElectrumServerStatus.online);
-        when(
-          () => serverRepo.save(any()),
-        ).thenAnswer((_) async => const Ok(null));
-        when(() => electrumSettingsRepo.save(any())).thenAnswer(
+        when(() => serverRepo.saveCustom(any())).thenAnswer(
           (_) async => const Err(ElectrumSaveFailure('raw db error')),
         );
-        when(
-          () => serverRepo.delete(url: any(named: 'url')),
-        ).thenAnswer((_) async => const Ok(null));
 
         final result = await usecase.execute(request());
 
         expect(result, isA<Err>());
         expect((result as Err).failure, isA<ElectrumSaveFailure>());
-        final savedSettings =
-            verify(
-                  () => electrumSettingsRepo.save(captureAny()),
-                ).captured.single
-                as ElectrumSettings;
-        expect(savedSettings.validateDomain, isFalse);
-        verify(() => serverRepo.delete(url: 'ssl://a.example:50002')).called(1);
+        verify(() => serverRepo.saveCustom(any())).called(1);
       },
     );
 

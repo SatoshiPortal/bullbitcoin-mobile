@@ -7,6 +7,11 @@ import 'package:meta/meta.dart';
 abstract class ElectrumServerRepository {
   @useResult
   Future<Result<void, ElectrumFailure>> save(ElectrumServer server);
+
+  /// Adds a custom server and applies its domain-validation policy together.
+  @useResult
+  Future<Result<void, ElectrumFailure>> saveCustom(ElectrumServer server);
+
   @useResult
   Future<Result<void, ElectrumFailure>> batchSave(List<ElectrumServer> servers);
   @useResult

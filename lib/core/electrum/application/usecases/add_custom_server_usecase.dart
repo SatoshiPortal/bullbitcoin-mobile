@@ -111,34 +111,8 @@ class AddCustomServerUsecase {
         await route?.close();
       }
 
-      switch (await _electrumServerRepository.save(server)) {
-        case Ok():
-          break;
-        case Err(:final failure):
-          return Err(failure);
-      }
-
-      if (electrumSettings.validateDomain) {
-        electrumSettings.update(newValidateDomain: false);
-        switch (await _electrumSettingsRepository.save(electrumSettings)) {
-          case Ok():
-            break;
-          case Err(:final failure):
-            final rollback = await _electrumServerRepository.delete(
-              url: server.url,
-            );
-            if (rollback case Err(:final failure)) {
-              log.severe(
-                message: 'Failed to roll back custom electrum server',
-                error: failure,
-                trace: StackTrace.current,
-              );
-            }
-            return Err(failure);
-        }
-      }
-
-      return const Ok(ElectrumServerStatus.online);
+      final saved = await _electrumServerRepository.saveCustom(server);
+      return saved.map((_) => ElectrumServerStatus.online);
     } on OnionServerWithoutTorException catch (error, st) {
       log.severe(
         message: 'External Tor unavailable for custom onion server',

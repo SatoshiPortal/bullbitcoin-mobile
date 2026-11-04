@@ -31,6 +31,25 @@ class DriftElectrumServerRepository implements ElectrumServerRepository {
   }
 
   @override
+  Future<Result<void, ElectrumFailure>> saveCustom(
+    ElectrumServer server,
+  ) async {
+    try {
+      await _datasource.storeCustom(ElectrumServerModel.fromEntity(server));
+      return const Ok(null);
+    } on Exception catch (e, st) {
+      log.severe(
+        message: 'Failed to save custom electrum server',
+        error: e.runtimeType,
+        trace: st,
+      );
+      return const Err(
+        ElectrumSaveFailure('Could not save custom Electrum server'),
+      );
+    }
+  }
+
+  @override
   Future<Result<void, ElectrumFailure>> batchSave(
     List<ElectrumServer> servers,
   ) async {
