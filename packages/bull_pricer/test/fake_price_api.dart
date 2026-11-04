@@ -41,12 +41,40 @@ FakePriceAnswer element(Map<String, Object> element) => (
 const mainnetIndexPrice = 11421420;
 const testnetIndexPrice = 5000000;
 
+/// A price history answer with [rates], each `(time, indexPrice)`.
+FakePriceAnswer historyElement(List<(DateTime, int)> rates) => element({
+  'precision': 2,
+  'rates': [
+    for (final (time, indexPrice) in rates)
+      {
+        'periodStart': time.toUtc().toIso8601String(),
+        'createdAt': time.toUtc().toIso8601String(),
+        'indexPrice': indexPrice,
+      },
+  ],
+});
+
 /// Answers like the real API: `getRate` with the index price of the network
-/// the request was addressed to.
+/// the request was addressed to, `getIndexRateHistory` with a few points
+/// ending at the requested `toDate`: one a day for `day`, one for `fifteen`.
 FakePriceAnswer realisticAnswer(FakePriceRequest request) {
   final indexPrice = request.host.contains('api05')
       ? testnetIndexPrice
       : mainnetIndexPrice;
+  if (request.method == 'getIndexRateHistory') {
+    final to = DateTime.fromMillisecondsSinceEpoch(
+      int.parse(request.params['toDate'] as String),
+      isUtc: true,
+    );
+    return historyElement(switch (request.params['interval']) {
+      'day' => [
+        (to.subtract(const Duration(days: 2)), indexPrice - 200),
+        (to.subtract(const Duration(days: 1)), indexPrice - 100),
+        (to, indexPrice),
+      ],
+      _ => [(to.subtract(const Duration(minutes: 5)), indexPrice)],
+    });
+  }
   return element({'indexPrice': indexPrice, 'precision': 2});
 }
 

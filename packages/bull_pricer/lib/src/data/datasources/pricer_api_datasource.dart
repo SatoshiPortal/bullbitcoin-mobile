@@ -1,6 +1,8 @@
 import 'dart:async';
 
+import 'package:bull_pricer/src/data/models/price_history_response_model.dart';
 import 'package:bull_pricer/src/data/models/price_response_model.dart';
+import 'package:bull_pricer/src/domain/entities/price_history_interval.dart';
 import 'package:bull_pricer/src/domain/entities/supported_currency.dart';
 import 'package:dio/dio.dart';
 import 'package:primitives/primitives.dart';
@@ -24,6 +26,26 @@ final class PricerApiDatasource {
     final params = {'fromCurrency': 'BTC', 'toCurrency': currency.code};
     final body = await _request(dio, 'getRate', params);
     return _priceFrom(body);
+  }
+
+  /// Public price history
+  Future<PriceHistoryResponseModel> indexPriceHistory(
+    BitcoinNetwork network,
+    SupportedCurrency currency,
+    PriceHistoryInterval interval, {
+    required DateTime from,
+    required DateTime to,
+  }) async {
+    final dio = _clientHttp(network);
+    final params = {
+      'fromCurrency': 'BTC',
+      'toCurrency': currency.code,
+      'interval': interval.code,
+      'fromDate': '${from.millisecondsSinceEpoch}',
+      'toDate': '${to.millisecondsSinceEpoch}',
+    };
+    final body = await _request(dio, 'getIndexRateHistory', params);
+    return PriceHistoryResponseModel.fromJson(_elementOf(body));
   }
 
   Dio _clientHttp(BitcoinNetwork network) {
@@ -64,13 +86,15 @@ final class PricerApiDatasource {
     return response.data;
   }
 
-  PriceResponseModel _priceFrom(Object? body) => switch (body) {
+  PriceResponseModel _priceFrom(Object? body) =>
+      PriceResponseModel.fromJson(_elementOf(body));
+
+  Map<String, dynamic> _elementOf(Object? body) => switch (body) {
     {'error': final Object error} => throw FormatException(
       'Price API error: $error',
       body,
     ),
-    {'result': {'element': final Map<String, dynamic> element}} =>
-      PriceResponseModel.fromJson(element),
+    {'result': {'element': final Map<String, dynamic> element}} => element,
     _ => throw FormatException('No price in the answer', body),
   };
 }

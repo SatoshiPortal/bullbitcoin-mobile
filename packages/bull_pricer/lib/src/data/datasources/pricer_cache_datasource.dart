@@ -1,5 +1,7 @@
 import 'package:bull_pricer/src/data/models/price_model.dart';
+import 'package:bull_pricer/src/data/models/price_point_model.dart';
 import 'package:bull_pricer/src/data/pricer_database.dart';
+import 'package:bull_pricer/src/domain/entities/price_history_interval.dart';
 import 'package:bull_pricer/src/domain/entities/supported_currency.dart';
 import 'package:drift/drift.dart';
 import 'package:primitives/primitives.dart';
@@ -48,5 +50,65 @@ final class PricerCacheDatasource {
             fetchedAt: price.fetchedAt.millisecondsSinceEpoch,
           ),
         );
+  }
+
+  /// The stored points of a price history from [from] on, oldest first.
+  Future<List<PricePointModel>> findHistory(
+    BitcoinNetwork network,
+    SupportedCurrency currency,
+    PriceHistoryInterval interval, {
+    required DateTime from,
+  }) async {
+    final rows =
+        await (_db.select(_db.cachedPricePoints)
+              ..where(
+                (p) =>
+                    p.network.equals(network.name) &
+                    p.currency.equals(currency.code) &
+                    p.interval.equals(interval.code) &
+                    p.time.isBiggerOrEqualValue(from.millisecondsSinceEpoch),
+              )
+              ..orderBy([(p) => OrderingTerm.asc(p.time)]))
+            .get();
+    return [
+      for (final row in rows)
+        PricePointModel(
+          network: network,
+          currency: currency,
+          interval: interval,
+          time: DateTime.fromMillisecondsSinceEpoch(row.time, isUtc: true),
+          fiatAmount: row.fiatAmount,
+        ),
+    ];
+  }
+
+  /// Replaces the stored points of a price history with [points].
+  Future<void> replaceHistory(
+    BitcoinNetwork network,
+    SupportedCurrency currency,
+    PriceHistoryInterval interval,
+    List<PricePointModel> points,
+  ) async {
+    await _db.transaction(() async {
+      await (_db.delete(_db.cachedPricePoints)..where(
+            (p) =>
+                p.network.equals(network.name) &
+                p.currency.equals(currency.code) &
+                p.interval.equals(interval.code),
+          ))
+          .go();
+      await _db.batch((batch) {
+        batch.insertAll(_db.cachedPricePoints, [
+          for (final point in points)
+            CachedPricePointsCompanion.insert(
+              network: network.name,
+              currency: currency.code,
+              interval: interval.code,
+              time: point.time.millisecondsSinceEpoch,
+              fiatAmount: point.fiatAmount,
+            ),
+        ], mode: InsertMode.insertOrReplace);
+      });
+    });
   }
 }
