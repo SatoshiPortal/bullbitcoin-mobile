@@ -122,6 +122,8 @@ export 'src/domain/wallet_address_record.dart' show WalletAddressRecord;
 export 'src/domain/wallet_address_reservation_port.dart'
     show WalletAddressReservationPort;
 
+export 'src/data/wallet_snapshot_reader.dart' show WalletSnapshotReader;
+
 export 'src/domain/wallet_transaction_details.dart'
     show WalletTransactionDetails;
 export 'src/domain/transaction_input_details.dart'
@@ -134,3 +136,4 @@ export 'src/domain/transaction_output_details.dart'
         TransactionOutputDetails,
         BitcoinTransactionOutputDetails,
         LiquidTransactionOutputDetails;
+export 'src/data/wallet_transaction_reader.dart' show WalletTransactionReader;
