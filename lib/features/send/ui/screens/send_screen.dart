@@ -885,7 +885,7 @@ class _FallbackFeesWarning extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InfoCard(
+    return BullInfoCard(
       title: context.loc.sendFeesFallbackWarningTitle,
       description: context.loc.sendFeesFallbackWarning,
       tagColor: context.appColors.error,

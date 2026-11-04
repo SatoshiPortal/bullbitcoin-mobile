@@ -98,16 +98,20 @@ class _Socks5Proxy {
             host.endsWith('.invalid') || host.endsWith('.onion')
             ? InternetAddress.loopbackIPv4.address
             : host;
-        upstream = await Socket.connect(destinationHost, destinationPort);
+        final connection = await Socket.connect(
+          destinationHost,
+          destinationPort,
+        );
+        upstream = connection;
         connected = true;
         client.add(const [0x05, 0x00, 0x00, 0x01, 0, 0, 0, 0, 0, 0]);
-        upstream!.listen(
+        connection.listen(
           client.add,
           onDone: client.destroy,
           onError: (_) => client.destroy(),
         );
         if (buffer.isNotEmpty) {
-          upstream!.add(List<int>.of(buffer));
+          connection.add(List<int>.of(buffer));
           buffer.clear();
         }
       },
