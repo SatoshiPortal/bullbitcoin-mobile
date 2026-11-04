@@ -1,0 +1,23 @@
+import 'package:primitives/primitives.dart';
+import 'package:wallet/wallet.dart';
+
+class SyncWalletUsecase {
+  final WalletRepository _wallet;
+
+  SyncWalletUsecase({required WalletRepository walletRepository})
+    : _wallet = walletRepository;
+
+  /// [discoverHistory] also scans addresses the wallet has not revealed, up
+  /// to the stop gap; only explicit user refreshes ask for it.
+  Future<void> execute(Wallet wallet, {bool discoverHistory = false}) async {
+    try {
+      await _wallet.sync(wallet, discoverHistory: discoverHistory);
+    } catch (e) {
+      throw SyncWalletException('$e');
+    }
+  }
+}
+
+class SyncWalletException extends BullException {
+  SyncWalletException(super.message);
+}

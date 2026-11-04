@@ -1,14 +1,13 @@
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/result.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/create_default_wallets_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
+import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:primitives/primitives.dart' show Fingerprint;
 import 'package:secrets/secrets.dart' as s;
 import 'package:secrets/testing.dart';
+import 'package:wallet/wallet.dart';
 
 class _Settings extends Mock implements SettingsRepository {}
 
@@ -31,7 +30,7 @@ void main() {
     stored =
         (await secrets.import(words: words) as Ok<s.Secret, s.SecretFailure>)
             .value;
-    registerFallbackValue(stored);
+    registerFallbackValue(stored.id);
     registerFallbackValue(Network.bitcoinMainnet);
     registerFallbackValue(ScriptType.bip84);
     settings = _Settings();
@@ -44,10 +43,7 @@ void main() {
       ),
     );
     when(
-      () => wallets.getWallets(
-        onlyDefaults: true,
-        environment: Environment.mainnet,
-      ),
+      () => wallets.getWallets(onlyDefaults: true, isMainnet: true),
     ).thenAnswer((_) async => Ok<List<Wallet>, WalletFailure>([]));
     create = CreateDefaultWalletsUsecase(
       secrets: secrets,
@@ -70,7 +66,7 @@ void main() {
         ).thenAnswer((_) async => const Ok<void, WalletFailure>(null));
         when(
           () => wallets.createWallet(
-            secret: any(named: 'secret'),
+            secretId: any(named: 'secretId'),
             network: any(named: 'network'),
             scriptType: ScriptType.bip84,
             isDefault: true,
@@ -78,8 +74,11 @@ void main() {
           ),
         ).thenAnswer((invocation) async {
           attempts++;
-          final secret = invocation.namedArguments[#secret] as s.Secret;
-          expect(secret.id, stored.id);
+          final secretId = invocation.namedArguments[#secretId] as Fingerprint;
+          expect(secretId, stored.id);
+          final secret =
+              (await secrets.fetch(secretId) as Ok<s.Secret, s.SecretFailure>)
+                  .value;
           expect(secret.info.hasPassphrase, isFalse);
           if (attempts == failedAttempt) {
             throw Exception('temporary wallet creation failure');
@@ -117,7 +116,7 @@ void main() {
     final persisted = Map<String, String>.of(storage.entries);
     when(
       () => wallets.createWallet(
-        secret: any(named: 'secret'),
+        secretId: any(named: 'secretId'),
         network: any(named: 'network'),
         scriptType: ScriptType.bip84,
         isDefault: true,
@@ -131,7 +130,7 @@ void main() {
     );
     verify(
       () => wallets.createWallet(
-        secret: any(named: 'secret'),
+        secretId: any(named: 'secretId'),
         network: Network.bitcoinMainnet,
         scriptType: ScriptType.bip84,
         isDefault: true,
@@ -169,10 +168,7 @@ void main() {
           when(() => bitcoin.network).thenReturn(Network.bitcoinMainnet);
           when(() => liquid.network).thenReturn(Network.liquidMainnet);
           when(
-            () => wallets.getWallets(
-              onlyDefaults: true,
-              environment: Environment.mainnet,
-            ),
+            () => wallets.getWallets(onlyDefaults: true, isMainnet: true),
           ).thenAnswer(
             (_) async => Ok<List<Wallet>, WalletFailure>([
               bitcoin,
@@ -192,7 +188,7 @@ void main() {
           expect(storage.reads, reads);
           verifyNever(
             () => wallets.createWallet(
-              secret: any(named: 'secret'),
+              secretId: any(named: 'secretId'),
               network: any(named: 'network'),
               scriptType: ScriptType.bip84,
               isDefault: true,
@@ -210,10 +206,7 @@ void main() {
     when(() => bitcoin.network).thenReturn(Network.bitcoinMainnet);
     when(() => liquid.network).thenReturn(Network.liquidMainnet);
     when(
-      () => wallets.getWallets(
-        onlyDefaults: true,
-        environment: Environment.mainnet,
-      ),
+      () => wallets.getWallets(onlyDefaults: true, isMainnet: true),
     ).thenAnswer(
       (_) async => Ok<List<Wallet>, WalletFailure>([bitcoin, liquid]),
     );
@@ -228,10 +221,7 @@ void main() {
       final bitcoin = _Wallet();
       when(() => bitcoin.network).thenReturn(Network.bitcoinMainnet);
       when(
-        () => wallets.getWallets(
-          onlyDefaults: true,
-          environment: Environment.mainnet,
-        ),
+        () => wallets.getWallets(onlyDefaults: true, isMainnet: true),
       ).thenAnswer((_) async => Ok<List<Wallet>, WalletFailure>([bitcoin]));
       final before = Map<String, String>.of(storage.entries);
       final reads = storage.reads;

@@ -133,6 +133,24 @@ export 'src/domain/wallet_address_reservation_port.dart'
     show WalletAddressReservationPort;
 
 export 'src/data/wallet_address_repository.dart' show WalletAddressRepository;
+export 'src/domain/usecases/calculate_bitcoin_absolute_fees_usecase.dart'
+    show
+        CalculateBitcoinAbsoluteFeesUsecase,
+        CalculateBitcoinAbsoluteFeesException;
+export 'src/domain/usecases/check_liquid_consolidation_usecase.dart'
+    show CheckLiquidConsolidationUsecase, kLiquidConsolidationThreshold;
+export 'src/domain/usecases/check_wallet_syncing_usecase.dart'
+    show CheckWalletSyncingUsecase;
+export 'src/domain/usecases/get_wallet_usecase.dart'
+    show GetWalletUsecase, GetWalletException;
+export 'src/domain/usecases/sync_wallet_usecase.dart'
+    show SyncWalletUsecase, SyncWalletException;
+export 'src/domain/usecases/watch_electrum_sync_results_usecase.dart'
+    show WatchElectrumSyncResultsUsecase, WatchElectrumSyncResultsException;
+export 'src/domain/usecases/watch_finished_wallet_syncs_usecase.dart'
+    show WatchFinishedWalletSyncsUsecase, WatchFinishedWalletSyncsException;
+export 'src/domain/usecases/watch_started_wallet_syncs_usecase.dart'
+    show WatchStartedWalletSyncsUsecase, WatchStartedWalletSyncsException;
 
 export 'src/data/wallet_snapshot_reader.dart' show WalletSnapshotReader;
 
