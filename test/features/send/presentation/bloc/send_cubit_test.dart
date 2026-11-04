@@ -6462,8 +6462,8 @@ void main() {
 
         expect(cubit.state.unsignedPsbt, 'cHNidP8=');
         expect(cubit.state.usingFallbackFees, isTrue);
-        expect(cubit.state.bitcoinFeesList!.fastest, const RelativeFee(250));
-        expect(cubit.state.liquidFeesList!.fastest, const RelativeFee(25));
+        expect(cubit.state.bitcoinFeesList?.fastest, const RelativeFee(250));
+        expect(cubit.state.liquidFeesList?.fastest, const RelativeFee(25));
         expect(cubit.state.failure, isNull);
       },
     );
