@@ -38,9 +38,12 @@ This split maps almost 1:1 onto the melos target (see Monorepo Migration): `lib/
 
 ## 🚪 Entry points & code tour
 
-New to the code? Start at these three files — together they are the app's **composition root**:
+New to the code? Start at these files — together they are the app's **composition root**:
 
-- **`lib/main.dart`** — process entry. `Bull.init()` runs before `runApp()`: logging → error reporting (Sentry, consent-gated through the first-run wizard) → Flutter-Rust-Bridge / `bull_sdk` init → `initLocator()` → wizard flush. Then `runApp()` provides the always-on top-level blocs (app-startup, wallet, settings, bitcoin-price, exchange).
+- **`lib/main.dart`** — process entry, delegates to `startApp()` in `lib/bootstrap.dart`.
+- **`lib/bootstrap.dart`** — Flutter binding, secure-storage prewarm, startup wizard, application rendering and startup/global error handling. `lib/startup_wizard.dart` owns the pre-locator wizard flow and pending consent read.
+- **`lib/init.dart`** — ordered service initialization. `Bull.init()` runs before the wallet app's `runApp()`: logging → error reporting (Sentry, consent-gated through the first-run wizard) → Flutter-Rust-Bridge / `bull_sdk` init → `AppLocator.setup()` → wizard flush. `bull_logger.initializeLogging()` owns log setup; `lib/report_logger_adapter.dart` connects its reporting contract to the app's consent-gated `Report`. Native-library initialization lives in `lib/native_libraries.dart`, Tor diagnostic collection in `lib/tor_diagnostic_context.dart`, and background-task cancellation in `lib/core/background_tasks/handler.dart`. The foreground and background composition roots share these helpers without importing one another.
+- **`lib/app.dart`** — root widget, lifecycle handling and always-on top-level blocs (app-startup, wallet, settings, bitcoin-price, exchange).
 - **`lib/locator.dart`** — dependency injection (`get_it`). `AppLocator.setup()` registers **core first** (`CoreLocator` — datasources, ports, repositories, services, use-cases, facades), then calls **every feature's `<Feature>Locator.setup(locator)`**. This file is the single list of what's wired into the app.
 - **`lib/router.dart`** — navigation (`GoRouter`). `AppRouter.router` starts at `WalletRoute.walletHome`, wraps the app in a root `ShellRoute`, and **spreads each feature's routes** (`...ExchangeRouter.routes`, `...BuyRouter.routes`, …) into the tree.
 
@@ -351,6 +354,12 @@ The codebase is migrating, incrementally, from a single Flutter package to a [me
 - **`features/`** — Flutter packages, one per user-facing flow (`send`, `receive`, `buy`, `sell`, `recoverbull`, …). Each owns its domain behind its `public/` facade and is mounted into the shell (routes + DI). A feature may carry an `example/` mini-app to run it in isolation during development; the shipped artifact is the shell embedding the feature, not a standalone app.
 - **`packages/`** — app-internal foundation and infrastructure consumed by features. Packages stay pure Dart by default (`wallet`, `storage`, `electrum`, `blockchain`, …), but may depend on Flutter when encapsulating an inherently Flutter/platform capability (`bull_tor`), when owning a sealed UI component (see "Sealed UI" below), or when implementing the shared **design-system package** (`bull_ui`, see "Design-system package" below). A Flutter dependency must serve the package's encapsulated capability; it is not permission to add feature presentation or screens.
 
+**End state: the shell, `features/` and `packages/`, nothing else.** `lib/core` moves into `packages/` and `lib/features` into `features/`; the migration ends when both are empty and deleted, leaving `lib/` with the shell only (routing, DI wiring, composition).
+
+**Why: a real dependency graph.** While code lives in `lib/core` and `lib/features`, it is all one package: any file can import any other and the dependency graph exists only on paper. As workspace members, every dependency is declared in a `pubspec.yaml`, so an undeclared import does not resolve, pub rejects cycles, `implementation_imports` closes every `src/`, and the graph is generated rather than hand-drawn: `fvm dart run melos list --mermaid` prints it and `fvm dart run melos list --cycles` checks it.
+
+**`lib/core` disappears.** It is the legacy home of what becomes `packages/`. No change adds code to `lib/core`, neither logic nor wiring: a change that needs to touch a `lib/core` domain extracts the part it touches into its package (or feature), so its `lib/core` diff is net negative. Wiring lives in the shell (`lib/locator.dart`, `lib/bootstrap.dart`, `lib/*_adapters.dart`) or in the package's own locator, never in `lib/core/core_locator.dart`.
+
 Each extracted package gets `resolution: workspace` and is listed under a `workspace:` key in the root `pubspec.yaml`; the root app keeps `useRootAsPackage: true` and consumes the members. Dependencies point one way and stay acyclic: **shell → features → packages**. `packages/` never import `features/`; a feature touches a package only through its published API.
 
 **Tor package (`packages/bull_tor`).** Tor is a Bull Mobile-specific Flutter infrastructure package. The Bull-prefixed package name lets it coexist with the Foundation `tor` dependency while consumers migrate in independently testable slices, and keeps its ownership explicit after that dependency is removed. The feature-facing `tor.dart` library publishes validated routes, sealed connection states, typed failures, and the operations consumers need. The narrower shell-facing `tor_adapter.dart` publishes composition, lifecycle, logging, and test seams. Internally the package owns Onion/Arti initialization, state/cache paths, mobile dormancy, the embedded SOCKS listener adapter, and provider-agnostic verification of a user-managed local SOCKS5 proxy.
@@ -375,7 +384,7 @@ The reason is the security property the package exists for: it hands a keystore 
 
 Consequence for consumers: an app test does not mock `Secrets`; it installs a `FakeSecureStoragePlatform` and uses the real one — see `test/features/app_startup/domain/default_secret_routing_test.dart`. The derogation is recorded in `packages/secrets/README.md` too, and it is specific to this package: no other package may skip rule #6 by citing it.
 
-This is a slow, deliberate migration. Until a module is extracted, it stays in `lib/` and follows the same rules it does today. Do not move code into `packages/`/`features/` opportunistically — extraction is its own scoped, reviewed change with the security/bitcoin/build implications considered per module.
+This is a slow, deliberate migration. Code that no change touches stays in `lib/` until its module is extracted. Do not move unrelated code into `packages/`/`features/` opportunistically: each extraction is a scoped, reviewed change with the security/bitcoin/build implications considered per module. New work never lands in `lib/core`; it goes into the package that owns the domain, created if needed.
 
 ## 🤖 Rules for AI
 

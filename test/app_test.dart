@@ -1,4 +1,4 @@
-import 'package:bb_mobile/main.dart';
+import 'package:bb_mobile/app.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:primitives/primitives.dart';
 import 'package:flutter/material.dart';

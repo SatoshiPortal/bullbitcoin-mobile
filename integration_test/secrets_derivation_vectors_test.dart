@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:bb_mobile/main.dart';
+import 'package:bb_mobile/init.dart';
 import 'package:bull_sdk/lwk.dart' as lwk;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
