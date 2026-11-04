@@ -43,6 +43,60 @@ Rate _rate(double price, int day) => Rate(
 );
 
 void main() {
+  Future<void> pumpChart(WidgetTester tester, List<Rate> prices) async {
+    final watchCurrencyChanges = _MockWatchCurrencyChangesUsecase();
+    when(
+      () => watchCurrencyChanges.execute(),
+    ).thenAnswer((_) => const Stream<String>.empty());
+    final bitcoinPriceBloc = BitcoinPriceBloc(
+      getAvailableCurrenciesUsecase: _MockGetAvailableCurrenciesUsecase(),
+      getSettingsUsecase: _MockGetSettingsUsecase(),
+      convertSatsToCurrencyAmountUsecase:
+          _MockConvertSatsToCurrencyAmountUsecase(),
+      watchCurrencyChangesUsecase: watchCurrencyChanges,
+    );
+    final priceChartCubit = PriceChartCubit(
+      getPriceHistoryUsecase: _MockGetPriceHistoryUsecase(),
+      refreshPriceHistoryUsecase: _MockRefreshPriceHistoryUsecase(),
+      getSettingsUsecase: _MockGetSettingsUsecase(),
+    )..emit(PriceChartState(prices: prices, currency: 'CAD'));
+    addTearDown(bitcoinPriceBloc.close);
+    addTearDown(priceChartCubit.close);
+
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.themeData(AppThemeType.light),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: Scaffold(
+          body: MultiBlocProvider(
+            providers: [
+              BlocProvider.value(value: bitcoinPriceBloc),
+              BlocProvider.value(value: priceChartCubit),
+            ],
+            child: const PriceChartWidget(),
+          ),
+        ),
+      ),
+    );
+    await tester.pump(const Duration(seconds: 2));
+  }
+
+  // A single point used to divide the chart width by zero and paint NaN
+  // offsets on every frame.
+  testWidgets('a single point paints without error', (tester) async {
+    await pumpChart(tester, [_rate(100, 1)]);
+
+    expect(tester.takeException(), isNull);
+  });
+
+  // Equal prices used to divide by a zero price range.
+  testWidgets('a flat line paints without error', (tester) async {
+    await pumpChart(tester, [_rate(100, 1), _rate(100, 2), _rate(100, 3)]);
+
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('settles after the chart animations finish', (tester) async {
     final watchCurrencyChanges = _MockWatchCurrencyChangesUsecase();
     when(

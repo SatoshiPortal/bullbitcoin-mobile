@@ -11,6 +11,9 @@ part 'price_chart_cubit.freezed.dart';
 part 'price_chart_state.dart';
 
 class PriceChartCubit extends Cubit<PriceChartState> {
+  /// A line needs two points: with fewer, there is no chart to show.
+  static const _minPoints = 2;
+
   PriceChartCubit({
     required this._getPriceHistoryUsecase,
     required this._refreshPriceHistoryUsecase,
@@ -54,7 +57,7 @@ class PriceChartCubit extends Cubit<PriceChartState> {
 
       localAllPrices.sort((a, b) => a.createdAt.compareTo(b.createdAt));
 
-      if (localAllPrices.isNotEmpty) {
+      if (localAllPrices.length >= _minPoints) {
         emit(
           state.copyWith(
             isLoading: false,
@@ -87,7 +90,7 @@ class PriceChartCubit extends Cubit<PriceChartState> {
 
       refreshedAllPrices.sort((a, b) => a.createdAt.compareTo(b.createdAt));
 
-      if (refreshedAllPrices.isNotEmpty) {
+      if (refreshedAllPrices.length >= _minPoints) {
         emit(
           state.copyWith(
             isLoading: false,
@@ -96,7 +99,7 @@ class PriceChartCubit extends Cubit<PriceChartState> {
             failure: null,
           ),
         );
-      } else if (localAllPrices.isEmpty) {
+      } else if (localAllPrices.length < _minPoints) {
         emit(
           state.copyWith(
             isLoading: false,

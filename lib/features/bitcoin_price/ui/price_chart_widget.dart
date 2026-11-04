@@ -442,7 +442,15 @@ class _ChartPainter extends CustomPainter {
     if (prices.isEmpty) return;
 
     final priceRange = maxPrice - minPrice;
-    final stepX = size.width / (prices.length - 1);
+    // One point, or all prices equal: nothing to divide by. The point goes at
+    // the left, the flat line in the middle.
+    final stepX = prices.length > 1 ? size.width / (prices.length - 1) : 0.0;
+    double heightOf(double price) {
+      final normalizedPrice = priceRange > 0
+          ? (price - minPrice) / priceRange
+          : 0.5;
+      return size.height - (normalizedPrice * size.height);
+    }
 
     final paint = Paint()
       ..color = lineColor
@@ -464,16 +472,13 @@ class _ChartPainter extends CustomPainter {
 
     final points = <Offset>[];
     for (var i = 0; i < prices.length; i++) {
-      double y;
+      final double y;
       if (i >= startIndex) {
-        final normalizedPrice = (prices[i] - minPrice) / priceRange;
-        y = size.height - (normalizedPrice * size.height);
+        y = heightOf(prices[i]);
       } else if (startIndex > 0) {
-        final normalizedPrice = (prices[startIndex] - minPrice) / priceRange;
-        y = size.height - (normalizedPrice * size.height);
+        y = heightOf(prices[startIndex]);
       } else {
-        final normalizedPrice = (prices.last - minPrice) / priceRange;
-        y = size.height - (normalizedPrice * size.height);
+        y = heightOf(prices.last);
       }
 
       final x = i * stepX;
@@ -513,8 +518,7 @@ class _ChartPainter extends CustomPainter {
         selectedIndex! >= 0 &&
         selectedIndex! < prices.length) {
       final x = selectedIndex! * stepX;
-      final normalizedPrice = (prices[selectedIndex!] - minPrice) / priceRange;
-      final y = size.height - (normalizedPrice * size.height);
+      final y = heightOf(prices[selectedIndex!]);
 
       final dotRadius = 6.0 * pulseAnimation.value;
       final glowRadius = dotRadius + 4;
