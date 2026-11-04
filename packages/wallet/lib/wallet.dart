@@ -68,6 +68,7 @@ export 'src/data/bdk/wallet_psbt_inspection.dart' show WalletPsbtInspection;
 
 // Composition and the held secrets adapters still construct these services.
 export 'src/data/bdk/bdk_wallet_datasource.dart' show BdkWalletDatasource;
+export 'src/data/lwk/lwk_wallet_datasource.dart' show LwkWalletDatasource;
 
 export 'src/data/models/wallet_model.dart'
     show WalletModel, PublicBdkWalletModel, PublicLwkWalletModel;
