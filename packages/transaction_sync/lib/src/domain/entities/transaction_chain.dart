@@ -1,0 +1,1 @@
+enum TransactionChain { external, internal }
