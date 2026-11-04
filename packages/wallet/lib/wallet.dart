@@ -132,6 +132,8 @@ export 'src/domain/wallet_address_record.dart' show WalletAddressRecord;
 export 'src/domain/wallet_address_reservation_port.dart'
     show WalletAddressReservationPort;
 
+export 'src/data/wallet_address_repository.dart' show WalletAddressRepository;
+
 export 'src/data/wallet_snapshot_reader.dart' show WalletSnapshotReader;
 
 export 'src/domain/wallet_transaction_details.dart'
