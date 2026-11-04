@@ -1,13 +1,12 @@
 import 'package:bb_mobile/features/fund_exchange/domain/value_objects/funding_details.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/qr_display_widget.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/bloc/fund_exchange_bloc.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/widgets/fund_exchange_details_error_card.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/widgets/fund_exchange_done_bottom_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullText, Gap;
 
 class FundExchangeCanadaPostScreen extends StatelessWidget {
   const FundExchangeCanadaPostScreen({super.key});
@@ -33,7 +32,7 @@ class FundExchangeCanadaPostScreen extends StatelessWidget {
             mainAxisAlignment: .center,
             crossAxisAlignment: .start,
             children: [
-              BBText(
+              BullText(
                 context.loc.fundExchangeCanadaPostTitle,
                 style: theme.textTheme.displaySmall,
               ),
@@ -51,7 +50,7 @@ class FundExchangeCanadaPostScreen extends StatelessWidget {
                   crossAxisAlignment: .start,
                   children: [
                     Expanded(
-                      child: BBText(step, style: theme.textTheme.bodyMedium),
+                      child: BullText(step, style: theme.textTheme.bodyMedium),
                     ),
                   ],
                 ),
@@ -65,7 +64,7 @@ class FundExchangeCanadaPostScreen extends StatelessWidget {
                 Center(
                   child: Column(
                     children: [
-                      BBText(
+                      BullText(
                         context.loc.fundExchangeCanadaPostQrCodeLabel,
                         style: theme.textTheme.bodyMedium,
                         textAlign: .center,

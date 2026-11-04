@@ -7,7 +7,7 @@ import 'package:flutter/widgets.dart';
 /// `logMessage`.
 ///
 /// Deviation from the single-method shape used by the other migrated features:
-/// fund_exchange renders errors as a headline plus a body (`InfoCard.title`,
+/// fund_exchange renders errors as a headline plus a body (`BullInfoCard.title`,
 /// and the bold-title column in `FundExchangeErrorText`), so the title is
 /// exposed as a second method rather than dropped. Both return only `.arb`
 /// strings — neither can carry backend data.
