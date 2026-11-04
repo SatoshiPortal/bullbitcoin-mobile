@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/app_startup/ui/screens/restore_default_secret_screen.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
@@ -7,7 +8,6 @@ import 'package:get_it/get_it.dart';
 import 'package:bb_mobile/features/app_startup/domain/app_startup_failure.dart';
 import 'package:bb_mobile/features/app_startup/presentation/app_startup_failure_l10n.dart';
 import 'package:bb_mobile/features/app_startup/presentation/bloc/app_startup_bloc.dart';
-import 'package:bb_mobile/features/app_startup/ui/screens/legacy_backup_screen.dart';
 import 'package:bb_mobile/features/app_unlock/ui/app_unlock_router.dart';
 import 'package:bb_mobile/features/onboarding/ui/onboarding_router.dart';
 import 'package:bb_mobile/features/onboarding/ui/screens/onboarding_splash.dart';
@@ -44,8 +44,6 @@ class _AppStartupWidgetState extends State<AppStartupWidget> {
               // if (state.isPinCodeSet) return const PinCodeUnlockScreen();
               // return const HomeScreen();
               return widget.app;
-            } else if (state is AppStartupLegacyBackupRequired) {
-              return const LegacyBackupScreen();
             } else if (state is AppStartupFailureState) {
               return AppStartupFailureScreen(failure: state.failure);
             }
@@ -88,13 +86,27 @@ class AppStartupListener extends StatelessWidget {
   }
 }
 
-class AppStartupFailureScreen extends StatelessWidget {
+class AppStartupFailureScreen extends StatefulWidget {
   const AppStartupFailureScreen({super.key, required this.failure});
 
   final AppStartupFailure failure;
 
   @override
+  State<AppStartupFailureScreen> createState() =>
+      _AppStartupFailureScreenState();
+}
+
+class _AppStartupFailureScreenState extends State<AppStartupFailureScreen> {
+  bool _restoring = false;
+
+  @override
   Widget build(BuildContext context) {
+    final failure = widget.failure;
+    if (_restoring && failure is AppStartupMissingDefaultSecretFailure) {
+      return RestoreDefaultSecretScreen(
+        onCancel: () => setState(() => _restoring = false),
+      );
+    }
     return Scaffold(
       body: Center(
         child: Padding(
@@ -134,6 +146,17 @@ class AppStartupFailureScreen extends StatelessWidget {
                   ),
                 ),
               ),
+              // The seed is gone but the wallets are not: the user's own
+              // backup brings it back, checked against the missing wallet.
+              if (failure is AppStartupMissingDefaultSecretFailure) ...[
+                const SizedBox(height: 24),
+                BBButton.big(
+                  onPressed: () => setState(() => _restoring = true),
+                  label: context.loc.appStartupRestoreSecretButton,
+                  bgColor: context.appColors.secondary,
+                  textColor: context.appColors.onSecondary,
+                ),
+              ],
               const SizedBox(height: 24),
               Text(
                 context.loc.appStartupContactSupportMessage,

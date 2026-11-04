@@ -1,0 +1,47 @@
+name: PR custody review
+
+# Asks a contributor why, in a comment on the pull request, when its added lines touch the boundary around users' seeds: an ignore of the package:secrets seal, a new importer of flutter_secure_storage, an import of package:secrets internals, or a keystore dependency in another pubspec. `make custody-check` fails the checks job on the same rules; this is the conversation that goes with it. The rules: tools/pr_governance/custody.js.
+
+on:
+  pull_request_target:
+    branches: [main, develop]
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+
+concurrency:
+  group: pr-custody-review-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    steps:
+      # pull_request_target is privileged. Checkout is pinned to the trusted
+      # base branch and never checks out, reads, or executes PR-head content:
+      # the PR's changes are read as diff text through the API.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+          persist-credentials: false
+      - uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        with:
+          script: |
+            const { MARKER, reviewFiles, commentBody } = require('./tools/pr_governance/custody');
+            const { owner, repo } = context.repo;
+            const number = context.payload.pull_request.number;
+            const files = await github.paginate(github.rest.pulls.listFiles, { owner, repo, pull_number: number, per_page: 100 });
+            const result = reviewFiles(files);
+            const comments = await github.paginate(github.rest.issues.listComments, { owner, repo, issue_number: number, per_page: 100 });
+            const existing = comments.find((c) => c.user?.login === 'github-actions[bot]' && c.body?.includes(MARKER));
+            const body = commentBody(result, { hadComment: Boolean(existing) });
+            if (body === null) return;
+            if (existing) {
+              if (existing.body !== body) await github.rest.issues.updateComment({ owner, repo, comment_id: existing.id, body });
+            } else {
+              await github.rest.issues.createComment({ owner, repo, issue_number: number, body });
+            }
+            if (result.findings.length > 0) core.notice(`${result.findings.length} custody finding(s); the contributor was asked why.`);

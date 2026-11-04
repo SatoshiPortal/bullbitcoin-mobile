@@ -18,8 +18,9 @@ sealed class RecoverBullState with _$RecoverBullState {
     @Default(null) EncryptedVault? vault,
     @Default(null) String? vaultKey,
     @Default(null) String? vaultPassword,
-    @Default(null) DecryptedVault? decryptedVault,
+    @Default(false) bool isVaultVerified,
     @Default(false) bool isLoading,
+
     @Default(null) RecoverBullFailure? failure,
     @Default(KeyServerStatus.unknown) KeyServerStatus keyServerStatus,
 
