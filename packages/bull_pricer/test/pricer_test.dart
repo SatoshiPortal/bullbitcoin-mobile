@@ -27,6 +27,12 @@ void main() {
     Err(:final failure) => fail('Expected a price, got $failure'),
   };
 
+  List<PricePoint> points(Result<List<PricePoint>, PricerFailure> result) =>
+      switch (result) {
+        Ok(:final value) => value,
+        Err(:final failure) => fail('Expected price points, got $failure'),
+      };
+
   test('asking a price before init is a programming error', () {
     expect(
       () => Pricer.getIndexPrice(
@@ -71,6 +77,28 @@ void main() {
         testnetIndexPrice / 100,
       );
       expect(api.requests.single.host, 'api05.bullbitcoin.dev');
+    });
+
+    test('the price history is fetched, then served from storage when the '
+        'price service fails', () async {
+      Future<List<PricePoint>> history() async => points(
+        await Pricer.getPriceHistory(
+          network: BitcoinNetwork.mainnet,
+          currency: SupportedCurrency.mxn,
+          interval: PriceHistoryInterval.day,
+        ),
+      );
+
+      final fetched = await history();
+      api.respond = (_) => (status: 503, body: const <String, Object>{});
+      final stored = await history();
+
+      expect(fetched, hasLength(3));
+      expect(stored, fetched);
+      expect(api.requests.map((r) => r.method), [
+        'getIndexRateHistory',
+        'getIndexRateHistory',
+      ]);
     });
 
     test('callers share the cached price', () async {
