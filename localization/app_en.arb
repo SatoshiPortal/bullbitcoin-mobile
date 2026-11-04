@@ -837,18 +837,6 @@
   "@exchangeRecipientsComingSoon": {
     "description": "Message indicating that the recipients feature is coming soon"
   },
-  "exchangeLogoutComingSoon": "Log Out - Coming Soon",
-  "@exchangeLogoutComingSoon": {
-    "description": "Message indicating that the log out feature is coming soon"
-  },
-  "exchangeLegacyTransactionsTitle": "Legacy Transactions",
-  "@exchangeLegacyTransactionsTitle": {
-    "description": "Title for the legacy transactions section in exchange"
-  },
-  "exchangeLegacyTransactionsComingSoon": "Legacy Transactions - Coming Soon",
-  "@exchangeLegacyTransactionsComingSoon": {
-    "description": "Message indicating that the legacy transactions feature is coming soon"
-  },
   "exchangeFileUploadTitle": "Secure File Upload",
   "@exchangeFileUploadTitle": {
     "description": "Title for the secure file upload section in exchange"
@@ -868,18 +856,6 @@
   "exchangeFileUploadSuccess": "File uploaded successfully",
   "@exchangeFileUploadSuccess": {
     "description": "Success message when file is uploaded successfully"
-  },
-  "exchangeAccountTitle": "Exchange Account",
-  "@exchangeAccountTitle": {
-    "description": "Title for the exchange account section"
-  },
-  "exchangeAccountSettingsTitle": "Exchange Account Settings",
-  "@exchangeAccountSettingsTitle": {
-    "description": "Title for the exchange account settings screen"
-  },
-  "exchangeAccountComingSoon": "This feature is coming soon.",
-  "@exchangeAccountComingSoon": {
-    "description": "Message indicating that a feature is coming soon"
   },
   "exchangeBitcoinWalletsTitle": "Default Bitcoin Wallets",
   "@exchangeBitcoinWalletsTitle": {

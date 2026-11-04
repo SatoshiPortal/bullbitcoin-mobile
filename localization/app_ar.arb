@@ -2324,10 +2324,6 @@
   "@payTotalAmount": {
     "description": "Label for sum of all payment amounts"
   },
-  "exchangeLegacyTransactionsTitle": "معاملات الإرث",
-  "@exchangeLegacyTransactionsTitle": {
-    "description": "Title for the legacy transactions section in exchange"
-  },
   "sellInsufficientBalance": "عدم كفاية رصيد المحفظة",
   "@sellInsufficientBalance": {
     "description": "Error when wallet lacks funds"
@@ -3487,10 +3483,6 @@
   "@paySwapFee": {
     "description": "Label for submarine swap fee"
   },
-  "exchangeAccountSettingsTitle": "تسويات حساب الصرف",
-  "@exchangeAccountSettingsTitle": {
-    "description": "Title for the exchange account settings screen"
-  },
   "exchangeFileUploadInstructionsWithParams": "تحميل حتى {maxFiles} الملفات. الصيغ المسموح بها: PDF, JPG, PNG, GIF, HEIC. الحد الأقصى للملف: 10MB لكل ملف.",
   "@exchangeFileUploadInstructionsWithParams": {
     "description": "Instructions for file upload with parameters",
@@ -3815,10 +3807,6 @@
   "sellSendPaymentEurBalance": "EUR الرصيد",
   "@sellSendPaymentEurBalance": {
     "description": "EUR balance payout method"
-  },
-  "exchangeAccountTitle": "حساب الصرف",
-  "@exchangeAccountTitle": {
-    "description": "Title for the exchange account section"
   },
   "swapProgressCompleted": "النقل المنجز",
   "@swapProgressCompleted": {
@@ -6918,10 +6906,6 @@
       }
     }
   },
-  "exchangeLegacyTransactionsComingSoon": "معاملات الإرث -قادم قريباً",
-  "@exchangeLegacyTransactionsComingSoon": {
-    "description": "Message indicating that the legacy transactions feature is coming soon"
-  },
   "buyProofOfAddress": "إثبات العنوان",
   "@buyProofOfAddress": {
     "description": "Type of document required"
@@ -7298,10 +7282,6 @@
   "sendConfirmSwap": "Confirm Swap",
   "@sendConfirmSwap": {
     "description": "Button to proceed with swap"
-  },
-  "exchangeLogoutComingSoon": "ارحل - قريباً -",
-  "@exchangeLogoutComingSoon": {
-    "description": "Message indicating that the log out feature is coming soon"
   },
   "exchangeStatisticsTotalVolume": "Total Trading Volume",
   "@exchangeStatisticsTotalVolume": {
@@ -9119,10 +9099,6 @@
   "payPayee": "Payee",
   "@payPayee": {
     "description": "Label for payee details"
-  },
-  "exchangeAccountComingSoon": "هذه المميزة قادمة قريباً.",
-  "@exchangeAccountComingSoon": {
-    "description": "Message indicating that a feature is coming soon"
   },
   "sellInProgress": "بيع في التقدم...",
   "@sellInProgress": {

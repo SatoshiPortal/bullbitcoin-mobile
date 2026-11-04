@@ -2482,10 +2482,6 @@
   "@payTotalAmount": {
     "description": "Label for sum of all payment amounts"
   },
-  "exchangeLegacyTransactionsTitle": "Miras İşlemleri",
-  "@exchangeLegacyTransactionsTitle": {
-    "description": "Title for the legacy transactions section in exchange"
-  },
   "autoswapWarningDontShowAgain": "Bu uyarıyı tekrar göstermeyin.",
   "@autoswapWarningDontShowAgain": {
     "description": "Checkbox label for dismissing the autoswap warning"
@@ -3717,10 +3713,6 @@
   "@paySwapFee": {
     "description": "Label for submarine swap fee"
   },
-  "exchangeAccountSettingsTitle": "Exchange Hesap Ayarları",
-  "@exchangeAccountSettingsTitle": {
-    "description": "Title for the exchange account settings screen"
-  },
   "exchangeFileUploadInstructionsWithParams": "{maxFiles} dosyalarına yük. İzinli formatlar: PDF, JPG, GIF, HEIC. Maksimum dosya büyüklüğü: dosya başına 10MB.",
   "@exchangeFileUploadInstructionsWithParams": {
     "description": "Instructions for file upload with parameters",
@@ -4057,10 +4049,6 @@
   "sellSendPaymentEurBalance": "EUR EUR EUR EUR EUR EUR Denge dengesi",
   "@sellSendPaymentEurBalance": {
     "description": "EUR balance payout method"
-  },
-  "exchangeAccountTitle": "Değişim Hesabı",
-  "@exchangeAccountTitle": {
-    "description": "Title for the exchange account section"
   },
   "swapProgressCompleted": "Transfer tamamlandı",
   "@swapProgressCompleted": {
@@ -7368,10 +7356,6 @@
       }
     }
   },
-  "exchangeLegacyTransactionsComingSoon": "Miras İşlemleri - Yakında Geliyor",
-  "@exchangeLegacyTransactionsComingSoon": {
-    "description": "Message indicating that the legacy transactions feature is coming soon"
-  },
   "backupWalletInstructionNoDigitalCopies": "Yedeklemenizin dijital kopyalarını yapmayın. Bir kağıda yazın veya metale kazın.",
   "@backupWalletInstructionNoDigitalCopies": {
     "description": "Instruction to avoid digital copies and use physical medium"
@@ -7773,10 +7757,6 @@
   "sendConfirmSwap": "Swap",
   "@sendConfirmSwap": {
     "description": "Button to proceed with swap"
-  },
-  "exchangeLogoutComingSoon": "Log Out - Yakında Geliyor",
-  "@exchangeLogoutComingSoon": {
-    "description": "Message indicating that the log out feature is coming soon"
   },
   "exchangeStatisticsTotalVolume": "Total Trading Volume",
   "@exchangeStatisticsTotalVolume": {
@@ -9726,10 +9706,6 @@
   "payPayee": "Paye",
   "@payPayee": {
     "description": "Label for payee details"
-  },
-  "exchangeAccountComingSoon": "Bu özellik yakında geliyor.",
-  "@exchangeAccountComingSoon": {
-    "description": "Message indicating that a feature is coming soon"
   },
   "sellInProgress": "İlerlemede Sat...",
   "@sellInProgress": {

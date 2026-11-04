@@ -4,8 +4,8 @@ import 'package:bb_mobile/features/backup_settings/ui/backup_settings_router.dar
 import 'package:bb_mobile/features/bip85_entropy/router.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/router.dart';
 import 'package:bb_mobile/features/electrum_settings/frameworks/ui/routing/electrum_settings_router.dart';
-import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
-import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
+import 'package:bb_mobile/features/exchange_settings/public/exchange_settings_facade.dart';
+import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
 import 'package:bb_mobile/features/import_wallet/router.dart';
 import 'package:bb_mobile/features/labels/router.dart';
 import 'package:bb_mobile/features/mempool_settings/router.dart';
@@ -293,11 +293,10 @@ List<SettingsItem> buildSettingsItems({
       path: path(SettingsItemSection.root, exchangeSection),
       icon: Icons.currency_exchange,
       open: (context) {
-        final notLoggedIn = context.read<ExchangeCubit>().state.notLoggedIn;
-        if (notLoggedIn) {
-          context.goNamed(ExchangeRoute.exchangeLanding.name);
+        if (ExchangeScope.isLoggedIn(context)) {
+          context.pushNamed(ExchangeSettingsRoute.home.name);
         } else {
-          context.pushNamed(SettingsRoute.exchangeSettings.name);
+          context.goNamed(ExchangeRoute.exchangeLanding.name);
         }
       },
       keywords: _keywords(
