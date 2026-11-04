@@ -3,6 +3,8 @@ library;
 export 'src/domain/wallet_storage_paths.dart'
     show WalletStoragePaths, WalletStoragePathsPort;
 
+export 'src/wallet_locator.dart' show WalletLocator;
+
 export 'src/domain/wallet.dart'
     show Wallet, $WalletCopyWith, Network, ScriptType;
 export 'src/domain/signer_entity.dart' show SignerEntity;
@@ -44,6 +46,9 @@ export 'src/domain/consolidation_required_exception.dart'
 export 'src/domain/insufficient_funds_exception.dart'
     show InsufficientFundsException;
 
+export 'src/data/bdk/address_script_conversions.dart'
+    show AddressScriptConversions;
+
 export 'src/domain/wallet_origin_codec.dart' show WalletOriginCodec;
 
 export 'src/domain/wallet_metadata.dart'
@@ -59,7 +64,33 @@ export 'src/domain/wallet_account_derivation_port.dart'
 
 export 'src/domain/network_bridge.dart' show NetworkBridge, ScriptTypeBridge;
 
+export 'src/data/bdk/wallet_psbt_inspection.dart' show WalletPsbtInspection;
+
 // Composition and the held secrets adapters still construct these services.
+export 'src/data/bdk/bdk_wallet_datasource.dart' show BdkWalletDatasource;
+
+export 'src/data/models/wallet_model.dart'
+    show WalletModel, PublicBdkWalletModel, PublicLwkWalletModel;
+
+export 'src/data/models/balance_model.dart' show BalanceModel;
+
+export 'src/data/models/transaction_input_model.dart'
+    show
+        TransactionInputModel,
+        BitcoinTransactionInputModel,
+        LiquidTransactionInputModel;
+
+export 'src/data/models/transaction_output_model.dart'
+    show
+        TransactionOutputModel,
+        BitcoinTransactionOutputModel,
+        LiquidTransactionOutputModel;
+
+export 'src/data/models/wallet_transaction_model.dart'
+    show WalletTransactionModel;
+
+export 'src/data/models/wallet_utxo_model.dart'
+    show WalletUtxoModel, BitcoinWalletUtxoModel, LiquidWalletUtxoModel;
 
 export 'src/domain/wallet_connection_port.dart' show WalletConnectionPort;
 
