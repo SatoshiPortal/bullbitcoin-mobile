@@ -106,7 +106,7 @@ void main() {
           as bool;
     }
 
-    test('payjoin is on by default, with payments between users off', () async {
+    test('payjoin is on by default, with receiving from users off', () async {
       expect(await requestedPayjoin(PayjoinPolicy.defaults()), isTrue);
     });
 

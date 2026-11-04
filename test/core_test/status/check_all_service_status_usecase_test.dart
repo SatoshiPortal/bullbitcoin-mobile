@@ -551,7 +551,8 @@ void main() {
   });
 }
 
-/// The exchange switches ship on, so payjoin is unused only with all four off.
+/// Sending and exchange switches ship on; unused means all four are off.
 PayjoinPolicy _allPayjoinOff() => PayjoinPolicy.defaults()
+    .withAction(PayjoinAction.send, enabled: false)
     .withAction(PayjoinAction.buy, enabled: false)
     .withAction(PayjoinAction.sell, enabled: false);

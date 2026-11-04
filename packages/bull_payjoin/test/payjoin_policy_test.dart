@@ -3,10 +3,10 @@ import 'package:primitives/primitives.dart';
 import 'package:test/test.dart';
 
 void main() {
-  test('defaults keep user payjoins off and exchange payjoins on', () {
+  test('defaults enable sending and exchange payjoins but not receiving', () {
     final policy = PayjoinPolicy.defaults();
 
-    expect(policy.sendEnabled, isFalse);
+    expect(policy.sendEnabled, isTrue);
     expect(policy.receiveEnabled, isFalse);
     expect(policy.buyEnabled, isTrue);
     expect(policy.sellEnabled, isTrue);
@@ -57,10 +57,9 @@ void main() {
   });
 
   test('each action reads its own switch', () {
-    final policy = PayjoinPolicy.defaults().withAction(
-      PayjoinAction.receive,
-      enabled: true,
-    );
+    final policy = PayjoinPolicy.defaults()
+        .withAction(PayjoinAction.send, enabled: false)
+        .withAction(PayjoinAction.receive, enabled: true);
 
     expect(policy.allows(PayjoinAction.receive), isTrue);
     expect(policy.allows(PayjoinAction.send), isFalse);
@@ -68,6 +67,7 @@ void main() {
     expect(policy.allows(PayjoinAction.sell), isTrue);
     expect(
       PayjoinPolicy.defaults()
+          .withAction(PayjoinAction.send, enabled: false)
           .withAction(PayjoinAction.buy, enabled: false)
           .withAction(PayjoinAction.sell, enabled: false)
           .anyEnabled,

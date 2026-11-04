@@ -103,14 +103,14 @@ void main() {
   test('seeds the policy row from the defaults', () async {
     // The root settings payjoin columns only existed in the unreleased schema
     // 14, so no install carries a stored preference: the store's single row is
-    // created from the conservative defaults, payjoin disabled.
+    // created with sending enabled and receiving disabled.
     await importLegacyPayjoinData(database, _LegacyData(_snapshot()));
 
     final policy = await database.select(database.payjoinPolicies).getSingle();
     final defaults = PayjoinPolicy.defaults();
     expect(policy.receiveEnabled, defaults.receiveEnabled);
     expect(policy.receiveEnabled, isFalse);
-    expect(policy.sendEnabled, isFalse);
+    expect(policy.sendEnabled, isTrue);
     expect(policy.buyEnabled, isTrue);
     expect(policy.sellEnabled, isTrue);
     expect(policy.minimumAmountSat, defaults.minimumAmount.value.toInt());

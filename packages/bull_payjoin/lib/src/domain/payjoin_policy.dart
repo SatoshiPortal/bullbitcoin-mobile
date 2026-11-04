@@ -22,7 +22,8 @@ final class PayjoinPolicy {
   static const minimumSessionLifetime = Duration(minutes: 1);
   static const maximumSessionLifetime = Duration(hours: 24);
 
-  /// Off by default: a user counterparty learns one of our UTXOs.
+  /// On by default: the receiver already sees the sender inputs in the
+  /// original transaction. The sender can opt out before starting a payjoin.
   final bool sendEnabled;
 
   /// Off by default and behind the disclaimer: the receiver carries the
@@ -73,7 +74,7 @@ final class PayjoinPolicy {
   }
 
   factory PayjoinPolicy.defaults() => PayjoinPolicy(
-    sendEnabled: false,
+    sendEnabled: true,
     receiveEnabled: false,
     buyEnabled: true,
     sellEnabled: true,

@@ -164,7 +164,7 @@ void main() {
 
     // Nothing to migrate: the root settings payjoin columns only existed in
     // the unreleased schema 14, so a freshly opened payjoin database starts on
-    // the conservative defaults, payjoin disabled.
+    // the defaults with sending enabled and receiving disabled.
     final loaded = switch (policy) {
       Ok(:final value) => value,
       Err(:final failure) => throw failure,
@@ -172,7 +172,7 @@ void main() {
     final defaults = PayjoinPolicy.defaults();
     expect(loaded.receiveEnabled, defaults.receiveEnabled);
     expect(loaded.receiveEnabled, isFalse);
-    expect(loaded.sendEnabled, isFalse);
+    expect(loaded.sendEnabled, isTrue);
     expect(loaded.buyEnabled, isTrue);
     expect(loaded.sellEnabled, isTrue);
     expect(loaded.minimumAmount.value, defaults.minimumAmount.value);
@@ -187,4 +187,33 @@ void main() {
     }, isA<PayjoinInvalidInputFailure>());
     await lifecycle.dispose();
   });
+
+  for (final enabled in [false, true]) {
+    test('reopening preserves the stored send preference $enabled', () async {
+      final lifecycle = switch (await open()) {
+        Ok(:final value) => value,
+        Err(:final failure) => throw failure,
+      };
+      try {
+        final saved = await lifecycle.payjoin.policy.setActionEnabled(
+          PayjoinAction.send,
+          enabled: enabled,
+        );
+        expect(saved, isA<Ok<PayjoinPolicy, PayjoinFailure>>());
+      } finally {
+        await lifecycle.dispose();
+      }
+
+      final reopened = switch (await open()) {
+        Ok(:final value) => value,
+        Err(:final failure) => throw failure,
+      };
+      addTearDown(reopened.dispose);
+      final loaded = switch (await reopened.payjoin.policy.load()) {
+        Ok(:final value) => value,
+        Err(:final failure) => throw failure,
+      };
+      expect(loaded.sendEnabled, enabled);
+    });
+  }
 }
