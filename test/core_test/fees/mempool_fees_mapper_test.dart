@@ -1,6 +1,7 @@
 import 'package:bb_mobile/core/fees/data/mappers/mempool_fees_mapper.dart';
 import 'package:bb_mobile/core/fees/data/models/mempool_fees_model.dart';
-import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
+import 'package:primitives/primitives.dart'
+    show RelativeFee, NetworkFeeRelayPolicy, RelativeFeeDisplay;
 import 'package:flutter_test/flutter_test.dart';
 
 /// Locks the tier policy after the precise-endpoint migration:

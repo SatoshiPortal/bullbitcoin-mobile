@@ -1,7 +1,8 @@
 import 'dart:math';
 
 import 'package:bb_mobile/core/fees/data/models/mempool_fees_model.dart';
-import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
+import 'package:primitives/primitives.dart'
+    show NetworkFee, RelativeFee, NetworkFeeRelayPolicy, FeeOptions;
 
 /// Maps a mempool fees response into the app's three preset tiers.
 ///

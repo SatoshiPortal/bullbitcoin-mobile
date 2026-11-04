@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/errors/bull_exception.dart';
+import 'package:primitives/primitives.dart' show BullException;
 
 /// Raised when a Liquid wallet holds more confirmed L-BTC UTXOs than a
 /// single confidential transaction can spend; the wallet needs consolidating

@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
+import 'package:primitives/primitives.dart' show FeeSelection;
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'fee_preview_cache.freezed.dart';

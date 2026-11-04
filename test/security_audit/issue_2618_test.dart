@@ -1,6 +1,7 @@
 import 'package:bb_mobile/core/fees/data/mappers/mempool_fees_mapper.dart';
 import 'package:bb_mobile/core/fees/data/models/mempool_fees_model.dart';
-import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
+import 'package:primitives/primitives.dart'
+    show RelativeFee, RelativeFeeDisplay;
 import 'package:flutter_test/flutter_test.dart';
 
 // Security audit reproducer for https://github.com/SatoshiPortal/bullbitcoin-mobile/issues/2618

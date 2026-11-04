@@ -1,4 +1,5 @@
-import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
+import 'package:primitives/primitives.dart'
+    show NetworkFee, RelativeFee, NetworkFeeRelayPolicy, FeeOptions;
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';

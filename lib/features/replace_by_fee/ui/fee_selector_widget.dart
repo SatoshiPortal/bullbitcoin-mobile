@@ -1,4 +1,5 @@
-import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
+import 'package:primitives/primitives.dart'
+    show RelativeFee, RelativeFeeDisplay;
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/fees/custom_fee_list_item.dart';

@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
+import 'package:primitives/primitives.dart' show FeeOptions;
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 
 /// Single source of truth for network fee rates. The implementation in

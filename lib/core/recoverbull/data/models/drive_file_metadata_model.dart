@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/errors/bull_exception.dart';
+import 'package:primitives/primitives.dart' show BullException;
 import 'package:bb_mobile/core/recoverbull/domain/entity/drive_file_metadata.dart';
 import 'package:googleapis/drive/v3.dart' as drive;
 

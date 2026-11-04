@@ -1,6 +1,7 @@
 import 'package:bb_mobile/core/fees/data/fees_datasource.dart';
 import 'package:bb_mobile/core/fees/data/mappers/mempool_fees_mapper.dart';
-import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
+import 'package:primitives/primitives.dart'
+    show RelativeFee, NetworkFeeRelayPolicy, FeeOptions;
 import 'package:bb_mobile/core/fees/domain/repositories/fees_repository.dart';
 import 'package:bb_mobile/core/mempool/domain/repositories/mempool_server_repository.dart';
 import 'package:bb_mobile/core/mempool/domain/repositories/mempool_settings_repository.dart';

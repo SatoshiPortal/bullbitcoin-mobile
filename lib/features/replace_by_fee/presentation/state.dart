@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
+import 'package:primitives/primitives.dart' show RelativeFee;
 import 'package:bb_mobile/features/replace_by_fee/domain/fee_entity.dart';
 import 'package:bb_mobile/features/replace_by_fee/domain/replace_by_fee_failure.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';

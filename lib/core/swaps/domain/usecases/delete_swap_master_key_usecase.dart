@@ -3,7 +3,7 @@ import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart'
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 
 import 'package:bb_mobile/core/utils/result.dart';
-import 'package:bb_mobile/core/errors/bull_exception.dart';
+import 'package:primitives/primitives.dart' show BullException;
 
 /// Deletes the swap master key (the "swap mnemonic") for the current
 /// environment's default bitcoin wallet — a super-user action exposed in the

@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:bb_mobile/core/errors/bull_exception.dart';
+import 'package:primitives/primitives.dart' show BullException;
 import 'package:bb_mobile/core/fees/data/models/mempool_fees_model.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:dio/dio.dart';

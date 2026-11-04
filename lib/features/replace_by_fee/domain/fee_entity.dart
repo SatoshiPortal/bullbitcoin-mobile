@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
+import 'package:primitives/primitives.dart' show RelativeFee;
 
 enum FeeType { fastest, economic, slow, custom }
 

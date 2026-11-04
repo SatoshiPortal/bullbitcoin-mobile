@@ -1,5 +1,11 @@
 import 'package:bb_mobile/core/fees/domain/fee_preview_cache.dart';
-import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
+import 'package:primitives/primitives.dart'
+    show
+        NetworkFee,
+        FeeOptions,
+        FeeSelection,
+        $NetworkFeeCopyWith,
+        $FeeOptionsCopyWith;
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';

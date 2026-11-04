@@ -4,7 +4,7 @@ import 'package:bb_mobile/core/swaps/domain/entity/swap_master_key_info.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 
 import 'package:bb_mobile/core/utils/result.dart';
-import 'package:bb_mobile/core/errors/bull_exception.dart';
+import 'package:primitives/primitives.dart' show BullException;
 
 /// Reads the swap master key (the "swap mnemonic") for the current
 /// environment's default bitcoin wallet, for display in the seed viewer.

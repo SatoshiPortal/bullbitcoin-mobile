@@ -24,7 +24,7 @@
 //     datasource's own default and BDK's default sequence (0xFFFFFFFD).
 import 'dart:typed_data';
 
-import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
+import 'package:primitives/primitives.dart' show NetworkFee;
 import 'package:secrets/secrets.dart';
 import 'package:secrets/testing.dart';
 import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart';

@@ -87,6 +87,7 @@ pr-governance-test:
 
 build-runner:
 	@echo "🏗️ Build runner for json_serializable and flutter_gen"
+	@(cd packages/primitives && fvm dart run build_runner build --force-jit)
 	@fvm dart run build_runner build --force-jit
 	@(cd packages/bull_payjoin && fvm dart run build_runner build --force-jit)
 

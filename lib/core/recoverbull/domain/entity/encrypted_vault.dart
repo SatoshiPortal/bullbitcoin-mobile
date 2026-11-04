@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/errors/bull_exception.dart';
+import 'package:primitives/primitives.dart' show BullException;
 import 'package:convert/convert.dart' as convert;
 import 'package:recoverbull/recoverbull.dart' as recoverbull;
 

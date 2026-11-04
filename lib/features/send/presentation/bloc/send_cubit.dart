@@ -8,7 +8,14 @@ import 'package:bb_mobile/core/errors/send_errors.dart'
 import 'package:bb_mobile/core/price/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
 import 'package:bb_mobile/core/price/domain/usecases/get_available_currencies_usecase.dart';
 import 'package:bb_mobile/core/fees/domain/fee_preview_cache.dart';
-import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
+import 'package:primitives/primitives.dart'
+    show
+        NetworkFee,
+        AbsoluteFee,
+        RelativeFee,
+        NetworkFeeRelayPolicy,
+        FeeSelection,
+        RelativeFeeDisplay;
 import 'package:bb_mobile/core/fees/domain/get_network_fees_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/consolidation_required_exception.dart';

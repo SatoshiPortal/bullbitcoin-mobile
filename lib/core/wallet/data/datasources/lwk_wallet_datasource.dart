@@ -1,7 +1,8 @@
 import 'dart:async';
 
-import 'package:bb_mobile/core/errors/bull_exception.dart';
-import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
+import 'package:primitives/primitives.dart' show BullException;
+import 'package:primitives/primitives.dart'
+    show RelativeFee, RelativeFeeDisplay;
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/lwk_facade.dart';
 import 'package:bb_mobile/core/wallet/data/models/balance_model.dart';

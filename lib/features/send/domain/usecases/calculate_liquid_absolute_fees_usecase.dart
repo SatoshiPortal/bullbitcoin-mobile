@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/errors/bull_exception.dart';
+import 'package:primitives/primitives.dart' show BullException;
 import 'package:bb_mobile/core/wallet/data/repositories/liquid_wallet_repository.dart';
 
 class CalculateLiquidAbsoluteFeesUsecase {

@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/fees/domain/fee_preview_cache.dart';
-import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
+import 'package:primitives/primitives.dart' show FeeSelection;
 import 'package:flutter_test/flutter_test.dart';
 
 /// Tests for the cache value object that replaced the 11 nullable preview

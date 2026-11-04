@@ -1,4 +1,5 @@
-import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
+import 'package:primitives/primitives.dart'
+    show NetworkFee, AbsoluteFee, RelativeFee, FeeSelection;
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:flutter/widgets.dart';

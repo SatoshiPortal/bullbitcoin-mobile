@@ -1,5 +1,6 @@
+import 'package:bb_mobile/fee_presentation_adapters.dart';
 import 'package:bb_mobile/core/widgets/lists/payment_detail_row.dart';
-import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
+import 'package:primitives/primitives.dart' show NetworkFee, FeeSelection;
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';

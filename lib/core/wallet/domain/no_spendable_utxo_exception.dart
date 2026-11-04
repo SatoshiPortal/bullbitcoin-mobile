@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/errors/bull_exception.dart';
+import 'package:primitives/primitives.dart' show BullException;
 
 class NoSpendableUtxoException extends BullException {
   NoSpendableUtxoException(super.message);

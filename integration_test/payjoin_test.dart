@@ -3,7 +3,6 @@ import 'dart:io' show Platform;
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
-import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:secrets/secrets.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_address_repository.dart';

@@ -5,7 +5,7 @@ import 'package:primitives/primitives.dart' show BitcoinNetwork, Fingerprint;
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/utils/result.dart';
-import 'package:bb_mobile/core/errors/bull_exception.dart';
+import 'package:primitives/primitives.dart' show BullException;
 
 /// Derives and persists the swap master key from the default bitcoin wallet's
 /// seed so it exists before any swap needs it. Run when wallets become ready

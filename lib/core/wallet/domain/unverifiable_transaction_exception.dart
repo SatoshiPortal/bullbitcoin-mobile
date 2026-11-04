@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/errors/bull_exception.dart';
+import 'package:primitives/primitives.dart' show BullException;
 
 /// A wallet transaction whose input signatures could not be verified —
 /// missing from the local store, or no wallet-owned prevout could be

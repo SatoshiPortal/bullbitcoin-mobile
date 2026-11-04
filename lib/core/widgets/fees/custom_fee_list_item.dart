@@ -1,6 +1,13 @@
 import 'dart:async';
 
-import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
+import 'package:primitives/primitives.dart'
+    show
+        NetworkFee,
+        AbsoluteFee,
+        RelativeFee,
+        NetworkFeeRelayPolicy,
+        FeeOptions,
+        RelativeFeeDisplay;
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';

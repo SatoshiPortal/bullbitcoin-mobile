@@ -1,5 +1,6 @@
-import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
-import 'package:flutter_test/flutter_test.dart';
+import 'package:primitives/primitives.dart'
+    show NetworkFee, AbsoluteFee, RelativeFee, RelativeFeeDisplay;
+import 'package:test/test.dart';
 
 void main() {
   group('RelativeFee.fromSatPerVbyte', () {

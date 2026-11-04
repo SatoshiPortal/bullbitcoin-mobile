@@ -1,5 +1,6 @@
-import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
-import 'package:flutter_test/flutter_test.dart';
+import 'package:primitives/primitives.dart'
+    show AbsoluteFee, RelativeFee, NetworkFeeRelayPolicy;
+import 'package:test/test.dart';
 
 /// Locks in the single source of truth for the network minrelayfee floor.
 /// Previously the `0.1 sat/vByte` literal was duplicated in send_cubit,

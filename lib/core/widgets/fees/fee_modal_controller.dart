@@ -1,5 +1,11 @@
 import 'package:bb_mobile/core/fees/domain/fee_preview_cache.dart';
-import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
+import 'package:primitives/primitives.dart'
+    show
+        NetworkFee,
+        FeeOptions,
+        FeeSelection,
+        $NetworkFeeCopyWith,
+        $FeeOptionsCopyWith;
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'fee_modal_controller.freezed.dart';

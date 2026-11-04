@@ -13,3 +13,15 @@ export 'src/outpoint.dart';
 export 'src/result.dart';
 export 'src/script_type.dart';
 export 'src/xpub_type.dart';
+export 'src/bull_exception.dart' show BullException, BullError;
+export 'src/network_fee.dart'
+    show
+        NetworkFee,
+        AbsoluteFee,
+        RelativeFee,
+        RelativeFeeDisplay,
+        NetworkFeeRelayPolicy,
+        FeeOptions,
+        $FeeOptionsCopyWith,
+        $NetworkFeeCopyWith,
+        FeeSelection;
