@@ -95,6 +95,10 @@ export 'src/data/models/wallet_utxo_model.dart'
 
 export 'src/domain/wallet_connection_port.dart' show WalletConnectionPort;
 
+export 'src/data/bitcoin_wallet_repository.dart' show BitcoinWalletRepository;
+
+export 'src/data/liquid_wallet_repository.dart' show LiquidWalletRepository;
+
 export 'src/domain/wallet_coin_port.dart' show WalletCoinPort;
 
 export 'src/domain/wallet_signing_port.dart' show WalletSigningPort;
