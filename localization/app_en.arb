@@ -833,10 +833,6 @@
   "@exchangeRecipientsTitle": {
     "description": "Title for the recipients section in exchange"
   },
-  "exchangeRecipientsComingSoon": "Recipients - Coming Soon",
-  "@exchangeRecipientsComingSoon": {
-    "description": "Message indicating that the recipients feature is coming soon"
-  },
   "exchangeFileUploadTitle": "Secure File Upload",
   "@exchangeFileUploadTitle": {
     "description": "Title for the secure file upload section in exchange"

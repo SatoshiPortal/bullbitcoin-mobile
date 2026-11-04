@@ -4128,10 +4128,6 @@
   "@sellBitcoinOnChain": {
     "description": "Option for Bitcoin on-chain payment"
   },
-  "exchangeRecipientsComingSoon": "प्राप्तकर्ता - जल्द आ रहा है",
-  "@exchangeRecipientsComingSoon": {
-    "description": "Message indicating that the recipients feature is coming soon"
-  },
   "ledgerWalletTypeLabel": "वॉलेट प्रकार:",
   "@ledgerWalletTypeLabel": {
     "description": "Label for wallet type/script type selection"

@@ -3501,10 +3501,6 @@
   "@sellBitcoinOnChain": {
     "description": "Option for Bitcoin on-chain payment"
   },
-  "exchangeRecipientsComingSoon": "Μαθητές - Έρχεται σύντομα",
-  "@exchangeRecipientsComingSoon": {
-    "description": "Message indicating that the recipients feature is coming soon"
-  },
   "ledgerWalletTypeLabel": "Wallet Type:",
   "@ledgerWalletTypeLabel": {
     "description": "Label for wallet type/script type selection"

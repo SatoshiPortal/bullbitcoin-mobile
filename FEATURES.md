@@ -76,6 +76,12 @@ graph TB
     CORE --> BULL_PAYJOIN
     BULL_PAYJOIN --> PRIMITIVES
 
+    %% Legacy Core-to-feature dependencies, pending extraction
+    CORE --> BUY
+    CORE --> SELL
+    CORE --> PAY
+    CORE --> DCA
+
     %% Feature-to-feature dependencies (extracted from draw.io diagram)
     ADDRESS_MGMT --> LABELS
     ALL_SEED_VIEW --> APP_UNLOCK
@@ -98,10 +104,15 @@ graph TB
     BUY --> RECEIVE
     BUY --> BULL_PAYJOIN
     BUY --> TX_HISTORY
+    BUY --> FUNDING
+    BUY --> LABELS
+    BUY --> SETTINGS
+    BUY --> WALLETS
     COINS --> UTXO_MGMT
     COINS --> LABELS
     COINS --> WALLETS
     DCA --> RECEIVE
+    DCA --> FUNDING
     SETTINGS --> DEFAULT_WALLETS
     SETTINGS --> EXCHANGE
     SETTINGS --> EXCHANGE_SETTINGS
@@ -134,6 +145,10 @@ graph TB
     LABELS --> CORE
     PAY --> RECIPIENTS
     PAY --> BULL_PAYJOIN
+    PAY --> BTC_PRICE
+    PAY --> SEND
+    PAY --> TX_HISTORY
+    PAY --> WALLETS
     PIN_CODE --> CORE
     RECEIVE --> BULL_PAYJOIN
     RECEIVE --> SETTINGS
@@ -145,6 +160,10 @@ graph TB
     SELL --> RECIPIENTS
     SELL --> BULL_PAYJOIN
     SELL --> TX_HISTORY
+    SELL --> BTC_PRICE
+    SELL --> LABELS
+    SELL --> SEND
+    SELL --> WALLETS
     SEND --> CONSOLIDATION
     SEND --> FEES
     SEND --> NETWORK
@@ -178,6 +197,10 @@ graph TB
     TX_HISTORY --> BULL_PAYJOIN
     TX_HISTORY --> SWAPS
     TX_HISTORY --> WALLETS
+    TX_HISTORY --> BUY
+    TX_HISTORY --> PAY
+    TX_HISTORY --> LABELS
+    TX_HISTORY --> SETTINGS
     UTXO_MGMT --> LABELS
     UTXO_MGMT --> WALLETS
     WALLETS --> BIP85
@@ -188,6 +211,7 @@ graph TB
     WALLETS --> SETTINGS
     WALLETS --> SWAPS
     WITHDRAWAL --> RECIPIENTS
+    WITHDRAWAL --> TX_HISTORY
 
     %% Styling
     classDef coreStyle fill:#2d3748,stroke:#4a5568,stroke-width:3px,color:#fff

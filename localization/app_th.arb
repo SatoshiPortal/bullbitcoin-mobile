@@ -4128,10 +4128,6 @@
   "@sellBitcoinOnChain": {
     "description": "Option for Bitcoin on-chain payment"
   },
-  "exchangeRecipientsComingSoon": "ตารางเวลา - มาถึงเร็ว",
-  "@exchangeRecipientsComingSoon": {
-    "description": "Message indicating that the recipients feature is coming soon"
-  },
   "ledgerWalletTypeLabel": "ประเภทข้อความ:",
   "@ledgerWalletTypeLabel": {
     "description": "Label for wallet type/script type selection"

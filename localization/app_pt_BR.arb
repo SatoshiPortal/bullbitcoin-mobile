@@ -3671,10 +3671,6 @@
   "@addressViewBalance": {
     "description": "Label for address balance"
   },
-  "exchangeRecipientsComingSoon": "Recipientes - Em breve",
-  "@exchangeRecipientsComingSoon": {
-    "description": "Message indicating that the recipients feature is coming soon"
-  },
   "exchangeDcaFrequencyWeek": "semana",
   "@exchangeDcaFrequencyWeek": {
     "description": "DCA frequency unit: week"

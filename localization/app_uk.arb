@@ -612,7 +612,6 @@
   "walletDetailsSignerLabel": "Підписка",
   "walletDetailsSignerDeviceLabel": "Пристрої сигналізації",
   "walletDetailsSignerDeviceNotSupported": "Не підтримується",
-  "exchangeRecipientsComingSoon": "Отримувачі - Складання Незабаром",
   "exchangeFileUploadTitle": "Безпечний файл завантаження",
   "walletDeletionErrorGeneric": "Не вдалося видалити гаманець, будь ласка, спробуйте знову.",
   "walletDeletionFailedOkButton": "ЗАРЕЄСТРУВАТИСЯ",

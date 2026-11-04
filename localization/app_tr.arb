@@ -4108,10 +4108,6 @@
   "@sellBitcoinOnChain": {
     "description": "Option for Bitcoin on-chain payment"
   },
-  "exchangeRecipientsComingSoon": "Recipients - Yakında Geliyor",
-  "@exchangeRecipientsComingSoon": {
-    "description": "Message indicating that the recipients feature is coming soon"
-  },
   "ledgerWalletTypeLabel": "Cüzdan Türü:",
   "@ledgerWalletTypeLabel": {
     "description": "Label for wallet type/script type selection"
