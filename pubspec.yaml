@@ -16,6 +16,7 @@ workspace:
   # dependency, so it is not compiled into the APK (zero build impact).
   - packages/bull_ui_catalogue
   - packages/primitives
+  - packages/wallet
   - packages/transaction_sync
   - packages/notifications
   - packages/bull_tor
@@ -34,6 +35,7 @@ dependencies:
   screen_privacy:
   bull_logger:
   bull_logs:
+  wallet:
   transaction_sync:
   notifications:
   flutter_bloc: ^9.1.1

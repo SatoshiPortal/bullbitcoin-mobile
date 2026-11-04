@@ -1,0 +1,1 @@
+enum WalletAddressKeyChain { internal, external }

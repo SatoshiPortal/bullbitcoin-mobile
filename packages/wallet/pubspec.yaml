@@ -1,0 +1,39 @@
+name: wallet
+description: Shared native wallet ownership and storage contracts.
+publish_to: "none"
+version: 0.1.0
+
+environment:
+  sdk: "3.12.2"
+
+resolution: workspace
+
+dependencies:
+  flutter:
+    sdk: flutter
+  bull_sdk:
+    git:
+      url: https://github.com/SatoshiPortal/bull_sdk
+      ref: f4ee00bf61a810d034a397a41a2e40cd7903aa51
+      path: packages/bull_sdk
+  async: ^2.11.0
+  bip32_keys: ^3.1.1
+  bs58check: ^1.0.2
+  freezed_annotation: ^3.1.0
+  bull_logger:
+  crypto: ^3.0.7
+  meta: ^1.17.0
+  path_provider: ^2.1.5
+  path: ^1.9.1
+  primitives:
+  sqlite3: ^2.9.4
+  transaction_sync:
+
+dev_dependencies:
+  mocktail: ^1.0.4
+  build_runner: ^2.10.4
+  freezed: ^3.2.3
+  flutter_test:
+    sdk: flutter
+  lints: ^6.0.0
+  test: ^1.26.3
