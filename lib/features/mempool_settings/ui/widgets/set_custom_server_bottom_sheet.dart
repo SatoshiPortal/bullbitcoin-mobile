@@ -309,9 +309,7 @@ class _SetCustomServerBottomSheetState
                         side: BorderSide.none,
                       ),
                       tileColor: context.appColors.transparent,
-                      title: Text(
-                        context.loc.electrumValidateDomain,
-                      ),
+                      title: Text(context.loc.electrumValidateDomain),
                       contentPadding: EdgeInsets.zero,
                       value: _validateDomain,
                       onChanged: (value) {
