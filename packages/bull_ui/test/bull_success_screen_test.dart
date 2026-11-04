@@ -1,4 +1,5 @@
 import 'package:bull_ui/bull_ui.dart';
+import 'package:flutter/material.dart' show Scaffold;
 import 'package:flutter_test/flutter_test.dart';
 
 import 'test_app.dart';
@@ -44,5 +45,41 @@ void main() {
 
     expect(find.text('custom icon'), findsOneWidget);
     expect(find.byIcon(BullIcons.checkCircle), findsNothing);
+  });
+
+  testWidgets('applies the caller overrides', (tester) async {
+    const background = Color(0xFF000000);
+
+    await tester.pumpWidget(
+      wrapWithTheme(
+        BullSuccessScreen(
+          title: 'Test',
+          headline: 'Done',
+          onClose: () {},
+          showCloseButton: false,
+          backgroundColor: background,
+          headlineStyle: const TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+      ),
+    );
+
+    expect(find.byIcon(BullIcons.close), findsNothing);
+    expect(
+      tester
+          .widget<Scaffold>(
+            find.descendant(
+              of: find.byType(BullScaffold),
+              matching: find.byType(Scaffold),
+            ),
+          )
+          .backgroundColor,
+      background,
+    );
+    final headline = tester.widget<Text>(find.text('Done')).style;
+    expect(headline?.fontSize, 16);
+    expect(headline?.fontWeight, FontWeight.w700);
   });
 }

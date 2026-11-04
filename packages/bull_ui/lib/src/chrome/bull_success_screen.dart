@@ -18,15 +18,30 @@ class BullSuccessScreen extends StatelessWidget {
     this.amountLine,
     this.message,
     this.actions = const <Widget>[],
+    this.showCloseButton = true,
+    this.backgroundColor,
+    this.headlineStyle,
   });
 
   final String title;
   final String headline;
+
+  /// Invoked by the close button and by a back gesture.
   final VoidCallback onClose;
   final Widget? icon;
   final String? amountLine;
   final Widget? message;
   final List<Widget> actions;
+
+  /// Hides the top-bar close button; back still invokes [onClose].
+  final bool showCloseButton;
+
+  /// Background fill; defaults to [BullTheme.surface].
+  final Color? backgroundColor;
+
+  /// Headline type; defaults to `titleLarge`. Always drawn in
+  /// [BullTheme.text].
+  final TextStyle? headlineStyle;
 
   @override
   Widget build(BuildContext context) {
@@ -39,10 +54,14 @@ class BullSuccessScreen extends StatelessWidget {
         if (!didPop) onClose();
       },
       child: BullScaffold(
+        backgroundColor: backgroundColor,
         body: SafeArea(
           child: Column(
             children: [
-              BullTopBar(title: title, onAction: onClose),
+              BullTopBar(
+                title: title,
+                onAction: showCloseButton ? onClose : null,
+              ),
               Expanded(
                 child: Center(
                   child: SingleChildScrollView(
@@ -62,9 +81,8 @@ class BullSuccessScreen extends StatelessWidget {
                         const SizedBox(height: BullSpacing.lg),
                         Text(
                           headline,
-                          style: textTheme.titleLarge?.copyWith(
-                            color: colors.text,
-                          ),
+                          style: (headlineStyle ?? textTheme.titleLarge)
+                              ?.copyWith(color: colors.text),
                           textAlign: TextAlign.center,
                         ),
                         if (amountLine != null) ...[
