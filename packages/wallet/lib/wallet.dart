@@ -49,6 +49,9 @@ export 'src/domain/insufficient_funds_exception.dart'
 export 'src/data/bdk/address_script_conversions.dart'
     show AddressScriptConversions;
 
+export 'src/data/descriptors/descriptor_derivation.dart'
+    show DescriptorDerivation;
+
 export 'src/domain/wallet_origin_codec.dart' show WalletOriginCodec;
 
 export 'src/domain/wallet_metadata.dart'
@@ -58,6 +61,8 @@ export 'src/domain/wallet_catalog_port.dart' show WalletCatalogPort;
 export 'src/domain/wallet_freeze_store_port.dart' show WalletFreezeStorePort;
 
 export 'src/domain/watch_only_wallet_import.dart' show WatchOnlyWalletImport;
+
+export 'src/data/descriptors/wallet_xpub_import.dart' show WalletXpubImport;
 
 export 'src/domain/wallet_account_derivation_port.dart'
     show WalletAccountDerivationPort, WalletAccountKeys;
@@ -104,6 +109,8 @@ export 'src/domain/wallet_coin_port.dart' show WalletCoinPort;
 export 'src/domain/wallet_signing_port.dart' show WalletSigningPort;
 
 export 'src/domain/bitcoin_send_port.dart' show BitcoinSendPort;
+
+export 'src/data/wallet_repository.dart' show WalletRepository;
 
 export 'src/domain/electrum_sync_result.dart' show ElectrumSyncResult;
 
