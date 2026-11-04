@@ -124,6 +124,9 @@ export 'src/domain/wallet_address_key_chain.dart' show WalletAddressKeyChain;
 
 export 'src/domain/wallet_utxo_repository.dart' show WalletUtxoRepository;
 
+export 'src/data/wallet_utxo_repository_impl.dart'
+    show WalletUtxoRepositoryImpl;
+
 export 'src/domain/wallet_address_record.dart' show WalletAddressRecord;
 
 export 'src/domain/wallet_address_reservation_port.dart'

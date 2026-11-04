@@ -26,6 +26,7 @@ import 'dart:async';
 import 'dart:typed_data';
 import 'package:wallet/wallet.dart';
 import 'package:primitives/primitives.dart' show NetworkFee, RelativeFee;
+import 'package:bb_mobile/features/coins/public/coins_facade.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:transaction_sync/transaction_sync.dart';
@@ -92,8 +93,8 @@ class _CountingCoordinator implements WalletSourceOperationCoordinator {
 // WalletMetadataExtension.isBitcoin decodes to true.
 const _walletId = 'wpkh([73c5da0a/84h/1h/0h])';
 
-WalletCoin _utxo({required String txId, required int vout}) =>
-    WalletCoin.bitcoin(
+WalletUtxo _utxo({required String txId, required int vout}) =>
+    WalletUtxo.bitcoin(
       walletId: _walletId,
       txId: txId,
       vout: vout,
@@ -216,7 +217,7 @@ void main() {
 
   Future<void> buildPsbt({
     List<({String txId, int vout})>? unspendable,
-    List<WalletCoin>? selected,
+    List<WalletUtxo>? selected,
     bool? replaceByFee,
   }) => repository.buildPsbt(
     walletId: _walletId,
