@@ -33,6 +33,13 @@ void main() {
         Err(:final failure) => fail('Expected price points, got $failure'),
       };
 
+  test('the reader types fit the pricer, for callers that inject it', () {
+    const IndexPriceReader indexPrice = Pricer.getIndexPrice;
+    const PriceHistoryReader history = Pricer.getPriceHistory;
+
+    expect([indexPrice, history], everyElement(isNotNull));
+  });
+
   test('asking a price before init is a programming error', () {
     expect(
       () => Pricer.getIndexPrice(
@@ -85,7 +92,6 @@ void main() {
         await Pricer.getPriceHistory(
           network: BitcoinNetwork.mainnet,
           currency: SupportedCurrency.mxn,
-          interval: PriceHistoryInterval.day,
         ),
       );
 
@@ -93,11 +99,14 @@ void main() {
       api.respond = (_) => (status: 503, body: const <String, Object>{});
       final stored = await history();
 
-      expect(fetched, hasLength(3));
+      // Three daily points and one from the last 15 minutes.
+      expect(fetched, hasLength(4));
       expect(stored, fetched);
-      expect(api.requests.map((r) => r.method), [
-        'getIndexRateHistory',
-        'getIndexRateHistory',
+      expect(api.requests.map((r) => r.params['interval']), [
+        'day',
+        'fifteen',
+        'day',
+        'fifteen',
       ]);
     });
 

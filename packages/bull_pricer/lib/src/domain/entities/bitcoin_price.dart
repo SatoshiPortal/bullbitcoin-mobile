@@ -4,6 +4,8 @@ import 'package:bull_pricer/src/domain/entities/supported_currency.dart';
 /// [fetchedAt]. A cached price keeps the time it was fetched, not the time it
 /// was read.
 final class BitcoinPrice {
+  static final _satsPerBitcoin = BigInt.from(100000000);
+
   final SupportedCurrency currency;
   final double fiatAmount;
   final DateTime fetchedAt;
@@ -21,6 +23,10 @@ final class BitcoinPrice {
       );
     }
   }
+
+  /// What [amountSat] is worth in [currency] at this price.
+  double fiatValueOf(BigInt amountSat) =>
+      amountSat / _satsPerBitcoin * fiatAmount;
 
   @override
   bool operator ==(Object other) =>
