@@ -13,3 +13,6 @@ export 'src/wallet_transaction_sync_background_task.dart';
 export 'src/wallet_payment_notification_identity.dart';
 export 'src/wallet_payment_observation_adapter.dart';
 export 'src/sqlite_wallet_sync_job_queue.dart';
+export 'src/sync_coordinator.dart';
+export 'src/sync_kind.dart';
+export 'src/sync_trigger.dart';
