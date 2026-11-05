@@ -1404,6 +1404,35 @@ void main() {
   // _onAmountCurrencyChanged had no try/catch before this migration and
   // called two throwing use-cases, so a failed rate fetch escaped the handler
   // as an unhandled bloc error. These pin the Err path that replaced it.
+  group('no price', () {
+    test('receiving works on, with no fiat value and no failure', () async {
+      when(
+        () => convertSatsToCurrency.execute(
+          amountSat: any(named: 'amountSat'),
+          currencyCode: any(named: 'currencyCode'),
+        ),
+      ).thenAnswer((_) async => const Err(ReceivePriceUnavailableFailure()));
+
+      final bloc = buildBloc();
+      addTearDown(bloc.close);
+      bloc.add(const ReceiveBitcoinStarted(null));
+      await pumpEventQueue();
+
+      expect(bloc.state.failure, isNull);
+      expect(bloc.state.exchangeRate, isNull);
+      expect(bloc.state.inputAmountCurrencyCodes, [
+        BitcoinUnit.btc.code,
+        BitcoinUnit.sats.code,
+      ]);
+      verify(
+        () => watchWalletTransaction.execute(
+          walletId: any(named: 'walletId'),
+          toAddress: any(named: 'toAddress'),
+        ),
+      ).called(1);
+    });
+  });
+
   group('amount currency change', () {
     test('a failed rate fetch surfaces a failure instead of escaping the '
         'handler', () async {
@@ -1455,13 +1484,12 @@ void main() {
     );
 
     test('a currency whose price does not come is not taken', () async {
-      // The datasource reports an unreachable pricer as a zero rate.
       when(
         () => convertSatsToCurrency.execute(
           amountSat: any(named: 'amountSat'),
           currencyCode: any(named: 'currencyCode'),
         ),
-      ).thenAnswer((_) async => const Ok(0));
+      ).thenAnswer((_) async => const Err(ReceivePriceUnavailableFailure()));
 
       final bloc = buildBloc();
       addTearDown(bloc.close);

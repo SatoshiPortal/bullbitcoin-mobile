@@ -177,22 +177,25 @@ void main() {
       expect(getIndexPrice.requests.single.currency, SupportedCurrency.eur);
     });
 
-    // The bloc stops on a failure before it watches the address: receiving
-    // must keep working without a price.
-    test('no price is a zero rate, not a failure', () async {
+    // Its own failure, so the bloc can tell it from one that stops receiving.
+    test('no price is a price unavailable failure', () async {
       getIndexPrice.failure = const PricerNetworkFailure('offline');
 
       final result = await usecase.execute();
 
-      expect((result as Ok<double, ReceiveFailure>).value, 0);
+      expect(
+        (result as Err<double, ReceiveFailure>).failure,
+        isA<ReceivePriceUnavailableFailure>(),
+      );
     });
 
-    test('a currency without a price is a failure, never asked', () async {
+    test('a currency without a price is a price unavailable failure, never '
+        'asked', () async {
       final result = await usecase.execute(currencyCode: 'JPY');
 
       expect(
         (result as Err<double, ReceiveFailure>).failure,
-        isA<ReceiveUnexpectedFailure>(),
+        isA<ReceivePriceUnavailableFailure>(),
       );
       expect(getIndexPrice.requests, isEmpty);
     });

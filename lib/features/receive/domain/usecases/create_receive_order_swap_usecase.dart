@@ -166,5 +166,8 @@ class CreateReceiveOrderSwapUsecase {
     SwapInvalidStateFailure() ||
     SwapStorageFailure() ||
     SwapUnexpectedFailure() => ReceiveUnexpectedFailure(failure.logMessage),
+    SwapPriceUnavailableFailure() => ReceivePriceUnavailableFailure(
+      failure.logMessage,
+    ),
   };
 }

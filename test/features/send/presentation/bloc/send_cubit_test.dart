@@ -1067,12 +1067,44 @@ void main() {
       );
       when(
         () => getSendExchangeRateUsecase.execute(currencyCode: 'CAD'),
-      ).thenAnswer((_) async => null);
+      ).thenAnswer((_) async => const Err(SendPriceUnavailableFailure()));
 
       await cubit.onCurrencyChanged('CAD');
 
       expect(cubit.state.inputAmountCurrencyCode, BitcoinUnit.sats.code);
       expect(cubit.state.isInputAmountFiat, isFalse);
+    });
+
+    test('a price that does not come leaves no rate, not a zero one', () async {
+      final cubit = buildCubit();
+      addTearDown(cubit.close);
+      cubit.setStateForTest(
+        const SendState(fiatCurrencyCode: 'USD', exchangeRate: 70000),
+      );
+      when(
+        () => getSendExchangeRateUsecase.execute(currencyCode: 'USD'),
+      ).thenAnswer((_) async => const Err(SendPriceUnavailableFailure()));
+
+      await cubit.getExchangeRate();
+
+      expect(cubit.state.exchangeRate, isNull);
+      expect(cubit.state.failure, isNull);
+    });
+
+    test('a failure other than no price is shown', () async {
+      final cubit = buildCubit();
+      addTearDown(cubit.close);
+      cubit.setStateForTest(
+        const SendState(fiatCurrencyCode: 'USD', exchangeRate: 70000),
+      );
+      when(
+        () => getSendExchangeRateUsecase.execute(currencyCode: 'USD'),
+      ).thenAnswer((_) async => const Err(SendUnexpectedFailure('settings')));
+
+      await cubit.getExchangeRate();
+
+      expect(cubit.state.exchangeRate, isNull);
+      expect(cubit.state.failure, isA<SendUnexpectedFailure>());
     });
   });
 

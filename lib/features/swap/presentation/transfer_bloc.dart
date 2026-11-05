@@ -173,7 +173,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
         walletsResult,
         liquidNetworkFees,
         bitcoinNetworkFees,
-        exchangeRate,
+        exchangeRateResult,
       ) = await (
         _getWalletsUsecase.execute(),
         _getNetworkFeesUsecase.execute(isLiquid: true),
@@ -182,6 +182,23 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
           currencyCode: settings.currencyCode,
         ),
       ).wait;
+      final double? exchangeRate;
+      switch (exchangeRateResult) {
+        case Ok(:final value):
+          exchangeRate = value;
+        // A transfer works without a price: no fiat value is shown then.
+        case Err(failure: SwapPriceUnavailableFailure()):
+          exchangeRate = null;
+        case Err(:final failure):
+          emit(
+            state.copyWith(
+              startError: Exception(
+                'price read failed: ${failure.runtimeType}',
+              ),
+            ),
+          );
+          return;
+      }
       final List<Wallet> wallets;
       switch (walletsResult) {
         case Ok(:final value):
@@ -1889,7 +1906,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
         customFee: s.customFee,
         selectedFeeOption: s.selectedFeeOption,
         feePreviewCache: s.feePreviewCache,
-        exchangeRate: s.exchangeRate ?? 0.0,
+        exchangeRate: s.exchangeRate,
         fiatCurrencyCode: s.fiatCurrencyCode ?? 'CAD',
         txSize: s.bitcoinTxSize ?? 140,
       );

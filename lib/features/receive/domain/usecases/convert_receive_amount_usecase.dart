@@ -9,7 +9,8 @@ import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart' show BitcoinNetwork;
 
 /// [amountSat] in [currencyCode], or in the settings currency when none is
-/// given. Without an amount, the price of one bitcoin.
+/// given. Without an amount, the price of one bitcoin. Without a price,
+/// [ReceivePriceUnavailableFailure]: receiving works on, with no fiat value.
 class ConvertReceiveAmountUsecase {
   final GetSettingsUsecase _getSettingsUsecase;
   final IndexPriceReader _getIndexPrice;
@@ -41,7 +42,9 @@ class ConvertReceiveAmountUsecase {
     final code = currencyCode ?? settings.currencyCode;
     final currency = SupportedCurrency.tryFromCode(code);
     if (currency == null) {
-      return Err(ReceiveUnexpectedFailure('Currency not available: $code'));
+      return Err(
+        ReceivePriceUnavailableFailure('Currency not available: $code'),
+      );
     }
     final price = await _getIndexPrice(
       network: settings.environment.isTestnet
@@ -56,11 +59,9 @@ class ConvertReceiveAmountUsecase {
             amountSat ?? ConversionConstants.satsAmountOfOneBitcoin,
           ),
         );
-      // Receiving works without a price: a zero rate shows no fiat value,
-      // where a failure would stop the screen before it watches the address.
       case Err(:final failure):
         log.warning('Receive price unavailable: ${failure.runtimeType}');
-        return const Ok(0);
+        return Err(ReceivePriceUnavailableFailure(failure.logMessage));
     }
   }
 }

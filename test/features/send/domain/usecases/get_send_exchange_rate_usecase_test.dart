@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/features/send/domain/send_failure.dart';
 import 'package:bb_mobile/features/send/domain/usecases/get_send_exchange_rate_usecase.dart';
 import 'package:bull_pricer/bull_pricer.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -16,6 +17,16 @@ SettingsEntity _settings({Environment environment = Environment.mainnet}) =>
       bitcoinUnit: BitcoinUnit.sats,
       currencyCode: 'USD',
     );
+
+double _rate(Result<double, SendFailure> result) => switch (result) {
+  Ok(:final value) => value,
+  Err(:final failure) => fail('Expected a rate, got $failure'),
+};
+
+SendFailure _failure(Result<double, SendFailure> result) => switch (result) {
+  Ok(:final value) => fail('Expected a failure, got $value'),
+  Err(:final failure) => failure,
+};
 
 void main() {
   late _MockGetSettings getSettings;
@@ -35,7 +46,7 @@ void main() {
   test(
     'gives the mainnet price of one bitcoin in the settings currency',
     () async {
-      expect(await usecase.execute(), 114214.20);
+      expect(_rate(await usecase.execute()), 114214.20);
       expect(getIndexPrice.requests.single, (
         network: BitcoinNetwork.mainnet,
         currency: SupportedCurrency.usd,
@@ -44,7 +55,7 @@ void main() {
   );
 
   test('asks the requested currency', () async {
-    expect(await usecase.execute(currencyCode: 'cad'), 114214.20);
+    expect(_rate(await usecase.execute(currencyCode: 'cad')), 114214.20);
     expect(getIndexPrice.requests.single.currency, SupportedCurrency.cad);
   });
 
@@ -53,25 +64,32 @@ void main() {
       getSettings.execute,
     ).thenAnswer((_) async => _settings(environment: Environment.testnet));
 
-    expect(await usecase.execute(), isNotNull);
+    _rate(await usecase.execute());
     expect(getIndexPrice.requests.single.network, BitcoinNetwork.testnet);
   });
 
-  test('no price is no rate', () async {
+  test('no price is a price unavailable failure', () async {
     getIndexPrice.failure = const PricerNetworkFailure('offline');
 
-    expect(await usecase.execute(), isNull);
+    expect(
+      _failure(await usecase.execute()),
+      isA<SendPriceUnavailableFailure>(),
+    );
   });
 
-  test('a currency without a price is no rate, never asked', () async {
-    expect(await usecase.execute(currencyCode: 'JPY'), isNull);
+  test('a currency without a price is a price unavailable failure, never '
+      'asked', () async {
+    expect(
+      _failure(await usecase.execute(currencyCode: 'JPY')),
+      isA<SendPriceUnavailableFailure>(),
+    );
     expect(getIndexPrice.requests, isEmpty);
   });
 
-  test('a failed settings read is no rate', () async {
+  test('a failed settings read is an unexpected failure', () async {
     when(getSettings.execute).thenThrow(Exception('storage locked'));
 
-    expect(await usecase.execute(), isNull);
+    expect(_failure(await usecase.execute()), isA<SendUnexpectedFailure>());
     expect(getIndexPrice.requests, isEmpty);
   });
 }

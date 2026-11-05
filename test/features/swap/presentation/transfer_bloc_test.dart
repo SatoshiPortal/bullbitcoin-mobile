@@ -1213,7 +1213,7 @@ void main() {
     ).thenAnswer((_) async => _feeOptions());
     when(
       () => getExchangeRate.execute(currencyCode: 'USD'),
-    ).thenAnswer((_) async => 1.0);
+    ).thenAnswer((_) async => const Ok(1.0));
     when(
       () => watchOrder.execute('local-1'),
     ).thenAnswer((_) => const Stream.empty());
@@ -1244,7 +1244,7 @@ void main() {
     ).thenAnswer((_) async => _feeOptions());
     when(
       () => getExchangeRate.execute(currencyCode: 'USD'),
-    ).thenAnswer((_) async => 1.0);
+    ).thenAnswer((_) async => const Ok(1.0));
     when(
       () => watchOrder.execute('local-1'),
     ).thenAnswer((_) => const Stream.empty());
@@ -1254,6 +1254,67 @@ void main() {
 
     expect(bloc.state.amount, '0.00001');
     expect(bloc.state.inputAmountSat, 1000);
+  });
+
+  test('starts without a price: no rate and no start error', () async {
+    final settings = SettingsEntity(
+      environment: Environment.testnet,
+      bitcoinUnit: BitcoinUnit.btc,
+      currencyCode: 'USD',
+    );
+    when(() => getSettings.execute()).thenAnswer((_) async => settings);
+    when(
+      () => getPendingOrders.execute(),
+    ).thenAnswer((_) async => Ok([prepared]));
+    when(
+      () => getWallets.execute(),
+    ).thenAnswer((_) async => Ok([_liquidWallet(), _destinationWallet()]));
+    when(
+      () => getNetworkFees.execute(isLiquid: any(named: 'isLiquid')),
+    ).thenAnswer((_) async => _feeOptions());
+    when(
+      () => getExchangeRate.execute(currencyCode: 'USD'),
+    ).thenAnswer((_) async => const Err(SwapPriceUnavailableFailure()));
+    when(
+      () => watchOrder.execute('local-1'),
+    ).thenAnswer((_) => const Stream.empty());
+
+    bloc.add(const TransferEvent.started());
+    await bloc.stream.firstWhere((state) => !state.isStarting);
+
+    expect(bloc.state.exchangeRate, isNull);
+    expect(bloc.state.startError, isNull);
+    expect(bloc.state.inputAmountSat, 1000);
+  });
+
+  test('a failure other than no price stops the start', () async {
+    final settings = SettingsEntity(
+      environment: Environment.testnet,
+      bitcoinUnit: BitcoinUnit.btc,
+      currencyCode: 'USD',
+    );
+    when(() => getSettings.execute()).thenAnswer((_) async => settings);
+    when(
+      () => getPendingOrders.execute(),
+    ).thenAnswer((_) async => Ok([prepared]));
+    when(
+      () => getWallets.execute(),
+    ).thenAnswer((_) async => Ok([_liquidWallet(), _destinationWallet()]));
+    when(
+      () => getNetworkFees.execute(isLiquid: any(named: 'isLiquid')),
+    ).thenAnswer((_) async => _feeOptions());
+    when(
+      () => getExchangeRate.execute(currencyCode: 'USD'),
+    ).thenAnswer((_) async => const Err(SwapUnexpectedFailure('settings')));
+    when(
+      () => watchOrder.execute('local-1'),
+    ).thenAnswer((_) => const Stream.empty());
+
+    bloc.add(const TransferEvent.started());
+    await bloc.stream.firstWhere((state) => !state.isStarting);
+
+    expect(bloc.state.exchangeRate, isNull);
+    expect(bloc.state.startError, isNotNull);
   });
 
   test('resumes the persisted non-default wallet pair', () async {
@@ -1280,7 +1341,7 @@ void main() {
     ).thenAnswer((_) async => _feeOptions());
     when(
       () => getExchangeRate.execute(currencyCode: 'USD'),
-    ).thenAnswer((_) async => 1.0);
+    ).thenAnswer((_) async => const Ok(1.0));
     when(
       () => watchOrder.execute('local-1'),
     ).thenAnswer((_) => const Stream.empty());
@@ -1312,7 +1373,7 @@ void main() {
     ).thenAnswer((_) async => _feeOptions());
     when(
       () => getExchangeRate.execute(currencyCode: 'USD'),
-    ).thenAnswer((_) async => 1.0);
+    ).thenAnswer((_) async => const Ok(1.0));
     when(() => watchOrder.execute('local-1')).thenAnswer(
       (_) =>
           Stream.value(const Err(SwapStorageFailure('database unavailable'))),
@@ -1381,7 +1442,7 @@ void main() {
       ).thenAnswer((_) async => _feeOptions());
       when(
         () => getExchangeRate.execute(currencyCode: 'USD'),
-      ).thenAnswer((_) async => 1.0);
+      ).thenAnswer((_) async => const Ok(1.0));
 
       bloc.add(const TransferEvent.started());
       await bloc.stream.firstWhere((state) => !state.isStarting);

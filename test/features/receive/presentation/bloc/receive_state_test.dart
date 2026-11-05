@@ -472,5 +472,12 @@ void main() {
       expect(state.formattedAmountInputEquivalent, isEmpty);
       expect(state.formattedConfirmedAmountFiat, isEmpty);
     });
+
+    test('has no fiat value, rather than a zero one', () {
+      const state = ReceiveState(confirmedAmountSat: 1000);
+      expect(state.inputAmountFiat, isNull);
+      expect(state.confirmedAmountFiat, isNull);
+      expect(state.payjoinAmountFiat, isNull);
+    });
   });
 }

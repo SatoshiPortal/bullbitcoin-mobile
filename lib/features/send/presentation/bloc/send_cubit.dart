@@ -758,7 +758,7 @@ class SendCubit extends Cubit<SendState>
     final settings = await _getSettingsUsecase.execute();
     final payjoinEnabled = await _getSendPayjoinEnabledUsecase.execute();
 
-    final exchangeRate = await _getSendExchangeRateUsecase.execute();
+    final exchangeRate = await _exchangeRate();
 
     final bitcoinUnit = settings.bitcoinUnit;
     final fiatCurrency = settings.currencyCode;
@@ -767,7 +767,7 @@ class SendCubit extends Cubit<SendState>
       state.copyWith(
         fiatCurrencyCodes: SupportedCurrency.codes,
         fiatCurrencyCode: fiatCurrency,
-        exchangeRate: exchangeRate ?? 0,
+        exchangeRate: exchangeRate,
         bitcoinUnit: bitcoinUnit,
         inputAmountCurrencyCode: bitcoinUnit.code,
         payjoinGloballyEnabled: payjoinEnabled,
@@ -869,16 +869,14 @@ class SendCubit extends Cubit<SendState>
   }
 
   Future<void> onCurrencyChanged(String currencyCode) async {
-    double exchangeRate = state.exchangeRate;
+    double? exchangeRate = state.exchangeRate;
     String fiatCurrencyCode = state.fiatCurrencyCode;
     bool payjoinGloballyEnabled = state.payjoinGloballyEnabled;
 
     if (![BitcoinUnit.btc.code, BitcoinUnit.sats.code].contains(currencyCode)) {
       // If the currency is a fiat currency, retrieve the exchange rate and replace
       //  the current exchange rate and fiat currency code.
-      final rate = await _getSendExchangeRateUsecase.execute(
-        currencyCode: currencyCode,
-      );
+      final rate = await _exchangeRate(currencyCode: currencyCode);
       // No price for that currency: stay on the current one rather than take
       // a fiat input that cannot be converted.
       if (rate == null) return;
@@ -889,12 +887,12 @@ class SendCubit extends Cubit<SendState>
       //  rate back to the currency from the settings.
       final (settings, rate, payjoinEnabled) = await (
         _getSettingsUsecase.execute(),
-        _getSendExchangeRateUsecase.execute(),
+        _exchangeRate(),
         _getSendPayjoinEnabledUsecase.execute(),
       ).wait;
 
       fiatCurrencyCode = settings.currencyCode;
-      exchangeRate = rate ?? 0;
+      exchangeRate = rate;
       payjoinGloballyEnabled = payjoinEnabled;
     }
 
@@ -1701,10 +1699,11 @@ class SendCubit extends Cubit<SendState>
           // the spendable wallet balance.
           final maxAmountSat = state.maxSpendableBalanceSat;
           // convert to btc or fiat based on selected currency
+          final rate = state.exchangeRate;
           final maxAmount = state.bitcoinUnit == BitcoinUnit.btc
               ? ConvertAmount.satsToBtc(maxAmountSat)
-              : state.isInputAmountFiat
-              ? ConvertAmount.satsToFiat(maxAmountSat, state.exchangeRate)
+              : state.isInputAmountFiat && rate != null
+              ? ConvertAmount.satsToFiat(maxAmountSat, rate)
               : maxAmountSat;
           emit(
             state.copyWith(
@@ -1897,11 +1896,12 @@ class SendCubit extends Cubit<SendState>
         if (state.sendMax) {
           // Keep the displayed MAX amount aligned with the built PSBT inputs.
           final maxAmountSat = state.maxSpendableBalanceSat;
+          final rate = state.exchangeRate;
           final maxAmount =
               state.inputAmountCurrencyCode == BitcoinUnit.btc.code
               ? ConvertAmount.satsToBtc(maxAmountSat)
-              : state.isInputAmountFiat
-              ? ConvertAmount.satsToFiat(maxAmountSat, state.exchangeRate)
+              : state.isInputAmountFiat && rate != null
+              ? ConvertAmount.satsToFiat(maxAmountSat, rate)
               : maxAmountSat;
           emit(
             state.copyWith(
@@ -2566,11 +2566,28 @@ class SendCubit extends Cubit<SendState>
   }
 
   Future<void> getExchangeRate({String? currencyCode}) async {
-    final exchangeRate = await _getSendExchangeRateUsecase.execute(
+    final exchangeRate = await _exchangeRate(
       currencyCode: currencyCode ?? state.fiatCurrencyCode,
     );
 
-    emit(state.copyWith(exchangeRate: exchangeRate ?? 0));
+    emit(state.copyWith(exchangeRate: exchangeRate));
+  }
+
+  /// The price of one bitcoin, or null without one. Sending works on
+  /// without a price, with no fiat value, so that failure is not shown; any
+  /// other is.
+  Future<double?> _exchangeRate({String? currencyCode}) async {
+    switch (await _getSendExchangeRateUsecase.execute(
+      currencyCode: currencyCode,
+    )) {
+      case Ok(:final value):
+        return value;
+      case Err(failure: SendPriceUnavailableFailure()):
+        return null;
+      case Err(:final failure):
+        emit(state.copyWith(failure: failure));
+        return null;
+    }
   }
 
   void _watchOrderSwap(String localId) {
