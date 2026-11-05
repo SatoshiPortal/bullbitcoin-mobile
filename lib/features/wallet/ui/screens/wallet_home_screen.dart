@@ -5,6 +5,7 @@ import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/features/consolidation/public/consolidation_facade.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/home_errors.dart';
+import 'package:bb_mobile/features/wallet/ui/widgets/in_flight_refresh_spinner.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_bottom_buttons.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_cards.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_home_top_section.dart';
@@ -26,6 +27,7 @@ class _WalletHomeScreenState extends State<WalletHomeScreen> {
 
   final GlobalKey<RefreshIndicatorState> _indicatorKey =
       GlobalKey<RefreshIndicatorState>();
+  final _spinner = InFlightRefreshSpinner();
 
   GoRouter? _router;
 
@@ -44,7 +46,7 @@ class _WalletHomeScreenState extends State<WalletHomeScreen> {
       // post-startup WalletStarted refresh), show the spinner over it so the
       // user sees activity instead of landing on apparently-static data.
       if (context.read<WalletBloc>().state.isRefreshing) {
-        _indicatorKey.currentState?.show();
+        _spinner.show(_indicatorKey.currentState);
       }
     });
   }
@@ -78,6 +80,16 @@ class _WalletHomeScreenState extends State<WalletHomeScreen> {
     super.dispose();
   }
 
+  /// Completes when the wallet refresh in flight settles.
+  Future<void> _refreshSettled() async {
+    final bloc = context.read<WalletBloc>();
+    if (!bloc.state.isRefreshing) return;
+    await bloc.stream.firstWhere(
+      (state) => !state.isRefreshing,
+      orElse: () => bloc.state,
+    );
+  }
+
   void _refreshOnVisible() {
     if (!mounted) return;
     context.read<WalletBloc>().add(const RefreshSpWallet());
@@ -104,7 +116,7 @@ class _WalletHomeScreenState extends State<WalletHomeScreen> {
             // with the initState path.
             WidgetsBinding.instance.addPostFrameCallback((_) {
               if (!mounted) return;
-              _indicatorKey.currentState?.show();
+              _spinner.show(_indicatorKey.currentState);
             });
           },
         ),
@@ -126,12 +138,15 @@ class _WalletHomeScreenState extends State<WalletHomeScreen> {
             ),
             BullPullableBody(
               indicatorKey: _indicatorKey,
-              onRefresh: () {
-                context.read<BitcoinPriceBloc>().add(
-                  const BitcoinPriceFetched(),
-                );
-                return context.read<WalletBloc>().refresh();
-              },
+              onRefresh: () => _spinner.onRefresh(
+                userRefresh: () {
+                  context.read<BitcoinPriceBloc>().add(
+                    const BitcoinPriceFetched(),
+                  );
+                  return context.read<WalletBloc>().refresh();
+                },
+                follow: _refreshSettled,
+              ),
               // Clearance for the bar pinned at the bottom of this Stack, so
               // the last wallet card can be scrolled out from under it.
               bottomInset:
