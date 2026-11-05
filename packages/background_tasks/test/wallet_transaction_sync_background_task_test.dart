@@ -1098,13 +1098,16 @@ void main() {
       await directory.delete(recursive: true);
     });
     final synced = <String>[];
+    // Simulated time: queue and notification I/O costs nothing, so the
+    // outcome does not depend on how loaded the machine is.
+    final clock = _ManualStopwatch();
     WalletTransactionSyncBackgroundJob job(String id, String chain) {
       final key = WalletNetworkKey(id, chain, 'testnet');
       return WalletTransactionSyncBackgroundJob(
         key: key,
         synchronize: () async {
           synced.add(id);
-          await Future<void>.delayed(const Duration(milliseconds: 150));
+          clock.advance(const Duration(milliseconds: 150));
           return Ok(_outcome(key, const []));
         },
       );
@@ -1119,7 +1122,7 @@ void main() {
       copy: (_, _) => (title: 'Incoming', body: 'Payment received'),
     );
 
-    await task.executeAll();
+    await task.executeAll(clock: clock);
 
     // Without the split, the second bitcoin wallet would take the rest.
     expect(synced, ['b1', 'l1']);
@@ -1158,6 +1161,40 @@ void main() {
       BackgroundTaskExecutionStatus.success,
     );
   });
+}
+
+/// A run clock that moves only when the test advances it.
+final class _ManualStopwatch implements Stopwatch {
+  Duration _elapsed = Duration.zero;
+
+  void advance(Duration duration) => _elapsed += duration;
+
+  @override
+  Duration get elapsed => _elapsed;
+
+  @override
+  int get elapsedMicroseconds => _elapsed.inMicroseconds;
+
+  @override
+  int get elapsedMilliseconds => _elapsed.inMilliseconds;
+
+  @override
+  int get elapsedTicks => _elapsed.inMicroseconds;
+
+  @override
+  int get frequency => Duration.microsecondsPerSecond;
+
+  @override
+  bool get isRunning => true;
+
+  @override
+  void reset() => _elapsed = Duration.zero;
+
+  @override
+  void start() {}
+
+  @override
+  void stop() {}
 }
 
 final class _Sink implements WalletSyncLogSink {
