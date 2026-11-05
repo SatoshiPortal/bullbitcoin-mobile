@@ -30,6 +30,8 @@ extension BitBoxFailureL10n on BitBoxFailure {
       context.loc.hardwareWalletPolicyUnsupported,
     WalletPolicyNotRegisteredBitBoxFailure() =>
       context.loc.hardwareWalletPolicyNotRegistered,
+    WalletPolicyNameInUseBitBoxFailure() =>
+      context.loc.bitboxErrorWalletNameInUse,
     BitBoxUnexpectedFailure() => context.loc.oopsSomethingWentWrong,
   };
 }

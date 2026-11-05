@@ -17464,5 +17464,9 @@
   "bullVaultRestoreMobileAvailable": "Your mobile key is available. Spending still requires the keys shown in your vault policy.",
   "@bullVaultRestoreCompleteTitle": {},
   "bullVaultRestoreCompleteTitle": "BullVault restored",
-  "bullVaultRestoreWatchOnly": "You can view this vault, but its mobile key is not available on this phone. Restore the matching seed and passphrase to use mobile signing, or use the other keys allowed by the vault policy."
+  "bullVaultRestoreWatchOnly": "You can view this vault, but its mobile key is not available on this phone. Restore the matching seed and passphrase to use mobile signing, or use the other keys allowed by the vault policy.",
+  "bitboxErrorWalletNameInUse": "Another wallet on your BitBox already uses this name. Go back and choose a different registration name.",
+  "@bitboxErrorWalletNameInUse": {
+    "description": "BitBox policy registration failed because another policy has the same name."
+  }
 }
