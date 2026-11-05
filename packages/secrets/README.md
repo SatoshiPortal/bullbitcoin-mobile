@@ -19,6 +19,8 @@ Secrets
 |-- trash(id) -> void
 |-- exists(id) -> bool
 |-- contains(words:, [passphrase:]) -> bool
+|-- preview
+|   `-- bitcoinDescriptors(words:, [language: Language.english], [passphrase:], network:, scriptTypes:) -> Map<ScriptType, ({String external, String internal})>
 |-- recoverbull
 |   |-- restore(vault:, key:, [passphrase:]) -> RestoredVault
 |   `-- fingerprint(vault:, key:) -> Fingerprint
