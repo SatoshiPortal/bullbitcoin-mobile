@@ -10,6 +10,7 @@ import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_master_key_usecase
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/features/all_seed_view/domain/get_seed_fingerprints_in_use_usecase.dart';
 import 'package:bb_mobile/features/all_seed_view/presentation/all_seed_view_cubit.dart';
 import 'package:bb_mobile/features/app_unlock/public/app_unlock_facade.dart';
@@ -100,6 +101,20 @@ void main() {
   test(
     'a seed used only by a wallet on another network is not offered for deletion',
     () async {
+      await cubit.unlock(issueGrant());
+
+      expect(cubit.state.existingWallets, [testnetSeed]);
+      expect(cubit.state.oldWallets, isEmpty);
+    },
+  );
+
+  test(
+    'a seed is not offered for deletion when wallet usage is unknown',
+    () async {
+      when(
+        () => walletRepository.getWallets(),
+      ).thenAnswer((_) async => const Err(WalletStorageFailure()));
+
       await cubit.unlock(issueGrant());
 
       expect(cubit.state.existingWallets, [testnetSeed]);
