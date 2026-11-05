@@ -52,7 +52,7 @@ void main() {
 
     for (final (role, path) in [
       ('foreground', 'lib/init.dart'),
-      ('background', 'lib/core/background_tasks/handler.dart'),
+      ('background', 'lib/background_bootstrap.dart'),
     ]) {
       test('$role Payjoin storage uses the Documents directory', () {
         final source = File(path).readAsStringSync();
