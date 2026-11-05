@@ -4979,5 +4979,7 @@
   "recoverbullServerBadResponse": "Le serveur de sauvegarde a répondu, mais l'échange a échoué.",
   "recoverbullNewRoute": "Autre route",
   "recoverbullTorInitializing": "Initialisation",
-  "recoverbullTorReady": "Prêt"
+  "recoverbullTorReady": "Prêt",
+  "passphraseShow": "Afficher la phrase secrète",
+  "passphraseHide": "Masquer la phrase secrète"
 }

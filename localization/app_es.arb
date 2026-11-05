@@ -4877,5 +4877,7 @@
   "sellPayoutBalance": "Agregar a mi saldo de cuenta",
   "sellPayoutSepaDescription": "Los retiros aparecen como enviados por Leonod",
   "sellPayoutTitle": "Seleccionar destinatario",
-  "sellPayoutNewBadge": "NUEVO"
+  "sellPayoutNewBadge": "NUEVO",
+  "passphraseShow": "Mostrar frase de contraseña",
+  "passphraseHide": "Ocultar frase de contraseña"
 }
