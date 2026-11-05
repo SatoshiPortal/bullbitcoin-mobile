@@ -10,6 +10,21 @@ import workmanager_apple
   ) -> Bool {
     GeneratedPluginRegistrant.register(with: self)
     excludeSensitiveFilesFromBackup()
+    if let registrar = registrar(forPlugin: "ScreenAwake") {
+      FlutterMethodChannel(name: "bull/screen_awake", binaryMessenger: registrar.messenger())
+        .setMethodCallHandler { call, result in
+          guard call.method == "setEnabled" else {
+            result(FlutterMethodNotImplemented)
+            return
+          }
+          guard let enabled = call.arguments as? Bool else {
+            result(FlutterError(code: "invalid_argument", message: "Expected a boolean", details: nil))
+            return
+          }
+          UIApplication.shared.isIdleTimerDisabled = enabled
+          result(nil)
+        }
+    }
 
     // workmanager_apple spawns a separate FlutterEngine per background task
     // (see BackgroundWorker.swift in workmanager_apple). Plugins registered

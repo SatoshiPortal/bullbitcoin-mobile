@@ -1,0 +1,23 @@
+name: screen_awake
+description: Keeps active hardware-wallet screens awake while the app is in the foreground.
+publish_to: "none"
+version: 0.0.1
+resolution: workspace
+
+environment:
+  sdk: "3.12.2"
+  flutter: "3.44.9"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  bull_logger:
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  lints: ^6.1.0
+  mocktail: ^1.0.4
+
+flutter:
+  uses-material-design: true
