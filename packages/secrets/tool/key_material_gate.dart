@@ -287,19 +287,25 @@ bool _isException(String path, AstNode node, String symbol) {
   final member = symbol.split('#').last;
   // This adapter replaces version bytes with the public xpub version before
   // decoding. Elsewhere this mixed decoder could import private extended keys.
-  if (path == 'lib/core/utils/bip32_derivation.dart' &&
-      owner == 'Bip32Derivation' &&
-      function == 'getBip32Xpub' &&
+  if (((path == 'lib/core/utils/bip32_derivation.dart' &&
+              owner == 'Bip32Derivation' &&
+              function == 'getBip32Xpub') ||
+          (path ==
+                  'packages/wallet/lib/src/data/descriptors/wallet_xpub_import.dart' &&
+              owner == 'WalletXpubImport' &&
+              function == '_parse')) &&
       member == 'Bip32Keys.fromBase58') {
     return true;
   }
   // Pre-import discovery operates on user input before there is a stored Secret.
-  if (path == 'lib/core/wallet/data/datasources/bdk_wallet_datasource.dart' &&
+  if (path == 'packages/wallet/lib/src/data/bdk/bdk_wallet_datasource.dart' &&
       function == '_performDryScan' &&
       owner == null) {
     return {
       'Mnemonic.fromEntropy',
       'DescriptorSecretKey.new',
+      // Frees the native key as soon as the scan ends.
+      'DescriptorSecretKey.dispose',
       'Descriptor.newBip44',
       'Descriptor.newBip49',
       'Descriptor.newBip84',

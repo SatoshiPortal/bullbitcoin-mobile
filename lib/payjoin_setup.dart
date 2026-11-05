@@ -14,6 +14,8 @@ import 'package:bb_mobile/payjoin_runtime_adapters.dart';
 import 'package:bb_mobile/recoverable_payjoin.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:get_it/get_it.dart';
+import 'package:transaction_sync/transaction_sync.dart'
+    show WalletSourceOperationCoordinator;
 
 const payjoinDatabaseFilename = 'payjoin.sqlite';
 
@@ -31,6 +33,7 @@ abstract final class PayjoinSetup {
           locator<Secrets>(),
           locator<BdkWalletDatasource>(),
           locator<WalletCatalogPort>(),
+          locator<WalletSourceOperationCoordinator>(),
         ),
         blockchain: AppPayjoinBlockchainAdapter(
           locator<BdkBitcoinBlockchainDatasource>(),

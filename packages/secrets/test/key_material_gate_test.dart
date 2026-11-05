@@ -324,7 +324,7 @@ Object _performDryScan() {
 }
 ''';
   const scanPath =
-      'lib/core/wallet/data/datasources/bdk_wallet_datasource.dart';
+      'packages/wallet/lib/src/data/bdk/bdk_wallet_datasource.dart';
 
   test('pre-import exemption requires the named file and function', () async {
     expect(await inspect('scan', scan, policyPath: scanPath), isEmpty);
