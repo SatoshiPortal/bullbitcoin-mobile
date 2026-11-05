@@ -7,13 +7,10 @@ import 'package:flutter/material.dart';
 /// such as a BIP39 passphrase.
 ///
 /// Hardened by construction, with no option to loosen it:
-/// - the IME gets no suggestions, autocorrect, personalised learning,
-///   autofill or smart punctuation, so it neither learns nor rewrites the value
-///   (iOS turning `'` into `’` would derive another wallet);
+/// - requests no IME suggestions, autocorrect, personalised learning, autofill or smart punctuation (iOS turning `'` into `’` would derive another wallet); the keyboard still receives the typed text;
 /// - the text is obscured until the user reveals it with the trailing toggle;
 /// - no selection, so nothing can be copied out of the field;
-/// - accessibility services see the [label] and the toggle, never the value or
-///   its length.
+/// - the Flutter semantics tree exposes the [label], [hint] and toggle without the value or its length. Native iOS VoiceOver behaviour while the value is revealed still requires device verification.
 ///
 /// The value is reported through [onChanged] only; the field never exposes it.
 class BullSecretTextInput extends StatefulWidget {
@@ -79,7 +76,9 @@ class _BullSecretTextInputState extends State<BullSecretTextInput> {
               listenable: _focusNode,
               builder: (context, child) => Semantics(
                 label: widget.label,
+                hint: widget.hint,
                 textField: true,
+                // Keep the native node marked as a password even when revealed.
                 obscured: true,
                 focusable: true,
                 focused: _focusNode.hasFocus,

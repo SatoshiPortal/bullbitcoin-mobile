@@ -205,9 +205,7 @@ class _MnemonicWidgetState extends State<MnemonicWidget> {
 
                   if (widget.allowPassphrase) ...[
                     const Gap(16),
-                    // Key material typed on the system keyboard: the secret
-                    // input keeps it from the IME, the clipboard and the
-                    // accessibility tree.
+                    // Key material typed on the system keyboard: request IME privacy, disable copying and omit the value from the Flutter semantics tree.
                     BullSecretTextInput(
                       label: context.loc.passphraseLabel,
                       hint: context.loc.optionalPassphraseHint,
