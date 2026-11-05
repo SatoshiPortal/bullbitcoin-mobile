@@ -58,7 +58,7 @@ class OrderSwapRepositoryImpl implements OrderSwapRepository {
       log.info(
         '[OrderSwap] quote environment=${environment.name} '
         'route=${inNetwork.name}->${outNetwork.name} '
-        'amountSat=$amountSat fixedInput=$isInAmountFixed',
+        'fixedInput=$isInAmountFixed',
       );
       final model = await _remote(environment).getBestSwapOption(
         amountSat: amountSat,
@@ -242,8 +242,9 @@ class OrderSwapRepositoryImpl implements OrderSwapRepository {
 
     try {
       log.info(
-        '[OrderSwap] create request requestId=${record.requestId} '
-        'route=${inNetwork.name}->${outNetwork.name} purpose=${purpose.name}',
+        '[OrderSwap] create request environment=${environment.name} '
+        'route=${inNetwork.name}->${outNetwork.name} purpose=${purpose.name} '
+        'fixedInput=$isInAmountFixed',
       );
       final order = await _createServerOrder(
         record: record,
@@ -260,15 +261,16 @@ class OrderSwapRepositoryImpl implements OrderSwapRepository {
       );
       await _saveRecordLocked(created);
       log.info(
-        '[OrderSwap] create success requestId=${created.requestId} '
-        'orderNumber=${order.orderNumber} '
-        'orderId=${_shortOrderId(order.orderId)}',
+        '[OrderSwap] create success environment=${environment.name} '
+        'route=${inNetwork.name}->${outNetwork.name} purpose=${purpose.name} '
+        'fixedInput=$isInAmountFixed',
       );
       return Ok(created);
     } catch (error) {
       log.warning(
-        '[OrderSwap] create failed requestId=${record.requestId} '
-        'failure=${error.runtimeType}'
+        '[OrderSwap] create failed environment=${environment.name} '
+        'route=${inNetwork.name}->${outNetwork.name} purpose=${purpose.name} '
+        'fixedInput=$isInAmountFixed failure=${error.runtimeType}'
         '${error is ExchangeRpcException ? ' apiCode=${error.apiCode}' : ''}',
       );
       if (_createOutcomeIsUnknown(error)) {
@@ -748,6 +750,3 @@ String _randomLocalId() {
   final bytes = List<int>.generate(16, (_) => random.nextInt(256));
   return bytes.map((byte) => byte.toRadixString(16).padLeft(2, '0')).join();
 }
-
-String _shortOrderId(String orderId) =>
-    orderId.substring(0, min(8, orderId.length));
