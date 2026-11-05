@@ -8,7 +8,7 @@ import 'package:bb_mobile/core/widgets/mnemonic_keyboard.dart';
 import 'package:bb_mobile/core/widgets/mnemonic_entry_failure_l10n.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:bull_ui/bull_ui.dart'
-    show BullButton, BullLabeledTextInput, BullText, Gap;
+    show BullButton, BullLabeledTextInput, BullSecretTextInput, BullText, Gap;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
@@ -205,22 +205,15 @@ class _MnemonicWidgetState extends State<MnemonicWidget> {
 
                   if (widget.allowPassphrase) ...[
                     const Gap(16),
-                    BullLabeledTextInput(
+                    // Key material typed on the system keyboard: the secret
+                    // input keeps it from the IME, the clipboard and the
+                    // accessibility tree.
+                    BullSecretTextInput(
                       label: context.loc.passphraseLabel,
                       hint: context.loc.optionalPassphraseHint,
-                      value: passphrase,
                       onChanged: updatePassphrase,
-                      maxLines: 1,
-                      // A passphrase is key material too: keep it out of the
-                      // IME's suggestion and autocorrect caches.
-                      enableSuggestions: false,
-                      autocorrect: false,
-                      // iOS Smart Punctuation turns `'` into `’`, which
-                      // would derive a different wallet. Disable it here
-                      // rather than cleaning up the submitted value: `’`
-                      // can be a real passphrase character.
-                      smartQuotesType: SmartQuotesType.disabled,
-                      smartDashesType: SmartDashesType.disabled,
+                      showLabel: context.loc.passphraseShow,
+                      hideLabel: context.loc.passphraseHide,
                     ),
                   ],
 
