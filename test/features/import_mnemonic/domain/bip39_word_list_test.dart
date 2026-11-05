@@ -1,8 +1,34 @@
 import 'package:bb_mobile/features/import_mnemonic/domain/bip39_word_list.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:flutter_test/flutter_test.dart';
+import 'package:unorm_dart/unorm_dart.dart';
 
 void main() {
+  group('Unicode prefixes', () {
+    for (final (language, composed) in [
+      (bip39.Language.spanish, 'ábaco'),
+      (bip39.Language.japanese, 'あおぞら'),
+      (bip39.Language.korean, '가격'),
+    ]) {
+      test('${language.name} accepts equivalent composed prefixes', () {
+        final word = nfkd(composed);
+        final prefix = word.substring(0, word.length - 1);
+        final expected = Bip39WordList.allowedNextLetters(
+          prefix: prefix,
+          language: language,
+        );
+        expect(expected, isNotEmpty);
+        expect(
+          Bip39WordList.allowedNextLetters(
+            prefix: nfc(prefix),
+            language: language,
+          ),
+          expected,
+        );
+      });
+    }
+  });
+
   group('Bip39WordList.allowedNextLetters', () {
     final list = bip39.Language.english.list;
 
@@ -55,6 +81,28 @@ void main() {
 
     test('an impossible prefix offers no letters', () {
       expect(Bip39WordList.allowedNextLetters(prefix: 'zzz'), isEmpty);
+    });
+  });
+
+  group('Bip39WordList.orderedNextLetters', () {
+    for (final language in [
+      bip39.Language.simplifiedChinese,
+      bip39.Language.traditionalChinese,
+    ]) {
+      test('${language.name} keeps the frequency order of its wordlist', () {
+        expect(
+          Bip39WordList.orderedNextLetters(prefix: '', language: language),
+          language.list.map(nfkd).toList(),
+        );
+      });
+    }
+
+    test('alphabetic wordlists stay sorted by code point', () {
+      final spanish = Bip39WordList.orderedNextLetters(
+        prefix: '',
+        language: bip39.Language.spanish,
+      );
+      expect(spanish, [...spanish]..sort());
     });
   });
 }

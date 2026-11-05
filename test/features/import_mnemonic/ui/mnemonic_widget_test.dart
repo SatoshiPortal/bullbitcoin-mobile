@@ -202,17 +202,6 @@ void main() {
       expect(find.byType(TextField), findsNWidgets(24));
     });
 
-    test('rejects a non-English language — the keyboard is a-z only', () {
-      expect(
-        () => MnemonicWidget(
-          initialLength: bip39.MnemonicLength.words12,
-          onSubmit: (_) {},
-          language: bip39.Language.french,
-        ),
-        throwsA(isA<AssertionError>()),
-      );
-    });
-
     testWidgets('word fields are read-only so no OS keyboard can open', (
       tester,
     ) async {
