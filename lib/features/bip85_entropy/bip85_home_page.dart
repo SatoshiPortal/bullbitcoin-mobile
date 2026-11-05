@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
@@ -19,7 +21,9 @@ class Bip85HomePage extends StatefulWidget {
 }
 
 class _Bip85HomePageView extends StatelessWidget {
-  const _Bip85HomePageView();
+  final Future<bool> Function() protect;
+
+  const _Bip85HomePageView({required this.protect});
 
   @override
   Widget build(BuildContext context) {
@@ -33,85 +37,105 @@ class _Bip85HomePageView extends StatelessWidget {
       },
       child: Scaffold(
         appBar: AppBar(title: Text(context.loc.bip85Title)),
-        body: BlocBuilder<Bip85EntropyCubit, Bip85EntropyState>(
-          builder: (context, state) {
-            final cubit = context.read<Bip85EntropyCubit>();
+        // The derived children never draw before capture blocking is active,
+        // unless the user chose to go without it.
+        body: ScreenPrivacyGate(
+          protect: protect,
+          labels: ScreenPrivacyGateLabels(
+            message: context.loc.screenPrivacyUnavailableMessage,
+            retry: context.loc.retry,
+            continueAnyway: context.loc.screenPrivacyContinueAnyway,
+          ),
+          builder: (context) =>
+              BlocBuilder<Bip85EntropyCubit, Bip85EntropyState>(
+                builder: (context, state) {
+                  final cubit = context.read<Bip85EntropyCubit>();
 
-            return Padding(
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              child: Column(
-                children: [
-                  BullFadingLinearProgress(trigger: state.isLoading),
-                  Container(
-                    margin: const EdgeInsets.all(16),
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: context.appColors.warning.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Row(
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    child: Column(
                       children: [
-                        Icon(Icons.warning, color: context.appColors.warning),
-                        const Gap(8),
-                        Expanded(
-                          child: Text(
-                            context.loc.bip85ExperimentalWarning,
-                            style: TextStyle(color: context.appColors.warning),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const Gap(16),
-                  if (state.derivations.isNotEmpty)
-                    Expanded(
-                      child: ListView.builder(
-                        itemCount: state.derivations.length,
-                        itemBuilder: (context, index) {
-                          final derivationWithEntropy =
-                              state.derivations[index];
-                          return Padding(
-                            padding: const EdgeInsets.all(8),
-                            child: Bip85DerivationWidget(
-                              derivation: derivationWithEntropy.derivation,
-                              entropy: derivationWithEntropy.entropy,
-                              onAliasChanged: cubit.aliasDerivation,
-                              onDerivationRevoked: cubit.revokeDerivation,
-                              onDerivationActivated: cubit.activateDerivation,
+                        BullFadingLinearProgress(trigger: state.isLoading),
+                        Container(
+                          margin: const EdgeInsets.all(16),
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: context.appColors.warning.withValues(
+                              alpha: 0.1,
                             ),
-                          );
-                        },
-                      ),
-                    ),
-                  const Gap(16),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: BullButton.big(
-                            onPressed: () => cubit.deriveNextMnemonic(),
-                            label: context.loc.bip85NextMnemonic,
-                            bgColor: context.appColors.onSurface,
-                            textColor: context.appColors.surface,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.warning,
+                                color: context.appColors.warning,
+                              ),
+                              const Gap(8),
+                              Expanded(
+                                child: Text(
+                                  context.loc.bip85ExperimentalWarning,
+                                  style: TextStyle(
+                                    color: context.appColors.warning,
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                        Gap(Device.screen.width * 0.01),
-                        Expanded(
-                          child: BullButton.big(
-                            onPressed: () => cubit.deriveNextHex(),
-                            label: context.loc.bip85NextHex,
-                            bgColor: context.appColors.onSurface,
-                            textColor: context.appColors.surface,
+                        const Gap(16),
+                        if (state.derivations.isNotEmpty)
+                          Expanded(
+                            child: ListView.builder(
+                              itemCount: state.derivations.length,
+                              itemBuilder: (context, index) {
+                                final derivationWithEntropy =
+                                    state.derivations[index];
+                                return Padding(
+                                  padding: const EdgeInsets.all(8),
+                                  child: Bip85DerivationWidget(
+                                    derivation:
+                                        derivationWithEntropy.derivation,
+                                    entropy: derivationWithEntropy.entropy,
+                                    onAliasChanged: cubit.aliasDerivation,
+                                    onDerivationRevoked: cubit.revokeDerivation,
+                                    onDerivationActivated:
+                                        cubit.activateDerivation,
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                        const Gap(16),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: BullButton.big(
+                                  onPressed: () => cubit.deriveNextMnemonic(),
+                                  label: context.loc.bip85NextMnemonic,
+                                  bgColor: context.appColors.onSurface,
+                                  textColor: context.appColors.surface,
+                                ),
+                              ),
+                              Gap(Device.screen.width * 0.01),
+                              Expanded(
+                                child: BullButton.big(
+                                  onPressed: () => cubit.deriveNextHex(),
+                                  label: context.loc.bip85NextHex,
+                                  bgColor: context.appColors.onSurface,
+                                  textColor: context.appColors.surface,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ],
                     ),
-                  ),
-                ],
+                  );
+                },
               ),
-            );
-          },
         ),
       ),
     );
@@ -120,17 +144,12 @@ class _Bip85HomePageView extends StatelessWidget {
 
 class _Bip85HomePageState extends State<Bip85HomePage> with PrivacyScreen {
   @override
-  void initState() {
-    super.initState();
-    enableScreenPrivacy();
-  }
-
-  @override
-  Widget build(BuildContext context) => const _Bip85HomePageView();
+  Widget build(BuildContext context) =>
+      _Bip85HomePageView(protect: enableScreenPrivacy);
 
   @override
   void dispose() {
-    disableScreenPrivacy();
+    unawaited(disableScreenPrivacy());
     super.dispose();
   }
 }
