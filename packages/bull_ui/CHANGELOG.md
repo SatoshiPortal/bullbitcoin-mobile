@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Add `BullSecretTextInput`, a labelled field for a secret typed on the system keyboard (a BIP39 passphrase): no IME suggestions, learning, autofill or smart punctuation, obscured behind a show/hide toggle, no selection or copy, and its value kept out of the semantics tree.
 - **Foundation tokens now follow the design system / official theme.** `BullTheme`
   is the full 1:1 `AppColors` mirror (all ~40 fields, official names); `BullRadius`
   adopts the design scale (`0/4/8/12/16/28/32/999`) and `BullSpacing` the design
