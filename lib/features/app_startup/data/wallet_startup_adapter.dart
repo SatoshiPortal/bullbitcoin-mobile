@@ -1,6 +1,6 @@
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/result.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
+import 'package:wallet/wallet.dart';
 import 'package:bb_mobile/features/app_startup/domain/app_startup_failure.dart';
 import 'package:bb_mobile/features/app_startup/domain/app_startup_wallet_port.dart';
 import 'package:meta/meta.dart';
@@ -17,7 +17,7 @@ final class WalletStartupAdapter implements AppStartupWalletPort {
     return switch (await _walletRepository.getWallets(
       onlyDefaults: true,
       onlyBitcoin: true,
-      environment: Environment.mainnet,
+      isMainnet: Environment.mainnet.isMainnet,
     )) {
       Ok(:final value) => Ok(
         value.isNotEmpty && value.first.latestEncryptedBackup != null,

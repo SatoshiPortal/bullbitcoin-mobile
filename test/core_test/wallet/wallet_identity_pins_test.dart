@@ -1,11 +1,9 @@
 import 'package:bb_mobile/core/utils/bip32_derivation.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/network_x.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bb_mobile/core/wallet/wallet_metadata_service.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart' as p;
 import 'package:secrets/secrets.dart';
 import 'package:secrets/testing.dart';
+import 'package:wallet/wallet.dart';
 
 /// The identity an upgraded install must find again.
 ///
@@ -145,7 +143,7 @@ void main() {
       };
 
       expect(
-        WalletMetadataService.encodeOrigin(
+        WalletOriginCodec.encodeOrigin(
           fingerprint: secret.id.hex,
           network: network,
           scriptType: scriptType,

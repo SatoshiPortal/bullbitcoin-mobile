@@ -1,9 +1,8 @@
-import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/sp/domain/sp_failure.dart';
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
 import 'package:secrets/secrets.dart';
+import 'package:wallet/wallet.dart' show Wallet, WalletRepository;
 
 /// The secret a Silent Payments account is opened from: the one behind the
 /// default Bitcoin wallet of the account's own network.

@@ -18,10 +18,10 @@ import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/get_swaps_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/retry_swap_usecase.dart';
 import 'package:bb_mobile/core/fees/domain/get_network_fees_usecase.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/wallet_address_repository.dart';
+import 'package:bb_mobile/features/address_view/public/address_view_facade.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/watch_swap_usecase.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
+import 'package:wallet/wallet.dart';
 import 'package:get_it/get_it.dart';
 
 class SwapsLocator {
@@ -109,7 +109,7 @@ class SwapsLocator {
               LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
         ),
         getNetworkFeesUsecase: locator<GetNetworkFeesUsecase>(),
-        walletAddressRepository: locator<WalletAddressRepository>(),
+        walletAddressRepository: locator<LabeledWalletAddressRepository>(),
       ),
     );
 

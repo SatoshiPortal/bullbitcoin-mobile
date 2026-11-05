@@ -1,0 +1,31 @@
+import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/features/transactions/domain/entities/wallet_transaction.dart';
+import 'package:bb_mobile/features/transactions/domain/repositories/wallet_transaction_repository.dart';
+import 'package:wallet/wallet.dart';
+import 'package:meta/meta.dart';
+
+/// Fetches one wallet transaction by txid. With [sync] the lookup first forces
+/// a direct Electrum-backed sync of the wallet. It bypasses periodic app sync
+/// scheduling but is serialized with other operations on the same wallet
+/// source, making a transaction that was just broadcast visible on demand
+/// instead of waiting for the next organic sync.
+class GetWalletTransactionUsecase {
+  final WalletTransactionRepository _walletTransactionRepository;
+
+  GetWalletTransactionUsecase({required this._walletTransactionRepository});
+
+  @useResult
+  Future<Result<WalletTransaction?, WalletTransactionLookupFailure>> execute({
+    required String txId,
+    required String walletId,
+    bool sync = false,
+  }) async {
+    try {
+      final transaction = await _walletTransactionRepository
+          .getWalletTransaction(txId, walletId: walletId, sync: sync);
+      return Ok(transaction);
+    } catch (e) {
+      return Err(WalletTransactionLookupFailure(e.toString()));
+    }
+  }
+}

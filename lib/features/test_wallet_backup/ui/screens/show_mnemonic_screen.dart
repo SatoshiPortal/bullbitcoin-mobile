@@ -1,3 +1,4 @@
+import 'package:bb_mobile/wallet_presentation_adapters.dart';
 import 'dart:async';
 
 import 'package:screen_privacy/screen_privacy.dart';

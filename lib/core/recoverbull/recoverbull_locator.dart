@@ -29,8 +29,8 @@ import 'package:bb_mobile/core/recoverbull/domain/repositories/recoverbull_repos
 import 'package:secrets/secrets.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/create_default_wallets_usecase.dart';
+import 'package:wallet/wallet.dart';
+import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
 import 'package:get_it/get_it.dart';
 import 'package:bull_tor/tor.dart';
 

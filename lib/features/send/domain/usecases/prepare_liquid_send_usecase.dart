@@ -1,9 +1,6 @@
 import 'package:primitives/primitives.dart' show BullException;
 import 'package:primitives/primitives.dart' show RelativeFee;
-import 'package:bb_mobile/core/wallet/domain/no_spendable_utxo_exception.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/liquid_wallet_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/consolidation_required_exception.dart';
-import 'package:bb_mobile/core/wallet/domain/insufficient_funds_exception.dart';
+import 'package:wallet/wallet.dart';
 
 class PrepareLiquidSendUsecase {
   final LiquidWalletRepository _liquidWalletRepository;

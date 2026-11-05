@@ -8,18 +8,22 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   group('Security audit #2645 network-specific default wallet', () {
-    test('derive-next requests defaults without filtering environment', () {
-      final source = File(
-        'lib/core/bip85/domain/derive_next_bip85_mnemonic_from_default_wallet_usecase.dart',
-      ).readAsStringSync();
-      final call = source.substring(
-        source.indexOf('walletRepository.getWallets'),
-        source.indexOf(');', source.indexOf('walletRepository.getWallets')) + 2,
-      );
+    test(
+      'derive-next filters default Bitcoin wallets by the active environment',
+      () {
+        final source = File(
+          'lib/core/bip85/domain/derive_next_bip85_mnemonic_from_default_wallet_usecase.dart',
+        ).readAsStringSync();
+        final call = source.substring(
+          source.indexOf('walletRepository.getWallets'),
+          source.indexOf(');', source.indexOf('walletRepository.getWallets')) +
+              2,
+        );
 
-      expect(call, contains('onlyDefaults: true'));
-      expect(call, contains('onlyBitcoin: true'));
-      expect(call, contains('environment:'));
-    });
+        expect(call, contains('onlyDefaults: true'));
+        expect(call, contains('onlyBitcoin: true'));
+        expect(call, contains('isMainnet: settings.environment.isMainnet'));
+      },
+    );
   });
 }

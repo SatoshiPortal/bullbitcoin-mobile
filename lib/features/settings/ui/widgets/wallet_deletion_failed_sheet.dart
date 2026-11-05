@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
+import 'package:wallet/wallet.dart';
 import 'package:bb_mobile/features/settings/presentation/wallet_deletion_failure_l10n.dart';
 import 'package:bull_ui/bull_ui.dart';
 

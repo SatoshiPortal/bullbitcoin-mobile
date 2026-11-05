@@ -1,11 +1,10 @@
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:wallet/wallet.dart';
 
 import 'package:bb_mobile/core/recoverbull/domain/entity/encrypted_vault.dart';
 import 'package:bb_mobile/core/recoverbull/domain/recoverbull_failure.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/utils/result.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:secrets/secrets.dart' as secrets;
 
 /// If the key server is down
@@ -45,7 +44,7 @@ class UpdateLatestEncryptedVaultTestUsecase {
       final List<Wallet> availableWallets;
       switch (await _walletRepository.getWallets(
         onlyDefaults: true,
-        environment: settings.environment,
+        isMainnet: settings.environment.isMainnet,
       )) {
         case Ok(:final value):
           availableWallets = value;

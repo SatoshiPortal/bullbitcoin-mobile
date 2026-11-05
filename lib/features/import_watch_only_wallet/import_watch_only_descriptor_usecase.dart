@@ -1,8 +1,6 @@
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/utils/result.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bb_mobile/core/wallet/domain/wallet_error.dart';
+import 'package:wallet/wallet.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/domain/import_watch_only_failure.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/watch_only_wallet_entity.dart';
 import 'package:meta/meta.dart';
@@ -25,7 +23,7 @@ class ImportWatchOnlyDescriptorUsecase {
     }
     try {
       final wallet = await _wallet.importDescriptor(
-        watchOnlyDescriptor: watchOnlyDescriptor,
+        watchOnlyDescriptor: watchOnlyDescriptor.toWalletImport(),
       );
       return Ok(wallet);
     } catch (e, st) {

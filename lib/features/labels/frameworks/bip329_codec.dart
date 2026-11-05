@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:bb_mobile/core/wallet/wallet_metadata_service.dart';
+import 'package:wallet/wallet.dart';
 import 'package:bb_mobile/features/labels/domain/decoded_labels.dart';
 import 'package:bb_mobile/features/labels/domain/label_entity.dart';
 import 'package:bb_mobile/features/labels/domain/labels_import_exception.dart';
@@ -148,8 +148,8 @@ String? _bip329OriginFromWalletId(String walletId) {
   if (start == -1 || end == -1 || start >= end) return null;
   final keyOrigin = walletId.substring(start, end + 1);
   try {
-    final decoded = WalletMetadataService.decodeOrigin(origin: keyOrigin);
-    final roundTrip = WalletMetadataService.encodeOrigin(
+    final decoded = WalletOriginCodec.decodeOrigin(origin: keyOrigin);
+    final roundTrip = WalletOriginCodec.encodeOrigin(
       fingerprint: decoded.fingerprint,
       network: decoded.network,
       scriptType: decoded.script,
@@ -167,10 +167,10 @@ String? _bip329OriginFromWalletId(String walletId) {
 String? _walletIdFromBip329Origin(String? origin) {
   if (origin == null || origin.isEmpty) return null;
   try {
-    final decoded = WalletMetadataService.decodeOrigin(
+    final decoded = WalletOriginCodec.decodeOrigin(
       origin: origin.replaceAll("'", 'h'),
     );
-    return WalletMetadataService.encodeOrigin(
+    return WalletOriginCodec.encodeOrigin(
       fingerprint: decoded.fingerprint,
       network: decoded.network,
       scriptType: decoded.script,

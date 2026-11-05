@@ -1,3 +1,5 @@
+import 'package:bb_mobile/features/transactions/presentation/wallet_transaction_status_l10n.dart';
+import 'package:bb_mobile/wallet_presentation_adapters.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';

@@ -5,16 +5,12 @@ import 'package:bb_mobile/features/wallet/domain/usecases/check_sp_wallet_setup_
 import 'package:bb_mobile/features/wallet/domain/usecases/refresh_sp_wallet_for_wallet_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/watch_sp_wallet_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/check_sp_feature_gate_for_wallet_usecase.dart';
-import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_sync_result.dart';
-import 'package:bb_mobile/core/sync/sync_trigger.dart';
+import 'package:wallet/wallet.dart';
+import 'package:background_tasks/background_tasks.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/check_backup_needed_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/check_wallet_syncing_usecase.dart';
+import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/delete_wallet_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/features/wallet/domain/entity/warning.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_external_tor_proxy_status_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_unconfirmed_incoming_balance_usecase.dart';
@@ -260,41 +256,10 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     WalletSyncStarted event,
     Emitter<WalletState> emit,
   ) async {
-    // Update sync status for the wallet that started syncing
+    // Only refresh/load events own failure; sync starts update the spinner.
     final newSyncStatus = Map<String, bool>.from(state.syncStatus);
-    newSyncStatus[event.wallet.id] = true;
-
+    newSyncStatus[event.walletId] = true;
     emit(state.copyWith(syncStatus: newSyncStatus));
-
-    // Only _onStarted and _onRefreshed own `failure`. These per-wallet sync
-    // events fire constantly (including from a `finally` after a failed sync),
-    // so writing it here would wipe a refresh failure before anyone saw it.
-    // A failed read here is logged and the list already on screen is kept.
-    final List<Wallet> wallets;
-    switch (await _getWalletsUsecase.execute()) {
-      case Ok(:final value):
-        wallets = value;
-      case Err(:final failure):
-        log.warning('Wallets read on sync start: ${failure.runtimeType}');
-        return;
-    }
-
-    if (wallets.isNotEmpty) {
-      final walletIds = wallets.map((w) => w.id).toList();
-      // A failed read leaves the previous figure in place rather than
-      // zeroing a balance the user is looking at.
-      final unconfirmedIncomingBalance =
-          switch (await _getUnconfirmedIncomingBalanceUsecase.execute(
-            walletIds: walletIds,
-          )) {
-            Ok(:final value) => value,
-            Err() => state.unconfirmedIncomingBalance,
-          };
-
-      emit(
-        state.copyWith(unconfirmedIncomingBalance: unconfirmedIncomingBalance),
-      );
-    }
   }
 
   Future<void> _onWalletSyncFinished(

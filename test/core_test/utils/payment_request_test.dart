@@ -4,7 +4,7 @@
 // integration_test/payment_request_test.dart.
 
 import 'package:bb_mobile/core/utils/payment_request.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:wallet/wallet.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

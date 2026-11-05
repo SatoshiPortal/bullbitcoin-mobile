@@ -1,5 +1,5 @@
 import 'package:primitives/primitives.dart' show FeeOptions;
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:wallet/wallet.dart';
 
 /// Single source of truth for network fee rates. The implementation in
 /// `data/` decides where the numbers come from (mempool API for Bitcoin,

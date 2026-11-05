@@ -5,8 +5,7 @@ import 'package:bb_mobile/core/swaps/domain/entity/restored_swap.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:wallet/wallet.dart';
 
 import 'package:bb_mobile/core/utils/result.dart';
 
@@ -43,7 +42,7 @@ class RescueSwapUsecase {
       // default wallet of the other chain (required, but unused on the happy path).
       final defaults = switch (await _walletRepository.getWallets(
         onlyDefaults: true,
-        environment: settings.environment,
+        isMainnet: settings.environment.isMainnet,
       )) {
         Ok(:final value) => value,
         Err(:final failure) => throw RescueSwapException(
@@ -109,7 +108,7 @@ class RescueSwapUsecase {
     return switch (await _walletRepository.getWallets(
       onlyBitcoin: !restored.actsOnLiquid,
       onlyLiquid: restored.actsOnLiquid,
-      environment: settings.environment,
+      isMainnet: settings.environment.isMainnet,
     )) {
       Ok(:final value) => value,
       Err(:final failure) => throw RescueSwapException(

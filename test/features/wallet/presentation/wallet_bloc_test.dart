@@ -1,15 +1,10 @@
-import 'package:bb_mobile/core/sync/sync_trigger.dart';
+import 'package:background_tasks/background_tasks.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/watch_wallet_sync_events_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/sync_wallets_usecase.dart';
 import 'package:bb_mobile/core/utils/result.dart';
-import 'package:bb_mobile/core/entities/signer_entity.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
+import 'package:wallet/wallet.dart';
 import 'dart:async';
-import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_sync_result.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/check_backup_needed_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/check_wallet_syncing_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
+import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
 import 'package:bb_mobile/features/wallet/domain/entity/warning.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/check_sp_feature_gate_for_wallet_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/check_sp_scanning_for_wallet_usecase.dart';
@@ -58,9 +53,12 @@ class _MockWatchSpWalletUsecase extends Mock implements WatchSpWalletUsecase {}
 class _MockCheckSpFeatureGateForWalletUsecase extends Mock
     implements CheckSpFeatureGateForWalletUsecase {}
 
-WalletBloc createBloc(GetExternalTorProxyStatusUsecase externalStatus) {
+WalletBloc createBloc(
+  GetExternalTorProxyStatusUsecase externalStatus, {
+  GetWalletsUsecase? getWallets,
+}) {
   return WalletBloc(
-    getWalletsUsecase: _MockGetWalletsUsecase(),
+    getWalletsUsecase: getWallets ?? _MockGetWalletsUsecase(),
     checkWalletSyncingUsecase: _MockCheckWalletSyncingUsecase(),
     watchWalletSyncEventsUsecase: _stubbedWatchers(),
     syncWalletsUsecase: _stubbedSync(),
@@ -80,6 +78,18 @@ WalletBloc createBloc(GetExternalTorProxyStatusUsecase externalStatus) {
 }
 
 void main() {
+  test('started sync updates status without reloading wallets', () async {
+    final getWallets = _MockGetWalletsUsecase();
+    final bloc = createBloc(
+      _MockExternalTorStatusUsecase(),
+      getWallets: getWallets,
+    );
+    addTearDown(bloc.close);
+    final state = bloc.stream.first;
+    bloc.add(const WalletSyncStarted('wallet-1'));
+    expect((await state).syncStatus['wallet-1'], isTrue);
+    verifyNever(() => getWallets.execute());
+  });
   for (final scenario in [
     (
       'unavailable Bitcoin proxy points to Tor settings',

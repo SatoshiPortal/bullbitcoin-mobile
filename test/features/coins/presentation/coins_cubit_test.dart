@@ -1,8 +1,6 @@
 import 'dart:async';
 
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/watch_started_wallet_syncs_usecase.dart';
+import 'package:wallet/wallet.dart';
 import 'package:bb_mobile/features/coins/domain/coins_error.dart';
 import 'package:bb_mobile/features/coins/domain/usecases/freeze_utxos_usecase.dart';
 import 'package:bb_mobile/features/coins/domain/usecases/get_utxos_usecase.dart';
@@ -38,7 +36,7 @@ void main() {
   late _MockLabelsFacade labelsFacade;
   late _MockWatchStarted watchStarted;
   late _MockWatchFinished watchFinished;
-  late StreamController<Wallet> startedController;
+  late StreamController<String> startedController;
   late StreamController<Wallet> finishedController;
 
   const walletId = 'w1';
@@ -60,7 +58,7 @@ void main() {
     labelsFacade = _MockLabelsFacade();
     watchStarted = _MockWatchStarted();
     watchFinished = _MockWatchFinished();
-    startedController = StreamController<Wallet>.broadcast();
+    startedController = StreamController<String>.broadcast();
     finishedController = StreamController<Wallet>.broadcast();
 
     when(
@@ -279,7 +277,7 @@ void main() {
         final cubit = buildCubit();
 
         // Sync started → syncing flips true.
-        startedController.add(_fakeWallet());
+        startedController.add(walletId);
         async.flushMicrotasks();
         expect(cubit.state.syncing, isTrue);
 

@@ -1,18 +1,15 @@
 import 'dart:io';
 
-import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
+import 'package:wallet/wallet.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:primitives/primitives.dart' show NetworkFee;
 import 'package:secrets/secrets.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
-import 'package:bb_mobile/core/wallet/domain/no_spendable_utxo_exception.dart';
-import 'package:bb_mobile/core/wallet/data/datasources/frozen_wallet_utxo_datasource.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/wallet_address_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/repositories/wallet_utxo_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/prepare_bitcoin_send_usecase.dart';
+import 'package:bb_mobile/wallet_freeze_storage_adapters.dart';
+import 'package:bb_mobile/features/address_view/public/address_view_facade.dart';
+import 'package:bb_mobile/features/coins/public/coins_facade.dart';
+import 'package:bb_mobile/features/send/public/send_facade.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_environment_usecase.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/init.dart';
@@ -41,8 +38,8 @@ Future<void> main({bool isInitialized = false}) async {
   TestWidgetsFlutterBinding.ensureInitialized();
   if (!isInitialized) await Bull.init();
 
-  final frozenDatasource = locator<FrozenWalletUtxoDatasource>();
-  final utxoRepository = locator<WalletUtxoRepository>();
+  final frozenDatasource = locator<WalletFreezeStorePort>();
+  final utxoRepository = locator<LabeledWalletUtxoRepository>();
 
   group('Coins / freeze persistence (funds-free)', () {
     const walletId = 'coins-integration-test-wallet';
@@ -89,14 +86,14 @@ Future<void> main({bool isInitialized = false}) async {
       final dbFile = File('${dir.path}/restart.sqlite');
 
       final before = SqliteDatabase(NativeDatabase(dbFile));
-      await FrozenWalletUtxoDatasource(
+      await SqliteWalletFreezeStore(
         db: before,
       ).freezeOutpoints(walletId: walletId, outpoints: [outpoint]);
       await before.close();
 
       final after = SqliteDatabase(NativeDatabase(dbFile));
       addTearDown(after.close);
-      final afterRestart = await FrozenWalletUtxoDatasource(
+      final afterRestart = await SqliteWalletFreezeStore(
         db: after,
       ).getFrozenOutpoints(walletId: walletId);
 
@@ -145,13 +142,13 @@ Future<void> main({bool isInitialized = false}) async {
       // all_test.dart when this group is skipped (no TEST_ALICE_MNEMONIC).
       // setUpAll only runs when the group actually runs.
       late final WalletRepository walletRepository;
-      late final WalletAddressRepository addressRepository;
+      late final LabeledWalletAddressRepository addressRepository;
       late final PrepareBitcoinSendUsecase prepareBitcoinSendUsecase;
       late Wallet wallet;
 
       setUpAll(() async {
         walletRepository = locator<WalletRepository>();
-        addressRepository = locator<WalletAddressRepository>();
+        addressRepository = locator<LabeledWalletAddressRepository>();
         prepareBitcoinSendUsecase = locator<PrepareBitcoinSendUsecase>();
 
         // Setup: assert rather than discard, so a failed write surfaces here
@@ -167,7 +164,7 @@ Future<void> main({bool isInitialized = false}) async {
           Err(:final failure) => fail('import failed: ${failure.runtimeType}'),
         };
         wallet = await walletRepository.createWallet(
-          secret: secret,
+          secretId: secret.id,
           network: Network.bitcoinTestnet,
           scriptType: ScriptType.bip84,
         );

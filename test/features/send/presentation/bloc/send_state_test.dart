@@ -1,10 +1,8 @@
-import 'package:bb_mobile/core/entities/signer_device_entity.dart';
-import 'package:bb_mobile/core/entities/signer_entity.dart';
+import 'package:wallet/wallet.dart';
 import 'package:primitives/primitives.dart'
     show NetworkFee, FeeOptions, FeeSelection;
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/payment_request.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/send/domain/send_failure.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';

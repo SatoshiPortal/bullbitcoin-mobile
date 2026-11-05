@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:wallet/wallet.dart';
 import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
 import 'package:bb_mobile/features/receive/ui/screens/receive_amount_screen.dart';
 import 'package:bb_mobile/features/receive/ui/screens/receive_payjoin_in_progress_screen.dart';

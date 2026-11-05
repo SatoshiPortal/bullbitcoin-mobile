@@ -1,5 +1,6 @@
+import 'package:bb_mobile/wallet_presentation_adapters.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:wallet/wallet.dart';
 import 'package:bb_mobile/core/widgets/cards/consolidation_required_card.dart';
 import 'package:bb_mobile/features/consolidation/presentation/consolidation_banner_cubit.dart';
 import 'package:bb_mobile/features/consolidation/ui/consolidation_router.dart';

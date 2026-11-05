@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
+import 'package:wallet/wallet.dart' show WalletAddressKeyChain;
 import 'package:bb_mobile/features/coins/domain/utxo_sort_filter.dart';
 import 'package:flutter_test/flutter_test.dart';
 

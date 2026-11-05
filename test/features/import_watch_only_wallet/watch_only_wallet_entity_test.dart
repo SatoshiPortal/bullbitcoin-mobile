@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/entities/signer_device_entity.dart';
+import 'package:wallet/wallet.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/watch_only_wallet_entity.dart';
 import 'package:flutter_test/flutter_test.dart';
 

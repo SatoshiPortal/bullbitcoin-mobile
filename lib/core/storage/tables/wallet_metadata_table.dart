@@ -1,5 +1,4 @@
-import 'package:bb_mobile/core/entities/signer_device_entity.dart';
-import 'package:bb_mobile/core/entities/signer_entity.dart';
+import 'package:wallet/wallet.dart';
 import 'package:drift/drift.dart';
 
 enum Signer {

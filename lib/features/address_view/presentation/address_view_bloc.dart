@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/utils/result.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
+import 'package:bb_mobile/features/address_view/domain/wallet_address.dart';
 import 'package:bb_mobile/features/address_view/domain/address_view_failure.dart';
 import 'package:bb_mobile/features/address_view/domain/usecases/check_wallet_is_liquid_usecase.dart';
 import 'package:bb_mobile/features/address_view/domain/usecases/get_address_list_usecase.dart';

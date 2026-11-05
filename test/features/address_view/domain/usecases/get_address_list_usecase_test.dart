@@ -1,14 +1,13 @@
 import 'package:bb_mobile/core/utils/result.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/wallet_address_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
-import 'package:bb_mobile/core/wallet/domain/wallet_error.dart';
+import 'package:bb_mobile/features/address_view/public/address_view_facade.dart';
+import 'package:wallet/wallet.dart';
 import 'package:bb_mobile/features/address_view/domain/address_view_failure.dart';
 import 'package:bb_mobile/features/address_view/domain/usecases/get_address_list_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
 class MockWalletAddressRepository extends Mock
-    implements WalletAddressRepository {}
+    implements LabeledWalletAddressRepository {}
 
 /// A wallet id is the descriptor origin, so it embeds the master key
 /// fingerprint. Routed through the failing paths below so the failure can be

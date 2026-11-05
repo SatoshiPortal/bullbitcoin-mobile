@@ -1,7 +1,7 @@
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_liquid_transaction_usecase.dart';
 import 'package:primitives/primitives.dart' show BullException;
 import 'package:primitives/primitives.dart' show RelativeFee;
-import 'package:bb_mobile/core/wallet/data/repositories/liquid_wallet_repository.dart';
+import 'package:wallet/wallet.dart';
 import 'package:bb_mobile/features/consolidation/domain/consolidation_config.dart';
 
 /// Result of building (but not yet broadcasting) a consolidation: the unsigned

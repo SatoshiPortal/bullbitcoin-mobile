@@ -1,6 +1,6 @@
 import 'package:primitives/primitives.dart' show BullException;
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
+import 'package:wallet/wallet.dart';
 
 import 'package:bb_mobile/core/utils/result.dart';
 
@@ -18,7 +18,7 @@ class CompletePhysicalBackupVerificationUsecase {
       final settings = await _settingsRepository.fetch();
       final defaultWallets = switch (await _walletRepository.getWallets(
         onlyDefaults: true,
-        environment: settings.environment,
+        isMainnet: settings.environment.isMainnet,
       )) {
         Ok(:final value) => value,
         // Wrapped into this use-case's own exception by the catch below.

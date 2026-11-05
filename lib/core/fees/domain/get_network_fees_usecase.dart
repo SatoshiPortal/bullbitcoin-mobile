@@ -3,7 +3,7 @@ import 'package:bb_mobile/core/fees/domain/repositories/fees_repository.dart';
 import 'package:primitives/primitives.dart' show FeeOptions;
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:wallet/wallet.dart';
 
 class GetNetworkFeesUsecase {
   final FeesRepository _feesRepository;

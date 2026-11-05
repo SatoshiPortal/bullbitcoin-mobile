@@ -1,5 +1,5 @@
-import 'package:bb_mobile/core/entities/signer_device_entity.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/wallet_presentation_adapters.dart';
+import 'package:wallet/wallet.dart';
 import 'package:flutter/widgets.dart';
 
 /// What the shared send screens read off the wallet a payment is sent from.

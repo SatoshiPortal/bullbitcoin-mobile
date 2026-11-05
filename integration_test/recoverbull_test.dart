@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
+import 'package:wallet/wallet.dart';
 import 'package:bb_mobile/core/recoverbull/domain/entity/encrypted_vault.dart';
 import 'package:bb_mobile/core/recoverbull/domain/recoverbull_failure.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/fetch_vault_key_from_server_usecase.dart';
@@ -9,8 +9,6 @@ import 'package:primitives/primitives.dart' show Fingerprint;
 import 'package:secrets/secrets.dart' as custody;
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/result.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/init.dart';
 import 'package:flutter/foundation.dart';
@@ -105,7 +103,7 @@ Future<void> main({bool isInitialized = false}) async {
         final walletsResult = await walletRepository.getWallets(
           onlyDefaults: true,
           onlyBitcoin: true,
-          environment: Environment.mainnet,
+          isMainnet: Environment.mainnet.isMainnet,
         );
 
         expect(walletsResult, isA<Ok<List<Wallet>, WalletFailure>>());

@@ -10,6 +10,8 @@ import 'package:bb_mobile/features/labels/domain/primitive/label_type.dart';
 import 'package:bb_mobile/features/labels/new_label.dart';
 import 'package:bb_mobile/features/labels/label.dart';
 
+export 'package:bb_mobile/features/labels/application/wallet_freeze_port.dart'
+    show WalletFreezePort;
 export 'package:bb_mobile/features/labels/label.dart';
 export 'package:bb_mobile/features/labels/new_label.dart';
 export 'package:bb_mobile/features/labels/domain/label_failure.dart';

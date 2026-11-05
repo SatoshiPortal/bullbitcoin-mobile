@@ -1,15 +1,13 @@
 import 'dart:io' show Platform;
 
-import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
+import 'package:wallet/wallet.dart';
 
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
 import 'package:secrets/secrets.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/wallet_address_repository.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bb_mobile/core/wallet/domain/repositories/wallet_utxo_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/prepare_bitcoin_send_usecase.dart';
+import 'package:bb_mobile/features/address_view/public/address_view_facade.dart';
+import 'package:bb_mobile/features/coins/public/coins_facade.dart';
+import 'package:bb_mobile/features/send/public/send_facade.dart';
 import 'package:bb_mobile/features/send/domain/usecases/sign_bitcoin_tx_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_environment_usecase.dart';
 import 'package:bb_mobile/locator.dart';
@@ -27,8 +25,8 @@ Future<void> main({bool isInitialized = false}) async {
 
   final walletRepository = locator<WalletRepository>();
   final secrets = locator<Secrets>();
-  final addressRepository = locator<WalletAddressRepository>();
-  final utxoRepository = locator<WalletUtxoRepository>();
+  final addressRepository = locator<LabeledWalletAddressRepository>();
+  final utxoRepository = locator<LabeledWalletUtxoRepository>();
   final receiverRole = locator<PayjoinReceiver>();
   final senderRole = locator<PayjoinSender>();
   final sessions = locator<PayjoinSessions>();
@@ -191,12 +189,12 @@ Future<void> main({bool isInitialized = false}) async {
         Err(:final failure) => fail('import failed: ${failure.runtimeType}'),
       };
       receiverWallet = await walletRepository.createWallet(
-        secret: receiverSecret,
+        secretId: receiverSecret.id,
         network: Network.bitcoinTestnet,
         scriptType: ScriptType.bip84,
       );
       senderWallet = await walletRepository.createWallet(
-        secret: senderSecret,
+        secretId: senderSecret.id,
         network: Network.bitcoinTestnet,
         scriptType: ScriptType.bip84,
       );

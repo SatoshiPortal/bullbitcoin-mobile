@@ -1,6 +1,4 @@
-import 'package:bb_mobile/core/entities/signer_device_entity.dart';
-import 'package:bb_mobile/core/entities/signer_entity.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:wallet/wallet.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:satoshifier/satoshifier.dart' as satoshifier;
 
@@ -99,6 +97,19 @@ extension WatchOnlyXpubEntityExtension on WatchOnlyXpubEntity {
 
 extension WatchOnlyDescriptorEntityExtension on WatchOnlyDescriptorEntity {
   satoshifier.Descriptor get descriptor => watchOnlyDescriptor.descriptor;
+  WatchOnlyWalletImport toWalletImport() => WatchOnlyWalletImport(
+    masterFingerprint: masterFingerprint,
+    pubkeyFingerprint: pubkeyFingerprint,
+    network: network,
+    scriptType: scriptType,
+    signer: signer,
+    signerDevice: signerDevice,
+    pubkey: pubkey,
+    externalDescriptor: descriptor.external,
+    internalDescriptor: descriptor.internal,
+    label: label,
+  );
+
   String get masterFingerprint => watchOnlyDescriptor.masterFingerprint;
   String get pubkeyFingerprint => watchOnlyDescriptor.pubkeyFingerprint;
 }

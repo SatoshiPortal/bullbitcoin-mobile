@@ -6,14 +6,13 @@ import 'package:bb_mobile/core/recoverbull/domain/usecases/update_latest_encrypt
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/result.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/create_default_wallets_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
+import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:secrets/secrets.dart' as secrets;
+import 'package:primitives/primitives.dart' show Fingerprint;
 import 'package:secrets/testing.dart';
+import 'package:wallet/wallet.dart';
 
 class _MockSettings extends Mock implements SettingsRepository {}
 
@@ -84,6 +83,7 @@ void main() {
     final source = _value(await custody.import(words: words));
     fingerprint = source.id.hex;
     registerFallbackValue(source);
+    registerFallbackValue(source.id);
     final backup = _value(
       await source.backup.recoverbull(
         metadata: {'masterFingerprint': '00000000'},
@@ -146,7 +146,7 @@ void main() {
       () => wallets.getWallets(
         onlyBitcoin: true,
         onlyDefaults: true,
-        environment: Environment.mainnet,
+        isMainnet: true,
       ),
     ).thenAnswer((_) async => Ok<List<Wallet>, WalletFailure>([defaultWallet]));
     final create = CreateEncryptedVaultUsecase(
@@ -233,13 +233,13 @@ void main() {
         () => wallets.getWallets(
           onlyBitcoin: true,
           onlyDefaults: true,
-          environment: any(named: 'environment'),
+          isMainnet: any(named: 'isMainnet'),
         ),
       ).thenAnswer((invocation) async {
-        final environment = invocation.namedArguments[#environment];
+        final isMainnet = invocation.namedArguments[#isMainnet] as bool?;
         return Ok<List<Wallet>, WalletFailure>([
-          if (environment != Environment.testnet) mainnetDefault,
-          if (environment != Environment.mainnet) testnetDefault,
+          if (isMainnet != false) mainnetDefault,
+          if (isMainnet != true) testnetDefault,
         ]);
       });
 
@@ -276,7 +276,7 @@ void main() {
       () => wallets.getWallets(
         onlyBitcoin: true,
         onlyDefaults: true,
-        environment: Environment.mainnet,
+        isMainnet: true,
       ),
     ).thenAnswer((_) async => Ok<List<Wallet>, WalletFailure>([defaultWallet]));
     storage.locked = true;
@@ -306,10 +306,7 @@ void main() {
       storage.locked = true;
       storage.writesFail = true;
       when(
-        () => wallets.getWallets(
-          onlyDefaults: true,
-          environment: Environment.mainnet,
-        ),
+        () => wallets.getWallets(onlyDefaults: true, isMainnet: true),
       ).thenAnswer(
         (_) async => Ok<List<Wallet>, WalletFailure>([
           wallet('matching', fingerprint, Network.bitcoinMainnet),
@@ -357,26 +354,23 @@ void main() {
   test(
     'restoration creates both defaults from the restored secret handle',
     () async {
-      final createdSecrets = <secrets.Secret>[];
+      final createdSecretIds = <Fingerprint>[];
       when(
-        () => wallets.getWallets(
-          onlyDefaults: true,
-          environment: Environment.mainnet,
-        ),
+        () => wallets.getWallets(onlyDefaults: true, isMainnet: true),
       ).thenAnswer((_) async => Ok<List<Wallet>, WalletFailure>([]));
       when(
         () => wallets.createWallet(
-          secret: any(named: 'secret'),
+          secretId: any(named: 'secretId'),
           network: any(named: 'network'),
           scriptType: ScriptType.bip84,
           isDefault: true,
           birthday: null,
         ),
       ).thenAnswer((invocation) async {
-        final secret = invocation.namedArguments[#secret] as secrets.Secret;
+        final secretId = invocation.namedArguments[#secretId] as Fingerprint;
         final network = invocation.namedArguments[#network] as Network;
-        createdSecrets.add(secret);
-        return wallet(network.name, secret.id.hex, network);
+        createdSecretIds.add(secretId);
+        return wallet(network.name, secretId.hex, network);
       });
       final restore = RestoreVaultUsecase(
         secrets: custody,
@@ -391,7 +385,12 @@ void main() {
       final result = await restore.execute(vault: vault, vaultKey: vaultKey);
 
       expect(result, isA<Ok<Null, RecoverBullCoreFailure>>());
-      expect(createdSecrets, hasLength(2));
+      expect(createdSecretIds, hasLength(2));
+      // The wallet repository now receives the secret's id; the handle it
+      // names is re-fetched from custody to check what was restored.
+      final createdSecrets = [
+        for (final id in createdSecretIds) _value(await custody.fetch(id)),
+      ];
       expect(
         createdSecrets.map((secret) => secret.id.hex),
         everyElement(fingerprint),
@@ -443,10 +442,7 @@ void main() {
     () async {
       final unrelated = _value(await custody.import(words: currentWords));
       when(
-        () => wallets.getWallets(
-          onlyDefaults: true,
-          environment: Environment.mainnet,
-        ),
+        () => wallets.getWallets(onlyDefaults: true, isMainnet: true),
       ).thenAnswer(
         (_) async => Ok<List<Wallet>, WalletFailure>([
           wallet('bitcoin', unrelated.id.hex, Network.bitcoinMainnet),

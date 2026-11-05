@@ -4,7 +4,7 @@ import 'package:primitives/primitives.dart' show BullException;
 import 'package:bb_mobile/core/fees/domain/get_network_fees_usecase.dart';
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/wallet_address_repository.dart';
+import 'package:bb_mobile/features/address_view/public/address_view_facade.dart';
 import 'package:bull_logger/bull_logger.dart';
 
 /// User-triggered "retry now" for a swap whose claim or refund never landed
@@ -23,7 +23,7 @@ import 'package:bull_logger/bull_logger.dart';
 class RetrySwapUsecase {
   final BoltzSwapRepository _boltzSwapRepository;
   final GetNetworkFeesUsecase _getNetworkFeesUsecase;
-  final WalletAddressRepository _walletAddressRepository;
+  final LabeledWalletAddressRepository _walletAddressRepository;
 
   RetrySwapUsecase({
     required this._boltzSwapRepository,

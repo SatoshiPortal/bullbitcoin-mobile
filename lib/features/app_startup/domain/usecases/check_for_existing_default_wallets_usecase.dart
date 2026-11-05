@@ -2,9 +2,7 @@ import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/keycha
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/utils/result.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:wallet/wallet.dart';
 import 'package:bb_mobile/features/app_startup/domain/app_startup_failure.dart';
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart' show Fingerprint;
@@ -44,7 +42,7 @@ class CheckForExistingDefaultWalletsUsecase {
     List<Wallet> defaultWallets;
     switch (await _walletRepository.getWallets(
       onlyDefaults: true,
-      environment: environment,
+      isMainnet: environment.isMainnet,
     )) {
       case Ok(:final value):
         defaultWallets = value;
@@ -57,7 +55,7 @@ class CheckForExistingDefaultWalletsUsecase {
         log.fine('Deleted LwkDb, retrying getWallets');
         switch (await _walletRepository.getWallets(
           onlyDefaults: true,
-          environment: environment,
+          isMainnet: environment.isMainnet,
         )) {
           case Ok(:final value):
             defaultWallets = value;
@@ -100,7 +98,7 @@ class CheckForExistingDefaultWalletsUsecase {
                   ? Network.liquidMainnet
                   : Network.liquidTestnet);
         await _walletRepository.createWallet(
-          secret: secret,
+          secretId: secret.id,
           network: network,
           scriptType: ScriptType.bip84,
           isDefault: true,
@@ -109,7 +107,7 @@ class CheckForExistingDefaultWalletsUsecase {
         // wallets already found, and the seed check below still runs.
         switch (await _walletRepository.getWallets(
           onlyDefaults: true,
-          environment: environment,
+          isMainnet: environment.isMainnet,
         )) {
           case Ok(:final value):
             defaultWallets = value;

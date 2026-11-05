@@ -1,18 +1,15 @@
 import 'dart:convert';
 
-import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/result.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/features/app_startup/domain/app_startup_failure.dart';
 import 'package:bb_mobile/features/app_startup/domain/usecases/check_for_existing_default_wallets_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:secrets/secrets.dart';
 import 'package:secrets/testing.dart';
+import 'package:wallet/wallet.dart';
 
 class _MockSettingsRepository extends Mock implements SettingsRepository {}
 
@@ -84,7 +81,7 @@ void main() {
     when(
       () => wallets.getWallets(
         onlyDefaults: any(named: 'onlyDefaults'),
-        environment: any(named: 'environment'),
+        isMainnet: any(named: 'isMainnet'),
       ),
     ).thenAnswer(
       (_) async => Ok<List<Wallet>, WalletFailure>([

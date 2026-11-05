@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/entities/signer_device_entity.dart';
+import 'package:wallet/wallet.dart';
 import 'package:bb_mobile/core/ledger/domain/entities/ledger_device_entity.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:ledger_bitcoin/ledger_bitcoin.dart';

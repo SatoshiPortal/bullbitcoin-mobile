@@ -4,13 +4,10 @@ import 'package:bb_mobile/core/bip85/domain/derive_next_bip85_hex_from_default_w
 import 'package:bb_mobile/core/bip85/domain/derive_next_bip85_mnemonic_from_default_wallet_usecase.dart';
 import 'package:bb_mobile/core/bip85/domain/errors/bip85_failure.dart';
 import 'package:bb_mobile/core/bip85/domain/fetch_all_bip85_derivations_with_entropy_usecase.dart';
-import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/result.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
+import 'package:wallet/wallet.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -69,7 +66,7 @@ void main() {
       () => walletRepository.getWallets(
         onlyDefaults: any(named: 'onlyDefaults'),
         onlyBitcoin: any(named: 'onlyBitcoin'),
-        environment: any(named: 'environment'),
+        isMainnet: any(named: 'isMainnet'),
       ),
     ).thenAnswer((_) async => Ok<List<Wallet>, WalletFailure>(wallets));
   }
@@ -83,7 +80,7 @@ void main() {
       () => walletRepository.getWallets(
         onlyDefaults: any(named: 'onlyDefaults'),
         onlyBitcoin: any(named: 'onlyBitcoin'),
-        environment: any(named: 'environment'),
+        isMainnet: any(named: 'isMainnet'),
       ),
     ).thenAnswer(
       (_) async => const Err<List<Wallet>, WalletFailure>(
@@ -158,7 +155,7 @@ void main() {
         () => walletRepository.getWallets(
           onlyDefaults: any(named: 'onlyDefaults'),
           onlyBitcoin: any(named: 'onlyBitcoin'),
-          environment: any(named: 'environment'),
+          isMainnet: any(named: 'isMainnet'),
         ),
       ).thenThrow(Exception('internal db error with secret path /data/user'));
 
@@ -297,7 +294,7 @@ void main() {
         () => walletRepository.getWallets(
           onlyDefaults: any(named: 'onlyDefaults'),
           onlyBitcoin: any(named: 'onlyBitcoin'),
-          environment: any(named: 'environment'),
+          isMainnet: any(named: 'isMainnet'),
         ),
       ).thenThrow(Exception('internal db error with secret path /data/user'));
 

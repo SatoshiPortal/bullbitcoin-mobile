@@ -9,10 +9,16 @@ This diagram shows the dependencies between features in the Bull Bitcoin Mobile 
 ```mermaid
 graph TB
     %% Core infrastructure
-    CORE[Core<br/>---<br/>Database, Secure Storage,<br/>API Clients, Tor Adapters, UI Kit,<br/>DI & Router setup,<br/>PIN encrypted storage,<br/>Domain Primitives/Value Objects]
-    PRIMITIVES[Primitives Package]
+    CORE[Core<br/>---<br/>Database, Secure Storage,<br/>API Clients, Tor Adapters, UI Kit,<br/>PIN encrypted storage,<br/>Domain Primitives/Value Objects]
+    PRIMITIVES[Primitives Package<br/>Shared values, results and network fees]
+    BULL_UI[Bull UI Package<br/>Design system]
     BULL_LOGGER[Bull Logger Package<br/>Logger, diagnostics, log files]
     BULL_PAYJOIN[Bull Payjoin Package<br/>Public contract]
+    WALLET[Wallet Package<br/>Wallet domain contracts, metadata catalog port and native ownership]
+    TRANSACTION_SYNC[Transaction Sync Package<br/>Local-source-first snapshots, freshness, source coordination]
+    NOTIFICATIONS[Notifications Package<br/>Durable outbox and deferred destinations]
+    BACKGROUND_TASKS[Background Tasks Package<br/>Headless dispatch and wallet sync orchestration]
+    BULL_SDK[Bull SDK External Dependency<br/>BDK/LWK native adapters]
 
     %% Feature modules
     SETTINGS[Settings]
@@ -47,7 +53,6 @@ graph TB
     TRANSFER[Transfer]
     TX_HISTORY[Transaction History]
     REPLACE_BY_FEE[Replace By Fee]
-    BG_TASKS[Background Tasks]
     DCA[DCA]
     DEFAULT_WALLETS[Default Wallets]
     LIMIT_ORDERS[Limit Orders]
@@ -66,6 +71,26 @@ graph TB
     %% Dependencies to Core (all features depend on Core, but showing it explicitly would clutter the diagram)
     %% Instead, we note this in the documentation below
 
+    %% Published use-cases extracted from core wallet
+    IMPORT_MNEMONIC[Import Mnemonic]
+    ONBOARDING[Onboarding]
+    ALL_SEED_VIEW --> WALLETS
+    AUTOSWAP --> ADDRESS_MGMT
+    BUY --> WALLETS
+    IMPORT_MNEMONIC --> WALLETS
+    LIMIT_ORDERS --> ADDRESS_MGMT
+    LIMIT_ORDERS --> WALLETS
+    ONBOARDING --> WALLETS
+    PAY --> ADDRESS_MGMT
+    PAY --> SEND
+    RECEIVE --> WALLETS
+    SELL --> SEND
+    SEND --> ADDRESS_MGMT
+    STATUS --> WALLETS
+    SWAPS --> ADDRESS_MGMT
+    SWAPS --> SEND
+    SWAPS --> WALLETS
+
     %% Extracted package dependencies
     CORE --> PRIMITIVES
     CORE --> BULL_LOGGER
@@ -75,9 +100,28 @@ graph TB
     SETTINGS --> LOGS
     CORE --> BULL_PAYJOIN
     BULL_PAYJOIN --> PRIMITIVES
+    CORE --> WALLET
+    CORE --> TRANSACTION_SYNC
+    WALLET --> TRANSACTION_SYNC
+    WALLET --> PRIMITIVES
+    WALLET --> BULL_LOGGER
+    WALLET --> BULL_SDK
+    TRANSACTION_SYNC --> PRIMITIVES
+    CORE --> NOTIFICATIONS
+    CORE --> BACKGROUND_TASKS
+    NOTIFICATIONS --> PRIMITIVES
+    BACKGROUND_TASKS --> TRANSACTION_SYNC
+    BACKGROUND_TASKS --> NOTIFICATIONS
+    BACKGROUND_TASKS --> BULL_LOGGER
+    BACKGROUND_TASKS --> PRIMITIVES
 
     %% Feature-to-feature dependencies (extracted from draw.io diagram)
     ADDRESS_MGMT --> LABELS
+    ADDRESS_MGMT --> WALLET
+    BUY --> ADDRESS_MGMT
+    DCA --> ADDRESS_MGMT
+    RECEIVE --> ADDRESS_MGMT
+    SELL --> ADDRESS_MGMT
     ALL_SEED_VIEW --> APP_UNLOCK
     ALL_SEED_VIEW --> SECRETS
     ANNOUNCEMENTS --> SETTINGS
@@ -102,6 +146,12 @@ graph TB
     BUY --> TX_HISTORY
     COINS --> UTXO_MGMT
     COINS --> LABELS
+    COINS --> WALLET
+    PAY --> COINS
+    SELL --> COINS
+    SEND --> COINS
+    SWAPS --> COINS
+    WALLETS --> COINS
     COINS --> WALLETS
     DCA --> RECEIVE
     SETTINGS --> DEFAULT_WALLETS
@@ -132,6 +182,7 @@ graph TB
     FUNDING --> RECIPIENTS
     HW_WALLETS --> CORE
     LABELS --> CORE
+    LABELS --> WALLET
     PAY --> RECIPIENTS
     PAY --> BULL_PAYJOIN
     PIN_CODE --> CORE
@@ -164,6 +215,7 @@ graph TB
     SWAPS --> SECRETS
     SWAPS --> EXCHANGE
     SWAPS --> LABELS
+    SWAPS --> TX_HISTORY
     SETTINGS --> SP
     WALLETS --> SP
     SWAPS --> UTXO_MGMT
@@ -178,6 +230,9 @@ graph TB
     TRANSFER --> RECEIVE
     TX_HISTORY --> BULL_PAYJOIN
     TX_HISTORY --> SWAPS
+    TX_HISTORY --> WALLET
+    TX_HISTORY --> LABELS
+    REPLACE_BY_FEE --> TX_HISTORY
     TX_HISTORY --> WALLETS
     UTXO_MGMT --> LABELS
     UTXO_MGMT --> WALLETS
@@ -197,8 +252,8 @@ graph TB
     classDef featureStyle fill:#1a202c,stroke:#2d3748,stroke-width:2px,color:#e2e8f0
 
     class CORE coreStyle
-    class SECRETS,PRIMITIVES,BULL_PAYJOIN,TOR packageStyle
-    class SETTINGS,PIN_CODE,LABELS,HW_WALLETS,BTC_PRICE,NETWORK,BIP85,FEES,WALLETS,EXCHANGE,EXCHANGE_SETTINGS,EXCHANGE_SUPPORT_CHAT,APP_STARTUP,UTXO_MGMT,ADDRESS_MGMT,RECIPIENTS,FUNDING,BACKUPS,SWAPS,WITHDRAWAL,STATUS,SEND,RECEIVE,TRANSFER,TX_HISTORY,REPLACE_BY_FEE,BG_TASKS,AUTOSWAP,AUTOBUY,DCA,DEFAULT_WALLETS,LIMIT_ORDERS,SELL,PAY,BUY,COINS,ANNOUNCEMENTS,CONSOLIDATION,ALL_SEED_VIEW,APP_UNLOCK,SP featureStyle
+    class SECRETS,WALLET,PRIMITIVES,BULL_UI,BULL_PAYJOIN,TRANSACTION_SYNC,NOTIFICATIONS,BACKGROUND_TASKS,BULL_SDK,TOR packageStyle
+    class SETTINGS,PIN_CODE,LABELS,HW_WALLETS,BTC_PRICE,NETWORK,BIP85,FEES,WALLETS,EXCHANGE,EXCHANGE_SETTINGS,EXCHANGE_SUPPORT_CHAT,APP_STARTUP,UTXO_MGMT,ADDRESS_MGMT,RECIPIENTS,FUNDING,BACKUPS,SWAPS,WITHDRAWAL,STATUS,SEND,RECEIVE,TRANSFER,TX_HISTORY,REPLACE_BY_FEE,AUTOSWAP,AUTOBUY,DCA,DEFAULT_WALLETS,LIMIT_ORDERS,SELL,PAY,BUY,COINS,ANNOUNCEMENTS,CONSOLIDATION,ALL_SEED_VIEW,APP_UNLOCK,SP featureStyle
 ```
 
 ## About Package Dependency Diagrams
@@ -240,8 +295,6 @@ graph TB
    - Embedded Onion adapter with isolated RecoverBull and Bitcoin Electrum `.onion` sessions
    - Explicit local SOCKS5 override for Bitcoin Electrum and encrypted backups
    - UI Kit (shared widgets, theme)
-   - DI setup and interfaces (Service Locator pattern)
-   - Router setup and interfaces (Navigation)
    - PIN encrypted storage
 
 2. **Core Primitives**:
@@ -258,11 +311,16 @@ graph TB
 
 - **Core**: Foundation for all features
 - **Tor**: `packages/bull_tor` — embedded Onion lifecycle with isolated RecoverBull and Bitcoin Electrum `.onion` sessions, plus provider-agnostic local SOCKS5 verification. Depends on Flutter for app-directory storage and an iOS plugin that excludes Tor state from backups, which are infrastructure-package exceptions in AGENTS.md
+- **Transaction Sync**: `packages/transaction_sync` — local-source-first Bitcoin/Liquid synchronization contracts, immutable process snapshots, freshness/evidence, and the shared per-wallet SDK-state coordinator. Wallet and the host adapters consume the source coordinator; Background Tasks owns foreground scheduling while production transaction UI remains on the label-enriching transaction repository; see the migration status in [ARCHITECTURE.md](ARCHITECTURE.md)
+- **Notifications**: `packages/notifications` — local-notification gateway, durable collision-safe outbox, silent topic baselines, and deferred post-unlock destinations
+- **Background Tasks**: `packages/background_tasks` — foreground scheduling, headless task outcomes, payment observation, the activity channel and WorkManager adapter; composes Transaction Sync, Notifications, Bull Logger, and Primitives without importing app features
+- **Address Management**: Wallet owns native address selection/revelation and balance/history projection. Address View publishes label-enriched WalletAddress values and supplies reservation/decoration callbacks under the same source gate.
+- **Transaction History**: Owns the label-enriched `WalletTransaction`, `TransactionInput`, and `TransactionOutput` projections, published by `TransactionsFacade`. The same feature owns the label-enriching transaction repository, domain-detail mappers, transaction lookup and sync-stream projection use-cases. WalletTransactionReader publishes domain details from normalized snapshots for lists and targeted native reads for exact lookup; the feature adds labels. status localization stays in presentation.
 - **Wallets**: Used by Send, UTXO Management, Transaction History, Backups, App Startup
 - **Secrets** (workspace package): Used by Wallets, BIP85, App Startup, All Seed View, RecoverBull, Swaps, Silent Payments
 - **Settings**: Used by Wallets, BIP85, Bitcoin Price
 - **Recipients**: Used by Pay, Withdrawal
-- **UTXO Management**: Used by Send, Swaps, Payjoin
+- **UTXO Management**: The wallet package owns label-free WalletCoin values, native UTXO reads, freeze state and coordination. The Coins public facade publishes the label-enriched WalletUtxo projection and its repository contract for Send, Sell, Pay, Swaps and Wallets. The Labels freeze adapter lives in the shell to avoid a Labels-to-Coins dependency cycle.
 
 ### Leaf Features (Depend on Many, Few Depend on Them)
 
@@ -290,3 +348,11 @@ To verify no cyclic dependencies exist, you can:
 - Add dependency cardinality (required vs optional dependencies)
 - Include compile-time vs runtime dependency distinction
 - Add layer groupings (ui, presentation, domain, data) per [ARCHITECTURE.md](ARCHITECTURE.md)
+
+## Shell composition during isolation
+
+The root `lib/locator.dart` owns infrastructure and feature registration; `lib/wallet_setup.dart` supplies the wallet's host adapters. There is no CoreLocator or forwarding barrel under `lib/core`. Notification resource names and the unchanged outbox filename live in `lib/notification_adapters.dart`.
+
+Background execution enters through `lib/background_entrypoint.dart`; `lib/background_bootstrap.dart` assembles the graph and `lib/sync_runtime_adapters.dart` supplies foreground jobs and background Electrum configuration. Scheduling, budgets, the activity channel and payment-observation policy live in Background Tasks. The current headless bootstrap still builds the application locator with foreground watchers disabled; reducing it to the required services remains part of the isolation work.
+
+The workspace dependency graph is acyclic (verified with `fvm dart run melos list --cycles` on 2026-11-04). The legacy feature graph above includes existing cycles and does not claim otherwise. Normalized foreground history publication and removal of transitional wallet datasource/model exports remain pending.

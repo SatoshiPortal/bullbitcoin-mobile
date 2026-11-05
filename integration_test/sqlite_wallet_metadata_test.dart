@@ -1,8 +1,6 @@
+import 'package:bb_mobile/wallet_catalog_adapters.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
-import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart';
-import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_model.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bb_mobile/core/wallet/wallet_metadata_service.dart';
+import 'package:wallet/wallet.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/init.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -18,9 +16,9 @@ Future<void> main({bool isInitialized = false}) async {
       const fingerprint = 'master';
       const scriptType = ScriptType.bip84;
 
-      final metadata = WalletMetadataModel(
+      final metadata = WalletMetadata(
         masterFingerprint: fingerprint,
-        id: WalletMetadataService.encodeOrigin(
+        id: WalletOriginCodec.encodeOrigin(
           fingerprint: fingerprint,
           network: Network.bitcoinMainnet,
           scriptType: scriptType,
@@ -29,7 +27,7 @@ Future<void> main({bool isInitialized = false}) async {
         xpub: 'xpub6CUGRUonZSQ4TWtTMmzXdrXDtypWKiKp5i1Lsfk...',
         externalPublicDescriptor: 'wpkh([abcd1234/84h/0h/0h]xpub.../0/*)',
         internalPublicDescriptor: 'wpkh([abcd1234/84h/0h/0h]xpub.../1/*)',
-        signer: Signer.local,
+        signer: SignerEntity.local,
         latestEncryptedBackup: 1680000000,
         latestPhysicalBackup: 1681000000,
         isEncryptedVaultTested: true,

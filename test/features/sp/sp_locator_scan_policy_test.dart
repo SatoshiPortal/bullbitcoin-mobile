@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
+import 'package:wallet/wallet.dart' show WalletRepository;
 import 'package:secrets/secrets.dart' show Secrets;
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';

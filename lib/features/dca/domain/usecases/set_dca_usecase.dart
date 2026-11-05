@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:wallet/wallet.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
@@ -7,8 +7,7 @@ import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/utils/result.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/wallet_address_repository.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
+import 'package:bb_mobile/features/address_view/public/address_view_facade.dart';
 import 'package:bb_mobile/features/dca/domain/dca.dart';
 import 'package:bb_mobile/features/dca/domain/dca_failure.dart';
 import 'package:meta/meta.dart';
@@ -20,7 +19,7 @@ class SetDcaUsecase {
   // interfaces for each domain just for what is needed from them in the DCA context/domain
   final WalletRepository _wallet;
   final SettingsRepository _settingsRepository;
-  final WalletAddressRepository _walletAddressRepository;
+  final LabeledWalletAddressRepository _walletAddressRepository;
   final ExchangeUserRepository _mainnetExchangeUserRepository;
   final ExchangeUserRepository _testnetExchangeUserRepository;
 
@@ -64,7 +63,7 @@ class SetDcaUsecase {
       try {
         final List<Wallet> wallets;
         switch (await _wallet.getWallets(
-          environment: environment,
+          isMainnet: environment.isMainnet,
           onlyDefaults: true,
           onlyBitcoin: network == DcaNetwork.bitcoin,
           onlyLiquid: network == DcaNetwork.liquid,

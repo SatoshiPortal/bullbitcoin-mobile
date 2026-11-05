@@ -1,8 +1,8 @@
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_user_repository.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/wallet_address_repository.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
+import 'package:bb_mobile/features/address_view/public/address_view_facade.dart';
+import 'package:wallet/wallet.dart';
 import 'package:bb_mobile/features/dca/domain/usecases/set_dca_usecase.dart';
 import 'package:bb_mobile/features/dca/domain/usecases/start_dca_usecase.dart';
 import 'package:bb_mobile/features/dca/presentation/dca_bloc.dart';
@@ -36,7 +36,7 @@ class DcaLocator {
         ),
         wallet: locator<WalletRepository>(),
         settingsRepository: locator<SettingsRepository>(),
-        walletAddressRepository: locator<WalletAddressRepository>(),
+        walletAddressRepository: locator<LabeledWalletAddressRepository>(),
         mainnetExchangeUserRepository: locator<ExchangeUserRepository>(
           instanceName: 'mainnetExchangeUserRepository',
         ),

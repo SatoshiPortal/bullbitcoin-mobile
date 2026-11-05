@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
+import 'package:wallet/wallet.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
 import 'package:bb_mobile/core/exchange/domain/exchange_user_failure.dart';
@@ -7,10 +7,7 @@ import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repos
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/result.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/wallet_address_repository.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bb_mobile/core/wallet/domain/wallet_error.dart';
+import 'package:bb_mobile/features/address_view/public/address_view_facade.dart';
 import 'package:bb_mobile/features/dca/domain/dca.dart';
 import 'package:bb_mobile/features/dca/domain/dca_failure.dart';
 import 'package:bb_mobile/features/dca/domain/usecases/set_dca_usecase.dart';
@@ -25,7 +22,7 @@ class MockWalletRepository extends Mock implements WalletRepository {}
 class MockSettingsRepository extends Mock implements SettingsRepository {}
 
 class MockWalletAddressRepository extends Mock
-    implements WalletAddressRepository {}
+    implements LabeledWalletAddressRepository {}
 
 class MockExchangeUserRepository extends Mock
     implements ExchangeUserRepository {}
@@ -140,7 +137,7 @@ void main() {
       () async {
         when(
           () => wallet.getWallets(
-            environment: Environment.mainnet,
+            isMainnet: Environment.mainnet.isMainnet,
             onlyDefaults: true,
             onlyBitcoin: true,
             onlyLiquid: false,
@@ -169,7 +166,7 @@ void main() {
         // Reporting the same thing for both would misdiagnose the common case.
         when(
           () => wallet.getWallets(
-            environment: Environment.mainnet,
+            isMainnet: Environment.mainnet.isMainnet,
             onlyDefaults: true,
             onlyBitcoin: true,
             onlyLiquid: false,
@@ -202,7 +199,7 @@ void main() {
         'logging the wallet identifier', () async {
       when(
         () => wallet.getWallets(
-          environment: Environment.mainnet,
+          isMainnet: Environment.mainnet.isMainnet,
           onlyDefaults: true,
           onlyBitcoin: true,
           onlyLiquid: false,

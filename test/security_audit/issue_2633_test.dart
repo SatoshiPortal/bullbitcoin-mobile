@@ -9,7 +9,7 @@ void main() {
   group('Security audit #2633 duplicate watch-only import', () {
     test('duplicate checks include imported wallets and use typed error', () {
       final source = File(
-        'lib/core/wallet/data/repositories/wallet_repository.dart',
+        'packages/wallet/lib/src/data/wallet_repository.dart',
       ).readAsStringSync();
       final importDescriptor = source.substring(
         source.indexOf('importDescriptor'),
@@ -25,9 +25,7 @@ void main() {
       expect(importXpub, contains('_readWallets()'));
       expect(source, contains('WalletAlreadyExistsException'));
       expect(
-        File(
-          'lib/core/wallet/data/datasources/wallet_metadata_datasource.dart',
-        ).readAsStringSync(),
+        File('lib/wallet_catalog_adapters.dart').readAsStringSync(),
         contains('insertOnConflictUpdate'),
       );
     });

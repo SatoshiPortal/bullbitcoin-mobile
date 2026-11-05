@@ -2,7 +2,7 @@ import 'dart:typed_data';
 
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
+import 'package:bb_mobile/features/coins/public/coins_facade.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/features/send/ui/widgets/coin_select_tile.dart';
 import 'package:bb_mobile/generated/l10n/localization.dart';

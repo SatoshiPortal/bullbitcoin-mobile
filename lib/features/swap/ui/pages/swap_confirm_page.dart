@@ -1,4 +1,5 @@
 import 'package:bb_mobile/fee_presentation_adapters.dart';
+import 'package:bb_mobile/wallet_presentation_adapters.dart';
 import 'package:bb_mobile/core/screens/send_confirm_screen.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';

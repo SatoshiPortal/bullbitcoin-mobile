@@ -1,7 +1,6 @@
 import 'dart:async';
 
-import 'package:bb_mobile/core/sync/sync_coordinator.dart';
-import 'package:bb_mobile/core/sync/sync_kind.dart';
+import 'package:background_tasks/background_tasks.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:flutter/widgets.dart';
 

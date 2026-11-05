@@ -3,9 +3,8 @@ import 'package:bb_mobile/core/bip85/domain/bip85_derivation_entity.dart';
 import 'package:bb_mobile/core/bip85/domain/errors/bip85_failure.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/utils/result.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bull_logger/bull_logger.dart';
+import 'package:wallet/wallet.dart';
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart' show Fingerprint;
 import 'package:secrets/secrets.dart';
@@ -49,7 +48,7 @@ class FetchAllBip85DerivationsWithEntropyUsecase {
       switch (await _walletRepository.getWallets(
         onlyDefaults: true,
         onlyBitcoin: true,
-        environment: settings.environment,
+        isMainnet: settings.environment.isMainnet,
       )) {
         case Ok(:final value):
           wallets = value;

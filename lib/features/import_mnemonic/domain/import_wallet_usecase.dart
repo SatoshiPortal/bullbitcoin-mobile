@@ -3,8 +3,7 @@ import 'package:secrets/secrets.dart';
 import 'package:primitives/primitives.dart' show Fingerprint;
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/utils/result.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:wallet/wallet.dart';
 import 'package:bb_mobile/features/import_mnemonic/domain/check_duplicate_mnemonic_usecase.dart';
 import 'package:bb_mobile/features/import_mnemonic/domain/import_mnemonic_failure.dart';
 import 'package:meta/meta.dart';
@@ -87,7 +86,7 @@ class ImportWalletUsecase {
           return Err(ImportMnemonicUnexpectedFailure(failure.toString()));
       }
       final wallet = await _wallet.createWallet(
-        secret: secret,
+        secretId: secret.id,
         network: bitcoinNetwork,
         scriptType: scriptType,
         isDefault: false,

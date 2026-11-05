@@ -1,5 +1,5 @@
-import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
+import 'package:wallet/wallet.dart' show WalletAddressKeyChain;
+import 'package:bb_mobile/features/coins/domain/wallet_utxo.dart';
 
 /// How the visible UTXO list is ordered (frozen always sink to the bottom
 /// regardless of the chosen sort — see [sortAndFilterUtxos]).

@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:wallet/wallet.dart';
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_liquid_transaction_usecase.dart';
 import 'package:primitives/primitives.dart' show RelativeFee;
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
@@ -7,9 +7,7 @@ import 'package:bb_mobile/core/swaps/domain/entity/auto_swap.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/utils/result.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/liquid_wallet_repository.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/get_receive_address_usecase.dart';
+import 'package:bb_mobile/features/address_view/public/address_view_facade.dart';
 import 'package:bb_mobile/features/autoswap/domain/autoswap_failure.dart';
 import 'package:bb_mobile/features/autoswap/domain/autoswap_provider_port.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
@@ -38,7 +36,9 @@ class BoltzAutoswapProvider implements AutoswapProviderPort {
     try {
       final environment = (await _settingsRepository.fetch()).environment;
       final List<Wallet> wallets;
-      switch (await _walletRepository.getWallets(environment: environment)) {
+      switch (await _walletRepository.getWallets(
+        isMainnet: environment.isMainnet,
+      )) {
         case Ok(:final value):
           wallets = value;
         case Err(:final failure):

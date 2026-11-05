@@ -1,14 +1,13 @@
-import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/result.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:wallet/wallet.dart';
 import 'package:bb_mobile/features/import_mnemonic/domain/check_duplicate_mnemonic_usecase.dart';
 import 'package:bb_mobile/features/import_mnemonic/domain/import_mnemonic_failure.dart';
 import 'package:bb_mobile/features/import_mnemonic/domain/import_wallet_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:primitives/primitives.dart' show Fingerprint;
 import 'package:secrets/secrets.dart';
 import 'package:secrets/testing.dart';
 
@@ -49,13 +48,9 @@ void main() {
   late _MockWalletRepository walletRepository;
   late ImportWalletUsecase usecase;
 
-  setUpAll(() async {
-    // `Secret` is final and cannot be mocked, so mocktail's fallback for `any(named: 'secret')` is a real one, made here and used for nothing else.
-    FakeSecureStoragePlatform().install();
-    final fallback = await Secrets(
-      scratchDirectory: () async => '/tmp',
-    ).import(words: words);
-    registerFallbackValue((fallback as Ok<Secret, SecretFailure>).value);
+  setUpAll(() {
+    // Mocktail's fallback for `any(named: 'secretId')`; used for nothing else.
+    registerFallbackValue(Fingerprint('00000000'));
     registerFallbackValue(Network.bitcoinMainnet);
     registerFallbackValue(ScriptType.bip84);
   });
@@ -88,7 +83,7 @@ void main() {
   void stubCreateWallet(Future<Wallet> Function() answer) {
     when(
       () => walletRepository.createWallet(
-        secret: any(named: 'secret'),
+        secretId: any(named: 'secretId'),
         network: any(named: 'network'),
         scriptType: any(named: 'scriptType'),
         isDefault: any(named: 'isDefault'),
@@ -161,7 +156,7 @@ void main() {
         expect((result as Err).failure, isA<ImportMnemonicDuplicateFailure>());
         verifyNever(
           () => walletRepository.createWallet(
-            secret: any(named: 'secret'),
+            secretId: any(named: 'secretId'),
             network: any(named: 'network'),
             scriptType: any(named: 'scriptType'),
             isDefault: any(named: 'isDefault'),

@@ -3,9 +3,7 @@ import 'package:bb_mobile/core/recoverbull/domain/usecases/create_encrypted_vaul
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/result.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
+import 'package:wallet/wallet.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:secrets/secrets.dart';
@@ -47,7 +45,7 @@ void main() {
         onlyBitcoin: any(named: 'onlyBitcoin'),
         onlyDefaults: any(named: 'onlyDefaults'),
         onlyLiquid: any(named: 'onlyLiquid'),
-        environment: any(named: 'environment'),
+        isMainnet: any(named: 'isMainnet'),
         sync: any(named: 'sync'),
       ),
     ).thenAnswer((_) async => result);

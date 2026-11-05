@@ -3,12 +3,10 @@ import 'package:bb_mobile/core/bip85/domain/bip85_derivation_entity.dart';
 import 'package:bb_mobile/core/bip85/domain/derive_next_bip85_hex_from_default_wallet_usecase.dart';
 import 'package:bb_mobile/core/bip85/domain/derive_next_bip85_mnemonic_from_default_wallet_usecase.dart';
 import 'package:bb_mobile/core/bip85/domain/errors/bip85_failure.dart';
-import 'package:bb_mobile/core/entities/signer_entity.dart';
+import 'package:wallet/wallet.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/result.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -90,14 +88,14 @@ void main() {
       () => walletRepository.getWallets(
         onlyDefaults: true,
         onlyBitcoin: true,
-        environment: Environment.mainnet,
+        isMainnet: Environment.mainnet.isMainnet,
       ),
     ).thenAnswer((_) async => Ok(<Wallet>[]));
     when(
       () => walletRepository.getWallets(
         onlyDefaults: true,
         onlyBitcoin: true,
-        environment: Environment.testnet,
+        isMainnet: Environment.testnet.isMainnet,
       ),
     ).thenAnswer((_) async => Ok(<Wallet>[testnetWallet]));
 

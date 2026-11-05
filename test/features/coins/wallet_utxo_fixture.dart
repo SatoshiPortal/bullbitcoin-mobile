@@ -1,7 +1,7 @@
+import 'package:wallet/wallet.dart' show WalletAddressKeyChain;
 import 'dart:typed_data';
 
-import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
+import 'package:bb_mobile/features/coins/domain/wallet_utxo.dart';
 import 'package:bb_mobile/features/labels/domain/primitive/label_type.dart';
 import 'package:bb_mobile/features/labels/label.dart';
 

@@ -1,7 +1,3 @@
-import 'package:bb_mobile/core/entities/signer_entity.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/features/app_startup/domain/app_startup_failure.dart';
 import 'package:bb_mobile/features/app_startup/domain/usecases/restore_missing_default_secret_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -9,6 +5,7 @@ import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart' hide Network, ScriptType;
 import 'package:secrets/secrets.dart';
 import 'package:secrets/testing.dart';
+import 'package:wallet/wallet.dart';
 
 class _MockWalletRepository extends Mock implements WalletRepository {}
 

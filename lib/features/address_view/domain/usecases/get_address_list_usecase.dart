@@ -1,13 +1,12 @@
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/utils/result.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/wallet_address_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
-import 'package:bb_mobile/core/wallet/domain/wallet_error.dart';
+import 'package:bb_mobile/features/address_view/public/address_view_facade.dart';
+import 'package:wallet/wallet.dart';
 import 'package:bb_mobile/features/address_view/domain/address_view_failure.dart';
 import 'package:meta/meta.dart';
 
 class GetAddressListUsecase {
-  final WalletAddressRepository _walletAddressRepository;
+  final LabeledWalletAddressRepository _walletAddressRepository;
 
   const GetAddressListUsecase({required this._walletAddressRepository});
 

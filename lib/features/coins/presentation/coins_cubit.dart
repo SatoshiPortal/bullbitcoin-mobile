@@ -1,8 +1,7 @@
 import 'dart:async';
 
-import 'package:bb_mobile/core/wallet/domain/entities/outpoint.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/watch_started_wallet_syncs_usecase.dart';
+import 'package:primitives/primitives.dart' show Outpoint;
+import 'package:wallet/wallet.dart';
 import 'package:bb_mobile/features/coins/domain/coins_error.dart';
 import 'package:bb_mobile/features/coins/domain/usecases/freeze_utxos_usecase.dart';
 import 'package:bb_mobile/features/coins/domain/usecases/get_utxos_usecase.dart';

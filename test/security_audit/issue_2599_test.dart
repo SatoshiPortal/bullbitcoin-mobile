@@ -15,10 +15,10 @@ void main() {
         ).readAsStringSync();
         final initialization = File('lib/init.dart').readAsStringSync();
         final bdk = File(
-          'lib/core/wallet/data/datasources/bdk_facade.dart',
+          'packages/wallet/lib/src/data/bdk/bdk_facade.dart',
         ).readAsStringSync();
         final lwk = File(
-          'lib/core/wallet/data/datasources/lwk_facade.dart',
+          'packages/wallet/lib/src/data/lwk/lwk_facade.dart',
         ).readAsStringSync();
 
         expect(sqlite, contains('getApplicationDocumentsDirectory'));

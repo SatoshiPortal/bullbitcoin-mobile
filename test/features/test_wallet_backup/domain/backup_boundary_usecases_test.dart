@@ -1,9 +1,7 @@
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/result.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
-import 'package:bb_mobile/core/entities/signer_entity.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:wallet/wallet.dart';
 import 'package:bb_mobile/features/onboarding/complete_physical_backup_verification_usecase.dart';
 import 'package:bb_mobile/features/test_wallet_backup/domain/test_wallet_backup_failure.dart';
 import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/check_backup_usecase.dart';
@@ -66,7 +64,7 @@ void main() {
     void stubWallets(List<Wallet> value) => when(
       () => wallets.getWallets(
         onlyDefaults: any(named: 'onlyDefaults'),
-        environment: any(named: 'environment'),
+        isMainnet: any(named: 'isMainnet'),
       ),
     ).thenAnswer((_) async => Ok(value));
 
@@ -95,7 +93,7 @@ void main() {
       when(
         () => wallets.getWallets(
           onlyDefaults: any(named: 'onlyDefaults'),
-          environment: any(named: 'environment'),
+          isMainnet: any(named: 'isMainnet'),
         ),
       ).thenThrow(Exception(_rawReason));
 
@@ -132,7 +130,7 @@ void main() {
         () => wallets.getWallets(
           onlyDefaults: any(named: 'onlyDefaults'),
           onlyBitcoin: any(named: 'onlyBitcoin'),
-          environment: any(named: 'environment'),
+          isMainnet: any(named: 'isMainnet'),
         ),
       ).thenAnswer((_) async => Ok(const <Wallet>[]));
 
@@ -153,7 +151,7 @@ void main() {
           () => wallets.getWallets(
             onlyDefaults: any(named: 'onlyDefaults'),
             onlyBitcoin: any(named: 'onlyBitcoin'),
-            environment: any(named: 'environment'),
+            isMainnet: any(named: 'isMainnet'),
           ),
         ).thenThrow(Exception(_rawReason));
 

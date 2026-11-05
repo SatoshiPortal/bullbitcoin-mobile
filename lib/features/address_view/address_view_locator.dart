@@ -1,5 +1,5 @@
-import 'package:bb_mobile/core/wallet/data/repositories/wallet_address_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
+import 'package:bb_mobile/features/address_view/public/address_view_facade.dart';
+import 'package:wallet/wallet.dart';
 import 'package:bb_mobile/features/address_view/domain/usecases/check_wallet_is_liquid_usecase.dart';
 import 'package:bb_mobile/features/address_view/domain/usecases/get_address_list_usecase.dart';
 import 'package:bb_mobile/features/address_view/presentation/address_view_bloc.dart';
@@ -14,7 +14,7 @@ class AddressViewLocator {
   static void registerUsecases(GetIt locator) {
     locator.registerFactory<GetAddressListUsecase>(
       () => GetAddressListUsecase(
-        walletAddressRepository: locator<WalletAddressRepository>(),
+        walletAddressRepository: locator<LabeledWalletAddressRepository>(),
       ),
     );
     locator.registerFactory<CheckWalletIsLiquidUsecase>(

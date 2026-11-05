@@ -1,5 +1,5 @@
 import 'package:primitives/primitives.dart' show BullException;
-import 'package:bb_mobile/core/wallet/data/repositories/bitcoin_wallet_repository.dart';
+import 'package:wallet/wallet.dart';
 
 class SignBitcoinTxUsecase {
   final BitcoinWalletRepository _bitcoinWalletRepository;

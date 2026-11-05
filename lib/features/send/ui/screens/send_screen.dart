@@ -1,4 +1,5 @@
 import 'package:bb_mobile/fee_presentation_adapters.dart';
+import 'package:bb_mobile/wallet_presentation_adapters.dart';
 import 'dart:math' as math;
 
 import 'package:bb_mobile/core/widgets/address_viewer.dart';

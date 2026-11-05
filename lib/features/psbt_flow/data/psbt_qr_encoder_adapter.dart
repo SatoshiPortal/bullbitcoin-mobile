@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/bbqr/bbqr.dart';
-import 'package:bb_mobile/core/entities/signer_device_entity.dart';
+import 'package:wallet/wallet.dart';
 import 'package:bb_mobile/core/urqr/urqr.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/psbt_flow/domain/psbt_flow_failure.dart';

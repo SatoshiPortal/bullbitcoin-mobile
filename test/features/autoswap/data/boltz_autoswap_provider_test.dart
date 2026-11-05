@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_liquid_transaction_usecase.dart';
-import 'package:bb_mobile/core/entities/signer_entity.dart';
+import 'package:wallet/wallet.dart';
 import 'package:primitives/primitives.dart' show RelativeFee;
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
@@ -8,11 +8,7 @@ import 'package:bb_mobile/core/swaps/domain/entity/auto_swap.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/utils/result.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/liquid_wallet_repository.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/get_receive_address_usecase.dart';
+import 'package:bb_mobile/features/address_view/public/address_view_facade.dart';
 import 'package:bb_mobile/features/autoswap/data/boltz_autoswap_provider.dart';
 import 'package:bb_mobile/features/autoswap/domain/autoswap_failure.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
@@ -101,7 +97,8 @@ void main() {
       ),
     );
     when(
-      () => walletRepository.getWallets(environment: Environment.testnet),
+      () =>
+          walletRepository.getWallets(isMainnet: Environment.testnet.isMainnet),
     ).thenAnswer(
       (_) async => Ok([_wallet(liquid: true), _wallet(liquid: false)]),
     );
@@ -194,7 +191,8 @@ void main() {
     expect(result, isA<Ok<String, AutoswapFailure>>());
     expect((result as Ok<String, AutoswapFailure>).value, 'swap-id');
     verify(
-      () => walletRepository.getWallets(environment: Environment.testnet),
+      () =>
+          walletRepository.getWallets(isMainnet: Environment.testnet.isMainnet),
     ).called(1);
     verify(
       () => swapRepository.createLiquidToBitcoinSwap(

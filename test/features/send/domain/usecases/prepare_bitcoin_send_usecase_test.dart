@@ -1,11 +1,9 @@
 import 'dart:typed_data';
 
 import 'package:primitives/primitives.dart' show NetworkFee;
-import 'package:bb_mobile/core/wallet/domain/no_spendable_utxo_exception.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/bitcoin_wallet_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
-import 'package:bb_mobile/core/wallet/domain/repositories/wallet_utxo_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/prepare_bitcoin_send_usecase.dart';
+import 'package:wallet/wallet.dart';
+import 'package:bb_mobile/features/coins/public/coins_facade.dart';
+import 'package:bb_mobile/features/send/public/send_facade.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -16,7 +14,8 @@ class _MockPayjoinSessions extends Mock implements PayjoinSessions {}
 class _MockBitcoinWalletRepository extends Mock
     implements BitcoinWalletRepository {}
 
-class _MockWalletUtxoRepository extends Mock implements WalletUtxoRepository {}
+class _MockLabeledWalletUtxoRepository extends Mock
+    implements LabeledWalletUtxoRepository {}
 
 WalletUtxo _utxo({required String txId, required int vout}) =>
     WalletUtxo.bitcoin(
@@ -31,7 +30,7 @@ WalletUtxo _utxo({required String txId, required int vout}) =>
 void main() {
   late _MockPayjoinSessions payjoin;
   late _MockBitcoinWalletRepository bitcoinWallet;
-  late _MockWalletUtxoRepository walletUtxo;
+  late _MockLabeledWalletUtxoRepository walletUtxo;
   late PrepareBitcoinSendUsecase usecase;
 
   const walletId = 'wallet-1';
@@ -45,7 +44,7 @@ void main() {
   setUp(() {
     payjoin = _MockPayjoinSessions();
     bitcoinWallet = _MockBitcoinWalletRepository();
-    walletUtxo = _MockWalletUtxoRepository();
+    walletUtxo = _MockLabeledWalletUtxoRepository();
     usecase = PrepareBitcoinSendUsecase(
       payjoinSessions: payjoin,
       walletUtxoRepository: walletUtxo,

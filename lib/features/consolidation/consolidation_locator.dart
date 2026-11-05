@@ -1,6 +1,5 @@
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_liquid_transaction_usecase.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/liquid_wallet_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/check_liquid_consolidation_usecase.dart';
+import 'package:wallet/wallet.dart';
 import 'package:bb_mobile/features/consolidation/domain/usecases/consolidate_liquid_wallet_usecase.dart';
 import 'package:bb_mobile/features/consolidation/presentation/consolidation_banner_cubit.dart';
 import 'package:bb_mobile/features/consolidation/presentation/consolidation_cubit.dart';

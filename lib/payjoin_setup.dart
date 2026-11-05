@@ -6,11 +6,9 @@ import 'package:bb_mobile/core/fees/domain/repositories/fees_repository.dart';
 import 'package:secrets/secrets.dart';
 import 'package:bb_mobile/core/storage/payjoin_legacy_data_adapter.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
-import 'package:bb_mobile/core/wallet/data/datasources/bdk_wallet_datasource.dart';
-import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasource.dart';
-import 'package:bb_mobile/core/wallet/data/payjoin_wallet_adapter.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
+import 'package:wallet/wallet.dart';
+import 'package:bb_mobile/payjoin_wallet_adapters.dart';
+import 'package:bb_mobile/features/transactions/transactions_facade.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/payjoin_runtime_adapters.dart';
 import 'package:bb_mobile/recoverable_payjoin.dart';
@@ -32,7 +30,7 @@ abstract final class PayjoinSetup {
         wallet: PayjoinWalletAdapter(
           locator<Secrets>(),
           locator<BdkWalletDatasource>(),
-          locator<WalletMetadataDatasource>(),
+          locator<WalletCatalogPort>(),
         ),
         blockchain: AppPayjoinBlockchainAdapter(
           locator<BdkBitcoinBlockchainDatasource>(),

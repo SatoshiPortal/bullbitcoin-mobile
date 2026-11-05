@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/entities/signer_device_entity.dart';
+import 'package:wallet/wallet.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'ledger_device_entity.freezed.dart';

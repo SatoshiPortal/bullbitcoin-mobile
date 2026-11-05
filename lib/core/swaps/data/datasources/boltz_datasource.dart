@@ -13,7 +13,7 @@ import 'package:bb_mobile/core/swaps/domain/entity/swap_tx_outspend.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:secrets/secrets.dart';
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:wallet/wallet.dart';
 import 'package:boltz_stream/boltz_stream.dart';
 import 'package:dio/dio.dart';
 import 'package:bull_sdk/boltz.dart' hide Network, SwapMasterKey;

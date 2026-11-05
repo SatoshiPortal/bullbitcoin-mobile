@@ -1,10 +1,10 @@
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:wallet/wallet.dart';
 import 'package:bb_mobile/features/send/domain/send_failure.dart';
 import 'package:bb_mobile/features/send/domain/sp_failure_mapping.dart';
 import 'package:bb_mobile/features/sp/public/sp_facade.dart';
 import 'package:primitives/primitives.dart' hide Network;
 
-export 'package:bb_mobile/core/wallet/domain/entities/wallet.dart' show Network;
+export 'package:wallet/wallet.dart' show Network;
 
 class GetSpNetworkForSendUsecase {
   final SpFacade _spFacade;

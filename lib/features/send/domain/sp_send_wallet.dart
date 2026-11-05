@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart' show Network;
+import 'package:wallet/wallet.dart' show Network;
 
 /// What the send flow needs to know about the SP wallet. SP has no descriptors
 /// and nothing is ever signed against it, so this is not a wallet entity.

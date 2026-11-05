@@ -1,5 +1,5 @@
-import 'package:bb_mobile/core/wallet/domain/entities/outpoint.dart';
-import 'package:bb_mobile/core/wallet/domain/repositories/wallet_utxo_repository.dart';
+import 'package:primitives/primitives.dart' show Outpoint;
+import 'package:bb_mobile/features/coins/domain/labeled_wallet_utxo_repository.dart';
 import 'package:bb_mobile/features/coins/domain/coins_error.dart';
 
 /// Freezes the given outpoints for a wallet (writes `origin = 'user'` rows via
@@ -7,7 +7,7 @@ import 'package:bb_mobile/features/coins/domain/coins_error.dart';
 class FreezeUtxosUsecase {
   FreezeUtxosUsecase({required this._walletUtxoRepository});
 
-  final WalletUtxoRepository _walletUtxoRepository;
+  final LabeledWalletUtxoRepository _walletUtxoRepository;
 
   Future<void> execute({
     required String walletId,

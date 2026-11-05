@@ -1,7 +1,6 @@
 import 'dart:async';
 
-import 'package:bb_mobile/core/sync/sync_coordinator.dart';
-import 'package:bb_mobile/core/sync/sync_kind.dart';
+import 'package:background_tasks/background_tasks.dart';
 import 'package:bb_mobile/features/swap/order_swap_watcher.dart';
 import 'package:fake_async/fake_async.dart';
 import 'package:flutter_test/flutter_test.dart';

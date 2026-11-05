@@ -1,5 +1,4 @@
-import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_utxos_usecase.dart';
+import 'package:bb_mobile/features/coins/public/coins_facade.dart';
 import 'package:bb_mobile/features/coins/domain/coins_error.dart';
 
 /// Thin feature wrapper over the core [GetWalletUtxosUsecase].

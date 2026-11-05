@@ -1,5 +1,4 @@
-import 'package:bb_mobile/core/wallet/domain/repositories/wallet_utxo_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_utxos_usecase.dart';
+import 'package:bb_mobile/features/coins/public/coins_facade.dart';
 import 'package:bb_mobile/features/coins/domain/coins_error.dart';
 import 'package:bb_mobile/features/coins/domain/usecases/freeze_utxos_usecase.dart';
 import 'package:bb_mobile/features/coins/domain/usecases/get_utxos_usecase.dart';
@@ -12,7 +11,8 @@ import '../../wallet_utxo_fixture.dart';
 class _MockGetWalletUtxosUsecase extends Mock
     implements GetWalletUtxosUsecase {}
 
-class _MockWalletUtxoRepository extends Mock implements WalletUtxoRepository {}
+class _MockLabeledWalletUtxoRepository extends Mock
+    implements LabeledWalletUtxoRepository {}
 
 void main() {
   group('GetUtxosUsecase', () {
@@ -59,11 +59,11 @@ void main() {
   });
 
   group('FreezeUtxosUsecase', () {
-    late _MockWalletUtxoRepository repo;
+    late _MockLabeledWalletUtxoRepository repo;
     late FreezeUtxosUsecase usecase;
 
     setUp(() {
-      repo = _MockWalletUtxoRepository();
+      repo = _MockLabeledWalletUtxoRepository();
       usecase = FreezeUtxosUsecase(walletUtxoRepository: repo);
     });
 
@@ -100,11 +100,11 @@ void main() {
   });
 
   group('UnfreezeUtxosUsecase', () {
-    late _MockWalletUtxoRepository repo;
+    late _MockLabeledWalletUtxoRepository repo;
     late UnfreezeUtxosUsecase usecase;
 
     setUp(() {
-      repo = _MockWalletUtxoRepository();
+      repo = _MockLabeledWalletUtxoRepository();
       usecase = UnfreezeUtxosUsecase(walletUtxoRepository: repo);
     });
 

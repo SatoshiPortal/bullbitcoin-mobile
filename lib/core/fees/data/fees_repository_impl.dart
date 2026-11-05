@@ -8,7 +8,7 @@ import 'package:bb_mobile/core/mempool/domain/repositories/mempool_settings_repo
 import 'package:bb_mobile/core/mempool/domain/value_objects/mempool_server_network.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/utils/result.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:wallet/wallet.dart';
 
 class FeesRepositoryImpl implements FeesRepository {
   final FeesDatasource _feesDatasource;

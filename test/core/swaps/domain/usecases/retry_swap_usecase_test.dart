@@ -3,7 +3,7 @@ import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/retry_swap_usecase.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/wallet_address_repository.dart';
+import 'package:bb_mobile/features/address_view/public/address_view_facade.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -13,7 +13,7 @@ class _MockGetNetworkFeesUsecase extends Mock
     implements GetNetworkFeesUsecase {}
 
 class _MockWalletAddressRepository extends Mock
-    implements WalletAddressRepository {}
+    implements LabeledWalletAddressRepository {}
 
 void main() {
   late _MockBoltzSwapRepository repo;

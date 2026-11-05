@@ -1,11 +1,9 @@
-import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
+import 'package:wallet/wallet.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/auto_swap.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/get_auto_swap_settings_usecase.dart';
 import 'package:bb_mobile/core/utils/result.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/autoswap/domain/autoswap_failure.dart';
 import 'package:bb_mobile/features/autoswap/domain/usecases/load_autoswap_settings_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -74,7 +72,7 @@ void main() {
         () => getAutoSwap.execute(),
       ).thenAnswer((_) async => const AutoSwap(recipientWalletId: 'stored'));
       when(
-        () => wallets.getWallets(environment: any(named: 'environment')),
+        () => wallets.getWallets(isMainnet: any(named: 'isMainnet')),
       ).thenAnswer(
         (_) async => Ok<List<Wallet>, WalletFailure>([
           FakeWallet(id: 'btc', isLiquid: false, isDefault: true),
@@ -98,7 +96,7 @@ void main() {
           () => getAutoSwap.execute(),
         ).thenAnswer((_) async => const AutoSwap());
         when(
-          () => wallets.getWallets(environment: any(named: 'environment')),
+          () => wallets.getWallets(isMainnet: any(named: 'isMainnet')),
         ).thenAnswer(
           (_) async => Ok<List<Wallet>, WalletFailure>([
             FakeWallet(id: 'other', isLiquid: false, isDefault: false),
@@ -133,7 +131,7 @@ void main() {
         () => getAutoSwap.execute(),
       ).thenAnswer((_) async => const AutoSwap());
       when(
-        () => wallets.getWallets(environment: any(named: 'environment')),
+        () => wallets.getWallets(isMainnet: any(named: 'isMainnet')),
       ).thenAnswer((_) async => throw Exception('bdk exploded'));
 
       expect(

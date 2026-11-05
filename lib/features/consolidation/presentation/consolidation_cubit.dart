@@ -1,5 +1,5 @@
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/check_liquid_consolidation_usecase.dart';
+import 'package:wallet/wallet.dart';
 import 'package:bb_mobile/features/consolidation/domain/usecases/consolidate_liquid_wallet_usecase.dart';
 import 'package:bb_mobile/features/consolidation/presentation/consolidation_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

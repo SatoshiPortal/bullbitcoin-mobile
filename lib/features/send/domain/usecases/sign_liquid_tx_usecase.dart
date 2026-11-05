@@ -1,5 +1,5 @@
 import 'package:primitives/primitives.dart' show BullException;
-import 'package:bb_mobile/core/wallet/data/repositories/liquid_wallet_repository.dart';
+import 'package:wallet/wallet.dart';
 
 class SignLiquidTxUsecase {
   final LiquidWalletRepository _liquidWalletRepository;

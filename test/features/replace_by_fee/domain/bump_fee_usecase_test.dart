@@ -6,10 +6,7 @@ import 'package:bb_mobile/features/replace_by_fee/domain/bump_fee_usecase.dart';
 import 'package:bb_mobile/features/replace_by_fee/domain/replace_by_fee_failure.dart';
 import 'package:bull_sdk/bdk.dart' as bdk;
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/bitcoin_wallet_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/manipulated_transaction_exception.dart';
-import 'package:bb_mobile/core/wallet/domain/transaction_signature_status.dart';
-import 'package:bb_mobile/core/wallet/domain/unverifiable_transaction_exception.dart';
+import 'package:wallet/wallet.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 

@@ -1,7 +1,7 @@
 import 'package:bb_mobile/core/errors/send_errors.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
+import 'package:wallet/wallet.dart';
 
 class VerifyChainSwapAmountSendUsecase {
   final WalletRepository _walletRepository;

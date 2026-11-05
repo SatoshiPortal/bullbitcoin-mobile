@@ -1,7 +1,7 @@
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap_master_key_info.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
+import 'package:wallet/wallet.dart';
 
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:primitives/primitives.dart' show BullException;
@@ -27,7 +27,7 @@ class GetSwapMasterKeyUsecase {
     final wallets = switch (await _walletRepository.getWallets(
       onlyDefaults: true,
       onlyBitcoin: true,
-      environment: settings.environment,
+      isMainnet: settings.environment.isMainnet,
     )) {
       Ok(:final value) => value,
       Err(:final failure) => throw GetSwapMasterKeyException(

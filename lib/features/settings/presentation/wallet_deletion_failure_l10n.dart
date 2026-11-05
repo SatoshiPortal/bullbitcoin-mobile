@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
+import 'package:wallet/wallet.dart';
 import 'package:flutter/widgets.dart';
 
 /// Settings' rendering of a [WalletFailure], for the wallet-deletion sheet.

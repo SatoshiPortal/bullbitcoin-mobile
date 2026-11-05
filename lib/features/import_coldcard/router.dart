@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/entities/signer_device_entity.dart';
+import 'package:wallet/wallet.dart';
 import 'package:bb_mobile/features/import_coldcard/import_coldcard_page.dart';
 import 'package:go_router/go_router.dart';
 

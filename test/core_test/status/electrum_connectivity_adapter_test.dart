@@ -4,7 +4,7 @@ import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_connection
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_network.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_status.dart';
 import 'package:bb_mobile/core/status/interface_adapters/adapter/electrum_connectivity_adapter.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:wallet/wallet.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:bull_tor/tor.dart';
 

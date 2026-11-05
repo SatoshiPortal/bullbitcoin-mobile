@@ -4,8 +4,7 @@ import 'package:bb_mobile/core/swaps/domain/entity/auto_swap.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/get_auto_swap_settings_usecase.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/utils/result.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:wallet/wallet.dart';
 import 'package:bb_mobile/features/autoswap/domain/autoswap_failure.dart';
 import 'package:meta/meta.dart';
 
@@ -36,7 +35,7 @@ class LoadAutoswapSettingsUsecase {
 
       final List<Wallet> wallets;
       switch (await _walletRepository.getWallets(
-        environment: appSettings.environment,
+        isMainnet: appSettings.environment.isMainnet,
       )) {
         case Ok(:final value):
           wallets = value;
