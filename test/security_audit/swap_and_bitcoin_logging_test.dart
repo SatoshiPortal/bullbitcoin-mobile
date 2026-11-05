@@ -4,6 +4,27 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   group('security-sensitive operational logging', () {
+    test('does not interpolate Bitcoin wallet or UTXO details', () {
+      final source = File(
+        'lib/core/wallet/domain/usecases/prepare_bitcoin_send_usecase.dart',
+      ).readAsStringSync();
+
+      for (final sensitiveInterpolation in [
+        r'$walletId',
+        r'$unspendableUtxos',
+        r'$address',
+        r'${address}',
+        r'$txId',
+        r'${txId}',
+        r'$psbt',
+        r'${psbt}',
+      ]) {
+        expect(source, isNot(contains(sensitiveInterpolation)));
+      }
+      expect(source, isNot(contains('Unspendable utxos:')));
+      expect(source, contains('Bitcoin PSBT preparation:'));
+    });
+
     test('does not interpolate swap amounts or order identifiers', () {
       final source = File(
         'lib/features/swap/data/order_swap_repository_impl.dart',
