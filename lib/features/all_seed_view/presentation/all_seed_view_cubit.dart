@@ -66,10 +66,10 @@ class AllSeedViewCubit extends Cubit<AllSeedViewState> {
       case Ok(:final value):
         existingFingerprints.addAll(value);
       case Err(:final failure):
-        // The seeds were fetched successfully; only the wallet lookup failed.
-        // Degrade gracefully: treat every seed as "old" and still display
-        // them, rather than discarding a good fetch and showing
-        // "No seeds found".
+        // Unknown usage is not evidence that a seed is unused: keep every seed visible, without offering deletion.
+        existingFingerprints.addAll(
+          seeds.map((seed) => seed.masterFingerprint),
+        );
         log.warning('all seeds: wallet lookup failed: ${failure.logMessage}');
     }
 
