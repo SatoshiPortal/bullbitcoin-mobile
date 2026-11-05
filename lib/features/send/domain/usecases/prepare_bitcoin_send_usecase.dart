@@ -48,7 +48,8 @@ class PrepareBitcoinSendUsecase {
       );
 
       log.info(
-        'Bitcoin wallet id $walletId building psbt. Unspendable utxos: $unspendableUtxos',
+        'Bitcoin PSBT preparation: '
+        '${unspendableUtxos.length} unspendable inputs',
       );
 
       final psbt = await _bitcoinWalletRepository.buildPsbt(
