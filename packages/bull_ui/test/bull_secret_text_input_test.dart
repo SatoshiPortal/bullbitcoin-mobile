@@ -121,6 +121,7 @@ void main() {
         tester.getSemantics(find.byType(TextField)),
         matchesSemantics(
           label: 'Passphrase',
+          hint: 'Optional passphrase',
           isTextField: true,
           isObscured: true,
           isFocusable: true,
