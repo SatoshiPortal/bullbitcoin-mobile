@@ -17210,5 +17210,9 @@
         "type": "int"
       }
     }
-  }
+  },
+  "@bitboxErrorWalletNameInUse": {
+    "description": "BitBox policy registration failed because another policy has the same name."
+  },
+  "bitboxErrorWalletNameInUse": "Another wallet on your BitBox already uses this name. Go back and choose a different registration name."
 }

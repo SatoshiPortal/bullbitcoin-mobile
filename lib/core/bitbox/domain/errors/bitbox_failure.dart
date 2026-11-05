@@ -72,6 +72,10 @@ final class WalletPolicyNotRegisteredBitBoxFailure extends BitBoxFailure {
   const WalletPolicyNotRegisteredBitBoxFailure();
 }
 
+final class WalletPolicyNameInUseBitBoxFailure extends BitBoxFailure {
+  const WalletPolicyNameInUseBitBoxFailure();
+}
+
 /// Catch-all. [logMessage] is for logs ONLY and MUST never reach the UI —
 /// the presentation extension returns the shared generic string.
 final class BitBoxUnexpectedFailure extends BitBoxFailure {

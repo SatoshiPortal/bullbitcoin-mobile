@@ -544,6 +544,9 @@ class BitBoxDeviceDatasource {
   BitBoxFailure _mapWalletPolicyError(Object error) {
     if (error is BitBoxFailure) return error;
     final normalized = error.toString().toLowerCase();
+    if (normalized.contains('bitbox(duplicate)')) {
+      return const WalletPolicyNameInUseBitBoxFailure();
+    }
     if (normalized.contains('not registered')) {
       return const WalletPolicyNotRegisteredBitBoxFailure();
     }
