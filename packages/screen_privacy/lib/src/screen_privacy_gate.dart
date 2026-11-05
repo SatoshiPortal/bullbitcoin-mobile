@@ -27,6 +27,8 @@ class ScreenPrivacyGateLabels {
 /// each of [retryDelays]; if blocking is still refused, a warning replaces the
 /// secret and offers to retry or to continue anyway, which shows the secret
 /// unprotected on the user's explicit consent.
+///
+/// Requires a [BullTheme] in the widget tree to render the warning.
 class ScreenPrivacyGate extends StatefulWidget {
   final Future<bool> Function() protect;
   final ScreenPrivacyGateLabels labels;
