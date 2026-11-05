@@ -11,12 +11,13 @@ import 'package:bull_ui/bull_ui.dart' show BullText;
 class WizardStepLayout extends StatelessWidget {
   const WizardStepLayout({
     super.key,
-    required this.page,
+    this.page,
     required this.title,
     required this.child,
   });
 
-  final WizardPage page;
+  /// Null outside the wizard: no page indicator.
+  final WizardPage? page;
   final String title;
   final Widget child;
 
@@ -33,15 +34,17 @@ class WizardStepLayout extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          BullText(
-            context.loc.wizardPageIndicator(page.number, WizardPage.total),
-            style: context.font.labelMedium?.copyWith(
-              color: context.appColors.primary,
-              fontWeight: FontWeight.w700,
-              letterSpacing: 1.2,
+          if (page case final page?) ...[
+            BullText(
+              context.loc.wizardPageIndicator(page.number, WizardPage.total),
+              style: context.font.labelMedium?.copyWith(
+                color: context.appColors.primary,
+                fontWeight: FontWeight.w700,
+                letterSpacing: 1.2,
+              ),
             ),
-          ),
-          SizedBox(height: vGapSm),
+            SizedBox(height: vGapSm),
+          ],
           BullText(
             title.toUpperCase(),
             style: context.font.displaySmall?.copyWith(
