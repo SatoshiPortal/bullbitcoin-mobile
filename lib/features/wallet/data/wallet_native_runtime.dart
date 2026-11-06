@@ -17,7 +17,9 @@ import 'package:transaction_sync/write.dart';
 import 'wallet_catalog_port_impl.dart';
 
 /// Owns application lifecycle orchestration; the shell only composes this owner.
-/// Catalog rows and secrets survive failed provisioning so startup can resume it.
+/// The repository compensates catalog insertion on native creation failure.
+/// Process death before compensation leaves the row for startup to resume;
+/// secrets and native recovery state are retained.
 abstract interface class WalletNativeLifecycle {
   Future<void> prepareCreate(WalletMetadataModel metadata);
   Future<void> create(WalletMetadataModel metadata);
