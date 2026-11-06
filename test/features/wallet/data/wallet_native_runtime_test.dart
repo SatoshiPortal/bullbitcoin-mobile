@@ -111,9 +111,23 @@ void main() {
         rows[row.id] = row;
         await runtime.create(row);
         await runtime.initialize();
-        final address = await runtime.receive(row);
+        var address = await runtime.receive(row);
         final wallet = await runtime.bitcoin(WalletModel.fromMetadata(row));
         expect(wallet.balance().total.toSat(), 0);
+        final revisions = <WalletRevisionState>[];
+        final observation = runtime.changes.listen(revisions.add);
+        final other = open();
+        await other.initialize();
+        address = await other.receive(row, advance: true);
+        await other.close();
+        await pumpEventQueue();
+        expect(revisions, isEmpty);
+        await runtime.refreshAll();
+        await pumpEventQueue();
+        expect(revisions, hasLength(1));
+        expect(revisions.single.lifecycle, WalletLifecycle.active);
+        await observation.cancel();
+
         await runtime.close();
         runtime = open();
         await runtime.initialize();
