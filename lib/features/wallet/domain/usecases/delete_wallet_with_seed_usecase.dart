@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/wallet/domain/seed_reference_port.dart';
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
@@ -12,11 +13,13 @@ class DeleteWalletUsecase {
   final WalletRepository _walletRepository;
   final BoltzSwapRepository _swapRepository;
   final Secrets _secrets;
+  final SeedReferences _seedReferences;
 
   DeleteWalletUsecase({
     required this._walletRepository,
     required this._swapRepository,
     required this._secrets,
+    required this._seedReferences,
   });
 
   @useResult
@@ -86,7 +89,7 @@ class DeleteWalletUsecase {
     String walletId,
   ) async {
     final Set<Fingerprint> remaining;
-    switch (await _walletRepository.getCustodyFingerprints()) {
+    switch (await _seedReferences.getCustodyFingerprints()) {
       case Ok(:final value):
         remaining = value;
       case Err(:final failure):

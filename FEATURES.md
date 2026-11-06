@@ -88,6 +88,7 @@ graph TB
     ADDRESS_MGMT -->|public revision stream| WALLETS
     ALL_SEED_VIEW --> APP_UNLOCK
     ALL_SEED_VIEW --> SECRETS
+    ALL_SEED_VIEW -->|public custody references| WALLETS
     ANNOUNCEMENTS --> SETTINGS
     ANNOUNCEMENTS --> SWAPS
     APP_STARTUP --> WALLETS

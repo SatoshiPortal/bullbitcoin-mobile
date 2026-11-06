@@ -152,6 +152,20 @@ class WalletLocator {
         ),
       ),
     );
+    locator.registerLazySingleton<SeedReferences>(
+      () => SeedReferences(locator<WalletRepository>()),
+    );
+    locator.registerFactory<core.DeleteWalletUsecase>(
+      () => core.DeleteWalletUsecase(
+        walletRepository: locator<WalletRepository>(),
+        swapRepository: locator<BoltzSwapRepository>(
+          instanceName:
+              LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
+        ),
+        seedReferences: locator<SeedReferences>(),
+        secrets: locator<Secrets>(),
+      ),
+    );
     locator.registerFactory<DeleteWalletUsecase>(
       () => DeleteWalletUsecase(
         locator<core.DeleteWalletUsecase>(),

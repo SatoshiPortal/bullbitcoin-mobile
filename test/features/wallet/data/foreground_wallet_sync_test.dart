@@ -1,3 +1,5 @@
+import 'package:bb_mobile/features/wallet/public/wallet_facade.dart'
+    show SeedReferences;
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/delete_wallet_usecase.dart';
 import 'package:bb_mobile/features/all_seed_view/domain/usecases/delete_secret_usecase.dart';
@@ -174,6 +176,7 @@ void main() {
           expect(
             await DeleteWalletUsecase(
               walletRepository: guardedRepository,
+              seedReferences: SeedReferences(guardedRepository),
               swapRepository: swaps,
               secrets: secrets,
             ).execute(walletId: id),
@@ -182,7 +185,7 @@ void main() {
         } else {
           final result = await DeleteSecretUsecase(
             secrets: secrets,
-            walletRepository: guardedRepository,
+            seedReferences: SeedReferences(guardedRepository),
           ).execute(secret.value.id);
           expect(result, isA<Err>());
         }
