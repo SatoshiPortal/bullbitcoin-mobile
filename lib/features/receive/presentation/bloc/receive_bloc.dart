@@ -19,7 +19,6 @@ import 'package:bb_mobile/features/receive/domain/usecases/receive_with_payjoin_
 import 'package:bb_mobile/features/receive/domain/receive_failure.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/convert_receive_amount_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/fetch_receive_note_suggestions_usecase.dart';
-import 'package:bb_mobile/features/receive/domain/usecases/get_receive_address_at_index_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/get_receive_currencies_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/get_receive_settings_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/get_receive_wallets_usecase.dart';
@@ -50,7 +49,6 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     required this._getReceiveSettingsUsecase,
     required this._convertReceiveAmountUsecase,
     required this._prepareReceiveAddressUsecase,
-    required this._getReceiveAddressAtIndexUsecase,
     required this._createReceiveOrderSwapUsecase,
     required this._receiveWithPayjoinUsecase,
     required this._broadcastOriginalTransactionUsecase,
@@ -130,7 +128,6 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
   final GetReceiveSettingsUsecase _getReceiveSettingsUsecase;
   final ConvertReceiveAmountUsecase _convertReceiveAmountUsecase;
   final PrepareReceiveAddressUsecase _prepareReceiveAddressUsecase;
-  final GetReceiveAddressAtIndexUsecase _getReceiveAddressAtIndexUsecase;
   final ReceiveWithPayjoinUsecase _receiveWithPayjoinUsecase;
   final BroadcastOriginalTransactionUsecase
   _broadcastOriginalTransactionUsecase;
@@ -912,13 +909,14 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
 
     emit(_withoutPayjoin().copyWith(bitcoinAddress: null, liquidAddress: null));
 
-    if (state.wallet == null) {
+    final wallet = state.wallet;
+    if (wallet == null) {
       log.warning('New address requested with no wallet selected');
       emit(state.copyWith(failure: const ReceiveAddressUnavailableFailure()));
       return;
     }
 
-    final walletId = state.wallet!.id;
+    final walletId = wallet.id;
 
     WalletAddress address;
     switch (state.type) {
@@ -961,10 +959,10 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
             payjoinMinAmountSat: payjoinMinAmountSat,
           ),
         );
-        if (_isPayjoinEligible(state.wallet!, payjoinEnabled)) {
+        if (_isPayjoinEligible(wallet, payjoinEnabled)) {
           final result = await _receiveWithPayjoinUsecase.execute(
             walletId: walletId,
-            isTestnet: state.wallet!.network.isTestnet,
+            isTestnet: wallet.network.isTestnet,
             address: address.address,
           );
           switch (result) {
@@ -997,9 +995,9 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
         );
 
       case ReceiveType.liquid:
-        switch (await _getReceiveAddressAtIndexUsecase.execute(
+        switch (await _prepareReceiveAddressUsecase.execute(
           walletId: walletId,
-          index: currentAddress.index + 1,
+          generateNew: true,
         )) {
           case Ok(:final value):
             address = value;
