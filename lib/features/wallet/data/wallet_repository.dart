@@ -125,9 +125,7 @@ class WalletRepository {
       }
     }
 
-    await _native?.prepareCreate(metadata);
-    await _walletMetadataDatasource.store(metadata);
-    await _createNative(metadata);
+    await _provision(metadata);
     final balance = await _getBalance(metadata, sync: sync);
 
     return Wallet(
@@ -163,9 +161,7 @@ class WalletRepository {
       }
     }
 
-    await _native?.prepareCreate(metadata);
-    await _walletMetadataDatasource.store(metadata);
-    await _createNative(metadata);
+    await _provision(metadata);
     final balance = await _getBalance(metadata, sync: sync);
 
     // Return the created wallet entity
@@ -211,9 +207,7 @@ class WalletRepository {
       }
     }
 
-    await _native?.prepareCreate(metadata);
-    await _walletMetadataDatasource.store(metadata);
-    await _createNative(metadata);
+    await _provision(metadata);
     final balance = await _getBalance(metadata, sync: sync);
 
     // Return the created wallet entity
@@ -517,6 +511,25 @@ class WalletRepository {
     final updatedWalletMetadata = metadata.copyWith(syncedAt: DateTime.now());
 
     await _walletMetadataDatasource.store(updatedWalletMetadata);
+  }
+
+  Future<void> _provision(WalletMetadataModel metadata) async {
+    if (await _walletMetadataDatasource.fetch(metadata.id) != null) {
+      throw WalletAlreadyExistsException(metadata.id);
+    }
+    await _native?.prepareCreate(metadata);
+    // The writer resolves descriptors from this row. Claim it exclusively,
+    // without holding an app database transaction across native work.
+    await _walletMetadataDatasource.insert(metadata);
+    try {
+      await _createNative(metadata);
+    } catch (_) {
+      // Only a successful insert owns compensation; a duplicate never deletes.
+      // Keep secrets and native recovery state for a later retry.
+      await _walletMetadataDatasource.delete(metadata.id);
+      log.warning('Wallet creation failed catalog row removed');
+      rethrow;
+    }
   }
 
   Future<void> _createNative(WalletMetadataModel metadata) async {
