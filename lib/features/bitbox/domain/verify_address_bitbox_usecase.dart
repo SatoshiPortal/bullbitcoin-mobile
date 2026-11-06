@@ -26,7 +26,7 @@ class VerifyAddressBitBoxUsecase {
     final bool isTestnet;
     try {
       final settings = await _settingsRepository.fetch();
-      isTestnet = settings.environment.isTestnet;
+      isTestnet = settings.environment.requireHistoricalTestnet();
     } catch (e, st) {
       log.severe(
         message: 'BitBox verify: settings fetch failed',

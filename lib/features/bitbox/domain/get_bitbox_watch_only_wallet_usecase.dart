@@ -1,3 +1,4 @@
+import 'package:primitives/primitives.dart' show NetworkEnv;
 import 'package:bb_mobile/core/bitbox/domain/entities/bitbox_device_entity.dart';
 import 'package:bb_mobile/core/bitbox/domain/errors/bitbox_failure.dart';
 import 'package:bb_mobile/core/bitbox/domain/repositories/bitbox_device_repository.dart';
@@ -31,7 +32,10 @@ class GetBitBoxWatchOnlyWalletUsecase {
     final bool isTestnet;
     try {
       final settings = await _settingsRepository.fetch();
-      isTestnet = settings.environment.isTestnet;
+      if (settings.environment.networkEnv == NetworkEnv.regtest) {
+        return const Err(InvalidParametersBitBoxFailure('unsupported network'));
+      }
+      isTestnet = settings.environment.networkEnv == NetworkEnv.testnet;
     } catch (e, st) {
       log.severe(
         message: 'BitBox import: settings fetch failed',
@@ -42,7 +46,7 @@ class GetBitBoxWatchOnlyWalletUsecase {
     }
 
     final network = Network.fromEnvironment(
-      isTestnet: isTestnet,
+      environment: isTestnet ? NetworkEnv.testnet : NetworkEnv.mainnet,
       isLiquid: false,
     );
     final derivationPath =

@@ -59,7 +59,7 @@ class ImportWatchOnlyCubit extends Cubit<ImportWatchOnlyState> {
       return;
     }
     final settings = await _settingsRepository.fetch();
-    if (wallet.network.isMainnet != settings.environment.isMainnet) {
+    if (wallet.network.environment != settings.environment.networkEnv) {
       emit(state.copyWith(failure: const NetworkMismatchFailure()));
       return;
     }

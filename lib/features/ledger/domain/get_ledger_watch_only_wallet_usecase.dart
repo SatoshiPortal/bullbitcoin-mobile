@@ -29,9 +29,12 @@ class GetLedgerWatchOnlyWalletUsecase {
     try {
       final settings = await _settingsRepository.fetch();
       final network = Network.fromEnvironment(
-        isTestnet: settings.environment.isTestnet,
+        environment: settings.environment.networkEnv,
         isLiquid: false,
       );
+      if (network == Network.bitcoinRegtest) {
+        return const Err(LedgerUnexpectedFailure('unsupported network'));
+      }
       derivationPath =
           "m/${scriptType.purpose}'/${network.coinType}'/$account'";
     } catch (e) {
