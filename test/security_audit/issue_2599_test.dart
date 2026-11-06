@@ -50,7 +50,11 @@ void main() {
     );
 
     test('background stores use Documents without opening Payjoin or custody', () {
-      final source = File('lib/background_bootstrap.dart').readAsStringSync();
+      final source = [
+        'lib/background_bootstrap.dart',
+        'lib/features/wallet/background_setup.dart',
+        'lib/features/electrum_settings/background_setup.dart',
+      ].map((path) => File(path).readAsStringSync()).join('\n');
       expect(source, contains('await getApplicationDocumentsDirectory()'));
       expect(source, contains('writerMetadataPath(documents.path)'));
       expect(
