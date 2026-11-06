@@ -5,7 +5,6 @@ import 'package:background_tasks/background_tasks.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:notifications/notifications.dart';
 import 'package:primitives/primitives.dart';
-import 'package:sqlite3/sqlite3.dart';
 import 'package:transaction_sync/transaction_sync.dart';
 
 void main() {
@@ -22,15 +21,11 @@ void main() {
   WalletRevision stamp(int revision) =>
       WalletRevision(key: key, generation: 1, revision: revision);
   BackgroundSyncOutcome outcome({
-    bool foreground = false,
     List<String> incoming = const ['old', 'new'],
-    List<String> discovered = const [],
   }) => BackgroundSyncOutcome(
     revision: stamp(2),
     incomingTxids: incoming,
-    discoveredTxids: discovered,
     completedAt: DateTime.utc(2026),
-    completedInForeground: foreground,
   );
   WalletTransactionSyncBackgroundTask task({
     Duration? budget,
@@ -47,7 +42,13 @@ void main() {
   );
   Future<Result<void, NotificationsFailure>> baseline() =>
       WalletPaymentObservationAdapter(notifications).recordCompletion(
-        outcome(foreground: true, incoming: ['old'], discovered: ['old']),
+        WalletSyncCompletion(
+          revision: stamp(1),
+          incomingTxids: ['old'],
+          discoveredTxids: ['old'],
+          completedAt: DateTime.utc(2026),
+          completedInForeground: true,
+        ),
       );
   setUp(() {
     directory = Directory.systemTemp.createTempSync('background-task-');
@@ -70,13 +71,13 @@ void main() {
     () async {
       await baseline();
       // Simulates a prior native commit followed by interruption before outbox.
-      writer.operation = () async => Ok(outcome(discovered: []));
+      writer.operation = () async => Ok(outcome());
       expect((await task().executeAll()).shouldRetry, isFalse);
       expect(writer.allowInitialScan, [false]);
       expect(
         logs.entries.any(
           (e) =>
-              e.$1 == WalletSyncLogLevel.fine && e.$2.contains('job finished'),
+              e.$1 == BackgroundLogLevel.fine && e.$2.contains('job finished'),
         ),
         isTrue,
       );
@@ -84,60 +85,6 @@ void main() {
       expect(gateway.shown, hasLength(1));
       await task().executeAll();
       expect(gateway.shown, hasLength(1));
-    },
-  );
-
-  test('foreground re-sync does not mark background discoveries seen', () async {
-    await baseline();
-    // The payment was discovered in background. Foreground sees it on its
-    // subsequent sync, but discovers only another payment itself.
-    writer.operation = () async => Ok(
-      outcome(
-        foreground: true,
-        incoming: ['old', 'background', 'foreground'],
-        discovered: ['foreground'],
-      ),
-    );
-    await task().executeAll();
-    expect(gateway.shown.single.body, '1');
-    final db = sqlite3.open('${directory.path}/outbox');
-    try {
-      final rows = db.select(
-        'SELECT event_id, seen_at FROM notification_outbox WHERE topic_id IS NOT NULL',
-      );
-      final seen = {for (final row in rows) row['event_id']: row['seen_at']};
-      expect(
-        seen[WalletPaymentNotificationIdentity.eventId(key, 'background')],
-        isNull,
-      );
-      expect(
-        seen[WalletPaymentNotificationIdentity.eventId(key, 'foreground')],
-        isNotNull,
-      );
-    } finally {
-      db.dispose();
-    }
-  });
-
-  test(
-    'initial foreground baseline is silent without marking old history seen',
-    () async {
-      writer.operation = () async =>
-          Ok(outcome(foreground: true, discovered: ['new']));
-      await task().executeAll();
-      expect(gateway.shown, isEmpty);
-      final db = sqlite3.open('${directory.path}/outbox');
-      try {
-        expect(
-          db.select(
-            'SELECT seen_at FROM notification_outbox WHERE event_id=?',
-            [WalletPaymentNotificationIdentity.eventId(key, 'old')],
-          ).single['seen_at'],
-          isNull,
-        );
-      } finally {
-        db.dispose();
-      }
     },
   );
 
@@ -168,9 +115,7 @@ void main() {
           BackgroundSyncOutcome(
             revision: WalletRevision(key: liquid, generation: 1, revision: 2),
             incomingTxids: const [],
-            discoveredTxids: const [],
             completedAt: DateTime.utc(2026),
-            completedInForeground: false,
           ),
         );
       }
@@ -190,6 +135,18 @@ void main() {
     };
     expect((await task(keys: [key, liquid]).executeAll()).shouldRetry, isTrue);
     expect(writer.allowInitialScan, [false]);
+  });
+
+  test('operation exceptions log only their type and request retry', () async {
+    writer.operation = () => throw Exception('private connection detail');
+    expect((await task().executeAll()).shouldRetry, isTrue);
+    expect(
+      logs.entries.map((e) => e.$2),
+      contains(
+        'Background job retry: category=operation_exception type=_Exception',
+      ),
+    );
+    expect(logs.entries.any((e) => e.$2.contains('private')), isFalse);
   });
 
   test('zero admission budget does not start a writer', () async {
@@ -213,7 +170,7 @@ void main() {
           task(
             budget: const Duration(seconds: 10),
             keys: [key, second],
-          ).execute(chain: WalletSyncChain.bitcoin, clock: clock).then((value) {
+          ).executeAll(clock: clock).then((value) {
             finished = true;
             return value;
           });
@@ -224,28 +181,6 @@ void main() {
       pending.complete(Ok(outcome()));
       await running;
       expect(writer.allowInitialScan, [false]);
-    },
-  );
-
-  test(
-    'completion visibility, not admission visibility, controls seen',
-    () async {
-      for (final foregroundAtEnd in [false, true]) {
-        await baseline();
-        var visible = !foregroundAtEnd;
-        writer.operation = () async {
-          visible = foregroundAtEnd;
-          return Ok(
-            outcome(
-              foreground: visible,
-              incoming: ['old', 'change-$foregroundAtEnd'],
-              discovered: ['change-$foregroundAtEnd'],
-            ),
-          );
-        };
-        await task().executeAll();
-      }
-      expect(gateway.shown, hasLength(1));
     },
   );
 }
@@ -314,9 +249,12 @@ final class _Gateway implements LocalNotificationGateway {
   }
 }
 
-final class _Logs implements WalletSyncLogSink {
-  final List<(WalletSyncLogLevel, String)> entries = [];
+final class _Logs implements BackgroundTaskLogger {
+  final List<(BackgroundLogLevel, String)> entries = [];
+
   @override
-  void write(WalletSyncLogLevel level, String message) =>
+  Future<void> flush() async {}
+  @override
+  void write(BackgroundLogLevel level, String message) =>
       entries.add((level, message));
 }

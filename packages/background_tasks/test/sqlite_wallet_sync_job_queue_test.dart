@@ -19,7 +19,7 @@ void main() {
 
   tearDown(() => directory.delete(recursive: true));
 
-  SqliteWalletSyncJobQueue queue({WalletSyncLogSink? sink}) =>
+  SqliteWalletSyncJobQueue queue({BackgroundTaskLogger? sink}) =>
       SqliteWalletSyncJobQueue(
         databasePath: path,
         clock: clock.call,
@@ -322,6 +322,7 @@ void main() {
         ),
       ], chain: WalletSyncChain.bitcoin);
 
+      expect(sink.levels, [BackgroundLogLevel.fine]);
       final logs = messages.join('\n');
       expect(logs, contains('chain=bitcoin'));
       expect(logs, contains('eligible=1'));
@@ -418,20 +419,27 @@ final class _FakeClock {
   void advance(Duration duration) => value = value.add(duration);
 }
 
-final class _Sink implements WalletSyncLogSink {
+final class _Sink implements BackgroundTaskLogger {
+  final levels = <BackgroundLogLevel>[];
   final List<String>? messages;
 
   _Sink([this.messages]);
 
   @override
-  void write(WalletSyncLogLevel level, String message) {
+  Future<void> flush() async {}
+
+  @override
+  void write(BackgroundLogLevel level, String message) {
+    levels.add(level);
     messages?.add(message);
   }
 }
 
-final class _ThrowingSink implements WalletSyncLogSink {
+final class _ThrowingSink implements BackgroundTaskLogger {
   @override
-  void write(WalletSyncLogLevel level, String message) {
+  Future<void> flush() async {}
+  @override
+  void write(BackgroundLogLevel level, String message) {
     throw StateError('logger unavailable');
   }
 }

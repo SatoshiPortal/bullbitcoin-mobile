@@ -7,10 +7,7 @@ final class _Logger implements BackgroundTaskLogger {
   bool throwOnFlush = false;
 
   @override
-  void fine(String message) => messages.add(message);
-
-  @override
-  void warning(String message) => messages.add(message);
+  void write(BackgroundLogLevel level, String message) => messages.add(message);
 
   /// How many messages were logged when the last flush started.
   int? flushedAfter;
@@ -90,7 +87,7 @@ void main() {
         },
       );
 
-      final result = await runner.run('bitcoin-sync');
+      final result = await runner.run(BackgroundTask.bitcoinSync);
 
       expect(result.status, expected);
       expect(logger.flushes, 1);
@@ -108,7 +105,7 @@ void main() {
       },
     );
 
-    await runner.run('com.bullbitcoin.mobile.bitcoin-sync-id');
+    await runner.run(BackgroundTask.bitcoinSync);
 
     expect(logger.messages.first, 'Background task bitcoin-sync started');
     expect(
@@ -131,12 +128,16 @@ void main() {
       handlers: {
         BackgroundTask.swapsSync: () => throw StateError('test-only failure'),
       },
-    ).run('swaps-sync');
+    ).run(BackgroundTask.swapsSync);
 
     expect(result.status, BackgroundTaskExecutionStatus.retry);
     expect(logger.flushes, 1);
     expect(finishes, 1);
     expect(logger.messages, isNot(contains(contains('test-only'))));
+    expect(
+      logger.messages,
+      contains('Background task failed unexpectedly type=StateError'),
+    );
   });
 
   test(
@@ -151,7 +152,7 @@ void main() {
           BackgroundTask.bitcoinSync: () async =>
               const BackgroundTaskExecutionResult.success(),
         },
-      ).run('bitcoin-sync');
+      ).run(BackgroundTask.bitcoinSync);
 
       expect(result.status, BackgroundTaskExecutionStatus.success);
       expect(logger.flushes, 1);
@@ -168,21 +169,14 @@ void main() {
         BackgroundTask.liquidSync: () async =>
             const BackgroundTaskExecutionResult.permanentFailure(),
       },
-    ).run('liquid-sync');
+    ).run(BackgroundTask.liquidSync);
 
     expect(result.status, BackgroundTaskExecutionStatus.permanentFailure);
     expect(logger.flushes, 1);
-    expect(logger.messages, contains('Background task cleanup failed'));
-  });
-
-  test('unknown tasks are permanently acknowledged and cannot loop', () async {
-    final logger = _Logger();
-    final result = await BackgroundTaskRunner(
-      logger: logger,
-      handlers: {},
-    ).run('unknown');
-    expect(result.status, BackgroundTaskExecutionStatus.permanentFailure);
-    expect(logger.flushes, 1);
+    expect(
+      logger.messages,
+      contains('Background task cleanup failed type=StateError'),
+    );
   });
 
   test(
