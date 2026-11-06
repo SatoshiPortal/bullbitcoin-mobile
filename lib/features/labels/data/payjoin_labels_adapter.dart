@@ -1,5 +1,5 @@
-import '../new_label.dart';
-import '../domain/primitive/label_system.dart';
+import 'package:bb_mobile/features/labels/domain/primitive/label_system.dart';
+import 'package:bb_mobile/features/labels/new_label.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 
 final class AppPayjoinLabelsAdapter implements PayjoinLabelsPort {

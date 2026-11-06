@@ -1,14 +1,14 @@
 import 'dart:async';
 
-import 'package:get_it/get_it.dart';
-import 'domain/usecase/apply_pending_wizard_choices_usecase.dart';
 import 'package:bb_mobile/features/wizard/data/datasource/wizard_local_datasource.dart';
 import 'package:bb_mobile/features/wizard/data/repository/wizard_repository_impl.dart';
 import 'package:bb_mobile/features/wizard/domain/repository/wizard_repository.dart';
+import 'package:bb_mobile/features/wizard/domain/usecase/apply_pending_wizard_choices_usecase.dart';
 import 'package:bb_mobile/features/wizard/domain/usecase/is_wizard_complete_usecase.dart';
 import 'package:bb_mobile/features/wizard/domain/usecase/read_pending_wizard_choices_usecase.dart';
 import 'package:bb_mobile/features/wizard/ui/wizard_app.dart';
 import 'package:flutter/widgets.dart';
+import 'package:get_it/get_it.dart';
 
 WizardRepository _buildPreInitWizardRepository() =>
     WizardRepositoryImpl(WizardLocalDatasourceImpl());
