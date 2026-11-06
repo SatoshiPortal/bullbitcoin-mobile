@@ -11,7 +11,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:secrets/secrets.dart';
 import 'package:secrets/testing.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:primitives/primitives.dart' show Ok, Result;
+import 'package:primitives/primitives.dart' show Err, Ok, Result;
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart'
     show ScriptType, Wallet;
 
@@ -280,5 +280,142 @@ void main() {
         await cubit.close();
       },
     );
+
+    test(
+      'a failed scan is a typed failure, not an empty or pending wallet',
+      () async {
+        scans(
+          (types) => {
+            for (final type in types)
+              type: type == ScriptType.bip44
+                  ? Future.value(
+                      const Err(ImportMnemonicScanServerUnavailableFailure()),
+                    )
+                  : Future.value(Ok((satoshis: BigInt.zero, transactions: 0))),
+          },
+        );
+        final cubit = buildCubit();
+
+        await cubit.updateMnemonic(mnemonic);
+        await pumpEventQueue();
+
+        expect(
+          cubit.state.bip44Scan,
+          const ScriptTypeScan.failed(
+            ImportMnemonicScanServerUnavailableFailure(),
+          ),
+        );
+        expect(cubit.state.bip84Scan, const ScriptTypeScan.empty());
+        // The scan is informational: no blocking failure, the import stays possible.
+        expect(cubit.state.failure, isNull);
+        expect(cubit.state.mnemonic, mnemonic);
+
+        await cubit.close();
+      },
+    );
+
+    test('retry scans the failed script type alone', () async {
+      var attempts = 0;
+      scans(
+        (types) => {
+          for (final type in types)
+            type: type == ScriptType.bip49 && attempts++ == 0
+                ? Future.value(const Err(ImportMnemonicScanTimeoutFailure()))
+                : Future.value(
+                    Ok((satoshis: BigInt.from(21), transactions: 1)),
+                  ),
+        },
+      );
+      final cubit = buildCubit();
+      await cubit.updateMnemonic(mnemonic);
+      await pumpEventQueue();
+      expect(
+        cubit.state.bip49Scan,
+        const ScriptTypeScan.failed(ImportMnemonicScanTimeoutFailure()),
+      );
+
+      final retry = cubit.retryScan(ScriptType.bip49);
+      expect(cubit.state.bip49Scan, const ScriptTypeScan.loading());
+      await retry;
+
+      expect(
+        cubit.state.bip49Scan,
+        ScriptTypeScan.found(satoshis: BigInt.from(21), transactions: 1),
+      );
+      verify(
+        () => scanMnemonic.execute(
+          words: mnemonic.words,
+          language: bip39.Language.english,
+          passphrase: 'TREZOR',
+          scriptTypes: {ScriptType.bip49},
+        ),
+      ).called(1);
+
+      await cubit.close();
+    });
+
+    test('retry ignores a script type that did not fail', () async {
+      scans(
+        (types) => {
+          for (final type in types)
+            type: Future.value(Ok((satoshis: BigInt.zero, transactions: 0))),
+        },
+      );
+      final cubit = buildCubit();
+      await cubit.updateMnemonic(mnemonic);
+      await pumpEventQueue();
+
+      await cubit.retryScan(ScriptType.bip84);
+
+      verify(
+        () => scanMnemonic.execute(
+          words: any(named: 'words'),
+          language: any(named: 'language'),
+          passphrase: any(named: 'passphrase'),
+          scriptTypes: any(named: 'scriptTypes'),
+        ),
+      ).called(1);
+
+      await cubit.close();
+    });
+
+    test('a scan of a replaced mnemonic is dropped', () async {
+      final pending =
+          Completer<Result<MnemonicScan, ImportMnemonicScanFailure>>();
+      scans((types) => {for (final type in types) type: pending.future});
+      final cubit = buildCubit();
+      await cubit.updateMnemonic(mnemonic);
+      cubit.reset();
+
+      pending.complete(const Err(ImportMnemonicScanTimeoutFailure()));
+      await pumpEventQueue();
+
+      expect(cubit.state.bip84Scan, const ScriptTypeScan.loading());
+
+      await cubit.close();
+    });
+
+    test('the state description names no word nor passphrase', () async {
+      scans(
+        (types) => {
+          for (final type in types)
+            type: Future.value(
+              const Err(ImportMnemonicScanUnexpectedFailure('StateError')),
+            ),
+        },
+      );
+      final cubit = buildCubit();
+      await cubit.updateMnemonic(mnemonic);
+      await pumpEventQueue();
+
+      final description = cubit.state.toString();
+      expect(description, contains('ImportMnemonicScanUnexpectedFailure'));
+      for (final secret in [...mnemonic.words, mnemonic.passphrase]) {
+        expect(description, isNot(contains(secret)));
+      }
+      expect(description, isNot(contains('StateError')));
+
+      await cubit.close();
+    });
   });
 }
