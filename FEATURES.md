@@ -109,7 +109,7 @@ graph TB
     BUY --> TX_HISTORY
     COINS --> UTXO_MGMT
     COINS --> LABELS
-    COINS --> WALLETS
+    COINS -->|public revision stream| WALLETS
     DCA --> RECEIVE
     SETTINGS --> DEFAULT_WALLETS
     SETTINGS --> EXCHANGE
@@ -159,7 +159,7 @@ graph TB
     SEND --> SWAPS
     SEND --> TX_HISTORY
     SEND --> UTXO_MGMT
-    SEND --> WALLETS
+    SEND -->|public revision stream| WALLETS
     SETTINGS --> CORE
     SETTINGS --> BULL_PAYJOIN
     SETTINGS --> RECOVERBULL
@@ -185,7 +185,7 @@ graph TB
     TRANSFER --> RECEIVE
     TX_HISTORY --> BULL_PAYJOIN
     TX_HISTORY --> SWAPS
-    TX_HISTORY --> WALLETS
+    TX_HISTORY -->|public revision stream| WALLETS
     UTXO_MGMT --> LABELS
     UTXO_MGMT --> WALLETS
     WALLETS --> BIP85

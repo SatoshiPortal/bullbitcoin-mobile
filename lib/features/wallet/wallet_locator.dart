@@ -1,3 +1,5 @@
+import 'package:bb_mobile/features/wallet/domain/usecases/watch_wallet_revisions_usecase.dart';
+import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
 import 'package:secrets/secrets.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart'
     as settings;
@@ -45,6 +47,9 @@ import 'package:get_it/get_it.dart';
 
 class WalletLocator {
   static void setup(GetIt locator) {
+    locator.registerLazySingleton<WalletFacade>(
+      () => WalletFacade(locator<WalletNativeRuntime>().changes),
+    );
     locator.registerFactory<CreateDefaultWalletsUsecase>(
       () => CreateDefaultWalletsUsecase(
         secrets: locator<Secrets>(),
@@ -173,6 +178,9 @@ class WalletLocator {
     // Bloc
     locator.registerFactory<WalletBloc>(
       () => WalletBloc(
+        watchWalletRevisionsUsecase: WatchWalletRevisionsUsecase(
+          locator<WalletFacade>(),
+        ),
         checkSpWalletSetupForWalletUsecase:
             locator<CheckSpWalletSetupForWalletUsecase>(),
         checkSpScanningForWalletUsecase:

@@ -42,6 +42,7 @@ class SyncCoordinator {
     this._syncSwaps,
     this._syncSwapsOutcome,
     this._syncSp,
+    this._refreshRevisions,
   }) : _getWallets = getWalletsUsecase,
        _syncWallet = syncWalletUsecase {
     final lifecycleState = WidgetsBinding.instance.lifecycleState;
@@ -68,6 +69,7 @@ class SyncCoordinator {
   // the swap callbacks, so this core orchestrator never imports the SP feature
   // (rule #7).
   final Future<void> Function()? _syncSp;
+  final Future<void> Function()? _refreshRevisions;
   final Future<SyncOutcome> Function()? _syncSwapsOutcome;
 
   SyncOutcome? lastSwapSyncOutcome;
@@ -322,10 +324,21 @@ class SyncCoordinator {
     _isAppResumed = isResumed;
     if (isResumed && _wasAway) {
       _wasAway = false;
+      unawaited(_refreshPersistedRevisions());
       // sync() may throw SyncCoordinatorException; ignore here — the drain
       // path already logged a sanitized SEVERE for any failed kind, and the
       // lifecycle-triggered refresh is best-effort with no awaiting caller.
       sync().ignore();
+    }
+  }
+
+  Future<void> _refreshPersistedRevisions() async {
+    try {
+      await _refreshRevisions?.call();
+    } on Exception catch (error) {
+      log.warning(
+        'Wallet resume revision read unavailable category=${error.runtimeType}',
+      );
     }
   }
 

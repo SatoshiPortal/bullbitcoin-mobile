@@ -19,6 +19,7 @@ import 'wallet_catalog_port_impl.dart';
 abstract interface class WalletNativeLifecycle {
   Future<void> create(WalletMetadataModel metadata);
   Future<void> delete(WalletMetadataModel metadata);
+  Future<void> catalogDeleted(WalletMetadataModel metadata);
   Future<({String address, int index})> receive(
     WalletMetadataModel metadata, {
     bool advance = false,
@@ -213,14 +214,25 @@ final class WalletNativeRuntime implements WalletNativeLifecycle {
   }
 
   /// Called after every worker outcome, including interrupted/failed writes.
-  Future<void> refresh(WalletKey key) async {
+  Future<void> refresh(WalletKey key, {bool catalogChanged = false}) async {
     final services = await _services;
     final state = await services.revisions.read(key);
+    if (state case Ok(:final value) when catalogChanged) {
+      _changes.add(value);
+    }
     if (state case Ok(
       value: final value,
     ) when value.lifecycle == WalletLifecycle.active) {
       _unavailable.remove(key);
     }
+  }
+
+  @override
+  Future<void> catalogDeleted(WalletMetadataModel metadata) async {
+    final descriptor = _value(
+      WalletCatalogPortImpl.descriptorFromMetadata(metadata),
+    );
+    await refresh(descriptor.key, catalogChanged: true);
   }
 
   Future<void> refreshAll() async {
