@@ -32,6 +32,7 @@ class ImportMnemonicCubit extends Cubit<ImportMnemonicState> {
 
     switch (await _checkDuplicateMnemonicUsecase.execute(
       mnemonicWords: mnemonic.words,
+      language: mnemonic.language,
       passphrase: mnemonic.passphrase,
     )) {
       case Ok():
@@ -92,16 +93,17 @@ class ImportMnemonicCubit extends Cubit<ImportMnemonicState> {
       emit(state.copyWith(scriptType: scriptType));
 
   Future<void> import() async {
-    if (state.mnemonic == null) {
+    final mnemonic = state.mnemonic;
+    if (mnemonic == null) {
       emit(state.copyWith(failure: const ImportMnemonicNullMnemonicFailure()));
       return;
     }
 
     emit(state.copyWith(isLoading: true, failure: null));
 
-    final mnemonic = state.mnemonic!;
     switch (await _importWalletUsecase.execute(
       mnemonicWords: mnemonic.words,
+      language: mnemonic.language,
       label: mnemonic.label,
       passphrase: mnemonic.passphrase,
       scriptType: state.scriptType,

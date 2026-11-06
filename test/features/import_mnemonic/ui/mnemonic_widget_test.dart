@@ -1,6 +1,6 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/widgets/mnemonic_keyboard.dart';
-import 'package:bb_mobile/core/widgets/mnemonic_widget.dart';
+import 'package:bb_mobile/features/import_mnemonic/ui/widgets/mnemonic_keyboard.dart';
+import 'package:bb_mobile/features/import_mnemonic/ui/widgets/mnemonic_widget.dart';
 import 'package:bb_mobile/generated/l10n/localization.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:flutter/foundation.dart';

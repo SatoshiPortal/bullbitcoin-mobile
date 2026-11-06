@@ -297,7 +297,11 @@ final class Secret extends SecretEntry {
     required RevealReason reason,
   }) => _repository.useMnemonic(info, (m) {
     log.info('SECRET_REVEAL: mnemonic for ${info.id} (${reason.name})');
-    return RevealedMnemonic(words: m.words, passphrase: m.passphrase);
+    return RevealedMnemonic(
+      words: m.words,
+      language: m.language,
+      passphrase: m.passphrase,
+    );
   });
 
   /// Compares user-typed words against the stored ones without exposing either.

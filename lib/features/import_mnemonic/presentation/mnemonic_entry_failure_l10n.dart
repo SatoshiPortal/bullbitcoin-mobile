@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/failures/mnemonic_entry_failure.dart';
+import 'package:bb_mobile/features/import_mnemonic/domain/mnemonic_entry_failure.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:flutter/widgets.dart';
 
@@ -11,6 +11,11 @@ extension MnemonicEntryFailureL10n on MnemonicEntryFailure {
     MnemonicEntryInvalidChecksumFailure() =>
       context.loc.mnemonicInvalidChecksumError,
     MnemonicEntryUnknownWordFailure() => context.loc.mnemonicUnknownWordError,
+    MnemonicEntryOtherLanguageFailure(:final wordlist, :final selected) =>
+      context.loc.mnemonicOtherLanguageWordsError(
+        context.loc.mnemonicLanguageName(wordlist.name),
+        context.loc.mnemonicLanguageName(selected.name),
+      ),
     // Never `logMessage`: generic message only, per rule #11.
     MnemonicEntryUnexpectedFailure() => context.loc.oopsSomethingWentWrong,
   };
