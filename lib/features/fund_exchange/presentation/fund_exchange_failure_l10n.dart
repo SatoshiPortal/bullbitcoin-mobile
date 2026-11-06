@@ -13,6 +13,8 @@ import 'package:flutter/widgets.dart';
 /// strings — neither can carry backend data.
 extension FundExchangeFailureL10n on FundExchangeFailure {
   String toTranslated(BuildContext context) => switch (this) {
+    FundExchangeUnsupportedNetworkFailure() =>
+      context.loc.networkFeatureUnavailable,
     FundExchangePaymentOptionUnavailableFailure() =>
       context.loc.fundExchangeErrorOrdPo404,
     FundExchangeOptionNotPermittedFailure() =>
@@ -57,6 +59,7 @@ extension FundExchangeFailureL10n on FundExchangeFailure {
       context.loc.fundExchangeErrorTitleOrdCsrcp400,
     FundExchangeRequestInvalidFailure() =>
       context.loc.fundExchangeErrorTitleRcp400,
+    FundExchangeUnsupportedNetworkFailure() ||
     FundExchangeNoInstitutionsFailure() ||
     FundExchangeConsentRegistrationFailure() ||
     FundExchangePaymentLinkUnavailableFailure() ||

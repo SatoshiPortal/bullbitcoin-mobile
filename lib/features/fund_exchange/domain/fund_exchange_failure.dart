@@ -82,3 +82,7 @@ final class FundExchangeNetworkFailure extends FundExchangeFailure {
 final class FundExchangeUnexpectedFailure extends FundExchangeFailure {
   const FundExchangeUnexpectedFailure([super.logMessage]);
 }
+
+final class FundExchangeUnsupportedNetworkFailure extends FundExchangeFailure {
+  const FundExchangeUnsupportedNetworkFailure();
+}
