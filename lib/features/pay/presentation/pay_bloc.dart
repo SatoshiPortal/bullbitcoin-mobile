@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/wallet/domain/network_x.dart';
 import 'dart:async';
 
 import 'package:bb_mobile/core/utils/constants.dart';
@@ -721,7 +722,7 @@ class PayBloc extends Bloc<PayEvent, PayState>
           final PayjoinSenderSession payjoinSender;
           switch (await _sendWithPayjoinUsecase.execute(
             walletId: wallet.id,
-            isTestnet: wallet.network.isTestnet,
+            network: wallet.network.bitcoin,
             bip21: payjoinBip21,
             unsignedOriginalPsbt: preparedSend.unsignedPsbt,
             amountSat: payinAmountSat,
@@ -786,6 +787,7 @@ class PayBloc extends Bloc<PayEvent, PayState>
           switch (await _broadcastPayPayinUsecase.bitcoin(
             signedTx.signedPsbt,
             isPsbt: true,
+            network: wallet.network,
           )) {
             case Err(:final failure):
               _emitSendPaymentError(emit, failure);

@@ -1,9 +1,10 @@
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/send/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/broadcast_liquid_transaction_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/pay_failure.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:meta/meta.dart';
-import 'package:primitives/primitives.dart';
+import 'package:primitives/primitives.dart' hide Network;
 
 class BroadcastPayPayinUsecase {
   final BroadcastBitcoinTransactionUsecase _broadcastBitcoinTransactionUsecase;
@@ -18,12 +19,14 @@ class BroadcastPayPayinUsecase {
   Future<Result<String, PayFailure>> bitcoin(
     String transaction, {
     required bool isPsbt,
+    Network? network,
   }) async {
     try {
       return Ok(
         await _broadcastBitcoinTransactionUsecase.execute(
           transaction,
           isPsbt: isPsbt,
+          network: network,
         ),
       );
     } catch (e, st) {

@@ -91,3 +91,8 @@ final class PayQuoteUnavailableFailure extends PayFailure {
 final class PayUnexpectedFailure extends PayFailure {
   const PayUnexpectedFailure([super.logMessage]);
 }
+
+/// The selected network has no exchange order service.
+final class PayUnsupportedNetworkFailure extends PayFailure {
+  const PayUnsupportedNetworkFailure();
+}

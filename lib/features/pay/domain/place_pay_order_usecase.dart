@@ -33,11 +33,17 @@ class PlacePayOrderUsecase {
   }) async {
     try {
       final settings = await _settingsRepository.fetch();
+      if (!NetworkCapabilities.supports(
+        BitcoinNetwork.fromName(settings.environment.name),
+        NetworkCapability.exchange,
+      )) {
+        return const Err(PayUnsupportedNetworkFailure());
+      }
       final payjoinEnabled = switch (await _payjoinPolicy.load()) {
         Ok(:final value) => value.sellEnabled,
         Err() => false,
       };
-      final isTestnet = settings.environment.isTestnet;
+      final isTestnet = settings.environment.requireHistoricalTestnet();
       final repo = isTestnet
           ? _testnetExchangeOrderRepository
           : _mainnetExchangeOrderRepository;
