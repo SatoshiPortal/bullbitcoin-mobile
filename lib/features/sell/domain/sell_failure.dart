@@ -103,3 +103,8 @@ final class SellQuoteUnavailableFailure extends SellFailure {
 final class SellUnexpectedFailure extends SellFailure {
   const SellUnexpectedFailure([super.logMessage]);
 }
+
+/// The selected network has no exchange order service.
+final class SellUnsupportedNetworkFailure extends SellFailure {
+  const SellUnsupportedNetworkFailure();
+}

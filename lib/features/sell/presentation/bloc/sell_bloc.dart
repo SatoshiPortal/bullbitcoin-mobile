@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/wallet/domain/network_x.dart';
 import 'dart:async';
 
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
@@ -877,7 +878,7 @@ class SellBloc extends Bloc<SellEvent, SellState>
           log.fine('Sell Payjoin sender creation started');
           final payjoinResult = await _sendWithPayjoinUsecase.execute(
             walletId: wallet.id,
-            isTestnet: wallet.network.isTestnet,
+            network: wallet.network.bitcoin,
             bip21: payjoinBip21,
             unsignedOriginalPsbt: preparedSend.unsignedPsbt,
             amountSat: payinAmountSat,
@@ -985,6 +986,7 @@ class SellBloc extends Bloc<SellEvent, SellState>
           final broadcast = await _broadcastSellPayinUsecase.bitcoin(
             signedTx.signedPsbt,
             isPsbt: true,
+            network: wallet.network,
           );
           if (broadcast case Err(:final failure)) {
             _emitSendPaymentError(emit, failure);
