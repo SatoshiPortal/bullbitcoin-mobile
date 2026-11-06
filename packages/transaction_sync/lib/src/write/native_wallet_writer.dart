@@ -87,6 +87,7 @@ final class NativeWalletWriter implements LiquidReadAdmission {
   Future<Result<ReceiveAddressIssued, TransactionSyncFailure>> receive(
     WalletKey key, {
     required int expectedGeneration,
+    bool advance = false,
   }) => _run(key, expectedGeneration, WriteIntent.receive, () async {
     final record = _active(key, expectedGeneration);
     if (record.needsSync) {
@@ -96,8 +97,10 @@ final class NativeWalletWriter implements LiquidReadAdmission {
     revisions.begin(key, WriteIntent.receive);
     final session = await _sessions.open(descriptor, create: false);
     try {
+      final nativeIssued = await session.lastIssuedIndex();
+      final highWater = math.max(record.issued ?? -1, nativeIssued ?? -1);
       var index = math.max(
-        record.issued ?? 0,
+        advance ? highWater + 1 : highWater,
         await session.firstUnusedIndex(),
       );
       while (index < 0x80000000) {

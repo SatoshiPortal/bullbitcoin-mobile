@@ -204,7 +204,8 @@ final class _BitcoinSession implements NativeWriteSession {
   _BitcoinSession(this._wallet, this._persister);
 
   @override
-  Future<int> firstUnusedIndex() async => 0;
+  Future<int> firstUnusedIndex() async =>
+      _wallet.derivationIndex(keychain: bdk.KeychainKind.external_) ?? 0;
 
   @override
   Future<String> address(int index) async {
@@ -300,6 +301,13 @@ final class _LiquidSession implements NativeWriteSession {
 /// Only the SDK session can attest its canonical cache. Test sessions do not
 /// provide a path and therefore cannot authorize production Liquid readers.
 extension NativeWriteSessionIdentity on NativeWriteSession {
+  Future<int?> lastIssuedIndex() async => switch (this) {
+    _BitcoinSession(:final _wallet) => _wallet.derivationIndex(
+      keychain: bdk.KeychainKind.external_,
+    ),
+    _ => await firstUnusedIndex(),
+  };
+
   String? get liquidCachePath => switch (this) {
     _LiquidSession(:final cachePath) => cachePath,
     _ => null,
