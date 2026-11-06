@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'writer_diagnostics.dart';
+import 'store_identity.dart';
 
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
@@ -55,13 +56,31 @@ final class NativeWalletWriter implements LiquidReadAdmission {
         (old != null && old.state.lifecycle == WalletLifecycle.active)) {
       revisions.begin(key, WriteIntent.load);
       final session = await _sessions.open(descriptor, create: false);
-      session.close();
-      return WriterCommitted(revisions.finish(key));
+      try {
+        return WriterCommitted(
+          revisions.finish(
+            key,
+            initializedDescriptor: descriptor,
+            liquidCachePath: session.liquidCachePath,
+          ),
+        );
+      } finally {
+        session.close();
+      }
     }
     revisions.begin(key, WriteIntent.create);
     final session = await _sessions.open(descriptor, create: true);
-    session.close();
-    return WriterCommitted(revisions.finish(key));
+    try {
+      return WriterCommitted(
+        revisions.finish(
+          key,
+          initializedDescriptor: descriptor,
+          liquidCachePath: session.liquidCachePath,
+        ),
+      );
+    } finally {
+      session.close();
+    }
   });
 
   @useResult
@@ -133,14 +152,30 @@ final class NativeWalletWriter implements LiquidReadAdmission {
     revisions.begin(key, WriteIntent.load);
     try {
       final session = await _sessions.open(descriptor, create: false);
-      session.close();
-      return WriterCommitted(revisions.finish(key));
+      try {
+        return WriterCommitted(
+          revisions.finish(
+            key,
+            initializedDescriptor: descriptor,
+            liquidCachePath: session.liquidCachePath,
+          ),
+        );
+      } finally {
+        session.close();
+      }
     } on Object catch (error) {
       if (!isLiquidStatusConflict(error)) rethrow;
     }
     revisions.requireRepair(key);
-    await _rebuild(descriptor, record.issued);
-    return WriterCommitted(revisions.finish(key, needsSync: true));
+    final cachePath = await _rebuild(descriptor, record.issued);
+    return WriterCommitted(
+      revisions.finish(
+        key,
+        needsSync: true,
+        initializedDescriptor: descriptor,
+        liquidCachePath: cachePath,
+      ),
+    );
   }, allowRepairIntent: true);
 
   @useResult
@@ -273,8 +308,13 @@ final class NativeWalletWriter implements LiquidReadAdmission {
       if (!allowRepairIntent) {
         throw const _WriterFailure(TransactionSyncNeedsRepairFailure());
       }
-      await _rebuild(descriptor, record.issued);
-      revisions.finish(key, needsSync: true);
+      final cachePath = await _rebuild(descriptor, record.issued);
+      revisions.finish(
+        key,
+        needsSync: true,
+        initializedDescriptor: descriptor,
+        liquidCachePath: cachePath,
+      );
       return;
     }
     late NativeWriteSession session;
@@ -286,8 +326,13 @@ final class NativeWalletWriter implements LiquidReadAdmission {
     } on Object catch (error) {
       if (!allowRepairIntent || !isLiquidStatusConflict(error)) rethrow;
       revisions.requireRepair(key);
-      await _rebuild(descriptor, record.issued);
-      revisions.finish(key, needsSync: true);
+      final cachePath = await _rebuild(descriptor, record.issued);
+      revisions.finish(
+        key,
+        needsSync: true,
+        initializedDescriptor: descriptor,
+        liquidCachePath: cachePath,
+      );
       return;
     }
     try {
@@ -297,13 +342,21 @@ final class NativeWalletWriter implements LiquidReadAdmission {
       }
       // Unknown sync completion still invalidates snapshots. It does not
       // unblock post-repair receive or produce any payment-seen receipt.
-      revisions.finish(key, issued: candidate ?? record.issued);
+      revisions.finish(
+        key,
+        issued: candidate ?? record.issued,
+        initializedDescriptor: descriptor,
+        liquidCachePath: session.liquidCachePath,
+      );
     } finally {
       session.close();
     }
   }
 
-  Future<void> _rebuild(PublicWalletDescriptor descriptor, int? issued) async {
+  Future<String?> _rebuild(
+    PublicWalletDescriptor descriptor,
+    int? issued,
+  ) async {
     _diagnostics(
       WriterLogLevel.warning,
       'Wallet writer repair executed network=${descriptor.key.network}',
@@ -312,6 +365,7 @@ final class NativeWalletWriter implements LiquidReadAdmission {
     final session = await _sessions.open(descriptor, create: true);
     try {
       if (issued != null) await session.revealAndPersist(issued);
+      return session.liquidCachePath;
     } finally {
       session.close();
     }
@@ -320,6 +374,13 @@ final class NativeWalletWriter implements LiquidReadAdmission {
   Future<PublicWalletDescriptor> _descriptor(WalletKey key) async {
     final descriptor = _value(await _catalog.find(key));
     if (descriptor.key != key) {
+      throw const _WriterFailure(TransactionSyncInvalidCatalogFailure());
+    }
+    final record = revisions.record(key);
+    final previousHash = record?.descriptorHash;
+    if (record?.state.lifecycle != WalletLifecycle.deleted &&
+        previousHash != null &&
+        previousHash != descriptorDigest(descriptor)) {
       throw const _WriterFailure(TransactionSyncInvalidCatalogFailure());
     }
     return descriptor;

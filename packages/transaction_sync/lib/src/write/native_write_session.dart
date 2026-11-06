@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'store_identity.dart';
 
 import 'package:bull_sdk/bdk.dart' as bdk;
 import 'package:bull_sdk/lwk.dart' as lwk;
@@ -97,7 +98,26 @@ final class SdkWriteSessions implements NativeWriteSessions {
             ctDescriptor: descriptor.combinedCtDescriptor,
           ),
         );
-        return _LiquidSession(wallet);
+        try {
+          final canonical = await wallet.descriptor();
+          final networkDirectory =
+              descriptor.key.network == LiquidNetwork.mainnet
+              ? 'liquid'
+              : 'liquid-testnet';
+          final relative =
+              '$networkDirectory/enc_cache/${liquidDirectoryHash(canonical)}';
+          if (FileSystemEntity.typeSync(
+                '$path/$relative',
+                followLinks: false,
+              ) !=
+              FileSystemEntityType.directory) {
+            throw const NativeStoreMissing();
+          }
+          return _LiquidSession(wallet, relative);
+        } on Object {
+          wallet.dispose();
+          rethrow;
+        }
     }
   }
 
@@ -179,6 +199,7 @@ bool isLiquidStatusConflict(Object error) =>
 final class _BitcoinSession implements NativeWriteSession {
   final bdk.Wallet _wallet;
   final bdk.Persister _persister;
+  Set<int>? _unused;
 
   _BitcoinSession(this._wallet, this._persister);
 
@@ -202,16 +223,19 @@ final class _BitcoinSession implements NativeWriteSession {
   Future<bool> isUsed(int index, String address) async {
     final last = _wallet.derivationIndex(keychain: bdk.KeychainKind.external_);
     if (last == null || index > last) return false;
-    final unused = _wallet.listUnusedAddresses(
-      keychain: bdk.KeychainKind.external_,
-    );
-    try {
-      return !unused.any((info) => info.index == index);
-    } finally {
-      for (final info in unused) {
-        info.address.dispose();
+    if (_unused == null) {
+      final unused = _wallet.listUnusedAddresses(
+        keychain: bdk.KeychainKind.external_,
+      );
+      try {
+        _unused = {for (final info in unused) info.index};
+      } finally {
+        for (final info in unused) {
+          info.address.dispose();
+        }
       }
     }
+    return !(_unused?.contains(index) ?? false);
   }
 
   @override
@@ -237,7 +261,9 @@ final class _LiquidSession implements NativeWriteSession {
   final lwk.Wallet _wallet;
   Set<String>? _used;
 
-  _LiquidSession(this._wallet);
+  final String cachePath;
+
+  _LiquidSession(this._wallet, this.cachePath);
 
   @override
   Future<int> firstUnusedIndex() async {
@@ -269,4 +295,13 @@ final class _LiquidSession implements NativeWriteSession {
 
   @override
   void close() => _wallet.dispose();
+}
+
+/// Only the SDK session can attest its canonical cache. Test sessions do not
+/// provide a path and therefore cannot authorize production Liquid readers.
+extension NativeWriteSessionIdentity on NativeWriteSession {
+  String? get liquidCachePath => switch (this) {
+    _LiquidSession(:final cachePath) => cachePath,
+    _ => null,
+  };
 }
