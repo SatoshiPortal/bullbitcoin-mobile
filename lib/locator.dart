@@ -1,6 +1,6 @@
 import 'package:bb_mobile/background_setup.dart';
-import 'package:bb_mobile/core/core_locator.dart';
-import 'package:bb_mobile/core/status/status_locator.dart';
+import 'package:bb_mobile/core_locator.dart';
+import 'package:bb_mobile/features/status_check/status_core_locator.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
 import 'package:bb_mobile/features/settings/public/settings_facade.dart';

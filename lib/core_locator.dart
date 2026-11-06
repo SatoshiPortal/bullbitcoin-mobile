@@ -1,24 +1,24 @@
 import 'package:bb_mobile/core/bip85/bip85_locator.dart';
-import 'package:bb_mobile/core/bitbox/bitbox_locator.dart';
-import 'package:bb_mobile/core/blockchain/blockchain_locator.dart';
-import 'package:bb_mobile/core/electrum/frameworks/di/electrum_locator.dart';
-import 'package:bb_mobile/core/exchange/exchange_locator.dart';
+import 'package:bb_mobile/features/bitbox/bitbox_core_locator.dart';
+import 'package:bb_mobile/features/send/blockchain_core_locator.dart';
+import 'package:bb_mobile/features/electrum_settings/electrum_core_locator.dart';
+import 'package:bb_mobile/features/exchange/exchange_core_locator.dart';
 import 'package:bb_mobile/features/fees/fees_locator.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
-import 'package:bb_mobile/core/ledger/ledger_locator.dart';
-import 'package:bb_mobile/core/mempool/mempool_locator.dart';
+import 'package:bb_mobile/features/ledger/ledger_core_locator.dart';
+import 'package:bb_mobile/features/mempool_settings/mempool_core_locator.dart';
 import 'package:bb_mobile/core/recoverbull/recoverbull_locator.dart';
 import 'package:secrets/secrets.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart'
     as settings;
-import 'package:bb_mobile/core/settings/settings_locator.dart';
+import 'package:bb_mobile/features/settings/settings_core_locator.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/storage/storage_locator.dart';
-import 'package:bb_mobile/core/swaps/swaps_locator.dart';
+import 'package:bb_mobile/features/swap/swaps_core_locator.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bb_mobile/core/wallet/wallet_locator.dart';
+import 'package:bb_mobile/features/wallet/wallet_core_locator.dart';
 import 'package:bull_tor/tor_adapter.dart' as bull_tor;
 import 'package:get_it/get_it.dart';
 
