@@ -17,10 +17,12 @@ dependencies:
   notifications:
   bull_logger:
   crypto: ^3.0.7
+  meta: ^1.17.0
   primitives:
   sqlite3: ^2.9.4
 
 dev_dependencies:
+  shared_preferences_platform_interface: ^2.4.2
   plugin_platform_interface: ^2.1.8
   flutter_test:
     sdk: flutter

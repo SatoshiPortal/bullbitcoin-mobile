@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'background_task.dart';
+import 'background_task_logger.dart';
 import 'background_task_runner.dart';
 
 /// Resources acquired by one selected headless task, never the app locator. Register cleanup immediately after acquisition, before the next await.

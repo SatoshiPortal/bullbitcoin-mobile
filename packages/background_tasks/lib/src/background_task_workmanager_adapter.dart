@@ -61,7 +61,7 @@ Future<bool> mapBackgroundTaskResult(
   // Acknowledge unknown and obsolete work without opening wallet resources.
   if (task == null || task == BackgroundTask.swapsSync) return true;
   try {
-    final result = await (await bootstrap(task)).run(task.name);
+    final result = await (await bootstrap(task)).run(task);
     return !result.shouldRetry;
   } catch (_) {
     return false;

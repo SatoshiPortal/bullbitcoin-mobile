@@ -66,7 +66,7 @@ final class FlutterLocalNotificationGateway
         if (persisted case Err(:final failure)) return Err(failure);
       }
       return const Ok(null);
-    } catch (_) {
+    } on Exception catch (_) {
       return const Err(NotificationsGatewayFailure());
     }
   }
@@ -92,7 +92,7 @@ final class FlutterLocalNotificationGateway
         payload: _codec.encode(notification.destination),
       );
       return const Ok(null);
-    } catch (_) {
+    } on Exception catch (_) {
       return const Err(NotificationsGatewayFailure());
     }
   }

@@ -3,10 +3,11 @@ import 'dart:math';
 
 import 'package:bull_logger/bull_logger.dart' show log;
 import 'package:crypto/crypto.dart';
-import 'package:sqlite3/sqlite3.dart';
 import 'package:primitives/primitives.dart';
-
+import 'package:sqlite3/sqlite3.dart';
 import 'package:transaction_sync/transaction_sync.dart';
+
+import 'background_task_logger.dart';
 
 enum WalletSyncChain { bitcoin, liquid }
 
@@ -14,30 +15,6 @@ WalletSyncChain walletSyncChain(WalletKey key) => switch (key.network) {
   BitcoinNetwork() => WalletSyncChain.bitcoin,
   LiquidNetwork() => WalletSyncChain.liquid,
 };
-
-enum WalletSyncLogLevel { config, fine, warning }
-
-abstract interface class WalletSyncLogSink {
-  void write(WalletSyncLogLevel level, String message);
-}
-
-final class BullLoggerWalletSyncLogSink implements WalletSyncLogSink {
-  const BullLoggerWalletSyncLogSink();
-
-  @override
-  void write(WalletSyncLogLevel level, String message) {
-    try {
-      switch (level) {
-        case WalletSyncLogLevel.config:
-          log.config(message);
-        case WalletSyncLogLevel.fine:
-          log.fine(message);
-        case WalletSyncLogLevel.warning:
-          log.warning(message);
-      }
-    } catch (_) {}
-  }
-}
 
 final class WalletSyncJobClaim {
   final String jobId;
@@ -56,7 +33,7 @@ abstract interface class WalletSyncJobQueue {
     Iterable<WalletKey> excluding = const [],
   });
 
-  Future<bool> renew(WalletSyncJobClaim claim, {Duration? lease});
+  Future<bool> renew(WalletSyncJobClaim claim);
   Future<bool> completeSuccess(WalletSyncJobClaim claim);
   Future<bool> completeFailure(
     WalletSyncJobClaim claim, {
@@ -80,7 +57,7 @@ final class SqliteWalletSyncJobQueue implements WalletSyncJobQueue {
   final Duration leaseDuration;
   final Duration retryBase;
   final Duration retryMaximum;
-  final WalletSyncLogSink _sink;
+  final BackgroundTaskLogger _sink;
   bool _closed = false;
 
   factory SqliteWalletSyncJobQueue({
@@ -90,7 +67,7 @@ final class SqliteWalletSyncJobQueue implements WalletSyncJobQueue {
     Duration leaseDuration = const Duration(minutes: 30),
     Duration retryBase = const Duration(minutes: 5),
     Duration retryMaximum = const Duration(hours: 6),
-    WalletSyncLogSink? logSink,
+    BackgroundTaskLogger? logSink,
   }) {
     if ((databasePath == null) == (database == null)) {
       throw ArgumentError('Provide exactly one of databasePath or database');
@@ -120,17 +97,17 @@ final class SqliteWalletSyncJobQueue implements WalletSyncJobQueue {
     required this.leaseDuration,
     required this.retryBase,
     required this.retryMaximum,
-    WalletSyncLogSink? logSink,
+    BackgroundTaskLogger? logSink,
   }) : _database = _open(databasePath, database),
        _ownsDatabase = database == null,
        now = clock ?? _utcNow,
-       _sink = logSink ?? const BullLoggerWalletSyncLogSink() {
+       _sink = logSink ?? LoggerBackgroundTaskLogger(log) {
     try {
       _database.execute('PRAGMA busy_timeout = 5000');
       _database.execute(
         '''CREATE TABLE IF NOT EXISTS wallet_sync_jobs (
         job_id TEXT PRIMARY KEY, chain TEXT NOT NULL, network TEXT NOT NULL,
-        revision TEXT NOT NULL, pending_revision TEXT, inserted_at INTEGER NOT NULL,
+        revision TEXT NOT NULL, inserted_at INTEGER NOT NULL,
         last_successful_at INTEGER, next_attempt_at INTEGER NOT NULL,
         attempts INTEGER NOT NULL DEFAULT 0, permanent_failed INTEGER NOT NULL DEFAULT 0,
         lease_token TEXT, lease_expires_at INTEGER, absent INTEGER NOT NULL DEFAULT 0)''',
@@ -186,10 +163,6 @@ final class SqliteWalletSyncJobQueue implements WalletSyncJobQueue {
           VALUES (?, ?, ?, ?, ?, ?) ON CONFLICT(job_id) DO UPDATE SET
           chain=excluded.chain, network=excluded.network,
           revision=CASE WHEN wallet_sync_jobs.lease_token IS NOT NULL AND wallet_sync_jobs.lease_expires_at > excluded.next_attempt_at THEN wallet_sync_jobs.revision ELSE excluded.revision END,
-          pending_revision=CASE
-            WHEN wallet_sync_jobs.lease_token IS NOT NULL AND wallet_sync_jobs.lease_expires_at > excluded.next_attempt_at AND wallet_sync_jobs.revision <> excluded.revision THEN excluded.revision
-            WHEN wallet_sync_jobs.lease_token IS NOT NULL AND wallet_sync_jobs.lease_expires_at > excluded.next_attempt_at THEN wallet_sync_jobs.pending_revision
-            ELSE NULL END,
           permanent_failed=CASE WHEN wallet_sync_jobs.lease_token IS NOT NULL AND wallet_sync_jobs.lease_expires_at > excluded.next_attempt_at THEN wallet_sync_jobs.permanent_failed WHEN wallet_sync_jobs.revision = excluded.revision THEN wallet_sync_jobs.permanent_failed ELSE 0 END,
           attempts=CASE WHEN wallet_sync_jobs.lease_token IS NOT NULL AND wallet_sync_jobs.lease_expires_at > excluded.next_attempt_at THEN wallet_sync_jobs.attempts WHEN wallet_sync_jobs.revision = excluded.revision THEN wallet_sync_jobs.attempts ELSE 0 END,
           next_attempt_at=CASE WHEN wallet_sync_jobs.lease_token IS NOT NULL AND wallet_sync_jobs.lease_expires_at > excluded.next_attempt_at THEN wallet_sync_jobs.next_attempt_at WHEN wallet_sync_jobs.revision = excluded.revision THEN wallet_sync_jobs.next_attempt_at ELSE excluded.next_attempt_at END,
@@ -306,7 +279,7 @@ final class SqliteWalletSyncJobQueue implements WalletSyncJobQueue {
       }
       _database.execute('COMMIT');
       _safeLog(
-        WalletSyncLogLevel.config,
+        BackgroundLogLevel.fine,
         'Wallet sync queue claim: chain=${chain.name} eligible=$eligibleCount claimed=${claims.length} max=$maxJobs',
       );
       return claims;
@@ -317,12 +290,12 @@ final class SqliteWalletSyncJobQueue implements WalletSyncJobQueue {
   }
 
   @override
-  Future<bool> renew(WalletSyncJobClaim claim, {Duration? lease}) async {
+  Future<bool> renew(WalletSyncJobClaim claim) async {
     _ensureOpen();
     _database.execute(
       'UPDATE wallet_sync_jobs SET lease_expires_at = ? WHERE job_id = ? AND lease_token = ?',
       [
-        now().toUtc().add(lease ?? leaseDuration).microsecondsSinceEpoch,
+        now().toUtc().add(leaseDuration).microsecondsSinceEpoch,
         claim.jobId,
         claim.leaseToken,
       ],
@@ -370,7 +343,7 @@ final class SqliteWalletSyncJobQueue implements WalletSyncJobQueue {
       final attempts = max(1, rows.single['attempts'] as int);
       final delay = _backoff(attempts);
       _database.execute(
-        'UPDATE wallet_sync_jobs SET revision = COALESCE(?, revision), pending_revision = NULL, attempts = ?, permanent_failed = ?, next_attempt_at = ?, lease_token = NULL, lease_expires_at = NULL WHERE job_id = ? AND lease_token = ?',
+        'UPDATE wallet_sync_jobs SET revision = COALESCE(?, revision), attempts = ?, permanent_failed = ?, next_attempt_at = ?, lease_token = NULL, lease_expires_at = NULL WHERE job_id = ? AND lease_token = ?',
         [
           failedRevision == null
               ? null
@@ -447,7 +420,7 @@ final class SqliteWalletSyncJobQueue implements WalletSyncJobQueue {
     } catch (_) {}
   }
 
-  void _safeLog(WalletSyncLogLevel level, String message) {
+  void _safeLog(BackgroundLogLevel level, String message) {
     try {
       _sink.write(level, message);
     } catch (_) {}

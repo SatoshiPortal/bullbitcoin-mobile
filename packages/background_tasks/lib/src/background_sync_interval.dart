@@ -1,3 +1,5 @@
+import 'package:meta/meta.dart';
+import 'package:primitives/primitives.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// How often the user asks the system to check for incoming payments. The
@@ -19,7 +21,10 @@ enum BackgroundSyncInterval {
 
 abstract interface class BackgroundSyncIntervalStore {
   Future<BackgroundSyncInterval> read();
-  Future<void> write(BackgroundSyncInterval interval);
+  @useResult
+  Future<Result<void, BackgroundSyncIntervalFailure>> write(
+    BackgroundSyncInterval interval,
+  );
 }
 
 /// Shared preferences, readable before the app database is opened and from
@@ -40,11 +45,23 @@ final class SharedPreferencesBackgroundSyncIntervalStore
   }
 
   @override
-  Future<void> write(BackgroundSyncInterval interval) async {
-    final saved = await (await SharedPreferences.getInstance()).setString(
-      _key,
-      interval.name,
-    );
-    if (!saved) throw StateError('background sync interval not saved');
+  Future<Result<void, BackgroundSyncIntervalFailure>> write(
+    BackgroundSyncInterval interval,
+  ) async {
+    try {
+      final saved = await (await SharedPreferences.getInstance()).setString(
+        _key,
+        interval.name,
+      );
+      return saved
+          ? const Ok(null)
+          : const Err(BackgroundSyncIntervalFailure());
+    } on Exception {
+      return const Err(BackgroundSyncIntervalFailure());
+    }
   }
+}
+
+final class BackgroundSyncIntervalFailure extends Failure {
+  const BackgroundSyncIntervalFailure();
 }

@@ -47,7 +47,7 @@ final class FlutterNotificationPermissionGateway
           granted = true;
       }
       return Ok(granted ?? true);
-    } catch (_) {
+    } on Exception catch (_) {
       return const Err(NotificationsGatewayFailure());
     }
   }
@@ -91,7 +91,7 @@ final class FlutterNotificationPermissionGateway
           enabled = true;
       }
       return Ok(enabled ?? true);
-    } catch (_) {
+    } on Exception catch (_) {
       return const Err(NotificationsGatewayFailure());
     }
   }
@@ -102,7 +102,7 @@ final class FlutterNotificationPermissionGateway
       return await openAppSettings()
           ? const Ok(null)
           : const Err(NotificationsGatewayFailure());
-    } catch (_) {
+    } on Exception catch (_) {
       return const Err(NotificationsGatewayFailure());
     }
   }
