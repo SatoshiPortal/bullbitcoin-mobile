@@ -51,6 +51,10 @@ final class WalletNativeRuntime implements WalletNativeLifecycle {
 
   Stream<WalletRevisionState> get changes => _changes.stream;
 
+  Future<Result<WalletRevisionState, TransactionSyncFailure>> readRevision(
+    WalletKey key,
+  ) async => (await _services).revisions.read(key);
+
   Future<_NativeServices> get _services =>
       _opening ??= _open().catchError((Object error, StackTrace trace) {
         _opening = null;

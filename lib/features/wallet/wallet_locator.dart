@@ -108,6 +108,7 @@ class WalletLocator {
     );
     locator.registerLazySingleton<ElectrumSync>(
       () => ElectrumSync(
+        readRevision: (key) => locator<WalletNativeRuntime>().readRevision(key),
         connections: locator<WalletConnectionPolicy>(),
         documentsDirectory: () async =>
             (await getApplicationDocumentsDirectory()).path,

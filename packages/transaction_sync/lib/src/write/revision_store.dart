@@ -52,6 +52,17 @@ final class RevisionStore implements WalletRevisionReader {
       db.execute('PRAGMA busy_timeout = 5000');
       db.execute('PRAGMA journal_mode = WAL');
       db.execute('PRAGMA synchronous = FULL');
+      final existingColumns = db
+          .select('PRAGMA table_info(revisions)')
+          .map((row) => row['name'])
+          .toSet();
+      if (existingColumns.containsAll({
+        'initialized_schema',
+        'descriptor_hash',
+        'liquid_cache_path',
+      })) {
+        return db;
+      }
       db.execute('BEGIN IMMEDIATE');
       db.execute('''CREATE TABLE IF NOT EXISTS revisions (
         wallet TEXT NOT NULL, network TEXT NOT NULL,

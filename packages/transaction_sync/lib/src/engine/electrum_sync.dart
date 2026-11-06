@@ -47,6 +47,10 @@ final class SyncFinished {
 /// One foreground Electrum operation. The caller must provision the native store first. No create, repair, reveal, durable revision or background lease.
 final class ElectrumSync {
   final WalletConnectionPolicy _connections;
+  final Future<Result<WalletRevisionState, TransactionSyncFailure>> Function(
+    WalletKey,
+  )?
+  _readRevision;
   final Future<String> Function() _documentsDirectory;
   final _active =
       <WalletKey, Future<Result<SyncCompletion, TransactionSyncFailure>>>{};
@@ -54,7 +58,11 @@ final class ElectrumSync {
   final _started = StreamController<WalletKey>.broadcast();
   final _finished = StreamController<SyncFinished>.broadcast();
 
-  ElectrumSync({required this._connections, required this._documentsDirectory});
+  ElectrumSync({
+    required this._connections,
+    required this._documentsDirectory,
+    this._readRevision,
+  });
 
   Stream<WalletKey> get started => _started.stream;
   Stream<SyncFinished> get finished => _finished.stream;
@@ -145,20 +153,26 @@ final class ElectrumSync {
     } on Exception {
       return const Err(TransactionSyncStorageFailure());
     }
-    final revisions = RevisionStore(writerMetadataPath(root));
-    final int generation;
-    try {
-      final state = await revisions.read(descriptor.key);
-      switch (state) {
-        case Ok(:final value):
-          generation = value.stamp.generation;
-        case Err(failure: TransactionSyncNotFoundFailure()):
-          generation = 0;
-        case Err(:final failure):
-          return Err(failure);
+    final readRevision = _readRevision;
+    final Result<WalletRevisionState, TransactionSyncFailure> state;
+    if (readRevision != null) {
+      state = await readRevision(descriptor.key);
+    } else {
+      final revisions = RevisionStore(writerMetadataPath(root));
+      try {
+        state = await revisions.read(descriptor.key);
+      } finally {
+        await revisions.close();
       }
-    } finally {
-      await revisions.close();
+    }
+    final int generation;
+    switch (state) {
+      case Ok(:final value):
+        generation = value.stamp.generation;
+      case Err(failure: TransactionSyncNotFoundFailure()):
+        generation = 0;
+      case Err(:final failure):
+        return Err(failure);
     }
     var retryable = false;
     var attempts = 0;
