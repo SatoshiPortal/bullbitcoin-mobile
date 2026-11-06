@@ -1628,6 +1628,86 @@ void main() {
     },
   );
 
+  for (final network in [Network.bitcoinMainnet, Network.liquidMainnet]) {
+    test(
+      '$network retry retains new-address intent and drops duplicates',
+      () async {
+        final wallet = _testWallet(network: network);
+        final old = _testAddress();
+        final next = old.copyWith(index: 1, address: 'next-issued');
+        final retry = Completer<Result<WalletAddress, ReceiveFailure>>();
+        var advances = 0;
+        when(
+          () => getReceiveAddress.execute(walletId: wallet.id),
+        ).thenAnswer((_) async => Ok(old));
+        when(
+          () =>
+              getReceiveAddress.execute(walletId: wallet.id, generateNew: true),
+        ).thenAnswer((_) async {
+          if (++advances == 1) {
+            return const Err(ReceiveAddressUnavailableFailure());
+          }
+          return retry.future;
+        });
+        final bloc = buildBloc(wallet: wallet);
+        addTearDown(bloc.close);
+        final start = wallet.isBitcoin
+            ? const ReceiveBitcoinStarted(null)
+            : const ReceiveLiquidStarted();
+        WalletAddress? address() => wallet.isBitcoin
+            ? bloc.state.bitcoinAddress
+            : bloc.state.liquidAddress;
+        bloc.add(start);
+        await pumpEventQueue();
+        expect(address(), old);
+        bloc.add(const ReceiveNewAddressGenerated());
+        await pumpEventQueue();
+        expect(bloc.state.failure, isA<ReceiveAddressUnavailableFailure>());
+        expect(address(), isNull);
+        bloc.add(start);
+        await pumpEventQueue();
+        bloc.add(start);
+        bloc.add(const ReceiveNewAddressGenerated());
+        await pumpEventQueue();
+        retry.complete(Ok(next));
+        await pumpEventQueue();
+        expect(address(), next);
+        expect(bloc.state.wallet?.id, wallet.id);
+        expect(bloc.state.failure, isNull);
+        expect(advances, 2);
+        verify(() => getReceiveAddress.execute(walletId: wallet.id)).called(1);
+      },
+    );
+
+    test('$network initial-open retry reuses the unused address', () async {
+      final wallet = _testWallet(network: network);
+      var attempts = 0;
+      when(() => getReceiveAddress.execute(walletId: wallet.id)).thenAnswer(
+        (_) async => ++attempts == 1
+            ? const Err(ReceiveAddressUnavailableFailure())
+            : Ok(_testAddress()),
+      );
+      final bloc = buildBloc(wallet: wallet);
+      addTearDown(bloc.close);
+      final start = wallet.isBitcoin
+          ? const ReceiveBitcoinStarted(null)
+          : const ReceiveLiquidStarted();
+      bloc.add(start);
+      await pumpEventQueue();
+      expect(bloc.state.failure, isA<ReceiveAddressUnavailableFailure>());
+      bloc.add(start);
+      await pumpEventQueue();
+      expect(
+        wallet.isBitcoin ? bloc.state.bitcoinAddress : bloc.state.liquidAddress,
+        _testAddress(),
+      );
+      expect(bloc.state.failure, isNull);
+      verifyNever(
+        () => getReceiveAddress.execute(walletId: wallet.id, generateNew: true),
+      );
+    });
+  }
+
   group('preselected-wallet network guard', () {
     // The preselected wallet survives tab switches (the shell's bloc is
     // created once), so a receive entered from a liquid wallet must not
