@@ -26,6 +26,16 @@ typedef Mnemonic = ({
 /// the candidate pool behind them has changed.
 typedef _HintQuery = ({int index, String prefix, int revision});
 
+// Non-Latin wordlists stay hidden until a dedicated keyboard is available.
+const _entryLanguages = [
+  bip39.Language.english,
+  bip39.Language.spanish,
+  bip39.Language.french,
+  bip39.Language.italian,
+  bip39.Language.czech,
+  bip39.Language.portuguese,
+];
+
 class MnemonicWidget extends StatefulWidget {
   /// Initial wordlist. Selection never rewrites the entered words.
   final bip39.Language language;
@@ -242,6 +252,7 @@ class _MnemonicWidgetState extends State<MnemonicWidget> {
   }
 
   void _selectLanguage(bip39.Language language) {
+    if (!_entryLanguages.contains(language)) return;
     FocusScope.of(context).unfocus();
     setState(() {
       _language = language;
@@ -262,9 +273,12 @@ class _MnemonicWidgetState extends State<MnemonicWidget> {
         final readings = complete
             ? Bip39WordList.matchingLanguages(words, requireChecksum: true)
             : const <bip39.Language>[];
-        final matches = readings.isNotEmpty
-            ? readings
-            : Bip39WordList.matchingLanguages(words);
+        final matches =
+            (readings.isNotEmpty
+                    ? readings
+                    : Bip39WordList.matchingLanguages(words))
+                .where(_entryLanguages.contains)
+                .toList();
         final ambiguous =
             _needsLanguageChoice ||
             (readings.length > 1 && !_languageConfirmed);
@@ -277,11 +291,11 @@ class _MnemonicWidgetState extends State<MnemonicWidget> {
             ),
             DropdownButton<bip39.Language>(
               key: const Key('mnemonicLanguagePicker'),
-              value: _language,
+              value: _entryLanguages.contains(_language) ? _language : null,
               isExpanded: true,
               dropdownColor: context.appColors.surface,
               items: [
-                for (final language in bip39.Language.values)
+                for (final language in _entryLanguages)
                   DropdownMenuItem(
                     value: language,
                     child: Text(
@@ -310,7 +324,9 @@ class _MnemonicWidgetState extends State<MnemonicWidget> {
             if (ambiguous)
               Wrap(
                 children: [
-                  for (final language in readings)
+                  for (final language in readings.where(
+                    _entryLanguages.contains,
+                  ))
                     TextButton(
                       onPressed: () => _selectLanguage(language),
                       child: Text(

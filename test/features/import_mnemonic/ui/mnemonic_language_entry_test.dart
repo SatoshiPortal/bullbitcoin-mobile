@@ -101,6 +101,46 @@ Finder key(String label) => find.descendant(
 );
 
 void main() {
+  testWidgets('import picker offers only the six Latin wordlists', (
+    tester,
+  ) async {
+    await host(tester, onSubmit: (_) {});
+    final picker = tester.widget<DropdownButton<bip39.Language>>(
+      find.byKey(const Key('mnemonicLanguagePicker')),
+    );
+    expect(picker.items?.map((item) => item.value), [
+      bip39.Language.english,
+      bip39.Language.spanish,
+      bip39.Language.french,
+      bip39.Language.italian,
+      bip39.Language.czech,
+      bip39.Language.portuguese,
+    ]);
+    await fill(
+      tester,
+      bip39.Mnemonic(List.filled(16, 0), bip39.Language.japanese).words,
+    );
+    final loc = AppLocalizations.of(
+      tester.element(find.byType(MnemonicWidget)),
+    );
+    expect(
+      find.text(
+        loc.mnemonicLanguageSuggestion(loc.mnemonicLanguageName('japanese')),
+      ),
+      findsNothing,
+    );
+    picker.onChanged?.call(bip39.Language.japanese);
+    await tester.pumpAndSettle();
+    expect(
+      tester
+          .widget<DropdownButton<bip39.Language>>(
+            find.byKey(const Key('mnemonicLanguagePicker')),
+          )
+          .value,
+      bip39.Language.english,
+    );
+  });
+
   for (final (language, word) in [
     (bip39.Language.japanese, 'あおぞら'),
     (bip39.Language.korean, '가격'),
@@ -191,20 +231,20 @@ void main() {
   });
 
   testWidgets(
-    'detection suggests Japanese without changing the selected language',
+    'detection suggests Spanish without changing the selected language',
     (tester) async {
       Mnemonic? submitted;
       await host(tester, onSubmit: (value) => submitted = value);
       final words = bip39.Mnemonic(
         List.filled(16, 0),
-        bip39.Language.japanese,
+        bip39.Language.spanish,
       ).words;
       await fill(tester, words);
       // Find by the localization itself rather than assuming its English wording.
       final context = tester.element(find.byType(MnemonicWidget));
       final loc = AppLocalizations.of(context);
       final action = find.text(
-        loc.mnemonicLanguageSuggestion(loc.mnemonicLanguageName('japanese')),
+        loc.mnemonicLanguageSuggestion(loc.mnemonicLanguageName('spanish')),
       );
       expect(action, findsOneWidget);
       expect(
@@ -221,7 +261,7 @@ void main() {
       await tester.tap(action);
       await tester.pumpAndSettle();
       await submit(tester);
-      expect(submitted?.language, bip39.Language.japanese);
+      expect(submitted?.language, bip39.Language.spanish);
     },
   );
 
@@ -249,7 +289,14 @@ void main() {
     },
   );
 
-  for (final language in bip39.Language.values) {
+  for (final language in [
+    bip39.Language.english,
+    bip39.Language.spanish,
+    bip39.Language.french,
+    bip39.Language.italian,
+    bip39.Language.czech,
+    bip39.Language.portuguese,
+  ]) {
     testWidgets('${language.name} imports after explicit picker selection', (
       tester,
     ) async {
@@ -257,8 +304,7 @@ void main() {
       await host(tester, onSubmit: (value) => submitted = value);
       final words = bip39.Mnemonic(List.filled(16, 0), language).words;
       await fill(tester, words.map(nfc).toList());
-      // After the words: a choice answers one phrase (the Chinese vectors
-      // read in both scripts).
+      // After the words: a choice answers one phrase.
       await pick(tester, language);
       await submit(tester);
       expect(submitted?.language, language);
