@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/wallet/data/wallet_native_runtime.dart';
 import 'dart:io';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_transaction_repository_impl.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
@@ -20,6 +21,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';
 import 'package:transaction_sync/transaction_sync.dart';
+
+class _Native extends Mock implements WalletNativeLifecycle {}
 
 class _WatchOnly extends Mock implements satoshifier.WatchOnlyDescriptor {}
 
@@ -161,13 +164,16 @@ void main() {
     },
   );
 
-  test('repair failure preserves startup conflict classification', () async {
-    policy.failure = const TransactionSyncNeedsRepairFailure();
-    await expectLater(
-      bridge.synchronize(row),
-      throwsA(isA<WalletLwkStatusConflictFailure>()),
-    );
-  });
+  test(
+    'unavailable repair is a storage failure without legacy reader healing',
+    () async {
+      policy.failure = const TransactionSyncNeedsRepairFailure();
+      await expectLater(
+        bridge.synchronize(row),
+        throwsA(isA<WalletStorageFailure>()),
+      );
+    },
+  );
 
   test('unexpected policy failure settles the finished event', () async {
     final sync = ElectrumSync(
@@ -235,62 +241,75 @@ void main() {
     expect(storage, isA<Err<Wallet, WalletFailure>>());
     verifyNever(() => bdk.getBalance(wallet: any(named: 'wallet')));
   });
-  test('new descriptor import provisions legacy storage before sync', () async {
-    final descriptor = _Descriptor();
-    when(
-      () => descriptor.network,
-    ).thenReturn(satoshifier.Network.bitcoinTestnet);
-    when(() => descriptor.derivation).thenReturn(satoshifier.Derivation.bip84);
-    when(() => descriptor.external).thenReturn('wpkh(public)');
-    when(() => descriptor.internal).thenReturn('wpkh(change)');
-    when(() => descriptor.pubkey).thenReturn(
-      'xpub6BosfCnifzxcFwrSzQiqu2DBVTshkCXacvNsWGYJVVhhawA7d4R5WSWGFNbi8Aw6ZRc1brxMyWMzG3DSSSSoekkudhUd9yLb6qx39T9nMdj',
-    );
-    when(() => descriptor.fingerprint).thenReturn('aabbccdd');
-    final watchOnly = _WatchOnly();
-    when(() => watchOnly.descriptor).thenReturn(descriptor);
-    when(() => metadata.fetchAll()).thenAnswer((_) async => []);
-    var provisioned = false;
-    var synchronized = false;
-    final originalBalance = await bdk.getBalance(
-      wallet: const WalletModel.publicBdk(
-        id: id,
-        externalDescriptor: 'wpkh(public)',
-        internalDescriptor: 'wpkh(change)',
-        isTestnet: true,
-      ),
-    );
-    when(() => bdk.getBalance(wallet: any(named: 'wallet'))).thenAnswer((
-      _,
-    ) async {
-      provisioned = true;
-      return originalBalance;
-    });
-    final importing = WalletRepository(
-      walletMetadataDatasource: metadata,
-      bdkWalletDatasource: bdk,
-      lwkWalletDatasource: _Lwk(),
-      synchronize: (value, {bool discover = false}) async {
+  test(
+    'descriptor import persists catalog then creates offline before sync',
+    () async {
+      final descriptor = _Descriptor();
+      when(
+        () => descriptor.network,
+      ).thenReturn(satoshifier.Network.bitcoinTestnet);
+      when(
+        () => descriptor.derivation,
+      ).thenReturn(satoshifier.Derivation.bip84);
+      when(() => descriptor.external).thenReturn('wpkh(public)');
+      when(() => descriptor.internal).thenReturn('wpkh(change)');
+      when(() => descriptor.pubkey).thenReturn(
+        'xpub6BosfCnifzxcFwrSzQiqu2DBVTshkCXacvNsWGYJVVhhawA7d4R5WSWGFNbi8Aw6ZRc1brxMyWMzG3DSSSSoekkudhUd9yLb6qx39T9nMdj',
+      );
+      when(() => descriptor.fingerprint).thenReturn('aabbccdd');
+      final watchOnly = _WatchOnly();
+      when(() => watchOnly.descriptor).thenReturn(descriptor);
+      when(() => metadata.fetchAll()).thenAnswer((_) async => []);
+      var provisioned = false;
+      final native = _Native();
+      when(() => native.create(any())).thenAnswer((_) async {
+        verify(() => metadata.store(any())).called(1);
+        verifyNever(() => bdk.getBalance(wallet: any(named: 'wallet')));
+        provisioned = true;
+      });
+      var synchronized = false;
+      final originalBalance = await bdk.getBalance(
+        wallet: const WalletModel.publicBdk(
+          id: id,
+          externalDescriptor: 'wpkh(public)',
+          internalDescriptor: 'wpkh(change)',
+          isTestnet: true,
+        ),
+      );
+      when(() => bdk.getBalance(wallet: any(named: 'wallet'))).thenAnswer((
+        _,
+      ) async {
         expect(provisioned, isTrue);
-        expect(value.id, id);
-        verifyNever(() => metadata.store(any()));
-        synchronized = true;
-      },
-      isSyncing: ({String? walletId}) => false,
-      syncStarted: const Stream.empty(),
-      syncFinished: const Stream.empty(),
-      electrumSyncResultStream: const Stream.empty(),
-    );
-    final wallet = await importing.importDescriptor(
-      watchOnlyDescriptor: WatchOnlyDescriptorEntity(
-        watchOnlyDescriptor: watchOnly,
-      ),
-      sync: true,
-    );
-    expect(synchronized, isTrue);
-    expect(wallet.id, id);
-    verify(() => metadata.store(any())).called(1);
-  });
+        return originalBalance;
+      });
+      clearInteractions(bdk);
+      final importing = WalletRepository(
+        native: native,
+        walletMetadataDatasource: metadata,
+        bdkWalletDatasource: bdk,
+        lwkWalletDatasource: _Lwk(),
+        synchronize: (value, {bool discover = false}) async {
+          expect(provisioned, isTrue);
+          expect(value.id, id);
+          verify(() => native.create(any())).called(1);
+          synchronized = true;
+        },
+        isSyncing: ({String? walletId}) => false,
+        syncStarted: const Stream.empty(),
+        syncFinished: const Stream.empty(),
+        electrumSyncResultStream: const Stream.empty(),
+      );
+      final wallet = await importing.importDescriptor(
+        watchOnlyDescriptor: WatchOnlyDescriptorEntity(
+          watchOnlyDescriptor: watchOnly,
+        ),
+        sync: true,
+      );
+      expect(synchronized, isTrue);
+      expect(wallet.id, id);
+      verify(() => bdk.getBalance(wallet: any(named: 'wallet'))).called(1);
+    },
+  );
 }
 
 final class _ThrowingPolicy implements WalletConnectionPolicy {
