@@ -20,13 +20,8 @@ class BitcoinBlockchainRepository {
 
   Future<String> broadcastPsbt(
     String finalizedPsbt, {
-    Network? network,
-    bool? isTestnet,
+    required Network network,
   }) {
-    if (network != null && isTestnet != null) {
-      throw ArgumentError('Supply exactly one network representation');
-    }
-    network ??= Network.fromEnvironment(isTestnet: isTestnet, isLiquid: false);
     return _serversPort.runWithFallback<String>(
       network: switch (network) {
         Network.bitcoinMainnet => ElectrumServerNetwork.bitcoinMainnet,
@@ -41,13 +36,8 @@ class BitcoinBlockchainRepository {
 
   Future<String> broadcastTransaction(
     List<int> transaction, {
-    Network? network,
-    bool? isTestnet,
+    required Network network,
   }) {
-    if (network != null && isTestnet != null) {
-      throw ArgumentError('Supply exactly one network representation');
-    }
-    network ??= Network.fromEnvironment(isTestnet: isTestnet, isLiquid: false);
     return _serversPort.runWithFallback<String>(
       network: switch (network) {
         Network.bitcoinMainnet => ElectrumServerNetwork.bitcoinMainnet,

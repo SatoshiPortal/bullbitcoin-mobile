@@ -13,7 +13,7 @@ import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 
 class FeesRepositoryImpl implements FeesRepository {
-  final ElectrumServersPort? _electrumServers;
+  final ElectrumServersPort _electrumServers;
   final RegtestFeesDatasource _regtestFeesDatasource;
   final FeesDatasource _feesDatasource;
   final MempoolSettingsRepository _mempoolSettingsRepository;
@@ -21,7 +21,7 @@ class FeesRepositoryImpl implements FeesRepository {
 
   const FeesRepositoryImpl({
     required this._feesDatasource,
-    this._electrumServers,
+    required this._electrumServers,
     this._regtestFeesDatasource = const RegtestFeesDatasource(),
     required this._mempoolSettingsRepository,
     required this._mempoolServerRepository,
@@ -30,12 +30,8 @@ class FeesRepositoryImpl implements FeesRepository {
   @override
   Future<FeeOptions> getNetworkFees({required Network network}) async {
     if (network == Network.bitcoinRegtest) {
-      final electrumServers = _electrumServers;
-      if (electrumServers == null) {
-        throw MempoolFeesException('Regtest fee estimates unavailable');
-      }
       try {
-        return await electrumServers.runWithFallback(
+        return await _electrumServers.runWithFallback(
           network: ElectrumServerNetwork.bitcoinRegtest,
           operation: _regtestFeesDatasource.fetch,
         );
