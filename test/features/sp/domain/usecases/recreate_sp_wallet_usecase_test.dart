@@ -38,10 +38,10 @@ void main() {
 
   setUpAll(() async {
     registerFallbackValue(await spSecret());
-    registerFallbackValue(BitcoinNetwork.regtest);
+    registerFallbackValue(BitcoinNetwork.testnet);
     registerFallbackValue(
       SpBackendConfig(
-        network: BitcoinNetwork.regtest,
+        network: BitcoinNetwork.testnet,
         blindbitUrl: 'http://blindbit.example',
         electrumUrl: 'tcp://electrum.example:50001',
       ),
@@ -55,6 +55,7 @@ void main() {
     configRepository = _MockSpBackendConfigRepository();
     ensureSpSessionUsecase = _MockEnsureSpSessionUsecase();
     usecase = RecreateSpWalletUsecase(
+      getSpFeatureGateUsecase: FakeSpFeatureGateUsecase(),
       getSpSecretUsecase: getSpSecretUsecase,
       repository: repository,
       files: repository,

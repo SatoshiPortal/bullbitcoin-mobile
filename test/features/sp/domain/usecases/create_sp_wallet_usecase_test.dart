@@ -35,18 +35,21 @@ void main() {
     repository: accountRepo,
     files: accountRepo,
     configRepository: configRepo,
-    scanSpWalletUsecase: ScanSpWalletUsecase(repository: accountRepo),
+    scanSpWalletUsecase: ScanSpWalletUsecase(
+      getSpFeatureGateUsecase: FakeSpFeatureGateUsecase(),
+      repository: accountRepo,
+    ),
   );
 
   Future<Result<void, SpFailure>> run({bool scanFromNow = false}) =>
       usecase.execute(
-        network: BitcoinNetwork.regtest,
+        network: BitcoinNetwork.testnet,
         blindbitUrl: 'http://blindbit.example',
         electrumUrl: 'tcp://electrum.example:50001',
         scanFromNow: scanFromNow,
       );
 
-  setUpAll(() => registerFallbackValue(BitcoinNetwork.regtest));
+  setUpAll(() => registerFallbackValue(BitcoinNetwork.testnet));
 
   setUp(() async {
     secretUsecase = MockGetSpSecretUsecase();
@@ -64,6 +67,34 @@ void main() {
   });
 
   group('CreateSpWalletUsecase gates', () {
+    test(
+      'regtest active refuses creation before custody or backend access',
+      () async {
+        when(() => settingsRepo.fetch()).thenAnswer(
+          (_) async => _settings().copyWith(environment: Environment.regtest),
+        );
+        final result = await run();
+        expect((result as Err).failure, isA<SpUnsupportedNetwork>());
+        verifyZeroInteractions(secretUsecase);
+        expect(accountRepo.createCount, 0);
+      },
+    );
+
+    test(
+      'regtest requested refuses creation before custody or backend access',
+      () async {
+        final result = await usecase.execute(
+          network: BitcoinNetwork.regtest,
+          blindbitUrl: 'http://blindbit.example',
+          electrumUrl: 'tcp://electrum.example:50001',
+          scanFromNow: false,
+        );
+        expect((result as Err).failure, isA<SpUnsupportedNetwork>());
+        verifyZeroInteractions(secretUsecase);
+        expect(accountRepo.createCount, 0);
+      },
+    );
+
     test('refuses with SpRequiresSuperuser when superuser is off', () async {
       when(
         () => settingsRepo.fetch(),
@@ -108,7 +139,7 @@ void main() {
       () async {
         await configRepo.save(
           SpBackendConfig(
-            network: BitcoinNetwork.regtest,
+            network: BitcoinNetwork.testnet,
             blindbitUrl: 'http://existing.example',
             electrumUrl: 'tcp://existing.example:50001',
           ),
@@ -196,7 +227,7 @@ void main() {
     test('looks the secret up on the network being set up', () async {
       await run();
 
-      verify(() => secretUsecase.execute(BitcoinNetwork.regtest)).called(1);
+      verify(() => secretUsecase.execute(BitcoinNetwork.testnet)).called(1);
     });
 
     test('forwards a passphrase refusal and never creates', () async {
@@ -274,7 +305,7 @@ void main() {
       expect(accountRepo.createCount, 1);
       final stored =
           (await configRepo.fetch()) as Ok<SpBackendConfig?, SpFailure>;
-      expect(stored.value?.network, BitcoinNetwork.regtest);
+      expect(stored.value?.network, BitcoinNetwork.testnet);
       expect(stored.value?.blindbitUrl, 'http://blindbit.example');
     });
   });

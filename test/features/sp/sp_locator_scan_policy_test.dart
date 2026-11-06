@@ -110,6 +110,27 @@ void main() {
   const settleWindow = Duration(milliseconds: 200);
 
   group('SP scan policy (real sp_locator wiring)', () {
+    test(
+      'regtest denies load and scan with an already stored SP account',
+      () async {
+        await cubit.load();
+        when(() => settingsRepo.fetch()).thenAnswer(
+          (_) async => const SettingsEntity(
+            environment: Environment.regtest,
+            bitcoinUnit: BitcoinUnit.sats,
+            currencyCode: 'CAD',
+            isSuperuser: true,
+            isDevModeEnabled: true,
+          ),
+        );
+        await cubit.load();
+        await cubit.scan();
+        expect(fakeRepo.scanOnceCount, 0);
+        expect(fakeRepo.createCount, 0);
+        expect(fakeRepo.hasSession, isTrue);
+      },
+    );
+
     test('load() through the real graph never reaches scanOnce', () {
       fakeAsync((async) {
         expect(fakeRepo.scanOnceCount, 0);

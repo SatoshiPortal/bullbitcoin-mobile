@@ -27,7 +27,10 @@ void main() {
     repository: repo,
     getSpWalletUsecase: getWallet,
     isSpScanningUsecase: IsSpScanningUsecase(repository: repo),
-    scanSpWalletUsecase: ScanSpWalletUsecase(repository: repo),
+    scanSpWalletUsecase: ScanSpWalletUsecase(
+      getSpFeatureGateUsecase: FakeSpFeatureGateUsecase(),
+      repository: repo,
+    ),
     getSpAutoScanUsecase: GetSpAutoScanUsecase(repository: autoScanRepo),
   );
 

@@ -15,6 +15,7 @@ void main() {
   setUp(() {
     repository = MockSpAccountRepository();
     usecase = ResyncSpListenerUsecase(
+      getSpFeatureGateUsecase: FakeSpFeatureGateUsecase(),
       repository: repository,
       scanControl: repository,
     );
