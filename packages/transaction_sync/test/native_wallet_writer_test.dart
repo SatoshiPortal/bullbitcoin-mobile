@@ -142,6 +142,24 @@ void main() {
   });
 
   test(
+    'repeated adoption preserves the revision of an unchanged store',
+    () async {
+      final before = store.record(key)?.state.stamp;
+      for (var i = 0; i < 5; i++) {
+        final result = await writer.create(
+          key,
+          expectedGeneration: 1,
+          existingOnly: true,
+        );
+        expect(result, isA<Ok<WriterOutcome, TransactionSyncFailure>>());
+        expect((result as Ok).value, isA<WriterUnchanged>());
+        expect(store.record(key)?.state.stamp, before);
+        expect(store.record(key)?.intent, isNull);
+      }
+    },
+  );
+
+  test(
     'explicit advance skips reserved indices and persists the new address',
     () async {
       final first = await writer.receive(key, expectedGeneration: 1) as Ok;

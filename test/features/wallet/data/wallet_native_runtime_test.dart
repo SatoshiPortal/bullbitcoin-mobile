@@ -185,6 +185,26 @@ void main() {
         runtime = open();
         await runtime.initialize();
         expect(missingStore.existsSync(), isFalse);
+        final healthyKey =
+            (WalletCatalogPortImpl.descriptorFromMetadata(row)
+                    as Ok<PublicWalletDescriptor, TransactionSyncFailure>)
+                .value
+                .key;
+        final beforeReads = await runtime.readRevision(healthyKey) as Ok;
+        clearInteractions(metadata);
+        for (var i = 0; i < 5; i++) {
+          await runtime.bitcoin(WalletModel.fromMetadata(row));
+          await expectLater(
+            runtime.bitcoin(WalletModel.fromMetadata(missing)),
+            throwsA(isA<WalletSnapshotException>()),
+          );
+        }
+        verifyNever(() => metadata.fetchAll());
+        final afterReads = await runtime.readRevision(healthyKey) as Ok;
+        expect(
+          (afterReads.value as WalletRevisionState).stamp,
+          (beforeReads.value as WalletRevisionState).stamp,
+        );
         await runtime.close();
         runtime = open();
         await runtime.initialize();
