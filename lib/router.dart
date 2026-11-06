@@ -1,5 +1,5 @@
-import 'package:bb_mobile/features/settings/public/settings_facade.dart'
-    show ActiveNetworkScope;
+import 'package:bb_mobile/features/settings/public/settings_facade.dart';
+import 'package:primitives/primitives.dart' show NetworkCapability;
 import 'dart:io';
 
 import 'package:bb_mobile/core/screens/route_error_screen.dart';
@@ -75,6 +75,7 @@ class AppRouter {
       final settingsState = context.read<SettingsCubit>().state;
       return spRedirect(
         path,
+        environment: settingsState.environment?.networkEnv,
         isSuperuser: settingsState.isSuperuser ?? false,
         isDevModeEnabled: settingsState.isDevModeEnabled ?? false,
         // The SP feature's own synchronous flag, not the wallet feature's copy:
@@ -117,53 +118,60 @@ class AppRouter {
                   body: child,
                   bottomNavigationBar: isSupportChat
                       ? null
-                      : Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            BottomNavigationBar(
-                              currentIndex: tabIndex,
-                              onTap: (index) {
-                                if (index == 0) {
-                                  context.goNamed(WalletRoute.walletHome.name);
-                                } else {
-                                  // Exchange tab
-                                  if (Platform.isIOS) {
-                                    final isSuperuser =
-                                        context
-                                            .read<SettingsCubit>()
-                                            .state
-                                            .isSuperuser ??
-                                        false;
-                                    if (isSuperuser) {
+                      : NetworkCapabilityVisibility(
+                          capability: NetworkCapability.exchange,
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              BottomNavigationBar(
+                                currentIndex: tabIndex,
+                                onTap: (index) {
+                                  if (index == 0) {
+                                    context.goNamed(
+                                      WalletRoute.walletHome.name,
+                                    );
+                                  } else {
+                                    // Exchange tab
+                                    if (Platform.isIOS) {
+                                      final isSuperuser =
+                                          context
+                                              .read<SettingsCubit>()
+                                              .state
+                                              .isSuperuser ??
+                                          false;
+                                      if (isSuperuser) {
+                                        context.goNamed(
+                                          ExchangeRoute.exchangeHome.name,
+                                        );
+                                      } else {
+                                        context.goNamed(
+                                          ExchangeRoute.exchangeLanding.name,
+                                        );
+                                      }
+                                    } else {
                                       context.goNamed(
                                         ExchangeRoute.exchangeHome.name,
                                       );
-                                    } else {
-                                      context.goNamed(
-                                        ExchangeRoute.exchangeLanding.name,
-                                      );
                                     }
-                                  } else {
-                                    context.goNamed(
-                                      ExchangeRoute.exchangeHome.name,
-                                    );
                                   }
-                                }
-                              },
-                              items: [
-                                BottomNavigationBarItem(
-                                  icon: const Icon(Icons.currency_bitcoin),
-                                  label: context.loc.navigationTabWallet,
-                                  backgroundColor: context.appColors.background,
-                                ),
-                                BottomNavigationBarItem(
-                                  icon: const Icon(Icons.attach_money),
-                                  label: context.loc.navigationTabExchange,
-                                  backgroundColor: context.appColors.background,
-                                ),
-                              ],
-                            ),
-                          ],
+                                },
+                                items: [
+                                  BottomNavigationBarItem(
+                                    icon: const Icon(Icons.currency_bitcoin),
+                                    label: context.loc.navigationTabWallet,
+                                    backgroundColor:
+                                        context.appColors.background,
+                                  ),
+                                  BottomNavigationBarItem(
+                                    icon: const Icon(Icons.attach_money),
+                                    label: context.loc.navigationTabExchange,
+                                    backgroundColor:
+                                        context.appColors.background,
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
                         ),
                 ),
               ),

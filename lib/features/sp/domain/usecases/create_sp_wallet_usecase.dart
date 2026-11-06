@@ -51,6 +51,19 @@ class CreateSpWalletUsecase {
         return const Err(SpRequiresDevMode());
       }
 
+      if (!NetworkCapabilities.supports(
+            network,
+            NetworkCapability.silentPayments,
+          ) ||
+          !NetworkCapabilities.supports(
+            BitcoinNetwork.values.firstWhere(
+              (network) => network.env == settings.environment.networkEnv,
+            ),
+            NetworkCapability.silentPayments,
+          )) {
+        return const Err(SpUnsupportedNetwork());
+      }
+
       final Secret secret;
       switch (await _getSpSecretUsecase.execute(network)) {
         case Ok(:final value):

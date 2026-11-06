@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/sp/domain/usecases/get_sp_feature_gate_usecase.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/sp/domain/repositories/sp_account_repository.dart';
 import 'package:bb_mobile/features/sp/domain/ports/sp_account_files_port.dart';
@@ -20,12 +21,14 @@ import 'package:secrets/secrets.dart' show Secret;
 /// concurrent callers (the SP shell `load()` and the wallet-side refresh on cold
 /// start) share one `createFromSecret` instead of racing two live sessions.
 class EnsureSpSessionUsecase {
+  final GetSpFeatureGateUsecase? _getSpFeatureGateUsecase;
   final SpAccountRepository _repository;
   final SpAccountFilesPort _files;
   final SpBackendConfigRepository _configRepository;
   final GetSpSecretUsecase _getSpSecretUsecase;
 
   EnsureSpSessionUsecase({
+    this._getSpFeatureGateUsecase,
     required this._repository,
     required this._files,
     required this._configRepository,
@@ -43,6 +46,9 @@ class EnsureSpSessionUsecase {
   Future<Result<SpWallet?, SpFailure>> execute({
     bool allowDuringTeardown = false,
   }) async {
+    if (await _getSpFeatureGateUsecase?.execute() != true) {
+      return const Err(SpUnsupportedNetwork());
+    }
     // A recreate/revoke is disposing (and maybe re-establishing) the session;
     // do not start a competing establishment while it runs.
     if (!allowDuringTeardown && _repository.teardownInProgress) {

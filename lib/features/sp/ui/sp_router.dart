@@ -1,3 +1,4 @@
+import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_cubit.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_settings_cubit.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_setup_cubit.dart';
@@ -15,8 +16,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 /// True when [path] targets an SP route (exact match or a nested sub-path).
-bool isSpPath(String path) =>
-    SpRoute.values.any((r) => path == r.path || path.startsWith('${r.path}/'));
+bool isSpPath(String path) => [
+  ...SpRoute.values.map((r) => r.path),
+  ...SpSetupRoute.values.map((r) => r.path),
+].any((route) => path == route || path.startsWith('$route/'));
 
 /// Pure SP route gate, extracted so it is unit-testable with no widget tree.
 ///
@@ -30,14 +33,27 @@ bool isSpPath(String path) =>
 /// gate never imports the wallet feature's router.
 String? spRedirect(
   String path, {
+  NetworkEnv? environment,
   required bool isSuperuser,
   required bool isDevModeEnabled,
   required bool isSpWalletSetup,
   required String gateClosedRedirectPath,
 }) {
   if (!isSpPath(path)) return null;
-  if (!isSuperuser || !isDevModeEnabled) return gateClosedRedirectPath;
-  if (!isSpWalletSetup) return SpSetupRoute.spSetup.path;
+  if (environment == null ||
+      !NetworkCapabilities.supports(
+        BitcoinNetwork.values.firstWhere(
+          (network) => network.env == environment,
+        ),
+        NetworkCapability.silentPayments,
+      ) ||
+      !isSuperuser ||
+      !isDevModeEnabled) {
+    return gateClosedRedirectPath;
+  }
+  if (!isSpWalletSetup && path != SpSetupRoute.spSetup.path) {
+    return SpSetupRoute.spSetup.path;
+  }
   return null;
 }
 
