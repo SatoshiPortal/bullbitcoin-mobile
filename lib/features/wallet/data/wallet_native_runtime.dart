@@ -213,7 +213,7 @@ final class WalletNativeRuntime implements WalletNativeLifecycle {
       // Every catalog entry now has an outcome. Later explicit retries (or a
       // restart) may resume provisioning, including entries with no native store.
       // Lost deletion metadata cannot distinguish these from interrupted deletes.
-      File('${writerMetadataPath(services.documents)}.recovery').deleteSync();
+      services.revisions.completeRecovery();
       services.recoveredMetadata = false;
     }
     log.fine(
