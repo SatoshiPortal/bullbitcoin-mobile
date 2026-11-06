@@ -305,7 +305,8 @@ extension NativeWriteSessionIdentity on NativeWriteSession {
     _BitcoinSession(:final _wallet) => _wallet.derivationIndex(
       keychain: bdk.KeychainKind.external_,
     ),
-    _ => await firstUnusedIndex(),
+    _LiquidSession() => await firstUnusedIndex(),
+    _ => null,
   };
 
   String? get liquidCachePath => switch (this) {
