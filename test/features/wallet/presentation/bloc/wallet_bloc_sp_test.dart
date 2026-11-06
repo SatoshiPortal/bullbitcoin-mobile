@@ -319,6 +319,7 @@ void main() {
       expect(states.last.isSpFeatureEnabled, isFalse);
       expect(states.last.isSpWalletSetup, isTrue);
       expect(states.last.showSpWallet, isFalse);
+      verifyNever(() => refreshSp.execute());
 
       await bloc.close();
     });
