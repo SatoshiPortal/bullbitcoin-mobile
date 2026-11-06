@@ -511,6 +511,7 @@ void main() {
     final result = await writer.sync(
       key,
       expectedGeneration: 1,
+      reconcile: false,
       preflight: () async =>
           const Err(TransactionSyncInitialScanRequiredFailure()),
       operation: Sync((_) => fail('must not sync')),
