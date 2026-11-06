@@ -5,6 +5,7 @@ import 'package:bull_sdk/lwk.dart' as lwk;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 import 'package:transaction_sync/read.dart';
+import 'package:transaction_sync/write.dart';
 import 'package:transaction_sync/transaction_sync.dart';
 
 import '../test/read/wallet_snapshot_reader_test.dart'
@@ -14,6 +15,68 @@ import '../test/read/wallet_snapshot_reader_test.dart'
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   setUpAll(() async => BullSdk.init());
+
+  test('writer attests the canonical Liquid cache for a production reader', () async {
+    final root = Directory.systemTemp.createTempSync('writer-readiness-');
+    final revisions = RevisionStore(writerMetadataPath(root.path));
+    final key = WalletKey(id: 'fixture', network: LiquidNetwork.testnet);
+    final native = await lwk.Descriptor.newConfidential(
+      network: lwk.LiquidNetwork.testnet,
+      mnemonic:
+          'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about',
+    );
+    final descriptor = LiquidWalletDescriptor(
+      key: key,
+      scriptType: ScriptType.bip84,
+      origin: 'fixture',
+      combinedCtDescriptor: native.ctDescriptor,
+    );
+    final catalog = _Catalog(descriptor);
+    final writer = NativeWalletWriter(
+      lockDirectory: writerLockDirectory(root.path),
+      revisions: revisions,
+      documentsDirectory: root.path,
+      catalog: catalog,
+      reservedAddresses: _Reserved(),
+    );
+    try {
+      expect(await writer.create(key, expectedGeneration: 0), isA<Ok>());
+      final reader = WalletSnapshotReader(
+        documentsDirectory: root.path,
+        readiness: PersistedWalletReadiness(revisions),
+        requiredSchemaVersion: writerSchemaVersion,
+        revisions: revisions,
+        liquidAdmission: writer,
+      );
+      expect(await reader.liquid(descriptor), isA<Ok>());
+      // A changed catalog must be refused before LWK can create a second cache.
+      final other = await lwk.Descriptor.newConfidential(
+        network: lwk.LiquidNetwork.testnet,
+        mnemonic:
+            'legal winner thank year wave sausage worth useful legal winner thank yellow',
+      );
+      catalog.descriptor = LiquidWalletDescriptor(
+        key: key,
+        scriptType: ScriptType.bip84,
+        origin: 'fixture',
+        combinedCtDescriptor: other.ctDescriptor,
+      );
+      final before = await fingerprint(
+        Directory(nativeWalletStoragePath(root.path, key)),
+      );
+      expect(
+        (await writer.create(key, expectedGeneration: 1) as Err).failure,
+        isA<TransactionSyncInvalidCatalogFailure>(),
+      );
+      expect(
+        await fingerprint(Directory(nativeWalletStoragePath(root.path, key))),
+        before,
+      );
+    } finally {
+      await revisions.close();
+      root.deleteSync(recursive: true);
+    }
+  });
 
   test(
     'Liquid hydration holds admission and preserves real store bytes',
@@ -194,4 +257,24 @@ final class FakeLease implements LiquidReadLease {
   FakeLease(this.revision, this.onRelease);
   @override
   Future<void> release() async => onRelease();
+}
+
+final class _Catalog implements WalletCatalogPort {
+  PublicWalletDescriptor descriptor;
+  _Catalog(this.descriptor);
+  @override
+  Future<Result<PublicWalletDescriptor, TransactionSyncFailure>> find(
+    WalletKey key,
+  ) async => Ok(descriptor);
+  @override
+  Future<Result<List<PublicWalletDescriptor>, TransactionSyncFailure>>
+  list() async => Ok([descriptor]);
+}
+
+final class _Reserved implements ReservedAddressPort {
+  @override
+  Future<Result<bool, TransactionSyncFailure>> isReserved(
+    WalletKey key,
+    String address,
+  ) async => const Ok(false);
 }
