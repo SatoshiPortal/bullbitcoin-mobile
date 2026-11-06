@@ -296,7 +296,7 @@ final class NativeWalletWriter implements LiquidReadAdmission {
       return Ok(_ReadLease(lock, record.state.stamp));
     } on Object catch (error) {
       lock.release();
-      final failure = _map(error);
+      final failure = _map(key, error);
       return Err(failure);
     }
   }
@@ -341,7 +341,7 @@ final class NativeWalletWriter implements LiquidReadAdmission {
       );
       return Ok(value);
     } on Object catch (error) {
-      final failure = _map(error);
+      final failure = _map(key, error);
       _reportFailure(key, failure);
       return Err(failure);
     } finally {
@@ -525,7 +525,7 @@ final class NativeWalletWriter implements LiquidReadAdmission {
         Err(:final failure) => throw _WriterFailure(failure),
       };
 
-  static TransactionSyncFailure _map(Object error) {
+  TransactionSyncFailure _map(WalletKey key, Object error) {
     if (error is Error) throw error;
     if (error is _WriterFailure) return error.failure;
     if (error is NativeStoreMissing) {
@@ -539,6 +539,19 @@ final class NativeWalletWriter implements LiquidReadAdmission {
     }
     if (isLiquidStatusConflict(error)) {
       return const TransactionSyncNeedsRepairFailure();
+    }
+    if (_failures[key] != TransactionSyncStorageFailure) {
+      // Keep long native type names readable through the support-log scrubber.
+      // Never include the exception value, which may contain wallet material.
+      final type = error.runtimeType.toString();
+      final category = [
+        for (var i = 0; i < type.length; i += 24)
+          type.substring(i, math.min(i + 24, type.length)),
+      ].join(':');
+      _diagnostics(
+        WriterLogLevel.warning,
+        'Wallet writer native exception category=$category',
+      );
     }
     return const TransactionSyncStorageFailure();
   }
