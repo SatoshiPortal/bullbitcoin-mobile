@@ -1,3 +1,5 @@
+import 'package:bb_mobile/features/wallet/public/wallet_facade.dart'
+    show SeedReferences;
 import 'package:primitives/primitives.dart' show Fingerprint;
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
 import 'package:bb_mobile/core/utils/result.dart';
@@ -40,6 +42,7 @@ void main() {
   late Secrets secrets;
   late _MockWalletRepository walletRepository;
   late _MockBoltzSwapRepository swapRepository;
+  late SeedReferences references;
   late DeleteWalletUsecase usecase;
   late String fingerprint;
 
@@ -64,8 +67,10 @@ void main() {
 
     walletRepository = _MockWalletRepository();
     swapRepository = _MockBoltzSwapRepository();
+    references = SeedReferences(walletRepository);
     usecase = DeleteWalletUsecase(
       walletRepository: walletRepository,
+      seedReferences: references,
       swapRepository: swapRepository,
       secrets: secrets,
     );

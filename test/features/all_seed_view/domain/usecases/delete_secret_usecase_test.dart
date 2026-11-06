@@ -1,3 +1,5 @@
+import 'package:bb_mobile/features/wallet/public/wallet_facade.dart'
+    show SeedReferences;
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/features/all_seed_view/domain/all_seed_view_failure.dart';
@@ -32,6 +34,7 @@ void main() {
   late FakeSecureStoragePlatform storage;
   late Secrets secrets;
   late _MockWalletRepository walletRepository;
+  late SeedReferences references;
   late DeleteSecretUsecase usecase;
   late Fingerprint id;
 
@@ -45,10 +48,8 @@ void main() {
         (await secrets.import(words: words)) as Ok<Secret, SecretFailure>;
     id = stored.value.id;
     walletRepository = _MockWalletRepository();
-    usecase = DeleteSecretUsecase(
-      secrets: secrets,
-      walletRepository: walletRepository,
-    );
+    references = SeedReferences(walletRepository);
+    usecase = DeleteSecretUsecase(secrets: secrets, seedReferences: references);
   });
 
   group('DeleteSecretUsecase', () {

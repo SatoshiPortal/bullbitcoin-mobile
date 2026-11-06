@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/wallet/domain/seed_reference_port.dart';
 import 'package:primitives/primitives.dart' show Fingerprint;
 import 'dart:async';
 import 'package:bb_mobile/features/wallet/data/wallet_native_runtime.dart';
@@ -27,7 +28,7 @@ import 'package:bb_mobile/core/wallet/wallet_metadata_service.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/watch_only_wallet_entity.dart';
 import 'package:meta/meta.dart';
 
-class WalletRepository {
+class WalletRepository implements SeedReferencePort {
   final WalletNativeLifecycle? _native;
   final _unavailable = <String, Type>{};
   int _invalidCatalogCount = 0;
@@ -346,6 +347,7 @@ class WalletRepository {
 
   /// Exhaustive custody references, independent of origin and native reads.
   /// A partial result must never authorize destruction of a secret.
+  @override
   @useResult
   Future<Result<Set<Fingerprint>, WalletFailure>>
   getCustodyFingerprints() async {

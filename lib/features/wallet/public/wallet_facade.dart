@@ -1,3 +1,4 @@
+export 'package:bb_mobile/features/wallet/domain/seed_reference_port.dart';
 import 'package:transaction_sync/transaction_sync.dart';
 export 'package:transaction_sync/transaction_sync.dart'
     show WalletRevisionState, WalletRevision, WalletKey, WalletLifecycle;
