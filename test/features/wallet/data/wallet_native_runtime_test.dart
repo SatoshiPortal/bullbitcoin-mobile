@@ -12,6 +12,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';
 import 'package:transaction_sync/read.dart';
+import 'package:transaction_sync/write.dart';
 import 'package:transaction_sync/transaction_sync.dart';
 
 class _Metadata extends Mock implements WalletMetadataDatasource {}
@@ -38,6 +39,36 @@ class _Offline implements WalletConnectionPolicy {
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
+  test(
+    'failed initialization can be retried without failing startup',
+    () async {
+      final directory = Directory.systemTemp.createTempSync('runtime-retry-');
+      final metadata = _Metadata();
+      when(() => metadata.fetchAll()).thenAnswer((_) async => []);
+      var attempts = 0;
+      final runtime = WalletNativeRuntime(
+        catalog: WalletCatalogPortImpl(metadata),
+        reserved: _Reserved(),
+        metadata: metadata,
+        sync: ElectrumSync(
+          connections: _Offline(),
+          documentsDirectory: () async => directory.path,
+        ),
+        documentsDirectory: () async {
+          if (++attempts == 1) throw const FileSystemException('unavailable');
+          return directory.path;
+        },
+      );
+      try {
+        await runtime.initialize();
+        await runtime.initialize();
+        expect(attempts, 2);
+      } finally {
+        await runtime.close();
+        directory.deleteSync(recursive: true);
+      }
+    },
+  );
   test(
     'offline create, issued address, read and tombstone survive reopening',
     () async {
@@ -135,6 +166,19 @@ void main() {
         final advanced = await runtime.receive(row, advance: true);
         expect(await runtime.issuedReceiveIndex(row), advanced.index);
         expect(advanced.index, address.index + 1);
+        await runtime.close();
+        final metadataFile = File(writerMetadataPath(directory.path));
+        metadataFile.writeAsStringSync('corrupt revision metadata');
+        runtime = open();
+        await runtime.initialize();
+        final adopted = await runtime.bitcoin(WalletModel.fromMetadata(row));
+        expect(adopted.balance().total.toSat(), 0);
+        expect(
+          metadataFile.parent.listSync().where(
+            (file) => file.path.contains('.corrupt-'),
+          ),
+          isNotEmpty,
+        );
         await runtime.delete(row);
         await expectLater(
           runtime.bitcoin(WalletModel.fromMetadata(row)),
