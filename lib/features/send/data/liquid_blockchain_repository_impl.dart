@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/electrum_settings/domain/electrum_environment.dart';
 import 'package:bb_mobile/core/blockchain/data/datasources/lwk_liquid_blockchain_datasource.dart';
 import 'package:bb_mobile/core/blockchain/domain/repositories/liquid_blockchain_repository.dart';
 import 'package:bb_mobile/core/electrum/domain/ports/electrum_servers_port.dart';
@@ -19,7 +20,9 @@ class LiquidBlockchainRepositoryImpl implements LiquidBlockchainRepository {
   }) {
     return _serversPort.runWithFallback<String>(
       network: ElectrumServerNetwork.fromEnvironment(
-        isTestnet: isTestnet,
+        environment: isTestnet
+            ? ElectrumEnvironment.testnet
+            : ElectrumEnvironment.mainnet,
         isLiquid: true,
       ),
       operation: (connection) => _blockchain.broadcastTransaction(

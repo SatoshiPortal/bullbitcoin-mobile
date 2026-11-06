@@ -12,7 +12,7 @@ final class AppPayjoinFeesAdapter implements PayjoinFeesPort {
   Future<FeeRate> fastestFeeRate({required BitcoinNetwork network}) async {
     final fees = await _fees.getNetworkFees(
       network: Network.fromEnvironment(
-        isTestnet: !network.isMainnet,
+        environment: network.env,
         isLiquid: false,
       ),
     );

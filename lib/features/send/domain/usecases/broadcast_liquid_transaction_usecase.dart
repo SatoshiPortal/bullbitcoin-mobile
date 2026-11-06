@@ -1,3 +1,5 @@
+import 'package:bull_logger/bull_logger.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/blockchain/domain/repositories/liquid_blockchain_repository.dart';
 import 'package:bb_mobile/core/errors/send_errors.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
@@ -13,7 +15,13 @@ class BroadcastLiquidTransactionUsecase {
 
   Future<String> execute(String signedPset, {bool? isTestnet}) async {
     try {
-      isTestnet ??= (await _settingsRepository.fetch()).environment.isTestnet;
+      final settings = await _settingsRepository.fetch();
+      isTestnet ??= settings.environment.requireHistoricalTestnet();
+      if (isTestnet &&
+          (settings.isSuperuser != true || settings.isDevModeEnabled != true)) {
+        log.warning('Liquid broadcast refused category=authorization');
+        throw const UnsupportedNetworkException();
+      }
       return await _liquidBlockchain.broadcastTransaction(
         signedPset: signedPset,
         isTestnet: isTestnet,

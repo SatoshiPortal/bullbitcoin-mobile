@@ -59,8 +59,8 @@ final class AppPayjoinTransactionAdapter implements PayjoinTransactionPort {
     final bool isKnownRemotely;
     try {
       isKnownRemotely = await _servers.runWithFallback<bool>(
-        network: ElectrumServerNetwork.fromEnvironment(
-          isTestnet: wallet.isTestnet,
+        network: ElectrumServerNetwork.fromNetworkEnv(
+          wallet.network.environment,
           isLiquid: false,
         ),
         operation: (connection) => _blockchain.isTransactionKnown(

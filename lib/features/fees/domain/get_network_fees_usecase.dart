@@ -14,18 +14,21 @@ class GetNetworkFeesUsecase {
     required this._settingsRepository,
   });
 
-  Future<FeeOptions> execute({required bool isLiquid}) async {
+  Future<FeeOptions> execute({required bool isLiquid, Network? network}) async {
     try {
-      final settings = await _settingsRepository.fetch();
-      final environment = settings.environment;
-      final network = Network.fromEnvironment(
-        isTestnet: environment.isTestnet,
-        isLiquid: isLiquid,
-      );
-
-      return await _feesRepository.getNetworkFees(network: network);
+      final requestedNetwork =
+          network ??
+          Network.fromEnvironment(
+            environment:
+                (await _settingsRepository.fetch()).environment.networkEnv,
+            isLiquid: isLiquid,
+          );
+      if (requestedNetwork.isLiquid != isLiquid) {
+        throw GetNetworkFeesException('Fee network does not match asset');
+      }
+      return await _feesRepository.getNetworkFees(network: requestedNetwork);
     } catch (e) {
-      log.severe(error: e, trace: StackTrace.current);
+      log.warning('Network fee estimation unavailable: ${e.runtimeType}');
       throw GetNetworkFeesException('Error while getting network fees.');
     }
   }

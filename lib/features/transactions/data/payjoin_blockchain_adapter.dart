@@ -17,10 +17,7 @@ final class AppPayjoinBlockchainAdapter implements PayjoinBlockchainPort {
     required BitcoinNetwork network,
     required Uint8List transaction,
   }) => _servers.runWithFallback<void>(
-    network: ElectrumServerNetwork.fromEnvironment(
-      isTestnet: !network.isMainnet,
-      isLiquid: false,
-    ),
+    network: ElectrumServerNetwork.fromNetworkEnv(network.env, isLiquid: false),
     operation: (connection) =>
         _blockchain.broadcastTransaction(transaction, connection: connection),
   );
@@ -30,10 +27,7 @@ final class AppPayjoinBlockchainAdapter implements PayjoinBlockchainPort {
     required BitcoinNetwork network,
     required String psbt,
   }) => _servers.runWithFallback<void>(
-    network: ElectrumServerNetwork.fromEnvironment(
-      isTestnet: !network.isMainnet,
-      isLiquid: false,
-    ),
+    network: ElectrumServerNetwork.fromNetworkEnv(network.env, isLiquid: false),
     operation: (connection) =>
         _blockchain.broadcastPsbt(psbt, connection: connection),
   );

@@ -1,3 +1,6 @@
+import 'package:bb_mobile/core/electrum/domain/ports/electrum_servers_port.dart';
+import 'package:bb_mobile/features/electrum_settings/domain/electrum_server_network.dart';
+import 'package:bb_mobile/features/fees/data/regtest_fees_datasource.dart';
 import 'package:bb_mobile/core/fees/data/fees_datasource.dart';
 import 'package:bb_mobile/core/fees/data/mappers/mempool_fees_mapper.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
@@ -10,21 +13,44 @@ import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 
 class FeesRepositoryImpl implements FeesRepository {
+  final ElectrumServersPort? _electrumServers;
+  final RegtestFeesDatasource _regtestFeesDatasource;
   final FeesDatasource _feesDatasource;
   final MempoolSettingsRepository _mempoolSettingsRepository;
   final MempoolServerRepository _mempoolServerRepository;
 
   const FeesRepositoryImpl({
     required this._feesDatasource,
+    this._electrumServers,
+    this._regtestFeesDatasource = const RegtestFeesDatasource(),
     required this._mempoolSettingsRepository,
     required this._mempoolServerRepository,
   });
 
   @override
   Future<FeeOptions> getNetworkFees({required Network network}) async {
+    if (network == Network.bitcoinRegtest) {
+      final electrumServers = _electrumServers;
+      if (electrumServers == null) {
+        throw MempoolFeesException('Regtest fee estimates unavailable');
+      }
+      try {
+        return await electrumServers.runWithFallback(
+          network: ElectrumServerNetwork.bitcoinRegtest,
+          operation: _regtestFeesDatasource.fetch,
+        );
+      } on Exception {
+        throw MempoolFeesException('Regtest fee estimates unavailable');
+      }
+    }
+    if (network == Network.liquidRegtest) {
+      throw MempoolFeesException('Fee estimates unavailable for this network');
+    }
     if (network.isBitcoin) {
       final fees = await _feesDatasource.fetchBitcoinNetworkFees(
-        baseUrl: await _resolveBitcoinMempoolUrl(isTestnet: network.isTestnet),
+        baseUrl: await _resolveBitcoinMempoolUrl(
+          isTestnet: network.requireHistoricalTestnet(),
+        ),
       );
       return MempoolFeesMapper.toFeeOptions(fees);
     }

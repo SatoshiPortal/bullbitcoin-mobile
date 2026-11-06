@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'dart:typed_data';
 
 import 'package:bb_mobile/core/blockchain/data/datasources/bdk_bitcoin_blockchain_datasource.dart';
@@ -19,13 +20,20 @@ class BitcoinBlockchainRepository {
 
   Future<String> broadcastPsbt(
     String finalizedPsbt, {
-    required bool isTestnet,
+    Network? network,
+    bool? isTestnet,
   }) {
+    if (network != null && isTestnet != null) {
+      throw ArgumentError('Supply exactly one network representation');
+    }
+    network ??= Network.fromEnvironment(isTestnet: isTestnet, isLiquid: false);
     return _serversPort.runWithFallback<String>(
-      network: ElectrumServerNetwork.fromEnvironment(
-        isTestnet: isTestnet,
-        isLiquid: false,
-      ),
+      network: switch (network) {
+        Network.bitcoinMainnet => ElectrumServerNetwork.bitcoinMainnet,
+        Network.bitcoinTestnet => ElectrumServerNetwork.bitcoinTestnet,
+        Network.bitcoinRegtest => ElectrumServerNetwork.bitcoinRegtest,
+        _ => throw const UnsupportedNetworkException(),
+      },
       operation: (connection) =>
           _blockchain.broadcastPsbt(finalizedPsbt, connection: connection),
     );
@@ -33,13 +41,20 @@ class BitcoinBlockchainRepository {
 
   Future<String> broadcastTransaction(
     List<int> transaction, {
-    required bool isTestnet,
+    Network? network,
+    bool? isTestnet,
   }) {
+    if (network != null && isTestnet != null) {
+      throw ArgumentError('Supply exactly one network representation');
+    }
+    network ??= Network.fromEnvironment(isTestnet: isTestnet, isLiquid: false);
     return _serversPort.runWithFallback<String>(
-      network: ElectrumServerNetwork.fromEnvironment(
-        isTestnet: isTestnet,
-        isLiquid: false,
-      ),
+      network: switch (network) {
+        Network.bitcoinMainnet => ElectrumServerNetwork.bitcoinMainnet,
+        Network.bitcoinTestnet => ElectrumServerNetwork.bitcoinTestnet,
+        Network.bitcoinRegtest => ElectrumServerNetwork.bitcoinRegtest,
+        _ => throw const UnsupportedNetworkException(),
+      },
       operation: (connection) => _blockchain.broadcastTransaction(
         Uint8List.fromList(transaction),
         connection: connection,

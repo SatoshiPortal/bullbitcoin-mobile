@@ -16,6 +16,7 @@ class FeesLocator {
         feesDatasource: locator<FeesDatasource>(),
         mempoolSettingsRepository: locator(),
         mempoolServerRepository: locator(),
+        electrumServers: locator(),
       ),
     );
   }
