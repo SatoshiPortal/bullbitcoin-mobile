@@ -1,3 +1,5 @@
+import 'package:primitives/primitives.dart'
+    show BitcoinNetwork, NetworkCapabilities, NetworkCapability;
 import 'package:bb_mobile/core/errors/exchange_errors.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/sepa_payment_processor.dart';
@@ -54,7 +56,13 @@ class CreateWithdrawOrderUsecase {
 
     try {
       final settings = await _settingsRepository.fetch();
-      final isTestnet = settings.environment.isTestnet;
+      if (!NetworkCapabilities.supports(
+        BitcoinNetwork.fromName(settings.environment.name),
+        NetworkCapability.exchange,
+      )) {
+        return const Err(WithdrawUnsupportedNetworkFailure());
+      }
+      final isTestnet = settings.environment.requireHistoricalTestnet();
       final repo = isTestnet
           ? _testnetExchangeOrderRepository
           : _mainnetExchangeOrderRepository;

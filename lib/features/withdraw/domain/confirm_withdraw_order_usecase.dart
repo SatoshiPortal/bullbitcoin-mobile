@@ -1,3 +1,5 @@
+import 'package:primitives/primitives.dart'
+    show BitcoinNetwork, NetworkEnv, NetworkCapabilities, NetworkCapability;
 import 'package:bb_mobile/core/errors/exchange_errors.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
@@ -30,7 +32,20 @@ class ConfirmWithdrawOrderUsecase {
     final WithdrawOrder order;
     try {
       final settings = await _settingsRepository.fetch();
-      final isTestnet = settings.environment.isTestnet;
+      final environment = settings.environment.networkEnv;
+      final exchangeNetwork = switch (environment) {
+        NetworkEnv.mainnet => BitcoinNetwork.mainnet,
+        NetworkEnv.testnet => BitcoinNetwork.testnet,
+        NetworkEnv.regtest => BitcoinNetwork.regtest,
+        NetworkEnv.signet => BitcoinNetwork.signet,
+      };
+      if (!NetworkCapabilities.supports(
+        exchangeNetwork,
+        NetworkCapability.exchange,
+      )) {
+        return const Err(WithdrawUnsupportedNetworkFailure());
+      }
+      final isTestnet = environment == NetworkEnv.testnet;
       final repo = isTestnet
           ? _testnetExchangeOrderRepository
           : _mainnetExchangeOrderRepository;
