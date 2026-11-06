@@ -14,17 +14,16 @@ void main() {
           'lib/core/storage/sqlite_database.dart',
         ).readAsStringSync();
         final initialization = File('lib/init.dart').readAsStringSync();
-        final bdk = File(
-          'lib/core/wallet/data/datasources/bdk_facade.dart',
+        final walletComposition = File(
+          'lib/features/wallet/wallet_locator.dart',
         ).readAsStringSync();
-        final lwk = File(
-          'lib/core/wallet/data/datasources/lwk_facade.dart',
+        final writer = File(
+          'packages/transaction_sync/lib/src/write/native_write_session.dart',
         ).readAsStringSync();
-
         expect(sqlite, contains('getApplicationDocumentsDirectory'));
         expect(initialization, contains('getApplicationDocumentsDirectory'));
-        expect(bdk, contains('getApplicationDocumentsDirectory'));
-        expect(lwk, contains('getApplicationDocumentsDirectory'));
+        expect(walletComposition, contains('getApplicationDocumentsDirectory'));
+        expect(writer, contains('nativeWalletStoragePath(documentsDirectory'));
 
         final nativeAndDart = <String>[];
         for (final root in [Directory('lib'), Directory('ios')]) {
