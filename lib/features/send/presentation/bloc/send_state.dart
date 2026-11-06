@@ -1,3 +1,6 @@
+import 'package:primitives/primitives.dart'
+    show NetworkCapabilities, NetworkCapability;
+import 'package:bb_mobile/features/wallet/domain/network_x.dart';
 import 'package:bb_mobile/core/fees/domain/fee_preview_cache.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
@@ -205,12 +208,20 @@ abstract class SendState with _$SendState {
   /// confirm screen swaps in a device-specific sign button for those
   /// wallets instead), so without this check the toggle could promise a
   /// payjoin that structurally can never happen for that wallet class.
-  bool get isPayjoinAvailable =>
-      payjoinGloballyEnabled &&
-      (selectedWallet?.signsLocally ?? false) &&
-      isToSelf != true &&
-      paymentRequest is Bip21PaymentRequest &&
-      (paymentRequest! as Bip21PaymentRequest).pj.isNotEmpty;
+  bool get isPayjoinAvailable {
+    final wallet = selectedWallet;
+    final request = paymentRequest;
+    return payjoinGloballyEnabled &&
+        wallet != null &&
+        NetworkCapabilities.supports(
+          wallet.network.shared,
+          NetworkCapability.payjoin,
+        ) &&
+        wallet.signsLocally &&
+        isToSelf != true &&
+        request is Bip21PaymentRequest &&
+        request.pj.isNotEmpty;
+  }
 
   /// Single source of truth for whether a payjoin will actually be attempted
   /// for this send — same pattern as [Payjoin.canManuallyBroadcastOriginal],

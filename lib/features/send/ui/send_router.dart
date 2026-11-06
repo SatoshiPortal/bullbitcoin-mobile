@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/send/domain/usecases/detect_bitcoin_string_usecase.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_cubit.dart';
@@ -52,7 +53,9 @@ class SendRouter {
         name: SendRoute.requestIdentifier.name,
         path: SendRoute.requestIdentifier.path,
         builder: (context, state) => BlocProvider(
-          create: (_) => RequestIdentifierCubit(),
+          create: (_) => RequestIdentifierCubit(
+            detect: locator<DetectBitcoinStringUsecase>(),
+          ),
           child: const RequestIdentifierScreen(),
         ),
       ),

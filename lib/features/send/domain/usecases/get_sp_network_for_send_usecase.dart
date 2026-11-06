@@ -17,9 +17,10 @@ class GetSpNetworkForSendUsecase {
   Result<Network, SendFailure> execute() => _spFacade.network().fold(
     (network) => switch (network) {
       BitcoinNetwork.mainnet => const Ok(Network.bitcoinMainnet),
-      BitcoinNetwork.testnet ||
-      BitcoinNetwork.signet ||
-      BitcoinNetwork.regtest => const Ok(Network.bitcoinTestnet),
+      BitcoinNetwork.testnet => const Ok(Network.bitcoinTestnet),
+      BitcoinNetwork.signet || BitcoinNetwork.regtest => const Err(
+        SendUnexpectedFailure('unsupported network'),
+      ),
       null => const Err(
         SendUnexpectedFailure('no live SP session to read the network from'),
       ),

@@ -74,7 +74,7 @@ class SendLocator {
       () => WatchPayjoinUsecase(locator<PayjoinSessions>()),
     );
     locator.registerFactory<DetectBitcoinStringUsecase>(
-      () => DetectBitcoinStringUsecase(),
+      () => DetectBitcoinStringUsecase(settings: locator<GetSettingsUsecase>()),
     );
     locator.registerFactory<PrepareBitcoinSendUsecase>(
       () => PrepareBitcoinSendUsecase(

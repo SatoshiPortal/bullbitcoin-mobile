@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/wallet/domain/network_x.dart';
 import 'package:bb_mobile/features/send/domain/usecases/watch_wallet_revisions_usecase.dart';
 import 'package:bull_pricer/bull_pricer.dart';
 import 'package:primitives/primitives.dart' show Sats;
@@ -382,6 +383,21 @@ class SendCubit extends Cubit<SendState>
   ) async {
     _startNewPaymentRequestInput();
     clearFailure();
+    final raw = scannedRawPaymentRequest.trim().toLowerCase();
+    if (paymentRequest == null ||
+        raw.startsWith('bcrt1') ||
+        raw.startsWith('bitcoin:bcrt1') ||
+        raw.startsWith('el1') ||
+        raw.startsWith('ert1')) {
+      try {
+        paymentRequest = await _detectBitcoinStringUsecase.execute(
+          data: scannedRawPaymentRequest,
+        );
+      } on Exception {
+        emit(state.copyWith(failure: const SendInvalidPaymentRequestFailure()));
+        return;
+      }
+    }
     final sanitizedText = scannedRawPaymentRequest.trim().replaceAll(
       RegExp(r'^["\"]+|["\"]+$'),
       '',
@@ -1107,7 +1123,20 @@ class SendCubit extends Cubit<SendState>
       );
       return;
     }
-    // Any failure keeps the user here.
+    // Regtest nodes may have no fee estimate yet. Keep the explicit failure
+    // and unsigned state, but expose the existing custom-fee control on the
+    // confirmation screen. A build still needs a user-selected valid fee.
+    if (state.failure is SendFeesUnavailableFailure &&
+        state.selectedWallet?.network == Network.bitcoinRegtest &&
+        state.sendType == SendType.bitcoin &&
+        state.inputAmountSat > 0 &&
+        await hasBalance()) {
+      emit(
+        state.copyWith(step: SendStep.confirm, amountConfirmedClicked: false),
+      );
+      return;
+    }
+    // Any other failure keeps the user here.
     if (state.failure == null) {
       emit(
         state.copyWith(
@@ -1272,10 +1301,27 @@ class SendCubit extends Cubit<SendState>
   }
 
   Future<void> loadFees() async {
-    if (state.selectedWallet == null) return;
+    final wallet = state.selectedWallet;
+    if (wallet == null) return;
+    final environment = wallet.network.environment;
     try {
-      final bitcoinFees = await _getNetworkFeesUsecase.execute(isLiquid: false);
-      final liquidFees = await _getNetworkFeesUsecase.execute(isLiquid: true);
+      final bitcoinFees = await _getNetworkFeesUsecase.execute(
+        isLiquid: false,
+        network: Network.fromEnvironment(
+          environment: environment,
+          isLiquid: false,
+        ),
+      );
+      final liquidFees = wallet.network == Network.bitcoinRegtest
+          ? null
+          : await _getNetworkFeesUsecase.execute(
+              isLiquid: true,
+              network: Network.fromEnvironment(
+                environment: environment,
+                isLiquid: true,
+              ),
+            );
+      if (state.selectedWallet?.network != wallet.network) return;
       final ratesChanged =
           state.bitcoinFeesList != bitcoinFees ||
           state.liquidFeesList != liquidFees;
@@ -1299,13 +1345,14 @@ class SendCubit extends Cubit<SendState>
       // clear when the API returned identical rates (which freezed
       // equality on FeeOptions makes cheap to check).
       if (ratesChanged) clearBitcoinFeePreviews();
-    } catch (e, st) {
-      log.severe(
-        message: 'Failed to load the network fee rates',
-        error: e,
-        trace: st,
+    } catch (e) {
+      if (state.selectedWallet?.network != wallet.network) return;
+      log.warning('Network fee rates unavailable', error: e.runtimeType);
+      emit(
+        state.copyWith(
+          failure: SendFeesUnavailableFailure(e.runtimeType.toString()),
+        ),
       );
-      emit(state.copyWith(failure: SendFeesUnavailableFailure(e.toString())));
     }
   }
 
@@ -1612,11 +1659,19 @@ class SendCubit extends Cubit<SendState>
     _invalidateSignedTransaction();
     final generation = _transactionGeneration;
     try {
-      if (state.bitcoinFeesList == null || state.liquidFeesList == null) {
-        await loadFees();
-        if (state.bitcoinFeesList == null || state.liquidFeesList == null) {
-          return;
+      if (!isSpMode && state.selectedWallet == null) return;
+      bool hasSelectedFee() {
+        if (state.selectedFeeOption == FeeSelection.custom) {
+          return state.customFee != null;
         }
+        return (state.selectedWallet?.isLiquid ?? false)
+            ? state.liquidFeesList != null
+            : state.bitcoinFeesList != null;
+      }
+
+      if (!hasSelectedFee()) {
+        await loadFees();
+        if (!hasSelectedFee()) return;
       }
       if (generation != _transactionGeneration) return;
       clearFailure();
@@ -1779,15 +1834,7 @@ class SendCubit extends Cubit<SendState>
           );
           if (generation != _transactionGeneration) return;
         }
-        log.info(
-          '[create-tx] build address=$address amount=$amount '
-          'rate=${selectedFee is RelativeFee ? selectedFee.satPerVbyte : selectedFee.value} '
-          'drain=$drain selectedInputs=${state.selectedUtxos.length} '
-          'rbf=${state.replaceByFee} '
-          'lightningOrder=${state.lightningOrder != null} '
-          'chainSwap=${state.chainSwap != null} '
-          'cacheHit=$canUseCache',
-        );
+        log.fine('[create-tx] building cacheHit=$canUseCache');
         final txPreparation = canUseCache
             ? (
                 unsignedPsbt: cachedSlot.unsignedPsbt!,
@@ -1829,11 +1876,7 @@ class SendCubit extends Cubit<SendState>
             return;
           }
         }
-        log.info(
-          '[create-tx] built vsize=${txPreparation.txSize} '
-          'realFee=$builtFee sats '
-          '(impliedRate=${txPreparation.txSize > 0 ? (builtFee / txPreparation.txSize).toStringAsFixed(4) : "n/a"} sat/vB)',
-        );
+        log.fine('[create-tx] transaction prepared');
 
         // Belt-and-suspenders relay-floor re-assert. The commit gate in
         // finalizeArmedCustomFee checks an ABSOLUTE custom fee against the
@@ -1849,11 +1892,7 @@ class SendCubit extends Cubit<SendState>
         );
         if (!clearsRelay) {
           if (generation != _transactionGeneration) return;
-          log.warning(
-            '[create-tx] ABORT — built fee $builtFee sats at '
-            '${txPreparation.txSize} vbytes is below the relay floor '
-            '(${state.bitcoinFeesList?.minRelay.satPerVbyte ?? NetworkFeeRelayPolicy.minRelaySatPerVbyte} sat/vB)',
-          );
+          log.warning('[create-tx] built fee below relay floor');
           emit(
             state.copyWith(
               failure: SendFeeBelowRelayFloorFailure(
@@ -1991,6 +2030,15 @@ class SendCubit extends Cubit<SendState>
         );
         return;
       }
+      if (e is InvalidWalletAddressException) {
+        emit(
+          state.copyWith(
+            failure: const SendAddressNetworkMismatchFailure(),
+            buildingTransaction: false,
+          ),
+        );
+        return;
+      }
       if (e is PrepareBitcoinSendException) {
         emit(
           state.copyWith(
@@ -2075,7 +2123,7 @@ class SendCubit extends Cubit<SendState>
           final paymentRequest = state.paymentRequest! as Bip21PaymentRequest;
           final payjoinResult = await _sendWithPayjoinUsecase.execute(
             walletId: state.selectedWallet!.id,
-            isTestnet: state.selectedWallet!.network.isTestnet,
+            network: state.selectedWallet!.network.bitcoin,
             bip21: paymentRequest.uri,
             unsignedOriginalPsbt: state.unsignedPsbt!,
             amountSat: state.confirmedAmountSat!,
@@ -2217,6 +2265,7 @@ class SendCubit extends Cubit<SendState>
         txId = await _broadcastBitcoinTxUsecase.execute(
           persistedPayin ??
               (isPsbt ? state.signedBitcoinPsbt! : state.signedBitcoinTx!),
+          network: wallet.network,
           isPsbt: persistedPayinIsPsbt ?? isPsbt,
         );
       }
@@ -2386,7 +2435,7 @@ class SendCubit extends Cubit<SendState>
           state.copyWith(
             paymentRequest: PaymentRequest.bitcoin(
               address: rawPaymentRequest,
-              isTestnet: network.isTestnet,
+              isTestnet: network.requireHistoricalTestnet(),
             ),
             sendType: SendType.bitcoin,
             step: SendStep.amount,

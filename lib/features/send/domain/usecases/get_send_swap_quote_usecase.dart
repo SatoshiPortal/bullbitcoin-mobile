@@ -1,3 +1,6 @@
+import 'package:bb_mobile/features/wallet/domain/network_x.dart';
+import 'package:primitives/primitives.dart'
+    show NetworkCapabilities, NetworkCapability;
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/send/domain/send_failure.dart';
@@ -15,6 +18,12 @@ class GetSendSwapQuoteUsecase {
     required Wallet wallet,
     required BigInt amountSat,
   }) async {
+    if (!NetworkCapabilities.supports(
+      wallet.network.shared,
+      NetworkCapability.swaps,
+    )) {
+      return const Err(SendSwapRouteUnavailableFailure());
+    }
     if (amountSat <= BigInt.zero) {
       return const Err(SendInvoiceAmountRequiredFailure());
     }
@@ -22,7 +31,7 @@ class GetSendSwapQuoteUsecase {
         ? OrderSwapNetwork.liquid
         : OrderSwapNetwork.bitcoin;
     final result = await _swapFacade.getQuote(
-      environment: wallet.network.isTestnet
+      environment: wallet.network.requireHistoricalTestnet()
           ? OrderSwapEnvironment.testnet
           : OrderSwapEnvironment.mainnet,
       amountSat: amountSat,

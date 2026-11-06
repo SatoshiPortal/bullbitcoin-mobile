@@ -349,7 +349,8 @@ sealed class PaymentRequest with _$PaymentRequest {
     BitcoinPaymentRequest(isTestnet: final isTestnet) => isTestnet,
     LiquidPaymentRequest(isTestnet: final isTestnet) => isTestnet,
     Bolt11PaymentRequest(isTestnet: final isTestnet) => isTestnet,
-    Bip21PaymentRequest(network: final network) => network.isTestnet,
+    Bip21PaymentRequest(network: final network) =>
+      network.requireHistoricalTestnet(),
     LnAddressPaymentRequest() => false,
     PsbtPaymentRequest() => false,
   };

@@ -2117,7 +2117,11 @@ class ShowPsbtButton extends StatelessWidget {
       onPressed: () {
         context.pushNamed(
           PsbtFlowRoutes.show.name,
-          extra: (psbt: unsignedPsbt, signerDevice: signerDevice),
+          extra: (
+            psbt: unsignedPsbt,
+            signerDevice: signerDevice,
+            wallet: context.read<SendCubit>().state.selectedWallet,
+          ),
         );
       },
       bgColor: context.appColors.secondary,
