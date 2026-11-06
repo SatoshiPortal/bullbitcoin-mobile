@@ -9,8 +9,10 @@ class Preferences implements BackgroundPreferencesRepository {
   int requests = 0;
   var selected = BackgroundSyncInterval.hour1;
   var failWrite = false;
+  var failRead = false;
   @override
-  Future<BackgroundSyncInterval> interval() async => selected;
+  Future<Result<BackgroundSyncInterval, SettingsFailure>> interval() async =>
+      failRead ? const Err(SettingsStorageFailure()) : Ok(selected);
   @override
   Future<Result<bool, SettingsFailure>> notificationsAllowed() async =>
       const Ok(false);
@@ -34,6 +36,13 @@ class Preferences implements BackgroundPreferencesRepository {
 }
 
 void main() {
+  test('read failures remain typed without requesting permission', () async {
+    final repository = Preferences()..failRead = true;
+    final state = await BackgroundPreferencesUsecase(repository).execute();
+    expect(state.failure, isA<SettingsStorageFailure>());
+    expect(repository.requests, 0);
+  });
+
   test(
     'loading and interval changes never prompt; only explicit request does',
     () async {
