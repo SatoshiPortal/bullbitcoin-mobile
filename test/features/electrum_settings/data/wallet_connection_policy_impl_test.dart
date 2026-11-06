@@ -100,13 +100,34 @@ void main() {
         );
         expect(servers.attempts, retry ? 2 : 1);
         expect(result, isA<Err<int, TransactionSyncFailure>>());
-        if (!retry) {
-          expect(
-            (result as Err<int, TransactionSyncFailure>).failure,
-            isA<TransactionSyncBusyFailure>(),
-          );
-        }
+        expect(
+          (result as Err<int, TransactionSyncFailure>).failure,
+          isA<TransactionSyncBusyFailure>(),
+        );
       }
+    },
+  );
+
+  test(
+    'exhausted fallback preserves the last distinct caller failure',
+    () async {
+      final servers = _Servers();
+      const lastFailure = TransactionSyncStorageFailure();
+      final result = await WalletConnectionPolicyImpl(servers).run<int>(
+        network: BitcoinNetwork.mainnet,
+        mayRetry: (_) => true,
+        operation: (_) async => Err(
+          servers.attempts == 1
+              ? const TransactionSyncConnectionFailure()
+              : lastFailure,
+        ),
+      );
+      expect(servers.attempts, 2);
+      expect(
+        (result as Err<int, TransactionSyncFailure>).failure,
+        same(lastFailure),
+      );
+      expect(servers.open, isFalse);
     },
   );
 
