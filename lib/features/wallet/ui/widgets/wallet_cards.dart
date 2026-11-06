@@ -24,7 +24,7 @@ class WalletCards extends StatelessWidget {
   final String? fiatCurrency;
 
   static Color cardDetails(BuildContext context, Wallet wallet) {
-    final isTestnet = wallet.isTestnet;
+    final isTestnet = !wallet.network.isMainnet;
     final isLiquid = wallet.isLiquid;
     final watchOrSignsRemotely = wallet.isWatchOnly || wallet.signsRemotely;
 

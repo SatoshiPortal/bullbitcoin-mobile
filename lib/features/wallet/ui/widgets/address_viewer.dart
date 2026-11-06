@@ -1,3 +1,5 @@
+import 'package:primitives/primitives.dart'
+    show BitcoinNetwork, NetworkCapabilities, NetworkCapability;
 import 'package:bb_mobile/core/mempool/domain/services/mempool_url_builder.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
@@ -110,7 +112,21 @@ class AddressViewer extends StatelessWidget {
     return width;
   }
 
+  // Regtest creation and payment validation permit native SegWit only.
+  // The bcrt HRP identifies that concrete network even without wallet context.
+  static bool _canExplore(String address) {
+    final value = address.toLowerCase();
+    if (value.startsWith('bcrt1') || value.startsWith('bitcoin:bcrt1')) {
+      return NetworkCapabilities.supports(
+        BitcoinNetwork.regtest,
+        NetworkCapability.publicExplorer,
+      );
+    }
+    return true;
+  }
+
   static Future<String?> _getExplorerUrlFor(String data) async {
+    if (!_canExplore(data)) return null;
     final builder = locator<MempoolUrlBuilder>();
     final parsed = await Satoshifier.tryParse(data);
     return switch (parsed) {
@@ -225,7 +241,7 @@ class _AddressDetailSheetState extends State<_AddressDetailSheet> {
           _buildBody(context),
           const Gap(24),
           _buildCopyAction(context),
-          if (!_showUri) ...[
+          if (!_showUri && AddressViewer._canExplore(widget.data)) ...[
             const Gap(16),
             _buildCopyLinkAction(context),
             const Gap(16),

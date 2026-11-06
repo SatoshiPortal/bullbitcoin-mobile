@@ -168,6 +168,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
   ) async {
     final catalog = ++_catalogGeneration;
     final updates = Map<String, int>.of(_walletUpdateVersions);
+    add(const RefreshSpWallet());
     await _spUpdatesSubscription?.cancel();
     _spUpdatesSubscription = _watchSpWalletUsecase.execute().listen((update) {
       switch (update) {
@@ -213,8 +214,6 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
         syncStatus: {for (final wallet in wallets) wallet.id: isSyncing},
       ),
     );
-
-    add(const RefreshSpWallet());
 
     // Now that the wallets are loaded, we can sync them as done by the refresh
     add(const WalletRefreshed());
@@ -493,11 +492,14 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
   ) async {
     // Refresh the SP feature gate (superuser + dev mode) so the wallet card
     // shows exactly when SP is enabled.
+    final bool enabled;
     try {
-      final enabled = await _checkSpFeatureGateForWalletUsecase.execute();
+      enabled = await _checkSpFeatureGateForWalletUsecase.execute();
       emit(state.copyWith(isSpFeatureEnabled: enabled));
     } catch (_) {
       log.warning('SP feature gate refresh failed category=feature_gate');
+      emit(state.copyWith(isSpFeatureEnabled: false, isSpWalletLoading: false));
+      return;
     }
 
     final bool isSpWalletSetup;
@@ -514,6 +516,11 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
         return;
     }
     emit(state.copyWith(isSpWalletSetup: isSpWalletSetup));
+    if (!enabled) {
+      // Preserve local setup knowledge without opening or refreshing a session.
+      emit(state.copyWith(isSpWalletLoading: false, spBalanceSat: 0));
+      return;
+    }
 
     // While a scan runs the live session holds the inner lock; refreshing now
     // would block on a snapshot read or time out in dispose() and tear the

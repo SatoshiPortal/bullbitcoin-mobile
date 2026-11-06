@@ -1,4 +1,9 @@
 import 'package:bb_mobile/features/wallet/domain/usecases/read_wallet_usecase.dart';
+import 'data/catalog_wallet_secret_references_repository.dart';
+import 'domain/repositories/wallet_secret_references_repository.dart';
+import 'domain/usecases/load_network_wallet_setup_usecase.dart';
+import 'domain/usecases/create_network_wallet_usecase.dart';
+import 'presentation/network_wallet_setup_cubit.dart';
 import 'package:background_tasks/background_tasks.dart';
 import 'package:flutter/widgets.dart';
 import 'data/payment_notifications.dart';
@@ -54,6 +59,31 @@ import 'package:get_it/get_it.dart';
 
 class WalletLocator {
   static void setup(GetIt locator) {
+    locator.registerFactory<WalletSecretReferencesRepository>(
+      () => CatalogWalletSecretReferencesRepository(
+        locator<WalletMetadataDatasource>(),
+      ),
+    );
+    locator.registerFactory<LoadNetworkWalletSetupUsecase>(
+      () => LoadNetworkWalletSetupUsecase(
+        locator<SettingsRepository>(),
+        locator<WalletSecretReferencesRepository>(),
+      ),
+    );
+    locator.registerFactory<CreateNetworkWalletUsecase>(
+      () => CreateNetworkWalletUsecase(
+        locator<SettingsRepository>(),
+        locator<WalletSecretReferencesRepository>(),
+        locator<Secrets>(),
+        locator<CreateDefaultWalletsUsecase>(),
+      ),
+    );
+    locator.registerFactory<NetworkWalletSetupCubit>(
+      () => NetworkWalletSetupCubit(
+        locator<LoadNetworkWalletSetupUsecase>(),
+        locator<CreateNetworkWalletUsecase>(),
+      ),
+    );
     locator.registerFactory<WatchWalletTransactionByTxIdUsecase>(
       () => WatchWalletTransactionByTxIdUsecase(
         walletTransactionRepository: locator<WalletTransactionRepository>(),

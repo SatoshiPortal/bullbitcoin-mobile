@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/wallet/ui/widgets/empty_network_wallets.dart';
 import 'package:bb_mobile/core/themes/colors.dart';
 import 'package:bb_mobile/features/announcements/ui/widgets/announcement_carousel.dart';
 import 'package:bb_mobile/features/bitcoin_price/presentation/bloc/bitcoin_price_bloc.dart';
@@ -14,7 +15,14 @@ import 'package:go_router/go_router.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_refresh_body.dart';
 
 class WalletHomeScreen extends StatefulWidget {
-  const WalletHomeScreen({super.key});
+  final VoidCallback onEmptyMainnet;
+  final VoidCallback onImportNetworkWallet;
+
+  const WalletHomeScreen({
+    super.key,
+    required this.onEmptyMainnet,
+    required this.onImportNetworkWallet,
+  });
 
   @override
   State<WalletHomeScreen> createState() => _WalletHomeScreenState();
@@ -93,6 +101,15 @@ class _WalletHomeScreenState extends State<WalletHomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final noWallets = context.select(
+      (WalletBloc bloc) => bloc.state.noWalletsFound,
+    );
+    if (noWallets) {
+      return EmptyNetworkWallets(
+        onMainnet: widget.onEmptyMainnet,
+        onImport: widget.onImportNetworkWallet,
+      );
+    }
     final isRefreshing = context.select(
       (WalletBloc bloc) => bloc.state.isRefreshing,
     );
