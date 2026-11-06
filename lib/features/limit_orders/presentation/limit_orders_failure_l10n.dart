@@ -4,6 +4,8 @@ import 'package:flutter/widgets.dart';
 
 extension LimitOrdersFailureL10n on LimitOrdersFailure {
   String toTranslated(BuildContext context) => switch (this) {
+    LimitOrdersUnsupportedNetworkFailure() =>
+      context.loc.networkFeatureUnavailable,
     LimitOrdersAccountUnavailableFailure() =>
       context.loc.limitOrdersAccountUnavailableError,
     LimitOrdersNoFundedBalanceFailure() =>

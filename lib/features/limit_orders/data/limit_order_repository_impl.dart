@@ -8,6 +8,8 @@ import 'package:bb_mobile/features/limit_orders/domain/limit_orders_failure.dart
 import 'package:bb_mobile/features/limit_orders/domain/repositories/limit_order_repository.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:dio/dio.dart';
+import 'package:primitives/primitives.dart'
+    show BitcoinNetwork, NetworkCapabilities, NetworkCapability;
 
 typedef _Fallback = LimitOrdersFailure Function(String logMessage);
 
@@ -21,13 +23,6 @@ final class LimitOrderRepositoryImpl implements LimitOrderRepository {
     this._testnetDatasource,
     this._settingsRepository,
   );
-
-  Future<LimitOrdersApiDatasource> get _datasource async {
-    final settings = await _settingsRepository.fetch();
-    return settings.environment.isTestnet
-        ? _testnetDatasource
-        : _mainnetDatasource;
-  }
 
   @override
   Future<Result<List<LimitOrder>, LimitOrdersFailure>> listActive() => _guard(
@@ -85,7 +80,17 @@ final class LimitOrderRepositoryImpl implements LimitOrderRepository {
     Future<T> Function(LimitOrdersApiDatasource datasource) action,
   ) async {
     try {
-      return Ok(await action(await _datasource));
+      final settings = await _settingsRepository.fetch();
+      if (!NetworkCapabilities.supports(
+        BitcoinNetwork.fromName(settings.activeNetwork.name),
+        NetworkCapability.exchange,
+      )) {
+        return const Err(LimitOrdersUnsupportedNetworkFailure());
+      }
+      final datasource = settings.environment.requireHistoricalTestnet()
+          ? _testnetDatasource
+          : _mainnetDatasource;
+      return Ok(await action(datasource));
     } on Error {
       rethrow;
     } catch (e, st) {

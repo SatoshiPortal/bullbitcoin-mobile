@@ -47,3 +47,7 @@ final class LimitOrderCancellationFailure extends LimitOrdersFailure {
 final class LimitOrdersUnexpectedFailure extends LimitOrdersFailure {
   const LimitOrdersUnexpectedFailure([super.logMessage]);
 }
+
+final class LimitOrdersUnsupportedNetworkFailure extends LimitOrdersFailure {
+  const LimitOrdersUnsupportedNetworkFailure();
+}
