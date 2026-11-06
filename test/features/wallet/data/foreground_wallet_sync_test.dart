@@ -78,6 +78,7 @@ final class _Policy implements WalletConnectionPolicy {
 void main() {
   const id = 'wpkh([aabbccdd/84h/1h/0h])';
   final row = WalletMetadataModel(
+    networkCode: 'bitcoinTestnet',
     id: id,
     masterFingerprint: 'aabbccdd',
     xpubFingerprint: 'aabbccdd',
@@ -89,14 +90,7 @@ void main() {
     signer: Signer.none,
     isDefault: false,
   );
-  registerFallbackValue(
-    const WalletModel.publicBdk(
-      id: id,
-      externalDescriptor: 'wpkh(public)',
-      internalDescriptor: 'wpkh(change)',
-      isTestnet: true,
-    ),
-  );
+  registerFallbackValue(WalletModel.fromMetadata(row));
   registerFallbackValue(row);
   late Directory directory;
   late _Policy policy;
@@ -639,12 +633,7 @@ void main() {
       });
       var synchronized = false;
       final originalBalance = await bdk.getBalance(
-        wallet: const WalletModel.publicBdk(
-          id: id,
-          externalDescriptor: 'wpkh(public)',
-          internalDescriptor: 'wpkh(change)',
-          isTestnet: true,
-        ),
+        wallet: WalletModel.fromMetadata(row),
       );
       when(() => bdk.getBalance(wallet: any(named: 'wallet'))).thenAnswer((
         _,

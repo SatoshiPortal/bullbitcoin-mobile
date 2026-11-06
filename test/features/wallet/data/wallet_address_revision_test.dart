@@ -27,6 +27,7 @@ void main() {
     () async {
       const id = 'elwpkh([aabbccdd/84h/1776h/0h])';
       final row = WalletMetadataModel(
+        networkCode: 'liquidMainnet',
         id: id,
         masterFingerprint: 'aabbccdd',
         xpubFingerprint: 'aabbccdd',

@@ -140,6 +140,7 @@ void main() {
       }
 
       final row = WalletMetadataModel(
+        networkCode: 'bitcoinTestnet',
         id: 'wpkh([aabbccdd/84h/1h/0h])',
         masterFingerprint: 'aabbccdd',
         xpubFingerprint: 'aabbccdd',

@@ -28,10 +28,12 @@ final class _Catalog implements WalletMetadataDatasource {
 
 WalletMetadataModel _row(
   String origin, {
+  String networkCode = 'bitcoinMainnet',
   String external = 'wpkh(public)',
   String internal = 'wpkh(change)',
 }) => WalletMetadataModel(
   id: origin,
+  networkCode: networkCode,
   masterFingerprint: 'aabbccdd',
   xpubFingerprint: 'aabbccdd',
   isEncryptedVaultTested: false,
@@ -61,10 +63,18 @@ void main() {
             (entry) => entry.value is LiquidNetwork
                 ? _row(
                     entry.key,
+                    networkCode: entry.value == LiquidNetwork.mainnet
+                        ? 'liquidMainnet'
+                        : 'liquidTestnet',
                     external: confidential,
                     internal: 'unused Liquid internal descriptor',
                   )
-                : _row(entry.key),
+                : _row(
+                    entry.key,
+                    networkCode: entry.value == BitcoinNetwork.mainnet
+                        ? 'bitcoinMainnet'
+                        : 'bitcoinTestnet',
+                  ),
           )
           .toList();
       final result =

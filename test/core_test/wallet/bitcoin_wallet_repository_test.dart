@@ -69,6 +69,7 @@ void main() {
   late BitcoinWalletRepository repository;
 
   const metadata = WalletMetadataModel(
+    networkCode: 'bitcoinTestnet',
     id: _walletId,
     masterFingerprint: '73c5da0a',
     xpubFingerprint: 'deadbeef',
@@ -82,14 +83,7 @@ void main() {
   );
 
   setUpAll(() {
-    registerFallbackValue(
-      const WalletModel.publicBdk(
-        id: _walletId,
-        externalDescriptor: 'wpkh(external)',
-        internalDescriptor: 'wpkh(internal)',
-        isTestnet: true,
-      ),
-    );
+    registerFallbackValue(WalletModel.fromMetadata(metadata));
     registerFallbackValue(const NetworkFee.relativeSatPerKwu(1000));
   });
 

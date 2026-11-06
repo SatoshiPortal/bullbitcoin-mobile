@@ -19,6 +19,7 @@ Future<void> main({bool isInitialized = false}) async {
       const scriptType = ScriptType.bip84;
 
       final metadata = WalletMetadataModel(
+        networkCode: 'bitcoinMainnet',
         masterFingerprint: fingerprint,
         id: WalletMetadataService.encodeOrigin(
           fingerprint: fingerprint,
