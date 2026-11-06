@@ -97,7 +97,7 @@ class _BullSecretTextInputState extends State<BullSecretTextInput> {
                 enableSuggestions: false,
                 autocorrect: false,
                 enableIMEPersonalizedLearning: false,
-                autofillHints: const <String>[],
+                autofillHints: null,
                 smartQuotesType: SmartQuotesType.disabled,
                 smartDashesType: SmartDashesType.disabled,
                 enableInteractiveSelection: false,
