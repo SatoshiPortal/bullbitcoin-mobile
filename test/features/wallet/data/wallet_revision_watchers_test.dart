@@ -1,5 +1,7 @@
 import 'dart:async';
-import 'package:bb_mobile/features/wallet/domain/wallet.dart' show Network;
+import 'package:bb_mobile/features/wallet/domain/wallet.dart'
+    as app
+    show Network;
 
 import 'package:bb_mobile/features/wallet/domain/wallet_transaction.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
@@ -21,7 +23,7 @@ void main() {
       final repository = _Transactions();
       const tx = WalletTransaction(
         walletId: 'fixture',
-        network: Network.bitcoinTestnet,
+        network: app.Network.bitcoinTestnet,
         direction: WalletTransactionDirection.incoming,
         status: WalletTransactionStatus.confirmed,
         txId: 'fixture-tx',
