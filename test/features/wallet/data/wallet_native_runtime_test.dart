@@ -40,6 +40,50 @@ class _Offline implements WalletConnectionPolicy {
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   test(
+    'failed service assembly closes metadata and permits a fresh open',
+    () async {
+      final directory = Directory.systemTemp.createTempSync('runtime-open-');
+      final metadata = _Metadata();
+      when(() => metadata.fetchAll()).thenAnswer((_) async => []);
+      RevisionStore? abandoned;
+      var attempts = 0;
+      final runtime = WalletNativeRuntime(
+        catalog: WalletCatalogPortImpl(metadata),
+        reserved: _Reserved(),
+        metadata: metadata,
+        sync: ElectrumSync(
+          connections: _Offline(),
+          documentsDirectory: () async => directory.path,
+        ),
+        documentsDirectory: () async => directory.path,
+        onRevisionStoreOpened: (store) {
+          if (++attempts == 1) {
+            abandoned = store;
+            throw const FileSystemException('assembly interrupted');
+          }
+        },
+      );
+      try {
+        await runtime.initialize();
+        final failedStore = abandoned;
+        expect(failedStore, isNotNull);
+        if (failedStore == null) return;
+        await expectLater(
+          failedStore.read(
+            WalletKey(id: 'probe', network: BitcoinNetwork.testnet),
+          ),
+          throwsStateError,
+        );
+        await runtime.initialize();
+        expect(attempts, 2);
+        verify(() => metadata.fetchAll()).called(1);
+      } finally {
+        await runtime.close();
+        directory.deleteSync(recursive: true);
+      }
+    },
+  );
+  test(
     'failed initialization can be retried without failing startup',
     () async {
       final directory = Directory.systemTemp.createTempSync('runtime-retry-');
