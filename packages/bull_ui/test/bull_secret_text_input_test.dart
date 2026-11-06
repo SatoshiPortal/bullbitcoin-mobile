@@ -58,7 +58,7 @@ void main() {
       expect(reported, _secret);
     });
 
-    testWidgets('keeps the value away from the IME', (tester) async {
+    testWidgets('requests private IME input settings', (tester) async {
       await pump(tester);
 
       final f = field(tester);
@@ -66,9 +66,21 @@ void main() {
       expect(f.autocorrect, isFalse);
       expect(f.enableIMEPersonalizedLearning, isFalse);
       expect(f.keyboardType, TextInputType.visiblePassword);
-      expect(f.autofillHints, isEmpty);
       expect(f.smartQuotesType, SmartQuotesType.disabled);
       expect(f.smartDashesType, SmartDashesType.disabled);
+    });
+
+    testWidgets('disables platform autofill while hidden and revealed', (
+      tester,
+    ) async {
+      await pump(tester);
+      await tester.enterText(find.byType(TextField), _secret);
+      expect(tester.testTextInput.setClientArgs, isNotNull);
+      expect(tester.testTextInput.setClientArgs?['autofill'], isNull);
+
+      await toggle(tester, 'Show passphrase');
+      expect(tester.testTextInput.setClientArgs, isNotNull);
+      expect(tester.testTextInput.setClientArgs?['autofill'], isNull);
     });
 
     testWidgets(
