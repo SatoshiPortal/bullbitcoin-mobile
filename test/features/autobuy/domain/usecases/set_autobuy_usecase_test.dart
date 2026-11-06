@@ -99,6 +99,34 @@ void main() {
     );
   });
 
+  test('regtest refuses AutoBuy before account or wallet access', () async {
+    when(() => settings.fetch()).thenAnswer(
+      (_) async => const SettingsEntity(
+        environment: Environment.regtest,
+        bitcoinUnit: BitcoinUnit.sats,
+        currencyCode: 'CAD',
+      ),
+    );
+    when(() => getDefaultWallets.execute()).thenAnswer((_) async => _wallets);
+    when(() => getUserSummary.execute()).thenAnswer((_) async => _summary);
+    stubSaveSucceeds();
+
+    for (final enabled in [true, false]) {
+      expect(
+        await usecase.execute(enabled: enabled),
+        isA<Err<void, AutoBuyFailure>>().having(
+          (result) => result.failure,
+          'failure',
+          isA<AutoBuyUnsupportedNetworkFailure>(),
+        ),
+      );
+    }
+    verifyZeroInteractions(getDefaultWallets);
+    verifyZeroInteractions(getUserSummary);
+    verifyZeroInteractions(savePreferences);
+    verifyZeroInteractions(testnetUsers);
+  });
+
   test('requires a default wallet before enabling AutoBuy', () async {
     when(() => getDefaultWallets.execute()).thenAnswer((_) async => _noWallets);
 
