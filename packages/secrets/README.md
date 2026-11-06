@@ -19,6 +19,7 @@ Secrets
 |-- trash(id) -> void
 |-- exists(id) -> bool
 |-- contains(words:, [passphrase:]) -> bool
+|-- find(words:, [passphrase:]) -> Secret?
 |-- recoverbull
 |   |-- restore(vault:, key:, [passphrase:]) -> RestoredVault
 |   `-- fingerprint(vault:, key:) -> Fingerprint
