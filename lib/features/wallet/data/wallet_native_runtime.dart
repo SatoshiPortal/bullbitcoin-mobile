@@ -65,12 +65,16 @@ final class WalletNativeRuntime implements WalletNativeLifecycle {
     final documents = await _documentsDirectory();
     final path = writerMetadataPath(documents);
     late RevisionStore revisions;
-    var recoveredMetadata = false;
+    final recoveryMarker = File('$path.recovery');
+    var recoveredMetadata = recoveryMarker.existsSync();
     try {
       revisions = RevisionStore(path);
     } on SqliteException catch (error) {
       // A locked, unwritable or full disk is not corruption. Preserve it intact.
       if (error.resultCode != 11 && error.resultCode != 26) rethrow;
+      // Persist the adoption-only policy before replacing damaged metadata.
+      // A later restart must not treat an unadopted row as a fresh wallet.
+      recoveryMarker.writeAsStringSync('existing-only\n', flush: true);
       final suffix =
           '.corrupt-${DateTime.now().toUtc().microsecondsSinceEpoch}';
       for (final sidecar in ['', '-wal', '-shm']) {
@@ -132,6 +136,8 @@ final class WalletNativeRuntime implements WalletNativeLifecycle {
   Future<void> _initialize() async {
     final services = await _services;
     final descriptors = _value(await _catalog.list());
+    final catalogKeys = descriptors.map((descriptor) => descriptor.key).toSet();
+    _unavailable.removeWhere((key, _) => !catalogKeys.contains(key));
     for (final descriptor in descriptors) {
       try {
         final state = await _state(services, descriptor.key);
@@ -149,7 +155,7 @@ final class WalletNativeRuntime implements WalletNativeLifecycle {
           continue;
         }
         // A catalog-only row is resumable provisioning. Existing stores are always
-        // adopted with load; a previously active missing store is never recreated.
+        // adopted with load; only the writer may rebuild a known missing store.
         final path = nativeWalletStoragePath(
           services.documents,
           descriptor.key,
