@@ -120,6 +120,8 @@ class _NativeWriteVisitor extends RecursiveAstVisitor<void> {
             'persist',
             'applyUpdate',
             'applyUpdateEvents',
+            'revealNextAddress',
+            'revealAddressesTo',
             'sync_',
             'newSqlite',
             'newInMemory',
@@ -130,16 +132,101 @@ class _NativeWriteVisitor extends RecursiveAstVisitor<void> {
     }
     if (element.library?.uri.toString() == 'dart:io' &&
         {'delete', 'deleteSync'}.contains(element.name) &&
-        path != snapshotModule &&
+        !_signerAllowance(node, element) &&
         _nativeIoContext(node)) {
       violations.add('$path: native store deletion');
     }
     final symbol = nativeWriteSymbol(element);
     if (symbol == null) return;
-    // One audited snapshot-copy module; never a directory-wide reader bypass.
-    if (path == snapshotModule) return;
+    if (path.startsWith('packages/transaction_sync/lib/src/read/')) {
+      final owner = element.enclosingElement?.name;
+      if (element.name == 'Persister' ||
+          element.name == 'PersisterInterface' ||
+          ({'Persister', 'PersisterInterface'}.contains(owner) &&
+              {'newSqlite', 'dispose'}.contains(element.name)) ||
+          (owner == 'Wallet' && {'load', 'init'}.contains(element.name))) {
+        return;
+      }
+    }
+    if (_signerAllowance(node, element)) return;
     if (_inMemoryDryScan(node, symbol)) return;
     violations.add('$path: $symbol');
+  }
+
+  MethodDeclaration? _method(AstNode node) {
+    for (AstNode? cursor = node; cursor != null; cursor = cursor.parent) {
+      if (cursor is MethodDeclaration) return cursor;
+    }
+    return null;
+  }
+
+  bool _signerAllowance(AstNode node, Element element) {
+    final method = _method(node);
+    AstNode? owner = method?.parent;
+    while (owner != null && owner is! ClassDeclaration) {
+      owner = owner.parent;
+    }
+    if (method == null || owner is! ClassDeclaration) return false;
+    if (path == 'packages/secrets/lib/src/crypto/signers/bitcoin_signer.dart' &&
+        owner.namePart.typeName.lexeme == 'BitcoinSigner' &&
+        method.name.lexeme == '_wallet') {
+      final proof = _SignerMemoryProof();
+      method.accept(proof);
+      return proof.valid && proof.allows(element, node);
+    }
+    if (path != 'packages/secrets/lib/src/crypto/signers/liquid_signer.dart' ||
+        owner.namePart.typeName.lexeme != 'LiquidSigner') {
+      return false;
+    }
+    if (method.name.lexeme == 'signPset') {
+      final proof = _ScratchProof();
+      method.accept(proof);
+      final invocation = node is MethodInvocation ? node : node.parent;
+      if (invocation is! MethodInvocation) return false;
+      if (element.library?.uri.toString() == 'dart:io' &&
+          {'delete', 'deleteSync'}.contains(element.name)) {
+        return proof.temporaryTarget(invocation.target);
+      }
+      if (element.enclosingElement?.name != 'Wallet' ||
+          element.name != 'init') {
+        return false;
+      }
+      final arguments = invocation.argumentList.arguments
+          .whereType<NamedExpression>()
+          .where((arg) => arg.name.label.name == 'dbpath');
+      return arguments.length == 1 &&
+          proof.temporaryPath(arguments.single.expression);
+    }
+    if (method.name.lexeme == 'sweepStale' &&
+        element.library?.uri.toString() == 'dart:io' &&
+        {'delete', 'deleteSync'}.contains(element.name)) {
+      final invocation = node is MethodInvocation ? node : node.parent;
+      if (invocation is! MethodInvocation ||
+          invocation.target is! SimpleIdentifier) {
+        return false;
+      }
+      final target = invocation.target as SimpleIdentifier;
+      for (
+        AstNode? parent = node;
+        parent != null && parent != method;
+        parent = parent.parent
+      ) {
+        if (parent is ForStatement &&
+            parent.forLoopParts is ForEachPartsWithDeclaration) {
+          final parts = parent.forLoopParts as ForEachPartsWithDeclaration;
+          final iterable = parts.iterable;
+          if (parts.loopVariable.declaredFragment?.element != target.element ||
+              iterable is! MethodInvocation) {
+            continue;
+          }
+          final resolved = iterable.methodName.element;
+          return resolved?.library?.uri.toString() == 'dart:io' &&
+              resolved?.name == 'list' &&
+              target.staticType?.getDisplayString() == 'Directory';
+        }
+      }
+    }
+    return false;
   }
 
   bool _inMemoryDryScan(AstNode node, String symbol) {
@@ -195,7 +282,8 @@ class _NativeWriteVisitor extends RecursiveAstVisitor<void> {
     final element = node.methodName.element;
     if (element?.library?.uri.toString() == 'dart:io' &&
         {'delete', 'deleteSync'}.contains(element?.name) &&
-        path != snapshotModule &&
+        element != null &&
+        !_signerAllowance(node, element) &&
         _nativeIoContext(node)) {
       violations.add('$path: native store deletion');
     }
@@ -310,6 +398,8 @@ class _MemoryOnlyProof extends RecursiveAstVisitor<void> {
             'persist',
             'applyUpdate',
             'applyUpdateEvents',
+            'revealNextAddress',
+            'revealAddressesTo',
           }.contains(element?.name) &&
           node.parent is! MethodInvocation) {
         safe = false;
@@ -356,6 +446,122 @@ class _MemoryOnlyProof extends RecursiveAstVisitor<void> {
   }
 }
 
+/// Prove the nullable local used by the signer is assigned exactly once, from
+/// newInMemory. Native mutations remain forbidden even in this method.
+class _SignerMemoryProof extends RecursiveAstVisitor<void> {
+  final Map<Element, int> assignments = {};
+  final Set<Element> memory = {};
+  bool valid = true;
+
+  void _assignment(Element? variable, Expression? value) {
+    if (variable == null || value == null) return;
+    assignments.update(variable, (count) => count + 1, ifAbsent: () => 1);
+    if (value is InstanceCreationExpression) {
+      final constructor = value.constructorName.element;
+      if (constructor?.library.uri.toString().startsWith('package:bdk_dart/') ==
+              true &&
+          constructor?.enclosingElement.name == 'Persister' &&
+          constructor?.name == 'newInMemory') {
+        memory.add(variable);
+      }
+    }
+  }
+
+  @override
+  void visitVariableDeclaration(VariableDeclaration node) {
+    _assignment(node.declaredFragment?.element, node.initializer);
+    super.visitVariableDeclaration(node);
+  }
+
+  @override
+  void visitAssignmentExpression(AssignmentExpression node) {
+    final left = node.leftHandSide;
+    if (left is SimpleIdentifier) _assignment(left.element, node.rightHandSide);
+    super.visitAssignmentExpression(node);
+  }
+
+  bool _memoryArgument(ArgumentList arguments) {
+    final values = arguments.arguments.whereType<NamedExpression>().where(
+      (arg) => arg.name.label.name == 'persister',
+    );
+    if (values.length != 1) return false;
+    final value = values.single.expression;
+    return value is SimpleIdentifier &&
+        memory.contains(value.element) &&
+        assignments[value.element] == 1;
+  }
+
+  bool allows(Element element, AstNode node) {
+    if (!(element.library?.uri.toString().startsWith('package:bdk_dart/') ??
+        false)) {
+      return false;
+    }
+    final owner = element.enclosingElement?.name;
+    if (element.name == 'Persister' || element.name == 'PersisterInterface') {
+      return true;
+    }
+    if (owner == 'Persister' &&
+        element is ConstructorElement &&
+        element.name == 'newInMemory') {
+      return memory.any((local) => assignments[local] == 1);
+    }
+    if ({'Persister', 'PersisterInterface'}.contains(owner) &&
+        element.name == 'dispose') {
+      final call = node.parent;
+      return call is MethodInvocation &&
+          call.target is SimpleIdentifier &&
+          memory.contains((call.target as SimpleIdentifier).element) &&
+          assignments[(call.target as SimpleIdentifier).element] == 1;
+    }
+    if (owner == 'Wallet' &&
+        element is ConstructorElement &&
+        (element.name == null || element.name == 'new' || element.name == '')) {
+      final constructor = node is ConstructorName ? node : node.parent;
+      return constructor is ConstructorName &&
+          constructor.parent is InstanceCreationExpression &&
+          _memoryArgument(
+            (constructor.parent as InstanceCreationExpression).argumentList,
+          );
+    }
+    return false;
+  }
+}
+
+class _ScratchProof extends RecursiveAstVisitor<void> {
+  final Set<Element> temporary = {};
+
+  @override
+  void visitVariableDeclaration(VariableDeclaration node) {
+    var value = node.initializer;
+    if (value is AwaitExpression) value = value.expression;
+    final list = node.parent;
+    if (list is VariableDeclarationList &&
+        list.isFinal &&
+        value is MethodInvocation &&
+        value.methodName.element?.library?.uri.toString() == 'dart:io' &&
+        value.methodName.element?.name == 'createTemp') {
+      final local = node.declaredFragment?.element;
+      if (local != null) temporary.add(local);
+    }
+    super.visitVariableDeclaration(node);
+  }
+
+  bool temporaryTarget(Expression? target) =>
+      target is SimpleIdentifier && temporary.contains(target.element);
+
+  bool temporaryPath(Expression value) => switch (value) {
+    PrefixedIdentifier(:final prefix, :final identifier) =>
+      temporaryTarget(prefix) &&
+          identifier.name == 'path' &&
+          identifier.element?.library?.uri.toString() == 'dart:io',
+    PropertyAccess(:final target, :final propertyName) =>
+      temporaryTarget(target) &&
+          propertyName.name == 'path' &&
+          propertyName.element?.library?.uri.toString() == 'dart:io',
+    _ => false,
+  };
+}
+
 String? nativeWriteSymbol(Element element) {
   final uri = element.library?.uri.toString();
   if (uri == null) return null;
@@ -370,7 +576,13 @@ String? nativeWriteSymbol(Element element) {
         owner == 'Persister' ||
         owner == 'PersisterInterface' ||
         ({'Wallet', 'WalletInterface'}.contains(owner) &&
-            ({'persist', 'applyUpdate', 'applyUpdateEvents'}.contains(name) ||
+            ({
+                  'persist',
+                  'applyUpdate',
+                  'applyUpdateEvents',
+                  'revealNextAddress',
+                  'revealAddressesTo',
+                }.contains(name) ||
                 element is ConstructorElement));
   }
   if (uri.startsWith('package:bull_sdk/src/rust/third_party/lwk/')) {

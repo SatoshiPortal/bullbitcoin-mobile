@@ -148,8 +148,10 @@ final class SdkWriteSessions implements NativeWriteSessions {
   @override
   Future<void> delete(WalletKey key) async {
     final path = nativeWalletStoragePath(documentsDirectory, key);
-    // Readers hydrate private copies. The coordination lock excludes new
-    // Liquid hydrations; unlink does not rely on cross-library SQLite locks.
+    // Readers retain the real store after brief hydration admission. On POSIX,
+    // unlink leaves an existing reader's inode alive; later readers get NotFound
+    // and never create a store. The writer lock excludes both BDK and Liquid
+    // hydration during deletion, without cross-library SQLite lock assumptions.
     switch (key.network) {
       case BitcoinNetwork():
         // The parents sidecar is lane A's disposable cache.

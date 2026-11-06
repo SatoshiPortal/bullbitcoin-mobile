@@ -1,5 +1,7 @@
 import 'dart:math' as math;
 
+import 'package:bull_logger/bull_logger.dart';
+
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
 import 'package:sqlite3/sqlite3.dart';
@@ -17,6 +19,7 @@ final class NativeWalletWriter implements LiquidReadAdmission {
   final WalletCatalogPort _catalog;
   final ReservedAddressPort _reserved;
   final NativeWriteSessions _sessions;
+  final Map<WalletKey, Type> _failures = {};
 
   NativeWalletWriter({
     required this.lockDirectory,
@@ -40,7 +43,7 @@ final class NativeWalletWriter implements LiquidReadAdmission {
   Future<Result<WriterOutcome, TransactionSyncFailure>> create(
     WalletKey key, {
     required int expectedGeneration,
-  }) => _run(key, expectedGeneration, () async {
+  }) => _run(key, expectedGeneration, WriteIntent.create, () async {
     final old = revisions.record(key);
     _expectGeneration(old, expectedGeneration);
     final descriptor = await _descriptor(key);
@@ -60,7 +63,7 @@ final class NativeWalletWriter implements LiquidReadAdmission {
   Future<Result<ReceiveAddressIssued, TransactionSyncFailure>> receive(
     WalletKey key, {
     required int expectedGeneration,
-  }) => _run(key, expectedGeneration, () async {
+  }) => _run(key, expectedGeneration, WriteIntent.receive, () async {
     final record = _active(key, expectedGeneration);
     if (record.needsSync) {
       throw const _WriterFailure(TransactionSyncNeedsRepairFailure());
@@ -96,7 +99,7 @@ final class NativeWalletWriter implements LiquidReadAdmission {
   Future<Result<WriterOutcome, TransactionSyncFailure>> delete(
     WalletKey key, {
     required int expectedGeneration,
-  }) => _run(key, expectedGeneration, () async {
+  }) => _run(key, expectedGeneration, WriteIntent.delete, () async {
     final record = revisions.record(key);
     _expectGeneration(record, expectedGeneration);
     if (record == null) {
@@ -116,7 +119,7 @@ final class NativeWalletWriter implements LiquidReadAdmission {
   Future<Result<WriterOutcome, TransactionSyncFailure>> repair(
     WalletKey key, {
     required int expectedGeneration,
-  }) => _run(key, expectedGeneration, () async {
+  }) => _run(key, expectedGeneration, WriteIntent.repair, () async {
     final record = _active(key, expectedGeneration);
     if (key.network is! LiquidNetwork) {
       throw const _WriterFailure(TransactionSyncUnsupportedNetworkFailure());
@@ -140,7 +143,7 @@ final class NativeWalletWriter implements LiquidReadAdmission {
     WalletKey key, {
     required int expectedGeneration,
     required WriterSyncOperation operation,
-  }) => _run(key, expectedGeneration, () async {
+  }) => _run(key, expectedGeneration, WriteIntent.sync, () async {
     final record = _active(key, expectedGeneration);
     final descriptor = await _descriptor(key);
     revisions.begin(key, WriteIntent.sync);
@@ -166,19 +169,24 @@ final class NativeWalletWriter implements LiquidReadAdmission {
   Future<Result<LiquidReadLease, TransactionSyncFailure>> acquire(
     WalletKey key,
   ) async {
-    if (key.network is! LiquidNetwork ||
-        (key.network.env != NetworkEnv.mainnet &&
-            key.network.env != NetworkEnv.testnet)) {
+    if (key.network.env != NetworkEnv.mainnet &&
+        key.network.env != NetworkEnv.testnet) {
       return const Err(TransactionSyncUnsupportedNetworkFailure());
     }
     final acquisition = WriterLock.acquire(lockDirectory, key);
-    if (acquisition case Err(:final failure)) return Err(failure);
+    if (acquisition case Err(:final failure)) {
+      _reportFailure(key, failure);
+      return Err(failure);
+    }
     final lock = (acquisition as Ok<WriterLock, TransactionSyncFailure>).value;
     try {
-      await _reconcile(key);
       final record = revisions.record(key);
-      if (record == null || record.state.lifecycle != WalletLifecycle.active) {
+      if (record == null || record.state.lifecycle == WalletLifecycle.deleted) {
         throw const _WriterFailure(TransactionSyncNotFoundFailure());
+      }
+      if (record.state.lifecycle != WalletLifecycle.active ||
+          record.state.initializedSchema != writerSchemaVersion) {
+        throw const _WriterFailure(TransactionSyncBusyFailure());
       }
       if (record.needsSync) {
         throw const _WriterFailure(TransactionSyncNeedsRepairFailure());
@@ -186,13 +194,16 @@ final class NativeWalletWriter implements LiquidReadAdmission {
       return Ok(_ReadLease(lock, record.state.stamp));
     } on Object catch (error) {
       lock.release();
-      return Err(_map(error));
+      final failure = _map(error);
+      _reportFailure(key, failure);
+      return Err(failure);
     }
   }
 
   Future<Result<T, TransactionSyncFailure>> _run<T>(
     WalletKey key,
     int expectedGeneration,
+    WriteIntent intent,
     Future<T> Function() operation, {
     bool allowRepairIntent = false,
     bool deleting = false,
@@ -202,8 +213,15 @@ final class NativeWalletWriter implements LiquidReadAdmission {
       return const Err(TransactionSyncUnsupportedNetworkFailure());
     }
     final acquisition = WriterLock.acquire(lockDirectory, key);
-    if (acquisition case Err(:final failure)) return Err(failure);
+    if (acquisition case Err(:final failure)) {
+      _reportFailure(key, failure);
+      return Err(failure);
+    }
     final lock = (acquisition as Ok<WriterLock, TransactionSyncFailure>).value;
+    final watch = Stopwatch()..start();
+    log.fine(
+      'Wallet writer lock acquired intent=${intent.name} network=${key.network} generation=$expectedGeneration',
+    );
     try {
       _expectGeneration(revisions.record(key), expectedGeneration);
       // Delete must remain possible for damaged stores: it supersedes an
@@ -212,9 +230,17 @@ final class NativeWalletWriter implements LiquidReadAdmission {
       if (!deleting || revisions.record(key)?.intent == WriteIntent.delete) {
         await _reconcile(key, allowRepairIntent: allowRepairIntent);
       }
-      return Ok(await operation());
+      final value = await operation();
+      final stamp = revisions.record(key)?.state.stamp;
+      _failures.remove(key);
+      log.fine(
+        'Wallet writer operation committed intent=${intent.name} network=${key.network} generation=${stamp?.generation} revision=${stamp?.revision} duration_ms=${watch.elapsedMilliseconds}',
+      );
+      return Ok(value);
     } on Object catch (error) {
-      return Err(_map(error));
+      final failure = _map(error);
+      _reportFailure(key, failure);
+      return Err(failure);
     } finally {
       lock.release();
     }
@@ -226,6 +252,9 @@ final class NativeWalletWriter implements LiquidReadAdmission {
   }) async {
     final record = revisions.record(key);
     if (record == null || record.intent == null) return;
+    log.warning(
+      'Wallet writer reconciling interrupted intent=${record.intent?.name} network=${key.network} generation=${record.state.stamp.generation} revision=${record.state.stamp.revision}',
+    );
     if (record.intent == WriteIntent.delete) {
       await _sessions.delete(key);
       revisions.finish(key);
@@ -267,6 +296,9 @@ final class NativeWalletWriter implements LiquidReadAdmission {
   }
 
   Future<void> _rebuild(PublicWalletDescriptor descriptor, int? issued) async {
+    log.warning(
+      'Wallet writer repair executed network=${descriptor.key.network}',
+    );
     await _sessions.delete(descriptor.key);
     final session = await _sessions.open(descriptor, create: true);
     try {
@@ -296,6 +328,22 @@ final class NativeWalletWriter implements LiquidReadAdmission {
   void _expectGeneration(RevisionRecord? record, int generation) {
     if ((record?.state.stamp.generation ?? 0) != generation) {
       throw const _WriterFailure(TransactionSyncNotFoundFailure());
+    }
+  }
+
+  void _reportFailure(WalletKey key, TransactionSyncFailure failure) {
+    if (_failures[key] == failure.runtimeType) return;
+    _failures[key] = failure.runtimeType;
+    if (failure is TransactionSyncStorageFailure) {
+      log.severe(
+        message: 'Wallet writer unexpected storage failure',
+        error: failure.runtimeType.toString(),
+        trace: StackTrace.empty,
+      );
+    } else {
+      log.warning(
+        'Wallet writer operation unavailable network=${key.network} category=${failure.runtimeType}',
+      );
     }
   }
 
