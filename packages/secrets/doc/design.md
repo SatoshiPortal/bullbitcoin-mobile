@@ -42,7 +42,7 @@ The language is an explicit import/preview parameter and stored metadata, not in
 
 `FingerprintDeriver.seed` is the single PBKDF2 implementation used by preview, import, duplicate checks, verification and all seed-based operations. Words normalize to NFKD before storage and verification. ⚠️ Japanese and Korean words are therefore stored decomposed (kana with voiced marks and Hangul syllables become several code points); any consumer that compares or displays them must normalise its own input to NFKD first, and NFC for display if it needs composed text. Passphrases retain their historical stored representation and normalize during seed computation. Full seed comparison handles differing word spellings, language or passphrase; invalid existing material stays occupied and cannot be overwritten.
 
-Bitcoin signing parses the Dart-derived master xprv with BDK, never the words. The key-material gate audits that signer location specifically, allowing only xprv parsing and disposal there. Liquid, Boltz and BWK still require English words in the pinned SDK, and non-English calls return `LanguageUnsupportedFailure`. Liquid's seed API awaits the bull_sdk bump to lwk-dart PR #95. This stage does not change the UI or English generation.
+Bitcoin signing parses the Dart-derived master xprv with BDK, never the words. The key-material gate audits that signer location specifically, allowing only xprv parsing and disposal there. Liquid, Boltz and BWK still require English words in the pinned SDK, and non-English calls return `LanguageUnsupportedFailure`. Liquid's seed API awaits the bull_sdk bump to lwk-dart PR #95. The app offers the six Latin-script wordlists for non-default Bitcoin import; non-Latin selection waits for the dedicated keyboards tracked in #3088. Generation and default-wallet recovery remain English. Picker and detection suggestions never silently resolve an ambiguous wordlist.
 
 Every new RecoverBull vault records its wordlist in the reserved `mnemonicLanguage` plaintext field using the same wire table, including `english`. Historical keyless vaults restore as English unchanged. Open, restore and fingerprint inspection use that language. Unknown values return `InvalidVaultFailure`. Caller metadata is snapshotted before the keystore read; `mnemonic` and `mnemonicLanguage` are reserved, while historical caller `language` metadata stays untouched. BIP85 child language remains independent of the parent; application paths and Ark index 11811 use English children.
 
@@ -98,7 +98,7 @@ pixels. The host's capture protection blocks a screenshot; it cannot stop
 code inside the app reading a rendered image back
 (`RenderRepaintBoundary.toImage`), which only review can rule out. Layout
 does not leak the words: every painted cell takes the size of the widest
-BIP39 word, or of the widest printable ASCII character for a passphrase, in
+BIP39 word in the revealed secret's own language, or of the widest printable ASCII character for a passphrase, in
 the style, so what a host can measure (`RenderBox.size`, intrinsic sizes)
 follows the word count and the passphrase length, never their content. The
 package's own tests read the painted text

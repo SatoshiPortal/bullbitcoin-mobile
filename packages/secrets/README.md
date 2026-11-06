@@ -147,7 +147,9 @@ Historical seed-only entries support xpub, Bitcoin descriptor and BIP85 derivati
 
 The pinned bull_sdk still exposes word-only Liquid and Boltz operations. Liquid descriptors/signing, swap-key derivation and Silent Payments return `LanguageUnsupportedFailure` for non-English mnemonics before any native call. English operations keep their existing behavior. Liquid's gate can be removed after bull_sdk integrates the seed APIs from [lwk-dart PR #95](https://github.com/SatoshiPortal/lwk-dart/pull/95); Boltz and BWK also need seed/key-based APIs. Default-wallet creation refuses a non-English secret before creating either wallet, so it cannot create an unsignable Liquid default.
 
-The application keyboard, suggestions and sealed-widget word metrics are a separate UI step. This change does not enable a non-English mnemonic entry flow. Generation continues to use the existing English BDK generator.
+The import picker offers English, Spanish, French, Italian, Czech and Portuguese for a separate, non-default Bitcoin wallet. Non-Latin lists stay hidden until a dedicated keyboard is available; the custody API still supports all ten. The in-app keyboard and suggestions normalize Unicode without exposing words to the platform IME. Detection never silently selects a language; ambiguous sentences require an explicit choice. Onboarding and default-wallet recovery remain English-only. Generation continues to use the existing English BDK generator.
+
+Sealed display and challenge widgets obtain language in the same read as the words and support all ten lists. Their cells use the dimensions of the entire public wordlist in that language, normalized to NFKD, never those of the actual secret words. Japanese sentence layout uses the ideographic separator. No raw-word getter or semantics exposure is added.
 
 ## Recovery and module keys
 
