@@ -25,6 +25,7 @@ final class FingerprintDeriver {
     String passphrase = '',
     bip39.Language language = bip39.Language.english,
   }) {
+    words = normalizeWords(words);
     _elements(words, language);
     final mnemonic = bip39.Mnemonic.fromWords(words: words, language: language);
     return _pbkdf2HmacSha512(
@@ -32,6 +33,9 @@ final class FingerprintDeriver {
       salt: utf8.encode(nfkd('mnemonic$passphrase')),
     );
   }
+
+  /// Canonical BIP39 spelling, without changing element boundaries.
+  List<String> normalizeWords(List<String> words) => words.map(nfkd).toList();
 
   /// The master fingerprint of a seed — 4 bytes, 8 lowercase hex.
   Fingerprint fingerprint(Uint8List seed) =>
@@ -42,6 +46,7 @@ final class FingerprintDeriver {
     List<String> words, {
     bip39.Language language = bip39.Language.english,
   }) {
+    words = normalizeWords(words);
     _elements(words, language);
     bip39.Mnemonic.fromWords(words: words, language: language);
   }

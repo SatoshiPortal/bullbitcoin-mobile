@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/errors/bull_exception.dart';
+import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:secrets/secrets.dart';
 import 'package:bull_logger/bull_logger.dart';
@@ -35,9 +36,7 @@ class CreateDefaultWalletsUsecase {
     if (secret != null && mnemonicWords != null) {
       throw ArgumentError('Provide either a secret or mnemonic words');
     }
-    if (secret?.info.hasPassphrase ?? false) {
-      throw ArgumentError('Default wallets cannot use a passphrase');
-    }
+    if (secret != null) _requireDefaultCapable(secret.info);
     try {
       final settings = await _settingsRepository.fetch();
       final environment = settings.environment;
@@ -85,6 +84,9 @@ class CreateDefaultWalletsUsecase {
               'could not create the default secret: ${failure.runtimeType}',
             ),
           };
+      // An import of words can resolve to an equivalent entry stored earlier
+      // in another wordlist: check what was resolved, before any wallet write.
+      _requireDefaultCapable(defaultSecret.info);
 
       final created = <Wallet>[];
       try {
@@ -145,6 +147,20 @@ class CreateDefaultWalletsUsecase {
     }
   }
 
+  /// Refuses a secret both default wallets cannot be built from, before any wallet write.
+  static void _requireDefaultCapable(SecretInfo info) {
+    if (info.hasPassphrase) {
+      throw ArgumentError('Default wallets cannot use a passphrase');
+    }
+    // Liquid derives from words: a raw seed has none.
+    if (!info.isMnemonic) throw DefaultWalletMnemonicRequiredException();
+    // TODO: remove after bull_sdk pins lwk-dart PR #95 and secrets uses its
+    // seed-based Liquid APIs.
+    if (info.language != bip39.Language.english) {
+      throw DefaultWalletLanguageUnsupportedException();
+    }
+  }
+
   Future<Result<Secret, SecretFailure>> _resolveSecret(
     List<String>? words,
   ) async {
@@ -161,4 +177,16 @@ class CreateDefaultWalletsUsecase {
 
 class CreateDefaultWalletsException extends BullException {
   CreateDefaultWalletsException(super.message);
+}
+
+class DefaultWalletMnemonicRequiredException
+    extends CreateDefaultWalletsException {
+  DefaultWalletMnemonicRequiredException()
+    : super('Default wallets require a mnemonic, not a raw seed');
+}
+
+class DefaultWalletLanguageUnsupportedException
+    extends CreateDefaultWalletsException {
+  DefaultWalletLanguageUnsupportedException()
+    : super('Default wallets require an English mnemonic');
 }

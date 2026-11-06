@@ -1,3 +1,4 @@
+import 'package:bip39_mnemonic/bip39_mnemonic.dart' show Language;
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
 
@@ -24,11 +25,14 @@ final class SecretInfo {
 
   final SecretKind kind;
 
+  /// BIP39 wordlist, or null for a raw seed.
+  final Language? language;
+
   /// 12 or 24 in practice; `null` for a seed secret.
   final int? wordCount;
 
-  /// ⚠️ `true` does not mean every operation honours it. Liquid and the
-  /// vault derive from the words alone. See
+  /// ⚠️ Liquid descriptors/signatures ignore it in the pinned SDK. A vault
+  /// omits it from plaintext, so restoration needs it separately. See
   /// doc/design.md, § Passphrase.
   final bool hasPassphrase;
 
@@ -38,6 +42,7 @@ final class SecretInfo {
   const SecretInfo.mnemonic({
     required this.id,
     required this.wordCount,
+    Language this.language = Language.english,
     required this.hasPassphrase,
   }) : kind = SecretKind.mnemonic,
        lengthInBits = null;
@@ -45,6 +50,7 @@ final class SecretInfo {
   const SecretInfo.seed({required this.id, required this.lengthInBits})
     : kind = SecretKind.seed,
       wordCount = null,
+      language = null,
       hasPassphrase = false;
 
   bool get isMnemonic => kind == SecretKind.mnemonic;
