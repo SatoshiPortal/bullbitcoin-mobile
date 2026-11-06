@@ -1,3 +1,5 @@
+import 'package:bb_mobile/features/electrum_settings/domain/electrum_network_unauthorized_exception.dart';
+import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/electrum/domain/ports/electrum_servers_port.dart';
 import 'package:bb_mobile/features/electrum_settings/domain/electrum_server_network.dart';
 import 'package:primitives/primitives.dart';
@@ -18,22 +20,25 @@ final class WalletConnectionPolicyImpl implements WalletConnectionPolicy {
     operation,
     required bool Function(TransactionSyncFailure) mayRetry,
   }) async {
-    final legacyNetwork = switch (network) {
+    final serverNetwork = switch (network) {
       BitcoinNetwork.mainnet => ElectrumServerNetwork.bitcoinMainnet,
       BitcoinNetwork.testnet => ElectrumServerNetwork.bitcoinTestnet,
+      BitcoinNetwork.regtest => ElectrumServerNetwork.bitcoinRegtest,
       LiquidNetwork.mainnet => ElectrumServerNetwork.liquidMainnet,
       LiquidNetwork.testnet => ElectrumServerNetwork.liquidTestnet,
       BitcoinNetwork.signet ||
-      BitcoinNetwork.regtest ||
+      // TODO(SatoshiPortal/lwk-dart#96): enable only after the pinned SDK
+      // exposes LiquidNetwork.regtest and its native lifecycle is verified.
       LiquidNetwork.regtest => null,
     };
-    if (legacyNetwork == null) {
+    if (serverNetwork == null) {
+      log.config('Wallet connection unavailable network=$network');
       return const Err(TransactionSyncUnsupportedNetworkFailure());
     }
     TransactionSyncFailure? lastFailure;
     try {
       return await _servers.runWithFallback(
-        network: legacyNetwork,
+        network: serverNetwork,
         isTransient: (error) => error is _RetryableFailure,
         operation: (connection) async {
           final result = await operation(
@@ -43,7 +48,7 @@ final class WalletConnectionPolicyImpl implements WalletConnectionPolicy {
               retry: connection.retry,
               stopGap: connection.stopGap,
               validateDomain: connection.validateDomain,
-              socks5: connection.socks5,
+              socks5: network is LiquidNetwork ? null : connection.socks5,
             ),
           );
           if (result case Err(:final failure) when mayRetry(failure)) {
@@ -53,6 +58,8 @@ final class WalletConnectionPolicyImpl implements WalletConnectionPolicy {
           return result;
         },
       );
+    } on ElectrumNetworkUnauthorizedException {
+      return const Err(TransactionSyncUnsupportedNetworkFailure());
     } on Exception {
       // No URL, proxy, descriptor or foreign diagnostic escapes this boundary.
       // Exhaustion may wrap callback errors; preserve the last typed failure.

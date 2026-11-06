@@ -16,8 +16,8 @@ final class HasActiveCustomBitcoinOnionServerUsecase {
     try {
       final settings = await _settingsRepository.fetch();
       final result = await _serverRepository.fetchActiveServers(
-        network: ElectrumServerNetwork.fromEnvironment(
-          isTestnet: settings.environment.isTestnet,
+        network: ElectrumServerNetwork.fromNetworkEnv(
+          settings.environment.networkEnv,
           isLiquid: false,
         ),
       );

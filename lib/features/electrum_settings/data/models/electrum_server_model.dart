@@ -36,10 +36,7 @@ class ElectrumServerModel {
   factory ElectrumServerModel.fromSqlite(ElectrumServerRow row) {
     return ElectrumServerModel(
       url: row.url,
-      network: ElectrumServerNetwork.fromEnvironment(
-        isTestnet: row.isTestnet,
-        isLiquid: row.isLiquid,
-      ),
+      network: ElectrumServerNetwork.fromStorageName(row.network),
       priority: row.priority,
       isCustom: row.isCustom,
     );
@@ -48,8 +45,7 @@ class ElectrumServerModel {
   ElectrumServerRow toSqlite() {
     return ElectrumServerRow(
       url: url,
-      isTestnet: network.isTestnet,
-      isLiquid: network.isLiquid,
+      network: network.storageName,
       priority: priority,
       isCustom: isCustom,
     );

@@ -117,14 +117,13 @@ class ElectrumSettingsBloc
     ElectrumServerViewModel toViewModel(ElectrumServerDto server) =>
         ElectrumServerViewModel(
           url: server.url,
+          network: server.network,
           status: statuses[server.url] ?? ElectrumServerStatus.unknown,
           priority: server.priority,
         );
 
     return state.copyWith(
-      environment: settings.network.isTestnet
-          ? ElectrumEnvironment.testnet
-          : ElectrumEnvironment.mainnet,
+      environment: settings.network.environment,
       defaultServers: servers
           .where((server) => !server.isCustom)
           .map(toViewModel)
@@ -151,13 +150,21 @@ class ElectrumSettingsBloc
     ElectrumCustomServerAdded event,
     Emitter<ElectrumSettingsState> emit,
   ) async {
+    final environment = state.environment;
+    if (environment == null) {
+      emit(
+        state.copyWith(
+          electrumServersError: const ElectrumServersLoadFailure(),
+        ),
+      );
+      return;
+    }
     _invalidateLoadGeneration();
     emit(
       state.copyWith(isAddingCustomServer: true, electrumServersError: null),
     );
-    final isTestnet = state.environment == ElectrumEnvironment.testnet;
     final network = ElectrumServerNetwork.fromEnvironment(
-      isTestnet: isTestnet,
+      environment: environment,
       isLiquid: state.isLiquid,
     );
     final sortedServers = state.getServersSortedByPriority(isCustom: true);
@@ -181,6 +188,7 @@ class ElectrumSettingsBloc
     switch (await _addCustomServerUsecase.execute(request)) {
       case Ok(:final value):
         final newServer = ElectrumServerViewModel(
+          network: network,
           url: event.enableSsl ? 'ssl://$cleanUrl' : 'tcp://$cleanUrl',
           status: value,
           priority: priority,
@@ -217,6 +225,15 @@ class ElectrumSettingsBloc
     ElectrumCustomServersPrioritized event,
     Emitter<ElectrumSettingsState> emit,
   ) async {
+    final environment = state.environment;
+    if (environment == null) {
+      emit(
+        state.copyWith(
+          electrumServersError: const ElectrumServersLoadFailure(),
+        ),
+      );
+      return;
+    }
     _invalidateLoadGeneration();
     emit(
       state.copyWith(
@@ -245,7 +262,7 @@ class ElectrumSettingsBloc
               isCustom: true,
               url: e.url,
               network: ElectrumServerNetwork.fromEnvironment(
-                isTestnet: state.environment == ElectrumEnvironment.testnet,
+                environment: environment,
                 isLiquid: state.isLiquid,
               ),
               priority: e.priority,
@@ -259,6 +276,7 @@ class ElectrumSettingsBloc
         final updatedServers = value.servers
             .map(
               (dto) => ElectrumServerViewModel(
+                network: dto.network,
                 url: dto.url,
                 status: currentServers
                     .firstWhere((s) => s.url == dto.url)
@@ -293,19 +311,37 @@ class ElectrumSettingsBloc
     ElectrumCustomServerDeleted event,
     Emitter<ElectrumSettingsState> emit,
   ) async {
+    final environment = state.environment;
+    if (environment == null) {
+      emit(
+        state.copyWith(
+          electrumServersError: const ElectrumServersLoadFailure(),
+        ),
+      );
+      return;
+    }
     _invalidateLoadGeneration();
     emit(
       state.copyWith(isDeletingCustomServer: true, electrumServersError: null),
     );
 
-    final isTestnet = state.environment == ElectrumEnvironment.testnet;
     final network = ElectrumServerNetwork.fromEnvironment(
-      isTestnet: isTestnet,
+      environment: environment,
       isLiquid: state.isLiquid,
     );
 
+    if (network != event.server.network) {
+      emit(
+        state.copyWith(
+          isDeletingCustomServer: false,
+          electrumServersError: const ElectrumServersDeleteFailure(),
+        ),
+      );
+      return;
+    }
+
     switch (await _deleteCustomServerUsecase.execute(
-      DeleteCustomServerRequest(url: event.server.url),
+      DeleteCustomServerRequest(url: event.server.url, network: network),
     )) {
       case Ok():
         // Re-derive from the latest state, not a pre-await snapshot: a
@@ -347,14 +383,22 @@ class ElectrumSettingsBloc
     ElectrumAdvancedOptionsSaved event,
     Emitter<ElectrumSettingsState> emit,
   ) async {
+    final environment = state.environment;
+    if (environment == null) {
+      emit(
+        state.copyWith(
+          electrumServersError: const ElectrumServersLoadFailure(),
+        ),
+      );
+      return;
+    }
     _invalidateLoadGeneration();
     emit(
       state.copyWith(isSavingAdvancedOptions: true, advancedOptionsError: null),
     );
 
-    final isTestnet = state.environment == ElectrumEnvironment.testnet;
     final network = ElectrumServerNetwork.fromEnvironment(
-      isTestnet: isTestnet,
+      environment: environment,
       isLiquid: state.isLiquid,
     );
 

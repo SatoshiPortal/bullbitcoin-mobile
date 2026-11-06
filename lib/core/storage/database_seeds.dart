@@ -43,14 +43,25 @@ class DatabaseSeeds {
     for (final (url, isTestnet, isLiquid, priority) in serversData) {
       final server = ElectrumServerRow(
         url: url,
-        isTestnet: isTestnet,
-        isLiquid: isLiquid,
+        network: isLiquid
+            ? (isTestnet ? 'liquidTestnet' : 'liquidMainnet')
+            : (isTestnet ? 'bitcoinTestnet' : 'bitcoinMainnet'),
         priority: priority,
         isCustom: false,
       );
 
       await db.into(db.electrumServers).insertOnConflictUpdate(server);
     }
+    await db
+        .into(db.electrumServers)
+        .insertOnConflictUpdate(
+          const ElectrumServerRow(
+            url: 'tcp://127.0.0.1:50000',
+            network: 'bitcoinRegtest',
+            priority: 0,
+            isCustom: false,
+          ),
+        );
   }
 
   static Future<void> seedDefaultElectrumSettings(SqliteDatabase db) async {
@@ -60,6 +71,8 @@ class DatabaseSeeds {
       ElectrumServerNetwork.liquidMainnet,
       ElectrumServerNetwork.liquidTestnet,
     ];
+
+    networks.add(ElectrumServerNetwork.bitcoinRegtest);
 
     for (final network in networks) {
       final settings = ElectrumSettingsRow(

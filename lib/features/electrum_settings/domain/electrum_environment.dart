@@ -1,6 +1,5 @@
-enum ElectrumEnvironment { mainnet, testnet }
+enum ElectrumEnvironment { mainnet, testnet, regtest }
 
 extension ElectrumEnvironmentX on ElectrumEnvironment {
-  bool get isTestnet => this == ElectrumEnvironment.testnet;
   bool get isMainnet => this == ElectrumEnvironment.mainnet;
 }

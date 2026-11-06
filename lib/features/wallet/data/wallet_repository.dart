@@ -2,6 +2,7 @@ import 'package:bb_mobile/features/wallet/domain/repositories/wallet_reader_repo
 import 'package:transaction_sync/diagnostics.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet_failure_log_code.dart';
 import 'package:primitives/primitives.dart' show Fingerprint;
+import 'package:bb_mobile/features/wallet/data/wallet_network_codec.dart';
 import 'dart:async';
 import 'package:bb_mobile/features/wallet/data/wallet_native_runtime.dart';
 import 'package:transaction_sync/read.dart';
@@ -639,6 +640,7 @@ class WalletRepository implements SeedReferencePort, WalletReaderRepository {
     await _syncWallet(
       WalletMetadataModel(
         id: wallet.id,
+        networkCode: WalletNetworkCodec.encode(wallet.network),
         masterFingerprint: wallet.masterFingerprint,
         xpubFingerprint: wallet.xpubFingerprint,
         isEncryptedVaultTested: wallet.isEncryptedVaultTested,

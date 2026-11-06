@@ -10,138 +10,70 @@ class ElectrumServerStorageDatasource {
   const ElectrumServerStorageDatasource({required this._sqlite});
 
   Future<void> store(ElectrumServerModel server) async {
-    try {
-      final row = server.toSqlite();
-      await _sqlite.into(_sqlite.electrumServers).insertOnConflictUpdate(row);
-
-      log.fine('Successfully stored/updated server: ${server.url}');
-    } catch (e) {
-      log.severe(
-        message: 'Failed to store/update server',
-        error: e,
-        trace: StackTrace.current,
-      );
-      rethrow;
-    }
+    await _sqlite
+        .into(_sqlite.electrumServers)
+        .insertOnConflictUpdate(server.toSqlite());
+    log.fine('Electrum server stored network=${server.network}');
   }
 
   Future<void> storeBatch(List<ElectrumServerModel> servers) async {
-    try {
-      await _sqlite.batch((batch) {
-        for (final server in servers) {
-          final row = server.toSqlite();
-          batch.insert(
-            _sqlite.electrumServers,
-            row,
-            mode: InsertMode.insertOrReplace,
-          );
-        }
-      });
-
-      log.fine('Successfully stored/updated ${servers.length} server(s)');
-    } catch (e) {
-      log.severe(
-        message: 'Failed to store/update multiple servers',
-        error: e,
-        trace: StackTrace.current,
-      );
-      rethrow;
-    }
+    await _sqlite.batch((batch) {
+      for (final server in servers) {
+        batch.insert(
+          _sqlite.electrumServers,
+          server.toSqlite(),
+          mode: InsertMode.insertOrReplace,
+        );
+      }
+    });
+    log.fine('Electrum server priorities stored count=${servers.length}');
   }
 
-  /// Fetch a server by its URL
-  Future<ElectrumServerModel?> fetchByUrl(String url) async {
+  Future<ElectrumServerModel?> fetchByUrl(
+    String url, {
+    required ElectrumServerNetwork network,
+  }) async {
     final row = await _sqlite.managers.electrumServers
-        .filter((f) => f.url.equals(url))
+        .filter(
+          (f) => f.url.equals(url) & f.network.equals(network.storageName),
+        )
         .getSingleOrNull();
-
     return row == null ? null : ElectrumServerModel.fromSqlite(row);
   }
 
   Future<List<ElectrumServerModel>> fetchAllServers({
-    bool? isTestnet,
-    bool? isLiquid,
+    ElectrumServerNetwork? network,
     bool? isCustom,
   }) async {
     var query = _sqlite.managers.electrumServers.filter(
-      // No filtering by default
       (f) => const Constant(true),
     );
-
-    if (isLiquid != null) {
-      query = query.filter((f) => f.isLiquid(isLiquid));
+    if (network != null) {
+      query = query.filter((f) => f.network.equals(network.storageName));
     }
-    if (isTestnet != null) {
-      query = query.filter((f) => f.isTestnet(isTestnet));
-    }
-    if (isCustom != null) {
-      query = query.filter((f) => f.isCustom(isCustom));
-    }
-
+    if (isCustom != null) query = query.filter((f) => f.isCustom(isCustom));
     final rows = await query.get();
-    final servers = rows
-        .map((row) => ElectrumServerModel.fromSqlite(row))
-        .toList();
-
-    return servers;
+    return rows.map(ElectrumServerModel.fromSqlite).toList();
   }
 
-  /// Get a default server by provider type
   Future<List<ElectrumServerModel>> fetchDefaultServersByNetwork(
     ElectrumServerNetwork network,
-  ) async {
-    final rows = await _sqlite.managers.electrumServers
-        .filter(
-          (f) =>
-              f.isLiquid(network.isLiquid) &
-              f.isTestnet(network.isTestnet) &
-              f.isCustom(false),
-        )
-        .get();
+  ) => fetchAllServers(network: network, isCustom: false);
 
-    final servers = rows
-        .map((row) => ElectrumServerModel.fromSqlite(row))
-        .toList();
-
-    return servers;
-  }
-
-  /// Get custom servers for a specific network
   Future<List<ElectrumServerModel>> fetchCustomServersByNetwork(
     ElectrumServerNetwork network,
-  ) async {
-    final rows = await _sqlite.managers.electrumServers
+  ) => fetchAllServers(network: network, isCustom: true);
+
+  Future<bool> deleteServer(
+    String url, {
+    required ElectrumServerNetwork network,
+  }) async {
+    final deleted = await _sqlite.managers.electrumServers
         .filter(
-          (f) =>
-              f.isLiquid(network.isLiquid) &
-              f.isTestnet(network.isTestnet) &
-              f.isCustom(true),
+          (f) => f.url.equals(url) & f.network.equals(network.storageName),
         )
-        .get();
-
-    final servers = rows
-        .map((row) => ElectrumServerModel.fromSqlite(row))
-        .toList();
-
-    return servers;
-  }
-
-  /// Delete a specific server by URL
-  Future<bool> deleteServer(String url) async {
-    try {
-      final deleted = await _sqlite.managers.electrumServers
-          .filter((f) => f.url.equals(url))
-          .delete();
-
-      log.fine('Deleted $deleted server(s) with URL: $url');
-      return deleted > 0;
-    } catch (e) {
-      log.severe(
-        message: 'Failed to delete server',
-        error: e,
-        trace: StackTrace.current,
-      );
-      return false;
-    }
+        .delete();
+    log.fine('Electrum server deleted network=$network count=$deleted');
+    return deleted > 0;
   }
 }

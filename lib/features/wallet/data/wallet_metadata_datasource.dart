@@ -39,7 +39,7 @@ class WalletMetadataDatasource {
 
   Future<List<WalletMetadataModel>> fetchAll() async {
     final rows = await _sqlite.managers.walletMetadatas.get();
-    return rows.map((e) => WalletMetadataModelMapper.fromSqlite(e)).toList();
+    return rows.map(WalletMetadataModelMapper.fromSqlite).toList();
   }
 
   Future<void> delete(String walletId) async {

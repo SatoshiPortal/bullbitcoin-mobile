@@ -1,3 +1,6 @@
+import 'package:bull_logger/bull_logger.dart';
+import 'package:bb_mobile/features/electrum_settings/domain/electrum_environment.dart';
+import 'package:bb_mobile/features/electrum_settings/domain/electrum_network_unauthorized_exception.dart';
 import 'package:bb_mobile/core/electrum/domain/electrum_fallback_runner.dart';
 import 'package:bb_mobile/core/electrum/domain/errors/electrum_fallback_exception.dart';
 import 'package:bb_mobile/core/electrum/domain/ports/electrum_servers_port.dart';
@@ -32,6 +35,17 @@ class ElectrumServersAdapter implements ElectrumServersPort {
     required Future<T> Function(ElectrumConnection connection) operation,
     bool Function(Object error)? isTransient,
   }) async {
+    // Authorization belongs to admission, not to the captured network. A
+    // settings change never retargets an operation already running.
+    final appSettings = await _appSettingsRepository.fetch();
+    if (network.environment != ElectrumEnvironment.mainnet &&
+        (appSettings.isSuperuser != true ||
+            appSettings.isDevModeEnabled != true)) {
+      log.warning(
+        'Electrum refused network=${network.name} category=authorization',
+      );
+      throw const ElectrumNetworkUnauthorizedException();
+    }
     // Resolve the active set + settings exactly once per call. The active
     // set is the chokepoint: when a custom server is configured this list
     // contains only custom servers, so the loop can never reach a default.
@@ -56,8 +70,6 @@ class ElectrumServersAdapter implements ElectrumServersPort {
     if (servers.isEmpty) {
       throw NoElectrumServersConfiguredException(network);
     }
-    final appSettings = await _appSettingsRepository.fetch();
-
     final connections = servers
         .map(
           (server) => ElectrumConnection(
@@ -67,7 +79,7 @@ class ElectrumServersAdapter implements ElectrumServersPort {
             stopGap: settings.stopGap,
             validateDomain: settings.validateDomain,
             isCustom: server.isCustom,
-            socks5: settings.socks5,
+            socks5: network.isLiquid ? null : settings.socks5,
           ),
         )
         .toList();

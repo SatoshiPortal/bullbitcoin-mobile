@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/electrum_settings/domain/electrum_environment.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/electrum_settings/frameworks/ui/widgets/draggable_server_list.dart';
@@ -16,6 +17,10 @@ class ElectrumSettingsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final isLoading = context.select(
       (ElectrumSettingsBloc bloc) => bloc.state.isLoading,
+    );
+
+    final environment = context.select(
+      (ElectrumSettingsBloc bloc) => bloc.state.environment,
     );
 
     return Scaffold(
@@ -45,20 +50,22 @@ class ElectrumSettingsScreen extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 16),
               sliver: SliverList(
                 delegate: SliverChildListDelegate([
-                  BullSegmented(
-                    items: {
-                      context.loc.electrumNetworkBitcoin,
-                      context.loc.electrumNetworkLiquid,
-                    },
-                    initialValue: context.loc.electrumNetworkBitcoin,
-                    onSelected: (value) {
-                      context.read<ElectrumSettingsBloc>().add(
-                        ElectrumSettingsLoaded(
-                          isLiquid: value == context.loc.electrumNetworkLiquid,
-                        ),
-                      );
-                    },
-                  ),
+                  if (environment != ElectrumEnvironment.regtest)
+                    BullSegmented(
+                      items: {
+                        context.loc.electrumNetworkBitcoin,
+                        context.loc.electrumNetworkLiquid,
+                      },
+                      initialValue: context.loc.electrumNetworkBitcoin,
+                      onSelected: (value) {
+                        context.read<ElectrumSettingsBloc>().add(
+                          ElectrumSettingsLoaded(
+                            isLiquid:
+                                value == context.loc.electrumNetworkLiquid,
+                          ),
+                        );
+                      },
+                    ),
                   const TorProxyErrorBanner(),
                   const Gap(16),
                   const DraggableServerList(),

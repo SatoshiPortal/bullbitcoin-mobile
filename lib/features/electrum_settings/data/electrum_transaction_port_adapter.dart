@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/electrum/domain/errors/electrum_fallback_exception.dart';
 import 'package:bb_mobile/core/electrum/domain/ports/electrum_servers_port.dart';
 import 'package:bb_mobile/core/electrum/domain/ports/environment_port.dart';
@@ -30,7 +31,7 @@ class ElectrumTransactionPortAdapter implements TransactionPort {
   Future<Transaction> fetch({required String txid}) async {
     final environment = await _environmentPort.getEnvironment();
     final network = ElectrumServerNetwork.fromEnvironment(
-      isTestnet: environment.isTestnet,
+      environment: environment,
       isLiquid: false,
     );
 
@@ -44,7 +45,11 @@ class ElectrumTransactionPortAdapter implements TransactionPort {
           );
           return TransactionMapper.fromBitcoinTx(
             bitcoinTx,
-            isTestnet: environment.isTestnet,
+            network: switch (environment) {
+              ElectrumEnvironment.mainnet => Network.bitcoinMainnet,
+              ElectrumEnvironment.testnet => Network.bitcoinTestnet,
+              ElectrumEnvironment.regtest => Network.bitcoinRegtest,
+            },
           );
         },
       );

@@ -12,5 +12,8 @@ class DeleteCustomServerUsecase {
   @useResult
   Future<Result<void, ElectrumFailure>> execute(
     DeleteCustomServerRequest request,
-  ) => _electrumServerRepository.delete(url: request.url);
+  ) => _electrumServerRepository.delete(
+    url: request.url,
+    network: request.network,
+  );
 }

@@ -1,3 +1,6 @@
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
+import 'package:bb_mobile/features/wallet/data/bdk_wallet_datasource.dart'
+    show NetworkX;
 import 'dart:typed_data';
 
 import 'package:bb_mobile/core/transactions/domain/entities/bitcoin_transaction.dart';
@@ -11,13 +14,17 @@ class TransactionMapper {
   /// Convert a [btc_utils.BitcoinTx] utility class to a [BitcoinTransaction]
   /// domain entity.
   ///
-  /// When [isTestnet] is provided, scriptPubKey bytes are decoded to a
+  /// When [network] is provided, scriptPubKey bytes are decoded to a
   /// human-readable address via `bdk.Address.fromScript`. If decoding fails
   /// (e.g. non-standard script), the address field is left `null`.
   static BitcoinTransaction fromBitcoinTx(
     btc_utils.BitcoinTx bitcoinTx, {
+    Network? network,
     bool isTestnet = false,
   }) {
+    final capturedNetwork =
+        network ??
+        Network.fromEnvironment(isTestnet: isTestnet, isLiquid: false);
     return BitcoinTransaction(
       txid: bitcoinTx.txid,
       version: bitcoinTx.version,
@@ -29,8 +36,11 @@ class TransactionMapper {
           .asMap()
           .entries
           .map(
-            (entry) =>
-                _mapBitcoinOutput(entry.value, entry.key, isTestnet: isTestnet),
+            (entry) => _mapBitcoinOutput(
+              entry.value,
+              entry.key,
+              network: capturedNetwork,
+            ),
           )
           .toList(),
     );
@@ -48,7 +58,7 @@ class TransactionMapper {
   static BitcoinTxOutput _mapBitcoinOutput(
     btc_utils.TxVout vout,
     int index, {
-    bool isTestnet = false,
+    required Network network,
   }) {
     String? address;
     try {
@@ -56,7 +66,7 @@ class TransactionMapper {
         script: bdk.Script(
           rawOutputScript: Uint8List.fromList(vout.scriptPubKey.bytes),
         ),
-        network: isTestnet ? bdk.Network.testnet : bdk.Network.bitcoin,
+        network: network.bdkNetwork,
       ).toString();
     } catch (_) {
       // Non-standard or unrecognized script — address left null

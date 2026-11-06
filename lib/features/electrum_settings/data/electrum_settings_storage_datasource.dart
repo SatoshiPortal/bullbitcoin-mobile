@@ -21,7 +21,7 @@ class ElectrumSettingsStorageDatasource {
     } catch (e) {
       log.severe(
         message: 'Failed to store/update electrum settings',
-        error: e,
+        error: e.runtimeType,
         trace: StackTrace.current,
       );
       rethrow;
@@ -45,14 +45,16 @@ class ElectrumSettingsStorageDatasource {
         .filter(
           (f) =>
               f.network(
-                environment.isTestnet
-                    ? ElectrumServerNetwork.bitcoinTestnet
-                    : ElectrumServerNetwork.bitcoinMainnet,
+                ElectrumServerNetwork.fromEnvironment(
+                  environment: environment,
+                  isLiquid: false,
+                ),
               ) |
               f.network(
-                environment.isTestnet
-                    ? ElectrumServerNetwork.liquidTestnet
-                    : ElectrumServerNetwork.liquidMainnet,
+                ElectrumServerNetwork.fromEnvironment(
+                  environment: environment,
+                  isLiquid: true,
+                ),
               ),
         )
         .get();

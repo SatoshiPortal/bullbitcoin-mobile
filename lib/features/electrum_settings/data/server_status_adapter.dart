@@ -57,10 +57,10 @@ class ServerStatusAdapter implements ServerStatusPort {
       );
       socket.destroy();
       return ElectrumServerStatus.online;
-    } catch (e) {
+    } on Exception {
       // A server we cannot reach is the expected answer of this check, not a
       // fault: `severe` would report every offline server to Sentry.
-      log.warning('Socket check failed for $url - $e');
+      log.warning('Electrum socket probe unavailable');
       return ElectrumServerStatus.offline;
     }
   }
@@ -74,6 +74,10 @@ class ServerStatusAdapter implements ServerStatusPort {
     int? retry,
     TorProxyEndpoint? proxyEndpoint,
   }) async {
+    // TODO(SatoshiPortal/lwk-dart#96): no Liquid regtest probes before SDK support.
+    if (network == ElectrumServerNetwork.liquidRegtest) {
+      return ElectrumServerStatus.offline;
+    }
     try {
       if (url.isEmpty) return ElectrumServerStatus.unknown;
 
@@ -82,7 +86,8 @@ class ServerStatusAdapter implements ServerStatusPort {
 
       final effectiveTimeout = _resolveTimeout(uri, timeout);
       if (network == ElectrumServerNetwork.bitcoinMainnet ||
-          network == ElectrumServerNetwork.bitcoinTestnet) {
+          network == ElectrumServerNetwork.bitcoinTestnet ||
+          network == ElectrumServerNetwork.bitcoinRegtest) {
         await _bdkProbe(
           url: url,
           socks5: proxyEndpoint?.authority,
@@ -119,8 +124,8 @@ class ServerStatusAdapter implements ServerStatusPort {
       return isAlive
           ? ElectrumServerStatus.online
           : ElectrumServerStatus.offline;
-    } catch (e) {
-      log.warning('Electrum protocol check failed for $url - $e');
+    } on Exception {
+      log.warning('Electrum protocol probe unavailable network=$network');
       return ElectrumServerStatus.offline;
     }
   }
@@ -133,6 +138,8 @@ class ServerStatusAdapter implements ServerStatusPort {
         return _liquidMainnetProbeTxid;
       case ElectrumServerNetwork.bitcoinTestnet:
       case ElectrumServerNetwork.liquidTestnet:
+      case ElectrumServerNetwork.bitcoinRegtest:
+      case ElectrumServerNetwork.liquidRegtest:
         return null;
     }
   }

@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/wallet/data/wallet_network_codec.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
@@ -12,8 +13,8 @@ part 'wallet_metadata_model.freezed.dart';
 @freezed
 abstract class WalletMetadataModel with _$WalletMetadataModel {
   const factory WalletMetadataModel({
-    String? networkCode,
     required String id,
+    required String networkCode,
     required String masterFingerprint,
     required String xpubFingerprint,
     required bool isEncryptedVaultTested,
@@ -36,28 +37,33 @@ abstract class WalletMetadataModel with _$WalletMetadataModel {
 }
 
 extension WalletMetadataModelExtension on WalletMetadataModel {
-  ({String account, String fingerprint, Network network, ScriptType script})
-  get decodeOrigin => WalletMetadataService.decodeOrigin(origin: id);
+  ({String account, String fingerprint, ScriptType script}) get parsedOrigin =>
+      WalletMetadataService.parseOrigin(origin: origin);
 
-  String get account => decodeOrigin.account;
-  String get fingerprint => decodeOrigin.fingerprint;
+  String get origin => WalletMetadataService.originFromId(id);
+
+  Network get network => WalletNetworkCodec.decode(networkCode);
+
+  String get account => parsedOrigin.account;
+  String get fingerprint => parsedOrigin.fingerprint;
 
   /// The stored master fingerprint as a [Fingerprint], or null when it is
   /// not one — a watch-only wallet imported from a descriptor keeps the key
   /// origin verbatim, which may be uppercase or absent. Parsed rather than
   /// constructed so a signing path reports "no secret" instead of raising.
   Fingerprint? get seedFingerprint => Fingerprint.tryParse(masterFingerprint);
-  Network get network => decodeOrigin.network;
-  ScriptType get scriptType => decodeOrigin.script;
-  bool get isBitcoin => decodeOrigin.network.isBitcoin;
-  bool get isLiquid => decodeOrigin.network.isLiquid;
-  bool get isMainnet => decodeOrigin.network.isMainnet;
-  bool get isTestnet => decodeOrigin.network.isTestnet;
+  ScriptType get scriptType => parsedOrigin.script;
+  bool get isBitcoin => network.isBitcoin;
+  bool get isLiquid => network.isLiquid;
+  bool get isMainnet => network.isMainnet;
+
+  bool get isTestnet => network.requireHistoricalTestnet();
 }
 
 extension WalletMetadataModelMapper on WalletMetadataModel {
   WalletMetadatasCompanion toSqlite() => WalletMetadatasCompanion(
     id: Value(id),
+    network: Value(networkCode),
     masterFingerprint: Value(masterFingerprint),
     xpubFingerprint: Value(xpubFingerprint),
     isEncryptedVaultTested: Value(isEncryptedVaultTested),
@@ -78,6 +84,7 @@ extension WalletMetadataModelMapper on WalletMetadataModel {
   static WalletMetadataModel fromSqlite(WalletMetadataRow row) =>
       WalletMetadataModel(
         id: row.id,
+        networkCode: row.network,
         masterFingerprint: row.masterFingerprint,
         xpubFingerprint: row.xpubFingerprint,
         isEncryptedVaultTested: row.isEncryptedVaultTested,

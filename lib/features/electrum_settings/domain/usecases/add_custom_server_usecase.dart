@@ -34,6 +34,10 @@ class AddCustomServerUsecase {
   Future<Result<ElectrumServerStatus, ElectrumFailure>> execute(
     AddCustomServerRequest request,
   ) async {
+    // TODO(SatoshiPortal/lwk-dart#96): no Liquid regtest IO until SDK support.
+    if (request.network == ElectrumServerNetwork.liquidRegtest) {
+      return const Err(ElectrumUnsupportedNetworkFailure());
+    }
     try {
       final server = ElectrumServer.createCustom(
         host: request.host,
@@ -44,7 +48,10 @@ class AddCustomServerUsecase {
       );
 
       final ElectrumServer? existingServer;
-      switch (await _electrumServerRepository.fetchByUrl(server.url)) {
+      switch (await _electrumServerRepository.fetchByUrl(
+        server.url,
+        network: server.network,
+      )) {
         case Ok(:final value):
           existingServer = value;
         case Err(:final failure):
@@ -95,7 +102,8 @@ class AddCustomServerUsecase {
           }
         }
 
-        // Verify that the server actually serves chain data.
+        // TODO: verify the Electrum genesis hash for the selected network.
+        // This probe checks protocol availability only.
         final protocolStatus = await _serverStatusPort.checkElectrum(
           url: server.url,
           network: server.network,
@@ -114,18 +122,12 @@ class AddCustomServerUsecase {
       // Both checks passed — persist the server.
       final saveResult = await _electrumServerRepository.save(server);
       return saveResult.map((_) => ElectrumServerStatus.online);
-    } on OnionServerWithoutTorException catch (error, st) {
-      log.severe(
-        message: 'External Tor unavailable for custom onion server',
-        error: error,
-        trace: st,
-      );
+    } on OnionServerWithoutTorException {
+      log.warning('Electrum custom server probe unavailable category=tor');
       return const Err(ElectrumExternalTorProxyUnavailableFailure());
-    } on Exception catch (e, st) {
-      log.severe(
-        message: 'Failed to add custom electrum server',
-        error: e,
-        trace: st,
+    } on Exception {
+      log.warning(
+        'Electrum custom server probe unavailable category=connection',
       );
       return const Err(ElectrumUnexpectedFailure());
     }

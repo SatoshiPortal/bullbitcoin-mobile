@@ -4,19 +4,23 @@ import 'package:bb_mobile/features/electrum_settings/domain/electrum_server_netw
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:meta/meta.dart';
 
-abstract class ElectrumServerRepository {
+abstract interface class ElectrumServerRepository {
   @useResult
   Future<Result<void, ElectrumFailure>> save(ElectrumServer server);
   @useResult
   Future<Result<void, ElectrumFailure>> batchSave(List<ElectrumServer> servers);
   @useResult
   Future<Result<List<ElectrumServer>, ElectrumFailure>> fetchAll({
+    ElectrumServerNetwork? network,
     bool? isTestnet,
     bool? isLiquid,
     bool? isCustom,
   });
   @useResult
-  Future<Result<ElectrumServer?, ElectrumFailure>> fetchByUrl(String url);
+  Future<Result<ElectrumServer?, ElectrumFailure>> fetchByUrl(
+    String url, {
+    ElectrumServerNetwork? network,
+  });
   @useResult
   Future<Result<List<ElectrumServer>, ElectrumFailure>> fetchCustomServers({
     required ElectrumServerNetwork network,
@@ -34,5 +38,8 @@ abstract class ElectrumServerRepository {
   });
 
   @useResult
-  Future<Result<void, ElectrumFailure>> delete({required String url});
+  Future<Result<void, ElectrumFailure>> delete({
+    required String url,
+    ElectrumServerNetwork? network,
+  });
 }

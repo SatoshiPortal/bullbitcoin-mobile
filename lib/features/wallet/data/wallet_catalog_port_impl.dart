@@ -61,10 +61,19 @@ final class WalletCatalogPortImpl implements WalletCatalogPort {
     final Network network;
     final ScriptType script;
     try {
-      final origin = WalletMetadataService.decodeOrigin(origin: row.id);
-      network = origin.network.shared;
+      final origin = WalletMetadataService.parseOrigin(origin: row.origin);
+      network = row.network.shared;
       script = origin.script.shared;
+      if (row.origin.startsWith('el') != (network is LiquidNetwork)) {
+        return const Err(TransactionSyncInvalidCatalogFailure());
+      }
+      final hasSuffix = row.id.endsWith(WalletMetadataService.regtestSuffix);
+      if (hasSuffix != (network.env == NetworkEnv.regtest)) {
+        return const Err(TransactionSyncInvalidCatalogFailure());
+      }
     } on String {
+      return const Err(TransactionSyncInvalidCatalogFailure());
+    } on FormatException {
       return const Err(TransactionSyncInvalidCatalogFailure());
     }
     final external = row.externalPublicDescriptor;
@@ -80,7 +89,7 @@ final class WalletCatalogPortImpl implements WalletCatalogPort {
           BitcoinWalletDescriptor(
             key: key,
             scriptType: script,
-            origin: row.id,
+            origin: row.origin,
             externalDescriptor: external,
             internalDescriptor: internal,
           ),
@@ -94,7 +103,7 @@ final class WalletCatalogPortImpl implements WalletCatalogPort {
           LiquidWalletDescriptor(
             key: key,
             scriptType: script,
-            origin: row.id,
+            origin: row.origin,
             combinedCtDescriptor: external,
           ),
         );

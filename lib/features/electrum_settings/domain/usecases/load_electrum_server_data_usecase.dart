@@ -10,7 +10,6 @@ import 'package:bb_mobile/core/electrum/domain/ports/server_status_port.dart';
 import 'package:bb_mobile/core/electrum/domain/ports/electrum_tor_session_port.dart';
 import 'package:bb_mobile/features/electrum_settings/domain/repositories/electrum_server_repository.dart';
 import 'package:bb_mobile/core/electrum/domain/repositories/electrum_settings_repository.dart';
-import 'package:bb_mobile/features/electrum_settings/domain/electrum_environment.dart';
 import 'package:bb_mobile/features/electrum_settings/domain/electrum_server_network.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_status.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_connection.dart';
@@ -45,15 +44,16 @@ class LoadElectrumServerDataUsecase {
       final isLiquid = request.isLiquid;
       final environment = await _environmentPort.getEnvironment();
       final network = ElectrumServerNetwork.fromEnvironment(
-        isTestnet: environment.isTestnet,
+        environment: environment,
         isLiquid: isLiquid,
       );
 
+      if (network == ElectrumServerNetwork.liquidRegtest) {
+        return const Err(ElectrumUnsupportedNetworkFailure());
+      }
+
       final (serversResult, settingsResult) = await (
-        _electrumServerRepository.fetchAll(
-          isTestnet: environment.isTestnet,
-          isLiquid: isLiquid,
-        ),
+        _electrumServerRepository.fetchAll(network: network),
         _electrumSettingsRepository.fetchByNetwork(network),
       ).wait;
 
@@ -126,13 +126,9 @@ class LoadElectrumServerDataUsecase {
       );
 
       return Ok(response());
-    } catch (e, st) {
-      log.severe(
-        message: 'Failed to load electrum server data',
-        error: e,
-        trace: st,
-      );
-      return Err(ElectrumUnexpectedFailure(e.toString()));
+    } on Exception {
+      log.warning('Electrum server data unavailable');
+      return const Err(ElectrumUnexpectedFailure());
     }
   }
 }

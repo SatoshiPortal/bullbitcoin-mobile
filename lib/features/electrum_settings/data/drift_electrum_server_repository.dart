@@ -20,13 +20,9 @@ class DriftElectrumServerRepository implements ElectrumServerRepository {
       final model = ElectrumServerModel.fromEntity(server);
       await _datasource.store(model);
       return const Ok(null);
-    } catch (e, st) {
-      log.severe(
-        message: 'Failed to save electrum server',
-        error: e,
-        trace: st,
-      );
-      return Err(ElectrumSaveFailure(e.toString()));
+    } on Exception {
+      log.warning('Failed to save electrum server');
+      return const Err(ElectrumSaveFailure());
     }
   }
 
@@ -40,53 +36,46 @@ class DriftElectrumServerRepository implements ElectrumServerRepository {
           .toList();
       await _datasource.storeBatch(models);
       return const Ok(null);
-    } catch (e, st) {
-      log.severe(
-        message: 'Failed to batch save electrum servers',
-        error: e,
-        trace: st,
-      );
-      return Err(ElectrumSaveFailure(e.toString()));
+    } on Exception {
+      log.warning('Failed to batch save electrum servers');
+      return const Err(ElectrumSaveFailure());
     }
   }
 
   @override
   Future<Result<ElectrumServer?, ElectrumFailure>> fetchByUrl(
-    String url,
-  ) async {
+    String url, {
+    ElectrumServerNetwork? network,
+  }) async {
+    if (network == null) return const Err(ElectrumUnsupportedNetworkFailure());
     try {
-      final server = await _datasource.fetchByUrl(url);
+      final server = await _datasource.fetchByUrl(url, network: network);
       return Ok(server?.toEntity());
-    } catch (e, st) {
-      log.severe(
-        message: 'Failed to fetch electrum server by url',
-        error: e,
-        trace: st,
-      );
-      return Err(ElectrumLoadFailure(e.toString()));
+    } on Exception {
+      log.warning('Failed to fetch electrum server by url');
+      return const Err(ElectrumLoadFailure());
     }
   }
 
   @override
   Future<Result<List<ElectrumServer>, ElectrumFailure>> fetchAll({
+    ElectrumServerNetwork? network,
     bool? isTestnet,
     bool? isLiquid,
     bool? isCustom,
   }) async {
+    if (isTestnet != null || isLiquid != null) {
+      return const Err(ElectrumUnsupportedNetworkFailure());
+    }
     try {
       final models = await _datasource.fetchAllServers(
-        isTestnet: isTestnet,
-        isLiquid: isLiquid,
+        network: network,
         isCustom: isCustom,
       );
       return Ok(models.map((e) => e.toEntity()).toList());
-    } catch (e, st) {
-      log.severe(
-        message: 'Failed to fetch all electrum servers',
-        error: e,
-        trace: st,
-      );
-      return Err(ElectrumLoadFailure(e.toString()));
+    } on Exception {
+      log.warning('Failed to fetch all electrum servers');
+      return const Err(ElectrumLoadFailure());
     }
   }
 
@@ -97,13 +86,9 @@ class DriftElectrumServerRepository implements ElectrumServerRepository {
     try {
       final models = await _datasource.fetchCustomServersByNetwork(network);
       return Ok(models.map((e) => e.toEntity()).toList());
-    } catch (e, st) {
-      log.severe(
-        message: 'Failed to fetch custom electrum servers',
-        error: e,
-        trace: st,
-      );
-      return Err(ElectrumLoadFailure(e.toString()));
+    } on Exception {
+      log.warning('Failed to fetch custom electrum servers');
+      return const Err(ElectrumLoadFailure());
     }
   }
 
@@ -114,13 +99,9 @@ class DriftElectrumServerRepository implements ElectrumServerRepository {
     try {
       final models = await _datasource.fetchDefaultServersByNetwork(network);
       return Ok(models.map((e) => e.toEntity()).toList());
-    } catch (e, st) {
-      log.severe(
-        message: 'Failed to fetch default electrum servers',
-        error: e,
-        trace: st,
-      );
-      return Err(ElectrumLoadFailure(e.toString()));
+    } on Exception {
+      log.warning('Failed to fetch default electrum servers');
+      return const Err(ElectrumLoadFailure());
     }
   }
 
@@ -128,10 +109,12 @@ class DriftElectrumServerRepository implements ElectrumServerRepository {
   Future<Result<List<ElectrumServer>, ElectrumFailure>> fetchActiveServers({
     required ElectrumServerNetwork network,
   }) async {
-    final result = await fetchAll(
-      isTestnet: network.isTestnet,
-      isLiquid: network.isLiquid,
-    );
+    // TODO(SatoshiPortal/lwk-dart#96): keep Liquid regtest unavailable until
+    // the pinned SDK supports the concrete chain.
+    if (network == ElectrumServerNetwork.liquidRegtest) {
+      return const Err(ElectrumUnsupportedNetworkFailure());
+    }
+    final result = await fetchAll(network: network);
     return result.map((servers) {
       final customServers = servers.where((s) => s.isCustom).toList();
       final activeServers = customServers.isNotEmpty ? customServers : servers;
@@ -141,17 +124,17 @@ class DriftElectrumServerRepository implements ElectrumServerRepository {
   }
 
   @override
-  Future<Result<void, ElectrumFailure>> delete({required String url}) async {
+  Future<Result<void, ElectrumFailure>> delete({
+    required String url,
+    ElectrumServerNetwork? network,
+  }) async {
+    if (network == null) return const Err(ElectrumUnsupportedNetworkFailure());
     try {
-      await _datasource.deleteServer(url);
+      await _datasource.deleteServer(url, network: network);
       return const Ok(null);
-    } catch (e, st) {
-      log.severe(
-        message: 'Failed to delete electrum server',
-        error: e,
-        trace: st,
-      );
-      return Err(ElectrumDeleteFailure(e.toString()));
+    } on Exception {
+      log.warning('Failed to delete electrum server');
+      return const Err(ElectrumDeleteFailure());
     }
   }
 }

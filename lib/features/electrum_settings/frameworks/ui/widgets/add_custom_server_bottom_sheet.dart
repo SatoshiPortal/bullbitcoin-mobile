@@ -116,9 +116,12 @@ class _AddCustomServerBottomSheetState
       (ElectrumSettingsBloc bloc) => bloc.state.isLiquid,
     );
     final environment = context.select(
-      (ElectrumSettingsBloc bloc) => bloc.state.environment?.isTestnet == true
-          ? context.loc.electrumTestnet
-          : context.loc.electrumMainnet,
+      (ElectrumSettingsBloc bloc) => switch (bloc.state.environment) {
+        ElectrumEnvironment.mainnet => context.loc.electrumMainnet,
+        ElectrumEnvironment.testnet => context.loc.electrumTestnet,
+        ElectrumEnvironment.regtest => context.loc.electrumRegtest,
+        null => context.loc.oopsSomethingWentWrong,
+      },
     );
 
     return GestureDetector(

@@ -40,6 +40,9 @@ void main() {
       late _Labels labels;
       late WalletAddressRepository repository;
       final row = WalletMetadataModel(
+        networkCode: origin.startsWith('el')
+            ? 'liquidMainnet'
+            : 'bitcoinMainnet',
         id: origin,
         masterFingerprint: 'aabbccdd',
         xpubFingerprint: 'aabbccdd',

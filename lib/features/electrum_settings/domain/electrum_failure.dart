@@ -1,9 +1,9 @@
 import 'package:bb_mobile/core/failures/failure.dart';
 
-/// Closed set of every failure the Electrum core layer surfaces across its
+/// Closed set of failures the Electrum owner surfaces across its
 /// boundary (the repositories). Foreign errors — Drift/storage, connectivity,
-/// domain-entity validation — are caught at the boundary, logged raw, and
-/// mapped to one of these variants; the raw reason stays in
+/// domain-entity validation — are caught at the boundary, logged by safe category, and
+/// mapped to one of these variants; optional safe diagnostics stay in
 /// [Failure.logMessage] (logs only).
 ///
 /// Pure Dart, no Flutter and no SDK types. A consuming feature lifts these into
@@ -68,4 +68,9 @@ final class ElectrumInvalidRetryFailure extends ElectrumFailure {
 /// Anything not otherwise modeled.
 final class ElectrumUnexpectedFailure extends ElectrumFailure {
   const ElectrumUnexpectedFailure([super.logMessage]);
+}
+
+/// The SDK cannot serve this concrete network.
+final class ElectrumUnsupportedNetworkFailure extends ElectrumFailure {
+  const ElectrumUnsupportedNetworkFailure();
 }
