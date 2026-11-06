@@ -16,7 +16,19 @@ class CachedPrices extends Table {
   Set<Column<Object>> get primaryKey => {network, currency};
 }
 
-@DriftDatabase(tables: [CachedPrices])
+@DataClassName('CachedPricePointRow')
+class CachedPricePoints extends Table {
+  TextColumn get network => text()();
+  TextColumn get currency => text()();
+  TextColumn get interval => text()();
+  IntColumn get time => integer()();
+  RealColumn get fiatAmount => real()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {network, currency, interval, time};
+}
+
+@DriftDatabase(tables: [CachedPrices, CachedPricePoints])
 final class PricerDatabase extends _$PricerDatabase {
   static const schema = 1;
 

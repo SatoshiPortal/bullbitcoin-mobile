@@ -1,10 +1,13 @@
 import 'dart:async';
 
 import 'package:bull_pricer/src/data/models/price_model.dart';
+import 'package:bull_pricer/src/data/models/price_point_model.dart';
 import 'package:bull_pricer/src/data/models/price_response_model.dart';
 import 'package:bull_pricer/src/data/datasources/pricer_cache_datasource.dart';
 import 'package:bull_pricer/src/data/datasources/pricer_api_datasource.dart';
 import 'package:bull_pricer/src/domain/entities/bitcoin_price.dart';
+import 'package:bull_pricer/src/domain/entities/price_history_interval.dart';
+import 'package:bull_pricer/src/domain/entities/price_point.dart';
 import 'package:bull_pricer/src/domain/entities/supported_currency.dart';
 import 'package:bull_pricer/src/domain/pricer_failure.dart';
 import 'package:clock/clock.dart';
@@ -72,8 +75,120 @@ final class PricerRepository {
   ) async {
     final (network, currency) = key;
     final PriceResponseModel response;
+    switch (await _call(request)) {
+      case Ok(:final value):
+        response = value;
+      case Err(:final failure):
+        return Err(failure);
+    }
+
+    final price = PriceModel(
+      network: network,
+      currency: currency,
+      fiatAmount: response.indexPrice(),
+      fetchedAt: DateTime.fromMillisecondsSinceEpoch(
+        clock.now().millisecondsSinceEpoch,
+        isUtc: true,
+      ),
+    );
+
+    await _writeCache(price);
+
+    return Ok(price.toEntity());
+  }
+
+  /// The price history, oldest first, fetched and stored. When the fetch
+  /// fails or brings no points, the stored one; a failure only when nothing
+  /// is stored either.
+  @useResult
+  Future<Result<List<PricePoint>, PricerFailure>> priceHistory({
+    required BitcoinNetwork network,
+    required SupportedCurrency currency,
+    required PriceHistoryInterval interval,
+  }) async {
+    final now = clock.now().toUtc();
+    final from = now.subtract(interval.window);
+    final List<PricePointModel> points;
+    switch (await _call(
+      () => _pricerApiDatasource.indexPriceHistory(
+        network,
+        currency,
+        interval,
+        from: from,
+        to: now,
+      ),
+    )) {
+      case Ok(:final value):
+        points = [
+          for (final point in value.points)
+            if (!point.time.isBefore(from))
+              PricePointModel(
+                network: network,
+                currency: currency,
+                interval: interval,
+                time: point.time,
+                fiatAmount: point.fiatAmount,
+              ),
+        ];
+      case Err(:final failure):
+        final stored = await _readHistory(
+          network,
+          currency,
+          interval,
+          from: from,
+        );
+        if (stored.isEmpty) return Err(failure);
+        return Ok(_entities(stored));
+    }
+
+    // An answer without points leaves the stored history as it is.
+    if (points.isEmpty) {
+      return Ok(
+        _entities(await _readHistory(network, currency, interval, from: from)),
+      );
+    }
+
     try {
-      response = await request();
+      await _pricerCacheDatasource.replaceHistory(
+        network,
+        currency,
+        interval,
+        points,
+      );
+    } on Exception {
+      // An unwritable cache only costs the fallback on a later failure.
+    }
+    return Ok(_entities(points));
+  }
+
+  Future<List<PricePointModel>> _readHistory(
+    BitcoinNetwork network,
+    SupportedCurrency currency,
+    PriceHistoryInterval interval, {
+    required DateTime from,
+  }) async {
+    try {
+      return await _pricerCacheDatasource.findHistory(
+        network,
+        currency,
+        interval,
+        from: from,
+      );
+    } on Exception {
+      // An unreadable cache only means there is nothing to fall back on.
+      return const [];
+    }
+  }
+
+  List<PricePoint> _entities(List<PricePointModel> points) => [
+    for (final point in points) point.toEntity(),
+  ];
+
+  Future<Result<T, PricerFailure>> _call<T>(
+    Future<T> Function() request,
+  ) async {
+    try {
+      return Ok(await request());
     } on PricerUnsupportedNetworkException catch (e) {
       return Err(
         PricerUnsupportedNetworkFailure(
@@ -91,20 +206,6 @@ final class PricerRepository {
     } on FormatException catch (e) {
       return Err(PricerUnexpectedFailure(e.message));
     }
-
-    final price = PriceModel(
-      network: network,
-      currency: currency,
-      fiatAmount: response.indexPrice(),
-      fetchedAt: DateTime.fromMillisecondsSinceEpoch(
-        clock.now().millisecondsSinceEpoch,
-        isUtc: true,
-      ),
-    );
-
-    await _writeCache(price);
-
-    return Ok(price.toEntity());
   }
 
   bool _isFresh(PriceModel price) {

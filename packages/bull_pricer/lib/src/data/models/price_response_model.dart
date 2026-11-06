@@ -27,5 +27,5 @@ final class PriceResponseModel {
     return response;
   }
 
-  double indexPrice() => rawIndexPrice / pow(10, precision);
+  double indexPrice() => rawIndexPrice / pow(10.0, precision);
 }

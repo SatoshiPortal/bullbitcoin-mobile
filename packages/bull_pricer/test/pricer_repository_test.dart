@@ -5,6 +5,8 @@ import 'package:bull_pricer/src/data/datasources/pricer_cache_datasource.dart';
 import 'package:bull_pricer/src/data/pricer_database.dart';
 import 'package:bull_pricer/src/data/pricer_repository.dart';
 import 'package:bull_pricer/src/domain/entities/bitcoin_price.dart';
+import 'package:bull_pricer/src/domain/entities/price_history_interval.dart';
+import 'package:bull_pricer/src/domain/entities/price_point.dart';
 import 'package:bull_pricer/src/domain/entities/supported_currency.dart';
 import 'package:bull_pricer/src/domain/pricer_failure.dart';
 import 'package:clock/clock.dart';
@@ -235,6 +237,154 @@ void main() {
         closeTo(114214.20, 1e-9),
       );
       expect(api.requests, hasLength(1));
+    });
+  });
+
+  group('price history', () {
+    const day = PriceHistoryInterval.day;
+    const fifteen = PriceHistoryInterval.fifteenMinutes;
+
+    Future<Result<List<PricePoint>, PricerFailure>> history(
+      PriceHistoryInterval interval, {
+      BitcoinNetwork network = mainnet,
+    }) => atNow(
+      () => repository.priceHistory(
+        network: network,
+        currency: cad,
+        interval: interval,
+      ),
+    );
+
+    List<PricePoint> points(Result<List<PricePoint>, PricerFailure> result) =>
+        switch (result) {
+          Ok(:final value) => value,
+          Err(:final failure) => fail('Expected points, got $failure'),
+        };
+
+    test('the first request fetches the points, oldest first', () async {
+      final fetched = points(await history(day));
+
+      expect(fetched.map((p) => p.time), [
+        now.subtract(const Duration(days: 2)),
+        now.subtract(const Duration(days: 1)),
+        now,
+      ]);
+      expect(fetched.last.fiatAmount, mainnetIndexPrice / 100);
+      expect(api.requests.single.method, 'getIndexRateHistory');
+      expect(api.requests.single.apiKey, isNull);
+    });
+
+    test('every request reaches the price service', () async {
+      await history(day);
+      await history(day);
+
+      expect(api.requests, hasLength(2));
+    });
+
+    test('a new answer replaces the stored points', () async {
+      await history(day);
+      api.respond = (_) => historyElement([(now, 12000000)]);
+      await history(day);
+      api.respond = (_) => (status: 503, body: const <String, Object>{});
+
+      expect(points(await history(day)).map((p) => p.fiatAmount), [120000]);
+    });
+
+    test(
+      'points older than the window are neither returned nor kept',
+      () async {
+        api.respond = (_) => historyElement([
+          (now.subtract(const Duration(days: 91)), 9000000),
+          (now.subtract(const Duration(days: 1)), 11000000),
+        ]);
+
+        expect(points(await history(day)).map((p) => p.fiatAmount), [110000]);
+        api.respond = (_) => (status: 503, body: const <String, Object>{});
+        expect(points(await history(day)).map((p) => p.fiatAmount), [110000]);
+      },
+    );
+
+    test('a failure falls back to the stored history, however old', () async {
+      final before = points(await history(day));
+      now = now.add(const Duration(days: 2));
+      api.respond = (_) => (status: 503, body: const <String, Object>{});
+
+      expect(points(await history(day)), before);
+      expect(api.requests, hasLength(2));
+    });
+
+    test('a failure with nothing stored is typed', () async {
+      api.respond = (_) => (status: 503, body: const <String, Object>{});
+
+      expect(switch (await history(day)) {
+        Ok(:final value) => fail('Expected a failure, got $value'),
+        Err(:final failure) => failure,
+      }, isA<PricerNetworkFailure>());
+    });
+
+    test('stored points out of the window are not served', () async {
+      await history(fifteen);
+      now = now.add(const Duration(minutes: 20));
+      api.respond = (_) => (status: 503, body: const <String, Object>{});
+
+      expect(
+        await history(fifteen),
+        isA<Err<List<PricePoint>, PricerFailure>>(),
+      );
+    });
+
+    test('an answer without points keeps the stored history', () async {
+      final before = points(await history(day));
+      api.respond = (_) => historyElement([]);
+
+      expect(points(await history(day)), before);
+      expect(points(await history(day)), before);
+      expect(api.requests, hasLength(3));
+    });
+
+    test('an answer without points and nothing stored is empty', () async {
+      api.respond = (_) => historyElement([]);
+
+      expect(points(await history(day)), isEmpty);
+    });
+
+    test('each interval and network has its own history', () async {
+      await history(day);
+      await history(fifteen);
+      await history(day, network: testnet);
+      // Only the stored histories answer from here on.
+      api.respond = (_) => (status: 503, body: const <String, Object>{});
+
+      expect(points(await history(day)), hasLength(3));
+      expect(points(await history(fifteen)), hasLength(1));
+      expect(
+        points(await history(day, network: testnet)).last.fiatAmount,
+        testnetIndexPrice / 100,
+      );
+    });
+
+    test('a point without a usable price is skipped', () async {
+      api.respond = (_) => historyElement([
+        (now.subtract(const Duration(days: 1)), 0),
+        (now, 11000000),
+      ]);
+
+      expect(points(await history(day)).map((p) => p.fiatAmount), [110000]);
+    });
+
+    test('an unreadable cache falls back to the price service', () async {
+      final directory = Directory.systemTemp.createTempSync('bull_pricer');
+      addTearDown(() => directory.deleteSync(recursive: true));
+      final file = File('${directory.path}/pricer.sqlite')
+        ..writeAsStringSync('not a database');
+      await database.close();
+      final broken = PricerDatabase.open(file.path);
+      addTearDown(broken.close);
+      repository = PricerRepository(
+        pricerCacheDatasource: PricerCacheDatasource(broken),
+      );
+
+      expect(points(await history(day)), hasLength(3));
     });
   });
 

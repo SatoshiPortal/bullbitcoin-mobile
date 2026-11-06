@@ -24,6 +24,15 @@ void main() {
       expect(response.indexPrice(), 100000);
     });
 
+    test('divides by a precision too large for an int', () {
+      final response = PriceResponseModel.fromJson({
+        'indexPrice': 11424220,
+        'precision': 20,
+      });
+
+      expect(response.indexPrice(), closeTo(11424220 / 1e20, 1e-30));
+    });
+
     test('rejects an answer without a usable price', () {
       final answers = <Map<String, dynamic>>[
         {},

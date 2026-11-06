@@ -2,6 +2,8 @@ import 'package:bull_pricer/src/data/datasources/pricer_cache_datasource.dart';
 import 'package:bull_pricer/src/data/pricer_database.dart';
 import 'package:bull_pricer/src/data/pricer_repository.dart';
 import 'package:bull_pricer/src/domain/entities/bitcoin_price.dart';
+import 'package:bull_pricer/src/domain/entities/price_history_interval.dart';
+import 'package:bull_pricer/src/domain/entities/price_point.dart';
 import 'package:bull_pricer/src/domain/entities/supported_currency.dart';
 import 'package:bull_pricer/src/domain/pricer_failure.dart';
 import 'package:meta/meta.dart';
@@ -30,9 +32,23 @@ abstract final class Pricer {
     (repository) => repository.indexPrice(network: network, currency: currency),
   );
 
-  static Future<Result<BitcoinPrice, PricerFailure>> _call(
-    Future<Result<BitcoinPrice, PricerFailure>> Function(PricerRepository)
-    action,
+  /// The price history, oldest first, fetched and stored. When the fetch
+  /// fails, the stored history is returned if there is one.
+  @useResult
+  static Future<Result<List<PricePoint>, PricerFailure>> getPriceHistory({
+    required BitcoinNetwork network,
+    required SupportedCurrency currency,
+    required PriceHistoryInterval interval,
+  }) => _call(
+    (repository) => repository.priceHistory(
+      network: network,
+      currency: currency,
+      interval: interval,
+    ),
+  );
+
+  static Future<Result<T, PricerFailure>> _call<T>(
+    Future<Result<T, PricerFailure>> Function(PricerRepository) action,
   ) {
     final repository = _repository;
     if (repository == null) {

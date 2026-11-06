@@ -1,4 +1,5 @@
 import 'package:bull_pricer/src/data/datasources/pricer_api_datasource.dart';
+import 'package:bull_pricer/src/domain/entities/price_history_interval.dart';
 import 'package:bull_pricer/src/domain/entities/supported_currency.dart';
 import 'package:dio/dio.dart';
 import 'package:primitives/primitives.dart';
@@ -39,6 +40,71 @@ void main() {
       expect(request.method, 'getRate');
       expect(request.params, {'fromCurrency': 'BTC', 'toCurrency': 'CAD'});
       expect(request.apiKey, isNull);
+    });
+  });
+
+  group('price history', () {
+    final from = DateTime.utc(2026, 8, 6);
+    final to = DateTime.utc(2026, 11, 4);
+
+    test(
+      'asks getIndexRateHistory for the window, without the API key',
+      () async {
+        await datasource.indexPriceHistory(
+          mainnet,
+          SupportedCurrency.cad,
+          PriceHistoryInterval.day,
+          from: from,
+          to: to,
+        );
+
+        final request = api.requests.single;
+        expect(request.method, 'getIndexRateHistory');
+        expect(request.params, {
+          'fromCurrency': 'BTC',
+          'toCurrency': 'CAD',
+          'interval': 'day',
+          'fromDate': '${from.millisecondsSinceEpoch}',
+          'toDate': '${to.millisecondsSinceEpoch}',
+        });
+        expect(request.apiKey, isNull);
+        expect(request.host, 'api.bullbitcoin.com');
+      },
+    );
+
+    test('names the 15-minute interval as the API does', () async {
+      await datasource.indexPriceHistory(
+        BitcoinNetwork.testnet,
+        SupportedCurrency.cad,
+        PriceHistoryInterval.fifteenMinutes,
+        from: from,
+        to: to,
+      );
+
+      expect(api.requests.single.params['interval'], 'fifteen');
+      expect(api.requests.single.host, 'api05.bullbitcoin.dev');
+    });
+
+    test('a JSON-RPC error is a FormatException', () async {
+      api.respond = (_) => (
+        status: 200,
+        body: const {
+          'jsonrpc': '2.0',
+          'id': 1,
+          'error': {'code': -32000, 'message': 'Server error'},
+        },
+      );
+
+      await expectLater(
+        datasource.indexPriceHistory(
+          mainnet,
+          SupportedCurrency.cad,
+          PriceHistoryInterval.day,
+          from: from,
+          to: to,
+        ),
+        throwsFormatException,
+      );
     });
   });
 
