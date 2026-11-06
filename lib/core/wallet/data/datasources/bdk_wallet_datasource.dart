@@ -6,7 +6,6 @@ import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/utils/address_script_conversions.dart';
 import 'package:bb_mobile/core/utils/generic_extensions.dart';
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bb_mobile/core/wallet/data/datasources/bdk_facade.dart';
 import 'package:bb_mobile/core/wallet/data/models/balance_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/transaction_input_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/transaction_output_model.dart';
@@ -50,8 +49,7 @@ extension BdkNetworkX on bdk.Network {
 class BdkWalletDatasource {
   final Future<bdk.Wallet> Function(WalletModel) _readWallet;
 
-  BdkWalletDatasource({Future<bdk.Wallet> Function(WalletModel)? readWallet})
-    : _readWallet = readWallet ?? BdkFacade.createWallet;
+  BdkWalletDatasource({required this._readWallet});
 
   Future<BalanceModel> getBalance({required WalletModel wallet}) async {
     final bdkWallet = await _readWallet(wallet);
@@ -464,54 +462,6 @@ class BdkWalletDatasource {
     return walletTxs.whereType<WalletTransactionModel>().toList();
   }
 
-  Future<({String address, int index})> getNewAddress({
-    required WalletModel wallet,
-    bool isChange = false,
-  }) async {
-    final bdkWallet = await _readWallet(wallet);
-    final addressInfo = bdkWallet.revealNextAddress(
-      keychain: isChange
-          ? bdk.KeychainKind.internal
-          : bdk.KeychainKind.external_,
-    );
-
-    // Persist the revealed address to avoid address reuse
-    await BdkFacade.saveWallet(bdkWallet, wallet.hexId);
-
-    final index = addressInfo.index;
-    final address = addressInfo.address.toString();
-
-    return (index: index, address: address);
-  }
-
-  Future<({String address, int index})> getLastRevealedAddressOrNew({
-    required WalletModel wallet,
-    bool isChange = false,
-  }) async {
-    final lastRevealedAddressIndex = await getLastRevealedAddressIndex(
-      wallet: wallet,
-      isChange: isChange,
-    );
-
-    if (lastRevealedAddressIndex < 0) {
-      // No address has been revealed yet, so we get a new one
-      return getNewAddress(wallet: wallet, isChange: isChange);
-    }
-
-    final address = await getAddressByIndex(
-      lastRevealedAddressIndex,
-      wallet: wallet,
-    );
-
-    if (await isAddressUsed(address, wallet: wallet)) {
-      // If the last revealed address has been used,
-      //  we need to get a new one to avoid address reuse
-      return getNewAddress(wallet: wallet, isChange: isChange);
-    }
-
-    return (index: lastRevealedAddressIndex, address: address);
-  }
-
   // This can return -1 if no address has been revealed yet.
   // This should be handled accordingly by the caller.
   Future<int> getLastRevealedAddressIndex({
@@ -754,11 +704,6 @@ class BdkWalletDatasource {
       bull_sdk.TxSignatureVerification_Malformed() =>
         TransactionSignatureStatus.unverifiable,
     };
-  }
-
-  Future<void> delete({required WalletModel wallet}) async {
-    await BdkFacade.delete(wallet);
-    log.fine('Deleted wallet ${wallet.id} BDK database');
   }
 
   Future<({BigInt satoshis, int transactions})> dryScan({
