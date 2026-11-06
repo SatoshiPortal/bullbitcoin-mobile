@@ -1,3 +1,6 @@
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
+import 'package:bb_mobile/features/wallet/data/bdk_wallet_datasource.dart'
+    show NetworkX;
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bull_sdk/bdk.dart' as bdk;
 import 'package:flutter/foundation.dart';
@@ -5,12 +8,17 @@ import 'package:flutter/foundation.dart';
 class AddressScriptConversions {
   static Future<String?> bitcoinAddressFromScriptPubkey(
     Uint8List scriptPubkey, {
-    required bool isTestnet,
+    Network? network,
+    bool? isTestnet,
   }) async {
+    if (network != null && isTestnet != null) {
+      throw ArgumentError('Supply exactly one network representation');
+    }
+    network ??= Network.fromEnvironment(isTestnet: isTestnet, isLiquid: false);
     try {
       final address = bdk.Address.fromScript(
         script: bdk.Script(rawOutputScript: scriptPubkey),
-        network: isTestnet ? bdk.Network.testnet : bdk.Network.bitcoin,
+        network: network.bdkNetwork,
       );
 
       return address.toString();

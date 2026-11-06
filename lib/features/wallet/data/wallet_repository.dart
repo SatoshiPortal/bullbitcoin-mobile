@@ -97,6 +97,50 @@ class WalletRepository implements SeedReferencePort, WalletReaderRepository {
     }
   }
 
+  /// Catalog existence protects onboarding even when the selected network
+  /// has no wallets or a stored network cannot currently be decoded.
+  @useResult
+  Future<Result<bool, WalletFailure>> hasStoredWallets() async {
+    try {
+      return Ok((await _walletMetadataDatasource.fetchAll()).isNotEmpty);
+    } catch (error) {
+      return Err(_classify(error, 'hasStoredWallets'));
+    }
+  }
+
+  /// Reads every catalog row, including unresolved networks and unavailable
+  /// native stores: neither condition permits deleting a shared secret.
+  @useResult
+  Future<Result<bool, WalletFailure>> hasSecretReference(
+    Fingerprint fingerprint,
+  ) async {
+    try {
+      final rows = await _walletMetadataDatasource.fetchAll();
+      return Ok(
+        rows.any(
+          (row) =>
+              row.signer == Signer.local && row.seedFingerprint == fingerprint,
+        ),
+      );
+    } catch (error) {
+      return Err(_classify(error, 'hasSecretReference'));
+    }
+  }
+
+  static void _requireSupportedCreation(
+    Network network,
+    ScriptType scriptType,
+  ) {
+    if (network == Network.liquidRegtest) {
+      // TODO(lwk-dart#96): enable only after LiquidNetwork.regtest ships in
+      // the pinned SDK; no Liquid regtest metadata or native store yet.
+      throw const UnsupportedNetworkException();
+    }
+    if (network == Network.bitcoinRegtest && scriptType != ScriptType.bip84) {
+      throw const UnsupportedWalletScriptException();
+    }
+  }
+
   Future<Wallet> createWallet({
     required Secret secret,
     required Network network,
@@ -106,6 +150,7 @@ class WalletRepository implements SeedReferencePort, WalletReaderRepository {
     bool sync = false,
     DateTime? birthday,
   }) async {
+    _requireSupportedCreation(network, scriptType);
     // Derive and store the wallet metadata
     final walletLabel =
         isDefault &&
@@ -132,9 +177,7 @@ class WalletRepository implements SeedReferencePort, WalletReaderRepository {
         (row) => row.isDefault,
       );
       for (final wallet in allWallets) {
-        if (wallet.isDefault &&
-            wallet.isLiquid == metadata.isLiquid &&
-            wallet.isTestnet == metadata.isTestnet) {
+        if (wallet.isDefault && wallet.network == metadata.network) {
           throw Exception('Default wallet already exists');
         }
       }
@@ -144,7 +187,7 @@ class WalletRepository implements SeedReferencePort, WalletReaderRepository {
     final balance = await _getBalance(metadata, sync: sync);
 
     return Wallet(
-      origin: metadata.id,
+      origin: metadata.origin,
       label: metadata.label,
       network: network,
       isDefault: metadata.isDefault,
@@ -165,6 +208,10 @@ class WalletRepository implements SeedReferencePort, WalletReaderRepository {
     required WatchOnlyDescriptorEntity watchOnlyDescriptor,
     bool sync = false,
   }) async {
+    _requireSupportedCreation(
+      watchOnlyDescriptor.network,
+      watchOnlyDescriptor.scriptType,
+    );
     final metadata = await WalletMetadataService.fromDescriptor(
       watchOnlyDescriptor,
     );
@@ -181,12 +228,9 @@ class WalletRepository implements SeedReferencePort, WalletReaderRepository {
 
     // Return the created wallet entity
     return Wallet(
-      origin: metadata.id,
+      origin: metadata.origin,
       label: metadata.label,
-      network: Network.fromEnvironment(
-        isTestnet: metadata.isTestnet,
-        isLiquid: metadata.isLiquid,
-      ),
+      network: metadata.network,
       isDefault: metadata.isDefault,
       masterFingerprint: metadata.masterFingerprint,
       xpubFingerprint: metadata.xpubFingerprint,
@@ -208,6 +252,7 @@ class WalletRepository implements SeedReferencePort, WalletReaderRepository {
     required String label,
     bool sync = false,
   }) async {
+    _requireSupportedCreation(network, scriptType);
     final metadata = await WalletMetadataService.deriveFromXpub(
       xpub: xpub,
       network: network,
@@ -227,12 +272,9 @@ class WalletRepository implements SeedReferencePort, WalletReaderRepository {
 
     // Return the created wallet entity
     return Wallet(
-      origin: metadata.id,
+      origin: metadata.origin,
       label: metadata.label,
-      network: Network.fromEnvironment(
-        isTestnet: metadata.isTestnet,
-        isLiquid: metadata.isLiquid,
-      ),
+      network: metadata.network,
       isDefault: metadata.isDefault,
       masterFingerprint: metadata.masterFingerprint,
       xpubFingerprint: metadata.xpubFingerprint,
@@ -309,12 +351,9 @@ class WalletRepository implements SeedReferencePort, WalletReaderRepository {
     final physical = metadata.latestPhysicalBackup;
     // Return the wallet entity
     return Wallet(
-      origin: metadata.id,
+      origin: metadata.origin,
       label: metadata.label,
-      network: Network.fromEnvironment(
-        isTestnet: metadata.isTestnet,
-        isLiquid: metadata.isLiquid,
-      ),
+      network: metadata.network,
       isDefault: metadata.isDefault,
       masterFingerprint: metadata.masterFingerprint,
       xpubFingerprint: metadata.xpubFingerprint,
@@ -449,7 +488,7 @@ class WalletRepository implements SeedReferencePort, WalletReaderRepository {
         try {
           final network = metadata.network;
           if ((environment != null &&
-                  network.isMainnet != environment.isMainnet) ||
+                  network.environment != environment.networkEnv) ||
               (onlyDefaults == true && !metadata.isDefault) ||
               (onlyBitcoin == true && !network.isBitcoin) ||
               (onlyLiquid == true && !network.isLiquid)) {
@@ -604,7 +643,7 @@ class WalletRepository implements SeedReferencePort, WalletReaderRepository {
     if (metadata.isLiquid) {
       final wallet = WalletModel.publicLwk(
         combinedCtDescriptor: metadata.externalPublicDescriptor,
-        isTestnet: metadata.isTestnet,
+        network: metadata.network,
         id: metadata.id,
       );
 
@@ -617,7 +656,7 @@ class WalletRepository implements SeedReferencePort, WalletReaderRepository {
       final wallet = WalletModel.publicBdk(
         externalDescriptor: metadata.externalPublicDescriptor,
         internalDescriptor: metadata.internalPublicDescriptor,
-        isTestnet: metadata.isTestnet,
+        network: metadata.network,
         id: metadata.id,
       );
 
@@ -683,7 +722,7 @@ class WalletRepository implements SeedReferencePort, WalletReaderRepository {
     if (metadata.isLiquid) {
       final wallet = WalletModel.publicLwk(
         combinedCtDescriptor: metadata.externalPublicDescriptor,
-        isTestnet: metadata.isTestnet,
+        network: metadata.network,
         id: metadata.id,
       );
       return await _lwkWallet.getAmountSentToAddress(
@@ -695,8 +734,12 @@ class WalletRepository implements SeedReferencePort, WalletReaderRepository {
       return await _bdkWallet.getAmountSentToAddress(
         psbtOrPset,
         address,
-        isTestnet: metadata.isTestnet,
+        network: metadata.network,
       );
     }
   }
+}
+
+final class UnsupportedWalletScriptException implements Exception {
+  const UnsupportedWalletScriptException();
 }

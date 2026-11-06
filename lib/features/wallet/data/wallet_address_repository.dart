@@ -1,3 +1,7 @@
+import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
+import 'package:primitives/primitives.dart' show Err;
+import 'package:bb_mobile/features/wallet/domain/network_x.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'dart:math';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:transaction_sync/read.dart';
@@ -67,6 +71,10 @@ class WalletAddressRepository {
         }
         await Future<void>.delayed(Duration(milliseconds: 250 * (attempt + 1)));
       }
+    }
+    if (await validateAddress(issued.address, metadata.network.shared)
+        case Err()) {
+      throw const InvalidWalletAddressException();
     }
     final labels = await _labelsFacade.fetchByReference(issued.address);
     return WalletAddressMapper.toEntity(

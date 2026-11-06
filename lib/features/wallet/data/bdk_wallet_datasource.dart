@@ -30,6 +30,8 @@ extension NetworkX on Network {
         return bdk.Network.bitcoin;
       case Network.bitcoinTestnet:
         return bdk.Network.testnet;
+      case Network.bitcoinRegtest:
+        return bdk.Network.regtest;
       default:
         throw UnsupportedBdkNetworkException('$name is not supported by BDK');
     }
@@ -37,13 +39,12 @@ extension NetworkX on Network {
 }
 
 extension BdkNetworkX on bdk.Network {
-  Network get network {
-    if (this == bdk.Network.bitcoin) {
-      return Network.bitcoinMainnet;
-    } else {
-      return Network.bitcoinTestnet;
-    }
-  }
+  Network get network => switch (this) {
+    bdk.Network.bitcoin => Network.bitcoinMainnet,
+    bdk.Network.testnet => Network.bitcoinTestnet,
+    bdk.Network.regtest => Network.bitcoinRegtest,
+    _ => throw const UnsupportedNetworkException(),
+  };
 }
 
 class BdkWalletDatasource {
@@ -148,7 +149,7 @@ class BdkWalletDatasource {
     final w = bdkWallet ?? await _readWallet(wallet);
     final bdkAddress = bdk.Address(
       address: address,
-      network: wallet.isTestnet ? bdk.Network.testnet : bdk.Network.bitcoin,
+      network: wallet.network.bdkNetwork,
     );
     return w.isMine(script: bdkAddress.scriptPubkey());
   }
@@ -163,18 +164,24 @@ class BdkWalletDatasource {
     bool replaceByFee = true,
     required WalletModel wallet,
   }) async {
+    bdk.TxBuilder txBuilder;
+
+    if (wallet.network == Network.bitcoinRegtest &&
+        !address.toLowerCase().startsWith('bcrt1')) {
+      throw const UnsupportedNetworkException();
+    }
+    // SDK validation is exact for the captured concrete wallet network.
+    // Testnet/regtest Base58 is ambiguous, so new regtest sends require bcrt1.
+    // Get the scriptPubkey from the address
+    final bdkAddress = bdk.Address(
+      address: address,
+      network: wallet.network.bdkNetwork,
+    );
+    final script = bdkAddress.scriptPubkey();
     final bdkWallet = await LeaseDiagnostics.from(
       LeaseSource.sendBuild,
       () => _readWallet(wallet),
     );
-    bdk.TxBuilder txBuilder;
-
-    // Get the scriptPubkey from the address
-    final bdkAddress = bdk.Address(
-      address: address,
-      network: wallet.isTestnet ? bdk.Network.testnet : bdk.Network.bitcoin,
-    );
-    final script = bdkAddress.scriptPubkey();
 
     // Check if the transaction is a drain transaction
     if (drain == true) {
@@ -295,8 +302,13 @@ class BdkWalletDatasource {
   Future<int> getAmountSentToAddress(
     String psbtString,
     String address, {
-    required bool isTestnet,
+    Network? network,
+    bool? isTestnet,
   }) async {
+    if (network != null && isTestnet != null) {
+      throw ArgumentError('Supply exactly one network representation');
+    }
+    network ??= Network.fromEnvironment(isTestnet: isTestnet, isLiquid: false);
     final psbt = bdk.Psbt(psbtBase64: psbtString);
     final tx = psbt.extractTx();
     final outputs = tx.output();
@@ -305,7 +317,7 @@ class BdkWalletDatasource {
       final scriptPubkey = output.scriptPubkey;
       final outputAddress = bdk.Address.fromScript(
         script: bdk.Script(rawOutputScript: scriptPubkey.toBytes()),
-        network: isTestnet ? bdk.Network.testnet : bdk.Network.bitcoin,
+        network: network.bdkNetwork,
       );
       if (outputAddress.toString() == address) {
         totalAmount += output.value.toSat();
@@ -329,7 +341,7 @@ class BdkWalletDatasource {
         final address =
             await AddressScriptConversions.bitcoinAddressFromScriptPubkey(
               unspent.txout.scriptPubkey.toBytes(),
-              isTestnet: wallet.isTestnet,
+              network: wallet.network,
             );
         // Confirmation count from the utxo's chain position (mirrors the
         // handling in getTransactions); unconfirmed utxos report 0.
@@ -390,7 +402,7 @@ class BdkWalletDatasource {
               final address =
                   await AddressScriptConversions.bitcoinAddressFromScriptPubkey(
                     output.scriptPubkey.toBytes(),
-                    isTestnet: wallet.isTestnet,
+                    network: wallet.network,
                   );
               if (address == null) return false;
               return address == toAddress;
@@ -464,8 +476,7 @@ class BdkWalletDatasource {
           isToSelf: isToSelf,
           inputs: inputModels,
           outputs: outputModels,
-          isLiquid: false,
-          isTestnet: wallet.isTestnet,
+          network: wallet.network,
           isRbf: tx.transaction.isExplicitlyRbf(),
         );
       }),
@@ -531,7 +542,7 @@ class BdkWalletDatasource {
         final generatedAddress =
             await AddressScriptConversions.bitcoinAddressFromScriptPubkey(
               output.scriptPubkey.toBytes(),
-              isTestnet: wallet.isTestnet,
+              network: wallet.network,
             );
         if (generatedAddress == null) continue;
         if (generatedAddress == address) {
@@ -557,7 +568,7 @@ class BdkWalletDatasource {
       final utxoAddress =
           await AddressScriptConversions.bitcoinAddressFromScriptPubkey(
             utxo.txout.scriptPubkey.toBytes(),
-            isTestnet: wallet.isTestnet,
+            network: wallet.network,
           );
       if (utxoAddress == null) continue;
 
@@ -621,7 +632,7 @@ class BdkWalletDatasource {
             final address =
                 await AddressScriptConversions.bitcoinAddressFromScriptPubkey(
                   output.scriptPubkey.toBytes(),
-                  isTestnet: wallet.isTestnet,
+                  network: wallet.network,
                 );
 
             return TransactionOutputModel.bitcoin(
@@ -736,7 +747,7 @@ class BdkWalletDatasource {
   Future<({BigInt satoshis, int transactions})> dryScan({
     required String externalDescriptor,
     required String internalDescriptor,
-    required bool isTestnet,
+    required Network network,
     required ElectrumConnection electrumServer,
   }) {
     final rootIsolateToken = ServicesBinding.rootIsolateToken;
@@ -748,7 +759,7 @@ class BdkWalletDatasource {
       _DryScanParams(
         externalDescriptor: externalDescriptor,
         internalDescriptor: internalDescriptor,
-        isTestnet: isTestnet,
+        network: network,
         electrumUrl: electrumServer.url,
         electrumSocks5: electrumServer.socks5,
         electrumStopGap: electrumServer.stopGap,
@@ -780,7 +791,7 @@ int confirmationsFromTip({required int tip, required int? height}) {
 class _DryScanParams {
   final String externalDescriptor;
   final String internalDescriptor;
-  final bool isTestnet;
+  final Network network;
   final String electrumUrl;
   final String? electrumSocks5;
   final int electrumStopGap;
@@ -792,7 +803,7 @@ class _DryScanParams {
   _DryScanParams({
     required this.externalDescriptor,
     required this.internalDescriptor,
-    required this.isTestnet,
+    required this.network,
     required this.electrumUrl,
     required this.electrumSocks5,
     required this.electrumStopGap,
@@ -808,12 +819,10 @@ Future<({BigInt satoshis, int transactions})> _performDryScan(
 ) async {
   BackgroundIsolateBinaryMessenger.ensureInitialized(params.rootIsolateToken);
 
-  final bdkNetwork = params.isTestnet
-      ? bdk.Network.testnet
-      : bdk.Network.bitcoin;
-  final bdkNetworkKind = params.isTestnet
-      ? bdk.NetworkKind.test
-      : bdk.NetworkKind.main;
+  final bdkNetwork = params.network.bdkNetwork;
+  final bdkNetworkKind = params.network.isMainnet
+      ? bdk.NetworkKind.main
+      : bdk.NetworkKind.test;
 
   bdk.Descriptor? external;
   bdk.Descriptor? internal;

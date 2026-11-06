@@ -1,3 +1,5 @@
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
+import 'package:transaction_sync/read.dart' show validateAddress;
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/features/wallet/data/lwk_wallet_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
@@ -35,9 +37,13 @@ class LiquidWalletRepository {
       throw Exception('Wallet $walletId is not a Liquid wallet');
     }
 
+    if (await validateAddress(address, metadata.network.shared) case Err()) {
+      throw const InvalidWalletAddressException();
+    }
+
     final wallet = WalletModel.publicLwk(
       combinedCtDescriptor: metadata.externalPublicDescriptor,
-      isTestnet: metadata.isTestnet,
+      network: metadata.network,
       id: metadata.id,
     );
     final pset = await _lwkWallet.buildPset(
@@ -66,7 +72,7 @@ class LiquidWalletRepository {
     }
     final wallet = WalletModel.publicLwk(
       combinedCtDescriptor: metadata.externalPublicDescriptor,
-      isTestnet: metadata.isTestnet,
+      network: metadata.network,
       id: metadata.id,
     );
     return _lwkWallet.getLbtcUtxoCount(wallet: wallet);
@@ -87,7 +93,7 @@ class LiquidWalletRepository {
     }
     final wallet = WalletModel.publicLwk(
       combinedCtDescriptor: metadata.externalPublicDescriptor,
-      isTestnet: metadata.isTestnet,
+      network: metadata.network,
       id: metadata.id,
     );
     return _lwkWallet.consolidate(
@@ -147,7 +153,7 @@ class LiquidWalletRepository {
     }
     final wallet = WalletModel.publicLwk(
       combinedCtDescriptor: metadata.externalPublicDescriptor,
-      isTestnet: metadata.isTestnet,
+      network: metadata.network,
       id: metadata.id,
     );
     return await _lwkWallet.getAmountSentToAddress(

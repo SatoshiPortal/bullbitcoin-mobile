@@ -89,7 +89,7 @@ final class PayjoinWalletAdapter implements PayjoinWalletPort {
     if (metadata == null || !metadata.isBitcoin) {
       throw StateError('Bitcoin wallet metadata not found');
     }
-    if (metadata.isTestnet == network.isMainnet) {
+    if (metadata.network.shared != network) {
       throw StateError('Wallet network does not match Payjoin network');
     }
     return metadata;

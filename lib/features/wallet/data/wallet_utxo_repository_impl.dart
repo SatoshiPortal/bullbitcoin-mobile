@@ -38,12 +38,12 @@ class WalletUtxoRepositoryImpl implements WalletUtxoRepository {
         ? WalletModel.publicBdk(
             externalDescriptor: metadata.externalPublicDescriptor,
             internalDescriptor: metadata.internalPublicDescriptor,
-            isTestnet: metadata.isTestnet,
+            network: metadata.network,
             id: metadata.id,
           )
         : WalletModel.publicLwk(
             combinedCtDescriptor: metadata.externalPublicDescriptor,
-            isTestnet: metadata.isTestnet,
+            network: metadata.network,
             id: metadata.id,
           );
 

@@ -1,3 +1,4 @@
+import 'package:transaction_sync/read.dart' show validateAddress;
 import 'dart:typed_data';
 
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
@@ -53,11 +54,15 @@ class BitcoinWalletRepository implements BitcoinSendPort {
       throw Exception('Wallet $walletId is not a Bitcoin wallet');
     }
 
+    if (await validateAddress(address, metadata.network.shared) case Err()) {
+      throw const InvalidWalletAddressException();
+    }
+
     final wallet =
         WalletModel.publicBdk(
               externalDescriptor: metadata.externalPublicDescriptor,
               internalDescriptor: metadata.internalPublicDescriptor,
-              isTestnet: metadata.isTestnet,
+              network: metadata.network,
               id: metadata.id,
             )
             as PublicBdkWalletModel;
@@ -186,7 +191,7 @@ class BitcoinWalletRepository implements BitcoinSendPort {
         WalletModel.publicBdk(
               externalDescriptor: metadata.externalPublicDescriptor,
               internalDescriptor: metadata.internalPublicDescriptor,
-              isTestnet: metadata.isTestnet,
+              network: metadata.network,
               id: metadata.id,
             )
             as PublicBdkWalletModel;
@@ -215,7 +220,7 @@ class BitcoinWalletRepository implements BitcoinSendPort {
         WalletModel.publicBdk(
               externalDescriptor: metadata.externalPublicDescriptor,
               internalDescriptor: metadata.internalPublicDescriptor,
-              isTestnet: metadata.isTestnet,
+              network: metadata.network,
               id: metadata.id,
             )
             as PublicBdkWalletModel;
@@ -254,20 +259,24 @@ class BitcoinWalletRepository implements BitcoinSendPort {
     return await _bdkWallet.getAmountSentToAddress(
       psbt,
       address,
-      isTestnet: metadata.isTestnet,
+      network: metadata.network,
     );
   }
 
   Future<({BigInt satoshis, int transactions})> dryScan({
     required String externalDescriptor,
     required String internalDescriptor,
-    required bool isTestnet,
+    required Network network,
     required ElectrumConnection electrumServer,
   }) {
+    if (network != null && isTestnet != null) {
+      throw ArgumentError('Supply exactly one network representation');
+    }
+    network ??= Network.fromEnvironment(network: network, isLiquid: false);
     return _bdkWallet.dryScan(
       externalDescriptor: externalDescriptor,
       internalDescriptor: internalDescriptor,
-      isTestnet: isTestnet,
+      network: network,
       electrumServer: electrumServer,
     );
   }
@@ -322,7 +331,7 @@ class BitcoinWalletRepository implements BitcoinSendPort {
         WalletModel.publicBdk(
               externalDescriptor: metadata.externalPublicDescriptor,
               internalDescriptor: metadata.internalPublicDescriptor,
-              isTestnet: metadata.isTestnet,
+              network: metadata.network,
               id: metadata.id,
             )
             as PublicBdkWalletModel;

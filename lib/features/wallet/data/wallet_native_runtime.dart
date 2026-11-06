@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/wallet/domain/network_x.dart';
 import 'dart:async';
 import 'dart:io';
 import 'package:meta/meta.dart';
@@ -321,12 +322,7 @@ final class WalletNativeRuntime implements WalletNativeLifecycle {
 
   Future<T> _borrow<T extends Object>(WalletModel model) async {
     await initialize();
-    final key = WalletKey(
-      id: model.id,
-      network: model is PublicBdkWalletModel
-          ? (model.isTestnet ? BitcoinNetwork.testnet : BitcoinNetwork.mainnet)
-          : (model.isTestnet ? LiquidNetwork.testnet : LiquidNetwork.mainnet),
-    );
+    final key = WalletKey(id: model.id, network: model.network.shared);
     final failure = _unavailable[key];
     if (failure != null) throw WalletSnapshotException(failure);
     return (await _services).reader.borrowedHandle<T>(key, _catalog);

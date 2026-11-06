@@ -159,7 +159,8 @@ class WalletTransactionRepositoryImpl implements WalletTransactionRepository {
 
     final filteredWalletsMetadata = walletsMetadata.where(
       (metadata) =>
-          environment == null || environment.isTestnet == metadata.isTestnet,
+          environment == null ||
+          environment.networkEnv == metadata.network.environment,
     );
     final walletModels = filteredWalletsMetadata
         .map(
@@ -167,12 +168,12 @@ class WalletTransactionRepositoryImpl implements WalletTransactionRepository {
               ? WalletModel.publicBdk(
                   externalDescriptor: metadata.externalPublicDescriptor,
                   internalDescriptor: metadata.internalPublicDescriptor,
-                  isTestnet: metadata.isTestnet,
+                  network: metadata.network,
                   id: metadata.id,
                 )
               : WalletModel.publicLwk(
                   combinedCtDescriptor: metadata.externalPublicDescriptor,
-                  isTestnet: metadata.isTestnet,
+                  network: metadata.network,
                   id: metadata.id,
                 ),
         )

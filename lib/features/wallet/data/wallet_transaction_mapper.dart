@@ -3,7 +3,6 @@ import 'package:bb_mobile/core/wallet/data/mappers/transaction_output_mapper.dar
 import 'package:bb_mobile/features/wallet/data/models/wallet_transaction_model.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/transaction_input.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/transaction_output.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet_transaction.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 
@@ -28,8 +27,7 @@ class WalletTransactionMapper {
           ? confirmationTime.millisecondsSinceEpoch ~/ 1000
           : null,
       isToSelf: walletTransaction.isToSelf,
-      isTestnet: walletTransaction.network.isTestnet,
-      isLiquid: walletTransaction.network.isLiquid,
+      network: walletTransaction.network,
       unblindedUrl: walletTransaction.unblindedUrl,
       isRbf: walletTransaction.isRbf,
       vsize: walletTransaction.vsize,
@@ -46,10 +44,7 @@ class WalletTransactionMapper {
   }) {
     return WalletTransaction(
       walletId: walletId,
-      network: Network.fromEnvironment(
-        isTestnet: walletTransactionModel.isTestnet,
-        isLiquid: walletTransactionModel.isLiquid,
-      ),
+      network: walletTransactionModel.network,
       direction: walletTransactionModel.isIncoming
           ? WalletTransactionDirection.incoming
           : WalletTransactionDirection.outgoing,

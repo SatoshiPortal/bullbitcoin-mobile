@@ -28,9 +28,7 @@ class LwkWalletDatasource {
       final balances = await lwkWallet.balances();
 
       final lBtcAssetBalance = balances.firstWhere((balance) {
-        final assetId = _lBtcAssetId(
-          wallet.isTestnet ? Network.liquidTestnet : Network.liquidMainnet,
-        );
+        final assetId = _lBtcAssetId(wallet.network);
         return balance.assetId == assetId;
       }).value;
 
@@ -195,9 +193,7 @@ class LwkWalletDatasource {
       final addressBalances = <String, BigInt>{};
 
       for (final utxo in utxos) {
-        final assetId = _lBtcAssetId(
-          Network.fromEnvironment(isTestnet: wallet.isTestnet, isLiquid: true),
-        );
+        final assetId = _lBtcAssetId(wallet.network);
         if (utxo.unblinded.asset != assetId) {
           continue;
         }
@@ -216,11 +212,12 @@ class LwkWalletDatasource {
     }
   }
 
-  String _lBtcAssetId(Network network) {
-    return network == Network.liquidTestnet
-        ? lwk.getLtestAssetId()
-        : lwk.getLbtcAssetId();
-  }
+  String _lBtcAssetId(Network network) => switch (network) {
+    Network.liquidMainnet => lwk.getLbtcAssetId(),
+    Network.liquidTestnet => lwk.getLtestAssetId(),
+    // TODO(lwk-dart#96): no regtest asset policy until the pinned SDK supports it.
+    _ => throw const UnsupportedNetworkException(),
+  };
 
   Future<List<WalletTransactionModel>> getTransactions({
     required WalletModel wallet,
@@ -233,9 +230,7 @@ class LwkWalletDatasource {
       );
       final transactions = await lwkWallet.txs();
       final usedAddressesMap = await _getUsedAddressesMap(wallet: wallet);
-      final network = wallet.isTestnet
-          ? Network.liquidTestnet
-          : Network.liquidMainnet;
+      final network = wallet.network;
       final lbtcAssetId = _lBtcAssetId(network);
       final walletTxs = await Future.wait(
         transactions.map((tx) async {
@@ -319,8 +314,7 @@ class LwkWalletDatasource {
             isToSelf: isToSelf,
             inputs: inputs,
             outputs: outputs,
-            isLiquid: true,
-            isTestnet: wallet.isTestnet,
+            network: wallet.network,
             unblindedUrl: tx.unblindedUrl,
             isRbf: false,
           );
@@ -394,9 +388,7 @@ class LwkWalletDatasource {
     try {
       final lwkWallet = await _readWallet(wallet);
       final utxos = await lwkWallet.utxos();
-      final network = wallet.isTestnet
-          ? Network.liquidTestnet
-          : Network.liquidMainnet;
+      final network = wallet.network;
       final lbtcAssetId = _lBtcAssetId(network);
       final lbtcCount = utxos
           .where((u) => u.unblinded.asset == lbtcAssetId)
@@ -485,9 +477,7 @@ class LwkWalletDatasource {
       final decoded = await lwkWallet.decodeTx(pset: pset);
 
       // Get the L-BTC asset ID for the network
-      final network = wallet.isTestnet
-          ? Network.liquidTestnet
-          : Network.liquidMainnet;
+      final network = wallet.network;
       final lbtcAssetId = _lBtcAssetId(network);
 
       // Find the L-BTC balance in the decoded amounts
