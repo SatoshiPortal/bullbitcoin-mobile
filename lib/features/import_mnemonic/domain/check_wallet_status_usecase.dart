@@ -29,7 +29,7 @@ class CheckWalletStatusUsecase {
 
   /// Derives the descriptors of all [scriptTypes] in one call, then starts one scan per script type.
   ///
-  /// The returned future fails with [CheckWalletStatusException] when the descriptors cannot be derived; each scan's own future then carries its result or failure, so a slow or failing scan does not hold back the others.
+  /// The returned future fails with [CheckWalletStatusException] when the descriptors cannot be derived, [CheckWalletStatusInvalidMnemonicException] for words that are not a mnemonic. Each scan's own future then carries its result or failure ([ElectrumFallbackException], [TimeoutException] or [CheckWalletStatusException]), so a slow or failing scan does not hold back the others.
   Future<Map<ScriptType, Future<({BigInt satoshis, int transactions})>>> call({
     required List<String> words,
     required bip39.Language language,
@@ -60,13 +60,21 @@ class CheckWalletStatusUsecase {
       )) {
         primitives.Ok(:final value) => value,
         // Only the failure's type travels: its message may describe the words.
+        primitives.Err(failure: InvalidMnemonicFailure()) =>
+          throw CheckWalletStatusInvalidMnemonicException(),
         primitives.Err(:final failure) => throw CheckWalletStatusException(
           'Could not derive the descriptors to scan: ${failure.runtimeType}',
         ),
       };
-    } catch (e) {
-      log.severe(error: e, trace: StackTrace.current);
-      throw CheckWalletStatusException(e.toString());
+    } on CheckWalletStatusException {
+      rethrow;
+    } catch (e, st) {
+      // Only the type is reported: a foreign message may quote the input.
+      final error = CheckWalletStatusException(
+        'Could not prepare the scan: ${e.runtimeType}',
+      );
+      log.severe(message: error.message, error: error, trace: st);
+      throw error;
     }
 
     return {
@@ -102,9 +110,13 @@ class CheckWalletStatusUsecase {
       // Preserve the typed exception so callers retain the per-server
       // attempts (failure tier, urls, root-cause errors) for diagnostics.
       rethrow;
-    } catch (e) {
-      log.severe(error: e, trace: StackTrace.current);
-      throw CheckWalletStatusException(e.toString());
+    } on TimeoutException {
+      rethrow;
+    } catch (e, st) {
+      // Only the type is reported: a foreign message may quote a descriptor.
+      final error = CheckWalletStatusException('Scan failed: ${e.runtimeType}');
+      log.severe(message: error.message, error: error, trace: st);
+      throw error;
     }
   }
 
@@ -117,4 +129,11 @@ class CheckWalletStatusUsecase {
 
 class CheckWalletStatusException extends BullException {
   CheckWalletStatusException(super.message);
+}
+
+/// The words are not a BIP39 mnemonic in the language given, so nothing could be scanned.
+class CheckWalletStatusInvalidMnemonicException
+    extends CheckWalletStatusException {
+  CheckWalletStatusInvalidMnemonicException()
+    : super('Could not derive the descriptors to scan: invalid mnemonic');
 }
