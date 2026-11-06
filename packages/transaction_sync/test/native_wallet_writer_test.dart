@@ -238,6 +238,31 @@ void main() {
     });
   }
 
+  test(
+    'interrupted missing-store rebuild restores indices before admission',
+    () async {
+      reserved.indices.addAll([0, 1]);
+      expect(await writer.receive(key, expectedGeneration: 1), isA<Ok>());
+      sessions.exists = false;
+      sessions.revealed.clear();
+      sessions.beforePersist = () =>
+          throw const FileSystemException('interrupted');
+      expect(
+        await writer.create(key, expectedGeneration: 1, existingOnly: true),
+        isA<Err>(),
+      );
+      expect(sessions.exists, isTrue);
+      sessions.beforePersist = null;
+      expect(
+        await writer.create(key, expectedGeneration: 1, existingOnly: true),
+        isA<Ok>(),
+      );
+      expect(sessions.revealed, [2]);
+      expect(store.record(key)?.needsSync, isTrue);
+      expect(await writer.acquire(key), isA<Err>());
+    },
+  );
+
   test('finalization failure retains intent and revision atomically', () async {
     final database = sqlite3.open('${dir.path}/metadata.sqlite');
     database.execute(
