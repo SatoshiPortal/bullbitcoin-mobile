@@ -1,7 +1,6 @@
 import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bb_mobile/core/wallet/data/datasources/lwk_facade.dart';
 import 'package:bb_mobile/core/wallet/data/models/balance_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/transaction_input_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/transaction_output_model.dart';
@@ -17,8 +16,7 @@ import 'package:bull_sdk/lwk.dart' as lwk;
 class LwkWalletDatasource {
   final Future<lwk.Wallet> Function(WalletModel) _readWallet;
 
-  LwkWalletDatasource({Future<lwk.Wallet> Function(WalletModel)? readWallet})
-    : _readWallet = readWallet ?? LwkFacade.createPublicWallet;
+  LwkWalletDatasource({required this._readWallet});
 
   Future<BalanceModel> getBalance({required WalletModel wallet}) async {
     try {
@@ -525,11 +523,6 @@ class LwkWalletDatasource {
         rethrow;
       }
     }
-  }
-
-  Future<void> delete({required WalletModel wallet}) async {
-    await LwkFacade.delete(wallet);
-    log.fine('Deleted wallet ${wallet.id} LWK database');
   }
 }
 

@@ -507,11 +507,15 @@ class _SignerMemoryProof extends RecursiveAstVisitor<void> {
     }
     if ({'Persister', 'PersisterInterface'}.contains(owner) &&
         element.name == 'dispose') {
-      final call = node.parent;
-      return call is MethodInvocation &&
-          call.target is SimpleIdentifier &&
-          memory.contains((call.target as SimpleIdentifier).element) &&
-          assignments[(call.target as SimpleIdentifier).element] == 1;
+      final access = node.parent;
+      final target = switch (access) {
+        MethodInvocation() => access.target,
+        PropertyAccess() => access.target,
+        _ => null,
+      };
+      return target is SimpleIdentifier &&
+          memory.contains(target.element) &&
+          assignments[target.element] == 1;
     }
     if (owner == 'Wallet' &&
         element is ConstructorElement &&

@@ -1,4 +1,4 @@
-.PHONY: secrets-api-docs secrets-api-docs-check custody-check all setup clean deps deps-update bootstrap analyze build-runner translations hooks ios-pod-update ios-simulator ios-release drift-migrations devcontainer devcontainer-up container-tools container-app android release debug beta verify verify-rustc-pins action-pins-check pr-governance-test test unit-test integration-test catalogue fvm-check
+.PHONY: native-write-check secrets-api-docs secrets-api-docs-check custody-check all setup clean deps deps-update bootstrap analyze build-runner translations hooks ios-pod-update ios-simulator ios-release drift-migrations devcontainer devcontainer-up container-tools container-app android release debug beta verify verify-rustc-pins action-pins-check pr-governance-test test unit-test integration-test catalogue fvm-check
 
 fvm-check:
 	@echo "🔍 Checking FVM"
@@ -65,6 +65,10 @@ custody-check:
 	@node tools/pr_governance/custody-check.js
 	@fvm dart packages/secrets/tool/key_material_gate.dart
 
+# Native stores have exactly one writer; readers and signers have scoped exceptions.
+native-write-check:
+	@fvm dart packages/transaction_sync/tool/native_write_gate.dart
+
 # The README's simplified public API trees are generated from resolved exports.
 secrets-api-docs:
 	@fvm dart packages/secrets/tool/api_docs.dart
@@ -72,7 +76,7 @@ secrets-api-docs:
 secrets-api-docs-check:
 	@fvm dart packages/secrets/tool/api_docs.dart --check
 
-checks: analyze bull-ui-check custody-check secrets-api-docs-check fix-check format-check unit-test
+checks: analyze bull-ui-check native-write-check custody-check secrets-api-docs-check fix-check format-check unit-test
 
 # Supply-chain regression gate: every external GitHub Actions `uses:` reference
 # must stay pinned to a full commit SHA (mutable tags can be repointed).
