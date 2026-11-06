@@ -1,4 +1,7 @@
 import 'dart:math';
+import 'package:bull_logger/bull_logger.dart';
+import 'package:transaction_sync/read.dart';
+import 'package:transaction_sync/transaction_sync.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_native_runtime.dart';
 
 import 'package:bb_mobile/features/labels/labels_facade.dart';
@@ -42,7 +45,29 @@ class WalletAddressRepository {
     if (metadata == null) throw WalletError.notFound(walletId);
     final native = _native;
     if (native == null) throw StateError('Native writer is not configured');
-    final issued = await native.receive(metadata, advance: advance);
+    // Retry only native admission, never label lookup after an issued address.
+    // Busy may follow a reconciled write: an advance can skip an index, but
+    // the writer's durable high-water mark prevents address reuse.
+    late ({String address, int index}) issued;
+    for (var attempt = 0; ; attempt++) {
+      try {
+        issued = await native.receive(metadata, advance: advance);
+        if (attempt > 0) {
+          log.fine('Receive writer recovered retries=$attempt');
+        }
+        break;
+      } on WalletSnapshotException catch (error) {
+        if (error.failure is! TransactionSyncBusyFailure) rethrow;
+        if (attempt == 4) {
+          log.warning('Receive writer busy exhausted attempts=5');
+          rethrow;
+        }
+        if (attempt == 0) {
+          log.warning('Receive writer busy retry scheduled');
+        }
+        await Future<void>.delayed(Duration(milliseconds: 250 * (attempt + 1)));
+      }
+    }
     final labels = await _labelsFacade.fetchByReference(issued.address);
     return WalletAddressMapper.toEntity(
       WalletAddressModel(
