@@ -2,6 +2,7 @@ import 'package:bb_mobile/features/settings/data/settings_model.dart';
 import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:drift/drift.dart';
+import 'package:bull_logger/bull_logger.dart';
 import 'package:bull_tor/tor.dart';
 
 class SettingsDatasource {
@@ -13,12 +14,20 @@ class SettingsDatasource {
     await _sqlite.into(_sqlite.settings).insert(model.toSqlite());
   }
 
-  Future<SettingsModel> fetch() async {
-    final row = await _sqlite.managers.settings
+  /// Repair persisted developer authorization before exposing the active network.
+  /// The transaction prevents a concurrent settings write between read and repair.
+  Future<SettingsModel> fetch() => _sqlite.transaction(() async {
+    var row = await _sqlite.managers.settings
         .filter((f) => f.id(1))
         .getSingle();
+    if (row.environment != Environment.mainnet.name &&
+        (!row.isSuperuser || !row.isDevModeEnabled)) {
+      await setIsDevMode(false);
+      row = await _sqlite.managers.settings.filter((f) => f.id(1)).getSingle();
+      log.warning('Active network restored category=developerAuthorization');
+    }
     return SettingsModel.fromSqlite(row);
-  }
+  });
 
   Future<void> setEnvironment(Environment env) async {
     await _sqlite.managers.settings.update(
@@ -58,7 +67,13 @@ class SettingsDatasource {
 
   Future<void> setIsDevMode(bool isEnabled) async {
     await _sqlite.managers.settings.update(
-      (f) => f(id: const Value(1), isDevModeEnabled: Value(isEnabled)),
+      (f) => f(
+        id: const Value(1),
+        isDevModeEnabled: Value(isEnabled),
+        environment: isEnabled
+            ? const Value.absent()
+            : Value(Environment.mainnet.name),
+      ),
     );
   }
 

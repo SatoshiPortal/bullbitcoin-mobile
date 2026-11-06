@@ -1,10 +1,12 @@
 export 'active_network_scope.dart';
+export 'network_capability_visibility.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/settings/domain/settings_failure.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_payjoin_enabled_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/watch_payjoin_policy_usecase.dart';
 import 'package:bull_payjoin/bull_payjoin.dart' show PayjoinAction;
 
+export '../domain/settings_entity.dart';
 export '../domain/settings_failure.dart';
 export '../presentation/settings_failure_l10n.dart';
 export '../ui/settings_router.dart' show SettingsRoute;

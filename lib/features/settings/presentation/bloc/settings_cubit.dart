@@ -127,12 +127,11 @@ class SettingsCubit extends Cubit<SettingsState> {
     }
   }
 
-  Future<void> toggleTestnetMode(bool active) async {
+  Future<void> toggleTestnetMode(bool active) =>
+      selectNetwork(active ? Environment.testnet : Environment.mainnet);
+
+  Future<void> selectNetwork(Environment environment) async {
     final settings = state.storedSettings;
-    log.config(
-      'Testnet mode toggled: $active was ${settings?.environment.name}',
-    );
-    final environment = active ? Environment.testnet : Environment.mainnet;
     final result = await _setEnvironmentUsecase.execute(environment);
     if (result case Err(:final failure)) {
       emit(state.copyWith(failure: failure));
@@ -277,7 +276,10 @@ class SettingsCubit extends Cubit<SettingsState> {
 
     emit(
       state.copyWith(
-        storedSettings: settings?.copyWith(isDevModeEnabled: isEnabled),
+        storedSettings: settings?.copyWith(
+          isDevModeEnabled: isEnabled,
+          environment: isEnabled ? settings.environment : Environment.mainnet,
+        ),
         revokeSpFailed: false,
       ),
     );
