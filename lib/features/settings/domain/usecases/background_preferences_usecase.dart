@@ -31,7 +31,12 @@ final class BackgroundPreferencesUsecase {
         return BackgroundPreferencesState(failure: failure);
       }
     }
-    final selected = await _repository.interval();
+    final selection = await _repository.interval();
+    if (selection case Err(:final failure)) {
+      return BackgroundPreferencesState(failure: failure);
+    }
+    final selected =
+        (selection as Ok<BackgroundSyncInterval, SettingsFailure>).value;
     final allowed = await _repository.notificationsAllowed();
     return allowed.fold(
       (value) => BackgroundPreferencesState(interval: selected, allowed: value),
