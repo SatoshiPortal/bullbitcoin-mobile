@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_transaction_repository_impl.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/watch_only_wallet_entity.dart';
@@ -76,6 +77,7 @@ void main() {
     ),
   );
   registerFallbackValue(row);
+  late Directory directory;
   late _Policy policy;
   late _Metadata metadata;
   late _Bdk bdk;
@@ -83,6 +85,7 @@ void main() {
   late ForegroundWalletSync bridge;
 
   setUp(() {
+    directory = Directory.systemTemp.createTempSync('foreground-sync-');
     policy = _Policy();
     metadata = _Metadata();
     bdk = _Bdk();
@@ -101,7 +104,7 @@ void main() {
     bridge = ForegroundWalletSync(
       ElectrumSync(
         connections: policy,
-        documentsDirectory: () async => '/unused',
+        documentsDirectory: () async => directory.path,
       ),
     );
     repository = WalletRepository(
@@ -115,6 +118,8 @@ void main() {
       electrumSyncResultStream: bridge.results,
     );
   });
+
+  tearDown(() => directory.deleteSync(recursive: true));
 
   test(
     'foreground use case reaches the new operation and legacy events',
@@ -167,7 +172,7 @@ void main() {
   test('unexpected policy failure settles the finished event', () async {
     final sync = ElectrumSync(
       connections: _ThrowingPolicy(),
-      documentsDirectory: () async => '/unused',
+      documentsDirectory: () async => directory.path,
     );
     final finished = sync.finished.first;
     final result = await sync.execute(
@@ -183,6 +188,16 @@ void main() {
     expect((await finished).result, same(result));
     expect(sync.isSyncing(), isFalse);
   });
+
+  test(
+    'writer busy skips the call and retains its visible unsuccessful result',
+    () async {
+      policy.failure = const TransactionSyncBusyFailure();
+      final result = bridge.results.first;
+      await bridge.synchronize(row);
+      expect((await result).success, isFalse);
+    },
+  );
 
   test('transaction reads delegate sync to the same operation', () async {
     when(
