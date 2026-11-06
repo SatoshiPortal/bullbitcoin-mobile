@@ -6,10 +6,15 @@ import 'package:primitives/primitives.dart';
 
 class _Android extends AndroidFlutterLocalNotificationsPlugin {
   bool appEnabled = true;
+  Object? failure;
   List<AndroidNotificationChannel>? channels = const [];
 
   @override
-  Future<bool?> areNotificationsEnabled() async => appEnabled;
+  Future<bool?> areNotificationsEnabled() async {
+    final error = failure;
+    if (error != null) throw error;
+    return appEnabled;
+  }
 
   @override
   Future<List<AndroidNotificationChannel>?> getNotificationChannels() async =>
@@ -65,6 +70,16 @@ void main() {
 
     expect(await gateway.isEnabled(), _ok(true));
   });
+
+  test(
+    'plugin exceptions become failures but programming errors propagate',
+    () async {
+      android.failure = Exception('private platform detail');
+      expect(await gateway.isEnabled(), isA<Err>());
+      android.failure = StateError('programming error');
+      await expectLater(gateway.isEnabled(), throwsStateError);
+    },
+  );
 
   test('a disabled app reports notifications as hidden', () async {
     android.appEnabled = false;

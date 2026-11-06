@@ -79,9 +79,7 @@ void main() {
 
 final class _Logger implements BackgroundTaskLogger {
   @override
-  void fine(String message) {}
-  @override
-  void warning(String message) {}
+  void write(BackgroundLogLevel level, String message) {}
   @override
   Future<void> flush() async {}
 }
