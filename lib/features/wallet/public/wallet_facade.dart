@@ -8,6 +8,9 @@ export '../domain/wallet_discovery_failure.dart';
 
 export 'package:transaction_sync/transaction_sync.dart'
     show WalletRevisionState, WalletRevision, WalletKey, WalletLifecycle;
+export '../wallet_sync_locator.dart' show SyncLocator, initializeWalletRuntime;
+export '../background_setup.dart'
+    show setupBackgroundWalletTask, paymentNotificationChannelId;
 
 /// Wallet-owned invalidations. A revision is not a successful network sync.
 final class WalletFacade {

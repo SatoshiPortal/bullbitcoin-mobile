@@ -29,6 +29,14 @@ graph TB
     LABELS --> TRANSACTION_SYNC
     WALLETS --> TRANSACTION_SYNC
     WALLETS --> LABELS
+    BULL_REPORTING[Bull Reporting Package]
+    BULL_REPORTING --> BULL_LOGGER
+    CORE --> BULL_REPORTING
+    SETTINGS --> BULL_REPORTING
+    LABELS --> BULL_PAYJOIN
+    TX_HISTORY --> LABELS
+    APP_STARTUP --> BULL_LOGGER
+    TOR_SETTINGS --> BULL_LOGGER
     BULL_LOGGER[Bull Logger Package<br/>Logger, diagnostics, log files]
     BULL_PAYJOIN[Bull Payjoin Package<br/>Public contract]
 

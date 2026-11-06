@@ -40,3 +40,5 @@ abstract final class PayjoinConstants {
   static const int minMaxFeeRateSatPerVb = 20;
   static const int maxMaxFeeRateSatPerVb = 100;
 }
+
+const payjoinDatabaseFilename = 'payjoin.sqlite';
