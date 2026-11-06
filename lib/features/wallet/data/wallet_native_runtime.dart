@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:sqlite3/sqlite3.dart' show SqliteException;
 
 import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_model.dart';
@@ -37,6 +38,7 @@ final class WalletNativeRuntime implements WalletNativeLifecycle {
   final _unavailable = <WalletKey, TransactionSyncFailure>{};
   Future<_NativeServices>? _opening;
   Future<void>? _initialization;
+  Type? _initializationFailure;
 
   WalletNativeRuntime({
     required this._catalog,
@@ -48,11 +50,32 @@ final class WalletNativeRuntime implements WalletNativeLifecycle {
 
   Stream<WalletRevisionState> get changes => _changes.stream;
 
-  Future<_NativeServices> get _services => _opening ??= _open();
+  Future<_NativeServices> get _services =>
+      _opening ??= _open().catchError((Object error, StackTrace trace) {
+        _opening = null;
+        Error.throwWithStackTrace(error, trace);
+      });
 
   Future<_NativeServices> _open() async {
     final documents = await _documentsDirectory();
-    final revisions = RevisionStore(writerMetadataPath(documents));
+    final path = writerMetadataPath(documents);
+    late RevisionStore revisions;
+    var recoveredMetadata = false;
+    try {
+      revisions = RevisionStore(path);
+    } on SqliteException catch (error) {
+      // A locked, unwritable or full disk is not corruption. Preserve it intact.
+      if (error.resultCode != 11 && error.resultCode != 26) rethrow;
+      final suffix =
+          '.corrupt-${DateTime.now().toUtc().microsecondsSinceEpoch}';
+      for (final sidecar in ['', '-wal', '-shm']) {
+        final file = File('$path$sidecar');
+        if (file.existsSync()) file.renameSync('$path$sidecar$suffix');
+      }
+      log.warning('Wallet revision metadata quarantined category=corrupt');
+      revisions = RevisionStore(path);
+      recoveredMetadata = true;
+    }
     revisions.changes.listen(_changes.add);
     final writer = NativeWalletWriter(
       lockDirectory: writerLockDirectory(documents),
@@ -63,6 +86,7 @@ final class WalletNativeRuntime implements WalletNativeLifecycle {
     );
     return _NativeServices(
       documents,
+      recoveredMetadata,
       revisions,
       writer,
       WalletSnapshotReader(
@@ -75,58 +99,88 @@ final class WalletNativeRuntime implements WalletNativeLifecycle {
     );
   }
 
-  Future<void> initialize() => _initialization ??= _initialize();
+  Future<void> initialize() => _initialization ??= _initializeSafely();
+
+  Future<void> _initializeSafely() async {
+    try {
+      await _initialize();
+      _initializationFailure = null;
+      if (_unavailable.isNotEmpty) _initialization = null;
+    } catch (error) {
+      _initialization = null;
+      if (_initializationFailure != error.runtimeType) {
+        _initializationFailure = error.runtimeType;
+        log.warning(
+          'Native wallet initialization unavailable category=${error.runtimeType}',
+        );
+      }
+    }
+  }
 
   /// Explicit provisioning retry; ordinary readers never trigger this pass.
   Future<void> resumeProvisioning() async {
     await initialize();
-    _unavailable.clear();
-    await (_initialization = _initialize());
+    _initialization = null;
+    await initialize();
   }
 
   Future<void> _initialize() async {
     final services = await _services;
     final descriptors = _value(await _catalog.list());
     for (final descriptor in descriptors) {
-      final state = await _state(services, descriptor.key);
-      if (state?.lifecycle == WalletLifecycle.deleted) {
-        // A crash after the tombstone but before catalog removal must not resurrect.
-        final result = await services.writer.delete(
-          descriptor.key,
-          expectedGeneration: state?.stamp.generation ?? 0,
-        );
-        if (result is Ok) {
-          await _metadata.delete(descriptor.key.id);
-        } else if (result case Err(:final failure)) {
-          _unavailable[descriptor.key] = failure;
-        }
-        continue;
-      }
-      // A catalog-only row is resumable provisioning. Existing stores are always
-      // adopted with load; a previously active missing store is never recreated.
-      final path = nativeWalletStoragePath(services.documents, descriptor.key);
-      final existing =
-          FileSystemEntity.typeSync(path) != FileSystemEntityType.notFound;
-      var result = await services.writer.create(
-        descriptor.key,
-        expectedGeneration: state?.stamp.generation ?? 0,
-        existingOnly: existing,
-      );
-      if (result case Err(failure: TransactionSyncNeedsRepairFailure())) {
-        result = await services.writer.repair(
-          descriptor.key,
-          expectedGeneration: state?.stamp.generation ?? 0,
-        );
-        if (result is Ok) {
-          final synced = await _sync.execute(descriptor);
-          if (synced case Err(:final failure)) {
+      try {
+        final state = await _state(services, descriptor.key);
+        if (state?.lifecycle == WalletLifecycle.deleted) {
+          // A crash after the tombstone but before catalog removal must not resurrect.
+          final result = await services.writer.delete(
+            descriptor.key,
+            expectedGeneration: state?.stamp.generation ?? 0,
+          );
+          if (result is Ok) {
+            await _metadata.delete(descriptor.key.id);
+          } else if (result case Err(:final failure)) {
             _unavailable[descriptor.key] = failure;
           }
-          await services.revisions.read(descriptor.key);
+          continue;
         }
-      }
-      if (result case Err(:final failure)) {
-        _unavailable[descriptor.key] = failure;
+        // A catalog-only row is resumable provisioning. Existing stores are always
+        // adopted with load; a previously active missing store is never recreated.
+        final path = nativeWalletStoragePath(
+          services.documents,
+          descriptor.key,
+        );
+        final existing =
+            FileSystemEntity.typeSync(path) != FileSystemEntityType.notFound;
+        var result = await services.writer.create(
+          descriptor.key,
+          expectedGeneration: state?.stamp.generation ?? 0,
+          existingOnly: services.recoveredMetadata || existing,
+        );
+        if (result case Err(failure: TransactionSyncNeedsRepairFailure())) {
+          result = await services.writer.repair(
+            descriptor.key,
+            expectedGeneration: state?.stamp.generation ?? 0,
+          );
+          if (result is Ok) {
+            final synced = await _sync.execute(descriptor);
+            if (synced case Err(:final failure)) {
+              _unavailable[descriptor.key] = failure;
+            }
+            await services.revisions.read(descriptor.key);
+          }
+        }
+        if (result case Err(:final failure)) {
+          _unavailable[descriptor.key] = failure;
+        } else {
+          _unavailable.remove(descriptor.key);
+        }
+      } catch (error) {
+        _unavailable[descriptor.key] = error is WalletSnapshotException
+            ? error.failure
+            : const TransactionSyncStorageFailure();
+        log.warning(
+          'Native wallet unavailable network=${descriptor.key.network} category=${error.runtimeType}',
+        );
       }
     }
     log.fine(
@@ -283,11 +337,13 @@ final class WalletNativeRuntime implements WalletNativeLifecycle {
 
 final class _NativeServices {
   final String documents;
+  final bool recoveredMetadata;
   final RevisionStore revisions;
   final NativeWalletWriter writer;
   final WalletSnapshotReader reader;
   const _NativeServices(
     this.documents,
+    this.recoveredMetadata,
     this.revisions,
     this.writer,
     this.reader,

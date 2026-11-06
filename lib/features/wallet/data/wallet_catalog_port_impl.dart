@@ -1,3 +1,4 @@
+import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/network_x.dart';
@@ -8,6 +9,7 @@ import 'package:transaction_sync/transaction_sync.dart';
 /// Reads the existing Drift catalog. Never opens native stores or secrets.
 final class WalletCatalogPortImpl implements WalletCatalogPort {
   final WalletMetadataDatasource _metadata;
+  int _invalidCount = 0;
 
   WalletCatalogPortImpl(this._metadata);
 
@@ -16,13 +18,18 @@ final class WalletCatalogPortImpl implements WalletCatalogPort {
   list() async {
     try {
       final descriptors = <PublicWalletDescriptor>[];
+      var invalid = 0;
       for (final row in await _metadata.fetchAll()) {
         switch (descriptorFromMetadata(row)) {
           case Ok(:final value):
             descriptors.add(value);
-          case Err(:final failure):
-            return Err(failure);
+          case Err():
+            invalid++;
         }
+      }
+      if (invalid != _invalidCount) {
+        _invalidCount = invalid;
+        log.warning('Wallet catalog validation invalid_count=$invalid');
       }
       return Ok(List.unmodifiable(descriptors));
     } on Exception {
