@@ -1,3 +1,6 @@
+import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasource.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_catalog_port_impl.dart';
+import 'package:transaction_sync/transaction_sync.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bull_tor/tor.dart';
 import 'package:bb_mobile/features/sp/public/sp_facade.dart';
@@ -28,6 +31,9 @@ import 'package:get_it/get_it.dart';
 
 class WalletLocator {
   static void setup(GetIt locator) {
+    locator.registerLazySingleton<WalletCatalogPort>(
+      () => WalletCatalogPortImpl(locator<WalletMetadataDatasource>()),
+    );
     // Usecase
     locator.registerFactory<GetUnconfirmedIncomingBalanceUsecase>(
       () => GetUnconfirmedIncomingBalanceUsecase(

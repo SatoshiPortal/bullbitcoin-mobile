@@ -11,6 +11,11 @@ graph TB
     %% Core infrastructure
     CORE[Core<br/>---<br/>Database, Secure Storage,<br/>API Clients, Tor Adapters, UI Kit,<br/>DI & Router setup,<br/>PIN encrypted storage,<br/>Domain Primitives/Value Objects]
     PRIMITIVES[Primitives Package]
+    TRANSACTION_SYNC[Transaction Sync Package<br/>Contracts and owner ports]
+    TRANSACTION_SYNC --> PRIMITIVES
+    ELECTRUM_SETTINGS --> TRANSACTION_SYNC
+    LABELS --> TRANSACTION_SYNC
+    WALLETS --> TRANSACTION_SYNC
     BULL_LOGGER[Bull Logger Package<br/>Logger, diagnostics, log files]
     BULL_PAYJOIN[Bull Payjoin Package<br/>Public contract]
 
