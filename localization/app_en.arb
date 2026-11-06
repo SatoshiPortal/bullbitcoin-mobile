@@ -6686,9 +6686,9 @@
   "@sellBankTransfer": {
     "description": "Option for bank deposit"
   },
-  "sellInteracTransfer": "Interac e-Transfer",
+  "sellInteracTransfer": "Email Money Transfer",
   "@sellInteracTransfer": {
-    "description": "Option for Interac payment (Canada)"
+    "description": "Option for the Canadian email money transfer payout"
   },
   "sellCashPickup": "Cash Pickup",
   "@sellCashPickup": {
@@ -6722,9 +6722,9 @@
   "@sellIBAN": {
     "description": "Label for International Bank Account Number"
   },
-  "sellInteracEmail": "Interac Email",
+  "sellInteracEmail": "Transfer email",
   "@sellInteracEmail": {
-    "description": "Label for email to receive Interac payment"
+    "description": "Label for the email that receives the email money transfer"
   },
   "sellReviewOrder": "Review Sell Order",
   "@sellReviewOrder": {
@@ -12269,9 +12269,9 @@
   "@recipientsJurisdictionColombia": {
     "description": "Colombia jurisdiction option in the jurisdictions dropdown."
   },
-  "recipientsTypeInteracEmail": "Interac e-Transfer",
+  "recipientsTypeInteracEmail": "Email Money Transfer",
   "@recipientsTypeInteracEmail": {
-    "description": "Display name for the Canadian Interac e-Transfer recipient type."
+    "description": "Display name for the Canadian email money transfer recipient type. Do not use the Interac trademark."
   },
   "recipientsTypeBillPayment": "Bill Payment",
   "@recipientsTypeBillPayment": {
@@ -14348,9 +14348,9 @@
   "@settingsErrorLoadingLogs": {
     "description": "settings user-facing failure message (#1895)."
   },
-  "withdrawInteracSecurityDetailsTitle": "Interac security details",
+  "withdrawInteracSecurityDetailsTitle": "Transfer security details",
   "@withdrawInteracSecurityDetailsTitle": {
-    "description": "Title for the Interac security question and answer screen."
+    "description": "Title for the email money transfer security question and answer screen."
   },
   "withdrawInteracSaveAsDefault": "Save these details as default",
   "@withdrawInteracSaveAsDefault": {
