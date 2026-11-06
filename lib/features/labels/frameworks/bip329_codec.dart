@@ -148,13 +148,10 @@ String? _bip329OriginFromWalletId(String walletId) {
   if (start == -1 || end == -1 || start >= end) return null;
   final keyOrigin = walletId.substring(start, end + 1);
   try {
-    final decoded = WalletMetadataService.decodeOrigin(origin: keyOrigin);
-    final roundTrip = WalletMetadataService.encodeOrigin(
-      fingerprint: decoded.fingerprint,
-      network: decoded.network,
-      scriptType: decoded.script,
-    );
-    return roundTrip == walletId ? keyOrigin : null;
+    final roundTrip = WalletMetadataService.canonicalBip329Origin(keyOrigin);
+    return roundTrip == WalletMetadataService.originFromId(walletId)
+        ? keyOrigin
+        : null;
   } catch (_) {
     return null;
   }
@@ -167,13 +164,8 @@ String? _bip329OriginFromWalletId(String walletId) {
 String? _walletIdFromBip329Origin(String? origin) {
   if (origin == null || origin.isEmpty) return null;
   try {
-    final decoded = WalletMetadataService.decodeOrigin(
-      origin: origin.replaceAll("'", 'h'),
-    );
-    return WalletMetadataService.encodeOrigin(
-      fingerprint: decoded.fingerprint,
-      network: decoded.network,
-      scriptType: decoded.script,
+    return WalletMetadataService.canonicalBip329Origin(
+      origin.replaceAll("'", 'h'),
     );
   } catch (_) {
     return null;

@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/wallet/data/wallet_network_codec.dart';
 import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart';
 import 'package:bb_mobile/core/utils/bip32_derivation.dart';
@@ -15,16 +16,14 @@ class WalletMetadataService {
     required Network network,
     required ScriptType scriptType,
   }) {
-    String networkPath;
-    if (network.isBitcoin && network.isMainnet) {
-      networkPath = "0h";
-    } else if (network.isLiquid && network.isMainnet) {
-      networkPath = "1776h";
-    } else if (network.isTestnet) {
-      networkPath = "1h";
-    } else {
-      throw 'Unexpected network path';
-    }
+    final networkPath = switch (network) {
+      Network.bitcoinMainnet => '0h',
+      Network.liquidMainnet => '1776h',
+      Network.bitcoinTestnet ||
+      Network.bitcoinRegtest ||
+      Network.liquidTestnet ||
+      Network.liquidRegtest => '1h',
+    };
 
     String prefixFormat = '';
     String scriptPath = '';
@@ -56,24 +55,25 @@ class WalletMetadataService {
       r'\[([a-fA-F0-9]+)/(\d+h)/(\d+h)/(\d+h)\]',
     ).firstMatch(origin);
 
-    if (match == null) throw 'Invalid origin format: $origin';
+    if (match == null) throw 'Invalid origin format';
 
-    final fingerprint = match.group(1)!;
-    final matchingScript = match.group(2)!;
-    final matchingNetwork = match.group(3)!;
-    final account = match.group(4)!;
-
-    ScriptType script;
-    switch (matchingScript) {
-      case '84h':
-        script = ScriptType.bip84;
-      case '49h':
-        script = ScriptType.bip49;
-      case '44h':
-        script = ScriptType.bip44;
-      default:
-        throw 'Unknown script: $matchingScript';
+    final fingerprint = match.group(1);
+    final matchingScript = match.group(2);
+    final matchingNetwork = match.group(3);
+    final account = match.group(4);
+    if (fingerprint == null ||
+        matchingScript == null ||
+        matchingNetwork == null ||
+        account == null) {
+      throw 'Invalid origin format';
     }
+
+    final script = switch (matchingScript) {
+      '84h' => ScriptType.bip84,
+      '49h' => ScriptType.bip49,
+      '44h' => ScriptType.bip44,
+      _ => throw 'Unknown origin script',
+    };
 
     Network network;
     switch (matchingNetwork) {
@@ -91,7 +91,7 @@ class WalletMetadataService {
         network = Network.liquidMainnet;
 
       default:
-        throw 'Unknown script: $matchingNetwork';
+        throw 'Unknown origin network';
     }
 
     return (
@@ -100,6 +100,73 @@ class WalletMetadataService {
       script: script,
       account: account,
     );
+  }
+
+  /// Rebuilds the historical default-account origin used by BIP329 without
+  /// interpreting its coin type as an active wallet network. Coin type 1
+  /// deliberately remains unattributed between testnet and regtest here.
+  static String canonicalBip329Origin(String keyOrigin) {
+    final derivation = parseOrigin(origin: keyOrigin);
+    final coinType = RegExp(
+      r'\[[a-fA-F0-9]+/\d+h/(\d+h)/\d+h\]',
+    ).firstMatch(keyOrigin)?.group(1);
+    if (coinType != '0h' && coinType != '1h' && coinType != '1776h') {
+      throw const FormatException('Unsupported derivation coin type');
+    }
+    final prefix = coinType == '1776h' ? 'el' : '';
+    final path =
+        '[${derivation.fingerprint}/${derivation.script.purpose}h/$coinType/0h]';
+    return switch (derivation.script) {
+      ScriptType.bip84 => '${prefix}wpkh($path)',
+      ScriptType.bip49 => '${prefix}sh(wpkh($path))',
+      ScriptType.bip44 => '${prefix}pkh($path)',
+    };
+  }
+
+  static const regtestSuffix = ':regtest';
+
+  /// The derivation origin stays suitable for BIP329 on every network.
+  static String originFromId(String id) => id.endsWith(regtestSuffix)
+      ? id.substring(0, id.length - regtestSuffix.length)
+      : id;
+
+  static String encodeId({
+    required String fingerprint,
+    required Network network,
+    required ScriptType scriptType,
+  }) {
+    final origin = encodeOrigin(
+      fingerprint: fingerprint,
+      network: network,
+      scriptType: scriptType,
+    );
+    return switch (network) {
+      Network.bitcoinRegtest ||
+      Network.liquidRegtest => '$origin$regtestSuffix',
+      _ => origin,
+    };
+  }
+
+  /// Parses derivation metadata without treating its coin type as a network.
+  static ({String fingerprint, ScriptType script, String account}) parseOrigin({
+    required String origin,
+  }) {
+    final match = RegExp(
+      r'\[([a-fA-F0-9]+)/(\d+h)/(\d+h)/(\d+h)\]',
+    ).firstMatch(origin);
+    final fingerprint = match?.group(1);
+    final purpose = match?.group(2);
+    final account = match?.group(4);
+    if (fingerprint == null || purpose == null || account == null) {
+      throw 'Invalid origin format';
+    }
+    final script = switch (purpose) {
+      '84h' => ScriptType.bip84,
+      '49h' => ScriptType.bip49,
+      '44h' => ScriptType.bip44,
+      _ => throw 'Unknown origin script',
+    };
+    return (fingerprint: fingerprint, script: script, account: account);
   }
 
   /// Builds a wallet's metadata from a stored secret.
@@ -146,7 +213,8 @@ class WalletMetadataService {
 
     final fingerprint = secret.info.id.hex;
     return WalletMetadataModel(
-      id: encodeOrigin(
+      networkCode: WalletNetworkCodec.encode(network),
+      id: encodeId(
         fingerprint: fingerprint,
         network: network,
         scriptType: scriptType,
@@ -202,19 +270,28 @@ class WalletMetadataService {
           xpubBase58,
           fingerprint: pubkeyFingerprint,
           scriptType: scriptType,
-          isTestnet: network.isTestnet,
+          isTestnet: switch (network) {
+            Network.bitcoinMainnet => false,
+            Network.bitcoinTestnet || Network.bitcoinRegtest => true,
+            _ => throw const FormatException('Unsupported xpub network'),
+          },
         );
     final changeDescriptor =
         await DescriptorDerivation.deriveBitcoinDescriptorFromXpub(
           xpubBase58,
           fingerprint: pubkeyFingerprint,
           scriptType: scriptType,
-          isTestnet: network.isTestnet,
+          isTestnet: switch (network) {
+            Network.bitcoinMainnet => false,
+            Network.bitcoinTestnet || Network.bitcoinRegtest => true,
+            _ => throw const FormatException('Unsupported xpub network'),
+          },
           isInternalKeychain: true,
         );
 
     return WalletMetadataModel(
-      id: WalletMetadataService.encodeOrigin(
+      networkCode: WalletNetworkCodec.encode(network),
+      id: WalletMetadataService.encodeId(
         fingerprint: pubkeyFingerprint,
         network: network,
         scriptType: scriptType,
@@ -237,7 +314,8 @@ class WalletMetadataService {
     WatchOnlyDescriptorEntity entity,
   ) async {
     return WalletMetadataModel(
-      id: WalletMetadataService.encodeOrigin(
+      networkCode: WalletNetworkCodec.encode(entity.network),
+      id: WalletMetadataService.encodeId(
         fingerprint: entity.masterFingerprint,
         network: entity.network,
         scriptType: entity.scriptType,
@@ -245,9 +323,10 @@ class WalletMetadataService {
       masterFingerprint: entity.masterFingerprint,
       xpubFingerprint: entity.pubkeyFingerprint,
       signer: Signer.fromEntity(entity.signer),
-      signerDevice: entity.signerDevice != null
-          ? SignerDevice.fromEntity(entity.signerDevice!)
-          : null,
+      signerDevice: switch (entity.signerDevice) {
+        final device? => SignerDevice.fromEntity(device),
+        null => null,
+      },
       xpub: entity.pubkey,
       externalPublicDescriptor: entity.descriptor.external,
       internalPublicDescriptor: entity.descriptor.internal,
