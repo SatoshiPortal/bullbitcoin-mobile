@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/test_wallet_backup/domain/test_wallet_backup_failure.dart';
@@ -12,6 +13,7 @@ import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/load_walle
 import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/verify_physical_backup_usecase.dart';
 import 'package:bb_mobile/features/test_wallet_backup/presentation/bloc/test_wallet_backup_bloc.dart';
 import 'package:bb_mobile/features/test_wallet_backup/presentation/test_wallet_backup_failure_l10n.dart';
+import 'package:bb_mobile/features/test_wallet_backup/ui/screens/show_mnemonic_screen.dart';
 import 'package:bb_mobile/features/test_wallet_backup/ui/screens/verify_mnemonic_screen.dart';
 import 'package:bb_mobile/generated/l10n/localization.dart';
 import 'package:flutter/material.dart';
@@ -142,14 +144,17 @@ void main() {
     ).thenAnswer((_) async => Ok((words, null)));
   }
 
-  Future<void> pumpScreen(WidgetTester tester) => tester.pumpWidget(
+  Future<void> pumpScreen(
+    WidgetTester tester, {
+    Widget screen = const VerifyMnemonicScreen(),
+  }) => tester.pumpWidget(
     MaterialApp(
       theme: AppTheme.themeData(AppThemeType.light),
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
       home: BlocProvider<TestWalletBackupBloc>.value(
         value: bloc,
-        child: const VerifyMnemonicScreen(),
+        child: screen,
       ),
     ),
   );
@@ -178,6 +183,32 @@ void main() {
   }
 
   final spinner = find.byType(CircularProgressIndicator);
+
+  testWidgets('show screen reads and displays the phrase only after consent '
+      'when capture blocking is refused', (tester) async {
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(
+          _noScreenshotChannel,
+          (call) async => call.method != 'screenshotOff',
+        );
+    stubMnemonic(_fingerprintA, _wordsA);
+    bloc.seed(_selected(_walletA));
+    Device.screen = tester.view.physicalSize / tester.view.devicePixelRatio;
+
+    await pumpScreen(tester, screen: const ShowMnemonicScreen());
+    await tester.pump(const Duration(seconds: 2));
+    await flush(tester);
+
+    verifyNever(() => getMnemonicUsecase.execute(any()));
+    expectWords(_wordsA, findsNothing);
+    expect(find.text('Continue anyway'), findsOneWidget);
+
+    await tester.tap(find.text('Continue anyway'));
+    await tester.pumpAndSettle();
+
+    expectWords(_wordsA, findsOneWidget);
+    verify(() => getMnemonicUsecase.execute(_fingerprintA)).called(1);
+  });
 
   testWidgets('loads the words once the wallet arrives after mount', (
     tester,

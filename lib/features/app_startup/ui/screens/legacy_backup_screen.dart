@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:screen_privacy/screen_privacy.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
@@ -25,25 +27,25 @@ class LegacyBackupScreen extends StatefulWidget {
 
 class _LegacyBackupScreenState extends State<LegacyBackupScreen>
     with PrivacyScreen {
-  // Gate rendering on the privacy future: the words must never be on screen
-  // before screenshot blocking is active.
-  late final Future<void> _privacyFuture = enableScreenPrivacy();
-
   @override
   void dispose() {
-    disableScreenPrivacy();
+    unawaited(disableScreenPrivacy());
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: FutureBuilder(
-        future: _privacyFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState != ConnectionState.done) {
-            return const Center(child: CircularProgressIndicator());
-          }
+      // The words never draw before capture blocking is active, unless the
+      // user chose to go without it.
+      body: ScreenPrivacyGate(
+        protect: enableScreenPrivacy,
+        labels: ScreenPrivacyGateLabels(
+          message: context.loc.screenPrivacyUnavailableMessage,
+          retry: context.loc.retry,
+          continueAnyway: context.loc.screenPrivacyContinueAnyway,
+        ),
+        builder: (context) {
           return SafeArea(
             child: ListView(
               padding: const EdgeInsets.all(16),

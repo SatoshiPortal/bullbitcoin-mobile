@@ -24,8 +24,6 @@ class ShowMnemonicScreen extends StatefulWidget {
 
 class _ShowMnemonicScreenState extends State<ShowMnemonicScreen>
     with PrivacyScreen {
-  late final Future<void> _privacyFuture = enableScreenPrivacy();
-
   @override
   void dispose() {
     unawaited(disableScreenPrivacy());
@@ -34,52 +32,57 @@ class _ShowMnemonicScreenState extends State<ShowMnemonicScreen>
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: _privacyFuture,
-      builder: (context, snapshot) {
-        return BlocBuilder<TestWalletBackupBloc, TestWalletBackupState>(
-          builder: (context, state) {
-            final walletName = state.selectedWallet?.isDefault ?? false
-                ? context.loc.testBackupDefaultWallets
-                : state.selectedWallet?.displayLabel(context) ?? '';
-            final title = context.loc.testBackupWalletTitle(walletName);
+    return BlocBuilder<TestWalletBackupBloc, TestWalletBackupState>(
+      builder: (context, state) {
+        final walletName = state.selectedWallet?.isDefault ?? false
+            ? context.loc.testBackupDefaultWallets
+            : state.selectedWallet?.displayLabel(context) ?? '';
+        final title = context.loc.testBackupWalletTitle(walletName);
 
-            return Scaffold(
-              backgroundColor: context.appColors.background,
-              appBar: PreferredSize(
-                preferredSize: const Size.fromHeight(kToolbarHeight),
-                child: AppBarWidget(title: title),
-              ),
-              body: Column(
-                children: [
-                  const Expanded(
-                    child: SingleChildScrollView(child: _MnemonicDisplay()),
+        return Scaffold(
+          backgroundColor: context.appColors.background,
+          appBar: PreferredSize(
+            preferredSize: const Size.fromHeight(kToolbarHeight),
+            child: AppBarWidget(title: title),
+          ),
+          // The words never draw before capture blocking is active,
+          // unless the user chose to go without it.
+          body: ScreenPrivacyGate(
+            protect: enableScreenPrivacy,
+            labels: ScreenPrivacyGateLabels(
+              message: context.loc.screenPrivacyUnavailableMessage,
+              retry: context.loc.retry,
+              continueAnyway: context.loc.screenPrivacyContinueAnyway,
+            ),
+            builder: (context) => Column(
+              children: [
+                const Expanded(
+                  child: SingleChildScrollView(child: _MnemonicDisplay()),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  child: Column(
+                    children: [
+                      BullButton.big(
+                        label: context.loc.testBackupNext,
+                        onPressed: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  const VerifyMnemonicScreen(),
+                            ),
+                          );
+                        },
+                        bgColor: context.appColors.secondary,
+                        textColor: context.appColors.onSecondary,
+                      ),
+                      Gap(Device.screen.height * 0.05),
+                    ],
                   ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 12),
-                    child: Column(
-                      children: [
-                        BullButton.big(
-                          label: context.loc.testBackupNext,
-                          onPressed: () {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (context) =>
-                                    const VerifyMnemonicScreen(),
-                              ),
-                            );
-                          },
-                          bgColor: context.appColors.secondary,
-                          textColor: context.appColors.onSecondary,
-                        ),
-                        Gap(Device.screen.height * 0.05),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            );
-          },
+                ),
+              ],
+            ),
+          ),
         );
       },
     );

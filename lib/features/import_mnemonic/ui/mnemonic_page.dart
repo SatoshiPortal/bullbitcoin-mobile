@@ -25,14 +25,6 @@ class MnemonicPage extends StatefulWidget {
 
 class _MnemonicPageState extends State<MnemonicPage> with PrivacyScreen {
   @override
-  void initState() {
-    super.initState();
-    // Not in build: this is a platform channel call, and this page rebuilds on
-    // every cubit emission.
-    unawaited(enableScreenPrivacy());
-  }
-
-  @override
   void dispose() {
     unawaited(disableScreenPrivacy());
     super.dispose();
@@ -51,39 +43,49 @@ class _MnemonicPageState extends State<MnemonicPage> with PrivacyScreen {
           onBack: () => context.pop(),
         ),
       ),
-      body: BlocBuilder<ImportMnemonicCubit, ImportMnemonicState>(
-        builder: (context, state) {
-          return Stack(
-            children: [
-              // MnemonicWidget owns its own scroll and docks the in-app
-              // keyboard at the bottom, so it must fill the available height.
-              Positioned.fill(
-                child: Padding(
-                  padding: const EdgeInsets.only(top: 16),
-                  child: MnemonicWidget(
-                    initialLength: bip39.MnemonicLength.words12,
-                    onSubmit: context
-                        .read<ImportMnemonicCubit>()
-                        .updateMnemonic,
-                    submitLabel: context.loc.importMnemonicContinue,
-                    externalError: state.failure?.toTranslated(context),
-                  ),
-                ),
-              ),
-              if (state.isLoading)
+      // The gate asks for capture blocking once, from its own state: this page
+      // rebuilds on every cubit emission.
+      body: ScreenPrivacyGate(
+        protect: enableScreenPrivacy,
+        labels: ScreenPrivacyGateLabels(
+          message: context.loc.screenPrivacyUnavailableMessage,
+          retry: context.loc.retry,
+          continueAnyway: context.loc.screenPrivacyContinueAnyway,
+        ),
+        builder: (context) => BlocBuilder<ImportMnemonicCubit, ImportMnemonicState>(
+          builder: (context, state) {
+            return Stack(
+              children: [
+                // MnemonicWidget owns its own scroll and docks the in-app
+                // keyboard at the bottom, so it must fill the available height.
                 Positioned.fill(
-                  child: ColoredBox(
-                    color: context.appColors.overlay,
-                    child: Center(
-                      child: CircularProgressIndicator(
-                        color: context.appColors.primary,
-                      ),
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 16),
+                    child: MnemonicWidget(
+                      initialLength: bip39.MnemonicLength.words12,
+                      onSubmit: context
+                          .read<ImportMnemonicCubit>()
+                          .updateMnemonic,
+                      submitLabel: context.loc.importMnemonicContinue,
+                      externalError: state.failure?.toTranslated(context),
                     ),
                   ),
                 ),
-            ],
-          );
-        },
+                if (state.isLoading)
+                  Positioned.fill(
+                    child: ColoredBox(
+                      color: context.appColors.overlay,
+                      child: Center(
+                        child: CircularProgressIndicator(
+                          color: context.appColors.primary,
+                        ),
+                      ),
+                    ),
+                  ),
+              ],
+            );
+          },
+        ),
       ),
     );
   }

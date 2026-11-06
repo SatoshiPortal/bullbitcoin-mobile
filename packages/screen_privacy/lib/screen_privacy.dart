@@ -4,8 +4,10 @@
 ///
 /// A screen opts in with the [PrivacyScreen] mixin; the process-wide
 /// [ScreenCaptureProtection] controller reference-counts protected screens and
-/// gates the flag on the user's preference.
+/// gates the flag on the user's preference. [ScreenPrivacyGate] holds a secret
+/// back until the flag is confirmed, or until the user accepts to go without.
 library;
 
 export 'src/privacy_screen.dart';
 export 'src/screen_capture_protection.dart';
+export 'src/screen_privacy_gate.dart';
