@@ -218,6 +218,14 @@ final class NativeWalletWriter implements LiquidReadAdmission {
     }
     if (result case Err(failure: TransactionSyncNeedsRepairFailure())) {
       revisions.requireRepair(key);
+    } else if (result is Err) {
+      if (operation case WriterSyncMutation(mayHaveMutated: false)) {
+        revisions.cancelUnchanged(key, record);
+      } else {
+        // Native work completed with an uncertain mutation: invalidate readers,
+        // but never claim a successful sync or clear a prior repair barrier.
+        revisions.finish(key);
+      }
     }
     _value(result);
     return WriterCommitted(revisions.finish(key, needsSync: false));
