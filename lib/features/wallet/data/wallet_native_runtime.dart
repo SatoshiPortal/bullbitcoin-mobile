@@ -20,6 +20,7 @@ abstract interface class WalletNativeLifecycle {
   Future<void> create(WalletMetadataModel metadata);
   Future<void> delete(WalletMetadataModel metadata);
   Future<void> catalogDeleted(WalletMetadataModel metadata);
+  Future<int?> issuedReceiveIndex(WalletMetadataModel metadata);
   Future<({String address, int index})> receive(
     WalletMetadataModel metadata, {
     bool advance = false,
@@ -193,6 +194,18 @@ final class WalletNativeRuntime implements WalletNativeLifecycle {
       ),
     );
     return (address: issued.address, index: issued.index);
+  }
+
+  @override
+  Future<int?> issuedReceiveIndex(WalletMetadataModel metadata) async {
+    final descriptor = _value(
+      WalletCatalogPortImpl.descriptorFromMetadata(metadata),
+    );
+    final state = await _state(await _services, descriptor.key);
+    if (state?.lifecycle == WalletLifecycle.deleted) {
+      throw const WalletSnapshotException(TransactionSyncNotFoundFailure());
+    }
+    return state?.issuedReceiveIndex;
   }
 
   Future<bdk.Wallet> bitcoin(WalletModel model) async =>

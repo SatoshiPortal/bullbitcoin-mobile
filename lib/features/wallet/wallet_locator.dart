@@ -1,3 +1,5 @@
+import 'package:bb_mobile/features/wallet/domain/usecases/watch_wallet_transaction_by_tx_id_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/watch_wallet_transaction_by_address_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/watch_wallet_revisions_usecase.dart';
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
 import 'package:secrets/secrets.dart';
@@ -47,6 +49,18 @@ import 'package:get_it/get_it.dart';
 
 class WalletLocator {
   static void setup(GetIt locator) {
+    locator.registerFactory<WatchWalletTransactionByTxIdUsecase>(
+      () => WatchWalletTransactionByTxIdUsecase(
+        walletTransactionRepository: locator<WalletTransactionRepository>(),
+        walletFacade: locator<WalletFacade>(),
+      ),
+    );
+    locator.registerFactory<WatchWalletTransactionByAddressUsecase>(
+      () => WatchWalletTransactionByAddressUsecase(
+        walletTransactionRepository: locator<WalletTransactionRepository>(),
+        walletFacade: locator<WalletFacade>(),
+      ),
+    );
     locator.registerLazySingleton<WalletFacade>(
       () => WalletFacade(locator<WalletNativeRuntime>().changes),
     );
