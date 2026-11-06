@@ -24,6 +24,7 @@ final class WalletConnection {
 /// The owner selects custom-or-default servers and manages scoped Tor routes.
 /// The caller may request fallback ONLY before any native mutation. It must
 /// await all work using the connection before returning from the callback.
+/// Exhausted fallback preserves the last failure returned by the caller.
 abstract interface class WalletConnectionPolicy {
   @useResult
   Future<Result<T, TransactionSyncFailure>> run<T>({

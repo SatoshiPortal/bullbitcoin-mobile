@@ -23,11 +23,14 @@ final class WalletConnectionPolicyImpl implements WalletConnectionPolicy {
       BitcoinNetwork.testnet => ElectrumServerNetwork.bitcoinTestnet,
       LiquidNetwork.mainnet => ElectrumServerNetwork.liquidMainnet,
       LiquidNetwork.testnet => ElectrumServerNetwork.liquidTestnet,
-      _ => null,
+      BitcoinNetwork.signet ||
+      BitcoinNetwork.regtest ||
+      LiquidNetwork.regtest => null,
     };
     if (legacyNetwork == null) {
       return const Err(TransactionSyncUnsupportedNetworkFailure());
     }
+    TransactionSyncFailure? lastFailure;
     try {
       return await _servers.runWithFallback(
         network: legacyNetwork,
@@ -44,6 +47,7 @@ final class WalletConnectionPolicyImpl implements WalletConnectionPolicy {
             ),
           );
           if (result case Err(:final failure) when mayRetry(failure)) {
+            lastFailure = failure;
             throw _RetryableFailure();
           }
           return result;
@@ -51,7 +55,8 @@ final class WalletConnectionPolicyImpl implements WalletConnectionPolicy {
       );
     } on Exception {
       // No URL, proxy, descriptor or foreign diagnostic escapes this boundary.
-      return const Err(TransactionSyncConnectionFailure());
+      // Exhaustion may wrap callback errors; preserve the last typed failure.
+      return Err(lastFailure ?? const TransactionSyncConnectionFailure());
     }
   }
 }
