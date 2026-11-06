@@ -22,14 +22,8 @@ class TransactionReviewCubit extends Cubit<TransactionReviewState> {
 
   Future<void> loadFromBitcoinTx(
     btc_utils.BitcoinTx bitcoinTx, {
-    Future<Network>? network,
-    bool? isTestnet,
+    required Future<Network> network,
   }) async {
-    final capturedNetwork =
-        network ??
-        Future.value(
-          Network.fromEnvironment(isTestnet: isTestnet, isLiquid: false),
-        );
     if (state is TransactionReviewLoading) return;
     emit(const TransactionReviewState.loading());
 
@@ -38,10 +32,7 @@ class TransactionReviewCubit extends Cubit<TransactionReviewState> {
     // (Sentry) and surfaces a sanitized failure.
     final Transaction tx;
     try {
-      tx = TransactionMapper.fromBitcoinTx(
-        bitcoinTx,
-        network: await capturedNetwork,
-      );
+      tx = TransactionMapper.fromBitcoinTx(bitcoinTx, network: await network);
     } catch (e, st) {
       log.severe(
         message: 'Unexpected failure mapping transaction for review',
