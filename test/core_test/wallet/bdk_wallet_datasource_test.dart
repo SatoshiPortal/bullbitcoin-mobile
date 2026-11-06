@@ -195,6 +195,35 @@ void main() {
     }
   });
 
+  test('last revealed index read does not reveal an address', () async {
+    final native = await BdkFacade.createWallet(walletModel);
+    final datasource = BdkWalletDatasource(readWallet: (_) async => native);
+    final before = native.nextDerivationIndex(
+      keychain: bdk.KeychainKind.external_,
+    );
+    expect(
+      await datasource.getLastRevealedAddressIndex(wallet: walletModel),
+      before - 1,
+    );
+    expect(
+      native.nextDerivationIndex(keychain: bdk.KeychainKind.external_),
+      before,
+    );
+  });
+
+  test('load mismatch preserves the existing native store', () async {
+    final file = File('${tempDir.path}/${walletModel.hexId}_bdk_dart');
+    final before = await file.readAsBytes();
+    final mismatched = WalletModel.publicBdk(
+      id: walletModel.id,
+      externalDescriptor: walletModel.internalDescriptor,
+      internalDescriptor: walletModel.externalDescriptor,
+      isTestnet: true,
+    );
+    await expectLater(BdkFacade.createWallet(mismatched), throwsA(anything));
+    expect(await file.readAsBytes(), before);
+  });
+
   test(
     'buildPsbt honors manual UTXO selection: a manually selected UTXO must '
     'be spendable even when every other UTXO is frozen/unspendable',
