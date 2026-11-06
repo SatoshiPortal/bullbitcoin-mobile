@@ -71,7 +71,7 @@ void main() {
                   as Map<String, dynamic>;
           if (language == bip39.Language.english) {
             const golden =
-                '{"label":"published vector","mnemonic":["abandon","abandon","abandon","abandon","abandon","abandon","abandon","abandon","abandon","abandon","abandon","about"]}';
+                '{"label":"published vector","mnemonic":["abandon","abandon","abandon","abandon","abandon","abandon","abandon","abandon","abandon","abandon","abandon","about"],"mnemonicLanguage":"english"}';
             expect(
               RecoverBull.restoreBackup(
                 backup: BullBackup.fromJson(backup.vault.json),
@@ -80,10 +80,10 @@ void main() {
               utf8.encode(golden),
             );
           }
-          expect(
-            plaintext.containsKey('mnemonicLanguage'),
-            language != bip39.Language.english,
-          );
+          expect(plaintext.containsKey('mnemonicLanguage'), isTrue);
+          if (language == bip39.Language.english) {
+            expect(plaintext['mnemonicLanguage'], 'english');
+          }
           ok(await secrets.trash(secret.id));
           storage.locked = true;
           final inspected = ok(
