@@ -50,6 +50,25 @@ void main() {
     },
   );
 
+  test(
+    'legacy storage refuses networks whose origins collide with testnet',
+    () {
+      for (final network in <Network>[
+        BitcoinNetwork.signet,
+        BitcoinNetwork.regtest,
+        LiquidNetwork.regtest,
+      ]) {
+        expect(
+          () => nativeWalletStoragePath(
+            '/data/wallets',
+            WalletKey(id: 'origin', network: network),
+          ),
+          throwsArgumentError,
+        );
+      }
+    },
+  );
+
   test('revision equality includes lifecycle generation and key', () {
     final key = WalletKey(id: 'wallet', network: BitcoinNetwork.mainnet);
     final revision = WalletRevision(key: key, generation: 2, revision: 3);
