@@ -1,3 +1,4 @@
+import 'package:background_tasks/background_tasks.dart';
 import 'package:flutter/widgets.dart';
 import 'data/payment_notifications.dart';
 import 'data/wallet_payment_observer.dart';
@@ -113,25 +114,30 @@ class WalletLocator {
       () => ElectrumSync(
         readRevision: (key) => locator<WalletNativeRuntime>().readRevision(key),
         connections: locator<WalletConnectionPolicy>(),
-        onCompletion: locator<WalletPaymentObserver>().record,
+        onCompletion: backgroundSyncAvailable
+            ? locator<WalletPaymentObserver>().record
+            : null,
         documentsDirectory: () async =>
             (await getApplicationDocumentsDirectory()).path,
       ),
     );
-    locator.registerLazySingleton<PaymentNotificationStore>(
-      () => PaymentNotificationStore(
-        () async => (await getApplicationDocumentsDirectory()).path,
-        () async => (await locator<SettingsRepository>().fetch()).language,
-      ),
-      dispose: (store) => store.close(),
-    );
-    locator.registerLazySingleton<WalletPaymentObserver>(
-      () => WalletPaymentObserver(
-        locator<PaymentNotificationStore>().open,
-        () =>
-            WidgetsBinding.instance.lifecycleState == AppLifecycleState.resumed,
-      ),
-    );
+    if (backgroundSyncAvailable) {
+      locator.registerLazySingleton<PaymentNotificationStore>(
+        () => PaymentNotificationStore(
+          () async => (await getApplicationDocumentsDirectory()).path,
+          () async => (await locator<SettingsRepository>().fetch()).language,
+        ),
+        dispose: (store) => store.close(),
+      );
+      locator.registerLazySingleton<WalletPaymentObserver>(
+        () => WalletPaymentObserver(
+          locator<PaymentNotificationStore>().open,
+          () =>
+              WidgetsBinding.instance.lifecycleState ==
+              AppLifecycleState.resumed,
+        ),
+      );
+    }
     locator.registerLazySingleton<ForegroundWalletSync>(
       () => ForegroundWalletSync(
         locator<ElectrumSync>(),

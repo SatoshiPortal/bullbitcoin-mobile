@@ -19,6 +19,7 @@ import '../domain/wallet_catalog_port.dart';
 import '../domain/wallet_connection_policy.dart';
 import '../domain/wallet_key.dart';
 import 'bdk_electrum_cache.dart';
+import 'payment_observation.dart';
 
 /// The completed native mode, with observations captured under writer ownership.
 enum SyncMode { initialScan, revealedScripts, discovery, liquid }
@@ -28,23 +29,20 @@ final class SyncCompletion {
   final Duration elapsed;
   final String? _cacheDiagnostics;
   final WalletRevision? revision;
-  final Set<String> incomingTxids;
-  final Set<String> discoveredTxids;
+  final Set<String>? incomingTxids;
 
   const SyncCompletion(
     this.mode,
     this.elapsed, {
     this.revision,
-    this.incomingTxids = const {},
-    this.discoveredTxids = const {},
+    this.incomingTxids,
   }) : _cacheDiagnostics = null;
 
   const SyncCompletion._withCache(
     this.mode,
     this.elapsed,
     this._cacheDiagnostics,
-    this.incomingTxids,
-    this.discoveredTxids, [
+    this.incomingTxids, [
     this.revision,
   ]);
 
@@ -53,7 +51,6 @@ final class SyncCompletion {
     elapsed,
     _cacheDiagnostics,
     incomingTxids,
-    discoveredTxids,
     stamp,
   );
 }
@@ -250,15 +247,15 @@ final class ElectrumSync {
               events.sendPort,
               headless,
               allowInitialScan,
+              onCompletion != null,
             ),
           );
           retryable = attempt.retryable;
           // Capture foreground visibility immediately on native completion,
           // before Tor teardown or diagnostic flushing can yield to lifecycle changes.
           if (attempt.result case Ok(:final value) when onCompletion != null) {
-            final recorded = await onCompletion(value);
-            if (recorded case Err(:final failure)) {
-              return Err<SyncCompletion, TransactionSyncFailure>(failure);
+            if (value.incomingTxids != null) {
+              return recordPaymentObservation(attempt.result, onCompletion);
             }
           }
           return attempt.result;
@@ -281,6 +278,7 @@ final class _SyncParams {
   final SendPort diagnostics;
   final bool headless;
   final bool allowInitialScan;
+  final bool observePayments;
 
   const _SyncParams(
     this.descriptor,
@@ -291,7 +289,11 @@ final class _SyncParams {
     this.diagnostics,
     this.headless,
     this.allowInitialScan,
+    this.observePayments,
   );
+
+  void observationWarning(String message) =>
+      diagnostics.send((WriterLogLevel.warning, message));
 }
 
 typedef _Attempt = ({
@@ -516,27 +518,28 @@ Future<_Attempt> _performNativeSync(
         ),
       );
       failure = const TransactionSyncConnectionFailure();
-      final before = {
-        for (final tx in await wallet.txs())
-          if (tx.kind == 'incoming') tx.txid,
-      };
       await wallet.sync_(
         electrumUrl: connection.url,
         validateDomain: connection.validateDomain,
         timeout: connection.timeout.inSeconds,
         stopAtIndex: issuedReceiveIndex,
       );
-      final incoming = {
-        for (final tx in await wallet.txs())
-          if (tx.kind == 'incoming') tx.txid,
-      };
+      final syncedWallet = wallet;
+      final incoming = params.observePayments
+          ? await collectPaymentObservation(
+              () async => {
+                for (final tx in await syncedWallet.txs())
+                  if (tx.kind == 'incoming') tx.txid,
+              },
+              warning: params.observationWarning,
+            )
+          : null;
       return (
         result: Ok<SyncCompletion, TransactionSyncFailure>(
           SyncCompletion(
             SyncMode.liquid,
             watch.elapsed,
             incomingTxids: incoming,
-            discoveredTxids: incoming.difference(before),
           ),
         ),
         retryable: false,
@@ -616,7 +619,6 @@ Future<_Attempt> _performNativeSync(
       persister: persister,
       lookahead: 25,
     );
-    final before = _bitcoinIncoming(wallet);
     final checkpoint = wallet.latestCheckpoint();
     final height = checkpoint.height;
     checkpoint.hash.dispose();
@@ -669,7 +671,13 @@ Future<_Attempt> _performNativeSync(
       update.dispose();
     }
     final parents = cache?.rememberParents(client, wallet);
-    final incoming = _bitcoinIncoming(wallet);
+    final syncedWallet = wallet;
+    final incoming = params.observePayments
+        ? await collectPaymentObservation(
+            () => _bitcoinIncoming(syncedWallet),
+            warning: params.observationWarning,
+          )
+        : null;
     return (
       result: Ok<SyncCompletion, TransactionSyncFailure>(
         SyncCompletion._withCache(
@@ -682,7 +690,6 @@ Future<_Attempt> _performNativeSync(
             parents: parents,
           ),
           incoming,
-          incoming.difference(before),
         ),
       ),
       retryable: false,
