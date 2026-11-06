@@ -9,7 +9,6 @@ import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bull_logger/bull_logger.dart';
 
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/widgets/cards/consolidation_required_card.dart';
 import 'package:bb_mobile/core/widgets/inputs/bb_keyboard_actions.dart';
 import 'package:bb_mobile/core/widgets/price_input/balance_row.dart';
@@ -420,7 +419,7 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                                               ),
                                               style: context.font.headlineSmall,
                                             )
-                                          : DropdownButtonFormField<Wallet>(
+                                          : DropdownButtonFormField<String>(
                                               alignment: Alignment.centerLeft,
                                               decoration: const InputDecoration(
                                                 border: InputBorder.none,
@@ -432,10 +431,10 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                                                     context.appColors.secondary,
                                               ),
                                               iconSize: 24,
-                                              initialValue: pickableWallet,
+                                              initialValue: pickableWallet.id,
                                               items: wallets.map((w) {
                                                 return DropdownMenuItem(
-                                                  value: w,
+                                                  value: w.id,
                                                   child: Text(
                                                     w.displayLabel(context),
                                                     style: context
@@ -449,7 +448,11 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                                                   context
                                                       .read<SendCubit>()
                                                       .updateSelectedWallet(
-                                                        value,
+                                                        wallets.firstWhere(
+                                                          (wallet) =>
+                                                              wallet.id ==
+                                                              value,
+                                                        ),
                                                       );
                                                 }
                                               },
