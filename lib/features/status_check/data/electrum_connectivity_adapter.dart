@@ -17,10 +17,14 @@ class ElectrumConnectivityAdapter implements ElectrumConnectivityPort {
 
   @override
   Future<bool> checkServersInUseAreOnlineForNetwork(Network network) async {
-    final serverNetwork = ElectrumServerNetwork.fromEnvironment(
-      isTestnet: network.isTestnet,
-      isLiquid: network.isLiquid,
-    );
+    final serverNetwork = switch (network) {
+      Network.bitcoinMainnet => ElectrumServerNetwork.bitcoinMainnet,
+      Network.bitcoinTestnet => ElectrumServerNetwork.bitcoinTestnet,
+      Network.bitcoinRegtest => ElectrumServerNetwork.bitcoinRegtest,
+      Network.liquidMainnet => ElectrumServerNetwork.liquidMainnet,
+      Network.liquidTestnet => ElectrumServerNetwork.liquidTestnet,
+      Network.liquidRegtest => ElectrumServerNetwork.liquidRegtest,
+    };
 
     try {
       return await _electrumServersPort.runWithFallback<bool>(

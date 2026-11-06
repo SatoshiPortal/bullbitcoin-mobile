@@ -58,7 +58,7 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
       final settings = await _settingsRepository.fetch();
       final environment = settings.environment;
       final network = Network.fromEnvironment(
-        isTestnet: environment.isTestnet,
+        environment: environment.networkEnv,
         isLiquid: false,
       );
 
