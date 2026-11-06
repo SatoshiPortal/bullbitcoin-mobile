@@ -1,3 +1,8 @@
+import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/delete_wallet_usecase.dart';
+import 'package:bb_mobile/features/all_seed_view/domain/usecases/delete_secret_usecase.dart';
+import 'package:secrets/secrets.dart';
+import 'package:secrets/testing.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_native_runtime.dart';
 import 'dart:io';
@@ -22,6 +27,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';
 import 'package:transaction_sync/transaction_sync.dart';
+
+class _Swaps extends Mock implements BoltzSwapRepository {}
 
 class _Native extends Mock implements WalletNativeLifecycle {}
 
@@ -125,6 +132,102 @@ void main() {
   });
 
   tearDown(() => directory.deleteSync(recursive: true));
+
+  for (final deleteWallet in [false, true]) {
+    test(
+      'invalid-origin local row protects seed; deleteWallet=$deleteWallet',
+      () async {
+        final storage = FakeSecureStoragePlatform()..install();
+        final secrets = Secrets(scratchDirectory: () async => directory.path);
+        final secret =
+            await secrets.import(
+                  words: [...List.filled(11, 'abandon'), 'about'],
+                )
+                as Ok<Secret, SecretFailure>;
+        final local = row.copyWith(
+          signer: Signer.local,
+          masterFingerprint: secret.value.id.hex,
+        );
+        final remaining = local.copyWith(id: 'invalid');
+        when(() => metadata.fetch(id)).thenAnswer((_) async => local);
+        when(() => metadata.fetchAll()).thenAnswer((_) async => [remaining]);
+        final native = _Native();
+        when(() => native.delete(any())).thenAnswer((_) async {});
+        when(() => native.catalogDeleted(any())).thenAnswer((_) async {});
+        when(() => metadata.delete(id)).thenAnswer((_) async {});
+        final guardedRepository = WalletRepository(
+          native: native,
+          walletMetadataDatasource: metadata,
+          bdkWalletDatasource: bdk,
+          lwkWalletDatasource: _Lwk(),
+          synchronize: bridge.synchronize,
+          isSyncing: bridge.isSyncing,
+          syncStarted: bridge.started,
+          syncFinished: bridge.finished,
+          electrumSyncResultStream: bridge.results,
+        );
+        if (deleteWallet) {
+          final swaps = _Swaps();
+          when(
+            () => swaps.getOngoingSwaps(walletId: id),
+          ).thenAnswer((_) async => []);
+          expect(
+            await DeleteWalletUsecase(
+              walletRepository: guardedRepository,
+              swapRepository: swaps,
+              secrets: secrets,
+            ).execute(walletId: id),
+            isA<Ok>(),
+          );
+        } else {
+          final result = await DeleteSecretUsecase(
+            secrets: secrets,
+            walletRepository: guardedRepository,
+          ).execute(secret.value.id);
+          expect(result, isA<Err>());
+        }
+        expect(
+          storage.entries.keys.where((key) => key.startsWith('seed_')),
+          hasLength(1),
+        );
+      },
+    );
+  }
+
+  test(
+    'custody query ignores origins, balances and nonlocal fingerprints',
+    () async {
+      when(() => metadata.fetchAll()).thenAnswer(
+        (_) async => [
+          row.copyWith(
+            id: 'invalid',
+            signer: Signer.local,
+            masterFingerprint: 'AABBCCDD',
+          ),
+          row.copyWith(signer: Signer.none, masterFingerprint: 'invalid'),
+          row.copyWith(signer: Signer.remote, masterFingerprint: '11223344'),
+        ],
+      );
+      final result = await repository.getCustodyFingerprints();
+      expect(result, isA<Ok>());
+      expect((result as Ok).value, {Fingerprint('aabbccdd')});
+      verifyNever(() => bdk.getBalance(wallet: any(named: 'wallet')));
+    },
+  );
+
+  test('custody query refuses an incomplete local fingerprint set', () async {
+    when(() => metadata.fetchAll()).thenAnswer(
+      (_) async => [
+        row.copyWith(signer: Signer.local),
+        row.copyWith(signer: Signer.local, masterFingerprint: 'invalid'),
+      ],
+    );
+    expect(await repository.getCustodyFingerprints(), isA<Err>());
+    when(
+      () => metadata.fetchAll(),
+    ).thenThrow(const FormatException('unreadable row'));
+    expect(await repository.getCustodyFingerprints(), isA<Err>());
+  });
 
   test('invalid catalog origin does not hide a healthy wallet', () async {
     when(
