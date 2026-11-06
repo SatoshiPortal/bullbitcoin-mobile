@@ -35,6 +35,33 @@ void main() {
     );
   });
 
+  test(
+    'regtest refuses before receive-address or provider side effects',
+    () async {
+      when(
+        () => getWallet.execute('wallet-1'),
+      ).thenAnswer((_) async => _wallet(Network.bitcoinRegtest));
+      final result = await usecase.execute(
+        walletId: 'wallet-1',
+        amountSat: 1000,
+        destinationAddress: 'unused',
+        destinationIsTestnet: true,
+        isInAmountFixed: false,
+        quotedCounterpartAmountSat: BigInt.from(1000),
+      );
+      expect(
+        result,
+        isA<Err>().having(
+          (result) => result.failure,
+          'failure',
+          isA<SendSwapRouteUnavailableFailure>(),
+        ),
+      );
+      verifyZeroInteractions(swapFacade);
+      verifyZeroInteractions(getReceiveAddress);
+    },
+  );
+
   test('creates Liquid to Bitcoin with a Liquid fallback', () async {
     when(
       () => getWallet.execute('wallet-1'),

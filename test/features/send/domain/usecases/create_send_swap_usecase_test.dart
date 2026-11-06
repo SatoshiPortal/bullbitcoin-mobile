@@ -39,6 +39,30 @@ void main() {
   });
 
   test(
+    'regtest refuses before receive-address or provider side effects',
+    () async {
+      when(
+        () => getWallet.execute('wallet-1'),
+      ).thenAnswer((_) async => _wallet(Network.bitcoinRegtest));
+      final result = await usecase.execute(
+        walletId: 'wallet-1',
+        amountSat: 1000,
+        invoice: _invoice(amountSat: 1000),
+      );
+      expect(
+        result,
+        isA<Err>().having(
+          (result) => result.failure,
+          'failure',
+          isA<SendSwapRouteUnavailableFailure>(),
+        ),
+      );
+      verifyZeroInteractions(swapFacade);
+      verifyZeroInteractions(getReceiveAddress);
+    },
+  );
+
+  test(
     'creates an output-fixed order with an owned fallback address',
     () async {
       final invoice = _invoice(amountSat: 1000);

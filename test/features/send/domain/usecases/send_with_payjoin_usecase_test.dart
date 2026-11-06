@@ -23,7 +23,7 @@ Future<core.Result<PayjoinSenderSession, SendFailure>> _start(
   PayjoinSender sender,
 ) => SendWithPayjoinUsecase(sender).execute(
   walletId: 'wallet-1',
-  isTestnet: false,
+  network: BitcoinNetwork.mainnet,
   bip21: 'bitcoin:bc1qaddress?pj=https://payjo.in/session',
   unsignedOriginalPsbt: 'cHNidP8=',
   amountSat: 10000,
@@ -31,6 +31,23 @@ Future<core.Result<PayjoinSenderSession, SendFailure>> _start(
 );
 
 void main() {
+  test('regtest is refused before creating a sender session', () async {
+    final sender = _MockPayjoinSender();
+    final result = await SendWithPayjoinUsecase(sender).execute(
+      walletId: 'regtest-wallet',
+      network: BitcoinNetwork.regtest,
+      bip21: 'bitcoin:bcrt1unused?pj=https://example.invalid',
+      unsignedOriginalPsbt: 'unused',
+      amountSat: 10000,
+      networkFeesSatPerVb: 1,
+    );
+    expect(
+      (result as core.Err).failure,
+      isA<SendTransactionConfirmationFailure>(),
+    );
+    verifyZeroInteractions(sender);
+  });
+
   setUpAll(() {
     // StartPayjoinSender is a final class, so mocktail needs a real instance
     // as the fallback rather than a Fake subclass.

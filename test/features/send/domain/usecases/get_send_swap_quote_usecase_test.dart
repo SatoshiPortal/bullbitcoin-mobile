@@ -18,6 +18,22 @@ void main() {
     usecase = GetSendSwapQuoteUsecase(swapFacade);
   });
 
+  test('regtest refuses before requesting a remote quote', () async {
+    final result = await usecase.execute(
+      wallet: _wallet(Network.bitcoinRegtest),
+      amountSat: BigInt.from(1000),
+    );
+    expect(
+      result,
+      isA<Err>().having(
+        (result) => result.failure,
+        'failure',
+        isA<SendSwapRouteUnavailableFailure>(),
+      ),
+    );
+    verifyZeroInteractions(swapFacade);
+  });
+
   test(
     'requests only the selected wallet route in output-fixed mode',
     () async {

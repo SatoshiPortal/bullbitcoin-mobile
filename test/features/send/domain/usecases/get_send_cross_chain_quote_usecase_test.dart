@@ -18,6 +18,23 @@ void main() {
     usecase = GetSendCrossChainQuoteUsecase(swapFacade);
   });
 
+  test('regtest refuses before requesting a remote quote', () async {
+    final result = await usecase.execute(
+      wallet: _wallet(Network.bitcoinRegtest),
+      amountSat: BigInt.from(1000),
+      isInAmountFixed: false,
+    );
+    expect(
+      result,
+      isA<Err>().having(
+        (result) => result.failure,
+        'failure',
+        isA<SendSwapRouteUnavailableFailure>(),
+      ),
+    );
+    verifyZeroInteractions(swapFacade);
+  });
+
   test('quotes Liquid to Bitcoin as exact output', () async {
     when(
       () => swapFacade.getQuote(
