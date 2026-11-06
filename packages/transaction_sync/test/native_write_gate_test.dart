@@ -331,6 +331,17 @@ class BitcoinSigner {
     );
     expect(
       await inspect(
+        'memory_signer_dispose_tearoff',
+        source('bdk.Persister.newInMemory()').replaceFirst(
+          'persister?.dispose();',
+          'final releases = [persister?.dispose]; for (final release in releases.nonNulls) { release(); }',
+        ),
+        path: signerPath,
+      ),
+      isEmpty,
+    );
+    expect(
+      await inspect(
         'disk_signer',
         source("bdk.Persister.newSqlite(path: 'disk')"),
         path: signerPath,
