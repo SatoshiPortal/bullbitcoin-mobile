@@ -69,11 +69,18 @@ class WalletAddressRepository {
     final walletModel = WalletModel.fromMetadata(walletMetadata);
     final isBdkWallet = walletModel is PublicBdkWalletModel;
 
+    final issued = await _native?.issuedReceiveIndex(walletMetadata);
     final from =
         fromIndex ??
-        (isBdkWallet
-            ? await _bdkWallet.getLastRevealedAddressIndex(wallet: walletModel)
-            : await _lwkWallet.getLastUnusedAddressIndex(wallet: walletModel));
+        max(
+          issued ?? -1,
+          isBdkWallet
+              ? await _bdkWallet.getLastRevealedAddressIndex(
+                  wallet: walletModel,
+                )
+              : await _lwkWallet.getLastUnusedAddressIndex(wallet: walletModel),
+        );
+    if (from < 0) return const [];
     final to = limit != null ? max(from - limit + 1, 0) : 0;
 
     // This is already in case we want to support both ascending and descending in the future

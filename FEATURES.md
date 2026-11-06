@@ -85,6 +85,7 @@ graph TB
 
     %% Feature-to-feature dependencies (extracted from draw.io diagram)
     ADDRESS_MGMT --> LABELS
+    ADDRESS_MGMT -->|public revision stream| WALLETS
     ALL_SEED_VIEW --> APP_UNLOCK
     ALL_SEED_VIEW --> SECRETS
     ANNOUNCEMENTS --> SETTINGS

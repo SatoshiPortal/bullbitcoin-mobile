@@ -107,6 +107,7 @@ final class RevisionStore implements WalletRevisionReader {
         ),
         lifecycle: WalletLifecycle.values.byName(row['lifecycle'] as String),
         initializedSchema: row['initialized_schema'] as int,
+        issuedReceiveIndex: row['issued'] as int?,
       ),
       intent == null ? null : WriteIntent.values.byName(intent),
       row['candidate'] as int?,

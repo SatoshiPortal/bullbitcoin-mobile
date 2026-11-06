@@ -31,8 +31,6 @@ import 'package:bb_mobile/core/wallet/domain/usecases/sync_wallet_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_electrum_sync_results_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_started_wallet_syncs_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_transaction_by_address_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_transaction_by_tx_id_usecase.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:get_it/get_it.dart';
 
@@ -152,18 +150,6 @@ class WalletLocator {
     locator.registerFactory<GetWalletTransactionUsecase>(
       () => GetWalletTransactionUsecase(
         walletTransactionRepository: locator<WalletTransactionRepository>(),
-      ),
-    );
-    locator.registerFactory<WatchWalletTransactionByAddressUsecase>(
-      () => WatchWalletTransactionByAddressUsecase(
-        walletTransactionRepository: locator<WalletTransactionRepository>(),
-        walletRepository: locator<WalletRepository>(),
-      ),
-    );
-    locator.registerFactory<WatchWalletTransactionByTxIdUsecase>(
-      () => WatchWalletTransactionByTxIdUsecase(
-        walletTransactionRepository: locator<WalletTransactionRepository>(),
-        walletRepository: locator<WalletRepository>(),
       ),
     );
     locator.registerFactory<CheckWalletStatusUsecase>(
