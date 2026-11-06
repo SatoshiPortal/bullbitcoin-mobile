@@ -131,7 +131,7 @@ void main() {
     });
 
     test(
-      'a secret this import created is removed when the wallet cannot be built (#2634)',
+      'a failed wallet import preserves its secret for explicit recovery',
       () async {
         stubCreateWallet(() async => throw Exception('wallet creation failed'));
 
@@ -140,8 +140,8 @@ void main() {
         expect((result as Err).failure, isA<ImportMnemonicUnexpectedFailure>());
         expect(
           storage.entries.keys.where((k) => k.startsWith('seed_')),
-          isEmpty,
-          reason: 'the import that created it owns the cleanup',
+          hasLength(1),
+          reason: 'orphan cleanup requires explicit user action',
         );
       },
     );
