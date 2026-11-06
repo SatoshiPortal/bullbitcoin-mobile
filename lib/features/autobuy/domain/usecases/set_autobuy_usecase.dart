@@ -26,6 +26,33 @@ class SetAutoBuyUsecase {
 
   @useResult
   Future<Result<void, AutoBuyFailure>> execute({required bool enabled}) async {
+    // The shared settings repository still throws, so this is its boundary.
+    final ExchangeUserRepository userRepository;
+    try {
+      final settings = await _settingsRepository.fetch();
+      if (!NetworkCapabilities.supports(
+        BitcoinNetwork.fromName(settings.activeNetwork.name),
+        NetworkCapability.exchange,
+      )) {
+        return const Err(AutoBuyUnsupportedNetworkFailure());
+      }
+      userRepository = settings.environment.requireHistoricalTestnet()
+          ? _testnetExchangeUserRepository
+          : _mainnetExchangeUserRepository;
+    } on Error {
+      rethrow;
+    } catch (e, st) {
+      // Type only, like every other boundary in this migration.
+      log.severe(
+        message: 'Failed to read settings before updating AutoBuy',
+        error: e.runtimeType,
+        trace: st,
+      );
+      return Err(
+        AutoBuyUnexpectedFailure('settings fetch failed: ${e.runtimeType}'),
+      );
+    }
+
     if (enabled) {
       final DefaultWallets wallets;
       try {
@@ -69,27 +96,6 @@ class SetAutoBuyUsecase {
 
     if (enabled && summary.isFundingRestricted) {
       return const Err(AutoBuyFundingRestrictedFailure());
-    }
-
-    // The shared settings repository still throws, so this is its boundary.
-    final ExchangeUserRepository userRepository;
-    try {
-      final settings = await _settingsRepository.fetch();
-      userRepository = settings.environment.isTestnet
-          ? _testnetExchangeUserRepository
-          : _mainnetExchangeUserRepository;
-    } on Error {
-      rethrow;
-    } catch (e, st) {
-      // Type only, like every other boundary in this migration.
-      log.severe(
-        message: 'Failed to read settings before updating AutoBuy',
-        error: e.runtimeType,
-        trace: st,
-      );
-      return Err(
-        AutoBuyUnexpectedFailure('settings fetch failed: ${e.runtimeType}'),
-      );
     }
 
     final saved = await userRepository.saveUserPreference(
