@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/wallet/domain/wallet.dart' as app;
 // Behavioral proof for two audit findings on SendCubit:
 //
 // 1. `_invalidateSignedTransaction()` (added by `fix(send)`) only clears
@@ -476,7 +477,11 @@ void main() {
     test('a cubit closed mid-broadcast still records the send', () async {
       final broadcast = Completer<String>();
       when(
-        () => broadcastBitcoinTx.execute(any(), isPsbt: any(named: 'isPsbt')),
+        () => broadcastBitcoinTx.execute(
+          any(),
+          isPsbt: any(named: 'isPsbt'),
+          network: app.Network.bitcoinMainnet,
+        ),
       ).thenAnswer((_) => broadcast.future);
       when(() => labelsFacade.store(any())).thenAnswer(
         (invocation) async =>

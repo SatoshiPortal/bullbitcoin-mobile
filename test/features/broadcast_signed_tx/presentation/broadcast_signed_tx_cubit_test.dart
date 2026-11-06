@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/wallet/domain/wallet.dart' as app;
 import 'package:bb_mobile/core/bbqr/bbqr.dart';
 import 'package:bb_mobile/features/send/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/domain/broadcast_signed_tx_failure.dart';
@@ -23,9 +24,14 @@ void main() {
     ).combine(other: bdk.Psbt(psbtBase64: secondSignedTrimmedPsbt)).serialize();
     final broadcast = _MockBroadcastBitcoinTransactionUsecase();
     when(
-      () => broadcast.execute(any(), isPsbt: any(named: 'isPsbt')),
+      () => broadcast.execute(
+        any(),
+        isPsbt: any(named: 'isPsbt'),
+        network: app.Network.bitcoinMainnet,
+      ),
     ).thenAnswer((_) async => 'txid');
     final cubit = BroadcastSignedTxCubit(
+      network: app.Network.bitcoinMainnet,
       broadcastBitcoinTransactionUsecase: broadcast,
       unsignedPsbt: unsignedPsbt,
     );
@@ -42,13 +48,18 @@ void main() {
     await cubit.broadcastTransaction();
 
     verify(
-      () => broadcast.execute(finalizedTransaction, isPsbt: false),
+      () => broadcast.execute(
+        finalizedTransaction,
+        isPsbt: false,
+        network: app.Network.bitcoinMainnet,
+      ),
     ).called(1);
     expect(cubit.state.isBroadcasted, isTrue);
   });
 
   test('rejects a combined PSBT that cannot be finalized', () async {
     final cubit = BroadcastSignedTxCubit(
+      network: app.Network.bitcoinMainnet,
       broadcastBitcoinTransactionUsecase:
           _MockBroadcastBitcoinTransactionUsecase(),
       unsignedPsbt: unsignedPsbt,
