@@ -105,6 +105,17 @@ class Sync implements WriterSyncOperation {
   }
 }
 
+class FailedSync implements WriterSyncOperation, WriterSyncMutation {
+  @override
+  final bool mayHaveMutated;
+  FailedSync(this.mayHaveMutated);
+  @override
+  Future<Result<void, TransactionSyncFailure>> execute(
+    PublicWalletDescriptor descriptor, {
+    required int? issuedReceiveIndex,
+  }) async => const Err(TransactionSyncConnectionFailure());
+}
+
 void main() {
   late Directory dir;
   late RevisionStore store;
@@ -204,6 +215,27 @@ void main() {
       await empty.close();
     }
   });
+
+  for (final mutated in [false, true]) {
+    test('failed sync clears intent with mutation=$mutated', () async {
+      final before = store.record(key)?.state.stamp.revision;
+      expect(
+        await writer.sync(
+          key,
+          expectedGeneration: 1,
+          operation: FailedSync(mutated),
+        ),
+        isA<Err>(),
+      );
+      final after = store.record(key);
+      expect(after?.intent, isNull);
+      expect(after?.state.lifecycle, WalletLifecycle.active);
+      expect(after?.state.stamp.revision, mutated ? (before ?? 0) + 1 : before);
+      final lease = await writer.acquire(key);
+      expect(lease, isA<Ok>());
+      if (lease case Ok(:final value)) await value.release();
+    });
+  }
 
   test('finalization failure retains intent and revision atomically', () async {
     final database = sqlite3.open('${dir.path}/metadata.sqlite');
