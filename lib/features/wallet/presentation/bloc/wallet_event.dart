@@ -70,3 +70,7 @@ class DismissBackupWarning extends WalletEvent {
 class VerifyBackupStatus extends WalletEvent {
   const VerifyBackupStatus();
 }
+
+class WalletRevisionChanged extends WalletEvent {
+  const WalletRevisionChanged();
+}

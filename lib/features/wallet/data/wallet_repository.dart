@@ -475,6 +475,7 @@ class WalletRepository {
       await native.delete(metadata);
 
       await _walletMetadataDatasource.delete(walletId);
+      await native.catalogDeleted(metadata);
       return const Ok(null);
     } catch (e, st) {
       log.severe(message: 'deleteWallet failed', error: e, trace: st);
