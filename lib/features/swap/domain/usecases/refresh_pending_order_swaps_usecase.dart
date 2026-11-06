@@ -6,8 +6,6 @@ import 'package:bb_mobile/features/swap/domain/entities/order_swap_record.dart';
 import 'package:bb_mobile/features/swap/domain/repositories/order_swap_repository.dart';
 import 'package:bb_mobile/features/swap/domain/swap_failure.dart';
 
-export '../entities/order_swap_refresh_batch.dart';
-
 class RefreshPendingOrderSwapsUsecase {
   final OrderSwapRepository _repository;
   final Future<void> Function(Duration) _delay;

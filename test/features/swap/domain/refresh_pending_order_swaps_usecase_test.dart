@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/swap/domain/entities/order_swap_refresh_batch.dart';
 import 'dart:async';
 
 import 'package:bb_mobile/core/utils/result.dart';

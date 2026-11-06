@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/utils/report.dart';
+import 'package:bull_reporting/bull_reporting.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

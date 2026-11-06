@@ -23,7 +23,11 @@ void main() {
     );
 
     test('the handler reaches no secret-mutating use case', () {
-      final source = File('lib/background_bootstrap.dart').readAsStringSync();
+      final source = [
+        'lib/background_bootstrap.dart',
+        'lib/features/wallet/background_setup.dart',
+        'lib/features/electrum_settings/background_setup.dart',
+      ].map((path) => File(path).readAsStringSync()).join('\n');
 
       expect(source, isNot(contains('package:secrets')));
       for (final mutating in [
