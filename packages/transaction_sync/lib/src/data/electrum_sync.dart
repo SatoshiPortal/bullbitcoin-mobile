@@ -412,7 +412,7 @@ bdk.ElectrumClient _connect(
   bool direct = false,
 }) {
   bdk.ElectrumClient build() => bdk.ElectrumClient(
-    url: connection.url,
+    url: electrumClientUrl(connection.url),
     socks5: !direct && connection.socks5?.isNotEmpty == true
         ? connection.socks5
         : null,
@@ -429,3 +429,8 @@ bdk.ElectrumClient _connect(
     rethrow;
   }
 }
+
+/// BDK requires an explicit transport; Liquid catalog URLs use LWK's host:port.
+@visibleForTesting
+String electrumClientUrl(String url) =>
+    url.contains('://') ? url : 'ssl://$url';
