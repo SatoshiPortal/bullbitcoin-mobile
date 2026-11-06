@@ -11,6 +11,7 @@ graph TB
     %% Core infrastructure
     CORE[Core<br/>---<br/>Database, Secure Storage,<br/>API Clients, Tor Adapters, UI Kit,<br/>DI & Router setup,<br/>PIN encrypted storage,<br/>Domain Primitives/Value Objects]
     PRIMITIVES[Primitives Package]
+    SCREEN_AWAKE[Screen Awake Package]
     BULL_LOGGER[Bull Logger Package<br/>Logger, diagnostics, log files]
     BULL_PAYJOIN[Bull Payjoin Package<br/>Public contract]
 
@@ -75,6 +76,8 @@ graph TB
     SETTINGS --> LOGS
     CORE --> BULL_PAYJOIN
     BULL_PAYJOIN --> PRIMITIVES
+    HW_WALLETS --> SCREEN_AWAKE
+    SCREEN_AWAKE --> BULL_LOGGER
 
     %% Feature-to-feature dependencies (extracted from draw.io diagram)
     ADDRESS_MGMT --> LABELS
@@ -193,7 +196,7 @@ graph TB
     classDef featureStyle fill:#1a202c,stroke:#2d3748,stroke-width:2px,color:#e2e8f0
 
     class CORE coreStyle
-    class PRIMITIVES,BULL_PAYJOIN,TOR packageStyle
+    class PRIMITIVES,BULL_PAYJOIN,TOR,SCREEN_AWAKE packageStyle
     class SETTINGS,PIN_CODE,LABELS,SECRETS,HW_WALLETS,BTC_PRICE,NETWORK,BIP85,FEES,WALLETS,EXCHANGE,EXCHANGE_SETTINGS,EXCHANGE_SUPPORT_CHAT,APP_STARTUP,UTXO_MGMT,ADDRESS_MGMT,RECIPIENTS,FUNDING,BACKUPS,SWAPS,WITHDRAWAL,STATUS,SEND,RECEIVE,TRANSFER,TX_HISTORY,REPLACE_BY_FEE,BG_TASKS,AUTOSWAP,AUTOBUY,DCA,DEFAULT_WALLETS,LIMIT_ORDERS,SELL,PAY,BUY,COINS,ANNOUNCEMENTS,CONSOLIDATION,ALL_SEED_VIEW,APP_UNLOCK,SP featureStyle
 ```
 

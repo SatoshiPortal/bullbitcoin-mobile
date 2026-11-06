@@ -22,6 +22,7 @@ import 'package:bb_mobile/features/ledger/presentation/cubit/ledger_operation_cu
 import 'package:bb_mobile/features/ledger/presentation/cubit/ledger_operation_state.dart';
 import 'package:bb_mobile/features/ledger/presentation/ledger_failure_l10n.dart';
 import 'package:bb_mobile/locator.dart';
+import 'package:screen_awake/screen_awake.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
@@ -121,18 +122,21 @@ class _LedgerActionViewState extends State<_LedgerActionView> {
           }
         },
         builder: (context, state) {
-          return Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: SingleChildScrollView(
-              physics: const ClampingScrollPhysics(),
-              child: Center(
-                child: Column(
-                  children: [
-                    const Gap(32),
-                    _buildMainContent(context, state),
-                    const Gap(32),
-                    _buildActionButtons(context, state),
-                  ],
+          return ScreenAwakeScope(
+            enabled: !state.isInitial && !state.isSuccess && !state.isError,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: SingleChildScrollView(
+                physics: const ClampingScrollPhysics(),
+                child: Center(
+                  child: Column(
+                    children: [
+                      const Gap(32),
+                      _buildMainContent(context, state),
+                      const Gap(32),
+                      _buildActionButtons(context, state),
+                    ],
+                  ),
                 ),
               ),
             ),
