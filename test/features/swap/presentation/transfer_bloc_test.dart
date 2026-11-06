@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/wallet/domain/wallet.dart' as app;
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'dart:async';
 import 'dart:typed_data';
@@ -371,7 +372,11 @@ void main() {
       );
       expect(bloc.state.signedPsbt, isEmpty);
       verifyNever(
-        () => broadcastBitcoin.execute(any(), isPsbt: any(named: 'isPsbt')),
+        () => broadcastBitcoin.execute(
+          any(),
+          isPsbt: any(named: 'isPsbt'),
+          network: app.Network.bitcoinTestnet,
+        ),
       );
     },
   );
@@ -393,7 +398,11 @@ void main() {
         () => refreshOrder.execute('local-1'),
       ).thenAnswer((_) async => Ok(broadcasting));
       when(
-        () => broadcastBitcoin.execute('signed-psbt', isPsbt: true),
+        () => broadcastBitcoin.execute(
+          'signed-psbt',
+          isPsbt: true,
+          network: app.Network.bitcoinTestnet,
+        ),
       ).thenAnswer((_) async => 'txid-1');
       when(
         () =>
@@ -417,7 +426,11 @@ void main() {
       await subscription.cancel();
       verify(() => markUnknown.execute('local-1')).called(1);
       verify(
-        () => broadcastBitcoin.execute('signed-psbt', isPsbt: true),
+        () => broadcastBitcoin.execute(
+          'signed-psbt',
+          isPsbt: true,
+          network: app.Network.bitcoinTestnet,
+        ),
       ).called(1);
       verify(
         () =>
@@ -640,7 +653,11 @@ void main() {
       expect(bloc.state.signedPsbt, isEmpty);
       expect(bloc.state.buildTransactionException, isNotNull);
       verifyNever(
-        () => broadcastBitcoin.execute('old-signed-psbt', isPsbt: true),
+        () => broadcastBitcoin.execute(
+          'old-signed-psbt',
+          isPsbt: true,
+          network: app.Network.bitcoinTestnet,
+        ),
       );
     },
   );
@@ -719,7 +736,11 @@ void main() {
       expect(bloc.state.feePreviewCache.fastest.isCacheReady, isFalse);
       expect(bloc.state.buildTransactionException, isNotNull);
       verifyNever(
-        () => broadcastBitcoin.execute('old-signed-psbt', isPsbt: true),
+        () => broadcastBitcoin.execute(
+          'old-signed-psbt',
+          isPsbt: true,
+          network: app.Network.bitcoinTestnet,
+        ),
       );
     },
   );
@@ -761,7 +782,11 @@ void main() {
       );
       expect(bloc.state.feePreviewCache.fastest.isCacheReady, isFalse);
       verifyNever(
-        () => broadcastBitcoin.execute(any(), isPsbt: any(named: 'isPsbt')),
+        () => broadcastBitcoin.execute(
+          any(),
+          isPsbt: any(named: 'isPsbt'),
+          network: app.Network.bitcoinTestnet,
+        ),
       );
     },
   );
@@ -1173,7 +1198,11 @@ void main() {
       () => markUnknown.execute('local-1'),
     ).thenAnswer((_) async => Ok(broadcasting));
     when(
-      () => broadcastBitcoin.execute('signed-psbt', isPsbt: true),
+      () => broadcastBitcoin.execute(
+        'signed-psbt',
+        isPsbt: true,
+        network: app.Network.bitcoinTestnet,
+      ),
     ).thenAnswer((_) async => 'txid-1');
     when(
       () => markBroadcast.execute(localId: 'local-1', transactionId: 'txid-1'),
@@ -1412,7 +1441,11 @@ void main() {
       verify(() => refreshOrder.execute('local-1')).called(1);
       verifyNever(() => markUnknown.execute(any()));
       verifyNever(
-        () => broadcastBitcoin.execute(any(), isPsbt: any(named: 'isPsbt')),
+        () => broadcastBitcoin.execute(
+          any(),
+          isPsbt: any(named: 'isPsbt'),
+          network: app.Network.bitcoinTestnet,
+        ),
       );
       expect(bloc.state.orderSwap, refreshed);
     },
@@ -1453,7 +1486,11 @@ void main() {
       bloc.add(const TransferEvent.confirmed());
       await Future<void>.delayed(Duration.zero);
       verifyNever(
-        () => broadcastBitcoin.execute(any(), isPsbt: any(named: 'isPsbt')),
+        () => broadcastBitcoin.execute(
+          any(),
+          isPsbt: any(named: 'isPsbt'),
+          network: app.Network.bitcoinTestnet,
+        ),
       );
     },
   );
@@ -1465,7 +1502,11 @@ void main() {
         () => markUnknown.execute('local-1'),
       ).thenAnswer((_) async => Ok(prepared));
       when(
-        () => broadcastBitcoin.execute('signed-psbt', isPsbt: true),
+        () => broadcastBitcoin.execute(
+          'signed-psbt',
+          isPsbt: true,
+          network: app.Network.bitcoinTestnet,
+        ),
       ).thenThrow(
         DioException(
           requestOptions: RequestOptions(path: '/broadcast'),
