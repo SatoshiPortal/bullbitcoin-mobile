@@ -4,12 +4,14 @@ import 'package:bull_logger/bull_logger.dart';
 import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:bull_tor/tor.dart';
+import 'package:primitives/primitives.dart' show NetworkEnv;
 
 part 'settings_entity.freezed.dart';
 
 enum Environment {
   mainnet,
-  testnet;
+  testnet,
+  regtest;
 
   factory Environment.fromName(String name) {
     return Environment.values.firstWhere(
@@ -17,8 +19,28 @@ enum Environment {
     );
   }
 
+  NetworkEnv get networkEnv => switch (this) {
+    Environment.mainnet => NetworkEnv.mainnet,
+    Environment.testnet => NetworkEnv.testnet,
+    Environment.regtest => NetworkEnv.regtest,
+  };
+
   bool get isMainnet => this == Environment.mainnet;
-  bool get isTestnet => this == Environment.testnet;
+
+  // Transitional historical API, removed after consumer conversion.
+  bool get isTestnet => requireHistoricalTestnet();
+
+  /// Legacy services have only mainnet and testnet backends. Refuse every
+  /// other environment before a caller can select one of those backends.
+  bool requireHistoricalTestnet() => switch (this) {
+    Environment.mainnet => false,
+    Environment.testnet => true,
+    Environment.regtest => throw const UnsupportedEnvironmentException(),
+  };
+}
+
+final class UnsupportedEnvironmentException implements Exception {
+  const UnsupportedEnvironmentException();
 }
 
 enum BitcoinUnit {
@@ -151,4 +173,12 @@ abstract class SettingsEntity with _$SettingsEntity {
     String? exchangeTestnetBasicAuthPassword,
   }) = _SettingsEntity;
   const SettingsEntity._();
+
+  /// Typed projection while legacy consumers still require a binary setting.
+  /// New networks stay unavailable until catalog and writer support is ready.
+  NetworkEnv get activeNetwork => switch (environment) {
+    Environment.mainnet => NetworkEnv.mainnet,
+    Environment.testnet => NetworkEnv.testnet,
+    Environment.regtest => NetworkEnv.regtest,
+  };
 }

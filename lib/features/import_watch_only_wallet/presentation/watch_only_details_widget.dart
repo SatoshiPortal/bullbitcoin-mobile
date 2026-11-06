@@ -45,7 +45,10 @@ class _DescriptorDetailsWidget extends StatelessWidget {
         context.loc.importWatchOnlyNetworkBitcoinMainnet,
       Network.bitcoinTestnet =>
         context.loc.importWatchOnlyNetworkBitcoinTestnet,
-      Network.liquidMainnet || Network.liquidTestnet => throw StateError(
+      Network.bitcoinRegtest => context.loc.electrumRegtest,
+      Network.liquidMainnet ||
+      Network.liquidTestnet ||
+      Network.liquidRegtest => throw StateError(
         'Liquid watch-only wallets must be rejected before presentation',
       ),
     };

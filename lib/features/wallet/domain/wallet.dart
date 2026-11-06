@@ -1,69 +1,79 @@
 import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:flutter/material.dart';
+import 'package:primitives/primitives.dart' show NetworkEnv;
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'wallet.freezed.dart';
 
 enum Network {
-  bitcoinMainnet(
-    coinType: 0,
-    isBitcoin: true,
-    isLiquid: false,
-    isMainnet: true,
-    isTestnet: false,
-  ),
-  bitcoinTestnet(
-    coinType: 1,
-    isBitcoin: true,
-    isLiquid: false,
-    isMainnet: false,
-    isTestnet: true,
-  ),
+  bitcoinMainnet(coinType: 0, isBitcoin: true, environment: NetworkEnv.mainnet),
+  bitcoinTestnet(coinType: 1, isBitcoin: true, environment: NetworkEnv.testnet),
+  bitcoinRegtest(coinType: 1, isBitcoin: true, environment: NetworkEnv.regtest),
   liquidMainnet(
     coinType: 1776,
     isBitcoin: false,
-    isLiquid: true,
-    isMainnet: true,
-    isTestnet: false,
+    environment: NetworkEnv.mainnet,
   ),
-  liquidTestnet(
-    coinType: 1,
-    isBitcoin: false,
-    isLiquid: true,
-    isMainnet: false,
-    isTestnet: true,
-  );
+  liquidTestnet(coinType: 1, isBitcoin: false, environment: NetworkEnv.testnet),
+  liquidRegtest(coinType: 1, isBitcoin: false, environment: NetworkEnv.regtest);
 
   final int coinType;
   final bool isBitcoin;
-  final bool isLiquid;
-  final bool isMainnet;
-  final bool isTestnet;
-
+  final NetworkEnv environment;
   const Network({
     required this.coinType,
     required this.isBitcoin,
-    required this.isLiquid,
-    required this.isMainnet,
-    required this.isTestnet,
+    required this.environment,
   });
+  bool get isLiquid => !isBitcoin;
+  bool get isMainnet => environment == NetworkEnv.mainnet;
 
-  factory Network.fromName(String name) {
-    return Network.values.firstWhere((network) => network.name == name);
-  }
+  // Transitional historical API, removed after consumer conversion.
+  bool get isTestnet => requireHistoricalTestnet();
+
+  factory Network.fromName(String name) =>
+      Network.values.firstWhere((network) => network.name == name);
 
   factory Network.fromEnvironment({
-    required bool isTestnet,
+    NetworkEnv? environment,
+    bool? isTestnet,
     required bool isLiquid,
   }) {
-    if (isLiquid) {
-      return isTestnet ? liquidTestnet : liquidMainnet;
-    } else {
-      return isTestnet ? bitcoinTestnet : bitcoinMainnet;
+    if ((environment == null) == (isTestnet == null)) {
+      throw ArgumentError('Supply exactly one environment representation');
     }
+    final selected =
+        environment ??
+        (isTestnet == true ? NetworkEnv.testnet : NetworkEnv.mainnet);
+    return switch ((selected, isLiquid)) {
+      (NetworkEnv.mainnet, false) => bitcoinMainnet,
+      (NetworkEnv.testnet, false) => bitcoinTestnet,
+      (NetworkEnv.regtest, false) => bitcoinRegtest,
+      (NetworkEnv.mainnet, true) => liquidMainnet,
+      (NetworkEnv.testnet, true) => liquidTestnet,
+      (NetworkEnv.regtest, true) => liquidRegtest,
+      (NetworkEnv.signet, _) => throw const UnsupportedNetworkException(),
+    };
   }
+
+  /// Historical protocol bridge. New networks must be supported explicitly by
+  /// the protocol owner before it can use a binary SDK or service API.
+  bool requireHistoricalTestnet() => switch (this) {
+    bitcoinMainnet || liquidMainnet => false,
+    bitcoinTestnet || liquidTestnet => true,
+    bitcoinRegtest ||
+    liquidRegtest => throw const UnsupportedNetworkException(),
+  };
+}
+
+final class UnsupportedNetworkException implements Exception {
+  const UnsupportedNetworkException();
+}
+
+final class InvalidWalletAddressException implements Exception {
+  const InvalidWalletAddressException();
 }
 
 enum ScriptType {
@@ -132,7 +142,8 @@ abstract class Wallet with _$Wallet {
   /// Native state could not be read; null is unknown, never a zero balance.
   bool get unavailable => balanceSat == null;
 
-  String get id => origin;
+  String get id =>
+      network == Network.bitcoinRegtest ? '$origin:regtest' : origin;
   String get addressType {
     if (isLiquid) {
       return 'Confidential Segwit';
@@ -147,8 +158,12 @@ abstract class Wallet with _$Wallet {
 
   String get walletTypeString {
     String name = switch (network) {
-      Network.bitcoinMainnet || Network.bitcoinTestnet => 'Bitcoin network',
-      Network.liquidMainnet || Network.liquidTestnet => 'Liquid and Lightning',
+      Network.bitcoinMainnet ||
+      Network.bitcoinTestnet ||
+      Network.bitcoinRegtest => 'Bitcoin network',
+      Network.liquidMainnet ||
+      Network.liquidTestnet ||
+      Network.liquidRegtest => 'Liquid and Lightning',
     };
     if (isWatchOnly) name = 'Watch-Only';
     if (isWatchSigner) name = 'Watch-Signer';
@@ -159,8 +174,10 @@ abstract class Wallet with _$Wallet {
     return switch (network) {
       Network.bitcoinMainnet => 'Bitcoin Network',
       Network.bitcoinTestnet => 'Bitcoin Testnet',
+      Network.bitcoinRegtest => 'Bitcoin Regtest',
       Network.liquidMainnet => 'Liquid Network',
       Network.liquidTestnet => 'Liquid Testnet',
+      Network.liquidRegtest => 'Liquid Regtest',
     };
   }
 
@@ -169,25 +186,19 @@ abstract class Wallet with _$Wallet {
 
     return switch (network) {
       Network.bitcoinMainnet ||
-      Network.bitcoinTestnet => context.loc.globalDefaultBitcoinWalletLabel,
+      Network.bitcoinTestnet ||
+      Network.bitcoinRegtest => context.loc.globalDefaultBitcoinWalletLabel,
       Network.liquidMainnet ||
-      Network.liquidTestnet => context.loc.globalDefaultLiquidWalletLabel,
+      Network.liquidTestnet ||
+      Network.liquidRegtest => context.loc.globalDefaultLiquidWalletLabel,
     };
   }
 
-  bool get isTestnet {
-    return network == Network.bitcoinTestnet ||
-        network == Network.liquidTestnet;
-  }
+  // Transitional historical API, removed after consumer conversion.
+  bool get isTestnet => network.requireHistoricalTestnet();
 
-  bool get isLiquid {
-    return network == Network.liquidMainnet || network == Network.liquidTestnet;
-  }
-
-  bool get isBitcoin {
-    return network == Network.bitcoinMainnet ||
-        network == Network.bitcoinTestnet;
-  }
+  bool get isLiquid => network.isLiquid;
+  bool get isBitcoin => network.isBitcoin;
 
   String get derivationPath {
     // Find the content between [ and ]

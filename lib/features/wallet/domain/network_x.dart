@@ -18,8 +18,10 @@ extension NetworkX on Network {
   primitives.Network get shared => switch (this) {
     Network.bitcoinMainnet => primitives.BitcoinNetwork.mainnet,
     Network.bitcoinTestnet => primitives.BitcoinNetwork.testnet,
+    Network.bitcoinRegtest => primitives.BitcoinNetwork.regtest,
     Network.liquidMainnet => primitives.LiquidNetwork.mainnet,
     Network.liquidTestnet => primitives.LiquidNetwork.testnet,
+    Network.liquidRegtest => primitives.LiquidNetwork.regtest,
   };
 
   /// The Bitcoin network this value names.
@@ -28,6 +30,7 @@ extension NetworkX on Network {
   primitives.BitcoinNetwork get bitcoin => switch (this) {
     Network.bitcoinMainnet => primitives.BitcoinNetwork.mainnet,
     Network.bitcoinTestnet => primitives.BitcoinNetwork.testnet,
+    Network.bitcoinRegtest => primitives.BitcoinNetwork.regtest,
     _ => throw ArgumentError.value(this, 'network', 'not a Bitcoin network'),
   };
 
@@ -37,6 +40,7 @@ extension NetworkX on Network {
   primitives.LiquidNetwork get liquid => switch (this) {
     Network.liquidMainnet => primitives.LiquidNetwork.mainnet,
     Network.liquidTestnet => primitives.LiquidNetwork.testnet,
+    Network.liquidRegtest => primitives.LiquidNetwork.regtest,
     _ => throw ArgumentError.value(this, 'network', 'not a Liquid network'),
   };
 }

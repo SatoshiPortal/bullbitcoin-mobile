@@ -1655,6 +1655,8 @@ class BoltzDatasource {
       Network.bitcoinTestnet => Chain.bitcoinTestnet,
       Network.liquidMainnet => Chain.liquid,
       Network.liquidTestnet => Chain.liquidTestnet,
+      Network.bitcoinRegtest ||
+      Network.liquidRegtest => throw const UnsupportedNetworkException(),
     };
 
     final chainSwapDirection = swapDirection != null
