@@ -112,6 +112,7 @@ void main() {
       revisions.state = WalletRevisionState(
         stamp: WalletRevision(key: key, generation: 0, revision: 1),
         lifecycle: WalletLifecycle.active,
+        initializedSchema: 1,
       );
       final corruptBefore = await fingerprint(documents);
       expect(await reader.liquid(descriptor), isA<Err>());

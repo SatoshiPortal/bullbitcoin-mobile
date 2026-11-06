@@ -166,6 +166,9 @@ void main() {
       expect(store.record(key)?.state.stamp, before);
       expect(store.record(key)?.issued, isNull);
       database.execute('DROP TRIGGER fail_commit');
+      expect(await writer.acquire(key), isA<Err>());
+      expect(store.record(key)?.intent, WriteIntent.receive);
+      expect(await writer.create(key, expectedGeneration: 1), isA<Ok>());
       final lease = await writer.acquire(key) as Ok;
       await (lease.value as LiquidReadLease).release();
       expect(store.record(key)?.intent, isNull);
@@ -183,7 +186,7 @@ void main() {
   });
 
   test(
-    'receive intent reconciles on admission after reopening metadata',
+    'writer reconciles before reader admission after reopening metadata',
     () async {
       store.begin(key, WriteIntent.receive, candidate: 7);
       await store.close();
@@ -195,6 +198,9 @@ void main() {
         reservedAddresses: reserved,
         sessions: sessions,
       );
+      expect(await writer.acquire(key), isA<Err>());
+      expect(sessions.revealed, isEmpty);
+      expect(await writer.create(key, expectedGeneration: 1), isA<Ok>());
       final admission = await writer.acquire(key) as Ok;
       expect(store.record(key)?.issued, 7);
       expect(store.record(key)?.intent, isNull);
@@ -265,6 +271,8 @@ void main() {
       store.begin(key, WriteIntent.sync);
       final before = store.record(key)?.state.stamp.revision ?? 0;
       expect(await writer.acquire(key), isA<Err>());
+      expect(store.record(key)?.intent, WriteIntent.sync);
+      expect(await writer.receive(key, expectedGeneration: 1), isA<Err>());
       expect(store.record(key)?.intent, isNull);
       expect(store.record(key)?.needsSync, isTrue);
       expect(store.record(key)?.state.stamp.revision, before + 1);
