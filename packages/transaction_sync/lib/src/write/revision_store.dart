@@ -12,7 +12,7 @@ import '../../transaction_sync.dart';
 const writerSchemaVersion = 1;
 
 /// Intents contain no descriptors, addresses, endpoints or key material.
-enum WriteIntent { create, load, receive, sync, delete, repair }
+enum WriteIntent { create, load, receive, sync, delete, repair, rebuild }
 
 final class RevisionRecord {
   final WalletRevisionState state;
@@ -201,6 +201,16 @@ final class RevisionStore implements WalletRevisionReader {
     );
   }
 
+  /// Reserve reconstruction before creating a replacement store. Recovery must
+  /// replay issued indices even when the new store already exists after a crash.
+  @internal
+  void requireRebuild(WalletKey key) {
+    _db.execute(
+      "UPDATE revisions SET intent='rebuild', needs_sync=1 WHERE wallet=? AND network=?",
+      [key.id, _network(key)],
+    );
+  }
+
   /// Clears a proven non-mutating attempt without invalidating snapshots.
   @internal
   void cancelUnchanged(WalletKey key, RevisionRecord? previous) {
@@ -261,6 +271,7 @@ final class RevisionStore implements WalletRevisionReader {
                   WriteIntent.create,
                   WriteIntent.load,
                   WriteIntent.repair,
+                  WriteIntent.rebuild,
                 }.contains(old.intent)
               ? writerSchemaVersion
               : old.state.initializedSchema,
