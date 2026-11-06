@@ -399,6 +399,7 @@ class WalletRepository {
   Future<void> updateEncryptedBackupTime({
     required DateTime? time,
     required String walletId,
+    bool updateTestedStatus = true,
   }) async {
     final metadata = await _walletMetadataDatasource.fetch(walletId);
 
@@ -409,7 +410,9 @@ class WalletRepository {
     await _walletMetadataDatasource.store(
       metadata.copyWith(
         latestEncryptedBackup: time?.millisecondsSinceEpoch,
-        isEncryptedVaultTested: time != null,
+        isEncryptedVaultTested: updateTestedStatus
+            ? time != null
+            : metadata.isEncryptedVaultTested,
       ),
     );
   }
