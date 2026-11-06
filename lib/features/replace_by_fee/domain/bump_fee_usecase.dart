@@ -69,9 +69,8 @@ class BumpFeeUsecase {
     required String walletId,
     required String txid,
     required RelativeFee newFeeRate,
-    Network? network,
+    required Network network,
   }) async {
-    network ??= await _broadcastBitcoinTransactionUsecase.captureNetwork();
     try {
       final psbt = await _bitcoinWalletRepository.bumpFee(
         walletId: walletId,

@@ -13,25 +13,14 @@ class SendWithPayjoinUsecase {
   @useResult
   Future<core.Result<PayjoinSenderSession, SendFailure>> execute({
     required String walletId,
-    BitcoinNetwork? network,
-    bool? isTestnet,
+    required BitcoinNetwork network,
     required String bip21,
     required String unsignedOriginalPsbt,
     required int amountSat,
     required double networkFeesSatPerVb,
     int? expireAfterSec,
   }) async {
-    final capturedNetwork =
-        network ??
-        switch (isTestnet) {
-          true => BitcoinNetwork.testnet,
-          false => BitcoinNetwork.mainnet,
-          null => throw ArgumentError("A concrete network is required"),
-        };
-    if (!NetworkCapabilities.supports(
-      capturedNetwork,
-      NetworkCapability.payjoin,
-    )) {
+    if (!NetworkCapabilities.supports(network, NetworkCapability.payjoin)) {
       return const core.Err(
         SendTransactionConfirmationFailure(logMessage: 'unsupported network'),
       );
@@ -39,7 +28,7 @@ class SendWithPayjoinUsecase {
     final result = await _sender.start(
       StartPayjoinSender(
         walletId: walletId,
-        network: capturedNetwork,
+        network: network,
         bip21Uri: bip21,
         unsignedOriginalPsbt: unsignedOriginalPsbt,
         amount: Sats.fromInt(amountSat),

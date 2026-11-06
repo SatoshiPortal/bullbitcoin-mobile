@@ -22,9 +22,8 @@ class BroadcastBitcoinTransactionUsecase {
   Future<String> execute(
     String transaction, {
     required bool isPsbt,
-    Network? network,
+    required Network network,
   }) async {
-    network ??= await captureNetwork();
     try {
       if (!network.isMainnet) {
         final settings = await _settingsRepository.fetch();

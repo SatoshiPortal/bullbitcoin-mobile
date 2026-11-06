@@ -19,7 +19,7 @@ class BroadcastPayPayinUsecase {
   Future<Result<String, PayFailure>> bitcoin(
     String transaction, {
     required bool isPsbt,
-    Network? network,
+    required Network network,
   }) async {
     try {
       return Ok(
