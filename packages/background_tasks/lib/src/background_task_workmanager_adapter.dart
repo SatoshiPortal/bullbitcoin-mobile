@@ -1,3 +1,4 @@
+import 'package:bull_logger/bull_logger.dart';
 import 'package:workmanager/workmanager.dart';
 
 import 'background_task_runner.dart';
@@ -63,7 +64,9 @@ Future<bool> mapBackgroundTaskResult(
   try {
     final result = await (await bootstrap(task)).run(task);
     return !result.shouldRetry;
-  } catch (_) {
+  } catch (error) {
+    log.warning('Background startup failed type=${error.runtimeType}');
+    await log.flush();
     return false;
   }
 }

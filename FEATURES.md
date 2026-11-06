@@ -12,6 +12,17 @@ graph TB
     CORE[Core<br/>---<br/>Database, Secure Storage,<br/>API Clients, Tor Adapters, UI Kit,<br/>DI & Router setup,<br/>PIN encrypted storage,<br/>Domain Primitives/Value Objects]
     PRIMITIVES[Primitives Package]
     TRANSACTION_SYNC[Transaction Sync Package<br/>Electrum sync, contracts and owner ports]
+    NOTIFICATIONS[Notifications Package]
+    BG_TASKS --> TRANSACTION_SYNC
+    BG_TASKS --> NOTIFICATIONS
+    WALLETS --> NOTIFICATIONS
+    WALLETS --> BG_TASKS
+    NOTIFICATIONS --> TRANSACTION_SYNC
+    NOTIFICATIONS --> PRIMITIVES
+    BG_TASKS --> PRIMITIVES
+    BG_TASKS --> BULL_LOGGER
+    SETTINGS --> BG_TASKS
+    SETTINGS --> NOTIFICATIONS
     TRANSACTION_SYNC --> PRIMITIVES
     TRANSACTION_SYNC --> BULL_LOGGER
     ELECTRUM_SETTINGS --> TRANSACTION_SYNC
@@ -54,7 +65,7 @@ graph TB
     TRANSFER[Transfer]
     TX_HISTORY[Transaction History]
     REPLACE_BY_FEE[Replace By Fee]
-    BG_TASKS[Background Tasks]
+    BG_TASKS[Background Tasks Package]
     DCA[DCA]
     DEFAULT_WALLETS[Default Wallets]
     LIMIT_ORDERS[Limit Orders]

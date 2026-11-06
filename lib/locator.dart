@@ -1,3 +1,10 @@
+import 'package:background_tasks/background_tasks.dart';
+import 'package:notifications/notifications.dart';
+import 'package:bb_mobile/background_setup.dart';
+import 'package:bb_mobile/features/settings/data/background_preferences_repository_impl.dart';
+import 'package:bb_mobile/features/settings/domain/usecases/background_preferences_usecase.dart';
+import 'package:bb_mobile/features/settings/presentation/bloc/background_preferences_cubit.dart';
+import 'package:bb_mobile/features/wallet/data/payment_notifications.dart';
 import 'package:bb_mobile/core/core_locator.dart';
 import 'package:bb_mobile/core/status/status_locator.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
@@ -147,6 +154,21 @@ class AppLocator {
     WalletLocator.setup(locator);
     SpLocator.setup(locator);
     SettingsLocator.setup(locator);
+    locator.registerFactory<BackgroundPreferencesCubit>(
+      () => BackgroundPreferencesCubit(
+        BackgroundPreferencesUsecase(
+          BackgroundPreferencesRepositoryImpl(
+            const SharedPreferencesBackgroundSyncIntervalStore(),
+            NotificationPermissionsFacade(
+              gateway: FlutterNotificationPermissionGateway(
+                channelId: PaymentNotifications.channelId,
+              ),
+            ),
+            configureBackgroundTasks,
+          ),
+        ),
+      ),
+    );
     const LogsFeature().setup(locator);
     BitcoinPriceLocator.setup(locator);
     TransactionsLocator.registerAdapters(locator);
