@@ -43,40 +43,22 @@ class BdkFacade {
     final dbPath = await _getDbPath(walletModel.hexId);
     final dbFile = File(dbPath);
 
-    try {
-      final dbPersister = bdk.Persister.newSqlite(path: dbPath);
-
-      // Use load if database (wallet) exists, otherwise create new
-      final wallet = await dbFile.exists()
-          ? bdk.Wallet.load(
-              descriptor: external,
-              changeDescriptor: internal,
-              persister: dbPersister,
-              lookahead: _lookahead,
-            )
-          : bdk.Wallet(
-              descriptor: external,
-              changeDescriptor: internal,
-              network: network,
-              persister: dbPersister,
-              lookahead: _lookahead,
-            );
-
-      return wallet;
-    } catch (e) {
-      // If there's any error (corrupted db, etc.), delete and recreate
-      if (await dbFile.exists()) {
-        await dbFile.delete();
-      }
-      final dbPersister = bdk.Persister.newSqlite(path: dbPath);
-      return bdk.Wallet(
-        descriptor: external,
-        changeDescriptor: internal,
-        network: network,
-        persister: dbPersister,
-        lookahead: _lookahead,
-      );
-    }
+    final exists = await dbFile.exists();
+    final dbPersister = bdk.Persister.newSqlite(path: dbPath);
+    return exists
+        ? bdk.Wallet.load(
+            descriptor: external,
+            changeDescriptor: internal,
+            persister: dbPersister,
+            lookahead: _lookahead,
+          )
+        : bdk.Wallet(
+            descriptor: external,
+            changeDescriptor: internal,
+            network: network,
+            persister: dbPersister,
+            lookahead: _lookahead,
+          );
   }
 
   /// Persists wallet changes to the database
