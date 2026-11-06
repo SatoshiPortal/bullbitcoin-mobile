@@ -1,4 +1,5 @@
 import 'package:primitives/primitives.dart';
+import 'wallet_revision.dart';
 
 /// Recoverable outcomes. No foreign exception, descriptor or endpoint is kept.
 sealed class TransactionSyncFailure extends Failure {
@@ -32,10 +33,16 @@ final class TransactionSyncConnectionFailure extends TransactionSyncFailure {
 }
 
 final class TransactionSyncNeedsRepairFailure extends TransactionSyncFailure {
-  const TransactionSyncNeedsRepairFailure();
+  final WalletRevision? revision;
+  const TransactionSyncNeedsRepairFailure([this.revision]);
 }
 
 final class TransactionSyncRestartRequiredFailure
     extends TransactionSyncFailure {
   const TransactionSyncRestartRequiredFailure();
+}
+
+final class TransactionSyncInitialScanRequiredFailure
+    extends TransactionSyncFailure {
+  const TransactionSyncInitialScanRequiredFailure();
 }

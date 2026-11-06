@@ -245,9 +245,12 @@ final class NativeWalletWriter implements LiquidReadAdmission {
     WalletKey key, {
     required int expectedGeneration,
     required WriterSyncOperation operation,
+    bool reconcile = true,
+    Future<Result<void, TransactionSyncFailure>> Function()? preflight,
   }) => _run(key, expectedGeneration, WriteIntent.sync, () async {
     final record = _active(key, expectedGeneration);
     final descriptor = await _descriptor(key);
+    if (preflight != null) _value(await preflight());
     revisions.begin(key, WriteIntent.sync);
     late Result<void, TransactionSyncFailure> result;
     try {
@@ -272,7 +275,7 @@ final class NativeWalletWriter implements LiquidReadAdmission {
     }
     _value(result);
     return WriterCommitted(revisions.finish(key, needsSync: false));
-  });
+  }, reconcile: reconcile);
 
   @override
   @useResult
@@ -317,6 +320,7 @@ final class NativeWalletWriter implements LiquidReadAdmission {
     Future<T> Function() operation, {
     bool allowRepairIntent = false,
     bool deleting = false,
+    bool reconcile = true,
   }) async {
     if (key.network.env != NetworkEnv.mainnet &&
         key.network.env != NetworkEnv.testnet) {
@@ -334,11 +338,21 @@ final class NativeWalletWriter implements LiquidReadAdmission {
       'Wallet writer lock acquired intent=${intent.name} network=${key.network} generation=$expectedGeneration',
     );
     try {
-      _expectGeneration(revisions.record(key), expectedGeneration);
+      final admitted = revisions.record(key);
+      _expectGeneration(admitted, expectedGeneration);
+      if (!reconcile &&
+          (admitted == null ||
+              admitted.intent != null ||
+              admitted.state.lifecycle != WalletLifecycle.active ||
+              admitted.state.initializedSchema != writerSchemaVersion ||
+              admitted.needsSync)) {
+        throw const _WriterFailure(TransactionSyncBusyFailure());
+      }
       // Delete must remain possible for damaged stores: it supersedes an
       // unfinished write, but completes an existing tombstone without another
       // generation increment.
-      if (!deleting || revisions.record(key)?.intent == WriteIntent.delete) {
+      if (reconcile &&
+          (!deleting || revisions.record(key)?.intent == WriteIntent.delete)) {
         await _reconcile(key, allowRepairIntent: allowRepairIntent);
       }
       final value = await operation();
@@ -350,7 +364,12 @@ final class NativeWalletWriter implements LiquidReadAdmission {
       );
       return Ok(value);
     } on Object catch (error) {
-      final failure = _map(key, error);
+      final mapped = _map(key, error);
+      final failure = mapped is TransactionSyncNeedsRepairFailure
+          ? TransactionSyncNeedsRepairFailure(
+              revisions.record(key)?.state.stamp,
+            )
+          : mapped;
       _reportFailure(key, failure);
       return Err(failure);
     } finally {
