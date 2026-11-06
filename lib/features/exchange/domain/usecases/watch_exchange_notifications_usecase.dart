@@ -12,12 +12,12 @@ import 'package:meta/meta.dart';
 /// raw reason. The lifted failure exists so a caller *could* react, though the
 /// socket is best-effort and the cubit deliberately does not surface it.
 class WatchExchangeNotificationsUsecase {
-  final SettingsRepository? _settingsRepository;
+  final SettingsRepository _settingsRepository;
   final ExchangeNotificationRepository _exchangeNotificationRepository;
 
   const WatchExchangeNotificationsUsecase({
     required this._exchangeNotificationRepository,
-    this._settingsRepository,
+    required this._settingsRepository,
   });
 
   /// Emits whenever the server says the account may have changed.
@@ -41,12 +41,8 @@ class WatchExchangeNotificationsUsecase {
   Future<Result<void, ExchangeFailure>> reconnect() => _open(reconnect: true);
 
   Future<Result<void, ExchangeFailure>> _open({required bool reconnect}) async {
-    final settingsRepository = _settingsRepository;
-    if (settingsRepository == null) {
-      return const Err(ExchangeNotificationsUnavailableFailure());
-    }
     final allowed = await readExchangeEnvironment(
-      settingsRepository,
+      _settingsRepository,
       ExchangeNotificationsUnavailableFailure.new,
     );
     if (allowed case Err(:final failure)) {

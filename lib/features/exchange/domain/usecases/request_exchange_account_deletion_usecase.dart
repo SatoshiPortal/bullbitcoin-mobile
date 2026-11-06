@@ -13,22 +13,18 @@ import 'package:meta/meta.dart';
 class RequestExchangeAccountDeletionUsecase {
   static const _message = 'I want to delete my account';
 
-  final SettingsRepository? _settingsRepository;
+  final SettingsRepository _settingsRepository;
   final SendSupportChatMessageUsecase _sendSupportChatMessageUsecase;
 
   const RequestExchangeAccountDeletionUsecase({
     required this._sendSupportChatMessageUsecase,
-    this._settingsRepository,
+    required this._settingsRepository,
   });
 
   @useResult
   Future<Result<void, ExchangeFailure>> execute() async {
-    final settingsRepository = _settingsRepository;
-    if (settingsRepository == null) {
-      return const Err(ExchangeAccountDeletionRequestFailure());
-    }
     final allowed = await readExchangeEnvironment(
-      settingsRepository,
+      _settingsRepository,
       ExchangeAccountDeletionRequestFailure.new,
     );
     if (allowed case Err(:final failure)) return Err(failure);
