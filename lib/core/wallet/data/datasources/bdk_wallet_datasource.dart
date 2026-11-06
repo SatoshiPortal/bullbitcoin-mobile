@@ -121,7 +121,7 @@ class BdkWalletDatasource {
     required String psbt,
     required WalletModel wallet,
   }) async {
-    final bdkWallet = await BdkFacade.createWallet(wallet);
+    final bdkWallet = await _readWallet(wallet);
     final parsed = bdk.Psbt(psbtBase64: psbt);
     bdkWallet.sign(psbt: parsed, signOptions: _annotateOptions);
     return parsed.serialize();
@@ -162,7 +162,7 @@ class BdkWalletDatasource {
     bool replaceByFee = true,
     required WalletModel wallet,
   }) async {
-    final bdkWallet = await BdkFacade.createWallet(wallet);
+    final bdkWallet = await _readWallet(wallet);
     bdk.TxBuilder txBuilder;
 
     // Get the scriptPubkey from the address
@@ -468,7 +468,7 @@ class BdkWalletDatasource {
     required WalletModel wallet,
     bool isChange = false,
   }) async {
-    final bdkWallet = await BdkFacade.createWallet(wallet);
+    final bdkWallet = await _readWallet(wallet);
     final addressInfo = bdkWallet.revealNextAddress(
       keychain: isChange
           ? bdk.KeychainKind.internal
@@ -678,7 +678,7 @@ class BdkWalletDatasource {
     required RelativeFee feeRate,
     required WalletModel wallet,
   }) async {
-    final bdkWallet = await BdkFacade.createWallet(wallet);
+    final bdkWallet = await _readWallet(wallet);
     // BumpFeeTxBuilder is rate-only by BDK design (BIP-125 requires a
     // higher rate, not absolute, to replace). We hit it with sat/kwu so
     // sub-1 sat/vByte bumps survive without precision loss.
@@ -717,7 +717,7 @@ class BdkWalletDatasource {
     required String txid,
     required WalletModel wallet,
   }) async {
-    final bdkWallet = await BdkFacade.createWallet(wallet);
+    final bdkWallet = await _readWallet(wallet);
     final canonicalTx = bdkWallet.getTx(txid: bdk.Txid.fromString(hex: txid));
     if (canonicalTx == null) return TransactionSignatureStatus.unverifiable;
     final tx = canonicalTx.transaction;

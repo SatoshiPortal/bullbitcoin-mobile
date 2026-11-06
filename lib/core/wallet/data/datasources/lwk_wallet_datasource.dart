@@ -80,7 +80,7 @@ class LwkWalletDatasource {
   Future<({String standard, String confidential, int index})>
   getLastUnusedAddress({required WalletModel wallet}) async {
     try {
-      final lwkWallet = await LwkFacade.createPublicWallet(wallet);
+      final lwkWallet = await _readWallet(wallet);
       // For LWK, address reuse is taken care of by the repository and the address history database,
       //  so here we just get the last unused address.
       final lastUnusedAddressInfo = await lwkWallet.addressLastUnused();
@@ -326,7 +326,7 @@ class LwkWalletDatasource {
     required WalletModel wallet,
   }) async {
     try {
-      final lwkWallet = await LwkFacade.createPublicWallet(wallet);
+      final lwkWallet = await _readWallet(wallet);
       // LWK accepts sat/kvByte as a double. Our RelativeFee stores sat/kwu,
       // and 1 sat/kwu = 4 sat/kvByte, so the conversion is exact integer
       // arithmetic promoted to double — no precision loss at the SDK boundary.
@@ -420,7 +420,7 @@ class LwkWalletDatasource {
     required int maximumInputs,
   }) async {
     try {
-      final lwkWallet = await LwkFacade.createPublicWallet(wallet);
+      final lwkWallet = await _readWallet(wallet);
       final psets = await lwkWallet.consolidate(
         feeRate: feeRate.satPerKvbyte,
         highUtxoThreshold: highUtxoThreshold,
@@ -460,7 +460,7 @@ class LwkWalletDatasource {
     required WalletModel wallet,
   }) async {
     try {
-      final lwkWallet = await LwkFacade.createPublicWallet(wallet);
+      final lwkWallet = await _readWallet(wallet);
       final decoded = await lwkWallet.decodeTx(pset: pset);
 
       // Get the L-BTC asset ID for the network

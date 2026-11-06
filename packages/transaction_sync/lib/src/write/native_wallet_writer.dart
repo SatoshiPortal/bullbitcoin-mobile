@@ -129,10 +129,7 @@ final class NativeWalletWriter implements LiquidReadAdmission {
   }) => _run(key, expectedGeneration, WriteIntent.delete, () async {
     final record = revisions.record(key);
     _expectGeneration(record, expectedGeneration);
-    if (record == null) {
-      throw const _WriterFailure(TransactionSyncNotFoundFailure());
-    }
-    if (record.state.lifecycle == WalletLifecycle.deleted) {
+    if (record != null && record.state.lifecycle == WalletLifecycle.deleted) {
       return WriterUnchanged(record.state.stamp);
     }
     revisions.begin(key, WriteIntent.delete);
