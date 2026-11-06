@@ -22,20 +22,41 @@ import '../domain/wallet_connection_policy.dart';
 import '../domain/wallet_key.dart';
 import 'bdk_electrum_cache.dart';
 
-/// No durable revision is claimed until the writer protocol lands in lane D.
+/// The completed native mode, with observations captured under writer ownership.
 enum SyncMode { initialScan, revealedScripts, discovery, liquid }
 
 final class SyncCompletion {
   final SyncMode mode;
   final Duration elapsed;
   final String? _cacheDiagnostics;
+  final WalletRevision? revision;
+  final Set<String> incomingTxids;
+  final Set<String> discoveredTxids;
 
-  const SyncCompletion(this.mode, this.elapsed) : _cacheDiagnostics = null;
+  const SyncCompletion(
+    this.mode,
+    this.elapsed, {
+    this.revision,
+    this.incomingTxids = const {},
+    this.discoveredTxids = const {},
+  }) : _cacheDiagnostics = null;
 
   const SyncCompletion._withCache(
     this.mode,
     this.elapsed,
     this._cacheDiagnostics,
+    this.incomingTxids,
+    this.discoveredTxids, [
+    this.revision,
+  ]);
+
+  SyncCompletion committed(WalletRevision stamp) => SyncCompletion._withCache(
+    mode,
+    elapsed,
+    _cacheDiagnostics,
+    incomingTxids,
+    discoveredTxids,
+    stamp,
   );
 }
 
@@ -46,13 +67,15 @@ final class SyncFinished {
   const SyncFinished(this.key, this.result);
 }
 
-/// One foreground Electrum operation. The caller must provision the native store first. No create, repair, reveal, durable revision or background lease.
+/// One Electrum operation inside the writer lease. Headless callers cannot provision or reconcile.
 final class ElectrumSync {
   final WalletConnectionPolicy _connections;
   final Future<Result<WalletRevisionState, TransactionSyncFailure>> Function(
     WalletKey,
   )?
   _readRevision;
+  final Future<Result<void, TransactionSyncFailure>> Function(SyncCompletion)?
+  _onCompletion;
   final Future<String> Function() _documentsDirectory;
   final _active =
       <WalletKey, Future<Result<SyncCompletion, TransactionSyncFailure>>>{};
@@ -65,6 +88,7 @@ final class ElectrumSync {
     required this._connections,
     required this._documentsDirectory,
     this._readRevision,
+    this._onCompletion,
   });
 
   Stream<WalletKey> get started => _started.stream;
@@ -79,6 +103,10 @@ final class ElectrumSync {
     PublicWalletDescriptor descriptor, {
     bool discover = false,
     SyncReason reason = SyncReason.auto,
+    bool headless = false,
+    bool allowInitialScan = true,
+    Future<Result<void, TransactionSyncFailure>> Function(SyncCompletion)?
+    onCompletion,
   }) {
     final key = descriptor.key;
     final previous = _active[key];
@@ -102,6 +130,9 @@ final class ElectrumSync {
           descriptor,
           runId: runId,
           discover: discover,
+          headless: headless,
+          allowInitialScan: allowInitialScan,
+          onCompletion: onCompletion ?? _onCompletion,
           onConnection: (connection) {
             connectionSummary =
                 'route=${descriptor is LiquidWalletDescriptor || connection.socks5?.isNotEmpty != true ? 'direct' : 'proxy'} stop_gap=${connection.stopGap}';
@@ -159,6 +190,12 @@ final class ElectrumSync {
     PublicWalletDescriptor descriptor, {
     required int runId,
     required bool discover,
+    required bool headless,
+    required bool allowInitialScan,
+    required Future<Result<void, TransactionSyncFailure>> Function(
+      SyncCompletion,
+    )?
+    onCompletion,
     required void Function(WalletConnection) onConnection,
   }) async {
     final String root;
@@ -233,9 +270,19 @@ final class ElectrumSync {
               generation,
               events.sendPort,
               runId,
+              headless,
+              allowInitialScan,
             ),
           );
           retryable = attempt.retryable;
+          // Capture foreground visibility immediately on native completion,
+          // before Tor teardown or diagnostic flushing can yield to lifecycle changes.
+          if (attempt.result case Ok(:final value) when onCompletion != null) {
+            final recorded = await onCompletion(value);
+            if (recorded case Err(:final failure)) {
+              return Err<SyncCompletion, TransactionSyncFailure>(failure);
+            }
+          }
           return attempt.result;
         },
       );
@@ -255,6 +302,8 @@ final class _SyncParams {
   final int generation;
   final SendPort diagnostics;
   final int runId;
+  final bool headless;
+  final bool allowInitialScan;
 
   const _SyncParams(
     this.descriptor,
@@ -264,6 +313,8 @@ final class _SyncParams {
     this.generation,
     this.diagnostics,
     this.runId,
+    this.headless,
+    this.allowInitialScan,
   );
 }
 
@@ -348,6 +399,14 @@ Future<_Attempt> _performSync(_SyncParams params) async {
                 .value
                 .initializedSchema !=
             writerSchemaVersion) {
+      if (params.headless) {
+        return (
+          result: const Err<SyncCompletion, TransactionSyncFailure>(
+            TransactionSyncBusyFailure(),
+          ),
+          retryable: false,
+        );
+      }
       final initialized = await writer.create(
         params.descriptor.key,
         expectedGeneration: params.generation,
@@ -365,15 +424,21 @@ Future<_Attempt> _performSync(_SyncParams params) async {
       params.descriptor.key,
       expectedGeneration: params.generation,
       operation: operation,
+      reconcile: !params.headless,
+      preflight: params.allowInitialScan
+          ? null
+          : () => _checkInitialScan(params),
     );
     return switch (result) {
       Err(:final failure) => (
         result: Err<SyncCompletion, TransactionSyncFailure>(failure),
         retryable: false,
       ),
-      Ok() => (
+      Ok(:final value) => (
         result:
-            operation.result ??
+            operation.result?.map(
+              (completion) => completion.committed(value.revision),
+            ) ??
             const Err<SyncCompletion, TransactionSyncFailure>(
               TransactionSyncStorageFailure(),
             ),
@@ -482,15 +547,28 @@ Future<_Attempt> _performNativeSync(
         ),
       );
       failure = const TransactionSyncConnectionFailure();
+      final before = {
+        for (final tx in await wallet.txs())
+          if (tx.kind == 'incoming') tx.txid,
+      };
       await wallet.sync_(
         electrumUrl: connection.url,
         validateDomain: connection.validateDomain,
         timeout: connection.timeout.inSeconds,
         stopAtIndex: issuedReceiveIndex,
       );
+      final incoming = {
+        for (final tx in await wallet.txs())
+          if (tx.kind == 'incoming') tx.txid,
+      };
       return (
         result: Ok<SyncCompletion, TransactionSyncFailure>(
-          SyncCompletion(SyncMode.liquid, watch.elapsed),
+          SyncCompletion(
+            SyncMode.liquid,
+            watch.elapsed,
+            incomingTxids: incoming,
+            discoveredTxids: incoming.difference(before),
+          ),
         ),
         retryable: false,
       );
@@ -569,6 +647,7 @@ Future<_Attempt> _performNativeSync(
       persister: persister,
       lookahead: 25,
     );
+    final before = _bitcoinIncoming(wallet);
     final checkpoint = wallet.latestCheckpoint();
     final height = checkpoint.height;
     checkpoint.hash.dispose();
@@ -621,6 +700,7 @@ Future<_Attempt> _performNativeSync(
       update.dispose();
     }
     final parents = cache?.rememberParents(client, wallet);
+    final incoming = _bitcoinIncoming(wallet);
     return (
       result: Ok<SyncCompletion, TransactionSyncFailure>(
         SyncCompletion._withCache(
@@ -632,6 +712,8 @@ Future<_Attempt> _performNativeSync(
             prefill: prefill,
             parents: parents,
           ),
+          incoming,
+          incoming.difference(before),
         ),
       ),
       retryable: false,
@@ -671,6 +753,88 @@ bdk.ElectrumClient _connect(
       return build();
     }
     rethrow;
+  }
+}
+
+Set<String> _bitcoinIncoming(bdk.Wallet wallet) {
+  final incoming = <String>{};
+  for (final tx in wallet.transactions()) {
+    try {
+      final amounts = wallet.sentAndReceived(tx: tx.transaction);
+      try {
+        if (amounts.received.toSat() > amounts.sent.toSat()) {
+          final id = tx.transaction.computeTxid();
+          try {
+            incoming.add(id.toString());
+          } finally {
+            id.dispose();
+          }
+        }
+      } finally {
+        amounts.received.dispose();
+        amounts.sent.dispose();
+      }
+    } finally {
+      tx.transaction.dispose();
+      if (tx.chainPosition case bdk.ConfirmedChainPosition(
+        :final confirmationBlockTime,
+        :final transitively,
+      )) {
+        confirmationBlockTime.blockId.hash.dispose();
+        transitively?.dispose();
+      }
+    }
+  }
+  return incoming;
+}
+
+// Runs under the writer lock, BEFORE recording an intent. A deferred initial
+// scan must leave no pending write and must never initialize an absent store.
+Future<Result<void, TransactionSyncFailure>> _checkInitialScan(
+  _SyncParams params,
+) async {
+  final descriptor = params.descriptor;
+  if (descriptor is! BitcoinWalletDescriptor) return const Ok(null);
+  final path = nativeWalletStoragePath(params.root, descriptor.key);
+  if (!File(path).existsSync()) {
+    return const Err(TransactionSyncNotFoundFailure());
+  }
+  final kind = descriptor.key.network == BitcoinNetwork.mainnet
+      ? bdk.NetworkKind.main
+      : bdk.NetworkKind.test;
+  final external = bdk.Descriptor(
+    descriptor: descriptor.externalDescriptor,
+    networkKind: kind,
+  );
+  final internal = bdk.Descriptor(
+    descriptor: descriptor.internalDescriptor,
+    networkKind: kind,
+  );
+  bdk.Persister? persister;
+  bdk.Wallet? wallet;
+  try {
+    persister = bdk.Persister.newSqlite(path: path);
+    wallet = bdk.Wallet.load(
+      descriptor: external,
+      changeDescriptor: internal,
+      persister: persister,
+      lookahead: 25,
+    );
+    final checkpoint = wallet.latestCheckpoint();
+    try {
+      return checkpoint.height == 0
+          ? const Err(TransactionSyncInitialScanRequiredFailure())
+          : const Ok(null);
+    } finally {
+      checkpoint.hash.dispose();
+    }
+  } on Exception {
+    return const Err(TransactionSyncStorageFailure());
+  } finally {
+    wallet?.dispose();
+    persister?.dispose();
+    internal.dispose();
+    external.dispose();
   }
 }
 
