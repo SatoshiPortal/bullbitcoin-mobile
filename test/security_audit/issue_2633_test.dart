@@ -9,7 +9,7 @@ void main() {
   group('Security audit #2633 duplicate watch-only import', () {
     test('duplicate checks include imported wallets and use typed error', () {
       final source = File(
-        'lib/core/wallet/data/repositories/wallet_repository.dart',
+        'lib/features/wallet/data/wallet_repository.dart',
       ).readAsStringSync();
       final importDescriptor = source.substring(
         source.indexOf('importDescriptor'),
@@ -17,12 +17,16 @@ void main() {
       final importXpub = source.substring(
         source.indexOf('importWatchOnlyXpub'),
       );
-      // The duplicate check reads every wallet before inserting. It calls the
-      // repository-internal reader rather than the public `getWallets()`,
-      // which now returns a Result and is the try/catch boundary (#1895) —
-      // the security property asserted here is the check, not the name.
-      expect(importDescriptor, contains('_readWallets()'));
-      expect(importXpub, contains('_readWallets()'));
+      // Catalog-only provisioning rows count too: checking duplicates must not
+      // require opening their native store or reading their balance.
+      for (final method in [importDescriptor, importXpub]) {
+        expect(method, contains('_walletMetadataDatasource.fetchAll()'));
+        expect(
+          method.indexOf('_walletMetadataDatasource.fetchAll()'),
+          lessThan(method.indexOf('_walletMetadataDatasource.store(metadata)')),
+        );
+        expect(method, contains('WalletAlreadyExistsException(metadata.id)'));
+      }
       expect(source, contains('WalletAlreadyExistsException'));
       expect(
         File(
