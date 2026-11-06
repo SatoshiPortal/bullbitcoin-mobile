@@ -10,7 +10,6 @@ import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_transaction_b
 import 'package:bb_mobile/features/receive/domain/receive_failure.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/convert_receive_amount_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/fetch_receive_note_suggestions_usecase.dart';
-import 'package:bb_mobile/features/receive/domain/usecases/get_receive_address_at_index_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/get_receive_currencies_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/get_receive_settings_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/get_receive_wallets_usecase.dart';
@@ -49,9 +48,6 @@ class _MockConvertReceiveAmountUsecase extends Mock
 
 class _MockPrepareReceiveAddressUsecase extends Mock
     implements PrepareReceiveAddressUsecase {}
-
-class _MockGetReceiveAddressAtIndexUsecase extends Mock
-    implements GetReceiveAddressAtIndexUsecase {}
 
 class _MockCreateReceiveOrderSwapUsecase extends Mock
     implements CreateReceiveOrderSwapUsecase {}
@@ -246,7 +242,6 @@ void main() {
         getReceiveSettingsUsecase: getSettings,
         convertReceiveAmountUsecase: convertSatsToCurrency,
         prepareReceiveAddressUsecase: getReceiveAddress,
-        getReceiveAddressAtIndexUsecase: _MockGetReceiveAddressAtIndexUsecase(),
         createReceiveOrderSwapUsecase: createOrderSwap,
         receiveWithPayjoinUsecase: receiveWithPayjoin,
         broadcastOriginalTransactionUsecase: broadcastOriginalTransaction,
