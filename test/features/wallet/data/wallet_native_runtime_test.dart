@@ -191,6 +191,17 @@ void main() {
         await runtime.initialize();
         expect(rows, isEmpty);
         verify(() => metadata.delete(row.id)).called(1);
+        // Re-import is interrupted after its catalog row becomes visible.
+        await runtime.prepareCreate(row);
+        rows[row.id] = row;
+        await runtime.close();
+        runtime = open();
+        await runtime.initialize();
+        expect(rows[row.id], row);
+        expect(
+          await runtime.bitcoin(WalletModel.fromMetadata(row)),
+          isA<bdk.Wallet>(),
+        );
       } finally {
         await runtime.close();
         directory.deleteSync(recursive: true);
