@@ -7,20 +7,19 @@ import 'package:bb_mobile/core/swaps/domain/usecases/delete_swap_master_key_usec
 import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_master_key_usecase.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/utils/result.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/features/all_seed_view/domain/all_seed_view_failure.dart';
+import 'package:bb_mobile/features/all_seed_view/domain/get_seed_fingerprints_in_use_usecase.dart';
 import 'package:bb_mobile/features/app_unlock/public/app_unlock_facade.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 part 'all_seed_view_cubit.freezed.dart';
 part 'all_seed_view_state.dart';
 
 class AllSeedViewCubit extends Cubit<AllSeedViewState> {
   AllSeedViewCubit({
     required this._getAllSeedsUsecase,
-    required this._getWalletsUsecase,
+    required this._getSeedFingerprintsInUseUsecase,
     required this._deleteSeedUsecase,
     required this._processAndSeparateSeedsUsecase,
     required this._getSwapMasterKeyUsecase,
@@ -28,7 +27,7 @@ class AllSeedViewCubit extends Cubit<AllSeedViewState> {
   }) : super(const AllSeedViewState());
 
   final GetAllSeedsUsecase _getAllSeedsUsecase;
-  final GetWalletsUsecase _getWalletsUsecase;
+  final GetSeedFingerprintsInUseUsecase _getSeedFingerprintsInUseUsecase;
   final DeleteSeedUsecase _deleteSeedUsecase;
   final ProcessAndSeparateSeedsUsecase _processAndSeparateSeedsUsecase;
   final GetSwapMasterKeyUsecase _getSwapMasterKeyUsecase;
@@ -59,19 +58,18 @@ class AllSeedViewCubit extends Cubit<AllSeedViewState> {
         return;
     }
 
-    // "No wallets yet" is normal here: seeds can exist before any wallet is
-    // created, and every seed is then simply treated as "old".
+    // A seed is in use while a wallet on any network references it, not only
+    // one on the network the app currently shows. Seeds can exist before any
+    // wallet is created, and are then simply treated as "old".
     final existingFingerprints = <String>{};
-    switch (await _getWalletsUsecase.execute()) {
+    switch (await _getSeedFingerprintsInUseUsecase.execute()) {
       case Ok(:final value):
-        existingFingerprints.addAll(value.map((w) => w.masterFingerprint));
-      case Err(failure: NoWalletsFoundFailure()):
-        break;
+        existingFingerprints.addAll(value);
       case Err(:final failure):
-        // The seeds were fetched successfully; only the wallet lookup failed.
-        // Degrade gracefully: treat every seed as "old" and still display
-        // them, rather than discarding a good fetch and showing
-        // "No seeds found".
+        // Unknown usage is not evidence that a seed is unused: keep every seed visible, without offering deletion.
+        existingFingerprints.addAll(
+          seeds.map((seed) => seed.masterFingerprint),
+        );
         log.warning('all seeds: wallet lookup failed: ${failure.logMessage}');
     }
 
