@@ -42,6 +42,24 @@ void main() {
     useEnvironment(isTestnet: false);
   });
 
+  test('regtest refuses before either orders backend', () async {
+    when(() => settingsRepository.fetch()).thenAnswer(
+      (_) async => const SettingsEntity(
+        environment: Environment.regtest,
+        bitcoinUnit: BitcoinUnit.sats,
+        currencyCode: 'CAD',
+      ),
+    );
+    when(() => mainnet.listActive()).thenAnswer((_) async => []);
+
+    expect(
+      failureOf(await repository.listActive()),
+      isA<LimitOrdersUnsupportedNetworkFailure>(),
+    );
+    verifyZeroInteractions(mainnet);
+    verifyZeroInteractions(testnet);
+  });
+
   test('routes to the testnet datasource on testnet', () async {
     useEnvironment(isTestnet: true);
     when(() => testnet.listActive()).thenAnswer((_) async => []);
