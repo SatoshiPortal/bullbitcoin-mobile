@@ -67,6 +67,28 @@ void main() {
     );
   });
 
+  test(
+    'regtest refuses confirmation before backend or recipient access',
+    () async {
+      when(settingsRepository.fetch).thenAnswer(
+        (_) async => const SettingsEntity(
+          environment: Environment.regtest,
+          bitcoinUnit: BitcoinUnit.sats,
+          currencyCode: 'CAD',
+        ),
+      );
+      final result = await usecase.execute(
+        orderId: 'order-1',
+        interacSecurityDetails: interacSecurityDetails,
+        saveSecurityDetailsAsDefault: true,
+      );
+      expect(_err(result), isA<WithdrawUnsupportedNetworkFailure>());
+      verifyZeroInteractions(mainnetRepository);
+      verifyZeroInteractions(testnetRepository);
+      verifyZeroInteractions(recipientsFacade);
+    },
+  );
+
   test('confirms the order before saving Interac defaults', () async {
     final order = _MockWithdrawOrder();
     when(

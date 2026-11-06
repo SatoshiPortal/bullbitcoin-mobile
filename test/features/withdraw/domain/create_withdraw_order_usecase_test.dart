@@ -55,6 +55,22 @@ void main() {
     );
   });
 
+  test('regtest refuses withdrawal before backend IO', () async {
+    when(settingsRepository.fetch).thenAnswer(
+      (_) async => const SettingsEntity(
+        environment: Environment.regtest,
+        bitcoinUnit: BitcoinUnit.sats,
+        currencyCode: 'CAD',
+      ),
+    );
+    expect(
+      await usecase.execute(fiatAmount: 100, recipientId: 'recipient'),
+      isA<Err>(),
+    );
+    verifyZeroInteractions(mainnetRepository);
+    verifyZeroInteractions(testnetRepository);
+  });
+
   test('validates and submits trimmed Interac security details', () async {
     final order = _MockWithdrawOrder();
     when(
