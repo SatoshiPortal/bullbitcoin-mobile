@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/wallet/domain/wallet.dart' show Network;
 import 'dart:convert';
 
 import 'package:bb_mobile/core/bbqr/bbqr.dart';
@@ -17,11 +18,16 @@ import 'package:url_launcher/url_launcher.dart';
 
 class BroadcastSignedTxCubit extends Cubit<BroadcastSignedTxState> {
   final BroadcastBitcoinTransactionUsecase _broadcastBitcoinTransactionUsecase;
+  final Future<Network> capturedNetwork;
 
   BroadcastSignedTxCubit({
     required this._broadcastBitcoinTransactionUsecase,
     String? unsignedPsbt,
-  }) : super(BroadcastSignedTxState(bbqr: Bbqr(), unsignedPsbt: unsignedPsbt));
+    Network? network,
+  }) : capturedNetwork = network != null
+           ? Future.value(network)
+           : _broadcastBitcoinTransactionUsecase.captureNetwork(),
+       super(BroadcastSignedTxState(bbqr: Bbqr(), unsignedPsbt: unsignedPsbt));
 
   Future<void> onQrScanned(String payload) async {
     try {
@@ -193,6 +199,7 @@ class BroadcastSignedTxCubit extends Cubit<BroadcastSignedTxState> {
       await _broadcastBitcoinTransactionUsecase.execute(
         state.transaction!.data,
         isPsbt: state.transaction!.format == TxFormat.psbt,
+        network: await capturedNetwork,
       );
       emit(state.copyWith(isBroadcasted: true, isBroadcasting: false));
     } catch (e, st) {
