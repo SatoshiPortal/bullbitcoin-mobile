@@ -56,6 +56,7 @@ final class FailingResponseOutbox implements NotificationOutboxPort {
     String topicId,
     List<LocalNotification> observedEvents, {
     List<LocalNotification> baselineEvents = const [],
+    bool onlyNew = false,
   }) async => const Ok(null);
   @override
   Future<Result<bool, NotificationsFailure>> isSeen(String eventId) async =>
