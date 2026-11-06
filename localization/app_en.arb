@@ -15787,5 +15787,21 @@
         "type": "String"
       }
     }
+  },
+  "importMnemonicScanServerUnavailable": "Couldn't reach a server to check this wallet. You can still import it.",
+  "@importMnemonicScanServerUnavailable": {
+    "description": "ImportMnemonic: scan of one wallet type failed because no Electrum server could be reached; the import stays possible"
+  },
+  "importMnemonicScanTimeout": "The server took too long to check this wallet. You can still import it.",
+  "@importMnemonicScanTimeout": {
+    "description": "ImportMnemonic: scan of one wallet type timed out; the import stays possible"
+  },
+  "importMnemonicScanInvalidMnemonic": "These words could not be checked for this wallet type.",
+  "@importMnemonicScanInvalidMnemonic": {
+    "description": "ImportMnemonic: the words could not be derived to scan one wallet type"
+  },
+  "importMnemonicScanUnavailable": "Balance check unavailable. You can still import this wallet.",
+  "@importMnemonicScanUnavailable": {
+    "description": "ImportMnemonic: generic message when the scan of one wallet type failed for an unexpected reason; the import stays possible"
   }
 }
