@@ -78,11 +78,7 @@ void main() {
         derivationPath: Backup.recoverbull.newDerivationPath(),
       );
       final plaintext = plaintextOf(sealed);
-      if (language == bip39.Language.english) {
-        expect(plaintext.containsKey('mnemonicLanguage'), isFalse);
-      } else {
-        expect(plaintext['mnemonicLanguage'], wire);
-      }
+      expect(plaintext['mnemonicLanguage'], wire);
       final opened = Backup.recoverbull.open(
         file: vaultWith({'mnemonic': words, 'mnemonicLanguage': wire}),
         backupKey: backupKey,
