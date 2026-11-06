@@ -82,7 +82,7 @@ final class RecoverBullBackup {
     final plaintext = json.encode({
       ...metadata,
       _kMnemonic: words,
-      if (language != Language.english) _kLanguage: encodeLanguage(language),
+      _kLanguage: encodeLanguage(language),
     });
     final sealed = RecoverBull.createBackup(
       secret: utf8.encode(plaintext),
