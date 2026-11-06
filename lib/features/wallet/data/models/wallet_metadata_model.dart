@@ -12,6 +12,7 @@ part 'wallet_metadata_model.freezed.dart';
 @freezed
 abstract class WalletMetadataModel with _$WalletMetadataModel {
   const factory WalletMetadataModel({
+    String? networkCode,
     required String id,
     required String masterFingerprint,
     required String xpubFingerprint,
