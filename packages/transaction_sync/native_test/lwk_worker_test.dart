@@ -14,7 +14,7 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   test(
-    'Liquid worker initializes its SDK and never retries after opening',
+    'Liquid worker uses direct access despite SOCKS and stops fallback after open',
     () async {
       await BullSdk.init();
       final dir = Directory.systemTemp.createTempSync('liquid_writer_');
@@ -51,7 +51,7 @@ void main() {
         'tcp://127.0.0.1:0',
         fixture.url,
         fixture.url,
-      ]);
+      ], socks5: '127.0.0.1:1');
       final sync = ElectrumSync(
         connections: connections,
         documentsDirectory: () async => dir.path,

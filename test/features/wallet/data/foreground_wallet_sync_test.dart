@@ -132,6 +132,58 @@ void main() {
     },
   );
 
+  test(
+    'single-wallet usecase forwards discovery through the repository',
+    () async {
+      final requests = <bool>[];
+      final repository = WalletRepository(
+        walletMetadataDatasource: metadata,
+        bdkWalletDatasource: bdk,
+        lwkWalletDatasource: _Lwk(),
+        synchronize: (metadata, {bool discover = false}) async =>
+            requests.add(discover),
+        isSyncing: ({String? walletId}) => false,
+        syncStarted: const Stream.empty(),
+        syncFinished: const Stream.empty(),
+        electrumSyncResultStream: const Stream.empty(),
+      );
+      final wallet =
+          (await repository.getWallet(id) as Ok<Wallet, WalletFailure>).value;
+      final usecase = SyncWalletUsecase(walletRepository: repository);
+      await usecase.execute(wallet);
+      await usecase.execute(wallet, discover: true);
+      expect(requests, [false, true]);
+    },
+  );
+
+  test('repair failure preserves startup conflict classification', () async {
+    policy.failure = const TransactionSyncNeedsRepairFailure();
+    await expectLater(
+      bridge.synchronize(row),
+      throwsA(isA<WalletLwkStatusConflictFailure>()),
+    );
+  });
+
+  test('unexpected policy failure settles the finished event', () async {
+    final sync = ElectrumSync(
+      connections: _ThrowingPolicy(),
+      documentsDirectory: () async => '/unused',
+    );
+    final finished = sync.finished.first;
+    final result = await sync.execute(
+      BitcoinWalletDescriptor(
+        key: WalletKey(id: id, network: BitcoinNetwork.testnet),
+        scriptType: ScriptType.bip84,
+        origin: id,
+        externalDescriptor: 'wpkh(public)',
+        internalDescriptor: 'wpkh(change)',
+      ),
+    );
+    expect(result, isA<Err<SyncCompletion, TransactionSyncFailure>>());
+    expect((await finished).result, same(result));
+    expect(sync.isSyncing(), isFalse);
+  });
+
   test('transaction reads delegate sync to the same operation', () async {
     when(
       () => bdk.getTransactions(wallet: any(named: 'wallet'), toAddress: null),
@@ -203,7 +255,7 @@ void main() {
       walletMetadataDatasource: metadata,
       bdkWalletDatasource: bdk,
       lwkWalletDatasource: _Lwk(),
-      synchronize: (value) async {
+      synchronize: (value, {bool discover = false}) async {
         expect(provisioned, isTrue);
         expect(value.id, id);
         verifyNever(() => metadata.store(any()));
@@ -224,4 +276,18 @@ void main() {
     expect(wallet.id, id);
     verify(() => metadata.store(any())).called(1);
   });
+}
+
+final class _ThrowingPolicy implements WalletConnectionPolicy {
+  @override
+  Future<Result<T, TransactionSyncFailure>> run<T>({
+    required Network network,
+    required Future<Result<T, TransactionSyncFailure>> Function(
+      WalletConnection,
+    )
+    operation,
+    required bool Function(TransactionSyncFailure) mayRetry,
+  }) async {
+    throw StateError('sensitive error detail');
+  }
 }

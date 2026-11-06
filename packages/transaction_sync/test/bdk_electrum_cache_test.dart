@@ -317,6 +317,8 @@ void main() {
       expect(lines, contains('Electrum sync started'));
       expect(lines, contains('Electrum sync finished mode=initialScan'));
       expect(lines, contains('cache=ok'));
+      expect(lines, contains('route=direct stop_gap=20'));
+      expect(lines, isNot(contains('Electrum sync connection network=')));
       expect(lines, isNot(contains(descriptor.key.id)));
       expect(lines, isNot(contains(descriptor.externalDescriptor)));
       expect(lines, isNot(contains(fixture.url)));
@@ -413,7 +415,7 @@ void main() {
     });
 
     test(
-      'Liquid refuses an unsupported SOCKS route without connecting',
+      'Liquid warns about SOCKS and still checks the native store',
       () async {
         final liquid = LiquidWalletDescriptor(
           key: WalletKey(id: 'liquid', network: LiquidNetwork.testnet),
@@ -433,7 +435,7 @@ void main() {
         final result = await sync.execute(liquid);
         expect(result, isA<Err<SyncCompletion, TransactionSyncFailure>>());
         if (result case Err(:final failure)) {
-          expect(failure, isA<TransactionSyncConnectionFailure>());
+          expect(failure, isA<TransactionSyncNotFoundFailure>());
         }
         expect((await fixture.requests()).counts, isEmpty);
       },
