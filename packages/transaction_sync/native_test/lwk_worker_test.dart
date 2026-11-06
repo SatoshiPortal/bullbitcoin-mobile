@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:transaction_sync/write.dart';
 
 import 'package:bull_sdk/bull_sdk.dart' show BullSdk;
 import 'package:bull_sdk/lwk.dart' as lwk;
@@ -56,6 +57,8 @@ void main() {
         connections: connections,
         documentsDirectory: () async => dir.path,
       );
+      final metadata = RevisionStore(writerMetadataPath(dir.path));
+      await metadata.close();
       // The Bitcoin fixture deliberately cannot serve Liquid headers. The error must occur inside sync_, after successful worker initialization.
       final result = await sync.execute(liquid);
       expect(result, isA<Err<SyncCompletion, TransactionSyncFailure>>());

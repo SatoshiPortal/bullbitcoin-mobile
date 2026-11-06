@@ -1,4 +1,6 @@
 import 'support/connections.dart';
+import 'package:transaction_sync/write.dart';
+import 'package:transaction_sync/src/write/writer_lock.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:primitives/primitives.dart';
 import 'package:transaction_sync/transaction_sync.dart';
@@ -315,6 +317,8 @@ void main() {
       completed(await sync.execute(descriptor));
       final lines = (await log.readLogs()).skip(before).join('\n');
       expect(lines, contains('Electrum sync started'));
+      expect(lines, contains('Wallet writer lock acquired'));
+      expect(lines, contains('Wallet writer operation committed'));
       expect(lines, contains('Electrum sync finished mode=initialScan'));
       expect(lines, contains('cache=ok'));
       expect(lines, contains('route=direct stop_gap=20'));
@@ -440,6 +444,44 @@ void main() {
         expect((await fixture.requests()).counts, isEmpty);
       },
     );
+
+    test(
+      'writer contention skips native sync and emits a visible failure',
+      () async {
+        final acquisition =
+            WriterLock.acquire(writerLockDirectory(dir.path), descriptor.key)
+                as Ok<WriterLock, TransactionSyncFailure>;
+        try {
+          final finished = sync.finished.first;
+          final result = await sync.execute(descriptor);
+          expect(result, isA<Err<SyncCompletion, TransactionSyncFailure>>());
+          expect((result as Err).failure, isA<TransactionSyncBusyFailure>());
+          expect((await finished).result, same(result));
+          final reopened = _Wallet.open(path);
+          expect(reopened.wallet.latestCheckpoint().height, 0);
+          reopened.close();
+        } finally {
+          acquisition.value.release();
+        }
+      },
+    );
+
+    test('successful sync publishes an initialized durable revision', () async {
+      await fixture.load(electrumFixtureScenarios.first, 0);
+      completed(await sync.execute(descriptor));
+      final revisions = RevisionStore(writerMetadataPath(dir.path));
+      try {
+        final state =
+            (await revisions.read(descriptor.key)
+                    as Ok<WalletRevisionState, TransactionSyncFailure>)
+                .value;
+        expect(state.lifecycle, WalletLifecycle.active);
+        expect(state.initializedSchema, writerSchemaVersion);
+        expect(state.stamp.revision, 2);
+      } finally {
+        await revisions.close();
+      }
+    });
 
     test('missing native store is not created', () async {
       File(path).deleteSync();
