@@ -16,7 +16,18 @@ import 'package:secrets/testing.dart';
 
 class _MockSettingsRepository extends Mock implements SettingsRepository {}
 
-class _MockWalletRepository extends Mock implements WalletRepository {}
+class _MockWalletRepository extends Mock implements WalletRepository {
+  int storeDeletions = 0;
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) {
+    if (invocation.memberName == #deleteLwkDb) {
+      storeDeletions++;
+      return Future<void>.value();
+    }
+    return super.noSuchMethod(invocation);
+  }
+}
 
 /// Startup must not collapse three different states into one screen.
 ///
@@ -104,6 +115,24 @@ void main() {
       secrets: Secrets(scratchDirectory: () async => '/tmp'),
     );
   }
+
+  test('a status conflict never deletes stores or retries the read', () async {
+    when(
+      () => wallets.getWallets(
+        onlyDefaults: any(named: 'onlyDefaults'),
+        environment: any(named: 'environment'),
+      ),
+    ).thenAnswer((_) async => const Err(WalletLwkStatusConflictFailure()));
+    final result = await usecaseOn(FakeSecureStoragePlatform()).execute();
+    expect(result, isA<Err<bool, AppStartupFailure>>());
+    expect(wallets.storeDeletions, 0);
+    verify(
+      () => wallets.getWallets(
+        onlyDefaults: true,
+        environment: Environment.mainnet,
+      ),
+    ).called(1);
+  });
 
   test('a readable seed is a normal start', () async {
     final usecase = usecaseOn(
