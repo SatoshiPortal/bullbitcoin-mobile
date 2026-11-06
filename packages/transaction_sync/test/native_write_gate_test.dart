@@ -128,7 +128,7 @@ Object sync(lwk.Wallet wallet) => wallet.sync_;
         source,
         path: 'packages/transaction_sync/lib/src/read/other.dart',
       ),
-      isNotEmpty,
+      isEmpty,
     );
   });
 
@@ -242,4 +242,100 @@ void _performDryScan(bdk.Descriptor descriptor) {
       expect(await inspect('wrong_file', memory), isNotEmpty);
     },
   );
+  test('read modules allow hydration but never mutation or deletion', () async {
+    final violations = await inspect('read_mutations', '''
+import 'dart:io';
+import 'package:bull_sdk/bdk.dart' as bdk;
+import 'package:bull_sdk/lwk.dart' as lwk;
+void mutate(bdk.Wallet wallet, bdk.Persister store) {
+  wallet.persist(persister: store);
+  wallet.revealNextAddress(keychain: bdk.KeychainKind.external_);
+  File('store').deleteSync();
+}
+Object sync(lwk.Wallet wallet) => wallet.sync_;
+''', path: snapshotModule);
+    for (final symbol in [
+      'Wallet.persist',
+      'Wallet.revealNextAddress',
+      'Wallet.sync_',
+      'native store deletion',
+    ]) {
+      expect(violations, contains(contains(symbol)));
+    }
+  });
+
+  test(
+    'Liquid signer requires createTemp provenance and forbids sync',
+    () async {
+      const signerPath =
+          'packages/secrets/lib/src/crypto/signers/liquid_signer.dart';
+      String source(String initializer, {bool sync = false}) =>
+          '''
+import 'dart:io';
+import 'package:bull_sdk/lwk.dart' as lwk;
+class LiquidSigner {
+  Future<void> signPset(Directory parent, lwk.Descriptor descriptor) async {
+    final scratch = $initializer;
+    final wallet = await lwk.Wallet.init(network: lwk.LiquidNetwork.testnet, dbpath: scratch.path, descriptor: descriptor);
+    ${sync ? 'await wallet.sync_(electrumUrl: "tcp://localhost:1", validateDomain: false);' : ''}
+    await scratch.delete(recursive: true);
+  }
+}
+''';
+      expect(
+        await inspect(
+          'scratch_valid',
+          source("await parent.createTemp('lwk_sign_')"),
+          path: signerPath,
+        ),
+        isEmpty,
+      );
+      expect(
+        await inspect('scratch_invalid', source('parent'), path: signerPath),
+        contains(contains('Wallet.init')),
+      );
+      expect(
+        await inspect(
+          'scratch_sync',
+          source("await parent.createTemp('lwk_sign_')", sync: true),
+          path: signerPath,
+        ),
+        contains(contains('Wallet.sync_')),
+      );
+    },
+  );
+
+  test('Bitcoin signer proves its single in-memory assignment', () async {
+    const signerPath =
+        'packages/secrets/lib/src/crypto/signers/bitcoin_signer.dart';
+    String source(String factory) =>
+        '''
+import 'package:bull_sdk/bdk.dart' as bdk;
+class BitcoinSigner {
+  bdk.Wallet _wallet(bdk.Descriptor descriptor) {
+    bdk.Persister? persister;
+    try {
+      persister = $factory;
+      return bdk.Wallet(descriptor: descriptor, changeDescriptor: descriptor, network: bdk.Network.testnet, persister: persister, lookahead: 25);
+    } finally { persister?.dispose(); }
+  }
+}
+''';
+    expect(
+      await inspect(
+        'memory_signer',
+        source('bdk.Persister.newInMemory()'),
+        path: signerPath,
+      ),
+      isEmpty,
+    );
+    expect(
+      await inspect(
+        'disk_signer',
+        source("bdk.Persister.newSqlite(path: 'disk')"),
+        path: signerPath,
+      ),
+      isNotEmpty,
+    );
+  });
 }

@@ -15,6 +15,7 @@ void main() {
   late BitcoinWalletDescriptor descriptor;
   late FakeRevisions revisions;
   late FakeReadiness readiness;
+  late FakeAdmission admission;
 
   setUp(() async {
     directory = await Directory.systemTemp.createTemp('snapshot-test-');
@@ -22,12 +23,13 @@ void main() {
     final key = WalletKey(id: 'reader-test', network: BitcoinNetwork.testnet);
     revisions = FakeRevisions(key);
     readiness = FakeReadiness();
+    admission = FakeAdmission(revisions);
     reader = WalletSnapshotReader(
       documentsDirectory: documents.path,
       readiness: readiness,
       requiredSchemaVersion: 1,
       revisions: revisions,
-      liquidAdmission: NoLiquidAdmission(),
+      liquidAdmission: admission,
     );
     // Published BIP39 test vector; no application key material.
     final mnemonic = bdk.Mnemonic.fromString(
@@ -141,6 +143,27 @@ void main() {
     },
   );
 
+  test(
+    'BDK hydration holds admission and releases before snapshot reads',
+    () async {
+      create();
+      readiness.onCheck = () => expect(admission.active, isTrue);
+      expect(await reader.bitcoin(descriptor), isA<Ok>());
+      expect(admission.active, isFalse);
+    },
+  );
+
+  test(
+    'BDK busy admission serves a stale cached snapshot without opening',
+    () async {
+      create();
+      expect(await reader.bitcoin(descriptor), isA<Ok>());
+      admission.busy = true;
+      final result = await reader.bitcoin(descriptor) as Ok;
+      expect((result.value as WalletReadSnapshot).stale, isTrue);
+    },
+  );
+
   test('missing store is typed and creates nothing', () async {
     final result = await reader.bitcoin(descriptor);
     expect((result as Err).failure, isA<TransactionSyncNotFoundFailure>());
@@ -182,6 +205,7 @@ void main() {
             revision: 0,
           ),
           lifecycle: WalletLifecycle.active,
+          initializedSchema: 1,
         );
       }
     };
@@ -215,6 +239,7 @@ final class FakeRevisions implements WalletRevisionReader {
     : state = WalletRevisionState(
         stamp: WalletRevision(key: key, generation: 0, revision: 0),
         lifecycle: WalletLifecycle.active,
+        initializedSchema: 1,
       );
   @override
   Future<Result<WalletRevisionState, TransactionSyncFailure>> read(
@@ -228,11 +253,28 @@ final class FakeRevisions implements WalletRevisionReader {
   Stream<WalletRevisionState> watch(WalletKey key) => const Stream.empty();
 }
 
-final class NoLiquidAdmission implements LiquidReadAdmission {
+final class FakeAdmission implements LiquidReadAdmission {
+  final FakeRevisions revisions;
+  bool busy = false;
+  bool active = false;
+  FakeAdmission(this.revisions);
   @override
   Future<Result<LiquidReadLease, TransactionSyncFailure>> acquire(
     WalletKey key,
-  ) => throw StateError('BDK must not acquire Liquid admission');
+  ) async {
+    if (busy) return const Err(TransactionSyncBusyFailure());
+    active = true;
+    return Ok(_FakeLease(revisions.state.stamp, () => active = false));
+  }
+}
+
+final class _FakeLease implements LiquidReadLease {
+  @override
+  final WalletRevision revision;
+  final void Function() onRelease;
+  _FakeLease(this.revision, this.onRelease);
+  @override
+  Future<void> release() async => onRelease();
 }
 
 final class FakeReadiness implements WalletReadReadiness {
