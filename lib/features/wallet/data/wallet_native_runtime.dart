@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:meta/meta.dart';
 import 'package:sqlite3/sqlite3.dart' show SqliteException;
 
 import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasource.dart';
@@ -40,6 +41,7 @@ final class WalletNativeRuntime implements WalletNativeLifecycle {
   Future<_NativeServices>? _opening;
   Future<void>? _initialization;
   Type? _initializationFailure;
+  final void Function(RevisionStore)? _onRevisionStoreOpened;
 
   WalletNativeRuntime({
     required this._catalog,
@@ -47,6 +49,7 @@ final class WalletNativeRuntime implements WalletNativeLifecycle {
     required this._metadata,
     required this._sync,
     required this._documentsDirectory,
+    @visibleForTesting this._onRevisionStoreOpened,
   });
 
   Stream<WalletRevisionState> get changes => _changes.stream;
@@ -85,27 +88,40 @@ final class WalletNativeRuntime implements WalletNativeLifecycle {
       revisions = RevisionStore(path);
       recoveredMetadata = true;
     }
-    revisions.changes.listen(_changes.add);
-    final writer = NativeWalletWriter(
-      lockDirectory: writerLockDirectory(documents),
-      revisions: revisions,
-      documentsDirectory: documents,
-      catalog: _catalog,
-      reservedAddresses: _reserved,
-    );
-    return _NativeServices(
-      documents,
-      recoveredMetadata,
-      revisions,
-      writer,
-      WalletSnapshotReader(
-        documentsDirectory: documents,
-        readiness: PersistedWalletReadiness(revisions),
-        requiredSchemaVersion: writerSchemaVersion,
+    StreamSubscription<WalletRevisionState>? subscription;
+    try {
+      subscription = revisions.changes.listen(_changes.add);
+      // Inject a failure after acquiring resources to verify cleanup in tests.
+      _onRevisionStoreOpened?.call(revisions);
+      final writer = NativeWalletWriter(
+        lockDirectory: writerLockDirectory(documents),
         revisions: revisions,
-        liquidAdmission: writer,
-      ),
-    );
+        documentsDirectory: documents,
+        catalog: _catalog,
+        reservedAddresses: _reserved,
+      );
+      return _NativeServices(
+        documents,
+        recoveredMetadata,
+        revisions,
+        subscription,
+        writer,
+        WalletSnapshotReader(
+          documentsDirectory: documents,
+          readiness: PersistedWalletReadiness(revisions),
+          requiredSchemaVersion: writerSchemaVersion,
+          revisions: revisions,
+          liquidAdmission: writer,
+        ),
+      );
+    } catch (_) {
+      try {
+        await subscription?.cancel();
+      } finally {
+        await revisions.close();
+      }
+      rethrow;
+    }
   }
 
   Future<void> initialize() => _initialization ??= _initializeSafely();
@@ -357,7 +373,12 @@ final class WalletNativeRuntime implements WalletNativeLifecycle {
   Future<void> close() async {
     final opening = _opening;
     if (opening != null) {
-      await (await opening).revisions.close();
+      final services = await opening;
+      try {
+        await services.subscription.cancel();
+      } finally {
+        await services.revisions.close();
+      }
     }
     await _changes.close();
   }
@@ -373,12 +394,14 @@ final class _NativeServices {
   final String documents;
   bool recoveredMetadata;
   final RevisionStore revisions;
+  final StreamSubscription<WalletRevisionState> subscription;
   final NativeWalletWriter writer;
   final WalletSnapshotReader reader;
   _NativeServices(
     this.documents,
     this.recoveredMetadata,
     this.revisions,
+    this.subscription,
     this.writer,
     this.reader,
   );
