@@ -119,6 +119,29 @@ void main() {
   }
 
   group('SetDcaUsecase', () {
+    test('regtest refuses before wallet or account access', () async {
+      when(() => settings.fetch()).thenAnswer(
+        (_) async => mainnetSettings.copyWith(environment: Environment.regtest),
+      );
+      when(
+        () => mainnetUsers.getUserSummary(),
+      ).thenAnswer((_) async => const Err(ExchangeUserUnexpectedFailure()));
+      final result = await usecase.execute(
+        amount: 10,
+        currency: FiatCurrency.cad,
+        frequency: DcaBuyFrequency.daily,
+        network: DcaNetwork.lightning,
+        lightningAddress: 'user@example.com',
+      );
+      expect(result, isA<Err<Dca, DcaFailure>>());
+      verifyZeroInteractions(mainnetUsers);
+      verifyZeroInteractions(testnetUsers);
+      verifyZeroInteractions(mainnetOrders);
+      verifyZeroInteractions(testnetOrders);
+      verifyZeroInteractions(wallet);
+      verifyZeroInteractions(walletAddress);
+    });
+
     test('maps a missing lightning address to LightningAddressRequired '
         'without calling the exchange', () async {
       final result = await usecase.execute(

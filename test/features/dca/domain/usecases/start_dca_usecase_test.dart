@@ -47,6 +47,15 @@ void main() {
   }
 
   group('StartDcaUsecase', () {
+    test('regtest refuses DCA before backend IO', () async {
+      when(settings.fetch).thenAnswer(
+        (_) async => mainnetSettings.copyWith(environment: Environment.regtest),
+      );
+      expect(await usecase.execute(), isA<Err>());
+      verifyZeroInteractions(mainnetUsers);
+      verifyZeroInteractions(testnetUsers);
+    });
+
     test('maps a not-logged-in repository failure to '
         'AccountUnavailableFailure', () async {
       when(() => mainnetUsers.getUserSummary()).thenAnswer(
