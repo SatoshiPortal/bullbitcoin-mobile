@@ -1,3 +1,4 @@
+import 'package:transaction_sync/src/write/native_write_session.dart';
 import 'dart:io';
 
 import 'package:primitives/primitives.dart';
@@ -39,7 +40,69 @@ class _Reserved implements ReservedAddressPort {
   ) async => Ok(address == reserved);
 }
 
+class _Sync implements WriterSyncOperation {
+  @override
+  Future<Result<void, TransactionSyncFailure>> execute(
+    PublicWalletDescriptor descriptor, {
+    required int? issuedReceiveIndex,
+  }) async => const Ok(null);
+}
+
 void main() {
+  for (final interrupted in [false, true]) {
+    test(
+      'adoption preserves native high water through store loss; interrupted=$interrupted',
+      () async {
+        final dir = Directory.systemTemp.createTempSync('bdk-adoption-');
+        final revisions = RevisionStore('${dir.path}/revisions.sqlite');
+        final sessions = SdkWriteSessions(dir.path);
+        final writer = NativeWalletWriter(
+          lockDirectory: '${dir.path}/locks',
+          revisions: revisions,
+          documentsDirectory: dir.path,
+          catalog: _Catalog(),
+          reservedAddresses: _Reserved(),
+        );
+        try {
+          final session = await sessions.open(_descriptor, create: true);
+          await session.revealAndPersist(10);
+          session.close();
+          if (interrupted) revisions.begin(_key, WriteIntent.load);
+          expect(
+            await writer.create(
+              _key,
+              expectedGeneration: 0,
+              existingOnly: true,
+            ),
+            isA<Ok>(),
+          );
+          // No receive between adoption and loss: that would mask the defect.
+          final adoptedIndex = revisions.record(_key)?.issued;
+          await sessions.delete(_key);
+          expect(
+            await writer.create(
+              _key,
+              expectedGeneration: 0,
+              existingOnly: true,
+            ),
+            isA<Ok>(),
+          );
+          expect(
+            await writer.sync(_key, expectedGeneration: 0, operation: _Sync()),
+            isA<Ok>(),
+          );
+          final result = await writer.receive(_key, expectedGeneration: 0);
+          expect(result, isA<Ok>());
+          expect(((result as Ok).value as ReceiveAddressIssued).index, 10);
+          expect(adoptedIndex, 10);
+        } finally {
+          await revisions.close();
+          dir.deleteSync(recursive: true);
+        }
+      },
+    );
+  }
+
   test('real BDK interrupted create, reserved skip, reopen and delete', () async {
     final directory = Directory.systemTemp.createTempSync('native-bdk-writer-');
     final metadataPath = '${directory.path}/revisions.sqlite';
