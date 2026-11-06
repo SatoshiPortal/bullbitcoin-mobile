@@ -229,6 +229,7 @@ void main() {
       );
       final after = store.record(key);
       expect(after?.intent, isNull);
+      expect(after?.state.syncFailed, isTrue);
       expect(after?.state.lifecycle, WalletLifecycle.active);
       expect(after?.state.stamp.revision, mutated ? (before ?? 0) + 1 : before);
       final lease = await writer.acquire(key);
