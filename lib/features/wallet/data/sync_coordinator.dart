@@ -31,10 +31,10 @@ import 'package:flutter/widgets.dart'
 ///    [SyncTrigger.automatic] request; [SyncTrigger.user] requests
 ///    (pull-to-refresh and other explicit gestures) bypass the throttle.
 ///
-/// Background tasks (`lib/core/background_tasks/handler.dart`) intentionally
+/// Background tasks (`lib/background_bootstrap.dart`) intentionally
 /// do **not** use this coordinator — they run in a separate Dart isolate with
-/// their own GetIt and no widget binding, so the lifecycle gate would actively
-/// block them. They keep calling the underlying usecases directly.
+/// a task-specific graph, so the lifecycle gate would actively block them.
+/// They call the writer-backed Electrum path through BackgroundWalletSync.
 class SyncCoordinator {
   SyncCoordinator({
     required GetWalletsUsecase getWalletsUsecase,
