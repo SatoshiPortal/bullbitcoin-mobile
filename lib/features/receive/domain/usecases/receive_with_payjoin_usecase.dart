@@ -12,15 +12,18 @@ class ReceiveWithPayjoinUsecase {
   @useResult
   Future<Result<PayjoinReceiverSession, ReceiveFailure>> execute({
     required String walletId,
-    bool isTestnet = false,
+    BitcoinNetwork network = BitcoinNetwork.mainnet,
     required String address,
     int? expireAfterSec,
     int? amountSat,
   }) async {
+    if (!NetworkCapabilities.supports(network, NetworkCapability.payjoin)) {
+      return const Err(ReceivePayjoinUnavailableFailure('unsupported network'));
+    }
     final result = await _receiver.start(
       StartPayjoinReceiver(
         walletId: walletId,
-        network: isTestnet ? BitcoinNetwork.testnet : BitcoinNetwork.mainnet,
+        network: network,
         address: address,
         amount: amountSat == null ? null : Sats.fromInt(amountSat),
         expiresAt: expireAfterSec == null

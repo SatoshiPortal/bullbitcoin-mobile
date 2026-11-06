@@ -348,6 +348,10 @@ abstract class ReceiveState with _$ReceiveState {
   bool get isPayjoinAwaitingFunds {
     if (type != ReceiveType.bitcoin) return false;
     return wallet != null &&
+        NetworkCapabilities.supports(
+          wallet!.network.shared,
+          NetworkCapability.payjoin,
+        ) &&
         wallet!.signsLocally &&
         payjoinGloballyEnabled == true &&
         !hasUtxos &&
@@ -372,11 +376,17 @@ abstract class ReceiveState with _$ReceiveState {
   /// funded wallet (the only case where flipping the setting actually changes
   /// anything — a watch-only or empty wallet can never payjoin regardless).
   /// The toggle reflects/controls the GLOBAL [payjoinGloballyEnabled] setting.
-  bool get isPayjoinToggleable =>
-      type == ReceiveType.bitcoin &&
-      wallet != null &&
-      wallet!.signsLocally &&
-      hasUtxos;
+  bool get isPayjoinToggleable {
+    final currentWallet = wallet;
+    return type == ReceiveType.bitcoin &&
+        currentWallet != null &&
+        NetworkCapabilities.supports(
+          currentWallet.network.shared,
+          NetworkCapability.payjoin,
+        ) &&
+        currentWallet.signsLocally &&
+        hasUtxos;
+  }
 
   /// True when the user has entered a requested amount that is below the
   /// configured anti-probing minimum. The receiver would decline a payjoin

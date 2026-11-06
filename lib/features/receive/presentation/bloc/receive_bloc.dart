@@ -1,3 +1,6 @@
+import 'package:primitives/primitives.dart'
+    show NetworkCapabilities, NetworkCapability;
+import 'package:bb_mobile/features/wallet/domain/network_x.dart';
 import 'dart:async';
 
 import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
@@ -211,6 +214,10 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
   /// original when an observed payjoin transaction never confirms, which
   /// belongs to the deferred watch-for-broadcast work.
   bool _isPayjoinEligible(Wallet wallet, bool payjoinEnabled) =>
+      NetworkCapabilities.supports(
+        wallet.network.shared,
+        NetworkCapability.payjoin,
+      ) &&
       wallet.signsLocally &&
       payjoinEnabled &&
       (wallet.balanceSat?.isNegative == false &&
@@ -414,7 +421,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
       PayjoinReceiverSession? payjoin;
       final result = await _receiveWithPayjoinUsecase.execute(
         walletId: wallet.id,
-        isTestnet: wallet.network.isTestnet,
+        network: wallet.network.bitcoin,
         address: bitcoinAddress.address,
       );
       if (generation != _receiveGeneration || emit.isDone) return;
@@ -1084,7 +1091,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
         if (_isPayjoinEligible(wallet, payjoinEnabled)) {
           final result = await _receiveWithPayjoinUsecase.execute(
             walletId: walletId,
-            isTestnet: wallet.network.isTestnet,
+            network: wallet.network.bitcoin,
             address: address.address,
           );
           if (generation != _receiveGeneration || emit.isDone) return;
@@ -1255,7 +1262,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
       emit(state.copyWith(payjoinAttemptSettled: false));
       final result = await _receiveWithPayjoinUsecase.execute(
         walletId: wallet.id,
-        isTestnet: wallet.network.isTestnet,
+        network: wallet.network.bitcoin,
         address: bitcoinAddress.address,
       );
       switch (result) {
