@@ -19,12 +19,8 @@ class TransactionMapper {
   /// (e.g. non-standard script), the address field is left `null`.
   static BitcoinTransaction fromBitcoinTx(
     btc_utils.BitcoinTx bitcoinTx, {
-    Network? network,
-    bool isTestnet = false,
+    required Network network,
   }) {
-    final capturedNetwork =
-        network ??
-        Network.fromEnvironment(isTestnet: isTestnet, isLiquid: false);
     return BitcoinTransaction(
       txid: bitcoinTx.txid,
       version: bitcoinTx.version,
@@ -36,11 +32,8 @@ class TransactionMapper {
           .asMap()
           .entries
           .map(
-            (entry) => _mapBitcoinOutput(
-              entry.value,
-              entry.key,
-              network: capturedNetwork,
-            ),
+            (entry) =>
+                _mapBitcoinOutput(entry.value, entry.key, network: network),
           )
           .toList(),
     );

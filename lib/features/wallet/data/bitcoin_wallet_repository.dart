@@ -269,10 +269,6 @@ class BitcoinWalletRepository implements BitcoinSendPort {
     required Network network,
     required ElectrumConnection electrumServer,
   }) {
-    if (network != null && isTestnet != null) {
-      throw ArgumentError('Supply exactly one network representation');
-    }
-    network ??= Network.fromEnvironment(network: network, isLiquid: false);
     return _bdkWallet.dryScan(
       externalDescriptor: externalDescriptor,
       internalDescriptor: internalDescriptor,

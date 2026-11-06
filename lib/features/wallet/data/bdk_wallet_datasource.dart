@@ -302,13 +302,8 @@ class BdkWalletDatasource {
   Future<int> getAmountSentToAddress(
     String psbtString,
     String address, {
-    Network? network,
-    bool? isTestnet,
+    required Network network,
   }) async {
-    if (network != null && isTestnet != null) {
-      throw ArgumentError('Supply exactly one network representation');
-    }
-    network ??= Network.fromEnvironment(isTestnet: isTestnet, isLiquid: false);
     final psbt = bdk.Psbt(psbtBase64: psbtString);
     final tx = psbt.extractTx();
     final outputs = tx.output();

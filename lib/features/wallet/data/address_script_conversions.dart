@@ -8,13 +8,8 @@ import 'package:flutter/foundation.dart';
 class AddressScriptConversions {
   static Future<String?> bitcoinAddressFromScriptPubkey(
     Uint8List scriptPubkey, {
-    Network? network,
-    bool? isTestnet,
+    required Network network,
   }) async {
-    if (network != null && isTestnet != null) {
-      throw ArgumentError('Supply exactly one network representation');
-    }
-    network ??= Network.fromEnvironment(isTestnet: isTestnet, isLiquid: false);
     try {
       final address = bdk.Address.fromScript(
         script: bdk.Script(rawOutputScript: scriptPubkey),
