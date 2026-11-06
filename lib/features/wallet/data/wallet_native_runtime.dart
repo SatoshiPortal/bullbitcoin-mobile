@@ -193,6 +193,13 @@ final class WalletNativeRuntime implements WalletNativeLifecycle {
         );
       }
     }
+    if (services.recoveredMetadata) {
+      // Every catalog entry now has an outcome. Later explicit retries (or a
+      // restart) may resume provisioning, including entries with no native store.
+      // Lost deletion metadata cannot distinguish these from interrupted deletes.
+      File('${writerMetadataPath(services.documents)}.recovery').deleteSync();
+      services.recoveredMetadata = false;
+    }
     log.fine(
       'Native wallet initialization finished count=${descriptors.length} unavailable=${_unavailable.length}',
     );
@@ -364,11 +371,11 @@ final class WalletNativeRuntime implements WalletNativeLifecycle {
 
 final class _NativeServices {
   final String documents;
-  final bool recoveredMetadata;
+  bool recoveredMetadata;
   final RevisionStore revisions;
   final NativeWalletWriter writer;
   final WalletSnapshotReader reader;
-  const _NativeServices(
+  _NativeServices(
     this.documents,
     this.recoveredMetadata,
     this.revisions,
