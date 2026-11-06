@@ -86,3 +86,7 @@ final class SwapPriceUnavailableFailure extends SwapFailure {
 final class SwapUnexpectedFailure extends SwapFailure {
   const SwapUnexpectedFailure([super.logMessage]);
 }
+
+final class SwapUnsupportedNetworkFailure extends SwapFailure {
+  const SwapUnsupportedNetworkFailure();
+}

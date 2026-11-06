@@ -1,4 +1,7 @@
-import 'package:bb_mobile/core/errors/bull_exception.dart';
+import 'package:bb_mobile/features/swap/domain/swap_failure.dart';
+import 'package:bb_mobile/features/swap/domain/swap_network_policy.dart';
+import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart' show NetworkEnv;
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/restored_swap.dart';
@@ -13,11 +16,17 @@ class RestoreSwapsUsecase {
     required this._settingsRepository,
   });
 
-  Future<List<RestorableSwap>> execute() async {
+  Future<Result<List<RestorableSwap>, SwapFailure>> execute() async {
     try {
       final settings = await _settingsRepository.fetch();
-      final isTestnet = settings.environment.isTestnet;
-      log.info('SWAP_RESTORE: starting (testnet=$isTestnet)');
+      if (!swapEnvironmentAvailable(settings.environment.networkEnv)) {
+        log.config(
+          'Swap recovery unavailable network=${settings.environment.name}',
+        );
+        return const Err(SwapUnsupportedNetworkFailure());
+      }
+      final isTestnet = settings.environment.networkEnv == NetworkEnv.testnet;
+      log.fine('Swap restore started network=${settings.environment.name}');
 
       final restored = await _swapRepository.restoreSwaps(isTestnet: isTestnet);
 
@@ -30,24 +39,15 @@ class RestoreSwapsUsecase {
           RestorableSwap(swap: swap, existsLocally: localIds.contains(swap.id)),
       ];
       final missing = result.where((r) => !r.existsLocally).length;
-      log.info(
-        'SWAP_RESTORE: ${result.length} restored, '
-        '${result.length - missing} already local, $missing missing',
-      );
-      for (final r in result) {
-        log.info(
-          'SWAP_RESTORE:   ${r.swap.id} ${r.swap.kind.name} '
-          'local=${r.existsLocally}',
-        );
-      }
-      return result;
-    } catch (e) {
-      log.warning('SWAP_RESTORE: failed: $e');
-      throw RestoreSwapsException('$e');
+      log.fine('Swap restore finished count=${result.length} missing=$missing');
+      return Ok(result);
+    } on String {
+      // The legacy provider still throws strings; contain them without
+      // logging their payload or swallowing programmer Errors.
+      return const Err(SwapUnexpectedFailure());
+    } on Exception {
+      log.warning('Swap restore unavailable');
+      return const Err(SwapUnexpectedFailure());
     }
   }
-}
-
-class RestoreSwapsException extends BullException {
-  RestoreSwapsException(super.message);
 }

@@ -1,3 +1,6 @@
+import 'package:bb_mobile/features/wallet/domain/network_x.dart';
+import 'package:primitives/primitives.dart'
+    show NetworkCapabilities, NetworkCapability;
 import 'package:bb_mobile/core/utils/payment_request.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bull_logger/bull_logger.dart';
@@ -27,10 +30,16 @@ class CreateReceiveOrderSwapUsecase {
     required int amountSat,
     String? note,
   }) async {
+    if (!NetworkCapabilities.supports(
+      wallet.network.shared,
+      NetworkCapability.swaps,
+    )) {
+      return const Err(ReceiveSwapUnavailableFailure());
+    }
     if (!wallet.isLiquid || amountSat <= 0) {
       return const Err(ReceiveSwapUnavailableFailure());
     }
-    final environment = wallet.isTestnet
+    final environment = wallet.network.requireHistoricalTestnet()
         ? OrderSwapEnvironment.testnet
         : OrderSwapEnvironment.mainnet;
 
@@ -94,7 +103,7 @@ class CreateReceiveOrderSwapUsecase {
       }
       final request = await _parsePaymentRequest(invoice);
       if (request is! Bolt11PaymentRequest ||
-          request.isTestnet != wallet.isTestnet ||
+          request.isTestnet != wallet.network.requireHistoricalTestnet() ||
           request.amountSat != amountSat) {
         log.warning('[ReceiveOrderSwap] create returned an invalid invoice');
         return const Err(
@@ -151,6 +160,7 @@ class CreateReceiveOrderSwapUsecase {
         outNetwork: outNetwork,
         logMessage: failure.logMessage,
       ),
+    SwapUnsupportedNetworkFailure() ||
     SwapValidationFailure() ||
     SwapProviderFailure() => ReceiveSwapUnavailableFailure(failure.logMessage),
     SwapRateLimitedFailure(:final retryAfter) => ReceiveRateLimitedFailure(

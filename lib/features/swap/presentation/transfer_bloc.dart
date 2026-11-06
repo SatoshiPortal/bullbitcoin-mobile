@@ -286,7 +286,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
     final pending =
         (pendingResult as Ok<List<OrderSwapRecord>, SwapFailure>).value;
     final record = pending.where((candidate) {
-      final expectedEnvironment = fromWallet.network.isTestnet
+      final expectedEnvironment = fromWallet.network.requireHistoricalTestnet()
           ? OrderSwapEnvironment.testnet
           : OrderSwapEnvironment.mainnet;
       final expectedInNetwork = fromWallet.isLiquid
@@ -646,7 +646,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
     if (fromWallet.isHardwareWallet) {
       throw SwapCreationException('hardware_wallet_swap_unavailable');
     }
-    final orderEnvironment = fromWallet.network.isTestnet
+    final orderEnvironment = fromWallet.network.requireHistoricalTestnet()
         ? OrderSwapEnvironment.testnet
         : OrderSwapEnvironment.mainnet;
 
@@ -732,7 +732,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
                   ? SwapType.liquidToBitcoin
                   : SwapType.bitcoinToLiquid,
               status: SwapStatus.pending,
-              environment: fromWallet.network.isTestnet
+              environment: fromWallet.network.requireHistoricalTestnet()
                   ? Environment.testnet
                   : Environment.mainnet,
               creationTime: created.createdAt,
@@ -1698,6 +1698,9 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
           txId = await _broadcastBitcoinTxUsecase.execute(
             broadcasting.signedPayinTransaction!,
             isPsbt: broadcasting.payinIsPsbt!,
+            network:
+                state.fromWallet?.network ??
+                (throw const UnsupportedNetworkException()),
           );
         }
         final broadcastResult = await _markOrderSwapPayinBroadcastUsecase
@@ -1722,6 +1725,9 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
         txId = await _broadcastBitcoinTxUsecase.execute(
           signedPsbt,
           isPsbt: true,
+          network:
+              state.fromWallet?.network ??
+              (throw const UnsupportedNetworkException()),
         );
         unawaited(
           _syncWalletsAfterBroadcast([
