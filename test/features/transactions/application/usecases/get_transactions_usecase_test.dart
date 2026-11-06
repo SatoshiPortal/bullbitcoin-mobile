@@ -155,6 +155,36 @@ void main() {
     );
   });
 
+  test('regtest history reads only its concrete wallet transactions', () async {
+    when(settingsRepository.fetch).thenAnswer(
+      (_) async => const SettingsEntity(
+        environment: Environment.regtest,
+        bitcoinUnit: BitcoinUnit.sats,
+        currencyCode: 'USD',
+      ),
+    );
+    final walletTx = _walletTransaction(
+      txId: 'regtest-tx',
+      walletId: 'regtest-wallet',
+      isIncoming: true,
+    ).copyWith(network: Network.bitcoinRegtest);
+    when(
+      () => walletTransactionRepository.getWalletTransactions(
+        walletId: 'regtest-wallet',
+        sync: false,
+        environment: Environment.regtest,
+      ),
+    ).thenAnswer((_) async => [walletTx]);
+    final rows = unwrap(await usecase.execute(walletId: 'regtest-wallet'));
+    expect(rows.single.walletTransaction, walletTx);
+    expect(rows.single.supportsPublicExplorer, false);
+    verifyZeroInteractions(mainnetOrderRepository);
+    verifyZeroInteractions(testnetOrderRepository);
+    verifyZeroInteractions(payjoinSessions);
+    verifyZeroInteractions(boltzSwapRepository);
+    verifyZeroInteractions(getOrderSwaps);
+  });
+
   test(
     'hides an aborted Payjoin until its original wallet tx is synced',
     () async {

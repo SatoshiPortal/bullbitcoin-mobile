@@ -73,6 +73,7 @@ void main() {
     when(
       () => walletTransactionRepository.getWalletTransactions(
         txId: any(named: 'txId'),
+        environment: any(named: 'environment'),
       ),
     ).thenAnswer((_) async => []);
     when(
@@ -82,6 +83,37 @@ void main() {
       (_) async => const bb.Ok<List<OrderSwapRecord>, TransactionFailure>([]),
     );
   });
+
+  test(
+    'regtest tx lookup never queries public network feature histories',
+    () async {
+      when(settingsRepository.fetch).thenAnswer(
+        (_) async => const SettingsEntity(
+          environment: Environment.regtest,
+          bitcoinUnit: BitcoinUnit.sats,
+          currencyCode: 'USD',
+        ),
+      );
+      when(
+        () => walletTransactionRepository.getWalletTransactions(
+          txId: _txId,
+          environment: Environment.regtest,
+        ),
+      ).thenAnswer((_) async => []);
+      expect(unwrap(await usecase.execute(_txId)), isEmpty);
+      verify(
+        () => walletTransactionRepository.getWalletTransactions(
+          txId: _txId,
+          environment: Environment.regtest,
+        ),
+      ).called(1);
+      verifyZeroInteractions(mainnetOrderRepository);
+      verifyZeroInteractions(testnetOrderRepository);
+      verifyZeroInteractions(payjoinSessions);
+      verifyZeroInteractions(swapHistoryRepository);
+      verifyZeroInteractions(getTransactionOrderSwapsUsecase);
+    },
+  );
 
   test(
     'keeps the order when only a payjoin session is found for the txid',
