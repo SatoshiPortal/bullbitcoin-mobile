@@ -142,13 +142,13 @@ class AppLocator {
     AppUnlockLocator.setup(locator);
     OnboardingLocator.setup(locator);
     AllSeedViewLocator.setup(locator);
-    // SP must register before settings/wallet: their wrapper use cases
-    // resolve locator<SpFacade>().
+    // SP starts watchers eagerly, so its wallet infrastructure must exist.
+    // Wallet's SP use cases resolve the facade lazily, after registration.
+    WalletLocator.setup(locator);
     SpLocator.setup(locator);
     SettingsLocator.setup(locator);
     const LogsFeature().setup(locator);
     BitcoinPriceLocator.setup(locator);
-    WalletLocator.setup(locator);
     TransactionsLocator.registerAdapters(locator);
     TransactionsLocator.registerUsecases(locator);
     TransactionsLocator.registerBlocs(locator);

@@ -1,3 +1,14 @@
+import 'package:bb_mobile/core/wallet/data/repositories/wallet_transaction_repository_impl.dart';
+import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
+import 'package:bb_mobile/features/labels/labels_facade.dart';
+import 'package:bb_mobile/core/wallet/data/datasources/bdk_wallet_datasource.dart';
+import 'package:bb_mobile/core/wallet/data/datasources/lwk_wallet_datasource.dart';
+import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
+import 'package:bb_mobile/features/wallet/data/foreground_wallet_sync.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasource.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_catalog_port_impl.dart';
+import 'package:transaction_sync/transaction_sync.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bull_tor/tor.dart';
 import 'package:bb_mobile/features/sp/public/sp_facade.dart';
@@ -28,6 +39,41 @@ import 'package:get_it/get_it.dart';
 
 class WalletLocator {
   static void setup(GetIt locator) {
+    locator.registerLazySingleton<WalletCatalogPort>(
+      () => WalletCatalogPortImpl(locator<WalletMetadataDatasource>()),
+    );
+    locator.registerLazySingleton<ElectrumSync>(
+      () => ElectrumSync(
+        connections: locator<WalletConnectionPolicy>(),
+        documentsDirectory: () async =>
+            (await getApplicationDocumentsDirectory()).path,
+      ),
+    );
+    locator.registerLazySingleton<ForegroundWalletSync>(
+      () => ForegroundWalletSync(locator<ElectrumSync>()),
+    );
+    locator.registerLazySingleton<WalletRepository>(() {
+      final sync = locator<ForegroundWalletSync>();
+      return WalletRepository(
+        walletMetadataDatasource: locator<WalletMetadataDatasource>(),
+        bdkWalletDatasource: locator<BdkWalletDatasource>(),
+        lwkWalletDatasource: locator<LwkWalletDatasource>(),
+        synchronize: sync.synchronize,
+        isSyncing: sync.isSyncing,
+        syncStarted: sync.started,
+        syncFinished: sync.finished,
+        electrumSyncResultStream: sync.results,
+      );
+    });
+    locator.registerLazySingleton<WalletTransactionRepository>(
+      () => WalletTransactionRepositoryImpl(
+        walletMetadataDatasource: locator<WalletMetadataDatasource>(),
+        labelsFacade: locator<LabelsFacade>(),
+        bdkWalletTransactionDatasource: locator<BdkWalletDatasource>(),
+        lwkWalletTransactionDatasource: locator<LwkWalletDatasource>(),
+        synchronize: locator<ForegroundWalletSync>().synchronize,
+      ),
+    );
     // Usecase
     locator.registerFactory<GetUnconfirmedIncomingBalanceUsecase>(
       () => GetUnconfirmedIncomingBalanceUsecase(
