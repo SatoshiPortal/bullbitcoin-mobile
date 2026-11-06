@@ -13,12 +13,12 @@ Each asynchronous `Future<Result<T, SecretFailure>>` is shown as `T`. Other retu
 ```text
 Secrets
 |-- generate([wordCount: MnemonicWordCount.words12]) -> Secret
-|-- import(words:, [passphrase:], [acceptOnly:]) -> Secret
+|-- import(words:, [language: Language.english], [passphrase:], [acceptOnly:]) -> Secret
 |-- fetch(id) -> Secret
 |-- list() -> List<SecretEntry>
 |-- trash(id) -> void
 |-- exists(id) -> bool
-|-- contains(words:, [passphrase:]) -> bool
+|-- contains(words:, [language: Language.english], [passphrase:]) -> bool
 |-- preview
 |   `-- bitcoinDescriptors(words:, [language: Language.english], [passphrase:], network:, scriptTypes:) -> Map<ScriptType, ({String external, String internal})>
 |-- recoverbull
