@@ -26,12 +26,13 @@ class CheckDuplicateMnemonicUsecase {
     var referenced = false;
     var invalid = 0;
     for (final row in await _metadata.fetchAll()) {
-      // Only the legacy origin decoder throws strings; other failures surface.
+      // An unresolved persisted network cannot establish a duplicate on this
+      // network. The catalog row remains available for secret protection.
       try {
         if (row.seedFingerprint == id && row.network == network) {
           referenced = true;
         }
-      } on String {
+      } on FormatException {
         invalid++;
       }
     }
@@ -59,9 +60,10 @@ class CheckDuplicateMnemonicUsecase {
           return Err(ImportMnemonicUnexpectedFailure(failure.toString()));
         case Ok(value: final secret?):
           final settings = await _settings.fetch();
-          final network = settings.environment.isMainnet
-              ? Network.bitcoinMainnet
-              : Network.bitcoinTestnet;
+          final network = Network.fromEnvironment(
+            environment: settings.environment.networkEnv,
+            isLiquid: false,
+          );
           if (await isReferenced(secret.id, network)) {
             return const Err(ImportMnemonicDuplicateFailure());
           }

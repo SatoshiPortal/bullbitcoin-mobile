@@ -1,5 +1,5 @@
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
-import 'package:primitives/primitives.dart' show Fingerprint;
+import 'package:primitives/primitives.dart' show Fingerprint, NetworkEnv;
 import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:secrets/secrets.dart';
@@ -35,23 +35,31 @@ class CreateDefaultWalletsUsecase {
   Future<List<Wallet>> execute({
     List<String>? mnemonicWords,
     Secret? secret,
+    NetworkEnv? expectedNetwork,
   }) async {
     if (secret != null && mnemonicWords != null) {
       throw ArgumentError('Provide either a secret or mnemonic words');
     }
     if (secret != null) _requireDefaultCapable(secret.info);
     try {
-      await _resumeProvisioning?.call();
       final settings = await _settingsRepository.fetch();
       final environment = settings.environment;
+      if (expectedNetwork != null &&
+          environment.networkEnv != expectedNetwork) {
+        throw CreateDefaultWalletsException('Selected network changed');
+      }
+      await _resumeProvisioning?.call();
 
       const scriptType = ScriptType.bip84;
-      final bitcoinNetwork = environment.isMainnet
-          ? Network.bitcoinMainnet
-          : Network.bitcoinTestnet;
-      final liquidNetwork = environment.isMainnet
-          ? Network.liquidMainnet
-          : Network.liquidTestnet;
+      final bitcoinNetwork = Network.fromEnvironment(
+        environment: settings.environment.networkEnv,
+        isLiquid: false,
+      );
+      final liquidNetwork = Network.fromEnvironment(
+        environment: settings.environment.networkEnv,
+        isLiquid: true,
+      );
+      final supportsLiquid = liquidNetwork != Network.liquidRegtest;
 
       final existing = switch (await _wallet.getWallets(
         onlyDefaults: true,
@@ -66,7 +74,7 @@ class CreateDefaultWalletsUsecase {
       final hasBitcoin = existing.any((w) => w.network.isBitcoin);
       final hasLiquid = existing.any((w) => w.network.isLiquid);
       Secret? resumedSecret;
-      if (hasBitcoin && hasLiquid) {
+      if (hasBitcoin && (!supportsLiquid || hasLiquid)) {
         if (secret != null || mnemonicWords != null) {
           throw StateError('Default wallets already exist');
         }
@@ -130,7 +138,7 @@ class CreateDefaultWalletsUsecase {
           ),
         );
       }
-      if (!hasLiquid) {
+      if (supportsLiquid && !hasLiquid) {
         created.add(
           await _wallet.createWallet(
             secret: defaultSecret,

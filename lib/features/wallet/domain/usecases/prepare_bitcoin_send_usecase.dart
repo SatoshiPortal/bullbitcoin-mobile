@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bull_logger/bull_logger.dart';
@@ -50,8 +51,8 @@ class PrepareBitcoinSendUsecase {
         selectedInputs: selectedInputs,
       );
 
-      log.info(
-        'Bitcoin wallet id $walletId building psbt. Unspendable utxos: $unspendableUtxos',
+      log.fine(
+        'Bitcoin transaction preparation unspendable_count=${unspendableUtxos.length}',
       );
 
       final psbt = await _bitcoinWalletRepository.buildPsbt(
@@ -73,6 +74,8 @@ class PrepareBitcoinSendUsecase {
     } on NoSpendableUtxoException {
       rethrow;
     } on InsufficientFundsException {
+      rethrow;
+    } on InvalidWalletAddressException {
       rethrow;
     } catch (e) {
       throw PrepareBitcoinSendException(e.toString());

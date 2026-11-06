@@ -67,10 +67,16 @@ class ImportWalletUsecase {
 
     try {
       final settings = await _settingsRepository.fetch();
-      final environment = settings.environment;
-      final bitcoinNetwork = environment.isMainnet
-          ? Network.bitcoinMainnet
-          : Network.bitcoinTestnet;
+      final bitcoinNetwork = Network.fromEnvironment(
+        environment: settings.environment.networkEnv,
+        isLiquid: false,
+      );
+      if (bitcoinNetwork == Network.bitcoinRegtest &&
+          scriptType != ScriptType.bip84) {
+        return const Err(
+          ImportMnemonicUnexpectedFailure('unsupported regtest script'),
+        );
+      }
 
       final Secret secret;
       switch (await _secrets.import(

@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:transaction_sync/read.dart';
 import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_address_repository.dart';
@@ -25,6 +26,8 @@ class GetReceiveAddressUsecase {
       }
 
       return address;
+    } on InvalidWalletAddressException {
+      rethrow;
     } on WalletSnapshotException catch (e) {
       throw GetReceiveAddressException(e.failure.logCode, reported: true);
     } on Exception {
