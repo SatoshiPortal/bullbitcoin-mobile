@@ -1,5 +1,5 @@
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart'
-    show SeedReferences;
+    show SeedReferences, SeedReferencePort;
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/features/all_seed_view/domain/all_seed_view_failure.dart';
@@ -9,6 +9,8 @@ import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';
 import 'package:secrets/secrets.dart';
 import 'package:secrets/testing.dart';
+
+class _MockSeedOwner extends Mock implements SeedReferencePort {}
 
 class _MockWalletRepository extends Mock implements WalletRepository {}
 
@@ -51,6 +53,31 @@ void main() {
     references = SeedReferences(walletRepository);
     usecase = DeleteSecretUsecase(secrets: secrets, seedReferences: references);
   });
+
+  for (final outcome in ['referenced', 'incomplete', 'throws']) {
+    test('additional custody owner $outcome preserves seed', () async {
+      when(
+        () => walletRepository.getCustodyFingerprints(),
+      ).thenAnswer((_) async => const Ok<Set<Fingerprint>, WalletFailure>({}));
+      final owner = _MockSeedOwner();
+      references.register(owner);
+      if (outcome == 'throws') {
+        when(
+          () => owner.getCustodyFingerprints(),
+        ).thenThrow(Exception('unavailable'));
+      } else {
+        when(() => owner.getCustodyFingerprints()).thenAnswer(
+          (_) async => outcome == 'referenced'
+              ? Ok<Set<Fingerprint>, WalletFailure>({id})
+              : const Err<Set<Fingerprint>, WalletFailure>(
+                  WalletStorageFailure('incomplete'),
+                ),
+        );
+      }
+      expect(await usecase.execute(id), isA<Err>());
+      expect(storedSecrets(), hasLength(1));
+    });
+  }
 
   group('DeleteSecretUsecase', () {
     test('deletes when no wallet uses the secret', () async {
