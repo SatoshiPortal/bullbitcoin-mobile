@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/wallet/domain/wallet.dart' as app;
 import 'dart:async';
 
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
@@ -218,6 +219,7 @@ void main() {
       );
 
   setUpAll(() {
+    registerFallbackValue(BitcoinNetwork.mainnet);
     registerFallbackValue(const NetworkFee.absolute(200));
     registerFallbackValue(<WalletUtxo>[]);
     // The fee estimate takes the wallet itself, so `any(named: 'wallet')`
@@ -293,7 +295,11 @@ void main() {
       )),
     );
     when(
-      () => broadcastPayPayin.bitcoin(any(), isPsbt: any(named: 'isPsbt')),
+      () => broadcastPayPayin.bitcoin(
+        any(),
+        isPsbt: any(named: 'isPsbt'),
+        network: app.Network.bitcoinMainnet,
+      ),
     ).thenAnswer((_) async => Ok<String, PayFailure>(expectedTxid));
     when(
       () => getNetworkFees.execute(isLiquid: any(named: 'isLiquid')),
@@ -429,7 +435,7 @@ void main() {
         when(
           () => sendWithPayjoin.execute(
             walletId: any(named: 'walletId'),
-            isTestnet: any(named: 'isTestnet'),
+            network: any(named: 'network'),
             bip21: any(named: 'bip21'),
             unsignedOriginalPsbt: any(named: 'unsignedOriginalPsbt'),
             amountSat: any(named: 'amountSat'),
@@ -502,7 +508,7 @@ void main() {
       when(
         () => sendWithPayjoin.execute(
           walletId: any(named: 'walletId'),
-          isTestnet: any(named: 'isTestnet'),
+          network: any(named: 'network'),
           bip21: any(named: 'bip21'),
           unsignedOriginalPsbt: any(named: 'unsignedOriginalPsbt'),
           amountSat: any(named: 'amountSat'),
@@ -545,7 +551,11 @@ void main() {
       );
       verify(() => watchPayjoin.execute(bip21)).called(1);
       verifyNever(
-        () => broadcastPayPayin.bitcoin(any(), isPsbt: any(named: 'isPsbt')),
+        () => broadcastPayPayin.bitcoin(
+          any(),
+          isPsbt: any(named: 'isPsbt'),
+          network: app.Network.bitcoinMainnet,
+        ),
       );
     });
 
@@ -561,7 +571,7 @@ void main() {
       when(
         () => sendWithPayjoin.execute(
           walletId: any(named: 'walletId'),
-          isTestnet: any(named: 'isTestnet'),
+          network: any(named: 'network'),
           bip21: any(named: 'bip21'),
           unsignedOriginalPsbt: any(named: 'unsignedOriginalPsbt'),
           amountSat: any(named: 'amountSat'),
@@ -597,7 +607,7 @@ void main() {
       when(
         () => sendWithPayjoin.execute(
           walletId: any(named: 'walletId'),
-          isTestnet: any(named: 'isTestnet'),
+          network: any(named: 'network'),
           bip21: any(named: 'bip21'),
           unsignedOriginalPsbt: any(named: 'unsignedOriginalPsbt'),
           amountSat: any(named: 'amountSat'),
@@ -633,7 +643,7 @@ void main() {
       verify(
         () => sendWithPayjoin.execute(
           walletId: any(named: 'walletId'),
-          isTestnet: any(named: 'isTestnet'),
+          network: any(named: 'network'),
           bip21: any(named: 'bip21'),
           unsignedOriginalPsbt: any(named: 'unsignedOriginalPsbt'),
           amountSat: any(named: 'amountSat'),
@@ -677,7 +687,11 @@ void main() {
         await Future<void>.delayed(const Duration(milliseconds: 100));
 
         verify(
-          () => broadcastPayPayin.bitcoin(any(), isPsbt: any(named: 'isPsbt')),
+          () => broadcastPayPayin.bitcoin(
+            any(),
+            isPsbt: any(named: 'isPsbt'),
+            network: app.Network.bitcoinMainnet,
+          ),
         ).called(1);
         verify(
           () => preparePayBitcoinPayin.execute(
@@ -865,7 +879,7 @@ void main() {
       when(
         () => sendWithPayjoin.execute(
           walletId: any(named: 'walletId'),
-          isTestnet: any(named: 'isTestnet'),
+          network: any(named: 'network'),
           bip21: any(named: 'bip21'),
           unsignedOriginalPsbt: any(named: 'unsignedOriginalPsbt'),
           amountSat: any(named: 'amountSat'),
@@ -920,7 +934,7 @@ void main() {
       when(
         () => sendWithPayjoin.execute(
           walletId: any(named: 'walletId'),
-          isTestnet: any(named: 'isTestnet'),
+          network: any(named: 'network'),
           bip21: any(named: 'bip21'),
           unsignedOriginalPsbt: any(named: 'unsignedOriginalPsbt'),
           amountSat: any(named: 'amountSat'),
@@ -974,7 +988,7 @@ void main() {
       verify(
         () => sendWithPayjoin.execute(
           walletId: 'wallet-1',
-          isTestnet: false,
+          network: BitcoinNetwork.mainnet,
           bip21: bip21,
           unsignedOriginalPsbt: unsignedPsbt,
           amountSat: 100000,
@@ -1004,7 +1018,11 @@ void main() {
       // The exchange expires the order at its deadline and does not credit a
       // payin sent after it.
       verifyNever(
-        () => broadcastPayPayin.bitcoin(any(), isPsbt: any(named: 'isPsbt')),
+        () => broadcastPayPayin.bitcoin(
+          any(),
+          isPsbt: any(named: 'isPsbt'),
+          network: app.Network.bitcoinMainnet,
+        ),
       );
       // A fresh quote is asked for instead.
       verify(
@@ -1256,7 +1274,11 @@ void main() {
       bloc.add(const PayEvent.sendPaymentConfirmed());
       await Future<void>.delayed(const Duration(milliseconds: 50));
       verifyNever(
-        () => broadcastPayPayin.bitcoin(any(), isPsbt: any(named: 'isPsbt')),
+        () => broadcastPayPayin.bitcoin(
+          any(),
+          isPsbt: any(named: 'isPsbt'),
+          network: app.Network.bitcoinMainnet,
+        ),
       );
     });
 
@@ -1483,7 +1505,11 @@ void main() {
         // hardcoded Fastest rate must appear nowhere.
         expect(capturedBuildFees(), everyElement(equals(feeOptions.slow)));
         verify(
-          () => broadcastPayPayin.bitcoin(any(), isPsbt: any(named: 'isPsbt')),
+          () => broadcastPayPayin.bitcoin(
+            any(),
+            isPsbt: any(named: 'isPsbt'),
+            network: app.Network.bitcoinMainnet,
+          ),
         ).called(1);
       },
       timeout: const Timeout(Duration(seconds: 60)),

@@ -71,6 +71,38 @@ void main() {
     network: OrderBitcoinNetwork.bitcoin,
   );
 
+  for (final refresh in [false, true]) {
+    test(
+      'regtest refuses pay ${refresh ? 'refresh' : 'creation'} before backend IO',
+      () async {
+        when(settings.fetch).thenAnswer(
+          (_) async => const SettingsEntity(
+            environment: Environment.regtest,
+            bitcoinUnit: BitcoinUnit.sats,
+            currencyCode: 'CAD',
+          ),
+        );
+        final result = refresh
+            ? await buildRefresh().execute(
+                orderId: 'order-1',
+                expectedDepositAddress: 'address',
+              )
+            : await place();
+        expect(
+          result,
+          isA<Err>().having(
+            (result) => result.failure,
+            'failure',
+            isA<PayUnsupportedNetworkFailure>(),
+          ),
+        );
+        verifyZeroInteractions(mainnet);
+        verifyZeroInteractions(testnet);
+        verifyZeroInteractions(payjoinPolicy);
+      },
+    );
+  }
+
   group('PlacePayOrderUsecase', () {
     // A bill payment pays the exchange like a sell order does.
     Future<bool> requestedPayjoin(PayjoinPolicy policy) async {

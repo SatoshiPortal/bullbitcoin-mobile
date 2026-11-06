@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/wallet/domain/wallet.dart' as app;
 import 'package:bb_mobile/features/send/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/features/send/domain/usecases/broadcast_liquid_transaction_usecase.dart';
@@ -220,13 +221,17 @@ void main() {
     test('a rejected broadcast is sanitized, not quoted', () async {
       final broadcast = _MockBroadcastBitcoin();
       when(
-        () => broadcast.execute(any(), isPsbt: any(named: 'isPsbt')),
+        () => broadcast.execute(
+          any(),
+          isPsbt: any(named: 'isPsbt'),
+          network: app.Network.bitcoinMainnet,
+        ),
       ).thenThrow(Exception(_rawReason));
 
       final result = await BroadcastPayPayinUsecase(
         broadcastBitcoinTransactionUsecase: broadcast,
         broadcastLiquidTransactionUsecase: _MockBroadcastLiquid(),
-      ).bitcoin('rawtx', isPsbt: true);
+      ).bitcoin('rawtx', isPsbt: true, network: app.Network.bitcoinMainnet);
 
       final failure = (result as Err<String, PayFailure>).failure;
       expect(failure, isA<PayUnexpectedFailure>());
