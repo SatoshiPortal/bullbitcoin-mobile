@@ -8,6 +8,7 @@ import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
 import 'package:sqlite3/sqlite3.dart';
 import '../../transaction_sync.dart';
+import '../domain/native_network_policy.dart';
 import 'native_write_session.dart';
 import 'revision_store.dart';
 import 'writer_lock.dart';
@@ -301,10 +302,8 @@ final class NativeWalletWriter implements LiquidReadAdmission {
   Future<Result<LiquidReadLease, TransactionSyncFailure>> acquire(
     WalletKey key,
   ) async {
-    if (key.network.env != NetworkEnv.mainnet &&
-        key.network.env != NetworkEnv.testnet) {
-      return const Err(TransactionSyncUnsupportedNetworkFailure());
-    }
+    final failure = nativeKeyFailure(key);
+    if (failure != null) return Err(failure);
     final trace =
         LeaseDiagnostics.current ??
         LeaseDiagnostics(
@@ -360,10 +359,8 @@ final class NativeWalletWriter implements LiquidReadAdmission {
     bool preparing = false,
     bool reconcile = true,
   }) async {
-    if (key.network.env != NetworkEnv.mainnet &&
-        key.network.env != NetworkEnv.testnet) {
-      return const Err(TransactionSyncUnsupportedNetworkFailure());
-    }
+    final failure = nativeKeyFailure(key);
+    if (failure != null) return Err(failure);
     final trace = LeaseDiagnostics(
       role: LeaseRole.writer,
       intent: preparing
@@ -581,6 +578,8 @@ final class NativeWalletWriter implements LiquidReadAdmission {
     if (descriptor.key != key) {
       throw const _WriterFailure(TransactionSyncInvalidCatalogFailure());
     }
+    final failure = nativeDescriptorFailure(descriptor);
+    if (failure != null) throw _WriterFailure(failure);
     final record = revisions.record(key);
     final previousHash = record?.descriptorHash;
     if (record?.state.lifecycle != WalletLifecycle.deleted &&

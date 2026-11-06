@@ -9,6 +9,7 @@ import 'package:bull_logger/bull_logger.dart';
 import 'wallet_read_readiness.dart';
 
 import '../domain/transaction_sync_failure.dart';
+import '../domain/native_network_policy.dart';
 import '../domain/wallet_catalog_port.dart';
 import '../domain/wallet_key.dart';
 import '../domain/wallet_revision.dart';
@@ -99,6 +100,8 @@ final class WalletSnapshotReader {
     PublicWalletDescriptor descriptor,
     Future<T> Function(WalletReadReady) hydrate,
   ) async {
+    final failure = nativeDescriptorFailure(descriptor);
+    if (failure != null) return Err(failure);
     final key = descriptor.key;
     // Serialize hydration/cache publication for the same wallet in this isolate.
     final trace = LeaseDiagnostics(
@@ -334,7 +337,8 @@ final class WalletSnapshotReader {
   Future<bdk.Wallet> _bitcoin(BitcoinWalletDescriptor descriptor) async {
     final network = descriptor.key.network;
     if (network != BitcoinNetwork.mainnet &&
-        network != BitcoinNetwork.testnet) {
+        network != BitcoinNetwork.testnet &&
+        network != BitcoinNetwork.regtest) {
       throw const _ReadFailure(TransactionSyncUnsupportedNetworkFailure());
     }
     final source = nativeWalletStoragePath(documentsDirectory, descriptor.key);
@@ -352,12 +356,25 @@ final class WalletSnapshotReader {
     );
     final persister = bdk.Persister.newSqlite(path: source);
     try {
-      return bdk.Wallet.load(
+      final wallet = bdk.Wallet.load(
         descriptor: external,
         changeDescriptor: internal,
         persister: persister,
         lookahead: 25,
       );
+      final expected = switch (network) {
+        BitcoinNetwork.mainnet => bdk.Network.bitcoin,
+        BitcoinNetwork.testnet => bdk.Network.testnet,
+        BitcoinNetwork.regtest => bdk.Network.regtest,
+        _ => throw const _ReadFailure(
+          TransactionSyncUnsupportedNetworkFailure(),
+        ),
+      };
+      if (wallet.network() != expected) {
+        wallet.dispose();
+        throw const _ReadFailure(TransactionSyncInvalidCatalogFailure());
+      }
+      return wallet;
     } finally {
       persister.dispose();
       external.dispose();

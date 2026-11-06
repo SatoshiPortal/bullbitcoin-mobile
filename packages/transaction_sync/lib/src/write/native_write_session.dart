@@ -43,6 +43,7 @@ final class SdkWriteSessions implements NativeWriteSessions {
         final network = switch (descriptor.key.network) {
           BitcoinNetwork.mainnet => bdk.Network.bitcoin,
           BitcoinNetwork.testnet => bdk.Network.testnet,
+          BitcoinNetwork.regtest => bdk.Network.regtest,
           _ => throw const NativeNetworkUnsupported(),
         };
         if (!exists) {
@@ -74,6 +75,10 @@ final class SdkWriteSessions implements NativeWriteSessions {
             persister: persister,
             lookahead: 25,
           );
+          if (wallet.network() != network) {
+            wallet.dispose();
+            throw const NativeNetworkUnsupported();
+          }
           return _BitcoinSession(wallet, persister);
         } on Object {
           persister?.dispose();

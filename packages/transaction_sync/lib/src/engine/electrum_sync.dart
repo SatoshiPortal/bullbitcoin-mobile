@@ -14,6 +14,7 @@ import 'package:primitives/primitives.dart';
 
 import '../../write.dart';
 import '../domain/sync_reason.dart';
+import '../domain/native_network_policy.dart';
 import '../domain/wallet_revision.dart';
 import '../domain/reserved_address_port.dart';
 import '../domain/transaction_sync_failure.dart';
@@ -105,6 +106,8 @@ final class ElectrumSync {
     Future<Result<void, TransactionSyncFailure>> Function(SyncCompletion)?
     onCompletion,
   }) {
+    final failure = nativeDescriptorFailure(descriptor);
+    if (failure != null) return Future.value(Err(failure));
     final key = descriptor.key;
     final previous = _active[key];
     // Joined requests keep the existing pass's reason; each queued discovery owns its reason.
@@ -327,12 +330,10 @@ typedef _Attempt = ({
 
 Future<_Attempt> _performSync(_SyncParams params) async {
   final key = params.descriptor.key;
-  if (key.network.env != NetworkEnv.mainnet &&
-      key.network.env != NetworkEnv.testnet) {
+  final failure = nativeDescriptorFailure(params.descriptor);
+  if (failure != null) {
     return (
-      result: const Err<SyncCompletion, TransactionSyncFailure>(
-        TransactionSyncUnsupportedNetworkFailure(),
-      ),
+      result: Err<SyncCompletion, TransactionSyncFailure>(failure),
       retryable: false,
     );
   }
@@ -617,7 +618,7 @@ Future<_Attempt> _performNativeSync(
   }
   final kind = switch (descriptor.key.network) {
     BitcoinNetwork.mainnet => bdk.NetworkKind.main,
-    BitcoinNetwork.testnet => bdk.NetworkKind.test,
+    BitcoinNetwork.testnet || BitcoinNetwork.regtest => bdk.NetworkKind.test,
     _ => null,
   };
   if (kind == null) {
@@ -664,6 +665,20 @@ Future<_Attempt> _performNativeSync(
       persister: persister,
       lookahead: 25,
     );
+    final expected = switch (descriptor.key.network) {
+      BitcoinNetwork.mainnet => bdk.Network.bitcoin,
+      BitcoinNetwork.testnet => bdk.Network.testnet,
+      BitcoinNetwork.regtest => bdk.Network.regtest,
+      _ => null,
+    };
+    if (wallet.network() != expected) {
+      return (
+        result: const Err<SyncCompletion, TransactionSyncFailure>(
+          TransactionSyncInvalidCatalogFailure(),
+        ),
+        retryable: false,
+      );
+    }
     final checkpoint = wallet.latestCheckpoint();
     final height = checkpoint.height;
     checkpoint.hash.dispose();
@@ -841,6 +856,15 @@ Future<Result<void, TransactionSyncFailure>> _checkInitialScan(
       persister: persister,
       lookahead: 25,
     );
+    final expected = switch (descriptor.key.network) {
+      BitcoinNetwork.mainnet => bdk.Network.bitcoin,
+      BitcoinNetwork.testnet => bdk.Network.testnet,
+      BitcoinNetwork.regtest => bdk.Network.regtest,
+      _ => null,
+    };
+    if (wallet.network() != expected) {
+      return const Err(TransactionSyncInvalidCatalogFailure());
+    }
     final checkpoint = wallet.latestCheckpoint();
     try {
       return checkpoint.height == 0

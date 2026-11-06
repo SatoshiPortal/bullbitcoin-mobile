@@ -1,0 +1,41 @@
+import 'package:primitives/primitives.dart';
+
+import 'transaction_sync_failure.dart';
+import 'wallet_catalog_port.dart';
+import 'wallet_key.dart';
+
+/// No storage or transport side effects are permitted for an unsupported key.
+TransactionSyncFailure? nativeKeyFailure(WalletKey key) {
+  switch (key.network) {
+    case BitcoinNetwork.mainnet ||
+        BitcoinNetwork.testnet ||
+        LiquidNetwork.mainnet ||
+        LiquidNetwork.testnet:
+      return null;
+    case BitcoinNetwork.regtest:
+      return key.id.endsWith(':regtest') && key.id.length > ':regtest'.length
+          ? null
+          : const TransactionSyncInvalidCatalogFailure();
+    case BitcoinNetwork.signet:
+      return const TransactionSyncUnsupportedNetworkFailure();
+    case LiquidNetwork.regtest:
+      // TODO(lwk-dart#96): enable only after LiquidNetwork.regtest ships in the
+      // pinned bull_sdk, with its native lifecycle and path isolation tested.
+      return const TransactionSyncUnsupportedNetworkFailure();
+  }
+}
+
+/// Regtest is deliberately limited to native witness receive AND change.
+/// Native parsing subsequently validates descriptor syntax before any persist.
+TransactionSyncFailure? nativeDescriptorFailure(PublicWalletDescriptor value) {
+  final keyFailure = nativeKeyFailure(value.key);
+  if (keyFailure != null) return keyFailure;
+  if (value.key.network != BitcoinNetwork.regtest) return null;
+  if (value is! BitcoinWalletDescriptor ||
+      value.scriptType != ScriptType.bip84 ||
+      !value.externalDescriptor.startsWith('wpkh(') ||
+      !value.internalDescriptor.startsWith('wpkh(')) {
+    return const TransactionSyncInvalidCatalogFailure();
+  }
+  return null;
+}

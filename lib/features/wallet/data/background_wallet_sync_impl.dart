@@ -53,6 +53,10 @@ final class BackgroundWalletSyncImpl implements BackgroundWalletSync {
   BackgroundSyncFailure _failure(
     TransactionSyncFailure failure,
   ) => switch (failure) {
+    TransactionSyncInvalidAddressFailure() =>
+      const BackgroundSyncUnavailableFailure(
+        BackgroundSyncUnavailableReason.address,
+      ),
     TransactionSyncBusyFailure() => const BackgroundSyncBusyFailure(),
     TransactionSyncUnsupportedNetworkFailure(:final authorization) =>
       BackgroundSyncUnsupportedNetworkFailure(authorization: authorization),
