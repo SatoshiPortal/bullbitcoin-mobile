@@ -49,6 +49,13 @@ void main() {
       gateway: Gateway(),
       outbox: outbox,
     );
+    expect(
+      await notifications.recordObserved(
+        WalletPaymentNotificationIdentity.topicId(key),
+        [],
+      ),
+      isA<Ok>(),
+    );
     final ready = Completer<NotificationsFacade>();
     var visible = true;
     final observer = WalletPaymentObserver(() => ready.future, () => visible);
@@ -58,7 +65,6 @@ void main() {
         Duration.zero,
         revision: WalletRevision(key: key, generation: 1, revision: 2),
         incomingTxids: {'new'},
-        discoveredTxids: {'new'},
       ),
     );
     visible = false;

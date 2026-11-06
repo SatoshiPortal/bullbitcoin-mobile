@@ -1,3 +1,4 @@
+import 'package:sqlite3/sqlite3.dart';
 import 'dart:async';
 import 'dart:io';
 
@@ -21,7 +22,7 @@ void main() {
   WalletRevision stamp(int revision) =>
       WalletRevision(key: key, generation: 1, revision: revision);
   BackgroundSyncOutcome outcome({
-    List<String> incoming = const ['old', 'new'],
+    List<String>? incoming = const ['old', 'new'],
   }) => BackgroundSyncOutcome(
     revision: stamp(2),
     incomingTxids: incoming,
@@ -45,7 +46,6 @@ void main() {
         WalletSyncCompletion(
           revision: stamp(1),
           incomingTxids: ['old'],
-          discoveredTxids: ['old'],
           completedAt: DateTime.utc(2026),
           completedInForeground: true,
         ),
@@ -87,6 +87,30 @@ void main() {
       expect(gateway.shown, hasLength(1));
     },
   );
+
+  test('outbox failure cannot retry a committed sync', () async {
+    await baseline();
+    final database = sqlite3.open('${directory.path}/outbox');
+    addTearDown(database.dispose);
+    database.execute(
+      "CREATE TRIGGER reject_observation BEFORE INSERT ON notification_outbox BEGIN SELECT RAISE(ABORT, 'injected'); END",
+    );
+    writer.operation = () async => Ok(outcome());
+    expect((await task().executeAll()).shouldRetry, isFalse);
+    expect(
+      logs.entries,
+      contains((
+        BackgroundLogLevel.warning,
+        'Background observation failed: category=notification_persistence',
+      )),
+    );
+  });
+
+  test('missing observations still acknowledge the committed sync', () async {
+    writer.operation = () async => Ok(outcome(incoming: null));
+    expect((await task().executeAll()).shouldRetry, isFalse);
+    expect(gateway.shown, isEmpty);
+  });
 
   test(
     'failure uses writer stamp B, not admission A; repair C re-enables',

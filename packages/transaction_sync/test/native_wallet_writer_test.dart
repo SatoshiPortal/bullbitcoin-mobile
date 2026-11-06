@@ -416,6 +416,34 @@ void main() {
     },
   );
 
+  test('headless retries syncFailed without reconciliation', () async {
+    expect(
+      await writer.sync(
+        key,
+        expectedGeneration: 1,
+        operation: FailedSync(true),
+      ),
+      isA<Err>(),
+    );
+    expect(store.record(key)?.state.syncFailed, isTrue);
+    final before = store.record(key)?.state.stamp.revision;
+    final opens = sessions.opens;
+    var ran = false;
+    expect(
+      await writer.sync(
+        key,
+        expectedGeneration: 1,
+        reconcile: false,
+        operation: Sync((_) => ran = true),
+      ),
+      isA<Ok>(),
+    );
+    expect(ran, isTrue);
+    expect(sessions.opens, opens);
+    expect(store.record(key)?.state.syncFailed, isFalse);
+    expect(store.record(key)?.state.stamp.revision, (before ?? -1) + 1);
+  });
+
   test(
     'repeated adoption preserves the revision of an unchanged store',
     () async {
