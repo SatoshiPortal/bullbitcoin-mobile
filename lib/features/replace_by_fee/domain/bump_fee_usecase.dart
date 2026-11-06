@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/send/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/features/fees/domain/get_network_fees_usecase.dart';
@@ -68,7 +69,9 @@ class BumpFeeUsecase {
     required String walletId,
     required String txid,
     required RelativeFee newFeeRate,
+    Network? network,
   }) async {
+    network ??= await _broadcastBitcoinTransactionUsecase.captureNetwork();
     try {
       final psbt = await _bitcoinWalletRepository.bumpFee(
         walletId: walletId,
@@ -78,6 +81,7 @@ class BumpFeeUsecase {
       final broadcastedTxid = await _broadcastBitcoinTransactionUsecase.execute(
         psbt,
         isPsbt: true,
+        network: network,
       );
       return Ok(broadcastedTxid);
     } on ManipulatedTransactionException catch (e, st) {

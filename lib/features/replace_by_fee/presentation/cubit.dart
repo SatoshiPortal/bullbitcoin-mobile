@@ -88,6 +88,7 @@ class ReplaceByFeeCubit extends Cubit<ReplaceByFeeState> {
       walletId: originalTransaction.walletId,
       txid: originalTransaction.txId,
       newFeeRate: state.newFeeRate!.feeRate,
+      network: originalTransaction.network,
     )) {
       case Ok(:final value):
         emit(state.copyWith(txid: value));
