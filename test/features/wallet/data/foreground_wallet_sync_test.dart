@@ -262,6 +262,9 @@ void main() {
       when(() => metadata.fetchAll()).thenAnswer((_) async => []);
       var provisioned = false;
       final native = _Native();
+      when(() => native.prepareCreate(any())).thenAnswer((_) async {
+        verifyNever(() => metadata.store(any()));
+      });
       when(() => native.create(any())).thenAnswer((_) async {
         verify(() => metadata.store(any())).called(1);
         verifyNever(() => bdk.getBalance(wallet: any(named: 'wallet')));
