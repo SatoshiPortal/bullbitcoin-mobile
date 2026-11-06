@@ -1217,7 +1217,7 @@ class MnemonicLengthDropdown extends StatelessWidget {
             (length) => DropdownMenuItem(
               value: length,
               child: BullText(
-                '${length.words} words',
+                '${length.words}${context.loc.wordsDropdownSuffix}',
                 style: context.font.bodyMedium?.copyWith(
                   fontWeight: .w600,
                   color: context.appColors.text,
