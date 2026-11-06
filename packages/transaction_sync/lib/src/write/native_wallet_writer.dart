@@ -94,6 +94,7 @@ final class NativeWalletWriter implements LiquidReadAdmission {
           WriterLogLevel.warning,
           'Wallet writer rebuilding missing store network=${key.network}',
         );
+        revisions.requireRebuild(key);
         session = await _sessions.open(descriptor, create: true);
         rebuilt = true;
       }
@@ -357,6 +358,10 @@ final class NativeWalletWriter implements LiquidReadAdmission {
       return;
     }
     final descriptor = await _descriptor(key);
+    if (record.intent == WriteIntent.rebuild) {
+      await _resumeRebuild(descriptor, record.issued);
+      return;
+    }
     if (record.intent == WriteIntent.repair) {
       if (!allowRepairIntent) {
         throw const _WriterFailure(TransactionSyncNeedsRepairFailure());
@@ -387,19 +392,8 @@ final class NativeWalletWriter implements LiquidReadAdmission {
         WriterLogLevel.warning,
         'Wallet writer rebuilding interrupted missing store network=${key.network}',
       );
-      session = await _sessions.open(descriptor, create: true);
-      try {
-        final issued = record.issued;
-        if (issued != null) await session.revealAndPersist(issued);
-        revisions.finish(
-          key,
-          needsSync: true,
-          initializedDescriptor: descriptor,
-          liquidCachePath: session.liquidCachePath,
-        );
-      } finally {
-        session.close();
-      }
+      revisions.requireRebuild(key);
+      await _resumeRebuild(descriptor, record.issued);
       return;
     } on Object catch (error) {
       if (!allowRepairIntent || !isLiquidStatusConflict(error)) rethrow;
@@ -423,6 +417,29 @@ final class NativeWalletWriter implements LiquidReadAdmission {
       revisions.finish(
         key,
         issued: candidate ?? record.issued,
+        initializedDescriptor: descriptor,
+        liquidCachePath: session.liquidCachePath,
+      );
+    } finally {
+      session.close();
+    }
+  }
+
+  Future<void> _resumeRebuild(
+    PublicWalletDescriptor descriptor,
+    int? issued,
+  ) async {
+    late NativeWriteSession session;
+    try {
+      session = await _sessions.open(descriptor, create: false);
+    } on NativeStoreMissing {
+      session = await _sessions.open(descriptor, create: true);
+    }
+    try {
+      if (issued != null) await session.revealAndPersist(issued);
+      revisions.finish(
+        descriptor.key,
+        needsSync: true,
         initializedDescriptor: descriptor,
         liquidCachePath: session.liquidCachePath,
       );
