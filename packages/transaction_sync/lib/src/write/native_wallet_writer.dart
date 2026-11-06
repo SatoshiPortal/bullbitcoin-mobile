@@ -55,11 +55,30 @@ final class NativeWalletWriter implements LiquidReadAdmission {
     if (existingOnly ||
         (old != null && old.state.lifecycle == WalletLifecycle.active)) {
       revisions.begin(key, WriteIntent.load);
-      final session = await _sessions.open(descriptor, create: false);
+      late NativeWriteSession session;
+      var rebuilt = false;
       try {
+        session = await _sessions.open(descriptor, create: false);
+      } on NativeStoreMissing {
+        if (old == null || old.state.initializedSchema == 0) {
+          revisions.cancelUnchanged(key, old);
+          rethrow;
+        }
+        _diagnostics(
+          WriterLogLevel.warning,
+          'Wallet writer rebuilding missing store network=${key.network}',
+        );
+        session = await _sessions.open(descriptor, create: true);
+        rebuilt = true;
+      }
+      try {
+        if (old?.issued case final issued? when rebuilt) {
+          await session.revealAndPersist(issued);
+        }
         return WriterCommitted(
           revisions.finish(
             key,
+            needsSync: rebuilt ? true : null,
             initializedDescriptor: descriptor,
             liquidCachePath: session.liquidCachePath,
           ),
@@ -323,6 +342,31 @@ final class NativeWalletWriter implements LiquidReadAdmission {
         descriptor,
         create: record.intent == WriteIntent.create,
       );
+    } on NativeStoreMissing {
+      if (record.state.initializedSchema == 0 &&
+          record.intent == WriteIntent.load) {
+        revisions.cancelUnchanged(key, null);
+        return;
+      }
+      if (record.intent != WriteIntent.load) rethrow;
+      _diagnostics(
+        WriterLogLevel.warning,
+        'Wallet writer rebuilding interrupted missing store network=${key.network}',
+      );
+      session = await _sessions.open(descriptor, create: true);
+      try {
+        final issued = record.issued;
+        if (issued != null) await session.revealAndPersist(issued);
+        revisions.finish(
+          key,
+          needsSync: true,
+          initializedDescriptor: descriptor,
+          liquidCachePath: session.liquidCachePath,
+        );
+      } finally {
+        session.close();
+      }
+      return;
     } on Object catch (error) {
       if (!allowRepairIntent || !isLiquidStatusConflict(error)) rethrow;
       revisions.requireRepair(key);

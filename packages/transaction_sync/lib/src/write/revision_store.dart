@@ -183,6 +183,28 @@ final class RevisionStore implements WalletRevisionReader {
     );
   }
 
+  /// Clears a proven non-mutating attempt without invalidating snapshots.
+  @internal
+  void cancelUnchanged(WalletKey key, RevisionRecord? previous) {
+    final pending = record(key);
+    if (pending?.intent != WriteIntent.load &&
+        pending?.intent != WriteIntent.sync) {
+      throw StateError('Only a non-mutating load or sync may be cancelled');
+    }
+    if (previous == null) {
+      _db.execute('DELETE FROM revisions WHERE wallet=? AND network=?', [
+        key.id,
+        _network(key),
+      ]);
+    } else {
+      _db.execute(
+        'UPDATE revisions SET lifecycle=?, intent=NULL, candidate=NULL WHERE wallet=? AND network=?',
+        [previous.state.lifecycle.name, key.id, _network(key)],
+      );
+      _publish(previous.state);
+    }
+  }
+
   @internal
   WalletRevision finish(
     WalletKey key, {
