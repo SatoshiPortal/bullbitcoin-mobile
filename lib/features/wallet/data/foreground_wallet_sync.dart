@@ -32,6 +32,9 @@ final class ForegroundWalletSync {
         throw const WalletStorageFailure('Invalid sync descriptor');
       case Ok(:final value):
         final result = await _sync.execute(value, discover: discover);
+        // Busy is a skipped foreground pass. The failed completion remains
+        // visible through results, without escalating contention as an error.
+        if (result case Err(failure: TransactionSyncBusyFailure())) return;
         if (result case Err(:final failure)) {
           // Legacy void/throw boundary only. The package always returns Result. The temporary status-conflict mapping preserves startup recovery until the writer repair cutover.
           throw switch (failure) {
