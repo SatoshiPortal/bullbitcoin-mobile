@@ -1,6 +1,10 @@
 import 'dart:async';
 import 'dart:math';
 
+import 'package:transaction_sync/read.dart';
+import 'package:transaction_sync/transaction_sync.dart';
+import 'package:primitives/primitives.dart' as primitives;
+
 import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/utils/address_script_conversions.dart';
@@ -48,8 +52,29 @@ extension BdkNetworkX on bdk.Network {
 }
 
 class BdkWalletDatasource {
+  final Future<bdk.Wallet> Function(WalletModel) _readWallet;
+
+  BdkWalletDatasource({Future<bdk.Wallet> Function(WalletModel)? readWallet})
+    : _readWallet = readWallet ?? BdkFacade.createWallet;
+
+  /// Prepared for writer cutover; existing production constructors stay legacy.
+  BdkWalletDatasource.withReader({
+    required WalletSnapshotReader reader,
+    required WalletCatalogPort catalog,
+  }) : this(
+         readWallet: (wallet) => reader.borrowedHandle<bdk.Wallet>(
+           WalletKey(
+             id: wallet.id,
+             network: wallet.isTestnet
+                 ? primitives.BitcoinNetwork.testnet
+                 : primitives.BitcoinNetwork.mainnet,
+           ),
+           catalog,
+         ),
+       );
+
   Future<BalanceModel> getBalance({required WalletModel wallet}) async {
-    final bdkWallet = await BdkFacade.createWallet(wallet);
+    final bdkWallet = await _readWallet(wallet);
     final balanceInfo = bdkWallet.balance();
 
     final balance = BalanceModel(
@@ -69,7 +94,7 @@ class BdkWalletDatasource {
     required WalletModel wallet,
     bdk.Wallet? bdkWallet,
   }) async {
-    final w = bdkWallet ?? await BdkFacade.createWallet(wallet);
+    final w = bdkWallet ?? await _readWallet(wallet);
     return w.isMine(script: bdk.Script(rawOutputScript: scriptBytes));
   }
 
@@ -77,7 +102,7 @@ class BdkWalletDatasource {
   Future<bool Function(Uint8List)> createIsMineChecker({
     required WalletModel wallet,
   }) async {
-    final bdkWallet = await BdkFacade.createWallet(wallet);
+    final bdkWallet = await _readWallet(wallet);
     return (Uint8List scriptBytes) =>
         bdkWallet.isMine(script: bdk.Script(rawOutputScript: scriptBytes));
   }
@@ -94,7 +119,7 @@ class BdkWalletDatasource {
   Future<bool Function(Outpoint)> createOutpointIsMineChecker({
     required WalletModel wallet,
   }) async {
-    final bdkWallet = await BdkFacade.createWallet(wallet);
+    final bdkWallet = await _readWallet(wallet);
     final owned = <Outpoint>{
       for (final output in bdkWallet.listOutput())
         (txId: output.outpoint.txid.toString(), vout: output.outpoint.vout),
@@ -139,7 +164,7 @@ class BdkWalletDatasource {
     required WalletModel wallet,
     bdk.Wallet? bdkWallet,
   }) async {
-    final w = bdkWallet ?? await BdkFacade.createWallet(wallet);
+    final w = bdkWallet ?? await _readWallet(wallet);
     final bdkAddress = bdk.Address(
       address: address,
       network: wallet.isTestnet ? bdk.Network.testnet : bdk.Network.bitcoin,
@@ -307,7 +332,7 @@ class BdkWalletDatasource {
   // 25000 - 988
 
   Future<List<WalletUtxoModel>> getUtxos({required WalletModel wallet}) async {
-    final bdkWallet = await BdkFacade.createWallet(wallet);
+    final bdkWallet = await _readWallet(wallet);
     final unspent = bdkWallet.listUnspent();
     // Chain tip read once from the already-synced wallet (no extra network
     // calls); reused for every utxo's confirmation count.
@@ -349,7 +374,7 @@ class BdkWalletDatasource {
     required WalletModel wallet,
     String? toAddress,
   }) async {
-    final bdkWallet = await BdkFacade.createWallet(wallet);
+    final bdkWallet = await _readWallet(wallet);
 
     final transactions = bdkWallet.transactions();
 
@@ -513,18 +538,13 @@ class BdkWalletDatasource {
     required WalletModel wallet,
     bool isChange = false,
   }) async {
-    final bdkWallet = await BdkFacade.createWallet(wallet);
-    final nextAddress = bdkWallet.revealNextAddress(
-      keychain: isChange
-          ? bdk.KeychainKind.internal
-          : bdk.KeychainKind.external_,
-    );
-
-    final index =
-        nextAddress.index -
-        1; // Subtract 1 to get the last revealed address index
-
-    return index;
+    final bdkWallet = await _readWallet(wallet);
+    return bdkWallet.nextDerivationIndex(
+          keychain: isChange
+              ? bdk.KeychainKind.internal
+              : bdk.KeychainKind.external_,
+        ) -
+        1;
   }
 
   Future<String> getAddressByIndex(
@@ -532,7 +552,7 @@ class BdkWalletDatasource {
     required WalletModel wallet,
     isChange = false,
   }) async {
-    final bdkWallet = await BdkFacade.createWallet(wallet);
+    final bdkWallet = await _readWallet(wallet);
     final addressInfo = bdkWallet.peekAddress(
       keychain: isChange
           ? bdk.KeychainKind.internal
@@ -549,7 +569,7 @@ class BdkWalletDatasource {
     String address, {
     required WalletModel wallet,
   }) async {
-    final bdkWallet = await BdkFacade.createWallet(wallet);
+    final bdkWallet = await _readWallet(wallet);
     final transactions = bdkWallet.transactions();
 
     // TODO: Use future.wait to parallelize the loop and improve performance
@@ -575,7 +595,7 @@ class BdkWalletDatasource {
   Future<Map<String, BigInt>> getAddressBalancesSat({
     required WalletModel wallet,
   }) async {
-    final bdkWallet = await BdkFacade.createWallet(wallet);
+    final bdkWallet = await _readWallet(wallet);
     final utxos = bdkWallet.listUnspent();
     final addressBalances = <String, BigInt>{};
 

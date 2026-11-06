@@ -14,10 +14,35 @@ import 'package:bb_mobile/core/wallet/domain/insufficient_funds_exception.dart';
 import 'package:flutter/material.dart';
 import 'package:bull_sdk/lwk.dart' as lwk;
 
+import 'package:transaction_sync/read.dart';
+import 'package:transaction_sync/transaction_sync.dart';
+import 'package:primitives/primitives.dart' as primitives;
+
 class LwkWalletDatasource {
+  final Future<lwk.Wallet> Function(WalletModel) _readWallet;
+
+  LwkWalletDatasource({Future<lwk.Wallet> Function(WalletModel)? readWallet})
+    : _readWallet = readWallet ?? LwkFacade.createPublicWallet;
+
+  /// Prepared for writer cutover; existing production constructors stay legacy.
+  LwkWalletDatasource.withReader({
+    required WalletSnapshotReader reader,
+    required WalletCatalogPort catalog,
+  }) : this(
+         readWallet: (wallet) => reader.borrowedHandle<lwk.Wallet>(
+           WalletKey(
+             id: wallet.id,
+             network: wallet.isTestnet
+                 ? primitives.LiquidNetwork.testnet
+                 : primitives.LiquidNetwork.mainnet,
+           ),
+           catalog,
+         ),
+       );
+
   Future<BalanceModel> getBalance({required WalletModel wallet}) async {
     try {
-      final lwkWallet = await LwkFacade.createPublicWallet(wallet);
+      final lwkWallet = await _readWallet(wallet);
       final balances = await lwkWallet.balances();
 
       final lBtcAssetBalance = balances.firstWhere((balance) {
@@ -39,10 +64,6 @@ class LwkWalletDatasource {
       return balance;
     } catch (e) {
       if (e is lwk.LwkError) {
-        if (e.toString().contains('UpdateOnDifferentStatus') ||
-            e.msg.contains('UpdateOnDifferentStatus')) {
-          await delete(wallet: wallet);
-        }
         throw e.msg;
       } else {
         rethrow;
@@ -52,7 +73,7 @@ class LwkWalletDatasource {
 
   Future<List<WalletUtxoModel>> getUtxos({required WalletModel wallet}) async {
     try {
-      final lwkWallet = await LwkFacade.createPublicWallet(wallet);
+      final lwkWallet = await _readWallet(wallet);
       final utxos = await lwkWallet.utxos();
 
       final unspent = utxos.map((utxo) {
@@ -103,7 +124,7 @@ class LwkWalletDatasource {
     bool isChange = false,
   }) async {
     try {
-      final lwkWallet = await LwkFacade.createPublicWallet(wallet);
+      final lwkWallet = await _readWallet(wallet);
       if (isChange) {
         throw Exception(
           'Change addresses are not retrievable with LWK at the moment.',
@@ -125,7 +146,7 @@ class LwkWalletDatasource {
     required WalletModel wallet,
   }) async {
     try {
-      final lwkWallet = await LwkFacade.createPublicWallet(wallet);
+      final lwkWallet = await _readWallet(wallet);
       final addressInfo = await lwkWallet.address(index: index);
       final address = (
         index: addressInfo.index!,
@@ -147,7 +168,7 @@ class LwkWalletDatasource {
     required WalletModel wallet,
   }) async {
     try {
-      final lwkWallet = await LwkFacade.createPublicWallet(wallet);
+      final lwkWallet = await _readWallet(wallet);
       final txs = await lwkWallet.txs();
       final txOutputLists = txs.map((tx) => tx.outputs).toList();
       final outputs = txOutputLists.expand((list) => list).toList();
@@ -174,7 +195,7 @@ class LwkWalletDatasource {
     required WalletModel wallet,
   }) async {
     try {
-      final lwkWallet = await LwkFacade.createPublicWallet(wallet);
+      final lwkWallet = await _readWallet(wallet);
       final utxos = await lwkWallet.utxos();
       final addressBalances = <String, BigInt>{};
 
@@ -211,7 +232,7 @@ class LwkWalletDatasource {
     String? toAddress,
   }) async {
     try {
-      final lwkWallet = await LwkFacade.createPublicWallet(wallet);
+      final lwkWallet = await _readWallet(wallet);
       final transactions = await lwkWallet.txs();
       final usedAddressesMap = await _getUsedAddressesMap(wallet: wallet);
       final network = wallet.isTestnet
@@ -370,7 +391,7 @@ class LwkWalletDatasource {
   /// consolidation detection.
   Future<int> getLbtcUtxoCount({required WalletModel wallet}) async {
     try {
-      final lwkWallet = await LwkFacade.createPublicWallet(wallet);
+      final lwkWallet = await _readWallet(wallet);
       final utxos = await lwkWallet.utxos();
       final network = wallet.isTestnet
           ? Network.liquidTestnet

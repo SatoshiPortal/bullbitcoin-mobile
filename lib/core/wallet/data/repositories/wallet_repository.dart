@@ -309,11 +309,7 @@ class WalletRepository {
   ///
   /// Two signals have to survive this boundary as types:
   ///
-  /// - an LWK status conflict, because app startup heals it by dropping the
-  ///   LWK database and retrying. The datasource throws `e.msg` as a bare
-  ///   String today, so the text match is what works; the `LwkError` arm is
-  ///   there so a raw error reaching here is not silently misclassified into
-  ///   a storage failure, which would disable the heal.
+  /// - an LWK status conflict, which requires writer-owned reconciliation.
   /// - an Electrum failure from a `sync: true` read, which is a *sync*
   ///   failure, not a read failure: the stored wallet is fine, only its
   ///   balance is stale, and the remedy is the server settings.
@@ -485,23 +481,6 @@ class WalletRepository {
     } catch (e, st) {
       log.severe(message: 'deleteWallet failed', error: e, trace: st);
       return Err(_classify(e, 'deleteWallet'));
-    }
-  }
-
-  // used only to delete lwk db - required for UpdateOnDifferentStatusError
-  Future<void> deleteLwkDb() async {
-    final metadatas = await _walletMetadataDatasource.fetchAll();
-
-    final liquidDefaultWallets = metadatas.where(
-      (metadata) => metadata.isDefault && metadata.isLiquid,
-    );
-
-    for (final metadata in liquidDefaultWallets) {
-      try {
-        await _lwkWallet.delete(wallet: WalletModel.fromMetadata(metadata));
-      } on WalletNotFound {
-        log.warning('deleteLwkDb: LWK file already absent for ${metadata.id}');
-      }
     }
   }
 
