@@ -102,6 +102,15 @@ final class NativeWalletWriter implements LiquidReadAdmission {
         if (old?.issued case final issued? when rebuilt) {
           await session.revealAndPersist(issued);
         }
+        if (!rebuilt &&
+            old != null &&
+            old.state.lifecycle == WalletLifecycle.active &&
+            old.state.initializedSchema == writerSchemaVersion &&
+            old.descriptorHash == descriptorDigest(descriptor) &&
+            old.liquidCachePath == session.liquidCachePath) {
+          revisions.cancelUnchanged(key, old);
+          return WriterUnchanged(old.state.stamp);
+        }
         return WriterCommitted(
           revisions.finish(
             key,
