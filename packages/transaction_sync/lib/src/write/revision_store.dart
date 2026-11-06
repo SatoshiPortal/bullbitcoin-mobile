@@ -40,10 +40,14 @@ final class RevisionRecord {
 /// for in-isolate notifications; read again on resume for cross-isolate writes.
 final class RevisionStore implements WalletRevisionReader {
   final Database _db;
+  final String _path;
   final _changes = StreamController<WalletRevisionState>.broadcast();
   final _published = <WalletKey, WalletRevisionState>{};
 
-  RevisionStore(String path) : _db = _open(path);
+  RevisionStore(this._path) : _db = _open(_path);
+
+  /// Called only after the complete catalog adoption pass has recorded outcomes.
+  void completeRecovery() => File('$_path.recovery').deleteSync();
 
   static Database _open(String path) {
     File(path).parent.createSync(recursive: true);
