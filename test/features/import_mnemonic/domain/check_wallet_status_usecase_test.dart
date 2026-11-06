@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/features/import_mnemonic/domain/check_wallet_status_usecase.dart';
@@ -151,7 +153,7 @@ void main() {
         scriptTypes: {ScriptType.bip84},
       ),
       throwsA(
-        isA<CheckWalletStatusException>().having(
+        isA<CheckWalletStatusInvalidMnemonicException>().having(
           (e) => e.message,
           'message',
           isNot(contains('abandon')),
@@ -235,4 +237,57 @@ void main() {
       );
     },
   );
+  test('a scan error keeps its type, never its message', () async {
+    environment(Environment.mainnet);
+    when(
+      () => wallets.dryScan(
+        externalDescriptor: any(named: 'externalDescriptor'),
+        internalDescriptor: any(named: 'internalDescriptor'),
+        isTestnet: any(named: 'isTestnet'),
+        electrumServer: any(named: 'electrumServer'),
+      ),
+    ).thenThrow(StateError('wpkh([73c5da0a/84h/0h/0h]xpub...)'));
+
+    final scans = await usecase()(
+      words: words,
+      language: bip39.Language.english,
+      passphrase: '',
+      scriptTypes: {ScriptType.bip84},
+    );
+
+    await expectLater(
+      scans[ScriptType.bip84],
+      throwsA(
+        isA<CheckWalletStatusException>().having(
+          (e) => e.message,
+          'message',
+          allOf(contains('StateError'), isNot(contains('xpub'))),
+        ),
+      ),
+    );
+  });
+
+  test('a scan timeout stays a timeout', () async {
+    environment(Environment.mainnet);
+    when(
+      () => wallets.dryScan(
+        externalDescriptor: any(named: 'externalDescriptor'),
+        internalDescriptor: any(named: 'internalDescriptor'),
+        isTestnet: any(named: 'isTestnet'),
+        electrumServer: any(named: 'electrumServer'),
+      ),
+    ).thenThrow(TimeoutException('no answer'));
+
+    final scans = await usecase()(
+      words: words,
+      language: bip39.Language.english,
+      passphrase: '',
+      scriptTypes: {ScriptType.bip84},
+    );
+
+    await expectLater(
+      scans[ScriptType.bip84],
+      throwsA(isA<TimeoutException>()),
+    );
+  });
 }
