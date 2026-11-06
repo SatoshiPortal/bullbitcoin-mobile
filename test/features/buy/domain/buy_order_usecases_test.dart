@@ -46,6 +46,49 @@ void main() {
     when(settingsRepository.fetch).thenAnswer((_) async => settings);
   });
 
+  test(
+    'regtest refuses buy order operations before any backend access',
+    () async {
+      final settings = _MockSettings();
+      when(() => settings.environment).thenReturn(Environment.regtest);
+      when(settingsRepository.fetch).thenAnswer((_) async => settings);
+      final labels = _MockLabelsFacade();
+      final refresh = RefreshBuyOrderUsecase(
+        mainnetExchangeOrderRepository: mainnet,
+        testnetExchangeOrderRepository: testnet,
+        settingsRepository: settingsRepository,
+      );
+      final results = [
+        await refresh.execute(orderId: 'order-1'),
+        await refresh.execute(orderId: 'order-1', confirmed: true),
+        await ConfirmBuyOrderUsecase(
+          mainnetExchangeOrderRepository: mainnet,
+          testnetExchangeOrderRepository: testnet,
+          settingsRepository: settingsRepository,
+          labelsFacade: labels,
+        ).execute(orderId: 'order-1'),
+        await AccelerateBuyOrderUsecase(
+          mainnetExchangeOrderRepository: mainnet,
+          testnetExchangeOrderRepository: testnet,
+          settingsRepository: settingsRepository,
+        ).execute('order-1'),
+      ];
+      for (final result in results) {
+        expect(
+          result,
+          isA<Err<BuyOrder, BuyFailure>>().having(
+            (result) => result.failure,
+            'failure',
+            isA<BuyUnsupportedNetworkFailure>(),
+          ),
+        );
+      }
+      verifyZeroInteractions(mainnet);
+      verifyZeroInteractions(testnet);
+      verifyZeroInteractions(labels);
+    },
+  );
+
   group('RefreshBuyOrderUsecase', () {
     RefreshBuyOrderUsecase build() => RefreshBuyOrderUsecase(
       mainnetExchangeOrderRepository: mainnet,

@@ -23,6 +23,49 @@ class _MockBuyOrder extends Mock implements BuyOrder {}
 class _MockLogger extends Mock implements Logger {}
 
 void main() {
+  test('regtest refuses creation before backend or payjoin access', () async {
+    final mainnet = _MockOrderRepository();
+    final testnet = _MockOrderRepository();
+    final settings = _MockSettingsRepository();
+    final receiver = _MockPayjoinReceiver();
+    final policy = _MockPayjoinPolicyAccess();
+    when(settings.fetch).thenAnswer(
+      (_) async => const SettingsEntity(
+        environment: Environment.regtest,
+        bitcoinUnit: BitcoinUnit.sats,
+        currencyCode: 'CAD',
+      ),
+    );
+    final result =
+        await CreateBuyOrderUsecase(
+          mainnetExchangeOrderRepository: mainnet,
+          testnetExchangeOrderRepository: testnet,
+          settingsRepository: settings,
+          payjoinReceiver: receiver,
+          payjoinPolicy: policy,
+        ).execute(
+          toAddress: 'bcrt1qexample',
+          orderAmount: const FiatAmount(100),
+          currency: FiatCurrency.cad,
+          isLiquid: false,
+          isOwner: true,
+          payjoinWalletId: 'regtest-wallet',
+          payjoinAmountSat: 10000,
+        );
+    expect(
+      result,
+      isA<Err<BuyOrder, BuyFailure>>().having(
+        (result) => result.failure,
+        'failure',
+        isA<BuyUnsupportedNetworkFailure>(),
+      ),
+    );
+    verifyZeroInteractions(mainnet);
+    verifyZeroInteractions(testnet);
+    verifyZeroInteractions(receiver);
+    verifyZeroInteractions(policy);
+  });
+
   setUpAll(() {
     registerFallbackValue(
       StartPayjoinReceiver(
