@@ -1,3 +1,7 @@
+import 'package:bb_mobile/locator.dart';
+import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/features/exchange/domain/exchange_failure.dart';
+import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_web_settings_usecase.dart';
 import 'dart:io';
 
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
@@ -44,11 +48,21 @@ class ExchangeRouterConfig {
 }
 
 class ExchangeRouter {
+  static Future<bool> _unsupportedNetwork() async {
+    final result = await locator<GetExchangeWebSettingsUsecase>().execute();
+    return switch (result) {
+      Err(failure: ExchangeUnsupportedNetworkFailure()) => true,
+      _ => false,
+    };
+  }
+
   static List<RouteBase> routes(ExchangeRouterConfig config) => [
     GoRoute(
       name: ExchangeRoute.exchangeHome.name,
       path: ExchangeRoute.exchangeHome.path,
-      redirect: (context, state) {
+      redirect: (context, state) async {
+        if (await _unsupportedNetwork()) return config.homePath;
+        if (!context.mounted) return null;
         final notLoggedIn = context.read<ExchangeCubit>().state.notLoggedIn;
         if (notLoggedIn) {
           return ExchangeRoute.exchangeLanding.path;
@@ -81,6 +95,8 @@ class ExchangeRouter {
     GoRoute(
       name: ExchangeRoute.exchangeLanding.name,
       path: ExchangeRoute.exchangeLanding.path,
+      redirect: (context, state) async =>
+          await _unsupportedNetwork() ? config.homePath : null,
       pageBuilder: (context, state) {
         // Show v2 screen for iOS without superuser, v1 for iOS with superuser, regular screen for Android
         void onExit() => config.onExit(context);
@@ -101,6 +117,8 @@ class ExchangeRouter {
     GoRoute(
       name: ExchangeRoute.exchangeLoginForSupport.name,
       path: ExchangeRoute.exchangeLoginForSupport.path,
+      redirect: (context, state) async =>
+          await _unsupportedNetwork() ? config.homePath : null,
       pageBuilder: (context, state) {
         return NoTransitionPage(
           key: state.pageKey,
@@ -122,6 +140,8 @@ class ExchangeRouter {
     GoRoute(
       name: ExchangeRoute.exchangeAuth.name,
       path: ExchangeRoute.exchangeAuth.path,
+      redirect: (context, state) async =>
+          await _unsupportedNetwork() ? config.homePath : null,
       pageBuilder: (context, state) {
         final draft = state.extra as ExchangeSupportChatDraft?;
         final fromSupport = state.uri.queryParameters['from'] == 'support';

@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_api_key_repository.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/utils/result.dart';
@@ -32,6 +33,10 @@ class ClearExchangeSessionUsecase {
       _settingsRepository,
       ExchangeSessionClearFailure.new,
     )) {
+      case Err(failure: ExchangeUnsupportedNetworkFailure()):
+        // No exchange identity exists on this network. Never erase a stored
+        // mainnet/testnet session merely because the active network changed.
+        return const Err(ExchangeUnsupportedNetworkFailure());
       case Err(failure: final envFailure):
         // Each repository call logs its own reason; the environment failure
         // is what gets reported, since the sign-out is incomplete either way.
@@ -42,7 +47,7 @@ class ClearExchangeSessionUsecase {
         failure = envFailure;
       case Ok(value: final environment):
         final deleted = await _exchangeApiKeyRepository.deleteApiKey(
-          isTestnet: environment.isTestnet,
+          isTestnet: (environment == Environment.testnet),
         );
         failure = switch (deleted) {
           Ok() => null,

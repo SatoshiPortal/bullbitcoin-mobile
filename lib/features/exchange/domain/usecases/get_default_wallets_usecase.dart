@@ -15,7 +15,7 @@ class GetDefaultWalletsUsecase {
 
   Future<DefaultWallets> execute() async {
     final settings = await _settingsRepository.fetch();
-    final isTestnet = settings.environment.isTestnet;
+    final isTestnet = settings.environment.requireHistoricalTestnet();
 
     final repository = isTestnet ? _testnetRepository : _mainnetRepository;
     return repository.getDefaultWallets();

@@ -34,7 +34,7 @@ class StoreExchangeApiKeyUsecase {
 
     final result = await _exchangeApiKeyRepository.saveApiKey(
       apiKeyResponseData,
-      isTestnet: environment.isTestnet,
+      isTestnet: (environment == Environment.testnet),
     );
 
     return result.mapErr(

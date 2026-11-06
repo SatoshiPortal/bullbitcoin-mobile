@@ -43,7 +43,7 @@ class SaveExchangePreferencesUsecase {
       case Err(:final failure):
         return Err(failure);
     }
-    final repo = environment.isTestnet
+    final repo = (environment == Environment.testnet)
         ? _testnetExchangeUserRepository
         : _mainnetExchangeUserRepository;
 

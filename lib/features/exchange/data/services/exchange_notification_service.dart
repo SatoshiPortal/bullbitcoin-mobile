@@ -50,7 +50,7 @@ class ExchangeNotificationService {
 
   Future<ExchangeNotificationDatasource> _getDatasource() async {
     final settings = await _settingsRepository.fetch();
-    _isTestnet = settings.environment.isTestnet;
+    _isTestnet = settings.environment.requireHistoricalTestnet();
     return _isTestnet ? _testnetDatasource : _mainnetDatasource;
   }
 

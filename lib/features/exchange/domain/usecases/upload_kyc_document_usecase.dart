@@ -20,7 +20,7 @@ class UploadKycDocumentUsecase {
     String sourceDetail = 'SECURE_UPLOAD',
   }) async {
     final settings = await _settingsRepository.fetch();
-    final isTestnet = settings.environment.isTestnet;
+    final isTestnet = settings.environment.requireHistoricalTestnet();
 
     final repository = isTestnet ? _testnetRepository : _mainnetRepository;
     return repository.uploadDocument(

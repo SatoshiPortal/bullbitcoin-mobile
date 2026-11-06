@@ -25,7 +25,7 @@ class GetSupportChatMessagesUsecase {
     final ExchangeSupportChatRepository repository;
     try {
       final settings = await _settingsRepository.fetch();
-      repository = settings.environment.isTestnet
+      repository = settings.environment.requireHistoricalTestnet()
           ? _testnetRepository
           : _mainnetRepository;
     } catch (e, st) {

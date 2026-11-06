@@ -94,12 +94,14 @@ class ExchangeLocator {
 
     locator.registerFactory<RequestExchangeAccountDeletionUsecase>(
       () => RequestExchangeAccountDeletionUsecase(
+        settingsRepository: locator<settings_contract.SettingsRepository>(),
         sendSupportChatMessageUsecase: locator<SendSupportChatMessageUsecase>(),
       ),
     );
 
     locator.registerFactory<WatchExchangeNotificationsUsecase>(
       () => WatchExchangeNotificationsUsecase(
+        settingsRepository: locator<settings_contract.SettingsRepository>(),
         exchangeNotificationRepository:
             locator<ExchangeNotificationRepository>(),
       ),
