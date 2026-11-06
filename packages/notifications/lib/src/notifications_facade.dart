@@ -45,13 +45,6 @@ final class NotificationsFacade {
     return firstFailure == null ? const Ok(null) : Err(firstFailure);
   }
 
-  Future<Result<void, NotificationsFailure>> enqueue(LocalNotification event) =>
-      outbox.enqueue(event);
-
-  Future<Result<bool, NotificationsFailure>> isTopicInitialized(
-    String topicId,
-  ) => outbox.isTopicInitialized(topicId);
-
   /// Records discoveries from a sync completed in foreground, never a read.
   /// On first completion, baselineEvents initializes history without marking
   /// it seen. An existing baseline ignores baselineEvents.
@@ -64,10 +57,6 @@ final class NotificationsFacade {
     List.unmodifiable(observedEvents),
     baselineEvents: List.unmodifiable(baselineEvents),
   );
-
-  Future<Result<NotificationReconcileResult, NotificationsFailure>>
-  reconcileTopic(String topicId, List<LocalNotification> observedEvents) =>
-      outbox.reconcileTopic(topicId, List.unmodifiable(observedEvents));
 
   Future<Result<NotificationReconcileResult, NotificationsFailure>>
   reconcileTopicsAndEnqueue(
@@ -111,7 +100,11 @@ final class NotificationsFacade {
             case Ok(:final value):
               alreadySeen = value;
             case Err(:final failure):
-              await outbox.release(event.eventId, claimed.claimToken);
+              final released = await outbox.release(
+                event.eventId,
+                claimed.claimToken,
+              );
+              if (released case Err(:final failure)) return Err(failure);
               return Err(failure);
           }
           if (show && !alreadySeen) {
@@ -120,7 +113,11 @@ final class NotificationsFacade {
               platformId: claimed.platformId,
             );
             if (shown case Err(:final failure)) {
-              await outbox.release(event.eventId, claimed.claimToken);
+              final released = await outbox.release(
+                event.eventId,
+                claimed.claimToken,
+              );
+              if (released case Err(:final failure)) return Err(failure);
               return Err(failure);
             }
           }

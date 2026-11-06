@@ -1,16 +1,17 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:bull_logger/bull_logger.dart' show log;
 import 'package:crypto/crypto.dart';
 import 'package:notifications/notifications.dart';
 import 'package:primitives/primitives.dart';
 import 'package:transaction_sync/transaction_sync.dart';
 
 import 'background_task_execution_result.dart';
-import 'domain/background_wallet_sync.dart';
+import 'background_task_logger.dart';
+import 'background_wallet_sync.dart';
 import 'read_wallet_sync_jobs.dart';
 import 'sqlite_wallet_sync_job_queue.dart';
-import 'wallet_payment_observation_adapter.dart';
 
 typedef NotificationCopy = ({String title, String body});
 typedef NotificationCopyBuilder =
@@ -28,7 +29,7 @@ final class WalletTransactionSyncBackgroundTask {
   final int maxJobsPerChain;
   final Duration? runBudget;
   final Duration renewalInterval;
-  final WalletSyncLogSink _sink;
+  final BackgroundTaskLogger _sink;
 
   WalletTransactionSyncBackgroundTask({
     required this.writer,
@@ -38,11 +39,11 @@ final class WalletTransactionSyncBackgroundTask {
     required this.notifications,
     required this.copy,
     this.maxJobsPerChain = 2,
-    WalletSyncLogSink? logSink,
+    BackgroundTaskLogger? logSink,
     this.runBudget,
     this.renewalInterval = const Duration(minutes: 5),
   }) : keys = List.unmodifiable(keys),
-       _sink = logSink ?? const BullLoggerWalletSyncLogSink() {
+       _sink = logSink ?? LoggerBackgroundTaskLogger(log) {
     final budget = runBudget;
     if (maxJobsPerChain <= 0 ||
         renewalInterval <= Duration.zero ||
@@ -79,17 +80,6 @@ final class WalletTransactionSyncBackgroundTask {
         ? const BackgroundTaskExecutionResult.retry()
         : const BackgroundTaskExecutionResult.success();
   }
-
-  Future<BackgroundTaskExecutionResult> execute({
-    required WalletSyncChain chain,
-    Stopwatch? clock,
-    Duration? admissionLimit,
-  }) => _execute(
-    chain: chain,
-    clock: clock,
-    admissionLimit: admissionLimit,
-    admission: _RunAdmission(),
-  );
 
   Future<BackgroundTaskExecutionResult> _execute({
     required WalletSyncChain chain,
@@ -128,7 +118,7 @@ final class WalletTransactionSyncBackgroundTask {
       handled.add(claim.key);
       final operationClock = Stopwatch()..start();
       _log(
-        WalletSyncLogLevel.fine,
+        BackgroundLogLevel.fine,
         'Background job admitted: chain=${chain.name} network=${claim.key.network.env.name}',
       );
       var leaseLost = false;
@@ -136,7 +126,13 @@ final class WalletTransactionSyncBackgroundTask {
       Future<void> renew() async {
         try {
           if (!await queue.renew(claim)) leaseLost = true;
-        } on Exception {
+        } on Exception catch (error) {
+          if (!leaseLost) {
+            _log(
+              BackgroundLogLevel.warning,
+              'Background lease renewal failed type=${error.runtimeType}',
+            );
+          }
           leaseLost = true;
         } finally {
           renewing = null;
@@ -154,7 +150,7 @@ final class WalletTransactionSyncBackgroundTask {
         switch (sync) {
           case Err(failure: BackgroundSyncNeedsRepairFailure(:final revision)):
             _log(
-              WalletSyncLogLevel.warning,
+              BackgroundLogLevel.warning,
               'Background job deferred: category=needs_repair revision=${revision.revision} generation=${revision.generation}',
             );
             if (revision.key != claim.key) {
@@ -169,7 +165,7 @@ final class WalletTransactionSyncBackgroundTask {
             }
           case Err(failure: BackgroundSyncUnsupportedNetworkFailure()):
             _log(
-              WalletSyncLogLevel.warning,
+              BackgroundLogLevel.warning,
               'Background job deferred: category=unsupported_network',
             );
             if (!await queue.completeFailure(claim, permanent: true)) {
@@ -177,13 +173,13 @@ final class WalletTransactionSyncBackgroundTask {
             }
           case Err(failure: BackgroundSyncInitialScanRequiredFailure()):
             _log(
-              WalletSyncLogLevel.fine,
+              BackgroundLogLevel.fine,
               'Background job deferred: category=initial_scan',
             );
             if (!await queue.completeSuccess(claim)) leaseLost = true;
           case Err(:final failure):
             _log(
-              WalletSyncLogLevel.warning,
+              BackgroundLogLevel.warning,
               'Background job retry: category=${failure is BackgroundSyncBusyFailure ? 'busy' : 'connection'}',
             );
             retry = true;
@@ -195,47 +191,42 @@ final class WalletTransactionSyncBackgroundTask {
               throw StateError('Writer returned a foreign revision');
             }
             _log(
-              WalletSyncLogLevel.fine,
-              'Background job committed: revision=${value.revision.revision} generation=${value.revision.generation} incoming=${value.incomingTxids.length} discovered=${value.discoveredTxids.length}',
+              BackgroundLogLevel.fine,
+              'Background job committed: revision=${value.revision.revision} generation=${value.revision.generation} incoming=${value.incomingTxids.length}',
             );
             // Persist observations before acknowledging success. Full incoming
             // history replays a crash between native commit and this handoff.
-            final seen = await WalletPaymentObservationAdapter(
-              notifications,
-            ).recordCompletion(value);
-            final reconciled = seen is Err<void, NotificationsFailure>
-                ? seen
-                : await notifications.reconcileTopicsAndEnqueue(
-                    [
-                      NotificationTopicObservation(
-                        WalletPaymentNotificationIdentity.topicId(claim.key),
-                        [
-                          for (final txid in value.incomingTxids)
-                            WalletPaymentNotificationIdentity.event(
-                              claim.key,
-                              txid,
-                              observedAt: value.completedAt,
-                            ),
-                        ],
+            final reconciled = await notifications.reconcileTopicsAndEnqueue(
+              [
+                NotificationTopicObservation(
+                  WalletPaymentNotificationIdentity.topicId(claim.key),
+                  [
+                    for (final txid in value.incomingTxids)
+                      WalletPaymentNotificationIdentity.event(
+                        claim.key,
+                        txid,
+                        observedAt: value.completedAt,
                       ),
-                    ],
-                    (events) {
-                      final ids = events.map((e) => e.eventId).toList()..sort();
-                      final text = copy(events.length, chain);
-                      return LocalNotification(
-                        eventId: sha256
-                            .convert(utf8.encode(ids.join('|')))
-                            .toString(),
-                        title: text.title,
-                        body: text.body,
-                        destination: NotificationDestination.walletHome,
-                        createdAt: value.completedAt,
-                      );
-                    },
-                  );
+                  ],
+                ),
+              ],
+              (events) {
+                final ids = events.map((e) => e.eventId).toList()..sort();
+                final text = copy(events.length, chain);
+                return LocalNotification(
+                  eventId: sha256
+                      .convert(utf8.encode(ids.join('|')))
+                      .toString(),
+                  title: text.title,
+                  body: text.body,
+                  destination: NotificationDestination.walletHome,
+                  createdAt: value.completedAt,
+                );
+              },
+            );
             if (reconciled is Err) {
               _log(
-                WalletSyncLogLevel.warning,
+                BackgroundLogLevel.warning,
                 'Background job retry: category=notification_persistence',
               );
               retry = true;
@@ -246,10 +237,10 @@ final class WalletTransactionSyncBackgroundTask {
               leaseLost = true;
             }
         }
-      } on Exception {
+      } on Exception catch (error) {
         _log(
-          WalletSyncLogLevel.warning,
-          'Background job retry: category=operation_exception',
+          BackgroundLogLevel.warning,
+          'Background job retry: category=operation_exception type=${error.runtimeType}',
         );
         retry = true;
         if (!await queue.completeFailure(claim, permanent: false)) {
@@ -259,13 +250,13 @@ final class WalletTransactionSyncBackgroundTask {
         timer.cancel();
         await renewing;
         _log(
-          WalletSyncLogLevel.fine,
+          BackgroundLogLevel.fine,
           'Background job finished: chain=${chain.name} elapsed_ms=${operationClock.elapsedMilliseconds} lease_lost=$leaseLost',
         );
       }
       if (leaseLost) {
         _log(
-          WalletSyncLogLevel.warning,
+          BackgroundLogLevel.warning,
           'Background admission stopped: category=claim_lost',
         );
         admission.stopped = true;
@@ -277,7 +268,7 @@ final class WalletTransactionSyncBackgroundTask {
       failure: final failure,
     ) when failure is! NotificationsPermissionDeniedFailure) {
       _log(
-        WalletSyncLogLevel.warning,
+        BackgroundLogLevel.warning,
         'Background notifications retry: category=delivery',
       );
       retry = true;
@@ -287,7 +278,7 @@ final class WalletTransactionSyncBackgroundTask {
         : const BackgroundTaskExecutionResult.success();
   }
 
-  void _log(WalletSyncLogLevel level, String message) {
+  void _log(BackgroundLogLevel level, String message) {
     try {
       _sink.write(level, message);
     } on Exception {

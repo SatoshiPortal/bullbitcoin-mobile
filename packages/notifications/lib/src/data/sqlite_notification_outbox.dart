@@ -16,7 +16,7 @@ final class SqliteNotificationOutbox implements NotificationOutboxPort {
   final String databasePath;
   late final Database _database;
   final Duration claimLease;
-  static const _schemaVersion = 2;
+  static const _schemaVersion = 1;
   static const _maxPlatformId = 0x7fffffff;
 
   SqliteNotificationOutbox({
@@ -30,8 +30,8 @@ final class SqliteNotificationOutbox implements NotificationOutboxPort {
       // The foreground keeps its outbox open for the process lifetime while
       // a background run writes to the same file.
       _database.execute('PRAGMA busy_timeout = 5000');
-      // One transaction: an app and a background engine opening an old file
-      // at once must not both upgrade it.
+      // One transaction: an app and a background engine opening a new file
+      // at once must not race schema creation.
       _database.execute('BEGIN IMMEDIATE');
       try {
         _migrate();
@@ -78,111 +78,7 @@ final class SqliteNotificationOutbox implements NotificationOutboxPort {
         PRIMARY KEY (aggregate_event_id, member_event_id)
       )
     ''');
-    // Checked whatever the version: an older open interrupted after creating
-    // the table could leave it without the column at version 0.
-    final columns = _database
-        .select('PRAGMA table_info(notification_outbox)')
-        .map((row) => row['name'] as String)
-        .toSet();
-    if (!columns.contains('seen_at')) {
-      _database.execute(
-        'ALTER TABLE notification_outbox ADD COLUMN seen_at INTEGER',
-      );
-    }
-    if (version == 1) {
-      // Version 1 initialized a topic with a silent background baseline and
-      // kept no aggregate members: neither can be trusted any more, so the
-      // foreground records topics again and old aggregates are settled.
-      _database.execute('DELETE FROM notification_topics');
-      _database.execute(
-        "UPDATE notification_outbox SET status='delivered', claim_token=NULL, lease_until=NULL WHERE topic_id IS NULL AND status!='delivered'",
-      );
-    }
     _database.execute('PRAGMA user_version = $_schemaVersion');
-  }
-
-  @override
-  Future<Result<void, NotificationsFailure>> enqueue(
-    LocalNotification event,
-  ) async {
-    try {
-      _database.execute('BEGIN IMMEDIATE');
-      final existing = _database.select(
-        'SELECT event_id FROM notification_outbox WHERE event_id=?',
-        [event.eventId],
-      );
-      if (existing.isEmpty) {
-        final platformId = _allocatePlatformId(event.eventId);
-        _database.execute(
-          '''INSERT INTO notification_outbox
-          (event_id,title,body,destination,created_at,status,platform_id)
-          VALUES (?,?,?,?,?,'pending',?)''',
-          [
-            event.eventId,
-            event.title,
-            event.body,
-            event.destination.wireValue,
-            event.createdAt.toUtc().millisecondsSinceEpoch,
-            platformId,
-          ],
-        );
-      }
-      _database.execute('COMMIT');
-      return const Ok(null);
-    } catch (_) {
-      try {
-        _database.execute('ROLLBACK');
-      } catch (_) {}
-      return const Err(NotificationsStorageFailure());
-    }
-  }
-
-  @override
-  Future<Result<NotificationReconcileResult, NotificationsFailure>>
-  reconcileTopic(String topicId, List<LocalNotification> observedEvents) async {
-    try {
-      _database.execute('BEGIN IMMEDIATE');
-      if (!_isInitialized(topicId)) {
-        _database.execute('COMMIT');
-        return const Ok(
-          NotificationReconcileResult(pendingCount: 0, skippedTopicCount: 1),
-        );
-      }
-      var pendingCount = 0;
-      final observedIds = <String>{};
-      for (final event in observedEvents) {
-        if (!observedIds.add(event.eventId)) continue;
-        final existing = _database.select(
-          'SELECT event_id FROM notification_outbox WHERE event_id=?',
-          [event.eventId],
-        );
-        if (existing.isNotEmpty) continue;
-        final platformId = _allocatePlatformId(event.eventId);
-        _database.execute(
-          '''INSERT INTO notification_outbox
-          (event_id,title,body,destination,created_at,status,platform_id,topic_id)
-          VALUES (?,?,?,?,?,?,?,?)''',
-          [
-            event.eventId,
-            event.title,
-            event.body,
-            event.destination.wireValue,
-            event.createdAt.toUtc().millisecondsSinceEpoch,
-            'pending',
-            platformId,
-            topicId,
-          ],
-        );
-        pendingCount++;
-      }
-      _database.execute('COMMIT');
-      return Ok(NotificationReconcileResult(pendingCount: pendingCount));
-    } catch (_) {
-      try {
-        _database.execute('ROLLBACK');
-      } catch (_) {}
-      return const Err(NotificationsStorageFailure());
-    }
   }
 
   @override
@@ -264,10 +160,10 @@ final class SqliteNotificationOutbox implements NotificationOutboxPort {
           skippedTopicCount: skippedTopicCount,
         ),
       );
-    } catch (_) {
+    } on SqliteException catch (_) {
       try {
         _database.execute('ROLLBACK');
-      } catch (_) {}
+      } on SqliteException catch (_) {}
       return const Err(NotificationsStorageFailure());
     }
   }
@@ -276,17 +172,6 @@ final class SqliteNotificationOutbox implements NotificationOutboxPort {
     'SELECT topic_id FROM notification_topics WHERE topic_id=?',
     [topicId],
   ).isNotEmpty;
-
-  @override
-  Future<Result<bool, NotificationsFailure>> isTopicInitialized(
-    String topicId,
-  ) async {
-    try {
-      return Ok(_isInitialized(topicId));
-    } catch (_) {
-      return const Err(NotificationsStorageFailure());
-    }
-  }
 
   @override
   Future<Result<void, NotificationsFailure>> recordObserved(
@@ -382,10 +267,10 @@ final class SqliteNotificationOutbox implements NotificationOutboxPort {
       }
       _database.execute('COMMIT');
       return const Ok(null);
-    } catch (_) {
+    } on SqliteException catch (_) {
       try {
         _database.execute('ROLLBACK');
-      } catch (_) {}
+      } on SqliteException catch (_) {}
       return const Err(NotificationsStorageFailure());
     }
   }
@@ -406,7 +291,7 @@ final class SqliteNotificationOutbox implements NotificationOutboxPort {
         [eventId],
       );
       return Ok(members.isNotEmpty && unseen.isEmpty);
-    } catch (_) {
+    } on SqliteException catch (_) {
       return const Err(NotificationsStorageFailure());
     }
   }
@@ -453,10 +338,10 @@ final class SqliteNotificationOutbox implements NotificationOutboxPort {
       }
       _database.execute('COMMIT');
       return Ok(List.unmodifiable(events));
-    } catch (_) {
+    } on SqliteException catch (_) {
       try {
         _database.execute('ROLLBACK');
-      } catch (_) {}
+      } on SqliteException catch (_) {}
       return const Err(NotificationsStorageFailure());
     }
   }
@@ -491,7 +376,7 @@ final class SqliteNotificationOutbox implements NotificationOutboxPort {
         return const Err(NotificationsClaimLostFailure());
       }
       return const Ok(null);
-    } catch (_) {
+    } on SqliteException catch (_) {
       return const Err(NotificationsStorageFailure());
     }
   }
@@ -504,7 +389,7 @@ final class SqliteNotificationOutbox implements NotificationOutboxPort {
         [payload],
       );
       return const Ok(null);
-    } catch (_) {
+    } on SqliteException catch (_) {
       return const Err(NotificationsStorageFailure());
     }
   }
@@ -527,10 +412,10 @@ final class SqliteNotificationOutbox implements NotificationOutboxPort {
       );
       _database.execute('COMMIT');
       return Ok(row['payload'] as String);
-    } catch (_) {
+    } on SqliteException catch (_) {
       try {
         _database.execute('ROLLBACK');
-      } catch (_) {}
+      } on SqliteException catch (_) {}
       return const Err(NotificationsStorageFailure());
     }
   }

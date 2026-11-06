@@ -1,3 +1,4 @@
+import 'package:meta/meta.dart';
 import 'local_notification.dart';
 import 'notifications_failure.dart';
 import 'package:primitives/primitives.dart';
@@ -26,24 +27,17 @@ final class ClaimedNotification {
 }
 
 abstract interface class NotificationOutboxPort {
-  Future<Result<void, NotificationsFailure>> enqueue(LocalNotification event);
-
-  /// Whether the foreground has recorded this topic: only then do later
-  /// reconciliations enqueue what is new.
-  Future<Result<bool, NotificationsFailure>> isTopicInitialized(String topicId);
-
   /// Atomically initializes a missing topic from baselineEvents without seen
   /// marks, then marks observedEvents (foreground sync discoveries) seen.
   /// Existing topics never absorb baselineEvents. Drops fully seen aggregates.
+  @useResult
   Future<Result<void, NotificationsFailure>> recordObserved(
     String topicId,
     List<LocalNotification> observedEvents, {
     List<LocalNotification> baselineEvents = const [],
   });
 
-  Future<Result<NotificationReconcileResult, NotificationsFailure>>
-  reconcileTopic(String topicId, List<LocalNotification> observedEvents);
-
+  @useResult
   Future<Result<NotificationReconcileResult, NotificationsFailure>>
   reconcileTopicsAndEnqueue(
     List<NotificationTopicObservation> observations,
@@ -52,23 +46,29 @@ abstract interface class NotificationOutboxPort {
   );
 
   /// Whether every payment this aggregate announces was seen in the app.
+  @useResult
   Future<Result<bool, NotificationsFailure>> isSeen(String eventId);
 
+  @useResult
   Future<Result<List<ClaimedNotification>, NotificationsFailure>> claimPending({
     DateTime? now,
   });
 
+  @useResult
   Future<Result<void, NotificationsFailure>> markDelivered(
     String eventId,
     String claimToken,
   );
 
+  @useResult
   Future<Result<void, NotificationsFailure>> release(
     String eventId,
     String claimToken,
   );
 
+  @useResult
   Result<void, NotificationsFailure> persistResponse(String payload);
 
+  @useResult
   Future<Result<String?, NotificationsFailure>> consumeResponse();
 }
