@@ -14,6 +14,15 @@ void main() {
     isTestnet: false,
   );
 
+  test('unknown balance cannot fund even an amountless payment', () {
+    final unknown = _wallet(
+      id: 'unknown',
+      balanceSat: 100000,
+    ).copyWith(balanceSat: null);
+    expect(unknown.unavailable, isTrue);
+    expect(usecase.execute(wallets: [unknown], request: request), isA<Err>());
+  });
+
   test('prefers the default wallet on the request network', () async {
     final result = usecase.execute(
       wallets: [

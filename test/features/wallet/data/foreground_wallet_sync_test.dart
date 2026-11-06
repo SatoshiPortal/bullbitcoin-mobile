@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_native_runtime.dart';
 import 'dart:io';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_transaction_repository_impl.dart';
@@ -123,6 +124,49 @@ void main() {
   });
 
   tearDown(() => directory.deleteSync(recursive: true));
+
+  test('invalid catalog origin does not hide a healthy wallet', () async {
+    when(
+      () => metadata.fetchAll(),
+    ).thenAnswer((_) async => [row.copyWith(id: 'invalid'), row]);
+    final result = await repository.getWallets();
+    expect(result, isA<Ok>());
+    if (result case Ok(:final value)) {
+      expect(value.map((wallet) => wallet.id), [id]);
+    }
+  });
+
+  test(
+    'one unavailable wallet does not hide the rest of the catalog',
+    () async {
+      final other = row.copyWith(id: 'wpkh([11223344/84h/1h/0h])');
+      when(() => metadata.fetchAll()).thenAnswer((_) async => [row, other]);
+      when(() => bdk.getBalance(wallet: any(named: 'wallet'))).thenAnswer((
+        invocation,
+      ) async {
+        final model = invocation.namedArguments[#wallet] as WalletModel;
+        if (model.id == id) throw const FileSystemException('unavailable');
+        return BalanceModel(
+          confirmedSat: BigInt.one,
+          immatureSat: BigInt.zero,
+          trustedPendingSat: BigInt.zero,
+          untrustedPendingSat: BigInt.zero,
+          spendableSat: BigInt.one,
+          totalSat: BigInt.one,
+        );
+      });
+      final result = await repository.getWallets();
+      expect(result, isA<Ok>());
+      if (result case Ok(:final value)) {
+        expect(value, hasLength(2));
+        expect(value.first.balanceSat, isNull);
+        expect(value.first.unavailable, isTrue);
+        expect(value.last.unavailable, isFalse);
+        expect(value.last.balanceSat, BigInt.one);
+        expect(WalletState(wallets: value).totalBalance(), isNull);
+      }
+    },
+  );
 
   test(
     'foreground use case reaches the new operation and legacy events',
