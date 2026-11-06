@@ -37,12 +37,14 @@ final class WalletRevisionState {
   final WalletLifecycle lifecycle;
   final int initializedSchema;
   final int? issuedReceiveIndex;
+  final bool syncFailed;
 
   const WalletRevisionState({
     required this.stamp,
     required this.lifecycle,
     this.initializedSchema = 0,
     this.issuedReceiveIndex,
+    this.syncFailed = false,
   });
 }
 

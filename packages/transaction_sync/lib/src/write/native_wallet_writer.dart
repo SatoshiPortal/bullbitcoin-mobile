@@ -250,7 +250,7 @@ final class NativeWalletWriter implements LiquidReadAdmission {
       } else {
         // Native work completed with an uncertain mutation: invalidate readers,
         // but never claim a successful sync or clear a prior repair barrier.
-        revisions.finish(key);
+        revisions.finish(key, syncFailed: true);
       }
     }
     _value(result);
