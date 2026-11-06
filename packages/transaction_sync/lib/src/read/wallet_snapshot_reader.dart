@@ -182,6 +182,7 @@ final class WalletSnapshotReader {
     }
 
     LiquidReadLease? lease;
+    T? unpublished;
     try {
       {
         switch (await liquidAdmission.acquire(key)) {
@@ -193,8 +194,7 @@ final class WalletSnapshotReader {
             lease = value;
         }
         if (lease.revision.key != key || lease.revision != state.stamp) {
-          _cache.remove(key);
-          return const Err(TransactionSyncBusyFailure());
+          return busy();
         }
       }
       final stamp = lease.revision;
@@ -227,6 +227,7 @@ final class WalletSnapshotReader {
       }
       final timer = Stopwatch()..start();
       final wallet = await hydrate(ready);
+      unpublished = wallet;
       final after = await revisions.read(key);
       if (after case Ok(
         value: final next,
@@ -241,16 +242,10 @@ final class WalletSnapshotReader {
           snapshot: WalletReadSnapshot<Object>(wallet, stamp),
           descriptor: _descriptorIdentity(descriptor),
         );
+        unpublished = null;
         return Ok(snapshot);
       }
-      if (wallet is bdk.Wallet) {
-        wallet.dispose();
-      }
-      if (wallet is lwk.Wallet) {
-        wallet.dispose();
-      }
-      _cache.remove(key);
-      return const Err(TransactionSyncBusyFailure());
+      return busy();
     } on _ReadFailure catch (e) {
       if (e.failure is TransactionSyncBusyFailure) {
         return busy();
@@ -264,6 +259,9 @@ final class WalletSnapshotReader {
       }
       return const Err(TransactionSyncNeedsRepairFailure());
     } finally {
+      final rejected = unpublished;
+      if (rejected is bdk.Wallet) rejected.dispose();
+      if (rejected is lwk.Wallet) rejected.dispose();
       await lease?.release();
     }
   }

@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'package:bb_mobile/features/wallet/data/wallet_native_runtime.dart';
 import 'package:transaction_sync/read.dart';
+import 'package:transaction_sync/transaction_sync.dart'
+    show TransactionSyncBusyFailure;
 
 import 'package:bb_mobile/core/electrum/domain/errors/electrum_fallback_exception.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_sync_result.dart';
@@ -247,7 +249,7 @@ class WalletRepository {
           ? const Err(WalletNotFoundFailure('no metadata for the wallet id'))
           : Ok(wallet);
     } catch (e, st) {
-      log.severe(message: 'getWallet failed', error: e, trace: st);
+      _reportReadFailure(e, st, 'getWallet');
       return Err(_classify(e, 'getWallet'));
     }
   }
@@ -310,8 +312,21 @@ class WalletRepository {
         ),
       );
     } catch (e, st) {
-      log.severe(message: 'getWallets failed', error: e, trace: st);
+      _reportReadFailure(e, st, 'getWallets');
       return Err(_classify(e, 'getWallets'));
+    }
+  }
+
+  void _reportReadFailure(Object error, StackTrace trace, String operation) {
+    if (error is WalletSnapshotException &&
+        error.failure is TransactionSyncBusyFailure) {
+      log.warning('Wallet read deferred operation=$operation category=busy');
+    } else {
+      log.severe(
+        message: 'Wallet read failed operation=$operation',
+        error: error.runtimeType,
+        trace: StackTrace.empty,
+      );
     }
   }
 
@@ -326,6 +341,9 @@ class WalletRepository {
   WalletFailure _classify(Object e, String operation) {
     if (e is WalletFailure) return e;
     if (e is WalletSnapshotException) {
+      if (e.failure is TransactionSyncBusyFailure) {
+        return const WalletSyncFailure('reader busy');
+      }
       return WalletStorageFailure('$operation: ${e.failure.runtimeType}');
     }
     if ((e is lwk.LwkError && e.msg.contains('UpdateOnDifferentStatus')) ||
