@@ -167,6 +167,44 @@ void main() {
     },
   );
 
+  test(
+    'missing active store rebuilds and restores issued receive index',
+    () async {
+      reserved.indices.addAll([0, 1]);
+      expect(await writer.receive(key, expectedGeneration: 1), isA<Ok>());
+      sessions.exists = false;
+      sessions.revealed.clear();
+      expect(
+        await writer.create(key, expectedGeneration: 1, existingOnly: true),
+        isA<Ok>(),
+      );
+      expect(sessions.revealed, [2]);
+      expect(store.record(key)?.issued, 2);
+      expect(store.record(key)?.needsSync, isTrue);
+      expect(store.record(key)?.intent, isNull);
+    },
+  );
+
+  test('missing adoption leaves no load intent or revision', () async {
+    final empty = RevisionStore('${dir.path}/empty.sqlite');
+    final adopter = NativeWalletWriter.withSessions(
+      lockDirectory: '${dir.path}/locks',
+      revisions: empty,
+      catalog: Catalog(),
+      reservedAddresses: reserved,
+      sessions: Sessions(),
+    );
+    try {
+      expect(
+        await adopter.create(key, expectedGeneration: 0, existingOnly: true),
+        isA<Err>(),
+      );
+      expect(empty.record(key), isNull);
+    } finally {
+      await empty.close();
+    }
+  });
+
   test('finalization failure retains intent and revision atomically', () async {
     final database = sqlite3.open('${dir.path}/metadata.sqlite');
     database.execute(
