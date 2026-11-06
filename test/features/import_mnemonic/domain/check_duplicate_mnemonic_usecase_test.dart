@@ -94,6 +94,35 @@ void main() {
       );
     });
 
+    test(
+      'invalid catalog origins do not block orphan import preflight',
+      () async {
+        expect(await secrets.import(words: words), isA<Ok>());
+        final invalid = _Row();
+        when(() => invalid.masterFingerprint).thenReturn('73c5da0a');
+        when(() => invalid.id).thenReturn('invalid origin');
+        when(() => metadata.fetchAll()).thenAnswer((_) async => [invalid]);
+        expect(
+          await usecase.execute(mnemonicWords: words),
+          isA<Ok<void, ImportMnemonicFailure>>(),
+        );
+        final valid = _Row();
+        when(() => valid.masterFingerprint).thenReturn('73c5da0a');
+        when(() => valid.id).thenReturn('wpkh([73c5da0a/84h/0h/0h])');
+        when(
+          () => metadata.fetchAll(),
+        ).thenAnswer((_) async => [invalid, valid]);
+        expect(
+          await usecase.execute(mnemonicWords: words),
+          isA<Err<void, ImportMnemonicFailure>>().having(
+            (result) => result.failure,
+            'failure',
+            isA<ImportMnemonicDuplicateFailure>(),
+          ),
+        );
+      },
+    );
+
     test('a passphrase makes a different secret, not a duplicate', () async {
       expect(
         await secrets.import(words: words),
