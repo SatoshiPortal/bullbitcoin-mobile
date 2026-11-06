@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'store_identity.dart';
 
 import 'package:primitives/primitives.dart';
 import 'package:meta/meta.dart';
@@ -19,6 +20,8 @@ final class RevisionRecord {
   final int? candidate;
   final int? issued;
   final bool needsSync;
+  final String? descriptorHash;
+  final String? liquidCachePath;
 
   const RevisionRecord(
     this.state,
@@ -26,6 +29,8 @@ final class RevisionRecord {
     this.candidate,
     this.issued,
     this.needsSync,
+    this.descriptorHash,
+    this.liquidCachePath,
   );
 }
 
@@ -47,6 +52,7 @@ final class RevisionStore implements WalletRevisionReader {
       db.execute('PRAGMA busy_timeout = 5000');
       db.execute('PRAGMA journal_mode = WAL');
       db.execute('PRAGMA synchronous = FULL');
+      db.execute('BEGIN IMMEDIATE');
       db.execute('''CREATE TABLE IF NOT EXISTS revisions (
         wallet TEXT NOT NULL, network TEXT NOT NULL,
         generation INTEGER NOT NULL, revision INTEGER NOT NULL,
@@ -61,6 +67,16 @@ final class RevisionStore implements WalletRevisionReader {
           'ALTER TABLE revisions ADD COLUMN initialized_schema INTEGER NOT NULL DEFAULT 0',
         );
       }
+      final columns = db
+          .select('PRAGMA table_info(revisions)')
+          .map((row) => row['name'])
+          .toSet();
+      for (final column in ['descriptor_hash', 'liquid_cache_path']) {
+        if (!columns.contains(column)) {
+          db.execute('ALTER TABLE revisions ADD COLUMN $column TEXT');
+        }
+      }
+      db.execute('COMMIT');
       return db;
     } on Exception {
       db.dispose();
@@ -96,6 +112,8 @@ final class RevisionStore implements WalletRevisionReader {
       row['candidate'] as int?,
       row['issued'] as int?,
       row['needs_sync'] == 1,
+      row['descriptor_hash'] as String?,
+      row['liquid_cache_path'] as String?,
     );
   }
 
@@ -165,7 +183,13 @@ final class RevisionStore implements WalletRevisionReader {
   }
 
   @internal
-  WalletRevision finish(WalletKey key, {int? issued, bool? needsSync}) {
+  WalletRevision finish(
+    WalletKey key, {
+    int? issued,
+    bool? needsSync,
+    PublicWalletDescriptor? initializedDescriptor,
+    String? liquidCachePath,
+  }) {
     _db.execute('BEGIN IMMEDIATE');
     late WalletRevisionState state;
     try {
@@ -175,7 +199,7 @@ final class RevisionStore implements WalletRevisionReader {
       final creating = old.intent == WriteIntent.create;
       _db.execute(
         '''UPDATE revisions SET revision=revision+1,
-        lifecycle=?, intent=NULL, candidate=NULL, issued=?, needs_sync=?, initialized_schema=?
+        lifecycle=?, intent=NULL, candidate=NULL, issued=?, needs_sync=?, initialized_schema=?, descriptor_hash=?, liquid_cache_path=?
         WHERE wallet=? AND network=?''',
         [
           (deleted ? WalletLifecycle.deleted : WalletLifecycle.active).name,
@@ -190,6 +214,16 @@ final class RevisionStore implements WalletRevisionReader {
                 }.contains(old.intent)
               ? writerSchemaVersion
               : old.state.initializedSchema,
+          deleted
+              ? null
+              : initializedDescriptor == null
+              ? old.descriptorHash
+              : descriptorDigest(initializedDescriptor),
+          deleted
+              ? null
+              : initializedDescriptor == null
+              ? old.liquidCachePath
+              : liquidCachePath,
           key.id,
           _network(key),
         ],
@@ -236,6 +270,8 @@ final class RevisionStore implements WalletRevisionReader {
     _published[state.stamp.key] = state;
     _changes.add(state);
   }
+
+  Stream<WalletRevisionState> get changes => _changes.stream;
 
   @override
   Stream<WalletRevisionState> watch(WalletKey key) =>
