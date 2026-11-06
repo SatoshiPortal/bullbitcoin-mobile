@@ -8,6 +8,28 @@ import 'package:transaction_sync/src/write/revision_store.dart';
 
 void main() {
   test(
+    'completing recovery removes only the associated recovery marker',
+    () async {
+      final directory = Directory.systemTemp.createTempSync(
+        'revision-recovery-',
+      );
+      final path = '${directory.path}/revisions.sqlite';
+      final marker = File('$path.recovery')..writeAsStringSync('existing-only');
+      final archive = File('$path.corrupt-fixture')
+        ..writeAsStringSync('preserved');
+      final store = RevisionStore(path);
+      try {
+        store.completeRecovery();
+        expect(marker.existsSync(), isFalse);
+        expect(File(path).existsSync(), isTrue);
+        expect(archive.readAsStringSync(), 'preserved');
+      } finally {
+        await store.close();
+        directory.deleteSync(recursive: true);
+      }
+    },
+  );
+  test(
     'opening current metadata does not acquire a writer transaction',
     () async {
       final directory = Directory.systemTemp.createTempSync('revision-open-');
