@@ -5,9 +5,11 @@ import 'package:bb_mobile/features/recipients/domain/repositories/sepa_virtual_p
 import 'package:bb_mobile/features/recipients/domain/value_objects/sepa_virtual_payee_status.dart';
 
 /// Emits the status of a SEPA recipient's virtual payee, activates it when
-/// there is none, then emits each new status until it is active. It checks often at first,
-/// because activation usually takes a few seconds, then less often. A
-/// failure is the last event.
+/// there is none, then emits each new status until it is active. It checks
+/// often at first, because activation usually takes a few seconds, then less
+/// often. A failure does not stop the checks: the payee can become active
+/// after a failed request, so the stream ends only when the payee is active
+/// or the listener cancels it.
 class WatchSepaVirtualPayeeActivationUsecase {
   final SepaVirtualPayeeRepository _sepaVirtualPayeeRepository;
   final GetRecipientsEnvironmentUsecase _getRecipientsEnvironmentUsecase;
@@ -35,45 +37,44 @@ class WatchSepaVirtualPayeeActivationUsecase {
         return;
     }
 
-    final initialStatus = await _findStatus(recipientId, isTestnet);
-    SepaVirtualPayeeStatus status;
-    switch (initialStatus) {
-      case Ok(:final value):
-        status = value;
-      case Err(:final failure):
-        yield Err(failure);
-        return;
-    }
-
-    yield Ok(status);
-    if (!status.exists) {
-      switch (await _sepaVirtualPayeeRepository.activate(
-        recipientId: recipientId,
-        isTestnet: isTestnet,
-      )) {
+    SepaVirtualPayeeStatus? status;
+    var hasFailed = false;
+    var isActivationRequested = false;
+    var polls = 0;
+    while (true) {
+      final Result<SepaVirtualPayeeStatus, RecipientsFailure> found =
+          await _findStatus(recipientId, isTestnet);
+      switch (found) {
         case Ok(:final value):
-          if (value != status) yield Ok(value);
+          if (value != status || hasFailed) yield Ok(value);
           status = value;
+          hasFailed = false;
         case Err(:final failure):
           yield Err(failure);
-          return;
+          hasFailed = true;
       }
-    }
 
-    var polls = 0;
-    while (!status.isActive) {
+      if (status != null && !status.exists && !isActivationRequested) {
+        isActivationRequested = true;
+        switch (await _sepaVirtualPayeeRepository.activate(
+          recipientId: recipientId,
+          isTestnet: isTestnet,
+        )) {
+          case Ok(:final value):
+            if (value != status) yield Ok(value);
+            status = value;
+          case Err(:final failure):
+            yield Err(failure);
+            hasFailed = true;
+        }
+      }
+
+      if (status?.isActive ?? false) return;
+
       await Future<void>.delayed(
         polls < _initialPolls ? _initialPollInterval : _pollInterval,
       );
       polls++;
-      switch (await _findStatus(recipientId, isTestnet)) {
-        case Ok(:final value):
-          if (value != status) yield Ok(value);
-          status = value;
-        case Err(:final failure):
-          yield Err(failure);
-          return;
-      }
     }
   }
 
