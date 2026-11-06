@@ -12,14 +12,12 @@ abstract interface class ElectrumServerRepository {
   @useResult
   Future<Result<List<ElectrumServer>, ElectrumFailure>> fetchAll({
     ElectrumServerNetwork? network,
-    bool? isTestnet,
-    bool? isLiquid,
     bool? isCustom,
   });
   @useResult
   Future<Result<ElectrumServer?, ElectrumFailure>> fetchByUrl(
     String url, {
-    ElectrumServerNetwork? network,
+    required ElectrumServerNetwork network,
   });
   @useResult
   Future<Result<List<ElectrumServer>, ElectrumFailure>> fetchCustomServers({
@@ -40,6 +38,6 @@ abstract interface class ElectrumServerRepository {
   @useResult
   Future<Result<void, ElectrumFailure>> delete({
     required String url,
-    ElectrumServerNetwork? network,
+    required ElectrumServerNetwork network,
   });
 }

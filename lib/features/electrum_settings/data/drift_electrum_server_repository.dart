@@ -45,9 +45,8 @@ class DriftElectrumServerRepository implements ElectrumServerRepository {
   @override
   Future<Result<ElectrumServer?, ElectrumFailure>> fetchByUrl(
     String url, {
-    ElectrumServerNetwork? network,
+    required ElectrumServerNetwork network,
   }) async {
-    if (network == null) return const Err(ElectrumUnsupportedNetworkFailure());
     try {
       final server = await _datasource.fetchByUrl(url, network: network);
       return Ok(server?.toEntity());
@@ -60,13 +59,8 @@ class DriftElectrumServerRepository implements ElectrumServerRepository {
   @override
   Future<Result<List<ElectrumServer>, ElectrumFailure>> fetchAll({
     ElectrumServerNetwork? network,
-    bool? isTestnet,
-    bool? isLiquid,
     bool? isCustom,
   }) async {
-    if (isTestnet != null || isLiquid != null) {
-      return const Err(ElectrumUnsupportedNetworkFailure());
-    }
     try {
       final models = await _datasource.fetchAllServers(
         network: network,
@@ -126,9 +120,8 @@ class DriftElectrumServerRepository implements ElectrumServerRepository {
   @override
   Future<Result<void, ElectrumFailure>> delete({
     required String url,
-    ElectrumServerNetwork? network,
+    required ElectrumServerNetwork network,
   }) async {
-    if (network == null) return const Err(ElectrumUnsupportedNetworkFailure());
     try {
       await _datasource.deleteServer(url, network: network);
       return const Ok(null);

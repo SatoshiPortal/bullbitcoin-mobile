@@ -11,7 +11,7 @@ part 'electrum_server_view_model.freezed.dart';
 sealed class ElectrumServerViewModel with _$ElectrumServerViewModel {
   const factory ElectrumServerViewModel({
     required String url,
-    ElectrumServerNetwork? network,
+    required ElectrumServerNetwork network,
     required ElectrumServerStatus status,
     required int priority,
   }) = _ElectrumServerViewModel;

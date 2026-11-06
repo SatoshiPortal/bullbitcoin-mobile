@@ -2,7 +2,7 @@ import 'package:bb_mobile/features/electrum_settings/domain/electrum_server_netw
 
 class DeleteCustomServerRequest {
   final String url;
-  final ElectrumServerNetwork? network;
+  final ElectrumServerNetwork network;
 
-  DeleteCustomServerRequest({required this.url, this.network});
+  DeleteCustomServerRequest({required this.url, required this.network});
 }

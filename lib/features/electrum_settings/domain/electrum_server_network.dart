@@ -10,27 +10,16 @@ enum ElectrumServerNetwork {
   liquidRegtest;
 
   static ElectrumServerNetwork fromEnvironment({
-    ElectrumEnvironment? environment,
-    bool? isTestnet,
+    required ElectrumEnvironment environment,
     required bool isLiquid,
-  }) {
-    if ((environment == null) == (isTestnet == null)) {
-      throw ArgumentError('Supply exactly one environment representation');
-    }
-    final selected =
-        environment ??
-        (isTestnet == true
-            ? ElectrumEnvironment.testnet
-            : ElectrumEnvironment.mainnet);
-    return switch ((selected, isLiquid)) {
-      (ElectrumEnvironment.mainnet, false) => bitcoinMainnet,
-      (ElectrumEnvironment.mainnet, true) => liquidMainnet,
-      (ElectrumEnvironment.testnet, false) => bitcoinTestnet,
-      (ElectrumEnvironment.testnet, true) => liquidTestnet,
-      (ElectrumEnvironment.regtest, false) => bitcoinRegtest,
-      (ElectrumEnvironment.regtest, true) => liquidRegtest,
-    };
-  }
+  }) => switch ((environment, isLiquid)) {
+    (ElectrumEnvironment.mainnet, false) => bitcoinMainnet,
+    (ElectrumEnvironment.mainnet, true) => liquidMainnet,
+    (ElectrumEnvironment.testnet, false) => bitcoinTestnet,
+    (ElectrumEnvironment.testnet, true) => liquidTestnet,
+    (ElectrumEnvironment.regtest, false) => bitcoinRegtest,
+    (ElectrumEnvironment.regtest, true) => liquidRegtest,
+  };
 
   static ElectrumServerNetwork fromNetworkEnv(
     NetworkEnv environment, {
@@ -57,13 +46,6 @@ enum ElectrumServerNetwork {
 }
 
 extension ElectrumServerNetworkX on ElectrumServerNetwork {
-  bool get isTestnet => switch (environment) {
-    ElectrumEnvironment.mainnet => false,
-    ElectrumEnvironment.testnet => true,
-    ElectrumEnvironment.regtest =>
-      throw const ElectrumUnsupportedNetworkException(),
-  };
-
   String get storageName => switch (this) {
     ElectrumServerNetwork.bitcoinMainnet => 'bitcoinMainnet',
     ElectrumServerNetwork.bitcoinTestnet => 'bitcoinTestnet',
