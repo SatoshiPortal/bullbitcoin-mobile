@@ -2099,13 +2099,26 @@ class SendCubit extends Cubit<SendState>
   }
 
   Future<void> signTransaction() async {
+    final wallet = state.selectedWallet;
+    if (wallet == null) {
+      log.warning('Signing refused category=missing-wallet');
+      emit(
+        state.copyWith(
+          signingTransaction: false,
+          failure: const SendTransactionConfirmationFailure(
+            logMessage: 'No wallet selected',
+          ),
+        ),
+      );
+      return;
+    }
     try {
       emit(state.copyWith(signingTransaction: true));
 
-      if (state.selectedWallet!.network.isLiquid) {
+      if (wallet.network.isLiquid) {
         final signedPset = await _signLiquidTxUsecase.execute(
           pset: state.unsignedPsbt!,
-          walletId: state.selectedWallet!.id,
+          walletId: wallet.id,
         );
         if (!await _persistPreparedOrderPayin(
           signedTransaction: signedPset,
@@ -2122,8 +2135,8 @@ class SendCubit extends Cubit<SendState>
         if (state.willAttemptPayjoin) {
           final paymentRequest = state.paymentRequest! as Bip21PaymentRequest;
           final payjoinResult = await _sendWithPayjoinUsecase.execute(
-            walletId: state.selectedWallet!.id,
-            network: state.selectedWallet!.network.bitcoin,
+            walletId: wallet.id,
+            network: wallet.network.bitcoin,
             bip21: paymentRequest.uri,
             unsignedOriginalPsbt: state.unsignedPsbt!,
             amountSat: state.confirmedAmountSat!,
@@ -2155,7 +2168,7 @@ class SendCubit extends Cubit<SendState>
         } else {
           final signedPsbtAndTxSize = await _signBitcoinTxUsecase.execute(
             psbt: state.unsignedPsbt!,
-            walletId: state.selectedWallet!.id,
+            walletId: wallet.id,
           );
           final bitcoinAbsoluteFeesSat =
               await _calculateBitcoinAbsoluteFeesUsecase.execute(

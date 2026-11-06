@@ -347,12 +347,13 @@ abstract class ReceiveState with _$ReceiveState {
   /// turned on, instead of silently doing nothing.
   bool get isPayjoinAwaitingFunds {
     if (type != ReceiveType.bitcoin) return false;
-    return wallet != null &&
+    final selectedWallet = wallet;
+    return selectedWallet != null &&
         NetworkCapabilities.supports(
-          wallet!.network.shared,
+          selectedWallet.network.shared,
           NetworkCapability.payjoin,
         ) &&
-        wallet!.signsLocally &&
+        selectedWallet.signsLocally &&
         payjoinGloballyEnabled == true &&
         !hasUtxos &&
         payjoin == null;
