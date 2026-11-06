@@ -121,6 +121,7 @@ class WalletRepository {
       }
     }
 
+    await _native?.prepareCreate(metadata);
     await _walletMetadataDatasource.store(metadata);
     await _createNative(metadata);
     final balance = await _getBalance(metadata, sync: sync);
@@ -158,6 +159,7 @@ class WalletRepository {
       }
     }
 
+    await _native?.prepareCreate(metadata);
     await _walletMetadataDatasource.store(metadata);
     await _createNative(metadata);
     final balance = await _getBalance(metadata, sync: sync);
@@ -205,6 +207,7 @@ class WalletRepository {
       }
     }
 
+    await _native?.prepareCreate(metadata);
     await _walletMetadataDatasource.store(metadata);
     await _createNative(metadata);
     final balance = await _getBalance(metadata, sync: sync);

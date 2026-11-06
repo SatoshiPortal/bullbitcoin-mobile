@@ -18,6 +18,7 @@ import 'wallet_catalog_port_impl.dart';
 /// Owns application lifecycle orchestration; the shell only composes this owner.
 /// Catalog rows and secrets survive failed provisioning so startup can resume it.
 abstract interface class WalletNativeLifecycle {
+  Future<void> prepareCreate(WalletMetadataModel metadata);
   Future<void> create(WalletMetadataModel metadata);
   Future<void> delete(WalletMetadataModel metadata);
   Future<void> catalogDeleted(WalletMetadataModel metadata);
@@ -196,6 +197,23 @@ final class WalletNativeRuntime implements WalletNativeLifecycle {
     Err(failure: TransactionSyncNotFoundFailure()) => null,
     Err(:final failure) => throw WalletSnapshotException(failure),
   };
+
+  @override
+  Future<void> prepareCreate(WalletMetadataModel metadata) async {
+    final descriptor = _value(
+      WalletCatalogPortImpl.descriptorFromMetadata(metadata),
+    );
+    final services = await _services;
+    final state = await _state(services, descriptor.key);
+    if (state != null && state.lifecycle == WalletLifecycle.deleted) {
+      _value(
+        await services.writer.prepareReimport(
+          descriptor.key,
+          expectedGeneration: state.stamp.generation,
+        ),
+      );
+    }
+  }
 
   @override
   Future<void> create(WalletMetadataModel metadata) async {
