@@ -93,7 +93,7 @@ void main() {
     );
 
     wallet = _MockWallet();
-    when(() => wallet.isTestnet).thenReturn(true);
+    when(() => wallet.network).thenReturn(Network.bitcoinTestnet);
     when(
       () => wallets.getWallet(_walletId, sync: any(named: 'sync')),
     ).thenAnswer((_) async => Ok(wallet));

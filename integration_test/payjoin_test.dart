@@ -79,7 +79,11 @@ Future<void> main({bool isInitialized = false}) async {
       psbt: prepared.unsignedPsbt,
       walletId: walletId,
     );
-    await broadcastBitcoinTx.execute(signed.signedPsbt, isPsbt: true);
+    await broadcastBitcoinTx.execute(
+      signed.signedPsbt,
+      isPsbt: true,
+      network: Network.bitcoinTestnet,
+    );
     await Future<void>.delayed(const Duration(seconds: 3));
     // Fail fast: a funding sync that failed would otherwise surface as a
     // confusing balance assertion further down.

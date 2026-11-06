@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/electrum/domain/ports/electrum_servers_port.dart';
 import 'dart:convert';
 import 'dart:io';
 
@@ -19,6 +20,8 @@ import 'package:mocktail/mocktail.dart';
 class _MempoolSettings extends Mock implements MempoolSettingsRepository {}
 
 class _MempoolServers extends Mock implements MempoolServerRepository {}
+
+class _ElectrumServers extends Mock implements ElectrumServersPort {}
 
 class _GlobalSettings extends Mock implements SettingsRepository {}
 
@@ -77,6 +80,7 @@ void main() {
   test('fees reach the direct HTTP oracle and never open SOCKS', () async {
     final locator = GetIt.asNewInstance();
     final globalSettings = _GlobalSettings();
+    final electrumServers = _ElectrumServers();
     final mempoolSettings = _MempoolSettings();
     final mempoolServers = _MempoolServers();
     final network = MempoolServerNetwork.fromEnvironment(
@@ -105,6 +109,7 @@ void main() {
     locator.registerSingleton<SettingsRepository>(globalSettings);
     locator.registerSingleton<MempoolSettingsRepository>(mempoolSettings);
     locator.registerSingleton<MempoolServerRepository>(mempoolServers);
+    locator.registerSingleton<ElectrumServersPort>(electrumServers);
     FeesLocator.registerDatasources(locator);
     FeesLocator.registerRepositories(locator);
 
@@ -115,5 +120,6 @@ void main() {
     expect(result.fastest.value, 5);
     expect(httpHits, greaterThan(0));
     expect(socksConnections, 0);
+    verifyZeroInteractions(electrumServers);
   });
 }
