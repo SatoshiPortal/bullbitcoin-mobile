@@ -117,6 +117,14 @@ class FailedSync implements WriterSyncOperation, WriterSyncMutation {
   }) async => const Err(TransactionSyncConnectionFailure());
 }
 
+class RepairSync implements WriterSyncOperation {
+  @override
+  Future<Result<void, TransactionSyncFailure>> execute(
+    PublicWalletDescriptor descriptor, {
+    required int? issuedReceiveIndex,
+  }) async => const Err(TransactionSyncNeedsRepairFailure());
+}
+
 class UnrecognizedNativeDescriptorException implements Exception {
   @override
   String toString() => 'sensitive-sentinel';
@@ -234,6 +242,57 @@ void main() {
       }
     },
   );
+
+  test(
+    'repair failure carries the stamp observed while holding the lease',
+    () async {
+      final before = store.record(key)?.state.stamp;
+      final result = await writer.sync(
+        key,
+        expectedGeneration: 1,
+        operation: RepairSync(),
+      );
+      expect(
+        result,
+        isA<Err<WriterOutcome, TransactionSyncFailure>>().having(
+          (result) =>
+              (result.failure as TransactionSyncNeedsRepairFailure).revision,
+          'writer stamp',
+          before,
+        ),
+      );
+    },
+  );
+
+  test('headless admission never reconciles pending work', () async {
+    store.begin(key, WriteIntent.sync);
+    final before = store.record(key);
+    final opens = sessions.opens;
+    final result = await writer.sync(
+      key,
+      expectedGeneration: 1,
+      reconcile: false,
+      operation: Sync((_) => fail('must not sync')),
+    );
+    expect(result, isA<Err<WriterOutcome, TransactionSyncFailure>>());
+    expect(sessions.opens, opens);
+    expect(store.record(key)?.intent, before?.intent);
+    expect(store.record(key)?.state.stamp, before?.state.stamp);
+  });
+
+  test('initial scan rejection precedes durable intent', () async {
+    final before = store.record(key)?.state.stamp;
+    final result = await writer.sync(
+      key,
+      expectedGeneration: 1,
+      preflight: () async =>
+          const Err(TransactionSyncInitialScanRequiredFailure()),
+      operation: Sync((_) => fail('must not sync')),
+    );
+    expect(result, isA<Err<WriterOutcome, TransactionSyncFailure>>());
+    expect(store.record(key)?.intent, isNull);
+    expect(store.record(key)?.state.stamp, before);
+  });
 
   test(
     'explicit advance skips reserved indices and persists the new address',
