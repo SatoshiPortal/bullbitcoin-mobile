@@ -43,6 +43,32 @@ final class NativeWalletWriter implements LiquidReadAdmission {
   }) : _reserved = reservedAddresses,
        _diagnostics = persistWriterDiagnostic;
 
+  /// Re-import reserves the next generation before publishing a new catalog
+  /// row, so startup cannot mistake it for the row of an interrupted deletion.
+  @useResult
+  Future<Result<WriterOutcome, TransactionSyncFailure>> prepareReimport(
+    WalletKey key, {
+    required int expectedGeneration,
+  }) => _run(key, expectedGeneration, WriteIntent.create, () async {
+    final old = revisions.record(key);
+    _expectGeneration(old, expectedGeneration);
+    if (old == null || old.state.lifecycle != WalletLifecycle.deleted) {
+      throw const _WriterFailure(TransactionSyncBusyFailure());
+    }
+    switch (await _catalog.find(key)) {
+      case Err(failure: TransactionSyncNotFoundFailure()):
+        break;
+      case Err(:final failure):
+        throw _WriterFailure(failure);
+      case Ok():
+        throw const _WriterFailure(TransactionSyncBusyFailure());
+    }
+    revisions.begin(key, WriteIntent.create);
+    final prepared = revisions.record(key);
+    if (prepared == null) throw StateError('Missing prepared generation');
+    return WriterUnchanged(prepared.state.stamp);
+  });
+
   @useResult
   Future<Result<WriterOutcome, TransactionSyncFailure>> create(
     WalletKey key, {
