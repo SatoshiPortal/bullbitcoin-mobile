@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/wallet/domain/wallet.dart' as app;
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
@@ -153,6 +154,7 @@ void main() {
           walletId: any(named: 'walletId'),
           txid: any(named: 'txid'),
           newFeeRate: any(named: 'newFeeRate'),
+          network: app.Network.bitcoinMainnet,
         ),
       );
     });
@@ -171,6 +173,7 @@ void main() {
           walletId: any(named: 'walletId'),
           txid: any(named: 'txid'),
           newFeeRate: any(named: 'newFeeRate'),
+          network: app.Network.bitcoinMainnet,
         ),
       ).thenAnswer((_) async => const Ok('txid-1'));
 

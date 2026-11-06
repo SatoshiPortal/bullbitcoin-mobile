@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/wallet/domain/wallet.dart' as app;
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/features/fees/domain/get_network_fees_usecase.dart';
 import 'package:bb_mobile/core/utils/result.dart';
@@ -51,13 +52,18 @@ void main() {
         ),
       ).thenAnswer((_) async => 'signed-psbt');
       when(
-        () => broadcastUsecase.execute('signed-psbt', isPsbt: true),
+        () => broadcastUsecase.execute(
+          'signed-psbt',
+          isPsbt: true,
+          network: app.Network.bitcoinMainnet,
+        ),
       ).thenAnswer((_) async => 'new-txid');
 
       final result = await usecase.execute(
         walletId: 'w1',
         txid: 'old-txid',
         newFeeRate: const RelativeFee(1250),
+        network: app.Network.bitcoinMainnet,
       );
 
       expect(result, isA<Ok<String, ReplaceByFeeFailure>>());
@@ -79,6 +85,7 @@ void main() {
           walletId: 'w1',
           txid: 'old-txid',
           newFeeRate: const RelativeFee(250),
+          network: app.Network.bitcoinMainnet,
         );
 
         expect(result, isA<Err<String, ReplaceByFeeFailure>>());
@@ -104,6 +111,7 @@ void main() {
           walletId: 'w1',
           txid: 'old-txid',
           newFeeRate: const RelativeFee(1250),
+          network: app.Network.bitcoinMainnet,
         );
 
         expect(result, isA<Err<String, ReplaceByFeeFailure>>());
@@ -132,6 +140,7 @@ void main() {
           walletId: 'w1',
           txid: 'old-txid',
           newFeeRate: const RelativeFee(1250),
+          network: app.Network.bitcoinMainnet,
         );
 
         expect(result, isA<Err<String, ReplaceByFeeFailure>>());
@@ -157,6 +166,7 @@ void main() {
           walletId: 'w1',
           txid: 'old-txid',
           newFeeRate: const RelativeFee(1250),
+          network: app.Network.bitcoinMainnet,
         );
 
         expect(result, isA<Err<String, ReplaceByFeeFailure>>());
