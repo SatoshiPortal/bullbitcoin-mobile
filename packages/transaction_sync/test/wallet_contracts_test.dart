@@ -69,6 +69,23 @@ void main() {
     },
   );
 
+  test('regtest storage hex includes the reserved suffix', () {
+    expect(
+      nativeWalletStoragePath(
+        '/data',
+        WalletKey(id: 'origin:regtest', network: BitcoinNetwork.regtest),
+      ),
+      '/data/6f726967696e3a72656774657374_bdk_dart',
+    );
+    expect(
+      () => nativeWalletStoragePath(
+        '/data',
+        WalletKey(id: ':regtest', network: BitcoinNetwork.regtest),
+      ),
+      throwsArgumentError,
+    );
+  });
+
   test('revision equality includes lifecycle generation and key', () {
     final key = WalletKey(id: 'wallet', network: BitcoinNetwork.mainnet);
     final revision = WalletRevision(key: key, generation: 2, revision: 3);
