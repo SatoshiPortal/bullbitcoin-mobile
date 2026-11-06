@@ -308,6 +308,24 @@ void main() {
     },
   );
 
+  test('failed sync leaves the same revision readable as stale', () async {
+    create();
+    final first =
+        await reader.bitcoin(descriptor)
+            as Ok<WalletReadSnapshot<bdk.Wallet>, TransactionSyncFailure>;
+    revisions.state = WalletRevisionState(
+      stamp: revisions.state.stamp,
+      lifecycle: WalletLifecycle.active,
+      initializedSchema: 1,
+      syncFailed: true,
+    );
+    final next =
+        await reader.bitcoin(descriptor)
+            as Ok<WalletReadSnapshot<bdk.Wallet>, TransactionSyncFailure>;
+    expect(next.value.wallet, same(first.value.wallet));
+    expect(next.value.stale, isTrue);
+  });
+
   test('revision changed during hydration is never cached', () async {
     create();
     var reads = 0;
