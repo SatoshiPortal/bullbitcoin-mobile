@@ -1594,6 +1594,40 @@ void main() {
     },
   );
 
+  test(
+    'Liquid new address uses the persistent writer and survives reopen',
+    () async {
+      final wallet = _testWallet(network: Network.liquidMainnet);
+      final next = _testAddress().copyWith(index: 1, address: 'liquid-next');
+      var issued = _testAddress();
+      when(
+        () => getReceiveAddress.execute(walletId: wallet.id),
+      ).thenAnswer((_) async => Ok(issued));
+      when(
+        () => getReceiveAddress.execute(walletId: wallet.id, generateNew: true),
+      ).thenAnswer((_) async {
+        issued = next;
+        return Ok(issued);
+      });
+      final bloc = buildBloc(wallet: wallet);
+      bloc.add(const ReceiveLiquidStarted());
+      await Future<void>.delayed(Duration.zero);
+      expect(bloc.state.liquidAddress, issued);
+      bloc.add(const ReceiveNewAddressGenerated());
+      await Future<void>.delayed(Duration.zero);
+      expect(bloc.state.liquidAddress, next);
+      verify(
+        () => getReceiveAddress.execute(walletId: wallet.id, generateNew: true),
+      ).called(1);
+      await bloc.close();
+      final reopened = buildBloc(wallet: wallet);
+      addTearDown(reopened.close);
+      reopened.add(const ReceiveLiquidStarted());
+      await Future<void>.delayed(Duration.zero);
+      expect(reopened.state.liquidAddress, next);
+    },
+  );
+
   group('preselected-wallet network guard', () {
     // The preselected wallet survives tab switches (the shell's bloc is
     // created once), so a receive entered from a liquid wallet must not
