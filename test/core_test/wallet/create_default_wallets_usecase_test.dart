@@ -1,4 +1,4 @@
-import 'package:primitives/primitives.dart' show Fingerprint;
+import 'package:primitives/primitives.dart' show Fingerprint, NetworkEnv;
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
@@ -163,6 +163,58 @@ void main() {
     );
     verifyZeroInteractions(wallets);
     verifyZeroInteractions(settings);
+  });
+
+  test(
+    'captured network mismatch refuses before any wallet mutation',
+    () async {
+      final before = Map<String, String>.of(storage.entries);
+      await expectLater(
+        create.execute(secret: stored, expectedNetwork: NetworkEnv.regtest),
+        throwsA(isA<CreateDefaultWalletsException>()),
+      );
+      verifyZeroInteractions(wallets);
+      expect(storage.entries, before);
+    },
+  );
+
+  test('regtest default provisioning creates Bitcoin only', () async {
+    when(() => settings.fetch()).thenAnswer(
+      (_) async => const SettingsEntity(
+        environment: Environment.regtest,
+        bitcoinUnit: BitcoinUnit.sats,
+        currencyCode: 'CAD',
+      ),
+    );
+    when(
+      () => wallets.getWallets(
+        onlyDefaults: true,
+        environment: Environment.regtest,
+      ),
+    ).thenAnswer((_) async => Ok<List<Wallet>, WalletFailure>([]));
+    final bitcoin = _Wallet();
+    when(
+      () => wallets.createWallet(
+        secret: stored,
+        network: Network.bitcoinRegtest,
+        scriptType: ScriptType.bip84,
+        isDefault: true,
+        birthday: null,
+      ),
+    ).thenAnswer((_) async => bitcoin);
+    expect(
+      await create.execute(secret: stored, expectedNetwork: NetworkEnv.regtest),
+      [bitcoin],
+    );
+    verifyNever(
+      () => wallets.createWallet(
+        secret: any(named: 'secret'),
+        network: Network.liquidRegtest,
+        scriptType: ScriptType.bip84,
+        isDefault: true,
+        birthday: null,
+      ),
+    );
   });
 
   for (final failedAttempt in [1, 2]) {

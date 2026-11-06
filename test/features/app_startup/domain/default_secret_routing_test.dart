@@ -116,6 +116,83 @@ void main() {
     );
   }
 
+  test(
+    'empty active regtest preserves an existing catalog without secret IO',
+    () async {
+      when(settings.fetch).thenAnswer(
+        (_) async => const SettingsEntity(
+          environment: Environment.regtest,
+          bitcoinUnit: BitcoinUnit.sats,
+          currencyCode: 'CAD',
+        ),
+      );
+      when(
+        () => wallets.getWallets(
+          onlyDefaults: true,
+          environment: Environment.regtest,
+        ),
+      ).thenAnswer((_) async => const Ok([]));
+      when(wallets.hasStoredWallets).thenAnswer((_) async => const Ok(true));
+      final storage = FakeSecureStoragePlatform();
+      final result = await usecaseOn(storage).execute();
+      expect(
+        result,
+        isA<Ok<bool, AppStartupFailure>>().having(
+          (result) => result.value,
+          'existing catalog',
+          true,
+        ),
+      );
+      verify(
+        () => wallets.getWallets(
+          onlyDefaults: true,
+          environment: Environment.regtest,
+        ),
+      ).called(1);
+      verify(wallets.hasStoredWallets).called(1);
+      verifyNoMoreInteractions(wallets);
+      expect(storage.entries, isEmpty);
+    },
+  );
+
+  test(
+    'bitcoin-only regtest is complete and never provisions Liquid',
+    () async {
+      when(settings.fetch).thenAnswer(
+        (_) async => const SettingsEntity(
+          environment: Environment.regtest,
+          bitcoinUnit: BitcoinUnit.sats,
+          currencyCode: 'CAD',
+        ),
+      );
+      when(
+        () => wallets.getWallets(
+          onlyDefaults: true,
+          environment: Environment.regtest,
+        ),
+      ).thenAnswer((_) async => Ok([wallet(Network.bitcoinRegtest)]));
+      final result = await usecaseOn(
+        FakeSecureStoragePlatform(entries: {'seed_$fingerprint': entry}),
+      ).execute();
+      expect(
+        result,
+        isA<Ok<bool, AppStartupFailure>>().having(
+          (result) => result.value,
+          'has defaults',
+          true,
+        ),
+      );
+      // Only the scoped catalog read is needed; no healing/create call occurs.
+      verify(
+        () => wallets.getWallets(
+          onlyDefaults: true,
+          environment: Environment.regtest,
+        ),
+      ).called(1);
+      verifyNoMoreInteractions(wallets);
+    },
+  );
+
   test('a status conflict never deletes stores or retries the read', () async {
     when(
       () => wallets.getWallets(

@@ -1,3 +1,5 @@
+import 'package:bull_sdk/bdk.dart' as bdk;
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 // Unit tests for the repository-boundary guarantees of
 // `BitcoinWalletRepository.buildPsbt`:
 //
@@ -62,6 +64,19 @@ WalletUtxo _utxo({required String txId, required int vout}) =>
       address: 'tb1-test-address',
     );
 
+String _destination([bdk.Network network = bdk.Network.testnet]) {
+  final script = bdk.Script(
+    rawOutputScript: Uint8List.fromList([0, 20, ...List.filled(20, 1)]),
+  );
+  final address = bdk.Address.fromScript(script: script, network: network);
+  try {
+    return address.toString();
+  } finally {
+    address.dispose();
+    script.dispose();
+  }
+}
+
 void main() {
   late _MockWalletMetadataDatasource metadataDatasource;
   late _MockBdkWalletDatasource bdkDatasource;
@@ -119,6 +134,23 @@ void main() {
     ).thenAnswer((_) async => 'psbt');
   });
 
+  test(
+    'rejects a destination from another network before native building',
+    () async {
+      await expectLater(
+        repository.buildPsbt(
+          walletId: _walletId,
+          address: _destination(bdk.Network.bitcoin),
+          amountSat: 10000,
+          networkFee: const NetworkFee.relativeSatPerKwu(1000),
+        ),
+        throwsA(isA<InvalidWalletAddressException>()),
+      );
+      verifyZeroInteractions(bdkDatasource);
+      verifyZeroInteractions(frozenDatasource);
+    },
+  );
+
   List<WalletUtxoModel>? capturedSelected() =>
       verify(
             () => bdkDatasource.buildPsbt(
@@ -170,7 +202,7 @@ void main() {
     bool? replaceByFee,
   }) => repository.buildPsbt(
     walletId: _walletId,
-    address: 'tb1-destination',
+    address: _destination(),
     amountSat: 25000,
     networkFee: const NetworkFee.relativeSatPerKwu(1000),
     unspendable: unspendable,

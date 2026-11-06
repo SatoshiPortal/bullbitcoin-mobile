@@ -114,6 +114,45 @@ void main() {
       xpub:
           'tpubDC5FSnBiZDMmhiuCmWAYsLwgLYrrT9rAqvTySfuCCrgsWz8wxMXUS9Tb9iVMvcRbvFcAHGkMD5Kx8koh4GquNGNTfohfk7pgjhaPCdXpoba',
     ),
+
+    // Regtest keeps coin type 1 derivation; creation policy separately
+    // refuses Liquid and legacy scripts. Internal regtest ids add a suffix.
+    (Network.bitcoinRegtest, ScriptType.bip84): (
+      id: 'wpkh([73c5da0a/84h/1h/0h])',
+      xpubFingerprint: 'e99b8628',
+      xpub:
+          'vpub5Y6cjg78GGuNLsaPhmYsiw4gYX3HoQiRBiSwDaBXKUafCt9bNwWQiitDk5VZ5BVxYnQdwoTyXSs2JHRPAgjAvtbBrf8ZhDYe2jWAqvZVnsc',
+    ),
+    (Network.bitcoinRegtest, ScriptType.bip49): (
+      id: 'sh(wpkh([73c5da0a/49h/1h/0h]))',
+      xpubFingerprint: '0a55db61',
+      xpub:
+          'upub5EFU65HtV5TeiSHmZZm7FUffBGy8UKeqp7vw43jYbvZPpoVsgU93oac7Wk3u6moKegAEWtGNF8DehrnHtv21XXEMYRUocHqguyjknFHYfgY',
+    ),
+    (Network.bitcoinRegtest, ScriptType.bip44): (
+      id: 'pkh([73c5da0a/44h/1h/0h])',
+      xpubFingerprint: '4334c988',
+      xpub:
+          'tpubDC5FSnBiZDMmhiuCmWAYsLwgLYrrT9rAqvTySfuCCrgsWz8wxMXUS9Tb9iVMvcRbvFcAHGkMD5Kx8koh4GquNGNTfohfk7pgjhaPCdXpoba',
+    ),
+    (Network.liquidRegtest, ScriptType.bip84): (
+      id: 'elwpkh([73c5da0a/84h/1h/0h])',
+      xpubFingerprint: 'e99b8628',
+      xpub:
+          'vpub5Y6cjg78GGuNLsaPhmYsiw4gYX3HoQiRBiSwDaBXKUafCt9bNwWQiitDk5VZ5BVxYnQdwoTyXSs2JHRPAgjAvtbBrf8ZhDYe2jWAqvZVnsc',
+    ),
+    (Network.liquidRegtest, ScriptType.bip49): (
+      id: 'elsh(wpkh([73c5da0a/49h/1h/0h]))',
+      xpubFingerprint: '0a55db61',
+      xpub:
+          'upub5EFU65HtV5TeiSHmZZm7FUffBGy8UKeqp7vw43jYbvZPpoVsgU93oac7Wk3u6moKegAEWtGNF8DehrnHtv21XXEMYRUocHqguyjknFHYfgY',
+    ),
+    (Network.liquidRegtest, ScriptType.bip44): (
+      id: 'elpkh([73c5da0a/44h/1h/0h])',
+      xpubFingerprint: '4334c988',
+      xpub:
+          'tpubDC5FSnBiZDMmhiuCmWAYsLwgLYrrT9rAqvTySfuCCrgsWz8wxMXUS9Tb9iVMvcRbvFcAHGkMD5Kx8koh4GquNGNTfohfk7pgjhaPCdXpoba',
+    ),
   };
 
   late Secret secret;

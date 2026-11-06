@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 // Regression test for a bug where `BdkWalletDatasource.buildPsbt` silently
 // dropped manual UTXO selection and the RBF-off sequence flag.
 //
@@ -141,7 +142,7 @@ void main() {
               id: 'bdk-wallet-datasource-test',
               externalDescriptor: external.toString(),
               internalDescriptor: internal.toString(),
-              isTestnet: true,
+              network: Network.bitcoinTestnet,
             )
             as PublicBdkWalletModel;
 
@@ -218,7 +219,7 @@ void main() {
       id: walletModel.id,
       externalDescriptor: walletModel.internalDescriptor,
       internalDescriptor: walletModel.externalDescriptor,
-      isTestnet: true,
+      network: Network.bitcoinTestnet,
     );
     await expectLater(BdkTestStore.createWallet(mismatched), throwsA(anything));
     expect(await file.readAsBytes(), before);

@@ -126,12 +126,18 @@ void main() {
       final row = _Row();
       when(() => row.masterFingerprint).thenReturn('73c5da0a');
       when(() => row.id).thenReturn('wpkh([73c5da0a/84h/0h/0h])');
+      when(() => row.networkCode).thenReturn('bitcoinMainnet');
       when(() => metadata.fetchAll()).thenAnswer((_) async => [row]);
       expect(
         await usecase.execute(mnemonicWords: words),
-        isA<Err<void, ImportMnemonicFailure>>(),
+        isA<Err<void, ImportMnemonicFailure>>().having(
+          (result) => result.failure,
+          'failure',
+          isA<ImportMnemonicDuplicateFailure>(),
+        ),
       );
       when(() => row.id).thenReturn('wpkh([73c5da0a/84h/1h/0h])');
+      when(() => row.networkCode).thenReturn('bitcoinTestnet');
       expect(
         await usecase.execute(mnemonicWords: words),
         isA<Ok<void, ImportMnemonicFailure>>(),
@@ -139,12 +145,13 @@ void main() {
     });
 
     test(
-      'invalid catalog origins do not block orphan import preflight',
+      'unresolved catalog networks do not block orphan import preflight',
       () async {
         expect(await secrets.import(words: words), isA<Ok>());
         final invalid = _Row();
         when(() => invalid.masterFingerprint).thenReturn('73c5da0a');
         when(() => invalid.id).thenReturn('invalid origin');
+        when(() => invalid.networkCode).thenReturn('unresolved');
         when(() => metadata.fetchAll()).thenAnswer((_) async => [invalid]);
         expect(
           await usecase.execute(mnemonicWords: words),
@@ -153,6 +160,7 @@ void main() {
         final valid = _Row();
         when(() => valid.masterFingerprint).thenReturn('73c5da0a');
         when(() => valid.id).thenReturn('wpkh([73c5da0a/84h/0h/0h])');
+        when(() => valid.networkCode).thenReturn('bitcoinMainnet');
         when(
           () => metadata.fetchAll(),
         ).thenAnswer((_) async => [invalid, valid]);

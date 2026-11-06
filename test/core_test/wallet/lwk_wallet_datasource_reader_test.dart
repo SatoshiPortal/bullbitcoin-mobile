@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/wallet/data/lwk_wallet_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_model.dart';
 import 'package:bull_sdk/lwk.dart' as lwk;
@@ -48,7 +49,7 @@ void main() {
     final wallet = WalletModel.publicLwk(
       id: 'status-conflict',
       combinedCtDescriptor: 'unused',
-      isTestnet: true,
+      network: Network.liquidTestnet,
     );
     await expectLater(
       reader.getBalance(wallet: wallet),

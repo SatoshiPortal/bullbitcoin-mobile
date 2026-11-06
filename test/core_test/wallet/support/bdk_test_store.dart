@@ -1,3 +1,5 @@
+import 'package:bb_mobile/features/wallet/data/bdk_wallet_datasource.dart'
+    show NetworkX;
 import 'dart:io';
 import 'package:bb_mobile/features/wallet/data/models/wallet_model.dart';
 import 'package:bull_sdk/bdk.dart' as bdk;
@@ -14,7 +16,9 @@ abstract final class BdkTestStore {
     }
     final path = await _path(model.hexId);
     final exists = File(path).existsSync();
-    final kind = model.isTestnet ? bdk.NetworkKind.test : bdk.NetworkKind.main;
+    final kind = model.network.isMainnet
+        ? bdk.NetworkKind.main
+        : bdk.NetworkKind.test;
     final external = bdk.Descriptor(
       descriptor: model.externalDescriptor,
       networkKind: kind,
@@ -35,9 +39,7 @@ abstract final class BdkTestStore {
           : bdk.Wallet(
               descriptor: external,
               changeDescriptor: internal,
-              network: model.isTestnet
-                  ? bdk.Network.testnet
-                  : bdk.Network.bitcoin,
+              network: model.network.bdkNetwork,
               persister: persister,
               lookahead: 25,
             );
