@@ -13,6 +13,7 @@ class CheckDuplicateMnemonicUsecase {
 
   final WalletMetadataDatasource _metadata;
   final SettingsRepository _settings;
+  int _invalidCount = 0;
 
   CheckDuplicateMnemonicUsecase({
     required this._secrets,
@@ -20,10 +21,25 @@ class CheckDuplicateMnemonicUsecase {
     required this._settings,
   });
 
-  Future<bool> isReferenced(Fingerprint id, Network network) async =>
-      (await _metadata.fetchAll()).any(
-        (row) => row.seedFingerprint == id && row.network == network,
-      );
+  Future<bool> isReferenced(Fingerprint id, Network network) async {
+    var referenced = false;
+    var invalid = 0;
+    for (final row in await _metadata.fetchAll()) {
+      // Only the legacy origin decoder throws strings; other failures surface.
+      try {
+        if (row.seedFingerprint == id && row.network == network) {
+          referenced = true;
+        }
+      } on String {
+        invalid++;
+      }
+    }
+    if (invalid != _invalidCount) {
+      _invalidCount = invalid;
+      log.warning('Import catalog validation invalid_count=$invalid');
+    }
+    return referenced;
+  }
 
   @useResult
   Future<Result<void, ImportMnemonicFailure>> execute({
