@@ -1,3 +1,4 @@
+import 'package:primitives/primitives.dart' show Fingerprint;
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
@@ -63,6 +64,7 @@ void main() {
       scratchDirectory: () async => '/tmp',
     ).import(words: words);
     registerFallbackValue((fallback as Ok<Secret, SecretFailure>).value);
+    registerFallbackValue(Fingerprint('73c5da0a'));
     registerFallbackValue(Network.bitcoinMainnet);
     registerFallbackValue(ScriptType.bip84);
   });
@@ -85,6 +87,9 @@ void main() {
         passphrase: any(named: 'passphrase'),
       ),
     ).thenAnswer((_) async => const Ok(null));
+    when(
+      () => checkDuplicate.isReferenced(any(), any()),
+    ).thenAnswer((_) async => false);
     // No wallet references any seed unless a test says so.
     when(
       () => walletRepository.getWallets(),

@@ -1,3 +1,8 @@
+import 'package:bb_mobile/core/settings/data/settings_repository.dart';
+import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasource.dart';
+import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_model.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/import_mnemonic/domain/check_duplicate_mnemonic_usecase.dart';
 import 'package:bb_mobile/features/import_mnemonic/domain/import_mnemonic_failure.dart';
@@ -6,6 +11,12 @@ import 'package:secrets/secrets.dart';
 import 'package:secrets/testing.dart';
 
 /// These run the real package against an in-memory keystore installed at the plugin's own seam, so duplicate detection uses the production fingerprint derivation.
+class _Metadata extends Mock implements WalletMetadataDatasource {}
+
+class _Settings extends Mock implements SettingsRepository {}
+
+class _Row extends Mock implements WalletMetadataModel {}
+
 void main() {
   const words = [
     'abandon',
@@ -25,11 +36,26 @@ void main() {
   late FakeSecureStoragePlatform storage;
   late Secrets secrets;
   late CheckDuplicateMnemonicUsecase usecase;
+  late _Metadata metadata;
 
   setUp(() {
     storage = FakeSecureStoragePlatform()..install();
     secrets = Secrets(scratchDirectory: () async => '/tmp');
-    usecase = CheckDuplicateMnemonicUsecase(secrets: secrets);
+    metadata = _Metadata();
+    final settings = _Settings();
+    when(() => metadata.fetchAll()).thenAnswer((_) async => []);
+    when(() => settings.fetch()).thenAnswer(
+      (_) async => const SettingsEntity(
+        environment: Environment.mainnet,
+        bitcoinUnit: BitcoinUnit.sats,
+        currencyCode: 'USD',
+      ),
+    );
+    usecase = CheckDuplicateMnemonicUsecase(
+      secrets: secrets,
+      metadata: metadata,
+      settings: settings,
+    );
   });
 
   group('CheckDuplicateMnemonicUsecase', () {
@@ -40,7 +66,7 @@ void main() {
       );
     });
 
-    test('returns Err(duplicate) once the same mnemonic is stored', () async {
+    test('allows an orphan secret to be retried', () async {
       expect(
         await secrets.import(words: words),
         isA<Ok<Secret, SecretFailure>>(),
@@ -48,7 +74,24 @@ void main() {
 
       final result = await usecase.execute(mnemonicWords: words);
 
-      expect((result as Err).failure, isA<ImportMnemonicDuplicateFailure>());
+      expect(result, isA<Ok<void, ImportMnemonicFailure>>());
+    });
+
+    test('rejects a referenced secret only on the target network', () async {
+      expect(await secrets.import(words: words), isA<Ok>());
+      final row = _Row();
+      when(() => row.masterFingerprint).thenReturn('73c5da0a');
+      when(() => row.id).thenReturn('wpkh([73c5da0a/84h/0h/0h])');
+      when(() => metadata.fetchAll()).thenAnswer((_) async => [row]);
+      expect(
+        await usecase.execute(mnemonicWords: words),
+        isA<Err<void, ImportMnemonicFailure>>(),
+      );
+      when(() => row.id).thenReturn('wpkh([73c5da0a/84h/1h/0h])');
+      expect(
+        await usecase.execute(mnemonicWords: words),
+        isA<Ok<void, ImportMnemonicFailure>>(),
+      );
     });
 
     test('a passphrase makes a different secret, not a duplicate', () async {
