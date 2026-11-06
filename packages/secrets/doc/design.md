@@ -28,7 +28,7 @@ Run `make secrets-api-docs` after changing the public API and include the README
 
 ## Passphrase
 
-Account xpub derivation, Bitcoin signing, BIP85 and the swap key honour a BIP39 passphrase. Liquid descriptors and signatures derive from the words alone and ignore it. A RecoverBull vault contains the words and an optional `mnemonicLanguage` field (absent for English), without the passphrase; its encryption key derives from the original secret, including its passphrase. Two secrets with the same words and different passphrases therefore share a Liquid descriptor but have different Bitcoin fingerprints.
+Account xpub derivation, Bitcoin signing, BIP85 and the swap key honour a BIP39 passphrase. Liquid descriptors and signatures derive from the words alone and ignore it. A RecoverBull vault contains the words and a `mnemonicLanguage` field (including English), without the passphrase; its encryption key derives from the original secret, including its passphrase. Two secrets with the same words and different passphrases therefore share a Liquid descriptor but have different Bitcoin fingerprints.
 
 These methods return their values directly. There is no passphrase wrapper: the behavior is part of each operation's contract. One operation refuses instead: `silentPayments.account`, because bwk derives from the words alone (`SpAccount.createFromMnemonic`, `mnemonic.to_seed("")`) and the account would be the passphrase-less sibling's — `PassphraseUnsupportedFailure`. `secrets.recoverbull.restore(vault:, key:, passphrase:)` accepts the passphrase separately; the vault cannot verify whether the supplied passphrase is correct. Without one, it restores the passphrase-less wallet.
 
@@ -44,7 +44,7 @@ The language is an explicit import/preview parameter and stored metadata, not in
 
 Bitcoin signing parses the Dart-derived master xprv with BDK, never the words. The key-material gate audits that signer location specifically, allowing only xprv parsing and disposal there. Liquid, Boltz and BWK still require English words in the pinned SDK, and non-English calls return `LanguageUnsupportedFailure`. Liquid's seed API awaits the bull_sdk bump to lwk-dart PR #95. This stage does not change the UI or English generation.
 
-RecoverBull records non-English wordlists in the reserved `mnemonicLanguage` plaintext field using the same wire table; English plaintext remains byte-identical. Open, restore and fingerprint inspection use that language. Unknown values return `InvalidVaultFailure`. Caller metadata is snapshotted before the keystore read; `mnemonic` and `mnemonicLanguage` are reserved, while historical caller `language` metadata stays untouched. BIP85 child language remains independent of the parent; application paths and Ark index 11811 use English children.
+Every new RecoverBull vault records its wordlist in the reserved `mnemonicLanguage` plaintext field using the same wire table, including `english`. Historical keyless vaults restore as English unchanged. Open, restore and fingerprint inspection use that language. Unknown values return `InvalidVaultFailure`. Caller metadata is snapshotted before the keystore read; `mnemonic` and `mnemonicLanguage` are reserved, while historical caller `language` metadata stays untouched. BIP85 child language remains independent of the parent; application paths and Ark index 11811 use English children.
 
 ## Networks
 

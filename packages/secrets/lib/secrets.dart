@@ -4,7 +4,7 @@
 ///
 /// Operations use the grouped API: `secret.derive`, `secret.sign`, `secret.backup`, `secret.verify`, `secret.silentPayments` and `secret.widgets`. Implementations are internal; no public operation returns the stored words or seed. BIP85 children and the swap master key are the documented derived-material outputs. ⚠️ `secret.silentPayments.account` hands the stored words to bwk, which holds them while the account lives; the app never sees them.
 ///
-/// Bitcoin operations honour the mnemonic's passphrase. Liquid uses words alone. RecoverBull encrypts words with an optional language field (absent for English) and returns its vault and key separately; restoring a passphrase-protected wallet requires that passphrase separately.
+/// Bitcoin operations honour the mnemonic's passphrase. Liquid uses words alone. RecoverBull encrypts words with an explicit language field (including English) and returns its vault and key separately; restoring a passphrase-protected wallet requires that passphrase separately.
 ///
 /// Result-returning methods expose typed [SecretFailure] values. See the README for a complete example and automatically maintained call trees, and `doc/design.md` for the custody contract.
 library;
