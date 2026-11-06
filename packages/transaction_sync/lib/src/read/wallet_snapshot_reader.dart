@@ -221,7 +221,13 @@ final class WalletSnapshotReader {
         if (latest case Ok(value: final next)
             when next.lifecycle == WalletLifecycle.active &&
                 next.stamp == stamp) {
-          return Ok(current);
+          return Ok(
+            WalletReadSnapshot(
+              current.wallet,
+              current.revision,
+              stale: next.syncFailed,
+            ),
+          );
         }
         return busy();
       }
@@ -237,7 +243,11 @@ final class WalletSnapshotReader {
           'generation=${stamp.generation} revision=${stamp.revision} '
           'durationMs=${timer.elapsedMilliseconds}',
         );
-        final snapshot = WalletReadSnapshot<T>(wallet, stamp);
+        final snapshot = WalletReadSnapshot<T>(
+          wallet,
+          stamp,
+          stale: next.syncFailed,
+        );
         _cache[key] = (
           snapshot: WalletReadSnapshot<Object>(wallet, stamp),
           descriptor: _descriptorIdentity(descriptor),

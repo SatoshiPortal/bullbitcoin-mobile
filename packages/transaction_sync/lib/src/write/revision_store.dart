@@ -60,6 +60,7 @@ final class RevisionStore implements WalletRevisionReader {
         'initialized_schema',
         'descriptor_hash',
         'liquid_cache_path',
+        'sync_failed',
       })) {
         return db;
       }
@@ -86,6 +87,11 @@ final class RevisionStore implements WalletRevisionReader {
         if (!columns.contains(column)) {
           db.execute('ALTER TABLE revisions ADD COLUMN $column TEXT');
         }
+      }
+      if (!columns.contains('sync_failed')) {
+        db.execute(
+          'ALTER TABLE revisions ADD COLUMN sync_failed INTEGER NOT NULL DEFAULT 0',
+        );
       }
       db.execute('COMMIT');
       return db;
@@ -119,6 +125,7 @@ final class RevisionStore implements WalletRevisionReader {
         lifecycle: WalletLifecycle.values.byName(row['lifecycle'] as String),
         initializedSchema: row['initialized_schema'] as int,
         issuedReceiveIndex: row['issued'] as int?,
+        syncFailed: row['sync_failed'] == 1,
       ),
       intent == null ? null : WriteIntent.values.byName(intent),
       row['candidate'] as int?,
@@ -209,10 +216,18 @@ final class RevisionStore implements WalletRevisionReader {
       ]);
     } else {
       _db.execute(
-        'UPDATE revisions SET lifecycle=?, intent=NULL, candidate=NULL WHERE wallet=? AND network=?',
-        [previous.state.lifecycle.name, key.id, _network(key)],
+        'UPDATE revisions SET lifecycle=?, intent=NULL, candidate=NULL, sync_failed=? WHERE wallet=? AND network=?',
+        [
+          previous.state.lifecycle.name,
+          pending?.intent == WriteIntent.sync || previous.state.syncFailed
+              ? 1
+              : 0,
+          key.id,
+          _network(key),
+        ],
       );
-      _publish(previous.state);
+      final current = record(key);
+      if (current != null) _publish(current.state);
     }
   }
 
@@ -221,6 +236,7 @@ final class RevisionStore implements WalletRevisionReader {
     WalletKey key, {
     int? issued,
     bool? needsSync,
+    bool? syncFailed,
     PublicWalletDescriptor? initializedDescriptor,
     String? liquidCachePath,
   }) {
@@ -233,7 +249,7 @@ final class RevisionStore implements WalletRevisionReader {
       final creating = old.intent == WriteIntent.create;
       _db.execute(
         '''UPDATE revisions SET revision=revision+1,
-        lifecycle=?, intent=NULL, candidate=NULL, issued=?, needs_sync=?, initialized_schema=?, descriptor_hash=?, liquid_cache_path=?
+        lifecycle=?, intent=NULL, candidate=NULL, issued=?, needs_sync=?, initialized_schema=?, descriptor_hash=?, liquid_cache_path=?, sync_failed=?
         WHERE wallet=? AND network=?''',
         [
           (deleted ? WalletLifecycle.deleted : WalletLifecycle.active).name,
@@ -258,6 +274,11 @@ final class RevisionStore implements WalletRevisionReader {
               : initializedDescriptor == null
               ? old.liquidCachePath
               : liquidCachePath,
+          (deleted || creating || needsSync == false
+                  ? false
+                  : syncFailed ?? old.state.syncFailed)
+              ? 1
+              : 0,
           key.id,
           _network(key),
         ],
@@ -298,7 +319,8 @@ final class RevisionStore implements WalletRevisionReader {
     final previous = _published[state.stamp.key];
     if (previous?.stamp == state.stamp &&
         previous?.lifecycle == state.lifecycle &&
-        previous?.initializedSchema == state.initializedSchema) {
+        previous?.initializedSchema == state.initializedSchema &&
+        previous?.syncFailed == state.syncFailed) {
       return;
     }
     _published[state.stamp.key] = state;
