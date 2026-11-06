@@ -1,9 +1,6 @@
 import 'dart:async';
 
-import 'package:async/async.dart' hide Result;
 import 'package:bb_mobile/core/electrum/domain/errors/electrum_fallback_exception.dart';
-import 'package:bb_mobile/core/electrum/domain/ports/electrum_servers_port.dart';
-import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_network.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_sync_result.dart';
 import 'package:secrets/secrets.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
@@ -29,18 +26,26 @@ class WalletRepository {
   final WalletMetadataDatasource _walletMetadataDatasource;
   final BdkWalletDatasource _bdkWallet;
   final LwkWalletDatasource _lwkWallet;
-  final ElectrumServersPort _serversPort;
-
-  final _electrumSyncResultController =
-      StreamController<ElectrumSyncResult>.broadcast();
+  final Future<void> Function(WalletMetadataModel) _syncWallet;
+  final bool Function({String? walletId}) _isSyncing;
+  final Stream<String> _walletSyncStartedStream;
+  final Stream<String> _walletSyncFinishedStream;
+  final Stream<ElectrumSyncResult> electrumSyncResultStream;
 
   WalletRepository({
     required this._walletMetadataDatasource,
     required BdkWalletDatasource bdkWalletDatasource,
     required LwkWalletDatasource lwkWalletDatasource,
-    required this._serversPort,
+    required Future<void> Function(WalletMetadataModel) synchronize,
+    required this._isSyncing,
+    required Stream<String> syncStarted,
+    required Stream<String> syncFinished,
+    required this.electrumSyncResultStream,
   }) : _bdkWallet = bdkWalletDatasource,
-       _lwkWallet = lwkWalletDatasource {
+       _lwkWallet = lwkWalletDatasource,
+       _syncWallet = synchronize,
+       _walletSyncStartedStream = syncStarted,
+       _walletSyncFinishedStream = syncFinished {
     // Keep track of the last sync time in the wallet metadata
     _walletSyncFinishedStream.listen(_updateWalletSyncTime);
     // Start auto syncing wallets
@@ -58,16 +63,10 @@ class WalletRepository {
       .where((wallet) => wallet != null)
       .map((wallet) => wallet!);
 
-  Stream<ElectrumSyncResult> get electrumSyncResultStream =>
-      _electrumSyncResultController.stream;
-
   @useResult
   Result<bool, WalletFailure> isWalletSyncing({String? walletId}) {
     try {
-      return Ok(
-        _bdkWallet.isWalletSyncing(walletId: walletId) ||
-            _lwkWallet.isWalletSyncing(walletId: walletId),
-      );
+      return Ok(_isSyncing(walletId: walletId));
     } catch (e, st) {
       log.severe(message: 'isWalletSyncing failed', error: e, trace: st);
       return Err(_classify(e, 'isWalletSyncing'));
@@ -113,6 +112,7 @@ class WalletRepository {
       }
     }
 
+    if (sync) await _getBalance(metadata);
     final balance = await _getBalance(metadata, sync: sync);
     await _walletMetadataDatasource.store(metadata);
 
@@ -143,6 +143,7 @@ class WalletRepository {
     );
 
     // Fetch the balance (in the future maybe other details of the wallet too)
+    if (sync) await _getBalance(metadata);
     final balance = await _getBalance(metadata, sync: sync);
 
     final allWallets = await _readWallets();
@@ -191,6 +192,7 @@ class WalletRepository {
     );
 
     // Fetch the balance (in the future maybe other details of the wallet too)
+    if (sync) await _getBalance(metadata);
     final balance = await _getBalance(metadata, sync: sync);
 
     final allWallets = await _readWallets();
@@ -318,6 +320,7 @@ class WalletRepository {
   ///   failure, not a read failure: the stored wallet is fine, only its
   ///   balance is stale, and the remedy is the server settings.
   WalletFailure _classify(Object e, String operation) {
+    if (e is WalletFailure) return e;
     if ((e is lwk.LwkError && e.msg.contains('UpdateOnDifferentStatus')) ||
         e.toString().contains('UpdateOnDifferentStatus')) {
       return WalletLwkStatusConflictFailure('$operation: lwk status conflict');
@@ -504,16 +507,6 @@ class WalletRepository {
     }
   }
 
-  Stream<String> get _walletSyncStartedStream => StreamGroup.merge([
-    _bdkWallet.walletSyncStartedStream,
-    _lwkWallet.walletSyncStartedStream,
-  ]);
-
-  Stream<String> get _walletSyncFinishedStream => StreamGroup.merge([
-    _bdkWallet.walletSyncFinishedStream,
-    _lwkWallet.walletSyncFinishedStream,
-  ]);
-
   Future<void> _updateWalletSyncTime(String walletId) async {
     final metadata = await _walletMetadataDatasource.fetch(walletId);
 
@@ -539,7 +532,7 @@ class WalletRepository {
       );
 
       if (sync) {
-        await _syncWallet(wallet);
+        await _syncWallet(metadata);
       }
 
       balance = await _lwkWallet.getBalance(wallet: wallet);
@@ -552,7 +545,7 @@ class WalletRepository {
       );
 
       if (sync) {
-        await _syncWallet(wallet);
+        await _syncWallet(metadata);
       }
 
       balance = await _bdkWallet.getBalance(wallet: wallet);
@@ -562,7 +555,7 @@ class WalletRepository {
   }
 
   Future<void> sync(Wallet wallet) async {
-    final walletModel = WalletModel.fromMetadata(
+    await _syncWallet(
       WalletMetadataModel(
         id: wallet.id,
         masterFingerprint: wallet.masterFingerprint,
@@ -577,42 +570,6 @@ class WalletRepository {
         signer: Signer.fromEntity(wallet.signer),
       ),
     );
-    await _syncWallet(walletModel);
-  }
-
-  Future<void> _syncWallet(WalletModel wallet) async {
-    final isLiquid = wallet is PublicLwkWalletModel;
-    final network = ElectrumServerNetwork.fromEnvironment(
-      isTestnet: wallet.isTestnet,
-      isLiquid: isLiquid,
-    );
-
-    try {
-      await _serversPort.runWithFallback<void>(
-        network: network,
-        operation: (connection) async {
-          if (isLiquid) {
-            await _lwkWallet.sync(wallet: wallet, electrumServer: connection);
-          } else {
-            await _bdkWallet.sync(wallet: wallet, electrumServer: connection);
-          }
-        },
-      );
-      _electrumSyncResultController.add(
-        ElectrumSyncResult(isLiquid: isLiquid, success: true),
-      );
-    } on ElectrumFallbackException catch (e, stackTrace) {
-      // Both NoElectrumServersConfigured and AllElectrumServersFailed land
-      // here. Emit the failed result, log the rich `e.message` (per-server
-      // attempts on failure, network on no-config), then rethrow the typed
-      // exception so callers keep the diagnostic instead of receiving a
-      // flat string they have to parse.
-      log.severe(message: e.message, error: e, trace: stackTrace);
-      _electrumSyncResultController.add(
-        ElectrumSyncResult(isLiquid: isLiquid, success: false),
-      );
-      rethrow;
-    }
   }
 
   Future<bool> isTorRequired() async {

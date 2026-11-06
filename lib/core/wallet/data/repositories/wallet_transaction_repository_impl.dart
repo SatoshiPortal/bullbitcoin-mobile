@@ -1,5 +1,3 @@
-import 'package:bb_mobile/core/electrum/domain/ports/electrum_servers_port.dart';
-import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_network.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/bdk_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/lwk_wallet_datasource.dart';
@@ -18,16 +16,14 @@ class WalletTransactionRepositoryImpl implements WalletTransactionRepository {
   final LabelsFacade _labelsFacade;
   final BdkWalletDatasource _bdkWalletTransactionDatasource;
   final LwkWalletDatasource _lwkWalletTransactionDatasource;
-  // TODO: We should not pass a port into a repository, this is a dirty hack for now
-  //  the syncing should be extracted from fetching the data
-  final ElectrumServersPort _serversPort;
+  final Future<void> Function(WalletMetadataModel) _synchronize;
 
   WalletTransactionRepositoryImpl({
     required this._walletMetadataDatasource,
     required this._labelsFacade,
     required this._bdkWalletTransactionDatasource,
     required this._lwkWalletTransactionDatasource,
-    required this._serversPort,
+    required this._synchronize,
   });
 
   @override
@@ -182,35 +178,8 @@ class WalletTransactionRepositoryImpl implements WalletTransactionRepository {
         )
         .toList();
 
-    // TODO: We should extract syncing from fetching the data; routing the
-    //  port through a repository like this is a dirty hack for now.
     if (sync) {
-      await Future.wait(
-        walletModels.map((walletModel) async {
-          final isLiquid = walletModel is PublicLwkWalletModel;
-          final network = ElectrumServerNetwork.fromEnvironment(
-            isTestnet: walletModel.isTestnet,
-            isLiquid: isLiquid,
-          );
-
-          await _serversPort.runWithFallback<void>(
-            network: network,
-            operation: (connection) async {
-              if (isLiquid) {
-                await _lwkWalletTransactionDatasource.sync(
-                  wallet: walletModel,
-                  electrumServer: connection,
-                );
-              } else {
-                await _bdkWalletTransactionDatasource.sync(
-                  wallet: walletModel,
-                  electrumServer: connection,
-                );
-              }
-            },
-          );
-        }),
-      );
+      await Future.wait(filteredWalletsMetadata.map(_synchronize));
     }
 
     return walletModels;

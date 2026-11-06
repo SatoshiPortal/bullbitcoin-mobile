@@ -17,7 +17,7 @@ final class WalletCatalogPortImpl implements WalletCatalogPort {
     try {
       final descriptors = <PublicWalletDescriptor>[];
       for (final row in await _metadata.fetchAll()) {
-        switch (_descriptor(row)) {
+        switch (descriptorFromMetadata(row)) {
           case Ok(:final value):
             descriptors.add(value);
           case Err(:final failure):
@@ -37,7 +37,7 @@ final class WalletCatalogPortImpl implements WalletCatalogPort {
     try {
       final row = await _metadata.fetch(key.id);
       if (row == null) return const Err(TransactionSyncNotFoundFailure());
-      final result = _descriptor(row);
+      final result = descriptorFromMetadata(row);
       if (result case Ok(:final value) when value.key != key) {
         return const Err(TransactionSyncNotFoundFailure());
       }
@@ -47,9 +47,8 @@ final class WalletCatalogPortImpl implements WalletCatalogPort {
     }
   }
 
-  Result<PublicWalletDescriptor, TransactionSyncFailure> _descriptor(
-    WalletMetadataModel row,
-  ) {
+  static Result<PublicWalletDescriptor, TransactionSyncFailure>
+  descriptorFromMetadata(WalletMetadataModel row) {
     // Legacy origin decoding throws strings. Contain only that legacy boundary;
     // programmer Errors from the datasource or this mapper must still surface.
     final Network network;
