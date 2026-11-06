@@ -114,7 +114,6 @@ final class WalletNativeRuntime implements WalletNativeLifecycle {
     try {
       await _initialize();
       _initializationFailure = null;
-      if (_unavailable.isNotEmpty) _initialization = null;
     } catch (error) {
       _initialization = null;
       if (_initializationFailure != error.runtimeType) {
