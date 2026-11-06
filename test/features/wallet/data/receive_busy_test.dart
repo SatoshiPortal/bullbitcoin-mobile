@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart'
     show Signer;
 import 'package:bb_mobile/core/wallet/data/datasources/bdk_wallet_datasource.dart';
@@ -22,6 +25,8 @@ class _Liquid extends Mock implements LwkWalletDatasource {}
 
 class _Labels extends Mock implements LabelsFacade {}
 
+class _Reporter extends Mock implements LoggerReporter {}
+
 void main() {
   for (final origin in [
     'wpkh([aabbccdd/84h/0h/0h])',
@@ -43,7 +48,17 @@ void main() {
         signer: Signer.none,
         isDefault: false,
       );
-      setUp(() {
+      late _Reporter reporter;
+      setUp(() async {
+        final directory = await Directory.systemTemp.createTemp(
+          'receive-busy-',
+        );
+        reporter = _Reporter();
+        await initializeLogging(directory: directory, reporter: reporter);
+        addTearDown(() async {
+          await log.flush();
+          await directory.delete(recursive: true);
+        });
         native = _Native();
         labels = _Labels();
         final metadata = _Metadata();
@@ -74,6 +89,17 @@ void main() {
           expect(address.address, 'issued');
           expect(address.index, 7);
           expect(attempts, 3);
+          expect(
+            (await log.readLogs()).map(
+              (line) => line.split('\t').sublist(1, 3),
+            ),
+            [
+              ['FINE', 'Logs created'],
+              ['WARNING', 'Receive writer busy retry scheduled'],
+              ['FINE', 'Receive writer recovered retries=2'],
+            ],
+          );
+          verifyZeroInteractions(reporter);
         },
       );
 
@@ -93,6 +119,15 @@ void main() {
         );
         verify(() => native.receive(row, advance: false)).called(5);
         verifyNever(() => labels.fetchByReference(any()));
+        expect(
+          (await log.readLogs()).map((line) => line.split('\t').sublist(1, 3)),
+          [
+            ['FINE', 'Logs created'],
+            ['WARNING', 'Receive writer busy retry scheduled'],
+            ['WARNING', 'Receive writer busy exhausted attempts=5'],
+          ],
+        );
+        verifyZeroInteractions(reporter);
       });
 
       test('other failures are not retried', () async {
