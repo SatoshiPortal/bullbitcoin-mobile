@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:bull_logger/bull_logger.dart';
 
 import 'package:bull_sdk/lwk.dart' as lwk;
 import 'package:primitives/primitives.dart';
@@ -116,6 +117,34 @@ class FailedSync implements WriterSyncOperation, WriterSyncMutation {
   }) async => const Err(TransactionSyncConnectionFailure());
 }
 
+class UnrecognizedNativeDescriptorException implements Exception {
+  @override
+  String toString() => 'sensitive-sentinel';
+}
+
+class _Reporter implements LoggerReporter {
+  final errors = <Object>[];
+  @override
+  void reportError({
+    String? message,
+    required Object exception,
+    required StackTrace stackTrace,
+    required ReportCategory category,
+  }) {
+    errors.add(exception);
+  }
+
+  @override
+  Future<void> reportShout({
+    required String message,
+    Object? exception,
+    StackTrace? stackTrace,
+    ReportCategory? category,
+  }) async {
+    throw StateError('Unexpected shout');
+  }
+}
+
 void main() {
   late Directory dir;
   late RevisionStore store;
@@ -139,6 +168,53 @@ void main() {
   tearDown(() async {
     await store.close();
     dir.deleteSync(recursive: true);
+  });
+
+  test('unknown native cause persists its type once without its value', () async {
+    final reporter = _Reporter();
+    await initializeLogging(directory: dir, reporter: reporter);
+    sessions.beforeOpen = () => throw UnrecognizedNativeDescriptorException();
+    for (var i = 0; i < 2; i++) {
+      final result = await writer.receive(key, expectedGeneration: 1);
+      expect(
+        result,
+        isA<Err>().having(
+          (r) => r.failure,
+          'failure',
+          isA<TransactionSyncStorageFailure>(),
+        ),
+      );
+    }
+    final lines = await log.readLogs();
+    final warnings = lines
+        .where(
+          (line) =>
+              line.split('\t')[1] == 'WARNING' &&
+              line.contains('Wallet writer native exception'),
+        )
+        .toList();
+    expect(warnings, hasLength(1));
+    expect(
+      warnings.single,
+      contains('category=UnrecognizedNativeDescri:ptorException'),
+    );
+    expect(lines.join(), isNot(contains('sensitive-sentinel')));
+    // The existing unexpected-storage event reports once; WARNING adds no event.
+    expect(reporter.errors, ['TransactionSyncStorageFailure']);
+    sessions.beforeOpen = null;
+    expect(await writer.receive(key, expectedGeneration: 1), isA<Ok>());
+    sessions.beforeOpen = () => throw UnrecognizedNativeDescriptorException();
+    expect(await writer.receive(key, expectedGeneration: 1), isA<Err>());
+    expect(
+      (await log.readLogs()).where(
+        (line) =>
+            line.split('\t')[1] == 'WARNING' &&
+            line.contains('Wallet writer native exception'),
+      ),
+      hasLength(2),
+    );
+    expect(reporter.errors, hasLength(2));
+    await log.flush();
   });
 
   test(
