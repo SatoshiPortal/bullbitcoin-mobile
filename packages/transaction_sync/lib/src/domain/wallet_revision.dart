@@ -35,8 +35,13 @@ enum WalletLifecycle { active, pendingWrite, deleted }
 final class WalletRevisionState {
   final WalletRevision stamp;
   final WalletLifecycle lifecycle;
+  final int initializedSchema;
 
-  const WalletRevisionState({required this.stamp, required this.lifecycle});
+  const WalletRevisionState({
+    required this.stamp,
+    required this.lifecycle,
+    this.initializedSchema = 0,
+  });
 }
 
 /// D implements persistence and reconciliation. Subscribe before reading;
@@ -49,9 +54,10 @@ abstract interface class WalletRevisionReader {
   Stream<WalletRevisionState> watch(WalletKey key);
 }
 
-/// D owns this admission capability. Hold it through Liquid hydration and
-/// release in finally. Busy serves the previous stale snapshot; BDK readers
-/// do not use this barrier. Admission never permits native-store writes.
+/// D owns brief hydration admission for both Bitcoin and Liquid (the historical
+/// name is retained for compatibility). Hold it only through existence checks,
+/// open and load; release before reads or PSBT construction. Busy serves the
+/// previous stale snapshot. Admission never permits native-store writes.
 abstract interface class LiquidReadLease {
   WalletRevision get revision;
   Future<void> release();

@@ -176,13 +176,14 @@ final class WalletSnapshotReader {
       return const Err(TransactionSyncBusyFailure());
     }
 
-    if (state.lifecycle == WalletLifecycle.pendingWrite) {
+    if (state.lifecycle == WalletLifecycle.pendingWrite ||
+        state.initializedSchema != requiredSchemaVersion) {
       return busy();
     }
 
     LiquidReadLease? lease;
     try {
-      if (descriptor is LiquidWalletDescriptor) {
+      {
         switch (await liquidAdmission.acquire(key)) {
           case Err(failure: TransactionSyncBusyFailure()):
             return busy();
@@ -196,7 +197,7 @@ final class WalletSnapshotReader {
           return const Err(TransactionSyncBusyFailure());
         }
       }
-      final stamp = lease?.revision ?? state.stamp;
+      final stamp = lease.revision;
       final readyResult = await readiness.check(
         descriptor,
         stamp,

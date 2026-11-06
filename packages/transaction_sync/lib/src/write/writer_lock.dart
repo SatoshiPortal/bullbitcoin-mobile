@@ -58,8 +58,11 @@ final class WriterLock {
   /// wrapper may release a lease around an unfinished FRB operation.
   void release() {
     if (_released) return;
-    _db.execute('ROLLBACK');
-    _db.dispose();
-    _released = true;
+    try {
+      _db.execute('ROLLBACK');
+    } finally {
+      _released = true;
+      _db.dispose();
+    }
   }
 }

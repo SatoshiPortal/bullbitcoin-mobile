@@ -6,6 +6,10 @@ import 'package:meta/meta.dart';
 import 'package:sqlite3/sqlite3.dart';
 import '../../transaction_sync.dart';
 
+/// Bump whenever the pinned native SDK or native store layout changes.
+/// Version 1: bull_sdk f4ee00bf61a810d034a397a41a2e40cd7903aa51, legacy BDK/LWK paths.
+const writerSchemaVersion = 1;
+
 /// Intents contain no descriptors, addresses, endpoints or key material.
 enum WriteIntent { create, load, receive, sync, delete, repair }
 
@@ -40,14 +44,23 @@ final class RevisionStore implements WalletRevisionReader {
     File(path).parent.createSync(recursive: true);
     final db = sqlite3.open(path);
     try {
-      db.execute('PRAGMA busy_timeout = 0');
+      db.execute('PRAGMA busy_timeout = 5000');
+      db.execute('PRAGMA journal_mode = WAL');
       db.execute('PRAGMA synchronous = FULL');
       db.execute('''CREATE TABLE IF NOT EXISTS revisions (
         wallet TEXT NOT NULL, network TEXT NOT NULL,
         generation INTEGER NOT NULL, revision INTEGER NOT NULL,
         lifecycle TEXT NOT NULL, intent TEXT, candidate INTEGER,
         issued INTEGER, needs_sync INTEGER NOT NULL DEFAULT 0,
+        initialized_schema INTEGER NOT NULL DEFAULT 0,
         PRIMARY KEY(wallet, network))''');
+      if (!db
+          .select('PRAGMA table_info(revisions)')
+          .any((row) => row['name'] == 'initialized_schema')) {
+        db.execute(
+          'ALTER TABLE revisions ADD COLUMN initialized_schema INTEGER NOT NULL DEFAULT 0',
+        );
+      }
       return db;
     } on Exception {
       db.dispose();
@@ -77,6 +90,7 @@ final class RevisionStore implements WalletRevisionReader {
           revision: row['revision'] as int,
         ),
         lifecycle: WalletLifecycle.values.byName(row['lifecycle'] as String),
+        initializedSchema: row['initialized_schema'] as int,
       ),
       intent == null ? null : WriteIntent.values.byName(intent),
       row['candidate'] as int?,
@@ -161,12 +175,21 @@ final class RevisionStore implements WalletRevisionReader {
       final creating = old.intent == WriteIntent.create;
       _db.execute(
         '''UPDATE revisions SET revision=revision+1,
-        lifecycle=?, intent=NULL, candidate=NULL, issued=?, needs_sync=?
+        lifecycle=?, intent=NULL, candidate=NULL, issued=?, needs_sync=?, initialized_schema=?
         WHERE wallet=? AND network=?''',
         [
           (deleted ? WalletLifecycle.deleted : WalletLifecycle.active).name,
           deleted ? null : (issued ?? (creating ? null : old.issued)),
           (needsSync ?? (creating ? false : old.needsSync)) ? 1 : 0,
+          deleted
+              ? 0
+              : {
+                  WriteIntent.create,
+                  WriteIntent.load,
+                  WriteIntent.repair,
+                }.contains(old.intent)
+              ? writerSchemaVersion
+              : old.state.initializedSchema,
           key.id,
           _network(key),
         ],
@@ -206,7 +229,8 @@ final class RevisionStore implements WalletRevisionReader {
   void _publish(WalletRevisionState state) {
     final previous = _published[state.stamp.key];
     if (previous?.stamp == state.stamp &&
-        previous?.lifecycle == state.lifecycle) {
+        previous?.lifecycle == state.lifecycle &&
+        previous?.initializedSchema == state.initializedSchema) {
       return;
     }
     _published[state.stamp.key] = state;
