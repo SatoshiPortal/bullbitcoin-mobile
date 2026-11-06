@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:bb_mobile/recoverable_payjoin.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';

@@ -1,3 +1,4 @@
+import '../domain/entities/order_swap_refresh_batch.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/swap/domain/entities/order_swap_network.dart';
 import 'package:bb_mobile/features/swap/domain/entities/order_swap_quote.dart';
@@ -20,6 +21,7 @@ import 'package:bb_mobile/features/swap/domain/usecases/save_prepared_order_swap
 import 'package:bb_mobile/features/swap/domain/usecases/watch_order_swap_usecase.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/watch_swap_app_update_required_usecase.dart';
 
+export '../domain/entities/order_swap_refresh_batch.dart';
 export 'package:bb_mobile/features/swap/domain/entities/order_swap.dart';
 export 'package:bb_mobile/features/swap/domain/entities/order_swap_network.dart';
 export 'package:bb_mobile/features/swap/domain/entities/order_swap_quote.dart';
@@ -166,6 +168,9 @@ class SwapFacade {
 
   Stream<Result<OrderSwapRecord, SwapFailure>> watchOrder(String localId) =>
       _watchOrder.execute(localId);
+
+  Future<Result<OrderSwapRefreshBatch, SwapFailure>>
+  refreshOrdersWithOutcome() => _refreshOrders.execute();
 
   Future<Result<void, SwapFailure>> refreshOrders() async {
     return switch (await _refreshOrders.execute()) {

@@ -8,6 +8,8 @@ export '../domain/settings_failure.dart';
 export '../presentation/settings_failure_l10n.dart';
 export '../ui/settings_router.dart' show SettingsRoute;
 export 'payjoin_disclaimer_dialog.dart';
+export '../reporting_setup.dart' show refreshReportingConsent;
+export '../background_setup.dart' show setupBackgroundPreferences;
 
 /// Public settings contract consumed by other features.
 class SettingsFacade {

@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:get_it/get_it.dart';
+import 'domain/usecase/apply_pending_wizard_choices_usecase.dart';
 import 'package:bb_mobile/features/wizard/data/datasource/wizard_local_datasource.dart';
 import 'package:bb_mobile/features/wizard/data/repository/wizard_repository_impl.dart';
 import 'package:bb_mobile/features/wizard/domain/repository/wizard_repository.dart';
@@ -30,3 +32,6 @@ Future<bool?> readStartupReportingConsent() async {
   ).execute();
   return pending?.reportingConsent;
 }
+
+Future<void> completeStartupWizard(GetIt locator) =>
+    locator<ApplyPendingWizardChoicesUsecase>().execute();

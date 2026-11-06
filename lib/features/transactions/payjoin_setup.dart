@@ -12,12 +12,12 @@ import 'package:bb_mobile/core/wallet/data/payjoin_wallet_adapter.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
-import 'package:bb_mobile/payjoin_runtime_adapters.dart';
-import 'package:bb_mobile/recoverable_payjoin.dart';
+import 'data/payjoin_blockchain_adapter.dart';
+import 'data/payjoin_fees_adapter.dart';
+import 'data/payjoin_transaction_adapter.dart';
+import 'data/payjoin_log_adapter.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:get_it/get_it.dart';
-
-const payjoinDatabaseFilename = 'payjoin.sqlite';
 
 abstract final class PayjoinSetup {
   static void setup(
@@ -45,7 +45,7 @@ abstract final class PayjoinSetup {
           locator<BdkBitcoinBlockchainDatasource>(),
           locator<ElectrumServersPort>(),
         ),
-        labels: AppPayjoinLabelsAdapter(locator<LabelsFacade>()),
+        labels: locator<LabelsFacade>().payjoinLabels(),
         legacyData: PayjoinLegacyDataAdapter(database),
         log: const AppPayjoinLogAdapter(),
       );

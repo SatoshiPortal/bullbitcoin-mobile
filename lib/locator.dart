@@ -1,16 +1,10 @@
-import 'package:background_tasks/background_tasks.dart';
-import 'package:notifications/notifications.dart';
 import 'package:bb_mobile/background_setup.dart';
-import 'package:bb_mobile/features/settings/data/background_preferences_repository_impl.dart';
-import 'package:bb_mobile/features/settings/domain/usecases/background_preferences_usecase.dart';
-import 'package:bb_mobile/features/settings/presentation/bloc/background_preferences_cubit.dart';
-import 'package:bb_mobile/features/wallet/data/payment_notifications.dart';
 import 'package:bb_mobile/core/core_locator.dart';
 import 'package:bb_mobile/core/status/status_locator.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
-import 'package:bb_mobile/core/sync/sync_locator.dart';
-import 'package:bb_mobile/core/sync/sync_coordinator.dart';
-import 'package:bb_mobile/payjoin_setup.dart';
+import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
+import 'package:bb_mobile/features/settings/public/settings_facade.dart';
+import 'package:bb_mobile/features/transactions/public/transactions_facade.dart';
 import 'package:bb_mobile/features/address_view/address_view_locator.dart';
 import 'package:bb_mobile/features/all_seed_view/all_seed_view_locator.dart';
 import 'package:bb_mobile/features/app_startup/app_startup_locator.dart';
@@ -49,14 +43,10 @@ import 'package:bb_mobile/features/replace_by_fee/locator.dart';
 import 'package:bb_mobile/features/sell/sell_locator.dart';
 import 'package:bb_mobile/features/send/send_locator.dart';
 import 'package:bb_mobile/features/settings/settings_locator.dart';
-import 'package:bb_mobile/features/sp/public/sp_facade.dart';
 import 'package:bb_mobile/features/sp/sp_locator.dart';
 import 'package:bb_mobile/features/status_check/locator.dart';
 import 'package:bb_mobile/features/swap/order_swap_watcher.dart';
 import 'package:bb_mobile/features/swap/swap_locator.dart';
-import 'package:bb_mobile/features/swap/public/swap_facade.dart';
-import 'package:bb_mobile/features/swap/domain/swap_failure.dart';
-import 'package:bb_mobile/features/swap/domain/usecases/refresh_order_swaps_usecase.dart';
 import 'package:bb_mobile/features/test_wallet_backup/test_wallet_backup_locator.dart';
 import 'package:bb_mobile/features/tor_settings/tor_settings_locator.dart';
 import 'package:bb_mobile/features/transactions/transactions_locator.dart';
@@ -100,44 +90,7 @@ class AppLocator {
       startRecovery: startPayjoinRecovery,
     );
 
-    SyncLocator.setup(
-      locator,
-      syncSwapsOutcome: () async {
-        final result = await locator<RefreshOrderSwapsUsecase>().execute();
-        switch (result) {
-          case Ok(:final value):
-            final rateLimited = value.failures
-                .whereType<SwapRateLimitedFailure>()
-                .firstOrNull;
-            if (rateLimited != null) {
-              return SyncOutcome.rateLimited(
-                retryAfter: rateLimited.retryAfter,
-                failure: _SwapSyncException(rateLimited.runtimeType),
-              );
-            }
-            return value.pollableOrderCount == 0
-                ? const SyncOutcome.idle()
-                : const SyncOutcome.active();
-          case Err(:final failure):
-            return failure is SwapRateLimitedFailure
-                ? SyncOutcome.rateLimited(
-                    retryAfter: failure.retryAfter,
-                    failure: _SwapSyncException(failure.runtimeType),
-                  )
-                : SyncOutcome.rateLimited(
-                    failure: _SwapSyncException(failure.runtimeType),
-                  );
-        }
-      },
-      // Lazy, like the swap callback above: SpLocator runs after this, and the
-      // closure only resolves the facade when a sync tick actually fires.
-      syncSp: () async {
-        final result = await locator<SpFacade>().syncWallet();
-        if (result case Err(:final failure)) {
-          throw SpSyncException(failure.logMessage);
-        }
-      },
-    );
+    SyncLocator.setupForeground(locator);
 
     // Register feature-specific dependencies
     ElectrumSettingsLocator.setup(locator);
@@ -154,19 +107,10 @@ class AppLocator {
     WalletLocator.setup(locator);
     SpLocator.setup(locator);
     SettingsLocator.setup(locator);
-    final backgroundPreferences = BackgroundPreferencesUsecase(
-      BackgroundPreferencesRepositoryImpl(
-        const SharedPreferencesBackgroundSyncIntervalStore(),
-        NotificationPermissionsFacade(
-          gateway: FlutterNotificationPermissionGateway(
-            channelId: PaymentNotifications.channelId,
-          ),
-        ),
-        configureBackgroundTasks,
-      ),
-    );
-    locator.registerFactory<BackgroundPreferencesCubit>(
-      () => BackgroundPreferencesCubit(backgroundPreferences),
+    setupBackgroundPreferences(
+      locator,
+      configureBackgroundTasks,
+      notificationChannelId: paymentNotificationChannelId,
     );
     const LogsFeature().setup(locator);
     BitcoinPriceLocator.setup(locator);
@@ -218,10 +162,4 @@ class AppLocator {
     RecipientsLocator.setup(locator);
     BitBoxLocator.setup(locator);
   }
-}
-
-final class _SwapSyncException implements Exception {
-  final Type failureType;
-
-  const _SwapSyncException(this.failureType);
 }
