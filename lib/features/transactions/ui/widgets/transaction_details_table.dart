@@ -33,7 +33,8 @@ class TransactionDetailsTable extends StatelessWidget {
       (TransactionDetailsCubit cubit) => cubit.state.transaction,
     );
     final txId = transaction?.txId;
-    final isTestnet = transaction?.isTestnet ?? false;
+    final canExplore = transaction?.supportsPublicExplorer ?? false;
+    final isTestnet = canExplore ? transaction?.isTestnet ?? false : false;
     final isLiquid = transaction?.isLiquid ?? false;
     final labels = transaction?.labels ?? [];
     final wallet = context.select(
@@ -100,7 +101,9 @@ class TransactionDetailsTable extends StatelessWidget {
             displayValue: StringFormatting.truncateMiddle(txId),
             copyValue: txId,
             onCopied: showCopied,
-            displayWidget: isLiquid
+            displayWidget: !canExplore
+                ? null
+                : isLiquid
                 ? TransactionViewer.liquid(
                     txId,
                     style: TextStyle(color: context.appColors.primary),

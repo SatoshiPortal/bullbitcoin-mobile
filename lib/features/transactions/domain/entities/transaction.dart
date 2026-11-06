@@ -1,3 +1,6 @@
+import 'package:bb_mobile/features/wallet/domain/network_x.dart';
+import 'package:primitives/primitives.dart'
+    show NetworkCapabilities, NetworkCapability;
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet_transaction.dart';
@@ -25,9 +28,18 @@ sealed class Transaction with _$Transaction {
       orderSwap?.canonicalWalletTransactionId ??
       payjoin?.txId ??
       order?.transactionId;
+  bool get supportsPublicExplorer {
+    final network = walletTransaction?.network;
+    return network == null ||
+        NetworkCapabilities.supports(
+          network.shared,
+          NetworkCapability.publicExplorer,
+        );
+  }
+
   bool get isTestnet =>
-      walletTransaction?.isTestnet ??
-      swap?.environment.isTestnet ??
+      walletTransaction?.network.requireHistoricalTestnet() ??
+      swap?.environment.requireHistoricalTestnet() ??
       (orderSwap == null
           ? null
           : orderSwap!.environment == OrderSwapEnvironment.testnet) ??
@@ -286,7 +298,7 @@ sealed class Transaction with _$Transaction {
       walletTransaction != null && walletTransaction!.isBitcoin ||
       isPayjoin ||
       swap?.type == SwapType.bitcoinToLiquid;
-  bool get isTestnet => fromWallet?.isTestnet ?? toWallet?.isTestnet ?? false;
+  bool get isTestnet => fromWallet?.network.requireHistoricalTestnet() ?? toWallet?.network.requireHistoricalTestnet() ?? false;
   bool get isLightning => [
     SwapType.lightningToBitcoin,
     SwapType.lightningToLiquid,

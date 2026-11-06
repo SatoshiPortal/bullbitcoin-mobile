@@ -1,7 +1,6 @@
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/swaps/domain/repositories/swap_history_repository.dart';
-import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:meta/meta.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
@@ -46,7 +45,17 @@ class GetTransactionsByTxIdUsecase {
   ) async {
     try {
       final settings = await _settingsRepository.fetch();
-      final orderRepository = settings.environment.isTestnet
+      final environment = settings.environment;
+      if (environment.networkEnv == NetworkEnv.regtest) {
+        final transactions = await _walletTransactionRepository
+            .getWalletTransactions(txId: txId, environment: environment);
+        return Ok(
+          transactions
+              .map((transaction) => Transaction(walletTransaction: transaction))
+              .toList(),
+        );
+      }
+      final orderRepository = environment.requireHistoricalTestnet()
           ? _testnetExchangeOrderRepository
           : _mainnetExchangeOrderRepository;
 
@@ -58,7 +67,10 @@ class GetTransactionsByTxIdUsecase {
         order,
         orderSwaps,
       ) = await (
-        _walletTransactionRepository.getWalletTransactions(txId: txId),
+        _walletTransactionRepository.getWalletTransactions(
+          txId: txId,
+          environment: environment,
+        ),
         _boltzSwapRepository.getSwapByTxId(txId),
         _payjoinSessions.byTransactionId(txId),
         orderRepository.getOrderByTxId(txId),

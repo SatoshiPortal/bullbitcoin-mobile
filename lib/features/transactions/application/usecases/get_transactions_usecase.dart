@@ -46,7 +46,20 @@ class GetTransactionsUsecase {
     try {
       final settings = await _settingsRepository.fetch();
       final environment = settings.environment;
-      final orderRepository = environment.isTestnet
+      if (environment.networkEnv == NetworkEnv.regtest) {
+        final transactions = await _walletTransactionRepository
+            .getWalletTransactions(
+              walletId: walletId,
+              sync: sync,
+              environment: environment,
+            );
+        return Ok(
+          transactions
+              .map((transaction) => Transaction(walletTransaction: transaction))
+              .toList(),
+        );
+      }
+      final orderRepository = environment.requireHistoricalTestnet()
           ? _testnetExchangeOrderRepository
           : _mainnetExchangeOrderRepository;
 
@@ -68,7 +81,7 @@ class GetTransactionsUsecase {
         _payjoinSessions.list(
           PayjoinSessionFilter(
             walletId: walletId,
-            network: environment.isTestnet
+            network: environment.requireHistoricalTestnet()
                 ? BitcoinNetwork.testnet
                 : BitcoinNetwork.mainnet,
           ),
