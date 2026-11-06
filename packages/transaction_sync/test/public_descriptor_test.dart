@@ -85,6 +85,7 @@ void main() {
       }
       expect(() => create(''), throwsArgumentError);
       expect(() => create('wpkh(public)'), returnsNormally);
+      expect(() => create('wpkh(xpubAAAAzprvBBBB)'), returnsNormally);
       expect(
         () => create('wpkh(public)', network: LiquidNetwork.mainnet),
         throwsArgumentError,

@@ -62,7 +62,7 @@ void main() {
                 ? _row(
                     entry.key,
                     external: confidential,
-                    internal: confidential,
+                    internal: 'unused Liquid internal descriptor',
                   )
                 : _row(entry.key),
           )
@@ -122,10 +122,7 @@ void main() {
       for (final invalid in [
         _row('invalid'),
         _row(bitcoin, external: 'wpkh(xprvINVALID)'),
-        _row(
-          liquid,
-          external: 'ct(slip77(PRIVACY_PLACEHOLDER),elwpkh(public))',
-        ),
+        _row(liquid, external: 'elwpkh(public)'),
       ]) {
         catalog.rows = [_row(bitcoin), invalid];
         final result =
