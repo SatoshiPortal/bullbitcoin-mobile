@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_web_settings_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/announcement.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
 import 'package:bb_mobile/core/exchange/domain/exchange_api_key_failure.dart';
@@ -153,6 +154,60 @@ void main() {
       verify(() => apiKeys.deleteApiKey(isTestnet: true)).called(1);
     });
   });
+
+  test(
+    'regtest refuses exchange operations without historical side effects',
+    () async {
+      when(
+        settings.fetch,
+      ).thenAnswer((_) async => _settings(Environment.regtest));
+      final support = _MockSendSupportChat();
+      var clearedCookies = false;
+      final results = [
+        await GetExchangeAccountUsecase(
+          mainnetExchangeUserRepository: mainnetUsers,
+          testnetExchangeUserRepository: testnetUsers,
+          settingsRepository: settings,
+        ).execute(),
+        await GetExchangeAnnouncementsUsecase(
+          mainnetExchangeUserRepository: mainnetUsers,
+          testnetExchangeUserRepository: testnetUsers,
+          settingsRepository: settings,
+        ).execute(),
+        await SaveExchangePreferencesUsecase(
+          mainnetExchangeUserRepository: mainnetUsers,
+          testnetExchangeUserRepository: testnetUsers,
+          settingsRepository: settings,
+        ).execute(language: 'fr'),
+        await StoreExchangeApiKeyUsecase(
+          exchangeApiKeyRepository: apiKeys,
+          settingsRepository: settings,
+        ).execute(const {}),
+        await ClearExchangeSessionUsecase(
+          exchangeApiKeyRepository: apiKeys,
+          settingsRepository: settings,
+          clearCookies: () async {
+            clearedCookies = true;
+          },
+        ).execute(),
+        await GetExchangeWebSettingsUsecase(
+          settingsRepository: settings,
+        ).execute(),
+        await RequestExchangeAccountDeletionUsecase(
+          sendSupportChatMessageUsecase: support,
+          settingsRepository: settings,
+        ).execute(),
+      ];
+      for (final result in results) {
+        expect(_failureOf(result), isA<ExchangeUnsupportedNetworkFailure>());
+      }
+      verifyZeroInteractions(mainnetUsers);
+      verifyZeroInteractions(testnetUsers);
+      verifyZeroInteractions(apiKeys);
+      verifyZeroInteractions(support);
+      expect(clearedCookies, isFalse);
+    },
+  );
 
   group('GetExchangeAccountUsecase', () {
     GetExchangeAccountUsecase build() => GetExchangeAccountUsecase(
@@ -458,6 +513,7 @@ void main() {
 
       final result = await RequestExchangeAccountDeletionUsecase(
         sendSupportChatMessageUsecase: sendSupportChat,
+        settingsRepository: settings,
       ).execute();
       final failure = _failureOf(result);
 
@@ -480,6 +536,7 @@ void main() {
       expect(
         await RequestExchangeAccountDeletionUsecase(
           sendSupportChatMessageUsecase: sendSupportChat,
+          settingsRepository: settings,
         ).execute(),
         isA<Ok<void, ExchangeFailure>>(),
       );
