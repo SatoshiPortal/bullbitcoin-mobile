@@ -33,6 +33,26 @@ void main() {
   });
 
   test(
+    'Liquid regtest refuses before address or provider side effects',
+    () async {
+      final result = await usecase.execute(
+        wallet: _wallet(Network.liquidRegtest),
+        amountSat: 1000,
+      );
+      expect(
+        result,
+        isA<Err>().having(
+          (result) => result.failure,
+          'failure',
+          isA<ReceiveSwapUnavailableFailure>(),
+        ),
+      );
+      verifyZeroInteractions(swapFacade);
+      verifyZeroInteractions(getReceiveAddress);
+    },
+  );
+
+  test(
     'creates an input-fixed Lightning to Liquid order without fallback',
     () async {
       when(
