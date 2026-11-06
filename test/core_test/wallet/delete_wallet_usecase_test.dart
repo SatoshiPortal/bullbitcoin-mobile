@@ -1,3 +1,4 @@
+import 'package:primitives/primitives.dart' show Fingerprint;
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
@@ -81,7 +82,9 @@ void main() {
       when(
         () => walletRepository.getWallet(walletId),
       ).thenAnswer((_) async => Ok<Wallet, WalletFailure>(buildWallet()));
-      when(() => walletRepository.getWallets()).thenAnswer((_) async => Ok([]));
+      when(
+        () => walletRepository.getCustodyFingerprints(),
+      ).thenAnswer((_) async => Ok(<Fingerprint>{}));
 
       final result = await usecase.execute(walletId: walletId);
 
@@ -96,8 +99,8 @@ void main() {
           () => walletRepository.getWallet(walletId),
         ).thenAnswer((_) async => Ok<Wallet, WalletFailure>(buildWallet()));
         when(
-          () => walletRepository.getWallets(),
-        ).thenAnswer((_) async => Ok([buildWallet()]));
+          () => walletRepository.getCustodyFingerprints(),
+        ).thenAnswer((_) async => Ok({Fingerprint(fingerprint)}));
 
         final result = await usecase.execute(walletId: walletId);
 
@@ -116,7 +119,7 @@ void main() {
 
       expect(result, isA<Ok<void, WalletFailure>>());
       expect(storage.entries, contains(key()));
-      verifyNever(() => walletRepository.getWallets());
+      verifyNever(() => walletRepository.getCustodyFingerprints());
     });
 
     test(
@@ -132,10 +135,9 @@ void main() {
             buildWallet(masterFingerprint: fingerprint.toUpperCase()),
           ),
         );
-        when(() => walletRepository.getWallets()).thenAnswer(
-          (_) async => Ok<List<Wallet>, WalletFailure>([
-            buildWallet(masterFingerprint: fingerprint),
-          ]),
+        when(() => walletRepository.getCustodyFingerprints()).thenAnswer(
+          (_) async =>
+              Ok<Set<Fingerprint>, WalletFailure>({Fingerprint(fingerprint)}),
         );
 
         expect(
@@ -159,14 +161,9 @@ void main() {
         when(
           () => walletRepository.getWallet(walletId),
         ).thenAnswer((_) async => Ok<Wallet, WalletFailure>(buildWallet()));
-        when(() => walletRepository.getWallets()).thenAnswer(
-          (_) async => Ok<List<Wallet>, WalletFailure>([
-            buildWallet(
-              masterFingerprint: fingerprint.toUpperCase(),
-              local: false,
-            ),
-          ]),
-        );
+        when(
+          () => walletRepository.getCustodyFingerprints(),
+        ).thenAnswer((_) async => Ok<Set<Fingerprint>, WalletFailure>({}));
 
         expect(
           await usecase.execute(walletId: walletId),
@@ -198,7 +195,7 @@ void main() {
         ).called(1);
         // A watch-only wallet never owned a seed entry, so nothing is even
         // looked up — the same shape as the empty-fingerprint case.
-        verifyNever(() => walletRepository.getWallets());
+        verifyNever(() => walletRepository.getCustodyFingerprints());
         expect(storage.entries, contains(key()));
       },
     );
@@ -210,8 +207,8 @@ void main() {
           () => walletRepository.getWallet(walletId),
         ).thenAnswer((_) async => Ok<Wallet, WalletFailure>(buildWallet()));
         when(
-          () => walletRepository.getWallets(),
-        ).thenAnswer((_) async => Ok([]));
+          () => walletRepository.getCustodyFingerprints(),
+        ).thenAnswer((_) async => Ok(<Fingerprint>{}));
         // Scripted on the MUTATION queue, not the read queue. `trash` performs
         // no read, so an exception queued on `scripted` was never consumed and
         // this test passed while exercising nothing.
@@ -235,7 +232,7 @@ void main() {
           () => walletRepository.getWallet(walletId),
         ).thenAnswer((_) async => Ok<Wallet, WalletFailure>(buildWallet()));
         when(
-          () => walletRepository.getWallets(),
+          () => walletRepository.getCustodyFingerprints(),
         ).thenAnswer((_) async => const Err(WalletUnexpectedFailure('read')));
 
         final result = await usecase.execute(walletId: walletId);
