@@ -56,8 +56,6 @@ extension WalletMetadataModelExtension on WalletMetadataModel {
   bool get isBitcoin => network.isBitcoin;
   bool get isLiquid => network.isLiquid;
   bool get isMainnet => network.isMainnet;
-
-  bool get isTestnet => network.requireHistoricalTestnet();
 }
 
 extension WalletMetadataModelMapper on WalletMetadataModel {

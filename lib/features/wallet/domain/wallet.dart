@@ -30,33 +30,21 @@ enum Network {
   bool get isLiquid => !isBitcoin;
   bool get isMainnet => environment == NetworkEnv.mainnet;
 
-  // Transitional historical API, removed after consumer conversion.
-  bool get isTestnet => requireHistoricalTestnet();
-
   factory Network.fromName(String name) =>
       Network.values.firstWhere((network) => network.name == name);
 
   factory Network.fromEnvironment({
-    NetworkEnv? environment,
-    bool? isTestnet,
+    required NetworkEnv environment,
     required bool isLiquid,
-  }) {
-    if ((environment == null) == (isTestnet == null)) {
-      throw ArgumentError('Supply exactly one environment representation');
-    }
-    final selected =
-        environment ??
-        (isTestnet == true ? NetworkEnv.testnet : NetworkEnv.mainnet);
-    return switch ((selected, isLiquid)) {
-      (NetworkEnv.mainnet, false) => bitcoinMainnet,
-      (NetworkEnv.testnet, false) => bitcoinTestnet,
-      (NetworkEnv.regtest, false) => bitcoinRegtest,
-      (NetworkEnv.mainnet, true) => liquidMainnet,
-      (NetworkEnv.testnet, true) => liquidTestnet,
-      (NetworkEnv.regtest, true) => liquidRegtest,
-      (NetworkEnv.signet, _) => throw const UnsupportedNetworkException(),
-    };
-  }
+  }) => switch ((environment, isLiquid)) {
+    (NetworkEnv.mainnet, false) => bitcoinMainnet,
+    (NetworkEnv.testnet, false) => bitcoinTestnet,
+    (NetworkEnv.regtest, false) => bitcoinRegtest,
+    (NetworkEnv.mainnet, true) => liquidMainnet,
+    (NetworkEnv.testnet, true) => liquidTestnet,
+    (NetworkEnv.regtest, true) => liquidRegtest,
+    (NetworkEnv.signet, _) => throw const UnsupportedNetworkException(),
+  };
 
   /// Historical protocol bridge. New networks must be supported explicitly by
   /// the protocol owner before it can use a binary SDK or service API.
@@ -193,9 +181,6 @@ abstract class Wallet with _$Wallet {
       Network.liquidRegtest => context.loc.globalDefaultLiquidWalletLabel,
     };
   }
-
-  // Transitional historical API, removed after consumer conversion.
-  bool get isTestnet => network.requireHistoricalTestnet();
 
   bool get isLiquid => network.isLiquid;
   bool get isBitcoin => network.isBitcoin;

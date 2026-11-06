@@ -48,7 +48,6 @@ sealed class WalletTransaction with _$WalletTransaction {
 
   bool get isBitcoin => network.isBitcoin;
   bool get isLiquid => network.isLiquid;
-  bool get isTestnet => network.isTestnet;
   bool get isMainnet => network.isMainnet;
   bool get isIncoming => direction == WalletTransactionDirection.incoming;
   bool get isOutgoing => direction == WalletTransactionDirection.outgoing;

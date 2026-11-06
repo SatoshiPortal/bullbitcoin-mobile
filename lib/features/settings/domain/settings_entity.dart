@@ -27,9 +27,6 @@ enum Environment {
 
   bool get isMainnet => this == Environment.mainnet;
 
-  // Transitional historical API, removed after consumer conversion.
-  bool get isTestnet => requireHistoricalTestnet();
-
   /// Legacy services have only mainnet and testnet backends. Refuse every
   /// other environment before a caller can select one of those backends.
   bool requireHistoricalTestnet() => switch (this) {
