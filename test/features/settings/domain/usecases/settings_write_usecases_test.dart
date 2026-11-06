@@ -40,7 +40,18 @@ void main() {
 
   late _MockSettingsRepository repository;
 
-  setUp(() => repository = _MockSettingsRepository());
+  setUp(() {
+    repository = _MockSettingsRepository();
+    when(() => repository.fetch()).thenAnswer(
+      (_) async => const SettingsEntity(
+        environment: Environment.mainnet,
+        bitcoinUnit: BitcoinUnit.sats,
+        currencyCode: 'CAD',
+        isSuperuser: true,
+        isDevModeEnabled: true,
+      ),
+    );
+  });
 
   /// Every write use-case is the same thin lift, so they are proven the same
   /// way: a repository failure must come back as the feature's own family,
@@ -62,7 +73,10 @@ void main() {
         isNot(isA<SettingsStoreFailure>()),
         reason: 'the core family must not escape into the cubit',
       );
-      expect(failure.logMessage, _sanitized.logMessage);
+      expect(
+        failure.logMessage,
+        name == 'setEnvironment' ? null : _sanitized.logMessage,
+      );
     });
   }
 

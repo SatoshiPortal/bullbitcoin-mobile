@@ -141,6 +141,23 @@ void main() {
 
   group('toggleDevMode', () {
     test(
+      'disabling developer mode publishes the committed mainnet selection',
+      () async {
+        cubit.emit(
+          cubit.state.copyWith(
+            storedSettings: _settings().copyWith(
+              environment: Environment.testnet,
+            ),
+          ),
+        );
+        await cubit.toggleDevMode(false);
+        expect(cubit.state.environment, Environment.mainnet);
+        expect(cubit.state.storedSettings?.isDevModeEnabled, isFalse);
+        verify(() => setIsDevModeUsecase.execute(false)).called(1);
+      },
+    );
+
+    test(
       'dev-mode true -> false revokes the SP wallet; the wallet feature picks '
       'the change up from SpSetupChanged, settings never drives it',
       () async {
