@@ -1,3 +1,5 @@
+import 'package:primitives/primitives.dart'
+    show BitcoinNetwork, NetworkCapabilities, NetworkCapability;
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_user_repository.dart';
@@ -29,6 +31,12 @@ class StartDcaUsecase {
     final bool isMainnet;
     try {
       final settings = await _settingsRepository.fetch();
+      if (!NetworkCapabilities.supports(
+        BitcoinNetwork.fromName(settings.environment.name),
+        NetworkCapability.exchange,
+      )) {
+        return const Err(DcaAccountUnavailableFailure('network unsupported'));
+      }
       isMainnet = settings.environment.isMainnet;
     } catch (e, st) {
       if (e is Error) rethrow;

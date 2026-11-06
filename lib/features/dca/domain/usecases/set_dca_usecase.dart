@@ -1,3 +1,5 @@
+import 'package:primitives/primitives.dart'
+    show BitcoinNetwork, NetworkCapabilities, NetworkCapability;
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
@@ -52,6 +54,12 @@ class SetDcaUsecase {
       return const Err(DcaUnexpectedFailure('settings fetch failed'));
     }
     final environment = settings.environment;
+    if (!NetworkCapabilities.supports(
+      BitcoinNetwork.fromName(environment.name),
+      NetworkCapability.exchange,
+    )) {
+      return const Err(DcaAccountUnavailableFailure('network unsupported'));
+    }
 
     final String address;
     if (network == DcaNetwork.lightning) {
@@ -104,7 +112,7 @@ class SetDcaUsecase {
     // by writing it — and saveUserPreferences replaces the whole stored set,
     // so the enabling write must carry the current values. Aborting here is
     // clean: nothing exists on the exchange yet.
-    final userRepository = environment.isTestnet
+    final userRepository = environment.requireHistoricalTestnet()
         ? _testnetExchangeUserRepository
         : _mainnetExchangeUserRepository;
 
