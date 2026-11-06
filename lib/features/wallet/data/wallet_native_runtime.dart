@@ -75,6 +75,13 @@ final class WalletNativeRuntime implements WalletNativeLifecycle {
 
   Future<void> initialize() => _initialization ??= _initialize();
 
+  /// Explicit provisioning retry; ordinary readers never trigger this pass.
+  Future<void> resumeProvisioning() async {
+    await initialize();
+    _unavailable.clear();
+    await (_initialization = _initialize());
+  }
+
   Future<void> _initialize() async {
     final services = await _services;
     final descriptors = _value(await _catalog.list());

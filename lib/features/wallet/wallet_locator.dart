@@ -1,3 +1,7 @@
+import 'package:secrets/secrets.dart';
+import 'package:bb_mobile/core/settings/data/settings_repository.dart'
+    as settings;
+import 'package:bb_mobile/features/wallet/domain/usecases/create_default_wallets_usecase.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_native_runtime.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_address_repository.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_transaction_repository_impl.dart';
@@ -41,6 +45,15 @@ import 'package:get_it/get_it.dart';
 
 class WalletLocator {
   static void setup(GetIt locator) {
+    locator.registerFactory<CreateDefaultWalletsUsecase>(
+      () => CreateDefaultWalletsUsecase(
+        secrets: locator<Secrets>(),
+        settingsRepository: locator<settings.SettingsRepository>(),
+        walletRepository: locator<WalletRepository>(),
+        resumeProvisioning: locator<WalletNativeRuntime>().resumeProvisioning,
+      ),
+    );
+
     locator.registerLazySingleton<WalletNativeRuntime>(
       () => WalletNativeRuntime(
         catalog: locator<WalletCatalogPort>(),

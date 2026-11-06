@@ -1,6 +1,5 @@
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:secrets/secrets.dart';
-import 'package:primitives/primitives.dart' show Fingerprint;
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
@@ -11,8 +10,8 @@ import 'package:meta/meta.dart';
 import 'package:synchronized/synchronized.dart';
 
 class ImportWalletUsecase {
-  /// Imports are serialised process-wide so wallet creation and any cleanup
-  /// complete before another wallet import uses the same secret.
+  /// Imports are serialised process-wide so catalog provisioning completes
+  /// before another wallet import uses the same secret.
   static final _imports = Lock();
 
   final CheckDuplicateMnemonicUsecase _checkDuplicateMnemonicUsecase;
@@ -58,12 +57,6 @@ class ImportWalletUsecase {
         break;
     }
 
-    // Set only once this import has actually stored a NEW seed. The cleanup
-    // below must never touch a seed that already existed: it is shared by
-    // whatever wallet was imported from the same mnemonic before, and
-    // deleting it would strand that wallet's funds.
-    Fingerprint? seedCreatedByThisImport;
-
     try {
       final settings = await _settingsRepository.fetch();
       final environment = settings.environment;
@@ -78,7 +71,6 @@ class ImportWalletUsecase {
       )) {
         case Ok(:final value):
           secret = value;
-          seedCreatedByThisImport = secret.id;
         case Err(failure: SecretAlreadyExistsFailure()):
           // The preflight check is indicative; another operation may have
           // stored this secret since then. A duplicate owns no cleanup.
@@ -98,53 +90,15 @@ class ImportWalletUsecase {
       log.fine('Wallet imported');
 
       return Ok(wallet);
-    } catch (e, st) {
-      // Remove the orphaned seed so a later import of the same mnemonic is
-      // not rejected as a duplicate (issue #2634). Only a seed this call
-      // created is orphaned; a pre-existing one belongs to another wallet.
-      // A cleanup failure is logged but must not mask the import error.
-      // And even then, never a seed some wallet has come to reference: a
-      // lookup that fails keeps the seed, because an orphan in the keystore
-      // is recoverable and a stranded wallet is not.
-      if (seedCreatedByThisImport != null &&
-          !await _referencedByAWallet(seedCreatedByThisImport)) {
-        final deletion = await _secrets.trash(seedCreatedByThisImport);
-        if (deletion case Err(:final failure)) {
-          log.warning(
-            'Failed to clean up orphaned seed after import failure',
-            error: failure,
-          );
-        }
-      }
-      log.severe(message: 'Import wallet failed', error: e, trace: st);
-      return Err(ImportMnemonicUnexpectedFailure(e.toString()));
-    }
-  }
-
-  Future<bool> _referencedByAWallet(Fingerprint fingerprint) async {
-    try {
-      switch (await _wallet.getWallets()) {
-        // Only a wallet that signs locally holds this seed; a watch-only
-        // wallet with the same origin fingerprint does not, whatever its
-        // spelling. Same rule as DeleteWalletUsecase and DeleteSecretUsecase.
-        case Ok(value: final wallets):
-          return wallets.any(
-            (w) =>
-                w.signsLocally &&
-                Fingerprint.tryParse(w.masterFingerprint) == fingerprint,
-          );
-        case Err(:final failure):
-          // Unknown counts as referenced: cleanup must never delete a seed a
-          // wallet may still use.
-          log.warning(
-            'Could not check wallet references before cleanup: '
-            '${failure.logMessage}',
-          );
-          return true;
-      }
     } catch (e) {
-      log.warning('Could not check wallet references before cleanup: $e');
-      return true;
+      // Provisioning may already have committed a catalog row. Preserve custody;
+      // orphan cleanup is an explicit user action, never failure compensation.
+      log.severe(
+        message: 'Import wallet failed',
+        error: e.runtimeType,
+        trace: StackTrace.empty,
+      );
+      return Err(ImportMnemonicUnexpectedFailure(e.toString()));
     }
   }
 }
