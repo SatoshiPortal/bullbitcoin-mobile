@@ -97,11 +97,42 @@ final class PricerRepository {
     return Ok(price.toEntity());
   }
 
-  /// The price history, oldest first, fetched and stored. When the fetch
-  /// fails or brings no points, the stored one; a failure only when nothing
-  /// is stored either.
+  /// The price history of a chart, oldest first: the daily points of the
+  /// last 90 days and those of the last 15 minutes. When one of the two is
+  /// unavailable, the other alone; a failure only when neither is.
   @useResult
   Future<Result<List<PricePoint>, PricerFailure>> priceHistory({
+    required BitcoinNetwork network,
+    required SupportedCurrency currency,
+  }) async {
+    final (day, fifteenMinutes) = await (
+      intervalHistory(
+        network: network,
+        currency: currency,
+        interval: PriceHistoryInterval.day,
+      ),
+      intervalHistory(
+        network: network,
+        currency: currency,
+        interval: PriceHistoryInterval.fifteenMinutes,
+      ),
+    ).wait;
+    return switch ((day, fifteenMinutes)) {
+      (Err(:final failure), Err()) => Err(failure),
+      (Ok(:final value), Err()) || (Err(), Ok(:final value)) => Ok(value),
+      (Ok(value: final days), Ok(value: final minutes)) => Ok(
+        [...days, ...minutes]..sort((a, b) => a.time.compareTo(b.time)),
+      ),
+    };
+  }
+
+  /// The price history of one interval, oldest first, fetched and stored.
+  /// When the fetch fails or brings no points, the stored one; a failure only
+  /// when nothing is stored either. Public for the tests of each interval:
+  /// [priceHistory] is the one callers use.
+  @visibleForTesting
+  @useResult
+  Future<Result<List<PricePoint>, PricerFailure>> intervalHistory({
     required BitcoinNetwork network,
     required SupportedCurrency currency,
     required PriceHistoryInterval interval,

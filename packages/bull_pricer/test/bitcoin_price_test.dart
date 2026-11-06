@@ -30,6 +30,12 @@ void main() {
       }
     });
 
+    test('values an amount of sats at this price', () {
+      expect(cad(100000).fiatValueOf(BigInt.from(100000000)), 100000);
+      expect(cad(100000).fiatValueOf(BigInt.from(50000)), 50);
+      expect(cad(100000).fiatValueOf(BigInt.zero), 0);
+    });
+
     test('is equal to another price with the same values', () {
       expect(cad(114214.20), cad(114214.20));
       expect(cad(114214.20).hashCode, cad(114214.20).hashCode);

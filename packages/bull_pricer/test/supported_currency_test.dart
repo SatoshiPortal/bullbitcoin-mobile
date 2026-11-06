@@ -20,4 +20,16 @@ void main() {
       }
     });
   });
+
+  test('SupportedCurrency.codes lists every code in declaration order', () {
+    expect(SupportedCurrency.codes, [
+      for (final currency in SupportedCurrency.values) currency.code,
+    ]);
+    expect(SupportedCurrency.codes.first, 'USD');
+  });
+
+  test('SupportedCurrency.codes cannot be changed by a caller', () {
+    expect(() => SupportedCurrency.codes.add('GBP'), throwsUnsupportedError);
+    expect(SupportedCurrency.codes.sort, throwsUnsupportedError);
+  });
 }

@@ -248,7 +248,7 @@ void main() {
       PriceHistoryInterval interval, {
       BitcoinNetwork network = mainnet,
     }) => atNow(
-      () => repository.priceHistory(
+      () => repository.intervalHistory(
         network: network,
         currency: cad,
         interval: interval,
@@ -385,6 +385,56 @@ void main() {
       );
 
       expect(points(await history(day)), hasLength(3));
+    });
+  });
+
+  group('chart history', () {
+    Future<Result<List<PricePoint>, PricerFailure>> chart() =>
+        atNow(() => repository.priceHistory(network: mainnet, currency: cad));
+
+    FakePriceAnswer failing(String interval, FakePriceRequest request) =>
+        request.params['interval'] == interval
+        ? (status: 503, body: const <String, Object>{})
+        : realisticAnswer(request);
+
+    test('merges the daily and the 15-minute points, oldest first', () async {
+      final result = await chart();
+
+      expect(
+        (result as Ok<List<PricePoint>, PricerFailure>).value.map(
+          (p) => p.time,
+        ),
+        [
+          now.subtract(const Duration(days: 2)),
+          now.subtract(const Duration(days: 1)),
+          now.subtract(const Duration(minutes: 5)),
+          now,
+        ],
+      );
+      expect(api.requests.map((r) => r.params['interval']).toSet(), {
+        'day',
+        'fifteen',
+      });
+    });
+
+    test('one interval unavailable leaves the other alone', () async {
+      api.respond = (request) => failing('day', request);
+
+      final result = await chart();
+
+      expect(
+        (result as Ok<List<PricePoint>, PricerFailure>).value,
+        hasLength(1),
+      );
+    });
+
+    test('both intervals unavailable is the failure', () async {
+      api.respond = (_) => (status: 503, body: const <String, Object>{});
+
+      expect(
+        (await chart() as Err<List<PricePoint>, PricerFailure>).failure,
+        isA<PricerNetworkFailure>(),
+      );
     });
   });
 

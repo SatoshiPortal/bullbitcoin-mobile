@@ -12,6 +12,10 @@ enum SupportedCurrency {
 
   const SupportedCurrency(this.code);
 
+  static final List<String> codes = List.unmodifiable([
+    for (final currency in values) currency.code,
+  ]);
+
   static SupportedCurrency? tryFromCode(String code) {
     final upper = code.toUpperCase();
     for (final currency in values) {

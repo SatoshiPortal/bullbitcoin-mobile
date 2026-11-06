@@ -7,7 +7,6 @@ import 'package:bb_mobile/core/fees/fees_locator.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/core/ledger/ledger_locator.dart';
 import 'package:bb_mobile/core/mempool/mempool_locator.dart';
-import 'package:bb_mobile/core/price/price_locator.dart';
 import 'package:bb_mobile/core/recoverbull/recoverbull_locator.dart';
 import 'package:bb_mobile/core/seed/seed_locator.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart'
@@ -38,7 +37,6 @@ class CoreLocator {
     );
     BlockchainLocator.registerDatasources(locator);
     await ElectrumLocator.registerDatasources(locator);
-    PriceLocator.registerDatasources(locator);
     ExchangeLocator.registerDatasources(locator);
     FeesLocator.registerDatasources(locator);
     await MempoolLocator.registerDatasources(locator);
@@ -83,7 +81,6 @@ class CoreLocator {
     );
     BlockchainLocator.registerRepositories(locator);
     ElectrumLocator.registerRepositories(locator);
-    PriceLocator.registerRepositories(locator);
     ExchangeLocator.registerRepositories(locator);
     FeesLocator.registerRepositories(locator);
     MempoolLocator.registerRepositories(locator);
@@ -108,7 +105,6 @@ class CoreLocator {
     LabelsLocator.registerUseCases(locator);
     ElectrumLocator.registerUsecases(locator);
     BlockchainLocator.registerUsecases(locator);
-    PriceLocator.registerUseCases(locator);
     ExchangeLocator.registerUseCases(locator);
     FeesLocator.registerUseCases(locator);
     MempoolLocator.registerUsecases(locator);

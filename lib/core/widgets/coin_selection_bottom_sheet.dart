@@ -12,7 +12,7 @@ import 'package:go_router/go_router.dart';
 
 class CommonCoinSelectionBottomSheet extends StatefulWidget {
   final BitcoinUnit bitcoinUnit;
-  final double exchangeRate;
+  final double? exchangeRate;
   final String fiatCurrency;
   final List<WalletUtxo> utxos;
   final List<WalletUtxo> initialSelectedUtxos;
@@ -87,9 +87,10 @@ class _CommonCoinSelectionBottomSheetState
 
     final isAmountSufficient = selectedUtxoTotalSat >= widget.amountToSendSat;
 
-    final selectedFiatEquivalent = widget.exchangeRate > 0
+    final rate = widget.exchangeRate;
+    final selectedFiatEquivalent = rate != null && rate > 0
         ? FormatAmount.fiat(
-            ConvertAmount.satsToFiat(selectedUtxoTotalSat, widget.exchangeRate),
+            ConvertAmount.satsToFiat(selectedUtxoTotalSat, rate),
             widget.fiatCurrency,
           )
         : null;
@@ -198,7 +199,7 @@ class CommonCoinSelectTile extends StatelessWidget {
   final bool selected;
   final VoidCallback onTap;
   final BitcoinUnit bitcoinUnit;
-  final double exchangeRate;
+  final double? exchangeRate;
   final String fiatCurrency;
 
   const CommonCoinSelectTile({
@@ -217,10 +218,13 @@ class CommonCoinSelectTile extends StatelessWidget {
         ? FormatAmount.btc(ConvertAmount.satsToBtc(utxo.amountSat.toInt()))
         : FormatAmount.sats(utxo.amountSat.toInt());
 
-    final fiatEquivalent = FormatAmount.fiat(
-      ConvertAmount.satsToFiat(utxo.amountSat.toInt(), exchangeRate),
-      fiatCurrency,
-    );
+    final rate = exchangeRate;
+    final fiatEquivalent = rate != null && rate > 0
+        ? FormatAmount.fiat(
+            ConvertAmount.satsToFiat(utxo.amountSat.toInt(), rate),
+            fiatCurrency,
+          )
+        : null;
 
     final address = utxo.address;
     final addressType = utxo.addressKeyChain == WalletAddressKeyChain.external
@@ -269,12 +273,13 @@ class CommonCoinSelectTile extends StatelessWidget {
                       ),
                     ),
                   ),
-                  BullText(
-                    '~$fiatEquivalent',
-                    style: context.font.labelSmall?.copyWith(
-                      color: context.appColors.onSurfaceVariant,
+                  if (fiatEquivalent != null)
+                    BullText(
+                      '~$fiatEquivalent',
+                      style: context.font.labelSmall?.copyWith(
+                        color: context.appColors.onSurfaceVariant,
+                      ),
                     ),
-                  ),
                   const SizedBox(height: 12),
 
                   Divider(color: context.appColors.secondaryFixedDim),
