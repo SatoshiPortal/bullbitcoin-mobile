@@ -154,6 +154,8 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
   late final StreamSubscription<int> _payjoinMinAmountChangeSubscription;
 
   Timer? _payjoinSenderWaitTimer;
+  Wallet? _pendingNewAddressWallet;
+  bool _newAddressInFlight = false;
 
   @override
   Future<void> close() async {
@@ -219,6 +221,14 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     ReceiveBitcoinStarted event,
     Emitter<ReceiveState> emit,
   ) async {
+    final pending = _pendingNewAddressWallet;
+    if (pending != null &&
+        pending.isBitcoin &&
+        (event.wallet == null || event.wallet?.id == pending.id)) {
+      await _onNewAddressGenerated(const ReceiveNewAddressGenerated(), emit);
+      return;
+    }
+    _pendingNewAddressWallet = null;
     final isWalletChange =
         event.wallet != null && state.wallet?.id != event.wallet!.id;
     if (isWalletChange) {
@@ -451,6 +461,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     ReceiveLightningStarted event,
     Emitter<ReceiveState> emit,
   ) async {
+    _pendingNewAddressWallet = null;
     // Emit a state with the Lightning type so the UI can update allready before
     // the async data is loaded. Remove values that should
     // not be shared between the different receive types. Currently only the
@@ -554,6 +565,12 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     ReceiveLiquidStarted event,
     Emitter<ReceiveState> emit,
   ) async {
+    final pending = _pendingNewAddressWallet;
+    if (pending != null && pending.isLiquid) {
+      await _onNewAddressGenerated(const ReceiveNewAddressGenerated(), emit);
+      return;
+    }
+    _pendingNewAddressWallet = null;
     // Emit a state with the Liquid type so the UI can update with the Liquid
     // receive UI already before the async data is loaded. Remove values that should
     // not be shared between the different receive types. Currently only the
@@ -900,26 +917,41 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     ReceiveNewAddressGenerated event,
     Emitter<ReceiveState> emit,
   ) async {
+    if (_newAddressInFlight) return;
+    _newAddressInFlight = true;
+    try {
+      await _generateNewAddress(emit);
+    } finally {
+      _newAddressInFlight = false;
+    }
+  }
+
+  Future<void> _generateNewAddress(Emitter<ReceiveState> emit) async {
     final currentAddress = state.isBitcoin
         ? state.bitcoinAddress
         : state.liquidAddress;
-    if (currentAddress == null) {
-      return;
-    }
+    if (currentAddress == null && _pendingNewAddressWallet == null) return;
 
-    emit(_withoutPayjoin().copyWith(bitcoinAddress: null, liquidAddress: null));
-
-    final wallet = state.wallet;
+    final wallet = _pendingNewAddressWallet ?? state.wallet;
     if (wallet == null) {
       log.warning('New address requested with no wallet selected');
       emit(state.copyWith(failure: const ReceiveAddressUnavailableFailure()));
       return;
     }
 
+    _pendingNewAddressWallet = wallet;
     final walletId = wallet.id;
+    final type = state.type;
+    emit(
+      _withoutPayjoin().copyWith(
+        bitcoinAddress: null,
+        liquidAddress: null,
+        failure: null,
+      ),
+    );
 
     WalletAddress address;
-    switch (state.type) {
+    switch (type) {
       case ReceiveType.bitcoin:
         PayjoinReceiverSession? payjoin;
         // A new address needs its own payjoin session, so whether it will
@@ -930,8 +962,13 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
           generateNew: true,
         )) {
           case Ok(:final value):
+            if (state.wallet?.id != walletId || state.type != type) return;
+            if (identical(_pendingNewAddressWallet, wallet)) {
+              _pendingNewAddressWallet = null;
+            }
             address = value;
           case Err(:final failure):
+            if (state.wallet?.id != walletId || state.type != type) return;
             // Release the QR: no new address means no new payjoin session
             //  either, so nothing further will settle it.
             emit(state.copyWith(failure: failure, payjoinAttemptSettled: true));
@@ -983,6 +1020,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
           }
         }
 
+        if (state.wallet?.id != walletId || state.type != type) return;
         emit(
           state.copyWith(
             bitcoinAddress: address,
@@ -1000,9 +1038,14 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
           generateNew: true,
         )) {
           case Ok(:final value):
+            if (state.wallet?.id != walletId || state.type != type) return;
+            if (identical(_pendingNewAddressWallet, wallet)) {
+              _pendingNewAddressWallet = null;
+            }
             address = value;
             emit(state.copyWith(liquidAddress: address));
           case Err(:final failure):
+            if (state.wallet?.id != walletId || state.type != type) return;
             emit(state.copyWith(failure: failure));
             return;
         }
