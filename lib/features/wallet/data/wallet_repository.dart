@@ -28,6 +28,8 @@ import 'package:meta/meta.dart';
 
 class WalletRepository {
   final WalletNativeLifecycle? _native;
+  final _unavailable = <String, Type>{};
+  int _invalidCatalogCount = 0;
   final WalletMetadataDatasource _walletMetadataDatasource;
   final BdkWalletDatasource _bdkWallet;
   final LwkWalletDatasource _lwkWallet;
@@ -260,9 +262,39 @@ class WalletRepository {
     if (metadata == null) {
       return null;
     }
-    // Get the balance
-    final balance = await _getBalance(metadata, sync: sync);
+    return _walletFromMetadata(
+      metadata,
+      sync
+          ? await _getBalance(metadata, sync: true)
+          : await _readBalance(metadata, sync: false),
+    );
+  }
 
+  Future<BalanceModel?> _readBalance(
+    WalletMetadataModel metadata, {
+    required bool sync,
+  }) async {
+    try {
+      final balance = await _getBalance(metadata, sync: sync);
+      if (_unavailable.remove(metadata.id) != null) {
+        log.fine('Wallet balance available');
+      }
+      return balance;
+    } catch (error) {
+      if (_unavailable[metadata.id] != error.runtimeType) {
+        _unavailable[metadata.id] = error.runtimeType;
+        log.warning('Wallet balance unavailable category=${error.runtimeType}');
+      }
+      return null;
+    }
+  }
+
+  Wallet _walletFromMetadata(
+    WalletMetadataModel metadata,
+    BalanceModel? balance,
+  ) {
+    final encrypted = metadata.latestEncryptedBackup;
+    final physical = metadata.latestPhysicalBackup;
     // Return the wallet entity
     return Wallet(
       origin: metadata.id,
@@ -280,15 +312,15 @@ class WalletRepository {
       internalPublicDescriptor: metadata.internalPublicDescriptor,
       signer: metadata.signer.toEntity(),
       signerDevice: metadata.signerDevice?.toEntity(),
-      balanceSat: balance.totalSat,
-      confirmedBalanceSat: balance.confirmedSat,
+      balanceSat: balance?.totalSat,
+      confirmedBalanceSat: balance?.confirmedSat,
       isEncryptedVaultTested: metadata.isEncryptedVaultTested,
       isPhysicalBackupTested: metadata.isPhysicalBackupTested,
-      latestEncryptedBackup: metadata.latestEncryptedBackup != null
-          ? DateTime.fromMillisecondsSinceEpoch(metadata.latestEncryptedBackup!)
+      latestEncryptedBackup: encrypted != null
+          ? DateTime.fromMillisecondsSinceEpoch(encrypted)
           : null,
-      latestPhysicalBackup: metadata.latestPhysicalBackup != null
-          ? DateTime.fromMillisecondsSinceEpoch(metadata.latestPhysicalBackup!)
+      latestPhysicalBackup: physical != null
+          ? DateTime.fromMillisecondsSinceEpoch(physical)
           : null,
     );
   }
@@ -366,62 +398,33 @@ class WalletRepository {
     final metadatas = await _walletMetadataDatasource.fetchAll();
     if (metadatas.isEmpty) return [];
 
-    final filteredWallets = metadatas
-        .where(
-          (wallet) =>
-              (environment == null ||
-                  wallet.isMainnet == environment.isMainnet) &&
-              (onlyDefaults == null ||
-                  onlyDefaults == false ||
-                  wallet.isDefault) &&
-              (onlyBitcoin == null ||
-                  onlyBitcoin == false ||
-                  wallet.isBitcoin) &&
-              (onlyLiquid == null || onlyLiquid == false || wallet.isLiquid),
-        )
-        .toList();
-
-    final balances = await Future.wait(
-      filteredWallets.map((wallet) => _getBalance(wallet, sync: sync)),
+    var invalid = 0;
+    final wallets = await Future.wait(
+      metadatas.map((metadata) async {
+        try {
+          final network = metadata.network;
+          if ((environment != null &&
+                  network.isMainnet != environment.isMainnet) ||
+              (onlyDefaults == true && !metadata.isDefault) ||
+              (onlyBitcoin == true && !network.isBitcoin) ||
+              (onlyLiquid == true && !network.isLiquid)) {
+            return null;
+          }
+          return _walletFromMetadata(
+            metadata,
+            await _readBalance(metadata, sync: sync),
+          );
+        } catch (error) {
+          invalid++;
+          return null;
+        }
+      }),
     );
-
-    return filteredWallets
-        .asMap()
-        .entries
-        .map(
-          (entry) => Wallet(
-            origin: entry.value.id,
-            label: entry.value.label,
-            network: Network.fromEnvironment(
-              isTestnet: entry.value.isTestnet,
-              isLiquid: entry.value.isLiquid,
-            ),
-            isDefault: entry.value.isDefault,
-            masterFingerprint: entry.value.masterFingerprint,
-            xpubFingerprint: entry.value.xpubFingerprint,
-            scriptType: entry.value.scriptType,
-            xpub: entry.value.xpub,
-            externalPublicDescriptor: entry.value.externalPublicDescriptor,
-            internalPublicDescriptor: entry.value.internalPublicDescriptor,
-            signer: entry.value.signer.toEntity(),
-            signerDevice: entry.value.signerDevice?.toEntity(),
-            balanceSat: balances[entry.key].totalSat,
-            confirmedBalanceSat: balances[entry.key].confirmedSat,
-            isEncryptedVaultTested: entry.value.isEncryptedVaultTested,
-            isPhysicalBackupTested: entry.value.isPhysicalBackupTested,
-            latestEncryptedBackup: entry.value.latestEncryptedBackup != null
-                ? DateTime.fromMillisecondsSinceEpoch(
-                    entry.value.latestEncryptedBackup!,
-                  )
-                : null,
-            latestPhysicalBackup: entry.value.latestPhysicalBackup != null
-                ? DateTime.fromMillisecondsSinceEpoch(
-                    entry.value.latestPhysicalBackup!,
-                  )
-                : null,
-          ),
-        )
-        .toList();
+    if (invalid != _invalidCatalogCount) {
+      _invalidCatalogCount = invalid;
+      log.warning('Wallet catalog read invalid_count=$invalid');
+    }
+    return wallets.whereType<Wallet>().toList();
   }
 
   Future<void> updateEncryptedBackupTime({

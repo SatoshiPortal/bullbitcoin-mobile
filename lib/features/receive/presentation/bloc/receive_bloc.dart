@@ -213,7 +213,10 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
   /// original when an observed payjoin transaction never confirms, which
   /// belongs to the deferred watch-for-broadcast work.
   bool _isPayjoinEligible(Wallet wallet, bool payjoinEnabled) =>
-      wallet.signsLocally && payjoinEnabled && wallet.balanceSat > BigInt.zero;
+      wallet.signsLocally &&
+      payjoinEnabled &&
+      (wallet.balanceSat?.isNegative == false &&
+          wallet.balanceSat != BigInt.zero);
 
   Future<void> _onBitcoinStarted(
     ReceiveBitcoinStarted event,

@@ -48,12 +48,15 @@ sealed class WalletState with _$WalletState {
   /// move the total.
   bool get showSpWallet => isSpFeatureEnabled && isSpWalletSetup;
 
-  int totalBalance() =>
-      wallets.fold<int>(
-        0,
-        (previousValue, element) => previousValue + element.balanceSat.toInt(),
-      ) +
-      (showSpWallet ? spBalanceSat : 0);
+  int? totalBalance() {
+    var total = showSpWallet ? spBalanceSat : 0;
+    for (final wallet in wallets) {
+      final balance = wallet.balanceSat;
+      if (balance == null) return null;
+      total += balance.toInt();
+    }
+    return total;
+  }
 
   bool hasNoBackup() {
     final defaultWallets = wallets.where((wallet) => wallet.isDefault);
@@ -65,6 +68,8 @@ sealed class WalletState with _$WalletState {
   }
 
   bool showBackupWarning() {
-    return hasNoBackup() && totalBalance() > 0 && !backupWarningDismissed;
+    return hasNoBackup() &&
+        (totalBalance() == null || (totalBalance() ?? 0) > 0) &&
+        !backupWarningDismissed;
   }
 }

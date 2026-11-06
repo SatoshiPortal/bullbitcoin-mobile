@@ -78,7 +78,13 @@ class EstimatePayPayinFeesUsecase {
       exchangeRateEstimate,
     );
 
-    if (wallet.balanceSat.toInt() < requiredAmountSat) {
+    final balance = wallet.balanceSat;
+    if (balance == null) {
+      return const Err(
+        PayQuoteUnavailableFailure('Wallet balance unavailable'),
+      );
+    }
+    if (balance.toInt() < requiredAmountSat) {
       log.info('Pay wallet ${wallet.id} cannot cover $requiredAmountSat sats');
       return Err(
         PayInsufficientBalanceFailure(requiredAmountSat: requiredAmountSat),
