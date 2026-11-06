@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasource.dart';
 import 'package:secrets/secrets.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
@@ -10,7 +11,11 @@ import 'package:get_it/get_it.dart';
 class ImportMnemonicLocator {
   static void setup(GetIt locator) {
     locator.registerFactory<CheckDuplicateMnemonicUsecase>(
-      () => CheckDuplicateMnemonicUsecase(secrets: locator<Secrets>()),
+      () => CheckDuplicateMnemonicUsecase(
+        secrets: locator<Secrets>(),
+        metadata: locator<WalletMetadataDatasource>(),
+        settings: locator<SettingsRepository>(),
+      ),
     );
     locator.registerFactory<ImportWalletUsecase>(
       () => ImportWalletUsecase(

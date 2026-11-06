@@ -71,10 +71,20 @@ class ImportWalletUsecase {
       )) {
         case Ok(:final value):
           secret = value;
-        case Err(failure: SecretAlreadyExistsFailure()):
-          // The preflight check is indicative; another operation may have
-          // stored this secret since then. A duplicate owns no cleanup.
-          return const Err(ImportMnemonicDuplicateFailure());
+        case Err(failure: SecretAlreadyExistsFailure(:final id)):
+          if (await _checkDuplicateMnemonicUsecase.isReferenced(
+            id,
+            bitcoinNetwork,
+          )) {
+            return const Err(ImportMnemonicDuplicateFailure());
+          }
+          switch (await _secrets.fetch(id)) {
+            case Ok(:final value):
+              secret = value;
+            case Err(:final failure):
+              return Err(ImportMnemonicUnexpectedFailure(failure.toString()));
+          }
+          log.warning('Resuming orphan mnemonic import');
         case Err(:final failure):
           return Err(ImportMnemonicUnexpectedFailure(failure.toString()));
       }
