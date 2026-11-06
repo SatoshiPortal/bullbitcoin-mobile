@@ -990,6 +990,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
             payjoinEnabled = false;
             payjoinMinAmountSat = null;
         }
+        if (state.wallet?.id != walletId || state.type != type) return;
         emit(
           state.copyWith(
             payjoinGloballyEnabled: payjoinEnabled,
@@ -1002,6 +1003,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
             isTestnet: wallet.network.isTestnet,
             address: address.address,
           );
+          if (state.wallet?.id != walletId || state.type != type) return;
           switch (result) {
             case Ok(:final value):
               // Same belt-and-suspenders re-check as
