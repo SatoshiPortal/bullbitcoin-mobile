@@ -133,6 +133,7 @@ void main() {
         await runtime.initialize();
         expect(await runtime.receive(row), address);
         final advanced = await runtime.receive(row, advance: true);
+        expect(await runtime.issuedReceiveIndex(row), advanced.index);
         expect(advanced.index, address.index + 1);
         await runtime.delete(row);
         await expectLater(
