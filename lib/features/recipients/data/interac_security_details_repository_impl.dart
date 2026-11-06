@@ -1,3 +1,5 @@
+import 'package:primitives/primitives.dart'
+    show BitcoinNetwork, NetworkCapabilities, NetworkCapability;
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/recipients/application/ports/recipients_gateway_port.dart';
@@ -24,9 +26,20 @@ final class InteracSecurityDetailsRepositoryImpl
     // for it. The gateway call below already returns a Result.
     final bool isTestnet;
     try {
-      isTestnet = (await _settingsRepository.fetch()).environment.isTestnet;
-    } on Object catch (e, st) {
-      log.warning('Could not read the environment', error: e, trace: st);
+      final environment = (await _settingsRepository.fetch()).environment;
+      if (!NetworkCapabilities.supports(
+        BitcoinNetwork.fromName(environment.name),
+        NetworkCapability.exchange,
+      )) {
+        return const Err(RecipientsUnsupportedNetworkFailure());
+      }
+      isTestnet = environment.requireHistoricalTestnet();
+    } on Exception catch (e, st) {
+      log.warning(
+        'Could not read the environment',
+        error: e.runtimeType,
+        trace: st,
+      );
       return const Err(RecipientsUnexpectedFailure());
     }
 
