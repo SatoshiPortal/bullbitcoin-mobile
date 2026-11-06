@@ -1,13 +1,13 @@
-import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasource.dart';
-import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_model.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
+import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
 import 'package:primitives/primitives.dart' show Fingerprint;
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/import_mnemonic/domain/check_duplicate_mnemonic_usecase.dart';
 import 'package:bb_mobile/features/import_mnemonic/domain/import_mnemonic_failure.dart';
 import 'package:bb_mobile/features/import_mnemonic/domain/import_wallet_usecase.dart';

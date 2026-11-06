@@ -3,9 +3,9 @@ import 'dart:io';
 import 'package:meta/meta.dart';
 import 'package:sqlite3/sqlite3.dart' show SqliteException;
 
-import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasource.dart';
-import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_model.dart';
-import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
+import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
+import 'package:bb_mobile/features/wallet/data/models/wallet_model.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bull_sdk/bdk.dart' as bdk;
 import 'package:bull_sdk/lwk.dart' as lwk;

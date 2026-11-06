@@ -1,7 +1,7 @@
 import 'dart:async';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart' show Network;
+import 'package:bb_mobile/features/wallet/domain/wallet.dart' show Network;
 
-import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet_transaction.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/watch_wallet_transaction_by_address_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/watch_wallet_transaction_by_tx_id_usecase.dart';

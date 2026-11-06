@@ -1,8 +1,8 @@
 import 'dart:io';
 
 import 'package:bb_mobile/features/wallet/data/wallet_catalog_port_impl.dart';
-import 'package:bb_mobile/core/wallet/wallet_metadata_service.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_metadata_service.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart' as p;
 import 'package:transaction_sync/transaction_sync.dart';

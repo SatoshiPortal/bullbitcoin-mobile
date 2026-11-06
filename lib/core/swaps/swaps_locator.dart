@@ -1,11 +1,11 @@
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_value_storage_datasource.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
-import 'package:bb_mobile/core/swaps/data/datasources/boltz_datasource.dart';
+import 'package:bb_mobile/features/swap/data/boltz_datasource.dart';
 import 'package:bb_mobile/core/swaps/data/datasources/boltz_storage_datasource.dart';
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
-import 'package:bb_mobile/core/swaps/data/auto_swap_settings_repository_impl.dart';
-import 'package:bb_mobile/core/swaps/domain/repositories/auto_swap_settings_repository.dart';
+import 'package:bb_mobile/features/autoswap/data/auto_swap_settings_repository_impl.dart';
+import 'package:bb_mobile/features/autoswap/domain/repositories/auto_swap_settings_repository.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/disable_autoswap_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/disable_autoswap_warning_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/get_auto_swap_settings_usecase.dart';
@@ -17,7 +17,7 @@ import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_mnemonic_usecase.d
 import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/get_swaps_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/retry_swap_usecase.dart';
-import 'package:bb_mobile/core/fees/domain/get_network_fees_usecase.dart';
+import 'package:bb_mobile/features/fees/domain/get_network_fees_usecase.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_address_repository.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/watch_swap_usecase.dart';
 import 'package:bb_mobile/core/utils/constants.dart';

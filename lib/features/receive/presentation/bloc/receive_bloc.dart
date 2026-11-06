@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
@@ -9,10 +9,10 @@ import 'package:bull_pricer/bull_pricer.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/utils/string_formatting.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
 import 'package:clock/clock.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet_transaction.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_transaction_by_address_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/broadcast_original_transaction_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/get_receive_payjoin_policy_usecase.dart';

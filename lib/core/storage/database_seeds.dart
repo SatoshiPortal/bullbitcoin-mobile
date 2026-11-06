@@ -1,5 +1,5 @@
-import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_network.dart';
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/features/electrum_settings/domain/electrum_server_network.dart';
+import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bull_logger/bull_logger.dart';

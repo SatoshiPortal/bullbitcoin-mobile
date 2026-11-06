@@ -1,7 +1,7 @@
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
-import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasource.dart';
-import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_model.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart' show Network;
+import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
+import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart' show Network;
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' show Language;
 import 'package:bb_mobile/features/import_mnemonic/domain/import_mnemonic_failure.dart';
 import 'package:bull_logger/bull_logger.dart';

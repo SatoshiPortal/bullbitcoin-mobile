@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
+import 'package:bb_mobile/features/wallet/data/models/wallet_model.dart';
 import 'package:bull_sdk/bdk.dart' as bdk;
 import 'package:path_provider/path_provider.dart';
 

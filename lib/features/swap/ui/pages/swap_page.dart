@@ -1,9 +1,9 @@
 import 'package:bb_mobile/core/errors/send_errors.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/widgets/cards/consolidation_required_card.dart';
 import 'package:bb_mobile/features/consolidation/public/consolidation_facade.dart';
 import 'package:go_router/go_router.dart';
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';

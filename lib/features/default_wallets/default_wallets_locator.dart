@@ -2,9 +2,9 @@ import 'package:bb_mobile/core/exchange/data/datasources/bullbitcoin_api_datasou
 import 'package:bb_mobile/core/exchange/data/datasources/bullbitcoin_api_key_datasource.dart';
 import 'package:bb_mobile/core/exchange/data/repository/exchange_recipient_repository_impl.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_recipient_repository.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/delete_default_wallet_usecase.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/get_default_wallets_usecase.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/save_default_wallet_usecase.dart';
+import 'package:bb_mobile/features/exchange/domain/usecases/delete_default_wallet_usecase.dart';
+import 'package:bb_mobile/features/exchange/domain/usecases/get_default_wallets_usecase.dart';
+import 'package:bb_mobile/features/exchange/domain/usecases/save_default_wallet_usecase.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/features/default_wallets/public/default_wallets_facade.dart';
 import 'package:get_it/get_it.dart';

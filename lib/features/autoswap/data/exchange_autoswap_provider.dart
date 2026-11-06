@@ -2,15 +2,15 @@ import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/auto_swap.dart';
 import 'package:bb_mobile/core/utils/result.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/liquid_wallet_repository.dart';
+import 'package:bb_mobile/features/wallet/data/liquid_wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/get_receive_address_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/get_receive_address_usecase.dart';
 import 'package:bb_mobile/features/autoswap/domain/autoswap_failure.dart';
 import 'package:bb_mobile/features/autoswap/domain/autoswap_provider_port.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
-import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_liquid_transaction_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/broadcast_liquid_transaction_usecase.dart';
 
 class ExchangeAutoswapProvider implements AutoswapProviderPort {
   /// Fallback when the server sends no Retry-After.

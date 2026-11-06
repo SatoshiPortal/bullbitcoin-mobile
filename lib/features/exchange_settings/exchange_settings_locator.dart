@@ -4,9 +4,9 @@ import 'package:bb_mobile/core/exchange/data/repository/exchange_kyc_repository_
 import 'package:bb_mobile/core/exchange/data/repository/exchange_order_stats_repository_impl.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_kyc_repository.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_stats_repository.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/get_order_stats_usecase.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/upload_kyc_document_usecase.dart';
+import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
+import 'package:bb_mobile/features/exchange/domain/usecases/get_order_stats_usecase.dart';
+import 'package:bb_mobile/features/exchange/domain/usecases/upload_kyc_document_usecase.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
 import 'package:bb_mobile/features/exchange_settings/data/file_picker_document_adapter.dart';

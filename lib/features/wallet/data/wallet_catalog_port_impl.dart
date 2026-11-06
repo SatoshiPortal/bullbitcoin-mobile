@@ -1,8 +1,8 @@
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasource.dart';
-import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_model.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/network_x.dart';
-import 'package:bb_mobile/core/wallet/wallet_metadata_service.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
+import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
+import 'package:bb_mobile/features/wallet/domain/network_x.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_metadata_service.dart';
 import 'package:primitives/primitives.dart';
 import 'package:transaction_sync/transaction_sync.dart';
 

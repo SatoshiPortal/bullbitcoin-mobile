@@ -17,13 +17,13 @@ import 'package:bb_mobile/features/wallet/domain/usecases/watch_wallet_sync_even
 import 'package:bb_mobile/features/wallet/domain/usecases/sync_wallets_usecase.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/entities/signer_entity.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'dart:async';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_sync_result.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/check_backup_needed_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/check_wallet_syncing_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/entity/warning.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/check_sp_feature_gate_for_wallet_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/check_sp_scanning_for_wallet_usecase.dart';

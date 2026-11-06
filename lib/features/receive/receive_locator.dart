@@ -1,10 +1,10 @@
 import 'package:bb_mobile/features/receive/domain/usecases/poll_receive_wallet_usecase.dart';
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_address_at_index_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/get_receive_address_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/get_receive_address_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_transaction_by_address_usecase.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/broadcast_original_transaction_usecase.dart';

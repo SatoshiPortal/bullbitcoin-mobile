@@ -1,7 +1,7 @@
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet_transaction.dart';
 import 'package:bb_mobile/features/transactions/adapters/csv_transaction_export_formatter.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/transactions/domain/transaction_failure.dart';

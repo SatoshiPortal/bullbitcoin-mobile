@@ -1,5 +1,5 @@
-import 'package:bb_mobile/core/electrum/domain/repositories/electrum_server_repository.dart';
-import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_network.dart';
+import 'package:bb_mobile/features/electrum_settings/domain/repositories/electrum_server_repository.dart';
+import 'package:bb_mobile/features/electrum_settings/domain/electrum_server_network.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_url.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 

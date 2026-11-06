@@ -1,9 +1,9 @@
-import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
-import 'package:bb_mobile/core/fees/domain/get_network_fees_usecase.dart';
+import 'package:bb_mobile/features/fees/domain/get_network_fees_usecase.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/utils/result.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/bitcoin_wallet_repository.dart';
+import 'package:bb_mobile/features/wallet/data/bitcoin_wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/manipulated_transaction_exception.dart';
 import 'package:bb_mobile/core/wallet/domain/transaction_signature_status.dart';
 import 'package:bb_mobile/core/wallet/domain/unverifiable_transaction_exception.dart';

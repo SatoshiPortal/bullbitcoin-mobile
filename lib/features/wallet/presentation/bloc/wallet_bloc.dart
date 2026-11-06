@@ -12,11 +12,11 @@ import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_sync_resul
 import 'package:bb_mobile/features/wallet/domain/sync_trigger.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/check_backup_needed_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/check_wallet_syncing_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/delete_wallet_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/features/wallet/domain/entity/warning.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_external_tor_proxy_status_usecase.dart';

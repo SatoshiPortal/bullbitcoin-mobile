@@ -2,10 +2,10 @@ import 'dart:typed_data';
 
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/wallet/domain/no_spendable_utxo_exception.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/bitcoin_wallet_repository.dart';
+import 'package:bb_mobile/features/wallet/data/bitcoin_wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_utxo_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/prepare_bitcoin_send_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/prepare_bitcoin_send_usecase.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';

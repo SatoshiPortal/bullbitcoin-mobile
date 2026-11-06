@@ -1,6 +1,6 @@
 import 'package:bb_mobile/core/swaps/domain/entity/restored_swap.dart';
-import 'package:bb_mobile/core/swaps/domain/usecases/rescue_swap_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/features/swap/domain/usecases/rescue_swap_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 enum SwapRescueStatus { loading, ready, rescuing, success, error }

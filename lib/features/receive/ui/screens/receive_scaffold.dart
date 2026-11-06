@@ -3,7 +3,7 @@ import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
 import 'package:bb_mobile/features/receive/ui/widgets/receive_polling.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/features/receive/ui/widgets/receive_network_selection.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';

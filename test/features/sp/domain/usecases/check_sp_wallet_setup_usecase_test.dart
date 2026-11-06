@@ -1,6 +1,6 @@
 import 'package:bb_mobile/features/sp/domain/entities/sp_wallet.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/sp/domain/repositories/sp_backend_config_repository.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/check_sp_wallet_setup_usecase.dart';

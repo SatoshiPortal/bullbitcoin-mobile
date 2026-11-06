@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/electrum/domain/ports/electrum_servers_port.dart';
-import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_network.dart';
+import 'package:bb_mobile/features/electrum_settings/domain/electrum_server_network.dart';
 import 'package:primitives/primitives.dart';
 import 'package:transaction_sync/transaction_sync.dart';
 

@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/exchange/domain/entity/file_upload.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/upload_kyc_document_usecase.dart';
+import 'package:bb_mobile/features/exchange/domain/usecases/upload_kyc_document_usecase.dart';
 import 'package:bb_mobile/features/exchange_settings/domain/document_picker_port.dart';
 import 'package:bb_mobile/features/exchange_settings/domain/exchange_settings_failure.dart';
 import 'package:bull_logger/bull_logger.dart';

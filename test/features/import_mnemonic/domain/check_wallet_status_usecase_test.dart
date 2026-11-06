@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:bull_logger/bull_logger.dart';
 
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/features/import_mnemonic/domain/check_wallet_status_usecase.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:flutter_test/flutter_test.dart';
@@ -12,11 +12,11 @@ import 'package:primitives/primitives.dart' as primitives;
 import 'package:primitives/primitives.dart' show BitcoinNetwork, Ok;
 import 'package:secrets/secrets.dart';
 import 'package:secrets/testing.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/bitcoin_wallet_repository.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
+import 'package:bb_mobile/features/wallet/data/bitcoin_wallet_repository.dart';
 import 'package:bb_mobile/core/electrum/domain/ports/electrum_servers_port.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_connection.dart';
-import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_network.dart';
+import 'package:bb_mobile/features/electrum_settings/domain/electrum_server_network.dart';
 
 class _MockSettingsRepository extends Mock implements SettingsRepository {}
 

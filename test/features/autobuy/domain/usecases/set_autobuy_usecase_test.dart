@@ -1,11 +1,11 @@
 import 'package:bb_mobile/core/exchange/domain/entity/default_wallet.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/get_default_wallets_usecase.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
+import 'package:bb_mobile/features/exchange/domain/usecases/get_default_wallets_usecase.dart';
+import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/exchange_user_failure.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_user_repository.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/autobuy/domain/autobuy_failure.dart';
 import 'package:bb_mobile/features/autobuy/domain/usecases/set_autobuy_usecase.dart';

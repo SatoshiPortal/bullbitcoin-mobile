@@ -1,8 +1,8 @@
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart';
-import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_model.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bb_mobile/core/wallet/wallet_metadata_service.dart';
+import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_metadata_service.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/init.dart';
 import 'package:flutter_test/flutter_test.dart';

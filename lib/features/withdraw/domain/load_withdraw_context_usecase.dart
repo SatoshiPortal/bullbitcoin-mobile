@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
+import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/withdraw/domain/withdraw_failure.dart';
 import 'package:bull_logger/bull_logger.dart';

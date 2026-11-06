@@ -1,6 +1,6 @@
 import 'package:background_tasks/background_tasks.dart';
 import '../../widgets/background_preferences.dart';
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/app_language_picker.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';

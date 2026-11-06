@@ -2,7 +2,7 @@ import 'dart:ui';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:primitives/primitives.dart';
 import 'package:background_tasks/background_tasks.dart';
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/generated/l10n/localization.dart';
 import 'package:notifications/notifications.dart';
 import 'package:path/path.dart' as p;

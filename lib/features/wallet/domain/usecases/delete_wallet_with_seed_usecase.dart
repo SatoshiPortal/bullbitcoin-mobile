@@ -2,7 +2,7 @@ import 'package:bb_mobile/features/wallet/domain/seed_reference_port.dart';
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:meta/meta.dart';

@@ -6,7 +6,7 @@ import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:secrets/secrets.dart' show Secrets;
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_coin.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_notification.dart';
 import 'package:bb_mobile/features/sp/domain/ports/sp_account_files_port.dart';

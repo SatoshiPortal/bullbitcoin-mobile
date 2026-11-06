@@ -7,10 +7,10 @@ import 'package:bb_mobile/core/recoverbull/domain/usecases/fetch_vault_key_from_
 import 'package:bb_mobile/core/recoverbull/domain/usecases/restore_vault_usecase.dart';
 import 'package:primitives/primitives.dart' show Fingerprint;
 import 'package:secrets/secrets.dart' as custody;
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/init.dart';
 import 'package:flutter/foundation.dart';

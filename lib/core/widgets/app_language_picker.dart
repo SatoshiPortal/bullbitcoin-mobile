@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/widgets/translation_warning_bottom_sheet.dart';
 import 'package:flutter/material.dart';

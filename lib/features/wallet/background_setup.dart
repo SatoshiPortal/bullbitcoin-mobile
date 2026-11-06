@@ -1,10 +1,10 @@
 import 'dart:io';
 
 import 'package:background_tasks/background_tasks.dart';
-import 'package:bb_mobile/core/settings/data/settings_datasource.dart';
+import 'package:bb_mobile/features/settings/data/settings_datasource.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
-import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasource.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/background_wallet_sync_impl.dart';
 import 'package:bb_mobile/features/wallet/data/payment_notifications.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_catalog_port_impl.dart';

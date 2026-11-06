@@ -5,9 +5,9 @@ import 'package:bb_mobile/core/exchange/domain/exchange_support_chat_failure.dar
 import 'package:bb_mobile/core/exchange/domain/exchange_user_failure.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_api_key_repository.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_user_repository.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/send_support_chat_message_usecase.dart';
+import 'package:bb_mobile/features/exchange/domain/usecases/send_support_chat_message_usecase.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/exchange/domain/exchange_failure.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/clear_exchange_session_usecase.dart';

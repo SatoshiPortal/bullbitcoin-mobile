@@ -11,7 +11,7 @@ import 'package:bb_mobile/core/mempool/domain/repositories/mempool_settings_repo
 import 'package:bb_mobile/core/mempool/domain/services/mempool_url_builder.dart';
 import 'package:bb_mobile/core/mempool/frameworks/drift/datasources/mempool_server_storage_datasource.dart';
 import 'package:bb_mobile/core/mempool/frameworks/drift/datasources/mempool_settings_storage_datasource.dart';
-import 'package:bb_mobile/core/mempool/interface_adapters/environment/settings_environment_adapter.dart';
+import 'package:bb_mobile/features/mempool_settings/data/settings_environment_adapter.dart';
 import 'package:bb_mobile/core/mempool/interface_adapters/repositories/drift_mempool_server_repository.dart';
 import 'package:bb_mobile/core/mempool/interface_adapters/repositories/drift_mempool_settings_repository.dart';
 import 'package:bb_mobile/core/mempool/interface_adapters/validators/http_mempool_server_validator.dart';

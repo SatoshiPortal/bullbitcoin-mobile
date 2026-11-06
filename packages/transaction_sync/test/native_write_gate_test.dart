@@ -149,18 +149,14 @@ void remove(String root, WalletKey key) {
   test(
     'memory decoy cannot authorize persistence of a supplied wallet',
     () async {
-      final violations = await inspect(
-        'decoy',
-        """
+      final violations = await inspect('decoy', """
 import 'package:bull_sdk/bdk.dart' as bdk;
 void _performDryScan(bdk.Wallet wallet, bdk.Persister disk) {
   final decoy = bdk.Persister.newInMemory();
   wallet.persist(persister: disk);
   decoy.dispose();
 }
-""",
-        path: 'lib/core/wallet/data/datasources/bdk_wallet_datasource.dart',
-      );
+""", path: 'lib/features/wallet/data/bdk_wallet_datasource.dart');
       expect(violations, contains(contains('Wallet.persist')));
     },
   );
@@ -179,7 +175,7 @@ void _performDryScan(bdk.Descriptor descriptor, bdk.Persister diskStore) {
   decoy.dispose();
 }
 """,
-        path: 'lib/core/wallet/data/datasources/bdk_wallet_datasource.dart',
+        path: 'lib/features/wallet/data/bdk_wallet_datasource.dart',
       );
       expect(violations, contains(contains('Wallet.load')));
     },
@@ -198,8 +194,7 @@ void update(Document doc) { doc.persist(); doc.applyUpdate(); }
   test(
     'dry scan allows final in-memory persister only in its exact function',
     () async {
-      const path =
-          'lib/core/wallet/data/datasources/bdk_wallet_datasource.dart';
+      const path = 'lib/features/wallet/data/bdk_wallet_datasource.dart';
       const memory = '''
 import 'package:bull_sdk/bdk.dart' as bdk;
 void _performDryScan(bdk.Descriptor descriptor) {

@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/receive/domain/enums/receive_network_type.dart';
 
 extension WalletReceiveExtension on Wallet {

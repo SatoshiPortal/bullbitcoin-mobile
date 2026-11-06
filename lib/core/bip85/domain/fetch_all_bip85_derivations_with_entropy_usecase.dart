@@ -4,7 +4,7 @@ import 'package:bb_mobile/core/bip85/domain/errors/bip85_failure.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart' show Fingerprint;

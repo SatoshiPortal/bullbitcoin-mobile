@@ -1,8 +1,8 @@
 import 'package:bb_mobile/core/utils/payment_request.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/get_receive_address_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/get_receive_address_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/receive_failure.dart';
 import 'package:meta/meta.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';

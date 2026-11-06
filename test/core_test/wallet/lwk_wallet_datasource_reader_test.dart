@@ -1,5 +1,5 @@
-import 'package:bb_mobile/core/wallet/data/datasources/lwk_wallet_datasource.dart';
-import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
+import 'package:bb_mobile/features/wallet/data/lwk_wallet_datasource.dart';
+import 'package:bb_mobile/features/wallet/data/models/wallet_model.dart';
 import 'package:bull_sdk/lwk.dart' as lwk;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';

@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:bb_mobile/core/exchange/data/services/exchange_notification_service.dart';
+import 'package:bb_mobile/features/exchange/data/services/exchange_notification_service.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/notification_message.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/limit_orders/domain/usecases/can_create_limit_order_usecase.dart';

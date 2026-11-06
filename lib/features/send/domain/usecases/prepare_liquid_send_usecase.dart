@@ -1,7 +1,7 @@
 import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/wallet/domain/no_spendable_utxo_exception.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/liquid_wallet_repository.dart';
+import 'package:bb_mobile/features/wallet/data/liquid_wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/consolidation_required_exception.dart';
 import 'package:bb_mobile/core/wallet/domain/insufficient_funds_exception.dart';
 

@@ -1,7 +1,7 @@
 import 'dart:math';
 
 import 'package:bb_mobile/core/errors/bull_exception.dart';
-import 'package:bb_mobile/core/fees/domain/get_network_fees_usecase.dart';
+import 'package:bb_mobile/features/fees/domain/get_network_fees_usecase.dart';
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_address_repository.dart';

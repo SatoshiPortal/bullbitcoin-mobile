@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:bb_mobile/core/blockchain/data/datasources/bdk_bitcoin_blockchain_datasource.dart';
 import 'package:bb_mobile/core/electrum/domain/ports/electrum_servers_port.dart';
-import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_network.dart';
+import 'package:bb_mobile/features/electrum_settings/domain/electrum_server_network.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';

@@ -6,10 +6,10 @@ import 'package:bb_mobile/features/recoverbull/domain/usecases/create_encrypted_
 import 'package:bb_mobile/core/recoverbull/domain/usecases/restore_vault_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/update_latest_encrypted_backup_usecase.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/create_default_wallets_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:flutter_test/flutter_test.dart';

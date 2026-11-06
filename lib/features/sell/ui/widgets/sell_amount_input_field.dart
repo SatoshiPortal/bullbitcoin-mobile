@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/features/exchange/ui/widgets/exchange_amount_input_field.dart';
 import 'package:bb_mobile/features/sell/presentation/bloc/sell_bloc.dart';
 import 'package:flutter/material.dart';

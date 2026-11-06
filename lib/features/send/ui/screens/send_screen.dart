@@ -1,7 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
-import 'package:bb_mobile/core/widgets/address_viewer.dart';
+import 'package:bb_mobile/features/wallet/ui/widgets/address_viewer.dart';
 import 'package:bb_mobile/core/screens/send_confirm_screen.dart' hide SendType;
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
@@ -9,7 +9,7 @@ import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bull_logger/bull_logger.dart';
 
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/widgets/cards/consolidation_required_card.dart';
 import 'package:bb_mobile/core/widgets/inputs/bb_keyboard_actions.dart';
 import 'package:bb_mobile/core/widgets/price_input/balance_row.dart';

@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/exchange/domain/usecases/send_support_chat_message_usecase.dart';
+import 'package:bb_mobile/features/exchange/domain/usecases/send_support_chat_message_usecase.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/exchange/domain/exchange_failure.dart';
 import 'package:meta/meta.dart';

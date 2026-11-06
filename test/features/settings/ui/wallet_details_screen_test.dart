@@ -5,7 +5,7 @@ import 'package:bb_mobile/features/wallet/public/wallet_facade.dart'
 import 'package:primitives/primitives.dart' show Ok;
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/wallet_details_screen.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/generated/l10n/localization.dart';

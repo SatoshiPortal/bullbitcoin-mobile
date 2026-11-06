@@ -2,7 +2,7 @@ import 'package:bb_mobile/core/errors/exchange_errors.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/features/pay/domain/place_pay_order_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/pay_failure.dart';
 import 'package:bb_mobile/features/pay/domain/refresh_pay_order_usecase.dart';

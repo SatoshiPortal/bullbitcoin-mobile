@@ -12,13 +12,13 @@ import 'package:bb_mobile/features/sell/domain/read_sell_payin_txid_usecase.dart
 import 'package:bb_mobile/features/sell/domain/prepare_sell_liquid_payin_usecase.dart';
 import 'package:bb_mobile/features/sell/domain/sell_failure.dart';
 import 'package:bb_mobile/features/sell/domain/sign_sell_payin_usecase.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/get_order_usercase.dart';
+import 'package:bb_mobile/features/exchange/domain/usecases/get_order_usercase.dart';
 import 'package:bb_mobile/core/fees/domain/fee_preview_cache.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/prepare_bitcoin_send_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/prepare_bitcoin_send_usecase.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/features/sell/domain/label_completed_sell_order_usecase.dart';
 import 'package:bb_mobile/features/sell/domain/create_sell_order_usecase.dart';

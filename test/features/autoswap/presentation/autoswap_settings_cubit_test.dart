@@ -1,7 +1,7 @@
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/auto_swap.dart';
 import 'package:bb_mobile/core/utils/result.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/autoswap/domain/autoswap_failure.dart';
 import 'package:bb_mobile/features/autoswap/domain/usecases/load_autoswap_settings_usecase.dart';
 import 'package:bb_mobile/features/autoswap/domain/usecases/save_autoswap_settings_usecase.dart';

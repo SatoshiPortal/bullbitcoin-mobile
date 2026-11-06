@@ -2,7 +2,7 @@ import 'package:transaction_sync/read.dart';
 import 'package:transaction_sync/transaction_sync.dart' show SyncReason;
 import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 
 class SyncWalletUsecase {
   final WalletRepository _wallet;

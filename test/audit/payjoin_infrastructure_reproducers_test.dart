@@ -41,7 +41,7 @@ void main() {
       'lib/features/buy/domain/create_buy_order_usecase.dart',
       'lib/features/transactions/application/usecases/get_transactions_usecase.dart',
       'lib/features/transactions/application/usecases/get_transactions_by_tx_id_usecase.dart',
-      'lib/core/wallet/domain/usecases/prepare_bitcoin_send_usecase.dart',
+      'lib/features/wallet/domain/usecases/prepare_bitcoin_send_usecase.dart',
     ];
     final violations = <String>[];
 

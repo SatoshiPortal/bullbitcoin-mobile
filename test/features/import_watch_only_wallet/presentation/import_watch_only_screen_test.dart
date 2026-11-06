@@ -1,6 +1,6 @@
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_descriptor_usecase.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_xpub_usecase.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/parse_watch_only_input_usecase.dart';

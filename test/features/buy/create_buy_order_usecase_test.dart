@@ -1,7 +1,7 @@
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/features/buy/domain/buy_failure.dart';
 import 'package:bb_mobile/features/buy/domain/create_buy_order_usecase.dart';
 import 'package:bull_logger/bull_logger.dart';

@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/swaps/domain/entity/restored_swap.dart';
-import 'package:bb_mobile/core/swaps/domain/usecases/restore_swaps_usecase.dart';
+import 'package:bb_mobile/features/swap/domain/usecases/restore_swaps_usecase.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 enum SwapRestoreStatus { initial, loading, success, error }

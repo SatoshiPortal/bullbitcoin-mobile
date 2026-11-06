@@ -6,7 +6,7 @@ import 'package:bb_mobile/core/ledger/domain/entities/ledger_device_entity.dart'
 import 'package:bb_mobile/core/ledger/data/ledger_exception.dart';
 import 'package:bb_mobile/core/ledger/domain/ledger_failure.dart';
 import 'package:bb_mobile/core/utils/result.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 

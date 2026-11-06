@@ -5,12 +5,12 @@ import 'package:transaction_sync/transaction_sync.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_native_runtime.dart';
 
 import 'package:bb_mobile/features/labels/labels_facade.dart';
-import 'package:bb_mobile/core/wallet/data/datasources/bdk_wallet_datasource.dart';
-import 'package:bb_mobile/core/wallet/data/datasources/lwk_wallet_datasource.dart';
-import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasource.dart';
+import 'package:bb_mobile/features/wallet/data/bdk_wallet_datasource.dart';
+import 'package:bb_mobile/features/wallet/data/lwk_wallet_datasource.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/mappers/wallet_address_mapper.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_address_model.dart';
-import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
+import 'package:bb_mobile/features/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_error.dart';
 

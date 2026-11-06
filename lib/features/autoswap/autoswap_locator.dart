@@ -1,8 +1,8 @@
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
-import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_liquid_transaction_usecase.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/liquid_wallet_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/get_receive_address_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/broadcast_liquid_transaction_usecase.dart';
+import 'package:bb_mobile/features/wallet/data/liquid_wallet_repository.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/get_receive_address_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/features/autoswap/autoswap_watcher.dart';
 import 'package:bb_mobile/features/autoswap/data/exchange_autoswap_provider.dart';

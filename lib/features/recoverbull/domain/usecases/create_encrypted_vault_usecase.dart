@@ -7,7 +7,7 @@ import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 
 class CreateEncryptedVaultUsecase {
   final secrets.Secrets _secrets;

@@ -5,7 +5,7 @@ import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:secrets/secrets.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 
 /// Creates the default Bitcoin and Liquid wallets from one secret: generated, imported from words, or restored by the secrets package.

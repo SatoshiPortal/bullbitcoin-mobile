@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/fees/data/fees_datasource.dart';
-import 'package:bb_mobile/core/fees/data/fees_repository_impl.dart';
+import 'package:bb_mobile/features/fees/data/fees_repository_impl.dart';
 import 'package:bb_mobile/core/fees/data/models/mempool_fees_model.dart';
 import 'package:bb_mobile/core/mempool/domain/entities/mempool_server.dart';
 import 'package:bb_mobile/core/mempool/domain/entities/mempool_settings.dart';
@@ -8,7 +8,7 @@ import 'package:bb_mobile/core/mempool/domain/repositories/mempool_server_reposi
 import 'package:bb_mobile/core/mempool/domain/repositories/mempool_settings_repository.dart';
 import 'package:bb_mobile/core/mempool/domain/value_objects/mempool_server_network.dart';
 import 'package:bb_mobile/core/utils/result.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 

@@ -1,12 +1,12 @@
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/string_formatting.dart';
-import 'package:bb_mobile/core/widgets/address_viewer.dart';
+import 'package:bb_mobile/features/wallet/ui/widgets/address_viewer.dart';
 import 'package:bb_mobile/core/widgets/transaction_viewer.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/core/widgets/text/currency_text.dart';

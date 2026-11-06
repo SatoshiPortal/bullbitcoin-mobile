@@ -1,12 +1,12 @@
-import 'package:bb_mobile/core/exchange/data/services/exchange_notification_service.dart';
+import 'package:bb_mobile/features/exchange/data/services/exchange_notification_service.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/support_chat_message.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/support_chat_message_attachment.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/create_log_attachment_usecase.dart';
 import 'package:bb_mobile/features/exchange_support_chat/domain/usecases/pick_image_attachments_usecase.dart';
 import 'package:bb_mobile/features/exchange_support_chat/domain/usecases/resolve_support_chat_user_id_usecase.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/get_support_chat_message_attachment_usecase.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/get_support_chat_messages_usecase.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/send_support_chat_message_usecase.dart';
+import 'package:bb_mobile/features/exchange/domain/usecases/get_support_chat_message_attachment_usecase.dart';
+import 'package:bb_mobile/features/exchange/domain/usecases/get_support_chat_messages_usecase.dart';
+import 'package:bb_mobile/features/exchange/domain/usecases/send_support_chat_message_usecase.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';

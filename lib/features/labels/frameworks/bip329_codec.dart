@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:bb_mobile/core/wallet/wallet_metadata_service.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_metadata_service.dart';
 import 'package:bb_mobile/features/labels/domain/decoded_labels.dart';
 import 'package:bb_mobile/features/labels/domain/label_entity.dart';
 import 'package:bb_mobile/features/labels/domain/labels_import_exception.dart';

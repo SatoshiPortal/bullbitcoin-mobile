@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 
 import 'package:bb_mobile/core/recoverbull/domain/entity/encrypted_vault.dart';
 import 'package:bb_mobile/core/recoverbull/domain/recoverbull_failure.dart';

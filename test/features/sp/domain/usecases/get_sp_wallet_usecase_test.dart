@@ -1,7 +1,7 @@
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/sp/domain/sp_failure.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/ensure_sp_session_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/get_sp_feature_gate_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/get_sp_wallet_usecase.dart';

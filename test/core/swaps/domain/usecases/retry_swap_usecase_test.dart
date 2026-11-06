@@ -1,5 +1,5 @@
-import 'package:bb_mobile/core/fees/domain/get_network_fees_usecase.dart';
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/features/fees/domain/get_network_fees_usecase.dart';
+import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/retry_swap_usecase.dart';

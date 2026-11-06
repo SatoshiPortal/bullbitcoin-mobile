@@ -1,12 +1,12 @@
-import 'package:bb_mobile/core/electrum/adapters/electrum_servers_adapter.dart';
-import 'package:bb_mobile/core/electrum/domain/entities/electrum_server.dart';
+import 'package:bb_mobile/features/electrum_settings/data/electrum_servers_adapter.dart';
+import 'package:bb_mobile/features/electrum_settings/domain/electrum_server.dart';
 import 'package:bb_mobile/core/electrum/domain/entities/electrum_settings.dart';
 import 'package:bb_mobile/core/electrum/domain/errors/electrum_fallback_exception.dart';
 import 'package:bb_mobile/core/electrum/domain/ports/electrum_tor_session_port.dart';
-import 'package:bb_mobile/core/electrum/domain/repositories/electrum_server_repository.dart';
+import 'package:bb_mobile/features/electrum_settings/domain/repositories/electrum_server_repository.dart';
 import 'package:bb_mobile/core/electrum/domain/repositories/electrum_settings_repository.dart';
-import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_network.dart';
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/features/electrum_settings/domain/electrum_server_network.dart';
+import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:flutter_test/flutter_test.dart';

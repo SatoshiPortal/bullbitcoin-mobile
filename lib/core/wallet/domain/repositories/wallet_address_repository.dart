@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
+import 'package:bb_mobile/features/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
 
 abstract class WalletAddressRepository {

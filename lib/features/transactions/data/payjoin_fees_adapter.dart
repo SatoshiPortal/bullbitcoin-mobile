@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/fees/domain/repositories/fees_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:primitives/primitives.dart' hide Network;
 

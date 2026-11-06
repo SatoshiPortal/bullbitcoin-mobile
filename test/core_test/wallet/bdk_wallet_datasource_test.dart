@@ -32,8 +32,8 @@ import 'dart:typed_data';
 
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'support/bdk_test_store.dart';
-import 'package:bb_mobile/core/wallet/data/datasources/bdk_wallet_datasource.dart';
-import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
+import 'package:bb_mobile/features/wallet/data/bdk_wallet_datasource.dart';
+import 'package:bb_mobile/features/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_utxo_model.dart';
 import 'package:bb_mobile/core/wallet/domain/insufficient_funds_exception.dart';
 import 'package:bull_sdk/bdk.dart' as bdk;

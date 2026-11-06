@@ -103,8 +103,7 @@ List<String> checkUnit(CompilationUnit unit, String relativePath) {
 
 const snapshotModule =
     'packages/transaction_sync/lib/src/read/wallet_snapshot_reader.dart';
-const _dryScanFile =
-    'lib/core/wallet/data/datasources/bdk_wallet_datasource.dart';
+const _dryScanFile = 'lib/features/wallet/data/bdk_wallet_datasource.dart';
 
 class _NativeWriteVisitor extends RecursiveAstVisitor<void> {
   final String path;

@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/utils/result.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/liquid_wallet_repository.dart';
+import 'package:bb_mobile/features/wallet/data/liquid_wallet_repository.dart';
 import 'package:bb_mobile/features/send/domain/send_failure.dart';
 import 'package:bb_mobile/features/send/domain/usecases/calculate_liquid_pset_size_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';

@@ -3,7 +3,7 @@ import 'package:bb_mobile/features/coins/domain/usecases/watch_wallet_revisions_
 import 'package:primitives/primitives.dart' as primitives;
 import 'dart:async';
 
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_started_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/features/coins/domain/coins_error.dart';

@@ -1,10 +1,10 @@
 import 'dart:async';
 
-import 'package:bb_mobile/core/settings/data/settings_datasource.dart';
-import 'package:bb_mobile/core/settings/data/settings_model.dart';
+import 'package:bb_mobile/features/settings/data/settings_datasource.dart';
+import 'package:bb_mobile/features/settings/data/settings_model.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart'
     as domain;
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/settings/domain/settings_store_failure.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bull_reporting/bull_reporting.dart';

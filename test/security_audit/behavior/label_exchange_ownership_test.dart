@@ -6,9 +6,9 @@
 // buggy server can still plant privileged, undeletable system labels on
 // arbitrary references.
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/list_all_orders_usecase.dart';
+import 'package:bb_mobile/features/exchange/domain/usecases/list_all_orders_usecase.dart';
 import 'package:bb_mobile/core/utils/result.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet_transaction.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/features/transactions/application/usecases/label_exchange_orders_usecase.dart';

@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/transactions/adapters/transaction_mapper.dart';
+import 'package:bb_mobile/features/wallet/data/transaction_mapper.dart';
 import 'package:bb_mobile/core/transactions/domain/entities/transaction.dart';
 import 'package:bb_mobile/core/utils/bitcoin_tx.dart' as btc_utils;
 import 'package:bull_logger/bull_logger.dart';

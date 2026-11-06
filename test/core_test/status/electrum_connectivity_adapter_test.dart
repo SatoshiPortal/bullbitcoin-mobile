@@ -1,10 +1,10 @@
 import 'package:bb_mobile/core/electrum/domain/ports/electrum_servers_port.dart';
 import 'package:bb_mobile/core/electrum/domain/ports/server_status_port.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_connection.dart';
-import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_network.dart';
+import 'package:bb_mobile/features/electrum_settings/domain/electrum_server_network.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_status.dart';
-import 'package:bb_mobile/core/status/interface_adapters/adapter/electrum_connectivity_adapter.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/features/status_check/data/electrum_connectivity_adapter.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:bull_tor/tor.dart';
 

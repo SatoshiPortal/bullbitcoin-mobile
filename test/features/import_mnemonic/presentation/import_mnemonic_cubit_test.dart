@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasource.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'dart:async';
 
@@ -14,7 +14,7 @@ import 'package:secrets/secrets.dart';
 import 'package:secrets/testing.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart' show Err, Ok, Result;
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart'
+import 'package:bb_mobile/features/wallet/domain/wallet.dart'
     show ScriptType, Wallet;
 
 class MockWallet extends Mock implements Wallet {}

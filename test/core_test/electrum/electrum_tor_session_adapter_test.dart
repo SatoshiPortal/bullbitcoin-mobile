@@ -1,7 +1,7 @@
 import 'package:bb_mobile/core/electrum/adapters/electrum_tor_session_adapter.dart';
 import 'package:bb_mobile/core/electrum/domain/ports/electrum_tor_session_port.dart';
 import 'package:bb_mobile/core/electrum/domain/errors/electrum_fallback_exception.dart';
-import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_network.dart';
+import 'package:bb_mobile/features/electrum_settings/domain/electrum_server_network.dart';
 import 'package:bb_mobile/core/electrum/frameworks/di/electrum_locator.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';

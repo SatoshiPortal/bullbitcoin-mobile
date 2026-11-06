@@ -8,7 +8,7 @@ import 'package:bb_mobile/core/fees/domain/fee_preview_cache.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bull_logger/bull_logger.dart' show log;
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart' hide Network;
+import 'package:bb_mobile/features/wallet/domain/wallet.dart' hide Network;
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bb_mobile/features/pay/domain/broadcast_pay_payin_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/calculate_pay_absolute_fees_usecase.dart';
