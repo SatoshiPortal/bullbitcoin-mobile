@@ -12,6 +12,7 @@ import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/core/widgets/text/currency_text.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transaction_details/transaction_details_cubit.dart';
+import 'package:bb_mobile/features/transactions/presentation/order_payment_method_l10n.dart';
 import 'package:bb_mobile/features/transactions/presentation/order_swap_status_l10n.dart';
 import 'package:bb_mobile/features/transactions/ui/widgets/labels_table_item.dart';
 import 'package:flutter/material.dart';
@@ -304,11 +305,11 @@ class TransactionDetailsTable extends StatelessWidget {
                   ),
                 BullDetailsTableItem(
                   label: context.loc.transactionDetailLabelPayinMethod,
-                  displayValue: order.payinMethod.value,
+                  displayValue: order.payinMethod.toTranslated(context),
                 ),
                 BullDetailsTableItem(
                   label: context.loc.transactionDetailLabelPayoutMethod,
-                  displayValue: order.payoutMethod.value,
+                  displayValue: order.payoutMethod.toTranslated(context),
                 ),
 
                 BullDetailsTableItem(
@@ -371,11 +372,11 @@ class TransactionDetailsTable extends StatelessWidget {
                   ),
                 BullDetailsTableItem(
                   label: context.loc.transactionDetailLabelPayinMethod,
-                  displayValue: order.payinMethod.value,
+                  displayValue: order.payinMethod.toTranslated(context),
                 ),
                 BullDetailsTableItem(
                   label: context.loc.transactionDetailLabelPayoutMethod,
-                  displayValue: order.payoutMethod.value,
+                  displayValue: order.payoutMethod.toTranslated(context),
                 ),
                 BullDetailsTableItem(
                   label: context.loc.transactionDetailLabelPayinStatus,
@@ -439,11 +440,11 @@ class TransactionDetailsTable extends StatelessWidget {
                   ),
                 BullDetailsTableItem(
                   label: context.loc.transactionDetailLabelPayinMethod,
-                  displayValue: order.payinMethod.value,
+                  displayValue: order.payinMethod.toTranslated(context),
                 ),
                 BullDetailsTableItem(
                   label: context.loc.transactionDetailLabelPayoutMethod,
-                  displayValue: order.payoutMethod.value,
+                  displayValue: order.payoutMethod.toTranslated(context),
                 ),
                 if (order.referenceNumber != null)
                   BullDetailsTableItem(
@@ -511,11 +512,11 @@ class TransactionDetailsTable extends StatelessWidget {
                 ),
                 BullDetailsTableItem(
                   label: context.loc.transactionDetailLabelPayinMethod,
-                  displayValue: order.payinMethod.value,
+                  displayValue: order.payinMethod.toTranslated(context),
                 ),
                 BullDetailsTableItem(
                   label: context.loc.transactionDetailLabelPayoutMethod,
-                  displayValue: order.payoutMethod.value,
+                  displayValue: order.payoutMethod.toTranslated(context),
                 ),
                 BullDetailsTableItem(
                   label: context.loc.transactionDetailLabelPayinStatus,
@@ -573,11 +574,11 @@ class TransactionDetailsTable extends StatelessWidget {
                   ),
                 BullDetailsTableItem(
                   label: context.loc.transactionDetailLabelPayinMethod,
-                  displayValue: order.payinMethod.value,
+                  displayValue: order.payinMethod.toTranslated(context),
                 ),
                 BullDetailsTableItem(
                   label: context.loc.transactionDetailLabelPayoutMethod,
-                  displayValue: order.payoutMethod.value,
+                  displayValue: order.payoutMethod.toTranslated(context),
                 ),
                 BullDetailsTableItem(
                   label: context.loc.transactionDetailLabelPayinStatus,
@@ -650,11 +651,11 @@ class TransactionDetailsTable extends StatelessWidget {
                   ),
                 BullDetailsTableItem(
                   label: context.loc.transactionDetailLabelPayinMethod,
-                  displayValue: order.payinMethod.value,
+                  displayValue: order.payinMethod.toTranslated(context),
                 ),
                 BullDetailsTableItem(
                   label: context.loc.transactionDetailLabelPayoutMethod,
-                  displayValue: order.payoutMethod.value,
+                  displayValue: order.payoutMethod.toTranslated(context),
                 ),
                 BullDetailsTableItem(
                   label: context.loc.transactionDetailLabelPayinStatus,
@@ -727,11 +728,11 @@ class TransactionDetailsTable extends StatelessWidget {
                   ),
                 BullDetailsTableItem(
                   label: context.loc.transactionDetailLabelPayinMethod,
-                  displayValue: order.payinMethod.value,
+                  displayValue: order.payinMethod.toTranslated(context),
                 ),
                 BullDetailsTableItem(
                   label: context.loc.transactionDetailLabelPayoutMethod,
-                  displayValue: order.payoutMethod.value,
+                  displayValue: order.payoutMethod.toTranslated(context),
                 ),
                 BullDetailsTableItem(
                   label: context.loc.transactionDetailLabelPayinStatus,
@@ -789,11 +790,11 @@ class TransactionDetailsTable extends StatelessWidget {
                   ),
                 BullDetailsTableItem(
                   label: context.loc.transactionDetailLabelPayinMethod,
-                  displayValue: order.payinMethod.value,
+                  displayValue: order.payinMethod.toTranslated(context),
                 ),
                 BullDetailsTableItem(
                   label: context.loc.transactionDetailLabelPayoutMethod,
-                  displayValue: order.payoutMethod.value,
+                  displayValue: order.payoutMethod.toTranslated(context),
                 ),
                 BullDetailsTableItem(
                   label: context.loc.transactionDetailLabelPayinStatus,
