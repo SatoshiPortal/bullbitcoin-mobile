@@ -137,6 +137,24 @@ void main() {
     watchTorConnectionUsecase: watchTor,
   );
 
+  test('vault creation failure reaches presentation unchanged', () async {
+    when(() => createVault.execute()).thenAnswer(
+      (_) async => const Err(VaultCreationFailure('creation failed')),
+    );
+    final bloc = buildBloc(flow: RecoverBullFlow.secureVault);
+    bloc.add(
+      const OnVaultCreation(
+        provider: VaultProvider.customLocation,
+        password: 'pw',
+      ),
+    );
+    await pumpEventQueue();
+    expect(bloc.state.failure, isA<VaultCreationFailure>());
+    verifyZeroInteractions(storeKey);
+    verifyZeroInteractions(saveFile);
+    await bloc.close();
+  });
+
   group('OnVaultPasswordSet guard', () {
     test('no vault set -> VaultNotSetFailure, password not stored, key never '
         'fetched', () async {

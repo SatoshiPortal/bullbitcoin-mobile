@@ -145,7 +145,14 @@ void main() {
       // `crypto/` and `domain/` stay plain Dart.
       'flutter': {'widgets', 'data', 'testing'},
     };
-    const domainMayImport = {'primitives', 'meta', 'convert', 'secrets'};
+    // The language enum is the same pure-Dart vocabulary used by preview and BIP85.
+    const domainMayImport = {
+      'primitives',
+      'meta',
+      'convert',
+      'secrets',
+      'bip39_mnemonic',
+    };
 
     final offenders = <String>[];
     for (final file in sources) {
@@ -167,6 +174,15 @@ void main() {
         if (allowed != null && !allowed.contains(mine)) {
           offenders.add(
             '${file.path} imports $dep (belongs to ${allowed.join('/, ')}/)',
+          );
+        }
+        if (mine == 'domain' &&
+            dep == 'bip39_mnemonic' &&
+            !code(file.readAsStringSync()).contains(
+              "import 'package:bip39_mnemonic/bip39_mnemonic.dart' show Language;",
+            )) {
+          offenders.add(
+            '${file.path}: domain may import only the Language enum',
           );
         }
         if (mine == 'domain' && !domainMayImport.contains(dep)) {
@@ -257,7 +273,7 @@ void main() {
       'DatabaseKeyCorruptFailure', 'MnemonicRequiredFailure',
       'InvalidMnemonicFailure', 'InvalidVaultFailure',
       'UnsupportedNetworkFailure', 'FingerprintMismatchFailure',
-      'PassphraseUnsupportedFailure',
+      'PassphraseUnsupportedFailure', 'LanguageUnsupportedFailure',
       'UseSecretFailure',
     };
 

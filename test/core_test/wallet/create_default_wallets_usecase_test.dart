@@ -1,3 +1,5 @@
+import 'package:primitives/primitives.dart' show Fingerprint;
+import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/result.dart';
@@ -54,6 +56,83 @@ void main() {
       settingsRepository: settings,
       walletRepository: wallets,
     );
+  });
+
+  test(
+    'refuses a non-English default before reading or creating wallets',
+    () async {
+      final imported = await secrets.import(
+        words: [...List.filled(11, 'あいこくしん'), 'あおぞら'],
+        language: bip39.Language.japanese,
+      );
+      final secret = switch (imported) {
+        Ok(:final value) => value,
+        Err(:final failure) => fail('import failed: ${failure.runtimeType}'),
+      };
+      await expectLater(
+        create.execute(secret: secret),
+        throwsA(isA<DefaultWalletLanguageUnsupportedException>()),
+      );
+      verifyZeroInteractions(wallets);
+      verifyZeroInteractions(settings);
+    },
+  );
+
+  test(
+    'words resolving to a stored non-English duplicate create no wallet',
+    () async {
+      // Valid in both the English and the French wordlists: one seed, so the
+      // English import resolves to the French entry already stored.
+      const shared = [
+        'crucial', 'million', 'voyage', 'sentence', 'mobile', 'suspect', //
+        'double', 'minute', 'virus', 'noble', 'junior', 'wagon',
+      ];
+      storage.entries.clear();
+      final imported = await secrets.import(
+        words: shared,
+        language: bip39.Language.french,
+      );
+      expect(imported, isA<Ok<s.Secret, s.SecretFailure>>());
+      final persisted = Map<String, String>.of(storage.entries);
+      await expectLater(
+        create.execute(mnemonicWords: shared),
+        throwsA(isA<DefaultWalletLanguageUnsupportedException>()),
+      );
+      verifyNever(
+        () => wallets.createWallet(
+          secret: any(named: 'secret'),
+          network: any(named: 'network'),
+          scriptType: ScriptType.bip84,
+          isDefault: true,
+          birthday: null,
+        ),
+      );
+      expect(storage.entries, persisted);
+    },
+  );
+
+  test('a seed-only secret is refused as needing a mnemonic', () async {
+    // BIP32 test vector 1: seed 000102…0f, master fingerprint 3442193e.
+    storage.entries['seed_3442193e'] =
+        '{"bytes":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],'
+        '"runtimeType":"bytes"}';
+    final seedOnly =
+        (await secrets.fetch(Fingerprint('3442193e'))
+                as Ok<s.Secret, s.SecretFailure>)
+            .value;
+    expect(seedOnly.info.language, isNull);
+    await expectLater(
+      create.execute(secret: seedOnly),
+      throwsA(
+        isA<DefaultWalletMnemonicRequiredException>().having(
+          (e) => e.toString(),
+          'message',
+          isNot(contains('English')),
+        ),
+      ),
+    );
+    verifyZeroInteractions(wallets);
+    verifyZeroInteractions(settings);
   });
 
   for (final failedAttempt in [1, 2]) {
