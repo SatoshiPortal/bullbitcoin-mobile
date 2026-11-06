@@ -4955,5 +4955,16 @@
   "appStartupRestoreMismatch": "Cette phrase de récupération appartient à un autre portefeuille. Saisissez celle du portefeuille de cet appareil.",
   "walletDiscoveryButton": "Rechercher les transactions manquantes",
   "walletDiscoverySucceeded": "Recherche terminée",
-  "walletDiscoveryFailed": "Impossible de terminer la recherche. Veuillez réessayer."
+  "walletDiscoveryFailed": "Impossible de terminer la recherche. Veuillez réessayer.",
+  "backgroundSyncTitle": "Synchronisation en arrière-plan",
+  "backgroundSyncDescription": "Rechercher les paiements reçus lorsque l’application est fermée. Le système peut retarder les vérifications.",
+  "backgroundSyncOff": "Désactivée",
+  "backgroundSyncMinutes": "Toutes les {count} minutes",
+  "backgroundSyncHours": "{count, plural, =1{Toutes les heures} other{Toutes les {count} heures}}",
+  "backgroundNotificationsTitle": "Notifications de paiement",
+  "backgroundNotificationsAllowed": "Autorisées dans les réglages système",
+  "backgroundNotificationsDenied": "Non autorisées dans les réglages système",
+  "backgroundNotificationsRequest": "Autoriser les notifications",
+  "backgroundNotificationsSettings": "Ouvrir les réglages de notification",
+  "backgroundPaymentCount": "{count, plural, =1{Vous avez reçu un paiement} other{Vous avez reçu {count} paiements}}"
 }

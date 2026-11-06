@@ -22,11 +22,13 @@ final backgroundRunBudget = Platform.isIOS
 /// the work in the app itself where there is no headless engine.
 Future<void> applyBackgroundTaskSchedule({
   required BackgroundTaskDispatcher dispatcher,
+  bool enabled = false,
+  BackgroundTaskScheduler? scheduler,
   required BackgroundTaskScheduler desktopScheduler,
 }) async {
   final mobile = Platform.isAndroid || Platform.isIOS;
   final adapter = BackgroundTaskWorkmanagerAdapter(
-    scheduler: mobile ? null : desktopScheduler,
+    scheduler: scheduler ?? (mobile ? null : desktopScheduler),
   );
   final interval = await const SharedPreferencesBackgroundSyncIntervalStore()
       .read();
@@ -37,6 +39,12 @@ Future<void> applyBackgroundTaskSchedule({
     BackgroundTask.liquidSync,
   ]) {
     await adapter.cancelByUniqueName(obsolete.id);
+  }
+  if (!enabled) {
+    await adapter.cancelByUniqueName(BackgroundTask.walletsSync.id);
+    await adapter.cancelByUniqueName(BackgroundTask.logsPrune.id);
+    log.config('Background scheduling disabled by rollout gate');
+    return;
   }
   final frequency = interval.frequency;
   if (frequency == null) {

@@ -1,4 +1,7 @@
 import 'package:bb_mobile/features/wallet/domain/usecases/read_wallet_usecase.dart';
+import 'package:flutter/widgets.dart';
+import 'data/payment_notifications.dart';
+import 'data/wallet_payment_observer.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/watch_wallet_transaction_by_tx_id_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/watch_wallet_transaction_by_address_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/watch_wallet_revisions_usecase.dart';
@@ -116,8 +119,23 @@ class WalletLocator {
       () => ElectrumSync(
         readRevision: (key) => locator<WalletNativeRuntime>().readRevision(key),
         connections: locator<WalletConnectionPolicy>(),
+        onCompletion: locator<WalletPaymentObserver>().record,
         documentsDirectory: () async =>
             (await getApplicationDocumentsDirectory()).path,
+      ),
+    );
+    locator.registerLazySingleton<PaymentNotificationStore>(
+      () => PaymentNotificationStore(
+        () async => (await getApplicationDocumentsDirectory()).path,
+        () async => (await locator<SettingsRepository>().fetch()).language,
+      ),
+      dispose: (store) => store.close(),
+    );
+    locator.registerLazySingleton<WalletPaymentObserver>(
+      () => WalletPaymentObserver(
+        locator<PaymentNotificationStore>().open,
+        () =>
+            WidgetsBinding.instance.lifecycleState == AppLifecycleState.resumed,
       ),
     );
     locator.registerLazySingleton<ForegroundWalletSync>(

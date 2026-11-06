@@ -14,3 +14,5 @@ export 'src/read_wallet_sync_jobs.dart';
 export 'src/background_wallet_sync.dart';
 export 'src/wallet_transaction_sync_background_task.dart';
 export 'src/background_task_logger.dart';
+
+export 'src/background_rollout.dart';

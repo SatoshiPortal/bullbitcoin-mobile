@@ -15757,5 +15757,45 @@
   "walletDiscoveryFailed": "Unable to complete the wallet scan. Please try again.",
   "@walletDiscoveryFailed": {
     "description": "Recoverable failure of a manual wallet discovery scan"
+  },
+  "backgroundSyncTitle": "Background synchronization",
+  "@backgroundSyncTitle": {},
+  "backgroundSyncDescription": "Check for incoming payments while the app is closed. Your system may delay checks.",
+  "@backgroundSyncDescription": {},
+  "backgroundSyncOff": "Off",
+  "@backgroundSyncOff": {},
+  "backgroundSyncMinutes": "Every {count} minutes",
+  "@backgroundSyncMinutes": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "backgroundSyncHours": "{count, plural, =1{Every hour} other{Every {count} hours}}",
+  "@backgroundSyncHours": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "backgroundNotificationsTitle": "Payment notifications",
+  "@backgroundNotificationsTitle": {},
+  "backgroundNotificationsAllowed": "Allowed by system settings",
+  "@backgroundNotificationsAllowed": {},
+  "backgroundNotificationsDenied": "Not allowed by system settings",
+  "@backgroundNotificationsDenied": {},
+  "backgroundNotificationsRequest": "Allow notifications",
+  "@backgroundNotificationsRequest": {},
+  "backgroundNotificationsSettings": "Open notification settings",
+  "@backgroundNotificationsSettings": {},
+  "backgroundPaymentCount": "{count, plural, =1{You received a payment} other{You received {count} payments}}",
+  "@backgroundPaymentCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   }
 }
