@@ -247,7 +247,7 @@ class SendCubit extends Cubit<SendState>
         state.copyWith(
           selectedWallet: wallet == null ? null : SendWalletBitcoin(wallet),
           utxos: const [],
-          selectedUtxos: const [],
+          selectedUtxos: wallet == null ? const [] : state.selectedUtxos,
         ),
       );
       if (wallet != null) await loadUtxos();
