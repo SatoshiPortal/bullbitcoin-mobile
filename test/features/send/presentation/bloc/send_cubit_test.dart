@@ -612,6 +612,18 @@ void main() {
     return cubit;
   }
 
+  test(
+    'signing without a selected wallet reports an explicit missing context',
+    () async {
+      final cubit = buildCubit();
+      addTearDown(cubit.close);
+      await cubit.signTransaction();
+      expect(cubit.state.failure, isA<SendTransactionConfirmationFailure>());
+      expect(cubit.state.failure?.logMessage, 'No wallet selected');
+      expect(cubit.state.signingTransaction, isFalse);
+    },
+  );
+
   group('SendCubit._watchPayjoin', () {
     test(
       'confirm starts payjoin even when the regular PSBT was pre-signed',

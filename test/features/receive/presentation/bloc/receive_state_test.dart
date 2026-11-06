@@ -293,6 +293,14 @@ void main() {
   });
 
   group('ReceiveState.isPayjoinAwaitingFunds', () {
+    test('false while the selected wallet is unavailable', () {
+      const state = ReceiveState(
+        type: ReceiveType.bitcoin,
+        payjoinGloballyEnabled: true,
+      );
+      expect(state.isPayjoinAwaitingFunds, isFalse);
+    });
+
     test('true when payjoin is enabled globally but this wallet has no '
         'confirmed balance yet', () {
       final state = buildState(
