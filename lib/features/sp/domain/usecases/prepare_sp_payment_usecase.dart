@@ -9,11 +9,11 @@ import 'package:meta/meta.dart';
 /// Builds a transaction simulation (coin selection + fee preview) for the
 /// confirm screen. Does not sign or broadcast.
 class PrepareSpPaymentUsecase {
-  final GetSpFeatureGateUsecase? _getSpFeatureGateUsecase;
+  final GetSpFeatureGateUsecase _getSpFeatureGateUsecase;
   final SpPaymentsPort _repository;
 
   PrepareSpPaymentUsecase({
-    this._getSpFeatureGateUsecase,
+    required this._getSpFeatureGateUsecase,
     required this._repository,
   });
 
@@ -22,7 +22,7 @@ class PrepareSpPaymentUsecase {
     required List<SpRecipient> recipients,
     required BigInt feerateSatVb,
   }) async {
-    if (await _getSpFeatureGateUsecase?.execute() != true) {
+    if (!await _getSpFeatureGateUsecase.execute()) {
       return const Err(SpUnsupportedNetwork());
     }
     return _repository.preparePsbt(

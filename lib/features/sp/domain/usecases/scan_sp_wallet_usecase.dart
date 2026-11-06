@@ -12,11 +12,11 @@ import 'package:meta/meta.dart';
 /// background service directly: the policy lives in `SyncSpWalletUsecase` and
 /// the audit script depends on that staying the only automatic route.
 class ScanSpWalletUsecase {
-  final GetSpFeatureGateUsecase? _getSpFeatureGateUsecase;
+  final GetSpFeatureGateUsecase _getSpFeatureGateUsecase;
   final SpScanPort _repository;
 
   ScanSpWalletUsecase({
-    this._getSpFeatureGateUsecase,
+    required this._getSpFeatureGateUsecase,
     required this._repository,
   });
 
@@ -24,7 +24,7 @@ class ScanSpWalletUsecase {
   /// scanned position); used by the first-scan start chooser.
   @useResult
   Future<Result<void, SpFailure>> execute({int? startHeight}) async {
-    if (await _getSpFeatureGateUsecase?.execute() != true) {
+    if (!await _getSpFeatureGateUsecase.execute()) {
       return const Err(SpUnsupportedNetwork());
     }
     return _repository.scanOnce(startHeight: startHeight);

@@ -10,17 +10,17 @@ import 'package:meta/meta.dart';
 /// receive tip), so the same address is never handed to two payers. Invoke
 /// only on an explicit user "generate" action.
 class GenerateTaprootAddressUsecase {
-  final GetSpFeatureGateUsecase? _getSpFeatureGateUsecase;
+  final GetSpFeatureGateUsecase _getSpFeatureGateUsecase;
   final SpPaymentsPort _repository;
 
   GenerateTaprootAddressUsecase({
-    this._getSpFeatureGateUsecase,
+    required this._getSpFeatureGateUsecase,
     required this._repository,
   });
 
   @useResult
   Future<Result<String, SpFailure>> execute() async {
-    if (await _getSpFeatureGateUsecase?.execute() != true) {
+    if (!await _getSpFeatureGateUsecase.execute()) {
       return const Err(SpUnsupportedNetwork());
     }
     return _repository.generateTaprootAddress();

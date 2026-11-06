@@ -21,14 +21,14 @@ import 'package:secrets/secrets.dart' show Secret;
 /// concurrent callers (the SP shell `load()` and the wallet-side refresh on cold
 /// start) share one `createFromSecret` instead of racing two live sessions.
 class EnsureSpSessionUsecase {
-  final GetSpFeatureGateUsecase? _getSpFeatureGateUsecase;
+  final GetSpFeatureGateUsecase _getSpFeatureGateUsecase;
   final SpAccountRepository _repository;
   final SpAccountFilesPort _files;
   final SpBackendConfigRepository _configRepository;
   final GetSpSecretUsecase _getSpSecretUsecase;
 
   EnsureSpSessionUsecase({
-    this._getSpFeatureGateUsecase,
+    required this._getSpFeatureGateUsecase,
     required this._repository,
     required this._files,
     required this._configRepository,
@@ -46,7 +46,7 @@ class EnsureSpSessionUsecase {
   Future<Result<SpWallet?, SpFailure>> execute({
     bool allowDuringTeardown = false,
   }) async {
-    if (await _getSpFeatureGateUsecase?.execute() != true) {
+    if (!await _getSpFeatureGateUsecase.execute()) {
       return const Err(SpUnsupportedNetwork());
     }
     // A recreate/revoke is disposing (and maybe re-establishing) the session;

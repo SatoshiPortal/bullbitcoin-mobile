@@ -14,7 +14,7 @@ import 'package:meta/meta.dart';
 import 'package:secrets/secrets.dart' show Secret;
 
 class RecreateSpWalletUsecase {
-  final GetSpFeatureGateUsecase? _getSpFeatureGateUsecase;
+  final GetSpFeatureGateUsecase _getSpFeatureGateUsecase;
   final GetSpSecretUsecase _getSpSecretUsecase;
   final SpAccountRepository _repository;
   final SpAccountFilesPort _files;
@@ -23,7 +23,7 @@ class RecreateSpWalletUsecase {
   final SpSessionGuard _guard;
 
   RecreateSpWalletUsecase({
-    this._getSpFeatureGateUsecase,
+    required this._getSpFeatureGateUsecase,
     required this._getSpSecretUsecase,
     required this._repository,
     required this._files,
@@ -45,7 +45,7 @@ class RecreateSpWalletUsecase {
     // Outer boundary: any Exception from the secret/dispose/backup/discardBackup
     // work becomes an Err so execute() is total.
     try {
-      if (await _getSpFeatureGateUsecase?.execute() != true) {
+      if (!await _getSpFeatureGateUsecase.execute()) {
         return const Err(SpUnsupportedNetwork());
       }
       if (!NetworkCapabilities.supports(

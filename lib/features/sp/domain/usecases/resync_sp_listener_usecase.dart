@@ -18,12 +18,12 @@ import 'package:bb_mobile/features/sp/domain/sp_failure.dart';
 /// the reconnect watcher and the header retry watcher can both react to the
 /// same drop, and one restart is enough.
 class ResyncSpListenerUsecase {
-  final GetSpFeatureGateUsecase? _getSpFeatureGateUsecase;
+  final GetSpFeatureGateUsecase _getSpFeatureGateUsecase;
   final SpAccountRepository _repository;
   final SpScanControlPort _scanControl;
 
   ResyncSpListenerUsecase({
-    this._getSpFeatureGateUsecase,
+    required this._getSpFeatureGateUsecase,
     required this._repository,
     required this._scanControl,
   });
@@ -34,7 +34,7 @@ class ResyncSpListenerUsecase {
       _inFlight ??= _run().whenComplete(() => _inFlight = null);
 
   Future<Result<void, SpFailure>> _run() async {
-    if (await _getSpFeatureGateUsecase?.execute() != true) {
+    if (!await _getSpFeatureGateUsecase.execute()) {
       return const Err(SpUnsupportedNetwork());
     }
 

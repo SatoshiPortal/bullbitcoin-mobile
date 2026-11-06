@@ -33,7 +33,7 @@ bool isSpPath(String path) => [
 /// gate never imports the wallet feature's router.
 String? spRedirect(
   String path, {
-  NetworkEnv? environment,
+  required NetworkEnv? environment,
   required bool isSuperuser,
   required bool isDevModeEnabled,
   required bool isSpWalletSetup,
