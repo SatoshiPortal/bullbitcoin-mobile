@@ -23,13 +23,18 @@ final class WalletKey {
 /// root beneath which LWK manages its network and descriptor directories.
 /// Existing ids encode the network. This layout must not be used to enable
 /// new networks until catalog uniqueness and storage migration are designed.
+/// Signet/regtest are refused: their legacy origins share testnet coin type 1.
+/// Pass getApplicationDocumentsDirectory().path verbatim as documentsDirectory.
 String nativeWalletStoragePath(String documentsDirectory, WalletKey key) {
   final hexId = key.id.codeUnits
       .map((unit) => unit.toRadixString(16).padLeft(2, '0'))
       .join();
   final suffix = switch (key.network) {
-    BitcoinNetwork() => '_bdk_dart',
-    LiquidNetwork() => '',
+    BitcoinNetwork.mainnet || BitcoinNetwork.testnet => '_bdk_dart',
+    LiquidNetwork.mainnet || LiquidNetwork.testnet => '',
+    BitcoinNetwork.signet ||
+    BitcoinNetwork.regtest ||
+    LiquidNetwork.regtest => throw ArgumentError('Unsupported storage network'),
   };
   return '$documentsDirectory/$hexId$suffix';
 }
