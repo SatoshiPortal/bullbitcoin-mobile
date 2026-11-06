@@ -8,5 +8,5 @@ export 'src/domain/wallet_connection_policy.dart';
 export 'src/domain/reserved_address_port.dart';
 export 'src/domain/wallet_catalog_port.dart';
 
-export 'src/data/electrum_sync.dart'
+export 'src/engine/electrum_sync.dart'
     show ElectrumSync, SyncCompletion, SyncFinished, SyncMode;

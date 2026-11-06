@@ -1,6 +1,6 @@
 import 'dart:math' as math;
 
-import 'package:bull_logger/bull_logger.dart';
+import 'writer_diagnostics.dart';
 
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
@@ -20,6 +20,7 @@ final class NativeWalletWriter implements LiquidReadAdmission {
   final ReservedAddressPort _reserved;
   final NativeWriteSessions _sessions;
   final Map<WalletKey, Type> _failures = {};
+  final WriterDiagnosticSink _diagnostics;
 
   NativeWalletWriter({
     required this.lockDirectory,
@@ -27,6 +28,7 @@ final class NativeWalletWriter implements LiquidReadAdmission {
     required String documentsDirectory,
     required this._catalog,
     required ReservedAddressPort reservedAddresses,
+    this._diagnostics = persistWriterDiagnostic,
   }) : _reserved = reservedAddresses,
        _sessions = SdkWriteSessions(documentsDirectory);
 
@@ -37,17 +39,20 @@ final class NativeWalletWriter implements LiquidReadAdmission {
     required this._catalog,
     required ReservedAddressPort reservedAddresses,
     required this._sessions,
-  }) : _reserved = reservedAddresses;
+  }) : _reserved = reservedAddresses,
+       _diagnostics = persistWriterDiagnostic;
 
   @useResult
   Future<Result<WriterOutcome, TransactionSyncFailure>> create(
     WalletKey key, {
     required int expectedGeneration,
+    bool existingOnly = false,
   }) => _run(key, expectedGeneration, WriteIntent.create, () async {
     final old = revisions.record(key);
     _expectGeneration(old, expectedGeneration);
     final descriptor = await _descriptor(key);
-    if (old != null && old.state.lifecycle == WalletLifecycle.active) {
+    if (existingOnly ||
+        (old != null && old.state.lifecycle == WalletLifecycle.active)) {
       revisions.begin(key, WriteIntent.load);
       final session = await _sessions.open(descriptor, create: false);
       session.close();
@@ -219,7 +224,8 @@ final class NativeWalletWriter implements LiquidReadAdmission {
     }
     final lock = (acquisition as Ok<WriterLock, TransactionSyncFailure>).value;
     final watch = Stopwatch()..start();
-    log.fine(
+    _diagnostics(
+      WriterLogLevel.fine,
       'Wallet writer lock acquired intent=${intent.name} network=${key.network} generation=$expectedGeneration',
     );
     try {
@@ -233,7 +239,8 @@ final class NativeWalletWriter implements LiquidReadAdmission {
       final value = await operation();
       final stamp = revisions.record(key)?.state.stamp;
       _failures.remove(key);
-      log.fine(
+      _diagnostics(
+        WriterLogLevel.fine,
         'Wallet writer operation committed intent=${intent.name} network=${key.network} generation=${stamp?.generation} revision=${stamp?.revision} duration_ms=${watch.elapsedMilliseconds}',
       );
       return Ok(value);
@@ -252,7 +259,8 @@ final class NativeWalletWriter implements LiquidReadAdmission {
   }) async {
     final record = revisions.record(key);
     if (record == null || record.intent == null) return;
-    log.warning(
+    _diagnostics(
+      WriterLogLevel.warning,
       'Wallet writer reconciling interrupted intent=${record.intent?.name} network=${key.network} generation=${record.state.stamp.generation} revision=${record.state.stamp.revision}',
     );
     if (record.intent == WriteIntent.delete) {
@@ -296,7 +304,8 @@ final class NativeWalletWriter implements LiquidReadAdmission {
   }
 
   Future<void> _rebuild(PublicWalletDescriptor descriptor, int? issued) async {
-    log.warning(
+    _diagnostics(
+      WriterLogLevel.warning,
       'Wallet writer repair executed network=${descriptor.key.network}',
     );
     await _sessions.delete(descriptor.key);
@@ -335,13 +344,13 @@ final class NativeWalletWriter implements LiquidReadAdmission {
     if (_failures[key] == failure.runtimeType) return;
     _failures[key] = failure.runtimeType;
     if (failure is TransactionSyncStorageFailure) {
-      log.severe(
-        message: 'Wallet writer unexpected storage failure',
-        error: failure.runtimeType.toString(),
-        trace: StackTrace.empty,
+      _diagnostics(
+        WriterLogLevel.severe,
+        'Wallet writer unexpected storage failure category=${failure.runtimeType}',
       );
     } else {
-      log.warning(
+      _diagnostics(
+        WriterLogLevel.warning,
         'Wallet writer operation unavailable network=${key.network} category=${failure.runtimeType}',
       );
     }
