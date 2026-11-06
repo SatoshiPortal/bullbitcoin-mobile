@@ -346,7 +346,10 @@ Future<_Attempt> _performSync(_SyncParams params) async {
   }
 }
 
-final class _NativeSyncOperation implements WriterSyncOperation {
+final class _NativeSyncOperation
+    implements WriterSyncOperation, WriterSyncMutation {
+  @override
+  bool mayHaveMutated = false;
   final _SyncParams params;
   Result<SyncCompletion, TransactionSyncFailure>? result;
   _NativeSyncOperation(this.params);
@@ -355,7 +358,11 @@ final class _NativeSyncOperation implements WriterSyncOperation {
     PublicWalletDescriptor descriptor, {
     required int? issuedReceiveIndex,
   }) async {
-    final attempt = await _performNativeSync(params, issuedReceiveIndex);
+    final attempt = await _performNativeSync(
+      params,
+      issuedReceiveIndex,
+      () => mayHaveMutated = true,
+    );
     result = attempt.result;
     return switch (attempt.result) {
       Ok() => const Ok(null),
@@ -389,6 +396,7 @@ final class _NoReceiveReservations implements ReservedAddressPort {
 Future<_Attempt> _performNativeSync(
   _SyncParams params,
   int? issuedReceiveIndex,
+  void Function() markMutation,
 ) async {
   final watch = Stopwatch()..start();
   final descriptor = params.descriptor;
@@ -420,6 +428,7 @@ Future<_Attempt> _performNativeSync(
     TransactionSyncFailure failure = const TransactionSyncStorageFailure();
     try {
       // LWK init may mutate its cache. Never fallback once it has been called.
+      markMutation();
       wallet = await lwk.Wallet.init(
         network: network,
         dbpath: path,
@@ -560,6 +569,7 @@ Future<_Attempt> _performNativeSync(
     }
     failure = const TransactionSyncStorageFailure();
     try {
+      markMutation();
       wallet.applyUpdate(update: update);
       wallet.persist(persister: persister);
     } finally {
