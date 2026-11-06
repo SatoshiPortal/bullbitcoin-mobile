@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/electrum_settings/interface_adapters/presenters/view_models/electrum_server_view_model.dart';
 import 'dart:async';
 
 import 'package:bb_mobile/core/electrum/application/dtos/electrum_server_dto.dart';
@@ -59,7 +60,12 @@ void main() {
       ),
     );
     registerFallbackValue(LoadElectrumServerDataRequest(isLiquid: false));
-    registerFallbackValue(DeleteCustomServerRequest(url: 'old.example:50002'));
+    registerFallbackValue(
+      DeleteCustomServerRequest(
+        url: 'old.example:50002',
+        network: ElectrumServerNetwork.bitcoinMainnet,
+      ),
+    );
   });
 
   test('maps configured Tor failures to the server-list failure', () async {
@@ -69,21 +75,53 @@ void main() {
         core.ElectrumExternalTorProxyUnavailableFailure(),
       ),
     );
+    final load = _MockLoadElectrumServerDataUsecase();
+    final appSettings = _MockSettingsRepository();
+    final servers = _MockElectrumServerRepository();
+    when(() => appSettings.fetch()).thenAnswer(
+      (_) async => const SettingsEntity(
+        environment: Environment.mainnet,
+        bitcoinUnit: BitcoinUnit.sats,
+        currencyCode: 'USD',
+      ),
+    );
+    when(
+      () => servers.fetchActiveServers(
+        network: ElectrumServerNetwork.bitcoinMainnet,
+      ),
+    ).thenAnswer((_) async => const Ok([]));
+    when(
+      () => load.execute(any(), onUpdate: any(named: 'onUpdate')),
+    ).thenAnswer(
+      (_) async => Ok(
+        LoadElectrumServerDataResponse(
+          servers: [],
+          serverStatuses: {},
+          settings: ElectrumSettingsDto(
+            stopGap: 20,
+            timeout: 10,
+            retry: 3,
+            validateDomain: true,
+            network: ElectrumServerNetwork.bitcoinMainnet,
+          ),
+        ),
+      ),
+    );
     final bloc = ElectrumSettingsBloc(
-      loadElectrumServerDataUsecase: _MockLoadElectrumServerDataUsecase(),
+      loadElectrumServerDataUsecase: load,
       addCustomServerUsecase: add,
       setCustomServersPriorityUsecase: _MockSetCustomServersPriorityUsecase(),
       deleteCustomServerUsecase: _MockDeleteCustomServerUsecase(),
       setAdvancedElectrumOptionsUsecase:
           _MockSetAdvancedElectrumOptionsUsecase(),
       hasActiveCustomBitcoinOnionServerUsecase:
-          HasActiveCustomBitcoinOnionServerUsecase(
-            _MockElectrumServerRepository(),
-            _MockSettingsRepository(),
-          ),
+          HasActiveCustomBitcoinOnionServerUsecase(servers, appSettings),
     );
     addTearDown(bloc.close);
 
+    final loaded = bloc.stream.firstWhere((state) => state.environment != null);
+    bloc.add(const ElectrumSettingsLoaded(isLiquid: false));
+    await loaded;
     final stateFuture = bloc.stream.firstWhere(
       (state) => state.electrumServersError != null,
     );
@@ -249,6 +287,22 @@ void main() {
 
     bloc.add(const ElectrumSettingsLoaded(isLiquid: false));
     await bloc.stream.firstWhere((state) => state.isLoadingData);
+    // An event from another tab must not delete this network's same URL.
+    final refused = bloc.stream.firstWhere(
+      (state) => state.electrumServersError is ElectrumServersDeleteFailure,
+    );
+    bloc.add(
+      ElectrumCustomServerDeleted(
+        server: ElectrumServerViewModel(
+          url: server.url,
+          network: ElectrumServerNetwork.bitcoinRegtest,
+          status: ElectrumServerStatus.unknown,
+          priority: 0,
+        ),
+      ),
+    );
+    await refused;
+    verifyNever(() => delete.execute(any()));
     bloc.add(
       ElectrumCustomServerDeleted(server: bloc.state.customServers.single),
     );

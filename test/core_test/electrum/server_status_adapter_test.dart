@@ -119,6 +119,43 @@ void main() {
     expect(probedIsMainnet, isTrue);
   });
 
+  test('Bitcoin regtest uses BDK without a historical chain probe', () async {
+    var probes = 0;
+    final adapter = ServerStatusAdapter(
+      const ElectrumSocketConnector(),
+      bdkProbe:
+          ({
+            required url,
+            required socks5,
+            required timeout,
+            required retry,
+            required validateDomain,
+            required isMainnet,
+          }) async {
+            probes++;
+            expect(isMainnet, isFalse);
+          },
+    );
+    expect(
+      await adapter.checkElectrum(
+        url: 'tcp://127.0.0.1:50000',
+        network: ElectrumServerNetwork.bitcoinRegtest,
+        validateDomain: true,
+      ),
+      ElectrumServerStatus.online,
+    );
+    expect(probes, 1);
+    expect(
+      await adapter.checkElectrum(
+        url: 'tcp://127.0.0.1:50001',
+        network: ElectrumServerNetwork.liquidRegtest,
+        validateDomain: true,
+      ),
+      ElectrumServerStatus.offline,
+    );
+    expect(probes, 1);
+  });
+
   test('Bitcoin reports a failed BDK probe as offline', () async {
     final adapter = ServerStatusAdapter(
       const ElectrumSocketConnector(),

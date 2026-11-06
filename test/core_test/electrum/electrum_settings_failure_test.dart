@@ -81,12 +81,17 @@ void main() {
     test('propagates the sanitized failure from the repository', () async {
       final repo = _MockServerRepository();
       final usecase = DeleteCustomServerUsecase(electrumServerRepository: repo);
-      when(() => repo.delete(url: any(named: 'url'))).thenAnswer(
+      when(
+        () => repo.delete(
+          url: any(named: 'url'),
+          network: any(named: 'network'),
+        ),
+      ).thenAnswer(
         (_) async => const Err(ElectrumDeleteFailure('raw db error')),
       );
 
       final result = await usecase.execute(
-        DeleteCustomServerRequest(url: 'ssl://a:50002'),
+        DeleteCustomServerRequest(url: 'ssl://a:50002', network: _network),
       );
 
       expect(result, isA<Err>());
@@ -139,7 +144,9 @@ void main() {
     });
 
     test('returns AlreadyExists failure when the server is present', () async {
-      when(() => serverRepo.fetchByUrl(any())).thenAnswer(
+      when(
+        () => serverRepo.fetchByUrl(any(), network: any(named: 'network')),
+      ).thenAnswer(
         (_) async => Ok(
           ElectrumServer.existing(
             url: 'a.example:50002',
@@ -161,7 +168,7 @@ void main() {
 
     test('propagates the load failure from fetchByUrl — no raw leak', () async {
       when(
-        () => serverRepo.fetchByUrl(any()),
+        () => serverRepo.fetchByUrl(any(), network: any(named: 'network')),
       ).thenAnswer((_) async => const Err(ElectrumLoadFailure('raw db error')));
 
       final result = await usecase.execute(request());
@@ -174,7 +181,7 @@ void main() {
       'returns Unreachable failure when the Bitcoin probe is offline',
       () async {
         when(
-          () => serverRepo.fetchByUrl(any()),
+          () => serverRepo.fetchByUrl(any(), network: any(named: 'network')),
         ).thenAnswer((_) async => Ok(null));
         when(
           () => electrumSettingsRepo.fetchByNetwork(_network),
@@ -203,7 +210,7 @@ void main() {
     test('keeps the preliminary socket check for Liquid', () async {
       const liquidNetwork = ElectrumServerNetwork.liquidMainnet;
       when(
-        () => serverRepo.fetchByUrl(any()),
+        () => serverRepo.fetchByUrl(any(), network: any(named: 'network')),
       ).thenAnswer((_) async => Ok(null));
       when(() => electrumSettingsRepo.fetchByNetwork(liquidNetwork)).thenAnswer(
         (_) async => Ok(
@@ -259,7 +266,7 @@ void main() {
       'probes with the user validateDomain setting, not a fixed one',
       () async {
         when(
-          () => serverRepo.fetchByUrl(any()),
+          () => serverRepo.fetchByUrl(any(), network: any(named: 'network')),
         ).thenAnswer((_) async => Ok(null));
         when(
           () => statusPort.checkSocket(
@@ -302,7 +309,7 @@ void main() {
       'propagates the load failure when electrum settings are unreadable',
       () async {
         when(
-          () => serverRepo.fetchByUrl(any()),
+          () => serverRepo.fetchByUrl(any(), network: any(named: 'network')),
         ).thenAnswer((_) async => Ok(null));
         when(
           () => statusPort.checkSocket(
@@ -335,7 +342,7 @@ void main() {
       var routeClosed = false;
       final endpoint = TorProxyEndpoint(host: '127.0.0.1', port: 41001);
       when(
-        () => serverRepo.fetchByUrl(any()),
+        () => serverRepo.fetchByUrl(any(), network: any(named: 'network')),
       ).thenAnswer((_) async => Ok(null));
       when(
         () => electrumSettingsRepo.fetchByNetwork(_network),
@@ -405,7 +412,7 @@ void main() {
             _appSettings(useTorProxy: true, port: externalRoute.endpoint.port),
       );
       when(
-        () => serverRepo.fetchByUrl(any()),
+        () => serverRepo.fetchByUrl(any(), network: any(named: 'network')),
       ).thenAnswer((_) async => Ok(null));
       when(
         () => electrumSettingsRepo.fetchByNetwork(_network),
@@ -479,7 +486,7 @@ void main() {
         () => appSettingsRepository.fetch(),
       ).thenAnswer((_) async => _appSettings(useTorProxy: true));
       when(
-        () => serverRepo.fetchByUrl(any()),
+        () => serverRepo.fetchByUrl(any(), network: any(named: 'network')),
       ).thenAnswer((_) async => Ok(null));
       when(
         () => electrumSettingsRepo.fetchByNetwork(_network),
@@ -630,7 +637,8 @@ void main() {
         () => envPort.getEnvironment(),
       ).thenAnswer((_) async => ElectrumEnvironment.mainnet);
       when(
-        () => serverRepo.fetchAll(isTestnet: false, isLiquid: false),
+        () =>
+            serverRepo.fetchAll(network: ElectrumServerNetwork.bitcoinMainnet),
       ).thenAnswer((_) async => Ok([server]));
       when(
         () => settingsRepo.fetchByNetwork(_network),
@@ -717,7 +725,9 @@ void main() {
           () => envPort.getEnvironment(),
         ).thenAnswer((_) async => ElectrumEnvironment.mainnet);
         when(
-          () => serverRepo.fetchAll(isTestnet: false, isLiquid: false),
+          () => serverRepo.fetchAll(
+            network: ElectrumServerNetwork.bitcoinMainnet,
+          ),
         ).thenAnswer((_) async => Ok(servers));
         when(
           () => settingsRepo.fetchByNetwork(_network),
@@ -794,7 +804,9 @@ void main() {
           () => envPort.getEnvironment(),
         ).thenAnswer((_) async => ElectrumEnvironment.mainnet);
         when(
-          () => serverRepo.fetchAll(isTestnet: false, isLiquid: false),
+          () => serverRepo.fetchAll(
+            network: ElectrumServerNetwork.bitcoinMainnet,
+          ),
         ).thenAnswer((_) async => Ok([server]));
         when(
           () => settingsRepo.fetchByNetwork(_network),

@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/electrum_settings/domain/electrum_network_unauthorized_exception.dart';
 import 'package:bb_mobile/core/electrum/domain/ports/electrum_servers_port.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_connection.dart';
 import 'package:bb_mobile/features/electrum_settings/domain/electrum_server_network.dart';
@@ -10,12 +11,14 @@ final class _Servers extends ElectrumServersPort {
   ElectrumServerNetwork? selected;
   bool open = false;
   int attempts = 0;
+  bool authorized = true;
   @override
   Future<T> runWithFallback<T>({
     required ElectrumServerNetwork network,
     required Future<T> Function(ElectrumConnection) operation,
     bool Function(Object)? isTransient,
   }) async {
+    if (!authorized) throw const ElectrumNetworkUnauthorizedException();
     selected = network;
     open = true;
     try {
@@ -45,6 +48,32 @@ final class _Servers extends ElectrumServersPort {
 }
 
 void main() {
+  test(
+    'authorization refusal is preserved for foreground and headless sync',
+    () async {
+      final servers = _Servers()..authorized = false;
+      var operations = 0;
+      final result = await WalletConnectionPolicyImpl(servers).run<int>(
+        network: BitcoinNetwork.regtest,
+        mayRetry: (_) => true,
+        operation: (_) async {
+          operations++;
+          return const Ok(1);
+        },
+      );
+      expect(
+        result,
+        isA<Err<int, TransactionSyncFailure>>().having(
+          (result) => result.failure,
+          'failure',
+          isA<TransactionSyncUnsupportedNetworkFailure>(),
+        ),
+      );
+      expect(operations, 0);
+      expect(servers.attempts, 0);
+    },
+  );
+
   test('maps network and effective settings within the scoped route', () async {
     final servers = _Servers();
     final policy = WalletConnectionPolicyImpl(servers);
@@ -58,7 +87,7 @@ void main() {
           connection.timeout.inSeconds,
           ElectrumConnection.onionMinimumTimeout,
         );
-        expect(connection.socks5, '127.0.0.1:9050');
+        expect(connection.socks5, isNull);
         expect(connection.stopGap, 42);
         expect(connection.retry, 2);
         expect(connection.validateDomain, isTrue);
@@ -68,6 +97,38 @@ void main() {
     expect(result, isA<Ok<int, TransactionSyncFailure>>());
     expect(servers.selected, ElectrumServerNetwork.liquidTestnet);
     expect(servers.open, isFalse);
+  });
+
+  test('regtest selects only the concrete Bitcoin regtest policy', () async {
+    final servers = _Servers();
+    final result = await WalletConnectionPolicyImpl(servers).run<int>(
+      network: BitcoinNetwork.regtest,
+      mayRetry: (_) => false,
+      operation: (connection) async {
+        expect(connection.socks5, '127.0.0.1:9050');
+        return const Ok(1);
+      },
+    );
+    expect(result, isA<Ok<int, TransactionSyncFailure>>());
+    expect(servers.selected, ElectrumServerNetwork.bitcoinRegtest);
+  });
+
+  test('Liquid regtest is refused before endpoint resolution', () async {
+    final servers = _Servers();
+    final result = await WalletConnectionPolicyImpl(servers).run<int>(
+      network: LiquidNetwork.regtest,
+      mayRetry: (_) => false,
+      operation: (_) async => const Ok(1),
+    );
+    expect(
+      result,
+      isA<Err<int, TransactionSyncFailure>>().having(
+        (result) => result.failure,
+        'failure',
+        isA<TransactionSyncUnsupportedNetworkFailure>(),
+      ),
+    );
+    expect(servers.attempts, 0);
   });
 
   test('unsupported networks never enter the legacy policy', () async {
