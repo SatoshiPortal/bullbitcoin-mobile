@@ -36,6 +36,30 @@ void main() {
             .value;
   });
 
+  test('regtest refuses before updating recipient security details', () async {
+    when(() => settingsRepository.fetch()).thenAnswer(
+      (_) async => const SettingsEntity(
+        environment: Environment.regtest,
+        bitcoinUnit: BitcoinUnit.sats,
+        currencyCode: 'CAD',
+      ),
+    );
+    when(
+      () => recipientsGateway.updateInteracSecurityDetails(
+        recipientId: any(named: 'recipientId'),
+        email: any(named: 'email'),
+        securityQuestion: any(named: 'securityQuestion'),
+        securityAnswer: any(named: 'securityAnswer'),
+        isTestnet: any(named: 'isTestnet'),
+      ),
+    ).thenAnswer((_) async => const Ok(null));
+    expect(
+      await repository.update(details),
+      isA<Err<void, RecipientsFailure>>(),
+    );
+    verifyZeroInteractions(recipientsGateway);
+  });
+
   test('updates security details on mainnet', () async {
     when(() => settingsRepository.fetch()).thenAnswer(
       (_) async => const SettingsEntity(
