@@ -2,7 +2,7 @@
 
 The native wallet writer contracts and foreground Electrum sync operation. The application depends on this package; this package never imports `bb_mobile`. Flutter is required by bull_sdk and isolate execution; no SDK handles cross the public API.
 
-`WalletKey` is the wallet id plus a primitives network. Engine, endpoint and tuning changes do not change identity. `nativeWalletStoragePath` preserves the legacy UTF-16 hex id and exact BDK suffix/LWK root; it performs no IO. Readers and writers will adopt this function at their respective cutovers. Callers pass `getApplicationDocumentsDirectory().path` verbatim. Signet/regtest throw `ArgumentError`: their legacy origins share testnet coin type 1, so enabling them requires catalog uniqueness and a storage migration first.
+`WalletKey` is the wallet id plus a primitives network. Engine, endpoint and tuning changes do not change identity. `nativeWalletStoragePath` preserves the legacy UTF-16 hex id and exact BDK suffix/LWK root; it performs no IO. Readers and writers will adopt this function at their respective cutovers. Callers pass `getApplicationDocumentsDirectory().path` verbatim. Bitcoin regtest requires a distinct id ending in `:regtest`; the full id is hex-encoded, so it cannot reuse the historical testnet origin path. Regtest provisioning accepts only bip84 native witness descriptors on both receive and change branches. Signet and Liquid regtest remain typed unsupported at native admission; Liquid support awaits lwk-dart #96 in the pinned SDK.
 
 `WalletConnectionPolicy` owns connection selection through its app implementation. Its callback runs within the existing Electrum policy's scoped Tor route. Only the caller knows whether mutation has started; `mayRetry` must refuse fallback after that point. Exhausted fallback returns the caller's last typed failure; failures before any callback result map to `TransactionSyncConnectionFailure`. Connection values must not escape the callback's lifetime. The labels owner retains the existing system-label reservation rule.
 
@@ -51,3 +51,15 @@ LD_LIBRARY_PATH="$BULL_SDK_LIB_DIR${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}" fvm flu
 This test has no skip and uses only the published BIP39 vector plus loopback traffic. It verifies real LWK initialization in the worker, fallback before opening, and no retry after opening when a Bitcoin-only fixture rejects Liquid synchronization. It does not establish successful live Liquid synchronization or device lock safety. The compute worker calling BullSdk.init() has not been validated on a phone; that device gate remains open. Normal `make checks` covers `test/`; run this additional suite when changing the native Liquid path.
 
 Sync start, completion, failure and connection fallback are persisted through `bull_logger` on the caller isolate. Completion includes cache state and aggregate counts; no wallet identifiers, descriptors, endpoints, transaction ids or amounts are logged.
+
+## Bitcoin regtest host test
+
+The explicit native suite exercises offline writer creation, bcrt1 receive, Nigiri faucet funding, writer-owned discovery, native reader hydration, an explicit-fee signed broadcast, sync/history, fresh-reader reopening and headless sync. It uses the published BIP39 test vector and disposable native stores. Start a disposable Nigiri service separately; the test never starts or reconfigures it. From this package directory:
+
+```sh
+fvm flutter test --no-pub native_test/native_regtest_nigiri_test.dart
+```
+
+The defaults are the local development Electrum port 50000 and faucet port 3000. Override with `--dart-define=NIGIRI_ELECTRUM=...` and `--dart-define=NIGIRI_FAUCET=...`. Ordinary unit checks do not require this service. This native test does not validate app navigation, wallet import or mobile lifecycle behavior.
+
+`read.dart` also publishes `validateAddress(address, network)` for payment consumers. It validates against captured concrete network context, rejects Liquid regtest and signet, and limits regtest destinations to the distinct bcrt1 witness encoding. Bitcoin testnet Base58 remains accepted; address bytes cannot distinguish its provenance from regtest. This is destination authorization, not URI parsing or an Electrum genesis check.

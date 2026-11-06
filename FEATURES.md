@@ -151,6 +151,9 @@ graph TB
     COINS --> LABELS
     COINS -->|public revision stream| WALLETS
     DCA --> RECEIVE
+    IMPORT_WALLET[Wallet Import]
+    IMPORT_WALLET --> SETTINGS
+    SETTINGS --> SWAPS
     SETTINGS --> DEFAULT_WALLETS
     SETTINGS --> EXCHANGE
     SETTINGS --> EXCHANGE_SETTINGS
