@@ -102,12 +102,17 @@ final class NativeWalletWriter implements LiquidReadAdmission {
         if (old?.issued case final issued? when rebuilt) {
           await session.revealAndPersist(issued);
         }
+        final issued = _highestIndex(
+          old?.issued,
+          await session.lastIssuedIndex(),
+        );
         if (!rebuilt &&
             old != null &&
             old.state.lifecycle == WalletLifecycle.active &&
             old.state.initializedSchema == writerSchemaVersion &&
             old.descriptorHash == descriptorDigest(descriptor) &&
-            old.liquidCachePath == session.liquidCachePath) {
+            old.liquidCachePath == session.liquidCachePath &&
+            old.issued == issued) {
           revisions.cancelUnchanged(key, old);
           return WriterUnchanged(old.state.stamp);
         }
@@ -115,6 +120,7 @@ final class NativeWalletWriter implements LiquidReadAdmission {
           revisions.finish(
             key,
             needsSync: rebuilt ? true : null,
+            issued: issued,
             initializedDescriptor: descriptor,
             liquidCachePath: session.liquidCachePath,
           ),
@@ -129,6 +135,7 @@ final class NativeWalletWriter implements LiquidReadAdmission {
       return WriterCommitted(
         revisions.finish(
           key,
+          issued: _highestIndex(old?.issued, await session.lastIssuedIndex()),
           initializedDescriptor: descriptor,
           liquidCachePath: session.liquidCachePath,
         ),
@@ -425,7 +432,10 @@ final class NativeWalletWriter implements LiquidReadAdmission {
       // unblock post-repair receive or produce any payment-seen receipt.
       revisions.finish(
         key,
-        issued: candidate ?? record.issued,
+        issued: _highestIndex(
+          _highestIndex(record.issued, candidate),
+          await session.lastIssuedIndex(),
+        ),
         initializedDescriptor: descriptor,
         liquidCachePath: session.liquidCachePath,
       );
@@ -474,6 +484,12 @@ final class NativeWalletWriter implements LiquidReadAdmission {
       session.close();
     }
   }
+
+  int? _highestIndex(int? left, int? right) => left == null
+      ? right
+      : right == null
+      ? left
+      : math.max(left, right);
 
   Future<PublicWalletDescriptor> _descriptor(WalletKey key) async {
     final descriptor = _value(await _catalog.find(key));
