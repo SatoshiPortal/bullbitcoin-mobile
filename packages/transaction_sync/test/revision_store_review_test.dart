@@ -8,6 +8,27 @@ import 'package:transaction_sync/src/write/revision_store.dart';
 
 void main() {
   test(
+    'opening current metadata does not acquire a writer transaction',
+    () async {
+      final directory = Directory.systemTemp.createTempSync('revision-open-');
+      final path = '${directory.path}/revisions.sqlite';
+      final initial = RevisionStore(path);
+      final writer = sqlite3.open(path);
+      RevisionStore? reader;
+      try {
+        writer.execute('BEGIN IMMEDIATE');
+        reader = RevisionStore(path);
+        expect(reader, isNotNull);
+      } finally {
+        writer.dispose();
+        await reader?.close();
+        await initial.close();
+        directory.deleteSync(recursive: true);
+      }
+    },
+  );
+
+  test(
     'metadata finish commits while another connection holds a read',
     () async {
       final directory = Directory.systemTemp.createTempSync(
