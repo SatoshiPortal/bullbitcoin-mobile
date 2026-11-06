@@ -1,16 +1,17 @@
 import 'dart:async';
 
-import 'package:bb_mobile/features/import_mnemonic/domain/check_wallet_status_usecase.dart';
 import 'package:bb_mobile/features/import_mnemonic/domain/check_duplicate_mnemonic_usecase.dart';
 import 'package:bb_mobile/features/import_mnemonic/domain/import_mnemonic_failure.dart';
 import 'package:bb_mobile/features/import_mnemonic/domain/import_wallet_usecase.dart';
+import 'package:bb_mobile/features/import_mnemonic/domain/scan_mnemonic_usecase.dart';
 import 'package:bb_mobile/features/import_mnemonic/presentation/cubit.dart';
+import 'package:bb_mobile/features/import_mnemonic/presentation/state.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:secrets/secrets.dart';
 import 'package:secrets/testing.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:primitives/primitives.dart' show Ok;
+import 'package:primitives/primitives.dart' show Ok, Result;
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart'
     show ScriptType, Wallet;
 
@@ -18,27 +19,41 @@ class MockWallet extends Mock implements Wallet {}
 
 class MockImportWalletUsecase extends Mock implements ImportWalletUsecase {}
 
-class MockCheckWalletStatusUsecase extends Mock
-    implements CheckWalletStatusUsecase {}
+class MockScanMnemonicUsecase extends Mock implements ScanMnemonicUsecase {}
+
+typedef _Scan = Future<Result<MnemonicScan, ImportMnemonicScanFailure>>;
 
 class MockCheckDuplicateMnemonicUsecase extends Mock
     implements CheckDuplicateMnemonicUsecase {}
 
 void main() {
   late MockImportWalletUsecase importWallet;
-  late MockCheckWalletStatusUsecase checkWalletStatus;
+  late MockScanMnemonicUsecase scanMnemonic;
   late MockCheckDuplicateMnemonicUsecase checkDuplicate;
 
   ImportMnemonicCubit buildCubit() => ImportMnemonicCubit(
     importWalletUsecase: importWallet,
-    checkWalletUsecase: checkWalletStatus,
+    scanMnemonicUsecase: scanMnemonic,
     checkDuplicateMnemonicUsecase: checkDuplicate,
   );
 
   setUp(() {
     importWallet = MockImportWalletUsecase();
-    checkWalletStatus = MockCheckWalletStatusUsecase();
+    scanMnemonic = MockScanMnemonicUsecase();
     checkDuplicate = MockCheckDuplicateMnemonicUsecase();
+    when(
+      () => scanMnemonic.execute(
+        words: any(named: 'words'),
+        language: any(named: 'language'),
+        passphrase: any(named: 'passphrase'),
+        scriptTypes: any(named: 'scriptTypes'),
+      ),
+    ).thenReturn({});
+  });
+
+  setUpAll(() {
+    registerFallbackValue(bip39.Language.english);
+    registerFallbackValue(<ScriptType>{});
   });
 
   test('accepts a Japanese vector before scanning', () async {
@@ -46,7 +61,7 @@ void main() {
     final secrets = Secrets(scratchDirectory: () async => '/tmp');
     final cubit = ImportMnemonicCubit(
       importWalletUsecase: importWallet,
-      checkWalletUsecase: checkWalletStatus,
+      scanMnemonicUsecase: scanMnemonic,
       checkDuplicateMnemonicUsecase: CheckDuplicateMnemonicUsecase(
         secrets: secrets,
       ),
@@ -82,14 +97,6 @@ void main() {
           ),
         ).thenAnswer((_) async => const Ok(null));
         when(
-          () => checkWalletStatus(
-            words: mnemonic.words,
-            language: language,
-            passphrase: mnemonic.passphrase,
-            scriptTypes: {ScriptType.bip84, ScriptType.bip49, ScriptType.bip44},
-          ),
-        ).thenAnswer((_) async => {});
-        when(
           () => importWallet.execute(
             mnemonicWords: mnemonic.words,
             language: language,
@@ -113,7 +120,7 @@ void main() {
           ),
         ).called(1);
         verify(
-          () => checkWalletStatus(
+          () => scanMnemonic.execute(
             words: mnemonic.words,
             language: language,
             passphrase: mnemonic.passphrase,
@@ -199,11 +206,6 @@ void main() {
       language: bip39.Language.english,
     );
 
-    setUpAll(() {
-      registerFallbackValue(bip39.Language.english);
-      registerFallbackValue(<ScriptType>{});
-    });
-
     setUp(() {
       when(
         () => checkDuplicate.execute(
@@ -213,24 +215,35 @@ void main() {
       ).thenAnswer((_) async => const Ok(null));
     });
 
-    test(
-      'requests the three script types in one call and emits each scan',
-      () async {
-        final bip49 = Completer<({BigInt satoshis, int transactions})>();
-        final bip44 = Completer<({BigInt satoshis, int transactions})>();
+    void scans(Map<ScriptType, _Scan> Function(Set<ScriptType>) answer) =>
         when(
-          () => checkWalletStatus(
+          () => scanMnemonic.execute(
             words: any(named: 'words'),
             language: any(named: 'language'),
             passphrase: any(named: 'passphrase'),
             scriptTypes: any(named: 'scriptTypes'),
           ),
         ).thenAnswer(
-          (_) async => {
-            ScriptType.bip84: Future.value((
-              satoshis: BigInt.from(status.satoshis),
-              transactions: status.transactions,
-            )),
+          (invocation) => answer(
+            invocation.namedArguments[#scriptTypes] as Set<ScriptType>,
+          ),
+        );
+
+    test(
+      'requests the three script types in one call and emits each scan',
+      () async {
+        final bip49 =
+            Completer<Result<MnemonicScan, ImportMnemonicScanFailure>>();
+        final bip44 =
+            Completer<Result<MnemonicScan, ImportMnemonicScanFailure>>();
+        scans(
+          (_) => {
+            ScriptType.bip84: Future.value(
+              Ok((
+                satoshis: BigInt.from(status.satoshis),
+                transactions: status.transactions,
+              )),
+            ),
             ScriptType.bip49: bip49.future,
             ScriptType.bip44: bip44.future,
           },
@@ -239,21 +252,24 @@ void main() {
 
         await cubit.updateMnemonic(mnemonic);
         await pumpEventQueue();
-        bip44.completeError(Exception('scan failed'));
-        await pumpEventQueue();
 
-        // The pending bip49 scan does not hold back bip84; the failed bip44 scan is not surfaced.
-        expect(cubit.state.bip84Status?.satoshis, BigInt.from(status.satoshis));
-        expect(cubit.state.bip49Status, isNull);
-        expect(cubit.state.bip44Status, isNull);
-        expect(cubit.state.failure, isNull);
+        // The pending bip49 and bip44 scans do not hold back bip84.
+        expect(
+          cubit.state.bip84Scan,
+          ScriptTypeScan.found(
+            satoshis: BigInt.from(status.satoshis),
+            transactions: status.transactions,
+          ),
+        );
+        expect(cubit.state.bip49Scan, const ScriptTypeScan.loading());
+        expect(cubit.state.bip44Scan, const ScriptTypeScan.loading());
 
-        bip49.complete((satoshis: BigInt.zero, transactions: 0));
+        bip49.complete(Ok((satoshis: BigInt.zero, transactions: 0)));
         await pumpEventQueue();
-        expect(cubit.state.bip49Status?.transactions, 0);
+        expect(cubit.state.bip49Scan, const ScriptTypeScan.empty());
 
         verify(
-          () => checkWalletStatus(
+          () => scanMnemonic.execute(
             words: mnemonic.words,
             language: bip39.Language.english,
             passphrase: 'TREZOR',
@@ -264,28 +280,5 @@ void main() {
         await cubit.close();
       },
     );
-
-    test('a failed derivation leaves every status empty', () async {
-      when(
-        () => checkWalletStatus(
-          words: any(named: 'words'),
-          language: any(named: 'language'),
-          passphrase: any(named: 'passphrase'),
-          scriptTypes: any(named: 'scriptTypes'),
-        ),
-      ).thenThrow(CheckWalletStatusException('derivation failed'));
-      final cubit = buildCubit();
-
-      await cubit.updateMnemonic(mnemonic);
-      await pumpEventQueue();
-
-      expect(cubit.state.mnemonic, mnemonic);
-      expect(cubit.state.bip84Status, isNull);
-      expect(cubit.state.bip49Status, isNull);
-      expect(cubit.state.bip44Status, isNull);
-      expect(cubit.state.failure, isNull);
-
-      await cubit.close();
-    });
   });
 }
