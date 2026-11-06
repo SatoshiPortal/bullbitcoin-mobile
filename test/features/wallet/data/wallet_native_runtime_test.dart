@@ -167,10 +167,33 @@ void main() {
         expect(await runtime.issuedReceiveIndex(row), advanced.index);
         expect(advanced.index, address.index + 1);
         await runtime.close();
+        final missing = row.copyWith(id: 'wpkh([11223344/84h/1h/0h])');
+        rows[missing.id] = missing;
+        when(
+          () => metadata.fetch(missing.id),
+        ).thenAnswer((_) async => rows[missing.id]);
+        final missingKey =
+            (WalletCatalogPortImpl.descriptorFromMetadata(missing)
+                    as Ok<PublicWalletDescriptor, TransactionSyncFailure>)
+                .value
+                .key;
+        final missingStore = File(
+          nativeWalletStoragePath(directory.path, missingKey),
+        );
         final metadataFile = File(writerMetadataPath(directory.path));
         metadataFile.writeAsStringSync('corrupt revision metadata');
         runtime = open();
         await runtime.initialize();
+        expect(missingStore.existsSync(), isFalse);
+        await runtime.close();
+        runtime = open();
+        await runtime.initialize();
+        expect(
+          missingStore.existsSync(),
+          isFalse,
+          reason: 'metadata quarantine must remain existing-only after restart',
+        );
+        rows.remove(missing.id);
         final adopted = await runtime.bitcoin(WalletModel.fromMetadata(row));
         expect(adopted.balance().total.toSat(), 0);
         expect(
