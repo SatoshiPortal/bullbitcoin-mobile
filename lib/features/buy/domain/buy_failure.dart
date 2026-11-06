@@ -59,3 +59,8 @@ final class BuyQuoteUnavailableFailure extends BuyFailure {
 final class BuyUnexpectedFailure extends BuyFailure {
   const BuyUnexpectedFailure([super.logMessage]);
 }
+
+/// The selected network cannot use the exchange.
+final class BuyUnsupportedNetworkFailure extends BuyFailure {
+  const BuyUnsupportedNetworkFailure();
+}

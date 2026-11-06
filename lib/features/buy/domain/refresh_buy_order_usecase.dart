@@ -1,3 +1,5 @@
+import 'package:primitives/primitives.dart'
+    show BitcoinNetwork, NetworkEnv, NetworkCapabilities, NetworkCapability;
 import 'package:bb_mobile/core/errors/exchange_errors.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/buy/domain/buy_failure.dart';
@@ -27,7 +29,20 @@ class RefreshBuyOrderUsecase {
   }) async {
     try {
       final settings = await _settingsRepository.fetch();
-      final isTestnet = settings.environment.isTestnet;
+      final environment = settings.environment.networkEnv;
+      final exchangeNetwork = switch (environment) {
+        NetworkEnv.mainnet => BitcoinNetwork.mainnet,
+        NetworkEnv.testnet => BitcoinNetwork.testnet,
+        NetworkEnv.regtest => BitcoinNetwork.regtest,
+        NetworkEnv.signet => BitcoinNetwork.signet,
+      };
+      if (!NetworkCapabilities.supports(
+        exchangeNetwork,
+        NetworkCapability.exchange,
+      )) {
+        return const Err(BuyUnsupportedNetworkFailure());
+      }
+      final isTestnet = environment == NetworkEnv.testnet;
       final repo = isTestnet
           ? _testnetExchangeOrderRepository
           : _mainnetExchangeOrderRepository;
