@@ -1,10 +1,6 @@
 import 'dart:async';
 import 'dart:math';
 
-import 'package:transaction_sync/read.dart';
-import 'package:transaction_sync/transaction_sync.dart';
-import 'package:primitives/primitives.dart' as primitives;
-
 import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/utils/address_script_conversions.dart';
@@ -56,22 +52,6 @@ class BdkWalletDatasource {
 
   BdkWalletDatasource({Future<bdk.Wallet> Function(WalletModel)? readWallet})
     : _readWallet = readWallet ?? BdkFacade.createWallet;
-
-  /// Prepared for writer cutover; existing production constructors stay legacy.
-  BdkWalletDatasource.withReader({
-    required WalletSnapshotReader reader,
-    required WalletCatalogPort catalog,
-  }) : this(
-         readWallet: (wallet) => reader.borrowedHandle<bdk.Wallet>(
-           WalletKey(
-             id: wallet.id,
-             network: wallet.isTestnet
-                 ? primitives.BitcoinNetwork.testnet
-                 : primitives.BitcoinNetwork.mainnet,
-           ),
-           catalog,
-         ),
-       );
 
   Future<BalanceModel> getBalance({required WalletModel wallet}) async {
     final bdkWallet = await _readWallet(wallet);
