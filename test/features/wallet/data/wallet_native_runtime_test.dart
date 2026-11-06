@@ -183,6 +183,18 @@ void main() {
         final metadataFile = File(writerMetadataPath(directory.path));
         metadataFile.writeAsStringSync('corrupt revision metadata');
         runtime = open();
+        // A global catalog failure leaves recovery pending across a restart.
+        when(
+          () => metadata.fetchAll(),
+        ).thenThrow(const FileSystemException('catalog unavailable'));
+        await runtime.initialize();
+        final recoveryMarker = File('${metadataFile.path}.recovery');
+        expect(recoveryMarker.existsSync(), isTrue);
+        await runtime.close();
+        when(
+          () => metadata.fetchAll(),
+        ).thenAnswer((_) async => rows.values.toList());
+        runtime = open();
         await runtime.initialize();
         expect(missingStore.existsSync(), isFalse);
         final healthyKey =
@@ -205,13 +217,19 @@ void main() {
           (afterReads.value as WalletRevisionState).stamp,
           (beforeReads.value as WalletRevisionState).stamp,
         );
+        expect(recoveryMarker.existsSync(), isFalse);
+        await runtime.resumeProvisioning();
+        expect(
+          missingStore.existsSync(),
+          isTrue,
+          reason: 'a completed adoption pass permits explicit provisioning',
+        );
         await runtime.close();
         runtime = open();
         await runtime.initialize();
         expect(
-          missingStore.existsSync(),
-          isFalse,
-          reason: 'metadata quarantine must remain existing-only after restart',
+          await runtime.bitcoin(WalletModel.fromMetadata(missing)),
+          isA<bdk.Wallet>(),
         );
         rows.remove(missing.id);
         final adopted = await runtime.bitcoin(WalletModel.fromMetadata(row));
@@ -244,6 +262,25 @@ void main() {
         expect(
           await runtime.bitcoin(WalletModel.fromMetadata(row)),
           isA<bdk.Wallet>(),
+        );
+        // If corruption destroys a deletion tombstone before catalog removal,
+        // the surviving row is indistinguishable from an interrupted import.
+        await runtime.delete(row);
+        await runtime.close();
+        metadataFile.writeAsStringSync('corrupt deletion metadata');
+        runtime = open();
+        await runtime.initialize();
+        await expectLater(
+          runtime.bitcoin(WalletModel.fromMetadata(row)),
+          throwsA(isA<WalletSnapshotException>()),
+        );
+        expect(recoveryMarker.existsSync(), isFalse);
+        await runtime.resumeProvisioning();
+        expect(
+          await runtime.bitcoin(WalletModel.fromMetadata(row)),
+          isA<bdk.Wallet>(),
+          reason:
+              'documented residual: lost deletion metadata permits reappearance',
         );
       } finally {
         await runtime.close();
