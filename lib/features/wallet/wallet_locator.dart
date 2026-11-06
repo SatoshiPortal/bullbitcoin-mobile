@@ -1,3 +1,5 @@
+import 'package:bb_mobile/features/wallet/data/wallet_native_runtime.dart';
+import 'package:bb_mobile/core/wallet/data/repositories/wallet_address_repository.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_transaction_repository_impl.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
@@ -39,6 +41,36 @@ import 'package:get_it/get_it.dart';
 
 class WalletLocator {
   static void setup(GetIt locator) {
+    locator.registerLazySingleton<WalletNativeRuntime>(
+      () => WalletNativeRuntime(
+        catalog: locator<WalletCatalogPort>(),
+        reserved: locator<ReservedAddressPort>(),
+        metadata: locator<WalletMetadataDatasource>(),
+        sync: locator<ElectrumSync>(),
+        documentsDirectory: () async =>
+            (await getApplicationDocumentsDirectory()).path,
+      ),
+    );
+    locator.registerLazySingleton<BdkWalletDatasource>(
+      () => BdkWalletDatasource(
+        readWallet: locator<WalletNativeRuntime>().bitcoin,
+      ),
+    );
+    locator.registerLazySingleton<LwkWalletDatasource>(
+      () => LwkWalletDatasource(
+        readWallet: locator<WalletNativeRuntime>().liquid,
+      ),
+    );
+    locator.registerLazySingleton<WalletAddressRepository>(
+      () => WalletAddressRepository(
+        native: locator<WalletNativeRuntime>(),
+        walletMetadataDatasource: locator<WalletMetadataDatasource>(),
+        bdkWalletDatasource: locator<BdkWalletDatasource>(),
+        lwkWalletDatasource: locator<LwkWalletDatasource>(),
+        labelsFacade: locator<LabelsFacade>(),
+      ),
+    );
+
     locator.registerLazySingleton<WalletCatalogPort>(
       () => WalletCatalogPortImpl(locator<WalletMetadataDatasource>()),
     );
@@ -50,11 +82,15 @@ class WalletLocator {
       ),
     );
     locator.registerLazySingleton<ForegroundWalletSync>(
-      () => ForegroundWalletSync(locator<ElectrumSync>()),
+      () => ForegroundWalletSync(
+        locator<ElectrumSync>(),
+        native: locator<WalletNativeRuntime>(),
+      ),
     );
     locator.registerLazySingleton<WalletRepository>(() {
       final sync = locator<ForegroundWalletSync>();
       return WalletRepository(
+        native: locator<WalletNativeRuntime>(),
         walletMetadataDatasource: locator<WalletMetadataDatasource>(),
         bdkWalletDatasource: locator<BdkWalletDatasource>(),
         lwkWalletDatasource: locator<LwkWalletDatasource>(),

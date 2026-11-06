@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/wallet/data/wallet_native_runtime.dart';
 import 'dart:io';
 
 import 'package:bb_mobile/bloc_observer.dart';
@@ -49,6 +50,7 @@ class Bull {
       SqliteDatabase(),
       payjoinDatabasePath: payjoinDatabasePath,
     );
+    await locator<WalletNativeRuntime>().initialize();
     Bloc.observer = AppBlocObserver();
 
     // Flush wizard pending values (if any) to SQLite now that the

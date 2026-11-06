@@ -39,13 +39,6 @@ import 'package:get_it/get_it.dart';
 
 class WalletLocator {
   static Future<void> registerDatasources(GetIt locator) async {
-    locator.registerLazySingleton<BdkWalletDatasource>(
-      () => BdkWalletDatasource(),
-    );
-    locator.registerLazySingleton<LwkWalletDatasource>(
-      () => LwkWalletDatasource(),
-    );
-
     locator.registerLazySingleton<WalletMetadataDatasource>(
       () => WalletMetadataDatasource(sqlite: locator<SqliteDatabase>()),
     );
@@ -79,15 +72,6 @@ class WalletLocator {
         bdkWalletDatasource: locator<BdkWalletDatasource>(),
         lwkWalletDatasource: locator<LwkWalletDatasource>(),
         frozenWalletUtxoDatasource: locator<FrozenWalletUtxoDatasource>(),
-        labelsFacade: locator<LabelsFacade>(),
-      ),
-    );
-
-    locator.registerLazySingleton<WalletAddressRepository>(
-      () => WalletAddressRepository(
-        walletMetadataDatasource: locator<WalletMetadataDatasource>(),
-        bdkWalletDatasource: locator<BdkWalletDatasource>(),
-        lwkWalletDatasource: locator<LwkWalletDatasource>(),
         labelsFacade: locator<LabelsFacade>(),
       ),
     );
