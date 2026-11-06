@@ -49,10 +49,37 @@ void main() {
       },
     );
 
-    for (final (role, path) in [
-      ('foreground', 'lib/init.dart'),
-      ('background', 'lib/core/background_tasks/handler.dart'),
-    ]) {
+    test(
+      'background stores use Documents without opening Payjoin or custody',
+      () {
+        final source = File('lib/background_bootstrap.dart').readAsStringSync();
+        expect(source, contains('await getApplicationDocumentsDirectory()'));
+        expect(source, contains('writerMetadataPath(documents.path)'));
+        expect(
+          source,
+          matches(
+            RegExp(
+              r"p\.join\(\s*documents\.path,\s*'wallet_transaction_sync_queue.sqlite'",
+            ),
+          ),
+        );
+        expect(
+          source,
+          contains('PaymentNotifications.openOutbox(documents.path)'),
+        );
+        expect(source, isNot(contains('AppLocator.setup(')));
+        expect(source, isNot(contains('payjoinDatabaseFilename')));
+        expect(source, isNot(contains('package:secrets/')));
+        final schemaGate = source.indexOf('SqliteDatabase.isAtCurrentSchema()');
+        expect(schemaGate, greaterThanOrEqualTo(0));
+        expect(
+          source.indexOf('final sqlite = SqliteDatabase();'),
+          greaterThan(schemaGate),
+        );
+      },
+    );
+
+    for (final (role, path) in [('foreground', 'lib/init.dart')]) {
       test('$role Payjoin storage uses the Documents directory', () {
         final source = File(path).readAsStringSync();
         expect(
