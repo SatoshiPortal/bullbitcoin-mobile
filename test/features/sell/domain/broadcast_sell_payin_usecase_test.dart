@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/wallet/domain/wallet.dart' as app;
 import 'package:bb_mobile/features/send/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/broadcast_liquid_transaction_usecase.dart';
 import 'package:bb_mobile/features/sell/domain/broadcast_sell_payin_usecase.dart';
@@ -30,20 +31,36 @@ void main() {
 
   test('returns the bitcoin txid', () async {
     when(
-      () => bitcoin.execute(any(), isPsbt: any(named: 'isPsbt')),
+      () => bitcoin.execute(
+        any(),
+        isPsbt: any(named: 'isPsbt'),
+        network: app.Network.bitcoinMainnet,
+      ),
     ).thenAnswer((_) async => 'txid-1');
 
-    final result = await usecase.bitcoin('signed', isPsbt: true);
+    final result = await usecase.bitcoin(
+      'signed',
+      isPsbt: true,
+      network: app.Network.bitcoinMainnet,
+    );
 
     expect((result as Ok<String, SellFailure>).value, 'txid-1');
   });
 
   test('a rejected bitcoin broadcast is sanitized, never raw', () async {
     when(
-      () => bitcoin.execute(any(), isPsbt: any(named: 'isPsbt')),
+      () => bitcoin.execute(
+        any(),
+        isPsbt: any(named: 'isPsbt'),
+        network: app.Network.bitcoinMainnet,
+      ),
     ).thenThrow(Exception(_rawReason));
 
-    final result = await usecase.bitcoin('signed', isPsbt: true);
+    final result = await usecase.bitcoin(
+      'signed',
+      isPsbt: true,
+      network: app.Network.bitcoinMainnet,
+    );
 
     switch (result) {
       case Ok():

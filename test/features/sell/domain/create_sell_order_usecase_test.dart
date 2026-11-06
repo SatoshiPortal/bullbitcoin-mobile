@@ -74,6 +74,40 @@ void main() {
     ).thenThrow(error);
   }
 
+  test('regtest refuses sell creation before backend IO', () async {
+    final settings = _MockSettingsRepository();
+    final testnet = _MockExchangeOrderRepository();
+    when(settings.fetch).thenAnswer(
+      (_) async => const SettingsEntity(
+        environment: Environment.regtest,
+        bitcoinUnit: BitcoinUnit.sats,
+        currencyCode: 'CAD',
+      ),
+    );
+    final guarded = CreateSellOrderUsecase(
+      mainnetExchangeOrderRepository: mainnet,
+      testnetExchangeOrderRepository: testnet,
+      settingsRepository: settings,
+      payjoinPolicy: payjoinPolicy,
+    );
+    final result = await guarded.execute(
+      orderAmount: const FiatAmount(100),
+      currency: FiatCurrency.cad,
+      network: OrderBitcoinNetwork.bitcoin,
+    );
+    expect(
+      result,
+      isA<Err>().having(
+        (result) => result.failure,
+        'failure',
+        isA<SellUnsupportedNetworkFailure>(),
+      ),
+    );
+    verifyZeroInteractions(mainnet);
+    verifyZeroInteractions(testnet);
+    verifyZeroInteractions(payjoinPolicy);
+  });
+
   group('EUR recipient payouts', () {
     for (final network in OrderBitcoinNetwork.values) {
       for (final type in [

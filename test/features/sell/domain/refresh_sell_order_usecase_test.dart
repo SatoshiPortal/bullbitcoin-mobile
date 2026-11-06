@@ -51,6 +51,30 @@ void main() {
     return order;
   }
 
+  test('regtest refuses sell refresh before backend IO', () async {
+    when(settingsRepository.fetch).thenAnswer(
+      (_) async => const SettingsEntity(
+        environment: Environment.regtest,
+        bitcoinUnit: BitcoinUnit.sats,
+        currencyCode: 'CAD',
+      ),
+    );
+    final result = await usecase.execute(
+      orderId: 'order-1',
+      expectedDepositAddress: _confirmedAddress,
+    );
+    expect(
+      result,
+      isA<Err>().having(
+        (result) => result.failure,
+        'failure',
+        isA<SellUnsupportedNetworkFailure>(),
+      ),
+    );
+    verifyZeroInteractions(mainnet);
+    verifyZeroInteractions(testnet);
+  });
+
   test(
     'returns the refreshed order when the deposit address is stable',
     () async {

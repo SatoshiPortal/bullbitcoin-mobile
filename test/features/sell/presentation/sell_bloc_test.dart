@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/wallet/domain/wallet.dart' as app;
 import 'dart:async';
 import 'dart:io';
 
@@ -203,6 +204,7 @@ void main() {
   );
 
   setUpAll(() {
+    registerFallbackValue(BitcoinNetwork.mainnet);
     registerFallbackValue(_FakeNewLabel());
     registerFallbackValue(const NetworkFee.absolute(200));
     registerFallbackValue(<WalletUtxo>[]);
@@ -314,7 +316,11 @@ void main() {
       )),
     );
     when(
-      () => broadcastSellPayin.bitcoin(any(), isPsbt: any(named: 'isPsbt')),
+      () => broadcastSellPayin.bitcoin(
+        any(),
+        isPsbt: any(named: 'isPsbt'),
+        network: app.Network.bitcoinMainnet,
+      ),
     ).thenAnswer((_) async => Ok<String, SellFailure>(expectedTxid));
     when(
       () => labelsFacade.store(any()),
@@ -511,7 +517,7 @@ void main() {
         when(
           () => sendWithPayjoin.execute(
             walletId: any(named: 'walletId'),
-            isTestnet: any(named: 'isTestnet'),
+            network: any(named: 'network'),
             bip21: any(named: 'bip21'),
             unsignedOriginalPsbt: any(named: 'unsignedOriginalPsbt'),
             amountSat: any(named: 'amountSat'),
@@ -561,7 +567,7 @@ void main() {
       when(
         () => sendWithPayjoin.execute(
           walletId: any(named: 'walletId'),
-          isTestnet: any(named: 'isTestnet'),
+          network: any(named: 'network'),
           bip21: any(named: 'bip21'),
           unsignedOriginalPsbt: any(named: 'unsignedOriginalPsbt'),
           amountSat: any(named: 'amountSat'),
@@ -606,7 +612,11 @@ void main() {
       );
       verify(() => watchPayjoin.execute(bip21)).called(1);
       verifyNever(
-        () => broadcastSellPayin.bitcoin(any(), isPsbt: any(named: 'isPsbt')),
+        () => broadcastSellPayin.bitcoin(
+          any(),
+          isPsbt: any(named: 'isPsbt'),
+          network: app.Network.bitcoinMainnet,
+        ),
       );
     });
 
@@ -619,7 +629,7 @@ void main() {
       when(
         () => sendWithPayjoin.execute(
           walletId: any(named: 'walletId'),
-          isTestnet: any(named: 'isTestnet'),
+          network: any(named: 'network'),
           bip21: any(named: 'bip21'),
           unsignedOriginalPsbt: any(named: 'unsignedOriginalPsbt'),
           amountSat: any(named: 'amountSat'),
@@ -661,7 +671,7 @@ void main() {
         when(
           () => sendWithPayjoin.execute(
             walletId: any(named: 'walletId'),
-            isTestnet: any(named: 'isTestnet'),
+            network: any(named: 'network'),
             bip21: any(named: 'bip21'),
             unsignedOriginalPsbt: any(named: 'unsignedOriginalPsbt'),
             amountSat: any(named: 'amountSat'),
@@ -741,7 +751,7 @@ void main() {
         when(
           () => sendWithPayjoin.execute(
             walletId: any(named: 'walletId'),
-            isTestnet: any(named: 'isTestnet'),
+            network: any(named: 'network'),
             bip21: any(named: 'bip21'),
             unsignedOriginalPsbt: any(named: 'unsignedOriginalPsbt'),
             amountSat: any(named: 'amountSat'),
@@ -818,7 +828,7 @@ void main() {
       when(
         () => sendWithPayjoin.execute(
           walletId: any(named: 'walletId'),
-          isTestnet: any(named: 'isTestnet'),
+          network: any(named: 'network'),
           bip21: any(named: 'bip21'),
           unsignedOriginalPsbt: any(named: 'unsignedOriginalPsbt'),
           amountSat: any(named: 'amountSat'),
@@ -848,7 +858,7 @@ void main() {
       verify(
         () => sendWithPayjoin.execute(
           walletId: 'wallet-1',
-          isTestnet: false,
+          network: BitcoinNetwork.mainnet,
           bip21: bip21,
           unsignedOriginalPsbt: unsignedPsbt,
           amountSat: 100000,
@@ -868,7 +878,7 @@ void main() {
         when(
           () => sendWithPayjoin.execute(
             walletId: any(named: 'walletId'),
-            isTestnet: any(named: 'isTestnet'),
+            network: any(named: 'network'),
             bip21: any(named: 'bip21'),
             unsignedOriginalPsbt: any(named: 'unsignedOriginalPsbt'),
             amountSat: any(named: 'amountSat'),
@@ -899,7 +909,7 @@ void main() {
         verify(
           () => sendWithPayjoin.execute(
             walletId: 'wallet-1',
-            isTestnet: any(named: 'isTestnet'),
+            network: any(named: 'network'),
             bip21: bip21,
             unsignedOriginalPsbt: unsignedPsbt,
             amountSat: 100000,
@@ -908,7 +918,11 @@ void main() {
           ),
         ).called(1);
         verifyNever(
-          () => broadcastSellPayin.bitcoin(any(), isPsbt: any(named: 'isPsbt')),
+          () => broadcastSellPayin.bitcoin(
+            any(),
+            isPsbt: any(named: 'isPsbt'),
+            network: app.Network.bitcoinMainnet,
+          ),
         );
 
         bloc.add(const SellEvent.sendPaymentConfirmed());
@@ -942,7 +956,11 @@ void main() {
         await Future<void>.delayed(const Duration(seconds: 6));
 
         verify(
-          () => broadcastSellPayin.bitcoin(any(), isPsbt: any(named: 'isPsbt')),
+          () => broadcastSellPayin.bitcoin(
+            any(),
+            isPsbt: any(named: 'isPsbt'),
+            network: app.Network.bitcoinMainnet,
+          ),
         ).called(1);
         verify(
           () => prepareSellBitcoinPayin.execute(
@@ -1100,7 +1118,11 @@ void main() {
       ),
     ).called(1);
     verifyNever(
-      () => broadcastSellPayin.bitcoin(any(), isPsbt: any(named: 'isPsbt')),
+      () => broadcastSellPayin.bitcoin(
+        any(),
+        isPsbt: any(named: 'isPsbt'),
+        network: app.Network.bitcoinMainnet,
+      ),
     );
 
     final state = bloc.state as SellPaymentState;
@@ -1357,7 +1379,11 @@ void main() {
       bloc.add(const SellEvent.sendPaymentConfirmed());
       await Future<void>.delayed(const Duration(milliseconds: 50));
       verifyNever(
-        () => broadcastSellPayin.bitcoin(any(), isPsbt: any(named: 'isPsbt')),
+        () => broadcastSellPayin.bitcoin(
+          any(),
+          isPsbt: any(named: 'isPsbt'),
+          network: app.Network.bitcoinMainnet,
+        ),
       );
     });
 
@@ -1529,7 +1555,11 @@ void main() {
       await Future<void>.delayed(const Duration(milliseconds: 100));
 
       verifyNever(
-        () => broadcastSellPayin.bitcoin(any(), isPsbt: any(named: 'isPsbt')),
+        () => broadcastSellPayin.bitcoin(
+          any(),
+          isPsbt: any(named: 'isPsbt'),
+          network: app.Network.bitcoinMainnet,
+        ),
       );
       expect((bloc.state as SellPaymentState).isConfirmingPayment, isFalse);
     });
