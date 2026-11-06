@@ -43,6 +43,7 @@ class WalletDetailScreen extends StatelessWidget {
     });
     final walletName = wallet != null ? wallet.displayLabel(context) : '';
 
+    final balanceSat = wallet?.balanceSat;
     return Scaffold(
       appBar: AppBar(
         title: walletName.isEmpty
@@ -67,6 +68,8 @@ class WalletDetailScreen extends StatelessWidget {
       ),
       body: wallet == null
           ? const BullShimmerBox(height: 100)
+          : balanceSat == null
+          ? Center(child: Text(context.loc.walletLoadFailed))
           : BlocProvider<TransactionsCubit>(
               create: (_) =>
                   locator<TransactionsCubit>(param1: walletId)..loadTxs(),
@@ -87,14 +90,14 @@ class WalletDetailScreen extends StatelessWidget {
                         isLiquid: wallet.isLiquid,
                         signer: wallet.signer,
                         balanceText: CurrencyText(
-                          wallet.balanceSat.toInt(),
+                          balanceSat.toInt(),
                           style: Theme.of(context).textTheme.displaySmall
                               ?.copyWith(color: context.appColors.onPrimary),
                           showFiat: false,
                         ),
                         eyeToggle: const EyeToggle(),
                         fiatBalance: HomeFiatBalance(
-                          balanceSat: wallet.balanceSat.toInt(),
+                          balanceSat: balanceSat.toInt(),
                         ),
                         syncingIndicator: const TxsSyncingIndicator(),
                       ),

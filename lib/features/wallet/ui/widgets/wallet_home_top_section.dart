@@ -152,6 +152,7 @@ class _BtcTotalAmt extends StatelessWidget {
     }
 
     final btcTotal = walletState.totalBalance();
+    if (btcTotal == null) return Text(context.loc.walletLoadFailed);
 
     return CurrencyText(
       btcTotal,
@@ -172,8 +173,10 @@ class _FiatAmt extends StatelessWidget {
         walletState.status == WalletStatus.initial ||
         walletState.status == WalletStatus.loading;
 
+    final total = walletState.totalBalance();
+    if (total == null) return Text(context.loc.walletLoadFailed);
     return HomeFiatBalance(
-      balanceSat: walletState.totalBalance(),
+      balanceSat: total,
       showBalanceLoading: showBalanceLoading,
     );
   }

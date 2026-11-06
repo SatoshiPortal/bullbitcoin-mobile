@@ -510,8 +510,8 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
 
       // Insufficient balance is surfaced as an inline form error on the
       // amount field (see SwapAmountInput); stop here so no swap is created.
-      final balanceSat = state.fromWallet?.balanceSat.toInt() ?? 0;
-      if (inputAmountSat > balanceSat) {
+      final balanceSat = state.fromWallet?.balanceSat?.toInt();
+      if (balanceSat == null || inputAmountSat > balanceSat) {
         return;
       }
 
@@ -675,6 +675,10 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
     final availableAmountSat = state.selectedUtxos.isEmpty
         ? fromWallet.balanceSat
         : BigInt.from(state.selectedUtxoTotalSat);
+    if (availableAmountSat == null) {
+      emit(state.copyWith(swapFailure: const SwapUnexpectedFailure()));
+      return;
+    }
     if (quote.inAmountSat > availableAmountSat) {
       throw InsufficientFundsSwapException();
     }
@@ -1772,7 +1776,9 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
 
   Future<int?> getMaxAmountSat(Wallet fromWallet) async {
     try {
-      if (fromWallet.balanceSat <= BigInt.zero) return 0;
+      final knownBalance = fromWallet.balanceSat;
+      if (knownBalance == null) return null;
+      if (knownBalance <= BigInt.zero) return 0;
       final networkFee = fromWallet.isLiquid
           ? state.liquidNetworkFees!.fastest
           : state.bitcoinNetworkFees!.fastest;
@@ -1816,7 +1822,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
         (sum, utxo) => sum + utxo.amountSat.toInt(),
       );
       final balanceSat = state.selectedUtxos.isEmpty
-          ? fromWallet.balanceSat.toInt()
+          ? knownBalance.toInt()
           : selectedBalanceSat;
       final maxAmountSat = balanceSat - absoluteFees;
       return maxAmountSat < 0 ? 0 : maxAmountSat;
