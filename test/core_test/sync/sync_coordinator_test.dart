@@ -54,6 +54,7 @@ void main() {
   late _MockSyncSwaps syncSwaps;
   late SyncCoordinator coordinator;
   late Future<void> Function() spCallback;
+  var revisionReads = 0;
 
   setUp(() {
     getWallets = _MockGetWallets();
@@ -61,6 +62,7 @@ void main() {
     syncSwaps = _MockSyncSwaps();
     when(syncSwaps.call).thenAnswer((_) async {});
     spCallback = () async {};
+    revisionReads = 0;
     coordinator = SyncCoordinator(
       getWalletsUsecase: getWallets,
       syncWalletUsecase: syncWallet,
@@ -68,6 +70,9 @@ void main() {
       // Deferred so a test can swap the behaviour after construction, the way
       // the composition root's lazy closure resolves the facade at call time.
       syncSp: () => spCallback(),
+      refreshRevisions: () async {
+        revisionReads++;
+      },
     );
   });
 
@@ -333,17 +338,26 @@ void main() {
     when(
       () => getWallets.execute(onlyLiquid: true),
     ).thenAnswer((_) async => Ok(<Wallet>[]));
-    TestWidgetsFlutterBinding.instance.handleAppLifecycleStateChanged(
+    for (final state in [
+      AppLifecycleState.inactive,
+      AppLifecycleState.hidden,
       AppLifecycleState.paused,
-    );
+    ]) {
+      TestWidgetsFlutterBinding.instance.handleAppLifecycleStateChanged(state);
+    }
 
     await coordinator.sync(only: {SyncKind.swaps}, trigger: SyncTrigger.user);
 
     verifyNever(syncSwaps.call);
-    TestWidgetsFlutterBinding.instance.handleAppLifecycleStateChanged(
+    for (final state in [
+      AppLifecycleState.hidden,
+      AppLifecycleState.inactive,
       AppLifecycleState.resumed,
-    );
+    ]) {
+      TestWidgetsFlutterBinding.instance.handleAppLifecycleStateChanged(state);
+    }
     await pumpEventQueue();
+    expect(revisionReads, 1);
   });
 
   group('SyncKind.sp', () {
