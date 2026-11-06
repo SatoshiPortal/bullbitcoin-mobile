@@ -125,6 +125,7 @@ void main() {
           url: any(named: 'url'),
           network: any(named: 'network'),
           enableSsl: any(named: 'enableSsl'),
+          validateDomain: any(named: 'validateDomain'),
         ),
       ).thenAnswer((_) async => const Err(MempoolValidationTimeoutFailure()));
 
@@ -148,6 +149,7 @@ void main() {
           url: any(named: 'url'),
           network: any(named: 'network'),
           enableSsl: any(named: 'enableSsl'),
+          validateDomain: any(named: 'validateDomain'),
         ),
       );
     });
@@ -158,6 +160,7 @@ void main() {
           url: any(named: 'url'),
           network: any(named: 'network'),
           enableSsl: any(named: 'enableSsl'),
+          validateDomain: any(named: 'validateDomain'),
         ),
       ).thenAnswer((_) async => const Ok(null));
       when(
@@ -169,6 +172,37 @@ void main() {
       expect(result, isA<Err>());
       expect((result as Err).failure, isA<MempoolSaveFailure>());
     });
+
+    test(
+      'defaults new custom servers to relaxed certificate validation',
+      () async {
+        when(
+          () => validator.validateServer(
+            url: any(named: 'url'),
+            network: any(named: 'network'),
+            enableSsl: any(named: 'enableSsl'),
+            validateDomain: any(named: 'validateDomain'),
+          ),
+        ).thenAnswer((_) async => const Ok(null));
+        when(() => repo.save(any())).thenAnswer((_) async => const Ok(null));
+
+        final result = await usecase.execute(request());
+
+        expect(result, isA<Ok>());
+        verify(
+          () => validator.validateServer(
+            url: 'mempool.example.com',
+            network: MempoolServerNetwork.bitcoinMainnet,
+            enableSsl: true,
+            validateDomain: false,
+          ),
+        ).called(1);
+        final server =
+            verify(() => repo.save(captureAny())).captured.single
+                as MempoolServer;
+        expect(server.validateDomain, isFalse);
+      },
+    );
 
     test(
       'returns SameAsDefault failure when custom URL matches the default',

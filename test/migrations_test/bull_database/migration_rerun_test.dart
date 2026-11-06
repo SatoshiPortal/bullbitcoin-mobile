@@ -156,6 +156,11 @@ void _seedUserData(File file) {
     );
     db.execute('UPDATE mempool_settings SET use_for_fee_estimation = 0');
     db.execute('UPDATE mempool_servers SET enable_ssl = 0');
+    db.execute(
+      'INSERT INTO mempool_servers '
+      '(url, is_testnet, is_liquid, is_custom, enable_ssl, validate_domain) '
+      "VALUES ('mempool.local', 0, 0, 1, 1, 0)",
+    );
     db.execute('UPDATE recoverbull SET is_permission_granted = 1');
   } finally {
     db.dispose();

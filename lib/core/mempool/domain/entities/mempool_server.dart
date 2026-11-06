@@ -8,12 +8,14 @@ class MempoolServer {
   final MempoolServerNetwork _network;
   final bool _isCustom;
   final bool _enableSsl;
+  final bool _validateDomain;
 
   MempoolServer._({
     required this._url,
     required this._network,
     required this._isCustom,
     required this._enableSsl,
+    required this._validateDomain,
   });
 
   /// Validates [url] and builds a custom server, returning a typed failure
@@ -22,6 +24,7 @@ class MempoolServer {
     required String url,
     required MempoolServerNetwork network,
     bool enableSsl = true,
+    bool validateDomain = false,
   }) {
     final parsed = MempoolUrlParser.tryParse(url);
     if (parsed == null) {
@@ -33,6 +36,7 @@ class MempoolServer {
         network: network,
         isCustom: true,
         enableSsl: enableSsl,
+        validateDomain: validateDomain,
       ),
     );
   }
@@ -42,12 +46,14 @@ class MempoolServer {
     required MempoolServerNetwork network,
     required bool isCustom,
     bool enableSsl = true,
+    bool validateDomain = true,
   }) {
     return MempoolServer._(
       url: url,
       network: network,
       isCustom: isCustom,
       enableSsl: enableSsl,
+      validateDomain: validateDomain,
     );
   }
 
@@ -55,6 +61,7 @@ class MempoolServer {
   MempoolServerNetwork get network => _network;
   bool get isCustom => _isCustom;
   bool get enableSsl => _enableSsl;
+  bool get validateDomain => _validateDomain;
   bool get canUseForFeeEstimation => _enableSsl;
   String get fullUrl => _enableSsl ? 'https://$_url' : 'http://$_url';
 
@@ -69,16 +76,18 @@ class MempoolServer {
           _url == other._url &&
           _network == other._network &&
           _isCustom == other._isCustom &&
-          _enableSsl == other._enableSsl;
+          _enableSsl == other._enableSsl &&
+          _validateDomain == other._validateDomain;
 
   @override
   int get hashCode =>
       _url.hashCode ^
       _network.hashCode ^
       _isCustom.hashCode ^
-      _enableSsl.hashCode;
+      _enableSsl.hashCode ^
+      _validateDomain.hashCode;
 
   @override
   String toString() =>
-      'MempoolServer(url: $_url, network: $_network, isCustom: $_isCustom, enableSsl: $_enableSsl)';
+      'MempoolServer(url: $_url, network: $_network, isCustom: $_isCustom, enableSsl: $_enableSsl, validateDomain: $_validateDomain)';
 }
