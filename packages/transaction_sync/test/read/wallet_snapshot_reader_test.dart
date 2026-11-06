@@ -5,6 +5,7 @@ import 'package:crypto/crypto.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 import 'package:transaction_sync/read.dart';
+import 'package:transaction_sync/write.dart';
 import 'package:transaction_sync/transaction_sync.dart';
 
 void main() {
@@ -67,7 +68,7 @@ void main() {
   });
   tearDown(() async => directory.delete(recursive: true));
 
-  void create() {
+  void create({int revealed = 0}) {
     final persister = bdk.Persister.newSqlite(
       path: nativeWalletStoragePath(documents.path, descriptor.key),
     );
@@ -86,13 +87,70 @@ void main() {
       persister: persister,
       lookahead: 25,
     );
-    wallet.revealNextAddress(keychain: bdk.KeychainKind.external_);
+    for (final address in wallet.revealAddressesTo(
+      keychain: bdk.KeychainKind.external_,
+      index: revealed,
+    )) {
+      address.address.dispose();
+    }
     wallet.persist(persister: persister);
     wallet.dispose();
     persister.dispose();
     external.dispose();
     internal.dispose();
   }
+
+  test('writer adopts the previously revealed receive index', () async {
+    create(revealed: 12);
+    final revisions = RevisionStore(writerMetadataPath(documents.path));
+    final writer = NativeWalletWriter(
+      lockDirectory: writerLockDirectory(documents.path),
+      revisions: revisions,
+      documentsDirectory: documents.path,
+      catalog: _Catalog(descriptor),
+      reservedAddresses: _Reserved(),
+    );
+    try {
+      expect(
+        await writer.create(
+          descriptor.key,
+          expectedGeneration: 0,
+          existingOnly: true,
+        ),
+        isA<Ok>(),
+      );
+      final first =
+          await writer.receive(descriptor.key, expectedGeneration: 0)
+              as Ok<ReceiveAddressIssued, TransactionSyncFailure>;
+      expect(first.value.index, 12);
+      final reopened = NativeWalletWriter(
+        lockDirectory: writerLockDirectory(documents.path),
+        revisions: revisions,
+        documentsDirectory: documents.path,
+        catalog: _Catalog(descriptor),
+        reservedAddresses: _Reserved(),
+      );
+      final again =
+          await reopened.receive(descriptor.key, expectedGeneration: 0)
+              as Ok<ReceiveAddressIssued, TransactionSyncFailure>;
+      expect(again.value.address, first.value.address);
+      expect(again.value.index, 12);
+      final next =
+          await reopened.receive(
+                descriptor.key,
+                expectedGeneration: 0,
+                advance: true,
+              )
+              as Ok<ReceiveAddressIssued, TransactionSyncFailure>;
+      expect(next.value.index, 13);
+      final same =
+          await reopened.receive(descriptor.key, expectedGeneration: 0)
+              as Ok<ReceiveAddressIssued, TransactionSyncFailure>;
+      expect(same.value.address, next.value.address);
+    } finally {
+      await revisions.close();
+    }
+  });
 
   test(
     'read and cached read preserve real bytes and directory listing',
@@ -305,4 +363,24 @@ final class FakeReadiness implements WalletReadReadiness {
       ),
     );
   }
+}
+
+final class _Catalog implements WalletCatalogPort {
+  final PublicWalletDescriptor descriptor;
+  _Catalog(this.descriptor);
+  @override
+  Future<Result<PublicWalletDescriptor, TransactionSyncFailure>> find(
+    WalletKey key,
+  ) async => Ok(descriptor);
+  @override
+  Future<Result<List<PublicWalletDescriptor>, TransactionSyncFailure>>
+  list() async => Ok([descriptor]);
+}
+
+final class _Reserved implements ReservedAddressPort {
+  @override
+  Future<Result<bool, TransactionSyncFailure>> isReserved(
+    WalletKey key,
+    String address,
+  ) async => const Ok(false);
 }
