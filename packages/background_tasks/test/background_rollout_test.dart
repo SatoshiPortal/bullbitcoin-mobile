@@ -3,12 +3,19 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Scheduler implements BackgroundTaskScheduler {
+  bool failInitialization = false;
+  bool initialized = false;
   final cancelled = <String>[];
   final registered = <String>[];
   @override
-  Future<void> initialize(BackgroundTaskDispatcher dispatcher) async {}
+  Future<void> initialize(BackgroundTaskDispatcher dispatcher) async {
+    if (failInitialization) throw StateError('initialize failed');
+    initialized = true;
+  }
+
   @override
   Future<void> cancelByUniqueName(String uniqueName) async {
+    expect(initialized, isTrue, reason: 'initialize before cancellation');
     cancelled.add(uniqueName);
   }
 
@@ -44,6 +51,19 @@ void main() {
       );
     },
   );
+  test('initialization failure never cancels schedules', () async {
+    final scheduler = Scheduler()..failInitialization = true;
+    await expectLater(
+      applyBackgroundTaskSchedule(
+        dispatcher: () {},
+        desktopScheduler: scheduler,
+        scheduler: scheduler,
+      ),
+      throwsStateError,
+    );
+    expect(scheduler.cancelled, isEmpty);
+    expect(scheduler.registered, isEmpty);
+  });
   test(
     'explicit maintainer activation registers the selected interval',
     () async {
