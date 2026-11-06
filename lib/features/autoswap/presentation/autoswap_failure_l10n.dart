@@ -9,6 +9,8 @@ extension AutoswapFailureL10n on AutoswapFailure {
     BuildContext context, {
     BitcoinUnit? unit,
   }) => switch (this) {
+    AutoswapUnsupportedNetworkFailure() =>
+      context.loc.networkFeatureUnavailable,
     AutoswapSettingsUnavailableFailure() =>
       context.loc.autoswapLoadSettingsError,
     AutoswapSettingsSaveFailure() => context.loc.autoswapUpdateSettingsError,

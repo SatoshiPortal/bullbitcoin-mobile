@@ -1,3 +1,6 @@
+import 'package:bull_logger/bull_logger.dart';
+import 'package:primitives/primitives.dart'
+    show BitcoinNetwork, NetworkCapabilities, NetworkCapability, NetworkEnv;
 import 'dart:async';
 
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
@@ -51,6 +54,24 @@ class AutoSwapSettingsRepositoryImpl implements AutoSwapSettingsRepository {
   @override
   Stream<AutoSwap> watchAutoSwapParams() => _controller.stream;
 
-  Future<int> _environmentRowId() async =>
-      (await _settingsRepository.fetch()).environment.isTestnet ? 2 : 1;
+  Future<int> _environmentRowId() async {
+    final environment =
+        (await _settingsRepository.fetch()).environment.networkEnv;
+    final network = switch (environment) {
+      NetworkEnv.mainnet => BitcoinNetwork.mainnet,
+      NetworkEnv.testnet => BitcoinNetwork.testnet,
+      NetworkEnv.regtest => BitcoinNetwork.regtest,
+      NetworkEnv.signet => BitcoinNetwork.signet,
+    };
+    if (!NetworkCapabilities.supports(network, NetworkCapability.swaps)) {
+      log.config('Autoswap capability unavailable network=${environment.name}');
+      throw const AutoswapNetworkUnavailableException();
+    }
+    return switch (environment) {
+      NetworkEnv.mainnet => 1,
+      NetworkEnv.testnet => 2,
+      NetworkEnv.regtest ||
+      NetworkEnv.signet => throw const AutoswapNetworkUnavailableException(),
+    };
+  }
 }

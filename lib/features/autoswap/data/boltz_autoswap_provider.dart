@@ -123,10 +123,10 @@ class BoltzAutoswapProvider implements AutoswapProviderPort {
       final swap = await _swapRepository.createLiquidToBitcoinSwap(
         sendWalletId: liquidWallet.id,
         amountSat: amountSat,
-        btcElectrumUrl: environment.isTestnet
+        btcElectrumUrl: environment.requireHistoricalTestnet()
             ? ApiServiceConstants.publicElectrumTestUrl
             : ApiServiceConstants.bbElectrumUrl,
-        lbtcElectrumUrl: environment.isTestnet
+        lbtcElectrumUrl: environment.requireHistoricalTestnet()
             ? ApiServiceConstants.publicliquidElectrumTestUrlPath
             : ApiServiceConstants.bbLiquidElectrumUrlPath,
         receiveWalletId: recipientWallet.id,
@@ -168,7 +168,7 @@ class BoltzAutoswapProvider implements AutoswapProviderPort {
       );
       final txid = await _broadcastLiquidTransaction.execute(
         signed,
-        isTestnet: environment.isTestnet,
+        isTestnet: environment.requireHistoricalTestnet(),
       );
       await _swapRepository.updatePaidSendSwap(
         swapId: swap.id,

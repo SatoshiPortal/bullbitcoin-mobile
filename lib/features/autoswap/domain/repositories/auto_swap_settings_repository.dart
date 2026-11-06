@@ -7,3 +7,9 @@ abstract interface class AutoSwapSettingsRepository {
 
   Stream<AutoSwap> watchAutoSwapParams();
 }
+
+/// The legacy throwing repository refuses before reading or changing a
+/// historical network's settings. Feature use cases map it to AutoswapFailure.
+final class AutoswapNetworkUnavailableException implements Exception {
+  const AutoswapNetworkUnavailableException();
+}
