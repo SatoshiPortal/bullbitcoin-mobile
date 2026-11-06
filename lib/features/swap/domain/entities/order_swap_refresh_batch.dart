@@ -1,5 +1,5 @@
-import 'order_swap_record.dart';
-import '../swap_failure.dart';
+import 'package:bb_mobile/features/swap/domain/entities/order_swap_record.dart';
+import 'package:bb_mobile/features/swap/domain/swap_failure.dart';
 
 class OrderSwapRefreshBatch {
   final int pollableOrderCount;

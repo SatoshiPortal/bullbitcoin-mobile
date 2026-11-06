@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:bb_mobile/core/blockchain/data/datasources/bdk_bitcoin_blockchain_datasource.dart';
 import 'package:bb_mobile/core/electrum/domain/ports/electrum_servers_port.dart';
 import 'package:bb_mobile/core/fees/domain/repositories/fees_repository.dart';
-import 'package:secrets/secrets.dart';
 import 'package:bb_mobile/core/storage/payjoin_legacy_data_adapter.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/bdk_wallet_datasource.dart';
@@ -12,12 +11,13 @@ import 'package:bb_mobile/core/wallet/data/payjoin_wallet_adapter.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
-import 'data/payjoin_blockchain_adapter.dart';
-import 'data/payjoin_fees_adapter.dart';
-import 'data/payjoin_transaction_adapter.dart';
-import 'data/payjoin_log_adapter.dart';
+import 'package:bb_mobile/features/transactions/data/payjoin_blockchain_adapter.dart';
+import 'package:bb_mobile/features/transactions/data/payjoin_fees_adapter.dart';
+import 'package:bb_mobile/features/transactions/data/payjoin_log_adapter.dart';
+import 'package:bb_mobile/features/transactions/data/payjoin_transaction_adapter.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:get_it/get_it.dart';
+import 'package:secrets/secrets.dart';
 
 abstract final class PayjoinSetup {
   static void setup(
