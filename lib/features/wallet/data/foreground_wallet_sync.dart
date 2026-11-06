@@ -22,16 +22,23 @@ final class ForegroundWalletSync {
 
   bool isSyncing({String? walletId}) => _sync.isSyncing(walletId: walletId);
 
-  Future<void> synchronize(WalletMetadataModel metadata) async {
+  Future<void> synchronize(
+    WalletMetadataModel metadata, {
+    bool discover = false,
+  }) async {
     final descriptor = WalletCatalogPortImpl.descriptorFromMetadata(metadata);
     switch (descriptor) {
       case Err():
         throw const WalletStorageFailure('Invalid sync descriptor');
       case Ok(:final value):
-        final result = await _sync.execute(value);
+        final result = await _sync.execute(value, discover: discover);
         if (result case Err(:final failure)) {
-          // Legacy void/throw boundary only. The package always returns Result. Do not expose SDK diagnostics or trigger destructive legacy repair.
+          // Legacy void/throw boundary only. The package always returns Result. The temporary status-conflict mapping preserves startup recovery until the writer repair cutover.
           throw switch (failure) {
+            TransactionSyncNeedsRepairFailure() =>
+              const WalletLwkStatusConflictFailure(
+                'Native wallet needs repair',
+              ),
             TransactionSyncConnectionFailure() => const WalletSyncFailure(
               'Electrum sync failed',
             ),

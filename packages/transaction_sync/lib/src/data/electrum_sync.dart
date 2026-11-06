@@ -78,18 +78,26 @@ final class ElectrumSync {
           'Electrum sync started network=${key.network.runtimeType}/${key.network.env.name} discovery=$discover',
         );
         _started.add(key);
-        final result = await _run(descriptor, discover: discover);
+        var connectionSummary = 'route=unselected';
+        final result = await _run(
+          descriptor,
+          discover: discover,
+          onConnection: (connection) {
+            connectionSummary =
+                'route=${descriptor is LiquidWalletDescriptor || connection.socks5?.isNotEmpty != true ? 'direct' : 'proxy'} stop_gap=${connection.stopGap}';
+          },
+        );
         switch (result) {
           case Ok(:final value):
             if (_failures.remove(key) != null) {
               log.fine('Electrum sync recovered');
             }
             log.fine(
-              'Electrum sync finished mode=${value.mode.name} elapsed_ms=${watch.elapsedMilliseconds} ${value._cacheDiagnostics ?? ''}',
+              'Electrum sync finished mode=${value.mode.name} elapsed_ms=${watch.elapsedMilliseconds} $connectionSummary ${value._cacheDiagnostics ?? ''}',
             );
           case Err(:final failure):
             log.fine(
-              'Electrum sync finished outcome=failure elapsed_ms=${watch.elapsedMilliseconds}',
+              'Electrum sync finished outcome=failure elapsed_ms=${watch.elapsedMilliseconds} $connectionSummary',
             );
             final previousFailure = _failures[key];
             _failures[key] = failure.runtimeType;
@@ -101,8 +109,17 @@ final class ElectrumSync {
         }
         _finished.add(SyncFinished(key, result));
         completer.complete(result);
-      } catch (error, stack) {
-        completer.completeError(error, stack);
+      } catch (error) {
+        log.severe(
+          message: 'Electrum sync unexpected failure',
+          error: error.runtimeType.toString(),
+          trace: StackTrace.empty,
+        );
+        const result = Err<SyncCompletion, TransactionSyncFailure>(
+          TransactionSyncStorageFailure(),
+        );
+        _finished.add(SyncFinished(key, result));
+        completer.complete(result);
       } finally {
         if (identical(_active[key], completer.future)) {
           unawaited(_active.remove(key));
@@ -115,6 +132,7 @@ final class ElectrumSync {
   Future<Result<SyncCompletion, TransactionSyncFailure>> _run(
     PublicWalletDescriptor descriptor, {
     required bool discover,
+    required void Function(WalletConnection) onConnection,
   }) async {
     final String root;
     try {
@@ -124,6 +142,7 @@ final class ElectrumSync {
     }
     var retryable = false;
     var attempts = 0;
+    var warnedLiquidProxy = false;
     return _connections.run(
       network: descriptor.key.network,
       mayRetry: (_) => retryable,
@@ -131,9 +150,15 @@ final class ElectrumSync {
         if (attempts++ > 0) {
           log.warning('Electrum sync connection fallback');
         }
-        log.config(
-          'Electrum sync connection network=${descriptor.key.network.runtimeType}/${descriptor.key.network.env.name} route=${connection.socks5?.isNotEmpty == true ? 'proxy' : 'direct'} stop_gap=${connection.stopGap}',
-        );
+        if (descriptor is LiquidWalletDescriptor &&
+            connection.socks5?.isNotEmpty == true &&
+            !warnedLiquidProxy) {
+          warnedLiquidProxy = true;
+          log.warning(
+            'Liquid sync cannot honor SOCKS setting; connecting directly',
+          );
+        }
+        onConnection(connection);
         final attempt = await compute(
           _performSync,
           _SyncParams(descriptor, root, connection, discover),
@@ -165,15 +190,6 @@ Future<_Attempt> _performSync(_SyncParams params) async {
   final connection = params.connection;
   final path = nativeWalletStoragePath(params.root, descriptor.key);
   if (descriptor is LiquidWalletDescriptor) {
-    // The pinned LWK API has no SOCKS argument. Never silently replace a policy-supplied private route with a direct connection.
-    if (connection.socks5?.isNotEmpty == true) {
-      return (
-        result: const Err<SyncCompletion, TransactionSyncFailure>(
-          TransactionSyncConnectionFailure(),
-        ),
-        retryable: false,
-      );
-    }
     if (!Directory(path).existsSync()) {
       return (
         result: const Err<SyncCompletion, TransactionSyncFailure>(
@@ -198,7 +214,7 @@ Future<_Attempt> _performSync(_SyncParams params) async {
     bdk.ElectrumClient? probe;
     try {
       // Protocol-only preflight: no descriptor, chain query or native store. LWK opens its own connection after this; a later failure is not retried.
-      probe = _connect(connection);
+      probe = _connect(connection, direct: true);
       probe.ping();
     } on Exception {
       return (
@@ -391,10 +407,15 @@ Future<_Attempt> _performSync(_SyncParams params) async {
   }
 }
 
-bdk.ElectrumClient _connect(WalletConnection connection) {
+bdk.ElectrumClient _connect(
+  WalletConnection connection, {
+  bool direct = false,
+}) {
   bdk.ElectrumClient build() => bdk.ElectrumClient(
     url: connection.url,
-    socks5: connection.socks5?.isNotEmpty == true ? connection.socks5 : null,
+    socks5: !direct && connection.socks5?.isNotEmpty == true
+        ? connection.socks5
+        : null,
     timeout: connection.timeout.inSeconds.clamp(0, 255),
     retry: connection.retry.clamp(0, 255),
     validateDomain: connection.validateDomain,

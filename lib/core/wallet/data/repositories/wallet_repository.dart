@@ -26,7 +26,7 @@ class WalletRepository {
   final WalletMetadataDatasource _walletMetadataDatasource;
   final BdkWalletDatasource _bdkWallet;
   final LwkWalletDatasource _lwkWallet;
-  final Future<void> Function(WalletMetadataModel) _syncWallet;
+  final Future<void> Function(WalletMetadataModel, {bool discover}) _syncWallet;
   final bool Function({String? walletId}) _isSyncing;
   final Stream<String> _walletSyncStartedStream;
   final Stream<String> _walletSyncFinishedStream;
@@ -36,7 +36,8 @@ class WalletRepository {
     required this._walletMetadataDatasource,
     required BdkWalletDatasource bdkWalletDatasource,
     required LwkWalletDatasource lwkWalletDatasource,
-    required Future<void> Function(WalletMetadataModel) synchronize,
+    required Future<void> Function(WalletMetadataModel, {bool discover})
+    synchronize,
     required this._isSyncing,
     required Stream<String> syncStarted,
     required Stream<String> syncFinished,
@@ -112,8 +113,7 @@ class WalletRepository {
       }
     }
 
-    if (sync) await _getBalance(metadata);
-    final balance = await _getBalance(metadata, sync: sync);
+    final balance = await _provisionBalance(metadata, sync: sync);
     await _walletMetadataDatasource.store(metadata);
 
     return Wallet(
@@ -143,8 +143,7 @@ class WalletRepository {
     );
 
     // Fetch the balance (in the future maybe other details of the wallet too)
-    if (sync) await _getBalance(metadata);
-    final balance = await _getBalance(metadata, sync: sync);
+    final balance = await _provisionBalance(metadata, sync: sync);
 
     final allWallets = await _readWallets();
     for (final wallet in allWallets) {
@@ -192,8 +191,7 @@ class WalletRepository {
     );
 
     // Fetch the balance (in the future maybe other details of the wallet too)
-    if (sync) await _getBalance(metadata);
-    final balance = await _getBalance(metadata, sync: sync);
+    final balance = await _provisionBalance(metadata, sync: sync);
 
     final allWallets = await _readWallets();
     for (final wallet in allWallets) {
@@ -519,6 +517,15 @@ class WalletRepository {
     await _walletMetadataDatasource.store(updatedWalletMetadata);
   }
 
+  Future<BalanceModel> _provisionBalance(
+    WalletMetadataModel metadata, {
+    required bool sync,
+  }) async {
+    // The engine refuses a missing store. Removed by D's explicit create cutover.
+    if (sync) await _getBalance(metadata);
+    return _getBalance(metadata, sync: sync);
+  }
+
   Future<BalanceModel> _getBalance(
     WalletMetadataModel metadata, {
     bool sync = false,
@@ -554,7 +561,7 @@ class WalletRepository {
     return balance;
   }
 
-  Future<void> sync(Wallet wallet) async {
+  Future<void> sync(Wallet wallet, {bool discover = false}) async {
     await _syncWallet(
       WalletMetadataModel(
         id: wallet.id,
@@ -569,6 +576,7 @@ class WalletRepository {
         label: wallet.label,
         signer: Signer.fromEntity(wallet.signer),
       ),
+      discover: discover,
     );
   }
 
