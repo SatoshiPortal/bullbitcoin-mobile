@@ -178,6 +178,7 @@ final class SqliteNotificationOutbox implements NotificationOutboxPort {
     String topicId,
     List<LocalNotification> observedEvents, {
     List<LocalNotification> baselineEvents = const [],
+    bool onlyNew = false,
   }) async {
     try {
       _database.execute('BEGIN IMMEDIATE');
@@ -215,6 +216,7 @@ final class SqliteNotificationOutbox implements NotificationOutboxPort {
           [event.eventId],
         );
         if (existing.isNotEmpty) {
+          if (onlyNew) continue;
           _database.execute(
             'UPDATE notification_outbox SET seen_at=? WHERE event_id=? AND seen_at IS NULL',
             [now, event.eventId],

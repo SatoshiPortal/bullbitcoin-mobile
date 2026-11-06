@@ -52,10 +52,12 @@ final class NotificationsFacade {
     String topicId,
     List<LocalNotification> observedEvents, {
     List<LocalNotification> baselineEvents = const [],
+    bool onlyNew = false,
   }) => outbox.recordObserved(
     topicId,
     List.unmodifiable(observedEvents),
     baselineEvents: List.unmodifiable(baselineEvents),
+    onlyNew: onlyNew,
   );
 
   Future<Result<NotificationReconcileResult, NotificationsFailure>>

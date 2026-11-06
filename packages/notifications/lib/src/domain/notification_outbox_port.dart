@@ -30,11 +30,14 @@ abstract interface class NotificationOutboxPort {
   /// Atomically initializes a missing topic from baselineEvents without seen
   /// marks, then marks observedEvents (foreground sync discoveries) seen.
   /// Existing topics never absorb baselineEvents. Drops fully seen aggregates.
+  /// With onlyNew, full incoming history is compared with stored events; existing
+  /// events retain their provenance, including the initial silent baseline.
   @useResult
   Future<Result<void, NotificationsFailure>> recordObserved(
     String topicId,
     List<LocalNotification> observedEvents, {
     List<LocalNotification> baselineEvents = const [],
+    bool onlyNew = false,
   });
 
   @useResult

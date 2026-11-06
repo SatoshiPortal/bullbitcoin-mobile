@@ -12,19 +12,21 @@ abstract interface class BackgroundWalletSync {
   });
 }
 
-/// Committed observations for background reconciliation. The writer binding
-/// records WalletSyncCompletion through notifications before returning success.
+/// A committed sync result; null incoming history means observation failed.
+/// Observation persistence is best effort and cannot invalidate the commit.
 final class BackgroundSyncOutcome {
   final WalletRevision revision;
-  final Set<String> incomingTxids;
+  final Set<String>? incomingTxids;
   final DateTime completedAt;
 
   BackgroundSyncOutcome({
     required this.revision,
-    required Iterable<String> incomingTxids,
+    required Iterable<String>? incomingTxids,
     required this.completedAt,
-  }) : incomingTxids = Set.unmodifiable(incomingTxids) {
-    if (this.incomingTxids.any((id) => id.isEmpty)) {
+  }) : incomingTxids = incomingTxids == null
+           ? null
+           : Set.unmodifiable(incomingTxids) {
+    if (this.incomingTxids?.any((id) => id.isEmpty) == true) {
       throw ArgumentError('Incoming payment identities must not be empty');
     }
   }

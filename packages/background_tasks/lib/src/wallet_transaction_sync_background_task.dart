@@ -192,48 +192,57 @@ final class WalletTransactionSyncBackgroundTask {
             }
             _log(
               BackgroundLogLevel.fine,
-              'Background job committed: revision=${value.revision.revision} generation=${value.revision.generation} incoming=${value.incomingTxids.length}',
+              'Background job committed: revision=${value.revision.revision} generation=${value.revision.generation} incoming=${value.incomingTxids?.length ?? 0}',
             );
-            // Persist observations before acknowledging success. Full incoming
-            // history replays a crash between native commit and this handoff.
-            final reconciled = await notifications.reconcileTopicsAndEnqueue(
-              [
-                NotificationTopicObservation(
-                  WalletPaymentNotificationIdentity.topicId(claim.key),
-                  [
-                    for (final txid in value.incomingTxids)
-                      WalletPaymentNotificationIdentity.event(
-                        claim.key,
-                        txid,
-                        observedAt: value.completedAt,
-                      ),
-                  ],
-                ),
-              ],
-              (events) {
-                final ids = events.map((e) => e.eventId).toList()..sort();
-                final text = copy(events.length, chain);
-                return LocalNotification(
-                  eventId: sha256
-                      .convert(utf8.encode(ids.join('|')))
-                      .toString(),
-                  title: text.title,
-                  body: text.body,
-                  destination: NotificationDestination.walletHome,
-                  createdAt: value.completedAt,
+            final incoming = value.incomingTxids;
+            if (incoming == null) {
+              if (!await queue.completeSuccess(claim)) leaseLost = true;
+              break;
+            }
+            // Observations are best effort after native commit; later history
+            // replays an interrupted handoff without degrading the sync result.
+            try {
+              final reconciled = await notifications.reconcileTopicsAndEnqueue(
+                [
+                  NotificationTopicObservation(
+                    WalletPaymentNotificationIdentity.topicId(claim.key),
+                    [
+                      for (final txid in incoming)
+                        WalletPaymentNotificationIdentity.event(
+                          claim.key,
+                          txid,
+                          observedAt: value.completedAt,
+                        ),
+                    ],
+                  ),
+                ],
+                (events) {
+                  final ids = events.map((e) => e.eventId).toList()..sort();
+                  final text = copy(events.length, chain);
+                  return LocalNotification(
+                    eventId: sha256
+                        .convert(utf8.encode(ids.join('|')))
+                        .toString(),
+                    title: text.title,
+                    body: text.body,
+                    destination: NotificationDestination.walletHome,
+                    createdAt: value.completedAt,
+                  );
+                },
+              );
+              if (reconciled is Err) {
+                _log(
+                  BackgroundLogLevel.warning,
+                  'Background observation failed: category=notification_persistence',
                 );
-              },
-            );
-            if (reconciled is Err) {
+              }
+            } on Object {
               _log(
                 BackgroundLogLevel.warning,
-                'Background job retry: category=notification_persistence',
+                'Background observation failed: category=notification_persistence',
               );
-              retry = true;
-              if (!await queue.completeFailure(claim, permanent: false)) {
-                leaseLost = true;
-              }
-            } else if (!await queue.completeSuccess(claim)) {
+            }
+            if (!await queue.completeSuccess(claim)) {
               leaseLost = true;
             }
         }

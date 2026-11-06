@@ -26,7 +26,8 @@ final class WalletPaymentObservationAdapter {
         );
     return notifications.recordObserved(
       WalletPaymentNotificationIdentity.topicId(key),
-      completion.discoveredTxids.map(event).toList(),
+      completion.incomingTxids.map(event).toList(),
+      onlyNew: true,
       baselineEvents: completion.incomingTxids.map(event).toList(),
     );
   }

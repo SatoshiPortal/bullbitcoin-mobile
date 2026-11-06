@@ -16,6 +16,8 @@ final class WalletPaymentObserver {
     // Capture before ANY await, including opening the durable outbox.
     final visible = _isForeground();
     final completedAt = DateTime.now();
+    final incoming = completion.incomingTxids;
+    if (incoming == null) return const Ok(null);
     final revision = completion.revision;
     if (revision == null) return const Err(TransactionSyncStorageFailure());
     try {
@@ -23,8 +25,7 @@ final class WalletPaymentObserver {
       final result = await adapter.recordCompletion(
         WalletSyncCompletion(
           revision: revision,
-          incomingTxids: completion.incomingTxids,
-          discoveredTxids: completion.discoveredTxids,
+          incomingTxids: incoming,
           completedAt: completedAt,
           completedInForeground: visible,
         ),
@@ -34,7 +35,7 @@ final class WalletPaymentObserver {
         return const Err(TransactionSyncStorageFailure());
       }
       log.fine(
-        'Payment observation recorded foreground=$visible incoming=${completion.incomingTxids.length} discoveries=${completion.discoveredTxids.length} revision=${revision.revision}',
+        'Payment observation recorded foreground=$visible incoming=${incoming.length} revision=${revision.revision}',
       );
       return const Ok(null);
     } on Exception {
