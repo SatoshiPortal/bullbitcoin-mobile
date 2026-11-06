@@ -251,6 +251,44 @@ void main() {
     }
   });
 
+  test(
+    'hydration revision race retains the previous snapshot as stale',
+    () async {
+      create();
+      final first =
+          await reader.bitcoin(descriptor)
+              as Ok<WalletReadSnapshot<bdk.Wallet>, TransactionSyncFailure>;
+      revisions.state = WalletRevisionState(
+        stamp: WalletRevision(key: descriptor.key, generation: 0, revision: 1),
+        lifecycle: WalletLifecycle.active,
+        initializedSchema: 1,
+      );
+      var reads = 0;
+      revisions.beforeRead = () {
+        if (++reads == 2) {
+          revisions.state = WalletRevisionState(
+            stamp: WalletRevision(
+              key: descriptor.key,
+              generation: 0,
+              revision: 2,
+            ),
+            lifecycle: WalletLifecycle.pendingWrite,
+            initializedSchema: 1,
+          );
+        }
+      };
+      final raced = await reader.bitcoin(descriptor);
+      expect(raced, isA<Ok>());
+      if (raced case Ok(:final value)) {
+        expect(value.stale, isTrue);
+        expect(value.wallet, same(first.value.wallet));
+        expect(value.revision, first.value.revision);
+      }
+      final retry = await reader.bitcoin(descriptor);
+      expect(retry, isA<Ok>());
+    },
+  );
+
   test('revision changed during hydration is never cached', () async {
     create();
     var reads = 0;
