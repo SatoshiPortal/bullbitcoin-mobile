@@ -131,6 +131,20 @@ void main() {
   });
 
   test(
+    'explicit advance skips reserved indices and persists the new address',
+    () async {
+      final first = await writer.receive(key, expectedGeneration: 1) as Ok;
+      expect((first.value as ReceiveAddressIssued).index, 0);
+      reserved.indices.add(1);
+      final next =
+          await writer.receive(key, expectedGeneration: 1, advance: true) as Ok;
+      expect((next.value as ReceiveAddressIssued).index, 2);
+      final same = await writer.receive(key, expectedGeneration: 1) as Ok;
+      expect((same.value as ReceiveAddressIssued).index, 2);
+    },
+  );
+
+  test(
     'intent precedes persist; reserved and used addresses skipped; reopen reuses',
     () async {
       reserved.indices.add(0);
