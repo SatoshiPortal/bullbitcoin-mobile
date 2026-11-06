@@ -35,6 +35,8 @@ graph TB
     SETTINGS --> BULL_REPORTING
     LABELS --> BULL_PAYJOIN
     TX_HISTORY --> LABELS
+    TX_HISTORY --> SECRETS
+    TX_HISTORY --> BULL_LOGGER
     APP_STARTUP --> BULL_LOGGER
     TOR_SETTINGS --> BULL_LOGGER
     BULL_LOGGER[Bull Logger Package<br/>Logger, diagnostics, log files]
