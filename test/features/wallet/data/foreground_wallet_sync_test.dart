@@ -95,6 +95,7 @@ void main() {
     bdk = _Bdk();
     when(() => metadata.fetch(id)).thenAnswer((_) async => row);
     when(() => metadata.store(any())).thenAnswer((_) async {});
+    when(() => metadata.insert(any())).thenAnswer((_) async {});
     when(() => bdk.getBalance(wallet: any(named: 'wallet'))).thenAnswer(
       (_) async => BalanceModel(
         confirmedSat: BigInt.zero,
@@ -304,13 +305,14 @@ void main() {
       final watchOnly = _WatchOnly();
       when(() => watchOnly.descriptor).thenReturn(descriptor);
       when(() => metadata.fetchAll()).thenAnswer((_) async => []);
+      when(() => metadata.fetch(id)).thenAnswer((_) async => null);
       var provisioned = false;
       final native = _Native();
       when(() => native.prepareCreate(any())).thenAnswer((_) async {
-        verifyNever(() => metadata.store(any()));
+        verifyNever(() => metadata.insert(any()));
       });
       when(() => native.create(any())).thenAnswer((_) async {
-        verify(() => metadata.store(any())).called(1);
+        verify(() => metadata.insert(any())).called(1);
         verifyNever(() => bdk.getBalance(wallet: any(named: 'wallet')));
         provisioned = true;
       });
