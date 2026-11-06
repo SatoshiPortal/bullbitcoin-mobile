@@ -1,5 +1,5 @@
 name: transaction_sync
-description: Typed contracts for the native wallet writer and its app-owned ports.
+description: Native wallet writer, read admission, revisions and app-owned ports.
 publish_to: "none"
 version: 0.1.0
 
@@ -16,12 +16,13 @@ dependencies:
       url: https://github.com/SatoshiPortal/bull_sdk
       ref: f4ee00bf61a810d034a397a41a2e40cd7903aa51
       path: packages/bull_sdk
-  sqlite3: ^2.9.4
+  sqlite3: 2.9.4
   bull_logger:
   primitives:
   meta: ^1.17.0
 
 dev_dependencies:
+  analyzer: ^10.2.0
   flutter_test:
     sdk: flutter
   crypto: ^3.0.7
