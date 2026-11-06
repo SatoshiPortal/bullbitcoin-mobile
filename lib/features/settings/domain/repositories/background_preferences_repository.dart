@@ -5,7 +5,8 @@ import 'package:primitives/primitives.dart';
 import '../settings_failure.dart';
 
 abstract interface class BackgroundPreferencesRepository {
-  Future<BackgroundSyncInterval> interval();
+  @useResult
+  Future<Result<BackgroundSyncInterval, SettingsFailure>> interval();
   @useResult
   Future<Result<bool, SettingsFailure>> notificationsAllowed();
   @useResult

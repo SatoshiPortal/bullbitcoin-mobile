@@ -18,7 +18,15 @@ final class BackgroundPreferencesRepositoryImpl
   );
 
   @override
-  Future<BackgroundSyncInterval> interval() => _intervals.read();
+  Future<Result<BackgroundSyncInterval, SettingsFailure>> interval() async {
+    try {
+      return Ok(await _intervals.read());
+    } on Exception {
+      log.warning('Background interval read failed');
+      return const Err(SettingsStorageFailure());
+    }
+  }
+
   @override
   Future<Result<bool, SettingsFailure>> notificationsAllowed() async =>
       (await _permissions.isEnabled()).mapErr(
