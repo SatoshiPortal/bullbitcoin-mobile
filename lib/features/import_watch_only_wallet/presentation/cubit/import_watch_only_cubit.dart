@@ -81,7 +81,7 @@ class ImportWatchOnlyCubit extends Cubit<ImportWatchOnlyState> {
     if (trimmed.length >= 111) {
       switch (await _parseWatchOnlyInputUsecase.execute(trimmed)) {
         case Ok(:final value):
-          emit(state.copyWith(watchOnlyWallet: value));
+          emit(state.copyWith(watchOnlyWallet: value, failure: null));
         case Err(:final failure):
           emit(state.copyWith(failure: failure));
       }

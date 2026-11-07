@@ -190,7 +190,11 @@ class WalletMetadataService {
     }
 
     final bip32Xpub = Bip32Derivation.getBip32Xpub(xpub);
-    final xpubBase58 = bip32Xpub.toBase58();
+    // Descriptor keys use BIP32 versions for the target network, even when
+    // the imported account uses SLIP132 (ypub/zpub/upub/vpub) versions.
+    final xpubBase58 = bip32Xpub.convert(
+      network.isMainnet ? XpubType.xpub : XpubType.tpub,
+    );
     final pubkeyFingerprint = bip32Xpub.fingerprintHex;
 
     final descriptor =
