@@ -12,7 +12,6 @@ import 'package:bb_mobile/core/wallet/data/repositories/bitcoin_wallet_repositor
 import 'package:bb_mobile/core/wallet/data/repositories/liquid_wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_address_repository.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/wallet_transaction_repository_impl.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_utxo_repository_impl.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_utxo_repository.dart';
@@ -74,15 +73,6 @@ class WalletLocator {
       ),
     );
 
-    locator.registerLazySingleton<WalletRepository>(
-      () => WalletRepository(
-        walletMetadataDatasource: locator<WalletMetadataDatasource>(),
-        bdkWalletDatasource: locator<BdkWalletDatasource>(),
-        lwkWalletDatasource: locator<LwkWalletDatasource>(),
-        serversPort: locator<ElectrumServersPort>(),
-      ),
-    );
-
     locator.registerLazySingleton<WalletUtxoRepository>(
       () => WalletUtxoRepositoryImpl(
         walletMetadataDatasource: locator<WalletMetadataDatasource>(),
@@ -99,16 +89,6 @@ class WalletLocator {
         bdkWalletDatasource: locator<BdkWalletDatasource>(),
         lwkWalletDatasource: locator<LwkWalletDatasource>(),
         labelsFacade: locator<LabelsFacade>(),
-      ),
-    );
-
-    locator.registerLazySingleton<WalletTransactionRepository>(
-      () => WalletTransactionRepositoryImpl(
-        walletMetadataDatasource: locator<WalletMetadataDatasource>(),
-        labelsFacade: locator<LabelsFacade>(),
-        bdkWalletTransactionDatasource: locator<BdkWalletDatasource>(),
-        lwkWalletTransactionDatasource: locator<LwkWalletDatasource>(),
-        serversPort: locator<ElectrumServersPort>(),
       ),
     );
   }

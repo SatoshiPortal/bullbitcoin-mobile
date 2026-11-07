@@ -48,11 +48,8 @@ final class WalletSyncFailure extends WalletFailure {
 
 /// LWK refused the update because its stored status disagrees with the chain.
 ///
-/// A distinct variant on purpose: app startup heals this by dropping the LWK
-/// database and retrying. It used to be detected by string-matching
-/// `UpdateOnDifferentStatus` on the raw exception, which the repository
-/// boundary would otherwise have swallowed — the recovery has to survive as a
-/// type, not as text.
+/// A status conflict requires reconciliation by the native wallet writer.
+/// Readers preserve the store and propagate this failure without deleting it.
 final class WalletLwkStatusConflictFailure extends WalletFailure {
   const WalletLwkStatusConflictFailure([super.logMessage]);
 }

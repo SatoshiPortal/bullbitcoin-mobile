@@ -1,3 +1,5 @@
+import 'package:bb_mobile/features/labels/data/reserved_address_port_impl.dart';
+import 'package:transaction_sync/transaction_sync.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/frozen_wallet_utxo_datasource.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_utxo_repository.dart';
 import 'package:bb_mobile/features/labels/adapters/labels_converter_apadater.dart';
@@ -24,6 +26,9 @@ import 'package:get_it/get_it.dart';
 
 class LabelsLocator {
   static void registerPorts(GetIt locator) {
+    locator.registerLazySingleton<ReservedAddressPort>(
+      () => ReservedAddressPortImpl(locator<LabelsRepositoryPort>()),
+    );
     locator.registerLazySingleton<LabelsRepositoryPort>(
       () => DriftLabelsRepositoryAdapter(database: locator<SqliteDatabase>()),
     );
