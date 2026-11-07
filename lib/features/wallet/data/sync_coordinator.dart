@@ -6,6 +6,8 @@ import 'dart:async';
 import 'package:bb_mobile/features/wallet/domain/wallet_discovery_failure.dart';
 import 'dart:collection';
 
+import 'package:bb_mobile/features/wallet/domain/sync_outcome.dart';
+
 import 'package:bb_mobile/core/sync/sync_kind.dart';
 import 'package:bb_mobile/core/sync/sync_trigger.dart';
 import 'package:bull_logger/bull_logger.dart';
@@ -16,6 +18,8 @@ import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/sync_wallet_usecase.dart';
 import 'package:flutter/widgets.dart'
     show AppLifecycleListener, AppLifecycleState, WidgetsBinding;
+
+export 'package:bb_mobile/features/wallet/domain/sync_outcome.dart';
 
 /// Foreground sync orchestrator.
 ///
@@ -452,25 +456,6 @@ class SyncCoordinator {
     _lifecycleListener.dispose();
     unawaited(_activity.close());
   }
-}
-
-enum SyncOutcomeKind { active, idle, rateLimited }
-
-class SyncOutcome {
-  const SyncOutcome._(this.kind, {this.retryAfter, this.failure});
-
-  const SyncOutcome.active() : this._(SyncOutcomeKind.active);
-  const SyncOutcome.idle() : this._(SyncOutcomeKind.idle);
-  const SyncOutcome.rateLimited({Duration? retryAfter, Object? failure})
-    : this._(
-        SyncOutcomeKind.rateLimited,
-        retryAfter: retryAfter,
-        failure: failure,
-      );
-
-  final SyncOutcomeKind kind;
-  final Duration? retryAfter;
-  final Object? failure;
 }
 
 /// Thrown by [SyncCoordinator.sync] when any of the requested kinds failed
