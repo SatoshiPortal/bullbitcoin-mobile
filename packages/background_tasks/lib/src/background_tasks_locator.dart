@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'background_task.dart';
+import 'background_sync_interval.dart';
 import 'background_task_logger.dart';
 import 'background_task_runner.dart';
 
@@ -49,7 +50,17 @@ final class BackgroundTasksLocator {
     try {
       final factory = tasks[task];
       final handlers = <BackgroundTask, BackgroundTaskHandler>{};
-      if (factory != null && task != BackgroundTask.swapsSync) {
+      final optedOut =
+          task == BackgroundTask.walletsSync &&
+          await const SharedPreferencesBackgroundSyncIntervalStore().read() ==
+              BackgroundSyncInterval.off;
+      if (optedOut) {
+        logger.write(
+          BackgroundLogLevel.fine,
+          'Background admission stopped: category=opt_out',
+        );
+      }
+      if (factory != null && task != BackgroundTask.swapsSync && !optedOut) {
         handlers[task] = await factory(resources);
       }
       return BackgroundTaskRunner(

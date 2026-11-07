@@ -7,6 +7,7 @@ import 'package:notifications/notifications.dart';
 import 'package:primitives/primitives.dart';
 import 'package:transaction_sync/transaction_sync.dart';
 
+import 'background_sync_interval.dart';
 import 'background_task_execution_result.dart';
 import 'background_task_logger.dart';
 import 'background_wallet_sync.dart';
@@ -95,6 +96,7 @@ final class WalletTransactionSyncBackgroundTask {
     final handled = <WalletKey>{};
     var reportedUnavailable = false;
     for (var count = 0; count < maxJobsPerChain && !spent(); count++) {
+      if (await _optedOut(admission)) break;
       // Refresh the authoritative stamp before EVERY admission, so this run
       // cannot overwrite a successful writer's new stamp with an older list.
       final read = await readWalletSyncJobs(
@@ -124,7 +126,15 @@ final class WalletTransactionSyncBackgroundTask {
       );
       if (claims.isEmpty) break;
       final claim = claims.single;
-      if (spent()) {
+      final bool stop;
+      try {
+        stop = await _optedOut(admission) || spent();
+      } catch (_) {
+        // A failed preference read must not leave a claim without a writer.
+        await queue.release(claim);
+        rethrow;
+      }
+      if (stop) {
         await queue.release(claim);
         break;
       }
@@ -285,6 +295,7 @@ final class WalletTransactionSyncBackgroundTask {
         return const BackgroundTaskExecutionResult.retry();
       }
     }
+    if (admission.stopped) return const BackgroundTaskExecutionResult.success();
     final delivered = await notifications?.deliverPending();
     if (delivered case Err(
       failure: final failure,
@@ -298,6 +309,19 @@ final class WalletTransactionSyncBackgroundTask {
     return retry
         ? const BackgroundTaskExecutionResult.retry()
         : const BackgroundTaskExecutionResult.success();
+  }
+
+  Future<bool> _optedOut(_RunAdmission admission) async {
+    if (await const SharedPreferencesBackgroundSyncIntervalStore().read() !=
+        BackgroundSyncInterval.off) {
+      return false;
+    }
+    admission.stopped = true;
+    _log(
+      BackgroundLogLevel.fine,
+      'Background admission stopped: category=opt_out',
+    );
+    return true;
   }
 
   void _log(BackgroundLogLevel level, String message) {
