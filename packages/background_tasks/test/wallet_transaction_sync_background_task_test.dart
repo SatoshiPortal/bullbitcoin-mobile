@@ -371,6 +371,7 @@ final class _Writer implements BackgroundWalletSync {
   Future<Result<BackgroundSyncOutcome, BackgroundSyncFailure>> synchronize(
     WalletKey key, {
     required bool allowInitialScan,
+    required bool discover,
   }) {
     this.allowInitialScan.add(allowInitialScan);
     final run = operation;

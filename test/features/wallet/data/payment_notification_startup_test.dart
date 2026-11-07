@@ -84,6 +84,7 @@ final class _Writer implements BackgroundWalletSync {
   Future<Result<BackgroundSyncOutcome, BackgroundSyncFailure>> synchronize(
     WalletKey key, {
     required bool allowInitialScan,
+    required bool discover,
   }) async {
     calls++;
     return Ok(

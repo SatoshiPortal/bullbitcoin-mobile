@@ -176,6 +176,9 @@ final class WalletTransactionSyncBackgroundTask {
         final sync = await writer.synchronize(
           claim.key,
           allowInitialScan: false,
+          // Background runs are the safety net for payments to addresses this
+          // device never revealed; the transaction cache keeps discovery cheap.
+          discover: true,
         );
         switch (sync) {
           case Err(failure: BackgroundSyncNeedsRepairFailure(:final revision)):

@@ -15,11 +15,13 @@ final class BackgroundWalletSyncImpl implements BackgroundWalletSync {
   Future<Result<BackgroundSyncOutcome, BackgroundSyncFailure>> synchronize(
     WalletKey key, {
     required bool allowInitialScan,
+    required bool discover,
   }) async {
     final descriptor = await _catalog.find(key);
     if (descriptor case Err(:final failure)) return Err(_failure(failure));
     final result = await _sync.execute(
       (descriptor as Ok<PublicWalletDescriptor, TransactionSyncFailure>).value,
+      discover: discover,
       headless: true,
       allowInitialScan: allowInitialScan,
       onCompletion: _observer?.record,

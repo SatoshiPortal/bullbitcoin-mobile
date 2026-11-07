@@ -9,6 +9,10 @@ abstract interface class BackgroundWalletSync {
   Future<Result<BackgroundSyncOutcome, BackgroundSyncFailure>> synchronize(
     WalletKey key, {
     required bool allowInitialScan,
+
+    /// Scans past the revealed addresses up to the stop gap, so a payment to an
+    /// address this device never showed is still found.
+    required bool discover,
   });
 }
 
