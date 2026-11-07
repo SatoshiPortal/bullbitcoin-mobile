@@ -71,7 +71,13 @@ void main() {
       };
       await expectLater(
         create.execute(secret: secret),
-        throwsA(isA<DefaultWalletLanguageUnsupportedException>()),
+        throwsA(
+          isA<CreateDefaultWalletsException>().having(
+            (e) => e.message,
+            'message',
+            'Default wallets require an English mnemonic',
+          ),
+        ),
       );
       verifyZeroInteractions(wallets);
       verifyZeroInteractions(settings);
@@ -96,7 +102,13 @@ void main() {
       final persisted = Map<String, String>.of(storage.entries);
       await expectLater(
         create.execute(mnemonicWords: shared),
-        throwsA(isA<DefaultWalletLanguageUnsupportedException>()),
+        throwsA(
+          isA<CreateDefaultWalletsException>().having(
+            (e) => e.message,
+            'message',
+            'Default wallets require an English mnemonic',
+          ),
+        ),
       );
       verifyNever(
         () => wallets.createWallet(
@@ -124,10 +136,10 @@ void main() {
     await expectLater(
       create.execute(secret: seedOnly),
       throwsA(
-        isA<DefaultWalletMnemonicRequiredException>().having(
-          (e) => e.toString(),
+        isA<CreateDefaultWalletsException>().having(
+          (e) => e.message,
           'message',
-          isNot(contains('English')),
+          'Default wallets require a mnemonic, not a raw seed',
         ),
       ),
     );
