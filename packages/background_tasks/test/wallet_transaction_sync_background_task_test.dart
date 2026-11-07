@@ -31,13 +31,14 @@ void main() {
   WalletTransactionSyncBackgroundTask task({
     Duration? budget,
     List<WalletKey>? keys,
+    NotificationCopyBuilder? copy,
   }) => WalletTransactionSyncBackgroundTask(
     writer: writer,
     revisions: revisions,
     keys: keys ?? [key],
     queue: queue,
     notifications: notifications,
-    copy: (count, chain) => (title: 'Payments', body: '$count'),
+    copy: copy ?? (count, chain) => (title: 'Payments', body: '$count'),
     runBudget: budget,
     logSink: logs,
   );
@@ -144,6 +145,15 @@ void main() {
       expect(gateway.shown, hasLength(1));
     },
   );
+
+  test('notification observation programmer errors propagate', () async {
+    await baseline();
+    writer.operation = () async => Ok(outcome());
+    await expectLater(
+      task(copy: (_, _) => throw StateError('private')).executeAll(),
+      throwsStateError,
+    );
+  });
 
   test('outbox failure cannot retry a committed sync', () async {
     await baseline();

@@ -14,6 +14,21 @@ void main() {
       directory.deleteSync(recursive: true);
     });
   });
+  test('history programmer errors reach the reporting boundary', () async {
+    await expectLater(
+      collectPaymentObservation(() => throw StateError('private')),
+      throwsStateError,
+    );
+  });
+  test('recording programmer errors reach the reporting boundary', () async {
+    await expectLater(
+      recordPaymentObservation(
+        const Ok<int, TransactionSyncFailure>(1),
+        (_) async => throw StateError('private'),
+      ),
+      throwsStateError,
+    );
+  });
   test('history failure is missing, not an empty baseline', () async {
     expect(
       await collectPaymentObservation<Set<String>>(
@@ -40,7 +55,6 @@ void main() {
           in <Future<Result<void, TransactionSyncFailure>> Function()>[
             () async => const Err(TransactionSyncStorageFailure()),
             () async => throw const FileSystemException('private'),
-            () async => throw StateError('private'),
           ]) {
         final result = Ok<SyncCompletion, TransactionSyncFailure>(completion);
         expect(
