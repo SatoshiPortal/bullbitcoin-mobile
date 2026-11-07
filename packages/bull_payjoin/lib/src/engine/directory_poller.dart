@@ -100,11 +100,7 @@ final class DirectoryPoller<T extends Object> {
       onExpired: onExpired,
     );
     _sessions[id] = session;
-    final remaining = expiresAt.difference(_now());
-    session.deadline = Timer(
-      remaining.isNegative ? Duration.zero : remaining,
-      () => _expire(id, session),
-    );
+    _armDeadline(id, session);
     _arm(id, session, Duration.zero);
   }
 
@@ -123,6 +119,22 @@ final class DirectoryPoller<T extends Object> {
 
   void _arm(String id, _PolledSession<T> session, Duration delay) {
     session.next = Timer(delay, () => _run(id, session));
+  }
+
+  void _armDeadline(String id, _PolledSession<T> session) {
+    final remaining = session.expiresAt.difference(_now());
+    session.deadline = Timer(
+      remaining.isNegative ? Duration.zero : remaining,
+      () {
+        if (!identical(_sessions[id], session)) return;
+        if (_hasExpired(session)) {
+          _expire(id, session);
+        } else {
+          // The wall clock moved backwards while the monotonic timer ran.
+          _armDeadline(id, session);
+        }
+      },
+    );
   }
 
   /// Ends session [id] at its expiry, provided [session] still owns it.
