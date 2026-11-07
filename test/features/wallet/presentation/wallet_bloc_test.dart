@@ -1,3 +1,7 @@
+import 'dart:io';
+import 'package:bull_logger/bull_logger.dart';
+import 'package:bb_mobile/features/wallet/data/sync_coordinator.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/sync_wallet_usecase.dart';
 import 'package:bb_mobile/core/sync/sync_trigger.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/watch_wallet_sync_events_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/sync_wallets_usecase.dart';
@@ -79,7 +83,93 @@ WalletBloc createBloc(GetExternalTorProxyStatusUsecase externalStatus) {
   );
 }
 
+class _MockSyncWalletUsecase extends Mock implements SyncWalletUsecase {}
+
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+  test(
+    'pull-to-refresh preserves failure and spinner without caller warnings',
+    () async {
+      final dir = await Directory.systemTemp.createTemp('refresh-logging-');
+      log = Logger.replace(directory: dir);
+      final getWallets = _MockGetWalletsUsecase();
+      when(
+        () => getWallets.execute(),
+      ).thenAnswer((_) async => Ok([_syncedWallet]));
+      when(
+        () => getWallets.execute(onlyBitcoin: true),
+      ).thenAnswer((_) async => Ok([_syncedWallet]));
+      when(
+        () => getWallets.execute(onlyLiquid: true),
+      ).thenAnswer((_) async => const Err(NoWalletsFoundFailure()));
+      final single = _MockSyncWalletUsecase();
+      var nativePasses = 0;
+      final syncGate = Completer<void>();
+      when(() => single.execute(_syncedWallet, discover: true)).thenAnswer((
+        _,
+      ) async {
+        nativePasses++;
+        await syncGate.future;
+        throw SyncWalletException('connection');
+      });
+      final coordinator = SyncCoordinator(
+        getWalletsUsecase: getWallets,
+        syncWalletUsecase: single,
+      );
+      final bloc = WalletBloc(
+        getWalletsUsecase: getWallets,
+        checkWalletSyncingUsecase: _MockCheckWalletSyncingUsecase(),
+        watchWalletSyncEventsUsecase: _stubbedWatchers(),
+        syncWalletsUsecase: SyncWalletsUsecase(coordinator),
+        getUnconfirmedIncomingBalanceUsecase:
+            _MockGetUnconfirmedIncomingBalanceUsecase(),
+        deleteWalletUsecase: _MockDeleteWalletUsecase(),
+        checkSpWalletSetupForWalletUsecase: _stubbedSpSetup(),
+        checkSpScanningForWalletUsecase: _stubbedSpScanning(),
+        refreshSpWalletForWalletUsecase: _stubbedSpRefresh(),
+        watchSpWalletUsecase: _stubbedSpWatch(),
+        checkSpFeatureGateForWalletUsecase: _stubbedSpGate(),
+        checkBackupNeededUsecase: _MockCheckBackupNeededUsecase(),
+        getExternalTorProxyStatusUsecase: _MockExternalTorStatusUsecase(),
+      );
+      try {
+        var refreshSettled = false;
+        final refresh = bloc.refresh().whenComplete(
+          () => refreshSettled = true,
+        );
+        await pumpEventQueue();
+        expect(bloc.state.isRefreshing, isTrue);
+        expect(refreshSettled, isFalse);
+        syncGate.complete();
+        await refresh;
+        await pumpEventQueue();
+        final messages = (await log.readLogs()).map((r) => r.split('\t')[2]);
+        expect(
+          messages.where((m) => m.contains('Sync pass finished kind=bitcoin')),
+          hasLength(1),
+        );
+        final callerDiagnostics = messages.where(
+          (m) =>
+              m.contains('SyncWallets:') || m.contains('Wallet refresh sync:'),
+        );
+        expect(nativePasses, 1);
+        expect(bloc.state.loadFailure, isA<WalletSyncFailure>());
+        expect(bloc.state.isRefreshing, isFalse);
+        expect(
+          callerDiagnostics,
+          isEmpty,
+          reason:
+              'The native boundary owns the failed pass; waiters must not repeat it.',
+        );
+      } finally {
+        if (!syncGate.isCompleted) syncGate.complete();
+        await bloc.close();
+        coordinator.dispose();
+        await log.flush();
+        await dir.delete(recursive: true);
+      }
+    },
+  );
   for (final scenario in [
     (
       'unavailable Bitcoin proxy points to Tor settings',
