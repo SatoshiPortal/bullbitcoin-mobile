@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bull_payjoin/src/engine/directory_poller.dart';
 import 'package:bull_payjoin/src/engine/payjoin_constants.dart';
 import 'package:dio/dio.dart';
@@ -126,14 +128,31 @@ void main() {
     });
   });
 
-  test('a poll that throws counts as a failure', () {
+  test('a poll exception counts as a failure', () {
     withPoller((async, poller, start) {
-      final poll = _ScriptedPoll(async, [(_) async => throw StateError('x')]);
+      final poll = _ScriptedPoll(async, [
+        (_) async => throw Exception('transport'),
+      ]);
       start(poll);
       async.elapse(_spacing);
       expect(poll.startedAt, [Duration.zero, _spacing]);
       expect(expired, 0);
     });
+  });
+
+  test('a programmer error is surfaced without retrying', () {
+    final errors = <Object>[];
+    final error = StateError('poll defect');
+    late _ScriptedPoll poll;
+    runZonedGuarded(() {
+      withPoller((async, poller, start) {
+        poll = _ScriptedPoll(async, [(_) async => throw error]);
+        start(poll);
+        async.elapse(_spacing * 2);
+      });
+    }, (error, stack) => errors.add(error));
+    expect(errors, [same(error)]);
+    expect(poll.startedAt, hasLength(1));
   });
 
   test('a backward wall-clock correction rearms the deadline', () {
