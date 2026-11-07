@@ -101,93 +101,45 @@ void main() {
     return (bitcoin: bitcoin, liquid: liquid, sp: sp);
   }
 
+  test('pull refresh and automatic sync both use revealed scripts', () async {
+    final wallet = _Wallet();
+    when(
+      () => getWallets.execute(onlyBitcoin: true),
+    ).thenAnswer((_) async => Ok([wallet]));
+    when(
+      () => syncWallet.execute(wallet, discover: any(named: 'discover')),
+    ).thenAnswer((_) async {});
+    await coordinator.sync(only: {SyncKind.bitcoin});
+    verify(() => syncWallet.execute(wallet, discover: false)).called(1);
+    await coordinator.sync(only: {SyncKind.bitcoin}, trigger: SyncTrigger.user);
+    verify(() => syncWallet.execute(wallet, discover: false)).called(1);
+  });
+
   test(
-    'manual refresh discovers while automatic sync uses revealed scripts',
+    'pull joins an in-flight routine pass without adding discovery',
     () async {
       final wallet = _Wallet();
+      final gate = Completer<void>();
       when(
         () => getWallets.execute(onlyBitcoin: true),
       ).thenAnswer((_) async => Ok([wallet]));
       when(
-        () => syncWallet.execute(wallet, discover: any(named: 'discover')),
-      ).thenAnswer((_) async {});
-      await coordinator.sync(only: {SyncKind.bitcoin});
+        () => syncWallet.execute(wallet, discover: false),
+      ).thenAnswer((_) => gate.future);
+      final routine = coordinator.sync(only: {SyncKind.bitcoin});
+      await pumpEventQueue();
+      var done = false;
+      final pull = coordinator
+          .sync(only: {SyncKind.bitcoin}, trigger: SyncTrigger.user)
+          .then((_) => done = true);
+      await pumpEventQueue();
+      expect(done, isFalse);
+      gate.complete();
+      await Future.wait([routine, pull]);
       verify(() => syncWallet.execute(wallet, discover: false)).called(1);
-      await coordinator.sync(
-        only: {SyncKind.bitcoin},
-        trigger: SyncTrigger.user,
-      );
-      verify(() => syncWallet.execute(wallet, discover: true)).called(1);
+      verifyNever(() => syncWallet.execute(wallet, discover: true));
     },
   );
-
-  for (final failRoutine in [false, true]) {
-    test(
-      'manual discovery waits for its own pass (routine failure=$failRoutine)',
-      () async {
-        final wallet = _Wallet();
-        final routine = Completer<void>();
-        final discovery = Completer<void>();
-        when(
-          () => getWallets.execute(onlyBitcoin: true),
-        ).thenAnswer((_) async => Ok([wallet]));
-        when(
-          () => syncWallet.execute(wallet, discover: false),
-        ).thenAnswer((_) => routine.future);
-        when(
-          () => syncWallet.execute(wallet, discover: true),
-        ).thenAnswer((_) => discovery.future);
-        final first = coordinator.sync(only: {SyncKind.bitcoin});
-        final firstSettled = failRoutine
-            ? expectLater(first, throwsA(isA<SyncCoordinatorException>()))
-            : first;
-        await pumpEventQueue();
-        var completed = false;
-        final manual = coordinator
-            .sync(only: {SyncKind.bitcoin}, trigger: SyncTrigger.user)
-            .then((_) => completed = true);
-        final duplicate = coordinator.sync(
-          only: {SyncKind.bitcoin},
-          trigger: SyncTrigger.user,
-        );
-        if (failRoutine) {
-          routine.completeError(Exception('routine failed'));
-        } else {
-          routine.complete();
-        }
-        await firstSettled;
-        await pumpEventQueue();
-        expect(completed, isFalse);
-        verify(() => syncWallet.execute(wallet, discover: true)).called(1);
-        discovery.complete();
-        await Future.wait([manual, duplicate]);
-        expect(completed, isTrue);
-      },
-    );
-  }
-
-  test('manual discovery upgrades a queued routine pass', () async {
-    final wallet = _Wallet();
-    final blocking = Completer<void>();
-    when(() => getWallets.execute(onlyBitcoin: true)).thenAnswer((_) async {
-      await blocking.future;
-      return const Ok(<Wallet>[]);
-    });
-    when(
-      () => getWallets.execute(onlyLiquid: true),
-    ).thenAnswer((_) async => Ok([wallet]));
-    when(
-      () => syncWallet.execute(wallet, discover: true),
-    ).thenAnswer((_) async {});
-    final routine = coordinator.sync(only: {SyncKind.bitcoin, SyncKind.liquid});
-    final manual = coordinator.sync(
-      only: {SyncKind.liquid},
-      trigger: SyncTrigger.user,
-    );
-    blocking.complete();
-    await Future.wait([routine, manual]);
-    verify(() => syncWallet.execute(wallet, discover: true)).called(1);
-  });
 
   test('sync resolves only after every requested kind has settled', () async {
     final gates = wireGates();
