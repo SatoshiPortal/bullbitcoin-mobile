@@ -13,6 +13,8 @@ import 'package:bb_mobile/features/exchange/presentation/exchange_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:primitives/primitives.dart';
 
+enum ExchangeAccountDeletionOutcome { completed, stale }
+
 class ExchangeCubit extends Cubit<ExchangeState> {
   final GetExchangeAccountUsecase _getExchangeAccountUsecase;
   final SaveExchangePreferencesUsecase _saveExchangePreferencesUsecase;
@@ -167,24 +169,27 @@ class ExchangeCubit extends Cubit<ExchangeState> {
     emit(state.copyWith(logoutFailure: null));
   }
 
-  /// Sends the account-deletion request to support and logs out. Returns the
-  /// failure when the request could not be sent — callers must NOT show a
-  /// success confirmation in that case. The raw reason is logged at the
-  /// boundary.
-  Future<ExchangeFailure?> deleteAccount() async {
-    if (isClosed) return null;
+  /// Sends the deletion request and logs out only its originating session.
+  /// Callers confirm only [ExchangeAccountDeletionOutcome.completed]; stale completions must not update the UI of another session.
+  Future<Result<ExchangeAccountDeletionOutcome, ExchangeFailure>>
+  deleteAccount() async {
+    if (isClosed) return const Ok(ExchangeAccountDeletionOutcome.stale);
     final session = _session;
     final result = await _requestExchangeAccountDeletionUsecase.execute();
 
-    if (isClosed || !identical(_session, session)) return null;
+    if (isClosed || !identical(_session, session)) {
+      return const Ok(ExchangeAccountDeletionOutcome.stale);
+    }
 
     switch (result) {
       case Ok():
-        // The request reached support, but if the session survives the user
-        // is still signed in — report that rather than confirming success.
-        return logout();
+        final failure = await logout();
+        if (isClosed) return const Ok(ExchangeAccountDeletionOutcome.stale);
+        return failure == null
+            ? const Ok(ExchangeAccountDeletionOutcome.completed)
+            : Err(failure);
       case Err(:final failure):
-        return failure;
+        return Err(failure);
     }
   }
 
