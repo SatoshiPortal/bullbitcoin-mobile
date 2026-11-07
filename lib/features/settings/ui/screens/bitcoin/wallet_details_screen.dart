@@ -12,6 +12,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart' show BullIcon, BullIcons, Gap;
 import 'package:go_router/go_router.dart';
+import 'package:bb_mobile/features/settings/ui/widgets/wallet_discovery_button.dart';
 
 class WalletDetailsScreen extends StatelessWidget {
   const WalletDetailsScreen({super.key, required this.walletId});
@@ -118,6 +119,8 @@ class WalletDetailsScreen extends StatelessWidget {
                         context.loc.walletDetailsSignerDeviceNotSupported,
                   ),
                   const Gap(32),
+                  WalletDiscoveryButton(walletId: walletId),
+                  const Gap(16),
                   BBButton.big(
                     label: context.loc.addressViewAddressesTitle,
                     onPressed: () => context.pushNamed(

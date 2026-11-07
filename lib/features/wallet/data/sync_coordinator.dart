@@ -1,5 +1,6 @@
 import 'package:bb_mobile/features/wallet/domain/wallet_failure_log_code.dart';
 import 'dart:async';
+import 'package:bb_mobile/features/wallet/domain/wallet_discovery_failure.dart';
 import 'dart:collection';
 
 import 'package:bb_mobile/core/sync/sync_kind.dart';
@@ -86,6 +87,7 @@ class SyncCoordinator {
 
   final Queue<_SyncPass> _queue = Queue<_SyncPass>();
   final Map<SyncKind, _SyncPass> _enqueued = {};
+  final Map<String, _SyncPass> _manualPasses = {};
   _SyncPass? _running;
   bool _draining = false;
   Future<void>? _activeDrain;
@@ -141,6 +143,58 @@ class SyncCoordinator {
     throw SyncCoordinatorException(failures);
   }
 
+  /// Explicit recovery is wallet-scoped, bypasses throttling and shares the
+  /// foreground FIFO. It cannot join an already-running routine pass.
+  Future<Result<void, WalletDiscoveryFailure>> discoverWallet(
+    String walletId,
+  ) async {
+    if (!_isAppResumed) return const Err(WalletDiscoveryUnavailableFailure());
+    try {
+      var pass = _manualPasses[walletId];
+      if (pass == null) {
+        final result = await _getWallets.execute();
+        if (result case Err()) {
+          return const Err(WalletDiscoveryUnavailableFailure());
+        }
+        final wallets = switch (result) {
+          Ok(:final value) => value,
+          Err() => <Wallet>[],
+        };
+        final wallet = wallets
+            .where((wallet) => wallet.id == walletId)
+            .firstOrNull;
+        if (wallet == null || !_isAppResumed) {
+          return const Err(WalletDiscoveryUnavailableFailure());
+        }
+        final kind = wallet.isLiquid ? SyncKind.liquid : SyncKind.bitcoin;
+        // Admission can yield; another caller may have queued the same wallet.
+        pass = _manualPasses[walletId];
+        if (pass == null) {
+          pass = _SyncPass(
+            kind,
+            wallet.isBitcoin,
+            SyncTrigger.user,
+            walletId: walletId,
+            walletNetwork: wallet.network,
+          );
+          _manualPasses[walletId] = pass;
+          _queue.add(pass);
+        }
+      }
+      final waiter = Completer<Object?>();
+      pass.waiters.add(waiter);
+      unawaited(_drain());
+      final failure = await waiter.future;
+      return switch (failure) {
+        null => const Ok(null),
+        WalletDiscoveryFailure() => Err(failure),
+        _ => const Err(WalletDiscoverySyncFailure()),
+      };
+    } on Exception {
+      return const Err(WalletDiscoverySyncFailure());
+    }
+  }
+
   /// The sp kind only resumes the SP chain scan, which a user gesture must not
   /// start: the SP side of a pull-to-refresh is the snapshot read the wallet
   /// does right after.
@@ -170,6 +224,7 @@ class SyncCoordinator {
     final running = _running;
     if (running != null &&
         running.kind == kind &&
+        running.walletId == null &&
         (!discover || running.discover)) {
       return (running, null);
     }
@@ -206,7 +261,7 @@ class SyncCoordinator {
       while (_queue.isNotEmpty) {
         final pass = _queue.removeFirst();
         final kind = pass.kind;
-        _enqueued.remove(kind);
+        if (pass.walletId == null) _enqueued.remove(kind);
         _running = pass;
         pass.clock.start();
         try {
@@ -218,7 +273,7 @@ class SyncCoordinator {
             _settle(pass, failure);
             continue;
           }
-          _lastSuccessAt[kind] = DateTime.now();
+          if (pass.walletId == null) _lastSuccessAt[kind] = DateTime.now();
           _settle(pass, null);
         } catch (e) {
           // The pass owns the summary, independently of its waiter count.
@@ -233,6 +288,18 @@ class SyncCoordinator {
   }
 
   void _settle(_SyncPass pass, Object? error) {
+    final walletId = pass.walletId;
+    if (walletId != null) {
+      _manualPasses.remove(walletId);
+      log.fine(
+        'Wallet discovery finished reason=manual outcome=${error == null ? 'settled' : 'failed'}',
+      );
+      for (final waiter in pass.waiters) {
+        waiter.complete(error);
+      }
+      pass.waiters.clear();
+      return;
+    }
     if (error is NoWalletsFoundFailure) pass.wallets = 0;
     final outcome = error is NoWalletsFoundFailure || pass.wallets == 0
         ? 'no_wallets'
@@ -284,7 +351,26 @@ class SyncCoordinator {
 
   /// The wallet read failure that failed the round, or null. Any other failure
   /// is thrown, as before.
-  Future<WalletFailure?> _runTask(_SyncPass pass) async {
+  Future<Object?> _runTask(_SyncPass pass) async {
+    final walletId = pass.walletId;
+    if (walletId != null) {
+      log.fine('Wallet discovery started reason=manual');
+      if (!_isAppResumed) return const WalletDiscoveryUnavailableFailure();
+      // Re-resolve from the active environment after waiting in the queue.
+      switch (await _getWallets.execute()) {
+        case Err():
+          return const WalletDiscoveryUnavailableFailure();
+        case Ok(:final value):
+          final wallet = value
+              .where((wallet) => wallet.id == walletId)
+              .firstOrNull;
+          if (wallet == null || wallet.network != pass.walletNetwork) {
+            return const WalletDiscoveryUnavailableFailure();
+          }
+          await _syncWallet.execute(wallet, discover: wallet.isBitcoin);
+          return null;
+      }
+    }
     switch (pass.kind) {
       case SyncKind.bitcoin:
         return _syncAll(_getWallets.execute(onlyBitcoin: true), pass: pass);
@@ -369,11 +455,19 @@ class SyncCoordinatorException implements Exception {
 
 final class _SyncPass {
   final SyncKind kind;
+  final String? walletId;
+  final Network? walletNetwork;
   bool discover;
   SyncTrigger trigger;
   int? wallets;
   final Stopwatch clock = Stopwatch();
   final List<Completer<Object?>> waiters = [];
 
-  _SyncPass(this.kind, this.discover, this.trigger);
+  _SyncPass(
+    this.kind,
+    this.discover,
+    this.trigger, {
+    this.walletId,
+    this.walletNetwork,
+  });
 }

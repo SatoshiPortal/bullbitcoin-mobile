@@ -26,6 +26,11 @@ final class SettingsExchangeSyncFailure extends SettingsFailure {
   const SettingsExchangeSyncFailure([super.logMessage]);
 }
 
+/// An explicit wallet discovery could not complete.
+final class SettingsWalletSyncFailure extends SettingsFailure {
+  const SettingsWalletSyncFailure();
+}
+
 /// Catch-all. [logMessage] is for logs ONLY and MUST never reach the UI —
 /// the presentation extension returns the shared generic string.
 final class SettingsUnexpectedFailure extends SettingsFailure {

@@ -62,7 +62,10 @@ class WalletLocator {
       ),
     );
     locator.registerLazySingleton<WalletFacade>(
-      () => WalletFacade(locator<WalletNativeRuntime>().changes),
+      () => WalletFacade(
+        locator<WalletNativeRuntime>().changes,
+        discoverWallet: (id) => locator<SyncCoordinator>().discoverWallet(id),
+      ),
     );
     locator.registerFactory<CreateDefaultWalletsUsecase>(
       () => CreateDefaultWalletsUsecase(

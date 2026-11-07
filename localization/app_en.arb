@@ -15745,5 +15745,17 @@
   "appStartupRestoreMismatch": "This recovery phrase belongs to another wallet. Enter the phrase of the wallet on this device.",
   "@appStartupRestoreMismatch": {
     "description": "App startup restore: the entered recovery phrase does not match the wallet whose secret is missing"
+  },
+  "walletDiscoveryButton": "Scan for missing transactions",
+  "@walletDiscoveryButton": {
+    "description": "Button requesting a full discovery scan of this wallet"
+  },
+  "walletDiscoverySucceeded": "Wallet scan complete",
+  "@walletDiscoverySucceeded": {
+    "description": "Confirmation after a manual wallet discovery scan"
+  },
+  "walletDiscoveryFailed": "Unable to complete the wallet scan. Please try again.",
+  "@walletDiscoveryFailed": {
+    "description": "Recoverable failure of a manual wallet discovery scan"
   }
 }

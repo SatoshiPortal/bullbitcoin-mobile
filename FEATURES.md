@@ -162,6 +162,7 @@ graph TB
     SEND --> TX_HISTORY
     SEND --> UTXO_MGMT
     SEND -->|public revision stream| WALLETS
+    SETTINGS -->|public wallet discovery| WALLETS
     SETTINGS --> CORE
     SETTINGS --> BULL_PAYJOIN
     SETTINGS --> RECOVERBULL
