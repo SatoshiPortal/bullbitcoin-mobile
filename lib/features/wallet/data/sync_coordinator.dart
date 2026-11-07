@@ -117,7 +117,7 @@ class SyncCoordinator {
     final dropped = <String>[];
     final waits = <SyncKind, Future<Object?>>{};
     for (final kind in requested) {
-      final (pass, reason) = _enqueue(kind, trigger: trigger);
+      final (pass, reason) = _enqueue(kind, trigger: trigger, discover: false);
       if (pass != null) {
         final completer = Completer<Object?>();
         pass.waiters.add(completer);
@@ -158,11 +158,9 @@ class SyncCoordinator {
   (_SyncPass?, String?) _enqueue(
     SyncKind kind, {
     required SyncTrigger trigger,
+    required bool discover,
   }) {
     if (!_isAppResumed) return (null, 'gated');
-    final discover =
-        trigger == SyncTrigger.user &&
-        (kind == SyncKind.bitcoin || kind == SyncKind.liquid);
     final queued = _enqueued[kind];
     if (queued != null) {
       queued.discover |= discover;
