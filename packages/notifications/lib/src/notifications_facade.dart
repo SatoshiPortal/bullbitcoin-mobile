@@ -1,3 +1,4 @@
+import 'package:bull_logger/bull_logger.dart';
 import 'dart:convert';
 import 'dart:typed_data';
 
@@ -16,6 +17,7 @@ final class NotificationsFacade {
   final LocalNotificationGateway gateway;
   final NotificationOutboxPort outbox;
   final List<String> _unpersistedResponses = [];
+  bool? _allowed;
 
   NotificationsFacade({required this.gateway, required this.outbox});
 
@@ -65,13 +67,26 @@ final class NotificationsFacade {
     List<NotificationTopicObservation> observations,
     LocalNotification Function(List<LocalNotification> newEvents)
     aggregateEvent,
-  ) => outbox.reconcileTopicsAndEnqueue(
-    List.unmodifiable(observations),
-    aggregateEvent,
-  );
+  ) async {
+    final result = await outbox.reconcileTopicsAndEnqueue(
+      List.unmodifiable(observations),
+      aggregateEvent,
+    );
+    if (result case Ok(:final value)) {
+      log.fine(
+        'Notifications reconciled pending=${value.pendingCount} skipped_topics=${value.skippedTopicCount}',
+      );
+    }
+    return result;
+  }
 
   Future<Result<void, NotificationsFailure>> deliverPending() async {
-    switch (await gateway.isEnabled()) {
+    final enabled = await gateway.isEnabled();
+    if (enabled case Ok(:final value) when value != _allowed) {
+      _allowed = value;
+      log.config('Notification permission changed allowed=$value');
+    }
+    switch (enabled) {
       case Err(:final failure):
         return Err(failure);
       case Ok(value: false):
@@ -89,6 +104,9 @@ final class NotificationsFacade {
   Future<Result<void, NotificationsFailure>> _settlePending({
     required bool show,
   }) async {
+    var shownCount = 0;
+    var seenCount = 0;
+    var deniedCount = 0;
     final claimed = await outbox.claimPending();
     switch (claimed) {
       case Err(:final failure):
@@ -128,6 +146,18 @@ final class NotificationsFacade {
             claimed.claimToken,
           );
           if (marked case Err(:final failure)) return Err(failure);
+          if (alreadySeen) {
+            seenCount++;
+          } else if (show) {
+            shownCount++;
+          } else {
+            deniedCount++;
+          }
+        }
+        if (value.isNotEmpty) {
+          log.fine(
+            'Notifications settled shown=$shownCount seen=$seenCount denied=$deniedCount',
+          );
         }
     }
     return const Ok(null);

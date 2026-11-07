@@ -12,6 +12,7 @@ dependencies:
   flutter:
     sdk: flutter
   meta: ^1.17.0
+  bull_logger:
   primitives:
   transaction_sync:
   crypto: ^3.0.7

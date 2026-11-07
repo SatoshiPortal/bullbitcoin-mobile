@@ -34,9 +34,11 @@ final class WalletPaymentObserver {
         log.warning('Payment observation persistence failed');
         return const Err(TransactionSyncStorageFailure());
       }
-      log.fine(
-        'Payment observation recorded foreground=$visible incoming=${incoming.length} revision=${revision.revision}',
-      );
+      if (visible) {
+        log.fine(
+          'Payment observation recorded foreground=true incoming=${incoming.length} revision=${revision.revision}',
+        );
+      }
       return const Ok(null);
     } on Exception {
       log.warning('Payment observation storage unavailable');
