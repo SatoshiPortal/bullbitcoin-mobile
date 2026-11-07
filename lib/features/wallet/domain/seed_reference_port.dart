@@ -1,9 +1,5 @@
 import 'package:primitives/primitives.dart';
-
-/// Ok must contain every custody reference; an incomplete read must return Err.
-abstract interface class SeedReferencePort {
-  Future<Result<Set<Fingerprint>, Failure>> getCustodyFingerprints();
-}
+import 'package:secrets/secrets.dart';
 
 class SeedReferences implements SeedReferencePort {
   final List<SeedReferencePort> _owners;
@@ -30,8 +26,4 @@ class SeedReferences implements SeedReferencePort {
       return const Err(SeedReferencesUnavailable());
     }
   }
-}
-
-final class SeedReferencesUnavailable extends Failure {
-  const SeedReferencesUnavailable() : super('custody references unavailable');
 }
