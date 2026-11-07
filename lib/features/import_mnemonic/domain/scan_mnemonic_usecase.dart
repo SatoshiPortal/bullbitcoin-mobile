@@ -57,11 +57,19 @@ class ScanMnemonicUsecase {
       final failure = _failureOf(e);
       log.warning(
         'Pre-import scan failed for ${scriptType.name}: '
-        '${failure.runtimeType}',
+        '${_failureCode(failure)}',
       );
       return Err(failure);
     }
   }
+
+  static String _failureCode(ImportMnemonicScanFailure failure) =>
+      switch (failure) {
+        ImportMnemonicScanServerUnavailableFailure() => 'server_unavailable',
+        ImportMnemonicScanTimeoutFailure() => 'timeout',
+        ImportMnemonicScanInvalidMnemonicFailure() => 'invalid_mnemonic',
+        ImportMnemonicScanUnexpectedFailure() => 'unexpected',
+      };
 
   /// Keeps the kind of [error] only: its message may name a server, a descriptor or a word.
   static ImportMnemonicScanFailure _failureOf(Object error) => switch (error) {
