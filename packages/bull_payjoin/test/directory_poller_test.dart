@@ -136,6 +136,36 @@ void main() {
     });
   });
 
+  test('a backward wall-clock correction rearms the deadline', () {
+    fakeAsync((async) {
+      final origin = DateTime(2026, 10, 20);
+      var correction = Duration.zero;
+      final poller = DirectoryPoller<String>(
+        now: () => origin.add(async.elapsed + correction),
+        elapsed: () => async.elapsed,
+      );
+      final poll = _ScriptedPoll(async, [_heldUntilCancelled]);
+      poller.start(
+        id: _id,
+        expiresAt: origin.add(const Duration(minutes: 5)),
+        poll: poll.call,
+        onFound: found.add,
+        onExpired: () => expired++,
+      );
+      async.elapse(const Duration(minutes: 4));
+      correction = const Duration(minutes: -2);
+      async.elapse(const Duration(minutes: 1));
+      expect(expired, 0);
+      expect(poll.tokens.single.isCancelled, isFalse);
+      async.elapse(const Duration(minutes: 2));
+      expect(expired, 1);
+      expect(poll.tokens.single.isCancelled, isTrue);
+      poller.dispose();
+      async.flushTimers();
+      expect(expired, 1);
+    });
+  });
+
   test('a found value is handed on once and polling stops', () {
     withPoller((async, poller, start) {
       final poll = _ScriptedPoll(async, [
