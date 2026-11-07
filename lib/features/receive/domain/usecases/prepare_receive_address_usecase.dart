@@ -25,8 +25,10 @@ class PrepareReceiveAddressUsecase {
         ),
       );
     } on Exception catch (e) {
-      log.warning('Receive address unavailable type=${e.runtimeType}');
-      return Err(ReceiveAddressUnavailableFailure(e.toString()));
+      if (e is! GetReceiveAddressException || !e.reported) {
+        log.warning('Receive address failed reason=unavailable');
+      }
+      return const Err(ReceiveAddressUnavailableFailure('unavailable'));
     }
   }
 }

@@ -1,3 +1,4 @@
+import 'package:transaction_sync/read.dart';
 import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_address_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
@@ -24,12 +25,15 @@ class GetReceiveAddressUsecase {
       }
 
       return address;
-    } catch (e) {
-      throw GetReceiveAddressException(e.toString());
+    } on WalletSnapshotException catch (e) {
+      throw GetReceiveAddressException(e.failure.logCode, reported: true);
+    } on Exception {
+      throw GetReceiveAddressException('storage');
     }
   }
 }
 
 class GetReceiveAddressException extends BullException {
-  GetReceiveAddressException(super.message);
+  final bool reported;
+  GetReceiveAddressException(super.message, {this.reported = false});
 }

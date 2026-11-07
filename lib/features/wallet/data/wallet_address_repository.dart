@@ -59,7 +59,7 @@ class WalletAddressRepository {
       } on WalletSnapshotException catch (error) {
         if (error.failure is! TransactionSyncBusyFailure) rethrow;
         if (attempt == 4) {
-          log.warning('Receive writer busy exhausted attempts=5');
+          log.warning('Receive address failed reason=busy attempts=5');
           rethrow;
         }
         if (attempt == 0) {
