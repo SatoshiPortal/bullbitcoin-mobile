@@ -1,3 +1,4 @@
+import 'package:transaction_sync/transaction_sync.dart' show SyncReason;
 import 'dart:io';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/features/wallet/data/sync_coordinator.dart';
@@ -86,6 +87,7 @@ WalletBloc createBloc(GetExternalTorProxyStatusUsecase externalStatus) {
 class _MockSyncWalletUsecase extends Mock implements SyncWalletUsecase {}
 
 void main() {
+  registerFallbackValue(SyncReason.auto);
   TestWidgetsFlutterBinding.ensureInitialized();
   test('spinner waiter does not request another foreground sync', () async {
     final sync = _MockSyncWalletsUsecase();
@@ -131,9 +133,13 @@ void main() {
       final single = _MockSyncWalletUsecase();
       var nativePasses = 0;
       final syncGate = Completer<void>();
-      when(() => single.execute(_syncedWallet, discover: false)).thenAnswer((
-        _,
-      ) async {
+      when(
+        () => single.execute(
+          _syncedWallet,
+          discover: false,
+          reason: any(named: 'reason'),
+        ),
+      ).thenAnswer((_) async {
         nativePasses++;
         await syncGate.future;
         throw SyncWalletException('connection');

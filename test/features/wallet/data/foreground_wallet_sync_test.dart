@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:transaction_sync/read.dart';
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart'
     show SeedReferences;
@@ -51,6 +52,7 @@ class _Lwk extends Mock implements LwkWalletDatasource {}
 final class _Policy implements WalletConnectionPolicy {
   TransactionSyncFailure? failure;
   int calls = 0;
+  Future<void>? gate;
   @override
   Future<Result<T, TransactionSyncFailure>> run<T>({
     required Network network,
@@ -61,6 +63,7 @@ final class _Policy implements WalletConnectionPolicy {
     required bool Function(TransactionSyncFailure) mayRetry,
   }) async {
     calls++;
+    await gate;
     final error = failure;
     if (error != null) return Err(error);
     return Ok(
@@ -293,6 +296,60 @@ void main() {
     },
   );
 
+  for (final reason in SyncReason.values) {
+    test(
+      'persists started, finished and failed reason=${reason.name}',
+      () async {
+        log = Logger.replace(directory: directory);
+        final wallet =
+            (await repository.getWallet(id) as Ok<Wallet, WalletFailure>).value;
+        final usecase = SyncWalletUsecase(walletRepository: repository);
+        await usecase.execute(wallet, reason: reason);
+        policy.failure = const TransactionSyncConnectionFailure();
+        await expectLater(
+          usecase.execute(wallet, reason: reason),
+          throwsA(isA<SyncWalletException>()),
+        );
+        final rows = (await log.readLogs())
+            .where((row) => row.contains('Electrum sync '))
+            .toList();
+        expect(rows.where((row) => row.contains('started')), hasLength(2));
+        expect(rows.where((row) => row.contains('finished')), hasLength(1));
+        expect(rows.where((row) => row.contains('failed')), hasLength(1));
+        expect(rows, everyElement(contains('reason=${reason.name}')));
+        expect(rows.join(), isNot(contains(id)));
+      },
+    );
+  }
+
+  test(
+    'engine joins retain auto and queued discovery retains manual',
+    () async {
+      log = Logger.replace(directory: directory);
+      final gate = Completer<void>();
+      policy.gate = gate.future;
+      final auto = bridge.synchronize(row);
+      await pumpEventQueue();
+      final pull = bridge.synchronize(row, reason: SyncReason.pull);
+      final manual = bridge.synchronize(
+        row,
+        discover: true,
+        reason: SyncReason.manual,
+      );
+      await pumpEventQueue();
+      expect(policy.calls, 1);
+      gate.complete();
+      await Future.wait([auto, pull, manual]);
+      final rows = (await log.readLogs())
+          .where((row) => row.contains('Electrum sync '))
+          .toList();
+      expect(rows, hasLength(4));
+      expect(rows.take(2), everyElement(contains('reason=auto')));
+      expect(rows.skip(2), everyElement(contains('reason=manual')));
+      expect(policy.calls, 2);
+    },
+  );
+
   test(
     'single-wallet usecase forwards discovery through the repository',
     () async {
@@ -363,7 +420,7 @@ void main() {
         (await log.readLogs())
             .where((row) => row.split('\t')[1] == 'SEVERE')
             .map((row) => row.split('\t')[2]),
-        ['Electrum sync unexpected failure'],
+        ['Electrum sync unexpected failure reason=auto'],
       );
     },
   );
