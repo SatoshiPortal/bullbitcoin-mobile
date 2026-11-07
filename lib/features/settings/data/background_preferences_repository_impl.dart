@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:bull_logger/bull_logger.dart';
 import '../domain/settings_failure.dart';
 import 'package:background_tasks/background_tasks.dart';
@@ -11,7 +12,10 @@ final class BackgroundPreferencesRepositoryImpl
   final NotificationPermissionsFacade _permissions;
   final Future<void> Function() _schedule;
 
-  const BackgroundPreferencesRepositoryImpl(
+  Future<void> _pendingWrite = Future.value();
+  int _generation = 0;
+
+  BackgroundPreferencesRepositoryImpl(
     this._intervals,
     this._permissions,
     this._schedule,
@@ -46,11 +50,23 @@ final class BackgroundPreferencesRepositoryImpl
   Future<Result<void, SettingsFailure>> setInterval(
     BackgroundSyncInterval value,
   ) async {
-    final result = await _intervals.write(value);
-    if (result is Err) {
-      log.warning('Background interval persistence failed');
-      return const Err(SettingsStorageFailure());
+    final generation = ++_generation;
+    final previous = _pendingWrite;
+    final finished = Completer<void>();
+    _pendingWrite = finished.future;
+    try {
+      await previous;
+      if (generation != _generation) return const Ok(null);
+      final result = await _intervals.write(value);
+      if (result is Err) {
+        log.warning('Background interval persistence failed');
+        return const Err(SettingsStorageFailure());
+      }
+    } finally {
+      // Platform scheduling must not delay persistence of a newer opt-out.
+      finished.complete();
     }
+    if (generation != _generation) return const Ok(null);
     try {
       await _schedule();
       log.config('Background interval saved=${value.name}');
