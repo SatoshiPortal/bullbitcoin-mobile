@@ -9,7 +9,7 @@ import 'package:bb_mobile/features/wallet/domain/usecases/refresh_sp_wallet_for_
 import 'package:bb_mobile/features/wallet/domain/usecases/watch_sp_wallet_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/check_sp_feature_gate_for_wallet_usecase.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_sync_result.dart';
-import 'package:bb_mobile/core/sync/sync_trigger.dart';
+import 'package:bb_mobile/features/wallet/domain/sync_trigger.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
