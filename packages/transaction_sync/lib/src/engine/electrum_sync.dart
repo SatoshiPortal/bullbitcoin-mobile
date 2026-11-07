@@ -129,11 +129,14 @@ final class ElectrumSync {
         _finished.add(SyncFinished(key, result));
         completer.complete(result);
       } catch (error) {
-        log.severe(
-          message: 'Electrum sync unexpected failure',
-          error: 'storage',
-          trace: StackTrace.empty,
-        );
+        if (_failures[key] != 'storage') {
+          log.severe(
+            message: 'Electrum sync unexpected failure',
+            error: 'storage',
+            trace: StackTrace.empty,
+          );
+        }
+        _failures[key] = 'storage';
         const result = Err<SyncCompletion, TransactionSyncFailure>(
           TransactionSyncStorageFailure(),
         );
