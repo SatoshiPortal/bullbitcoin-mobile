@@ -46,7 +46,11 @@ class DeleteWalletUsecase {
         return const Err(WalletCannotDeleteWithOngoingSwapsFailure());
       }
     } catch (e, st) {
-      log.severe(message: 'DeleteWallet: swap check', error: e, trace: st);
+      log.severe(
+        message: 'Wallet delete failed stage=swap reason=storage',
+        error: 'storage',
+        trace: st,
+      );
       return Err(
         WalletUnexpectedFailure('ongoing swap check: ${e.runtimeType}'),
       );
@@ -76,7 +80,7 @@ class DeleteWalletUsecase {
     // gated on signsLocally, so only real holders count.
     final fingerprint = Fingerprint.tryParse(wallet.masterFingerprint);
     if (wallet.signsLocally && fingerprint != null) {
-      await _deleteOrphanSeed(fingerprint, walletId);
+      await _deleteOrphanSeed(fingerprint);
     }
 
     return const Ok(null);
@@ -84,32 +88,25 @@ class DeleteWalletUsecase {
 
   /// Best-effort cleanup: a failure here leaves an orphan seed entry but must
   /// not fail the wallet deletion the user asked for.
-  Future<void> _deleteOrphanSeed(
-    Fingerprint fingerprint,
-    String walletId,
-  ) async {
+  Future<void> _deleteOrphanSeed(Fingerprint fingerprint) async {
     final Set<Fingerprint> remaining;
     switch (await _seedReferences.getCustodyFingerprints()) {
       case Ok(:final value):
         remaining = value;
-      case Err(:final failure):
-        log.warning(
-          'DeleteWalletUsecase: cannot check remaining wallets for $walletId: '
-          '${failure.logMessage}',
-        );
+      case Err():
+        log.warning('Seed cleanup failed reason=references_unavailable');
         return;
     }
 
-    if (remaining.contains(fingerprint)) return;
+    if (remaining.contains(fingerprint)) {
+      log.fine('Seed cleanup skipped reason=referenced');
+      return;
+    }
 
     // Unconditional on the package side; the "still used by a wallet" guard
     // is this usecase's, and was applied above.
     final deleted = await _secrets.trash(fingerprint);
-    if (deleted case Err(:final failure)) {
-      log.warning(
-        'DeleteWalletUsecase: failed to clean up seed for $walletId: '
-        '${failure.logMessage}',
-      );
-    }
+    // The keystore boundary owns storage failures.
+    if (deleted is Ok) log.fine('Seed deleted source=wallet_cleanup');
   }
 }
