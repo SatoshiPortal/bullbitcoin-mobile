@@ -140,6 +140,33 @@ void main() {
 
   tearDown(() => directory.deleteSync(recursive: true));
 
+  test('busy finishes without reporting an Electrum outage', () async {
+    policy.failure = const TransactionSyncBusyFailure();
+    final results = <Object>[];
+    final finished = <String>[];
+    final resultSubscription = bridge.results.listen(results.add);
+    final finishedSubscription = bridge.finished.listen(finished.add);
+    try {
+      await expectLater(
+        bridge.synchronize(row),
+        throwsA(isA<WalletSnapshotException>()),
+      );
+      await pumpEventQueue();
+      expect(results, isEmpty);
+      expect(finished, [id]);
+      policy.failure = const TransactionSyncConnectionFailure();
+      await expectLater(
+        bridge.synchronize(row),
+        throwsA(isA<WalletSnapshotException>()),
+      );
+      await pumpEventQueue();
+      expect(results, hasLength(1));
+    } finally {
+      await resultSubscription.cancel();
+      await finishedSubscription.cancel();
+    }
+  });
+
   for (final deleteWallet in [false, true]) {
     test(
       'invalid-origin local row protects seed; deleteWallet=$deleteWallet',
@@ -433,7 +460,7 @@ void main() {
 
   test('writer busy fails through the real foreground usecase', () async {
     policy.failure = const TransactionSyncBusyFailure();
-    final result = bridge.results.first;
+    final finished = bridge.finished.first;
     final wallet =
         (await repository.getWallet(id) as Ok<Wallet, WalletFailure>).value;
     await expectLater(
@@ -448,7 +475,7 @@ void main() {
         ),
       ),
     );
-    expect((await result).success, isFalse);
+    expect(await finished, id);
   });
 
   test('transaction reads delegate sync to the same operation', () async {

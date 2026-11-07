@@ -1,3 +1,11 @@
+import 'package:transaction_sync/read.dart';
+import 'package:transaction_sync/transaction_sync.dart'
+    show TransactionSyncBusyFailure;
+import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/features/wallet/ui/widgets/home_errors.dart';
+import 'package:bb_mobile/generated/l10n/localization.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:transaction_sync/transaction_sync.dart' show SyncReason;
 import 'dart:io';
 import 'package:bull_logger/bull_logger.dart';
@@ -86,9 +94,95 @@ WalletBloc createBloc(GetExternalTorProxyStatusUsecase externalStatus) {
 
 class _MockSyncWalletUsecase extends Mock implements SyncWalletUsecase {}
 
+class _ViewWalletBloc extends Mock implements WalletBloc {}
+
 void main() {
   registerFallbackValue(SyncReason.auto);
   TestWidgetsFlutterBinding.ensureInitialized();
+  for (final trigger in [SyncTrigger.automatic, SyncTrigger.user]) {
+    testWidgets('$trigger busy does not render a generic failure card', (
+      tester,
+    ) async {
+      late WalletState settled;
+      await tester.runAsync(() async {
+        final dir = Directory.systemTemp.createTempSync('review-fix2-busy-');
+        log = Logger.replace(directory: dir);
+        final getWallets = _MockGetWalletsUsecase();
+        when(
+          () => getWallets.execute(),
+        ).thenAnswer((_) async => Ok([_syncedWallet]));
+        when(
+          () => getWallets.execute(onlyBitcoin: true),
+        ).thenAnswer((_) async => Ok([_syncedWallet]));
+        when(
+          () => getWallets.execute(onlyLiquid: true),
+        ).thenAnswer((_) async => const Ok(<Wallet>[]));
+        final single = _MockSyncWalletUsecase();
+        when(
+          () => single.execute(
+            _syncedWallet,
+            discover: false,
+            reason: any(named: 'reason'),
+          ),
+        ).thenThrow(
+          const WalletSnapshotException(TransactionSyncBusyFailure()),
+        );
+        final coordinator = SyncCoordinator(
+          getWalletsUsecase: getWallets,
+          syncWalletUsecase: single,
+        );
+        final bloc = WalletBloc(
+          getWalletsUsecase: getWallets,
+          checkWalletSyncingUsecase: _MockCheckWalletSyncingUsecase(),
+          watchWalletSyncEventsUsecase: _stubbedWatchers(),
+          syncWalletsUsecase: SyncWalletsUsecase(coordinator),
+          getUnconfirmedIncomingBalanceUsecase:
+              _MockGetUnconfirmedIncomingBalanceUsecase(),
+          deleteWalletUsecase: _MockDeleteWalletUsecase(),
+          checkSpWalletSetupForWalletUsecase: _stubbedSpSetup(),
+          checkSpScanningForWalletUsecase: _stubbedSpScanning(),
+          refreshSpWalletForWalletUsecase: _stubbedSpRefresh(),
+          watchSpWalletUsecase: _stubbedSpWatch(),
+          checkSpFeatureGateForWalletUsecase: _stubbedSpGate(),
+          checkBackupNeededUsecase: _MockCheckBackupNeededUsecase(),
+          getExternalTorProxyStatusUsecase: _MockExternalTorStatusUsecase(),
+        );
+
+        try {
+          bloc.add(WalletRefreshed(trigger: trigger));
+          await pumpEventQueue();
+          settled = bloc.state;
+          expect(settled.isRefreshing, isFalse);
+          expect(settled.wallets, [_syncedWallet]);
+        } finally {
+          await bloc.close();
+          coordinator.dispose();
+          await log.flush();
+          dir.deleteSync(recursive: true);
+        }
+      });
+      final viewBloc = _ViewWalletBloc();
+      when(() => viewBloc.state).thenReturn(settled);
+      when(
+        () => viewBloc.stream,
+      ).thenAnswer((_) => const Stream<WalletState>.empty());
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.themeData(AppThemeType.light),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: Scaffold(
+            body: BlocProvider<WalletBloc>.value(
+              value: viewBloc,
+              child: const HomeWarnings(),
+            ),
+          ),
+        ),
+      );
+      expect(find.textContaining('may be out of date'), findsNothing);
+    });
+  }
+
   test('spinner waiter does not request another foreground sync', () async {
     final sync = _MockSyncWalletsUsecase();
     final gate = Completer<Result<void, WalletFailure>>();
