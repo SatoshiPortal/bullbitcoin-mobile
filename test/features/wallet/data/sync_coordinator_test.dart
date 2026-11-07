@@ -1,4 +1,3 @@
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/read_wallet_usecase.dart';
 import 'package:transaction_sync/read.dart';
 import 'package:transaction_sync/transaction_sync.dart'
@@ -10,6 +9,7 @@ import 'package:bb_mobile/features/wallet/domain/wallet_discovery_failure.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet_failure_log_code.dart';
 import 'dart:async';
 import 'dart:io';
+import 'package:primitives/primitives.dart' show NetworkEnv;
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 
@@ -69,7 +69,7 @@ void main() {
   late SyncCoordinator coordinator;
   late Future<void> Function() spCallback;
   var revisionReads = 0;
-  var network = Environment.mainnet;
+  var network = NetworkEnv.mainnet;
 
   setUp(() {
     readWallet = _MockReadWallet();
@@ -79,7 +79,7 @@ void main() {
     when(syncSwaps.call).thenAnswer((_) async {});
     spCallback = () async {};
     revisionReads = 0;
-    network = Environment.mainnet;
+    network = NetworkEnv.mainnet;
     coordinator = SyncCoordinator(
       readWalletUsecase: readWallet,
       readNetwork: () async => network,
@@ -96,6 +96,52 @@ void main() {
   });
 
   tearDown(() => coordinator.dispose());
+
+  test(
+    'regtest skips unsupported kinds and logs their configuration once',
+    () async {
+      final directory = await Directory.systemTemp.createTemp(
+        'network-sync-logs-',
+      );
+      final reporter = _Reporter();
+      log = Logger.replace(directory: directory, reporter: reporter);
+      addTearDown(() async {
+        await log.flush();
+        await directory.delete(recursive: true);
+      });
+      network = NetworkEnv.regtest;
+      when(
+        () => getWallets.execute(onlyBitcoin: true),
+      ).thenAnswer((_) async => const Ok(<Wallet>[]));
+      when(
+        () => getWallets.execute(onlyLiquid: true),
+      ).thenAnswer((_) async => const Err(NoWalletsFoundFailure()));
+      var spRuns = 0;
+      spCallback = () async {
+        spRuns++;
+      };
+      await coordinator.sync(trigger: SyncTrigger.user);
+      await coordinator.sync();
+      await coordinator.sync(
+        only: {SyncKind.liquid, SyncKind.sp, SyncKind.swaps},
+      );
+      verifyNever(() => getWallets.execute(onlyLiquid: true));
+      verifyNever(syncSwaps.call);
+      expect(spRuns, 0);
+      final lines = await log.readLogs();
+      expect(lines.where((line) => line.contains('kind=liquid')), hasLength(1));
+      expect(lines.where((line) => line.contains('kind=sp')), hasLength(1));
+      expect(lines.join(), isNot(contains('WARNING')));
+      expect(reporter.errors, isEmpty);
+      network = NetworkEnv.testnet;
+      when(
+        () => getWallets.execute(onlyLiquid: true),
+      ).thenAnswer((_) async => const Ok(<Wallet>[]));
+      await coordinator.sync();
+      verify(() => getWallets.execute(onlyLiquid: true)).called(1);
+      expect(spRuns, 1);
+    },
+  );
 
   // Each kind's work is gated behind a Completer so the test controls exactly
   // when bitcoin / liquid / sp finish. The wallet list is empty, so no real
@@ -440,7 +486,7 @@ void main() {
       held.complete();
       await Future.wait([first, joined]);
       expect(joinedEnded, isTrue);
-      network = Environment.testnet;
+      network = NetworkEnv.testnet;
       await coordinator.pollWallet('a', isActive: () => true);
       verifyNever(
         () => syncWallet.execute(
