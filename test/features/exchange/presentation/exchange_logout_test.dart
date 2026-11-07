@@ -1,5 +1,13 @@
 import 'dart:async';
 
+import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/widgets/delete_account_confirmation_bottom_sheet.dart';
+import 'package:bb_mobile/core/widgets/delete_account_success_bottom_sheet.dart';
+import 'package:bb_mobile/features/exchange/ui/widgets/exchange_account_actions.dart';
+import 'package:bb_mobile/generated/l10n/localization.dart';
+import 'package:bull_ui/bull_ui.dart' show BullButton;
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/exchange_api_key.dart';
 import 'package:bb_mobile/core/exchange/domain/exchange_api_key_failure.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_api_key_repository.dart';
@@ -267,7 +275,10 @@ void main() {
       await cubit.logout();
       await cubit.completeAuthentication(operation);
       response.complete(const Ok(null));
-      await pending;
+      expect(
+        (await pending).fold<Object>((value) => value, (failure) => failure),
+        ExchangeAccountDeletionOutcome.stale,
+      );
       verify(clearSession.execute).called(1);
       expect(cubit.state.userSummary, _account);
     });
@@ -442,6 +453,51 @@ void main() {
     });
   });
 
+  testWidgets('a failed deletion after logout shows no success sheet', (
+    tester,
+  ) async {
+    final response = Completer<Result<void, ExchangeFailure>>();
+    when(requestDeletion.execute).thenAnswer((_) => response.future);
+    when(clearSession.execute).thenAnswer((_) async => const Ok(null));
+    final cubit = build();
+    addTearDown(cubit.close);
+    await cubit.fetchUserSummary();
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.themeData(AppThemeType.light),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: BlocProvider.value(
+          value: cubit,
+          child: const Scaffold(
+            body: ExchangeAccountActions(showDeleteAccount: true),
+          ),
+        ),
+      ),
+    );
+    await tester.tap(find.byIcon(Icons.delete_forever));
+    await tester.pumpAndSettle();
+    await tester.tap(
+      find
+          .descendant(
+            of: find.byType(DeleteAccountConfirmationBottomSheet),
+            matching: find.byType(BullButton),
+          )
+          .last,
+    );
+    await tester.pumpAndSettle();
+    verify(requestDeletion.execute).called(1);
+    await cubit.logout();
+    await tester.pumpAndSettle();
+    expect(find.byType(ExchangeAccountActions), findsOneWidget);
+
+    response.complete(const Err(ExchangeAccountDeletionRequestFailure()));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(DeleteAccountSuccessBottomSheet), findsNothing);
+    verify(clearSession.execute).called(1);
+  });
+
   group('deleteAccount', () {
     test('a failed request is reported and nothing is cleared', () async {
       when(requestDeletion.execute).thenAnswer(
@@ -451,7 +507,10 @@ void main() {
       addTearDown(cubit.close);
 
       expect(
-        await cubit.deleteAccount(),
+        (await cubit.deleteAccount()).fold<Object>(
+          (value) => value,
+          (failure) => failure,
+        ),
         isA<ExchangeAccountDeletionRequestFailure>(),
       );
       verifyNever(clearSession.execute);
@@ -470,7 +529,13 @@ void main() {
         final cubit = build();
         addTearDown(cubit.close);
 
-        expect(await cubit.deleteAccount(), isA<ExchangeSessionClearFailure>());
+        expect(
+          (await cubit.deleteAccount()).fold<Object>(
+            (value) => value,
+            (failure) => failure,
+          ),
+          isA<ExchangeSessionClearFailure>(),
+        );
       },
     );
 
@@ -480,7 +545,13 @@ void main() {
       final cubit = build();
       addTearDown(cubit.close);
 
-      expect(await cubit.deleteAccount(), isNull);
+      expect(
+        (await cubit.deleteAccount()).fold<Object>(
+          (value) => value,
+          (failure) => failure,
+        ),
+        ExchangeAccountDeletionOutcome.completed,
+      );
       expect(cubit.state.userSummary, isNull);
     });
   });
