@@ -1,4 +1,3 @@
-import 'package:transaction_sync/diagnostics.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet_failure_log_code.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/watch_wallet_revisions_usecase.dart';
 import 'dart:async';
@@ -297,55 +296,21 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     );
   }
 
-  Future<void> _onWalletSyncStarted(
+  void _onWalletSyncStarted(
     WalletSyncStarted event,
     Emitter<WalletState> emit,
-  ) async {
-    // Update sync status for the wallet that started syncing
-    final newSyncStatus = Map<String, bool>.from(state.syncStatus);
-    newSyncStatus[event.wallet.id] = true;
-
-    emit(state.copyWith(syncStatus: newSyncStatus));
-
-    // Only _onStarted and _onRefreshed own `failure`. These per-wallet sync
-    // events fire constantly (including from a `finally` after a failed sync),
-    // so writing it here would wipe a refresh failure before anyone saw it.
-    // A failed read here is logged and the list already on screen is kept.
-    final List<Wallet> wallets;
-    switch (await LeaseDiagnostics.from(
-      LeaseSource.syncStartedReload,
-      () => _getWalletsUsecase.execute(),
-    )) {
-      case Ok(:final value):
-        wallets = value;
-      case Err(:final failure):
-        log.warning('Wallets read on sync start: ${failure.runtimeType}');
-        return;
-    }
-
-    if (wallets.isNotEmpty) {
-      final walletIds = wallets.map((w) => w.id).toList();
-      // A failed read leaves the previous figure in place rather than
-      // zeroing a balance the user is looking at.
-      final unconfirmedIncomingBalance =
-          switch (await _getUnconfirmedIncomingBalanceUsecase.execute(
-            walletIds: walletIds,
-          )) {
-            Ok(:final value) => value,
-            Err() => state.unconfirmedIncomingBalance,
-          };
-
-      emit(
-        state.copyWith(unconfirmedIncomingBalance: unconfirmedIncomingBalance),
-      );
-    }
+  ) {
+    final syncStatus = Map<String, bool>.from(state.syncStatus);
+    syncStatus[event.walletId] = true;
+    emit(state.copyWith(syncStatus: syncStatus));
   }
 
   Future<void> _onWalletSyncFinished(
     WalletSyncFinished event,
     Emitter<WalletState> emit,
   ) async {
-    // See _onWalletSyncStarted: `failure` is not this handler's to write.
+    // Per-wallet events must preserve the refresh failure, including when a
+    // failed sync emits its finished event from finally.
     final List<Wallet> wallets;
     switch (await _getWalletsUsecase.execute()) {
       case Ok(:final value):

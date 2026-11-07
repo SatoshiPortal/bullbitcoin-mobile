@@ -75,14 +75,7 @@ class WalletRepository implements SeedReferencePort {
     // Start auto syncing wallets
   }
 
-  Stream<Wallet> get walletSyncStartedStream => _walletSyncStartedStream
-      .asyncMap<Result<Wallet, WalletFailure>>(
-        (id) =>
-            LeaseDiagnostics.from(LeaseSource.syncStarted, () => getWallet(id)),
-      )
-      .map<Wallet?>((result) => result.fold((w) => w, (_) => null))
-      .where((wallet) => wallet != null)
-      .map((wallet) => wallet!);
+  Stream<String> get walletSyncStartedStream => _walletSyncStartedStream;
 
   Stream<Wallet> get walletSyncFinishedStream => _walletSyncFinishedStream
       .asyncMap<Result<Wallet, WalletFailure>>((id) => getWallet(id))
