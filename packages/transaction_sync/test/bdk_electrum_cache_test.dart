@@ -317,9 +317,12 @@ void main() {
       completed(await sync.execute(descriptor));
       final lines = (await log.readLogs()).skip(before).join('\n');
       expect(lines, contains('Electrum sync started'));
-      expect(lines, contains('Wallet writer lock acquired'));
-      expect(lines, contains('Wallet writer operation committed'));
-      expect(lines, contains('Electrum sync finished mode=initialScan'));
+      expect(lines, isNot(contains('event=lease_acquire')));
+      expect(
+        lines,
+        contains('Wallet writer finished intent=sync outcome=committed'),
+      );
+      expect(lines, matches(r'Electrum sync finished[^\n]*mode=initialScan'));
       expect(lines, contains('cache=ok'));
       expect(lines, contains('route=direct stop_gap=20'));
       expect(lines, isNot(contains('Electrum sync connection network=')));
@@ -338,14 +341,23 @@ void main() {
       File(path).writeAsBytesSync(saved);
       completed(await sync.execute(descriptor));
       final lines = (await log.readLogs()).skip(before).toList();
-      expect(lines.join(), contains('Electrum sync failed category=not_found'));
+      expect(
+        lines.join(),
+        matches(r'Electrum sync failed[^\n]*category=not_found'),
+      );
       expect(lines.join(), isNot(contains('category=[REDACTED]')));
       expect(
         lines.where((line) => line.contains('Electrum sync failed')).length,
         1,
       );
       expect(
-        lines.where((line) => line.contains('Electrum sync recovered')).length,
+        lines
+            .where(
+              (line) =>
+                  line.contains('Electrum sync finished') &&
+                  line.contains('recovered=true'),
+            )
+            .length,
         1,
       );
     });

@@ -1,3 +1,5 @@
+import 'package:flutter/foundation.dart';
+import 'package:transaction_sync/diagnostics.dart';
 import 'dart:io';
 import 'package:bull_logger/bull_logger.dart';
 
@@ -118,6 +120,78 @@ void main() {
     external.dispose();
     internal.dispose();
   }
+
+  test(
+    'native reader logs hydrate and cache leases with caller context',
+    () async {
+      create();
+      final store = RevisionStore(writerMetadataPath(documents.path));
+      final writer = NativeWalletWriter(
+        lockDirectory: writerLockDirectory(documents.path),
+        revisions: store,
+        documentsDirectory: documents.path,
+        catalog: _Catalog(descriptor),
+        reservedAddresses: _Reserved(),
+      );
+      final console = <String>[];
+      final previous = debugPrint;
+      try {
+        expect(
+          await writer.create(
+            descriptor.key,
+            expectedGeneration: 0,
+            existingOnly: true,
+          ),
+          isA<Ok>(),
+        );
+        reader = WalletSnapshotReader(
+          documentsDirectory: documents.path,
+          readiness: PersistedWalletReadiness(store),
+          requiredSchemaVersion: writerSchemaVersion,
+          revisions: store,
+          liquidAdmission: writer,
+        );
+        debugPrint = (message, {wrapWidth}) {
+          if (message != null) console.add(message);
+        };
+        for (var i = 0; i < 2; i++) {
+          expect(
+            await LeaseDiagnostics.from(
+              LeaseSource.syncStarted,
+              () => reader.bitcoin(descriptor),
+            ),
+            isA<Ok>(),
+          );
+        }
+        await log.flush();
+        await pumpEventQueue();
+        final rows = console
+            .where((line) => line.contains('event=lease_'))
+            .toList();
+        expect(
+          rows.where((line) => line.contains('event=lease_acquire')),
+          hasLength(2),
+        );
+        final releases = rows
+            .where((line) => line.contains('event=lease_release'))
+            .toList();
+        expect(releases, hasLength(2));
+        expect(releases.first, contains('read=hydrate'));
+        expect(releases.last, contains('read=cache'));
+        expect(
+          rows.every(
+            (line) => line.contains(
+              'role=reader intent=snapshot scope=foreground source=sync_started',
+            ),
+          ),
+          isTrue,
+        );
+      } finally {
+        debugPrint = previous;
+        await store.close();
+      }
+    },
+  );
 
   test('writer adopts the previously revealed receive index', () async {
     create(revealed: 12);
@@ -324,6 +398,37 @@ void main() {
             as Ok<WalletReadSnapshot<bdk.Wallet>, TransactionSyncFailure>;
     expect(next.value.wallet, same(first.value.wallet));
     expect(next.value.stale, isTrue);
+  });
+
+  test('lease releases even when unpublished native disposal throws', () async {
+    create();
+    reader = WalletSnapshotReader(
+      documentsDirectory: documents.path,
+      readiness: readiness,
+      requiredSchemaVersion: 1,
+      revisions: revisions,
+      liquidAdmission: admission,
+      disposeUnpublished: (wallet) {
+        (wallet as bdk.Wallet).dispose();
+        throw StateError('dispose failure');
+      },
+    );
+    var reads = 0;
+    revisions.beforeRead = () {
+      if (++reads == 2) {
+        revisions.state = WalletRevisionState(
+          stamp: WalletRevision(
+            key: descriptor.key,
+            generation: 1,
+            revision: 0,
+          ),
+          lifecycle: WalletLifecycle.active,
+          initializedSchema: 1,
+        );
+      }
+    };
+    await expectLater(reader.bitcoin(descriptor), throwsStateError);
+    expect(admission.active, isFalse);
   });
 
   test('revision changed during hydration is never cached', () async {
