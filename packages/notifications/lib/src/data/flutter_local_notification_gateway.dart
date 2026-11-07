@@ -17,12 +17,14 @@ final class FlutterLocalNotificationGateway
   final String? channelDescription;
   final String androidIconResource;
   final NotificationPayloadCodec _codec;
+  final bool emitDestinations;
 
   FlutterLocalNotificationGateway({
     required this.channelId,
     required this.channelName,
     required this.androidIconResource,
     this.channelDescription,
+    this.emitDestinations = true,
     this._codec = const NotificationPayloadCodec(),
   }) : _plugin = FlutterLocalNotificationsPlugin(),
        _permissions = FlutterNotificationPermissionGateway(
@@ -55,10 +57,12 @@ final class FlutterLocalNotificationGateway
             requestSoundPermission: false,
           ),
         ),
-        onDidReceiveNotificationResponse: (response) =>
-            onResponse(response.payload ?? ''),
+        onDidReceiveNotificationResponse: emitDestinations
+            ? (response) => onResponse(response.payload ?? '')
+            : null,
       );
       if (initialized != true) return const Err(NotificationsGatewayFailure());
+      if (!emitDestinations) return const Ok(null);
       final launch = await _plugin.getNotificationAppLaunchDetails();
       final payload = launch?.notificationResponse?.payload;
       if (launch?.didNotificationLaunchApp == true && payload != null) {
@@ -89,7 +93,9 @@ final class FlutterLocalNotificationGateway
           ),
           iOS: DarwinNotificationDetails(),
         ),
-        payload: _codec.encode(notification.destination),
+        payload: emitDestinations
+            ? _codec.encode(notification.destination)
+            : null,
       );
       return const Ok(null);
     } on Exception catch (_) {
