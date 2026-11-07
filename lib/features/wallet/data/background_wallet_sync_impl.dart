@@ -23,6 +23,7 @@ final class BackgroundWalletSyncImpl implements BackgroundWalletSync {
       (descriptor as Ok<PublicWalletDescriptor, TransactionSyncFailure>).value,
       discover: discover,
       headless: true,
+      reason: SyncReason.background,
       allowInitialScan: allowInitialScan,
       onCompletion: _observer?.record,
     );
