@@ -1,3 +1,4 @@
+import 'lease_diagnostics.dart';
 import 'dart:math' as math;
 
 import 'package:bull_logger/bull_logger.dart';
@@ -20,6 +21,7 @@ final class NativeWalletWriter implements LiquidReadAdmission {
   final ReservedAddressPort _reserved;
   final NativeWriteSessions _sessions;
   final Map<WalletKey, Type> _failures = {};
+  final LeaseScope leaseScope;
 
   NativeWalletWriter({
     required this.lockDirectory,
@@ -27,6 +29,7 @@ final class NativeWalletWriter implements LiquidReadAdmission {
     required String documentsDirectory,
     required this._catalog,
     required ReservedAddressPort reservedAddresses,
+    this.leaseScope = LeaseScope.foreground,
   }) : _reserved = reservedAddresses,
        _sessions = SdkWriteSessions(documentsDirectory);
 
@@ -36,6 +39,7 @@ final class NativeWalletWriter implements LiquidReadAdmission {
     required this.revisions,
     required this._catalog,
     required ReservedAddressPort reservedAddresses,
+    this.leaseScope = LeaseScope.foreground,
     required this._sessions,
   }) : _reserved = reservedAddresses;
 
@@ -173,7 +177,18 @@ final class NativeWalletWriter implements LiquidReadAdmission {
         key.network.env != NetworkEnv.testnet) {
       return const Err(TransactionSyncUnsupportedNetworkFailure());
     }
-    final acquisition = WriterLock.acquire(lockDirectory, key);
+    final trace =
+        LeaseDiagnostics.current ??
+        LeaseDiagnostics(
+          role: LeaseRole.reader,
+          intent: LeaseIntent.snapshot,
+          scope: leaseScope,
+        );
+    final acquisition = WriterLock.acquire(
+      lockDirectory,
+      key,
+      diagnostics: trace,
+    );
     if (acquisition case Err(:final failure)) {
       return Err(failure);
     }
@@ -185,6 +200,11 @@ final class NativeWalletWriter implements LiquidReadAdmission {
       }
       if (record.state.lifecycle != WalletLifecycle.active ||
           record.state.initializedSchema != writerSchemaVersion) {
+        trace.busy(
+          record.state.lifecycle != WalletLifecycle.active
+              ? LeaseBusySource.lifecycleGate
+              : LeaseBusySource.schemaGate,
+        );
         throw const _WriterFailure(TransactionSyncBusyFailure());
       }
       if (record.needsSync) {
@@ -193,6 +213,9 @@ final class NativeWalletWriter implements LiquidReadAdmission {
       return Ok(_ReadLease(lock, record.state.stamp));
     } on Object catch (error) {
       lock.release();
+      if (error is SqliteException && error.resultCode == 5) {
+        trace.busy(LeaseBusySource.revisionRead);
+      }
       final failure = _map(error);
       return Err(failure);
     }
@@ -210,16 +233,29 @@ final class NativeWalletWriter implements LiquidReadAdmission {
         key.network.env != NetworkEnv.testnet) {
       return const Err(TransactionSyncUnsupportedNetworkFailure());
     }
-    final acquisition = WriterLock.acquire(lockDirectory, key);
+    final trace = LeaseDiagnostics(
+      role: LeaseRole.writer,
+      intent: switch (intent) {
+        WriteIntent.create => LeaseIntent.create,
+        WriteIntent.receive => LeaseIntent.receive,
+        WriteIntent.delete => LeaseIntent.delete,
+        WriteIntent.repair => LeaseIntent.repair,
+        WriteIntent.load => LeaseIntent.reconcile,
+        WriteIntent.sync => LeaseIntent.sync,
+      },
+      scope: leaseScope,
+    );
+    final acquisition = WriterLock.acquire(
+      lockDirectory,
+      key,
+      diagnostics: trace,
+    );
     if (acquisition case Err(:final failure)) {
       _reportFailure(key, failure);
       return Err(failure);
     }
     final lock = (acquisition as Ok<WriterLock, TransactionSyncFailure>).value;
     final watch = Stopwatch()..start();
-    log.fine(
-      'Wallet writer lock acquired intent=${intent.name} network=${key.network} generation=$expectedGeneration',
-    );
     try {
       _expectGeneration(revisions.record(key), expectedGeneration);
       // Delete must remain possible for damaged stores: it supersedes an
@@ -228,7 +264,7 @@ final class NativeWalletWriter implements LiquidReadAdmission {
       if (!deleting || revisions.record(key)?.intent == WriteIntent.delete) {
         await _reconcile(key, allowRepairIntent: allowRepairIntent);
       }
-      final value = await operation();
+      final value = await trace.run(operation);
       final stamp = revisions.record(key)?.state.stamp;
       _failures.remove(key);
       log.fine(
@@ -236,6 +272,9 @@ final class NativeWalletWriter implements LiquidReadAdmission {
       );
       return Ok(value);
     } on Object catch (error) {
+      if (error is SqliteException && error.resultCode == 5) {
+        trace.busy(LeaseBusySource.revisionRead);
+      }
       final failure = _map(error);
       _reportFailure(key, failure);
       return Err(failure);

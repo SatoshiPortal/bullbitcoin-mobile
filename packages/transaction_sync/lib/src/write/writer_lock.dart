@@ -1,3 +1,4 @@
+import 'lease_diagnostics.dart';
 import 'dart:io';
 
 import 'package:primitives/primitives.dart';
@@ -11,8 +12,10 @@ import '../../transaction_sync.dart';
 final class WriterLock {
   final Database _db;
   bool _released = false;
+  final LeaseDiagnostics _diagnostics;
+  final Stopwatch _held = Stopwatch()..start();
 
-  WriterLock._(this._db);
+  WriterLock._(this._db, this._diagnostics);
 
   static String path(String directory, WalletKey key) {
     final id = key.id.codeUnits
@@ -27,8 +30,14 @@ final class WriterLock {
 
   static Result<WriterLock, TransactionSyncFailure> acquire(
     String directory,
-    WalletKey key,
-  ) {
+    WalletKey key, {
+    LeaseDiagnostics? diagnostics,
+  }) {
+    final trace =
+        diagnostics ??
+        LeaseDiagnostics.current ??
+        LeaseDiagnostics(role: LeaseRole.writer, intent: LeaseIntent.sync);
+    var busySource = LeaseBusySource.leaseOpen;
     Database? db;
     try {
       Directory(directory).createSync(recursive: true);
@@ -39,10 +48,14 @@ final class WriterLock {
         db.dispose();
         return const Err(TransactionSyncStorageFailure());
       }
+      busySource = LeaseBusySource.leaseBegin;
       db.execute('BEGIN IMMEDIATE');
-      return Ok(WriterLock._(db));
+      final lock = WriterLock._(db, trace);
+      trace.acquire();
+      return Ok(lock);
     } on SqliteException catch (error) {
       db?.dispose();
+      if (error.resultCode == 5) trace.busy(busySource);
       return Err(
         error.resultCode == 5
             ? const TransactionSyncBusyFailure()
@@ -62,7 +75,11 @@ final class WriterLock {
       _db.execute('ROLLBACK');
     } finally {
       _released = true;
-      _db.dispose();
+      try {
+        _db.dispose();
+      } finally {
+        _diagnostics.release(_held.elapsedMilliseconds);
+      }
     }
   }
 }
