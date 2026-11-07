@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:bull_logger/bull_logger.dart';
 
 import 'package:bull_sdk/bdk.dart' as bdk;
 import 'package:crypto/crypto.dart';
@@ -19,6 +20,7 @@ void main() {
 
   setUp(() async {
     directory = await Directory.systemTemp.createTemp('snapshot-test-');
+    log = Logger.replace(directory: directory);
     documents = await Directory('${directory.path}/documents').create();
     final key = WalletKey(id: 'reader-test', network: BitcoinNetwork.testnet);
     revisions = FakeRevisions(key);
@@ -65,7 +67,24 @@ void main() {
     secret.dispose();
     mnemonic.dispose();
   });
-  tearDown(() async => directory.delete(recursive: true));
+  tearDown(() async {
+    await log.flush();
+    await directory.delete(recursive: true);
+  });
+
+  test('reader failure category persists once across repeated reads', () async {
+    readiness.initializedDescriptor = null;
+    for (var i = 0; i < 3; i++) {
+      await reader.bitcoin(descriptor);
+    }
+    final rows = await log.readLogs();
+    expect(
+      rows.where((row) => row.contains('Wallet reader state:')),
+      hasLength(1),
+    );
+    expect(rows.join(), isNot(contains('[REDACTED]')));
+    expect(rows.join(), isNot(contains('TransactionSync')));
+  });
 
   void create() {
     final persister = bdk.Persister.newSqlite(
