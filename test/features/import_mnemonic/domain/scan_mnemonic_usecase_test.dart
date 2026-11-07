@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:bb_mobile/core/electrum/domain/errors/electrum_fallback_exception.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_network.dart';
@@ -7,6 +8,7 @@ import 'package:bb_mobile/features/import_mnemonic/domain/scan_mnemonic_usecase.
 import 'package:bb_mobile/features/import_mnemonic/domain/check_wallet_status_usecase.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:flutter_test/flutter_test.dart';
+import 'package:bull_logger/bull_logger.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart' show Err, Ok;
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart'
@@ -137,6 +139,31 @@ void main() {
           failure,
         ),
       );
+    });
+  }
+
+  for (final (error, code) in <(Object, String)>[
+    (AllElectrumServersFailedException([attempt]), 'server_unavailable'),
+    (TimeoutException('no answer'), 'timeout'),
+    (CheckWalletStatusInvalidMnemonicException(), 'invalid_mnemonic'),
+    (CheckWalletStatusException('settings'), 'unexpected'),
+  ]) {
+    test('persists the short scan failure code $code', () async {
+      final directory = await Directory.systemTemp.createTemp('scan-logs-');
+      log = Logger.replace(directory: directory);
+      addTearDown(() async {
+        await log.flush();
+        await directory.delete(recursive: true);
+      });
+      derivation(() => Future.error(error));
+
+      await run({ScriptType.bip84})[ScriptType.bip84];
+      await log.flush();
+
+      final messages = (await log.readLogs()).map(
+        (line) => line.split('\t')[2],
+      );
+      expect(messages, contains('Pre-import scan failed for bip84: $code'));
     });
   }
 
