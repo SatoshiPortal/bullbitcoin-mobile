@@ -193,6 +193,9 @@ class SyncCoordinator {
           return const Err(WalletDiscoveryUnavailableFailure());
         }
         final kind = wallet.isLiquid ? SyncKind.liquid : SyncKind.bitcoin;
+        if (!_supports(kind, wallet.network.environment)) {
+          return const Err(WalletDiscoveryUnavailableFailure());
+        }
         // Admission can yield; another caller may have queued the same wallet.
         pass = _manualPasses[walletId];
         if (pass == null) {
