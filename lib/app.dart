@@ -66,7 +66,7 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
   }
 
   // Wallet/swap sync on resume is handled by SyncCoordinator's own
-  // AppLifecycleListener — see lib/core/sync/sync_coordinator.dart.
+  // AppLifecycleListener — see lib/features/wallet/data/sync_coordinator.dart.
   void _onStateChanged(AppLifecycleState state) {
     log.info(state.name);
     if (locator.isRegistered<PayjoinLifecycle>()) {

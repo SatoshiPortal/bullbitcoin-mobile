@@ -71,8 +71,8 @@ import 'package:get_it/get_it.dart';
 /// DI wiring for the Silent Payments feature:
 /// adapter (single live session) -> use cases -> facade -> presentation.
 ///
-/// Must be registered BEFORE the wallet/settings locators, whose own use
-/// cases resolve `locator<SpFacade>()`.
+/// Wallet infrastructure must be registered before foreground watchers start.
+/// Wallet/settings usecases resolve this feature's facade lazily.
 class SpLocator {
   static void setup(GetIt locator, {bool startForegroundWatchers = false}) {
     _registerAdapters(locator);
@@ -100,8 +100,8 @@ class SpLocator {
 
   // The sync tick usually runs before the header store reports a tip, so the
   // scan policy has to be re-judged once it lands, and a dropped electrum
-  // connection has to be restarted. Foreground-only, like the coordinator,
-  // which is absent in the background isolate.
+  // connection has to be restarted. Composition explicitly enables these
+  // watchers only in the foreground graph.
   static void _startWatchers(GetIt locator) {
     locator<SpTipWatcher>().start();
     locator<SpElectrumReconnectWatcher>().start();
