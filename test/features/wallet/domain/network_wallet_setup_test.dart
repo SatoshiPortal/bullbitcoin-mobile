@@ -1,3 +1,8 @@
+import 'package:bb_mobile/features/wallet/data/catalog_wallet_secret_references_repository.dart';
+import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
+import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart'
+    show Signer;
 import 'package:bb_mobile/features/wallet/domain/network_wallet_setup_failure.dart';
 import 'package:bb_mobile/features/wallet/domain/default_wallet_secret_policy.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
@@ -18,6 +23,10 @@ class _Settings extends Mock implements SettingsRepository {}
 class _References extends Mock implements WalletSecretReferencesRepository {}
 
 class _CreateDefaults extends Mock implements CreateDefaultWalletsUsecase {}
+
+class _Metadata extends Mock implements WalletMetadataDatasource {}
+
+class _Row extends Mock implements WalletMetadataModel {}
 
 void main() {
   late _Settings settings;
@@ -52,6 +61,59 @@ void main() {
         expectedNetwork: NetworkEnv.regtest,
       ),
     ).thenAnswer((_) async => []);
+  });
+
+  for (final environment in [Environment.regtest, Environment.testnet]) {
+    test(
+      'remote descriptor keeps setup available on ${environment.name}',
+      () async {
+        when(
+          settings.fetch,
+        ).thenAnswer((_) async => regtest.copyWith(environment: environment));
+        final localRow = _Row();
+        when(() => localRow.masterFingerprint).thenReturn(secret.id.hex);
+        when(() => localRow.signer).thenReturn(Signer.local);
+        // A public descriptor origin has no local secret by design.
+        final remoteRow = _Row();
+        when(() => remoteRow.masterFingerprint).thenReturn('deadbeef');
+        when(() => remoteRow.signer).thenReturn(Signer.remote);
+        final metadata = _Metadata();
+        when(metadata.fetchAll).thenAnswer((_) async => [remoteRow, localRow]);
+        final catalog = CatalogWalletSecretReferencesRepository(metadata);
+        final allReferences = await catalog.list();
+        expect((allReferences as Ok).value, [
+          Fingerprint.tryParse('deadbeef'),
+          secret.id,
+        ]);
+        final result = await LoadNetworkWalletSetupUsecase(
+          settings,
+          catalog,
+          secrets,
+        ).execute();
+        expect(
+          result,
+          isA<Ok<NetworkWalletSetup, NetworkWalletSetupFailure>>(),
+        );
+        final setup =
+            (result as Ok<NetworkWalletSetup, NetworkWalletSetupFailure>).value;
+        expect(setup.network, environment.networkEnv);
+        expect(setup.reusable, [secret.id]);
+      },
+    );
+  }
+
+  test('secret storage failure keeps setup unavailable', () async {
+    storage.locked = true;
+    final result = await LoadNetworkWalletSetupUsecase(
+      settings,
+      references,
+      secrets,
+    ).execute();
+    expect(result, isA<Err<NetworkWalletSetup, NetworkWalletSetupFailure>>());
+    expect(
+      (result as Err).failure,
+      isA<NetworkWalletSetupUnavailableFailure>(),
+    );
   });
 
   test(
