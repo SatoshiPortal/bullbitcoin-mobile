@@ -1,7 +1,5 @@
 import 'dart:io';
 
-import 'package:bb_mobile/core/electrum/frameworks/drift/models/electrum_server_model.dart';
-import 'package:bb_mobile/core/electrum/frameworks/drift/models/electrum_settings_model.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_error.dart';
@@ -67,17 +65,5 @@ class LwkFacade {
         rethrow;
       }
     }
-  }
-
-  static Future<void> sync(
-    WalletModel wallet,
-    ElectrumServerModel electrumServer,
-    ElectrumSettingsModel electrumSettings,
-  ) async {
-    final lwkWallet = await LwkFacade.createPublicWallet(wallet);
-    await lwkWallet.sync_(
-      electrumUrl: electrumServer.url,
-      validateDomain: electrumSettings.validateDomain,
-    );
   }
 }
