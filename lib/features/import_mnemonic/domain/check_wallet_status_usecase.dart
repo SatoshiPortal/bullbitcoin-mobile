@@ -66,14 +66,17 @@ class CheckWalletStatusUsecase {
           'Could not derive the descriptors to scan: ${failure.runtimeType}',
         ),
       };
-    } on CheckWalletStatusException {
+    } on CheckWalletStatusException catch (e) {
+      log.warning(
+        'Import scan blocked stage=derive reason=${e is CheckWalletStatusInvalidMnemonicException ? 'invalid_mnemonic' : 'derivation'}',
+      );
       rethrow;
-    } catch (e, st) {
+    } catch (e) {
       // Only the type is reported: a foreign message may quote the input.
       final error = CheckWalletStatusException(
         'Could not prepare the scan: ${e.runtimeType}',
       );
-      log.severe(message: error.message, error: error, trace: st);
+      log.warning('Import scan blocked stage=derive reason=preparation');
       throw error;
     }
 
@@ -84,7 +87,11 @@ class CheckWalletStatusUsecase {
           primitives.ScriptType.bip49 => ScriptType.bip49,
           primitives.ScriptType.bip44 => ScriptType.bip44,
         }: _handled(
-          _scan(descriptors: pair, isTestnet: isTestnet),
+          _scan(
+            descriptors: pair,
+            isTestnet: isTestnet,
+            scriptType: scriptType,
+          ),
         ),
     };
   }
@@ -92,9 +99,14 @@ class CheckWalletStatusUsecase {
   Future<({BigInt satoshis, int transactions})> _scan({
     required Descriptors descriptors,
     required bool isTestnet,
+    required primitives.ScriptType scriptType,
   }) async {
+    final timer = Stopwatch()..start();
+    final context =
+        'network=${isTestnet ? 'testnet' : 'mainnet'} script=${scriptType.name}';
+    log.fine('Import scan started $context');
     try {
-      return await _serversPort
+      final result = await _serversPort
           .runWithFallback<({BigInt satoshis, int transactions})>(
             network: isTestnet
                 ? ElectrumServerNetwork.bitcoinTestnet
@@ -106,17 +118,21 @@ class CheckWalletStatusUsecase {
               electrumServer: connection,
             ),
           );
-    } on ElectrumFallbackException {
-      // Preserve the typed exception so callers retain the per-server
-      // attempts (failure tier, urls, root-cause errors) for diagnostics.
-      rethrow;
-    } on TimeoutException {
-      rethrow;
-    } catch (e, st) {
-      // Only the type is reported: a foreign message may quote a descriptor.
-      final error = CheckWalletStatusException('Scan failed: ${e.runtimeType}');
-      log.severe(message: error.message, error: error, trace: st);
-      throw error;
+      log.fine(
+        'Import scan finished $context outcome=${result.transactions == 0 ? 'empty' : 'history'} tx_count=${result.transactions} duration_ms=${timer.elapsedMilliseconds}',
+      );
+      return result;
+    } catch (e) {
+      final reason = switch (e) {
+        TimeoutException() => 'timeout',
+        ElectrumFallbackException() => 'server_unavailable',
+        _ => 'unexpected',
+      };
+      log.warning(
+        'Import scan failed $context reason=$reason duration_ms=${timer.elapsedMilliseconds}',
+      );
+      if (e is ElectrumFallbackException || e is TimeoutException) rethrow;
+      throw CheckWalletStatusException('Scan failed: ${e.runtimeType}');
     }
   }
 
