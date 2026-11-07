@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:bb_mobile/features/wallet/data/sync_coordinator.dart';
+
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:secrets/secrets.dart' show Secrets;
@@ -38,6 +40,8 @@ import 'sp_fakes.dart';
 // The sync tick is the one sanctioned automatic scan, so it is exercised here
 // too: it must scan only when SpScanPolicy allows it.
 
+class _MockCoordinator extends Mock implements SyncCoordinator {}
+
 class _MockWalletRepository extends Mock implements WalletRepository {}
 
 class _MockSettingsRepository extends Mock implements SettingsRepository {}
@@ -75,6 +79,9 @@ void main() {
     locator.registerSingleton<SettingsRepository>(settingsRepo);
 
     // Real SP wiring: registers the whole use case + presentation graph.
+    // A coordinator registration must not implicitly opt this isolated graph
+    // into foreground watchers. Only composition grants that lifecycle fact.
+    locator.registerSingleton<SyncCoordinator>(_MockCoordinator());
     SpLocator.setup(locator);
 
     // Swap ONLY the outbound ports for in-memory fakes. The lazy singletons are
