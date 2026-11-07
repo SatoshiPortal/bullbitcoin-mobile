@@ -33,6 +33,9 @@ class _GatedLocalPayjoinDatasource extends LocalPayjoinDatasource {
   Completer<void>? storeReceiverGate;
   Completer<void>? updateSenderGate;
   Object? updateSenderError;
+  Completer<void>? receiverSnapshotRead;
+  Completer<void>? receiverSnapshotGate;
+  Future<void> Function()? afterReceiverStored;
 
   _GatedLocalPayjoinDatasource({required super.db});
 
@@ -40,6 +43,15 @@ class _GatedLocalPayjoinDatasource extends LocalPayjoinDatasource {
   Future<void> storeReceiver(PayjoinReceiverModel receiver) async {
     await storeReceiverGate?.future;
     await super.storeReceiver(receiver);
+    await afterReceiverStored?.call();
+  }
+
+  @override
+  Future<List<PayjoinReceiverModel>> fetchReceivers() async {
+    final snapshot = await super.fetchReceivers();
+    receiverSnapshotRead?.complete();
+    await receiverSnapshotGate?.future;
+    return snapshot;
   }
 
   @override
@@ -300,6 +312,47 @@ void main() {
     gated.storeReceiverGate?.complete();
     await creation;
     verify(() => pdk.startListeningForRequest(model)).called(1);
+  });
+
+  test('failed creation cancels a poll started by concurrent resume', () async {
+    final gated = await useGatedLocal();
+    final model = receiver();
+    stubCreateReceiver(model);
+    final snapshotRead = Completer<void>();
+    final snapshotGate = Completer<void>();
+    gated.receiverSnapshotRead = snapshotRead;
+    gated.receiverSnapshotGate = snapshotGate;
+    final active = <String>{};
+    when(() => pdk.startListeningForRequest(model)).thenAnswer((_) {
+      active.add(model.id);
+    });
+    when(() => pdk.stopPolling(any())).thenAnswer((invocation) {
+      active.remove(invocation.positionalArguments.single as String);
+    });
+
+    final resume = engine.resumePayjoinsOnStartup();
+    await snapshotRead.future;
+    gated.afterReceiverStored = () async {
+      snapshotGate.complete();
+      await resume;
+      expect(active, {model.id});
+      // The second policy read now fails after the row was stored and polled.
+      await database.delete(database.payjoinPolicies).go();
+    };
+
+    await expectLater(
+      engine.createPayjoinReceiver(
+        walletId: model.walletId,
+        address: model.address,
+        isTestnet: true,
+        maxFeeRateSatPerVb: model.maxFeeRateSatPerVb,
+        expireAfterSec: model.expireAfterSec,
+        amountSat: model.amountSat,
+      ),
+      throwsStateError,
+    );
+    expect(await local.fetchReceiver(model.id), isNull);
+    expect(active, isEmpty);
   });
 
   test('a receiver disabled during creation never starts polling', () async {
