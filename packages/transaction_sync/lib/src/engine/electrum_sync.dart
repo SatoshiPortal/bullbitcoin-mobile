@@ -13,8 +13,8 @@ import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
 
 import '../../write.dart';
-import '../domain/sync_reason.dart';
 import '../domain/native_network_policy.dart';
+import '../domain/sync_reason.dart';
 import '../domain/wallet_revision.dart';
 import '../domain/reserved_address_port.dart';
 import '../domain/transaction_sync_failure.dart';
@@ -233,7 +233,6 @@ final class ElectrumSync {
         return Err(failure);
     }
     var retryable = false;
-    var attempts = 0;
     var warnedLiquidProxy = false;
     final events = ReceivePort();
     final subscription = events.listen((message) {
@@ -248,9 +247,6 @@ final class ElectrumSync {
         network: descriptor.key.network,
         mayRetry: (_) => retryable,
         operation: (connection) async {
-          if (attempts++ > 0) {
-            log.warning('Electrum sync connection fallback');
-          }
           if (descriptor is LiquidWalletDescriptor &&
               connection.socks5?.isNotEmpty == true &&
               !warnedLiquidProxy) {
@@ -269,10 +265,10 @@ final class ElectrumSync {
               discover,
               generation,
               events.sendPort,
-              runId,
               headless,
               allowInitialScan,
               onCompletion != null,
+              runId,
             ),
           );
           retryable = attempt.retryable;
@@ -301,10 +297,10 @@ final class _SyncParams {
   final bool discover;
   final int generation;
   final SendPort diagnostics;
-  final int runId;
   final bool headless;
   final bool allowInitialScan;
   final bool observePayments;
+  final int runId;
 
   const _SyncParams(
     this.descriptor,
@@ -313,10 +309,10 @@ final class _SyncParams {
     this.discover,
     this.generation,
     this.diagnostics,
-    this.runId,
     this.headless,
     this.allowInitialScan,
     this.observePayments,
+    this.runId,
   );
 
   void observationWarning(String message) =>

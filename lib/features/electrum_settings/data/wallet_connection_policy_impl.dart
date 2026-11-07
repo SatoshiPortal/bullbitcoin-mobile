@@ -59,7 +59,9 @@ final class WalletConnectionPolicyImpl implements WalletConnectionPolicy {
         },
       );
     } on ElectrumNetworkUnauthorizedException {
-      return const Err(TransactionSyncUnsupportedNetworkFailure());
+      return const Err(
+        TransactionSyncUnsupportedNetworkFailure(authorization: true),
+      );
     } on Exception {
       // No URL, proxy, descriptor or foreign diagnostic escapes this boundary.
       // Exhaustion may wrap callback errors; preserve the last typed failure.

@@ -360,7 +360,10 @@ final class NativeWalletWriter implements LiquidReadAdmission {
     bool reconcile = true,
   }) async {
     final failure = nativeKeyFailure(key);
-    if (failure != null) return Err(failure);
+    if (failure != null) {
+      _reportFailure(key, failure);
+      return Err(failure);
+    }
     final trace = LeaseDiagnostics(
       role: LeaseRole.writer,
       intent: preparing

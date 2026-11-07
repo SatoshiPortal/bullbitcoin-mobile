@@ -41,7 +41,7 @@ class ElectrumServersAdapter implements ElectrumServersPort {
     if (network.environment != ElectrumEnvironment.mainnet &&
         (appSettings.isSuperuser != true ||
             appSettings.isDevModeEnabled != true)) {
-      log.warning(
+      log.info(
         'Electrum refused network=${network.name} category=authorization',
       );
       throw const ElectrumNetworkUnauthorizedException();
@@ -84,11 +84,17 @@ class ElectrumServersAdapter implements ElectrumServersPort {
         )
         .toList();
 
+    var attempt = 0;
     return runElectrumFallback<ElectrumConnection, T>(
       servers: connections,
       urlOf: (c) => c.url,
       isCustomOf: (c) => c.isCustom,
       operation: (connection) async {
+        if (++attempt > 1) {
+          log.warning(
+            'Electrum fallback attempt=$attempt network=${network.name} server=${connection.isCustom ? 'custom' : 'default'} reason=connection',
+          );
+        }
         ElectrumTorRoute? route;
         try {
           route = await _torSessionPort.open(
