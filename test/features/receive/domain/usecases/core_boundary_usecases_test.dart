@@ -230,7 +230,7 @@ void main() {
         final lines = await log.readLogs();
         expect(lines.map((line) => line.split('\t').sublist(1, 3)), [
           ['FINE', 'Logs created'],
-          ['WARNING', 'Receive address unavailable type=_Exception'],
+          ['WARNING', 'Receive address failed reason=unavailable'],
         ]);
         expect(lines.join(), isNot(contains(_rawReason)));
         expect(lines.join(), isNot(contains('app.sqlite')));
@@ -243,7 +243,7 @@ void main() {
             // Dedicated variant: the user gets an actionable "could not prepare
             // an address" message rather than the generic one.
             expect(failure, isA<ReceiveAddressUnavailableFailure>());
-            expect(failure.logMessage, contains('app.sqlite'));
+            expect(failure.logMessage, 'unavailable');
         }
       },
     );
