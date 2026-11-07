@@ -68,6 +68,7 @@ final class BackgroundPreferencesRepositoryImpl
         log.warning('Background interval persistence failed');
         return const Err(SettingsStorageFailure());
       }
+      log.config('Background interval saved=${value.name}');
     } finally {
       // Platform scheduling must not delay persistence of a newer opt-out.
       finished.complete();
@@ -75,7 +76,7 @@ final class BackgroundPreferencesRepositoryImpl
     if (generation != _generation) return const Ok(null);
     try {
       await _schedule();
-      log.config('Background interval saved=${value.name}');
+      log.config('Background schedule applied interval=${value.name}');
       return const Ok(null);
     } on Exception {
       log.warning('Background schedule update failed');

@@ -46,7 +46,8 @@ final class BackgroundSyncConnectionFailure extends BackgroundSyncFailure {
 
 final class BackgroundSyncUnsupportedNetworkFailure
     extends BackgroundSyncFailure {
-  const BackgroundSyncUnsupportedNetworkFailure();
+  final bool authorization;
+  const BackgroundSyncUnsupportedNetworkFailure({this.authorization = false});
 }
 
 final class BackgroundSyncInitialScanRequiredFailure
@@ -58,4 +59,19 @@ final class BackgroundSyncNeedsRepairFailure extends BackgroundSyncFailure {
   /// Exact stamp observed under writer ownership, not the admission read.
   final WalletRevision revision;
   const BackgroundSyncNeedsRepairFailure(this.revision);
+}
+
+/// A deferred native failure whose exact revision is unavailable.
+enum BackgroundSyncUnavailableReason {
+  storage,
+  catalog,
+  missing,
+  repair,
+  restart,
+  address,
+}
+
+final class BackgroundSyncUnavailableFailure extends BackgroundSyncFailure {
+  final BackgroundSyncUnavailableReason reason;
+  const BackgroundSyncUnavailableFailure(this.reason);
 }

@@ -38,22 +38,46 @@ final class BackgroundWalletSyncImpl implements BackgroundWalletSync {
             completedAt: DateTime.now(),
           ),
         ),
-      Ok() => const Err(BackgroundSyncConnectionFailure()),
+      Ok() => const Err(
+        BackgroundSyncUnavailableFailure(
+          BackgroundSyncUnavailableReason.storage,
+        ),
+      ),
       Err(:final failure) => Err(_failure(failure)),
     };
   }
 
-  BackgroundSyncFailure _failure(TransactionSyncFailure failure) =>
-      switch (failure) {
-        TransactionSyncBusyFailure() => const BackgroundSyncBusyFailure(),
-        TransactionSyncUnsupportedNetworkFailure() =>
-          const BackgroundSyncUnsupportedNetworkFailure(),
-        TransactionSyncInitialScanRequiredFailure() =>
-          const BackgroundSyncInitialScanRequiredFailure(),
-        TransactionSyncNeedsRepairFailure(
-          revision: final WalletRevision revision,
-        ) =>
-          BackgroundSyncNeedsRepairFailure(revision),
-        _ => const BackgroundSyncConnectionFailure(),
-      };
+  BackgroundSyncFailure _failure(
+    TransactionSyncFailure failure,
+  ) => switch (failure) {
+    TransactionSyncBusyFailure() => const BackgroundSyncBusyFailure(),
+    TransactionSyncUnsupportedNetworkFailure(:final authorization) =>
+      BackgroundSyncUnsupportedNetworkFailure(authorization: authorization),
+    TransactionSyncInitialScanRequiredFailure() =>
+      const BackgroundSyncInitialScanRequiredFailure(),
+    TransactionSyncNeedsRepairFailure(
+      revision: final WalletRevision revision,
+    ) =>
+      BackgroundSyncNeedsRepairFailure(revision),
+    TransactionSyncConnectionFailure() =>
+      const BackgroundSyncConnectionFailure(),
+    TransactionSyncStorageFailure() => const BackgroundSyncUnavailableFailure(
+      BackgroundSyncUnavailableReason.storage,
+    ),
+    TransactionSyncInvalidCatalogFailure() =>
+      const BackgroundSyncUnavailableFailure(
+        BackgroundSyncUnavailableReason.catalog,
+      ),
+    TransactionSyncNotFoundFailure() => const BackgroundSyncUnavailableFailure(
+      BackgroundSyncUnavailableReason.missing,
+    ),
+    TransactionSyncNeedsRepairFailure() =>
+      const BackgroundSyncUnavailableFailure(
+        BackgroundSyncUnavailableReason.repair,
+      ),
+    TransactionSyncRestartRequiredFailure() =>
+      const BackgroundSyncUnavailableFailure(
+        BackgroundSyncUnavailableReason.restart,
+      ),
+  };
 }

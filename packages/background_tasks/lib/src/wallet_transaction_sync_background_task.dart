@@ -103,7 +103,13 @@ final class WalletTransactionSyncBackgroundTask {
         keys.where((key) => walletSyncChain(key) == chain),
         revisions,
       );
-      if (read case Err()) return const BackgroundTaskExecutionResult.retry();
+      if (read case Err()) {
+        _log(
+          BackgroundLogLevel.warning,
+          'Background admission failed reason=revision_read',
+        );
+        return const BackgroundTaskExecutionResult.retry();
+      }
       final jobs =
           (read as Ok<WalletSyncJobSelection, TransactionSyncFailure>).value;
       if (jobs.unavailable.isNotEmpty) {
@@ -145,15 +151,16 @@ final class WalletTransactionSyncBackgroundTask {
         'Background job admitted: chain=${chain.name} network=${claim.key.network.env.name}',
       );
       var leaseLost = false;
+      var outcome = 'retry';
       Future<void>? renewing;
       Future<void> renew() async {
         try {
           if (!await queue.renew(claim)) leaseLost = true;
-        } on Exception catch (error) {
+        } on Exception {
           if (!leaseLost) {
             _log(
               BackgroundLogLevel.warning,
-              'Background lease renewal failed type=${error.runtimeType}',
+              'Background lease renewal failed reason=storage',
             );
           }
           leaseLost = true;
@@ -172,8 +179,9 @@ final class WalletTransactionSyncBackgroundTask {
         );
         switch (sync) {
           case Err(failure: BackgroundSyncNeedsRepairFailure(:final revision)):
+            outcome = 'deferred';
             _log(
-              BackgroundLogLevel.warning,
+              BackgroundLogLevel.fine,
               'Background job deferred: category=needs_repair revision=${revision.revision} generation=${revision.generation}',
             );
             if (revision.key != claim.key) {
@@ -186,15 +194,21 @@ final class WalletTransactionSyncBackgroundTask {
             )) {
               leaseLost = true;
             }
-          case Err(failure: BackgroundSyncUnsupportedNetworkFailure()):
+          case Err(
+            failure: BackgroundSyncUnsupportedNetworkFailure(
+              :final authorization,
+            ),
+          ):
+            outcome = 'deferred';
             _log(
-              BackgroundLogLevel.warning,
-              'Background job deferred: category=unsupported_network',
+              BackgroundLogLevel.fine,
+              'Background job deferred: category=${authorization ? 'authorization' : 'unsupported_network'}',
             );
             if (!await queue.completeFailure(claim, permanent: true)) {
               leaseLost = true;
             }
           case Err(failure: BackgroundSyncInitialScanRequiredFailure()):
+            outcome = 'deferred';
             _log(
               BackgroundLogLevel.fine,
               'Background job deferred: category=initial_scan',
@@ -202,20 +216,25 @@ final class WalletTransactionSyncBackgroundTask {
             if (!await queue.completeSuccess(claim)) leaseLost = true;
           case Err(:final failure):
             _log(
-              BackgroundLogLevel.warning,
-              'Background job retry: category=${failure is BackgroundSyncBusyFailure ? 'busy' : 'connection'}',
+              BackgroundLogLevel.fine,
+              'Background job retry: category=${failure is BackgroundSyncBusyFailure
+                  ? 'busy'
+                  : failure is BackgroundSyncUnavailableFailure
+                  ? failure.reason.name
+                  : 'connection'}',
             );
             retry = true;
             if (!await queue.completeFailure(claim, permanent: false)) {
               leaseLost = true;
             }
           case Ok(:final value):
+            outcome = 'success';
             if (value.revision.key != claim.key) {
               throw StateError('Writer returned a foreign revision');
             }
             _log(
               BackgroundLogLevel.fine,
-              'Background job committed: revision=${value.revision.revision} generation=${value.revision.generation} incoming=${value.incomingTxids?.length ?? 0}',
+              'Background job committed: revision=${value.revision.revision} generation=${value.revision.generation} incoming=${value.incomingTxids?.length ?? 'unknown'}',
             );
             final incoming = value.incomingTxids;
             if (incoming == null || notifications == null) {
@@ -269,10 +288,11 @@ final class WalletTransactionSyncBackgroundTask {
               leaseLost = true;
             }
         }
-      } on Exception catch (error) {
+      } on Exception {
+        outcome = 'retry';
         _log(
           BackgroundLogLevel.warning,
-          'Background job retry: category=operation_exception type=${error.runtimeType}',
+          'Background job retry: category=operation_exception',
         );
         retry = true;
         if (!await queue.completeFailure(claim, permanent: false)) {
@@ -283,7 +303,7 @@ final class WalletTransactionSyncBackgroundTask {
         await renewing;
         _log(
           BackgroundLogLevel.fine,
-          'Background job finished: chain=${chain.name} elapsed_ms=${operationClock.elapsedMilliseconds} lease_lost=$leaseLost',
+          'Background job finished: chain=${chain.name} network=${claim.key.network.env.name} outcome=$outcome elapsed_ms=${operationClock.elapsedMilliseconds} lease_lost=$leaseLost',
         );
       }
       if (leaseLost) {
@@ -296,6 +316,14 @@ final class WalletTransactionSyncBackgroundTask {
       }
     }
     if (admission.stopped) return const BackgroundTaskExecutionResult.success();
+    _log(
+      BackgroundLogLevel.fine,
+      'Background admission stopped reason=${spent()
+          ? 'budget'
+          : handled.length >= maxJobsPerChain
+          ? 'limit'
+          : 'empty'} chain=${chain.name} elapsed_ms=${elapsed.elapsed.inMilliseconds} budget_ms=${budget?.inMilliseconds ?? 'unlimited'} admitted=${handled.length}',
+    );
     final delivered = await notifications?.deliverPending();
     if (delivered case Err(
       failure: final failure,
