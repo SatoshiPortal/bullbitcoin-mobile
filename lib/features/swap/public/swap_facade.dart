@@ -22,6 +22,8 @@ import 'package:bb_mobile/features/swap/domain/usecases/watch_order_swap_usecase
 import 'package:bb_mobile/features/swap/domain/usecases/watch_swap_app_update_required_usecase.dart';
 
 export '../domain/entities/order_swap_refresh_batch.dart';
+export '../domain/entities/order_swap_polling.dart';
+export '../domain/swap_sync_port.dart';
 export 'package:bb_mobile/features/swap/domain/entities/order_swap.dart';
 export 'package:bb_mobile/features/swap/domain/entities/order_swap_network.dart';
 export 'package:bb_mobile/features/swap/domain/entities/order_swap_quote.dart';

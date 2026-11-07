@@ -1,3 +1,7 @@
+import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
+import 'package:bb_mobile/features/wallet/data/coordinated_swap_sync.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/sync_order_swaps_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/sync_sp_for_wallet_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/sync_wallet_usecase.dart';
 import 'package:bb_mobile/features/sp/public/sp_facade.dart';
@@ -9,43 +13,19 @@ import 'package:primitives/primitives.dart';
 
 class SyncLocator {
   static void setupForeground(GetIt locator) {
+    locator.registerFactory<SyncOrderSwapsUsecase>(
+      () => SyncOrderSwapsUsecase(locator<SwapFacade>()),
+    );
+    locator.registerFactory<SyncSpForWalletUsecase>(
+      () => SyncSpForWalletUsecase(locator<SpFacade>()),
+    );
     SyncLocator.setup(
       locator,
-      syncSwapsOutcome: () async {
-        final result = await locator<SwapFacade>().refreshOrdersWithOutcome();
-        switch (result) {
-          case Ok(:final value):
-            final rateLimited = value.failures
-                .whereType<SwapRateLimitedFailure>()
-                .firstOrNull;
-            if (rateLimited != null) {
-              return SyncOutcome.rateLimited(
-                retryAfter: rateLimited.retryAfter,
-                failure: _SwapSyncException(rateLimited.runtimeType),
-              );
-            }
-            return value.pollableOrderCount == 0
-                ? const SyncOutcome.idle()
-                : const SyncOutcome.active();
-          case Err(:final failure):
-            return failure is SwapRateLimitedFailure
-                ? SyncOutcome.rateLimited(
-                    retryAfter: failure.retryAfter,
-                    failure: _SwapSyncException(failure.runtimeType),
-                  )
-                : SyncOutcome.rateLimited(
-                    failure: _SwapSyncException(failure.runtimeType),
-                  );
-        }
-      },
-      // Lazy, like the swap callback above: SpLocator runs after this, and the
-      // closure only resolves the facade when a sync tick actually fires.
-      syncSp: () async {
-        final result = await locator<SpFacade>().syncWallet();
-        if (result case Err(:final failure)) {
-          throw SpSyncException(failure.logMessage);
-        }
-      },
+      syncSwapsOutcome: () => locator<SyncOrderSwapsUsecase>().execute(),
+      syncSpOutcome: () => locator<SyncSpForWalletUsecase>().execute(),
+    );
+    locator.registerLazySingleton<SwapSyncPort>(
+      () => CoordinatedSwapSync(locator<SyncCoordinator>()),
     );
   }
 
@@ -54,12 +34,13 @@ class SyncLocator {
   /// widget binding to attach to in that isolate).
   ///
   /// [syncSp] is a lazy closure resolved at call time, like the swap
-  /// callbacks, so core never imports the SP feature (rule #7).
+  /// callbacks, so feature resolution waits until the first sync tick.
   static void setup(
     GetIt locator, {
     Future<void> Function()? syncSwaps,
     Future<SyncOutcome> Function()? syncSwapsOutcome,
     Future<void> Function()? syncSp,
+    Future<Result<void, WalletFailure>> Function()? syncSpOutcome,
   }) {
     locator.registerLazySingleton<SyncCoordinator>(
       () => SyncCoordinator(
@@ -68,16 +49,11 @@ class SyncLocator {
         syncSwaps: syncSwaps,
         syncSwapsOutcome: syncSwapsOutcome,
         syncSp: syncSp,
+        syncSpOutcome: syncSpOutcome,
         refreshRevisions: () => locator<WalletNativeRuntime>().refreshAll(),
       ),
     );
   }
-}
-
-final class _SwapSyncException implements Exception {
-  final Type failureType;
-
-  const _SwapSyncException(this.failureType);
 }
 
 Future<void> initializeWalletRuntime(GetIt locator) =>
