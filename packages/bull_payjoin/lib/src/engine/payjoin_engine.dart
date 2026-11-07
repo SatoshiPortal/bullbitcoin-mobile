@@ -1562,9 +1562,14 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
   }
 
   Future<void> _resumeOne(PayjoinModel model) async {
-    final record = _pdkPayjoinDatasource.isPolling(model.id)
-        ? _log.info
-        : _log.fine;
+    bool ofSession(String key) =>
+        key == model.id || key.startsWith('${model.id}|');
+    // Proposal delivery ends directory polling, but its watchers stay active.
+    final alreadyActive =
+        _pdkPayjoinDatasource.isPolling(model.id) ||
+        _broadcastWatchers.keys.any(ofSession) ||
+        _fallbackWatchers.keys.any(ofSession);
+    final record = alreadyActive ? _log.info : _log.fine;
     record(
       code: api.PayjoinLogCode.sessionResumed,
       role: _roleOf(model),
