@@ -393,6 +393,12 @@ final class NativeWalletWriter implements LiquidReadAdmission {
               admitted.state.lifecycle != WalletLifecycle.active ||
               admitted.state.initializedSchema != writerSchemaVersion ||
               admitted.needsSync)) {
+        trace.busy(
+          admitted != null &&
+                  admitted.state.initializedSchema != writerSchemaVersion
+              ? LeaseBusySource.schemaGate
+              : LeaseBusySource.lifecycleGate,
+        );
         throw const _WriterFailure(TransactionSyncBusyFailure());
       }
       // Delete must remain possible for damaged stores: it supersedes an

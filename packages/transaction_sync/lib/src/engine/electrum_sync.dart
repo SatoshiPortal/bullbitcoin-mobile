@@ -224,7 +224,7 @@ final class ElectrumSync {
           LeaseDiagnostics(
             role: LeaseRole.writer,
             intent: LeaseIntent.sync,
-            scope: LeaseScope.foreground,
+            scope: headless ? LeaseScope.headless : LeaseScope.foreground,
           ).busy(LeaseBusySource.revisionRead);
         }
         return Err(failure);
@@ -376,7 +376,7 @@ Future<_Attempt> _performSync(_SyncParams params) async {
     catalog: _DescriptorCatalog(params.descriptor),
     reservedAddresses: _NoReceiveReservations(),
     reportFailures: false,
-    leaseScope: LeaseScope.compute,
+    leaseScope: params.headless ? LeaseScope.headless : LeaseScope.compute,
     diagnostics: (level, message) => params.diagnostics.send((
       level,
       message.startsWith('event=lease_')
@@ -402,6 +402,16 @@ Future<_Attempt> _performSync(_SyncParams params) async {
                 .initializedSchema !=
             writerSchemaVersion) {
       if (params.headless) {
+        LeaseDiagnostics(
+          role: LeaseRole.writer,
+          intent: LeaseIntent.sync,
+          scope: LeaseScope.headless,
+          sink: (level, message) => params.diagnostics.send((level, message)),
+        ).busy(switch (current) {
+          Err(failure: TransactionSyncBusyFailure()) =>
+            LeaseBusySource.revisionRead,
+          _ => LeaseBusySource.schemaGate,
+        });
         return (
           result: const Err<SyncCompletion, TransactionSyncFailure>(
             TransactionSyncBusyFailure(),
