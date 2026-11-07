@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/wallet/domain/wallet_failure_log_code.dart';
 import 'dart:async';
 import 'dart:collection';
 
@@ -88,6 +89,7 @@ class SyncCoordinator {
   _SyncPass? _running;
   bool _draining = false;
   Future<void>? _activeDrain;
+  final Map<SyncKind, String> _lastOutcome = {};
   final Map<SyncKind, DateTime> _lastSuccessAt = <SyncKind, DateTime>{};
 
   /// Schedule `kinds` (or the trigger's default kinds when `only` is null) and
@@ -112,7 +114,6 @@ class SyncCoordinator {
     final requested = SyncKind.values
         .where(requestedKinds.contains)
         .toList(growable: false);
-    final started = DateTime.now();
     final dropped = <String>[];
     final waits = <SyncKind, Future<Object?>>{};
     for (final kind in requested) {
@@ -136,28 +137,7 @@ class SyncCoordinator {
       for (final entry in settled)
         if (entry.value != null) entry.key: entry.value!,
     };
-    final elapsedMs = DateTime.now().difference(started).inMilliseconds;
-    final kinds = requested.map((k) => k.name).join(', ');
-    if (failures.isEmpty) {
-      log.fine('[SyncCoordinator] sync ok ($kinds) in ${elapsedMs}ms');
-      return;
-    }
-    // One sanitized summary (kind:runtimeType only — no wallet identifiers
-    // reach Sentry). severe keeps failures visible in monitoring.
-    final failed = failures.entries
-        .map((e) => '${e.key.name}:${e.value.runtimeType}')
-        .join(', ');
-    // No wallet yet is the normal state before onboarding, not a broken sync:
-    // keep it in the support log without reporting it.
-    if (failures.values.every((f) => f is NoWalletsFoundFailure)) {
-      log.warning('[SyncCoordinator] sync failed ($failed) in ${elapsedMs}ms');
-    } else {
-      log.severe(
-        message: '[SyncCoordinator] sync failed ($failed) in ${elapsedMs}ms',
-        error: SyncCoordinatorException(failures),
-        trace: StackTrace.current,
-      );
-    }
+    if (failures.isEmpty) return;
     throw SyncCoordinatorException(failures);
   }
 
@@ -186,6 +166,7 @@ class SyncCoordinator {
     final queued = _enqueued[kind];
     if (queued != null) {
       queued.discover |= discover;
+      if (trigger == SyncTrigger.user) queued.trigger = trigger;
       return (queued, null);
     }
     final running = _running;
@@ -200,7 +181,7 @@ class SyncCoordinator {
         return (null, 'throttled');
       }
     }
-    final pass = _SyncPass(kind, discover);
+    final pass = _SyncPass(kind, discover, trigger);
     _enqueued[kind] = pass;
     _queue.add(pass);
     return (pass, null);
@@ -229,11 +210,12 @@ class SyncCoordinator {
         final kind = pass.kind;
         _enqueued.remove(kind);
         _running = pass;
+        pass.clock.start();
         try {
           // A wallet read failure fails the round without being thrown: it is
           // settled as the error and, like a throw, never stamps
           // _lastSuccessAt.
-          final failure = await _runTask(kind, discover: pass.discover);
+          final failure = await _runTask(pass);
           if (failure != null) {
             _settle(pass, failure);
             continue;
@@ -241,8 +223,7 @@ class SyncCoordinator {
           _lastSuccessAt[kind] = DateTime.now();
           _settle(pass, null);
         } catch (e) {
-          // Delivered to any sync() awaiting this kind; the single sanitized
-          // summary is logged by sync().
+          // The pass owns the summary, independently of its waiter count.
           _settle(pass, e);
         } finally {
           _running = null;
@@ -254,6 +235,25 @@ class SyncCoordinator {
   }
 
   void _settle(_SyncPass pass, Object? error) {
+    if (error is NoWalletsFoundFailure) pass.wallets = 0;
+    final outcome = error is NoWalletsFoundFailure || pass.wallets == 0
+        ? 'no_wallets'
+        : error == null
+        ? 'settled'
+        : 'failed';
+    final reason = error is WalletFailure
+        ? error.logCode
+        : error == null
+        ? 'none'
+        : 'operation';
+    // Native and repository boundaries own failures. This row describes the
+    // completed queue pass; legacy void sync cannot prove a native success.
+    if (outcome != 'no_wallets' || _lastOutcome[pass.kind] != outcome) {
+      log.fine(
+        'Sync pass finished kind=${pass.kind.name} trigger=${pass.trigger.name} outcome=$outcome wallets=${pass.wallets ?? 'unknown'} reason=$reason elapsed_ms=${pass.clock.elapsedMilliseconds}',
+      );
+    }
+    _lastOutcome[pass.kind] = outcome;
     for (final completer in pass.waiters) {
       if (!completer.isCompleted) completer.complete(error);
     }
@@ -270,12 +270,13 @@ class SyncCoordinator {
   /// from a transient failure.
   Future<WalletFailure?> _syncAll(
     Future<Result<List<Wallet>, WalletFailure>> read, {
-    required bool discover,
+    required _SyncPass pass,
   }) async {
     switch (await read) {
       case Ok(:final value):
+        pass.wallets = value.length;
         for (final wallet in value) {
-          await _syncWallet.execute(wallet, discover: discover);
+          await _syncWallet.execute(wallet, discover: pass.discover);
         }
         return null;
       case Err(:final failure):
@@ -285,21 +286,12 @@ class SyncCoordinator {
 
   /// The wallet read failure that failed the round, or null. Any other failure
   /// is thrown, as before.
-  Future<WalletFailure?> _runTask(
-    SyncKind kind, {
-    required bool discover,
-  }) async {
-    switch (kind) {
+  Future<WalletFailure?> _runTask(_SyncPass pass) async {
+    switch (pass.kind) {
       case SyncKind.bitcoin:
-        return _syncAll(
-          _getWallets.execute(onlyBitcoin: true),
-          discover: discover,
-        );
+        return _syncAll(_getWallets.execute(onlyBitcoin: true), pass: pass);
       case SyncKind.liquid:
-        return _syncAll(
-          _getWallets.execute(onlyLiquid: true),
-          discover: discover,
-        );
+        return _syncAll(_getWallets.execute(onlyLiquid: true), pass: pass);
       case SyncKind.swaps:
         final outcomeCallback = _syncSwapsOutcome;
         if (outcomeCallback != null) {
@@ -325,9 +317,8 @@ class SyncCoordinator {
     if (isResumed && _wasAway) {
       _wasAway = false;
       unawaited(_refreshPersistedRevisions());
-      // sync() may throw SyncCoordinatorException; ignore here — the drain
-      // path already logged a sanitized SEVERE for any failed kind, and the
-      // lifecycle-triggered refresh is best-effort with no awaiting caller.
+      // Each pass records its outcome; underlying boundaries own failures.
+      // Lifecycle refresh is best-effort with no awaiting caller.
       sync().ignore();
     }
   }
@@ -381,7 +372,10 @@ class SyncCoordinatorException implements Exception {
 final class _SyncPass {
   final SyncKind kind;
   bool discover;
+  SyncTrigger trigger;
+  int? wallets;
+  final Stopwatch clock = Stopwatch();
   final List<Completer<Object?>> waiters = [];
 
-  _SyncPass(this.kind, this.discover);
+  _SyncPass(this.kind, this.discover, this.trigger);
 }
