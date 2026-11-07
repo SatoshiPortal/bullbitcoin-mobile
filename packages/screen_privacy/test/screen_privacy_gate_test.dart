@@ -1,3 +1,5 @@
+import 'dart:io';
+import 'package:bull_logger/bull_logger.dart';
 import 'package:bull_ui/testing.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -37,6 +39,15 @@ Future<_FakeProtection> _pump(WidgetTester tester, List<bool> verdicts) async {
 }
 
 void main() {
+  late Directory directory;
+  setUp(() async {
+    directory = await Directory.systemTemp.createTemp('privacy-log-');
+    log = Logger.replace(directory: directory);
+  });
+  tearDown(() async {
+    await log.flush();
+    await directory.delete(recursive: true);
+  });
   testWidgets('shows the secret at once when protection succeeds', (
     tester,
   ) async {
@@ -99,6 +110,11 @@ void main() {
     expect(find.text('the secret'), findsOneWidget);
     expect(find.text(_labels.message), findsNothing);
     expect(protection.calls, 4);
+    final rows = await tester.runAsync(() async => log.readLogs());
+    expect(rows?.map((row) => row.split('\t')[2]), [
+      'Privacy gate refused reason=platform attempts=3',
+      'Privacy gate ready outcome=allowed attempts=1 recovered=true',
+    ]);
   });
 
   testWidgets('Retry that is refused again comes back to the warning', (
