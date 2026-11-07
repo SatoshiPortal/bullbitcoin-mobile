@@ -468,6 +468,32 @@ void main() {
       },
     );
 
+    test(
+      'coalesced callers persist one pass and throttling stays silent',
+      () async {
+        final gate = Completer<List<Wallet>>();
+        when(
+          () => getWallets.execute(onlyBitcoin: true),
+        ).thenAnswer((_) async => Ok(await gate.future));
+        final first = coordinator.sync(only: {SyncKind.bitcoin});
+        final second = coordinator.sync(only: {SyncKind.bitcoin});
+        await Future<void>.delayed(Duration.zero);
+        gate.complete([]);
+        await Future.wait([first, second]);
+        await coordinator.sync(only: {SyncKind.bitcoin});
+        final messages = (await log.readLogs())
+            .map((line) => line.split('\t')[2])
+            .toList();
+        expect(
+          messages.where((message) => message.startsWith('Sync pass finished')),
+          hasLength(1),
+        );
+        expect(messages.join(), contains('outcome=no_wallets wallets=0'));
+        expect(messages.join(), isNot(contains('sync ok')));
+        expect(reporter.errors, isEmpty);
+      },
+    );
+
     void walletsRead(WalletFailure failure) {
       when(
         () => getWallets.execute(onlyBitcoin: true),
@@ -487,14 +513,14 @@ void main() {
       expect(reporter.errors, isEmpty);
     });
 
-    test('a real wallet read failure is still reported', () async {
+    test('a wallet read failure is not reported again by waiters', () async {
       walletsRead(const WalletStorageFailure());
 
       await expectLater(
         coordinator.sync(trigger: SyncTrigger.user),
         throwsA(isA<SyncCoordinatorException>()),
       );
-      expect(reporter.errors, hasLength(1));
+      expect(reporter.errors, isEmpty);
     });
   });
 }
