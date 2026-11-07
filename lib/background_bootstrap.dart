@@ -96,14 +96,11 @@ Future<BackgroundTaskRunner> bootstrapBackgroundRunner(
           ),
         );
         resources.onClose(queue.close);
-        final outbox = PaymentNotifications.openOutbox(documents.path);
-        resources.onClose(outbox.dispose);
-        final notifications = PaymentNotifications.create(
-          outbox,
+        final notifications = await PaymentNotifications.initializeBackground(
+          documents.path,
           preferences.language,
+          resources,
         );
-        final initialized = await notifications.initialize();
-        if (initialized is Err) throw const _NotificationStartupFailure();
         final catalogResult = await catalog.list();
         final descriptors = switch (catalogResult) {
           Ok(:final value) => value,
@@ -117,7 +114,9 @@ Future<BackgroundTaskRunner> bootstrapBackgroundRunner(
           writer: BackgroundWalletSyncImpl(
             catalog,
             sync,
-            WalletPaymentObserver(() async => notifications, () => false),
+            notifications == null
+                ? null
+                : WalletPaymentObserver(() async => notifications, () => false),
           ),
           revisions: revisions,
           keys: descriptors.map((descriptor) => descriptor.key),
@@ -130,10 +129,6 @@ Future<BackgroundTaskRunner> bootstrapBackgroundRunner(
       },
     },
   );
-}
-
-final class _NotificationStartupFailure implements Exception {
-  const _NotificationStartupFailure();
 }
 
 final class _CatalogStartupFailure implements Exception {

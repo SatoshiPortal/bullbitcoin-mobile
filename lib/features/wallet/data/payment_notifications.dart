@@ -1,4 +1,6 @@
 import 'dart:ui';
+import 'package:bull_logger/bull_logger.dart';
+import 'package:primitives/primitives.dart';
 import 'package:background_tasks/background_tasks.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/generated/l10n/localization.dart';
@@ -27,6 +29,35 @@ final class PaymentNotifications {
       androidIconResource: 'ic_launcher_foreground',
     ),
   );
+
+  /// Notification storage and the platform plugin are optional to native sync.
+  static Future<NotificationsFacade?> initializeBackground(
+    String documents,
+    Language? language,
+    BackgroundTaskResources resources,
+  ) async {
+    SqliteNotificationOutbox? outbox;
+    var retained = false;
+    try {
+      outbox = openOutbox(documents);
+      final notifications = create(outbox, language);
+      if (await notifications.initialize() case Err()) {
+        log.warning(
+          'Background notifications unavailable category=initialization',
+        );
+        return null;
+      }
+      resources.onClose(outbox.dispose);
+      retained = true;
+      log.fine('Background notifications ready');
+      return notifications;
+    } on Exception {
+      log.warning('Background notifications unavailable category=storage');
+      return null;
+    } finally {
+      if (!retained) outbox?.dispose();
+    }
+  }
 
   static NotificationCopyBuilder copy(Language? language) {
     final localized = localization(language);

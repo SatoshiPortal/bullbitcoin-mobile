@@ -7,7 +7,7 @@ import 'wallet_payment_observer.dart';
 final class BackgroundWalletSyncImpl implements BackgroundWalletSync {
   final WalletCatalogPort _catalog;
   final ElectrumSync _sync;
-  final WalletPaymentObserver _observer;
+  final WalletPaymentObserver? _observer;
 
   const BackgroundWalletSyncImpl(this._catalog, this._sync, this._observer);
 
@@ -22,7 +22,7 @@ final class BackgroundWalletSyncImpl implements BackgroundWalletSync {
       (descriptor as Ok<PublicWalletDescriptor, TransactionSyncFailure>).value,
       headless: true,
       allowInitialScan: allowInitialScan,
-      onCompletion: _observer.record,
+      onCompletion: _observer?.record,
     );
     return switch (result) {
       Ok(
