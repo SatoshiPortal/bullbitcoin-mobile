@@ -87,6 +87,32 @@ class _MockSyncWalletUsecase extends Mock implements SyncWalletUsecase {}
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
+  test('spinner waiter does not request another foreground sync', () async {
+    final sync = _MockSyncWalletsUsecase();
+    final gate = Completer<Result<void, WalletFailure>>();
+    when(
+      () => sync.execute(trigger: SyncTrigger.automatic),
+    ).thenAnswer((_) => gate.future);
+    final bloc = _blocWithFailingLoad(const WalletStorageFailure(), sync: sync);
+    addTearDown(bloc.close);
+    await bloc.waitForRefresh();
+    verifyNever(() => sync.execute());
+    bloc.add(const WalletRefreshed());
+    await pumpEventQueue();
+    expect(bloc.state.isRefreshing, isTrue);
+    var settled = false;
+    final spinner = bloc.waitForRefresh().then((_) => settled = true);
+    await pumpEventQueue();
+    expect(settled, isFalse);
+    gate.complete(const Err(WalletSyncFailure()));
+    await spinner;
+    expect(bloc.state.isRefreshing, isFalse);
+    verify(() => sync.execute(trigger: SyncTrigger.automatic)).called(1);
+    verifyNever(() => sync.execute(trigger: SyncTrigger.user));
+    await bloc.close();
+    await bloc.waitForRefresh();
+  });
+
   test(
     'pull-to-refresh preserves failure and spinner without caller warnings',
     () async {
@@ -105,7 +131,7 @@ void main() {
       final single = _MockSyncWalletUsecase();
       var nativePasses = 0;
       final syncGate = Completer<void>();
-      when(() => single.execute(_syncedWallet, discover: true)).thenAnswer((
+      when(() => single.execute(_syncedWallet, discover: false)).thenAnswer((
         _,
       ) async {
         nativePasses++;
@@ -340,7 +366,10 @@ void main() {
 }
 
 /// Builds a bloc whose wallet load fails, so the failure path can be driven.
-WalletBloc _blocWithFailingLoad(WalletFailure failure) {
+WalletBloc _blocWithFailingLoad(
+  WalletFailure failure, {
+  SyncWalletsUsecase? sync,
+}) {
   final getWallets = _MockGetWalletsUsecase();
   when(
     () => getWallets.execute(
@@ -355,7 +384,7 @@ WalletBloc _blocWithFailingLoad(WalletFailure failure) {
     getWalletsUsecase: getWallets,
     checkWalletSyncingUsecase: _MockCheckWalletSyncingUsecase(),
     watchWalletSyncEventsUsecase: _stubbedWatchers(),
-    syncWalletsUsecase: _stubbedSync(),
+    syncWalletsUsecase: sync ?? _stubbedSync(),
     getUnconfirmedIncomingBalanceUsecase:
         _MockGetUnconfirmedIncomingBalanceUsecase(),
     deleteWalletUsecase: _MockDeleteWalletUsecase(),
