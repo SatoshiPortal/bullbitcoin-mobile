@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:background_tasks/background_tasks.dart';
 import 'package:bb_mobile/features/wallet/data/payment_notifications.dart';
@@ -9,6 +10,8 @@ import 'package:primitives/primitives.dart';
 import 'package:transaction_sync/transaction_sync.dart';
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+  setUp(() => SharedPreferences.setMockInitialValues({}));
   for (final storageFailure in [true, false]) {
     test(
       'notification startup failure permits wallet sync (storage=$storageFailure)',

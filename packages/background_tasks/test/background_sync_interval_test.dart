@@ -30,6 +30,17 @@ void main() {
     expect(await store.read(), BackgroundSyncInterval.hour1);
   });
 
+  test('reread observes Off written outside the isolate cache', () async {
+    const store = SharedPreferencesBackgroundSyncIntervalStore();
+    expect(await store.read(), BackgroundSyncInterval.hour1);
+    await SharedPreferencesStorePlatform.instance.setValue(
+      'String',
+      'flutter.background_sync_interval',
+      'off',
+    );
+    expect(await store.read(), BackgroundSyncInterval.off);
+  });
+
   test('a chosen interval survives a reread', () async {
     const store = SharedPreferencesBackgroundSyncIntervalStore();
     expect(await store.write(BackgroundSyncInterval.minutes15), isA<Ok>());

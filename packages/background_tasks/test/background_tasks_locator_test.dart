@@ -1,7 +1,42 @@
 import 'package:background_tasks/background_tasks.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:primitives/primitives.dart';
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+  setUp(() => SharedPreferences.setMockInitialValues({}));
+
+  test(
+    'persisted Off acknowledges wallet callback before building its graph',
+    () async {
+      expect(
+        await const SharedPreferencesBackgroundSyncIntervalStore().write(
+          BackgroundSyncInterval.off,
+        ),
+        isA<Ok>(),
+      );
+      final logger = _Logger();
+      final runner = await BackgroundTasksLocator.setup(
+        task: BackgroundTask.walletsSync,
+        logger: logger,
+        tasks: {
+          BackgroundTask.walletsSync: (_) async =>
+              fail('wallet graph opened after opt-out'),
+        },
+      );
+      expect(
+        (await runner.run(BackgroundTask.walletsSync)).shouldRetry,
+        isFalse,
+      );
+      expect(runner.handlers, isEmpty);
+      expect(
+        logger.messages,
+        contains('Background admission stopped: category=opt_out'),
+      );
+    },
+  );
+
   test('unknown and obsolete tasks never build a graph', () async {
     for (final task in ['unknown', BackgroundTask.swapsSync.id]) {
       var bootstrapped = false;
@@ -78,8 +113,9 @@ void main() {
 }
 
 final class _Logger implements BackgroundTaskLogger {
+  final messages = <String>[];
   @override
-  void write(BackgroundLogLevel level, String message) {}
+  void write(BackgroundLogLevel level, String message) => messages.add(message);
   @override
   Future<void> flush() async {}
 }
