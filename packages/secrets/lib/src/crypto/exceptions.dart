@@ -59,3 +59,10 @@ class SilentPaymentsOpenFailed implements Exception {
   @internal
   const SilentPaymentsOpenFailed();
 }
+
+/// A word-based capability cannot consume this mnemonic's wordlist.
+final class LanguageUnsupported implements Exception {
+  final String message;
+  @internal
+  const LanguageUnsupported(this.message);
+}

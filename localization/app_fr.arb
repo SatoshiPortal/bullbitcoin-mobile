@@ -4952,5 +4952,11 @@
   "screenPrivacyUnavailable": "La protection de l’écran n’a pas pu être activée : ce secret reste masqué.",
   "appStartupMissingSecretMessage": "Cet appareil ne contient plus la phrase de récupération de votre portefeuille. Saisissez-la à nouveau pour le retrouver.",
   "appStartupRestoreSecretButton": "Saisir ma phrase de récupération",
-  "appStartupRestoreMismatch": "Cette phrase de récupération appartient à un autre portefeuille. Saisissez celle du portefeuille de cet appareil."
+  "appStartupRestoreMismatch": "Cette phrase de récupération appartient à un autre portefeuille. Saisissez celle du portefeuille de cet appareil.",
+  "mnemonicLanguageLabel": "Langue de la phrase de récupération",
+  "mnemonicLanguageSuggestion": "Ces mots correspondent à la langue {language}. Sélectionnez-la pour continuer.",
+  "mnemonicLanguageAmbiguous": "Ces mots correspondent à plusieurs langues. Sélectionnez la langue de votre phrase de récupération.",
+  "mnemonicDefaultEnglishOnly": "Les portefeuilles par défaut nécessitent actuellement une phrase de récupération en anglais. Après la configuration, vous pouvez importer une autre langue dans un portefeuille Bitcoin séparé.",
+  "mnemonicLanguageName": "{language, select, english{Anglais} french{Français} spanish{Espagnol} italian{Italien} portuguese{Portugais} czech{Tchèque} korean{Coréen} simplifiedChinese{Chinois (simplifié)} traditionalChinese{Chinois (traditionnel)} japanese{Japonais} other{Langue inconnue}}",
+  "mnemonicOtherLanguageWordsError": "Ces mots figurent dans la liste de mots « {language} », pas « {selected} », et ne forment pas non plus une phrase de récupération valide dans cette langue. Vérifiez chaque mot et sa position."
 }

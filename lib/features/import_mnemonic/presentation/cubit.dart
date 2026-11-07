@@ -1,11 +1,10 @@
 import 'package:bb_mobile/core/utils/result.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/check_wallet_status_usecase.dart';
+import 'package:bb_mobile/features/import_mnemonic/domain/check_wallet_status_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/import_mnemonic/domain/check_duplicate_mnemonic_usecase.dart';
 import 'package:bb_mobile/features/import_mnemonic/domain/import_mnemonic_failure.dart';
 import 'package:bb_mobile/features/import_mnemonic/domain/import_wallet_usecase.dart';
 import 'package:bb_mobile/features/import_mnemonic/presentation/state.dart';
-import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ImportMnemonicCubit extends Cubit<ImportMnemonicState> {
@@ -33,6 +32,7 @@ class ImportMnemonicCubit extends Cubit<ImportMnemonicState> {
 
     switch (await _checkDuplicateMnemonicUsecase.execute(
       mnemonicWords: mnemonic.words,
+      language: mnemonic.language,
       passphrase: mnemonic.passphrase,
     )) {
       case Ok():
@@ -44,27 +44,36 @@ class ImportMnemonicCubit extends Cubit<ImportMnemonicState> {
   }
 
   Future<void> _scanAllScriptTypes(Mnemonic mnemonic) async {
-    final bip39Mnemonic = bip39.Mnemonic.fromWords(
-      words: mnemonic.words,
-      passphrase: mnemonic.passphrase,
-      language: mnemonic.language,
-    );
-
-    // Fire all three concurrently and emit each as it completes,
-    // so a slow/failing scan for one type doesn't block the others.
+    final Map<ScriptType, Future<({BigInt satoshis, int transactions})>> scans;
+    try {
+      // One derivation for the three script types; their scans then run concurrently.
+      scans = await _checkWalletUsecase(
+        words: mnemonic.words,
+        language: mnemonic.language,
+        passphrase: mnemonic.passphrase,
+        scriptTypes: const {
+          ScriptType.bip84,
+          ScriptType.bip49,
+          ScriptType.bip44,
+        },
+      );
+    } catch (_) {
+      // Without descriptors nothing is scanned; the import itself stays available.
+      return;
+    }
+    // Emit each as it completes, so a slow/failing scan for one type doesn't block the others.
     await Future.wait([
-      _scanOne(bip39Mnemonic, ScriptType.bip84),
-      _scanOne(bip39Mnemonic, ScriptType.bip49),
-      _scanOne(bip39Mnemonic, ScriptType.bip44),
+      for (final MapEntry(key: scriptType, value: scan) in scans.entries)
+        _emitScan(scriptType, scan),
     ]);
   }
 
-  Future<void> _scanOne(bip39.Mnemonic m, ScriptType scriptType) async {
+  Future<void> _emitScan(
+    ScriptType scriptType,
+    Future<({BigInt satoshis, int transactions})> scan,
+  ) async {
     try {
-      final result = await _checkWalletUsecase(
-        mnemonic: m,
-        scriptType: scriptType,
-      );
+      final result = await scan;
       if (isClosed) return;
       switch (scriptType) {
         case ScriptType.bip84:
@@ -84,16 +93,17 @@ class ImportMnemonicCubit extends Cubit<ImportMnemonicState> {
       emit(state.copyWith(scriptType: scriptType));
 
   Future<void> import() async {
-    if (state.mnemonic == null) {
+    final mnemonic = state.mnemonic;
+    if (mnemonic == null) {
       emit(state.copyWith(failure: const ImportMnemonicNullMnemonicFailure()));
       return;
     }
 
     emit(state.copyWith(isLoading: true, failure: null));
 
-    final mnemonic = state.mnemonic!;
     switch (await _importWalletUsecase.execute(
       mnemonicWords: mnemonic.words,
+      language: mnemonic.language,
       label: mnemonic.label,
       passphrase: mnemonic.passphrase,
       scriptType: state.scriptType,

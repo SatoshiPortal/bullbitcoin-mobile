@@ -1,5 +1,5 @@
-import 'package:bb_mobile/core/recoverbull/domain/recoverbull_failure.dart';
-import 'package:bb_mobile/core/recoverbull/domain/usecases/create_encrypted_vault_usecase.dart';
+import 'package:bb_mobile/features/recoverbull/domain/recoverbull_failure.dart';
+import 'package:bb_mobile/features/recoverbull/domain/usecases/create_encrypted_vault_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/result.dart';
@@ -64,8 +64,8 @@ void main() {
 
       final result = await usecase.execute();
 
-      final failure = (result as Err).failure as RecoverBullCoreFailure;
-      expect(failure, isA<RecoverBullUnexpectedCoreFailure>());
+      final failure = (result as Err).failure as RecoverBullFailure;
+      expect(failure, isA<VaultCreationFailure>());
       // This family has a single unexpected variant, so the TYPE cannot tell
       // the two causes apart — the message is the only signal, and it must not
       // claim the user has no wallet.
@@ -89,8 +89,8 @@ void main() {
 
       final result = await usecase.execute();
 
-      final failure = (result as Err).failure as RecoverBullCoreFailure;
-      expect(failure, isA<RecoverBullUnexpectedCoreFailure>());
+      final failure = (result as Err).failure as RecoverBullFailure;
+      expect(failure, isA<VaultCreationFailure>());
       expect(failure.logMessage, contains('No default Bitcoin wallet'));
     },
   );

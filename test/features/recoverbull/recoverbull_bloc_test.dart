@@ -7,7 +7,7 @@ import 'package:bb_mobile/core/recoverbull/domain/recoverbull_failure.dart'
 import 'package:bb_mobile/core/recoverbull/domain/usecases/check_server_connection_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/recoverbull_tor_route.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/ensure_recoverbull_tor_session_usecase.dart';
-import 'package:bb_mobile/core/recoverbull/domain/usecases/create_encrypted_vault_usecase.dart';
+import 'package:bb_mobile/features/recoverbull/domain/usecases/create_encrypted_vault_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/fetch_vault_key_from_server_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/connect_google_drive_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/fetch_latest_google_drive_backup_usecase.dart';
@@ -136,6 +136,24 @@ void main() {
     updateLatestEncryptedVaultTestUsecase: updateLatest,
     watchTorConnectionUsecase: watchTor,
   );
+
+  test('vault creation failure reaches presentation unchanged', () async {
+    when(() => createVault.execute()).thenAnswer(
+      (_) async => const Err(VaultCreationFailure('creation failed')),
+    );
+    final bloc = buildBloc(flow: RecoverBullFlow.secureVault);
+    bloc.add(
+      const OnVaultCreation(
+        provider: VaultProvider.customLocation,
+        password: 'pw',
+      ),
+    );
+    await pumpEventQueue();
+    expect(bloc.state.failure, isA<VaultCreationFailure>());
+    verifyZeroInteractions(storeKey);
+    verifyZeroInteractions(saveFile);
+    await bloc.close();
+  });
 
   group('OnVaultPasswordSet guard', () {
     test('no vault set -> VaultNotSetFailure, password not stored, key never '

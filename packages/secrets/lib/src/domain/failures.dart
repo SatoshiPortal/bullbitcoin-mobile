@@ -120,3 +120,8 @@ String describeSafely(Object error) {
   if (error is FormatException) return 'FormatException';
   return error.runtimeType.toString();
 }
+
+/// The operation cannot use the mnemonic's language.
+final class LanguageUnsupportedFailure extends SecretFailure {
+  const LanguageUnsupportedFailure([super.logMessage]);
+}

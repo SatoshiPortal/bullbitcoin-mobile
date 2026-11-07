@@ -1,6 +1,6 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/widgets/mnemonic_keyboard.dart';
-import 'package:bb_mobile/core/widgets/mnemonic_widget.dart';
+import 'package:bb_mobile/features/import_mnemonic/ui/widgets/mnemonic_keyboard.dart';
+import 'package:bb_mobile/features/import_mnemonic/ui/widgets/mnemonic_widget.dart';
 import 'package:bb_mobile/generated/l10n/localization.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:flutter/foundation.dart';
@@ -200,17 +200,6 @@ void main() {
         onSubmit: (_) {},
       );
       expect(find.byType(TextField), findsNWidgets(24));
-    });
-
-    test('rejects a non-English language — the keyboard is a-z only', () {
-      expect(
-        () => MnemonicWidget(
-          initialLength: bip39.MnemonicLength.words12,
-          onSubmit: (_) {},
-          language: bip39.Language.french,
-        ),
-        throwsA(isA<AssertionError>()),
-      );
     });
 
     testWidgets('word fields are read-only so no OS keyboard can open', (

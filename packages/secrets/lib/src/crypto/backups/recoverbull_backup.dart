@@ -1,6 +1,9 @@
 import 'dart:convert';
 import 'dart:math';
 
+import 'package:secrets/src/domain/domain.dart'
+    show decodeLanguage, encodeLanguage;
+
 import 'package:bip85_entropy/bip85_entropy.dart';
 import 'package:convert/convert.dart' as convert;
 import 'package:recoverbull/recoverbull.dart';
@@ -30,6 +33,9 @@ final class RecoverBullBackup {
   static final _application = CustomApplication.fromNumber(1608);
 
   static const _kMnemonic = 'mnemonic';
+  // Not `language`: vaults sealed before languages existed may carry that
+  // key as caller metadata, which must still come back untouched.
+  static const _kLanguage = 'mnemonicLanguage';
   static const _kPath = 'path';
 
   /// A fresh `1608'/0'/<random>'` path.
@@ -55,12 +61,13 @@ final class RecoverBullBackup {
   ///
   /// [metadata] is whatever the caller wants restored alongside the
   /// mnemonic — backup timestamps, test flags. It must not contain a
-  /// `mnemonic` entry: that one is this method's to write.
-  /// The one metadata key a caller may not supply: the vault writes it.
-  String get reservedMetadataKey => _kMnemonic;
+  /// `mnemonic` or `mnemonicLanguage` entry: those belong to the vault.
+  /// Reserved plaintext keys may not be supplied as caller metadata.
+  Set<String> get reservedMetadataKeys => const {_kMnemonic, _kLanguage};
 
   String seal({
     required List<String> words,
+    Language language = Language.english,
     required Map<String, dynamic> metadata,
     required String backupKey,
     required String derivationPath,
@@ -68,11 +75,15 @@ final class RecoverBullBackup {
     // Validated by `Secret.backupRecoverbull` before the boundary, where the
     // caller still gets an ArgumentError with this package's message.
     assert(
-      !metadata.containsKey(_kMnemonic),
+      !metadata.keys.any(reservedMetadataKeys.contains),
       'the mnemonic is written by the vault, not by the caller',
     );
 
-    final plaintext = json.encode({...metadata, _kMnemonic: words});
+    final plaintext = json.encode({
+      ...metadata,
+      _kMnemonic: words,
+      _kLanguage: encodeLanguage(language),
+    });
     final sealed = RecoverBull.createBackup(
       secret: utf8.encode(plaintext),
       backupKey: convert.hex.decode(_normalize(backupKey)),
@@ -95,10 +106,8 @@ final class RecoverBullBackup {
   /// file's own messages: the libraries' messages are not carried, and
   /// the stages are kept apart so a wrong key reads differently from a
   /// file that was never a vault.
-  ({List<String> words, Map<String, dynamic> metadata}) open({
-    required String file,
-    required String backupKey,
-  }) {
+  ({List<String> words, Language language, Map<String, dynamic> metadata})
+  open({required String file, required String backupKey}) {
     final BullBackup backup;
     try {
       backup = BullBackup.fromJson(file);
@@ -128,8 +137,15 @@ final class RecoverBullBackup {
       throw const InvalidVault('vault plaintext is not an object');
     }
 
-    // Checked element by element: `List.cast` is lazy and would let a
-    // list of non-strings through here to fail later, inside storage.
+    final Language language;
+    try {
+      language = plaintext.containsKey(_kLanguage)
+          ? decodeLanguage(plaintext.remove(_kLanguage))
+          : Language.english;
+    } on FormatException {
+      throw const InvalidVault('vault carries an unknown mnemonic language');
+    }
+    // Check elements eagerly; a lazy cast would defer invalid plaintext.
     final words = plaintext.remove(_kMnemonic);
     if (words is! List || words.isEmpty || words.any((w) => w is! String)) {
       throw const InvalidVault('vault carries no mnemonic');
@@ -145,11 +161,18 @@ final class RecoverBullBackup {
     // would accept a list whose elements are several words each and leave
     // that list to be stored. `check` derives no seed.
     try {
-      const FingerprintDeriver().check(List<String>.from(words));
+      const FingerprintDeriver().check(
+        List<String>.from(words),
+        language: language,
+      );
     } on MnemonicException {
       throw const InvalidVault('vault mnemonic is not a valid BIP39 mnemonic');
     }
-    return (words: List<String>.from(words), metadata: plaintext);
+    return (
+      words: List<String>.from(words),
+      language: language,
+      metadata: plaintext,
+    );
   }
 
   /// Strips the application number, which `Bip85Entropy.derive` supplies
