@@ -76,6 +76,9 @@ List<String> productionDartFiles(String root) {
     }
   }
   return [
+    // Audit signing too: it must use the language-aware seed, never BDK words.
+    if (File('$root/$_bitcoinSignerPath').existsSync())
+      '$root/$_bitcoinSignerPath',
     for (final directory in roots)
       if (directory.existsSync())
         for (final file in directory.listSync(
@@ -273,6 +276,9 @@ String? materialSymbol(Element element) {
   return forbidden ? '$uri#$symbol' : null;
 }
 
+const _bitcoinSignerPath =
+    'packages/secrets/lib/src/crypto/signers/bitcoin_signer.dart';
+
 bool _isException(String path, AstNode node, String symbol) {
   String? function;
   String? owner;
@@ -285,6 +291,15 @@ bool _isException(String path, AstNode node, String symbol) {
     if (current is ClassDeclaration) owner = current.namePart.typeName.lexeme;
   }
   final member = symbol.split('#').last;
+  if (path == _bitcoinSignerPath &&
+      owner == 'BitcoinSigner' &&
+      function == '_wallet' &&
+      {
+        'DescriptorSecretKey.fromString',
+        'DescriptorSecretKey.dispose',
+      }.contains(member)) {
+    return true;
+  }
   // This adapter replaces version bytes with the public xpub version before
   // decoding. Elsewhere this mixed decoder could import private extended keys.
   if (path == 'lib/core/utils/bip32_derivation.dart' &&
@@ -292,18 +307,6 @@ bool _isException(String path, AstNode node, String symbol) {
       function == 'getBip32Xpub' &&
       member == 'Bip32Keys.fromBase58') {
     return true;
-  }
-  // Pre-import discovery operates on user input before there is a stored Secret.
-  if (path == 'lib/core/wallet/data/datasources/bdk_wallet_datasource.dart' &&
-      function == '_performDryScan' &&
-      owner == null) {
-    return {
-      'Mnemonic.fromEntropy',
-      'DescriptorSecretKey.new',
-      'Descriptor.newBip44',
-      'Descriptor.newBip49',
-      'Descriptor.newBip84',
-    }.contains(member);
   }
   // The exported swap master key is a documented, independent child secret.
   if (path == 'lib/core/swaps/data/models/swap_master_key_model.dart' &&

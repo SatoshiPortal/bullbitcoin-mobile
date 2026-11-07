@@ -1,3 +1,4 @@
+import 'package:bip39_mnemonic/bip39_mnemonic.dart' show Language;
 import 'dart:io';
 
 import 'package:bull_logger/bull_logger.dart';
@@ -42,6 +43,11 @@ final class LiquidSigner {
     required LiquidNetwork network,
     required Future<String> Function() scratchDirectory,
   }) async {
+    // TODO: after bull_sdk pins SatoshiPortal/lwk-dart PR #95, pass seedBytes
+    // to its seed-based descriptor/signing APIs and remove this language gate.
+    if (secret.language != Language.english) {
+      throw const LanguageUnsupported('Liquid requires an English mnemonic');
+    }
     final mnemonic = mnemonicSentence(secret);
     final lwkNetwork = _network(network);
     // Before any file or FFI call: lwk honours whatever sighash the PSET

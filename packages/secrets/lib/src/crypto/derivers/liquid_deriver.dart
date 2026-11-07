@@ -1,3 +1,4 @@
+import 'package:bip39_mnemonic/bip39_mnemonic.dart' show Language;
 import 'package:bull_sdk/lwk.dart' as lwk;
 import 'package:primitives/primitives.dart';
 import 'package:secrets/src/crypto/exceptions.dart';
@@ -27,6 +28,11 @@ final class LiquidDeriver {
     Mnemonic secret, {
     required LiquidNetwork network,
   }) async {
+    // TODO: after bull_sdk pins SatoshiPortal/lwk-dart PR #95, pass seedBytes
+    // to its seed-based descriptor/signing APIs and remove this language gate.
+    if (secret.language != Language.english) {
+      throw const LanguageUnsupported('Liquid requires an English mnemonic');
+    }
     final descriptor = await lwk.Descriptor.newConfidential(
       network: switch (network) {
         LiquidNetwork.mainnet => lwk.LiquidNetwork.mainnet,

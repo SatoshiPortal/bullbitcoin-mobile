@@ -74,6 +74,43 @@ export 'package:secrets/testing.dart';
   }
 
   test(
+    'the Bitcoin signer may parse its xprv but never mnemonic words',
+    () async {
+      const path =
+          'packages/secrets/lib/src/crypto/signers/bitcoin_signer.dart';
+      const xprv = """
+import 'package:bull_sdk/bdk.dart' as bdk;
+class BitcoinSigner {
+  void _wallet(String value) {
+    final key = bdk.DescriptorSecretKey.fromString(privateKey: value);
+    key.dispose();
+  }
+}
+""";
+      expect(await inspect('signer_xprv', xprv, policyPath: path), isEmpty);
+      expect(await inspect('outside_signer', xprv), isNotEmpty);
+      const words = """
+import 'package:bull_sdk/bdk.dart' as bdk;
+class BitcoinSigner {
+  bdk.Mnemonic _wallet(String value) => bdk.Mnemonic.fromString(mnemonic: value);
+}
+""";
+      expect(
+        await inspect('signer_words', words, policyPath: path),
+        isNotEmpty,
+      );
+      expect(
+        await inspect(
+          'wrong_method',
+          xprv.replaceAll('_wallet', '_other'),
+          policyPath: path,
+        ),
+        isNotEmpty,
+      );
+    },
+  );
+
+  test(
     'aliases and getter access resolve to the private seed declaration',
     () async {
       final violations = await inspect('alias', '''
@@ -326,29 +363,12 @@ Object _performDryScan() {
   const scanPath =
       'lib/core/wallet/data/datasources/bdk_wallet_datasource.dart';
 
-  test('pre-import exemption requires the named file and function', () async {
-    expect(await inspect('scan', scan, policyPath: scanPath), isEmpty);
-    expect(await inspect('wrong_file', scan), hasLength(3));
-    expect(
-      await inspect(
-        'wrong_function',
-        scan.replaceAll('_performDryScan', 'other'),
-        policyPath: scanPath,
-      ),
-      hasLength(3),
-    );
+  test('the former pre-import scan has no exemption', () async {
+    // The scan now receives public descriptors from `secrets`; deriving them from words in the wallet package is a violation again.
+    final violations = await inspect('scan', scan, policyPath: scanPath);
+    expect(violations, hasLength(3));
+    expect(violations, everyElement(contains('package:bdk_dart/')));
   });
-
-  test(
-    'pre-import exemption does not authorize another derivation API',
-    () async {
-      final violations = await inspect('scan_extra', '''
-import 'package:bip32_keys/bip32_keys.dart';
-Object _performDryScan() => Bip32Keys.fromSeed;
-''', policyPath: scanPath);
-      expect(violations.single, endsWith('#Bip32Keys.fromSeed'));
-    },
-  );
 
   const swaps = '''
 import 'package:bull_sdk/boltz.dart' as boltz;
@@ -404,11 +424,12 @@ class SwapMasterKeyModel {
   );
 
   test(
-    'production discovery excludes custody, generated code and vendor files',
+    'production discovery includes the signer but excludes other custody',
     () {
       final root = Directory('${fixture.path}/discovery')..createSync();
       const included = [
         'lib/app.dart',
+        'packages/secrets/lib/src/crypto/signers/bitcoin_signer.dart',
         'packages/other/lib/value.dart',
         'features/other/lib/feature.dart',
       ];
