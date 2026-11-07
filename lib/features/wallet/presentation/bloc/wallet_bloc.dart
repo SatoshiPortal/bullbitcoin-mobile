@@ -1,3 +1,4 @@
+import 'package:transaction_sync/diagnostics.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet_failure_log_code.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/watch_wallet_revisions_usecase.dart';
 import 'dart:async';
@@ -311,7 +312,10 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     // so writing it here would wipe a refresh failure before anyone saw it.
     // A failed read here is logged and the list already on screen is kept.
     final List<Wallet> wallets;
-    switch (await _getWalletsUsecase.execute()) {
+    switch (await LeaseDiagnostics.from(
+      LeaseSource.syncStartedReload,
+      () => _getWalletsUsecase.execute(),
+    )) {
       case Ok(:final value):
         wallets = value;
       case Err(:final failure):

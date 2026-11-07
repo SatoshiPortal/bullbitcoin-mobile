@@ -1,3 +1,4 @@
+import '../write/lease_diagnostics.dart';
 import 'package:primitives/primitives.dart';
 import '../domain/transaction_sync_failure.dart';
 import '../domain/wallet_catalog_port.dart';
@@ -26,6 +27,13 @@ final class PersistedWalletReadiness implements WalletReadReadiness {
         record.state.stamp != expected ||
         record.state.initializedSchema != requiredSchemaVersion ||
         record.descriptorHash == null) {
+      LeaseDiagnostics.current?.busy(
+        record.intent != null
+            ? LeaseBusySource.lifecycleGate
+            : record.state.stamp != expected
+            ? LeaseBusySource.revisionRead
+            : LeaseBusySource.schemaGate,
+      );
       return const Err(TransactionSyncBusyFailure());
     }
     if (record.needsSync) return const Err(TransactionSyncNeedsRepairFailure());
@@ -34,6 +42,7 @@ final class PersistedWalletReadiness implements WalletReadReadiness {
     }
     if (descriptor is LiquidWalletDescriptor &&
         record.liquidCachePath == null) {
+      LeaseDiagnostics.current?.busy(LeaseBusySource.schemaGate);
       return const Err(TransactionSyncBusyFailure());
     }
     return Ok(

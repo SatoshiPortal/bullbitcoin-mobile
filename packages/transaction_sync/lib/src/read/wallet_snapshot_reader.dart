@@ -1,3 +1,4 @@
+import '../write/lease_diagnostics.dart';
 import 'dart:io';
 
 import 'package:bull_sdk/bdk.dart' as bdk;
@@ -29,6 +30,7 @@ final class WalletSnapshotReader {
   final String documentsDirectory;
   final WalletReadReadiness readiness;
   final int requiredSchemaVersion;
+  final void Function(Object) _disposeUnpublished;
   final Map<WalletKey, String> _diagnostics = {};
   final WalletRevisionReader revisions;
   final LiquidReadAdmission liquidAdmission;
@@ -45,7 +47,13 @@ final class WalletSnapshotReader {
     required this.requiredSchemaVersion,
     required this.revisions,
     required this.liquidAdmission,
+    this._disposeUnpublished = _disposeNative,
   });
+
+  static void _disposeNative(Object wallet) {
+    if (wallet is bdk.Wallet) wallet.dispose();
+    if (wallet is lwk.Wallet) wallet.dispose();
+  }
 
   /// Looks up the canonical descriptor without importing application models.
   Future<Result<WalletReadSnapshot<Object>, TransactionSyncFailure>> read(
@@ -93,9 +101,15 @@ final class WalletSnapshotReader {
   ) async {
     final key = descriptor.key;
     // Serialize hydration/cache publication for the same wallet in this isolate.
+    final trace = LeaseDiagnostics(
+      role: LeaseRole.reader,
+      intent: LeaseIntent.snapshot,
+    );
     final previous = _pending[key] ?? Future<void>.value();
     final operation = previous.then((_) async {
-      final result = await _readAdmitted<T>(descriptor, hydrate);
+      final result = await trace.run(
+        () => _readAdmitted<T>(descriptor, hydrate),
+      );
       final category = switch (result) {
         Ok(:final value) => value.stale ? 'stale' : 'fresh',
         Err(:final failure) => failure.logCode,
@@ -133,8 +147,12 @@ final class WalletSnapshotReader {
     Future<T> Function(WalletReadReady) hydrate,
   ) async {
     final key = descriptor.key;
+    final trace = LeaseDiagnostics.current;
     final stateResult = await revisions.read(key);
     if (stateResult case Err(:final failure)) {
+      if (failure is TransactionSyncBusyFailure) {
+        trace?.busy(LeaseBusySource.revisionRead);
+      }
       _cache.remove(key);
       return Err(failure);
     }
@@ -158,7 +176,11 @@ final class WalletSnapshotReader {
     if (candidate != null && candidate.wallet is T) {
       current = WalletReadSnapshot(candidate.wallet as T, candidate.revision);
     }
-    Future<Result<WalletReadSnapshot<T>, TransactionSyncFailure>> busy() async {
+    Future<Result<WalletReadSnapshot<T>, TransactionSyncFailure>> busy([
+      LeaseBusySource? source,
+    ]) async {
+      if (trace != null) trace.read = LeaseRead.stale;
+      if (source != null) trace?.busy(source);
       final snapshot = current;
       if (snapshot == null) {
         return const Err(TransactionSyncBusyFailure());
@@ -178,7 +200,11 @@ final class WalletSnapshotReader {
 
     if (state.lifecycle == WalletLifecycle.pendingWrite ||
         state.initializedSchema != requiredSchemaVersion) {
-      return busy();
+      return busy(
+        state.lifecycle == WalletLifecycle.pendingWrite
+            ? LeaseBusySource.lifecycleGate
+            : LeaseBusySource.schemaGate,
+      );
     }
 
     LiquidReadLease? lease;
@@ -194,7 +220,7 @@ final class WalletSnapshotReader {
             lease = value;
         }
         if (lease.revision.key != key || lease.revision != state.stamp) {
-          return busy();
+          return busy(LeaseBusySource.revisionRead);
         }
       }
       final stamp = lease.revision;
@@ -205,6 +231,7 @@ final class WalletSnapshotReader {
       );
       if (readyResult case Err(:final failure)) {
         if (failure is TransactionSyncBusyFailure) {
+          // Readiness owns the exact gate diagnostic.
           return busy();
         }
         _cache.remove(key);
@@ -214,13 +241,19 @@ final class WalletSnapshotReader {
           (readyResult as Ok<WalletReadReady, TransactionSyncFailure>).value;
       if (ready.revision != stamp ||
           ready.schemaVersion != requiredSchemaVersion) {
-        return busy();
+        return busy(
+          ready.revision != stamp
+              ? LeaseBusySource.revisionRead
+              : LeaseBusySource.schemaGate,
+        );
       }
       if (current != null && current.revision == stamp) {
+        if (trace != null) trace.read = LeaseRead.cache;
         final latest = await revisions.read(key);
         if (latest case Ok(value: final next)
             when next.lifecycle == WalletLifecycle.active &&
                 next.stamp == stamp) {
+          if (trace != null && next.syncFailed) trace.read = LeaseRead.stale;
           return Ok(
             WalletReadSnapshot(
               current.wallet,
@@ -229,7 +262,7 @@ final class WalletSnapshotReader {
             ),
           );
         }
-        return busy();
+        return busy(LeaseBusySource.revisionRead);
       }
       final timer = Stopwatch()..start();
       final wallet = await hydrate(ready);
@@ -243,6 +276,7 @@ final class WalletSnapshotReader {
           'generation=${stamp.generation} revision=${stamp.revision} '
           'state=${next.syncFailed ? 'stale' : 'fresh'} reason=${next.syncFailed ? 'sync_failed' : 'none'} duration_ms=${timer.elapsedMilliseconds}',
         );
+        if (trace != null && next.syncFailed) trace.read = LeaseRead.stale;
         final snapshot = WalletReadSnapshot<T>(
           wallet,
           stamp,
@@ -255,10 +289,10 @@ final class WalletSnapshotReader {
         unpublished = null;
         return Ok(snapshot);
       }
-      return busy();
+      return busy(LeaseBusySource.revisionRead);
     } on _ReadFailure catch (e) {
       if (e.failure is TransactionSyncBusyFailure) {
-        return busy();
+        return busy(LeaseBusySource.schemaGate);
       }
       return Err(e.failure);
     } on FileSystemException {
@@ -269,10 +303,12 @@ final class WalletSnapshotReader {
       }
       return const Err(TransactionSyncNeedsRepairFailure());
     } finally {
-      final rejected = unpublished;
-      if (rejected is bdk.Wallet) rejected.dispose();
-      if (rejected is lwk.Wallet) rejected.dispose();
-      await lease?.release();
+      try {
+        final rejected = unpublished;
+        if (rejected != null) _disposeUnpublished(rejected);
+      } finally {
+        await lease?.release();
+      }
     }
   }
 

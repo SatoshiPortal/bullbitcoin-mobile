@@ -1,3 +1,4 @@
+import 'package:transaction_sync/diagnostics.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet_failure_log_code.dart';
 import 'package:primitives/primitives.dart' show Fingerprint;
 import 'dart:async';
@@ -75,7 +76,10 @@ class WalletRepository implements SeedReferencePort {
   }
 
   Stream<Wallet> get walletSyncStartedStream => _walletSyncStartedStream
-      .asyncMap<Result<Wallet, WalletFailure>>((id) => getWallet(id))
+      .asyncMap<Result<Wallet, WalletFailure>>(
+        (id) =>
+            LeaseDiagnostics.from(LeaseSource.syncStarted, () => getWallet(id)),
+      )
       .map<Wallet?>((result) => result.fold((w) => w, (_) => null))
       .where((wallet) => wallet != null)
       .map((wallet) => wallet!);
@@ -345,12 +349,15 @@ class WalletRepository implements SeedReferencePort {
   }) async {
     try {
       return Ok(
-        await _readWallets(
-          environment: environment,
-          onlyDefaults: onlyDefaults,
-          onlyBitcoin: onlyBitcoin,
-          onlyLiquid: onlyLiquid,
-          sync: sync,
+        await LeaseDiagnostics.from(
+          LeaseSource.walletList,
+          () => _readWallets(
+            environment: environment,
+            onlyDefaults: onlyDefaults,
+            onlyBitcoin: onlyBitcoin,
+            onlyLiquid: onlyLiquid,
+            sync: sync,
+          ),
         ),
       );
     } catch (e, st) {

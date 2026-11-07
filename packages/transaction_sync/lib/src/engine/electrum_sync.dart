@@ -1,3 +1,4 @@
+import '../write/lease_diagnostics.dart';
 import 'dart:async';
 import 'dart:io';
 import 'dart:isolate';
@@ -185,6 +186,13 @@ final class ElectrumSync {
       case Err(failure: TransactionSyncNotFoundFailure()):
         generation = 0;
       case Err(:final failure):
+        if (failure is TransactionSyncBusyFailure) {
+          LeaseDiagnostics(
+            role: LeaseRole.writer,
+            intent: LeaseIntent.sync,
+            scope: LeaseScope.foreground,
+          ).busy(LeaseBusySource.revisionRead);
+        }
         return Err(failure);
     }
     var retryable = false;
@@ -315,9 +323,12 @@ Future<_Attempt> _performSync(_SyncParams params) async {
     catalog: _DescriptorCatalog(params.descriptor),
     reservedAddresses: _NoReceiveReservations(),
     reportFailures: false,
+    leaseScope: LeaseScope.compute,
     diagnostics: (level, message) => params.diagnostics.send((
       level,
-      '$message run=${params.runId} headless=false',
+      message.startsWith('event=lease_')
+          ? message
+          : '$message run=${params.runId} headless=false',
     )),
   );
   try {

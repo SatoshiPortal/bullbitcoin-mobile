@@ -60,6 +60,7 @@ final class NativeWalletWriter implements LiquidReadAdmission {
     final old = revisions.record(key);
     _expectGeneration(old, expectedGeneration);
     if (old == null || old.state.lifecycle != WalletLifecycle.deleted) {
+      LeaseDiagnostics.current?.busy(LeaseBusySource.lifecycleGate);
       throw const _WriterFailure(TransactionSyncBusyFailure());
     }
     switch (await _catalog.find(key)) {
@@ -68,6 +69,7 @@ final class NativeWalletWriter implements LiquidReadAdmission {
       case Err(:final failure):
         throw _WriterFailure(failure);
       case Ok():
+        LeaseDiagnostics.current?.busy(LeaseBusySource.lifecycleGate);
         throw const _WriterFailure(TransactionSyncBusyFailure());
     }
     revisions.begin(key, WriteIntent.create);

@@ -1,3 +1,4 @@
+import 'package:transaction_sync/diagnostics.dart';
 import 'dart:async';
 import 'dart:math';
 
@@ -52,7 +53,10 @@ class BdkWalletDatasource {
   BdkWalletDatasource({required this._readWallet});
 
   Future<BalanceModel> getBalance({required WalletModel wallet}) async {
-    final bdkWallet = await _readWallet(wallet);
+    final bdkWallet = await LeaseDiagnostics.from(
+      LeaseSource.balance,
+      () => _readWallet(wallet),
+    );
     final balanceInfo = bdkWallet.balance();
 
     final balance = BalanceModel(
@@ -160,7 +164,10 @@ class BdkWalletDatasource {
     bool replaceByFee = true,
     required WalletModel wallet,
   }) async {
-    final bdkWallet = await _readWallet(wallet);
+    final bdkWallet = await LeaseDiagnostics.from(
+      LeaseSource.sendBuild,
+      () => _readWallet(wallet),
+    );
     bdk.TxBuilder txBuilder;
 
     // Get the scriptPubkey from the address
@@ -310,7 +317,10 @@ class BdkWalletDatasource {
   // 25000 - 988
 
   Future<List<WalletUtxoModel>> getUtxos({required WalletModel wallet}) async {
-    final bdkWallet = await _readWallet(wallet);
+    final bdkWallet = await LeaseDiagnostics.from(
+      LeaseSource.utxos,
+      () => _readWallet(wallet),
+    );
     final unspent = bdkWallet.listUnspent();
     // Chain tip read once from the already-synced wallet (no extra network
     // calls); reused for every utxo's confirmation count.
@@ -352,7 +362,10 @@ class BdkWalletDatasource {
     required WalletModel wallet,
     String? toAddress,
   }) async {
-    final bdkWallet = await _readWallet(wallet);
+    final bdkWallet = await LeaseDiagnostics.from(
+      LeaseSource.transactions,
+      () => _readWallet(wallet),
+    );
 
     final transactions = bdkWallet.transactions();
 
@@ -468,7 +481,10 @@ class BdkWalletDatasource {
     required WalletModel wallet,
     bool isChange = false,
   }) async {
-    final bdkWallet = await _readWallet(wallet);
+    final bdkWallet = await LeaseDiagnostics.from(
+      LeaseSource.addressList,
+      () => _readWallet(wallet),
+    );
     return bdkWallet.nextDerivationIndex(
           keychain: isChange
               ? bdk.KeychainKind.internal
@@ -482,7 +498,10 @@ class BdkWalletDatasource {
     required WalletModel wallet,
     isChange = false,
   }) async {
-    final bdkWallet = await _readWallet(wallet);
+    final bdkWallet = await LeaseDiagnostics.from(
+      LeaseSource.addressList,
+      () => _readWallet(wallet),
+    );
     final addressInfo = bdkWallet.peekAddress(
       keychain: isChange
           ? bdk.KeychainKind.internal
@@ -499,7 +518,10 @@ class BdkWalletDatasource {
     String address, {
     required WalletModel wallet,
   }) async {
-    final bdkWallet = await _readWallet(wallet);
+    final bdkWallet = await LeaseDiagnostics.from(
+      LeaseSource.addressList,
+      () => _readWallet(wallet),
+    );
     final transactions = bdkWallet.transactions();
 
     // TODO: Use future.wait to parallelize the loop and improve performance
@@ -525,7 +547,10 @@ class BdkWalletDatasource {
   Future<Map<String, BigInt>> getAddressBalancesSat({
     required WalletModel wallet,
   }) async {
-    final bdkWallet = await _readWallet(wallet);
+    final bdkWallet = await LeaseDiagnostics.from(
+      LeaseSource.addressList,
+      () => _readWallet(wallet),
+    );
     final utxos = bdkWallet.listUnspent();
     final addressBalances = <String, BigInt>{};
 
@@ -628,7 +653,10 @@ class BdkWalletDatasource {
     required RelativeFee feeRate,
     required WalletModel wallet,
   }) async {
-    final bdkWallet = await _readWallet(wallet);
+    final bdkWallet = await LeaseDiagnostics.from(
+      LeaseSource.sendBuild,
+      () => _readWallet(wallet),
+    );
     // BumpFeeTxBuilder is rate-only by BDK design (BIP-125 requires a
     // higher rate, not absolute, to replace). We hit it with sat/kwu so
     // sub-1 sat/vByte bumps survive without precision loss.
