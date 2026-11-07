@@ -73,6 +73,7 @@ class ImportWalletUsecase {
       );
       if (bitcoinNetwork == Network.bitcoinRegtest &&
           scriptType != ScriptType.bip84) {
+        log.warning('Wallet import refused reason=unsupported');
         return const Err(
           ImportMnemonicUnexpectedFailure('unsupported regtest script'),
         );
