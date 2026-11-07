@@ -55,6 +55,7 @@ final class ElectrumSync {
   final _active =
       <WalletKey, Future<Result<SyncCompletion, TransactionSyncFailure>>>{};
   final _failures = <WalletKey, Type>{};
+  int _runSequence = 0;
   final _started = StreamController<WalletKey>.broadcast();
   final _finished = StreamController<SyncFinished>.broadcast();
 
@@ -87,9 +88,9 @@ final class ElectrumSync {
       try {
         if (previous != null) await previous;
         final watch = Stopwatch()..start();
-        log.fine(
-          'Electrum sync started network=${key.network.runtimeType}/${key.network.env.name} discovery=$discover',
-        );
+        final context =
+            'run=${++_runSequence} chain=${key.network is BitcoinNetwork ? 'bitcoin' : 'liquid'} network=${key.network.env.name} script=${descriptor.scriptType.name} headless=false';
+        log.fine('Electrum sync started $context discovery=$discover');
         _started.add(key);
         var connectionSummary = 'route=unselected';
         final result = await _run(
@@ -102,22 +103,25 @@ final class ElectrumSync {
         );
         switch (result) {
           case Ok(:final value):
-            if (_failures.remove(key) != null) {
-              log.fine('Electrum sync recovered');
-            }
+            final recovered = _failures.remove(key) != null;
             log.fine(
-              'Electrum sync finished mode=${value.mode.name} elapsed_ms=${watch.elapsedMilliseconds} $connectionSummary ${value._cacheDiagnostics ?? ''}',
+              'Electrum sync finished $context mode=${value.mode.name} recovered=$recovered revision=unknown incoming=unknown elapsed_ms=${watch.elapsedMilliseconds} $connectionSummary ${value._cacheDiagnostics ?? ''}',
             );
           case Err(:final failure):
-            log.fine(
-              'Electrum sync finished outcome=failure elapsed_ms=${watch.elapsedMilliseconds} $connectionSummary',
-            );
             final previousFailure = _failures[key];
             _failures[key] = failure.runtimeType;
             if (previousFailure != failure.runtimeType) {
-              log.warning(
-                'Electrum sync failed category=${failure.logCode} elapsed_ms=${watch.elapsedMilliseconds}',
-              );
+              final message =
+                  'Electrum sync failed $context category=${failure.logCode} elapsed_ms=${watch.elapsedMilliseconds} $connectionSummary';
+              if (failure is TransactionSyncStorageFailure) {
+                log.severe(
+                  message: message,
+                  error: 'storage',
+                  trace: StackTrace.empty,
+                );
+              } else {
+                log.warning(message);
+              }
             }
         }
         _finished.add(SyncFinished(key, result));
@@ -125,7 +129,7 @@ final class ElectrumSync {
       } catch (error) {
         log.severe(
           message: 'Electrum sync unexpected failure',
-          error: error.runtimeType.toString(),
+          error: 'storage',
           trace: StackTrace.empty,
         );
         const result = Err<SyncCompletion, TransactionSyncFailure>(
@@ -298,6 +302,7 @@ Future<_Attempt> _performSync(_SyncParams params) async {
     documentsDirectory: params.root,
     catalog: _DescriptorCatalog(params.descriptor),
     reservedAddresses: _NoReceiveReservations(),
+    reportFailures: false,
     diagnostics: (level, message) => params.diagnostics.send((level, message)),
   );
   try {

@@ -241,7 +241,7 @@ final class WalletSnapshotReader {
         log.fine(
           'Wallet reader hydrated: network=${key.network} '
           'generation=${stamp.generation} revision=${stamp.revision} '
-          'durationMs=${timer.elapsedMilliseconds}',
+          'state=${next.syncFailed ? 'stale' : 'fresh'} reason=${next.syncFailed ? 'sync_failed' : 'none'} duration_ms=${timer.elapsedMilliseconds}',
         );
         final snapshot = WalletReadSnapshot<T>(
           wallet,

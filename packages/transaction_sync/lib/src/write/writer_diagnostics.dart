@@ -14,10 +14,6 @@ void persistWriterDiagnostic(WriterLogLevel level, String message) {
     case WriterLogLevel.warning:
       log.warning(message);
     case WriterLogLevel.severe:
-      log.severe(
-        message: message,
-        error: 'TransactionSyncStorageFailure',
-        trace: StackTrace.empty,
-      );
+      log.severe(message: message, error: 'storage', trace: StackTrace.empty);
   }
 }

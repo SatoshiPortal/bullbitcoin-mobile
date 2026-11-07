@@ -22,6 +22,7 @@ final class NativeWalletWriter implements LiquidReadAdmission {
   final NativeWriteSessions _sessions;
   final Map<WalletKey, Type> _failures = {};
   final WriterDiagnosticSink _diagnostics;
+  final bool reportFailures;
 
   NativeWalletWriter({
     required this.lockDirectory,
@@ -30,6 +31,7 @@ final class NativeWalletWriter implements LiquidReadAdmission {
     required this._catalog,
     required ReservedAddressPort reservedAddresses,
     this._diagnostics = persistWriterDiagnostic,
+    this.reportFailures = true,
   }) : _reserved = reservedAddresses,
        _sessions = SdkWriteSessions(documentsDirectory);
 
@@ -40,6 +42,7 @@ final class NativeWalletWriter implements LiquidReadAdmission {
     required this._catalog,
     required ReservedAddressPort reservedAddresses,
     required this._sessions,
+    this.reportFailures = true,
   }) : _reserved = reservedAddresses,
        _diagnostics = persistWriterDiagnostic;
 
@@ -67,7 +70,7 @@ final class NativeWalletWriter implements LiquidReadAdmission {
     final prepared = revisions.record(key);
     if (prepared == null) throw StateError('Missing prepared generation');
     return WriterUnchanged(prepared.state.stamp);
-  });
+  }, preparing: true);
 
   @useResult
   Future<Result<WriterOutcome, TransactionSyncFailure>> create(
@@ -267,7 +270,11 @@ final class NativeWalletWriter implements LiquidReadAdmission {
       } else {
         // Native work completed with an uncertain mutation: invalidate readers,
         // but never claim a successful sync or clear a prior repair barrier.
-        revisions.finish(key, syncFailed: true);
+        final stamp = revisions.finish(key, syncFailed: true);
+        _diagnostics(
+          WriterLogLevel.fine,
+          'Writer revision invalidated generation=${stamp.generation} revision=${stamp.revision} reason=${(result as Err<void, TransactionSyncFailure>).failure.logCode}',
+        );
       }
     }
     _value(result);
@@ -315,6 +322,7 @@ final class NativeWalletWriter implements LiquidReadAdmission {
     Future<T> Function() operation, {
     bool allowRepairIntent = false,
     bool deleting = false,
+    bool preparing = false,
   }) async {
     if (key.network.env != NetworkEnv.mainnet &&
         key.network.env != NetworkEnv.testnet) {
@@ -344,7 +352,11 @@ final class NativeWalletWriter implements LiquidReadAdmission {
       _failures.remove(key);
       _diagnostics(
         WriterLogLevel.fine,
-        'Wallet writer operation committed intent=${intent.name} network=${key.network} generation=${stamp?.generation} revision=${stamp?.revision} duration_ms=${watch.elapsedMilliseconds}',
+        'Wallet writer finished intent=${intent.name} outcome=${preparing
+            ? 'prepared'
+            : value is WriterUnchanged
+            ? 'unchanged'
+            : 'committed'} network=${key.network} generation=${stamp?.generation} revision=${stamp?.revision} duration_ms=${watch.elapsedMilliseconds}',
       );
       return Ok(value);
     } on Object catch (error) {
@@ -471,7 +483,7 @@ final class NativeWalletWriter implements LiquidReadAdmission {
   ) async {
     _diagnostics(
       WriterLogLevel.warning,
-      'Wallet writer repair executed network=${descriptor.key.network}',
+      'Wallet writer repair started network=${descriptor.key.network}',
     );
     await _sessions.delete(descriptor.key);
     final session = await _sessions.open(descriptor, create: true);
@@ -520,7 +532,7 @@ final class NativeWalletWriter implements LiquidReadAdmission {
   }
 
   void _reportFailure(WalletKey key, TransactionSyncFailure failure) {
-    if (_failures[key] == failure.runtimeType) return;
+    if (!reportFailures || _failures[key] == failure.runtimeType) return;
     _failures[key] = failure.runtimeType;
     if (failure is TransactionSyncStorageFailure) {
       _diagnostics(
@@ -555,19 +567,6 @@ final class NativeWalletWriter implements LiquidReadAdmission {
     }
     if (isLiquidStatusConflict(error)) {
       return const TransactionSyncNeedsRepairFailure();
-    }
-    if (_failures[key] != TransactionSyncStorageFailure) {
-      // Keep long native type names readable through the support-log scrubber.
-      // Never include the exception value, which may contain wallet material.
-      final type = error.runtimeType.toString();
-      final category = [
-        for (var i = 0; i < type.length; i += 24)
-          type.substring(i, math.min(i + 24, type.length)),
-      ].join(':');
-      _diagnostics(
-        WriterLogLevel.warning,
-        'Wallet writer native exception category=$category',
-      );
     }
     return const TransactionSyncStorageFailure();
   }
