@@ -12,7 +12,7 @@ dependencies:
   flutter:
     sdk: flutter
   bull_ui:
-  logging: ^1.2.0
+  bull_logger:
   no_screenshot: ^1.1.0
 
 dev_dependencies:

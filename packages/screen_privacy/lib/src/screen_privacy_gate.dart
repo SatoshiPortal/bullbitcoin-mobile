@@ -2,9 +2,7 @@ import 'dart:async';
 
 import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter/material.dart' show Icon, Icons, WidgetBuilder;
-import 'package:logging/logging.dart';
-
-final _log = Logger('ScreenPrivacyGate');
+import 'package:bull_logger/bull_logger.dart';
 
 /// The localized texts of the warning a [ScreenPrivacyGate] shows; the package
 /// has no localizations of its own, so the screen passes `context.loc` values.
@@ -58,6 +56,7 @@ class _ScreenPrivacyGateState extends State<ScreenPrivacyGate> {
   /// Identifies the latest attempt, so a slower earlier one cannot overwrite
   /// its verdict.
   int _attempt = 0;
+  bool _refused = false;
 
   @override
   void initState() {
@@ -67,14 +66,24 @@ class _ScreenPrivacyGateState extends State<ScreenPrivacyGate> {
 
   Future<void> _protect() async {
     final attempt = ++_attempt;
+    var calls = 1;
     var protected = await widget.protect();
     for (final delay in widget.retryDelays) {
       if (protected || !mounted || attempt != _attempt) break;
       await Future<void>.delayed(delay);
       if (!mounted || attempt != _attempt) return;
+      calls++;
       protected = await widget.protect();
     }
     if (!mounted || attempt != _attempt) return;
+    if (protected) {
+      log.fine(
+        'Privacy gate ready outcome=allowed attempts=$calls recovered=${_refused || calls > 1}',
+      );
+    } else if (!_refused) {
+      log.warning('Privacy gate refused reason=platform attempts=$calls');
+    }
+    _refused = !protected;
     setState(() {
       _status = protected ? _GateStatus.shown : _GateStatus.refused;
     });
@@ -86,7 +95,7 @@ class _ScreenPrivacyGateState extends State<ScreenPrivacyGate> {
   }
 
   void _continueAnyway() {
-    _log.warning('secret shown without capture blocking on user consent');
+    log.warning('Privacy gate bypass consent=true');
     setState(() => _status = _GateStatus.shown);
   }
 

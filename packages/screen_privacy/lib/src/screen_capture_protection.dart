@@ -1,7 +1,6 @@
-import 'package:logging/logging.dart';
+import 'package:bull_logger/bull_logger.dart';
+import 'package:flutter/services.dart';
 import 'package:no_screenshot/no_screenshot.dart';
-
-final _log = Logger('ScreenCaptureProtection');
 
 /// Controls OS-level screen-capture blocking (Android `FLAG_SECURE`, iOS secure
 /// overlay) via the `no_screenshot` plugin.
@@ -19,6 +18,7 @@ class ScreenCaptureProtection {
 
   int _activeCount = 0;
   bool _enabledByUser = true;
+  bool _channelFailed = false;
 
   /// Whether the user wants sensitive screens protected from capture.
   ///
@@ -59,23 +59,25 @@ class ScreenCaptureProtection {
         // `false` is the plugin saying the flag is not set (no window yet on
         // iOS, a native failure on Android): not a secret screen's green light.
         final protected = await _noScreenshot.screenshotOff();
-        if (!protected) {
-          _log.severe('capture blocking was refused by the platform');
-        }
+        if (protected) _channelFailed = false;
         return protected;
       }
       await _noScreenshot.screenshotOn();
+      _channelFailed = false;
       return true;
     } catch (e, st) {
-      // Callers fire-and-forget this, so a platform-channel failure would
-      // otherwise vanish as an unhandled async error. On a secret screen a
-      // silent failure means we may be showing the mnemonic without
-      // FLAG_SECURE set, so make it loud rather than let it disappear.
-      _log.severe(
-        'failed to ${shouldProtect ? 'enable' : 'disable'} capture blocking',
-        e,
-        st,
-      );
+      if (!_channelFailed &&
+          e is! PlatformException &&
+          e is! MissingPluginException) {
+        log.severe(
+          message: 'Privacy channel failed reason=unexpected',
+          error: 'platform',
+          trace: st,
+        );
+      } else if (!_channelFailed && !shouldProtect) {
+        log.warning('Privacy release failed reason=platform');
+      }
+      _channelFailed = true;
       return !shouldProtect;
     }
   }
