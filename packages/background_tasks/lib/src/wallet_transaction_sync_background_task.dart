@@ -92,6 +92,7 @@ final class WalletTransactionSyncBackgroundTask {
     bool spent() => budget != null && elapsed.elapsed >= budget;
     var retry = false;
     final handled = <WalletKey>{};
+    var reportedUnavailable = false;
     for (var count = 0; count < maxJobsPerChain && !spent(); count++) {
       // Refresh the authoritative stamp before EVERY admission, so this run
       // cannot overwrite a successful writer's new stamp with an older list.
@@ -101,10 +102,21 @@ final class WalletTransactionSyncBackgroundTask {
       );
       if (read case Err()) return const BackgroundTaskExecutionResult.retry();
       final jobs =
-          (read as Ok<List<WalletRevision>, TransactionSyncFailure>).value;
+          (read as Ok<WalletSyncJobSelection, TransactionSyncFailure>).value;
+      if (jobs.unavailable.isNotEmpty) {
+        retry = true;
+        if (!reportedUnavailable) {
+          _log(
+            BackgroundLogLevel.warning,
+            'Background wallets deferred: chain=${chain.name} unavailable=${jobs.unavailable.length}',
+          );
+          reportedUnavailable = true;
+        }
+      }
       if (spent()) break;
       final claims = await queue.reconcileAndClaim(
-        jobs,
+        jobs.ready,
+        unavailable: jobs.unavailable,
         chain: chain,
         maxJobs: 1,
         excluding: handled,

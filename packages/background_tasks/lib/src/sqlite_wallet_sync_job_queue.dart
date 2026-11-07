@@ -31,6 +31,7 @@ abstract interface class WalletSyncJobQueue {
     required WalletSyncChain chain,
     int maxJobs = 2,
     Iterable<WalletKey> excluding = const [],
+    Iterable<WalletKey> unavailable = const [],
   });
 
   Future<bool> renew(WalletSyncJobClaim claim);
@@ -134,6 +135,7 @@ final class SqliteWalletSyncJobQueue implements WalletSyncJobQueue {
     required WalletSyncChain chain,
     int maxJobs = 2,
     Iterable<WalletKey> excluding = const [],
+    Iterable<WalletKey> unavailable = const [],
   }) async {
     _ensureOpen();
     if (maxJobs <= 0) throw ArgumentError.value(maxJobs, 'maxJobs');
@@ -142,7 +144,11 @@ final class SqliteWalletSyncJobQueue implements WalletSyncJobQueue {
     if (byId.length != current.length) {
       throw ArgumentError('Duplicate wallet synchronization jobs');
     }
-    final ids = <String>[];
+    final unavailableIds = unavailable
+        .where((key) => walletSyncChain(key) == chain)
+        .map(_id)
+        .toSet();
+    final ids = <String>[...unavailableIds];
     final timestamp = now().toUtc().microsecondsSinceEpoch;
     _database.execute('BEGIN IMMEDIATE');
     try {
@@ -179,6 +185,13 @@ final class SqliteWalletSyncJobQueue implements WalletSyncJobQueue {
           ],
         );
       }
+      for (final id in unavailableIds) {
+        // Presence must not reset a retry, replace a stamp or release a lease.
+        _database.execute(
+          'UPDATE wallet_sync_jobs SET absent = 0 WHERE job_id = ?',
+          [id],
+        );
+      }
       final placeholders = ids.isEmpty
           ? ''
           : List.filled(ids.length, '?').join(',');
@@ -206,13 +219,23 @@ final class SqliteWalletSyncJobQueue implements WalletSyncJobQueue {
           ]);
         }
       }
-      const eligibility = '''chain = ? AND absent = 0 AND permanent_failed = 0
+      final unavailablePlaceholders = List.filled(
+        unavailableIds.length,
+        '?',
+      ).join(',');
+      final readyOnly = unavailableIds.isEmpty
+          ? ''
+          : 'AND job_id NOT IN ($unavailablePlaceholders)';
+      final eligibility =
+          '''chain = ? AND absent = 0 AND permanent_failed = 0
+        $readyOnly
         AND next_attempt_at <= ?
         AND (lease_expires_at IS NULL OR lease_expires_at <= ?)
         AND (last_successful_at IS NULL OR NOT EXISTS (
           SELECT 1 FROM wallet_sync_jobs unseen
           WHERE unseen.chain = ? AND unseen.absent = 0
             AND unseen.permanent_failed = 0
+            $readyOnly
             AND unseen.next_attempt_at <= ?
             AND (unseen.lease_expires_at IS NULL OR unseen.lease_expires_at <= ?)
             AND unseen.last_successful_at IS NULL AND unseen.attempts = 0))''';
@@ -221,9 +244,11 @@ final class SqliteWalletSyncJobQueue implements WalletSyncJobQueue {
                 'SELECT COUNT(*) AS eligible_count FROM wallet_sync_jobs WHERE $eligibility',
                 [
                   chain.name,
+                  ...unavailableIds,
                   timestamp,
                   timestamp,
                   chain.name,
+                  ...unavailableIds,
                   timestamp,
                   timestamp,
                 ],
@@ -243,9 +268,11 @@ final class SqliteWalletSyncJobQueue implements WalletSyncJobQueue {
           last_successful_at, inserted_at, job_id LIMIT ?''',
         [
           chain.name,
+          ...unavailableIds,
           timestamp,
           timestamp,
           chain.name,
+          ...unavailableIds,
           timestamp,
           timestamp,
           ...excludedIds,
