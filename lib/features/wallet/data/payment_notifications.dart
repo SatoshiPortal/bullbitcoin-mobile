@@ -25,6 +25,8 @@ final class PaymentNotifications {
     outbox: outbox,
     gateway: FlutterLocalNotificationGateway(
       channelId: channelId,
+      // A tap opens the app; no authenticated destination consumer is wired.
+      emitDestinations: false,
       channelName: localization(language).receivePaymentReceived,
       androidIconResource: 'ic_launcher_foreground',
     ),
