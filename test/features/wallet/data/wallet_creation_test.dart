@@ -22,7 +22,7 @@ import 'package:mocktail/mocktail.dart';
 import 'package:secrets/secrets.dart';
 import 'package:primitives/primitives.dart' show Ok;
 import 'package:transaction_sync/transaction_sync.dart'
-    show WalletConnectionPolicy, ReservedAddressPort, ElectrumSync;
+    show WalletConnectionPolicy, ReservedAddressPort, ElectrumSync, SyncReason;
 import 'package:bb_mobile/features/wallet/data/wallet_catalog_port_impl.dart';
 
 import 'package:secrets/testing.dart';
@@ -97,7 +97,7 @@ void main() {
       walletMetadataDatasource: metadata,
       bdkWalletDatasource: bitcoin,
       lwkWalletDatasource: _Liquid(),
-      synchronize: (_, {discover = false}) async {},
+      synchronize: (_, {discover = false, reason = SyncReason.auto}) async {},
       isSyncing: ({walletId}) => false,
       syncStarted: const Stream.empty(),
       syncFinished: const Stream.empty(),

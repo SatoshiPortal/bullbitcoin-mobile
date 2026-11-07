@@ -2,6 +2,7 @@
 library;
 
 export 'src/domain/wallet_key.dart';
+export 'src/domain/sync_reason.dart';
 export 'src/domain/transaction_sync_failure.dart';
 export 'src/domain/wallet_revision.dart';
 export 'src/domain/wallet_connection_policy.dart';

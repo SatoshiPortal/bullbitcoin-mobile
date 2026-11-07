@@ -4,7 +4,10 @@ import 'dart:async';
 import 'package:bb_mobile/features/wallet/data/wallet_native_runtime.dart';
 import 'package:transaction_sync/read.dart';
 import 'package:transaction_sync/transaction_sync.dart'
-    show TransactionSyncStorageFailure, TransactionSyncInvalidCatalogFailure;
+    show
+        SyncReason,
+        TransactionSyncStorageFailure,
+        TransactionSyncInvalidCatalogFailure;
 
 import 'package:bb_mobile/core/electrum/domain/errors/electrum_fallback_exception.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_sync_result.dart';
@@ -35,7 +38,12 @@ class WalletRepository implements SeedReferencePort {
   final WalletMetadataDatasource _walletMetadataDatasource;
   final BdkWalletDatasource _bdkWallet;
   final LwkWalletDatasource _lwkWallet;
-  final Future<void> Function(WalletMetadataModel, {bool discover}) _syncWallet;
+  final Future<void> Function(
+    WalletMetadataModel, {
+    bool discover,
+    SyncReason reason,
+  })
+  _syncWallet;
   final bool Function({String? walletId}) _isSyncing;
   final Stream<String> _walletSyncStartedStream;
   final Stream<String> _walletSyncFinishedStream;
@@ -46,7 +54,11 @@ class WalletRepository implements SeedReferencePort {
     required this._walletMetadataDatasource,
     required BdkWalletDatasource bdkWalletDatasource,
     required LwkWalletDatasource lwkWalletDatasource,
-    required Future<void> Function(WalletMetadataModel, {bool discover})
+    required Future<void> Function(
+      WalletMetadataModel, {
+      bool discover,
+      SyncReason reason,
+    })
     synchronize,
     required this._isSyncing,
     required Stream<String> syncStarted,
@@ -614,7 +626,11 @@ class WalletRepository implements SeedReferencePort {
     return balance;
   }
 
-  Future<void> sync(Wallet wallet, {bool discover = false}) async {
+  Future<void> sync(
+    Wallet wallet, {
+    bool discover = false,
+    SyncReason reason = SyncReason.auto,
+  }) async {
     await _syncWallet(
       WalletMetadataModel(
         id: wallet.id,
@@ -630,6 +646,7 @@ class WalletRepository implements SeedReferencePort {
         signer: Signer.fromEntity(wallet.signer),
       ),
       discover: discover,
+      reason: reason,
     );
   }
 

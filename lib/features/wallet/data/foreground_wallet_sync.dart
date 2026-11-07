@@ -28,6 +28,7 @@ final class ForegroundWalletSync {
   Future<void> synchronize(
     WalletMetadataModel metadata, {
     bool discover = false,
+    SyncReason reason = SyncReason.auto,
   }) async {
     final descriptor = WalletCatalogPortImpl.descriptorFromMetadata(metadata);
     switch (descriptor) {
@@ -35,13 +36,21 @@ final class ForegroundWalletSync {
         throw const WalletStorageFailure('Invalid sync descriptor');
       case Ok(:final value):
         await _native?.initialize();
-        var result = await _sync.execute(value, discover: discover);
+        var result = await _sync.execute(
+          value,
+          discover: discover,
+          reason: reason,
+        );
         final native = _native;
         if (result case Err(
           failure: TransactionSyncNeedsRepairFailure(),
         ) when native != null) {
           await native.repair(value.key);
-          result = await _sync.execute(value, discover: discover);
+          result = await _sync.execute(
+            value,
+            discover: discover,
+            reason: reason,
+          );
         }
         await native?.refresh(value.key);
         // Busy is a skipped foreground pass. The failed completion remains

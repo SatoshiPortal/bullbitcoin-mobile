@@ -1,3 +1,4 @@
+import 'package:transaction_sync/transaction_sync.dart' show SyncReason;
 import 'package:bb_mobile/features/wallet/domain/wallet_failure_log_code.dart';
 import 'dart:async';
 import 'package:bb_mobile/features/wallet/domain/wallet_discovery_failure.dart';
@@ -10,7 +11,7 @@ import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/sync_wallet_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/sync_wallet_usecase.dart';
 import 'package:flutter/widgets.dart'
     show AppLifecycleListener, AppLifecycleState, WidgetsBinding;
 
@@ -306,7 +307,7 @@ class SyncCoordinator {
         : error == null
         ? 'settled'
         : 'failed';
-    final reason = error is WalletFailure
+    final category = error is WalletFailure
         ? error.logCode
         : error == null
         ? 'none'
@@ -315,7 +316,7 @@ class SyncCoordinator {
     // completed queue pass; legacy void sync cannot prove a native success.
     if (outcome != 'no_wallets' || _lastOutcome[pass.kind] != outcome) {
       log.fine(
-        'Sync pass finished kind=${pass.kind.name} trigger=${pass.trigger.name} outcome=$outcome wallets=${pass.wallets ?? 'unknown'} reason=$reason elapsed_ms=${pass.clock.elapsedMilliseconds}',
+        'Sync pass finished kind=${pass.kind.name} reason=${pass.reason.name} outcome=$outcome wallets=${pass.wallets ?? 'unknown'} category=$category elapsed_ms=${pass.clock.elapsedMilliseconds}',
       );
     }
     _lastOutcome[pass.kind] = outcome;
@@ -341,7 +342,11 @@ class SyncCoordinator {
       case Ok(:final value):
         pass.wallets = value.length;
         for (final wallet in value) {
-          await _syncWallet.execute(wallet, discover: pass.discover);
+          await _syncWallet.execute(
+            wallet,
+            discover: pass.discover,
+            reason: pass.reason,
+          );
         }
         return null;
       case Err(:final failure):
@@ -367,7 +372,11 @@ class SyncCoordinator {
           if (wallet == null || wallet.network != pass.walletNetwork) {
             return const WalletDiscoveryUnavailableFailure();
           }
-          await _syncWallet.execute(wallet, discover: wallet.isBitcoin);
+          await _syncWallet.execute(
+            wallet,
+            discover: wallet.isBitcoin,
+            reason: pass.reason,
+          );
           return null;
       }
     }
@@ -470,4 +479,11 @@ final class _SyncPass {
     this.walletId,
     this.walletNetwork,
   });
+
+  // Queued passes follow the user-trigger upgrade; joined running passes keep their original reason.
+  SyncReason get reason => walletId != null
+      ? SyncReason.manual
+      : trigger == SyncTrigger.user
+      ? SyncReason.pull
+      : SyncReason.auto;
 }

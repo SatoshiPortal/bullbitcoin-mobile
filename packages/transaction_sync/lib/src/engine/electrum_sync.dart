@@ -12,6 +12,7 @@ import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
 
 import '../../write.dart';
+import '../domain/sync_reason.dart';
 import '../domain/wallet_revision.dart';
 import '../domain/reserved_address_port.dart';
 import '../domain/transaction_sync_failure.dart';
@@ -76,9 +77,11 @@ final class ElectrumSync {
   Future<Result<SyncCompletion, TransactionSyncFailure>> execute(
     PublicWalletDescriptor descriptor, {
     bool discover = false,
+    SyncReason reason = SyncReason.auto,
   }) {
     final key = descriptor.key;
     final previous = _active[key];
+    // Joined requests keep the existing pass's reason; each queued discovery owns its reason.
     if (previous != null && !discover) return previous;
     // A discovery request must not disappear behind a routine sync. Queue it after the current operation; all native access still happens in workers.
     final completer =
@@ -90,7 +93,7 @@ final class ElectrumSync {
         final watch = Stopwatch()..start();
         final runId = ++_runSequence;
         final context =
-            'run=$runId chain=${key.network is BitcoinNetwork ? 'bitcoin' : 'liquid'} network=${key.network.env.name} script=${descriptor.scriptType.name} headless=false';
+            'run=$runId chain=${key.network is BitcoinNetwork ? 'bitcoin' : 'liquid'} network=${key.network.env.name} script=${descriptor.scriptType.name} headless=false reason=${reason.name}';
         log.fine('Electrum sync started $context discovery=$discover');
         _started.add(key);
         var connectionSummary = 'route=unselected';
@@ -131,7 +134,7 @@ final class ElectrumSync {
       } catch (error) {
         if (_failures[key] != 'storage') {
           log.severe(
-            message: 'Electrum sync unexpected failure',
+            message: 'Electrum sync unexpected failure reason=${reason.name}',
             error: 'storage',
             trace: StackTrace.empty,
           );

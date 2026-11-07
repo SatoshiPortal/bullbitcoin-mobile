@@ -301,8 +301,12 @@ void main() {
         walletMetadataDatasource: metadata,
         bdkWalletDatasource: bdk,
         lwkWalletDatasource: _Lwk(),
-        synchronize: (metadata, {bool discover = false}) async =>
-            requests.add(discover),
+        synchronize:
+            (
+              metadata, {
+              bool discover = false,
+              SyncReason reason = SyncReason.auto,
+            }) async => requests.add(discover),
         isSyncing: ({String? walletId}) => false,
         syncStarted: const Stream.empty(),
         syncFinished: const Stream.empty(),
@@ -483,12 +487,17 @@ void main() {
         walletMetadataDatasource: metadata,
         bdkWalletDatasource: bdk,
         lwkWalletDatasource: _Lwk(),
-        synchronize: (value, {bool discover = false}) async {
-          expect(provisioned, isTrue);
-          expect(value.id, id);
-          verify(() => native.create(any())).called(1);
-          synchronized = true;
-        },
+        synchronize:
+            (
+              value, {
+              bool discover = false,
+              SyncReason reason = SyncReason.auto,
+            }) async {
+              expect(provisioned, isTrue);
+              expect(value.id, id);
+              verify(() => native.create(any())).called(1);
+              synchronized = true;
+            },
         isSyncing: ({String? walletId}) => false,
         syncStarted: const Stream.empty(),
         syncFinished: const Stream.empty(),
