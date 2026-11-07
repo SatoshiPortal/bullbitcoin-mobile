@@ -13,15 +13,20 @@ class _MockGetRecipientsEnvironmentUsecase extends Mock
 
 class _FakeSepaVirtualPayeeRepository implements SepaVirtualPayeeRepository {
   final List<Result<SepaVirtualPayeeStatus?, RecipientsFailure>> findResults;
-  final Result<SepaVirtualPayeeStatus, RecipientsFailure> activateResult;
+
+  /// One result per activation request; the last one repeats.
+  final List<Result<SepaVirtualPayeeStatus, RecipientsFailure>> activateResults;
   int finds = 0;
   int activations = 0;
   bool? lastIsTestnet;
 
   _FakeSepaVirtualPayeeRepository({
     required this.findResults,
-    this.activateResult = const Ok(SepaVirtualPayeeStatus.pending),
-  });
+    Result<SepaVirtualPayeeStatus, RecipientsFailure> activateResult = const Ok(
+      SepaVirtualPayeeStatus.pending,
+    ),
+    List<Result<SepaVirtualPayeeStatus, RecipientsFailure>>? activateResults,
+  }) : activateResults = activateResults ?? [activateResult];
 
   @override
   Future<Result<SepaVirtualPayeeStatus?, RecipientsFailure>> findStatus({
@@ -37,8 +42,10 @@ class _FakeSepaVirtualPayeeRepository implements SepaVirtualPayeeRepository {
     required String recipientId,
     required bool isTestnet,
   }) async {
+    final result =
+        activateResults[activations.clamp(0, activateResults.length - 1)];
     activations++;
-    return activateResult;
+    return result;
   }
 }
 
@@ -122,22 +129,37 @@ void main() {
     ]);
   });
 
-  test('keeps checking after a failed activation', () async {
+  test('asks again after a failed activation and keeps checking', () async {
     final repository = _FakeSepaVirtualPayeeRepository(
       findResults: [_absent, _absent, _active],
-      activateResult: const Err(RecipientsUnexpectedFailure()),
+      activateResults: const [
+        Err(RecipientsUnexpectedFailure()),
+        Ok(SepaVirtualPayeeStatus.pending),
+      ],
     );
 
     final events = await run(repository);
 
-    expect(repository.activations, 1);
-    expect(events, hasLength(4));
+    expect(repository.activations, 2);
+    expect(events, hasLength(5));
     expect(events[1], isA<Err<SepaVirtualPayeeStatus, RecipientsFailure>>());
-    expect(statuses([events[0], events[2], events[3]]), [
+    expect(statuses([events[0], events[2], events[3], events[4]]), [
       SepaVirtualPayeeStatus.absent,
       SepaVirtualPayeeStatus.absent,
+      SepaVirtualPayeeStatus.pending,
       SepaVirtualPayeeStatus.active,
     ]);
+  });
+
+  test('a successful activation is not asked again while pending', () async {
+    final repository = _FakeSepaVirtualPayeeRepository(
+      findResults: [_absent, _absent, _pending, _active],
+      activateResult: const Ok(SepaVirtualPayeeStatus.absent),
+    );
+
+    await run(repository);
+
+    expect(repository.activations, 1);
   });
 
   test('keeps checking after a failed check', () async {

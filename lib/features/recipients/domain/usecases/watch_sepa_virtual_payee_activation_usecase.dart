@@ -54,13 +54,15 @@ class WatchSepaVirtualPayeeActivationUsecase {
           hasFailed = true;
       }
 
+      // Asked once it succeeds; a failed request may never have reached the
+      // server, so it is asked again at the next check while still absent.
       if (status != null && !status.exists && !isActivationRequested) {
-        isActivationRequested = true;
         switch (await _sepaVirtualPayeeRepository.activate(
           recipientId: recipientId,
           isTestnet: isTestnet,
         )) {
           case Ok(:final value):
+            isActivationRequested = true;
             if (value != status) yield Ok(value);
             status = value;
           case Err(:final failure):
