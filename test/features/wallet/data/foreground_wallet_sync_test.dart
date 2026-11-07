@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/wallet/data/background_wallet_sync_impl.dart';
 import 'dart:async';
 import 'package:transaction_sync/read.dart';
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart'
@@ -42,6 +43,8 @@ class _WatchOnly extends Mock implements satoshifier.WatchOnlyDescriptor {}
 class _Descriptor extends Mock implements satoshifier.Descriptor {}
 
 class _Labels extends Mock implements LabelsFacade {}
+
+class _Catalog extends Mock implements WalletCatalogPort {}
 
 class _Metadata extends Mock implements WalletMetadataDatasource {}
 
@@ -373,6 +376,45 @@ void main() {
       },
     );
   }
+
+  test('background adapter explicitly persists background reason', () async {
+    log = Logger.replace(directory: directory);
+    final descriptor = BitcoinWalletDescriptor(
+      key: WalletKey(id: id, network: BitcoinNetwork.testnet),
+      scriptType: ScriptType.bip84,
+      origin: id,
+      externalDescriptor: 'wpkh(public)',
+      internalDescriptor: 'wpkh(change)',
+    );
+    final catalog = _Catalog();
+    when(
+      () => catalog.find(descriptor.key),
+    ).thenAnswer((_) async => Ok(descriptor));
+    final background = BackgroundWalletSyncImpl(
+      catalog,
+      ElectrumSync(
+        connections: policy,
+        documentsDirectory: () async => directory.path,
+      ),
+      null,
+    );
+    // The policy fixture returns no committed revision, so the adapter rejects it.
+    expect(
+      await background.synchronize(
+        descriptor.key,
+        allowInitialScan: false,
+        discover: true,
+      ),
+      isA<Err>(),
+    );
+    final rows = (await log.readLogs())
+        .where((row) => row.contains('Electrum sync '))
+        .toList();
+    expect(rows, hasLength(2));
+    expect(rows, everyElement(contains('reason=background')));
+    expect(rows, everyElement(contains('headless=true')));
+    expect(rows.first, contains('discovery=true'));
+  });
 
   test(
     'engine joins retain auto and queued discovery retains manual',
