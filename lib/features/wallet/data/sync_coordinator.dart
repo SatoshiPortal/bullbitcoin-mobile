@@ -1,4 +1,3 @@
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/read_wallet_usecase.dart';
 import 'package:transaction_sync/read.dart';
 import 'package:transaction_sync/transaction_sync.dart'
@@ -7,6 +6,7 @@ import 'package:bb_mobile/features/wallet/domain/wallet_failure_log_code.dart';
 import 'dart:async';
 import 'package:bb_mobile/features/wallet/domain/wallet_discovery_failure.dart';
 import 'dart:collection';
+import 'package:primitives/primitives.dart' as network;
 
 import 'package:bb_mobile/features/wallet/domain/sync_outcome.dart';
 
@@ -75,7 +75,8 @@ class SyncCoordinator {
   /// caller passes [SyncTrigger.user].
   static const Duration _minSyncInterval = Duration(seconds: 2);
 
-  final Future<Environment> Function()? _readNetwork;
+  final Set<(network.NetworkEnv, SyncKind)> _unsupportedLogged = {};
+  final Future<network.NetworkEnv> Function()? _readNetwork;
   final ReadWalletUsecase? _readWalletUsecase;
   final GetWalletsUsecase _getWallets;
   final SyncWalletUsecase _syncWallet;
@@ -132,9 +133,14 @@ class SyncCoordinator {
     Set<SyncKind>? only,
     SyncTrigger trigger = SyncTrigger.automatic,
   }) async {
+    final readNetwork = _readNetwork;
+    final environment = readNetwork == null
+        ? network.NetworkEnv.mainnet
+        : await readNetwork();
     final requestedKinds = only ?? _defaultKinds(trigger);
     final requested = SyncKind.values
         .where(requestedKinds.contains)
+        .where((kind) => _supports(kind, environment))
         .toList(growable: false);
     final dropped = <String>[];
     final waits = <SyncKind, Future<Object?>>{};
@@ -274,13 +280,9 @@ class SyncCoordinator {
     if (result case Ok(:final value)) {
       final readNetwork = _readNetwork;
       final environment = readNetwork == null
-          ? Environment.mainnet
+          ? network.NetworkEnv.mainnet
           : await readNetwork();
-      final walletEnvironment = switch (value.network) {
-        Network.bitcoinMainnet || Network.liquidMainnet => Environment.mainnet,
-        Network.bitcoinTestnet || Network.liquidTestnet => Environment.testnet,
-      };
-      if (walletEnvironment == environment) return value;
+      if (value.network.environment == environment) return value;
     }
     return null;
   }
@@ -296,6 +298,34 @@ class SyncCoordinator {
       SyncKind.sp,
     },
   };
+
+  bool _supports(SyncKind kind, network.NetworkEnv environment) {
+    final bitcoin = network.BitcoinNetwork.values.singleWhere(
+      (n) => n.env == environment,
+    );
+    final liquid = switch (environment) {
+      network.NetworkEnv.mainnet => network.LiquidNetwork.mainnet,
+      network.NetworkEnv.testnet => network.LiquidNetwork.testnet,
+      network.NetworkEnv.regtest => network.LiquidNetwork.regtest,
+      network.NetworkEnv.signet => null,
+    };
+    final network.Network? chain = kind == SyncKind.liquid ? liquid : bitcoin;
+    final capability = switch (kind) {
+      SyncKind.bitcoin ||
+      SyncKind.liquid => network.NetworkCapability.softwareWallet,
+      SyncKind.sp => network.NetworkCapability.silentPayments,
+      SyncKind.swaps => network.NetworkCapability.swaps,
+    };
+    final supported =
+        chain != null &&
+        network.NetworkCapabilities.supports(chain, capability);
+    if (!supported && _unsupportedLogged.add((environment, kind))) {
+      log.config(
+        'Wallet sync disabled network=${environment.name} kind=${kind.name}',
+      );
+    }
+    return supported;
+  }
 
   /// An active routine pass cannot satisfy discovery. Keep its waiters separate
   /// from the discovery pass queued behind it; queued passes can be upgraded.
