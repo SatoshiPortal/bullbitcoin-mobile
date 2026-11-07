@@ -737,6 +737,15 @@ void main() {
 
       expect(await local.fetchReceiver(trade.id), isNotNull);
       verify(() => pdk.startListeningForRequest(trade)).called(1);
+
+      when(() => pdk.isPolling(trade.id)).thenReturn(true);
+      await engine.resumePayjoinsOnStartup();
+      expect(
+        logs
+            .withCode(PayjoinLogCode.sessionResumed)
+            .map((event) => event.level),
+        [PayjoinLogLevel.fine, PayjoinLogLevel.info],
+      );
     });
 
     test('startup removes an idle buy receiver while buying is off', () async {

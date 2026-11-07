@@ -85,6 +85,7 @@ void main() {
     const adapter = AppPayjoinLogAdapter();
     for (final code in [
       PayjoinLogCode.pollReplayFailed,
+      PayjoinLogCode.pollRequestFailed,
       PayjoinLogCode.pollParseFailed,
       PayjoinLogCode.pollRecovered,
     ]) {
@@ -100,6 +101,7 @@ void main() {
     }
     expect((await log.readLogs()).map((row) => row.split('\t')[2]), [
       'Payjoin receiver pollReplayFailed: Poll failed stage=replay',
+      'Payjoin receiver pollRequestFailed: Poll failed stage=request',
       'Payjoin receiver pollParseFailed: Poll failed stage=parse',
       'Payjoin receiver pollRecovered: Poll state recovered',
     ]);
