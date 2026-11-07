@@ -10,6 +10,7 @@ import 'package:primitives/primitives.dart';
 class Preferences implements BackgroundPreferencesRepository {
   int requests = 0;
   Completer<void>? pendingWrite;
+  StateError? writeError;
   final started = Completer<void>();
   var selected = BackgroundSyncInterval.hour1;
   var failWrite = false;
@@ -35,6 +36,9 @@ class Preferences implements BackgroundPreferencesRepository {
   ) async {
     if (!started.isCompleted) started.complete();
     await pendingWrite?.future;
+    final error = writeError;
+    writeError = null;
+    if (error != null) throw error;
     if (failWrite) return const Err(SettingsStorageFailure());
     selected = value;
     return const Ok(null);
@@ -56,6 +60,30 @@ void main() {
     expect(repository.selected, BackgroundSyncInterval.off);
     expect(cubit.state.interval, BackgroundSyncInterval.off);
   });
+
+  test(
+    'Off still executes after a preceding programming error propagates',
+    () async {
+      final repository = Preferences()
+        ..pendingWrite = Completer<void>()
+        ..writeError = StateError('injected');
+      final cubit = BackgroundPreferencesCubit(
+        BackgroundPreferencesUsecase(repository),
+      );
+      addTearDown(cubit.close);
+      final first = cubit.load(interval: BackgroundSyncInterval.minutes15);
+      final errorReported = expectLater(first, throwsStateError);
+      await repository.started.future;
+      final offCompleted = expectLater(
+        cubit.load(interval: BackgroundSyncInterval.off),
+        completes,
+      );
+      repository.pendingWrite?.complete();
+      await Future.wait([errorReported, offCompleted]);
+      expect(repository.selected, BackgroundSyncInterval.off);
+      expect(cubit.state.interval, BackgroundSyncInterval.off);
+    },
+  );
 
   test('read failures remain typed without requesting permission', () async {
     final repository = Preferences()..failRead = true;
