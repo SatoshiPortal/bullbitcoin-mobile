@@ -71,14 +71,18 @@ class _MockWatchSpWalletUsecase extends Mock implements WatchSpWalletUsecase {}
 class _MockCheckSpFeatureGateForWalletUsecase extends Mock
     implements CheckSpFeatureGateForWalletUsecase {}
 
-WalletBloc createBloc(GetExternalTorProxyStatusUsecase externalStatus) {
+WalletBloc createBloc(
+  GetExternalTorProxyStatusUsecase externalStatus, {
+  GetWalletsUsecase? getWallets,
+  GetUnconfirmedIncomingBalanceUsecase? getUnconfirmed,
+}) {
   return WalletBloc(
-    getWalletsUsecase: _MockGetWalletsUsecase(),
+    getWalletsUsecase: getWallets ?? _MockGetWalletsUsecase(),
     checkWalletSyncingUsecase: _MockCheckWalletSyncingUsecase(),
     watchWalletSyncEventsUsecase: _stubbedWatchers(),
     syncWalletsUsecase: _stubbedSync(),
     getUnconfirmedIncomingBalanceUsecase:
-        _MockGetUnconfirmedIncomingBalanceUsecase(),
+        getUnconfirmed ?? _MockGetUnconfirmedIncomingBalanceUsecase(),
     deleteWalletUsecase: _MockDeleteWalletUsecase(),
     checkBackupNeededUsecase: _MockCheckBackupNeededUsecase(),
     getExternalTorProxyStatusUsecase: externalStatus,
@@ -99,6 +103,43 @@ class _ViewWalletBloc extends Mock implements WalletBloc {}
 void main() {
   registerFallbackValue(SyncReason.auto);
   TestWidgetsFlutterBinding.ensureInitialized();
+  test(
+    'started only sets indicator; finished refreshes wallets and balance',
+    () async {
+      final wallets = _MockGetWalletsUsecase();
+      final balance = _MockGetUnconfirmedIncomingBalanceUsecase();
+      when(
+        () => wallets.execute(),
+      ).thenAnswer((_) async => Ok([_syncedWallet]));
+      when(
+        () => balance.execute(walletIds: [_syncedWallet.id]),
+      ).thenAnswer((_) async => const Ok(42));
+      final bloc = createBloc(
+        _MockExternalTorStatusUsecase(),
+        getWallets: wallets,
+        getUnconfirmed: balance,
+      );
+      addTearDown(bloc.close);
+      final started = bloc.stream.firstWhere(
+        (s) => s.syncStatus[_syncedWallet.id] == true,
+      );
+      bloc.add(WalletSyncStarted(_syncedWallet.id));
+      await started;
+      verifyZeroInteractions(wallets);
+      verifyZeroInteractions(balance);
+      expect(bloc.state.wallets, isEmpty);
+      final finished = bloc.stream.firstWhere(
+        (s) => s.syncStatus[_syncedWallet.id] == false,
+      );
+      bloc.add(WalletSyncFinished(_syncedWallet));
+      await finished;
+      expect(bloc.state.wallets, [_syncedWallet]);
+      expect(bloc.state.unconfirmedIncomingBalance, 42);
+      verify(() => wallets.execute()).called(1);
+      verify(() => balance.execute(walletIds: [_syncedWallet.id])).called(1);
+    },
+  );
+
   for (final trigger in [SyncTrigger.automatic, SyncTrigger.user]) {
     testWidgets('$trigger busy does not render a generic failure card', (
       tester,

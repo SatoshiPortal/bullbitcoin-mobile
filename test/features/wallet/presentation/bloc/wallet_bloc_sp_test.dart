@@ -115,7 +115,7 @@ WalletBloc _makeBloc({
   final checkWalletSyncing = _MockCheckWalletSyncingUsecase();
   when(
     () => watchStarted.execute(),
-  ).thenAnswer((_) => const Stream<Wallet>.empty());
+  ).thenAnswer((_) => const Stream<String>.empty());
   when(
     () => watchFinished.execute(),
   ).thenAnswer((_) => const Stream<Wallet>.empty());

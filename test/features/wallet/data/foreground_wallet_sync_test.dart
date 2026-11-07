@@ -317,11 +317,30 @@ void main() {
       final result = repository.electrumSyncResultStream.first;
       await SyncWalletUsecase(walletRepository: repository).execute(wallet);
       expect(policy.calls, 1);
-      expect((await started).id, id);
+      expect(await started, id);
       expect((await finished).id, id);
       expect((await result).success, isTrue);
     },
   );
+
+  test('sync start emits without admitting a balance reader', () async {
+    final wallet =
+        (await repository.getWallet(id) as Ok<Wallet, WalletFailure>).value;
+    clearInteractions(bdk);
+    final gate = Completer<void>();
+    policy.gate = gate.future;
+    final started = repository.walletSyncStartedStream.first;
+    final syncing = SyncWalletUsecase(
+      walletRepository: repository,
+    ).execute(wallet);
+    try {
+      await started;
+      verifyNever(() => bdk.getBalance(wallet: any(named: 'wallet')));
+    } finally {
+      gate.complete();
+      await syncing;
+    }
+  });
 
   for (final reason in SyncReason.values) {
     test(
