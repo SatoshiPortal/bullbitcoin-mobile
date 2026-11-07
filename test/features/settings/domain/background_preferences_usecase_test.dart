@@ -1,3 +1,5 @@
+import 'dart:io';
+import 'package:bull_logger/bull_logger.dart';
 import 'dart:async';
 import 'package:bb_mobile/features/settings/data/background_preferences_repository_impl.dart';
 import 'package:notifications/notifications.dart';
@@ -212,6 +214,12 @@ void main() {
   );
 
   test('cancellation failure retains persisted Off', () async {
+    final directory = await Directory.systemTemp.createTemp('background-off-');
+    log = Logger.replace(directory: directory);
+    addTearDown(() async {
+      await log.flush();
+      await directory.delete(recursive: true);
+    });
     final scheduler = Scheduler()..failCancellation = true;
     final repository = BackgroundPreferencesRepositoryImpl(
       const SharedPreferencesBackgroundSyncIntervalStore(),
@@ -232,6 +240,18 @@ void main() {
       BackgroundSyncInterval.off,
     );
     expect(scheduler.registered, isTrue);
+    final messages = (await log.readLogs())
+        .map((row) => row.split('\t')[2])
+        .toList();
+    expect(messages, contains('Background interval saved=off'));
+    expect(
+      messages.indexOf('Background interval saved=off'),
+      lessThan(messages.indexOf('Background schedule update failed')),
+    );
+    expect(
+      messages,
+      isNot(contains('Background schedule applied interval=off')),
+    );
   });
 
   test(

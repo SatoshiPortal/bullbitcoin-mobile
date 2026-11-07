@@ -1,3 +1,4 @@
+import 'package:bull_logger/bull_logger.dart';
 import 'package:sqlite3/sqlite3.dart';
 import 'dart:async';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -56,6 +57,7 @@ void main() {
   setUp(() {
     SharedPreferences.setMockInitialValues({});
     directory = Directory.systemTemp.createTempSync('background-task-');
+    log = Logger.replace(directory: directory);
     outbox = SqliteNotificationOutbox(databasePath: '${directory.path}/outbox');
     queue = SqliteWalletSyncJobQueue(databasePath: '${directory.path}/queue');
     writer = _Writer();
@@ -65,6 +67,7 @@ void main() {
     notifications = NotificationsFacade(gateway: gateway, outbox: outbox);
   });
   tearDown(() async {
+    await log.flush();
     await queue.close();
     outbox.dispose();
     directory.deleteSync(recursive: true);
@@ -298,14 +301,12 @@ void main() {
     expect(writer.allowInitialScan, [false]);
   });
 
-  test('operation exceptions log only their type and request retry', () async {
+  test('operation exceptions log a fixed category and request retry', () async {
     writer.operation = () => throw Exception('private connection detail');
     expect((await task().executeAll()).shouldRetry, isTrue);
     expect(
       logs.entries.map((e) => e.$2),
-      contains(
-        'Background job retry: category=operation_exception type=_Exception',
-      ),
+      contains('Background job retry: category=operation_exception'),
     );
     expect(logs.entries.any((e) => e.$2.contains('private')), isFalse);
   });
@@ -313,6 +314,14 @@ void main() {
   test('zero admission budget does not start a writer', () async {
     await task(budget: Duration.zero).executeAll();
     expect(writer.allowInitialScan, isEmpty);
+    final messages = (await log.readLogs()).map((row) => row.split('\t')[2]);
+    expect(
+      messages.where(
+        (message) =>
+            message.startsWith('Background admission stopped reason=budget'),
+      ),
+      hasLength(2),
+    );
   });
 
   test(
@@ -422,6 +431,8 @@ final class _Logs implements BackgroundTaskLogger {
   @override
   Future<void> flush() async {}
   @override
-  void write(BackgroundLogLevel level, String message) =>
-      entries.add((level, message));
+  void write(BackgroundLogLevel level, String message) {
+    entries.add((level, message));
+    LoggerBackgroundTaskLogger(log).write(level, message);
+  }
 }
