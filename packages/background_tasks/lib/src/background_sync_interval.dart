@@ -37,7 +37,10 @@ final class SharedPreferencesBackgroundSyncIntervalStore
 
   @override
   Future<BackgroundSyncInterval> read() async {
-    final name = (await SharedPreferences.getInstance()).getString(_key);
+    final preferences = await SharedPreferences.getInstance();
+    // Another Flutter engine may have persisted an opt-out since our last read.
+    await preferences.reload();
+    final name = preferences.getString(_key);
     return BackgroundSyncInterval.values.firstWhere(
       (interval) => interval.name == name,
       orElse: () => BackgroundSyncInterval.fallback,
