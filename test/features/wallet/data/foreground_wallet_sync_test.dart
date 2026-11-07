@@ -1,3 +1,4 @@
+import 'package:transaction_sync/read.dart';
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart'
     show SeedReferences;
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
@@ -317,12 +318,18 @@ void main() {
   );
 
   test(
-    'unavailable repair is a storage failure without legacy reader healing',
+    'unavailable repair preserves its category without legacy reader healing',
     () async {
       policy.failure = const TransactionSyncNeedsRepairFailure();
       await expectLater(
         bridge.synchronize(row),
-        throwsA(isA<WalletStorageFailure>()),
+        throwsA(
+          isA<WalletSnapshotException>().having(
+            (error) => error.failure,
+            'failure',
+            isA<TransactionSyncNeedsRepairFailure>(),
+          ),
+        ),
       );
     },
   );
@@ -392,20 +399,27 @@ void main() {
       expect(failure, isA<WalletSyncFailure>());
     }
     final connectionLogs = (await log.readLogs()).join('\n');
-    expect(
-      connectionLogs,
-      contains(
-        'Wallet sync unavailable operation=getWallet category=connection',
-      ),
-    );
+    expect(connectionLogs, contains('Electrum sync failed'));
     expect(connectionLogs, isNot(contains('SEVERE')));
+    expect(connectionLogs, isNot(contains('Wallet sync unavailable')));
+    expect(
+      (await log.readLogs()).where((row) => row.contains('WARNING')),
+      hasLength(1),
+    );
     policy.failure = const TransactionSyncStorageFailure();
     final storage = await repository.getWallet(id, sync: true);
     if (storage case Err(:final failure)) {
       expect(failure, isA<WalletStorageFailure>());
     }
     expect(storage, isA<Err<Wallet, WalletFailure>>());
-    expect((await log.readLogs()).join('\n'), contains('SEVERE'));
+    expect(
+      (await log.readLogs()).where((row) => row.contains('SEVERE')),
+      hasLength(1),
+    );
+    expect(
+      (await log.readLogs()).join('\n'),
+      isNot(contains('Wallet read failed')),
+    );
     verifyNever(() => bdk.getBalance(wallet: any(named: 'wallet')));
   });
   test(
