@@ -233,12 +233,12 @@ final class SqliteWalletSyncJobQueue implements WalletSyncJobQueue {
       final exclusion = excludedIds.isEmpty
           ? ''
           : 'AND job_id NOT IN (${List.filled(excludedIds.length, '?').join(',')})';
-      // Fewest consecutive attempts first: a wallet whose runs keep failing or
-      // being stopped does not starve the others.
+      // Oldest due time first: both overdue retries and successful wallets
+      // rotate. Backoff prevents a repeatedly failing wallet from monopolizing work.
       final rows = _database.select(
         '''SELECT job_id, attempts FROM wallet_sync_jobs
         WHERE $eligibility $exclusion
-        ORDER BY attempts,
+        ORDER BY next_attempt_at, attempts,
           CASE WHEN last_successful_at IS NULL THEN 0 ELSE 1 END,
           last_successful_at, inserted_at, job_id LIMIT ?''',
         [
