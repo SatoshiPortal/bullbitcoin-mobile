@@ -277,6 +277,7 @@ enum PayjoinLogCode {
   broadcastFailure('Broadcast failed'),
   storageFailure('Payjoin storage failed'),
   pollReplayFailed('Poll failed stage=replay'),
+  pollRequestFailed('Poll failed stage=request'),
   pollParseFailed('Poll failed stage=parse'),
   pollRecovered('Poll state recovered'),
   migrationFailure('Payjoin storage migration failed'),

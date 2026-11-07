@@ -1148,6 +1148,11 @@ class PdkPayjoinDatasource {
       if (e.isExpired()) {
         throw PayjoinExpiredException('Payjoin receiver expired');
       }
+      _pollFailed(
+        receiverModel,
+        PayjoinLogRole.receiver,
+        PayjoinLogCode.pollRequestFailed,
+      );
       throw PayjoinNotFoundException('Could not create poll request');
     } on PayjoinExpiredException {
       rethrow;
@@ -1190,6 +1195,13 @@ class PdkPayjoinDatasource {
       });
     } on PayjoinExpiredException {
       rethrow;
+    } on CreateRequestException {
+      _pollFailed(
+        senderModel,
+        PayjoinLogRole.sender,
+        PayjoinLogCode.pollRequestFailed,
+      );
+      throw PayjoinNotFoundException('Could not create poll request');
     } catch (e) {
       throw PayjoinNotFoundException('Failed to poll sender: $e');
     }
