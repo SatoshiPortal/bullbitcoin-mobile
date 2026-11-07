@@ -1,3 +1,4 @@
+import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/get_sp_feature_gate_usecase.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/sp/domain/ports/sp_payments_port.dart';
@@ -21,6 +22,7 @@ class GenerateTaprootAddressUsecase {
   @useResult
   Future<Result<String, SpFailure>> execute() async {
     if (!await _getSpFeatureGateUsecase.execute()) {
+      log.warning('Capability refused feature=sp_receive reason=unsupported');
       return const Err(SpUnsupportedNetwork());
     }
     return _repository.generateTaprootAddress();

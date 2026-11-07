@@ -33,6 +33,7 @@ class GetBitBoxWatchOnlyWalletUsecase {
     try {
       final settings = await _settingsRepository.fetch();
       if (settings.environment.networkEnv == NetworkEnv.regtest) {
+        log.warning('Capability refused feature=bitbox reason=unsupported');
         return const Err(InvalidParametersBitBoxFailure('unsupported network'));
       }
       isTestnet = settings.environment.networkEnv == NetworkEnv.testnet;

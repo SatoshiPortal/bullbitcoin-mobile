@@ -40,6 +40,7 @@ class ConfirmBuyOrderUsecase {
         exchangeNetwork,
         NetworkCapability.exchange,
       )) {
+        log.warning('Capability refused feature=buy reason=unsupported');
         return const Err(BuyUnsupportedNetworkFailure());
       }
       final isTestnet = environment == NetworkEnv.testnet;

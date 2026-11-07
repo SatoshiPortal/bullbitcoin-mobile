@@ -22,13 +22,13 @@ Future<Result<Environment, ExchangeFailure>> readExchangeEnvironment(
   try {
     final environment = (await settingsRepository.fetch()).environment;
     if (!exchangeNetworkAvailable(environment)) {
-      log.config('Exchange capability unavailable network=${environment.name}');
+      log.info('Exchange capability unavailable network=${environment.name}');
       return const Err(ExchangeUnsupportedNetworkFailure());
     }
     return Ok(environment);
   } on Exception catch (e, st) {
     // Type only, matching the repositories.
-    log.warning('Could not read the environment: ${e.runtimeType}', trace: st);
+    log.warning('Exchange environment unavailable reason=settings', trace: st);
     return Err(onFailure('settings fetch failed: ${e.runtimeType}'));
   }
 }

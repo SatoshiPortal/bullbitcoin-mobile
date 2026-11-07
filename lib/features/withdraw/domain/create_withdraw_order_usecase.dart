@@ -60,6 +60,7 @@ class CreateWithdrawOrderUsecase {
         BitcoinNetwork.fromName(settings.environment.name),
         NetworkCapability.exchange,
       )) {
+        log.warning('Capability refused feature=withdraw reason=unsupported');
         return const Err(WithdrawUnsupportedNetworkFailure());
       }
       final isTestnet = settings.environment.requireHistoricalTestnet();

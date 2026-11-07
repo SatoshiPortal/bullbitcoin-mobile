@@ -1,3 +1,4 @@
+import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/ledger/domain/entities/ledger_device_entity.dart';
 import 'package:bb_mobile/core/ledger/domain/ledger_failure.dart';
@@ -33,6 +34,7 @@ class GetLedgerWatchOnlyWalletUsecase {
         isLiquid: false,
       );
       if (network == Network.bitcoinRegtest) {
+        log.warning('Capability refused feature=ledger reason=unsupported');
         return const Err(LedgerUnexpectedFailure('unsupported network'));
       }
       derivationPath =

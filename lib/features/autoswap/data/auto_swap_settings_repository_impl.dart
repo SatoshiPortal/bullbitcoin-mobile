@@ -64,7 +64,7 @@ class AutoSwapSettingsRepositoryImpl implements AutoSwapSettingsRepository {
       NetworkEnv.signet => BitcoinNetwork.signet,
     };
     if (!NetworkCapabilities.supports(network, NetworkCapability.swaps)) {
-      log.config('Autoswap capability unavailable network=${environment.name}');
+      log.info('Autoswap capability unavailable network=${environment.name}');
       throw const AutoswapNetworkUnavailableException();
     }
     return switch (environment) {

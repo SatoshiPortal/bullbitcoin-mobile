@@ -18,6 +18,9 @@ class ReceiveWithPayjoinUsecase {
     int? amountSat,
   }) async {
     if (!NetworkCapabilities.supports(network, NetworkCapability.payjoin)) {
+      log.warning(
+        'Capability refused feature=receive_payjoin reason=unsupported',
+      );
       return const Err(ReceivePayjoinUnavailableFailure('unsupported network'));
     }
     final result = await _receiver.start(

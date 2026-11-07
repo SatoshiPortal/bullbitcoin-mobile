@@ -58,6 +58,7 @@ class SetDcaUsecase {
       BitcoinNetwork.fromName(environment.name),
       NetworkCapability.exchange,
     )) {
+      log.warning('Capability refused feature=dca reason=unsupported');
       return const Err(DcaAccountUnavailableFailure('network unsupported'));
     }
 

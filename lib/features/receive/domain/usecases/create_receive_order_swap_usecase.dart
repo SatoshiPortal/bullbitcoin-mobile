@@ -34,6 +34,7 @@ class CreateReceiveOrderSwapUsecase {
       wallet.network.shared,
       NetworkCapability.swaps,
     )) {
+      log.warning('Capability refused feature=receive_swap reason=unsupported');
       return const Err(ReceiveSwapUnavailableFailure());
     }
     if (!wallet.isLiquid || amountSat <= 0) {

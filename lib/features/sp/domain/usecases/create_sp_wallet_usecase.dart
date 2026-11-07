@@ -61,6 +61,7 @@ class CreateSpWalletUsecase {
             ),
             NetworkCapability.silentPayments,
           )) {
+        log.warning('Capability refused feature=sp reason=unsupported');
         return const Err(SpUnsupportedNetwork());
       }
 

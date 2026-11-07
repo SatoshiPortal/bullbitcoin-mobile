@@ -254,12 +254,9 @@ class SettingsCubit extends Cubit<SettingsState> {
       // The revoke use case disposes the live session, deletes the wallet, and
       // emits SpSetupChanged; the WalletBloc observes that and refreshes itself,
       // so settings never drives the wallet for SP.
-      if (await _revokeSpWalletUsecase.execute() case Err(:final failure)) {
-        log.severe(
-          message: 'Failed to revoke SP wallet',
-          error: failure,
-          trace: StackTrace.current,
-        );
+      if (await _revokeSpWalletUsecase.execute() case Err()) {
+        // The SP owner reports the failure; this only records the refused change.
+        log.fine('Developer mode unchanged reason=revoke');
         emit(state.copyWith(revokeSpFailed: true));
         return;
       }

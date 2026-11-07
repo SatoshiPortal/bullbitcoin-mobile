@@ -35,10 +35,8 @@ class SetActiveNetworkUsecase {
           );
           return const Err(SettingsConsentFailure());
         }
-      } on Exception catch (error) {
-        log.warning(
-          'Network selection refused category=settingsRead failure=${error.runtimeType}',
-        );
+      } on Exception {
+        log.warning('Network selection refused category=settingsRead');
         return const Err(SettingsStorageFailure());
       }
     }
@@ -49,7 +47,6 @@ class SetActiveNetworkUsecase {
         return const Ok(null);
       },
       (_) {
-        log.warning('Network selection refused category=settingsWrite');
         return const Err(SettingsStorageFailure());
       },
     );

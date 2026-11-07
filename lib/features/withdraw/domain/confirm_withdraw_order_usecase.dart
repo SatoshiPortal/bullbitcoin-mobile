@@ -43,6 +43,7 @@ class ConfirmWithdrawOrderUsecase {
         exchangeNetwork,
         NetworkCapability.exchange,
       )) {
+        log.warning('Capability refused feature=withdraw reason=unsupported');
         return const Err(WithdrawUnsupportedNetworkFailure());
       }
       final isTestnet = environment == NetworkEnv.testnet;
