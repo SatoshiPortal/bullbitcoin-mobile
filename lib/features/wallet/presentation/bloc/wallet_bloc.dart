@@ -212,6 +212,16 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
         });
   }
 
+  /// Wait for the foreground refresh already represented by the UI state.
+  /// Unlike [refresh], this never dispatches an event or requests a sync.
+  Future<void> waitForRefresh() async {
+    if (!state.isRefreshing || isClosed) return;
+    await stream.firstWhere(
+      (state) => !state.isRefreshing,
+      orElse: () => state,
+    );
+  }
+
   /// Pull-to-refresh entry point for the UI. Dispatches a user-triggered
   /// refresh (so the data reload and `isRefreshing` transitions still happen)
   /// and awaits the [SyncCoordinator] directly, so the returned future (and
