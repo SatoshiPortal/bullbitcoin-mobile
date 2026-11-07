@@ -1,5 +1,5 @@
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart'
-    show SeedReferences, SeedReferencePort;
+    show SeedReferences;
 import 'package:primitives/primitives.dart' show Fingerprint;
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
 import 'package:bb_mobile/core/utils/result.dart';

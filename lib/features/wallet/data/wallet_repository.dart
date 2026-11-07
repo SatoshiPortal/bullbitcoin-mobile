@@ -1,4 +1,3 @@
-import 'package:bb_mobile/features/wallet/domain/seed_reference_port.dart';
 import 'package:primitives/primitives.dart' show Fingerprint;
 import 'dart:async';
 import 'package:bb_mobile/features/wallet/data/wallet_native_runtime.dart';
