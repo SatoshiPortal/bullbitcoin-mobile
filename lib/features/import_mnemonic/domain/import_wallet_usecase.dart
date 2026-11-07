@@ -76,6 +76,7 @@ class ImportWalletUsecase {
             id,
             bitcoinNetwork,
           )) {
+            log.warning('Wallet import refused reason=duplicate');
             return const Err(ImportMnemonicDuplicateFailure());
           }
           switch (await _secrets.fetch(id)) {
@@ -105,7 +106,7 @@ class ImportWalletUsecase {
       // orphan cleanup is an explicit user action, never failure compensation.
       log.severe(
         message: 'Import wallet failed',
-        error: e.runtimeType,
+        error: 'storage',
         trace: StackTrace.empty,
       );
       return Err(ImportMnemonicUnexpectedFailure(e.toString()));
