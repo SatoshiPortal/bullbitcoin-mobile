@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/wallet/domain/default_wallet_secret_policy.dart';
 import 'package:bb_mobile/features/recoverbull/domain/recoverbull_failure.dart'
     show RecoverBullFailure;
 import 'package:bb_mobile/core/recoverbull/domain/entity/encrypted_vault.dart';
@@ -430,7 +431,16 @@ void main() {
         walletRepository: wallets,
       );
 
-      await expectLater(create.execute(secret: secret), throwsArgumentError);
+      await expectLater(
+        create.execute(secret: secret),
+        throwsA(
+          isA<CreateDefaultWalletsException>().having(
+            (e) => e.secretRefusal,
+            'refusal',
+            DefaultWalletSecretRefusal.passphrase,
+          ),
+        ),
+      );
 
       verifyZeroInteractions(wallets);
       verifyZeroInteractions(settings);
