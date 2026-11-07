@@ -197,6 +197,14 @@ void main() {
     },
   );
 
+  test('background run asks for discovery but never an initial scan', () async {
+    await baseline();
+    writer.operation = () async => Ok(outcome());
+    await task().executeAll();
+    expect(writer.discover, [true]);
+    expect(writer.allowInitialScan, [false]);
+  });
+
   test(
     'background commit replay announces payment with no new discovery',
     () async {
@@ -365,6 +373,7 @@ final class _Clock implements Stopwatch {
 
 final class _Writer implements BackgroundWalletSync {
   final List<bool> allowInitialScan = [];
+  final List<bool> discover = [];
   Future<Result<BackgroundSyncOutcome, BackgroundSyncFailure>> Function()?
   operation;
   @override
@@ -374,6 +383,7 @@ final class _Writer implements BackgroundWalletSync {
     required bool discover,
   }) {
     this.allowInitialScan.add(allowInitialScan);
+    this.discover.add(discover);
     final run = operation;
     if (run == null) throw StateError('No fake operation');
     return run();
