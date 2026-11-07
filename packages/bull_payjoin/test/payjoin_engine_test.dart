@@ -191,6 +191,7 @@ void main() {
           ),
         );
     pdk = _MockPdkPayjoinDatasource();
+    when(() => pdk.isPolling(any())).thenReturn(false);
     blockchain = _MockBlockchainPort();
     transactions = _MockTransactionPort();
     labels = _MockLabelsPort();

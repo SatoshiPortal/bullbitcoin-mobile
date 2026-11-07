@@ -556,6 +556,31 @@ void main() {
       });
     });
 
+    test('corrupt saved poll state warns once and stop releases its state', () {
+      fakeAsync((async) {
+        final logs = _CaptureLogPort();
+        final datasource = PdkPayjoinDatasource(
+          log: PayjoinLogger(logs),
+          dio: relayDio(),
+        );
+        final receiver = initializedReceiver(
+          expireAfterSec: 3600,
+        ).copyWith(receiver: '{invalid');
+        datasource.startListeningForRequest(receiver);
+        async.elapse(retryDelay * 3);
+        expect(logs.at(PayjoinLogLevel.warning).map((event) => event.code), [
+          PayjoinLogCode.storageFailure,
+        ]);
+        expect(logs.events.every((event) => event.error == null), isTrue);
+        datasource.stopPolling(receiver.id);
+        datasource.startListeningForRequest(receiver);
+        async.elapse(Duration.zero);
+        expect(logs.at(PayjoinLogLevel.warning), hasLength(2));
+        datasource.dispose();
+        async.flushMicrotasks();
+      });
+    });
+
     test('the first poll goes out right away', () {
       fakeAsync((async) {
         final dio = relayDio();
