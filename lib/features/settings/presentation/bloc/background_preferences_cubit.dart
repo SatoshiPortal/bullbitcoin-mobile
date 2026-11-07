@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import '../../domain/settings_failure.dart';
 import 'package:background_tasks/background_tasks.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -16,25 +18,13 @@ final class BackgroundPreferencesCubit
     BackgroundSyncInterval? interval,
     bool requestPermission = false,
     bool openSettings = false,
-  }) {
-    // Keep every explicit action, including Off while persistence is pending.
-    final next = _pending.then(
-      (_) => _load(
-        interval: interval,
-        requestPermission: requestPermission,
-        openSettings: openSettings,
-      ),
-    );
-    _pending = next;
-    return next;
-  }
-
-  Future<void> _load({
-    BackgroundSyncInterval? interval,
-    required bool requestPermission,
-    required bool openSettings,
   }) async {
+    // Serialize completion, while each caller still receives its own error.
+    final previous = _pending;
+    final finished = Completer<void>();
+    _pending = finished.future;
     try {
+      await previous;
       final next = await _preferences.execute(
         interval: interval,
         requestPermission: requestPermission,
@@ -47,6 +37,8 @@ final class BackgroundPreferencesCubit
           const BackgroundPreferencesState(failure: SettingsStorageFailure()),
         );
       }
+    } finally {
+      finished.complete();
     }
   }
 }
