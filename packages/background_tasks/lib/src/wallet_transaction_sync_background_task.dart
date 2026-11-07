@@ -249,7 +249,7 @@ final class WalletTransactionSyncBackgroundTask {
                   'Background observation failed: category=notification_persistence',
                 );
               }
-            } on Object {
+            } on Exception {
               _log(
                 BackgroundLogLevel.warning,
                 'Background observation failed: category=notification_persistence',

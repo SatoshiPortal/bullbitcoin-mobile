@@ -12,7 +12,7 @@ Future<T?> collectPaymentObservation<T>(
 }) async {
   try {
     return await collect();
-  } on Object {
+  } on Exception {
     (warning ?? log.warning)('Payment observation failed category=history');
     return null;
   }
@@ -28,7 +28,7 @@ Future<Result<T, TransactionSyncFailure>> recordPaymentObservation<T>(
       if (await record(value) case Err()) {
         log.warning('Payment observation failed category=outbox');
       }
-    } on Object {
+    } on Exception {
       log.warning('Payment observation failed category=outbox');
     }
   }
