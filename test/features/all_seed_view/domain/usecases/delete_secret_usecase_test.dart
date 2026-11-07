@@ -1,3 +1,5 @@
+import 'dart:io';
+import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
@@ -48,7 +50,15 @@ void main() {
     return wallet;
   }
 
+  late Directory logDirectory;
+  tearDown(() async {
+    await log.flush();
+    await logDirectory.delete(recursive: true);
+  });
+
   setUp(() async {
+    logDirectory = await Directory.systemTemp.createTemp("seed-log-");
+    log = Logger.replace(directory: logDirectory);
     storage = FakeSecureStoragePlatform()..install();
     secrets = Secrets(scratchDirectory: () async => '/tmp');
     final stored =
@@ -69,6 +79,9 @@ void main() {
 
       expect(await usecase.execute(id), isA<Ok<void, AllSeedViewFailure>>());
       expect(storedSecrets(), isEmpty);
+      expect((await log.readLogs()).map((row) => row.split('\t')[2]), [
+        'Seed deleted source=manual',
+      ]);
     });
 
     test(
@@ -99,6 +112,9 @@ void main() {
 
         expect((result as Err).failure, isA<AllSeedViewDeleteFailure>());
         expect(storedSecrets(), hasLength(1));
+        expect((await log.readLogs()).map((row) => row.split('\t')[2]), [
+          'Seed delete refused reason=referenced',
+        ]);
       },
     );
 
@@ -110,6 +126,9 @@ void main() {
 
       expect((result as Err).failure, isA<AllSeedViewDeleteFailure>());
       expect(storedSecrets(), hasLength(1));
+      expect((await log.readLogs()).map((row) => row.split('\t')[2]), [
+        'Seed delete refused reason=references_unavailable',
+      ]);
     });
 
     test('refuses when the wallet read fails', () async {
@@ -125,6 +144,9 @@ void main() {
 
       expect((result as Err).failure, isA<AllSeedViewDeleteFailure>());
       expect(storedSecrets(), hasLength(1));
+      expect((await log.readLogs()).map((row) => row.split('\t')[2]), [
+        'Seed delete refused reason=references_unavailable',
+      ]);
     });
 
     test('another wallet fingerprint does not protect this secret', () async {
