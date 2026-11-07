@@ -54,7 +54,7 @@ final class ElectrumSync {
   final Future<String> Function() _documentsDirectory;
   final _active =
       <WalletKey, Future<Result<SyncCompletion, TransactionSyncFailure>>>{};
-  final _failures = <WalletKey, Type>{};
+  final _failures = <WalletKey, String>{};
   int _runSequence = 0;
   final _started = StreamController<WalletKey>.broadcast();
   final _finished = StreamController<SyncFinished>.broadcast();
@@ -88,13 +88,15 @@ final class ElectrumSync {
       try {
         if (previous != null) await previous;
         final watch = Stopwatch()..start();
+        final runId = ++_runSequence;
         final context =
-            'run=${++_runSequence} chain=${key.network is BitcoinNetwork ? 'bitcoin' : 'liquid'} network=${key.network.env.name} script=${descriptor.scriptType.name} headless=false';
+            'run=$runId chain=${key.network is BitcoinNetwork ? 'bitcoin' : 'liquid'} network=${key.network.env.name} script=${descriptor.scriptType.name} headless=false';
         log.fine('Electrum sync started $context discovery=$discover');
         _started.add(key);
         var connectionSummary = 'route=unselected';
         final result = await _run(
           descriptor,
+          runId: runId,
           discover: discover,
           onConnection: (connection) {
             connectionSummary =
@@ -109,8 +111,8 @@ final class ElectrumSync {
             );
           case Err(:final failure):
             final previousFailure = _failures[key];
-            _failures[key] = failure.runtimeType;
-            if (previousFailure != failure.runtimeType) {
+            _failures[key] = failure.logCode;
+            if (previousFailure != failure.logCode) {
               final message =
                   'Electrum sync failed $context category=${failure.logCode} elapsed_ms=${watch.elapsedMilliseconds} $connectionSummary';
               if (failure is TransactionSyncStorageFailure) {
@@ -148,6 +150,7 @@ final class ElectrumSync {
 
   Future<Result<SyncCompletion, TransactionSyncFailure>> _run(
     PublicWalletDescriptor descriptor, {
+    required int runId,
     required bool discover,
     required void Function(WalletConnection) onConnection,
   }) async {
@@ -215,6 +218,7 @@ final class ElectrumSync {
               discover,
               generation,
               events.sendPort,
+              runId,
             ),
           );
           retryable = attempt.retryable;
@@ -236,6 +240,7 @@ final class _SyncParams {
   final bool discover;
   final int generation;
   final SendPort diagnostics;
+  final int runId;
 
   const _SyncParams(
     this.descriptor,
@@ -244,6 +249,7 @@ final class _SyncParams {
     this.discover,
     this.generation,
     this.diagnostics,
+    this.runId,
   );
 }
 
@@ -303,7 +309,10 @@ Future<_Attempt> _performSync(_SyncParams params) async {
     catalog: _DescriptorCatalog(params.descriptor),
     reservedAddresses: _NoReceiveReservations(),
     reportFailures: false,
-    diagnostics: (level, message) => params.diagnostics.send((level, message)),
+    diagnostics: (level, message) => params.diagnostics.send((
+      level,
+      '$message run=${params.runId} headless=false',
+    )),
   );
   try {
     final current = await revisions.read(params.descriptor.key);
