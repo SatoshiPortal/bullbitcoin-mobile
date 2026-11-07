@@ -277,6 +277,8 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
         _pdkPayjoinDatasource.startListeningForRequest(model);
         return entity;
       } catch (_) {
+        // A concurrent resume may have started polling after persistence.
+        _pdkPayjoinDatasource.stopPolling(model.id);
         if (stored && !settled) {
           // The row is still idle while this session lock is held. If another
           // path already settled it, the conditional delete is a no-op.
