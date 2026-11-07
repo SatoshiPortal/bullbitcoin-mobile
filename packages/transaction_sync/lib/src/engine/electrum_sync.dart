@@ -381,7 +381,7 @@ Future<_Attempt> _performSync(_SyncParams params) async {
       level,
       message.startsWith('event=lease_')
           ? message
-          : '$message run=${params.runId} headless=false',
+          : '$message run=${params.runId} headless=${params.headless}',
     )),
   );
   try {
