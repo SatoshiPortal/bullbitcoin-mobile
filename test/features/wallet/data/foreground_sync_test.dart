@@ -1,6 +1,9 @@
 import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'dart:async';
 
+import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
+import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
+
 import 'package:bb_mobile/features/wallet/domain/sync_kind.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/sync_wallet_usecase.dart';
@@ -25,6 +28,8 @@ import 'package:primitives/primitives.dart';
 
 class _WalletRepository extends Mock implements WalletRepository {}
 
+class _Settings extends Mock implements SettingsRepository {}
+
 class _RefreshPending extends Mock implements RefreshPendingOrderSwapsUsecase {}
 
 class _ApplyLabels extends Mock
@@ -48,6 +53,15 @@ void main() {
   setUp(() {
     binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
     locator = GetIt.asNewInstance();
+    final settings = _Settings();
+    when(settings.fetch).thenAnswer(
+      (_) async => const SettingsEntity(
+        environment: Environment.mainnet,
+        bitcoinUnit: BitcoinUnit.sats,
+        currencyCode: 'CAD',
+      ),
+    );
+    locator.registerSingleton<SettingsRepository>(settings);
     locator.registerSingleton<GetWalletsUsecase>(_GetWallets());
     locator.registerSingleton<SyncWalletUsecase>(_SyncWallet());
     locator.registerSingleton<WalletRepository>(_WalletRepository());
