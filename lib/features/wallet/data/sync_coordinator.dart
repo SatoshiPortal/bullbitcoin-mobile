@@ -1,4 +1,6 @@
-import 'package:transaction_sync/transaction_sync.dart' show SyncReason;
+import 'package:transaction_sync/read.dart';
+import 'package:transaction_sync/transaction_sync.dart'
+    show SyncReason, TransactionSyncBusyFailure;
 import 'package:bb_mobile/features/wallet/domain/wallet_failure_log_code.dart';
 import 'dart:async';
 import 'package:bb_mobile/features/wallet/domain/wallet_discovery_failure.dart';
@@ -289,11 +291,18 @@ class SyncCoordinator {
   }
 
   void _settle(_SyncPass pass, Object? error) {
+    final busy =
+        error is WalletSnapshotException &&
+        error.failure is TransactionSyncBusyFailure;
     final walletId = pass.walletId;
     if (walletId != null) {
       _manualPasses.remove(walletId);
       log.fine(
-        'Wallet discovery finished reason=manual outcome=${error == null ? 'settled' : 'failed'}',
+        'Wallet discovery finished reason=manual outcome=${busy
+            ? 'busy'
+            : error == null
+            ? 'settled'
+            : 'failed'}',
       );
       for (final waiter in pass.waiters) {
         waiter.complete(error);
@@ -304,10 +313,14 @@ class SyncCoordinator {
     if (error is NoWalletsFoundFailure) pass.wallets = 0;
     final outcome = error is NoWalletsFoundFailure || pass.wallets == 0
         ? 'no_wallets'
+        : busy
+        ? 'busy'
         : error == null
         ? 'settled'
         : 'failed';
-    final category = error is WalletFailure
+    final category = busy
+        ? 'busy'
+        : error is WalletFailure
         ? error.logCode
         : error == null
         ? 'none'

@@ -53,9 +53,6 @@ final class ForegroundWalletSync {
           );
         }
         await native?.refresh(value.key);
-        // Busy is a skipped foreground pass. The failed completion remains
-        // visible through results, without escalating contention as an error.
-        if (result case Err(failure: TransactionSyncBusyFailure())) return;
         if (result case Err(:final failure)) {
           // Legacy void/throw boundary only. The package always returns Result. Repair is owned by the writer and never by a reader.
           throw WalletSnapshotException(failure);

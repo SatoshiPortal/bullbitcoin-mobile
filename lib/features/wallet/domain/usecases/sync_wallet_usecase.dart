@@ -1,3 +1,4 @@
+import 'package:transaction_sync/read.dart';
 import 'package:transaction_sync/transaction_sync.dart' show SyncReason;
 import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
@@ -16,6 +17,8 @@ class SyncWalletUsecase {
   }) async {
     try {
       await _wallet.sync(wallet, discover: discover, reason: reason);
+    } on WalletSnapshotException {
+      rethrow;
     } catch (e) {
       throw SyncWalletException('$e');
     }
