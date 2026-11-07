@@ -36,7 +36,7 @@ void main() {
           (_) async => SettingsEntity(
             environment: labelCorrection
                 ? Environment.testnet
-                : Environment.mainnet,
+                : Environment.regtest,
             bitcoinUnit: BitcoinUnit.sats,
             currencyCode: 'USD',
           ),
