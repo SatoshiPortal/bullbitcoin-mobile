@@ -1,14 +1,37 @@
+import 'dart:collection';
+
 import 'package:primitives/primitives.dart';
 import 'package:transaction_sync/transaction_sync.dart';
 
-/// Read the complete catalog selection before reconciling queue state. A failed or pending read must not make a disabled wallet look deleted to the queue. These are admission stamps, not evidence of the revision a writer failed on.
-Future<Result<List<WalletRevision>, TransactionSyncFailure>> readWalletSyncJobs(
+/// Catalog membership is independent of whether a wallet is ready to sync.
+final class WalletSyncJobSelection extends IterableBase<WalletRevision> {
+  final List<WalletRevision> ready;
+  final List<WalletKey> unavailable;
+
+  WalletSyncJobSelection(
+    Iterable<WalletRevision> ready,
+    Iterable<WalletKey> unavailable,
+  ) : ready = List.unmodifiable(ready),
+      unavailable = List.unmodifiable(unavailable);
+
+  @override
+  Iterator<WalletRevision> get iterator => ready.iterator;
+}
+
+Future<Result<WalletSyncJobSelection, TransactionSyncFailure>>
+readWalletSyncJobs(
   Iterable<WalletKey> keys,
   WalletRevisionReader revisions,
 ) async {
   final jobs = <WalletRevision>[];
+  final unavailable = <WalletKey>[];
   for (final key in keys) {
     switch (await revisions.read(key)) {
+      case Err(
+        failure: TransactionSyncNotFoundFailure() ||
+            TransactionSyncBusyFailure(),
+      ):
+        unavailable.add(key);
       case Err(:final failure):
         return Err(failure);
       case Ok(:final value):
@@ -19,11 +42,11 @@ Future<Result<List<WalletRevision>, TransactionSyncFailure>> readWalletSyncJobs(
           case WalletLifecycle.active:
             jobs.add(value.stamp);
           case WalletLifecycle.pendingWrite:
-            return const Err(TransactionSyncBusyFailure());
+            unavailable.add(key);
           case WalletLifecycle.deleted:
             break;
         }
     }
   }
-  return Ok(List.unmodifiable(jobs));
+  return Ok(WalletSyncJobSelection(jobs, unavailable));
 }
