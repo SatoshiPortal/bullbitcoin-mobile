@@ -20,7 +20,8 @@ void main() {
           final jobs = await readWalletSyncJobs([reader.key], reader);
           return switch (jobs) {
             Ok(:final value) => queue.reconcileAndClaim(
-              value,
+              value.ready,
+              unavailable: value.unavailable,
               chain: WalletSyncChain.bitcoin,
             ),
             Err() => <WalletSyncJobClaim>[],
@@ -45,17 +46,23 @@ void main() {
   }
 
   test(
-    'pending revisions abort instead of returning a partial catalog',
+    'pending revisions preserve membership without blocking ready wallets',
     () async {
       final reader = _Revisions()..lifecycle = WalletLifecycle.pendingWrite;
       expect(
         await readWalletSyncJobs([reader.key], reader),
-        isA<Err<List<WalletRevision>, TransactionSyncFailure>>(),
+        isA<Ok<WalletSyncJobSelection, TransactionSyncFailure>>().having(
+          (r) => r.value.unavailable,
+          'unavailable',
+          [reader.key],
+        ),
       );
       reader.lifecycle = WalletLifecycle.deleted;
       final jobs = await readWalletSyncJobs([reader.key], reader);
       expect(
-        (jobs as Ok<List<WalletRevision>, TransactionSyncFailure>).value,
+        (jobs as Ok<WalletSyncJobSelection, TransactionSyncFailure>)
+            .value
+            .ready,
         isEmpty,
       );
     },
