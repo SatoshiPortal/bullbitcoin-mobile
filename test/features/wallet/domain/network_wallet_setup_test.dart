@@ -1,11 +1,13 @@
+import 'package:bb_mobile/features/wallet/domain/network_wallet_setup_failure.dart';
+import 'package:bb_mobile/features/wallet/domain/default_wallet_secret_policy.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
-import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/features/wallet/domain/repositories/wallet_secret_references_repository.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/create_default_wallets_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/create_network_wallet_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/load_network_wallet_setup_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';
 import 'package:secrets/secrets.dart';
@@ -53,6 +55,57 @@ void main() {
   });
 
   test(
+    'setup excludes French and passphrase seeds before offering reuse',
+    () async {
+      final frenchWords = bip39.Mnemonic(
+        List.filled(16, 0),
+        bip39.Language.french,
+      ).sentence.split(' ');
+      final french =
+          (await secrets.import(
+                    words: frenchWords,
+                    language: bip39.Language.french,
+                  )
+                  as Ok<Secret, SecretFailure>)
+              .value;
+      final passphrase =
+          (await secrets.import(words: words, passphrase: 'TREZOR')
+                  as Ok<Secret, SecretFailure>)
+              .value;
+      when(
+        () => references.list(),
+      ).thenAnswer((_) async => Ok([secret.id, french.id, passphrase.id]));
+      final result = await LoadNetworkWalletSetupUsecase(
+        settings,
+        references,
+        secrets,
+      ).execute();
+      expect((result as Ok).value.reusable, [secret.id]);
+      final refusal = await CreateNetworkWalletUsecase(
+        settings,
+        references,
+        secrets,
+        create,
+      ).execute(network: NetworkEnv.regtest, reuse: french.id);
+      expect(refusal, isA<Err>());
+      expect(
+        (refusal as Err).failure,
+        isA<NetworkWalletSetupSecretFailure>().having(
+          (f) => f.reason,
+          'reason',
+          DefaultWalletSecretRefusal.nonEnglish,
+        ),
+      );
+      verifyNever(
+        () => create.execute(
+          secret: any(named: 'secret'),
+          expectedNetwork: NetworkEnv.regtest,
+        ),
+      );
+    },
+  );
+
+  test(
     'empty mainnet keeps onboarding without enumerating references',
     () async {
       when(() => settings.fetch()).thenAnswer(
@@ -61,9 +114,12 @@ void main() {
       final result = await LoadNetworkWalletSetupUsecase(
         settings,
         references,
+        secrets,
       ).execute();
       expect(
-        (result as Ok<NetworkWalletSetup, WalletFailure>).value.network,
+        (result as Ok<NetworkWalletSetup, NetworkWalletSetupFailure>)
+            .value
+            .network,
         NetworkEnv.mainnet,
       );
       verifyNever(() => references.list());
@@ -73,17 +129,24 @@ void main() {
   test(
     'regtest offers catalog references and refuses developer mode off',
     () async {
-      final usecase = LoadNetworkWalletSetupUsecase(settings, references);
+      final usecase = LoadNetworkWalletSetupUsecase(
+        settings,
+        references,
+        secrets,
+      );
       final result = await usecase.execute();
-      expect((result as Ok<NetworkWalletSetup, WalletFailure>).value.reusable, [
-        secret.id,
-      ]);
+      expect(
+        (result as Ok<NetworkWalletSetup, NetworkWalletSetupFailure>)
+            .value
+            .reusable,
+        [secret.id],
+      );
       when(
         () => settings.fetch(),
       ).thenAnswer((_) async => regtest.copyWith(isDevModeEnabled: false));
       expect(
         await usecase.execute(),
-        isA<Err<NetworkWalletSetup, WalletFailure>>(),
+        isA<Err<NetworkWalletSetup, NetworkWalletSetupFailure>>(),
       );
     },
   );

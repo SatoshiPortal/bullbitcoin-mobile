@@ -1,4 +1,5 @@
-import 'package:primitives/primitives.dart' show Fingerprint, NetworkEnv;
+import 'package:primitives/primitives.dart' show NetworkEnv;
+import 'package:primitives/primitives.dart' show Fingerprint;
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
@@ -55,6 +56,68 @@ void main() {
       secrets: secrets,
       settingsRepository: settings,
       walletRepository: wallets,
+    );
+  });
+
+  test(
+    'programmer errors are not mapped to recoverable provisioning failures',
+    () async {
+      final error = StateError('programmer failure');
+      when(() => settings.fetch()).thenThrow(error);
+      await expectLater(create.execute(secret: stored), throwsA(same(error)));
+      verifyZeroInteractions(wallets);
+    },
+  );
+
+  test(
+    'captured network mismatch refuses before any wallet mutation',
+    () async {
+      final before = Map<String, String>.of(storage.entries);
+      await expectLater(
+        create.execute(secret: stored, expectedNetwork: NetworkEnv.regtest),
+        throwsA(isA<CreateDefaultWalletsException>()),
+      );
+      verifyZeroInteractions(wallets);
+      expect(storage.entries, before);
+    },
+  );
+
+  test('regtest default provisioning creates Bitcoin only', () async {
+    when(() => settings.fetch()).thenAnswer(
+      (_) async => const SettingsEntity(
+        environment: Environment.regtest,
+        bitcoinUnit: BitcoinUnit.sats,
+        currencyCode: 'CAD',
+      ),
+    );
+    when(
+      () => wallets.getWallets(
+        onlyDefaults: true,
+        environment: Environment.regtest,
+      ),
+    ).thenAnswer((_) async => Ok<List<Wallet>, WalletFailure>([]));
+    final bitcoin = _Wallet();
+    when(
+      () => wallets.createWallet(
+        secret: stored,
+        network: Network.bitcoinRegtest,
+        scriptType: ScriptType.bip84,
+        isDefault: true,
+        birthday: null,
+      ),
+    ).thenAnswer((_) async => bitcoin);
+    expect(
+      await create.execute(secret: stored, expectedNetwork: NetworkEnv.regtest),
+      [bitcoin],
+    );
+    verifyNever(
+      () => wallets.createWallet(
+        secret: any(named: 'secret'),
+        network: Network.liquidRegtest,
+        scriptType: ScriptType.bip84,
+        isDefault: true,
+        birthday: null,
+      ),
     );
   });
 
@@ -163,58 +226,6 @@ void main() {
     );
     verifyZeroInteractions(wallets);
     verifyZeroInteractions(settings);
-  });
-
-  test(
-    'captured network mismatch refuses before any wallet mutation',
-    () async {
-      final before = Map<String, String>.of(storage.entries);
-      await expectLater(
-        create.execute(secret: stored, expectedNetwork: NetworkEnv.regtest),
-        throwsA(isA<CreateDefaultWalletsException>()),
-      );
-      verifyZeroInteractions(wallets);
-      expect(storage.entries, before);
-    },
-  );
-
-  test('regtest default provisioning creates Bitcoin only', () async {
-    when(() => settings.fetch()).thenAnswer(
-      (_) async => const SettingsEntity(
-        environment: Environment.regtest,
-        bitcoinUnit: BitcoinUnit.sats,
-        currencyCode: 'CAD',
-      ),
-    );
-    when(
-      () => wallets.getWallets(
-        onlyDefaults: true,
-        environment: Environment.regtest,
-      ),
-    ).thenAnswer((_) async => Ok<List<Wallet>, WalletFailure>([]));
-    final bitcoin = _Wallet();
-    when(
-      () => wallets.createWallet(
-        secret: stored,
-        network: Network.bitcoinRegtest,
-        scriptType: ScriptType.bip84,
-        isDefault: true,
-        birthday: null,
-      ),
-    ).thenAnswer((_) async => bitcoin);
-    expect(
-      await create.execute(secret: stored, expectedNetwork: NetworkEnv.regtest),
-      [bitcoin],
-    );
-    verifyNever(
-      () => wallets.createWallet(
-        secret: any(named: 'secret'),
-        network: Network.liquidRegtest,
-        scriptType: ScriptType.bip84,
-        isDefault: true,
-        birthday: null,
-      ),
-    );
   });
 
   for (final failedAttempt in [1, 2]) {
@@ -355,7 +366,7 @@ void main() {
 
       await expectLater(
         create.execute(secret: protected),
-        throwsA(isA<ArgumentError>()),
+        throwsA(isA<CreateDefaultWalletsException>()),
       );
       verifyZeroInteractions(settings);
       verifyZeroInteractions(wallets);
@@ -369,6 +380,7 @@ void main() {
         () async {
           final bitcoin = _Wallet();
           final liquid = _Wallet();
+          when(() => bitcoin.masterFingerprint).thenReturn('ffffffff');
           when(() => bitcoin.network).thenReturn(Network.bitcoinMainnet);
           when(() => liquid.network).thenReturn(Network.liquidMainnet);
           when(
@@ -392,7 +404,7 @@ void main() {
             throwsA(isA<CreateDefaultWalletsException>()),
           );
           expect(storage.entries, before);
-          expect(storage.reads, reads);
+          expect(storage.reads, reads + (partial && !useHandle ? 5 : 0));
           verifyNever(
             () => wallets.createWallet(
               secret: any(named: 'secret'),
@@ -426,9 +438,10 @@ void main() {
   });
 
   test(
-    'creation refuses a partial setup instead of generating another secret',
+    'partial setup with unavailable custody never generates another secret',
     () async {
       final bitcoin = _Wallet();
+      when(() => bitcoin.masterFingerprint).thenReturn('ffffffff');
       when(() => bitcoin.network).thenReturn(Network.bitcoinMainnet);
       when(
         () => wallets.getWallets(
@@ -443,7 +456,7 @@ void main() {
         throwsA(isA<CreateDefaultWalletsException>()),
       );
       expect(storage.entries, before);
-      expect(storage.reads, reads);
+      expect(storage.reads, reads + 5);
     },
   );
 }
