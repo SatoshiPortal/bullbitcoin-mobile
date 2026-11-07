@@ -153,11 +153,17 @@ class CreateDefaultWalletsUsecase {
       throw ArgumentError('Default wallets cannot use a passphrase');
     }
     // Liquid derives from words: a raw seed has none.
-    if (!info.isMnemonic) throw DefaultWalletMnemonicRequiredException();
+    if (!info.isMnemonic) {
+      throw CreateDefaultWalletsException(
+        'Default wallets require a mnemonic, not a raw seed',
+      );
+    }
     // TODO: remove after bull_sdk pins lwk-dart PR #95 and secrets uses its
     // seed-based Liquid APIs.
     if (info.language != bip39.Language.english) {
-      throw DefaultWalletLanguageUnsupportedException();
+      throw CreateDefaultWalletsException(
+        'Default wallets require an English mnemonic',
+      );
     }
   }
 
@@ -177,16 +183,4 @@ class CreateDefaultWalletsUsecase {
 
 class CreateDefaultWalletsException extends BullException {
   CreateDefaultWalletsException(super.message);
-}
-
-class DefaultWalletMnemonicRequiredException
-    extends CreateDefaultWalletsException {
-  DefaultWalletMnemonicRequiredException()
-    : super('Default wallets require a mnemonic, not a raw seed');
-}
-
-class DefaultWalletLanguageUnsupportedException
-    extends CreateDefaultWalletsException {
-  DefaultWalletLanguageUnsupportedException()
-    : super('Default wallets require an English mnemonic');
 }
