@@ -371,7 +371,11 @@ class WalletRepository implements SeedReferencePort {
   }
 
   void _reportReadFailure(Object error, StackTrace trace, String operation) {
-    if (error is WalletSnapshotException &&
+    if (error is WalletSyncFailure) {
+      log.warning(
+        'Wallet sync unavailable operation=$operation category=connection',
+      );
+    } else if (error is WalletSnapshotException &&
         error.failure is TransactionSyncBusyFailure) {
       log.warning('Wallet read deferred operation=$operation category=busy');
     } else {
