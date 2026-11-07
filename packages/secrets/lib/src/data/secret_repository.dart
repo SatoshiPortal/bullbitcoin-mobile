@@ -43,7 +43,7 @@ class SecretRepository {
             try {
               return await _describe(e.id, e.model);
             } on FormatException {
-              log.warning('Skipping secret ${e.id}: stored words fail bip39');
+              log.warning('Stored mnemonic invalid reason=validation');
               unreadable.add((
                 id: e.id,
                 failure: const FetchSecretFailure('stored words fail bip39'),

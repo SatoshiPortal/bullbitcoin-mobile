@@ -32,32 +32,28 @@ class DeleteSecretUsecase {
                   w.signsLocally &&
                   Fingerprint.tryParse(w.masterFingerprint) == id,
             ):
-          log.warning('Refused to delete secret $id: a wallet still uses it');
+          log.warning('Seed delete refused reason=referenced');
           return const Err(
             AllSeedViewDeleteFailure('a wallet still uses this secret'),
           );
         case Ok():
           break;
-        case Err(:final failure):
+        case Err():
           // An unreadable wallet list refuses the deletion rather than
           // assuming no wallet uses the secret — deleting key material on a
           // failed read is unrecoverable.
-          log.warning('delete secret: ${failure.logMessage}');
+          log.warning('Seed delete refused reason=references_unavailable');
           return const Err(
             AllSeedViewDeleteFailure('could not verify wallets'),
           );
       }
-    } catch (e, st) {
-      // If the wallets cannot be listed, nothing is deleted: a guard that cannot be evaluated has failed.
-      log.severe(
-        message: 'Failed to verify wallets before deleting secret',
-        error: e,
-        trace: st,
-      );
+    } on Exception {
+      log.warning('Seed delete refused reason=references_unavailable');
       return const Err(AllSeedViewDeleteFailure('could not verify wallets'));
     }
-    return (await _secrets.trash(
-      id,
-    )).mapErr((f) => AllSeedViewDeleteFailure(f.logMessage));
+    final result = await _secrets.trash(id);
+    if (result is Ok) log.fine('Seed deleted source=manual');
+    // The keystore boundary owns storage failures.
+    return result.mapErr((f) => AllSeedViewDeleteFailure(f.logMessage));
   }
 }
