@@ -1,5 +1,6 @@
 import 'package:sqlite3/sqlite3.dart';
 import 'dart:async';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:io';
 
 import 'package:background_tasks/background_tasks.dart';
@@ -9,6 +10,7 @@ import 'package:primitives/primitives.dart';
 import 'package:transaction_sync/transaction_sync.dart';
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
   late Directory directory;
   late SqliteNotificationOutbox outbox;
   late SqliteWalletSyncJobQueue queue;
@@ -52,6 +54,7 @@ void main() {
         ),
       );
   setUp(() {
+    SharedPreferences.setMockInitialValues({});
     directory = Directory.systemTemp.createTempSync('background-task-');
     outbox = SqliteNotificationOutbox(databasePath: '${directory.path}/outbox');
     queue = SqliteWalletSyncJobQueue(databasePath: '${directory.path}/queue');
@@ -66,6 +69,73 @@ void main() {
     outbox.dispose();
     directory.deleteSync(recursive: true);
   });
+
+  test(
+    'persisted Off prevents a surviving callback from admitting work',
+    () async {
+      expect(
+        await const SharedPreferencesBackgroundSyncIntervalStore().write(
+          BackgroundSyncInterval.off,
+        ),
+        isA<Ok>(),
+      );
+      writer.operation = () async => Ok(outcome());
+      expect((await task().executeAll()).shouldRetry, isFalse);
+      expect(writer.allowInitialScan, isEmpty);
+      expect(
+        logs.entries,
+        contains((
+          BackgroundLogLevel.fine,
+          'Background admission stopped: category=opt_out',
+        )),
+      );
+    },
+  );
+
+  test(
+    'Off during admitted work waits for completion and stops further wallets',
+    () async {
+      final started = Completer<void>();
+      final release = Completer<void>();
+      writer.operation = () async {
+        if (!started.isCompleted) started.complete();
+        await release.future;
+        return Ok(
+          BackgroundSyncOutcome(
+            revision: WalletRevision(
+              key: writer.allowInitialScan.length == 1 ? key : second,
+              generation: 1,
+              revision: 2,
+            ),
+            incomingTxids: null,
+            completedAt: DateTime.utc(2026),
+          ),
+        );
+      };
+      var finished = false;
+      final run = task(
+        keys: [key, second],
+      ).executeAll().then((_) => finished = true);
+      await started.future;
+      expect(
+        await const SharedPreferencesBackgroundSyncIntervalStore().write(
+          BackgroundSyncInterval.off,
+        ),
+        isA<Ok>(),
+      );
+      expect(finished, isFalse);
+      release.complete();
+      await run;
+      expect(writer.allowInitialScan, [false]);
+      expect(
+        logs.entries,
+        contains((
+          BackgroundLogLevel.fine,
+          'Background admission stopped: category=opt_out',
+        )),
+      );
+    },
+  );
 
   for (final pending in [true, false]) {
     test(
