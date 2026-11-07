@@ -4,7 +4,7 @@ import 'dart:async';
 import 'package:bb_mobile/features/wallet/data/wallet_native_runtime.dart';
 import 'package:transaction_sync/read.dart';
 import 'package:transaction_sync/transaction_sync.dart'
-    show TransactionSyncBusyFailure;
+    show TransactionSyncStorageFailure, TransactionSyncInvalidCatalogFailure;
 
 import 'package:bb_mobile/core/electrum/domain/errors/electrum_fallback_exception.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_sync_result.dart';
@@ -372,17 +372,16 @@ class WalletRepository implements SeedReferencePort {
   }
 
   void _reportReadFailure(Object error, StackTrace trace, String operation) {
+    // Native readers and sync already own their terminal diagnostics.
+    if (error is WalletSnapshotException) return;
     if (error is WalletSyncFailure) {
       log.warning(
-        'Wallet sync unavailable operation=$operation category=connection',
+        'Wallet sync unavailable operation=$operation reason=connection',
       );
-    } else if (error is WalletSnapshotException &&
-        error.failure is TransactionSyncBusyFailure) {
-      log.warning('Wallet read deferred operation=$operation category=busy');
     } else {
       log.severe(
-        message: 'Wallet read failed operation=$operation',
-        error: error.runtimeType,
+        message: 'Wallet read failed operation=$operation reason=storage',
+        error: 'storage',
         trace: StackTrace.empty,
       );
     }
@@ -399,10 +398,13 @@ class WalletRepository implements SeedReferencePort {
   WalletFailure _classify(Object e, String operation) {
     if (e is WalletFailure) return e;
     if (e is WalletSnapshotException) {
-      if (e.failure is TransactionSyncBusyFailure) {
-        return const WalletSyncFailure('reader busy');
-      }
-      return WalletStorageFailure('$operation: ${e.failure.runtimeType}');
+      return switch (e.failure) {
+        TransactionSyncStorageFailure() ||
+        TransactionSyncInvalidCatalogFailure() => WalletStorageFailure(
+          '$operation: ${e.failure.logCode}',
+        ),
+        _ => WalletSyncFailure('$operation: ${e.failure.logCode}'),
+      };
     }
     if ((e is lwk.LwkError && e.msg.contains('UpdateOnDifferentStatus')) ||
         e.toString().contains('UpdateOnDifferentStatus')) {
@@ -526,9 +528,16 @@ class WalletRepository implements SeedReferencePort {
 
       await _walletMetadataDatasource.delete(walletId);
       await native.catalogDeleted(metadata);
+      log.fine('Wallet deleted outcome=ok');
       return const Ok(null);
     } catch (e, st) {
-      log.severe(message: 'deleteWallet failed', error: e, trace: st);
+      if (e is! WalletSnapshotException) {
+        log.severe(
+          message: 'Wallet delete failed reason=storage',
+          error: 'storage',
+          trace: st,
+        );
+      }
       return Err(_classify(e, 'deleteWallet'));
     }
   }

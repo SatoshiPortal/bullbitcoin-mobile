@@ -1,3 +1,4 @@
+import 'package:transaction_sync/read.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_native_runtime.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_sync_result.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_model.dart';
@@ -48,12 +49,7 @@ final class ForegroundWalletSync {
         if (result case Err(failure: TransactionSyncBusyFailure())) return;
         if (result case Err(:final failure)) {
           // Legacy void/throw boundary only. The package always returns Result. Repair is owned by the writer and never by a reader.
-          throw switch (failure) {
-            TransactionSyncConnectionFailure() => const WalletSyncFailure(
-              'Electrum sync failed',
-            ),
-            _ => const WalletStorageFailure('Native wallet sync failed'),
-          };
+          throw WalletSnapshotException(failure);
         }
     }
   }
