@@ -1,3 +1,5 @@
+import 'dart:async';
+import 'package:bb_mobile/features/settings/presentation/bloc/background_preferences_cubit.dart';
 import 'package:background_tasks/background_tasks.dart';
 import 'package:bb_mobile/features/settings/domain/settings_failure.dart';
 import 'package:bb_mobile/features/settings/domain/repositories/background_preferences_repository.dart';
@@ -7,6 +9,8 @@ import 'package:primitives/primitives.dart';
 
 class Preferences implements BackgroundPreferencesRepository {
   int requests = 0;
+  Completer<void>? pendingWrite;
+  final started = Completer<void>();
   var selected = BackgroundSyncInterval.hour1;
   var failWrite = false;
   var failRead = false;
@@ -29,6 +33,8 @@ class Preferences implements BackgroundPreferencesRepository {
   Future<Result<void, SettingsFailure>> setInterval(
     BackgroundSyncInterval value,
   ) async {
+    if (!started.isCompleted) started.complete();
+    await pendingWrite?.future;
     if (failWrite) return const Err(SettingsStorageFailure());
     selected = value;
     return const Ok(null);
@@ -36,6 +42,21 @@ class Preferences implements BackgroundPreferencesRepository {
 }
 
 void main() {
+  test('Off waits for a pending interval change and wins', () async {
+    final repository = Preferences()..pendingWrite = Completer<void>();
+    final cubit = BackgroundPreferencesCubit(
+      BackgroundPreferencesUsecase(repository),
+    );
+    addTearDown(cubit.close);
+    final first = cubit.load(interval: BackgroundSyncInterval.minutes15);
+    await repository.started.future;
+    final off = cubit.load(interval: BackgroundSyncInterval.off);
+    repository.pendingWrite?.complete();
+    await Future.wait([first, off]);
+    expect(repository.selected, BackgroundSyncInterval.off);
+    expect(cubit.state.interval, BackgroundSyncInterval.off);
+  });
+
   test('read failures remain typed without requesting permission', () async {
     final repository = Preferences()..failRead = true;
     final state = await BackgroundPreferencesUsecase(repository).execute();
