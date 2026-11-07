@@ -86,6 +86,12 @@ void main() {
       }
       expect(await usecase.execute(id), isA<Err>());
       expect(storedSecrets(), hasLength(1));
+      final rows = await log.readLogs();
+      expect(rows.map((row) => row.split('\t')[2]), [
+        outcome == 'referenced'
+            ? 'Seed delete refused reason=referenced'
+            : 'Seed delete refused reason=references_unavailable',
+      ]);
     });
   }
 
@@ -129,9 +135,6 @@ void main() {
 
         expect((result as Err).failure, isA<AllSeedViewDeleteFailure>());
         expect(storedSecrets(), hasLength(1));
-        expect((await log.readLogs()).map((row) => row.split('\t')[2]), [
-          'Seed delete refused reason=referenced',
-        ]);
       },
     );
 
@@ -145,9 +148,6 @@ void main() {
 
       expect((result as Err).failure, isA<AllSeedViewDeleteFailure>());
       expect(storedSecrets(), hasLength(1));
-      expect((await log.readLogs()).map((row) => row.split('\t')[2]), [
-        'Seed delete refused reason=references_unavailable',
-      ]);
     });
 
     test('refuses when the wallet read fails', () async {
@@ -163,9 +163,6 @@ void main() {
 
       expect((result as Err).failure, isA<AllSeedViewDeleteFailure>());
       expect(storedSecrets(), hasLength(1));
-      expect((await log.readLogs()).map((row) => row.split('\t')[2]), [
-        'Seed delete refused reason=references_unavailable',
-      ]);
     });
 
     test('another wallet fingerprint does not protect this secret', () async {

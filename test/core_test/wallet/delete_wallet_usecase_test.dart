@@ -1,3 +1,5 @@
+import 'dart:io';
+import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart'
     show SeedReferences;
 import 'package:primitives/primitives.dart' show Fingerprint;
@@ -60,7 +62,15 @@ void main() {
     return wallet;
   }
 
+  late Directory logDirectory;
+  tearDown(() async {
+    await log.flush();
+    await logDirectory.delete(recursive: true);
+  });
+
   setUp(() async {
+    logDirectory = await Directory.systemTemp.createTemp("seed-log-");
+    log = Logger.replace(directory: logDirectory);
     storage = FakeSecureStoragePlatform()..install();
     secrets = Secrets(scratchDirectory: () async => '/tmp');
     final stored =
@@ -115,6 +125,12 @@ void main() {
       ).thenAnswer((_) async => const Ok(null));
       expect(await usecase.execute(walletId: walletId), isA<Ok>());
       expect(storage.entries.containsKey(key()), isTrue);
+      final rows = await log.readLogs();
+      expect(rows.map((row) => row.split('\t')[2]), [
+        outcome == 'referenced'
+            ? 'Seed cleanup skipped reason=referenced'
+            : 'Seed cleanup failed reason=references_unavailable',
+      ]);
     });
   }
 
@@ -131,6 +147,9 @@ void main() {
 
       expect(result, isA<Ok<void, WalletFailure>>());
       expect(storage.entries, isNot(contains(key())));
+      expect((await log.readLogs()).map((row) => row.split('\t')[2]), [
+        'Seed deleted source=wallet_cleanup',
+      ]);
     });
 
     test(
