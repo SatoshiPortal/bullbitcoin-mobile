@@ -175,7 +175,6 @@ final class NativeWalletWriter implements LiquidReadAdmission {
     }
     final acquisition = WriterLock.acquire(lockDirectory, key);
     if (acquisition case Err(:final failure)) {
-      _reportFailure(key, failure);
       return Err(failure);
     }
     final lock = (acquisition as Ok<WriterLock, TransactionSyncFailure>).value;
@@ -195,7 +194,6 @@ final class NativeWalletWriter implements LiquidReadAdmission {
     } on Object catch (error) {
       lock.release();
       final failure = _map(error);
-      _reportFailure(key, failure);
       return Err(failure);
     }
   }

@@ -8,7 +8,8 @@ sealed class TransactionSyncFailure extends Failure {
   String get logCode => switch (this) {
     TransactionSyncBusyFailure() => 'busy',
     TransactionSyncNotFoundFailure() => 'not_found',
-    TransactionSyncUnsupportedNetworkFailure() => 'unsupported_network',
+    TransactionSyncUnsupportedNetworkFailure(:final authorization) =>
+      authorization ? 'authorization' : 'unsupported_network',
     TransactionSyncInvalidCatalogFailure() => 'invalid_catalog',
     TransactionSyncStorageFailure() => 'storage',
     TransactionSyncConnectionFailure() => 'connection',
@@ -27,7 +28,8 @@ final class TransactionSyncNotFoundFailure extends TransactionSyncFailure {
 
 final class TransactionSyncUnsupportedNetworkFailure
     extends TransactionSyncFailure {
-  const TransactionSyncUnsupportedNetworkFailure();
+  final bool authorization;
+  const TransactionSyncUnsupportedNetworkFailure({this.authorization = false});
 }
 
 final class TransactionSyncInvalidCatalogFailure
