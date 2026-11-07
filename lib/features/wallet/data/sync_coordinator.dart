@@ -70,9 +70,8 @@ class SyncCoordinator {
   final SyncWalletUsecase _syncWallet;
   final Future<void> Function()? _syncSwaps;
   // The SP side of a sync tick: resume the chain scan when the SP feature's
-  // policy allows it. Passed as a lazy closure from the composition root, like
-  // the swap callbacks, so this core orchestrator never imports the SP feature
-  // (rule #7).
+  // policy allows it. The foreground setup resolves the wallet usecase lazily
+  // at tick time, after SP and swap have registered their public facades.
   final Future<void> Function()? _syncSp;
   final Future<Result<void, WalletFailure>> Function()? _syncSpOutcome;
   final Future<void> Function()? _refreshRevisions;

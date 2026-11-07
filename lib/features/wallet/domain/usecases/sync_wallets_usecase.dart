@@ -7,11 +7,8 @@ import 'package:meta/meta.dart';
 
 /// Runs a wallet sync round.
 ///
-/// [SyncCoordinator] is a shared core service, not a repository, so there is
-/// no repository boundary to push this into: this use case — the first layer
-/// the wallet feature owns — is it. The coordinator throws
-/// `SyncCoordinatorException` aggregating per-kind failures; that stays in the
-/// log and only a typed failure comes out (#1895).
+/// The wallet-owned coordinator throws `SyncCoordinatorException` aggregating
+/// per-kind failures. This usecase maps those to a typed wallet failure.
 class SyncWalletsUsecase {
   final SyncCoordinator _syncCoordinator;
 
