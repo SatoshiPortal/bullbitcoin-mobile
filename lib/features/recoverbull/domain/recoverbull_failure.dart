@@ -43,7 +43,7 @@ final class KeyServerConnectionFailure extends RecoverBullFailure {
 }
 
 final class VaultCreationFailure extends RecoverBullFailure {
-  const VaultCreationFailure();
+  const VaultCreationFailure([super.logMessage]);
 }
 
 final class TorNotStartedFailure extends RecoverBullFailure {

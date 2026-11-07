@@ -1,3 +1,4 @@
+import 'package:bip39_mnemonic/bip39_mnemonic.dart' show Language;
 import 'package:secrets/src/domain/domain.dart';
 import 'package:meta/meta.dart';
 
@@ -21,6 +22,7 @@ sealed class SecretModel {
   static const _kBytes = 'bytes';
   static const _kWords = 'mnemonicWords';
   static const _kPassphrase = 'passphrase';
+  static const _kLanguage = 'language';
 
   /// The word counts BIP39 defines. A stored list of any other length
   /// was never a mnemonic: both generation and import go through bip39,
@@ -51,6 +53,9 @@ sealed class SecretModel {
     return switch (json[_kDiscriminator]) {
       _kMnemonic => MnemonicSecretModel(
         mnemonicWords: _words(json[_kWords]),
+        language: json.containsKey(_kLanguage)
+            ? decodeLanguage(json[_kLanguage])
+            : Language.english,
         passphrase: _optionalString(json[_kPassphrase], _kPassphrase),
       ),
       _kBytes => BytesSecretModel(bytes: _seedBytes(json[_kBytes])),
@@ -101,13 +106,18 @@ sealed class SecretModel {
 
 final class MnemonicSecretModel extends SecretModel {
   final List<String> mnemonicWords;
+  final Language language;
 
   /// Nullable on purpose: absent passphrases were written as `null`, and
   /// re-writing them as `""` would change the stored bytes. The entity
   /// normalises to `""`; only this layer knows the difference.
   final String? passphrase;
 
-  const MnemonicSecretModel._({required this.mnemonicWords, this.passphrase});
+  const MnemonicSecretModel._({
+    required this.mnemonicWords,
+    required this.language,
+    this.passphrase,
+  });
 
   /// The only way to build one, so the invariant belongs to the type
   /// rather than to whoever remembered to check.
@@ -125,6 +135,7 @@ final class MnemonicSecretModel extends SecretModel {
   @internal
   factory MnemonicSecretModel({
     required List<String> mnemonicWords,
+    Language language = Language.english,
     String? passphrase,
   }) {
     if (!SecretModel._wordCounts.contains(mnemonicWords.length)) {
@@ -145,6 +156,7 @@ final class MnemonicSecretModel extends SecretModel {
     }
     return MnemonicSecretModel._(
       mnemonicWords: List.unmodifiable(mnemonicWords),
+      language: language,
       passphrase: passphrase,
     );
   }
@@ -154,6 +166,8 @@ final class MnemonicSecretModel extends SecretModel {
     SecretModel._kWords: mnemonicWords,
     SecretModel._kPassphrase: passphrase,
     SecretModel._kDiscriminator: SecretModel._kMnemonic,
+    if (language != Language.english)
+      SecretModel._kLanguage: encodeLanguage(language),
   };
 }
 

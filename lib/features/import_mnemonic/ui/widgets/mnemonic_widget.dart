@@ -1,11 +1,11 @@
 import 'dart:math';
 
-import 'package:bb_mobile/core/failures/mnemonic_entry_failure.dart';
+import 'package:bb_mobile/features/import_mnemonic/domain/mnemonic_entry_failure.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/utils/bip39.dart';
+import 'package:bb_mobile/features/import_mnemonic/domain/bip39_word_list.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/mnemonic_keyboard.dart';
-import 'package:bb_mobile/core/widgets/mnemonic_entry_failure_l10n.dart';
+import 'package:bb_mobile/features/import_mnemonic/ui/widgets/mnemonic_keyboard.dart';
+import 'package:bb_mobile/features/import_mnemonic/presentation/mnemonic_entry_failure_l10n.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:bull_ui/bull_ui.dart'
     show BullButton, BullLabeledTextInput, BullText, Gap;
@@ -26,15 +26,26 @@ typedef Mnemonic = ({
 /// the candidate pool behind them has changed.
 typedef _HintQuery = ({int index, String prefix, int revision});
 
+// Non-Latin wordlists stay hidden until a dedicated keyboard is available.
+const _entryLanguages = [
+  bip39.Language.english,
+  bip39.Language.spanish,
+  bip39.Language.french,
+  bip39.Language.italian,
+  bip39.Language.czech,
+  bip39.Language.portuguese,
+];
+
 class MnemonicWidget extends StatefulWidget {
-  /// Only English is supported: the in-app keyboard is fixed to the 26 Latin
-  /// letters, so a language with accented or non-Latin words (French, Spanish,
-  /// Japanese, …) would leave most of its wordlist untypeable and the wallet
-  /// impossible to import. Guarded by an assert rather than silently accepted.
+  /// Initial wordlist. Selection never rewrites the entered words.
   final bip39.Language language;
   final bip39.MnemonicLength initialLength;
   final Function(Mnemonic) onSubmit;
   final String? submitLabel;
+
+  /// Default-wallet recovery remains English until its native engines support
+  /// other languages. This also hides the import-only language picker.
+  final bool englishOnly;
   final bool allowPassphrase;
   final bool allowLabel;
   final bool allowMultipleMnemonicLength;
@@ -48,16 +59,13 @@ class MnemonicWidget extends StatefulWidget {
     required this.initialLength,
     required this.onSubmit,
     this.submitLabel,
+    this.englishOnly = false,
     this.allowPassphrase = true,
     this.allowLabel = true,
     this.allowMultipleMnemonicLength = true,
     this.allowAutoFillWords = true,
     this.externalError,
-  }) : assert(
-         language == bip39.Language.english,
-         'The in-app keyboard is Latin a–z only; non-English wordlists cannot '
-         'be typed and would produce an un-importable wallet.',
-       );
+  });
 
   @override
   State<MnemonicWidget> createState() => _MnemonicWidgetState();
@@ -73,25 +81,66 @@ class MnemonicWidget extends StatefulWidget {
 class _MnemonicWidgetState extends State<MnemonicWidget> {
   MnemonicEntryFailure? _failure;
   late bip39.MnemonicLength length;
+  late bip39.Language _language;
+
+  /// An explicit choice answers one phrase only: any word edit or length
+  /// change asks again (see [_onWordEdited]).
+  bool _languageConfirmed = false;
+  bool _needsLanguageChoice = false;
+  bool _defaultRefused = false;
+  final _languageNoticeKey = GlobalKey();
   late List<TextEditingController> _controllers;
+
+  /// The texts last seen per field, so a caret-only notification does not
+  /// count as an edit. References to the controllers' own strings, no copy.
+  List<String> _seenTexts = [];
   String passphrase = '';
   String label = '';
 
-  List<String> get _words =>
-      _controllers.map((controller) => controller.text.trim()).toList();
+  List<String> get _words => _controllers
+      .map((controller) => Bip39WordList.normalize(controller.text))
+      .toList();
 
   @override
   void initState() {
     super.initState();
     length = widget.initialLength;
+    _language = widget.englishOnly ? bip39.Language.english : widget.language;
     _controllers = _newControllers(length.words);
+    _watchEdits(_controllers);
   }
 
   List<TextEditingController> _newControllers(int count) =>
       List.generate(count, (_) => TextEditingController());
 
+  void _watchEdits(List<TextEditingController> controllers) {
+    _seenTexts = [for (final controller in controllers) controller.text];
+    for (final controller in controllers) {
+      controller.addListener(_onWordEdited);
+    }
+  }
+
+  /// No setState: only the language section reads these flags, and it already
+  /// rebuilds on every controller notification.
+  void _onWordEdited() {
+    var edited = false;
+    for (var i = 0; i < _controllers.length && i < _seenTexts.length; i++) {
+      if (_controllers[i].text != _seenTexts[i]) {
+        _seenTexts[i] = _controllers[i].text;
+        edited = true;
+      }
+    }
+    if (!edited) return;
+    _languageConfirmed = false;
+    _needsLanguageChoice = false;
+  }
+
   void onSubmit() {
-    setState(() => _failure = null);
+    setState(() {
+      _failure = null;
+      _needsLanguageChoice = false;
+      _defaultRefused = false;
+    });
     final words = _words;
 
     if (words.any((word) => word.isEmpty)) {
@@ -99,17 +148,51 @@ class _MnemonicWidgetState extends State<MnemonicWidget> {
       return;
     }
 
+    // Valid readings (membership and checksum) decide, never membership
+    // alone: the English and French lists share 100 words.
+    final readings = Bip39WordList.matchingLanguages(
+      words,
+      requireChecksum: true,
+    );
+    if (widget.englishOnly) {
+      if (readings.isNotEmpty && !readings.contains(bip39.Language.english)) {
+        setState(() => _defaultRefused = true);
+        _showLanguageNotice();
+        return;
+      }
+    } else if (readings.isNotEmpty &&
+        (!readings.contains(_language) ||
+            (readings.length > 1 && !_languageConfirmed))) {
+      setState(() => _needsLanguageChoice = readings.length > 1);
+      _showLanguageNotice();
+      return;
+    }
+    if (readings.isEmpty && !words.every(_language.isValid)) {
+      // No valid reading, and the words are not the selected language's:
+      // "unknown word" would be wrong when another wordlist knows them all.
+      final others = Bip39WordList.matchingLanguages(words);
+      if (others.isNotEmpty) {
+        setState(
+          () => _failure = MnemonicEntryOtherLanguageFailure(
+            wordlist: others.first,
+            selected: _language,
+          ),
+        );
+        return;
+      }
+    }
+
     try {
       final mnemonic = bip39.Mnemonic.fromWords(
         words: words,
-        language: widget.language,
+        language: _language,
         passphrase: passphrase,
       );
       widget.onSubmit((
         words: mnemonic.words,
         passphrase: passphrase,
         label: label,
-        language: widget.language,
+        language: _language,
       ));
     } catch (e) {
       // The boundary where a library exception becomes a failure. Only the
@@ -139,9 +222,15 @@ class _MnemonicWidgetState extends State<MnemonicWidget> {
 
   void changeMnemonicLength(bip39.MnemonicLength value) {
     final previous = _controllers;
+    for (final controller in previous) {
+      controller.removeListener(_onWordEdited);
+    }
     setState(() {
       length = value;
       _controllers = _newControllers(length.words);
+      _watchEdits(_controllers);
+      _languageConfirmed = false;
+      _needsLanguageChoice = false;
       _failure = null;
     });
     // Dispose only once the tree no longer references them.
@@ -150,6 +239,106 @@ class _MnemonicWidgetState extends State<MnemonicWidget> {
         controller.dispose();
       }
     });
+  }
+
+  void _showLanguageNotice() {
+    FocusScope.of(context).unfocus();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final noticeContext = _languageNoticeKey.currentContext;
+      if (noticeContext == null) return;
+      Scrollable.ensureVisible(noticeContext, alignment: 0);
+    });
+  }
+
+  void _selectLanguage(bip39.Language language) {
+    if (!_entryLanguages.contains(language)) return;
+    FocusScope.of(context).unfocus();
+    setState(() {
+      _language = language;
+      _languageConfirmed = true;
+      _needsLanguageChoice = false;
+      _failure = null;
+    });
+  }
+
+  Widget _buildLanguageSelection(BuildContext context) {
+    return ListenableBuilder(
+      listenable: Listenable.merge(_controllers),
+      builder: (context, _) {
+        final words = _words;
+        // Ambiguity is a property of a complete phrase: a partial one shares
+        // words between wordlists far too often to be worth announcing.
+        final complete = words.every((word) => word.isNotEmpty);
+        final readings = complete
+            ? Bip39WordList.matchingLanguages(words, requireChecksum: true)
+            : const <bip39.Language>[];
+        final matches =
+            (readings.isNotEmpty
+                    ? readings
+                    : Bip39WordList.matchingLanguages(words))
+                .where(_entryLanguages.contains)
+                .toList();
+        final ambiguous =
+            _needsLanguageChoice ||
+            (readings.length > 1 && !_languageConfirmed);
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(
+              context.loc.mnemonicLanguageLabel,
+              style: context.font.bodyMedium,
+            ),
+            DropdownButton<bip39.Language>(
+              key: const Key('mnemonicLanguagePicker'),
+              value: _entryLanguages.contains(_language) ? _language : null,
+              isExpanded: true,
+              dropdownColor: context.appColors.surface,
+              items: [
+                for (final language in _entryLanguages)
+                  DropdownMenuItem(
+                    value: language,
+                    child: Text(
+                      context.loc.mnemonicLanguageName(language.name),
+                    ),
+                  ),
+              ],
+              onChanged: (value) {
+                if (value != null) _selectLanguage(value);
+              },
+            ),
+            if (ambiguous)
+              Text(
+                context.loc.mnemonicLanguageAmbiguous,
+                style: context.font.bodyMedium,
+              ),
+            if (matches.length == 1 && matches.single != _language)
+              TextButton(
+                onPressed: () => _selectLanguage(matches.single),
+                child: Text(
+                  context.loc.mnemonicLanguageSuggestion(
+                    context.loc.mnemonicLanguageName(matches.single.name),
+                  ),
+                ),
+              ),
+            if (ambiguous)
+              Wrap(
+                children: [
+                  for (final language in readings.where(
+                    _entryLanguages.contains,
+                  ))
+                    TextButton(
+                      onPressed: () => _selectLanguage(language),
+                      child: Text(
+                        context.loc.mnemonicLanguageName(language.name),
+                      ),
+                    ),
+                ],
+              ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -188,6 +377,22 @@ class _MnemonicWidgetState extends State<MnemonicWidget> {
               padding: const EdgeInsets.only(left: 16, right: 16),
               child: Column(
                 children: [
+                  if (widget.englishOnly)
+                    BullText(
+                      context.loc.mnemonicDefaultEnglishOnly,
+                      key: _languageNoticeKey,
+                      style: context.font.bodyMedium,
+                      color: _defaultRefused
+                          ? context.appColors.error
+                          : context.appColors.textMuted,
+                    )
+                  else ...[
+                    KeyedSubtree(
+                      key: _languageNoticeKey,
+                      child: _buildLanguageSelection(context),
+                    ),
+                    const Gap(16),
+                  ],
                   if (widget.allowMultipleMnemonicLength) ...[
                     MnemonicLengthDropdown(
                       value: length,
@@ -198,7 +403,7 @@ class _MnemonicWidgetState extends State<MnemonicWidget> {
 
                   MnemonicSentenceWidget(
                     controllers: _controllers,
-                    language: widget.language,
+                    language: _language,
                     allowAutoFillWords: widget.allowAutoFillWords,
                     keyboardBarSlot: _keyboardBarSlot,
                   ),
@@ -320,14 +525,14 @@ class MnemonicWord extends StatelessWidget {
           ListenableBuilder(
             listenable: candidates == null
                 ? controller
-                : Listenable.merge([controller, candidates!]),
+                : Listenable.merge([controller, ?candidates]),
             builder: (context, _) {
-              final word = controller.text.trim();
+              final word = Bip39WordList.normalize(controller.text);
               // With a candidate pool (last field), acceptability means
               // closing the checksum; without one, plain wordlist membership.
               final pool = candidates?.value;
               final isValid = pool != null
-                  ? pool.contains(word)
+                  ? pool.any((entry) => Bip39WordList.normalize(entry) == word)
                   : language.isValid(word);
               return Container(
                 height: 34,
@@ -481,6 +686,16 @@ class _MnemonicSentenceWidgetState extends State<MnemonicSentenceWidget> {
   @override
   void didUpdateWidget(MnemonicSentenceWidget oldWidget) {
     super.didUpdateWidget(oldWidget);
+    if (oldWidget.language != widget.language) {
+      _candidatesKey = null;
+      _shuffledHintsFor = null;
+      _shuffledHintsOrder = null;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        _candidatePool.value = _lastWordCandidates();
+        _refreshHint(_hint.value.index, force: true);
+      });
+    }
     if (!identical(oldWidget.controllers, widget.controllers)) {
       final retiredNodes = _focusNodes;
       _detach(oldWidget.controllers);
@@ -607,7 +822,7 @@ class _MnemonicSentenceWidgetState extends State<MnemonicSentenceWidget> {
   List<String>? _lastWordCandidates() {
     final previous = [
       for (var i = 0; i < widget.controllers.length - 1; i++)
-        widget.controllers[i].text.trim(),
+        Bip39WordList.normalize(widget.controllers[i].text),
     ];
     final key = previous.join(' ');
     if (key != _candidatesKey) {
@@ -627,7 +842,7 @@ class _MnemonicSentenceWidgetState extends State<MnemonicSentenceWidget> {
     if (force) _revision++;
     _hint.value = (
       index: index,
-      prefix: widget.controllers[index].text.trim(),
+      prefix: Bip39WordList.normalize(widget.controllers[index].text),
       revision: _revision,
     );
   }
@@ -654,15 +869,16 @@ class _MnemonicSentenceWidgetState extends State<MnemonicSentenceWidget> {
   /// the keyboard.
   void _maybeAutoFill(int index) {
     if (!widget.allowAutoFillWords) return;
-    final prefix = widget.controllers[index].text.trim();
+    final prefix = Bip39WordList.normalize(widget.controllers[index].text);
     if (prefix.isEmpty) return;
 
     // Stop at the second match: only ambiguity matters here, not the count.
     final matches = widget.language.list
-        .where((word) => word.startsWith(prefix))
+        .where((word) => Bip39WordList.normalize(word).startsWith(prefix))
         .take(2)
         .toList();
-    if (matches.length == 1 && matches.first != prefix) {
+    if (matches.length == 1 &&
+        Bip39WordList.normalize(matches.first) != prefix) {
       _setWord(index, matches.first);
       if (index == widget.controllers.length - 1) {
         _focusNodes[index].unfocus();
@@ -691,7 +907,7 @@ class _MnemonicSentenceWidgetState extends State<MnemonicSentenceWidget> {
   void _onKeyLetter(String letter) {
     final index = _activeField.value;
     if (index == null) return;
-    final prefix = widget.controllers[index].text;
+    final prefix = Bip39WordList.normalize(widget.controllers[index].text);
     final allowed = Bip39WordList.allowedNextLetters(
       prefix: prefix,
       language: widget.language,
@@ -804,12 +1020,19 @@ class _MnemonicSentenceWidgetState extends State<MnemonicSentenceWidget> {
       valueListenable: _hint,
       builder: (context, query, _) {
         final prefix = query.prefix;
+        final layout = Bip39WordList.orderedNextLetters(
+          prefix: prefix,
+          language: widget.language,
+        );
+        if (_paranoid.value && widget.language != bip39.Language.english) {
+          layout.shuffle(_random);
+        }
         return MnemonicKeyboard(
-          layout: _paranoid.value ? _shuffledLayout : MnemonicKeyboard.qwerty,
-          enabledLetters: Bip39WordList.allowedNextLetters(
-            prefix: prefix,
-            language: widget.language,
-          ),
+          scrollable: widget.language != bip39.Language.english,
+          layout: widget.language == bip39.Language.english
+              ? (_paranoid.value ? _shuffledLayout : MnemonicKeyboard.qwerty)
+              : layout,
+          enabledLetters: layout.toSet(),
           canBackspace: prefix.isNotEmpty,
           canAdvance: _canLeaveField(prefix),
           onLetter: _onKeyLetter,
@@ -834,7 +1057,8 @@ class _MnemonicSentenceWidgetState extends State<MnemonicSentenceWidget> {
   /// Against the whole wordlist even on the last field: narrowing to the
   /// checksum candidates would swallow a transcription error, as
   /// [_maybeAutoFill] explains.
-  bool _isWholeWord(String word) => widget.language.list.contains(word);
+  bool _isWholeWord(String word) =>
+      widget.language.isValid(Bip39WordList.normalize(word));
 
   /// A field can be left once it is finished, or if it was never started. A
   /// half-typed prefix is neither: leaving it parks a fragment that reads like
@@ -884,7 +1108,9 @@ class _MnemonicSentenceWidgetState extends State<MnemonicSentenceWidget> {
         // Materialized: elementAt on a lazy where() walks the wordlist again
         // for every chip the list scrolls to.
         final hints = pool
-            .where((word) => word.startsWith(query.prefix))
+            .where(
+              (word) => Bip39WordList.normalize(word).startsWith(query.prefix),
+            )
             .toList();
 
         // Paranoid mode randomises the chip order so a chip's position leaks
@@ -892,20 +1118,23 @@ class _MnemonicSentenceWidgetState extends State<MnemonicSentenceWidget> {
         // once per keystroke) so the order is stable across unrelated rebuilds
         // — otherwise the chips would jitter on every repaint.
         if (paranoid) {
-          if (query != _shuffledHintsFor) {
+          final cachedHints = _shuffledHintsOrder;
+          if (query != _shuffledHintsFor || cachedHints == null) {
             hints.shuffle(_random);
             _shuffledHintsFor = query;
             _shuffledHintsOrder = hints;
           } else {
             hints
               ..clear()
-              ..addAll(_shuffledHintsOrder!);
+              ..addAll(cachedHints);
           }
         }
 
         // The field already holds the single matching word: the question is
         // answered, so both the chips and the count label leave.
-        final completed = hints.length == 1 && hints.first == query.prefix;
+        final completed =
+            hints.length == 1 &&
+            Bip39WordList.normalize(hints.first) == query.prefix;
 
         return Column(
           crossAxisAlignment: .start,
@@ -1004,7 +1233,7 @@ class MnemonicLengthDropdown extends StatelessWidget {
             (length) => DropdownMenuItem(
               value: length,
               child: BullText(
-                '${length.words} words',
+                '${length.words}${context.loc.wordsDropdownSuffix}',
                 style: context.font.bodyMedium?.copyWith(
                   fontWeight: .w600,
                   color: context.appColors.text,

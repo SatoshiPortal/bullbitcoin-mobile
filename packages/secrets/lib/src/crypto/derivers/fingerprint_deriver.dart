@@ -17,26 +17,38 @@ final class FingerprintDeriver {
   @internal
   const FingerprintDeriver();
 
-  /// The BIP39 seed of [words] with [passphrase]. Throws bip39's own exception on words that are not a mnemonic — before any PBKDF2 is spent.
+  /// The BIP39 seed of [words] in [language] with [passphrase]. Throws bip39's own exception on words that are not a mnemonic — before any PBKDF2 is spent.
   ///
-  /// bip39 validates; the PBKDF2 runs on `package:crypto`, about 20× faster than bip39's pointycastle one and paid on every operation. Pinned against bip39 by `seed_pbkdf2_test.dart`.
-  Uint8List seed(List<String> words, {String passphrase = ''}) {
-    _elements(words);
-    final mnemonic = bip39.Mnemonic.fromWords(words: words);
+  /// bip39 validates; the PBKDF2 runs on `package:crypto`, about 20× faster than bip39's pointycastle one and paid on every operation. Pinned against bip39 by `seed_pbkdf2_test.dart`. The sentence is the words themselves joined by a space, which NFKD makes identical to a sentence joined by the language's own separator.
+  Uint8List seed(
+    List<String> words, {
+    String passphrase = '',
+    bip39.Language language = bip39.Language.english,
+  }) {
+    words = normalizeWords(words);
+    _elements(words, language);
+    final mnemonic = bip39.Mnemonic.fromWords(words: words, language: language);
     return _pbkdf2HmacSha512(
       password: utf8.encode(nfkd(mnemonic.words.join(' '))),
       salt: utf8.encode(nfkd('mnemonic$passphrase')),
     );
   }
 
+  /// Canonical BIP39 spelling, without changing element boundaries.
+  List<String> normalizeWords(List<String> words) => words.map(nfkd).toList();
+
   /// The master fingerprint of a seed — 4 bytes, 8 lowercase hex.
   Fingerprint fingerprint(Uint8List seed) =>
       Fingerprint(convert.hex.encode(Bip32Keys.fromSeed(seed).fingerprint));
 
   /// Validates words without deriving a seed: wordlist and checksum only, no PBKDF2. Throws bip39's own exception.
-  void check(List<String> words) {
-    _elements(words);
-    bip39.Mnemonic.fromWords(words: words);
+  void check(
+    List<String> words, {
+    bip39.Language language = bip39.Language.english,
+  }) {
+    words = normalizeWords(words);
+    _elements(words, language);
+    bip39.Mnemonic.fromWords(words: words, language: language);
   }
 
   /// Refuses a list whose elements are not one word each — see
@@ -48,11 +60,11 @@ final class FingerprintDeriver {
   /// wordlist, and that type is what the boundary already classifies as an
   /// invalid mnemonic. The placeholder stands in for the element so that no
   /// candidate word ever enters an exception message, redacted or not.
-  static void _elements(List<String> words) {
+  static void _elements(List<String> words, bip39.Language language) {
     if (!words.every(isMnemonicWordShape)) {
       throw bip39.MnemonicWordNotFoundException(
         '<not a single word>',
-        'english',
+        language.name,
       );
     }
   }
