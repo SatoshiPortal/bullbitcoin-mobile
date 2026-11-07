@@ -186,10 +186,8 @@ class _ExchangeAuthScreenState extends State<ExchangeAuthScreen> {
                   failure is! ExchangeAuthenticationDeferredFailure) {
                 retry = await _handleLoginError(failure);
               }
-            } on Exception catch (error) {
-              log.warning(
-                'Exchange authentication failed: ${error.runtimeType}',
-              );
+            } on Exception {
+              log.warning('Exchange auth failed reason=platform');
               if (mounted && !_isClosing) retry = await _handleLoginError();
             } finally {
               if (mounted) setState(() => _isGeneratingApiKey = false);
@@ -202,11 +200,8 @@ class _ExchangeAuthScreenState extends State<ExchangeAuthScreen> {
             // https://accounts.evil.com.
             final uri = Uri.tryParse(request.url);
             if (uri == null || uri.scheme != 'https') {
-              // Host only — never the full URL, whose query params may
-              // carry tokens.
               log.warning(
-                'Blocked webview navigation: '
-                '${uri == null ? 'unparseable URL' : 'non-https host ${uri.host}'}',
+                'Exchange navigation refused reason=${uri == null ? 'parse' : 'scheme'}',
               );
               return NavigationDecision.prevent;
             }
@@ -225,7 +220,7 @@ class _ExchangeAuthScreenState extends State<ExchangeAuthScreen> {
             // Logged so a legitimate navigation blocked in the field (e.g.
             // a cross-host redirect between auth instances) is diagnosable
             // from user logs.
-            log.warning('Blocked webview navigation to host: ${uri.host}');
+            log.warning('Exchange navigation refused reason=host');
             return NavigationDecision.prevent;
           },
           onHttpAuthRequest: (HttpAuthRequest request) {

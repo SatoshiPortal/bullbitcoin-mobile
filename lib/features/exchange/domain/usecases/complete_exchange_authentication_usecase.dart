@@ -1,3 +1,4 @@
+import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_api_key_repository.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/exchange/domain/exchange_failure.dart';
@@ -46,6 +47,11 @@ class CompleteExchangeAuthenticationUsecase {
     if (!_isCurrent()) {
       return const Err(
         ExchangeAuthenticationFailure('Authentication cancelled'),
+      );
+    }
+    if (generated case Err(failure: ExchangeAuthenticationFailure())) {
+      log.warning(
+        'Exchange auth refused reason=invalid_response env=${_isTestnet ? 'testnet' : 'mainnet'}',
       );
     }
     return switch (generated) {

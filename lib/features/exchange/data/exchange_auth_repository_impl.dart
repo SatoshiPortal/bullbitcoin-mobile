@@ -5,7 +5,6 @@ import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/exchange/data/exchange_web_auth_datasource.dart';
 import 'package:bb_mobile/features/exchange/domain/exchange_failure.dart';
 import 'package:bb_mobile/features/exchange/domain/repositories/exchange_auth_repository.dart';
-import 'package:bull_logger/bull_logger.dart';
 
 final class ExchangeAuthRepositoryImpl implements ExchangeAuthRepository {
   final ExchangeWebAuthDatasource _datasource;
@@ -26,9 +25,8 @@ final class ExchangeAuthRepositoryImpl implements ExchangeAuthRepository {
       return ExchangeApiKeyMapper.toDomain(
         model,
       ).mapErr((_) => const ExchangeAuthenticationFailure());
-    } on Exception catch (error) {
+    } on Exception {
       // Platform errors may contain cookies or the entire response.
-      log.warning('Exchange authentication failed: ${error.runtimeType}');
       return const Err(ExchangeAuthenticationFailure());
     }
   }
