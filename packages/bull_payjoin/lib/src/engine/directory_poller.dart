@@ -209,7 +209,7 @@ final class DirectoryPoller<T extends Object> {
     try {
       final result = await session.poll(cancelToken);
       return (result, _elapsed() - started);
-    } catch (_) {
+    } on Exception {
       return (
         DirectoryPollResult<T>(
           cancelToken.isCancelled
