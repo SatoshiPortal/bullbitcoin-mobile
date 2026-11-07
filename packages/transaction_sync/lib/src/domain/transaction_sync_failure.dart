@@ -3,6 +3,18 @@ import 'package:primitives/primitives.dart';
 /// Recoverable outcomes. No foreign exception, descriptor or endpoint is kept.
 sealed class TransactionSyncFailure extends Failure {
   const TransactionSyncFailure();
+
+  /// Fixed support-log codes survive identifier redaction and carry no data.
+  String get logCode => switch (this) {
+    TransactionSyncBusyFailure() => 'busy',
+    TransactionSyncNotFoundFailure() => 'not_found',
+    TransactionSyncUnsupportedNetworkFailure() => 'unsupported_network',
+    TransactionSyncInvalidCatalogFailure() => 'invalid_catalog',
+    TransactionSyncStorageFailure() => 'storage',
+    TransactionSyncConnectionFailure() => 'connection',
+    TransactionSyncNeedsRepairFailure() => 'needs_repair',
+    TransactionSyncRestartRequiredFailure() => 'restart_required',
+  };
 }
 
 final class TransactionSyncBusyFailure extends TransactionSyncFailure {

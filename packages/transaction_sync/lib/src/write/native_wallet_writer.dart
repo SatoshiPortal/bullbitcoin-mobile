@@ -336,13 +336,14 @@ final class NativeWalletWriter implements LiquidReadAdmission {
     _failures[key] = failure.runtimeType;
     if (failure is TransactionSyncStorageFailure) {
       log.severe(
-        message: 'Wallet writer unexpected storage failure',
+        message:
+            'Wallet writer unexpected storage failure category=${failure.logCode}',
         error: failure.runtimeType.toString(),
         trace: StackTrace.empty,
       );
     } else {
       log.warning(
-        'Wallet writer operation unavailable network=${key.network} category=${failure.runtimeType}',
+        'Wallet writer operation unavailable network=${key.network} category=${failure.logCode}',
       );
     }
   }
