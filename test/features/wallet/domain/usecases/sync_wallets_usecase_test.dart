@@ -2,8 +2,8 @@ import 'package:transaction_sync/read.dart';
 import 'package:transaction_sync/transaction_sync.dart'
     show TransactionSyncBusyFailure;
 import 'package:bb_mobile/features/wallet/data/sync_coordinator.dart';
-import 'package:bb_mobile/core/sync/sync_kind.dart';
-import 'package:bb_mobile/core/sync/sync_trigger.dart';
+import 'package:bb_mobile/features/wallet/domain/sync_kind.dart';
+import 'package:bb_mobile/features/wallet/domain/sync_trigger.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/sync_wallets_usecase.dart';

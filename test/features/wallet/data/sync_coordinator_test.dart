@@ -8,9 +8,9 @@ import 'dart:io';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 
-import 'package:bb_mobile/core/sync/sync_coordinator.dart';
-import 'package:bb_mobile/core/sync/sync_kind.dart';
-import 'package:bb_mobile/core/sync/sync_trigger.dart';
+import 'package:bb_mobile/features/wallet/data/sync_coordinator.dart';
+import 'package:bb_mobile/features/wallet/domain/sync_kind.dart';
+import 'package:bb_mobile/features/wallet/domain/sync_trigger.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/sync_wallet_usecase.dart';
