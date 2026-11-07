@@ -195,7 +195,8 @@ graph TB
     SWAPS --> EXCHANGE
     SWAPS --> LABELS
     SETTINGS --> SP
-    WALLETS --> SP
+    %% SP receives a foreground flag; swap owns the scheduling port implemented by wallet.
+    WALLETS -->|public wallet/scan capabilities| SP
     SWAPS --> UTXO_MGMT
     CORE --> TOR
     ELECTRUM_SETTINGS --> TOR
@@ -218,7 +219,7 @@ graph TB
     WALLETS --> SECRETS
     SP --> SECRETS
     WALLETS --> SETTINGS
-    WALLETS --> SWAPS
+    WALLETS -->|public orders + swap scheduling port| SWAPS
     WITHDRAWAL --> RECIPIENTS
 
     %% Styling
@@ -255,6 +256,10 @@ graph TB
 2. **Core Independence**: Core must not depend on any feature
 3. **Feature Isolation**: Features should communicate through well-defined facades/interfaces
 4. **Layered Dependencies**: Dependencies flow one way — `shell → features → packages` across modules, and `ui → presentation → domain → data` within a feature. Under the melos migration each `lib/core/<domain>` becomes a `packages/<domain>` and these turn into compile-time boundaries. See [ARCHITECTURE.md](ARCHITECTURE.md).
+
+## Foreground synchronization
+
+Wallet owns the private foreground synchronization queue and consumes the SP and swap facades. SP receives an explicit foreground-start flag from composition. Swap's watcher calls its own scheduling usecase and port; wallet implements that published port. Runtime callbacks enter the wallet queue without introducing an SP/swap source dependency on wallet synchronization. The swap facade keeps its direct refresh path so a queued pass never enqueues itself.
 
 ## Core Dependencies
 

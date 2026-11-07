@@ -46,6 +46,7 @@ class SyncCoordinator {
     this._syncSwaps,
     this._syncSwapsOutcome,
     this._syncSp,
+    this._syncSpOutcome,
     this._refreshRevisions,
   }) : _getWallets = getWalletsUsecase,
        _syncWallet = syncWalletUsecase {
@@ -73,6 +74,7 @@ class SyncCoordinator {
   // the swap callbacks, so this core orchestrator never imports the SP feature
   // (rule #7).
   final Future<void> Function()? _syncSp;
+  final Future<Result<void, WalletFailure>> Function()? _syncSpOutcome;
   final Future<void> Function()? _refreshRevisions;
   final Future<SyncOutcome> Function()? _syncSwapsOutcome;
 
@@ -314,7 +316,12 @@ class SyncCoordinator {
           await _syncSwaps!();
         }
       case SyncKind.sp:
-        await _syncSp?.call();
+        final callback = _syncSpOutcome;
+        if (callback != null) {
+          if (await callback() case Err(:final failure)) return failure;
+        } else {
+          await _syncSp?.call();
+        }
     }
     return null;
   }

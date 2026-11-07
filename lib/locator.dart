@@ -105,7 +105,7 @@ class AppLocator {
     // SP starts watchers eagerly, so its wallet infrastructure must exist.
     // Wallet's SP use cases resolve the facade lazily, after registration.
     WalletLocator.setup(locator);
-    SpLocator.setup(locator);
+    SpLocator.setup(locator, startForegroundWatchers: true);
     SettingsLocator.setup(locator);
     setupBackgroundPreferences(
       locator,

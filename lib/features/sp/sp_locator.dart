@@ -5,7 +5,6 @@ import 'package:bb_mobile/features/sp/domain/usecases/get_sp_secret_usecase.dart
 import 'package:secrets/secrets.dart' show Secrets;
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_value_storage_datasource.dart';
-import 'package:bb_mobile/core/sync/sync_coordinator.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/features/sp/data/bwk_sp_account_repository.dart';
 import 'package:bb_mobile/features/sp/data/bwk_sp_recipient_address_validator.dart';
@@ -75,12 +74,12 @@ import 'package:get_it/get_it.dart';
 /// Must be registered BEFORE the wallet/settings locators, whose own use
 /// cases resolve `locator<SpFacade>()`.
 class SpLocator {
-  static void setup(GetIt locator) {
+  static void setup(GetIt locator, {bool startForegroundWatchers = false}) {
     _registerAdapters(locator);
     _registerUseCases(locator);
     _registerFacade(locator);
     _registerPresentation(locator);
-    _startWatchers(locator);
+    if (startForegroundWatchers) _startWatchers(locator);
     _loadAutoScanSetting(locator);
   }
 
@@ -104,7 +103,6 @@ class SpLocator {
   // connection has to be restarted. Foreground-only, like the coordinator,
   // which is absent in the background isolate.
   static void _startWatchers(GetIt locator) {
-    if (!locator.isRegistered<SyncCoordinator>()) return;
     locator<SpTipWatcher>().start();
     locator<SpElectrumReconnectWatcher>().start();
   }
