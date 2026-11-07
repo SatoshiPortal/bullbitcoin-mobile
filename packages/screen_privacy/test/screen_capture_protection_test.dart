@@ -1,3 +1,5 @@
+import 'dart:io';
+import 'package:bull_logger/bull_logger.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:screen_privacy/screen_privacy.dart';
@@ -40,6 +42,38 @@ void main() {
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMethodCallHandler(_channel, null);
   });
+
+  test(
+    'unexpected channel failure persists and reports once until recovery',
+    () async {
+      final directory = await Directory.systemTemp.createTemp(
+        'privacy-channel-',
+      );
+      final reporter = _Reporter();
+      log = Logger.replace(directory: directory, reporter: reporter);
+      addTearDown(() async {
+        await log.flush();
+        await directory.delete(recursive: true);
+      });
+      // Invalid native response type, distinct from an expected platform refusal.
+      answer = 'synthetic-private-response';
+      expect(await controller.acquire(), isFalse);
+      expect(await controller.resync(), isFalse);
+      expect(reporter.errors, ['platform']);
+      expect((await log.readLogs()).map((row) => row.split('\t')[2]), [
+        'Privacy channel failed reason=unexpected',
+      ]);
+      expect(
+        (await log.readLogs()).join(),
+        isNot(contains('synthetic-private-response')),
+      );
+      answer = true;
+      expect(await controller.resync(), isTrue);
+      answer = 'synthetic-private-response';
+      expect(await controller.resync(), isFalse);
+      expect(reporter.errors, ['platform', 'platform']);
+    },
+  );
 
   test('protects while at least one screen is mounted', () async {
     await controller.acquire();
@@ -123,4 +157,26 @@ void main() {
       expect(await controller.resync(), isTrue);
     });
   });
+}
+
+final class _Reporter implements LoggerReporter {
+  final List<Object> errors = [];
+
+  @override
+  void reportError({
+    String? message,
+    required Object exception,
+    required StackTrace stackTrace,
+    required ReportCategory category,
+  }) {
+    errors.add(exception);
+  }
+
+  @override
+  Future<void> reportShout({
+    required String message,
+    Object? exception,
+    StackTrace? stackTrace,
+    ReportCategory? category,
+  }) async {}
 }
