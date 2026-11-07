@@ -23,6 +23,7 @@ void main() {
       TransactionSyncNeedsRepairFailure(),
       TransactionSyncRestartRequiredFailure(),
       TransactionSyncInitialScanRequiredFailure(),
+      TransactionSyncInvalidAddressFailure(),
     ];
     for (final failure in failures) {
       log.warning('Wallet sync unavailable category=${failure.logCode}');
@@ -43,6 +44,7 @@ void main() {
       'needs_repair',
       'restart_required',
       'initial_scan_required',
+      'invalid_address',
     });
     expect(lines.join(), isNot(contains('[REDACTED]')));
   });
