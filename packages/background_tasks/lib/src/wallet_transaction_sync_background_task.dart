@@ -24,7 +24,7 @@ final class WalletTransactionSyncBackgroundTask {
   final WalletRevisionReader revisions;
   final List<WalletKey> keys;
   final WalletSyncJobQueue queue;
-  final NotificationsFacade notifications;
+  final NotificationsFacade? notifications;
   final NotificationCopyBuilder copy;
   final int maxJobsPerChain;
   final Duration? runBudget;
@@ -87,6 +87,7 @@ final class WalletTransactionSyncBackgroundTask {
     Stopwatch? clock,
     Duration? admissionLimit,
   }) async {
+    final notifications = this.notifications;
     final elapsed = clock ?? (Stopwatch()..start());
     final budget = admissionLimit ?? runBudget;
     bool spent() => budget != null && elapsed.elapsed >= budget;
@@ -207,7 +208,7 @@ final class WalletTransactionSyncBackgroundTask {
               'Background job committed: revision=${value.revision.revision} generation=${value.revision.generation} incoming=${value.incomingTxids?.length ?? 0}',
             );
             final incoming = value.incomingTxids;
-            if (incoming == null) {
+            if (incoming == null || notifications == null) {
               if (!await queue.completeSuccess(claim)) leaseLost = true;
               break;
             }
@@ -284,7 +285,7 @@ final class WalletTransactionSyncBackgroundTask {
         return const BackgroundTaskExecutionResult.retry();
       }
     }
-    final delivered = await notifications.deliverPending();
+    final delivered = await notifications?.deliverPending();
     if (delivered case Err(
       failure: final failure,
     ) when failure is! NotificationsPermissionDeniedFailure) {
