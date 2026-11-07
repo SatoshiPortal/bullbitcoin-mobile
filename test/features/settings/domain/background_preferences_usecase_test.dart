@@ -52,6 +52,69 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   setUp(() => SharedPreferences.setMockInitialValues({}));
 
+  for (final latest in [
+    BackgroundSyncInterval.off,
+    BackgroundSyncInterval.minutes15,
+  ]) {
+    for (final action in ['request', 'settings', 'refresh']) {
+      test(
+        'notification $action must not hide committed ${latest.name}',
+        () async {
+          final initial = latest == BackgroundSyncInterval.off
+              ? BackgroundSyncInterval.hour1
+              : BackgroundSyncInterval.off;
+          SharedPreferences.setMockInitialValues({
+            'background_sync_interval': initial.name,
+          });
+          final store = DelayedPersistentStore();
+          final scheduler = Scheduler()
+            ..registered = initial != BackgroundSyncInterval.off;
+          final cubit = BackgroundPreferencesCubit(
+            BackgroundPreferencesUsecase(
+              BackgroundPreferencesRepositoryImpl(
+                store,
+                NotificationPermissionsFacade(gateway: Permissions()),
+                () => applyBackgroundTaskSchedule(
+                  dispatcher: () {},
+                  scheduler: scheduler,
+                  desktopScheduler: scheduler,
+                  enabled: true,
+                ),
+              ),
+            ),
+          );
+          addTearDown(cubit.close);
+          await cubit.load();
+          expect(cubit.state.interval, initial);
+          final choice = cubit.load(interval: latest);
+          await store.entered.future;
+          final permission = cubit.load(
+            requestPermission: action == 'request',
+            openSettings: action == 'settings',
+          );
+          // Drain runnable reads/permission work while persistence is suspended.
+          await Future<void>.delayed(Duration.zero);
+          store.release.complete();
+          await Future.wait([choice, permission]);
+          expect(
+            await const SharedPreferencesBackgroundSyncIntervalStore().read(),
+            latest,
+          );
+          expect(scheduler.registered, latest != BackgroundSyncInterval.off);
+          if (latest != BackgroundSyncInterval.off) {
+            expect(scheduler.frequency, latest.frequency);
+          }
+          expect(
+            cubit.state.interval,
+            latest,
+            reason:
+                'After all actions finish, the UI must match the durable choice',
+          );
+        },
+      );
+    }
+  }
+
   test('closed settings cannot replay On after newer Off', () async {
     final permissions = DelayedPermissions();
     final scheduler = Scheduler();
@@ -275,6 +338,7 @@ void main() {
 }
 
 class Scheduler implements BackgroundTaskScheduler {
+  Duration? frequency;
   bool registered = true;
   bool failCancellation = false;
   bool holdInitialization = false;
@@ -313,6 +377,7 @@ class Scheduler implements BackgroundTaskScheduler {
         await release.future;
       }
       registered = true;
+      this.frequency = frequency;
     }
   }
 }
@@ -362,5 +427,25 @@ class DelayedStore implements BackgroundSyncIntervalStore {
     }
     selected = value;
     return const Ok(null);
+  }
+}
+
+class DelayedPersistentStore implements BackgroundSyncIntervalStore {
+  final entered = Completer<void>();
+  final release = Completer<void>();
+  final _store = const SharedPreferencesBackgroundSyncIntervalStore();
+
+  @override
+  Future<BackgroundSyncInterval> read() => _store.read();
+
+  @override
+  Future<Result<void, BackgroundSyncIntervalFailure>> write(
+    BackgroundSyncInterval value,
+  ) async {
+    if (!entered.isCompleted) {
+      entered.complete();
+      await release.future;
+    }
+    return _store.write(value);
   }
 }
