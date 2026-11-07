@@ -1,3 +1,5 @@
+import 'dart:io';
+import 'package:bull_logger/bull_logger.dart';
 import 'dart:convert';
 import 'dart:async';
 
@@ -49,6 +51,28 @@ class _Keys extends Fake implements ExchangeApiKeyRepository {
 }
 
 void main() {
+  test(
+    'invalid auth has one persisted owner after response decoding',
+    () async {
+      final directory = await Directory.systemTemp.createTemp('auth-log-');
+      log = Logger.replace(directory: directory);
+      addTearDown(() async {
+        await log.flush();
+        await directory.delete(recursive: true);
+      });
+      final usecase = CompleteExchangeAuthenticationUsecase(
+        authRepository: _repository(
+          () async => throw Exception('synthetic-private-value'),
+        ),
+        apiKeyRepository: _Keys(),
+        isTestnet: true,
+      );
+      expect(await usecase.execute(), isA<Err>());
+      expect((await log.readLogs()).map((row) => row.split('\t')[2]), [
+        'Exchange auth refused reason=invalid_response env=testnet',
+      ]);
+    },
+  );
   for (final payload in <String, Object>{
     'bare': fields,
     'apiKey': {'apiKey': fields},
