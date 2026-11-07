@@ -225,8 +225,8 @@ class SqliteDatabase extends _$SqliteDatabase {
         await m.database.transaction(() => fn(m, schema));
       } catch (e, s) {
         log.severe(
-          message: 'drift migration step $name failed',
-          error: e,
+          message: 'Schema migration failed step=$name reason=storage',
+          error: 'storage',
           trace: s,
           category: ReportCategory.migration,
         );
