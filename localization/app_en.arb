@@ -15848,5 +15848,13 @@
   "viewerViewInExplorerDisclosePayjoin": "View in explorer (disclose Payjoin)",
   "@viewerViewInExplorerDisclosePayjoin": {
     "description": "Button to open a Payjoin transaction in the block explorer with a link that discloses which inputs and outputs belong to the sender and the recipient"
+  },
+  "passphraseShow": "Show passphrase",
+  "@passphraseShow": {
+    "description": "Accessible name of the button that reveals the typed passphrase"
+  },
+  "passphraseHide": "Hide passphrase",
+  "@passphraseHide": {
+    "description": "Accessible name of the button that hides the typed passphrase"
   }
 }
