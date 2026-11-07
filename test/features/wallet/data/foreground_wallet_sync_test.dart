@@ -334,25 +334,35 @@ void main() {
     },
   );
 
-  test('unexpected policy failure settles the finished event', () async {
-    final sync = ElectrumSync(
-      connections: _ThrowingPolicy(),
-      documentsDirectory: () async => directory.path,
-    );
-    final finished = sync.finished.first;
-    final result = await sync.execute(
-      BitcoinWalletDescriptor(
+  test(
+    'unexpected policy failure settles once and bounds diagnostics',
+    () async {
+      log = Logger.replace(directory: directory);
+      final sync = ElectrumSync(
+        connections: _ThrowingPolicy(),
+        documentsDirectory: () async => directory.path,
+      );
+      final descriptor = BitcoinWalletDescriptor(
         key: WalletKey(id: id, network: BitcoinNetwork.testnet),
         scriptType: ScriptType.bip84,
         origin: id,
         externalDescriptor: 'wpkh(public)',
         internalDescriptor: 'wpkh(change)',
-      ),
-    );
-    expect(result, isA<Err<SyncCompletion, TransactionSyncFailure>>());
-    expect((await finished).result, same(result));
-    expect(sync.isSyncing(), isFalse);
-  });
+      );
+      final finished = sync.finished.first;
+      final result = await sync.execute(descriptor);
+      expect(result, isA<Err<SyncCompletion, TransactionSyncFailure>>());
+      expect((await finished).result, same(result));
+      expect(sync.isSyncing(), isFalse);
+      expect(await sync.execute(descriptor), isA<Err>());
+      expect(
+        (await log.readLogs())
+            .where((row) => row.split('\t')[1] == 'SEVERE')
+            .map((row) => row.split('\t')[2]),
+        ['Electrum sync unexpected failure'],
+      );
+    },
+  );
 
   test(
     'writer busy skips the call and retains its visible unsuccessful result',
