@@ -223,9 +223,6 @@ class SepaEurDetails extends RecipientDetails {
     SepaVirtualPayeeStatus virtualPayeeStatus = SepaVirtualPayeeStatus.absent,
     bool isConfidential = false,
   }) {
-    if (iban.trim().isEmpty) {
-      throw ArgumentError('IBAN cannot be empty');
-    }
     if (isCorporate) {
       if (corporateName == null || corporateName.trim().isEmpty) {
         throw ArgumentError(
@@ -239,6 +236,39 @@ class SepaEurDetails extends RecipientDetails {
           'First name and last name are required for non-corporate accounts',
         );
       }
+    }
+
+    return SepaEurDetails.saved(
+      label: label,
+      isDefault: isDefault,
+      isOwner: isOwner,
+      iban: iban,
+      isCorporate: isCorporate,
+      firstname: firstname,
+      lastname: lastname,
+      corporateName: corporateName,
+      virtualPayeeStatus: virtualPayeeStatus,
+      isConfidential: isConfidential,
+    );
+  }
+
+  /// A recipient that the API already has. Names are not checked: the API
+  /// can return a recipient without a last name, for example when the name
+  /// of its virtual payee is a single word.
+  factory SepaEurDetails.saved({
+    String? label,
+    bool isDefault = false,
+    bool? isOwner,
+    required String iban,
+    required bool isCorporate,
+    String? firstname,
+    String? lastname,
+    String? corporateName,
+    SepaVirtualPayeeStatus virtualPayeeStatus = SepaVirtualPayeeStatus.absent,
+    bool isConfidential = false,
+  }) {
+    if (iban.trim().isEmpty) {
+      throw ArgumentError('IBAN cannot be empty');
     }
 
     return SepaEurDetails._(
