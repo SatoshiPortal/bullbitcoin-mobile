@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/sync/sync_trigger.dart';
+import 'package:bb_mobile/features/wallet/domain/sync_trigger.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/watch_wallet_sync_events_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/sync_wallets_usecase.dart';
 import 'package:bb_mobile/core/utils/result.dart';
