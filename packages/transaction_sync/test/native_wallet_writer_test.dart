@@ -199,6 +199,8 @@ void main() {
       contains('category=UnrecognizedNativeDescri:ptorException'),
     );
     expect(lines.join(), isNot(contains('sensitive-sentinel')));
+    expect(lines.join(), contains('category=storage'));
+    expect(lines.join(), isNot(contains('category=[REDACTED]')));
     // The existing unexpected-storage event reports once; WARNING adds no event.
     expect(reporter.errors, ['TransactionSyncStorageFailure']);
     sessions.beforeOpen = null;
@@ -214,6 +216,22 @@ void main() {
       hasLength(2),
     );
     expect(reporter.errors, hasLength(2));
+    await log.flush();
+  });
+
+  test('connection failure category survives persisted redaction', () async {
+    await initializeLogging(directory: dir);
+    expect(
+      await writer.sync(
+        key,
+        expectedGeneration: 1,
+        operation: FailedSync(true),
+      ),
+      isA<Err>(),
+    );
+    final lines = await log.readLogs();
+    expect(lines.join(), contains('category=connection'));
+    expect(lines.join(), isNot(contains('category=[REDACTED]')));
     await log.flush();
   });
 

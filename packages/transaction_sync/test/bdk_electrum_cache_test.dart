@@ -338,6 +338,8 @@ void main() {
       File(path).writeAsBytesSync(saved);
       completed(await sync.execute(descriptor));
       final lines = (await log.readLogs()).skip(before).toList();
+      expect(lines.join(), contains('Electrum sync failed category=not_found'));
+      expect(lines.join(), isNot(contains('category=[REDACTED]')));
       expect(
         lines.where((line) => line.contains('Electrum sync failed')).length,
         1,

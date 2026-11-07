@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/wallet/domain/wallet_failure_log_code.dart';
 import 'dart:async';
 import 'dart:io';
 import 'package:bb_mobile/core/utils/result.dart';
@@ -454,6 +455,18 @@ void main() {
       reporter = _Reporter();
       log = Logger.replace(directory: directory, reporter: reporter);
     });
+
+    test(
+      'long wallet failure names retain their category in support logs',
+      () async {
+        const failure = WalletCannotDeleteWithOngoingSwapsFailure();
+        log.warning('Wallet operation unavailable category=${failure.logCode}');
+        final lines = await log.readLogs();
+        expect(lines.join(), contains('category=ongoing_swaps'));
+        expect(lines.join(), isNot(contains('[REDACTED]')));
+        expect(reporter.errors, isEmpty);
+      },
+    );
 
     void walletsRead(WalletFailure failure) {
       when(
