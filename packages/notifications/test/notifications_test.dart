@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:bull_logger/bull_logger.dart';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:notifications/notifications.dart';
@@ -126,12 +127,14 @@ void main() {
 
   setUp(() {
     directory = Directory.systemTemp.createTempSync('notifications_test_');
+    log = Logger.replace(directory: directory);
     outbox = SqliteNotificationOutbox(
       databasePath: '${directory.path}/notifications.sqlite',
     );
   });
 
-  tearDown(() {
+  tearDown(() async {
+    await log.flush();
     outbox.dispose();
     directory.deleteSync(recursive: true);
   });
@@ -509,6 +512,12 @@ void main() {
     await pending(outbox, 'after-grant');
     expect(await facade.deliverPending(), isA<Ok>());
     expect(gateway.shownIds, hasLength(1));
+    expect((await log.readLogs()).map((row) => row.split('\t')[2]), [
+      'Notification permission changed allowed=false',
+      'Notifications settled shown=0 seen=0 denied=1',
+      'Notification permission changed allowed=true',
+      'Notifications settled shown=1 seen=0 denied=0',
+    ]);
   });
 
   test('the permissions facade needs no outbox', () async {
