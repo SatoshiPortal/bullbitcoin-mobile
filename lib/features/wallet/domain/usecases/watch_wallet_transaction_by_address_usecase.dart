@@ -24,9 +24,9 @@ class WatchWalletTransactionByAddressUsecase {
             toAddress: toAddress,
           );
           return txs.isEmpty ? null : txs.last;
-        } on Exception catch (error) {
+        } on Exception {
           log.warning(
-            'Wallet transaction revision read unavailable category=${error.runtimeType}',
+            'Wallet transaction revision read unavailable category=exception',
           );
           return null;
         }

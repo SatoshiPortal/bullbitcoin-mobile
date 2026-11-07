@@ -23,9 +23,9 @@ class WatchWalletTransactionByTxIdUsecase {
             txId,
             walletId: walletId,
           );
-        } on Exception catch (error) {
+        } on Exception {
           log.warning(
-            'Wallet transaction revision read unavailable category=${error.runtimeType}',
+            'Wallet transaction revision read unavailable category=exception',
           );
           return null;
         }

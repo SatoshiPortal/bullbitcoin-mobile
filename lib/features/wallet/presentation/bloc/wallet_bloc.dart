@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/wallet/domain/wallet_failure_log_code.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/watch_wallet_revisions_usecase.dart';
 import 'dart:async';
 
@@ -115,7 +116,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
         );
       case Err(:final failure):
         log.warning(
-          'Wallet revision read unavailable category=${failure.runtimeType}',
+          'Wallet revision read unavailable category=${failure.logCode}',
         );
     }
   }

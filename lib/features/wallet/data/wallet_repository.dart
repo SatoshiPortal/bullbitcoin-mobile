@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/wallet/domain/wallet_failure_log_code.dart';
 import 'package:primitives/primitives.dart' show Fingerprint;
 import 'dart:async';
 import 'package:bb_mobile/features/wallet/data/wallet_native_runtime.dart';
@@ -278,7 +279,9 @@ class WalletRepository implements SeedReferencePort {
     } catch (error) {
       if (_unavailable[metadata.id] != error.runtimeType) {
         _unavailable[metadata.id] = error.runtimeType;
-        log.warning('Wallet balance unavailable category=${error.runtimeType}');
+        log.warning(
+          'Wallet balance unavailable category=${_classify(error, 'balance').logCode}',
+        );
       }
       return null;
     }
@@ -362,10 +365,8 @@ class WalletRepository implements SeedReferencePort {
         fingerprints.add(fingerprint);
       }
       return Ok(fingerprints);
-    } catch (error) {
-      log.warning(
-        'Wallet custody references unavailable category=${error.runtimeType}',
-      );
+    } catch (_) {
+      log.warning('Wallet custody references unavailable category=storage');
       return const Err(WalletStorageFailure('custody references unavailable'));
     }
   }

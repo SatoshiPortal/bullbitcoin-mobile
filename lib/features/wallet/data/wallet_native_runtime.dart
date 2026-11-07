@@ -137,7 +137,7 @@ final class WalletNativeRuntime implements WalletNativeLifecycle {
       if (_initializationFailure != error.runtimeType) {
         _initializationFailure = error.runtimeType;
         log.warning(
-          'Native wallet initialization unavailable category=${error.runtimeType}',
+          'Native wallet initialization unavailable category=${error is WalletSnapshotException ? error.failure.logCode : 'storage'}',
         );
       }
     }
@@ -207,7 +207,7 @@ final class WalletNativeRuntime implements WalletNativeLifecycle {
             ? error.failure
             : const TransactionSyncStorageFailure();
         log.warning(
-          'Native wallet unavailable network=${descriptor.key.network} category=${error.runtimeType}',
+          'Native wallet unavailable network=${descriptor.key.network} category=${error is WalletSnapshotException ? error.failure.logCode : 'storage'}',
         );
       }
     }

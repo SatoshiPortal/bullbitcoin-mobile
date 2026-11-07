@@ -335,9 +335,9 @@ class SyncCoordinator {
   Future<void> _refreshPersistedRevisions() async {
     try {
       await _refreshRevisions?.call();
-    } on Exception catch (error) {
+    } on Exception {
       log.warning(
-        'Wallet resume revision read unavailable category=${error.runtimeType}',
+        'Wallet resume revision read unavailable category=revision_read',
       );
     }
   }

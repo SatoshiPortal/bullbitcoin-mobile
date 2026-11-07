@@ -116,7 +116,7 @@ final class ElectrumSync {
             _failures[key] = failure.runtimeType;
             if (previousFailure != failure.runtimeType) {
               log.warning(
-                'Electrum sync failed category=${failure.runtimeType} elapsed_ms=${watch.elapsedMilliseconds}',
+                'Electrum sync failed category=${failure.logCode} elapsed_ms=${watch.elapsedMilliseconds}',
               );
             }
         }
