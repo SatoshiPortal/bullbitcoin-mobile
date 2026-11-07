@@ -7,7 +7,6 @@ sealed class TransactionSyncFailure extends Failure {
 
   /// Fixed support-log codes survive identifier redaction and carry no data.
   String get logCode => switch (this) {
-    TransactionSyncInvalidAddressFailure() => 'invalid_address',
     TransactionSyncBusyFailure() => 'busy',
     TransactionSyncNotFoundFailure() => 'not_found',
     TransactionSyncUnsupportedNetworkFailure(:final authorization) =>
@@ -18,6 +17,7 @@ sealed class TransactionSyncFailure extends Failure {
     TransactionSyncNeedsRepairFailure() => 'needs_repair',
     TransactionSyncRestartRequiredFailure() => 'restart_required',
     TransactionSyncInitialScanRequiredFailure() => 'initial_scan_required',
+    TransactionSyncInvalidAddressFailure() => 'invalid_address',
   };
 }
 
