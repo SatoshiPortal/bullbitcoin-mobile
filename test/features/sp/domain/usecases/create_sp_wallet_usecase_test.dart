@@ -1,3 +1,5 @@
+import 'dart:io';
+import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:primitives/primitives.dart';
@@ -83,6 +85,12 @@ void main() {
     test(
       'regtest requested refuses creation before custody or backend access',
       () async {
+        final directory = await Directory.systemTemp.createTemp('sp-refusal-');
+        log = Logger.replace(directory: directory);
+        addTearDown(() async {
+          await log.flush();
+          await directory.delete(recursive: true);
+        });
         final result = await usecase.execute(
           network: BitcoinNetwork.regtest,
           blindbitUrl: 'http://blindbit.example',
@@ -92,6 +100,9 @@ void main() {
         expect((result as Err).failure, isA<SpUnsupportedNetwork>());
         verifyZeroInteractions(secretUsecase);
         expect(accountRepo.createCount, 0);
+        expect((await log.readLogs()).map((row) => row.split('\t')[2]), [
+          'Capability refused feature=sp reason=unsupported',
+        ]);
       },
     );
 

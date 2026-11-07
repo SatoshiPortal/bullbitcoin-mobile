@@ -1,3 +1,5 @@
+import 'dart:io';
+import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/settings/domain/settings_store_failure.dart';
@@ -51,6 +53,29 @@ void main() {
         isDevModeEnabled: true,
       ),
     );
+  });
+
+  test('developer mode persists only a successful settings outcome', () async {
+    final directory = await Directory.systemTemp.createTemp('dev-mode-log-');
+    log = Logger.replace(directory: directory);
+    addTearDown(() async {
+      await log.flush();
+      await directory.delete(recursive: true);
+    });
+    when(
+      () => repository.setIsDevMode(any()),
+    ).thenAnswer((_) async => const Ok(null));
+    final usecase = SetIsDevModeUsecase(settingsRepository: repository);
+    expect(await usecase.execute(true), isA<Ok>());
+    expect(await usecase.execute(false), isA<Ok>());
+    when(
+      () => repository.setIsDevMode(any()),
+    ).thenAnswer((_) async => const Err(_sanitized));
+    expect(await usecase.execute(true), isA<Err>());
+    expect((await log.readLogs()).map((row) => row.split('\t')[2]), [
+      'Developer mode saved enabled=true',
+      'Developer mode saved enabled=false network=mainnet',
+    ]);
   });
 
   /// Every write use-case is the same thin lift, so they are proven the same
