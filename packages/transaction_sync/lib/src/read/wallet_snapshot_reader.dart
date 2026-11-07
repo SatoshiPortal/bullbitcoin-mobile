@@ -98,7 +98,7 @@ final class WalletSnapshotReader {
       final result = await _readAdmitted<T>(descriptor, hydrate);
       final category = switch (result) {
         Ok(:final value) => value.stale ? 'stale' : 'fresh',
-        Err(:final failure) => failure.runtimeType.toString(),
+        Err(:final failure) => failure.logCode,
       };
       if (_diagnostics[key] != category) {
         _diagnostics[key] = category;
