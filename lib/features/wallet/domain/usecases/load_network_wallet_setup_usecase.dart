@@ -54,6 +54,9 @@ final class LoadNetworkWalletSetupUsecase {
               if (defaultWalletSecretRefusal(value.info) == null) {
                 reusable.add(fingerprint);
               }
+            case Err(failure: SecretNotFoundFailure()):
+              // Public descriptors can reference secrets held outside the app.
+              continue;
             case Err():
               return const Err(NetworkWalletSetupUnavailableFailure());
           }
