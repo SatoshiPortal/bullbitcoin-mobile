@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/wallet/domain/wallet_discovery_failure.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet_failure_log_code.dart';
 import 'dart:async';
 import 'dart:io';
@@ -138,6 +139,160 @@ void main() {
       await Future.wait([routine, pull]);
       verify(() => syncWallet.execute(wallet, discover: false)).called(1);
       verifyNever(() => syncWallet.execute(wallet, discover: true));
+    },
+  );
+
+  _Wallet manualWallet(String id, {bool liquid = false}) {
+    final wallet = _Wallet();
+    when(() => wallet.id).thenReturn(id);
+    when(
+      () => wallet.network,
+    ).thenReturn(liquid ? Network.liquidMainnet : Network.bitcoinMainnet);
+    when(() => wallet.isBitcoin).thenReturn(!liquid);
+    when(() => wallet.isLiquid).thenReturn(liquid);
+    return wallet;
+  }
+
+  for (final failRoutine in [false, true]) {
+    test(
+      'targeted discovery survives routine failure=$failRoutine and stays serialized',
+      () async {
+        final a = manualWallet('a');
+        final b = manualWallet('b');
+        final routineGate = Completer<void>();
+        final manualGate = Completer<void>();
+        when(() => getWallets.execute()).thenAnswer((_) async => Ok([a, b]));
+        when(
+          () => getWallets.execute(onlyBitcoin: true),
+        ).thenAnswer((_) async => Ok([a]));
+        when(
+          () => syncWallet.execute(a, discover: false),
+        ).thenAnswer((_) => routineGate.future);
+        when(
+          () => syncWallet.execute(a, discover: true),
+        ).thenAnswer((_) => manualGate.future);
+        final routine = coordinator.sync(only: {SyncKind.bitcoin});
+        final settledRoutine = failRoutine
+            ? expectLater(routine, throwsA(isA<SyncCoordinatorException>()))
+            : routine;
+        await pumpEventQueue();
+        var done = false;
+        final manual = coordinator.discoverWallet('a').then((result) {
+          expect(result, isA<Ok<void, WalletDiscoveryFailure>>());
+          done = true;
+        });
+        final duplicate = coordinator.discoverWallet('a');
+        await pumpEventQueue();
+        verifyNever(() => syncWallet.execute(a, discover: true));
+        if (failRoutine) {
+          routineGate.completeError(Exception('routine'));
+        } else {
+          routineGate.complete();
+        }
+        await settledRoutine;
+        await pumpEventQueue();
+        expect(done, isFalse);
+        verify(() => syncWallet.execute(a, discover: true)).called(1);
+        verifyNever(
+          () => syncWallet.execute(b, discover: any(named: 'discover')),
+        );
+        manualGate.complete();
+        await Future.wait([manual, duplicate]);
+        expect(done, isTrue);
+      },
+    );
+  }
+
+  test(
+    'manual liquid uses normal sync and does not throttle other wallets',
+    () async {
+      final wallet = manualWallet('liquid', liquid: true);
+      when(() => getWallets.execute()).thenAnswer((_) async => Ok([wallet]));
+      when(
+        () => getWallets.execute(onlyLiquid: true),
+      ).thenAnswer((_) async => Ok([wallet]));
+      when(
+        () => syncWallet.execute(wallet, discover: false),
+      ).thenAnswer((_) async {});
+      expect(
+        await coordinator.discoverWallet('liquid'),
+        isA<Ok<void, WalletDiscoveryFailure>>(),
+      );
+      await coordinator.sync(only: {SyncKind.liquid});
+      verify(() => syncWallet.execute(wallet, discover: false)).called(2);
+      verifyNever(() => syncWallet.execute(wallet, discover: true));
+    },
+  );
+
+  test(
+    'queued discovery rechecks the active environment and wallet existence',
+    () async {
+      final a = manualWallet('a');
+      final blocker = Completer<void>();
+      var wallets = <Wallet>[a];
+      when(() => getWallets.execute()).thenAnswer((_) async => Ok(wallets));
+      when(() => getWallets.execute(onlyBitcoin: true)).thenAnswer((_) async {
+        await blocker.future;
+        return const Ok(<Wallet>[]);
+      });
+      final routine = coordinator.sync(only: {SyncKind.bitcoin});
+      await pumpEventQueue();
+      final manual = coordinator.discoverWallet('a');
+      await pumpEventQueue();
+      wallets = [];
+      blocker.complete();
+      await routine;
+      expect(
+        await manual,
+        isA<Err<void, WalletDiscoveryFailure>>().having(
+          (result) => result.failure,
+          'failure',
+          isA<WalletDiscoveryUnavailableFailure>(),
+        ),
+      );
+      verifyNever(
+        () => syncWallet.execute(a, discover: any(named: 'discover')),
+      );
+    },
+  );
+
+  test(
+    'manual failure is typed and its start and finish are persisted once',
+    () async {
+      final directory = await Directory.systemTemp.createTemp(
+        'manual-sync-logs-',
+      );
+      log = Logger.replace(directory: directory, reporter: _Reporter());
+      addTearDown(() async {
+        await log.flush();
+        await directory.delete(recursive: true);
+      });
+      final a = manualWallet('private-wallet-id');
+      when(() => getWallets.execute()).thenAnswer((_) async => Ok([a]));
+      when(
+        () => syncWallet.execute(a, discover: true),
+      ).thenThrow(Exception('sync'));
+      expect(
+        await coordinator.discoverWallet(a.id),
+        isA<Err<void, WalletDiscoveryFailure>>().having(
+          (result) => result.failure,
+          'failure',
+          isA<WalletDiscoverySyncFailure>(),
+        ),
+      );
+      final lines = await log.readLogs();
+      expect(
+        lines.where((line) => line.contains('discovery started reason=manual')),
+        hasLength(1),
+      );
+      expect(
+        lines.where(
+          (line) =>
+              line.contains('discovery finished reason=manual outcome=failed'),
+        ),
+        hasLength(1),
+      );
+      expect(lines.join(), isNot(contains(a.id)));
     },
   );
 
