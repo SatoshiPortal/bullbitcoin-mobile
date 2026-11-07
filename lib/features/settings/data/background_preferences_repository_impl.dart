@@ -24,7 +24,13 @@ final class BackgroundPreferencesRepositoryImpl
   @override
   Future<Result<BackgroundSyncInterval, SettingsFailure>> interval() async {
     try {
-      return Ok(await _intervals.read());
+      while (true) {
+        final generation = _generation;
+        // Wait for persistence only; scheduling must not block preference reads.
+        await _pendingWrite;
+        final interval = await _intervals.read();
+        if (generation == _generation) return Ok(interval);
+      }
     } on Exception {
       log.warning('Background interval read failed');
       return const Err(SettingsStorageFailure());
