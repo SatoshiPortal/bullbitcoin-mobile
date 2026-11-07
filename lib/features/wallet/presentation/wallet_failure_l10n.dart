@@ -22,6 +22,7 @@ extension WalletFailureL10n on WalletFailure {
     // The list loaded; only the sync behind it failed. Saying "could not be
     // loaded" above a visibly loaded list would contradict the screen.
     WalletSyncFailure() => context.loc.walletBalancesMayBeStale,
+    WalletSyncBusyFailure() ||
     WalletStorageFailure() ||
     WalletTransactionLookupFailure() ||
     WalletLwkStatusConflictFailure() ||

@@ -9,6 +9,7 @@ extension WalletFailureLogCode on WalletFailure {
     WalletCannotDeleteDefaultFailure() => 'default_wallet',
     WalletCannotDeleteWithOngoingSwapsFailure() => 'ongoing_swaps',
     WalletSyncFailure() => 'sync',
+    WalletSyncBusyFailure() => 'busy',
     WalletLwkStatusConflictFailure() => 'status_conflict',
     WalletUnexpectedFailure() => 'unexpected',
   };

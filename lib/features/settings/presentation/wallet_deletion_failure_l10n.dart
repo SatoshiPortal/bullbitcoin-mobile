@@ -25,6 +25,7 @@ extension WalletDeletionFailureL10n on WalletFailure {
     WalletStorageFailure() ||
     WalletTransactionLookupFailure() ||
     WalletLwkStatusConflictFailure() ||
+    WalletSyncBusyFailure() ||
     WalletSyncFailure() ||
     NoWalletsFoundFailure() ||
     // Never `logMessage`: the reason is for the log, not the screen.

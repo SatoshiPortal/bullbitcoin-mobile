@@ -16,12 +16,21 @@ final class ForegroundWalletSync {
 
   Stream<String> get started => _sync.started.map((key) => key.id);
   Stream<String> get finished => _sync.finished.map((event) => event.key.id);
-  Stream<ElectrumSyncResult> get results => _sync.finished.map(
-    (event) => ElectrumSyncResult(
-      isLiquid: event.key.network is LiquidNetwork,
-      success: event.result is Ok<SyncCompletion, TransactionSyncFailure>,
-    ),
-  );
+  Stream<ElectrumSyncResult> get results => _sync.finished
+      // Contention says nothing about server reachability. Completion still
+      // reaches finished so callers clear their syncing state.
+      .where(
+        (event) => switch (event.result) {
+          Err(failure: TransactionSyncBusyFailure()) => false,
+          _ => true,
+        },
+      )
+      .map(
+        (event) => ElectrumSyncResult(
+          isLiquid: event.key.network is LiquidNetwork,
+          success: event.result is Ok<SyncCompletion, TransactionSyncFailure>,
+        ),
+      );
 
   bool isSyncing({String? walletId}) => _sync.isSyncing(walletId: walletId);
 
