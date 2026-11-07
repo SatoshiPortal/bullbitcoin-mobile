@@ -154,20 +154,19 @@ class AppLocator {
     WalletLocator.setup(locator);
     SpLocator.setup(locator);
     SettingsLocator.setup(locator);
-    locator.registerFactory<BackgroundPreferencesCubit>(
-      () => BackgroundPreferencesCubit(
-        BackgroundPreferencesUsecase(
-          BackgroundPreferencesRepositoryImpl(
-            const SharedPreferencesBackgroundSyncIntervalStore(),
-            NotificationPermissionsFacade(
-              gateway: FlutterNotificationPermissionGateway(
-                channelId: PaymentNotifications.channelId,
-              ),
-            ),
-            configureBackgroundTasks,
+    final backgroundPreferences = BackgroundPreferencesUsecase(
+      BackgroundPreferencesRepositoryImpl(
+        const SharedPreferencesBackgroundSyncIntervalStore(),
+        NotificationPermissionsFacade(
+          gateway: FlutterNotificationPermissionGateway(
+            channelId: PaymentNotifications.channelId,
           ),
         ),
+        configureBackgroundTasks,
       ),
+    );
+    locator.registerFactory<BackgroundPreferencesCubit>(
+      () => BackgroundPreferencesCubit(backgroundPreferences),
     );
     const LogsFeature().setup(locator);
     BitcoinPriceLocator.setup(locator);
