@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/wallet/presentation/network_wallet_setup_cubit.dart';
 import 'package:bb_mobile/features/settings/public/settings_facade.dart';
 import 'package:primitives/primitives.dart' show NetworkCapability;
 import 'dart:io';
@@ -179,9 +180,13 @@ class AppRouter {
           );
         },
         routes: [
-          WalletRouter.walletHomeRoute,
+          WalletRouter.walletHomeRoute(
+            createSetupCubit: () => locator<NetworkWalletSetupCubit>(),
+          ),
           ...ExchangeRouter.routes(
             ExchangeRouterConfig(
+              networkUnavailable: () =>
+                  locator<ExchangeFacade>().networkUnavailable(),
               isSuperuser: (context) =>
                   context.read<SettingsCubit>().state.isSuperuser ?? false,
               homePath: WalletRoute.walletHome.path,

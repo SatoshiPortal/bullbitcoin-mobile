@@ -1,25 +1,26 @@
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/features/wallet/presentation/network_wallet_setup_cubit.dart';
-import 'package:bb_mobile/locator.dart';
 import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:primitives/primitives.dart';
 
 /// The route supplies navigation; this view only presents setup state/actions.
 class EmptyNetworkWallets extends StatelessWidget {
+  final NetworkWalletSetupCubit Function() createSetupCubit;
   final VoidCallback onMainnet;
   final VoidCallback onImport;
 
   const EmptyNetworkWallets({
     super.key,
+    required this.createSetupCubit,
     required this.onMainnet,
     required this.onImport,
   });
 
   @override
   Widget build(BuildContext context) => BlocProvider(
-    create: (_) => locator<NetworkWalletSetupCubit>()..load(),
+    create: (_) => createSetupCubit()..load(),
     child: BlocListener<WalletBloc, WalletState>(
       listenWhen: (previous, current) =>
           previous.isRefreshing && !current.isRefreshing,

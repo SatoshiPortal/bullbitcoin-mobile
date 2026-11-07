@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/wallet/presentation/network_wallet_setup_cubit.dart';
 import 'package:bb_mobile/features/onboarding/ui/onboarding_router.dart';
 import 'package:bb_mobile/features/wallet/ui/screens/wallet_detail_screen.dart';
 import 'package:bb_mobile/features/wallet/ui/screens/wallet_home_screen.dart';
@@ -13,13 +14,16 @@ enum WalletRoute {
 }
 
 class WalletRouter {
-  static final walletHomeRoute = GoRoute(
+  static GoRoute walletHomeRoute({
+    required NetworkWalletSetupCubit Function() createSetupCubit,
+  }) => GoRoute(
     name: WalletRoute.walletHome.name,
     path: WalletRoute.walletHome.path,
     pageBuilder: (context, state) {
       return NoTransitionPage(
         key: state.pageKey,
         child: WalletHomeScreen(
+          createSetupCubit: createSetupCubit,
           onEmptyMainnet: () =>
               context.goNamed(OnboardingRoute.onboarding.name),
           onImportNetworkWallet: () =>

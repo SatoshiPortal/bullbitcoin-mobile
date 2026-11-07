@@ -1,7 +1,3 @@
-import 'package:bb_mobile/locator.dart';
-import 'package:bb_mobile/core/utils/result.dart';
-import 'package:bb_mobile/features/exchange/domain/exchange_failure.dart';
-import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_web_settings_usecase.dart';
 import 'dart:io';
 
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
@@ -30,6 +26,7 @@ enum ExchangeRoute {
 }
 
 class ExchangeRouterConfig {
+  final Future<bool> Function() networkUnavailable;
   final bool Function(BuildContext) isSuperuser;
   final String homePath;
   final List<Widget> Function() buildHomeCards;
@@ -38,6 +35,7 @@ class ExchangeRouterConfig {
   final void Function(BuildContext) onOpenSettings;
 
   const ExchangeRouterConfig({
+    required this.networkUnavailable,
     required this.isSuperuser,
     required this.homePath,
     required this.buildHomeCards,
@@ -48,20 +46,12 @@ class ExchangeRouterConfig {
 }
 
 class ExchangeRouter {
-  static Future<bool> _unsupportedNetwork() async {
-    final result = await locator<GetExchangeWebSettingsUsecase>().execute();
-    return switch (result) {
-      Err(failure: ExchangeUnsupportedNetworkFailure()) => true,
-      _ => false,
-    };
-  }
-
   static List<RouteBase> routes(ExchangeRouterConfig config) => [
     GoRoute(
       name: ExchangeRoute.exchangeHome.name,
       path: ExchangeRoute.exchangeHome.path,
       redirect: (context, state) async {
-        if (await _unsupportedNetwork()) return config.homePath;
+        if (await config.networkUnavailable()) return config.homePath;
         if (!context.mounted) return null;
         final notLoggedIn = context.read<ExchangeCubit>().state.notLoggedIn;
         if (notLoggedIn) {
@@ -96,7 +86,7 @@ class ExchangeRouter {
       name: ExchangeRoute.exchangeLanding.name,
       path: ExchangeRoute.exchangeLanding.path,
       redirect: (context, state) async =>
-          await _unsupportedNetwork() ? config.homePath : null,
+          await config.networkUnavailable() ? config.homePath : null,
       pageBuilder: (context, state) {
         // Show v2 screen for iOS without superuser, v1 for iOS with superuser, regular screen for Android
         void onExit() => config.onExit(context);
@@ -118,7 +108,7 @@ class ExchangeRouter {
       name: ExchangeRoute.exchangeLoginForSupport.name,
       path: ExchangeRoute.exchangeLoginForSupport.path,
       redirect: (context, state) async =>
-          await _unsupportedNetwork() ? config.homePath : null,
+          await config.networkUnavailable() ? config.homePath : null,
       pageBuilder: (context, state) {
         return NoTransitionPage(
           key: state.pageKey,
@@ -141,7 +131,7 @@ class ExchangeRouter {
       name: ExchangeRoute.exchangeAuth.name,
       path: ExchangeRoute.exchangeAuth.path,
       redirect: (context, state) async =>
-          await _unsupportedNetwork() ? config.homePath : null,
+          await config.networkUnavailable() ? config.homePath : null,
       pageBuilder: (context, state) {
         final draft = state.extra as ExchangeSupportChatDraft?;
         final fromSupport = state.uri.queryParameters['from'] == 'support';

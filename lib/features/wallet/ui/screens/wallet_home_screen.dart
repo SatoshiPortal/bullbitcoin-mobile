@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/wallet/presentation/network_wallet_setup_cubit.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/empty_network_wallets.dart';
 import 'package:bb_mobile/core/themes/colors.dart';
 import 'package:bb_mobile/features/announcements/ui/widgets/announcement_carousel.dart';
@@ -15,11 +16,13 @@ import 'package:go_router/go_router.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_refresh_body.dart';
 
 class WalletHomeScreen extends StatefulWidget {
+  final NetworkWalletSetupCubit Function() createSetupCubit;
   final VoidCallback onEmptyMainnet;
   final VoidCallback onImportNetworkWallet;
 
   const WalletHomeScreen({
     super.key,
+    required this.createSetupCubit,
     required this.onEmptyMainnet,
     required this.onImportNetworkWallet,
   });
@@ -106,6 +109,7 @@ class _WalletHomeScreenState extends State<WalletHomeScreen> {
     );
     if (noWallets) {
       return EmptyNetworkWallets(
+        createSetupCubit: widget.createSetupCubit,
         onMainnet: widget.onEmptyMainnet,
         onImport: widget.onImportNetworkWallet,
       );

@@ -3,7 +3,7 @@ import 'package:primitives/primitives.dart'
 import 'package:bb_mobile/core/mempool/domain/services/mempool_url_builder.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/locator.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:bull_ui/bull_ui.dart'
@@ -125,9 +125,11 @@ class AddressViewer extends StatelessWidget {
     return true;
   }
 
-  static Future<String?> _getExplorerUrlFor(String data) async {
+  static Future<String?> _getExplorerUrlFor(
+    String data,
+    MempoolUrlBuilder builder,
+  ) async {
     if (!_canExplore(data)) return null;
-    final builder = locator<MempoolUrlBuilder>();
     final parsed = await Satoshifier.tryParse(data);
     return switch (parsed) {
       BitcoinAddress(:final address, :final network) => builder.bitcoinAddress(
@@ -155,6 +157,7 @@ class AddressViewer extends StatelessWidget {
     required String data,
     String? clipboardText,
   }) {
+    final builder = context.read<MempoolUrlBuilder>();
     return BullDialog.show<void>(
       context: context,
       padding: EdgeInsets.zero,
@@ -162,7 +165,7 @@ class AddressViewer extends StatelessWidget {
         data: data,
         clipboardText: clipboardText ?? data,
         dialogContext: dialogContext,
-        getExplorerUrl: () => _getExplorerUrlFor(data),
+        getExplorerUrl: () => _getExplorerUrlFor(data, builder),
       ),
     );
   }
