@@ -87,7 +87,10 @@ class ExchangeAutoswapProvider implements AutoswapProviderPort {
         return Err(AutoswapProviderFailure(failure.runtimeType.toString()));
       }
 
-      final balanceSat = liquidWallet.balanceSat.toInt();
+      final balanceSat = liquidWallet.balanceSat?.toInt();
+      if (balanceSat == null) {
+        return const Err(AutoswapExecutionFailure('Wallet unavailable'));
+      }
       if (!settings.passedRequiredBalance(balanceSat)) {
         return Err(
           AutoswapInsufficientBalanceFailure(
@@ -104,6 +107,7 @@ class ExchangeAutoswapProvider implements AutoswapProviderPort {
         walletId: liquidWallet.id,
       );
       final networkFeeSat = await _estimateNetworkFee(
+        balanceSat: balanceSat,
         wallet: liquidWallet,
         address: fallback.address,
         targetBalanceSat: settings.balanceThresholdSats,
@@ -239,8 +243,11 @@ class ExchangeAutoswapProvider implements AutoswapProviderPort {
     }
     final (_, actualFeeSat) = await _liquidWalletRepository
         .getPsetSizeAndAbsoluteFees(pset: pset);
-    final projectedBalanceSat =
-        wallet.balanceSat.toInt() - actualAmount - actualFeeSat;
+    final balance = wallet.balanceSat;
+    if (balance == null) {
+      return const Err(AutoswapExecutionFailure('Wallet unavailable'));
+    }
+    final projectedBalanceSat = balance.toInt() - actualAmount - actualFeeSat;
     if (projectedBalanceSat < settings.balanceThresholdSats) {
       return const Err(AutoswapTargetBalanceFailure());
     }
@@ -311,11 +318,12 @@ class ExchangeAutoswapProvider implements AutoswapProviderPort {
   }
 
   Future<int> _estimateNetworkFee({
+    required int balanceSat,
     required Wallet wallet,
     required String address,
     required int targetBalanceSat,
   }) async {
-    final provisionalAmount = wallet.balanceSat.toInt() - targetBalanceSat;
+    final provisionalAmount = balanceSat - targetBalanceSat;
     final pset = await _liquidWalletRepository.buildPset(
       walletId: wallet.id,
       address: address,

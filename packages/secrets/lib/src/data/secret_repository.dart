@@ -151,7 +151,7 @@ class SecretRepository {
   }, orElse: StoreSecretFailure.new);
 
   /// Compares the full seed, not merely the collision-prone fingerprint.
-  Future<Result<bool, SecretFailure>> contains({
+  Future<Result<SecretInfo?, SecretFailure>> find({
     required List<String> words,
     String? passphrase,
   }) {
@@ -162,14 +162,14 @@ class SecretRepository {
       );
       final id = Deriver.fingerprint.fingerprint(seed);
       final stored = await _source.fetchSecret(id);
-      if (stored == null) return false;
+      if (stored == null) return null;
       final existing = await _readOffIsolate(() => _seedOf(stored));
-      if (seed.length != existing.length) return false;
+      if (seed.length != existing.length) return null;
       var difference = 0;
       for (var i = 0; i < seed.length; i++) {
         difference |= seed[i] ^ existing[i];
       }
-      return difference == 0;
+      return difference == 0 ? _describe(id, stored) : null;
     }, orElse: FetchSecretFailure.new);
   }
 

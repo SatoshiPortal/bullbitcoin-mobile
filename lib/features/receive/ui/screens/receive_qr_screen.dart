@@ -20,6 +20,7 @@ import 'package:bb_mobile/core/widgets/text/currency_text.dart';
 import 'package:bb_mobile/features/ledger/ui/ledger_router.dart';
 import 'package:bb_mobile/features/ledger/ui/screens/ledger_action_screen.dart';
 import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
+import 'package:bb_mobile/features/receive/presentation/receive_failure_l10n.dart';
 import 'package:bb_mobile/features/receive/ui/receive_router.dart';
 import 'package:bb_mobile/features/receive/ui/widgets/receive_payjoin_toggle_button.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
@@ -112,6 +113,32 @@ class ReceiveQRDetails extends StatelessWidget {
     final isPayjoinSuppressedByAmount = context.select(
       (ReceiveBloc bloc) => bloc.state.isPayjoinSuppressedByAmount,
     );
+
+    final failure = context.select((ReceiveBloc bloc) => bloc.state.failure);
+    if (!isLightning && qrData.isEmpty && failure != null) {
+      return Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          children: [
+            BBText(
+              failure.toTranslated(context),
+              style: context.font.bodyMedium,
+            ),
+            const Gap(16),
+            BBButton.big(
+              label: context.loc.retry,
+              onPressed: () => context.read<ReceiveBloc>().add(
+                isBitcoin
+                    ? ReceiveBitcoinStarted(selectedWallet)
+                    : const ReceiveLiquidStarted(),
+              ),
+              bgColor: context.appColors.onSurface,
+              textColor: context.appColors.surface,
+            ),
+          ],
+        ),
+      );
+    }
 
     final gap = Device.screen.height * 0.02;
     return Padding(

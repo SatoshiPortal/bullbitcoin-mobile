@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/transactions/domain/usecases/watch_wallet_revisions_usecase.dart';
 import 'dart:async';
 import 'dart:collection';
 
@@ -20,6 +21,7 @@ part 'transactions_state.dart';
 
 class TransactionsCubit extends Cubit<TransactionsState> {
   TransactionsCubit({
+    WatchWalletRevisionsUsecase? watchWalletRevisionsUsecase,
     String? walletId,
     bool exchangeOnly = false,
     required this._getTransactionsUsecase,
@@ -32,9 +34,12 @@ class TransactionsCubit extends Cubit<TransactionsState> {
     _startedSyncSubscription = _watchStartedWalletSyncsUsecase
         .execute(walletId: walletId)
         .listen((_) => emit(state.copyWith(isSyncing: true)));
+    _revisionsSubscription = watchWalletRevisionsUsecase
+        ?.execute(walletId: walletId)
+        .listen((_) => _scheduleReload());
     _finishedSyncSubscription = _watchFinishedWalletSyncsUsecase
         .execute(walletId: walletId)
-        .listen((_) => _onSyncFinished());
+        .listen((_) => _scheduleReload());
   }
 
   final GetTransactionsUsecase _getTransactionsUsecase;
@@ -44,6 +49,7 @@ class TransactionsCubit extends Cubit<TransactionsState> {
 
   StreamSubscription? _startedSyncSubscription;
   StreamSubscription? _finishedSyncSubscription;
+  StreamSubscription? _revisionsSubscription;
   Timer? _debounceTimer;
 
   /// Bumped every time [loadTxs] replaces the list, so a [refreshLabels] that
@@ -54,6 +60,7 @@ class TransactionsCubit extends Cubit<TransactionsState> {
   @override
   Future<void> close() async {
     _debounceTimer?.cancel();
+    await _revisionsSubscription?.cancel();
     await Future.wait([
       _startedSyncSubscription?.cancel() ?? Future.value(),
       _finishedSyncSubscription?.cancel() ?? Future.value(),
@@ -106,7 +113,7 @@ class TransactionsCubit extends Cubit<TransactionsState> {
     emit(state.copyWith(filter: filter));
   }
 
-  Future<void> _onSyncFinished() async {
+  Future<void> _scheduleReload() async {
     _debounceTimer?.cancel();
     _debounceTimer = Timer(const Duration(seconds: 3), () {
       loadTxs();

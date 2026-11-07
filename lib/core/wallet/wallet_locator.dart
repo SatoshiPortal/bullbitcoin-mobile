@@ -2,8 +2,6 @@ import 'package:bb_mobile/core/electrum/domain/ports/electrum_servers_port.dart'
 import 'package:secrets/secrets.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
-import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
-import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/bdk_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/frozen_wallet_utxo_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/lwk_wallet_datasource.dart';
@@ -12,15 +10,12 @@ import 'package:bb_mobile/core/wallet/data/repositories/bitcoin_wallet_repositor
 import 'package:bb_mobile/core/wallet/data/repositories/liquid_wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_address_repository.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/wallet_transaction_repository_impl.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_utxo_repository_impl.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_utxo_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/check_backup_needed_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/check_wallet_status_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/check_wallet_syncing_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/create_default_wallets_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/delete_wallet_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_address_at_index_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_receive_address_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_transaction_usecase.dart';
@@ -33,20 +28,11 @@ import 'package:bb_mobile/core/wallet/domain/usecases/sync_wallet_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_electrum_sync_results_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_started_wallet_syncs_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_transaction_by_address_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_transaction_by_tx_id_usecase.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:get_it/get_it.dart';
 
 class WalletLocator {
   static Future<void> registerDatasources(GetIt locator) async {
-    locator.registerLazySingleton<BdkWalletDatasource>(
-      () => BdkWalletDatasource(),
-    );
-    locator.registerLazySingleton<LwkWalletDatasource>(
-      () => LwkWalletDatasource(),
-    );
-
     locator.registerLazySingleton<WalletMetadataDatasource>(
       () => WalletMetadataDatasource(sqlite: locator<SqliteDatabase>()),
     );
@@ -74,15 +60,6 @@ class WalletLocator {
       ),
     );
 
-    locator.registerLazySingleton<WalletRepository>(
-      () => WalletRepository(
-        walletMetadataDatasource: locator<WalletMetadataDatasource>(),
-        bdkWalletDatasource: locator<BdkWalletDatasource>(),
-        lwkWalletDatasource: locator<LwkWalletDatasource>(),
-        serversPort: locator<ElectrumServersPort>(),
-      ),
-    );
-
     locator.registerLazySingleton<WalletUtxoRepository>(
       () => WalletUtxoRepositoryImpl(
         walletMetadataDatasource: locator<WalletMetadataDatasource>(),
@@ -92,35 +69,9 @@ class WalletLocator {
         labelsFacade: locator<LabelsFacade>(),
       ),
     );
-
-    locator.registerLazySingleton<WalletAddressRepository>(
-      () => WalletAddressRepository(
-        walletMetadataDatasource: locator<WalletMetadataDatasource>(),
-        bdkWalletDatasource: locator<BdkWalletDatasource>(),
-        lwkWalletDatasource: locator<LwkWalletDatasource>(),
-        labelsFacade: locator<LabelsFacade>(),
-      ),
-    );
-
-    locator.registerLazySingleton<WalletTransactionRepository>(
-      () => WalletTransactionRepositoryImpl(
-        walletMetadataDatasource: locator<WalletMetadataDatasource>(),
-        labelsFacade: locator<LabelsFacade>(),
-        bdkWalletTransactionDatasource: locator<BdkWalletDatasource>(),
-        lwkWalletTransactionDatasource: locator<LwkWalletDatasource>(),
-        serversPort: locator<ElectrumServersPort>(),
-      ),
-    );
   }
 
   static void registerUsecases(GetIt locator) {
-    locator.registerFactory<CreateDefaultWalletsUsecase>(
-      () => CreateDefaultWalletsUsecase(
-        secrets: locator<Secrets>(),
-        settingsRepository: locator<SettingsRepository>(),
-        walletRepository: locator<WalletRepository>(),
-      ),
-    );
     locator.registerFactory<GetWalletUsecase>(
       () => GetWalletUsecase(walletRepository: locator<WalletRepository>()),
     );
@@ -157,16 +108,6 @@ class WalletLocator {
       ),
     );
 
-    locator.registerFactory<DeleteWalletUsecase>(
-      () => DeleteWalletUsecase(
-        walletRepository: locator<WalletRepository>(),
-        swapRepository: locator<BoltzSwapRepository>(
-          instanceName:
-              LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
-        ),
-        secrets: locator<Secrets>(),
-      ),
-    );
     locator.registerFactory<GetAddressAtIndexUsecase>(
       () => GetAddressAtIndexUsecase(
         walletAddressRepository: locator<WalletAddressRepository>(),
@@ -196,18 +137,6 @@ class WalletLocator {
     locator.registerFactory<GetWalletTransactionUsecase>(
       () => GetWalletTransactionUsecase(
         walletTransactionRepository: locator<WalletTransactionRepository>(),
-      ),
-    );
-    locator.registerFactory<WatchWalletTransactionByAddressUsecase>(
-      () => WatchWalletTransactionByAddressUsecase(
-        walletTransactionRepository: locator<WalletTransactionRepository>(),
-        walletRepository: locator<WalletRepository>(),
-      ),
-    );
-    locator.registerFactory<WatchWalletTransactionByTxIdUsecase>(
-      () => WatchWalletTransactionByTxIdUsecase(
-        walletTransactionRepository: locator<WalletTransactionRepository>(),
-        walletRepository: locator<WalletRepository>(),
       ),
     );
     locator.registerFactory<CheckWalletStatusUsecase>(

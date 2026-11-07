@@ -105,19 +105,23 @@ class SelectBestWalletUsecase {
   ) {
     // Default first
     for (final w in wallets) {
+      final balance = w.balanceSat;
+      if (balance == null) continue;
       if (w.isDefault &&
           w.network == network &&
           w.signer == SignerEntity.local &&
-          w.balanceSat.toInt() > satoshis &&
-          w.balanceSat.toInt() != 0) {
+          balance.toInt() > satoshis &&
+          balance.toInt() != 0) {
         return Ok(w);
       }
     }
 
     // Any wallet with enough funds from the same network
     for (final w in wallets) {
+      final balance = w.balanceSat;
+      if (balance == null) continue;
       if (w.network == network &&
-          w.balanceSat.toInt() > satoshis &&
+          balance.toInt() > satoshis &&
           w.signer == SignerEntity.local) {
         return Ok(w);
       }
@@ -125,7 +129,9 @@ class SelectBestWalletUsecase {
 
     // Any wallet with enough funds
     for (final w in wallets) {
-      if (w.balanceSat.toInt() >= satoshis && w.signer == SignerEntity.local) {
+      final balance = w.balanceSat;
+      if (balance == null) continue;
+      if (balance.toInt() >= satoshis && w.signer == SignerEntity.local) {
         return Ok(w);
       }
     }

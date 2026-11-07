@@ -48,22 +48,6 @@ class CheckForExistingDefaultWalletsUsecase {
     )) {
       case Ok(:final value):
         defaultWallets = value;
-      // LWK disagrees with its own stored status: drop its database and retry
-      // once. Keyed on the failure type now, not on matching the words
-      // "UpdateOnDifferentStatus" in an exception string.
-      case Err(failure: WalletLwkStatusConflictFailure()):
-        log.fine('LWK status conflict, deleting lwkDb');
-        await _walletRepository.deleteLwkDb();
-        log.fine('Deleted LwkDb, retrying getWallets');
-        switch (await _walletRepository.getWallets(
-          onlyDefaults: true,
-          environment: environment,
-        )) {
-          case Ok(:final value):
-            defaultWallets = value;
-          case Err(:final failure):
-            return Err(_walletCheckFailed(failure));
-        }
       case Err(:final failure):
         return Err(_walletCheckFailed(failure));
     }

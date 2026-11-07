@@ -11,6 +11,13 @@ graph TB
     %% Core infrastructure
     CORE[Core<br/>---<br/>Database, Secure Storage,<br/>API Clients, Tor Adapters, UI Kit,<br/>DI & Router setup,<br/>PIN encrypted storage,<br/>Domain Primitives/Value Objects]
     PRIMITIVES[Primitives Package]
+    TRANSACTION_SYNC[Transaction Sync Package<br/>Electrum sync, contracts and owner ports]
+    TRANSACTION_SYNC --> PRIMITIVES
+    TRANSACTION_SYNC --> BULL_LOGGER
+    ELECTRUM_SETTINGS --> TRANSACTION_SYNC
+    LABELS --> TRANSACTION_SYNC
+    WALLETS --> TRANSACTION_SYNC
+    WALLETS --> LABELS
     BULL_LOGGER[Bull Logger Package<br/>Logger, diagnostics, log files]
     BULL_PAYJOIN[Bull Payjoin Package<br/>Public contract]
 
@@ -78,8 +85,10 @@ graph TB
 
     %% Feature-to-feature dependencies (extracted from draw.io diagram)
     ADDRESS_MGMT --> LABELS
+    ADDRESS_MGMT -->|public revision stream| WALLETS
     ALL_SEED_VIEW --> APP_UNLOCK
     ALL_SEED_VIEW --> SECRETS
+    ALL_SEED_VIEW -->|public custody references| WALLETS
     ANNOUNCEMENTS --> SETTINGS
     ANNOUNCEMENTS --> SWAPS
     APP_STARTUP --> WALLETS
@@ -102,7 +111,7 @@ graph TB
     BUY --> TX_HISTORY
     COINS --> UTXO_MGMT
     COINS --> LABELS
-    COINS --> WALLETS
+    COINS -->|public revision stream| WALLETS
     DCA --> RECEIVE
     SETTINGS --> DEFAULT_WALLETS
     SETTINGS --> EXCHANGE
@@ -152,7 +161,7 @@ graph TB
     SEND --> SWAPS
     SEND --> TX_HISTORY
     SEND --> UTXO_MGMT
-    SEND --> WALLETS
+    SEND -->|public revision stream| WALLETS
     SETTINGS --> CORE
     SETTINGS --> BULL_PAYJOIN
     SETTINGS --> RECOVERBULL
@@ -178,7 +187,7 @@ graph TB
     TRANSFER --> RECEIVE
     TX_HISTORY --> BULL_PAYJOIN
     TX_HISTORY --> SWAPS
-    TX_HISTORY --> WALLETS
+    TX_HISTORY -->|public revision stream| WALLETS
     UTXO_MGMT --> LABELS
     UTXO_MGMT --> WALLETS
     WALLETS --> BIP85
