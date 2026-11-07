@@ -33,9 +33,17 @@ class ImportWatchOnlyCubit extends Cubit<ImportWatchOnlyState> {
   }
 
   void updateLabel(String label) {
-    if (state.watchOnlyWallet == null) return;
-    final watchOnlyWallet = state.watchOnlyWallet!.copyWith(label: label);
-    emit(state.copyWith(watchOnlyWallet: watchOnlyWallet));
+    final wallet = state.watchOnlyWallet;
+    if (wallet == null) return;
+    final failure = state.failure;
+    emit(
+      state.copyWith(
+        watchOnlyWallet: wallet.copyWith(label: label),
+        failure: failure is LabelRequiredFailure && label.isNotEmpty
+            ? null
+            : failure,
+      ),
+    );
   }
 
   Future<void> import() async {
