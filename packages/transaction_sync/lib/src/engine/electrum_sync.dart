@@ -119,7 +119,7 @@ final class ElectrumSync {
         final watch = Stopwatch()..start();
         final runId = ++_runSequence;
         final context =
-            'run=$runId chain=${key.network is BitcoinNetwork ? 'bitcoin' : 'liquid'} network=${key.network.env.name} script=${descriptor.scriptType.name} headless=false reason=${reason.name}';
+            'run=$runId chain=${key.network is BitcoinNetwork ? 'bitcoin' : 'liquid'} network=${key.network.env.name} script=${descriptor.scriptType.name} headless=$headless reason=${reason.name}';
         log.fine('Electrum sync started $context discovery=$discover');
         _started.add(key);
         var connectionSummary = 'route=unselected';
@@ -139,7 +139,7 @@ final class ElectrumSync {
           case Ok(:final value):
             final recovered = _failures.remove(key) != null;
             log.fine(
-              'Electrum sync finished $context mode=${value.mode.name} recovered=$recovered revision=unknown incoming=unknown elapsed_ms=${watch.elapsedMilliseconds} $connectionSummary ${value._cacheDiagnostics ?? ''}',
+              'Electrum sync finished $context mode=${value.mode.name} recovered=$recovered revision=${value.revision?.revision ?? 'unknown'} incoming=${value.incomingTxids?.length ?? 'unknown'} elapsed_ms=${watch.elapsedMilliseconds} $connectionSummary ${value._cacheDiagnostics ?? ''}',
             );
           case Err(:final failure):
             final previousFailure = _failures[key];
