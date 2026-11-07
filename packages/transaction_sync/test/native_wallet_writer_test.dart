@@ -259,6 +259,44 @@ void main() {
   });
 
   test(
+    'failed sync releases the writer; hydration can briefly contend',
+    () async {
+      expect(
+        await writer.sync(
+          key,
+          expectedGeneration: 1,
+          operation: FailedSync(false),
+        ),
+        isA<Err>(),
+      );
+      final admission = await writer.acquire(key);
+      expect(admission, isA<Ok>());
+      final lease =
+          (admission as Ok<LiquidReadLease, TransactionSyncFailure>).value;
+      try {
+        expect(
+          await writer.sync(
+            key,
+            expectedGeneration: 1,
+            operation: Sync((_) {}),
+          ),
+          isA<Err<WriterOutcome, TransactionSyncFailure>>().having(
+            (result) => result.failure,
+            'failure',
+            isA<TransactionSyncBusyFailure>(),
+          ),
+        );
+      } finally {
+        await lease.release();
+      }
+      expect(
+        await writer.sync(key, expectedGeneration: 1, operation: Sync((_) {})),
+        isA<Ok>(),
+      );
+    },
+  );
+
+  test(
     'repeated adoption preserves the revision of an unchanged store',
     () async {
       await initializeLogging(directory: dir);

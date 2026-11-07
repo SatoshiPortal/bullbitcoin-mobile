@@ -1,4 +1,6 @@
-import 'package:transaction_sync/transaction_sync.dart' show SyncReason;
+import 'package:transaction_sync/read.dart';
+import 'package:transaction_sync/transaction_sync.dart'
+    show SyncReason, TransactionSyncBusyFailure;
 import 'package:bb_mobile/features/wallet/domain/wallet_discovery_failure.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet_failure_log_code.dart';
 import 'dart:async';
@@ -186,6 +188,54 @@ void main() {
     when(() => wallet.isLiquid).thenReturn(liquid);
     return wallet;
   }
+
+  test(
+    'busy discovery fails and routine busy does not throttle a retry',
+    () async {
+      final directory = Directory.systemTemp.createTempSync('busy-sync-logs-');
+      log = Logger.replace(directory: directory, reporter: _Reporter());
+      addTearDown(() async {
+        await log.flush();
+        directory.deleteSync(recursive: true);
+      });
+      final wallet = manualWallet('busy-wallet');
+      when(() => getWallets.execute()).thenAnswer((_) async => Ok([wallet]));
+      when(
+        () => getWallets.execute(onlyBitcoin: true),
+      ).thenAnswer((_) async => Ok([wallet]));
+      when(
+        () => syncWallet.execute(
+          wallet,
+          discover: any(named: 'discover'),
+          reason: any(named: 'reason'),
+        ),
+      ).thenThrow(const WalletSnapshotException(TransactionSyncBusyFailure()));
+      expect(
+        await coordinator.discoverWallet(wallet.id),
+        isA<Err<void, WalletDiscoveryFailure>>(),
+      );
+      await expectLater(
+        coordinator.sync(only: {SyncKind.bitcoin}),
+        throwsA(isA<SyncCoordinatorException>()),
+      );
+      final lines = (await log.readLogs()).join();
+      expect(
+        lines,
+        contains('Wallet discovery finished reason=manual outcome=busy'),
+      );
+      expect(lines, contains('outcome=busy wallets=1 category=busy'));
+      expect(lines, isNot(contains('outcome=settled')));
+      when(
+        () => syncWallet.execute(
+          wallet,
+          discover: false,
+          reason: SyncReason.auto,
+        ),
+      ).thenAnswer((_) async {});
+      await coordinator.sync(only: {SyncKind.bitcoin});
+      verify(() => getWallets.execute(onlyBitcoin: true)).called(2);
+    },
+  );
 
   for (final failRoutine in [false, true]) {
     test(

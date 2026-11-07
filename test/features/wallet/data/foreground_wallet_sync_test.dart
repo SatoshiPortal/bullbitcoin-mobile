@@ -308,7 +308,13 @@ void main() {
         policy.failure = const TransactionSyncConnectionFailure();
         await expectLater(
           usecase.execute(wallet, reason: reason),
-          throwsA(isA<SyncWalletException>()),
+          throwsA(
+            isA<WalletSnapshotException>().having(
+              (error) => error.failure,
+              'failure',
+              isA<TransactionSyncConnectionFailure>(),
+            ),
+          ),
         );
         final rows = (await log.readLogs())
             .where((row) => row.contains('Electrum sync '))
@@ -425,15 +431,25 @@ void main() {
     },
   );
 
-  test(
-    'writer busy skips the call and retains its visible unsuccessful result',
-    () async {
-      policy.failure = const TransactionSyncBusyFailure();
-      final result = bridge.results.first;
-      await bridge.synchronize(row);
-      expect((await result).success, isFalse);
-    },
-  );
+  test('writer busy fails through the real foreground usecase', () async {
+    policy.failure = const TransactionSyncBusyFailure();
+    final result = bridge.results.first;
+    final wallet =
+        (await repository.getWallet(id) as Ok<Wallet, WalletFailure>).value;
+    await expectLater(
+      SyncWalletUsecase(
+        walletRepository: repository,
+      ).execute(wallet, discover: true, reason: SyncReason.manual),
+      throwsA(
+        isA<WalletSnapshotException>().having(
+          (error) => error.failure,
+          'failure',
+          isA<TransactionSyncBusyFailure>(),
+        ),
+      ),
+    );
+    expect((await result).success, isFalse);
+  });
 
   test('transaction reads delegate sync to the same operation', () async {
     when(
