@@ -1,6 +1,6 @@
 # Feature Dependencies
 
-This diagram shows the dependencies between features in the Bull Bitcoin Mobile application. It helps visualize the dependency graph and ensures there are no cyclic dependencies.
+This diagram shows the dependencies between features in the Bull Bitcoin Mobile application. It helps visualize the dependency graph, including known legacy cycles that remain to be removed.
 
 **Diagram Type**: This is a **Package Dependency Diagram** (also known as Module Dependency Graph or Component Dependency Diagram in UML).
 
@@ -198,6 +198,8 @@ graph TB
     SETTINGS --> SP
     %% SP receives a foreground flag; swap owns the scheduling port implemented by wallet.
     WALLETS -->|public wallet/scan capabilities| SP
+    SP -->|legacy: wallet repository via core barrel| WALLETS
+    SWAPS -->|legacy: wallet repository and wallet navigation| WALLETS
     SWAPS --> UTXO_MGMT
     CORE --> TOR
     ELECTRUM_SETTINGS --> TOR
@@ -261,6 +263,8 @@ graph TB
 ## Foreground synchronization
 
 Wallet owns the private foreground synchronization queue and consumes the SP and swap facades. SP receives an explicit foreground-start flag from composition. Swap's watcher calls its own scheduling usecase and port; wallet implements that published port. Runtime callbacks enter the wallet queue without introducing an SP/swap source dependency on wallet synchronization. The swap facade keeps its direct refresh path so a queued pass never enqueues itself.
+
+The pre-existing reverse source edges remain: SP uses the wallet repository via the `core/wallet` re-export in `get_sp_secret_usecase.dart` and `sp_locator.dart`; swap uses the same barrel in `swap_locator.dart` and imports `wallet_router.dart` in `swap_in_progress_page.dart`. Together with wallet’s facade imports, these retain the legacy wallet↔SP and wallet↔swap cycles. Removing those repository/navigation dependencies is outside the foreground sync scope. `test/architecture/foreground_sync_dependencies_test.dart` resolves feature ownership through imports and transitive exports, including public barrels, and rejects new feature edges against an explicit baseline; it does not claim that the existing graph is acyclic.
 
 ## Core Dependencies
 
