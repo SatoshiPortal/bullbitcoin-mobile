@@ -2,7 +2,6 @@ import 'package:bb_mobile/core/sync/sync_coordinator.dart';
 import 'package:bb_mobile/core/sync/sync_trigger.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
-import 'package:bull_logger/bull_logger.dart';
 import 'package:meta/meta.dart';
 
 /// Runs a wallet sync round.
@@ -24,8 +23,8 @@ class SyncWalletsUsecase {
     try {
       await _syncCoordinator.sync(trigger: trigger);
       return const Ok(null);
-    } catch (e, st) {
-      log.warning('SyncWallets: sync round failed', error: e, trace: st);
+    } catch (e) {
+      // The engine owns the failure diagnostic; coalesced callers only map it.
       return Err(WalletSyncFailure('sync: ${e.runtimeType}'));
     }
   }

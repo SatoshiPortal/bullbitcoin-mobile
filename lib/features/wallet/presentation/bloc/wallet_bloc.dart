@@ -252,7 +252,6 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     if (await _syncWalletsUsecase.execute(trigger: event.trigger) case Err(
       :final failure,
     )) {
-      log.warning('Wallet refresh sync: ${failure.logMessage}');
       syncFailure = failure;
     }
 
