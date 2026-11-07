@@ -66,6 +66,63 @@ void main() {
     directory.deleteSync(recursive: true);
   });
 
+  for (final pending in [true, false]) {
+    test(
+      'unavailable wallet does not block healthy wallet (pending=$pending)',
+      () async {
+        final disabled = (await queue.reconcileAndClaim([
+          stamp(1),
+        ], chain: WalletSyncChain.bitcoin)).single;
+        await queue.completeFailure(disabled, permanent: true);
+        revisions.unavailable = key;
+        revisions.pending = pending;
+        writer.operation = () async => Ok(
+          BackgroundSyncOutcome(
+            revision: WalletRevision(key: second, generation: 1, revision: 2),
+            incomingTxids: null,
+            completedAt: DateTime.utc(2026),
+          ),
+        );
+        await task(keys: [key, second]).executeAll();
+        expect(writer.allowInitialScan, [false]);
+        revisions.unavailable = null;
+        // A temporary read failure must not erase the permanent retry state.
+        final claims = await queue.reconcileAndClaim([
+          stamp(1),
+        ], chain: WalletSyncChain.bitcoin);
+        expect(claims, isEmpty);
+      },
+    );
+  }
+
+  test(
+    'unavailable unseen wallet cannot block a previously synced wallet',
+    () async {
+      final healthy = WalletRevision(key: second, generation: 1, revision: 1);
+      final claims = await queue.reconcileAndClaim([
+        stamp(1),
+        healthy,
+      ], chain: WalletSyncChain.bitcoin);
+      for (final claim in claims) {
+        if (claim.key == key) {
+          await queue.release(claim);
+        } else {
+          await queue.completeSuccess(claim);
+        }
+      }
+      revisions.unavailable = key;
+      writer.operation = () async => Ok(
+        BackgroundSyncOutcome(
+          revision: healthy,
+          incomingTxids: null,
+          completedAt: DateTime.utc(2026),
+        ),
+      );
+      await task(keys: [key, second]).executeAll();
+      expect(writer.allowInitialScan, [false]);
+    },
+  );
+
   test(
     'background commit replay announces payment with no new discovery',
     () async {
@@ -235,15 +292,21 @@ final class _Writer implements BackgroundWalletSync {
 
 final class _Revisions implements WalletRevisionReader {
   int revision = 1;
+  WalletKey? unavailable;
+  bool pending = true;
   @override
   Future<Result<WalletRevisionState, TransactionSyncFailure>> read(
     WalletKey key,
-  ) async => Ok(
-    WalletRevisionState(
-      stamp: WalletRevision(key: key, generation: 1, revision: revision),
-      lifecycle: WalletLifecycle.active,
-    ),
-  );
+  ) async => key == unavailable && !pending
+      ? const Err(TransactionSyncNotFoundFailure())
+      : Ok(
+          WalletRevisionState(
+            stamp: WalletRevision(key: key, generation: 1, revision: revision),
+            lifecycle: key == unavailable
+                ? WalletLifecycle.pendingWrite
+                : WalletLifecycle.active,
+          ),
+        );
   @override
   Stream<WalletRevisionState> watch(WalletKey key) => const Stream.empty();
 }
