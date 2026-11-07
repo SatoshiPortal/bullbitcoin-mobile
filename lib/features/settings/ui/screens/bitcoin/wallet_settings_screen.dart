@@ -33,7 +33,8 @@ class _WalletSettingsScreenState extends State<WalletSettingsScreen> {
             child: Column(
               children: [
                 for (final id in walletSettingsItemOrder)
-                  items.byId(id).buildTile(context),
+                  for (final item in items.where((item) => item.id == id))
+                    item.buildTile(context),
                 for (final item in items.inSection(SettingsItemSection.wallet))
                   if (!walletSettingsItemOrder.contains(item.id))
                     item.buildTile(context),
