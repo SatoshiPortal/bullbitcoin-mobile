@@ -1,3 +1,10 @@
+import 'package:background_tasks/background_tasks.dart';
+import 'package:notifications/notifications.dart';
+import 'package:bb_mobile/background_setup.dart';
+import 'package:bb_mobile/features/settings/data/background_preferences_repository_impl.dart';
+import 'package:bb_mobile/features/settings/domain/usecases/background_preferences_usecase.dart';
+import 'package:bb_mobile/features/settings/presentation/bloc/background_preferences_cubit.dart';
+import 'package:bb_mobile/features/wallet/data/payment_notifications.dart';
 import 'package:bb_mobile/core/core_locator.dart';
 import 'package:bb_mobile/core/status/status_locator.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
@@ -142,13 +149,27 @@ class AppLocator {
     AppUnlockLocator.setup(locator);
     OnboardingLocator.setup(locator);
     AllSeedViewLocator.setup(locator);
-    // SP must register before settings/wallet: their wrapper use cases
-    // resolve locator<SpFacade>().
+    // SP starts watchers eagerly, so its wallet infrastructure must exist.
+    // Wallet's SP use cases resolve the facade lazily, after registration.
+    WalletLocator.setup(locator);
     SpLocator.setup(locator);
     SettingsLocator.setup(locator);
+    final backgroundPreferences = BackgroundPreferencesUsecase(
+      BackgroundPreferencesRepositoryImpl(
+        const SharedPreferencesBackgroundSyncIntervalStore(),
+        NotificationPermissionsFacade(
+          gateway: FlutterNotificationPermissionGateway(
+            channelId: PaymentNotifications.channelId,
+          ),
+        ),
+        configureBackgroundTasks,
+      ),
+    );
+    locator.registerFactory<BackgroundPreferencesCubit>(
+      () => BackgroundPreferencesCubit(backgroundPreferences),
+    );
     const LogsFeature().setup(locator);
     BitcoinPriceLocator.setup(locator);
-    WalletLocator.setup(locator);
     TransactionsLocator.registerAdapters(locator);
     TransactionsLocator.registerUsecases(locator);
     TransactionsLocator.registerBlocs(locator);

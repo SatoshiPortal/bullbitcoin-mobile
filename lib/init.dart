@@ -1,7 +1,7 @@
-import 'dart:io';
+import 'package:bb_mobile/features/wallet/data/wallet_native_runtime.dart';
 
 import 'package:bb_mobile/bloc_observer.dart';
-import 'package:bb_mobile/core/background_tasks/handler.dart';
+import 'package:bb_mobile/background_setup.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/utils/report.dart';
@@ -49,6 +49,7 @@ class Bull {
       SqliteDatabase(),
       payjoinDatabasePath: payjoinDatabasePath,
     );
+    await locator<WalletNativeRuntime>().initialize();
     Bloc.observer = AppBlocObserver();
 
     // Flush wizard pending values (if any) to SQLite now that the
@@ -59,9 +60,7 @@ class Bull {
       () => loadTorDiagnosticContext(settings, locator<Tor>()),
     );
     Report.consent = (await settings.fetch()).isErrorReportingEnabled;
-    if (Platform.isAndroid || Platform.isIOS) {
-      await cancelLegacyBackgroundTasks();
-    }
+    await configureBackgroundTasks();
 
     // Emits the install/upgrade transition event (no-op on a normal
     // launch) and advances the persisted version marker. The shout is

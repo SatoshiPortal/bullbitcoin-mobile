@@ -13,7 +13,7 @@
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:bb_mobile/core/wallet/data/datasources/bdk_facade.dart';
+import 'support/bdk_test_store.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/bdk_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_transaction_model.dart';
@@ -147,7 +147,7 @@ void main() {
             )
             as PublicBdkWalletModel;
 
-    final wallet = await BdkFacade.createWallet(walletModel);
+    final wallet = await BdkTestStore.createWallet(walletModel);
 
     receive0 = wallet
         .revealNextAddress(keychain: bdk.KeychainKind.external_)
@@ -211,7 +211,7 @@ void main() {
       reason: 'test setup: expected exactly 2 synthetic utxos after funding',
     );
 
-    await BdkFacade.saveWallet(wallet, walletModel.hexId);
+    await BdkTestStore.saveWallet(wallet, walletModel.hexId);
   });
 
   tearDown(() async {
@@ -226,7 +226,7 @@ void main() {
     required List<({bdk.Script script, int amountSat})> outputs,
     List<int> spendingVouts = const [0],
   }) async {
-    final wallet = await BdkFacade.createWallet(walletModel);
+    final wallet = await BdkTestStore.createWallet(walletModel);
     final tx = _rawTx(
       inputs: [
         for (final vout in spendingVouts) (txId: fundingTxId, vout: vout),
@@ -241,11 +241,11 @@ void main() {
         ),
       ],
     );
-    await BdkFacade.saveWallet(wallet, walletModel.hexId);
+    await BdkTestStore.saveWallet(wallet, walletModel.hexId);
 
-    final transactions = await BdkWalletDatasource().getTransactions(
-      wallet: walletModel,
-    );
+    final transactions = await BdkWalletDatasource(
+      readWallet: BdkTestStore.createWallet,
+    ).getTransactions(wallet: walletModel);
     return transactions.firstWhere(
       (transaction) => transaction.txId == tx.computeTxid().toString(),
     );
@@ -332,9 +332,9 @@ void main() {
   });
 
   test('an incoming transaction is unaffected', () async {
-    final transactions = await BdkWalletDatasource().getTransactions(
-      wallet: walletModel,
-    );
+    final transactions = await BdkWalletDatasource(
+      readWallet: BdkTestStore.createWallet,
+    ).getTransactions(wallet: walletModel);
     final funding = transactions.firstWhere((tx) => tx.txId == fundingTxId);
 
     expect(funding.isToSelf, isFalse);

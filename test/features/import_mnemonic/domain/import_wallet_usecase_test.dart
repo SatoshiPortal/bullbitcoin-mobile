@@ -1,3 +1,4 @@
+import 'package:primitives/primitives.dart' show Fingerprint;
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
@@ -56,6 +57,7 @@ void main() {
       scratchDirectory: () async => '/tmp',
     ).import(words: words);
     registerFallbackValue((fallback as Ok<Secret, SecretFailure>).value);
+    registerFallbackValue(Fingerprint('73c5da0a'));
     registerFallbackValue(Network.bitcoinMainnet);
     registerFallbackValue(ScriptType.bip84);
   });
@@ -78,6 +80,9 @@ void main() {
         passphrase: any(named: 'passphrase'),
       ),
     ).thenAnswer((_) async => const Ok(null));
+    when(
+      () => checkDuplicate.isReferenced(any(), any()),
+    ).thenAnswer((_) async => false);
     // No wallet references any seed unless a test says so.
     when(
       () => walletRepository.getWallets(),
@@ -115,6 +120,22 @@ void main() {
       );
     });
 
+    test('#2634 retries an orphan secret without replacing custody', () async {
+      final wallet = _MockWallet();
+      stubCreateWallet(() async => throw Exception('catalog write failed'));
+      expect(await usecase.execute(mnemonicWords: words), isA<Err>());
+      final keys = storage.entries.keys
+          .where((k) => k.startsWith('seed_'))
+          .toList();
+      expect(keys, hasLength(1));
+      stubCreateWallet(() async => wallet);
+      expect(
+        await usecase.execute(mnemonicWords: words),
+        isA<Ok<Wallet, ImportMnemonicFailure>>(),
+      );
+      expect(storage.entries.keys.where((k) => k.startsWith('seed_')), keys);
+    });
+
     test('a duplicate stops before anything else is touched', () async {
       when(
         () => checkDuplicate.execute(
@@ -131,7 +152,7 @@ void main() {
     });
 
     test(
-      'a secret this import created is removed when the wallet cannot be built (#2634)',
+      'a failed wallet import preserves its secret for explicit recovery',
       () async {
         stubCreateWallet(() async => throw Exception('wallet creation failed'));
 
@@ -140,15 +161,18 @@ void main() {
         expect((result as Err).failure, isA<ImportMnemonicUnexpectedFailure>());
         expect(
           storage.entries.keys.where((k) => k.startsWith('seed_')),
-          isEmpty,
-          reason: 'the import that created it owns the cleanup',
+          hasLength(1),
+          reason: 'orphan cleanup requires explicit user action',
         );
       },
     );
 
     test(
-      'strict import rejects a duplicate missed by preflight without cleanup',
+      'strict import rejects a referenced duplicate without cleanup',
       () async {
+        when(
+          () => checkDuplicate.isReferenced(any(), any()),
+        ).thenAnswer((_) async => true);
         // The mocked preflight says the words are new, as it can after a stale
         // read or a concurrent storage operation. Import still rejects them.
         expect(
@@ -184,6 +208,9 @@ void main() {
         var creations = 0;
         stubCreateWallet(() async {
           creations++;
+          when(
+            () => checkDuplicate.isReferenced(any(), any()),
+          ).thenAnswer((_) async => true);
           return wallet;
         });
 

@@ -70,15 +70,22 @@ class WalletCards extends StatelessWidget {
         children: [
           for (final (index, w) in wallets.indexed) ...[
             if (index > 0) const Gap(8),
-            WalletCard(
-              tagColor: cardDetails(context, w),
-              title: w.displayLabel(context),
-              description: w.walletTypeString,
-              balanceSat: w.balanceSat.toInt(),
-              isSyncing: syncStatus[w.id] ?? false,
-              fiatCurrency: fiatCurrency,
-              onTap: () => onTap?.call(w),
-            ),
+            if (w.balanceSat case final balance?)
+              WalletCard(
+                tagColor: cardDetails(context, w),
+                title: w.displayLabel(context),
+                description: w.walletTypeString,
+                balanceSat: balance.toInt(),
+                isSyncing: syncStatus[w.id] ?? false,
+                fiatCurrency: fiatCurrency,
+                onTap: () => onTap?.call(w),
+              )
+            else
+              ListTile(
+                title: Text(w.displayLabel(context)),
+                subtitle: Text(context.loc.walletLoadFailed),
+                onTap: () => onTap?.call(w),
+              ),
           ],
           if (showSpWallet) ...[
             WalletCard(

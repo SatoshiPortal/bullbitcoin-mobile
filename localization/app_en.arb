@@ -15745,5 +15745,45 @@
   "appStartupRestoreMismatch": "This recovery phrase belongs to another wallet. Enter the phrase of the wallet on this device.",
   "@appStartupRestoreMismatch": {
     "description": "App startup restore: the entered recovery phrase does not match the wallet whose secret is missing"
+  },
+  "backgroundSyncTitle": "Background synchronization",
+  "@backgroundSyncTitle": {},
+  "backgroundSyncDescription": "Check for incoming payments while the app is closed. Your system may delay checks.",
+  "@backgroundSyncDescription": {},
+  "backgroundSyncOff": "Off",
+  "@backgroundSyncOff": {},
+  "backgroundSyncMinutes": "Every {count} minutes",
+  "@backgroundSyncMinutes": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "backgroundSyncHours": "{count, plural, =1{Every hour} other{Every {count} hours}}",
+  "@backgroundSyncHours": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "backgroundNotificationsTitle": "Payment notifications",
+  "@backgroundNotificationsTitle": {},
+  "backgroundNotificationsAllowed": "Allowed by system settings",
+  "@backgroundNotificationsAllowed": {},
+  "backgroundNotificationsDenied": "Not allowed by system settings",
+  "@backgroundNotificationsDenied": {},
+  "backgroundNotificationsRequest": "Allow notifications",
+  "@backgroundNotificationsRequest": {},
+  "backgroundNotificationsSettings": "Open notification settings",
+  "@backgroundNotificationsSettings": {},
+  "backgroundPaymentCount": "{count, plural, =1{You received a payment} other{You received {count} payments}}",
+  "@backgroundPaymentCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   }
 }

@@ -1,13 +1,45 @@
+import 'package:bb_mobile/core/settings/data/settings_repository.dart';
+import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasource.dart';
+import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_model.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart' show Network;
 import 'package:bb_mobile/features/import_mnemonic/domain/import_mnemonic_failure.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:meta/meta.dart';
-import 'package:primitives/primitives.dart';
+import 'package:primitives/primitives.dart' hide Network;
 import 'package:secrets/secrets.dart';
 
 class CheckDuplicateMnemonicUsecase {
   final Secrets _secrets;
 
-  CheckDuplicateMnemonicUsecase({required this._secrets});
+  final WalletMetadataDatasource _metadata;
+  final SettingsRepository _settings;
+  int _invalidCount = 0;
+
+  CheckDuplicateMnemonicUsecase({
+    required this._secrets,
+    required this._metadata,
+    required this._settings,
+  });
+
+  Future<bool> isReferenced(Fingerprint id, Network network) async {
+    var referenced = false;
+    var invalid = 0;
+    for (final row in await _metadata.fetchAll()) {
+      // Only the legacy origin decoder throws strings; other failures surface.
+      try {
+        if (row.seedFingerprint == id && row.network == network) {
+          referenced = true;
+        }
+      } on String {
+        invalid++;
+      }
+    }
+    if (invalid != _invalidCount) {
+      _invalidCount = invalid;
+      log.warning('Import catalog validation invalid_count=$invalid');
+    }
+    return referenced;
+  }
 
   @useResult
   Future<Result<void, ImportMnemonicFailure>> execute({
@@ -15,23 +47,30 @@ class CheckDuplicateMnemonicUsecase {
     String passphrase = '',
   }) async {
     try {
-      // This preflight avoids an unnecessary wallet scan. The strict import
-      // remains responsible for rejecting a duplicate at the time of storage.
-      return switch (await _secrets.contains(
+      final existing = await _secrets.find(
         words: mnemonicWords,
         passphrase: passphrase,
-      )) {
-        Ok(value: true) => const Err(ImportMnemonicDuplicateFailure()),
-        Ok() => const Ok(null),
-        Err(:final failure) => Err(
-          ImportMnemonicUnexpectedFailure(failure.toString()),
-        ),
-      };
-    } catch (e, st) {
+      );
+      switch (existing) {
+        case Err(:final failure):
+          return Err(ImportMnemonicUnexpectedFailure(failure.toString()));
+        case Ok(value: final secret?):
+          final settings = await _settings.fetch();
+          final network = settings.environment.isMainnet
+              ? Network.bitcoinMainnet
+              : Network.bitcoinTestnet;
+          if (await isReferenced(secret.id, network)) {
+            return const Err(ImportMnemonicDuplicateFailure());
+          }
+          return const Ok(null);
+        case Ok():
+          return const Ok(null);
+      }
+    } catch (e) {
       log.severe(
         message: 'Duplicate mnemonic check failed',
-        error: e,
-        trace: st,
+        error: e.runtimeType,
+        trace: StackTrace.empty,
       );
       return Err(ImportMnemonicUnexpectedFailure(e.toString()));
     }

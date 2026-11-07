@@ -21,8 +21,10 @@ class SwapBalanceRow extends StatelessWidget {
     final bitcoinUnit = context.select(
       (TransferBloc bloc) => bloc.state.bitcoinUnit,
     );
-    final balanceSat = fromWallet?.balanceSat.toInt() ?? 0;
-    final balance = bitcoinUnit == BitcoinUnit.sats
+    final balanceSat = fromWallet?.balanceSat?.toInt();
+    final balance = balanceSat == null
+        ? context.loc.walletLoadFailed
+        : bitcoinUnit == BitcoinUnit.sats
         ? FormatAmount.sats(balanceSat)
         : FormatAmount.btc(ConvertAmount.satsToBtc(balanceSat));
 

@@ -1,3 +1,5 @@
+import 'package:bb_mobile/features/send/domain/usecases/watch_wallet_revisions_usecase.dart';
+import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_liquid_transaction_usecase.dart';
@@ -210,6 +212,9 @@ class SendLocator {
     // param2 carries the localized SP wallet label, non-null exactly in SP mode.
     locator.registerFactoryParam<SendCubit, Wallet?, String?>(
       (wallet, spWalletLabel) => SendCubit(
+        watchWalletRevisionsUsecase: WatchWalletRevisionsUsecase(
+          locator<WalletFacade>(),
+        ),
         wallet: wallet,
         mode: spWalletLabel == null
             ? const SendModeBitcoin()

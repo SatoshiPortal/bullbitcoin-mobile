@@ -14,7 +14,7 @@ sealed class SendWalletView {
 
   String get id;
   Network get network;
-  BigInt get balanceSat;
+  BigInt? get balanceSat;
   ScriptType? get scriptType;
   SignerDeviceEntity? get signerDevice;
   String? get derivationPath;
@@ -45,7 +45,7 @@ final class SendWalletBitcoin extends SendWalletView {
   @override
   Network get network => wallet.network;
   @override
-  BigInt get balanceSat => wallet.balanceSat;
+  BigInt? get balanceSat => wallet.balanceSat;
   @override
   ScriptType? get scriptType => wallet.scriptType;
   @override

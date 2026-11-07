@@ -18,6 +18,8 @@ class _MockGetWallets extends Mock implements GetWalletsUsecase {}
 
 class _MockSyncWallet extends Mock implements SyncWalletUsecase {}
 
+class _Wallet extends Mock implements Wallet {}
+
 class _MockSyncSwaps extends Mock {
   Future<void> call();
 }
@@ -52,6 +54,7 @@ void main() {
   late _MockSyncSwaps syncSwaps;
   late SyncCoordinator coordinator;
   late Future<void> Function() spCallback;
+  var revisionReads = 0;
 
   setUp(() {
     getWallets = _MockGetWallets();
@@ -59,6 +62,7 @@ void main() {
     syncSwaps = _MockSyncSwaps();
     when(syncSwaps.call).thenAnswer((_) async {});
     spCallback = () async {};
+    revisionReads = 0;
     coordinator = SyncCoordinator(
       getWalletsUsecase: getWallets,
       syncWalletUsecase: syncWallet,
@@ -66,6 +70,9 @@ void main() {
       // Deferred so a test can swap the behaviour after construction, the way
       // the composition root's lazy closure resolves the facade at call time.
       syncSp: () => spCallback(),
+      refreshRevisions: () async {
+        revisionReads++;
+      },
     );
   });
 
@@ -92,6 +99,94 @@ void main() {
     };
     return (bitcoin: bitcoin, liquid: liquid, sp: sp);
   }
+
+  test(
+    'manual refresh discovers while automatic sync uses revealed scripts',
+    () async {
+      final wallet = _Wallet();
+      when(
+        () => getWallets.execute(onlyBitcoin: true),
+      ).thenAnswer((_) async => Ok([wallet]));
+      when(
+        () => syncWallet.execute(wallet, discover: any(named: 'discover')),
+      ).thenAnswer((_) async {});
+      await coordinator.sync(only: {SyncKind.bitcoin});
+      verify(() => syncWallet.execute(wallet, discover: false)).called(1);
+      await coordinator.sync(
+        only: {SyncKind.bitcoin},
+        trigger: SyncTrigger.user,
+      );
+      verify(() => syncWallet.execute(wallet, discover: true)).called(1);
+    },
+  );
+
+  for (final failRoutine in [false, true]) {
+    test(
+      'manual discovery waits for its own pass (routine failure=$failRoutine)',
+      () async {
+        final wallet = _Wallet();
+        final routine = Completer<void>();
+        final discovery = Completer<void>();
+        when(
+          () => getWallets.execute(onlyBitcoin: true),
+        ).thenAnswer((_) async => Ok([wallet]));
+        when(
+          () => syncWallet.execute(wallet, discover: false),
+        ).thenAnswer((_) => routine.future);
+        when(
+          () => syncWallet.execute(wallet, discover: true),
+        ).thenAnswer((_) => discovery.future);
+        final first = coordinator.sync(only: {SyncKind.bitcoin});
+        final firstSettled = failRoutine
+            ? expectLater(first, throwsA(isA<SyncCoordinatorException>()))
+            : first;
+        await pumpEventQueue();
+        var completed = false;
+        final manual = coordinator
+            .sync(only: {SyncKind.bitcoin}, trigger: SyncTrigger.user)
+            .then((_) => completed = true);
+        final duplicate = coordinator.sync(
+          only: {SyncKind.bitcoin},
+          trigger: SyncTrigger.user,
+        );
+        if (failRoutine) {
+          routine.completeError(Exception('routine failed'));
+        } else {
+          routine.complete();
+        }
+        await firstSettled;
+        await pumpEventQueue();
+        expect(completed, isFalse);
+        verify(() => syncWallet.execute(wallet, discover: true)).called(1);
+        discovery.complete();
+        await Future.wait([manual, duplicate]);
+        expect(completed, isTrue);
+      },
+    );
+  }
+
+  test('manual discovery upgrades a queued routine pass', () async {
+    final wallet = _Wallet();
+    final blocking = Completer<void>();
+    when(() => getWallets.execute(onlyBitcoin: true)).thenAnswer((_) async {
+      await blocking.future;
+      return const Ok(<Wallet>[]);
+    });
+    when(
+      () => getWallets.execute(onlyLiquid: true),
+    ).thenAnswer((_) async => Ok([wallet]));
+    when(
+      () => syncWallet.execute(wallet, discover: true),
+    ).thenAnswer((_) async {});
+    final routine = coordinator.sync(only: {SyncKind.bitcoin, SyncKind.liquid});
+    final manual = coordinator.sync(
+      only: {SyncKind.liquid},
+      trigger: SyncTrigger.user,
+    );
+    blocking.complete();
+    await Future.wait([routine, manual]);
+    verify(() => syncWallet.execute(wallet, discover: true)).called(1);
+  });
 
   test('sync resolves only after every requested kind has settled', () async {
     final gates = wireGates();
@@ -243,17 +338,26 @@ void main() {
     when(
       () => getWallets.execute(onlyLiquid: true),
     ).thenAnswer((_) async => Ok(<Wallet>[]));
-    TestWidgetsFlutterBinding.instance.handleAppLifecycleStateChanged(
+    for (final state in [
+      AppLifecycleState.inactive,
+      AppLifecycleState.hidden,
       AppLifecycleState.paused,
-    );
+    ]) {
+      TestWidgetsFlutterBinding.instance.handleAppLifecycleStateChanged(state);
+    }
 
     await coordinator.sync(only: {SyncKind.swaps}, trigger: SyncTrigger.user);
 
     verifyNever(syncSwaps.call);
-    TestWidgetsFlutterBinding.instance.handleAppLifecycleStateChanged(
+    for (final state in [
+      AppLifecycleState.hidden,
+      AppLifecycleState.inactive,
       AppLifecycleState.resumed,
-    );
+    ]) {
+      TestWidgetsFlutterBinding.instance.handleAppLifecycleStateChanged(state);
+    }
     await pumpEventQueue();
+    expect(revisionReads, 1);
   });
 
   group('SyncKind.sp', () {

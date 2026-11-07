@@ -133,7 +133,21 @@ final class Secrets {
   Future<Result<bool, SecretFailure>> contains({
     required List<String> words,
     String? passphrase,
-  }) => _repository.contains(words: words, passphrase: passphrase);
+  }) async => (await find(
+    words: words,
+    passphrase: passphrase,
+  )).map((secret) => secret != null);
+
+  /// Finds an existing secret by full seed equality, including its passphrase.
+  /// Does not write storage. Absence is null; unreadable custody remains Err.
+  @useResult
+  Future<Result<Secret?, SecretFailure>> find({
+    required List<String> words,
+    String? passphrase,
+  }) async => (await _repository.find(
+    words: words,
+    passphrase: passphrase,
+  )).map((info) => info == null ? null : _handle(info));
 
   // ----------------------------------------------------------------- restore
 

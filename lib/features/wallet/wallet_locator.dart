@@ -1,3 +1,28 @@
+import 'package:background_tasks/background_tasks.dart';
+import 'package:flutter/widgets.dart';
+import 'data/payment_notifications.dart';
+import 'data/wallet_payment_observer.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/watch_wallet_transaction_by_tx_id_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/watch_wallet_transaction_by_address_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/watch_wallet_revisions_usecase.dart';
+import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
+import 'package:secrets/secrets.dart';
+import 'package:bb_mobile/core/settings/data/settings_repository.dart'
+    as settings;
+import 'package:bb_mobile/features/wallet/domain/usecases/create_default_wallets_usecase.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_native_runtime.dart';
+import 'package:bb_mobile/core/wallet/data/repositories/wallet_address_repository.dart';
+import 'package:bb_mobile/core/wallet/data/repositories/wallet_transaction_repository_impl.dart';
+import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
+import 'package:bb_mobile/features/labels/labels_facade.dart';
+import 'package:bb_mobile/core/wallet/data/datasources/bdk_wallet_datasource.dart';
+import 'package:bb_mobile/core/wallet/data/datasources/lwk_wallet_datasource.dart';
+import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
+import 'package:bb_mobile/features/wallet/data/foreground_wallet_sync.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasource.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_catalog_port_impl.dart';
+import 'package:transaction_sync/transaction_sync.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bull_tor/tor.dart';
 import 'package:bb_mobile/features/sp/public/sp_facade.dart';
@@ -28,6 +53,120 @@ import 'package:get_it/get_it.dart';
 
 class WalletLocator {
   static void setup(GetIt locator) {
+    locator.registerFactory<WatchWalletTransactionByTxIdUsecase>(
+      () => WatchWalletTransactionByTxIdUsecase(
+        walletTransactionRepository: locator<WalletTransactionRepository>(),
+        walletFacade: locator<WalletFacade>(),
+      ),
+    );
+    locator.registerFactory<WatchWalletTransactionByAddressUsecase>(
+      () => WatchWalletTransactionByAddressUsecase(
+        walletTransactionRepository: locator<WalletTransactionRepository>(),
+        walletFacade: locator<WalletFacade>(),
+      ),
+    );
+    locator.registerLazySingleton<WalletFacade>(
+      () => WalletFacade(locator<WalletNativeRuntime>().changes),
+    );
+    locator.registerFactory<CreateDefaultWalletsUsecase>(
+      () => CreateDefaultWalletsUsecase(
+        secrets: locator<Secrets>(),
+        settingsRepository: locator<settings.SettingsRepository>(),
+        walletRepository: locator<WalletRepository>(),
+        resumeProvisioning: locator<WalletNativeRuntime>().resumeProvisioning,
+      ),
+    );
+
+    locator.registerLazySingleton<WalletNativeRuntime>(
+      () => WalletNativeRuntime(
+        catalog: locator<WalletCatalogPort>(),
+        reserved: locator<ReservedAddressPort>(),
+        metadata: locator<WalletMetadataDatasource>(),
+        sync: locator<ElectrumSync>(),
+        documentsDirectory: () async =>
+            (await getApplicationDocumentsDirectory()).path,
+      ),
+    );
+    locator.registerLazySingleton<BdkWalletDatasource>(
+      () => BdkWalletDatasource(
+        readWallet: locator<WalletNativeRuntime>().bitcoin,
+      ),
+    );
+    locator.registerLazySingleton<LwkWalletDatasource>(
+      () => LwkWalletDatasource(
+        readWallet: locator<WalletNativeRuntime>().liquid,
+      ),
+    );
+    locator.registerLazySingleton<WalletAddressRepository>(
+      () => WalletAddressRepository(
+        native: locator<WalletNativeRuntime>(),
+        walletMetadataDatasource: locator<WalletMetadataDatasource>(),
+        bdkWalletDatasource: locator<BdkWalletDatasource>(),
+        lwkWalletDatasource: locator<LwkWalletDatasource>(),
+        labelsFacade: locator<LabelsFacade>(),
+      ),
+    );
+
+    locator.registerLazySingleton<WalletCatalogPort>(
+      () => WalletCatalogPortImpl(locator<WalletMetadataDatasource>()),
+    );
+    locator.registerLazySingleton<ElectrumSync>(
+      () => ElectrumSync(
+        readRevision: (key) => locator<WalletNativeRuntime>().readRevision(key),
+        connections: locator<WalletConnectionPolicy>(),
+        onCompletion: backgroundSyncAvailable
+            ? locator<WalletPaymentObserver>().record
+            : null,
+        documentsDirectory: () async =>
+            (await getApplicationDocumentsDirectory()).path,
+      ),
+    );
+    if (backgroundSyncAvailable) {
+      locator.registerLazySingleton<PaymentNotificationStore>(
+        () => PaymentNotificationStore(
+          () async => (await getApplicationDocumentsDirectory()).path,
+          () async => (await locator<SettingsRepository>().fetch()).language,
+        ),
+        dispose: (store) => store.close(),
+      );
+      locator.registerLazySingleton<WalletPaymentObserver>(
+        () => WalletPaymentObserver(
+          locator<PaymentNotificationStore>().open,
+          () =>
+              WidgetsBinding.instance.lifecycleState ==
+              AppLifecycleState.resumed,
+        ),
+      );
+    }
+    locator.registerLazySingleton<ForegroundWalletSync>(
+      () => ForegroundWalletSync(
+        locator<ElectrumSync>(),
+        native: locator<WalletNativeRuntime>(),
+      ),
+    );
+    locator.registerLazySingleton<WalletRepository>(() {
+      final sync = locator<ForegroundWalletSync>();
+      return WalletRepository(
+        native: locator<WalletNativeRuntime>(),
+        walletMetadataDatasource: locator<WalletMetadataDatasource>(),
+        bdkWalletDatasource: locator<BdkWalletDatasource>(),
+        lwkWalletDatasource: locator<LwkWalletDatasource>(),
+        synchronize: sync.synchronize,
+        isSyncing: sync.isSyncing,
+        syncStarted: sync.started,
+        syncFinished: sync.finished,
+        electrumSyncResultStream: sync.results,
+      );
+    });
+    locator.registerLazySingleton<WalletTransactionRepository>(
+      () => WalletTransactionRepositoryImpl(
+        walletMetadataDatasource: locator<WalletMetadataDatasource>(),
+        labelsFacade: locator<LabelsFacade>(),
+        bdkWalletTransactionDatasource: locator<BdkWalletDatasource>(),
+        lwkWalletTransactionDatasource: locator<LwkWalletDatasource>(),
+        synchronize: locator<ForegroundWalletSync>().synchronize,
+      ),
+    );
     // Usecase
     locator.registerFactory<GetUnconfirmedIncomingBalanceUsecase>(
       () => GetUnconfirmedIncomingBalanceUsecase(
@@ -35,6 +174,20 @@ class WalletLocator {
           instanceName:
               LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
         ),
+      ),
+    );
+    locator.registerLazySingleton<SeedReferences>(
+      () => SeedReferences(locator<WalletRepository>()),
+    );
+    locator.registerFactory<core.DeleteWalletUsecase>(
+      () => core.DeleteWalletUsecase(
+        walletRepository: locator<WalletRepository>(),
+        swapRepository: locator<BoltzSwapRepository>(
+          instanceName:
+              LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
+        ),
+        seedReferences: locator<SeedReferences>(),
+        secrets: locator<Secrets>(),
       ),
     );
     locator.registerFactory<DeleteWalletUsecase>(
@@ -78,6 +231,9 @@ class WalletLocator {
     // Bloc
     locator.registerFactory<WalletBloc>(
       () => WalletBloc(
+        watchWalletRevisionsUsecase: WatchWalletRevisionsUsecase(
+          locator<WalletFacade>(),
+        ),
         checkSpWalletSetupForWalletUsecase:
             locator<CheckSpWalletSetupForWalletUsecase>(),
         checkSpScanningForWalletUsecase:
