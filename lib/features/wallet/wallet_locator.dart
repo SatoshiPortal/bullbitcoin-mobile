@@ -68,6 +68,7 @@ class WalletLocator {
       () => LoadNetworkWalletSetupUsecase(
         locator<SettingsRepository>(),
         locator<WalletSecretReferencesRepository>(),
+        locator<Secrets>(),
       ),
     );
     locator.registerFactory<CreateNetworkWalletUsecase>(

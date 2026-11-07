@@ -1,3 +1,5 @@
+import 'package:bb_mobile/features/wallet/domain/default_wallet_secret_policy.dart';
+import 'package:bb_mobile/features/wallet/domain/network_wallet_setup_failure.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/features/wallet/domain/repositories/wallet_secret_references_repository.dart';
@@ -23,7 +25,7 @@ final class CreateNetworkWalletUsecase {
   );
 
   @useResult
-  Future<Result<void, WalletFailure>> execute({
+  Future<Result<void, NetworkWalletSetupFailure>> execute({
     required NetworkEnv network,
     Fingerprint? reuse,
   }) async {
@@ -35,33 +37,30 @@ final class CreateNetworkWalletUsecase {
           settings.isDevModeEnabled != true ||
           settings.isSuperuser != true) {
         log.warning('Network wallet setup refused category=context');
-        return const Err(
-          WalletUnexpectedFailure('Developer network unavailable'),
-        );
+        return const Err(NetworkWalletSetupContextFailure());
       }
       Secret? secret;
       if (reuse != null) {
         switch (await _references.list()) {
           case Err(:final failure):
-            return Err(failure);
+            return Err(NetworkWalletSetupReadFailure(failure));
           case Ok(:final value) when !value.contains(reuse):
-            return const Err(WalletNotFoundFailure());
+            return const Err(
+              NetworkWalletSetupReadFailure(WalletNotFoundFailure()),
+            );
           case Ok():
             break;
         }
         switch (await _secrets.fetch(reuse)) {
           case Err():
-            return const Err(WalletStorageFailure());
+            return const Err(NetworkWalletSetupUnavailableFailure());
           case Ok(:final value):
             secret = value;
         }
-        if (secret.info.hasPassphrase ||
-            (network == NetworkEnv.testnet &&
-                secret.info.kind != SecretKind.mnemonic)) {
+        final refusal = defaultWalletSecretRefusal(secret.info);
+        if (refusal != null) {
           log.warning('Network wallet setup refused category=secretKind');
-          return const Err(
-            WalletUnexpectedFailure('Default secret unsupported'),
-          );
+          return Err(NetworkWalletSetupSecretFailure(refusal));
         }
       }
       await _createDefaults.execute(secret: secret, expectedNetwork: network);
@@ -69,9 +68,16 @@ final class CreateNetworkWalletUsecase {
         'Network wallet setup completed network=${network.name} reused=${reuse != null}',
       );
       return const Ok(null);
+    } on CreateDefaultWalletsException catch (error) {
+      final refusal = error.secretRefusal;
+      return Err(
+        refusal == null
+            ? const NetworkWalletSetupUnavailableFailure()
+            : NetworkWalletSetupSecretFailure(refusal),
+      );
     } on Exception {
       log.warning('Network wallet setup unavailable category=provisioning');
-      return const Err(WalletStorageFailure());
+      return const Err(NetworkWalletSetupUnavailableFailure());
     }
   }
 }

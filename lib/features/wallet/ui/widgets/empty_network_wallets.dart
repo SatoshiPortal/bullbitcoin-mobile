@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/wallet/presentation/network_wallet_setup_failure_l10n.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/features/wallet/presentation/network_wallet_setup_cubit.dart';
@@ -106,10 +107,10 @@ class EmptyNetworkWallets extends StatelessWidget {
                     textColor: context.bull.onPrimary,
                   ),
                 ],
-                if (state.failure != null) ...[
+                if (state.failure case final failure?) ...[
                   const Gap(BullSpacing.md),
                   BullText(
-                    context.loc.oopsSomethingWentWrong,
+                    failure.toTranslated(context),
                     style: context.bullText.bodyMedium,
                   ),
                   if (options == null)

@@ -1,4 +1,4 @@
-import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
+import 'package:bb_mobile/features/wallet/domain/default_wallet_secret_policy.dart';
 import 'package:primitives/primitives.dart' show Fingerprint, NetworkEnv;
 import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
@@ -76,7 +76,7 @@ class CreateDefaultWalletsUsecase {
       Secret? resumedSecret;
       if (hasBitcoin && (!supportsLiquid || hasLiquid)) {
         if (secret != null || mnemonicWords != null) {
-          throw StateError('Default wallets already exist');
+          throw CreateDefaultWalletsException('Default wallets already exist');
         }
         return existing;
       }
@@ -86,25 +86,27 @@ class CreateDefaultWalletsUsecase {
               (wallet) => Fingerprint(wallet.masterFingerprint) != fingerprint,
             ) ||
             (secret != null && secret.id != fingerprint)) {
-          throw StateError('Default wallet custody does not match');
+          throw CreateDefaultWalletsException(
+            'Default wallet custody does not match',
+          );
         }
         resumedSecret =
             secret ??
             switch (await _secrets.fetch(fingerprint)) {
               Ok(:final value) => value,
-              Err(:final failure) => throw StateError(
+              Err(:final failure) => throw CreateDefaultWalletsException(
                 'Default secret unavailable: ${failure.runtimeType}',
               ),
             };
-        if (resumedSecret.info.hasPassphrase) {
-          throw StateError('Default wallets cannot use a passphrase');
-        }
+        _requireDefaultCapable(resumedSecret.info);
         if (mnemonicWords != null) {
           switch (await resumedSecret.verify.mnemonic(mnemonicWords)) {
             case Ok(value: true):
               break;
             case _:
-              throw StateError('Default wallet custody does not match');
+              throw CreateDefaultWalletsException(
+                'Default wallet custody does not match',
+              );
           }
         }
         log.warning('Resuming partial default wallet provisioning');
@@ -119,7 +121,7 @@ class CreateDefaultWalletsUsecase {
           secret ??
           switch (await _resolveSecret(mnemonicWords)) {
             Ok(:final value) => value,
-            Err(:final failure) => throw StateError(
+            Err(:final failure) => throw CreateDefaultWalletsException(
               'could not create the default secret: ${failure.runtimeType}',
             ),
           };
@@ -153,29 +155,24 @@ class CreateDefaultWalletsUsecase {
       return [...existing, ...created];
     } on CreateDefaultWalletsException {
       rethrow;
-    } catch (e) {
+    } on Exception catch (e) {
       throw CreateDefaultWalletsException(e.toString());
     }
   }
 
   /// Refuses a secret both default wallets cannot be built from, before any wallet write.
   static void _requireDefaultCapable(SecretInfo info) {
-    if (info.hasPassphrase) {
-      throw ArgumentError('Default wallets cannot use a passphrase');
-    }
-    // Liquid derives from words: a raw seed has none.
-    if (!info.isMnemonic) {
-      throw CreateDefaultWalletsException(
+    final refusal = defaultWalletSecretRefusal(info);
+    if (refusal == null) return;
+    final message = switch (refusal) {
+      DefaultWalletSecretRefusal.passphrase =>
+        'Default wallets cannot use a passphrase',
+      DefaultWalletSecretRefusal.nonMnemonic =>
         'Default wallets require a mnemonic, not a raw seed',
-      );
-    }
-    // TODO: remove after bull_sdk pins lwk-dart PR #95 and secrets uses its
-    // seed-based Liquid APIs.
-    if (info.language != bip39.Language.english) {
-      throw CreateDefaultWalletsException(
+      DefaultWalletSecretRefusal.nonEnglish =>
         'Default wallets require an English mnemonic',
-      );
-    }
+    };
+    throw CreateDefaultWalletsException(message, secretRefusal: refusal);
   }
 
   Future<Result<Secret, SecretFailure>> _resolveSecret(
@@ -193,5 +190,7 @@ class CreateDefaultWalletsUsecase {
 }
 
 class CreateDefaultWalletsException extends BullException {
-  CreateDefaultWalletsException(super.message);
+  final DefaultWalletSecretRefusal? secretRefusal;
+
+  CreateDefaultWalletsException(super.message, {this.secretRefusal});
 }

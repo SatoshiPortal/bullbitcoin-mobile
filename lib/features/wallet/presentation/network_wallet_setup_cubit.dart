@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
+import 'package:bb_mobile/features/wallet/domain/network_wallet_setup_failure.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/create_network_wallet_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/load_network_wallet_setup_usecase.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -6,7 +6,7 @@ import 'package:primitives/primitives.dart';
 
 final class NetworkWalletSetupState {
   final NetworkWalletSetup? options;
-  final WalletFailure? failure;
+  final NetworkWalletSetupFailure? failure;
   final bool working;
   final bool completed;
 
