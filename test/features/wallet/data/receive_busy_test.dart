@@ -3,6 +3,8 @@ import 'package:bb_mobile/features/receive/domain/usecases/prepare_receive_addre
 import 'package:primitives/primitives.dart' show Err;
 import 'dart:io';
 
+import 'package:bull_sdk/bull_sdk.dart';
+
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart'
     show Signer;
@@ -31,19 +33,23 @@ class _Labels extends Mock implements LabelsFacade {}
 class _Reporter extends Mock implements LoggerReporter {}
 
 void main() {
+  setUpAll(BullSdk.init);
   for (final origin in [
     'wpkh([aabbccdd/84h/0h/0h])',
     'elwpkh([aabbccdd/84h/1776h/0h])',
   ]) {
     group(origin.startsWith('el') ? 'Liquid' : 'Bitcoin', () {
+      final issuedAddress = origin.startsWith('el')
+          ? 'lq1pqvxwxl7pckz6p4vq0dh7dv8ae3lha97w4wjqls8p508xc2jus85sf3xgkzdkm3qdgmckph0a303qvnfyxsffyszy8s2w5ev5ys93xx0we046p4uqlt24'
+          : '1BoatSLRHtKNngkdXEeobR76b53LETtpyT';
       late _Native native;
       late _Labels labels;
       late WalletAddressRepository repository;
       final row = WalletMetadataModel(
+        id: origin,
         networkCode: origin.startsWith('el')
             ? 'liquidMainnet'
             : 'bitcoinMainnet',
-        id: origin,
         masterFingerprint: 'aabbccdd',
         xpubFingerprint: 'aabbccdd',
         isEncryptedVaultTested: false,
@@ -87,12 +93,12 @@ void main() {
             if (++attempts < 3) {
               throw const WalletSnapshotException(TransactionSyncBusyFailure());
             }
-            return (address: 'issued', index: 7);
+            return (address: issuedAddress, index: 7);
           });
           final address = await repository.getLastRevealedReceiveAddress(
             walletId: origin,
           );
-          expect(address.address, 'issued');
+          expect(address.address, issuedAddress);
           expect(address.index, 7);
           expect(attempts, 3);
           expect(
@@ -145,7 +151,7 @@ void main() {
       test('label failure after issuance never replays an advance', () async {
         when(
           () => native.receive(row, advance: true),
-        ).thenAnswer((_) async => (address: 'issued', index: 8));
+        ).thenAnswer((_) async => (address: issuedAddress, index: 8));
         const error = WalletSnapshotException(TransactionSyncBusyFailure());
         when(() => labels.fetchByReference(any())).thenThrow(error);
         await expectLater(
