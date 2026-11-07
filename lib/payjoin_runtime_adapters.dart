@@ -163,13 +163,19 @@ final class AppPayjoinTransactionAdapter implements PayjoinTransactionPort {
           transactionId,
           walletId: walletId,
         );
-        if (transaction != null) return;
-      } catch (e) {
-        // Nobody awaits this: a throw here would be an unhandled error.
-        log.warning('Payjoin wallet refresh failed: ${e.runtimeType}');
+        if (transaction != null) {
+          if (attempt > 1) {
+            log.fine('Payjoin wallet reconcile recovered attempts=$attempt');
+          }
+          return;
+        }
+      } on Exception {
+        // The final outcome below owns this bounded reconciliation.
       }
     }
-    log.warning('Payjoin wallet did not catch up with a settled transaction');
+    log.warning(
+      'Payjoin wallet reconcile failed attempts=$_reconcileAttempts reason=unavailable',
+    );
   }
 
   @override
@@ -224,10 +230,7 @@ final class AppPayjoinLogAdapter implements PayjoinLogPort {
         // structured code and cause type, retaining the original stack.
         log.severe(
           message: message,
-          error: Exception(
-            'Payjoin ${event.code.name}'
-            '${event.error == null ? '' : ' ${event.error.runtimeType}'}',
-          ),
+          error: event.code.name,
           trace: event.trace ?? StackTrace.current,
         );
     }
@@ -244,7 +247,6 @@ final class AppPayjoinLogAdapter implements PayjoinLogPort {
       ?role?.name,
       if (sessionRef != null)
         sessionRef.substring(0, _displayedSessionRefLength),
-      ?event.server?.host,
       '${event.code.name}: ${event.code.description}',
       if (error != null) 'cause=${_describeCause(error)}',
     ].join(' ');
@@ -255,8 +257,8 @@ final class AppPayjoinLogAdapter implements PayjoinLogPort {
   /// dropped because it quotes the URL.
   static String _describeCause(Object error) => switch (error) {
     DioException(:final type, :final response) =>
-      'DioException.${type.name}'
+      'transport_${type.name}'
           '${response == null ? '' : '(${response.statusCode})'}',
-    _ => '${error.runtimeType}',
+    _ => 'operation',
   };
 }

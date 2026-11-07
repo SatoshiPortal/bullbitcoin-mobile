@@ -59,6 +59,31 @@ class PdkPayjoinDatasource {
   // one that stays down is warned about once, not on every poll.
   final Set<(PayjoinLogCode, String)> _failingServers = {};
 
+  final Map<(PayjoinLogRole, String), PayjoinLogCode> _pollFailures = {};
+
+  bool isPolling(String id) =>
+      _receiverPolls.isPolling(id) || _senderPolls.isPolling(id);
+
+  void _pollFailed(
+    PayjoinModel model,
+    PayjoinLogRole role,
+    PayjoinLogCode code,
+  ) {
+    if (_pollFailures[(role, model.id)] == code) return;
+    _pollFailures[(role, model.id)] = code;
+    _log.warning(code: code, role: role, sessionRef: model.toEntity().logRef);
+  }
+
+  void _pollRecovered(PayjoinModel model, PayjoinLogRole role) {
+    if (_pollFailures.remove((role, model.id)) != null) {
+      _log.fine(
+        code: PayjoinLogCode.pollRecovered,
+        role: role,
+        sessionRef: model.toEntity().logRef,
+      );
+    }
+  }
+
   bool _disposed = false;
 
   PdkPayjoinDatasource({
@@ -93,6 +118,7 @@ class PdkPayjoinDatasource {
   /// (observed live: a redundant second broadcast of the original
   /// transaction a minute after the session had already resolved).
   void stopPolling(String payjoinId) {
+    _pollFailures.removeWhere((key, _) => key.$2 == payjoinId);
     _receiverPolls.stop(payjoinId);
     _senderPolls.stop(payjoinId);
   }
@@ -108,6 +134,7 @@ class PdkPayjoinDatasource {
   Future<void> dispose() async {
     if (_disposed) return;
     _disposed = true;
+    _pollFailures.clear();
     _receiverPolls.dispose();
     _senderPolls.dispose();
     await _payjoinRequestedController.close();
@@ -886,9 +913,14 @@ class PdkPayjoinDatasource {
       id: payjoin.id,
       expiresAt: _expiryOf(payjoin),
       poll: (cancelToken) => _pollReceiverOnce(payjoin, cancelToken),
-      onFound: _payjoinRequestedController.add,
-      onExpired: () =>
-          _expiredController.add(payjoin.copyWith(isExpired: true)),
+      onFound: (value) {
+        _pollFailures.remove((PayjoinLogRole.receiver, payjoin.id));
+        _payjoinRequestedController.add(value);
+      },
+      onExpired: () {
+        _pollFailures.remove((PayjoinLogRole.receiver, payjoin.id));
+        _expiredController.add(payjoin.copyWith(isExpired: true));
+      },
     );
   }
 
@@ -900,9 +932,14 @@ class PdkPayjoinDatasource {
       id: payjoin.id,
       expiresAt: _expiryOf(payjoin),
       poll: (cancelToken) => _pollSenderOnce(payjoin, cancelToken),
-      onFound: _proposalSentController.add,
-      onExpired: () =>
-          _expiredController.add(payjoin.copyWith(isExpired: true)),
+      onFound: (value) {
+        _pollFailures.remove((PayjoinLogRole.sender, payjoin.id));
+        _proposalSentController.add(value);
+      },
+      onExpired: () {
+        _pollFailures.remove((PayjoinLogRole.sender, payjoin.id));
+        _expiredController.add(payjoin.copyWith(isExpired: true));
+      },
     );
   }
 
@@ -915,11 +952,22 @@ class PdkPayjoinDatasource {
     PayjoinReceiverModel receiverModel,
     CancelToken cancelToken,
   ) async {
+    var stage = 'replay';
+    var invalid = false;
     try {
       final persister = InMemoryJsonReceiverSessionPersister.fromJson(
         receiverModel.receiver,
         log: _log,
+        onInvalid: () => invalid = true,
       );
+      if (invalid) {
+        _pollFailed(
+          receiverModel,
+          PayjoinLogRole.receiver,
+          PayjoinLogCode.storageFailure,
+        );
+        return const DirectoryPollResult(DirectoryPollOutcome.failed);
+      }
       final ReceiveSession state;
       try {
         state = replayReceiverEventLog(persister: persister).state();
@@ -930,16 +978,20 @@ class PdkPayjoinDatasource {
         rethrow;
       }
       if (state is! InitializedReceiveSession) {
+        _pollFailures.remove((PayjoinLogRole.receiver, receiverModel.id));
         return const DirectoryPollResult(DirectoryPollOutcome.stale);
       }
 
+      stage = 'transport';
       final unchecked = await _getUncheckedOriginalPayload(
         state.inner,
         persister,
         receiverModel,
         cancelToken,
       );
+      stage = 'parse';
       if (unchecked == null) {
+        _pollRecovered(receiverModel, PayjoinLogRole.receiver);
         return const DirectoryPollResult(DirectoryPollOutcome.empty);
       }
 
@@ -953,6 +1005,7 @@ class PdkPayjoinDatasource {
         isTestnet: receiverModel.isTestnet,
       );
 
+      _pollRecovered(receiverModel, PayjoinLogRole.receiver);
       return DirectoryPollResult.found(
         receiverModel.copyWith(
           receiver: persister.toJson(),
@@ -968,6 +1021,15 @@ class PdkPayjoinDatasource {
         return const DirectoryPollResult(DirectoryPollOutcome.expired);
       }
 
+      if (stage != 'transport') {
+        _pollFailed(
+          receiverModel,
+          PayjoinLogRole.receiver,
+          stage == 'replay'
+              ? PayjoinLogCode.pollReplayFailed
+              : PayjoinLogCode.pollParseFailed,
+        );
+      }
       return const DirectoryPollResult(DirectoryPollOutcome.failed);
     }
   }
@@ -978,11 +1040,25 @@ class PdkPayjoinDatasource {
     PayjoinSenderModel senderModel,
     CancelToken cancelToken,
   ) async {
+    // logRef, never the raw id in log lines/exception messages: a sender id
+    //  is the full BIP21 URI (address+amount+endpoint).
+
+    var stage = 'replay';
+    var invalid = false;
     try {
       final persister = InMemoryJsonSenderSessionPersister.fromJson(
         senderModel.sender,
         log: _log,
+        onInvalid: () => invalid = true,
       );
+      if (invalid) {
+        _pollFailed(
+          senderModel,
+          PayjoinLogRole.sender,
+          PayjoinLogCode.storageFailure,
+        );
+        return const DirectoryPollResult(DirectoryPollOutcome.failed);
+      }
       final SendSession state;
       try {
         state = replaySenderEventLog(persister: persister).state();
@@ -993,20 +1069,25 @@ class PdkPayjoinDatasource {
         rethrow;
       }
       if (state is! PollingForProposalSendSession) {
+        _pollFailures.remove((PayjoinLogRole.sender, senderModel.id));
         return const DirectoryPollResult(DirectoryPollOutcome.stale);
       }
 
+      stage = 'transport';
       final proposalPsbt = await _getProposalPsbt(
         state.inner,
         persister,
         senderModel,
         cancelToken,
       );
+      stage = 'parse';
       if (proposalPsbt == null) {
+        _pollRecovered(senderModel, PayjoinLogRole.sender);
         return const DirectoryPollResult(DirectoryPollOutcome.empty);
       }
 
       final txId = (await BitcoinTx.fromPsbt(proposalPsbt)).txid;
+      _pollRecovered(senderModel, PayjoinLogRole.sender);
       return DirectoryPollResult.found(
         senderModel.copyWith(
           sender: persister.toJson(),
@@ -1021,6 +1102,15 @@ class PdkPayjoinDatasource {
         return const DirectoryPollResult(DirectoryPollOutcome.expired);
       }
 
+      if (stage != 'transport') {
+        _pollFailed(
+          senderModel,
+          PayjoinLogRole.sender,
+          stage == 'replay'
+              ? PayjoinLogCode.pollReplayFailed
+              : PayjoinLogCode.pollParseFailed,
+        );
+      }
       return const DirectoryPollResult(DirectoryPollOutcome.failed);
     }
   }
@@ -1212,8 +1302,11 @@ class InMemoryJsonReceiverSessionPersister
   factory InMemoryJsonReceiverSessionPersister.fromJson(
     String? raw, {
     logger.PayjoinLogger log = logger.PayjoinLogger.silent,
+    void Function()? onInvalid,
   }) {
-    return InMemoryJsonReceiverSessionPersister(_decodeEvents(raw, log));
+    return InMemoryJsonReceiverSessionPersister(
+      _decodeEvents(raw, log, onInvalid),
+    );
   }
 
   List<String> get events => List.unmodifiable(_events);
@@ -1243,8 +1336,11 @@ class InMemoryJsonSenderSessionPersister implements JsonSenderSessionPersister {
   factory InMemoryJsonSenderSessionPersister.fromJson(
     String? raw, {
     logger.PayjoinLogger log = logger.PayjoinLogger.silent,
+    void Function()? onInvalid,
   }) {
-    return InMemoryJsonSenderSessionPersister(_decodeEvents(raw, log));
+    return InMemoryJsonSenderSessionPersister(
+      _decodeEvents(raw, log, onInvalid),
+    );
   }
 
   List<String> get events => List.unmodifiable(_events);
@@ -1263,7 +1359,11 @@ class InMemoryJsonSenderSessionPersister implements JsonSenderSessionPersister {
   void close() => _closed = true;
 }
 
-List<String> _decodeEvents(String? raw, logger.PayjoinLogger log) {
+List<String> _decodeEvents(
+  String? raw,
+  logger.PayjoinLogger log, [
+  void Function()? onInvalid,
+]) {
   if (raw == null || raw.isEmpty) return const [];
   try {
     final decoded = jsonDecode(raw);
@@ -1274,9 +1374,13 @@ List<String> _decodeEvents(String? raw, logger.PayjoinLogger log) {
       // replayReceiverEventLog on every poll tick.
       return List<String>.from(decoded);
     }
-    log.warning();
-  } catch (e) {
-    log.warning(error: e);
+  } catch (_) {
+    // Saved event contents never reach diagnostics.
+  }
+  if (onInvalid != null) {
+    onInvalid();
+  } else {
+    log.warning(code: PayjoinLogCode.storageFailure);
   }
   return const [];
 }

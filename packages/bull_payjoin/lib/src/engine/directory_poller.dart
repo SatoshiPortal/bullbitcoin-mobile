@@ -106,6 +106,8 @@ final class DirectoryPoller<T extends Object> {
 
   /// Stops polling session [id]. A poll still in flight is cancelled and its
   /// outcome dropped.
+  bool isPolling(String id) => _sessions.containsKey(id);
+
   void stop(String id) => _sessions.remove(id)?.end();
 
   /// Stops every session, cancels every poll in flight, and refuses new ones.

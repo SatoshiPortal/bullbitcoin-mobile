@@ -1562,7 +1562,10 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
   }
 
   Future<void> _resumeOne(PayjoinModel model) async {
-    _log.fine(
+    final record = _pdkPayjoinDatasource.isPolling(model.id)
+        ? _log.info
+        : _log.fine;
+    record(
       code: api.PayjoinLogCode.sessionResumed,
       role: _roleOf(model),
       sessionRef: model.toEntity().logRef,
