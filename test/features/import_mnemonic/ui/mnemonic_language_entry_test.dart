@@ -1,3 +1,5 @@
+import 'dart:io';
+import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/features/import_mnemonic/ui/widgets/mnemonic_widget.dart';
 import 'package:bb_mobile/features/import_mnemonic/ui/widgets/mnemonic_keyboard.dart';
@@ -101,6 +103,15 @@ Finder key(String label) => find.descendant(
 );
 
 void main() {
+  late Directory logDirectory;
+  setUp(() async {
+    logDirectory = await Directory.systemTemp.createTemp('language-log-');
+    log = Logger.replace(directory: logDirectory);
+  });
+  tearDown(() async {
+    await log.flush();
+    await logDirectory.delete(recursive: true);
+  });
   testWidgets('import picker offers only the six Latin wordlists', (
     tester,
   ) async {
@@ -228,6 +239,11 @@ void main() {
     await submit(tester);
     expect(submitted?.language, bip39.Language.french);
     expect(submitted?.words, ambiguous);
+    final rows = await tester.runAsync(() async => log.readLogs());
+    expect(rows?.map((row) => row.split('\t')[2]), [
+      'Mnemonic submit refused reason=language_required',
+      'Mnemonic language selected language=french',
+    ]);
   });
 
   testWidgets(
@@ -391,6 +407,8 @@ void main() {
       await submit(tester);
       expect(submitted?.language, bip39.Language.english);
       expect(submitted?.words, ambiguous);
+      final rows = await tester.runAsync(() async => log.readLogs());
+      expect(rows, isEmpty);
     });
 
     testWidgets(
