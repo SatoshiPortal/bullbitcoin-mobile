@@ -8,7 +8,7 @@ export '../../domain/usecases/background_preferences_usecase.dart'
 final class BackgroundPreferencesCubit
     extends Cubit<BackgroundPreferencesState> {
   final BackgroundPreferencesUsecase _preferences;
-  bool _busy = false;
+  Future<void> _pending = Future.value();
   BackgroundPreferencesCubit(this._preferences)
     : super(const BackgroundPreferencesState());
 
@@ -16,9 +16,24 @@ final class BackgroundPreferencesCubit
     BackgroundSyncInterval? interval,
     bool requestPermission = false,
     bool openSettings = false,
+  }) {
+    // Keep every explicit action, including Off while persistence is pending.
+    final next = _pending.then(
+      (_) => _load(
+        interval: interval,
+        requestPermission: requestPermission,
+        openSettings: openSettings,
+      ),
+    );
+    _pending = next;
+    return next;
+  }
+
+  Future<void> _load({
+    BackgroundSyncInterval? interval,
+    required bool requestPermission,
+    required bool openSettings,
   }) async {
-    if (_busy) return;
-    _busy = true;
     try {
       final next = await _preferences.execute(
         interval: interval,
@@ -32,8 +47,6 @@ final class BackgroundPreferencesCubit
           const BackgroundPreferencesState(failure: SettingsStorageFailure()),
         );
       }
-    } finally {
-      _busy = false;
     }
   }
 }
