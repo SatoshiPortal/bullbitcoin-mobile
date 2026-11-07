@@ -8,6 +8,7 @@ import 'package:secrets/testing.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_native_runtime.dart';
 import 'dart:io';
+import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_transaction_repository_impl.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/watch_only_wallet_entity.dart';
@@ -378,18 +379,33 @@ void main() {
   });
 
   test('sync:true reads preserve connection versus storage failure', () async {
+    final directory = Directory.systemTemp.createTempSync('sync-read-logs-');
+    await initializeLogging(directory: directory);
+    addTearDown(() async {
+      await log.flush();
+      directory.deleteSync(recursive: true);
+    });
     policy.failure = const TransactionSyncConnectionFailure();
     final connection = await repository.getWallet(id, sync: true);
     expect(connection, isA<Err<Wallet, WalletFailure>>());
     if (connection case Err(:final failure)) {
       expect(failure, isA<WalletSyncFailure>());
     }
+    final connectionLogs = (await log.readLogs()).join('\n');
+    expect(
+      connectionLogs,
+      contains(
+        'Wallet sync unavailable operation=getWallet category=connection',
+      ),
+    );
+    expect(connectionLogs, isNot(contains('SEVERE')));
     policy.failure = const TransactionSyncStorageFailure();
     final storage = await repository.getWallet(id, sync: true);
     if (storage case Err(:final failure)) {
       expect(failure, isA<WalletStorageFailure>());
     }
     expect(storage, isA<Err<Wallet, WalletFailure>>());
+    expect((await log.readLogs()).join('\n'), contains('SEVERE'));
     verifyNever(() => bdk.getBalance(wallet: any(named: 'wallet')));
   });
   test(
