@@ -72,11 +72,17 @@ void main() {
       await expectLater(
         create.execute(secret: secret),
         throwsA(
-          isA<CreateDefaultWalletsException>().having(
-            (e) => e.message,
-            'message',
-            'Default wallets require an English mnemonic',
-          ),
+          isA<CreateDefaultWalletsException>()
+              .having(
+                (e) => e.runtimeType,
+                'exact exception type',
+                CreateDefaultWalletsException,
+              )
+              .having(
+                (e) => e.message,
+                'message',
+                'Default wallets require an English mnemonic',
+              ),
         ),
       );
       verifyZeroInteractions(wallets);
@@ -103,11 +109,17 @@ void main() {
       await expectLater(
         create.execute(mnemonicWords: shared),
         throwsA(
-          isA<CreateDefaultWalletsException>().having(
-            (e) => e.message,
-            'message',
-            'Default wallets require an English mnemonic',
-          ),
+          isA<CreateDefaultWalletsException>()
+              .having(
+                (e) => e.runtimeType,
+                'exact exception type',
+                CreateDefaultWalletsException,
+              )
+              .having(
+                (e) => e.message,
+                'message',
+                'Default wallets require an English mnemonic',
+              ),
         ),
       );
       verifyNever(
@@ -136,11 +148,17 @@ void main() {
     await expectLater(
       create.execute(secret: seedOnly),
       throwsA(
-        isA<CreateDefaultWalletsException>().having(
-          (e) => e.message,
-          'message',
-          'Default wallets require a mnemonic, not a raw seed',
-        ),
+        isA<CreateDefaultWalletsException>()
+            .having(
+              (e) => e.runtimeType,
+              'exact exception type',
+              CreateDefaultWalletsException,
+            )
+            .having(
+              (e) => e.message,
+              'message',
+              'Default wallets require a mnemonic, not a raw seed',
+            ),
       ),
     );
     verifyZeroInteractions(wallets);
