@@ -17,7 +17,9 @@ final class BackgroundPreferencesCubit
     bool requestPermission = false,
     bool openSettings = false,
   }) async {
-    final generation = ++_generation;
+    // Notification actions must not invalidate a pending interval selection.
+    if (interval != null) _generation++;
+    final generation = _generation;
     try {
       final next = await _preferences.execute(
         interval: interval,
