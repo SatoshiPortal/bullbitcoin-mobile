@@ -170,54 +170,45 @@ void main() {
     dir.deleteSync(recursive: true);
   });
 
-  test('unknown native cause persists its type once without its value', () async {
-    final reporter = _Reporter();
-    await initializeLogging(directory: dir, reporter: reporter);
-    sessions.beforeOpen = () => throw UnrecognizedNativeDescriptorException();
-    for (var i = 0; i < 2; i++) {
-      final result = await writer.receive(key, expectedGeneration: 1);
+  test(
+    'unknown native cause has one persisted owner without foreign data',
+    () async {
+      final reporter = _Reporter();
+      await initializeLogging(directory: dir, reporter: reporter);
+      sessions.beforeOpen = () => throw UnrecognizedNativeDescriptorException();
+      for (var i = 0; i < 2; i++) {
+        final result = await writer.receive(key, expectedGeneration: 1);
+        expect(
+          result,
+          isA<Err>().having(
+            (r) => r.failure,
+            'failure',
+            isA<TransactionSyncStorageFailure>(),
+          ),
+        );
+      }
+      final lines = await log.readLogs();
+      expect(lines.where((line) => line.contains('native exception')), isEmpty);
       expect(
-        result,
-        isA<Err>().having(
-          (r) => r.failure,
-          'failure',
-          isA<TransactionSyncStorageFailure>(),
-        ),
+        lines.where((line) => line.split('\t')[1] == 'SEVERE'),
+        hasLength(1),
       );
-    }
-    final lines = await log.readLogs();
-    final warnings = lines
-        .where(
-          (line) =>
-              line.split('\t')[1] == 'WARNING' &&
-              line.contains('Wallet writer native exception'),
-        )
-        .toList();
-    expect(warnings, hasLength(1));
-    expect(
-      warnings.single,
-      contains('category=UnrecognizedNativeDescri:ptorException'),
-    );
-    expect(lines.join(), isNot(contains('sensitive-sentinel')));
-    expect(lines.join(), contains('category=storage'));
-    expect(lines.join(), isNot(contains('category=[REDACTED]')));
-    // The existing unexpected-storage event reports once; WARNING adds no event.
-    expect(reporter.errors, ['TransactionSyncStorageFailure']);
-    sessions.beforeOpen = null;
-    expect(await writer.receive(key, expectedGeneration: 1), isA<Ok>());
-    sessions.beforeOpen = () => throw UnrecognizedNativeDescriptorException();
-    expect(await writer.receive(key, expectedGeneration: 1), isA<Err>());
-    expect(
-      (await log.readLogs()).where(
-        (line) =>
-            line.split('\t')[1] == 'WARNING' &&
-            line.contains('Wallet writer native exception'),
-      ),
-      hasLength(2),
-    );
-    expect(reporter.errors, hasLength(2));
-    await log.flush();
-  });
+      expect(lines.join(), isNot(contains('sensitive-sentinel')));
+      expect(lines.join(), contains('category=storage'));
+      expect(lines.join(), isNot(contains('category=[REDACTED]')));
+      expect(reporter.errors, ['storage']);
+      sessions.beforeOpen = null;
+      expect(await writer.receive(key, expectedGeneration: 1), isA<Ok>());
+      sessions.beforeOpen = () => throw UnrecognizedNativeDescriptorException();
+      expect(await writer.receive(key, expectedGeneration: 1), isA<Err>());
+      expect(
+        (await log.readLogs()).where((line) => line.split('\t')[1] == 'SEVERE'),
+        hasLength(2),
+      );
+      expect(reporter.errors, hasLength(2));
+      await log.flush();
+    },
+  );
 
   test('connection failure category survives persisted redaction', () async {
     await initializeLogging(directory: dir);
@@ -235,9 +226,42 @@ void main() {
     await log.flush();
   });
 
+  test('worker writer leaves terminal failure to the engine', () async {
+    await initializeLogging(directory: dir);
+    final worker = NativeWalletWriter.withSessions(
+      lockDirectory: '${dir.path}/locks',
+      revisions: store,
+      catalog: Catalog(),
+      reservedAddresses: reserved,
+      sessions: sessions,
+      reportFailures: false,
+    );
+    expect(
+      await worker.sync(
+        key,
+        expectedGeneration: 1,
+        operation: FailedSync(true),
+      ),
+      isA<Err>(),
+    );
+    final lines = await log.readLogs();
+    expect(
+      lines.where(
+        (line) => ['WARNING', 'SEVERE'].contains(line.split('\t')[1]),
+      ),
+      isEmpty,
+    );
+    expect(
+      lines.where((line) => line.contains('Writer revision invalidated')),
+      hasLength(1),
+    );
+    expect(lines.join(), contains('reason=connection'));
+  });
+
   test(
     'repeated adoption preserves the revision of an unchanged store',
     () async {
+      await initializeLogging(directory: dir);
       final before = store.record(key)?.state.stamp;
       for (var i = 0; i < 5; i++) {
         final result = await writer.create(
@@ -250,6 +274,12 @@ void main() {
         expect(store.record(key)?.state.stamp, before);
         expect(store.record(key)?.intent, isNull);
       }
+      final lines = await log.readLogs();
+      expect(
+        lines.where((line) => line.contains('outcome=unchanged')),
+        hasLength(5),
+      );
+      expect(lines.join(), isNot(contains('operation committed')));
     },
   );
 
