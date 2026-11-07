@@ -28,6 +28,42 @@ void main() {
         logSink: sink ?? _Sink(),
       );
 
+  test(
+    'overdue retry runs despite two repeatedly successful wallets',
+    () async {
+      final current = queue();
+      addTearDown(current.close);
+      final jobs = List.generate(3, _registration);
+      final initial = await current.reconcileAndClaim(
+        jobs,
+        chain: WalletSyncChain.bitcoin,
+      );
+      for (final claim in initial) {
+        await current.completeSuccess(claim);
+      }
+      final failed = (await current.reconcileAndClaim(
+        jobs,
+        chain: WalletSyncChain.bitcoin,
+      )).single;
+      expect(failed.key.id, 'wallet-2');
+      await current.completeFailure(failed, permanent: false);
+      var retried = false;
+      for (var run = 0; run < 3; run++) {
+        clock.advance(const Duration(hours: 1));
+        final claims = await current.reconcileAndClaim(
+          jobs,
+          chain: WalletSyncChain.bitcoin,
+        );
+        expect(claims.length, lessThanOrEqualTo(2));
+        for (final claim in claims) {
+          retried |= claim.key == failed.key;
+          await current.completeSuccess(claim);
+        }
+      }
+      expect(retried, isTrue);
+    },
+  );
+
   test('rotates five wallets in stable 2, 2, 1 batches after reopen', () async {
     final registrations = List.generate(5, _registration);
     final seen = <String>[];
