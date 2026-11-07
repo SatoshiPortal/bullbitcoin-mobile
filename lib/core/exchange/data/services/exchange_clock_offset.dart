@@ -33,21 +33,33 @@ class ExchangeClockOffset {
       serverInstant.subtract(_offset);
 
   /// Measures the offset from every response, errors included: an error
-  /// response carries the server's `Date` just the same.
-  Interceptor get interceptor => InterceptorsWrapper(
+  /// response carries the server's `Date` just the same. The device time is
+  /// the midpoint between sending the request and receiving the response, so
+  /// symmetric latency (a slow Tor circuit) is not counted as clock offset.
+  late final Interceptor interceptor = InterceptorsWrapper(
+    onRequest: (options, handler) {
+      options.extra[_sentAtKey] = clock.now();
+      handler.next(options);
+    },
     onResponse: (response, handler) {
-      _observeDateHeader(response.headers);
+      _observeDateHeader(response.headers, response.requestOptions);
       handler.next(response);
     },
     onError: (error, handler) {
-      final headers = error.response?.headers;
-      if (headers != null) _observeDateHeader(headers);
+      final response = error.response;
+      if (response != null) {
+        _observeDateHeader(response.headers, error.requestOptions);
+      }
       handler.next(error);
     },
   );
 
-  void _observeDateHeader(Headers headers) {
-    final date = headers.value(HttpHeaders.dateHeader);
+  static const _sentAtKey = 'exchangeClockOffsetSentAt';
+
+  void _observeDateHeader(Headers headers, RequestOptions request) {
+    // `Headers.value` throws on a repeated header, and a throw here would
+    // fail the request this measurement rides on.
+    final date = headers[HttpHeaders.dateHeader]?.firstOrNull;
     if (date == null) return;
     final DateTime serverTime;
     try {
@@ -57,6 +69,11 @@ class ExchangeClockOffset {
     } on HttpException {
       return;
     }
-    observe(serverTime: serverTime, deviceTime: clock.now());
+    final receivedAt = clock.now();
+    final sentAt = request.extra[_sentAtKey];
+    final deviceTime = sentAt is DateTime && !sentAt.isAfter(receivedAt)
+        ? sentAt.add(receivedAt.difference(sentAt) ~/ 2)
+        : receivedAt;
+    observe(serverTime: serverTime, deviceTime: deviceTime);
   }
 }
