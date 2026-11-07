@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/price/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
 import 'package:bb_mobile/core/price/domain/usecases/get_available_currencies_usecase.dart';
@@ -18,6 +21,8 @@ import 'package:bb_mobile/features/receive/domain/usecases/prepare_receive_addre
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart' hide Network, ScriptType;
+
+class _Reporter extends Mock implements LoggerReporter {}
 
 class _MockGetWalletsUsecase extends Mock implements GetWalletsUsecase {}
 
@@ -201,6 +206,15 @@ void main() {
     test(
       'maps a throw to the dedicated address failure, not the catch-all',
       () async {
+        final directory = await Directory.systemTemp.createTemp(
+          'receive-boundary-',
+        );
+        final reporter = _Reporter();
+        await initializeLogging(directory: directory, reporter: reporter);
+        addTearDown(() async {
+          await log.flush();
+          await directory.delete(recursive: true);
+        });
         final inner = _MockGetReceiveAddressUsecase();
         when(
           () => inner.execute(
@@ -212,6 +226,15 @@ void main() {
         final result = await PrepareReceiveAddressUsecase(
           inner,
         ).execute(walletId: 'w1');
+
+        final lines = await log.readLogs();
+        expect(lines.map((line) => line.split('\t').sublist(1, 3)), [
+          ['FINE', 'Logs created'],
+          ['WARNING', 'Receive address unavailable type=_Exception'],
+        ]);
+        expect(lines.join(), isNot(contains(_rawReason)));
+        expect(lines.join(), isNot(contains('app.sqlite')));
+        verifyZeroInteractions(reporter);
 
         switch (result) {
           case Ok():

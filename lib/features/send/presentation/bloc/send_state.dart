@@ -368,29 +368,26 @@ abstract class SendState with _$SendState {
       code == BitcoinUnit.btc.code || code == BitcoinUnit.sats.code;
 
   String formattedWalletBalance() {
-    if (selectedWallet == null) return '0';
+    final balance = selectedWallet?.balanceSat;
+    if (balance == null) return '—';
 
     if (inputAmountCurrencyCode == BitcoinUnit.btc.code) {
-      return FormatAmount.btc(
-        ConvertAmount.satsToBtc(selectedWallet!.balanceSat.toInt()),
-      );
+      return FormatAmount.btc(ConvertAmount.satsToBtc(balance.toInt()));
     } else if (inputAmountCurrencyCode == BitcoinUnit.sats.code) {
-      return FormatAmount.sats(selectedWallet!.balanceSat.toInt());
+      return FormatAmount.sats(balance.toInt());
     } else {
       return FormatAmount.fiat(
-        ConvertAmount.satsToFiat(
-          selectedWallet!.balanceSat.toInt(),
-          exchangeRate,
-        ),
+        ConvertAmount.satsToFiat(balance.toInt(), exchangeRate),
         inputAmountCurrencyCode,
       );
     }
   }
 
   String formattedApproximateBalance() {
-    if (selectedWallet == null) return '0';
+    final balance = selectedWallet?.balanceSat;
+    if (balance == null) return '—';
 
-    final satsBalance = selectedWallet!.balanceSat.toInt();
+    final satsBalance = balance.toInt();
 
     if (inputAmountCurrencyCode == BitcoinUnit.btc.code ||
         inputAmountCurrencyCode == BitcoinUnit.sats.code) {
@@ -445,7 +442,7 @@ abstract class SendState with _$SendState {
   /// must validate against this, not the raw wallet balance. Falls back to the
   /// full balance before [utxos] have loaded so it never under-reports.
   int get spendableBalanceSat =>
-      (selectedWallet?.balanceSat.toInt() ?? 0) - frozenBalanceSat;
+      (selectedWallet?.balanceSat?.toInt() ?? 0) - frozenBalanceSat;
 
   int get maxAvailableBalanceSat {
     final selectedBalance = selectedUtxos.fold(

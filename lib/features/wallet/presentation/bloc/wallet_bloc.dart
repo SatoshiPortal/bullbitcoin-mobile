@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/wallet/domain/usecases/watch_wallet_revisions_usecase.dart';
 import 'dart:async';
 
 import 'package:bb_mobile/features/wallet/domain/usecases/check_sp_scanning_for_wallet_usecase.dart';
@@ -6,7 +7,7 @@ import 'package:bb_mobile/features/wallet/domain/usecases/refresh_sp_wallet_for_
 import 'package:bb_mobile/features/wallet/domain/usecases/watch_sp_wallet_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/check_sp_feature_gate_for_wallet_usecase.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_sync_result.dart';
-import 'package:bb_mobile/core/sync/sync_trigger.dart';
+import 'package:bb_mobile/features/wallet/domain/sync_trigger.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
@@ -30,6 +31,7 @@ part 'wallet_state.dart';
 
 class WalletBloc extends Bloc<WalletEvent, WalletState> {
   WalletBloc({
+    WatchWalletRevisionsUsecase? watchWalletRevisionsUsecase,
     required this._getWalletsUsecase,
     required this._checkWalletSyncingUsecase,
     required this._watchWalletSyncEventsUsecase,
@@ -44,6 +46,10 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     required this._watchSpWalletUsecase,
     required this._checkSpFeatureGateForWalletUsecase,
   }) : super(const WalletState()) {
+    _revisionsSubscription = watchWalletRevisionsUsecase?.execute().listen((_) {
+      if (!isClosed) add(const WalletRevisionChanged());
+    });
+    on<WalletRevisionChanged>(_onRevisionChanged, transformer: restartable());
     on<WalletStarted>(_onStarted, transformer: restartable());
     on<WalletRefreshed>(_onRefreshed, transformer: droppable());
     on<WalletSyncStarted>(_onWalletSyncStarted);
@@ -71,6 +77,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
   final WatchSpWalletUsecase _watchSpWalletUsecase;
   final CheckSpFeatureGateForWalletUsecase _checkSpFeatureGateForWalletUsecase;
 
+  StreamSubscription? _revisionsSubscription;
   StreamSubscription? _startedSyncsSubscription;
   StreamSubscription? _finishedSyncsSubscription;
   StreamSubscription? _electrumSyncResultsSubscription;
@@ -83,11 +90,34 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
 
   @override
   Future<void> close() {
+    _revisionsSubscription?.cancel();
     _startedSyncsSubscription?.cancel();
     _finishedSyncsSubscription?.cancel();
     _electrumSyncResultsSubscription?.cancel();
     _spUpdatesSubscription?.cancel();
     return super.close();
+  }
+
+  Future<void> _onRevisionChanged(
+    WalletRevisionChanged event,
+    Emitter<WalletState> emit,
+  ) async {
+    switch (await _getWalletsUsecase.execute()) {
+      case Ok(:final value):
+        emit(
+          state.copyWith(
+            wallets: value,
+            syncStatus: {
+              for (final wallet in value)
+                wallet.id: state.syncStatus[wallet.id] ?? false,
+            },
+          ),
+        );
+      case Err(:final failure):
+        log.warning(
+          'Wallet revision read unavailable category=${failure.runtimeType}',
+        );
+    }
   }
 
   Future<void> _onStarted(

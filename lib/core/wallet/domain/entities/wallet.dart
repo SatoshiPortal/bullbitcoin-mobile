@@ -109,7 +109,7 @@ abstract class Wallet with _$Wallet {
     required String internalPublicDescriptor,
     required SignerEntity signer,
     required SignerDeviceEntity? signerDevice,
-    required BigInt balanceSat,
+    required BigInt? balanceSat,
     // Confirmed-only component of balanceSat (excludes trusted/untrusted
     // pending and immature funds). Nullable/optional so every existing
     // construction site doesn't need updating at once; consumers that care
@@ -128,6 +128,9 @@ abstract class Wallet with _$Wallet {
     // otherwise we have to store all swap metadata as part of the backup as well, which is not ideal
   }) = _Wallet;
   const Wallet._();
+
+  /// Native state could not be read; null is unknown, never a zero balance.
+  bool get unavailable => balanceSat == null;
 
   String get id => origin;
   String get addressType {

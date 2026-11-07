@@ -76,7 +76,10 @@ class BoltzAutoswapProvider implements AutoswapProviderPort {
             : Ok(existing.id);
       }
 
-      final balanceSat = liquidWallet.balanceSat.toInt();
+      final balanceSat = liquidWallet.balanceSat?.toInt();
+      if (balanceSat == null) {
+        return const Err(AutoswapExecutionFailure('Wallet unavailable'));
+      }
       if (!settings.passedRequiredBalance(balanceSat)) {
         return Err(
           AutoswapInsufficientBalanceFailure(

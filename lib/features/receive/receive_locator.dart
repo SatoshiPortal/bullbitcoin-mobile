@@ -114,8 +114,6 @@ class ReceiveLocator {
         getReceiveSettingsUsecase: locator<GetReceiveSettingsUsecase>(),
         convertReceiveAmountUsecase: locator<ConvertReceiveAmountUsecase>(),
         prepareReceiveAddressUsecase: locator<PrepareReceiveAddressUsecase>(),
-        getReceiveAddressAtIndexUsecase:
-            locator<GetReceiveAddressAtIndexUsecase>(),
         createReceiveOrderSwapUsecase: locator<CreateReceiveOrderSwapUsecase>(),
         receiveWithPayjoinUsecase: locator<ReceiveWithPayjoinUsecase>(),
         broadcastOriginalTransactionUsecase:

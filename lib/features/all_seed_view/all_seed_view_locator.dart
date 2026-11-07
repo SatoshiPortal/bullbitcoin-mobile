@@ -1,4 +1,5 @@
-import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
+import 'package:bb_mobile/features/wallet/public/wallet_facade.dart'
+    show SeedReferences;
 import 'package:bb_mobile/features/all_seed_view/domain/usecases/delete_secret_usecase.dart';
 import 'package:bb_mobile/features/all_seed_view/domain/usecases/get_all_secrets_usecase.dart';
 import 'package:bb_mobile/features/all_seed_view/domain/usecases/separate_secrets_usecase.dart';
@@ -18,7 +19,7 @@ class AllSeedViewLocator {
         getWalletsUsecase: locator<GetWalletsUsecase>(),
         deleteSecretUsecase: DeleteSecretUsecase(
           secrets: locator<Secrets>(),
-          walletRepository: locator<WalletRepository>(),
+          seedReferences: locator<SeedReferences>(),
         ),
         separateSecretsUsecase: const SeparateSecretsUsecase(),
         getSwapMasterKeyUsecase: locator<GetSwapMasterKeyUsecase>(),

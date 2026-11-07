@@ -96,7 +96,7 @@ void main() {
         final persisted = Map<String, String>.of(storage.entries);
         expect(persisted, contains('seed_${stored.id.hex}'));
         if (failedAttempt == 2) {
-          verify(() => wallets.deleteWallet(walletId: 'bitcoin')).called(1);
+          verifyNever(() => wallets.deleteWallet(walletId: 'bitcoin'));
         }
 
         expect(await create.execute(mnemonicWords: words), [bitcoin, liquid]);
@@ -108,6 +108,48 @@ void main() {
             'failure',
             isA<s.SecretAlreadyExistsFailure>(),
           ),
+        );
+      },
+    );
+  }
+
+  for (final supplyWords in [false, true]) {
+    test(
+      'partial defaults resume the original custody (words: $supplyWords)',
+      () async {
+        final bitcoin = _Wallet();
+        final liquid = _Wallet();
+        when(() => bitcoin.network).thenReturn(Network.bitcoinMainnet);
+        when(() => bitcoin.masterFingerprint).thenReturn(stored.id.hex);
+        when(
+          () => wallets.getWallets(
+            onlyDefaults: true,
+            environment: Environment.mainnet,
+          ),
+        ).thenAnswer((_) async => Ok<List<Wallet>, WalletFailure>([bitcoin]));
+        when(
+          () => wallets.createWallet(
+            secret: any(named: 'secret'),
+            network: Network.liquidMainnet,
+            scriptType: ScriptType.bip84,
+            isDefault: true,
+            birthday: null,
+          ),
+        ).thenAnswer((invocation) async {
+          expect(
+            (invocation.namedArguments[#secret] as s.Secret).id,
+            stored.id,
+          );
+          return liquid;
+        });
+        final before = Map<String, String>.of(storage.entries);
+        expect(
+          await create.execute(mnemonicWords: supplyWords ? words : null),
+          [bitcoin, liquid],
+        );
+        expect(storage.entries, before);
+        verifyNever(
+          () => wallets.deleteWallet(walletId: any(named: 'walletId')),
         );
       },
     );

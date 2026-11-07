@@ -4952,5 +4952,16 @@
   "screenPrivacyUnavailable": "La protection de l’écran n’a pas pu être activée : ce secret reste masqué.",
   "appStartupMissingSecretMessage": "Cet appareil ne contient plus la phrase de récupération de votre portefeuille. Saisissez-la à nouveau pour le retrouver.",
   "appStartupRestoreSecretButton": "Saisir ma phrase de récupération",
-  "appStartupRestoreMismatch": "Cette phrase de récupération appartient à un autre portefeuille. Saisissez celle du portefeuille de cet appareil."
+  "appStartupRestoreMismatch": "Cette phrase de récupération appartient à un autre portefeuille. Saisissez celle du portefeuille de cet appareil.",
+  "backgroundSyncTitle": "Synchronisation en arrière-plan",
+  "backgroundSyncDescription": "Rechercher les paiements reçus lorsque l’application est fermée. Le système peut retarder les vérifications.",
+  "backgroundSyncOff": "Désactivée",
+  "backgroundSyncMinutes": "Toutes les {count} minutes",
+  "backgroundSyncHours": "{count, plural, =1{Toutes les heures} other{Toutes les {count} heures}}",
+  "backgroundNotificationsTitle": "Notifications de paiement",
+  "backgroundNotificationsAllowed": "Autorisées dans les réglages système",
+  "backgroundNotificationsDenied": "Non autorisées dans les réglages système",
+  "backgroundNotificationsRequest": "Autoriser les notifications",
+  "backgroundNotificationsSettings": "Ouvrir les réglages de notification",
+  "backgroundPaymentCount": "{count, plural, =1{Vous avez reçu un paiement} other{Vous avez reçu {count} paiements}}"
 }

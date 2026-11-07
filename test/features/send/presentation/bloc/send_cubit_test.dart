@@ -1,3 +1,5 @@
+import 'package:bb_mobile/features/send/domain/usecases/watch_wallet_revisions_usecase.dart';
+import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
 import 'dart:async';
 import 'dart:typed_data';
 
@@ -212,6 +214,7 @@ class _MockRefreshSpWalletForSendUsecase extends Mock
 class _TestableSendCubit extends SendCubit {
   _TestableSendCubit({
     super.mode,
+    super.watchWalletRevisionsUsecase,
     required super.labelsFacade,
     required super.bestWalletUsecase,
     required super.detectBitcoinStringUsecase,
@@ -396,6 +399,7 @@ void main() {
 
   _TestableSendCubit buildCubit({
     Future<PaymentRequest> Function(String)? parsePaymentRequest,
+    WatchWalletRevisionsUsecase? watchWalletRevisionsUsecase,
     bool isSpMode = false,
     String spWalletLabel = '',
     ValidateSpAmountForSendUsecase? validateSpAmountForSendUsecase,
@@ -405,6 +409,7 @@ void main() {
     SendSpPaymentForSendUsecase? sendSpPaymentForSendUsecase,
     ValidateSpRecipientForSendUsecase? validateSpRecipientForSendUsecase,
   }) => _TestableSendCubit(
+    watchWalletRevisionsUsecase: watchWalletRevisionsUsecase,
     mode: isSpMode
         ? SendModeSp(walletLabel: spWalletLabel)
         : const SendModeBitcoin(),
@@ -1460,6 +1465,60 @@ void main() {
       );
     });
   });
+
+  for (final vanished in [false, true]) {
+    test('revision preserves Max coin control; vanished=$vanished', () async {
+      final revisions = StreamController<WalletRevisionState>();
+      final cubit = buildCubit(
+        watchWalletRevisionsUsecase: WatchWalletRevisionsUsecase(
+          WalletFacade(revisions.stream),
+        ),
+      );
+      addTearDown(cubit.close);
+      addTearDown(revisions.close);
+      final wallet = _bitcoinWallet(balanceSat: 1000000);
+      final selected = _utxo(amountSat: 100000);
+      final other = _utxo(amountSat: 900000, vout: 1);
+      when(
+        () => getWalletUsecase.execute(wallet.id),
+      ).thenAnswer((_) async => wallet);
+      when(
+        () => getWalletUtxosUsecase.execute(walletId: wallet.id),
+      ).thenAnswer((_) async => [if (!vanished) selected, other]);
+      cubit.setStateForTest(
+        SendState(
+          selectedWallet: SendWalletBitcoin(wallet),
+          utxos: [selected, other],
+          selectedUtxos: [selected],
+          sendMax: true,
+          unsignedPsbt: 'unsigned',
+          signedBitcoinPsbt: 'signed',
+        ),
+      );
+      final refreshed = cubit.stream.firstWhere((s) => s.utxos.contains(other));
+      revisions.add(
+        WalletRevisionState(
+          stamp: WalletRevision(
+            key: WalletKey(id: wallet.id, network: BitcoinNetwork.mainnet),
+            generation: 1,
+            revision: 2,
+          ),
+          lifecycle: WalletLifecycle.active,
+        ),
+      );
+      await refreshed;
+      expect(cubit.state.sendMax, isTrue);
+      if (vanished) {
+        expect(cubit.state.failure, isA<SendSelectedCoinsUnavailableFailure>());
+        expect(cubit.state.unsignedPsbt, isNull);
+        expect(cubit.state.signedBitcoinPsbt, isNull);
+      } else {
+        expect(cubit.state.selectedUtxos.map((u) => u.outpoint), [
+          selected.outpoint,
+        ]);
+      }
+    });
+  }
 
   group('SendCubit.loadUtxos', () {
     test(

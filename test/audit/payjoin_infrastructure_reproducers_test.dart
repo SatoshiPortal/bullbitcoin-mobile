@@ -6,7 +6,9 @@ void main() {
   test(
     'Payjoin setup accepts the database path chosen by the composition root',
     () {
-      final source = File('lib/payjoin_setup.dart').readAsStringSync();
+      final source = File(
+        'lib/features/transactions/payjoin_setup.dart',
+      ).readAsStringSync();
 
       expect(
         source,

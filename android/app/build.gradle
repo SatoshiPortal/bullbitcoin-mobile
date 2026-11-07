@@ -35,6 +35,10 @@ def flutterVersionName = localProperties.getProperty('flutter.versionName') ?: '
 
 
 android {
+    compileOptions {
+        coreLibraryDesugaringEnabled true
+    }
+
     ndkVersion = rootProject.properties['android.ndkVersion']
 
     // The Play dependency-metadata block AGP writes into the signing block is
@@ -153,4 +157,8 @@ android {
 
 flutter {
     source '../..'
+}
+
+dependencies {
+    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.1.4'
 }

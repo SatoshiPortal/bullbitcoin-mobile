@@ -299,7 +299,12 @@ class SellBloc extends Bloc<SellEvent, SellState>
         );
       }
 
-      if (event.wallet.balanceSat.toInt() < requiredAmountSat) {
+      final balance = event.wallet.balanceSat;
+      if (balance == null) {
+        emit(preparing.copyWith(error: const SellUnexpectedFailure()));
+        return;
+      }
+      if (balance.toInt() < requiredAmountSat) {
         if (!isCurrent()) return;
         emit(
           preparing.copyWith(

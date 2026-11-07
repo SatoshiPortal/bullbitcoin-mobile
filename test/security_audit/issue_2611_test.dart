@@ -10,7 +10,9 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   group('Security audit #2611 native Sentry consent', () {
     test('native integrations are consent-gated', () {
-      final source = File('lib/core/utils/report.dart').readAsStringSync();
+      final source = File(
+        'packages/bull_reporting/lib/src/report.dart',
+      ).readAsStringSync();
 
       expect(source, contains('await SentryFlutter.init((options)'));
       expect(source, contains('options.dsn = kReleaseMode ?'));

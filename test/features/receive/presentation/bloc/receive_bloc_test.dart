@@ -10,7 +10,6 @@ import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_transaction_b
 import 'package:bb_mobile/features/receive/domain/receive_failure.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/convert_receive_amount_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/fetch_receive_note_suggestions_usecase.dart';
-import 'package:bb_mobile/features/receive/domain/usecases/get_receive_address_at_index_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/get_receive_currencies_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/get_receive_settings_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/get_receive_wallets_usecase.dart';
@@ -49,9 +48,6 @@ class _MockConvertReceiveAmountUsecase extends Mock
 
 class _MockPrepareReceiveAddressUsecase extends Mock
     implements PrepareReceiveAddressUsecase {}
-
-class _MockGetReceiveAddressAtIndexUsecase extends Mock
-    implements GetReceiveAddressAtIndexUsecase {}
 
 class _MockCreateReceiveOrderSwapUsecase extends Mock
     implements CreateReceiveOrderSwapUsecase {}
@@ -246,7 +242,6 @@ void main() {
         getReceiveSettingsUsecase: getSettings,
         convertReceiveAmountUsecase: convertSatsToCurrency,
         prepareReceiveAddressUsecase: getReceiveAddress,
-        getReceiveAddressAtIndexUsecase: _MockGetReceiveAddressAtIndexUsecase(),
         createReceiveOrderSwapUsecase: createOrderSwap,
         receiveWithPayjoinUsecase: receiveWithPayjoin,
         broadcastOriginalTransactionUsecase: broadcastOriginalTransaction,
@@ -1598,6 +1593,239 @@ void main() {
       creation.complete(const Err(ReceiveSwapUnavailableFailure()));
     },
   );
+
+  test(
+    'Liquid new address uses the persistent writer and survives reopen',
+    () async {
+      final wallet = _testWallet(network: Network.liquidMainnet);
+      final next = _testAddress().copyWith(index: 1, address: 'liquid-next');
+      var issued = _testAddress();
+      when(
+        () => getReceiveAddress.execute(walletId: wallet.id),
+      ).thenAnswer((_) async => Ok(issued));
+      when(
+        () => getReceiveAddress.execute(walletId: wallet.id, generateNew: true),
+      ).thenAnswer((_) async {
+        issued = next;
+        return Ok(issued);
+      });
+      final bloc = buildBloc(wallet: wallet);
+      bloc.add(const ReceiveLiquidStarted());
+      await Future<void>.delayed(Duration.zero);
+      expect(bloc.state.liquidAddress, issued);
+      bloc.add(const ReceiveNewAddressGenerated());
+      await Future<void>.delayed(Duration.zero);
+      expect(bloc.state.liquidAddress, next);
+      verify(
+        () => getReceiveAddress.execute(walletId: wallet.id, generateNew: true),
+      ).called(1);
+      await bloc.close();
+      final reopened = buildBloc(wallet: wallet);
+      addTearDown(reopened.close);
+      reopened.add(const ReceiveLiquidStarted());
+      await Future<void>.delayed(Duration.zero);
+      expect(reopened.state.liquidAddress, next);
+    },
+  );
+
+  for (final network in [Network.bitcoinMainnet, Network.liquidMainnet]) {
+    test(
+      '$network retry retains new-address intent and drops duplicates',
+      () async {
+        final wallet = _testWallet(network: network);
+        final old = _testAddress();
+        final next = old.copyWith(index: 1, address: 'next-issued');
+        final retry = Completer<Result<WalletAddress, ReceiveFailure>>();
+        var advances = 0;
+        when(
+          () => getReceiveAddress.execute(walletId: wallet.id),
+        ).thenAnswer((_) async => Ok(old));
+        when(
+          () =>
+              getReceiveAddress.execute(walletId: wallet.id, generateNew: true),
+        ).thenAnswer((_) async {
+          if (++advances == 1) {
+            return const Err(ReceiveAddressUnavailableFailure());
+          }
+          return retry.future;
+        });
+        final bloc = buildBloc(wallet: wallet);
+        addTearDown(bloc.close);
+        final start = wallet.isBitcoin
+            ? const ReceiveBitcoinStarted(null)
+            : const ReceiveLiquidStarted();
+        WalletAddress? address() => wallet.isBitcoin
+            ? bloc.state.bitcoinAddress
+            : bloc.state.liquidAddress;
+        bloc.add(start);
+        await pumpEventQueue();
+        expect(address(), old);
+        bloc.add(const ReceiveNewAddressGenerated());
+        await pumpEventQueue();
+        expect(bloc.state.failure, isA<ReceiveAddressUnavailableFailure>());
+        expect(address(), isNull);
+        bloc.add(start);
+        await pumpEventQueue();
+        bloc.add(start);
+        bloc.add(const ReceiveNewAddressGenerated());
+        await pumpEventQueue();
+        retry.complete(Ok(next));
+        await pumpEventQueue();
+        expect(address(), next);
+        expect(bloc.state.wallet?.id, wallet.id);
+        expect(bloc.state.failure, isNull);
+        expect(advances, 2);
+        verify(() => getReceiveAddress.execute(walletId: wallet.id)).called(1);
+      },
+    );
+
+    test('$network initial-open retry reuses the unused address', () async {
+      final wallet = _testWallet(network: network);
+      var attempts = 0;
+      when(() => getReceiveAddress.execute(walletId: wallet.id)).thenAnswer(
+        (_) async => ++attempts == 1
+            ? const Err(ReceiveAddressUnavailableFailure())
+            : Ok(_testAddress()),
+      );
+      final bloc = buildBloc(wallet: wallet);
+      addTearDown(bloc.close);
+      final start = wallet.isBitcoin
+          ? const ReceiveBitcoinStarted(null)
+          : const ReceiveLiquidStarted();
+      bloc.add(start);
+      await pumpEventQueue();
+      expect(bloc.state.failure, isA<ReceiveAddressUnavailableFailure>());
+      bloc.add(start);
+      await pumpEventQueue();
+      expect(
+        wallet.isBitcoin ? bloc.state.bitcoinAddress : bloc.state.liquidAddress,
+        _testAddress(),
+      );
+      expect(bloc.state.failure, isNull);
+      verifyNever(
+        () => getReceiveAddress.execute(walletId: wallet.id, generateNew: true),
+      );
+    });
+  }
+
+  for (final network in [Network.bitcoinMainnet, Network.liquidMainnet]) {
+    for (final succeeds in [true, false]) {
+      test(
+        '$network navigation while advance pending success=$succeeds',
+        () async {
+          final wallet = _testWallet(network: network);
+          final destination = _testWallet(
+            origin: 'destination',
+            network: wallet.isBitcoin
+                ? Network.liquidMainnet
+                : Network.bitcoinMainnet,
+          );
+          final pending = Completer<Result<WalletAddress, ReceiveFailure>>();
+          when(
+            () => getWallets.execute(onlyLiquid: true, onlyDefaults: true),
+          ).thenAnswer((_) async => Ok([destination]));
+          when(
+            () => getWallets.execute(onlyBitcoin: true),
+          ).thenAnswer((_) async => Ok([destination]));
+          when(
+            () => getReceiveAddress.execute(
+              walletId: wallet.id,
+              generateNew: true,
+            ),
+          ).thenAnswer((_) => pending.future);
+          final bloc = buildBloc(wallet: wallet);
+          addTearDown(bloc.close);
+          bloc.add(
+            wallet.isBitcoin
+                ? const ReceiveBitcoinStarted(null)
+                : const ReceiveLiquidStarted(),
+          );
+          await pumpEventQueue();
+          bloc.add(const ReceiveNewAddressGenerated());
+          await pumpEventQueue();
+          bloc.add(
+            wallet.isBitcoin
+                ? const ReceiveLiquidStarted()
+                : const ReceiveBitcoinStarted(null),
+          );
+          await pumpEventQueue();
+          expect(bloc.state.wallet?.id, destination.id);
+          expect(
+            bloc.state.type,
+            wallet.isBitcoin ? ReceiveType.liquid : ReceiveType.bitcoin,
+          );
+          final afterNavigation = bloc.state;
+          pending.complete(
+            succeeds
+                ? Ok(_testAddress().copyWith(index: 1, address: 'late-issued'))
+                : const Err(ReceiveAddressUnavailableFailure()),
+          );
+          await pumpEventQueue();
+          expect(bloc.state, afterNavigation);
+        },
+      );
+    }
+  }
+
+  test('wallet navigation retains current payjoin subscription', () async {
+    final walletA = _testWallet(origin: 'wallet-a');
+    final walletB = _testWallet(origin: 'wallet-b');
+    final pending = Completer<Result<PayjoinReceiverSession, ReceiveFailure>>();
+    final bUpdates =
+        StreamController<Result<PayjoinSession, ReceiveFailure>>.broadcast();
+    final bSession = _receiver(id: 'pj-b', walletId: walletB.id);
+    var advances = 0;
+    when(
+      () => getReceiveAddress.execute(walletId: walletA.id, generateNew: true),
+    ).thenAnswer(
+      (_) async => ++advances == 1
+          ? const Err(ReceiveAddressUnavailableFailure())
+          : Ok(_testAddress().copyWith(index: 1, address: 'new-a')),
+    );
+    when(
+      () => receiveWithPayjoin.execute(walletId: walletA.id, address: 'new-a'),
+    ).thenAnswer((_) => pending.future);
+    when(
+      () => receiveWithPayjoin.execute(
+        walletId: walletB.id,
+        address: any(named: 'address'),
+      ),
+    ).thenAnswer((_) async => Ok(bSession));
+    when(
+      () => watchPayjoin.execute(ids: ['pj-b']),
+    ).thenAnswer((_) => bUpdates.stream);
+    final bloc = buildBloc(withPresetWallet: false);
+    addTearDown(() async {
+      await bloc.close();
+      await bUpdates.close();
+    });
+    bloc.add(ReceiveBitcoinStarted(walletA));
+    await pumpEventQueue();
+    bloc.add(const ReceiveNewAddressGenerated());
+    await pumpEventQueue();
+    expect(bloc.state.failure, isA<ReceiveAddressUnavailableFailure>());
+    bloc.add(ReceiveBitcoinStarted(walletA));
+    await pumpEventQueue();
+    expect(advances, 2);
+    bloc.add(ReceiveBitcoinStarted(walletB));
+    await pumpEventQueue();
+    expect(bloc.state.wallet?.id, walletB.id);
+    expect(bloc.state.payjoin?.id, 'pj-b');
+    expect(bUpdates.hasListener, isTrue);
+    pending.complete(Ok(_receiver(id: 'late-pj-a', walletId: walletA.id)));
+    await pumpEventQueue();
+    expect(bloc.state.wallet?.id, walletB.id);
+    expect(bloc.state.payjoin?.id, 'pj-b');
+    final bUpdate = _receiver(
+      id: 'pj-b',
+      walletId: walletB.id,
+      status: PayjoinStatus.proposed,
+    );
+    bUpdates.add(Ok(bUpdate));
+    await pumpEventQueue();
+    expect(bloc.state.payjoin?.status, PayjoinStatus.proposed);
+    expect(bUpdates.hasListener, isTrue);
+  });
 
   group('preselected-wallet network guard', () {
     // The preselected wallet survives tab switches (the shell's bloc is

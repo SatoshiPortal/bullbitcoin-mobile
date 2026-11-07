@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/send/domain/usecases/watch_wallet_revisions_usecase.dart';
 import 'package:primitives/primitives.dart' show Sats;
 import 'dart:async';
 
@@ -77,6 +78,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class SendCubit extends Cubit<SendState>
     implements FeeModalActions, FeeModalViewState {
   SendCubit({
+    WatchWalletRevisionsUsecase? watchWalletRevisionsUsecase,
     this._wallet,
     this.mode = const SendModeBitcoin(),
     required this._labelsFacade,
@@ -126,7 +128,11 @@ class SendCubit extends Cubit<SendState>
     required this._refreshSpWalletForSendUsecase,
     Future<PaymentRequest> Function(String)? parsePaymentRequest,
   }) : _parsePaymentRequest = parsePaymentRequest ?? PaymentRequest.parse,
-       super(const SendState());
+       super(const SendState()) {
+    _revisionsSubscription = watchWalletRevisionsUsecase?.execute().listen(
+      _onWalletRevision,
+    );
+  }
 
   /// Distinct user-defined labels for the suggestion chips in the label
   /// bottom sheet. Wraps [LabelsFacade.fetchDistinctLabels] so widgets
@@ -195,6 +201,8 @@ class SendCubit extends Cubit<SendState>
   StreamSubscription<Result<OrderSwapRecord, SendFailure>>?
   _orderSwapSubscription;
   StreamSubscription<Wallet>? _selectedWalletSyncingSubscription;
+  StreamSubscription<String>? _revisionsSubscription;
+  int _revisionRead = 0;
   StreamSubscription<WalletTransaction>? _txSubscription;
   StreamSubscription<PayjoinSession>? _payjoinSubscription;
   ({int generation, Future<void> future})? _pendingPaymentRequestInput;
@@ -214,10 +222,40 @@ class SendCubit extends Cubit<SendState>
     await (
       _orderSwapSubscription?.cancel() ?? Future.value(),
       _selectedWalletSyncingSubscription?.cancel() ?? Future.value(),
+      _revisionsSubscription?.cancel() ?? Future.value(),
       _txSubscription?.cancel() ?? Future.value(),
       _payjoinSubscription?.cancel() ?? Future.value(),
     ).wait;
     return super.close();
+  }
+
+  Future<void> _onWalletRevision(String walletId) async {
+    final selected = state.selectedWallet;
+    if (isClosed || selected is! SendWalletBitcoin || selected.id != walletId) {
+      return;
+    }
+    final version = ++_revisionRead;
+    try {
+      final wallet = await _getWalletUsecase.execute(walletId);
+      if (isClosed ||
+          version != _revisionRead ||
+          state.selectedWallet?.id != walletId) {
+        return;
+      }
+      clearBitcoinFeePreviews();
+      emit(
+        state.copyWith(
+          selectedWallet: wallet == null ? null : SendWalletBitcoin(wallet),
+          utxos: const [],
+          selectedUtxos: wallet == null ? const [] : state.selectedUtxos,
+        ),
+      );
+      if (wallet != null) await loadUtxos();
+    } on Exception catch (error) {
+      log.warning(
+        'Send wallet revision read unavailable category=${error.runtimeType}',
+      );
+    }
   }
 
   /// LWK and the RBF builder are rate-only at the SDK boundary. When the user

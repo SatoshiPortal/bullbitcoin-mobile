@@ -24,15 +24,8 @@ class PrepareReceiveAddressUsecase {
           generateNew: generateNew,
         ),
       );
-    } on Object catch (e, st) {
-      // Logged HERE, at the boundary that owns the raw reason. The failure's
-      // logMessage stays secondary (equality, debug): if a caller chooses not
-      // to log, the diagnostic must still exist.
-      log.severe(
-        message: 'Failed to prepare a receive address',
-        error: e,
-        trace: st,
-      );
+    } on Exception catch (e) {
+      log.warning('Receive address unavailable type=${e.runtimeType}');
       return Err(ReceiveAddressUnavailableFailure(e.toString()));
     }
   }

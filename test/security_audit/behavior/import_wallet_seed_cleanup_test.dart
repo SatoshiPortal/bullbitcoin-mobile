@@ -1,3 +1,4 @@
+import 'package:primitives/primitives.dart' show Fingerprint;
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
@@ -21,11 +22,11 @@ class _MockSettingsRepository extends Mock implements SettingsRepository {}
 
 class _MockWalletRepository extends Mock implements WalletRepository {}
 
-/// An import must delete only what it created.
+/// A failed import must preserve custody for resumable native provisioning.
 ///
-/// Deleting a secret an earlier import stored would destroy a wallet the user still has; leaving one this import created would litter the keystore with an orphan. The three failure points below are the ones that tell the two apart.
-///
-/// Now asserted against the real `Secrets` and an in-memory keystore: the question is whether the entry is still there, not whether a mock method was called.
+/// A catalog entry may already be committed when the native writer fails.
+/// Assert against the real Secrets and in-memory keystore; automatic cleanup
+/// cannot safely infer that a secret is unreferenced from an unavailable reader.
 void main() {
   const words = [
     'abandon',
@@ -63,6 +64,7 @@ void main() {
       scratchDirectory: () async => '/tmp',
     ).import(words: words);
     registerFallbackValue((fallback as Ok<Secret, SecretFailure>).value);
+    registerFallbackValue(Fingerprint('73c5da0a'));
     registerFallbackValue(Network.bitcoinMainnet);
     registerFallbackValue(ScriptType.bip84);
   });
@@ -85,6 +87,9 @@ void main() {
         passphrase: any(named: 'passphrase'),
       ),
     ).thenAnswer((_) async => const Ok(null));
+    when(
+      () => checkDuplicate.isReferenced(any(), any()),
+    ).thenAnswer((_) async => false);
     // No wallet references any seed unless a test says so.
     when(
       () => walletRepository.getWallets(),
@@ -197,7 +202,7 @@ void main() {
     });
   });
 
-  group('ImportWalletUsecase orphaned-secret cleanup', () {
+  group('ImportWalletUsecase custody retention', () {
     test(
       'keeps a stored secret when the failure precedes the import',
       () async {
@@ -277,14 +282,23 @@ void main() {
       },
     );
 
-    test('still removes a secret this import actually orphaned', () async {
-      when(() => settingsRepository.fetch()).thenAnswer((_) async => settings);
-      failCreateWalletWith(Exception('electrum unreachable'));
+    test(
+      'retains a newly imported secret after native provisioning fails',
+      () async {
+        when(
+          () => settingsRepository.fetch(),
+        ).thenAnswer((_) async => settings);
+        failCreateWalletWith(Exception('electrum unreachable'));
 
-      final result = await usecase.execute(mnemonicWords: words);
+        final result = await usecase.execute(mnemonicWords: words);
 
-      expect(result, isA<Err<Wallet, ImportMnemonicFailure>>());
-      expect(storedSecrets(), isEmpty);
-    });
+        expect(result, isA<Err<Wallet, ImportMnemonicFailure>>());
+        expect(
+          storedSecrets(),
+          hasLength(1),
+          reason: 'startup must be able to resume a committed catalog entry',
+        );
+      },
+    );
   });
 }

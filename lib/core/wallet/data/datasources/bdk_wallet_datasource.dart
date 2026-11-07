@@ -6,7 +6,6 @@ import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/utils/address_script_conversions.dart';
 import 'package:bb_mobile/core/utils/generic_extensions.dart';
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bb_mobile/core/wallet/data/datasources/bdk_facade.dart';
 import 'package:bb_mobile/core/wallet/data/models/balance_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/transaction_input_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/transaction_output_model.dart';
@@ -48,29 +47,12 @@ extension BdkNetworkX on bdk.Network {
 }
 
 class BdkWalletDatasource {
-  @visibleForTesting
-  final Map<String, int> syncExecutions = {};
-  final Map<String, Future<void>> _activeSyncs;
-  final StreamController<String> _walletSyncStartedController;
-  final StreamController<String> _walletSyncFinishedController;
+  final Future<bdk.Wallet> Function(WalletModel) _readWallet;
 
-  BdkWalletDatasource()
-    : _activeSyncs = {},
-      _walletSyncStartedController = StreamController<String>.broadcast(),
-      _walletSyncFinishedController = StreamController<String>.broadcast();
-
-  Stream<String> get walletSyncStartedStream =>
-      _walletSyncStartedController.stream;
-
-  Stream<String> get walletSyncFinishedStream =>
-      _walletSyncFinishedController.stream;
-
-  bool isWalletSyncing({String? walletId}) => walletId == null
-      ? _activeSyncs.isNotEmpty
-      : _activeSyncs.containsKey(walletId);
+  BdkWalletDatasource({required this._readWallet});
 
   Future<BalanceModel> getBalance({required WalletModel wallet}) async {
-    final bdkWallet = await BdkFacade.createWallet(wallet);
+    final bdkWallet = await _readWallet(wallet);
     final balanceInfo = bdkWallet.balance();
 
     final balance = BalanceModel(
@@ -85,66 +67,12 @@ class BdkWalletDatasource {
     return balance;
   }
 
-  Future<void> sync({
-    required WalletModel wallet,
-    required ElectrumConnection electrumServer,
-  }) {
-    // putIfAbsent ensures only one sync starts for each wallet ID,
-    //  all others await the same Future.
-    // TODO: if needed, add these debugPrint to a filterable logger.debug
-    // TODO: to avoid spamming the terminal with recurring prints
-    // debugPrint('Sync requested for wallet: ${wallet.id}');
-    return _activeSyncs.putIfAbsent(wallet.id, () async {
-      try {
-        // debugPrint('New sync started for wallet: ${wallet.id}');
-        // Notify that the wallet is syncing through a stream for other
-        // parts of the app to listen to so they can show a syncing indicator
-        _walletSyncStartedController.add(wallet.id);
-
-        // Increment the sync execution count for this wallet for testing purposes
-        syncExecutions.update(wallet.id, (v) => v + 1, ifAbsent: () => 1);
-
-        await compute(
-          _performFullScan,
-          _SyncParams(
-            walletId: wallet.id,
-            externalDescriptor:
-                (wallet as PublicBdkWalletModel).externalDescriptor,
-            internalDescriptor: wallet.internalDescriptor,
-            isTestnet: wallet.isTestnet,
-            electrumUrl: electrumServer.url,
-            electrumSocks5: electrumServer.socks5,
-            electrumStopGap: electrumServer.stopGap,
-            electrumTimeout: electrumServer.effectiveTimeout,
-            electrumRetry: electrumServer.retry,
-            electrumValidateDomain: electrumServer.validateDomain,
-            walletHexId: wallet.hexId,
-            rootIsolateToken: ServicesBinding.rootIsolateToken!,
-          ),
-        );
-        //debugPrint('Sync completed for wallet: ${wallet.id} with server ${electrumServer.url}',);
-      } catch (e) {
-        // debugPrint('Sync error for wallet ${wallet.id} with server ${electrumServer.url}: $e');
-        rethrow;
-      } finally {
-        // Notify that the wallet has been synced through a stream for other
-        // parts of the app to listen to
-        _walletSyncFinishedController.add(wallet.id);
-        // Remove the sync so future syncs can be triggered
-        // Do not await this, as it is not necessary and can cause deadlocks
-        // since it returns the Future from the map.
-        // ignore: unawaited_futures
-        _activeSyncs.remove(wallet.id);
-      }
-    });
-  }
-
   Future<bool> isMine(
     Uint8List scriptBytes, {
     required WalletModel wallet,
     bdk.Wallet? bdkWallet,
   }) async {
-    final w = bdkWallet ?? await BdkFacade.createWallet(wallet);
+    final w = bdkWallet ?? await _readWallet(wallet);
     return w.isMine(script: bdk.Script(rawOutputScript: scriptBytes));
   }
 
@@ -152,7 +80,7 @@ class BdkWalletDatasource {
   Future<bool Function(Uint8List)> createIsMineChecker({
     required WalletModel wallet,
   }) async {
-    final bdkWallet = await BdkFacade.createWallet(wallet);
+    final bdkWallet = await _readWallet(wallet);
     return (Uint8List scriptBytes) =>
         bdkWallet.isMine(script: bdk.Script(rawOutputScript: scriptBytes));
   }
@@ -169,7 +97,7 @@ class BdkWalletDatasource {
   Future<bool Function(Outpoint)> createOutpointIsMineChecker({
     required WalletModel wallet,
   }) async {
-    final bdkWallet = await BdkFacade.createWallet(wallet);
+    final bdkWallet = await _readWallet(wallet);
     final owned = <Outpoint>{
       for (final output in bdkWallet.listOutput())
         (txId: output.outpoint.txid.toString(), vout: output.outpoint.vout),
@@ -191,7 +119,7 @@ class BdkWalletDatasource {
     required String psbt,
     required WalletModel wallet,
   }) async {
-    final bdkWallet = await BdkFacade.createWallet(wallet);
+    final bdkWallet = await _readWallet(wallet);
     final parsed = bdk.Psbt(psbtBase64: psbt);
     bdkWallet.sign(psbt: parsed, signOptions: _annotateOptions);
     return parsed.serialize();
@@ -214,7 +142,7 @@ class BdkWalletDatasource {
     required WalletModel wallet,
     bdk.Wallet? bdkWallet,
   }) async {
-    final w = bdkWallet ?? await BdkFacade.createWallet(wallet);
+    final w = bdkWallet ?? await _readWallet(wallet);
     final bdkAddress = bdk.Address(
       address: address,
       network: wallet.isTestnet ? bdk.Network.testnet : bdk.Network.bitcoin,
@@ -232,7 +160,7 @@ class BdkWalletDatasource {
     bool replaceByFee = true,
     required WalletModel wallet,
   }) async {
-    final bdkWallet = await BdkFacade.createWallet(wallet);
+    final bdkWallet = await _readWallet(wallet);
     bdk.TxBuilder txBuilder;
 
     // Get the scriptPubkey from the address
@@ -382,7 +310,7 @@ class BdkWalletDatasource {
   // 25000 - 988
 
   Future<List<WalletUtxoModel>> getUtxos({required WalletModel wallet}) async {
-    final bdkWallet = await BdkFacade.createWallet(wallet);
+    final bdkWallet = await _readWallet(wallet);
     final unspent = bdkWallet.listUnspent();
     // Chain tip read once from the already-synced wallet (no extra network
     // calls); reused for every utxo's confirmation count.
@@ -424,7 +352,7 @@ class BdkWalletDatasource {
     required WalletModel wallet,
     String? toAddress,
   }) async {
-    final bdkWallet = await BdkFacade.createWallet(wallet);
+    final bdkWallet = await _readWallet(wallet);
 
     final transactions = bdkWallet.transactions();
 
@@ -534,72 +462,19 @@ class BdkWalletDatasource {
     return walletTxs.whereType<WalletTransactionModel>().toList();
   }
 
-  Future<({String address, int index})> getNewAddress({
-    required WalletModel wallet,
-    bool isChange = false,
-  }) async {
-    final bdkWallet = await BdkFacade.createWallet(wallet);
-    final addressInfo = bdkWallet.revealNextAddress(
-      keychain: isChange
-          ? bdk.KeychainKind.internal
-          : bdk.KeychainKind.external_,
-    );
-
-    // Persist the revealed address to avoid address reuse
-    await BdkFacade.saveWallet(bdkWallet, wallet.hexId);
-
-    final index = addressInfo.index;
-    final address = addressInfo.address.toString();
-
-    return (index: index, address: address);
-  }
-
-  Future<({String address, int index})> getLastRevealedAddressOrNew({
-    required WalletModel wallet,
-    bool isChange = false,
-  }) async {
-    final lastRevealedAddressIndex = await getLastRevealedAddressIndex(
-      wallet: wallet,
-      isChange: isChange,
-    );
-
-    if (lastRevealedAddressIndex < 0) {
-      // No address has been revealed yet, so we get a new one
-      return getNewAddress(wallet: wallet, isChange: isChange);
-    }
-
-    final address = await getAddressByIndex(
-      lastRevealedAddressIndex,
-      wallet: wallet,
-    );
-
-    if (await isAddressUsed(address, wallet: wallet)) {
-      // If the last revealed address has been used,
-      //  we need to get a new one to avoid address reuse
-      return getNewAddress(wallet: wallet, isChange: isChange);
-    }
-
-    return (index: lastRevealedAddressIndex, address: address);
-  }
-
   // This can return -1 if no address has been revealed yet.
   // This should be handled accordingly by the caller.
   Future<int> getLastRevealedAddressIndex({
     required WalletModel wallet,
     bool isChange = false,
   }) async {
-    final bdkWallet = await BdkFacade.createWallet(wallet);
-    final nextAddress = bdkWallet.revealNextAddress(
-      keychain: isChange
-          ? bdk.KeychainKind.internal
-          : bdk.KeychainKind.external_,
-    );
-
-    final index =
-        nextAddress.index -
-        1; // Subtract 1 to get the last revealed address index
-
-    return index;
+    final bdkWallet = await _readWallet(wallet);
+    return bdkWallet.nextDerivationIndex(
+          keychain: isChange
+              ? bdk.KeychainKind.internal
+              : bdk.KeychainKind.external_,
+        ) -
+        1;
   }
 
   Future<String> getAddressByIndex(
@@ -607,7 +482,7 @@ class BdkWalletDatasource {
     required WalletModel wallet,
     isChange = false,
   }) async {
-    final bdkWallet = await BdkFacade.createWallet(wallet);
+    final bdkWallet = await _readWallet(wallet);
     final addressInfo = bdkWallet.peekAddress(
       keychain: isChange
           ? bdk.KeychainKind.internal
@@ -624,7 +499,7 @@ class BdkWalletDatasource {
     String address, {
     required WalletModel wallet,
   }) async {
-    final bdkWallet = await BdkFacade.createWallet(wallet);
+    final bdkWallet = await _readWallet(wallet);
     final transactions = bdkWallet.transactions();
 
     // TODO: Use future.wait to parallelize the loop and improve performance
@@ -650,7 +525,7 @@ class BdkWalletDatasource {
   Future<Map<String, BigInt>> getAddressBalancesSat({
     required WalletModel wallet,
   }) async {
-    final bdkWallet = await BdkFacade.createWallet(wallet);
+    final bdkWallet = await _readWallet(wallet);
     final utxos = bdkWallet.listUnspent();
     final addressBalances = <String, BigInt>{};
 
@@ -753,7 +628,7 @@ class BdkWalletDatasource {
     required RelativeFee feeRate,
     required WalletModel wallet,
   }) async {
-    final bdkWallet = await BdkFacade.createWallet(wallet);
+    final bdkWallet = await _readWallet(wallet);
     // BumpFeeTxBuilder is rate-only by BDK design (BIP-125 requires a
     // higher rate, not absolute, to replace). We hit it with sat/kwu so
     // sub-1 sat/vByte bumps survive without precision loss.
@@ -792,7 +667,7 @@ class BdkWalletDatasource {
     required String txid,
     required WalletModel wallet,
   }) async {
-    final bdkWallet = await BdkFacade.createWallet(wallet);
+    final bdkWallet = await _readWallet(wallet);
     final canonicalTx = bdkWallet.getTx(txid: bdk.Txid.fromString(hex: txid));
     if (canonicalTx == null) return TransactionSignatureStatus.unverifiable;
     final tx = canonicalTx.transaction;
@@ -831,11 +706,6 @@ class BdkWalletDatasource {
     };
   }
 
-  Future<void> delete({required WalletModel wallet}) async {
-    await BdkFacade.delete(wallet);
-    log.fine('Deleted wallet ${wallet.id} BDK database');
-  }
-
   Future<({BigInt satoshis, int transactions})> dryScan({
     required List<int> entropy,
     required String passphrase,
@@ -860,79 +730,6 @@ class BdkWalletDatasource {
       ),
     );
   }
-}
-
-// Top-level function for isolate execution
-class _SyncParams {
-  final String walletId;
-  final String externalDescriptor;
-  final String internalDescriptor;
-  final bool isTestnet;
-  final String electrumUrl;
-  final String? electrumSocks5;
-  final int electrumStopGap;
-  final int electrumTimeout;
-  final int electrumRetry;
-  final bool electrumValidateDomain;
-  final String walletHexId;
-  final RootIsolateToken rootIsolateToken;
-
-  _SyncParams({
-    required this.walletId,
-    required this.externalDescriptor,
-    required this.internalDescriptor,
-    required this.isTestnet,
-    required this.electrumUrl,
-    required this.electrumSocks5,
-    required this.electrumStopGap,
-    required this.electrumTimeout,
-    required this.electrumRetry,
-    required this.electrumValidateDomain,
-    required this.walletHexId,
-    required this.rootIsolateToken,
-  });
-}
-
-Future<void> _performFullScan(_SyncParams params) async {
-  // Initialize the binary messenger for platform channel access in isolate
-  // Needed for things like getting the database path from BdkFacade which
-  // uses path_provider under the hood
-  BackgroundIsolateBinaryMessenger.ensureInitialized(params.rootIsolateToken);
-
-  // Recreate wallet model in the isolate
-  final wallet = WalletModel.publicBdk(
-    id: params.walletId,
-    externalDescriptor: params.externalDescriptor,
-    internalDescriptor: params.internalDescriptor,
-    isTestnet: params.isTestnet,
-  );
-
-  final bdkWallet = await BdkFacade.createWallet(wallet);
-  final blockchain = _createElectrumClient(
-    url: params.electrumUrl,
-    socks5: params.electrumSocks5,
-    timeout: params.electrumTimeout,
-    retry: params.electrumRetry,
-    validateDomain: params.electrumValidateDomain,
-  );
-  try {
-    final scanRequest = bdkWallet.startFullScan().build();
-    final update = blockchain.fullScan(
-      request: scanRequest,
-      stopGap: params.electrumStopGap,
-      batchSize: _batchSizeFor(params.electrumStopGap),
-      fetchPrevTxouts: true,
-    );
-    bdkWallet.applyUpdate(update: update);
-  } catch (e, st) {
-    log.warning(
-      'full_scan failed for wallet ${params.walletId}',
-      error: e,
-      trace: st,
-    );
-    rethrow;
-  }
-  await BdkFacade.saveWallet(bdkWallet, params.walletHexId);
 }
 
 class FailedToSignPsbtException extends BullException {

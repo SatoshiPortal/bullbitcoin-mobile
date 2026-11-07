@@ -1,15 +1,18 @@
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/labels/adapters/label_mapper.dart';
 import 'package:bb_mobile/features/labels/application/store_label_application.dart';
-import 'package:bb_mobile/features/labels/application/usecases/trash_label_usecase.dart';
 import 'package:bb_mobile/features/labels/application/usecases/fetch_all_labels_usecase.dart';
 import 'package:bb_mobile/features/labels/application/usecases/fetch_label_by_reference_usecase.dart';
 import 'package:bb_mobile/features/labels/application/usecases/store_labels_usecase.dart';
+import 'package:bb_mobile/features/labels/application/usecases/trash_label_usecase.dart';
+import 'package:bb_mobile/features/labels/data/payjoin_labels_adapter.dart';
 import 'package:bb_mobile/features/labels/domain/label_failure.dart';
 import 'package:bb_mobile/features/labels/domain/primitive/label_type.dart';
-import 'package:bb_mobile/features/labels/new_label.dart';
 import 'package:bb_mobile/features/labels/label.dart';
+import 'package:bb_mobile/features/labels/new_label.dart';
+import 'package:bull_payjoin/bull_payjoin.dart';
 
+export 'package:bull_payjoin/bull_payjoin.dart' show PayjoinLabelsPort;
 export 'package:bb_mobile/features/labels/label.dart';
 export 'package:bb_mobile/features/labels/new_label.dart';
 export 'package:bb_mobile/features/labels/domain/label_failure.dart';
@@ -42,6 +45,10 @@ class LabelsFacade {
     required this._fetchAllLabelsUsecase,
     required this._storeLabelsUsecase,
     required this._trashLabelUsecase,
+  });
+
+  PayjoinLabelsPort payjoinLabels() => AppPayjoinLabelsAdapter((label) async {
+    await store(label);
   });
 
   Future<List<Label>> fetchByReference(String reference) async {

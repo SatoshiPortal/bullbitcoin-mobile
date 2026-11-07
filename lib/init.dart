@@ -1,17 +1,16 @@
-import 'dart:io';
-
-import 'package:bb_mobile/bloc_observer.dart';
-import 'package:bb_mobile/core/background_tasks/handler.dart';
+import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
+import 'package:bb_mobile/features/app_startup/public/app_startup_facade.dart';
+import 'package:bb_mobile/background_setup.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
-import 'package:bb_mobile/core/utils/report.dart';
-import 'package:bb_mobile/tor_diagnostic_context.dart';
-import 'package:bb_mobile/features/wizard/domain/usecase/apply_pending_wizard_choices_usecase.dart';
+import 'package:bull_reporting/bull_reporting.dart';
+import 'package:bb_mobile/features/tor_settings/public/tor_settings_facade.dart';
+import 'package:bb_mobile/core/utils/constants.dart';
+import 'package:bb_mobile/features/settings/public/settings_facade.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/native_libraries.dart';
-import 'package:bb_mobile/payjoin_setup.dart' show payjoinDatabaseFilename;
-import 'package:bb_mobile/report_logger_adapter.dart';
-import 'package:bb_mobile/startup_wizard.dart';
+import 'package:bull_payjoin/bull_payjoin.dart' show payjoinDatabaseFilename;
+import 'package:bb_mobile/features/wizard/public/wizard_facade.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bull_tor/tor.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -29,16 +28,16 @@ class Bull {
     await initializeLogging(
       directory: bullDirectory,
       reporter: const ReportLoggerAdapter(),
-      diagnosticContextSource: PlatformDiagnosticContextSource(
-        runtime: _diagnosticRuntime,
-      ),
     );
     // The pre-init wizard writes consent to prefs via the bloc's
     // `SavePendingWizardChoicesUsecase` right before this runs. Pull
     // it so Sentry initializes with the user's freshest answer rather
     // than a stale mirror, and so migration errors that happen on this
     // very boot are captured if the user just opted in.
-    await Report.init(wizardConsent: await readStartupReportingConsent());
+    await Report.init(
+      dsn: ApiServiceConstants.sentryDsn,
+      wizardConsent: await readStartupReportingConsent(),
+    );
 
     await initFlutterRustBridgeDependencies();
 
@@ -49,35 +48,19 @@ class Bull {
       SqliteDatabase(),
       payjoinDatabasePath: payjoinDatabasePath,
     );
+    await initializeWalletRuntime(locator);
     Bloc.observer = AppBlocObserver();
 
     // Flush wizard pending values (if any) to SQLite now that the
     // settings repository is available, then mark the wizard complete.
-    await locator<ApplyPendingWizardChoicesUsecase>().execute();
+    await completeStartupWizard(locator);
     final settings = locator<SettingsRepository>();
     configureLogTorContext(
       () => loadTorDiagnosticContext(settings, locator<Tor>()),
     );
-    Report.consent = (await settings.fetch()).isErrorReportingEnabled;
-    if (Platform.isAndroid || Platform.isIOS) {
-      await cancelLegacyBackgroundTasks();
-    }
+    await refreshReportingConsent(settings);
+    await configureBackgroundTasks();
 
-    // Emits the install/upgrade transition event (no-op on a normal
-    // launch) and advances the persisted version marker. The shout is
-    // awaited so a crash between scheduling and capture cannot lose
-    // the milestone — the persisted marker only advances once Sentry
-    // has the event.
-    final type = Report.migrationType;
-    if (type != null) {
-      await log.shout(message: type.name, category: ReportCategory.migration);
-      await Report.commitVersion();
-    }
+    await Report.recordMigration();
   }
-}
-
-final _diagnosticRuntime = DiagnosticRuntimeContext();
-
-void configureLogTorContext(Future<DiagnosticTorContext> Function() loader) {
-  _diagnosticRuntime.setTorLoader(loader);
 }

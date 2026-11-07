@@ -4,7 +4,7 @@ import 'package:bb_mobile/core/price/domain/usecases/convert_sats_to_currency_am
 import 'package:bb_mobile/core/fees/domain/get_network_fees_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
-import 'package:bb_mobile/core/sync/sync_coordinator.dart';
+import 'package:bb_mobile/features/swap/domain/usecases/schedule_order_swap_refresh_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/verify_chain_swap_amount_send_usecase.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/bitcoin_wallet_repository.dart';
@@ -189,9 +189,12 @@ class SwapLocator {
         locator<WatchSwapAppUpdateRequiredUsecase>(),
       ),
     );
+    locator.registerFactory<ScheduleOrderSwapRefreshUsecase>(
+      () => ScheduleOrderSwapRefreshUsecase(locator<SwapSyncPort>()),
+    );
     locator.registerLazySingleton<OrderSwapWatcher>(
       () => OrderSwapWatcher(
-        locator<SyncCoordinator>(),
+        locator<ScheduleOrderSwapRefreshUsecase>(),
         isAppUpdateRequired: () => locator<SwapFacade>().isAppUpdateRequired,
       ),
       dispose: (watcher) => watcher.dispose(),

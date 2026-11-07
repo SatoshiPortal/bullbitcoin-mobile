@@ -1,6 +1,6 @@
 # Feature Dependencies
 
-This diagram shows the dependencies between features in the Bull Bitcoin Mobile application. It helps visualize the dependency graph and ensures there are no cyclic dependencies.
+This diagram shows the dependencies between features in the Bull Bitcoin Mobile application. It helps visualize the dependency graph, including known legacy cycles that remain to be removed.
 
 **Diagram Type**: This is a **Package Dependency Diagram** (also known as Module Dependency Graph or Component Dependency Diagram in UML).
 
@@ -11,6 +11,34 @@ graph TB
     %% Core infrastructure
     CORE[Core<br/>---<br/>Database, Secure Storage,<br/>API Clients, Tor Adapters, UI Kit,<br/>DI & Router setup,<br/>PIN encrypted storage,<br/>Domain Primitives/Value Objects]
     PRIMITIVES[Primitives Package]
+    TRANSACTION_SYNC[Transaction Sync Package<br/>Electrum sync, contracts and owner ports]
+    NOTIFICATIONS[Notifications Package]
+    BG_TASKS --> TRANSACTION_SYNC
+    BG_TASKS --> NOTIFICATIONS
+    WALLETS --> NOTIFICATIONS
+    WALLETS --> BG_TASKS
+    NOTIFICATIONS --> TRANSACTION_SYNC
+    NOTIFICATIONS --> PRIMITIVES
+    BG_TASKS --> PRIMITIVES
+    BG_TASKS --> BULL_LOGGER
+    SETTINGS --> BG_TASKS
+    SETTINGS --> NOTIFICATIONS
+    TRANSACTION_SYNC --> PRIMITIVES
+    TRANSACTION_SYNC --> BULL_LOGGER
+    ELECTRUM_SETTINGS --> TRANSACTION_SYNC
+    LABELS --> TRANSACTION_SYNC
+    WALLETS --> TRANSACTION_SYNC
+    WALLETS --> LABELS
+    BULL_REPORTING[Bull Reporting Package]
+    BULL_REPORTING --> BULL_LOGGER
+    CORE --> BULL_REPORTING
+    SETTINGS --> BULL_REPORTING
+    LABELS --> BULL_PAYJOIN
+    TX_HISTORY --> LABELS
+    TX_HISTORY --> SECRETS
+    TX_HISTORY --> BULL_LOGGER
+    APP_STARTUP --> BULL_LOGGER
+    TOR_SETTINGS --> BULL_LOGGER
     BULL_LOGGER[Bull Logger Package<br/>Logger, diagnostics, log files]
     BULL_PAYJOIN[Bull Payjoin Package<br/>Public contract]
 
@@ -47,7 +75,7 @@ graph TB
     TRANSFER[Transfer]
     TX_HISTORY[Transaction History]
     REPLACE_BY_FEE[Replace By Fee]
-    BG_TASKS[Background Tasks]
+    BG_TASKS[Background Tasks Package]
     DCA[DCA]
     DEFAULT_WALLETS[Default Wallets]
     LIMIT_ORDERS[Limit Orders]
@@ -78,8 +106,10 @@ graph TB
 
     %% Feature-to-feature dependencies (extracted from draw.io diagram)
     ADDRESS_MGMT --> LABELS
+    ADDRESS_MGMT -->|public revision stream| WALLETS
     ALL_SEED_VIEW --> APP_UNLOCK
     ALL_SEED_VIEW --> SECRETS
+    ALL_SEED_VIEW -->|public custody references| WALLETS
     ANNOUNCEMENTS --> SETTINGS
     ANNOUNCEMENTS --> SWAPS
     APP_STARTUP --> WALLETS
@@ -102,7 +132,7 @@ graph TB
     BUY --> TX_HISTORY
     COINS --> UTXO_MGMT
     COINS --> LABELS
-    COINS --> WALLETS
+    COINS -->|public revision stream| WALLETS
     DCA --> RECEIVE
     SETTINGS --> DEFAULT_WALLETS
     SETTINGS --> EXCHANGE
@@ -152,7 +182,7 @@ graph TB
     SEND --> SWAPS
     SEND --> TX_HISTORY
     SEND --> UTXO_MGMT
-    SEND --> WALLETS
+    SEND -->|public revision stream| WALLETS
     SETTINGS --> CORE
     SETTINGS --> BULL_PAYJOIN
     SETTINGS --> RECOVERBULL
@@ -165,7 +195,10 @@ graph TB
     SWAPS --> EXCHANGE
     SWAPS --> LABELS
     SETTINGS --> SP
-    WALLETS --> SP
+    %% SP receives a foreground flag; swap owns the scheduling port implemented by wallet.
+    WALLETS -->|public wallet/scan capabilities| SP
+    SP -->|legacy: wallet repository via core barrel| WALLETS
+    SWAPS -->|legacy: wallet repository and wallet navigation| WALLETS
     SWAPS --> UTXO_MGMT
     CORE --> TOR
     ELECTRUM_SETTINGS --> TOR
@@ -178,7 +211,7 @@ graph TB
     TRANSFER --> RECEIVE
     TX_HISTORY --> BULL_PAYJOIN
     TX_HISTORY --> SWAPS
-    TX_HISTORY --> WALLETS
+    TX_HISTORY -->|public revision stream| WALLETS
     UTXO_MGMT --> LABELS
     UTXO_MGMT --> WALLETS
     WALLETS --> BIP85
@@ -188,7 +221,7 @@ graph TB
     WALLETS --> SECRETS
     SP --> SECRETS
     WALLETS --> SETTINGS
-    WALLETS --> SWAPS
+    WALLETS -->|public orders + swap scheduling port| SWAPS
     WITHDRAWAL --> RECIPIENTS
 
     %% Styling
@@ -225,6 +258,12 @@ graph TB
 2. **Core Independence**: Core must not depend on any feature
 3. **Feature Isolation**: Features should communicate through well-defined facades/interfaces
 4. **Layered Dependencies**: Dependencies flow one way — `shell → features → packages` across modules, and `ui → presentation → domain → data` within a feature. Under the melos migration each `lib/core/<domain>` becomes a `packages/<domain>` and these turn into compile-time boundaries. See [ARCHITECTURE.md](ARCHITECTURE.md).
+
+## Foreground synchronization
+
+Wallet owns the private foreground synchronization queue and consumes the SP and swap facades. SP receives an explicit foreground-start flag from composition. Swap's watcher calls its own scheduling usecase and port; wallet implements that published port. Runtime callbacks enter the wallet queue without introducing an SP/swap source dependency on wallet synchronization. The swap facade keeps its direct refresh path so a queued pass never enqueues itself.
+
+The pre-existing reverse source edges remain: SP uses the wallet repository via the `core/wallet` re-export in `get_sp_secret_usecase.dart` and `sp_locator.dart`; swap uses the same barrel in `swap_locator.dart` and imports `wallet_router.dart` in `swap_in_progress_page.dart`. Together with wallet’s facade imports, these retain the legacy wallet↔SP and wallet↔swap cycles. Removing those repository/navigation dependencies is outside the foreground sync scope. `test/architecture/foreground_sync_dependencies_test.dart` resolves feature ownership through imports and transitive exports, including public barrels, and rejects new feature edges against an explicit baseline; it does not claim that the existing graph is acyclic.
 
 ## Core Dependencies
 

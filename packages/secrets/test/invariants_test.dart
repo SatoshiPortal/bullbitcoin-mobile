@@ -231,6 +231,8 @@ void main() {
     const declared = {
       // lifecycle and handle
       'Secrets', 'Secret', 'SecretEntry', 'UnreadableSecret', 'RestoredVault',
+      // exhaustive custody references supplied by seed owners
+      'SeedReferencePort', 'SeedReferencesUnavailable',
       // the grouped spelling: forwards, holds nothing
       'SecretExtension', 'SecretDerivation', 'SecretDescriptors', 'SecretBip85',
       'SecretSigning', 'SecretBackup', 'SecretVerification',

@@ -1,0 +1,378 @@
+import 'dart:async';
+import 'dart:collection';
+
+import 'package:bb_mobile/features/wallet/domain/sync_outcome.dart';
+
+import 'package:bb_mobile/features/wallet/domain/sync_kind.dart';
+import 'package:bb_mobile/features/wallet/domain/sync_trigger.dart';
+import 'package:bull_logger/bull_logger.dart';
+import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/sync_wallet_usecase.dart';
+import 'package:flutter/widgets.dart'
+    show AppLifecycleListener, AppLifecycleState, WidgetsBinding;
+
+export 'package:bb_mobile/features/wallet/domain/sync_outcome.dart';
+
+/// Foreground sync orchestrator.
+///
+/// Schedules per-kind sync work (bitcoin and liquid) so that:
+///  - the same kind is **never** run concurrently — duplicate requests are
+///    dropped while one is queued or running;
+///  - different kinds are **queued** and executed sequentially in FIFO order
+///    (matching the [SyncKind] enum declaration), avoiding concurrent writes
+///    to the shared drift database, avoiding "database is locked" errors;
+///  - sync requests issued while the app is not foreground-`resumed` (i.e.
+///    `inactive`/`hidden`/`paused`/`detached`) are dropped — there is no point
+///    burning bandwidth/CPU for a UI no-one is interacting with;
+///  - returning to `resumed` triggers a fresh catch-up sync, replaying any
+///    sync that was gated off while away (tracked via a single "was away since
+///    last resumed" flag, independent of the exact intermediate state path);
+///  - per-kind successes are throttled: a kind that completed within
+///    [_minSyncInterval] is skipped on the next enqueue for an
+///    [SyncTrigger.automatic] request; [SyncTrigger.user] requests
+///    (pull-to-refresh and other explicit gestures) bypass the throttle.
+///
+/// Background tasks (`lib/background_bootstrap.dart`) intentionally
+/// do **not** use this coordinator — they run in a separate Dart isolate with
+/// a task-specific graph, so the lifecycle gate would actively block them.
+/// They call the writer-backed Electrum path through BackgroundWalletSync.
+class SyncCoordinator {
+  SyncCoordinator({
+    required GetWalletsUsecase getWalletsUsecase,
+    required SyncWalletUsecase syncWalletUsecase,
+    this._syncSwaps,
+    this._syncSwapsOutcome,
+    this._syncSp,
+    this._syncSpOutcome,
+    this._refreshRevisions,
+  }) : _getWallets = getWalletsUsecase,
+       _syncWallet = syncWalletUsecase {
+    final lifecycleState = WidgetsBinding.instance.lifecycleState;
+    // Gate syncs to the foreground-resumed state only. Default to allowed for
+    // the brief startup window before the first lifecycle event arrives
+    // (lifecycleState is null then) so the cold-start sync isn't gated off.
+    _isAppResumed =
+        lifecycleState == null || lifecycleState == AppLifecycleState.resumed;
+    _lifecycleListener = AppLifecycleListener(
+      onStateChange: _onLifecycleChange,
+    );
+  }
+
+  /// Minimum time between successful syncs of the same kind. A second
+  /// `sync()` call within this window is a no-op for that kind unless the
+  /// caller passes [SyncTrigger.user].
+  static const Duration _minSyncInterval = Duration(seconds: 2);
+
+  final GetWalletsUsecase _getWallets;
+  final SyncWalletUsecase _syncWallet;
+  final Future<void> Function()? _syncSwaps;
+  // The SP side of a sync tick: resume the chain scan when the SP feature's
+  // policy allows it. The foreground setup resolves the wallet usecase lazily
+  // at tick time, after SP and swap have registered their public facades.
+  final Future<void> Function()? _syncSp;
+  final Future<Result<void, WalletFailure>> Function()? _syncSpOutcome;
+  final Future<void> Function()? _refreshRevisions;
+  final Future<SyncOutcome> Function()? _syncSwapsOutcome;
+
+  SyncOutcome? lastSwapSyncOutcome;
+
+  late final AppLifecycleListener _lifecycleListener;
+  bool _isAppResumed = true;
+
+  /// Tracks whether the app left the foreground-resumed state — to any of
+  /// `inactive`/`hidden`/`paused`/`detached` — since the last `resumed`. Used
+  /// to replay a catch-up sync on return, so a sync requested while the gate
+  /// was closed is never lost.
+  bool _wasAway = false;
+
+  final Queue<_SyncPass> _queue = Queue<_SyncPass>();
+  final Map<SyncKind, _SyncPass> _enqueued = {};
+  _SyncPass? _running;
+  bool _draining = false;
+  Future<void>? _activeDrain;
+  final Map<SyncKind, DateTime> _lastSuccessAt = <SyncKind, DateTime>{};
+
+  /// Schedule `kinds` (or the trigger's default kinds when `only` is null) and
+  /// resolve once every requested kind that actually runs has settled. Resolution tracks
+  /// this call's own kinds (via per-kind completers), so it is correct even
+  /// when those kinds are drained by a pass another caller started. Execution
+  /// order follows the [SyncKind] enum declaration (bitcoin → liquid → swaps → sp).
+  ///
+  /// Pass [SyncTrigger.user] to bypass the per-kind throttle; reserved for
+  /// explicit user gestures (pull-to-refresh). Default callers (route-aware
+  /// triggers, lifecycle resumption) use [SyncTrigger.automatic].
+  ///
+  /// Returns immediately if the app is not foreground-resumed or every
+  /// requested kind was deduped/throttled. Throws [SyncCoordinatorException]
+  /// when any requested kind failed during the drain pass that satisfied this
+  /// call.
+  Future<void> sync({
+    Set<SyncKind>? only,
+    SyncTrigger trigger = SyncTrigger.automatic,
+  }) async {
+    final requestedKinds = only ?? _defaultKinds(trigger);
+    final requested = SyncKind.values
+        .where(requestedKinds.contains)
+        .toList(growable: false);
+    final started = DateTime.now();
+    final dropped = <String>[];
+    final waits = <SyncKind, Future<Object?>>{};
+    for (final kind in requested) {
+      final (pass, reason) = _enqueue(kind, trigger: trigger);
+      if (pass != null) {
+        final completer = Completer<Object?>();
+        pass.waiters.add(completer);
+        waits[kind] = completer.future;
+      } else {
+        dropped.add('${kind.name}:$reason');
+      }
+    }
+    if (dropped.isNotEmpty) {
+      log.info('[SyncCoordinator] sync dropped (${dropped.join(', ')})');
+    }
+    unawaited(_drain());
+    final settled = await Future.wait(
+      waits.entries.map((e) async => MapEntry(e.key, await e.value)),
+    );
+    final failures = <SyncKind, Object>{
+      for (final entry in settled)
+        if (entry.value != null) entry.key: entry.value!,
+    };
+    final elapsedMs = DateTime.now().difference(started).inMilliseconds;
+    final kinds = requested.map((k) => k.name).join(', ');
+    if (failures.isEmpty) {
+      log.fine('[SyncCoordinator] sync ok ($kinds) in ${elapsedMs}ms');
+      return;
+    }
+    // One sanitized summary (kind:runtimeType only — no wallet identifiers
+    // reach Sentry). severe keeps failures visible in monitoring.
+    final failed = failures.entries
+        .map((e) => '${e.key.name}:${e.value.runtimeType}')
+        .join(', ');
+    // No wallet yet is the normal state before onboarding, not a broken sync:
+    // keep it in the support log without reporting it.
+    if (failures.values.every((f) => f is NoWalletsFoundFailure)) {
+      log.warning('[SyncCoordinator] sync failed ($failed) in ${elapsedMs}ms');
+    } else {
+      log.severe(
+        message: '[SyncCoordinator] sync failed ($failed) in ${elapsedMs}ms',
+        error: SyncCoordinatorException(failures),
+        trace: StackTrace.current,
+      );
+    }
+    throw SyncCoordinatorException(failures);
+  }
+
+  /// The sp kind only resumes the SP chain scan, which a user gesture must not
+  /// start: the SP side of a pull-to-refresh is the snapshot read the wallet
+  /// does right after.
+  static Set<SyncKind> _defaultKinds(SyncTrigger trigger) => switch (trigger) {
+    SyncTrigger.user => const {SyncKind.bitcoin, SyncKind.liquid},
+    SyncTrigger.automatic => const {
+      SyncKind.bitcoin,
+      SyncKind.liquid,
+      SyncKind.sp,
+    },
+  };
+
+  /// An active routine pass cannot satisfy discovery. Keep its waiters separate
+  /// from the discovery pass queued behind it; queued passes can be upgraded.
+  (_SyncPass?, String?) _enqueue(
+    SyncKind kind, {
+    required SyncTrigger trigger,
+  }) {
+    if (!_isAppResumed) return (null, 'gated');
+    final discover =
+        trigger == SyncTrigger.user &&
+        (kind == SyncKind.bitcoin || kind == SyncKind.liquid);
+    final queued = _enqueued[kind];
+    if (queued != null) {
+      queued.discover |= discover;
+      return (queued, null);
+    }
+    final running = _running;
+    if (running != null &&
+        running.kind == kind &&
+        (!discover || running.discover)) {
+      return (running, null);
+    }
+    if (trigger == SyncTrigger.automatic) {
+      final last = _lastSuccessAt[kind];
+      if (last != null && DateTime.now().difference(last) < _minSyncInterval) {
+        return (null, 'throttled');
+      }
+    }
+    final pass = _SyncPass(kind, discover);
+    _enqueued[kind] = pass;
+    _queue.add(pass);
+    return (pass, null);
+  }
+
+  Future<void> _drain() {
+    final inFlight = _activeDrain;
+    if (inFlight != null) return inFlight;
+    final future = _drainOnce();
+    _activeDrain = future;
+    return future.whenComplete(() {
+      if (identical(_activeDrain, future)) {
+        _activeDrain = null;
+      }
+      if (_queue.isNotEmpty && !_draining) {
+        unawaited(_drain());
+      }
+    });
+  }
+
+  Future<void> _drainOnce() async {
+    _draining = true;
+    try {
+      while (_queue.isNotEmpty) {
+        final pass = _queue.removeFirst();
+        final kind = pass.kind;
+        _enqueued.remove(kind);
+        _running = pass;
+        try {
+          // A wallet read failure fails the round without being thrown: it is
+          // settled as the error and, like a throw, never stamps
+          // _lastSuccessAt.
+          final failure = await _runTask(kind, discover: pass.discover);
+          if (failure != null) {
+            _settle(pass, failure);
+            continue;
+          }
+          _lastSuccessAt[kind] = DateTime.now();
+          _settle(pass, null);
+        } catch (e) {
+          // Delivered to any sync() awaiting this kind; the single sanitized
+          // summary is logged by sync().
+          _settle(pass, e);
+        } finally {
+          _running = null;
+        }
+      }
+    } finally {
+      _draining = false;
+    }
+  }
+
+  void _settle(_SyncPass pass, Object? error) {
+    for (final completer in pass.waiters) {
+      if (!completer.isCompleted) completer.complete(error);
+    }
+    pass.waiters.clear();
+  }
+
+  /// Syncs every wallet the read returns, or returns the read's failure so
+  /// the round fails.
+  ///
+  /// Deliberately not degraded to an empty list: `_drainOnce` stamps
+  /// `_lastSuccessAt` for any round that completes normally, so a swallowed
+  /// read failure would both report a successful sync to pull-to-refresh and
+  /// count toward the throttle — suppressing the retries that would recover
+  /// from a transient failure.
+  Future<WalletFailure?> _syncAll(
+    Future<Result<List<Wallet>, WalletFailure>> read, {
+    required bool discover,
+  }) async {
+    switch (await read) {
+      case Ok(:final value):
+        for (final wallet in value) {
+          await _syncWallet.execute(wallet, discover: discover);
+        }
+        return null;
+      case Err(:final failure):
+        return failure;
+    }
+  }
+
+  /// The wallet read failure that failed the round, or null. Any other failure
+  /// is thrown, as before.
+  Future<WalletFailure?> _runTask(
+    SyncKind kind, {
+    required bool discover,
+  }) async {
+    switch (kind) {
+      case SyncKind.bitcoin:
+        return _syncAll(
+          _getWallets.execute(onlyBitcoin: true),
+          discover: discover,
+        );
+      case SyncKind.liquid:
+        return _syncAll(
+          _getWallets.execute(onlyLiquid: true),
+          discover: discover,
+        );
+      case SyncKind.swaps:
+        final outcomeCallback = _syncSwapsOutcome;
+        if (outcomeCallback != null) {
+          final outcome = await outcomeCallback();
+          lastSwapSyncOutcome = outcome;
+          if (outcome.failure != null) throw outcome.failure!;
+        } else {
+          await _syncSwaps!();
+        }
+      case SyncKind.sp:
+        final callback = _syncSpOutcome;
+        if (callback != null) {
+          if (await callback() case Err(:final failure)) return failure;
+        } else {
+          await _syncSp?.call();
+        }
+    }
+    return null;
+  }
+
+  void _onLifecycleChange(AppLifecycleState state) {
+    final isResumed = state == AppLifecycleState.resumed;
+    // Leaving resumed for any reason (inactive/hidden/paused/detached) closes
+    // the gate; remember it so the return-to-resumed below replays any sync
+    // that was gated off while away.
+    if (!isResumed) _wasAway = true;
+    _isAppResumed = isResumed;
+    if (isResumed && _wasAway) {
+      _wasAway = false;
+      unawaited(_refreshPersistedRevisions());
+      // sync() may throw SyncCoordinatorException; ignore here — the drain
+      // path already logged a sanitized SEVERE for any failed kind, and the
+      // lifecycle-triggered refresh is best-effort with no awaiting caller.
+      sync().ignore();
+    }
+  }
+
+  Future<void> _refreshPersistedRevisions() async {
+    try {
+      await _refreshRevisions?.call();
+    } on Exception catch (error) {
+      log.warning(
+        'Wallet resume revision read unavailable category=${error.runtimeType}',
+      );
+    }
+  }
+
+  void dispose() {
+    _lifecycleListener.dispose();
+  }
+}
+
+/// Thrown by [SyncCoordinator.sync] when any of the requested kinds failed
+/// during the drain pass that satisfied the call.
+class SyncCoordinatorException implements Exception {
+  const SyncCoordinatorException(this.failures);
+
+  final Map<SyncKind, Object> failures;
+
+  @override
+  String toString() =>
+      'SyncCoordinatorException(${failures.entries.map((e) => '${e.key}: ${e.value.runtimeType}').join(', ')})';
+}
+
+final class _SyncPass {
+  final SyncKind kind;
+  bool discover;
+  final List<Completer<Object?>> waiters = [];
+
+  _SyncPass(this.kind, this.discover);
+}
