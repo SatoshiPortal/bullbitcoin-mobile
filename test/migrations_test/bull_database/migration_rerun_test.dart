@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:bull_logger/bull_logger.dart';
 
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:drift/drift.dart' hide isNotNull, isNull;
@@ -70,6 +71,7 @@ void main() {
   });
 
   test('a step that fails part-way leaves the database as it was', () async {
+    log = Logger.replace(directory: dir);
     final file = File('${dir.path}/${SqliteDatabase.name}.sqlite');
     final seeded = v10.DatabaseAtV10(NativeDatabase(file));
     await seeded.customSelect('SELECT 1').get();
@@ -89,6 +91,14 @@ void main() {
       throwsA(anything),
     );
     await failing.close();
+    final rows = await log.readLogs();
+    expect(
+      rows
+          .where((row) => row.split('\t')[1] == 'SEVERE')
+          .map((row) => row.split('\t')[2]),
+      ['Schema migration failed step=from10To11 reason=storage'],
+    );
+    expect(rows.join(), isNot(contains('injected failure')));
 
     expect(_userVersion(file), 10);
     expect(_columns(file, 'settings'), isNot(contains('theme_mode')));
