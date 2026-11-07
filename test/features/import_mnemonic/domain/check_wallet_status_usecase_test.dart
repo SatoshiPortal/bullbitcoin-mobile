@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'dart:io';
+import 'package:bull_logger/bull_logger.dart';
 
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
@@ -74,7 +76,14 @@ void main() {
 
   setUpAll(() => registerFallbackValue(_FakeConnection()));
 
-  setUp(() {
+  late Directory logDirectory;
+  tearDown(() async {
+    await log.flush();
+    await logDirectory.delete(recursive: true);
+  });
+  setUp(() async {
+    logDirectory = await Directory.systemTemp.createTemp('scan-log-');
+    log = Logger.replace(directory: logDirectory);
     storage = FakeSecureStoragePlatform()..install();
     secrets = Secrets(scratchDirectory: () async => '/tmp');
     settings = _MockSettingsRepository();
@@ -137,6 +146,15 @@ void main() {
         ),
       ).called(1);
       expect(servers.networks, [legacy]);
+      final messages = (await log.readLogs())
+          .map((row) => row.split('\t')[2])
+          .toList();
+      expect(messages, [
+        'Import scan started network=${network.env.name} script=bip49',
+        matches(
+          '^Import scan finished network=${network.env.name} script=bip49 outcome=history tx_count=2 duration_ms=[0-9]+\$',
+        ),
+      ]);
       // A scan before import stores nothing.
       expect(storage.entries, isEmpty);
     });
@@ -289,5 +307,14 @@ void main() {
       scans[ScriptType.bip84],
       throwsA(isA<TimeoutException>()),
     );
+    final messages = (await log.readLogs())
+        .map((row) => row.split('\t')[2])
+        .toList();
+    expect(messages, [
+      'Import scan started network=mainnet script=bip84',
+      matches(
+        r'^Import scan failed network=mainnet script=bip84 reason=timeout duration_ms=[0-9]+$',
+      ),
+    ]);
   });
 }

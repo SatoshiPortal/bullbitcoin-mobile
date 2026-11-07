@@ -148,7 +148,7 @@ void main() {
     (CheckWalletStatusInvalidMnemonicException(), 'invalid_mnemonic'),
     (CheckWalletStatusException('settings'), 'unexpected'),
   ]) {
-    test('persists the short scan failure code $code', () async {
+    test('does not duplicate the scan owner for $code', () async {
       final directory = await Directory.systemTemp.createTemp('scan-logs-');
       log = Logger.replace(directory: directory);
       addTearDown(() async {
@@ -163,7 +163,7 @@ void main() {
       final messages = (await log.readLogs()).map(
         (line) => line.split('\t')[2],
       );
-      expect(messages, contains('Pre-import scan failed for bip84: $code'));
+      expect(messages, isEmpty);
     });
   }
 
