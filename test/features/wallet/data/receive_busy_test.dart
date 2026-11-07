@@ -1,3 +1,6 @@
+import 'package:bb_mobile/core/wallet/domain/usecases/get_receive_address_usecase.dart';
+import 'package:bb_mobile/features/receive/domain/usecases/prepare_receive_address_usecase.dart';
+import 'package:primitives/primitives.dart' show Err;
 import 'dart:io';
 
 import 'package:bull_logger/bull_logger.dart';
@@ -107,16 +110,10 @@ void main() {
         when(() => native.receive(row, advance: false)).thenThrow(
           const WalletSnapshotException(TransactionSyncBusyFailure()),
         );
-        await expectLater(
-          repository.getLastRevealedReceiveAddress(walletId: origin),
-          throwsA(
-            isA<WalletSnapshotException>().having(
-              (e) => e.failure,
-              'failure',
-              isA<TransactionSyncBusyFailure>(),
-            ),
-          ),
+        final prepare = PrepareReceiveAddressUsecase(
+          GetReceiveAddressUsecase(walletAddressRepository: repository),
         );
+        expect(await prepare.execute(walletId: origin), isA<Err>());
         verify(() => native.receive(row, advance: false)).called(5);
         verifyNever(() => labels.fetchByReference(any()));
         expect(
@@ -124,7 +121,7 @@ void main() {
           [
             ['FINE', 'Logs created'],
             ['WARNING', 'Receive writer busy retry scheduled'],
-            ['WARNING', 'Receive writer busy exhausted attempts=5'],
+            ['WARNING', 'Receive address failed reason=busy attempts=5'],
           ],
         );
         verifyZeroInteractions(reporter);
