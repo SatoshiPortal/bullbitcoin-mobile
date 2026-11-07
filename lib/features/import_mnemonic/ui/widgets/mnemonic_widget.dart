@@ -1,3 +1,4 @@
+import 'package:bull_logger/bull_logger.dart';
 import 'dart:math';
 
 import 'package:bb_mobile/features/import_mnemonic/domain/mnemonic_entry_failure.dart';
@@ -144,6 +145,7 @@ class _MnemonicWidgetState extends State<MnemonicWidget> {
     final words = _words;
 
     if (words.any((word) => word.isEmpty)) {
+      log.warning('Mnemonic submit refused reason=incomplete');
       setState(() => _failure = const MnemonicEntryIncompleteFailure());
       return;
     }
@@ -156,6 +158,7 @@ class _MnemonicWidgetState extends State<MnemonicWidget> {
     );
     if (widget.englishOnly) {
       if (readings.isNotEmpty && !readings.contains(bip39.Language.english)) {
+        log.warning('Mnemonic submit refused reason=unsupported_language');
         setState(() => _defaultRefused = true);
         _showLanguageNotice();
         return;
@@ -163,6 +166,7 @@ class _MnemonicWidgetState extends State<MnemonicWidget> {
     } else if (readings.isNotEmpty &&
         (!readings.contains(_language) ||
             (readings.length > 1 && !_languageConfirmed))) {
+      log.warning('Mnemonic submit refused reason=language_required');
       setState(() => _needsLanguageChoice = readings.length > 1);
       _showLanguageNotice();
       return;
@@ -172,6 +176,7 @@ class _MnemonicWidgetState extends State<MnemonicWidget> {
       // "unknown word" would be wrong when another wordlist knows them all.
       final others = Bip39WordList.matchingLanguages(words);
       if (others.isNotEmpty) {
+        log.warning('Mnemonic submit refused reason=language_required');
         setState(
           () => _failure = MnemonicEntryOtherLanguageFailure(
             wordlist: others.first,
@@ -199,6 +204,12 @@ class _MnemonicWidgetState extends State<MnemonicWidget> {
       // *kind* of exception crosses: every `bip39.MnemonicException` message
       // embeds the offending word, so `e.toString()` would put a piece of the
       // user's seed on screen and into anything that later logs the failure.
+      final reason = switch (e) {
+        bip39.MnemonicInvalidChecksumException() => 'checksum',
+        bip39.MnemonicWordNotFoundException() => 'unknown_word',
+        _ => 'validation',
+      };
+      log.warning('Mnemonic submit refused reason=$reason');
       if (e is bip39.MnemonicInvalidChecksumException) {
         // The checksum lives in the last word, so that is the one to retype.
         _controllers.last.clear();
@@ -253,6 +264,9 @@ class _MnemonicWidgetState extends State<MnemonicWidget> {
 
   void _selectLanguage(bip39.Language language) {
     if (!_entryLanguages.contains(language)) return;
+    if (_language != language) {
+      log.config('Mnemonic language selected language=${language.name}');
+    }
     FocusScope.of(context).unfocus();
     setState(() {
       _language = language;

@@ -58,6 +58,9 @@ class ImportWalletUsecase {
       passphrase: passphrase,
     )) {
       case Err(:final failure):
+        log.warning(
+          'Wallet import refused reason=${failure is ImportMnemonicDuplicateFailure ? 'duplicate' : 'preflight'}',
+        );
         return Err(failure);
       case Ok():
         break;
@@ -101,7 +104,9 @@ class ImportWalletUsecase {
         label: label,
       );
 
-      log.fine('Wallet imported');
+      log.fine(
+        'Wallet imported language=${language.name} network=${bitcoinNetwork.name} script=${scriptType.name}',
+      );
 
       return Ok(wallet);
     } catch (e, st) {
