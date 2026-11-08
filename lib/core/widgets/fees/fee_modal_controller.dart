@@ -15,7 +15,7 @@ abstract class FeeModalSnapshot with _$FeeModalSnapshot {
     required NetworkFee? customFee,
     required FeeSelection selectedFeeOption,
     required BitcoinFeePreviewCache feePreviewCache,
-    required double exchangeRate,
+    required double? exchangeRate,
     required String fiatCurrencyCode,
     required int txSize,
   }) = _FeeModalSnapshot;

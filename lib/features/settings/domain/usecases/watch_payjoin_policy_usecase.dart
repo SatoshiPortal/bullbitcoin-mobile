@@ -34,6 +34,10 @@ class WatchPayjoinPolicyUsecase {
   }
 
   /// Every switch off, as the payjoin gates treat an unreadable policy.
-  static PayjoinPolicy _failClosed() =>
-      PayjoinPolicy.defaults().copyWith(buyEnabled: false, sellEnabled: false);
+  static PayjoinPolicy _failClosed() => PayjoinPolicy.defaults().copyWith(
+    sendEnabled: false,
+    receiveEnabled: false,
+    buyEnabled: false,
+    sellEnabled: false,
+  );
 }
