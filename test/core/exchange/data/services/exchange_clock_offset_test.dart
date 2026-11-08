@@ -5,7 +5,6 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   final serverNow = DateTime.utc(2026, 11, 6, 12);
-  final deadline = DateTime.utc(2026, 11, 6, 12, 5);
 
   group('observe', () {
     test('an offset within tolerance counts as none', () {
@@ -16,10 +15,10 @@ void main() {
         );
 
       expect(offset.offset, Duration.zero);
-      expect(offset.toDeviceClock(deadline), deadline);
+      expect(offset.isDeviceClockOff, isFalse);
     });
 
-    test('a device clock running ahead moves the deadline later', () {
+    test('a device clock running ahead gives a negative offset', () {
       final offset = ExchangeClockOffset()
         ..observe(
           serverTime: serverNow,
@@ -27,23 +26,17 @@ void main() {
         );
 
       expect(offset.offset, const Duration(minutes: -30));
-      expect(
-        offset.toDeviceClock(deadline),
-        deadline.add(const Duration(minutes: 30)),
-      );
+      expect(offset.isDeviceClockOff, isTrue);
     });
 
-    test('a device clock running behind moves the deadline earlier', () {
+    test('a device clock running behind gives a positive offset', () {
       final offset = ExchangeClockOffset()
         ..observe(
           serverTime: serverNow,
           deviceTime: serverNow.subtract(const Duration(minutes: 30)),
         );
 
-      expect(
-        offset.toDeviceClock(deadline),
-        deadline.subtract(const Duration(minutes: 30)),
-      );
+      expect(offset.offset, const Duration(minutes: 30));
     });
 
     test('the latest response wins', () {
@@ -127,6 +120,16 @@ void main() {
         sentAt: serverNow,
         latency: const Duration(seconds: 40),
       );
+
+      expect(offset.offset, Duration.zero);
+    });
+
+    test('a round trip longer than the tolerance is discarded', () async {
+      // Device 30 minutes ahead, but the answer took 40 s: the sample cannot
+      // place the server's stamp within the tolerance, so it is not used.
+      final offset = await respondWith({
+        'date': ['Fri, 06 Nov 2026 12:00:20 GMT'],
+      }, latency: const Duration(seconds: 40));
 
       expect(offset.offset, Duration.zero);
     });
