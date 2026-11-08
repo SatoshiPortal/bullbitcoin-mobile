@@ -249,6 +249,11 @@ class OrderModel {
     final confirmationDeadlineDt = confirmationDeadline != null
         ? DateTime.tryParse(confirmationDeadline!)?.subtract(clockOffset)
         : null;
+    // The payjoin library checks the exchange's payjoin expiry against the
+    // device clock and would refuse it on a device that is off; the payin
+    // then goes out without payjoin. A buy's URI is the customer's own and
+    // is unaffected.
+    final payinPayjoinBip21 = clockOffset == Duration.zero ? bip21URI : null;
     final createdAtDt = DateTime.parse(createdAt);
     final completedAtDt = completedAt != null
         ? DateTime.tryParse(completedAt!)
@@ -362,7 +367,7 @@ class OrderModel {
           indexRateAmount: indexRateAmount,
           indexRateCurrency: indexRateCurrency,
           lightningVoucherExpiresAt: lightningVoucherExpiresAtDt,
-          bip21URI: bip21URI,
+          bip21URI: payinPayjoinBip21,
           payjoinDetails: payjoinDetailsObj,
           isTestnet: isTestnet,
         );
@@ -406,7 +411,7 @@ class OrderModel {
           payinAmountChanged: payinAmountChangedObj,
           indexRateAmount: indexRateAmount,
           indexRateCurrency: indexRateCurrency,
-          bip21URI: bip21URI,
+          bip21URI: payinPayjoinBip21,
           payjoinDetails: payjoinDetailsObj,
           isTestnet: isTestnet,
           referenceNumber: referenceNumber,
