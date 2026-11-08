@@ -2268,6 +2268,78 @@ void main() {
       },
     );
   }
+  for (final liquid in [false, true]) {
+    test(
+      'reveal outcome gates initial and new-address sync (liquid=$liquid)',
+      () {
+        fakeAsync((async) {
+          final wallet = _testWallet(
+            network: liquid ? Network.liquidMainnet : Network.bitcoinMainnet,
+          );
+          final initial = Completer<Result<WalletAddress, ReceiveFailure>>();
+          final next = Completer<Result<WalletAddress, ReceiveFailure>>();
+          final label = Completer<Result<String, ReceiveFailure>>();
+          when(
+            () => getReceiveAddress.execute(walletId: wallet.id),
+          ).thenAnswer((_) => initial.future);
+          when(
+            () => getReceiveAddress.execute(
+              walletId: wallet.id,
+              generateNew: true,
+            ),
+          ).thenAnswer((_) => next.future);
+          when(
+            () => loadAddressLabel.execute(any()),
+          ).thenAnswer((_) => label.future);
+          when(() => getPayjoinPolicy.execute()).thenAnswer(
+            (_) async => const Ok((enabled: false, minimumAmountSat: 10000)),
+          );
+          final bloc = buildBloc(wallet: wallet);
+          bloc.add(
+            liquid
+                ? const ReceiveLiquidStarted()
+                : ReceiveBitcoinStarted(wallet),
+          );
+          async.flushMicrotasks();
+          expect(bloc.state.revealedAddressGeneration, isNull);
+          async.elapse(const Duration(minutes: 1));
+          expect(bloc.state.revealedAddressGeneration, isNull);
+          final address = _testAddress(walletId: wallet.id);
+          initial.complete(Ok(address));
+          async.flushMicrotasks();
+          final firstGeneration = bloc.state.revealedAddressGeneration;
+          expect(
+            firstGeneration,
+            isNotNull,
+          ); // No dependency on labels or prices.
+          label.complete(const Ok(''));
+          async.flushMicrotasks();
+          bloc.add(const ReceiveNewAddressGenerated());
+          async.flushMicrotasks();
+          expect(bloc.state.revealedAddressGeneration, isNull);
+          async.elapse(const Duration(minutes: 1));
+          expect(bloc.state.revealedAddressGeneration, isNull);
+          next.complete(
+            Ok(address.copyWith(index: 1, address: 'next-address')),
+          );
+          async.flushMicrotasks();
+          expect(bloc.state.revealedAddressGeneration, isNotNull);
+          expect(bloc.state.revealedAddressGeneration, isNot(firstGeneration));
+          if (liquid) {
+            // Re-entering Liquid reuses its committed address, without becoming stuck.
+            bloc.add(const ReceiveLiquidStarted());
+            async.flushMicrotasks();
+            expect(bloc.state.revealedAddressGeneration, isNotNull);
+            verify(
+              () => getReceiveAddress.execute(walletId: wallet.id),
+            ).called(1);
+          }
+          unawaited(bloc.close());
+          async.flushMicrotasks();
+        });
+      },
+    );
+  }
 }
 
 OrderSwapRecord _receiveOrderSwapRecord() => OrderSwapRecord(
