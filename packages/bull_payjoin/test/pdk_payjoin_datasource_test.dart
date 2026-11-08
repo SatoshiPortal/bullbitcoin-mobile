@@ -349,6 +349,7 @@ void main() {
             any(),
             data: any(named: 'data'),
             options: any(named: 'options'),
+            cancelToken: any(named: 'cancelToken'),
           ),
         ).thenAnswer((invocation) async {
           final url = invocation.positionalArguments.first as String;
@@ -385,9 +386,13 @@ void main() {
         async.flushMicrotasks();
         expect(payjoinDirectoryOf(receiver?.pjUri ?? '')?.host, directory.host);
 
-        async.elapse(
-          const Duration(seconds: PayjoinConstants.directoryPollingInterval),
-        );
+        if (receiver case final model?) {
+          datasource.startListeningForRequest(model);
+        } else {
+          fail('receiver was not created');
+        }
+        async.flushMicrotasks();
+        async.elapse(Duration.zero);
 
         expect(relayHosts, [otherEntity.host]);
         datasource.dispose();
