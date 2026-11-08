@@ -37,9 +37,11 @@ class GetSwapExchangeRateUsecase {
       return Err(SwapPriceUnavailableFailure('Currency not available: $code'));
     }
     final price = await _getIndexPrice(
-      network: settings.environment.isTestnet
-          ? BitcoinNetwork.testnet
-          : BitcoinNetwork.mainnet,
+      network: switch (settings.environment) {
+        Environment.mainnet => BitcoinNetwork.mainnet,
+        Environment.testnet => BitcoinNetwork.testnet,
+        Environment.regtest => BitcoinNetwork.regtest,
+      },
       currency: currency,
     );
     switch (price) {

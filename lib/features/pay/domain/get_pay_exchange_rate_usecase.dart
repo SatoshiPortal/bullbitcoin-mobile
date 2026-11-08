@@ -36,9 +36,11 @@ class GetPayExchangeRateUsecase {
       return Err(PayUnexpectedFailure('Currency not available: $currencyCode'));
     }
     final price = await _getIndexPrice(
-      network: settings.environment.isTestnet
-          ? BitcoinNetwork.testnet
-          : BitcoinNetwork.mainnet,
+      network: switch (settings.environment) {
+        Environment.mainnet => BitcoinNetwork.mainnet,
+        Environment.testnet => BitcoinNetwork.testnet,
+        Environment.regtest => BitcoinNetwork.regtest,
+      },
       currency: currency,
     );
     switch (price) {
