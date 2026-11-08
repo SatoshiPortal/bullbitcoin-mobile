@@ -14,14 +14,19 @@ final class WalletFacade {
   final Stream<WalletRevisionState> _revisions;
   final Future<Result<void, WalletDiscoveryFailure>> Function(String)?
   _discoverWallet;
+  final Stream<void> _syncFinished;
   final Stream<bool> _syncPassActivity;
   final bool Function()? _isSyncPassActive;
   const WalletFacade(
     this._revisions, {
     this._discoverWallet,
+    this._syncFinished = const Stream.empty(),
     this._syncPassActivity = const Stream.empty(),
     this._isSyncPassActive,
   });
+
+  /// Raw completion, including failures without a revision; never hydrates a wallet.
+  Stream<void> watchSyncFinished() => _syncFinished;
 
   bool get isSyncPassActive => _isSyncPassActive?.call() ?? false;
   Stream<bool> watchSyncPassActivity() => _syncPassActivity;

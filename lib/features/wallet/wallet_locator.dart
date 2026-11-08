@@ -66,6 +66,7 @@ class WalletLocator {
       () => WalletFacade(
         locator<WalletNativeRuntime>().changes,
         discoverWallet: (id) => locator<SyncCoordinator>().discoverWallet(id),
+        syncFinished: locator<ForegroundWalletSync>().finished.map((_) {}),
         syncPassActivity: locator<SyncCoordinator>().syncPassActivity,
         isSyncPassActive: () => locator<SyncCoordinator>().isSyncPassActive,
       ),

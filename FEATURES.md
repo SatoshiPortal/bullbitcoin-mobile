@@ -188,7 +188,7 @@ graph TB
     TRANSFER --> RECEIVE
     TX_HISTORY --> BULL_PAYJOIN
     TX_HISTORY --> SWAPS
-    TX_HISTORY -->|public revisions and sync pass activity| WALLETS
+    TX_HISTORY -->|public revisions, raw sync finishes and pass activity| WALLETS
     UTXO_MGMT --> LABELS
     UTXO_MGMT --> WALLETS
     WALLETS --> BIP85
