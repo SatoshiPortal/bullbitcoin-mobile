@@ -1,4 +1,3 @@
-import '../../../tools/testing/sqlite_test_timing.dart';
 import 'dart:io';
 
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
@@ -7,6 +6,8 @@ import 'package:drift/native.dart';
 import 'package:drift_dev/api/migrations_native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sqlite3/sqlite3.dart' show sqlite3;
+
+import '../../../tools/testing/sqlite_test_timing.dart';
 
 import 'generated/schema_v1.dart' as v1;
 import 'generated/schema_v10.dart' as v10;
@@ -86,11 +87,21 @@ void main() {
                 .getSingle();
             expect(userVersion, SqliteDatabase.currentSchemaVersion);
             await relaunch.validateDatabaseSchema();
+            if (version == 16) {
+              final row = await relaunch
+                  .customSelect(
+                    "SELECT network FROM wallet_metadatas WHERE id = 'regtest-fixture'",
+                  )
+                  .getSingle();
+              expect(row.read<String>('network'), 'bitcoinRegtest');
+            }
+
             final labels = await relaunch.select(relaunch.labels).get();
             expect(labels, hasLength(_labelCount));
             await relaunch.close();
           }
         },
+        // Ten real races include SQLite busy waits and durable writes under CI load.
         timeout: const Timeout(Duration(minutes: 2)),
         skip: sqliteTimingSkipReason,
       );
@@ -126,6 +137,14 @@ void _seedLabels(File file, int version) {
   final reference = version < 12 ? 'ref' : 'reference';
   final db = sqlite3.open(file.path);
   try {
+    if (version == 16) {
+      db.execute('''INSERT INTO wallet_metadatas
+        (id, network, master_fingerprint, xpub_fingerprint,
+         is_encrypted_vault_tested, is_physical_backup_tested, xpub,
+         external_public_descriptor, internal_public_descriptor, signer, is_default)
+        VALUES ('regtest-fixture', 'bitcoinRegtest', 'aabbccdd', 'aabbccdd',
+                0, 0, 'public', 'public', 'public', 'none', 0)''');
+    }
     for (var i = 0; i < _labelCount; i++) {
       db.execute(
         'INSERT INTO labels (label, $reference, type, origin) '
