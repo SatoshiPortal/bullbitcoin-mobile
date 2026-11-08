@@ -607,6 +607,53 @@ m.Widget bullInfoCardUseCase(m.BuildContext context) {
   );
 }
 
+@widgetbook.UseCase(name: 'Default', type: BullCopyField)
+m.Widget bullCopyFieldUseCase(m.BuildContext context) {
+  return _frame(
+    context,
+    m.SizedBox(
+      width: 360,
+      child: BullCopyField(
+        text: context.knobs.string(
+          label: 'text',
+          initialValue:
+              '4a5e1e4baab89f3a32518a88c31bc87f618f76673e2cc77ab2127b7afdeda33b',
+        ),
+        copiedMessage: 'Copied to clipboard',
+        maxLines: 1,
+        overflow: m.TextOverflow.ellipsis,
+      ),
+    ),
+  );
+}
+
+@widgetbook.UseCase(name: 'Default', type: BullReferenceNotice)
+m.Widget bullReferenceNoticeUseCase(m.BuildContext context) {
+  return _frame(
+    context,
+    m.SizedBox(
+      width: 360,
+      child: BullReferenceNotice(
+        message: context.knobs.string(
+          label: 'message',
+          initialValue:
+              'Payment sent. The exchange reports that the payment deadline '
+              'for this order expired. Keep the transaction ID below and '
+              'contact support if the order is not updated.',
+        ),
+        reference:
+            '4a5e1e4baab89f3a32518a88c31bc87f618f76673e2cc77ab2127b7afdeda33b',
+        copiedMessage: 'Copied to clipboard',
+        actionLabel: context.knobs.string(
+          label: 'action label',
+          initialValue: 'Leave',
+        ),
+        onAction: () {},
+      ),
+    ),
+  );
+}
+
 @widgetbook.UseCase(name: 'Default', type: BullLabelChip)
 m.Widget bullLabelChipUseCase(m.BuildContext context) {
   return _frame(
@@ -710,7 +757,6 @@ m.Widget bullCountdownUseCase(m.BuildContext context) {
     context,
     BullCountdown(
       until: DateTime.now().add(Duration(minutes: minutes)),
-      onTimeout: () {},
       textStyle: m.Theme.of(context).textTheme.headlineLarge?.copyWith(
         fontFeatures: const [m.FontFeature.tabularFigures()],
         color: context.bull.text,
@@ -725,7 +771,6 @@ m.Widget bullCountdownShortUseCase(m.BuildContext context) {
     context,
     BullCountdown(
       until: DateTime.now().add(const Duration(seconds: 30)),
-      onTimeout: () {},
       textStyle: m.Theme.of(context).textTheme.headlineLarge?.copyWith(
         fontFeatures: const [m.FontFeature.tabularFigures()],
         color: context.bull.warning,

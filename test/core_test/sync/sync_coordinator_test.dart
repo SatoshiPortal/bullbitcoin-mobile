@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 
@@ -8,6 +9,7 @@ import 'package:bb_mobile/core/sync/sync_trigger.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/sync_wallet_usecase.dart';
+import 'package:bull_logger/bull_logger.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -18,6 +20,26 @@ class _MockSyncWallet extends Mock implements SyncWalletUsecase {}
 
 class _MockSyncSwaps extends Mock {
   Future<void> call();
+}
+
+final class _Reporter implements LoggerReporter {
+  final List<String?> errors = [];
+
+  @override
+  void reportError({
+    String? message,
+    required Object exception,
+    required StackTrace stackTrace,
+    required ReportCategory category,
+  }) => errors.add(message);
+
+  @override
+  Future<void> reportShout({
+    required String message,
+    Object? exception,
+    StackTrace? stackTrace,
+    ReportCategory? category,
+  }) async {}
 }
 
 void main() {
@@ -313,6 +335,49 @@ void main() {
       verify(() => getWallets.execute(onlyBitcoin: true)).called(1);
       verify(() => getWallets.execute(onlyLiquid: true)).called(1);
       expect(spCalls, 0);
+    });
+  });
+
+  group('failure reporting', () {
+    late _Reporter reporter;
+
+    setUp(() async {
+      final directory = await Directory.systemTemp.createTemp('sync-logs-');
+      addTearDown(() async {
+        await log.flush();
+        await directory.delete(recursive: true);
+      });
+      reporter = _Reporter();
+      log = Logger.replace(directory: directory, reporter: reporter);
+    });
+
+    void walletsRead(WalletFailure failure) {
+      when(
+        () => getWallets.execute(onlyBitcoin: true),
+      ).thenAnswer((_) async => Err<List<Wallet>, WalletFailure>(failure));
+      when(
+        () => getWallets.execute(onlyLiquid: true),
+      ).thenAnswer((_) async => Err<List<Wallet>, WalletFailure>(failure));
+    }
+
+    test('no wallet yet still fails the sync but is not reported', () async {
+      walletsRead(const NoWalletsFoundFailure());
+
+      await expectLater(
+        coordinator.sync(trigger: SyncTrigger.user),
+        throwsA(isA<SyncCoordinatorException>()),
+      );
+      expect(reporter.errors, isEmpty);
+    });
+
+    test('a real wallet read failure is still reported', () async {
+      walletsRead(const WalletStorageFailure());
+
+      await expectLater(
+        coordinator.sync(trigger: SyncTrigger.user),
+        throwsA(isA<SyncCoordinatorException>()),
+      );
+      expect(reporter.errors, hasLength(1));
     });
   });
 }

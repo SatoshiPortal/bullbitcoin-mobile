@@ -56,6 +56,11 @@ final class TransactionLabelLimitFailure extends TransactionFailure {
   const TransactionLabelLimitFailure([super.logMessage]);
 }
 
+/// A user-triggered script-path swap claim/refund retry could not complete.
+final class TransactionSwapRetryFailure extends TransactionFailure {
+  const TransactionSwapRetryFailure([super.logMessage]);
+}
+
 /// Catch-all. [logMessage] is for logs ONLY and MUST never reach the UI.
 final class TransactionUnexpectedFailure extends TransactionFailure {
   const TransactionUnexpectedFailure([super.logMessage]);

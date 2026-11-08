@@ -104,6 +104,7 @@ void main() {
     final result = await usecase.execute();
 
     expect(result, isA<Ok<RecoverBullTorRoute, RecoverBullCoreFailure>>());
+    verify(() => sessions.open()).called(1);
   });
 
   test('rejects an external SOCKS route', () async {

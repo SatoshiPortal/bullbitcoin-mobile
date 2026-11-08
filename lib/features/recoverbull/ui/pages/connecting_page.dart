@@ -280,6 +280,22 @@ class _Body extends StatelessWidget {
       _serverPhase == _PhaseState.failed ||
       _diagnostic != null;
 
+  /// The failure panel also stays up while a retry runs, so its buttons can show as disabled instead of vanishing.
+  bool get _showFailurePanel =>
+      _hasFailure ||
+      (state.keyServerFailures > 0 &&
+          state.keyServerStatus == KeyServerStatus.connecting);
+
+  /// New route is offered with Retry from the first failure: a timeout often favours Retry, which reuses work Tor finished in the background, while other causes favour a new route.
+  ///
+  /// Only an embedded route can take another path; a user-managed proxy would just be asked again.
+  bool get _offersNewCircuit =>
+      state.keyServerFailures >= 1 &&
+      switch (_tor) {
+        tor.TorReady(:final route) => route.source == tor.TorSource.embedded,
+        _ => false,
+      };
+
   TorBullState get _mascotState {
     final diagnostic = _diagnostic;
     if (diagnostic?.suggestsCensorship ?? false) {
@@ -350,9 +366,15 @@ class _Body extends StatelessWidget {
     // "Tor is working" would be false — the shape of a bug seen in testing,
     // where a torn-down Tor still produced a server-side error message.
     if (_serverPhase == _PhaseState.failed) {
-      return _torPhase == _PhaseState.done
-          ? context.loc.recoverbullServerUnreachableTorOk
-          : context.loc.recoverbullTorCantStart;
+      if (_torPhase != _PhaseState.done) {
+        return context.loc.recoverbullTorCantStart;
+      }
+      return switch (state.failure) {
+        final KeyServerConnectionFailure failure
+            when failure.cause != KeyServerUnreachableCause.unknown =>
+          failure.toTranslated(context),
+        _ => context.loc.recoverbullServerUnreachableTorOk,
+      };
     }
 
     return state.failure?.toTranslated(context) ??
@@ -430,6 +452,9 @@ class _Body extends StatelessWidget {
         _PhaseCard(
           label: context.loc.recoverbullTorNetwork,
           phase: _torPhase,
+          // Tor is bootstrapped, not connected to anything: no circuit to the server exists until the server row succeeds.
+          activeLabel: context.loc.recoverbullTorInitializing,
+          doneLabel: context.loc.recoverbullTorReady,
           // No sub-step is named: the conn/dir split that would identify the
           // exact phase is private upstream, so claiming one would be wrong
           // about a third of the time.
@@ -443,16 +468,19 @@ class _Body extends StatelessWidget {
           label: context.loc.recoverbullRecoverBullServer,
           phase: _serverPhase,
           elapsed: _serverPhase == _PhaseState.active ? elapsed : null,
-          // Bare "2/3", deliberately unlocalised, like the timer.
-          trailingDetail:
-              _serverPhase == _PhaseState.active && state.keyServerAttempt > 0
-              ? '${state.keyServerAttempt}/${state.keyServerAttempts}'
-              : null,
         ),
         const Gap(24),
-        if (_hasFailure)
+        if (_showFailurePanel)
           _FailurePanel(
+            busy: !_hasFailure,
             message: _failureMessage(context),
+            // Shown whenever the message comes from this failure, including while a Retry runs.
+            detail: switch (state.failure) {
+              final KeyServerConnectionFailure failure
+                  when _torPhase == _PhaseState.done =>
+                failure.technicalLabel,
+              _ => null,
+            },
             onOpenTorSettings:
                 state.failure is ExternalTorProxyUnavailableFailure
                 ? () => context.pushNamed(
@@ -472,6 +500,12 @@ class _Body extends StatelessWidget {
                 bloc.add(const OnTorInitialization(restart: true));
               }
             },
+            onNewCircuit: _offersNewCircuit
+                ? () {
+                    onRetry();
+                    context.read<RecoverBullBloc>().add(const OnNewCircuit());
+                  }
+                : null,
           )
         else
           BullText(
@@ -495,15 +529,17 @@ class _PhaseCard extends StatelessWidget {
   final String? caption;
   final Duration? elapsed;
 
-  /// An extra language-neutral token for the detail line, such as `2/3`.
-  final String? trailingDetail;
+  /// Status wording for a phase whose generic "Connecting" and "Connected" would overstate it.
+  final String? activeLabel;
+  final String? doneLabel;
 
   const _PhaseCard({
     required this.label,
+    this.activeLabel,
+    this.doneLabel,
     required this.phase,
     this.caption,
     this.elapsed,
-    this.trailingDetail,
   });
 
   Color _color(BuildContext context) => switch (phase) {
@@ -513,9 +549,9 @@ class _PhaseCard extends StatelessWidget {
   };
 
   String _statusLabel(BuildContext context) => switch (phase) {
-    _PhaseState.done => context.loc.recoverbullConnected,
+    _PhaseState.done => doneLabel ?? context.loc.recoverbullConnected,
     _PhaseState.failed => context.loc.recoverbullFailed,
-    _PhaseState.active => context.loc.recoverbullConnecting,
+    _PhaseState.active => activeLabel ?? context.loc.recoverbullConnecting,
     _PhaseState.pending => context.loc.recoverbullWaiting,
   };
 
@@ -553,7 +589,7 @@ class _PhaseCard extends StatelessWidget {
               ),
             ],
           ),
-          if (caption != null || elapsed != null || trailingDetail != null) ...[
+          if (caption != null || elapsed != null) ...[
             const Gap(8),
             Padding(
               padding: const EdgeInsets.only(left: 32),
@@ -568,16 +604,13 @@ class _PhaseCard extends StatelessWidget {
                       ),
                       maxLines: 2,
                     ),
-                  if (elapsed != null || trailingDetail != null) ...[
+                  if (elapsed case final elapsed?) ...[
                     const Gap(6),
                     BullText(
-                      [
-                        ?trailingDetail,
-                        // A bare timer, deliberately unlocalised: no words to
-                        // translate, and it is the only element that keeps
-                        // moving during the long directory phase.
-                        if (elapsed != null) _formatElapsed(elapsed!),
-                      ].join('  ·  '),
+                      // A bare timer, deliberately unlocalised: no words to
+                      // translate, and it is the only element that keeps
+                      // moving during the long directory phase.
+                      _formatElapsed(elapsed),
                       style: context.font.bodySmall?.copyWith(
                         color: context.appColors.textMuted,
                       ),
@@ -633,13 +666,23 @@ class _PhaseIcon extends StatelessWidget {
 
 class _FailurePanel extends StatelessWidget {
   final String message;
+
+  /// An attempt is in flight: the buttons stay visible but cannot start another one.
+  final bool busy;
+  final VoidCallback? onNewCircuit;
+
+  /// A fixed technical label naming the exact reason, deliberately unlocalised like the timer.
+  final String? detail;
   final VoidCallback onRetry;
   final VoidCallback? onOpenTorSettings;
 
   const _FailurePanel({
     required this.message,
     required this.onRetry,
+    this.busy = false,
+    this.onNewCircuit,
     this.onOpenTorSettings,
+    this.detail,
   });
 
   @override
@@ -654,14 +697,38 @@ class _FailurePanel extends StatelessWidget {
           ),
           maxLines: 4,
         ),
+        if (detail case final detail?) ...[
+          const Gap(6),
+          BullText(
+            detail,
+            textAlign: .center,
+            style: context.font.bodySmall?.copyWith(
+              color: context.appColors.textMuted,
+            ),
+          ),
+        ],
         const Gap(24),
         BullButton.big(
           label: context.loc.recoverbullRetry,
           textStyle: context.font.headlineLarge,
           bgColor: context.appColors.onSurface,
           textColor: context.appColors.surface,
+          disabled: busy,
           onPressed: onRetry,
         ),
+        if (onNewCircuit case final onNewCircuit?) ...[
+          const Gap(12),
+          BullButton.big(
+            label: context.loc.recoverbullNewRoute,
+            textStyle: context.font.headlineLarge,
+            bgColor: context.appColors.surface,
+            textColor: context.appColors.onSurface,
+            outlined: true,
+            borderColor: context.appColors.onSurface,
+            disabled: busy,
+            onPressed: onNewCircuit,
+          ),
+        ],
         if (onOpenTorSettings != null) ...[
           const Gap(12),
           BullButton.big(

@@ -13,7 +13,10 @@ import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_connection
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bb_mobile/core/wallet/domain/bitcoin_send_port.dart';
+import 'package:bb_mobile/core/wallet/domain/manipulated_transaction_exception.dart';
 import 'package:bb_mobile/core/wallet/domain/no_spendable_utxo_exception.dart';
+import 'package:bb_mobile/core/wallet/domain/transaction_signature_status.dart';
+import 'package:bb_mobile/core/wallet/domain/unverifiable_transaction_exception.dart';
 
 class BitcoinWalletRepository implements BitcoinSendPort {
   final WalletMetadataDatasource _walletMetadataDatasource;
@@ -266,11 +269,48 @@ class BitcoinWalletRepository implements BitcoinSendPort {
     );
   }
 
+  /// Verifies the stored transaction's wallet-owned input signatures against
+  /// its watch-only descriptors (GHSA-6jp4-8v48-cc5v guard); no key material
+  /// is loaded. See [BdkWalletDatasource.verifyTransactionInputSignatures].
+  Future<TransactionSignatureStatus> getTransactionSignatureStatus({
+    required String walletId,
+    required String txid,
+  }) async {
+    final metadata = await _walletMetadataDatasource.fetch(walletId);
+    if (metadata == null) {
+      throw Exception('Wallet metadata not found for walletId: $walletId');
+    }
+    if (!metadata.isBitcoin) {
+      throw Exception('Wallet $walletId is not a Bitcoin wallet');
+    }
+    final wallet = WalletModel.fromMetadata(metadata);
+    return _bdkWallet.verifyTransactionInputSignatures(
+      txid: txid,
+      wallet: wallet,
+    );
+  }
+
   Future<String> bumpFee({
     required String walletId,
     required String txid,
     required RelativeFee newFeeRate,
   }) async {
+    final signatureStatus = await getTransactionSignatureStatus(
+      walletId: walletId,
+      txid: txid,
+    );
+    switch (signatureStatus) {
+      case TransactionSignatureStatus.valid:
+        break;
+      case TransactionSignatureStatus.invalid:
+        throw ManipulatedTransactionException(
+          'Input signature verification failed for the stored transaction',
+        );
+      case TransactionSignatureStatus.unverifiable:
+        throw UnverifiableTransactionException(
+          'Input signatures of the stored transaction could not be verified',
+        );
+    }
     final wallet = await getPrivateWallet(walletId: walletId);
     final psbt = await _bdkWallet.createUnsignedReplaceByFeePsbt(
       wallet: wallet,

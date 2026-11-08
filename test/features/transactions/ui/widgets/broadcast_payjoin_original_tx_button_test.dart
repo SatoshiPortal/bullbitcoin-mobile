@@ -55,7 +55,7 @@ void main() {
       payjoinUri: 'bitcoin:address',
       hasOriginalTransaction: true,
       hasProposal: true,
-      fallbackAvailableAt: DateTime.now().add(const Duration(seconds: 60)),
+      fallbackAvailableAt: clock.now().add(const Duration(seconds: 60)),
     );
     final state = TransactionDetailsState(
       transaction: Transaction(payjoin: session),

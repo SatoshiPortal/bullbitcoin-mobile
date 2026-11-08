@@ -6705,7 +6705,7 @@
   "@fundExchangeJurisdictionMexico": {
     "description": "Dropdown option for Mexico jurisdiction"
   },
-  "sellInteracEmail": "Interac email",
+  "sellInteracEmail": "Email για τη μεταφορά",
   "@sellInteracEmail": {
     "description": "Label for email to receive Interac payment"
   },
@@ -8463,7 +8463,7 @@
   "@autoswapTitle": {
     "description": "Header title for auto transfer settings bottom sheet"
   },
-  "sellInteracTransfer": "Interac e-Transfer",
+  "sellInteracTransfer": "Μεταφορά χρημάτων μέσω email",
   "@sellInteracTransfer": {
     "description": "Option for Interac payment (Canada)"
   },
@@ -10947,7 +10947,7 @@
   "recipientsJurisdictionCostaRica": "🇨🇷 Κόστα Ρίκα",
   "recipientsJurisdictionArgentina": "🇦🇷 Αργεντινή",
   "recipientsJurisdictionColombia": "🇨🇴 Κολομβία",
-  "recipientsTypeInteracEmail": "Interac e-Transfer",
+  "recipientsTypeInteracEmail": "Μεταφορά χρημάτων μέσω email",
   "recipientsTypeBillPayment": "Πληρωμή λογαριασμού",
   "recipientsTypeBankTransfer": "Τραπεζικό έμβασμα",
   "recipientsTypeSepa": "Έμβασμα SEPA",
@@ -11716,7 +11716,7 @@
   "testBackupErrorSeedUnavailable": "Δεν ήταν δυνατή η ανάγνωση της φράσης ανάκτησής σας. Δοκιμάστε ξανά.",
   "testBackupErrorSeedNotMnemonic": "Αυτό το πορτοφόλι δεν έχει φράση ανάκτησης για δοκιμή.",
   "testBackupErrorCompletionFailed": "Η φράση ανάκτησής σας ήταν σωστή, αλλά δεν μπορέσαμε να αποθηκεύσουμε το αποτέλεσμα. Δοκιμάστε ξανά.",
-  "withdrawInteracSecurityDetailsTitle": "Στοιχεία ασφαλείας Interac",
+  "withdrawInteracSecurityDetailsTitle": "Στοιχεία ασφαλείας μεταφοράς",
   "withdrawInteracSaveAsDefault": "Αποθήκευση αυτών των στοιχείων ως προεπιλογή",
   "withdrawInteracSecurityQuestionLengthError": "Η ερώτηση ασφαλείας πρέπει να έχει 3–40 χαρακτήρες",
   "withdrawInteracSecurityAnswerLengthError": "Η απάντηση ασφαλείας πρέπει να έχει 3–40 χαρακτήρες",
@@ -11851,7 +11851,7 @@
   "recipientsVirtualIbanCopied": "Κόπηκε να πετάξε",
   "recipientsVirtualIbanDone": "Έγινε",
   "recipientsVirtualIbanRecipientName": "Μαθητές όνομα",
-  "recipientsVirtualIbanIbanLabel": "IBAN Αριθμός λογαριασμού",
+  "recipientsVirtualIbanIbanLabel": "Αριθμός εικονικού λογαριασμού IBAN",
   "recipientsVirtualIbanCountry": "Τράπεζα λογαριασμού χώρα",
   "recipientsVirtualIbanBic": "Κωδικός BIC",
   "fundExchangeMethodConfidentialSepa": "Εμπιστευτικό SEPA",
@@ -11862,5 +11862,11 @@
   "recipientsVirtualIbanBankAddress": "Διεύθυνση τράπεζας",
   "recipientsVirtualIbanBankAddressHelp": "Η επίσημη διεύθυνση της τράπεζας, σε περίπτωση που τη ζητήσει η τράπεζά σας.",
   "recipientsConfidentialSepaNameMustMatchHint": "Τα ονόματα στην τράπεζά σας και στον εικονικό IBAN πρέπει να ταιριάζουν, διαφορετικά οι μεταφορές θα επιστρέφονται αυτόματα.",
-  "copiedToClipboard": "Αντιγράφηκε στο πρόχειρο"
+  "copiedToClipboard": "Αντιγράφηκε στο πρόχειρο",
+  "recipientsFieldBankAccountIban": "Αριθμός τραπεζικού λογαριασμού (IBAN)",
+  "recipientsTypeConfidentialSepaDescription": "Οι αναλήψεις εμφανίζονται ως μεταφορά στον εαυτό σας με το όνομα του λογαριασμού σας",
+  "sellPayoutBalance": "Προσθήκη στο υπόλοιπο του λογαριασμού μου",
+  "sellPayoutSepaDescription": "Οι αναλήψεις εμφανίζονται ως αποστολές από τη Leonod",
+  "sellPayoutTitle": "Επιλογή παραλήπτη",
+  "sellPayoutNewBadge": "ΝΕΟ"
 }

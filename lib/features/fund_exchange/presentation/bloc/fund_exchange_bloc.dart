@@ -11,6 +11,7 @@ import 'package:bb_mobile/features/fund_exchange/domain/value_objects/funding_de
 import 'package:bb_mobile/features/fund_exchange/domain/value_objects/funding_institution.dart';
 import 'package:bb_mobile/features/fund_exchange/domain/value_objects/funding_method.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/pending_consent_action.dart';
+import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -39,6 +40,10 @@ class FundExchangeBloc extends Bloc<FundExchangeEvent, FundExchangeState> {
     required this._getConfidentialSepaFundingAvailabilityUsecase,
   }) : super(const FundExchangeState()) {
     on<FundExchangeStarted>(_onStarted);
+    on<FundExchangeConfidentialSepaAvailabilityRetried>(
+      _onConfidentialSepaAvailabilityRetried,
+      transformer: droppable(),
+    );
     on<FundExchangeFundingInstitutionsRequested>(
       _onFundingInstitutionsRequested,
     );
@@ -54,6 +59,7 @@ class FundExchangeBloc extends Bloc<FundExchangeEvent, FundExchangeState> {
     Emitter<FundExchangeState> emit,
   ) async {
     final result = await _getFundExchangeUserSummaryUsecase.execute();
+    if (emit.isDone) return;
 
     switch (result) {
       case Ok(:final value):
@@ -65,14 +71,39 @@ class FundExchangeBloc extends Bloc<FundExchangeEvent, FundExchangeState> {
         break;
     }
 
-    // Not surfaced: without an answer the method is simply not offered.
-    if (await _getConfidentialSepaFundingAvailabilityUsecase.execute() case Ok(
-      :final value,
-    )) {
-      emit(state.copyWith(isConfidentialSepaAvailable: value));
-    }
-
+    await _loadConfidentialSepaAvailability(emit);
+    if (emit.isDone) return;
     emit(state.copyWith(isStarted: true));
+  }
+
+  Future<void> _onConfidentialSepaAvailabilityRetried(
+    FundExchangeConfidentialSepaAvailabilityRetried event,
+    Emitter<FundExchangeState> emit,
+  ) => _loadConfidentialSepaAvailability(emit);
+
+  Future<void> _loadConfidentialSepaAvailability(
+    Emitter<FundExchangeState> emit,
+  ) async {
+    if (state.isLoadingConfidentialSepaAvailability) return;
+    emit(
+      state.copyWith(
+        isLoadingConfidentialSepaAvailability: true,
+        confidentialSepaAvailabilityFailure: null,
+      ),
+    );
+    final result = await _getConfidentialSepaFundingAvailabilityUsecase
+        .execute();
+    if (emit.isDone) return;
+    emit(switch (result) {
+      Ok(:final value) => state.copyWith(
+        isConfidentialSepaAvailable: value,
+        isLoadingConfidentialSepaAvailability: false,
+      ),
+      Err(:final failure) => state.copyWith(
+        confidentialSepaAvailabilityFailure: failure,
+        isLoadingConfidentialSepaAvailability: false,
+      ),
+    });
   }
 
   Future<void> _onFundingInstitutionsRequested(

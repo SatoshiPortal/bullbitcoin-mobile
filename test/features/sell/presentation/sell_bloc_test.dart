@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
@@ -28,8 +29,11 @@ import 'package:bb_mobile/features/sell/domain/watch_payjoin_usecase.dart';
 import 'package:bb_mobile/features/sell/presentation/bloc/sell_bloc.dart';
 import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_presets_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_usecase.dart';
+import 'package:clock/clock.dart';
+import 'package:fake_async/fake_async.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:bull_logger/bull_logger.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:primitives/primitives.dart'
     show BitcoinNetwork, Err, Ok, Result, Sats;
@@ -75,7 +79,28 @@ class _MockLabelCompletedSellOrderUsecase extends Mock
 
 class _MockWallet extends Mock implements Wallet {}
 
-class _MockSellOrder extends Mock implements SellOrder {}
+class _MockLogger extends Mock implements Logger {}
+
+class _MockSellOrder extends Mock implements SellOrder {
+  @override
+  OrderPaymentMethod get payinMethod =>
+      super.noSuchMethod(Invocation.getter(#payinMethod))
+          as OrderPaymentMethod? ??
+      OrderPaymentMethod.bitcoin;
+
+  // Unstubbed, an order is in progress with no payjoin; tests can still stub
+  // either with `when`. The order-progress log line reads both.
+  @override
+  OrderStatus get orderStatus =>
+      super.noSuchMethod(Invocation.getter(#orderStatus)) as OrderStatus? ??
+      OrderStatus.inProgress;
+
+  @override
+  OrderPayjoinOutcome get payjoinOutcome =>
+      super.noSuchMethod(Invocation.getter(#payjoinOutcome))
+          as OrderPayjoinOutcome? ??
+      OrderPayjoinOutcome.none;
+}
 
 class _FakeNewLabel extends Fake implements NewLabel {}
 
@@ -246,6 +271,8 @@ void main() {
     when(
       () => sellOrder.bitcoinAddress,
     ).thenReturn('bc1q0000000000000000000000000000000000000');
+    when(() => sellOrder.liquidAddress).thenReturn(null);
+    when(() => sellOrder.payinMethod).thenReturn(OrderPaymentMethod.bitcoin);
     // The deposit-address pinning compares orders through this getter; the
     // default order carries the creation-time address.
     when(
@@ -333,7 +360,34 @@ void main() {
     );
   });
 
-  tearDown(() => bloc.close());
+  // A test may have closed the bloc inside a fake-time zone; closing it again
+  // would wait on that zone forever.
+  tearDown(() async {
+    if (!bloc.isClosed) await bloc.close();
+  });
+
+  test(
+    'a missing deposit address blocks payment before building or signing',
+    () async {
+      when(() => sellOrder.bitcoinAddress).thenReturn(null);
+      when(() => sellOrder.toAddress).thenReturn(null);
+      final failed = bloc.stream.firstWhere(
+        (state) =>
+            state is SellPaymentState && state.error is SellUnexpectedFailure,
+      );
+      bloc.add(const SellEvent.sendPaymentConfirmed());
+      final state = await failed as SellPaymentState;
+      expect(state.isConfirmingPayment, isFalse);
+      expect(state.isPayinBroadcast, isFalse);
+      verifyNoBuilds();
+      verifyNever(
+        () => signSellPayin.bitcoin(
+          psbt: any(named: 'psbt'),
+          walletId: any(named: 'walletId'),
+        ),
+      );
+    },
+  );
 
   group('Sell preparation lifecycle', () {
     test(
@@ -453,7 +507,7 @@ void main() {
         const bip21 =
             'bitcoin:bc1q0000000000000000000000000000000000000'
             '?amount=0.001&pj=https://payjo.in/session';
-        when(() => sellOrder.bip21URI).thenReturn(bip21);
+        when(() => sellOrder.payjoinBip21).thenReturn(bip21);
         when(
           () => sendWithPayjoin.execute(
             walletId: any(named: 'walletId'),
@@ -501,7 +555,7 @@ void main() {
       const bip21 =
           'bitcoin:bc1q0000000000000000000000000000000000000'
           '?amount=0.001&pj=https://payjo.in/session';
-      when(() => sellOrder.bip21URI).thenReturn(bip21);
+      when(() => sellOrder.payjoinBip21).thenReturn(bip21);
       // The engine persists the session (signed original included) before
       // posting to the directory; a post failure throws AFTER that persist.
       when(
@@ -561,7 +615,7 @@ void main() {
       const bip21 =
           'bitcoin:bc1q0000000000000000000000000000000000000'
           '?amount=0.001&pj=https://payjo.in/session';
-      when(() => sellOrder.bip21URI).thenReturn(bip21);
+      when(() => sellOrder.payjoinBip21).thenReturn(bip21);
       when(
         () => sendWithPayjoin.execute(
           walletId: any(named: 'walletId'),
@@ -600,7 +654,7 @@ void main() {
             '?amount=0.001&pj=https://payjo.in/session';
         const payjoinTxid =
             'aaaa1111c0ea01904322222851b2e702d37651be2644f4757cc4421f39261b55';
-        when(() => sellOrder.bip21URI).thenReturn(bip21);
+        when(() => sellOrder.payjoinBip21).thenReturn(bip21);
         when(
           () => loadSellContext.order(orderId: any(named: 'orderId')),
         ).thenAnswer((_) async => Ok<Order, SellFailure>(sellOrder));
@@ -659,11 +713,84 @@ void main() {
       timeout: const Timeout(Duration(seconds: 20)),
     );
 
+    test(
+      'a sale settled without a recorded proposal says so in the log',
+      () async {
+        final previousLogger = log;
+        final logger = _MockLogger();
+        log = logger;
+        addTearDown(() => log = previousLogger);
+        const bip21 =
+            'bitcoin:bc1q0000000000000000000000000000000000000'
+            '?amount=0.001&pj=https://payjo.in/session';
+        when(() => sellOrder.payjoinBip21).thenReturn(bip21);
+        when(
+          () => loadSellContext.order(orderId: any(named: 'orderId')),
+        ).thenAnswer((_) async => Ok<Order, SellFailure>(sellOrder));
+        PayjoinSenderSession session(PayjoinStatus status) =>
+            PayjoinSenderSession(
+              status: status,
+              uri: bip21,
+              network: BitcoinNetwork.mainnet,
+              walletId: 'wallet-1',
+              originalTransactionId: expectedTxid,
+              amount: Sats.fromInt(100000),
+              createdAt: DateTime(2026),
+              expiresAt: DateTime(2026).add(const Duration(minutes: 5)),
+            );
+        when(
+          () => sendWithPayjoin.execute(
+            walletId: any(named: 'walletId'),
+            isTestnet: any(named: 'isTestnet'),
+            bip21: any(named: 'bip21'),
+            unsignedOriginalPsbt: any(named: 'unsignedOriginalPsbt'),
+            amountSat: any(named: 'amountSat'),
+            networkFeesSatPerVb: any(named: 'networkFeesSatPerVb'),
+            expireAfterSec: any(named: 'expireAfterSec'),
+          ),
+        ).thenAnswer(
+          (_) async => Ok<PayjoinSenderSession, SellFailure>(
+            session(PayjoinStatus.requested),
+          ),
+        );
+        when(() => watchPayjoin.execute(bip21)).thenAnswer(
+          (_) => Stream.value(
+            Ok<PayjoinSession, SellFailure>(session(PayjoinStatus.aborted)),
+          ),
+        );
+
+        bloc.add(const SellEvent.sendPaymentConfirmed());
+        await bloc.stream.firstWhere(
+          (state) => state is SellPaymentState && state.isPayinBroadcast,
+        );
+
+        final warnings = verify(
+          () => logger.warning(
+            captureAny(),
+            error: any(named: 'error'),
+            trace: any(named: 'trace'),
+          ),
+        ).captured.whereType<String>();
+        expect(
+          warnings.where(
+            (line) =>
+                line.contains('without a recorded proposal') &&
+                line.contains('status=aborted'),
+          ),
+          hasLength(1),
+          reason: 'a support log must show the payjoin never got a proposal',
+        );
+        // Local absence is all the app knows; it must not blame the exchange.
+        expect(warnings.join(), isNot(contains('never answered')));
+      },
+      timeout: const Timeout(Duration(seconds: 20)),
+    );
+
     test('absolute custom fees pass their actual rate to Payjoin', () async {
       const bip21 =
           'bitcoin:bc1q0000000000000000000000000000000000000'
           '?amount=0.001&pj=https://payjo.in/session';
-      when(() => sellOrder.bip21URI).thenReturn(bip21);
+      when(() => sellOrder.payjoinBip21).thenReturn(bip21);
       when(
         () => prepareSellBitcoinPayin.execute(
           walletId: any(named: 'walletId'),
@@ -737,7 +864,7 @@ void main() {
         const bip21 =
             'bitcoin:bc1q0000000000000000000000000000000000000'
             '?amount=0.001&pj=https://payjo.in/session';
-        when(() => sellOrder.bip21URI).thenReturn(bip21);
+        when(() => sellOrder.payjoinBip21).thenReturn(bip21);
         when(
           () => sendWithPayjoin.execute(
             walletId: any(named: 'walletId'),
@@ -982,6 +1109,430 @@ void main() {
     expect(state.payinBroadcastTxid, isNull);
     // The refresh must not erase why the send failed.
     expect(state.error, isNotNull);
+  });
+
+  group('SellBloc — quote refresh scheduling', () {
+    Future<Result<Order, SellFailure>> refreshCall() =>
+        refreshSellOrder.execute(
+          orderId: any(named: 'orderId'),
+          expectedDepositAddress: any(named: 'expectedDepositAddress'),
+        );
+
+    setUp(() {
+      when(
+        () => sellOrder.confirmationDeadline,
+      ).thenReturn(DateTime.now().subtract(const Duration(minutes: 1)));
+      when(
+        refreshCall,
+      ).thenAnswer((_) async => Ok<SellOrder, SellFailure>(sellOrder));
+    });
+
+    // The scheduler's timers must be born inside the fake zone, so the bloc
+    // is rebuilt there from the state the outer setUp seeded.
+    Future<void> inFakeTime(void Function(FakeAsync) check) async {
+      final initial = bloc.state;
+      await bloc.close();
+      fakeAsync((time) {
+        bloc = _SeedableSellBloc(
+          loadSellContextUsecase: loadSellContext,
+          createSellOrderUsecase: _MockCreateSellOrder(),
+          refreshSellOrderUsecase: refreshSellOrder,
+          prepareSellBitcoinPayinUsecase: prepareSellBitcoinPayin,
+          prepareSellLiquidPayinUsecase: _MockPrepareSellLiquidPayin(),
+          signSellPayinUsecase: signSellPayin,
+          broadcastSellPayinUsecase: broadcastSellPayin,
+          sendWithPayjoinUsecase: sendWithPayjoin,
+          watchPayjoinUsecase: watchPayjoin,
+          getPayjoinUsecase: getPayjoin,
+          calculateSellLiquidFeesUsecase: _MockCalculateSellLiquidFees(),
+          loadSellWalletUtxosUsecase: _MockLoadSellWalletUtxos(),
+          readSellPayinTxidUsecase: const ReadSellPayinTxidUsecase(),
+          labelsFacade: labelsFacade,
+          labelCompletedSellOrderUsecase: labelCompletedSellOrder,
+          previewBitcoinFeeUsecase: previewBitcoinFee,
+          previewBitcoinFeePresetsUsecase: previewBitcoinFeePresets,
+        );
+        bloc.seed(initial);
+        try {
+          check(time);
+        } finally {
+          unawaited(bloc.close());
+          time.flushMicrotasks();
+        }
+      });
+    }
+
+    test('overlapping refresh requests send one call', () async {
+      final response = Completer<Result<SellOrder, SellFailure>>();
+      when(refreshCall).thenAnswer((_) => response.future);
+      bloc.add(const SellEvent.orderRefreshTimePassed());
+      bloc.add(const SellEvent.orderRefreshTimePassed());
+      await pumpEventQueue();
+      verify(refreshCall).called(1);
+      response.complete(Ok(sellOrder));
+      await pumpEventQueue();
+    });
+
+    test('a late answer for a replaced order leaves the new one', () async {
+      final response = Completer<Result<SellOrder, SellFailure>>();
+      when(refreshCall).thenAnswer((_) => response.future);
+      bloc.add(const SellEvent.orderRefreshTimePassed());
+      await pumpEventQueue();
+
+      // The user picked another wallet meanwhile: a new order is on screen.
+      final replacement = _MockSellOrder();
+      when(() => replacement.orderId).thenReturn('order-2');
+      when(() => replacement.payinAmount).thenReturn(0.002);
+      when(
+        () => replacement.confirmationDeadline,
+      ).thenReturn(DateTime.now().add(const Duration(minutes: 5)));
+      bloc.seed(
+        (bloc.state as SellPaymentState).copyWith(sellOrder: replacement),
+      );
+
+      response.complete(Ok(sellOrder));
+      await pumpEventQueue();
+      expect((bloc.state as SellPaymentState).sellOrder.orderId, 'order-2');
+    });
+
+    test('a stale answer leaves the new order on its own schedule', () {
+      // The new order's lock lapsed while the old order's refresh was still
+      // in flight, so its own refresh was dropped as overlapping.
+      // Created inside the fake zone below, so completing it runs there.
+      late final Completer<Result<SellOrder, SellFailure>> response;
+      var calls = 0;
+      when(refreshCall).thenAnswer((_) {
+        calls++;
+        return calls == 1 ? response.future : Future.value(Ok(sellOrder));
+      });
+      return inFakeTime((time) {
+        response = Completer();
+        bloc.add(const SellEvent.orderRefreshTimePassed());
+        time.flushMicrotasks();
+        final replacement = _MockSellOrder();
+        when(() => replacement.orderId).thenReturn('order-2');
+        when(() => replacement.payinAmount).thenReturn(0.002);
+        when(
+          () => replacement.confirmationDeadline,
+        ).thenReturn(clock.now().subtract(const Duration(seconds: 1)));
+        bloc.seed(
+          (bloc.state as SellPaymentState).copyWith(sellOrder: replacement),
+        );
+        response.complete(Ok(sellOrder));
+        time.flushMicrotasks();
+        expect(calls, 1);
+        time.elapse(const Duration(seconds: 5));
+        time.flushMicrotasks();
+        expect(calls, 2, reason: 'the new order gets its refresh');
+      });
+    });
+
+    test('a lapsed quote coming back is retried after five seconds', () {
+      return inFakeTime((time) {
+        bloc.add(const SellEvent.orderRefreshTimePassed());
+        time.flushMicrotasks();
+        verify(refreshCall).called(1);
+        time.elapse(const Duration(seconds: 4));
+        time.flushMicrotasks();
+        verifyNever(refreshCall);
+        time.elapse(const Duration(seconds: 1));
+        time.flushMicrotasks();
+        verify(refreshCall).called(1);
+      });
+    });
+
+    test('a failed refresh has a deferred successor', () {
+      when(
+        refreshCall,
+      ).thenAnswer((_) async => const Err(SellUnexpectedFailure('offline')));
+      return inFakeTime((time) {
+        bloc.add(const SellEvent.orderRefreshTimePassed());
+        time.flushMicrotasks();
+        verify(refreshCall).called(1);
+        time.elapse(const Duration(seconds: 5));
+        time.flushMicrotasks();
+        verify(refreshCall).called(1);
+      });
+    });
+
+    test('a fresh lock is refreshed at its exact deadline', () {
+      // The countdown widget fires up to a second early; the bloc no longer
+      // listens to it and arms its own timer at the instant the lock lapses.
+      return inFakeTime((time) {
+        when(
+          () => sellOrder.confirmationDeadline,
+        ).thenReturn(clock.now().add(const Duration(milliseconds: 500)));
+        bloc.add(const SellEvent.orderRefreshTimePassed());
+        time.flushMicrotasks();
+        verify(refreshCall).called(1);
+        time.elapse(const Duration(milliseconds: 499));
+        time.flushMicrotasks();
+        verifyNever(refreshCall);
+        time.elapse(const Duration(milliseconds: 1));
+        time.flushMicrotasks();
+        verify(refreshCall).called(1);
+      });
+    });
+
+    test('retries stop with a typed failure once the budget is spent', () {
+      return inFakeTime((time) {
+        bloc.add(const SellEvent.orderRefreshTimePassed());
+        time.flushMicrotasks();
+        // Six retries, five seconds apart, after the first lapsed answer.
+        time.elapse(const Duration(seconds: 30));
+        time.flushMicrotasks();
+        verify(refreshCall).called(7);
+        expect(
+          (bloc.state as SellPaymentState).error,
+          isA<SellQuoteUnavailableFailure>(),
+        );
+        time.elapse(const Duration(minutes: 1));
+        time.flushMicrotasks();
+        verifyNever(refreshCall);
+      });
+    });
+
+    test('leaving cancels the pending retry', () {
+      return inFakeTime((time) {
+        bloc.add(const SellEvent.orderRefreshTimePassed());
+        time.flushMicrotasks();
+        verify(refreshCall).called(1);
+        bloc.add(const SellEvent.paymentPreparationAbandoned());
+        time.flushMicrotasks();
+        time.elapse(const Duration(seconds: 10));
+        time.flushMicrotasks();
+        verifyNever(refreshCall);
+      });
+    });
+  });
+
+  group('SellBloc — payin past the order deadline', () {
+    _MockSellOrder polled({
+      required OrderStatus status,
+      required OrderPayinStatus payin,
+    }) {
+      final order = _MockSellOrder();
+      when(() => order.orderId).thenReturn('order-1');
+      when(() => order.orderStatus).thenReturn(status);
+      when(() => order.payinStatus).thenReturn(payin);
+      when(
+        () => order.toAddress,
+      ).thenReturn('bc1q0000000000000000000000000000000000000');
+      return order;
+    }
+
+    void seedBroadcast() => bloc.seed(
+      (bloc.state as SellPaymentState).copyWith(
+        isConfirmingPayment: true,
+        payinBroadcastTxid: expectedTxid,
+      ),
+    );
+
+    test('an expired order after the payin lets the user leave without '
+        'paying again', () async {
+      seedBroadcast();
+      when(
+        () => loadSellContext.order(orderId: any(named: 'orderId')),
+      ).thenAnswer(
+        (_) async => Ok<Order, SellFailure>(
+          polled(
+            status: OrderStatus.expired,
+            payin: OrderPayinStatus.notStarted,
+          ),
+        ),
+      );
+
+      expect((bloc.state as SellPaymentState).canLeavePaymentScreen, isFalse);
+      bloc.add(const SellEvent.pollOrderStatus());
+      await Future<void>.delayed(const Duration(milliseconds: 50));
+
+      // Observed on testnet: the screen spun on "refreshing your order"
+      // forever, with back navigation blocked, for a payin the exchange had
+      // already reported as past its deadline.
+      final waiting = bloc.state as SellPaymentState;
+      expect(waiting.isConfirmingPayment, isFalse);
+      expect(waiting.payinBroadcastTxid, expectedTxid);
+      expect(waiting.canLeavePaymentScreen, isTrue);
+
+      bloc.add(const SellEvent.sendPaymentConfirmed());
+      await Future<void>.delayed(const Duration(milliseconds: 50));
+      verifyNever(
+        () => broadcastSellPayin.bitcoin(any(), isPsbt: any(named: 'isPsbt')),
+      );
+    });
+
+    test('an old order poll cannot overwrite a replacement order', () async {
+      final poll = Completer<Result<Order, SellFailure>>();
+      when(
+        () => loadSellContext.order(orderId: any(named: 'orderId')),
+      ).thenAnswer((_) => poll.future);
+      final replacementOrder = _MockSellOrder();
+      when(() => replacementOrder.orderId).thenReturn('order-2');
+      when(
+        () => replacementOrder.toAddress,
+      ).thenReturn('bc1q0000000000000000000000000000000000000');
+
+      bloc.add(const SellEvent.pollOrderStatus());
+      await untilCalled(() => loadSellContext.order(orderId: 'order-1'));
+      bloc.seed(
+        (bloc.state as SellPaymentState).copyWith(sellOrder: replacementOrder),
+      );
+      poll.complete(
+        Ok<Order, SellFailure>(
+          polled(
+            status: OrderStatus.expired,
+            payin: OrderPayinStatus.awaitingPayment,
+          ),
+        ),
+      );
+      await pumpEventQueue();
+
+      final state = bloc.state as SellPaymentState;
+      expect(state.sellOrder, same(replacementOrder));
+    });
+
+    test(
+      'a completion read for a replaced order cannot settle the new one',
+      () async {
+        seedBroadcast();
+        final read = Completer<Result<Order, SellFailure>>();
+        when(
+          () => loadSellContext.order(orderId: any(named: 'orderId')),
+        ).thenAnswer((_) => read.future);
+        final replacementOrder = _MockSellOrder();
+        when(() => replacementOrder.orderId).thenReturn('order-2');
+
+        bloc.add(const SellEvent.sendPaymentConfirmed());
+        await untilCalled(() => loadSellContext.order(orderId: 'order-1'));
+        bloc.seed(
+          (bloc.state as SellPaymentState).copyWith(
+            sellOrder: replacementOrder,
+          ),
+        );
+        read.complete(
+          Ok<Order, SellFailure>(
+            polled(
+              status: OrderStatus.inProgress,
+              payin: OrderPayinStatus.inProgress,
+            ),
+          ),
+        );
+        await pumpEventQueue();
+
+        expect(bloc.state, isA<SellPaymentState>());
+      },
+      timeout: const Timeout(Duration(seconds: 20)),
+    );
+
+    test(
+      'the past-deadline warning survives the exported log filter',
+      () async {
+        final previousLogger = log;
+        final directory = await Directory.systemTemp.createTemp('sell_logs');
+        addTearDown(() async {
+          log = previousLogger;
+          await directory.delete(recursive: true);
+        });
+        log = Logger.replace(directory: directory);
+        await log.ensureLogsExist(writeDiagnosticContext: false);
+        seedBroadcast();
+        when(
+          () => loadSellContext.order(orderId: any(named: 'orderId')),
+        ).thenAnswer(
+          (_) async => Ok<Order, SellFailure>(
+            polled(
+              status: OrderStatus.expired,
+              payin: OrderPayinStatus.notStarted,
+            ),
+          ),
+        );
+
+        bloc.add(const SellEvent.pollOrderStatus());
+        await Future<void>.delayed(const Duration(milliseconds: 50));
+
+        // The logger redacts any long run of lowercase words as a possible
+        // mnemonic; on a phone this line came out as "[REDACTED]".
+        final lines = await log.readLogs();
+        expect(
+          lines.where((line) => line.contains('past deadline: status=expired')),
+          hasLength(1),
+        );
+      },
+    );
+
+    test(
+      'leaving a payin reported past its deadline stops watching it',
+      () async {
+        seedBroadcast();
+        when(
+          () => loadSellContext.order(orderId: any(named: 'orderId')),
+        ).thenAnswer(
+          (_) async => Ok<Order, SellFailure>(
+            polled(
+              status: OrderStatus.expired,
+              payin: OrderPayinStatus.notStarted,
+            ),
+          ),
+        );
+        bloc.add(const SellEvent.pollOrderStatus());
+        await Future<void>.delayed(const Duration(milliseconds: 50));
+
+        // Leave pops the screen, which reports the preparation as abandoned.
+        bloc.add(const SellEvent.paymentPreparationAbandoned());
+        await Future<void>.delayed(const Duration(milliseconds: 50));
+
+        final left = bloc.state as SellPaymentState;
+        // No screen is left to show a late credit, so nothing polls for one.
+        expect(left.isPolling, isFalse);
+        // Still paid as far as this device knows: never paid again.
+        expect(left.payinBroadcastTxid, expectedTxid);
+      },
+    );
+
+    test(
+      'a payin the exchange accepts late still completes the sale',
+      () async {
+        seedBroadcast();
+        final expired = polled(
+          status: OrderStatus.expired,
+          payin: OrderPayinStatus.notStarted,
+        );
+        final accepted = polled(
+          status: OrderStatus.inProgress,
+          payin: OrderPayinStatus.inProgress,
+        );
+        var reads = 0;
+        when(
+          () => loadSellContext.order(orderId: any(named: 'orderId')),
+        ).thenAnswer(
+          (_) async =>
+              Ok<Order, SellFailure>(reads++ == 0 ? expired : accepted),
+        );
+
+        bloc.add(const SellEvent.pollOrderStatus());
+        await Future<void>.delayed(const Duration(milliseconds: 50));
+        bloc.add(const SellEvent.pollOrderStatus());
+
+        await bloc.stream.firstWhere((state) => state is SellSuccessState);
+      },
+    );
+
+    test('a quote past its deadline is never paid', () async {
+      bloc.seed(
+        (bloc.state as SellPaymentState).copyWith(isPayjoinEnabled: false),
+      );
+      when(
+        () => sellOrder.confirmationDeadline,
+      ).thenReturn(DateTime.now().subtract(const Duration(seconds: 1)));
+
+      bloc.add(const SellEvent.sendPaymentConfirmed());
+      await Future<void>.delayed(const Duration(milliseconds: 100));
+
+      verifyNever(
+        () => broadcastSellPayin.bitcoin(any(), isPsbt: any(named: 'isPsbt')),
+      );
+      expect((bloc.state as SellPaymentState).isConfirmingPayment, isFalse);
+    });
   });
 
   group('SellBloc — deposit address pinning', () {

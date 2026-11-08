@@ -174,8 +174,8 @@ packages:
     dependency: "direct main"
     description:
       path: "packages/bitbox-transport"
-      ref: "7f3956c9a648bb19833694ec2e5b0c06bd200eca"
-      resolved-ref: "7f3956c9a648bb19833694ec2e5b0c06bd200eca"
+      ref: "1b01dc5e962c4c068fc4934b8125b839e2cd3264"
+      resolved-ref: "1b01dc5e962c4c068fc4934b8125b839e2cd3264"
       url: "https://github.com/SatoshiPortal/bull_sdk"
     source: git
     version: "0.1.0"
@@ -240,8 +240,8 @@ packages:
     dependency: "direct main"
     description:
       path: "packages/boltz-stream"
-      ref: "7f3956c9a648bb19833694ec2e5b0c06bd200eca"
-      resolved-ref: "7f3956c9a648bb19833694ec2e5b0c06bd200eca"
+      ref: "1b01dc5e962c4c068fc4934b8125b839e2cd3264"
+      resolved-ref: "1b01dc5e962c4c068fc4934b8125b839e2cd3264"
       url: "https://github.com/SatoshiPortal/bull_sdk"
     source: git
     version: "0.1.0"
@@ -329,8 +329,8 @@ packages:
     dependency: "direct main"
     description:
       path: "packages/bull_sdk"
-      ref: "7f3956c9a648bb19833694ec2e5b0c06bd200eca"
-      resolved-ref: "7f3956c9a648bb19833694ec2e5b0c06bd200eca"
+      ref: "1b01dc5e962c4c068fc4934b8125b839e2cd3264"
+      resolved-ref: "1b01dc5e962c4c068fc4934b8125b839e2cd3264"
       url: "https://github.com/SatoshiPortal/bull_sdk"
     source: git
     version: "1.0.0+1"
@@ -1481,8 +1481,8 @@ packages:
     dependency: transitive
     description:
       path: "packages/onion"
-      ref: "7f3956c9a648bb19833694ec2e5b0c06bd200eca"
-      resolved-ref: "7f3956c9a648bb19833694ec2e5b0c06bd200eca"
+      ref: "1b01dc5e962c4c068fc4934b8125b839e2cd3264"
+      resolved-ref: "1b01dc5e962c4c068fc4934b8125b839e2cd3264"
       url: "https://github.com/SatoshiPortal/bull_sdk"
     source: git
     version: "0.1.0"
@@ -1577,12 +1577,11 @@ packages:
   payjoin:
     dependency: transitive
     description:
-      path: "payjoin-ffi/dart"
-      ref: "51da8ed79ee57536f4be223a01e6ecb163986f28"
-      resolved-ref: "51da8ed79ee57536f4be223a01e6ecb163986f28"
-      url: "https://github.com/SatoshiPortal/payjoin-rust"
-    source: git
-    version: "0.2.1+payjoin-1.0.0-rc.8"
+      name: payjoin
+      sha256: "2ed55d9abf8c5be8a0604a94a75eacd54ad8245613ee319456012bfbdc361f3e"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.25.1"
   permission_handler:
     dependency: "direct main"
     description:
@@ -1788,8 +1787,8 @@ packages:
     dependency: transitive
     description:
       path: "packages/bull_sdk/rust_builder"
-      ref: "7f3956c9a648bb19833694ec2e5b0c06bd200eca"
-      resolved-ref: "7f3956c9a648bb19833694ec2e5b0c06bd200eca"
+      ref: "1b01dc5e962c4c068fc4934b8125b839e2cd3264"
+      resolved-ref: "1b01dc5e962c4c068fc4934b8125b839e2cd3264"
       url: "https://github.com/SatoshiPortal/bull_sdk"
     source: git
     version: "0.0.1"
@@ -1805,8 +1804,8 @@ packages:
     dependency: "direct main"
     description:
       path: "packages/satoshifier"
-      ref: "7f3956c9a648bb19833694ec2e5b0c06bd200eca"
-      resolved-ref: "7f3956c9a648bb19833694ec2e5b0c06bd200eca"
+      ref: "1b01dc5e962c4c068fc4934b8125b839e2cd3264"
+      resolved-ref: "1b01dc5e962c4c068fc4934b8125b839e2cd3264"
       url: "https://github.com/SatoshiPortal/bull_sdk"
     source: git
     version: "0.0.1"
@@ -1992,7 +1991,7 @@ packages:
     source: hosted
     version: "1.10.2"
   sqlite3:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: sqlite3
       sha256: "3145bd74dcdb4fd6f5c6dda4d4e4490a8087d7f286a14dee5d37087290f0f8a2"

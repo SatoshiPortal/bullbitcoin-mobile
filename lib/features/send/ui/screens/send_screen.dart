@@ -26,6 +26,7 @@ import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';
 import 'package:bb_mobile/features/send/presentation/send_failure_l10n.dart';
 import 'package:bb_mobile/features/send/ui/screens/open_the_camera_widget.dart';
 import 'package:bb_mobile/core/widgets/fees/fee_options_modal.dart';
+import 'package:bb_mobile/core/widgets/fees/fee_selection_label.dart';
 import 'package:bb_mobile/features/send/ui/widgets/advanced_options_bottom_sheet.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
@@ -989,6 +990,9 @@ class _OnchainTransactionReview extends StatelessWidget {
     final selectedFeeOption = context.select(
       (SendCubit cubit) => cubit.state.selectedFeeOption,
     );
+    final customFee = context.select(
+      (SendCubit cubit) => cubit.state.customFee,
+    );
     final feePercent = context.select(
       (SendCubit cubit) => cubit.state.getFeeAsPercentOfAmount(),
     );
@@ -1014,9 +1018,16 @@ class _OnchainTransactionReview extends StatelessWidget {
           sendWalletLabel: selectedWallet?.displayLabel(context) ?? '',
           receiveWalletLabel: paymentRequestAddress,
           formattedBitcoinAmount: formattedBitcoinAmount,
-          formattedFiatEquivalent: '~$formattedFiatEquivalent',
+          formattedFiatEquivalent: formattedFiatEquivalent.isEmpty
+              ? ''
+              : '~$formattedFiatEquivalent',
           absoluteFees: formattedAbsoluteFees,
-          selectedFeeOptionTitle: selectedFeeOption.title(),
+          selectedFeeOptionTitle: feeSelectionRowLabel(
+            context,
+            selection: selectedFeeOption,
+            customFee: customFee,
+            fastestLabel: context.loc.sendFastFee,
+          ),
           isToSelf: isToSelf,
           payjoinToggleValue: isPayjoinAvailable ? willAttemptPayjoin : null,
           onPayjoinToggleChanged: (attempt) =>
@@ -1099,7 +1110,9 @@ class _LiquidOnchainSendInfoSection extends StatelessWidget {
       sendWalletLabel: selectedWallet?.displayLabel(context) ?? '',
       receiveWalletLabel: paymentRequestAddress,
       formattedBitcoinAmount: formattedBitcoinAmount,
-      formattedFiatEquivalent: '~$formattedFiatEquivalent',
+      formattedFiatEquivalent: formattedFiatEquivalent.isEmpty
+          ? ''
+          : '~$formattedFiatEquivalent',
       absoluteFees: formattedAbsoluteFees,
       selectedFeeOptionTitle: '',
       note: label,
@@ -1806,7 +1819,6 @@ class SendSendingScreen extends StatelessWidget {
                             seconds: PayjoinConstants.directoryPollingInterval,
                           ),
                         ),
-                        onTimeout: () {},
                       ),
                     ],
                   ),
@@ -2003,14 +2015,16 @@ class SendSucessScreen extends StatelessWidget {
                     maxLines: 4,
                     textAlign: .center,
                   ),
-                  const Gap(4),
-                  BullText(
-                    '~$fiatEquivalent',
-                    style: context.font.bodyMedium,
-                    color: context.appColors.secondary,
-                    maxLines: 4,
-                    textAlign: .center,
-                  ),
+                  if (fiatEquivalent.isNotEmpty) ...[
+                    const Gap(4),
+                    BullText(
+                      '~$fiatEquivalent',
+                      style: context.font.bodyMedium,
+                      color: context.appColors.secondary,
+                      maxLines: 4,
+                      textAlign: .center,
+                    ),
+                  ],
                 ],
               ),
             ),

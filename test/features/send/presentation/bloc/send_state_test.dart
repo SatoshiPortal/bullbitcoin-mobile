@@ -705,4 +705,49 @@ void main() {
       );
     });
   });
+  // With no price, fiat cannot be shown or typed: no rate means no currency,
+  // never a zero amount or an amount read in the wrong unit.
+  group('SendState without a price', () {
+    test('offers only bitcoin units as input currencies', () {
+      const state = SendState(fiatCurrencyCodes: ['USD', 'CAD']);
+      expect(state.inputAmountCurrencyCodes, [
+        BitcoinUnit.btc.code,
+        BitcoinUnit.sats.code,
+      ]);
+    });
+
+    test('offers fiat currencies once a price is known', () {
+      const state = SendState(
+        fiatCurrencyCodes: ['USD', 'CAD'],
+        exchangeRate: 70000,
+      );
+      expect(state.inputAmountCurrencyCodes, contains('USD'));
+    });
+
+    test('shows no fiat equivalent of a bitcoin amount', () {
+      const state = SendState(
+        inputAmountCurrencyCode: 'sats',
+        amount: '1000',
+        fiatCurrencyCode: 'USD',
+      );
+      expect(state.formattedAmountInputEquivalent, isEmpty);
+    });
+
+    test('never reads an amount typed in fiat as bitcoin', () {
+      // 0.01 typed in a USD field must not become 0.01 BTC.
+      const state = SendState(
+        inputAmountCurrencyCode: 'USD',
+        amount: '0.01',
+        fiatCurrencyCode: 'USD',
+      );
+      expect(state.inputAmountSat, 0);
+    });
+
+    test('has no fiat value, rather than a zero one', () {
+      const state = SendState(confirmedAmountSat: 1000);
+      expect(state.inputAmountFiat, isNull);
+      expect(state.confirmedAmountFiat, isNull);
+      expect(state.formattedConfirmedAmountFiat, isEmpty);
+    });
+  });
 }

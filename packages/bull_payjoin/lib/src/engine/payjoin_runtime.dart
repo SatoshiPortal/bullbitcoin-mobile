@@ -81,14 +81,13 @@ Future<Result<PayjoinLifecycle, PayjoinFailure>> openPayjoin({
       policy: policy,
       labels: labels,
     );
-    final roles = _PayjoinRoles(engine, policy, wallet, fees);
+    final roles = _PayjoinRoles(engine, policy, wallet, fees, payjoinLog);
     return Ok(_PayjoinLifecycle(database, engine, roles.payjoin));
   } catch (error, trace) {
     // No quarantine-and-retry here: with the import's row-level quarantine,
     // a post-open throw is an IO/disk problem or a bug — a fresh file would
     // not help and would needlessly discard readable payjoin history.
     payjoinLog.severe(
-      message: 'Could not open or migrate Payjoin storage',
       code: PayjoinLogCode.migrationFailure,
       error: error,
       trace: trace,
@@ -114,7 +113,6 @@ Future<PayjoinDatabase?> _tryOpenDatabase(
     return database;
   } catch (error, trace) {
     payjoinLog.severe(
-      message: 'Could not open Payjoin storage',
       code: PayjoinLogCode.migrationFailure,
       error: error,
       trace: trace,
@@ -143,7 +141,6 @@ Future<PayjoinDatabase?> _quarantineAndReopenDatabase(
     }
   } catch (error, trace) {
     payjoinLog.severe(
-      message: 'Could not quarantine unreadable Payjoin storage',
       code: PayjoinLogCode.migrationFailure,
       error: error,
       trace: trace,
@@ -151,7 +148,6 @@ Future<PayjoinDatabase?> _quarantineAndReopenDatabase(
     return null;
   }
   payjoinLog.warning(
-    '',
     code: PayjoinLogCode.migrationFailure,
     error: StateError(
       'Moved unreadable Payjoin database aside and reopened a fresh one; '
@@ -229,6 +225,7 @@ final class _PayjoinRoles implements _PayjoinRuntimeContract {
   final PayjoinPolicyStore _policy;
   final PayjoinWalletPort _wallet;
   final PayjoinFeesPort _fees;
+  final logger.PayjoinLogger _log;
   final Lock _policyMutationLock = Lock();
 
   late final Payjoin payjoin = Payjoin(
@@ -239,7 +236,13 @@ final class _PayjoinRoles implements _PayjoinRuntimeContract {
     diagnostics: _DiagnosticsRole(this),
   );
 
-  _PayjoinRoles(this._engine, this._policy, this._wallet, this._fees);
+  _PayjoinRoles(
+    this._engine,
+    this._policy,
+    this._wallet,
+    this._fees,
+    this._log,
+  );
 
   PayjoinSession _toSession(engine.Payjoin value) => _mapSession(
     value,
@@ -265,7 +268,13 @@ final class _PayjoinRoles implements _PayjoinRuntimeContract {
     late final String signed;
     try {
       signed = await _engineWalletSign(request);
-    } catch (_) {
+    } catch (error, trace) {
+      _log.warning(
+        code: PayjoinLogCode.signingFailure,
+        role: PayjoinLogRole.sender,
+        error: error,
+        trace: trace,
+      );
       return const Err(PayjoinSigningFailure('Sender signing failed'));
     }
     try {
@@ -279,7 +288,15 @@ final class _PayjoinRoles implements _PayjoinRuntimeContract {
         expireAfterSec: lifetime.inSeconds,
       );
       return Ok(_toSession(session) as PayjoinSenderSession);
-    } catch (_) {
+    } catch (error, trace) {
+      // The failure handed back is deliberately generic; without this the
+      // cause of a payment falling back to a plain transaction is lost.
+      _log.warning(
+        code: PayjoinLogCode.sessionStartFailed,
+        role: PayjoinLogRole.sender,
+        error: error,
+        trace: trace,
+      );
       return const Err(PayjoinProtocolRejectedFailure('Sender start failed'));
     }
   }
@@ -321,7 +338,13 @@ final class _PayjoinRoles implements _PayjoinRuntimeContract {
         isTrade: request.isTrade,
       );
       return Ok(_toSession(session) as PayjoinReceiverSession);
-    } catch (_) {
+    } catch (error, trace) {
+      _log.warning(
+        code: PayjoinLogCode.sessionStartFailed,
+        role: PayjoinLogRole.receiver,
+        error: error,
+        trace: trace,
+      );
       return const Err(PayjoinProtocolRejectedFailure('Receiver start failed'));
     }
   }

@@ -5,8 +5,9 @@ sealed class RecipientsState with _$RecipientsState {
   const factory RecipientsState({
     String? preferredJurisdiction,
     String? jurisdictionFilter,
-    @Default(ConfidentialSepaAvailability.unavailable)
-    ConfidentialSepaAvailability confidentialSepaAvailability,
+    ConfidentialSepaAvailability? confidentialSepaAvailability,
+    @Default(false) bool isLoadingConfidentialSepaAvailability,
+    RecipientsFailure? failedToLoadConfidentialSepaAvailability,
     AccountOwnerName? accountOwnerName,
     @Default(RecipientType.sepaEur) RecipientType sepaType,
     @Default('') String searchQuery,
@@ -29,6 +30,7 @@ sealed class RecipientsState with _$RecipientsState {
   const RecipientsState._();
 
   bool get isLoading =>
+      isLoadingConfidentialSepaAvailability ||
       isLoadingRecipients ||
       isAddingRecipient ||
       isCheckingSinpe ||
@@ -46,8 +48,9 @@ sealed class RecipientsState with _$RecipientsState {
       .where(
         (type) =>
             type != RecipientType.confidentialSepaEur ||
-            confidentialSepaAvailability !=
-                ConfidentialSepaAvailability.unavailable,
+            (confidentialSepaAvailability != null &&
+                confidentialSepaAvailability !=
+                    ConfidentialSepaAvailability.unavailable),
       )
       .toSet();
 

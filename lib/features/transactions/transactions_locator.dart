@@ -4,6 +4,7 @@ import 'package:bb_mobile/core/exchange/domain/usecases/list_all_orders_usecase.
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_usecase.dart';
+import 'package:bb_mobile/core/swaps/domain/usecases/retry_swap_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/watch_swap_usecase.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
@@ -214,6 +215,7 @@ class TransactionsLocator {
             locator<GetTransactionNoteSuggestionsUsecase>(),
         broadcastOriginalTransactionUsecase:
             locator<BroadcastOriginalTransactionUsecase>(),
+        retrySwapUsecase: locator<RetrySwapUsecase>(),
       ),
     );
   }

@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_connection.dart';
 import 'package:bb_mobile/core/electrum/application/dtos/electrum_server_dto.dart';
 import 'package:bb_mobile/core/electrum/application/dtos/electrum_settings_dto.dart';
 import 'package:bb_mobile/core/electrum/application/dtos/requests/add_custom_server_request.dart';
@@ -355,7 +356,7 @@ void main() {
           url: 'ssl://hidden.onion:50002',
           network: _network,
           validateDomain: true,
-          timeout: 30,
+          timeout: ElectrumConnection.onionMinimumTimeout,
           retry: 1,
           proxyEndpoint: endpoint,
         ),
@@ -379,7 +380,7 @@ void main() {
           url: 'ssl://hidden.onion:50002',
           network: _network,
           validateDomain: true,
-          timeout: 30,
+          timeout: ElectrumConnection.onionMinimumTimeout,
           retry: 1,
           proxyEndpoint: endpoint,
         ),
@@ -650,7 +651,7 @@ void main() {
           url: server.url,
           network: _network,
           validateDomain: true,
-          timeout: 30,
+          timeout: ElectrumConnection.onionMinimumTimeout,
           retry: 1,
           proxyEndpoint: endpoint,
         ),
@@ -677,7 +678,7 @@ void main() {
           url: server.url,
           network: _network,
           validateDomain: true,
-          timeout: 30,
+          timeout: ElectrumConnection.onionMinimumTimeout,
           retry: 1,
           proxyEndpoint: endpoint,
         ),
@@ -743,7 +744,7 @@ void main() {
             url: any(named: 'url'),
             network: _network,
             validateDomain: true,
-            timeout: 30,
+            timeout: ElectrumConnection.onionMinimumTimeout,
             retry: 1,
             proxyEndpoint: externalRoute.endpoint,
           ),

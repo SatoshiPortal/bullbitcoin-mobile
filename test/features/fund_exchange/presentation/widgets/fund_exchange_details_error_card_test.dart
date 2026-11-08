@@ -81,15 +81,23 @@ class _UnusedExternalLink implements ExternalLinkPort {
 
 Future<InfoCard> _pumpCard(
   WidgetTester tester,
-  FundExchangeBloc bloc, {
+  FundExchangeFailure failure, {
   bool triggerFailure = true,
 }) async {
-  addTearDown(bloc.close);
-  if (triggerFailure) {
-    bloc.add(
-      FundExchangeEvent.fundingDetailsRequested(fundingMethod: RegularSepa()),
-    );
-  }
+  late final FundExchangeBloc bloc;
+  await tester.runAsync(() async {
+    bloc = _blocFor(failure);
+    addTearDown(bloc.close);
+    if (triggerFailure) {
+      final failed = bloc.stream.firstWhere(
+        (state) => state.getFundingDetailsFailure != null,
+      );
+      bloc.add(
+        FundExchangeEvent.fundingDetailsRequested(fundingMethod: RegularSepa()),
+      );
+      await failed;
+    }
+  });
 
   await tester.pumpWidget(
     MaterialApp(
@@ -119,7 +127,7 @@ void main() {
   testWidgets('shows the failure headline and message', (tester) async {
     final card = await _pumpCard(
       tester,
-      _blocFor(const FundExchangeKycIncompleteFailure(_rawReason)),
+      const FundExchangeKycIncompleteFailure(_rawReason),
     );
 
     expect(card.title, 'KYC Requirements Missing');
@@ -134,7 +142,7 @@ void main() {
   ) async {
     final card = await _pumpCard(
       tester,
-      _blocFor(const FundExchangeUnexpectedFailure()),
+      const FundExchangeUnexpectedFailure(),
       triggerFailure: false,
     );
 
@@ -147,7 +155,7 @@ void main() {
   ) async {
     final card = await _pumpCard(
       tester,
-      _blocFor(const FundExchangeUnexpectedFailure(_rawReason)),
+      const FundExchangeUnexpectedFailure(_rawReason),
     );
 
     expect(card.title, isNull);
@@ -160,7 +168,7 @@ void main() {
   testWidgets('never renders the raw reason', (tester) async {
     final card = await _pumpCard(
       tester,
-      _blocFor(const FundExchangeUnexpectedFailure(_rawReason)),
+      const FundExchangeUnexpectedFailure(_rawReason),
     );
 
     final painted = '${card.title} ${card.description}';

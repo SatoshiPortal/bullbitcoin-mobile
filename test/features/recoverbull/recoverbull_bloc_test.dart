@@ -130,7 +130,6 @@ void main() {
     connectToKeyServerUsecase: ConnectToKeyServerUsecase(
       checkConnection,
       ensureRecoverBullTorSession,
-      wait: (_) async {},
     ),
     fetchVaultKeyFromServerUsecase: fetchKey,
     decryptVaultUsecase: decrypt,
@@ -339,6 +338,37 @@ void main() {
   });
 
   group('RecoverBull Tor readiness', () {
+    // A flow waiting behind the server permission page must not race the flow pushed after Continue: two blocs once opened two sessions and two onion connections when Tor became ready.
+    test(
+      'a flow that never asked to connect stays idle when Tor is ready',
+      () async {
+        final states = StreamController<TorConnectionState>();
+        when(() => watchTor.execute()).thenAnswer((_) => states.stream);
+        final route = TorRoute(
+          source: TorSource.embedded,
+          endpoint: TorProxyEndpoint(host: '127.0.0.1', port: 41001),
+          evidence: TorReadinessEvidence.embeddedBootstrap,
+          transport: TorTransport.direct,
+        );
+        final verified = RecoverBullTorRoute(route, () async {});
+        when(
+          () => ensureRecoverBullTorSession.execute(),
+        ).thenAnswer((_) async => Ok(verified));
+        when(
+          () => checkConnection.execute(route: verified),
+        ).thenAnswer((_) async => const Ok(true));
+        final bloc = buildBloc(flow: RecoverBullFlow.recoverVault);
+        addTearDown(bloc.close);
+
+        states.add(TorReady(route));
+        await pumpEventQueue();
+
+        expect(bloc.state.torConnection, isA<TorReady>());
+        expect(bloc.state.keyServerStatus, KeyServerStatus.unknown);
+        verifyNever(() => ensureRecoverBullTorSession.execute());
+      },
+    );
+
     test(
       'keeps a usable route ready during Arti directory refreshes',
       () async {
@@ -441,14 +471,10 @@ void main() {
     // for a server check, so readiness arriving through the watch stream has to
     // trigger one — otherwise the screen sits on "waiting" with no retry.
     test(
-      'checks the server when readiness arrives through the stream',
+      'a flow that asked to connect checks the server once Tor is ready',
       () async {
         final states = StreamController<TorConnectionState>();
         when(() => watchTor.execute()).thenAnswer((_) => states.stream);
-        when(
-          () => checkConnection.execute(),
-        ).thenAnswer((_) async => const Ok(true));
-        final bloc = buildBloc(flow: RecoverBullFlow.recoverVault);
         final route = TorRoute(
           source: TorSource.embedded,
           endpoint: TorProxyEndpoint(host: '127.0.0.1', port: 41001),
@@ -456,22 +482,37 @@ void main() {
           transport: TorTransport.direct,
         );
         final recoverBullRoute = RecoverBullTorRoute(route, () async {});
+        // Acquisition waits for Tor, as it does during a cold bootstrap.
+        final acquisition =
+            Completer<
+              Result<RecoverBullTorRoute, core.RecoverBullCoreFailure>
+            >();
         when(
           () => ensureRecoverBullTorSession.execute(
             restartEmbedded: any(named: 'restartEmbedded'),
           ),
-        ).thenAnswer((_) async => Ok(recoverBullRoute));
+        ).thenAnswer((_) => acquisition.future);
         when(
           () => checkConnection.execute(route: recoverBullRoute),
         ).thenAnswer((_) async => const Ok(true));
+        final bloc = buildBloc(flow: RecoverBullFlow.recoverVault);
 
+        bloc.add(const OnTorInitialization());
+        await pumpEventQueue();
         states.add(TorReady(route));
+        await pumpEventQueue();
+        acquisition.complete(Ok(recoverBullRoute));
         await pumpEventQueue();
 
         expect(bloc.state.keyServerStatus, KeyServerStatus.online);
         verify(
           () => checkConnection.execute(route: recoverBullRoute),
-        ).called(greaterThanOrEqualTo(1));
+        ).called(1);
+        verify(
+          () => ensureRecoverBullTorSession.execute(
+            restartEmbedded: any(named: 'restartEmbedded'),
+          ),
+        ).called(1);
 
         await states.close();
         await bloc.close();
@@ -816,7 +857,7 @@ void main() {
       },
     );
 
-    test('a failed check waits for a fetch borrowing the route', () async {
+    test('a new circuit waits for a fetch borrowing the route', () async {
       var closed = 0;
       final route = routeAt(41001, () async => closed++);
       final vault = _MockEncryptedVault();
@@ -848,6 +889,10 @@ void main() {
       await pumpEventQueue();
 
       expect(bloc.state.failure, isA<KeyServerConnectionFailure>());
+      // A failed check keeps the route for Retry.
+      expect(closed, 0);
+      bloc.add(const OnNewCircuit());
+      await pumpEventQueue();
       // The SOCKS listener stays up until the fetch returns.
       expect(closed, 0);
       fetching.complete(const Err(core.KeyServerUnavailableFailure()));
@@ -1272,8 +1317,139 @@ void main() {
       },
     );
 
+    test('a dead session is dropped so Retry opens a new one', () async {
+      var firstClosed = 0;
+      final first = routeAt(41001, () async => firstClosed++);
+      final second = routeAt(41002, () async {});
+      var acquisitions = 0;
+      when(
+        () => ensureRecoverBullTorSession.execute(),
+      ).thenAnswer((_) async => Ok(acquisitions++ == 0 ? first : second));
+      when(() => checkConnection.execute(route: first)).thenAnswer(
+        (_) async => const Err(
+          core.KeyServerUnavailableFailure.because(
+            core.KeyServerUnreachableCause.proxyGone,
+          ),
+        ),
+      );
+      when(
+        () => checkConnection.execute(route: second),
+      ).thenAnswer((_) async => const Ok(true));
+      final bloc = buildBloc(flow: RecoverBullFlow.recoverVault);
+      addTearDown(bloc.close);
+
+      bloc.add(const OnTorInitialization());
+      await pumpEventQueue();
+
+      expect(bloc.state.keyServerStatus, KeyServerStatus.offline);
+      expect(firstClosed, 1);
+
+      bloc.add(const OnServerCheck());
+      await pumpEventQueue();
+
+      expect(bloc.state.keyServerStatus, KeyServerStatus.online);
+      expect(acquisitions, 2);
+      verify(() => checkConnection.execute(route: second)).called(1);
+    });
+
+    test('New route waits out a session acquisition in progress', () async {
+      final acquisition =
+          Completer<Result<RecoverBullTorRoute, core.RecoverBullCoreFailure>>();
+      when(
+        () => ensureRecoverBullTorSession.execute(),
+      ).thenAnswer((_) => acquisition.future);
+      final bloc = buildBloc(flow: RecoverBullFlow.recoverVault);
+      addTearDown(bloc.close);
+
+      bloc.add(const OnTorInitialization());
+      await pumpEventQueue();
+      // Set after the acquisition started, so only New route could reset it.
+      bloc.emit(
+        bloc.state.copyWith(
+          keyServerFailures: 2,
+          failure: const KeyServerConnectionFailure(),
+        ),
+      );
+      bloc.add(const OnNewCircuit());
+      await pumpEventQueue();
+
+      // Nothing was reset for an initialization that the droppable handler would discard.
+      expect(bloc.state.keyServerFailures, 2);
+      verify(() => ensureRecoverBullTorSession.execute()).called(1);
+      acquisition.complete(const Err(core.KeyServerUnavailableFailure()));
+      await pumpEventQueue();
+    });
+
+    test('replacing the route starts the failure count again', () async {
+      final acquisition =
+          Completer<Result<RecoverBullTorRoute, core.RecoverBullCoreFailure>>();
+      when(
+        () => ensureRecoverBullTorSession.execute(
+          restartEmbedded: any(named: 'restartEmbedded'),
+        ),
+      ).thenAnswer((_) => acquisition.future);
+      final bloc = buildBloc(flow: RecoverBullFlow.recoverVault);
+      addTearDown(bloc.close);
+      bloc.emit(
+        bloc.state.copyWith(
+          keyServerFailures: 1,
+          keyServerStatus: KeyServerStatus.offline,
+          failure: const KeyServerConnectionFailure(),
+        ),
+      );
+
+      // What Retry dispatches once Tor stopped after a failure.
+      bloc.add(const OnTorInitialization(restart: true));
+      await pumpEventQueue();
+
+      expect(bloc.state.keyServerFailures, 0);
+      expect(bloc.state.failure, isNull);
+      acquisition.complete(const Err(core.KeyServerUnavailableFailure()));
+      await pumpEventQueue();
+    });
+
+    test('Retry reuses the session and counts each failed attempt', () async {
+      var closed = 0;
+      final route = routeAt(41001, () async => closed++);
+      when(
+        () => ensureRecoverBullTorSession.execute(),
+      ).thenAnswer((_) async => Ok(route));
+      when(() => checkConnection.execute(route: route)).thenAnswer(
+        (_) async => const Err(
+          core.KeyServerUnavailableFailure.because(
+            core.KeyServerUnreachableCause.circuitTimeout,
+          ),
+        ),
+      );
+      final bloc = buildBloc(flow: RecoverBullFlow.recoverVault);
+      addTearDown(bloc.close);
+
+      bloc.add(const OnTorInitialization());
+      await pumpEventQueue();
+
+      expect(bloc.state.keyServerStatus, KeyServerStatus.offline);
+      expect(bloc.state.keyServerFailures, 1);
+      expect(
+        bloc.state.failure,
+        isA<KeyServerConnectionFailure>().having(
+          (f) => f.cause,
+          'cause',
+          core.KeyServerUnreachableCause.circuitTimeout,
+        ),
+      );
+
+      // What the connecting page's Retry dispatches while Tor reads ready.
+      bloc.add(const OnServerCheck());
+      await pumpEventQueue();
+
+      expect(bloc.state.keyServerFailures, 2);
+      verify(() => ensureRecoverBullTorSession.execute()).called(1);
+      verify(() => checkConnection.execute(route: route)).called(2);
+      expect(closed, 0);
+    });
+
     test(
-      'a failed check releases the route and the retry acquires a fresh one',
+      'New circuit replaces the session and starts counting again',
       () async {
         var firstClosed = 0;
         final first = routeAt(41001, () async => firstClosed++);
@@ -1282,9 +1458,9 @@ void main() {
         when(
           () => ensureRecoverBullTorSession.execute(),
         ).thenAnswer((_) async => Ok(acquisitions++ == 0 ? first : second));
-        when(
-          () => checkConnection.execute(route: first),
-        ).thenAnswer((_) async => const Ok(false));
+        when(() => checkConnection.execute(route: first)).thenAnswer(
+          (_) async => const Err(core.KeyServerUnavailableFailure()),
+        );
         when(
           () => checkConnection.execute(route: second),
         ).thenAnswer((_) async => const Ok(true));
@@ -1293,20 +1469,18 @@ void main() {
 
         bloc.add(const OnTorInitialization());
         await pumpEventQueue();
-
-        expect(bloc.state.keyServerStatus, KeyServerStatus.offline);
-        expect(bloc.state.failure, isA<KeyServerConnectionFailure>());
-        expect(firstClosed, 1);
-
-        // What the connecting page's Retry dispatches while Tor reads ready.
         bloc.add(const OnServerCheck());
+        await pumpEventQueue();
+        expect(bloc.state.keyServerFailures, 2);
+
+        bloc.add(const OnNewCircuit());
         await pumpEventQueue();
 
         expect(bloc.state.keyServerStatus, KeyServerStatus.online);
+        expect(bloc.state.keyServerFailures, 0);
+        expect(bloc.state.failure, isNull);
         expect(acquisitions, 2);
-        verify(
-          () => checkConnection.execute(route: first),
-        ).called(ConnectToKeyServerUsecase.maxAttempts);
+        expect(firstClosed, 1);
         verify(() => checkConnection.execute(route: second)).called(1);
       },
     );

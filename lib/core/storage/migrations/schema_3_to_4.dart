@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/storage/migrations/migration_guards.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.steps.dart';
 import 'package:drift/drift.dart';
 
@@ -15,41 +16,50 @@ class Schema3To4 {
 
     final metadatas = schema4.walletMetadatas;
 
-    await m.alterTable(
-      // ignore: experimental_member_use
-      TableMigration(
-        metadatas,
-        columnTransformer: {
-          metadatas.id: CaseWhenExpression(
-            cases: [
-              CaseWhen(
-                metadatas.id.contains('/1667h/'),
-                then: metadatas.id.replace('/1667h/', '/1776h/'),
-              ),
-              CaseWhen(
-                metadatas.id.contains('/1668h/'),
-                then: metadatas.id.replace('/1668h/', '/1h/'),
-              ),
-            ],
-            orElse: metadatas.id,
-          ),
-          metadatas.signer: schema3.walletMetadatas.source.caseMatch(
-            when: {
-              const Constant('mnemonic'): const Constant('local'),
-              const Constant('descriptors'): const Constant('remote'),
-            },
-            orElse: const Constant('none'),
-          ),
-        },
-        newColumns: [metadatas.signerDevice],
-      ),
-    );
+    // The rename reads `source`, which only exists until this step has run
+    // once. wallet_addresses is dropped again by 7→8, so it is only created
+    // alongside the rename.
+    final renameSource = await m.hasColumn('wallet_metadatas', 'source');
+
+    if (renameSource) {
+      await m.alterTable(
+        // ignore: experimental_member_use
+        TableMigration(
+          metadatas,
+          columnTransformer: {
+            metadatas.id: CaseWhenExpression(
+              cases: [
+                CaseWhen(
+                  metadatas.id.contains('/1667h/'),
+                  then: metadatas.id.replace('/1667h/', '/1776h/'),
+                ),
+                CaseWhen(
+                  metadatas.id.contains('/1668h/'),
+                  then: metadatas.id.replace('/1668h/', '/1h/'),
+                ),
+              ],
+              orElse: metadatas.id,
+            ),
+            metadatas.signer: schema3.walletMetadatas.source.caseMatch(
+              when: {
+                const Constant('mnemonic'): const Constant('local'),
+                const Constant('descriptors'): const Constant('remote'),
+              },
+              orElse: const Constant('none'),
+            ),
+          },
+          newColumns: [metadatas.signerDevice],
+        ),
+      );
+    }
 
     // Delete table wallet_address_history
     await m.deleteTable(schema3.walletAddressHistory.actualTableName);
 
     // Create table wallet_addresses
-    await m.createTable(schema4.walletAddresses);
+    if (renameSource) {
+      await m.createTable(schema4.walletAddresses);
+    }
   }
 }
 

@@ -5,6 +5,7 @@ import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
+import 'package:bull_pricer/bull_pricer.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/utils/string_formatting.dart';
@@ -20,7 +21,6 @@ import 'package:bb_mobile/features/receive/domain/receive_failure.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/convert_receive_amount_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/fetch_receive_note_suggestions_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/get_receive_address_at_index_usecase.dart';
-import 'package:bb_mobile/features/receive/domain/usecases/get_receive_currencies_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/get_receive_settings_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/get_receive_wallets_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/load_receive_address_label_usecase.dart';
@@ -46,7 +46,6 @@ part 'receive_state.dart';
 class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
   ReceiveBloc({
     required this._getReceiveWalletsUsecase,
-    required this._getReceiveCurrenciesUsecase,
     required this._getReceiveSettingsUsecase,
     required this._convertReceiveAmountUsecase,
     required this._prepareReceiveAddressUsecase,
@@ -126,7 +125,6 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
   }
 
   final GetReceiveWalletsUsecase _getReceiveWalletsUsecase;
-  final GetReceiveCurrenciesUsecase _getReceiveCurrenciesUsecase;
   final GetReceiveSettingsUsecase _getReceiveSettingsUsecase;
   final ConvertReceiveAmountUsecase _convertReceiveAmountUsecase;
   final PrepareReceiveAddressUsecase _prepareReceiveAddressUsecase;
@@ -323,14 +321,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     }
 
     if (state.fiatCurrencyCodes.isEmpty) {
-      // If the fiat currency codes are not set yet, we need to get them from the settings
-      switch (await _getReceiveCurrenciesUsecase.execute()) {
-        case Ok(:final value):
-          emit(state.copyWith(fiatCurrencyCodes: value));
-        case Err(:final failure):
-          emit(state.copyWith(failure: failure, payjoinAttemptSettled: true));
-          return;
-      }
+      emit(state.copyWith(fiatCurrencyCodes: SupportedCurrency.codes));
     }
 
     var bitcoinAddress = state.bitcoinAddress;
@@ -429,11 +420,14 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     //  added above cannot forget to release it and hang the screen.
     emit(state.copyWith(payjoinAttemptSettled: true));
 
-    if (state.exchangeRate == 0) {
+    if (state.exchangeRate == null) {
       // If the exchange rate is not set yet, we need to get it from the settings
       switch (await _convertReceiveAmountUsecase.execute()) {
         case Ok(:final value):
           emit(state.copyWith(exchangeRate: value));
+        // Receiving works without a price: no fiat value is shown.
+        case Err(failure: ReceivePriceUnavailableFailure()):
+          break;
         case Err(:final failure):
           emit(state.copyWith(failure: failure));
           return;
@@ -501,14 +495,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     }
 
     if (state.fiatCurrencyCodes.isEmpty) {
-      // If the fiat currency codes are not set yet, we need to get them from the settings
-      switch (await _getReceiveCurrenciesUsecase.execute()) {
-        case Ok(:final value):
-          emit(state.copyWith(fiatCurrencyCodes: value));
-        case Err(:final failure):
-          emit(state.copyWith(failure: failure));
-          return;
-      }
+      emit(state.copyWith(fiatCurrencyCodes: SupportedCurrency.codes));
     }
 
     // If no wallet is passed through the constructor, get the default liquid wallet,
@@ -538,11 +525,14 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     }
     emit(state.copyWith(wallet: wallet));
 
-    if (state.exchangeRate == 0) {
+    if (state.exchangeRate == null) {
       // If the exchange rate is not set yet, we need to get it from the settings
       switch (await _convertReceiveAmountUsecase.execute()) {
         case Ok(:final value):
           emit(state.copyWith(exchangeRate: value));
+        // Receiving works without a price: no fiat value is shown.
+        case Err(failure: ReceivePriceUnavailableFailure()):
+          break;
         case Err(:final failure):
           emit(state.copyWith(failure: failure));
           return;
@@ -600,14 +590,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     }
 
     if (state.fiatCurrencyCodes.isEmpty) {
-      // If the fiat currency codes are not set yet, we need to get them from the settings
-      switch (await _getReceiveCurrenciesUsecase.execute()) {
-        case Ok(:final value):
-          emit(state.copyWith(fiatCurrencyCodes: value));
-        case Err(:final failure):
-          emit(state.copyWith(failure: failure));
-          return;
-      }
+      emit(state.copyWith(fiatCurrencyCodes: SupportedCurrency.codes));
     }
 
     // If no liquid wallet is passed through the constructor, get the
@@ -653,11 +636,14 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
       }
     }
 
-    if (state.exchangeRate == 0) {
+    if (state.exchangeRate == null) {
       // If the exchange rate is not set yet, we need to get it from the settings
       switch (await _convertReceiveAmountUsecase.execute()) {
         case Ok(:final value):
           emit(state.copyWith(exchangeRate: value));
+        // Receiving works without a price: no fiat value is shown.
+        case Err(failure: ReceivePriceUnavailableFailure()):
+          break;
         case Err(:final failure):
           emit(state.copyWith(failure: failure));
           return;
@@ -731,7 +717,11 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
           );
           return;
         }
-        inputSat = ConvertAmount.fiatToSats(amountFiat, state.exchangeRate);
+        // A fiat amount is only offered with a price.
+        final rate = state.exchangeRate;
+        inputSat = rate == null
+            ? 0
+            : ConvertAmount.fiatToSats(amountFiat, rate);
       } else if (state.inputAmountCurrencyCode == BitcoinUnit.sats.code) {
         inputSat = int.tryParse(amount) ?? 0;
       } else {
@@ -754,7 +744,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     ReceiveAmountCurrencyChanged event,
     Emitter<ReceiveState> emit,
   ) async {
-    double exchangeRate = state.exchangeRate;
+    double? exchangeRate = state.exchangeRate;
     String fiatCurrencyCode = state.fiatCurrencyCode;
 
     if (![
@@ -769,6 +759,10 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
       )) {
         case Ok(:final value):
           exchangeRate = value;
+        // No price for that currency: stay on the current one, or a fiat
+        // amount would request zero sats.
+        case Err(failure: ReceivePriceUnavailableFailure()):
+          return;
         case Err(:final failure):
           emit(state.copyWith(failure: failure));
           return;
@@ -786,6 +780,9 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
       switch (await _convertReceiveAmountUsecase.execute()) {
         case Ok(:final value):
           exchangeRate = value;
+        // Bitcoin units work without a price: no fiat value is shown.
+        case Err(failure: ReceivePriceUnavailableFailure()):
+          exchangeRate = null;
         case Err(:final failure):
           emit(state.copyWith(failure: failure));
           return;

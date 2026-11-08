@@ -23,14 +23,8 @@ sealed class RecoverBullState with _$RecoverBullState {
     @Default(null) RecoverBullFailure? failure,
     @Default(KeyServerStatus.unknown) KeyServerStatus keyServerStatus,
 
-    /// Which key-server attempt is in flight, and out of how many.
-    ///
-    /// Reaching the server is an onion-service lookup — a descriptor fetch then
-    /// a rendezvous — which routinely needs more than one try just after a cold
-    /// bootstrap. Showing the count is the difference between "it is retrying"
-    /// and "it is frozen".
-    @Default(0) int keyServerAttempt,
-    @Default(0) int keyServerAttempts,
+    /// Failed key-server attempts on the current Tor session; a new session starts again from zero.
+    @Default(0) int keyServerFailures,
     @Default(false) bool isFlowFinished,
 
     /// The full readiness snapshot, not just the coarse status.
