@@ -449,6 +449,12 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     //  added above cannot forget to release it and hang the screen.
     emit(state.copyWith(payjoinAttemptSettled: true));
 
+    // Start watching for transactions on the wallet address
+    _watchWalletTransactionToAddress(
+      walletId: wallet.id,
+      address: bitcoinAddress.address,
+    );
+
     if (state.exchangeRate == null) {
       // If the exchange rate is not set yet, we need to get it from the settings
       final priceResult = await _convertReceiveAmountUsecase.execute();
@@ -464,12 +470,6 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
           return;
       }
     }
-
-    // Start watching for transactions on the wallet address
-    _watchWalletTransactionToAddress(
-      walletId: wallet.id,
-      address: bitcoinAddress.address,
-    );
   }
 
   Future<void> _onLightningStarted(
@@ -695,6 +695,12 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
       }
     }
 
+    // Start watching for transactions on the wallet address
+    _watchWalletTransactionToAddress(
+      walletId: wallet.id,
+      address: liquidAddress.address,
+    );
+
     if (state.exchangeRate == null) {
       // If the exchange rate is not set yet, we need to get it from the settings
       final priceResult = await _convertReceiveAmountUsecase.execute();
@@ -710,12 +716,6 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
           return;
       }
     }
-
-    // Start watching for transactions on the wallet address
-    _watchWalletTransactionToAddress(
-      walletId: wallet.id,
-      address: liquidAddress.address,
-    );
   }
 
   Future<void> _onAmountInputChanged(
