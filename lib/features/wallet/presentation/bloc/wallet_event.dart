@@ -72,5 +72,7 @@ class VerifyBackupStatus extends WalletEvent {
 }
 
 class WalletRevisionChanged extends WalletEvent {
-  const WalletRevisionChanged();
+  final String walletId;
+
+  const WalletRevisionChanged(this.walletId);
 }

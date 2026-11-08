@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/wallet/domain/usecases/read_wallet_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/watch_wallet_transaction_by_tx_id_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/watch_wallet_transaction_by_address_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/watch_wallet_revisions_usecase.dart';
@@ -221,6 +222,7 @@ class WalletLocator {
             locator<RefreshSpWalletForWalletUsecase>(),
         watchSpWalletUsecase: locator<WatchSpWalletUsecase>(),
         getWalletsUsecase: locator<GetWalletsUsecase>(),
+        readWalletUsecase: ReadWalletUsecase(locator<WalletRepository>()),
         checkWalletSyncingUsecase: locator<CheckWalletSyncingUsecase>(),
         watchWalletSyncEventsUsecase: locator<WatchWalletSyncEventsUsecase>(),
         syncWalletsUsecase: locator<SyncWalletsUsecase>(),

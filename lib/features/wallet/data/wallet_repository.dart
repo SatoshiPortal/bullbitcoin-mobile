@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/wallet/domain/repositories/wallet_reader_repository.dart';
 import 'package:transaction_sync/diagnostics.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet_failure_log_code.dart';
 import 'package:primitives/primitives.dart' show Fingerprint;
@@ -32,7 +33,7 @@ import 'package:bb_mobile/core/wallet/wallet_metadata_service.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/watch_only_wallet_entity.dart';
 import 'package:meta/meta.dart';
 
-class WalletRepository implements SeedReferencePort {
+class WalletRepository implements SeedReferencePort, WalletReaderRepository {
   final WalletNativeLifecycle? _native;
   final _unavailable = <String, Type>{};
   int _invalidCatalogCount = 0;
@@ -243,6 +244,7 @@ class WalletRepository implements SeedReferencePort {
     );
   }
 
+  @override
   @useResult
   Future<Result<Wallet, WalletFailure>> getWallet(
     String walletId, {
