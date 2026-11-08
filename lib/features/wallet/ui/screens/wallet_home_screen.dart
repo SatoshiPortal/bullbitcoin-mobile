@@ -25,6 +25,7 @@ class _WalletHomeScreenState extends State<WalletHomeScreen> {
   static const double _bottomBarHeight = 52.0 + 16.0 * 2;
 
   GoRouter? _router;
+  bool _homeVisible = false;
 
   @override
   void initState() {
@@ -36,7 +37,7 @@ class _WalletHomeScreenState extends State<WalletHomeScreen> {
       // screen remounts). The pop-back-to-home path, where this screen stays
       // mounted, is handled by the router listener below. The coordinator
       // throttles, so a redundant trigger is cheap.
-      _refreshOnVisible();
+      _onRouteChanged();
     });
   }
 
@@ -59,8 +60,17 @@ class _WalletHomeScreenState extends State<WalletHomeScreen> {
 
   void _onRouteChanged() {
     if (!mounted) return;
-    final location = _router?.routerDelegate.currentConfiguration.uri.path;
-    if (location == WalletRoute.walletHome.path) _refreshOnVisible();
+    final configuration = _router?.routerDelegate.currentConfiguration;
+    final top = configuration?.lastOrNull;
+    // A push keeps the base URI (/wallet). Its imperative match owns the
+    // visible location, including Receive on the root navigator.
+    final location = top is ImperativeRouteMatch
+        ? top.matches.uri.path
+        : configuration?.uri.path;
+    final visible = location == WalletRoute.walletHome.path;
+    final becameVisible = visible && !_homeVisible;
+    _homeVisible = visible;
+    if (becameVisible) _refreshOnVisible();
   }
 
   @override
