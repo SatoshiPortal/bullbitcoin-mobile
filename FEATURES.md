@@ -263,7 +263,6 @@ graph TB
     AUTOSWAP --> SETTINGS
     BITBOX --> WALLETS
     BROADCAST_SIGNED_TX --> SEND
-    BUY --> BTC_PRICE
     BUY --> FEES
     CONSOLIDATION --> SEND
     DCA --> SETTINGS
@@ -281,23 +280,22 @@ graph TB
     PAY --> FEES
     PAY --> SETTINGS
     PSBT_FLOW --> WALLETS
-    RECEIVE --> BTC_PRICE
     RECIPIENTS --> SETTINGS
     REPLACE_BY_FEE --> FEES
     REPLACE_BY_FEE --> SEND
     SELL --> FEES
     SELL --> SETTINGS
-    SEND --> BTC_PRICE
     SEND --> ELECTRUM_SETTINGS
     SEND --> SETTINGS
     STATUS --> ELECTRUM_SETTINGS
     STATUS --> WALLETS
     SWAPS --> AUTOSWAP
-    SWAPS --> BTC_PRICE
     SWAPS --> FEES
     SWAPS --> SETTINGS
     TX_HISTORY --> ELECTRUM_SETTINGS
     WIZARD --> SETTINGS
+
+    IMPORT_MNEMONIC --> ELECTRUM_SETTINGS
 
     %% Styling
     classDef coreStyle fill:#2d3748,stroke:#4a5568,stroke-width:3px,color:#fff
@@ -405,15 +403,15 @@ To verify no cyclic dependencies exist, you can:
 - Include compile-time vs runtime dependency distinction
 - Add layer groupings (ui, presentation, domain, data) per [ARCHITECTURE.md](ARCHITECTURE.md)
 
+The mnemonic import feature currently imports Wallets internals. Replace that dependency with the Wallets public facade in a scoped follow-up; the graph records the existing dependency rather than implying facade compliance.
+
 ## Wallet failure compatibility edges (2026-11-08)
 
 The shell ownership move relocates wallet failures while retaining the `lib/core/wallet/domain/wallet_failure.dart` compatibility export. Two existing consumers therefore resolve to the wallet owner: `backup_settings` through `presentation/cubit/backup_settings_cubit.dart`, and `status_check` through `domain/check_service_status_usecase.dart`. The source-edge allowlist and diagram record those observed dependencies. These legacy internal imports are migration debt, not permission for new cross-feature internals; move consumers to a published wallet failure surface in a scoped follow-up.
 
-The mnemonic import feature currently imports Wallets internals. Replace that dependency with the Wallets public facade in a scoped follow-up; the graph records the existing dependency rather than implying facade compliance.
+## Networks source-edge review (2026-11-08)
 
-## Networks source-edge review (2026-11-07)
-
-The architecture test records source dependencies, including internal imports and compatibility exports. The following 47 additions are individually reviewed against the rebased networks tree: 43 expose existing dependencies through owner relocation, one follows the #3103 Payjoin adapter split, and three carry concrete-network behavior. They are not permission for new internal imports. Existing cycles and internal boundaries remain migration debt; broad facade extraction is separate work. The captured-network changes below retain the current API and avoid an unrelated feature migration. The diagram and the exact allowlist in `test/architecture/foreground_sync_dependencies_test.dart` record the same observed additions.
+The architecture test records source dependencies, including internal imports and compatibility exports. The following 46 additions are individually reviewed against the rebased networks tree: 39 expose existing dependencies through owner relocation, one follows the #3103 Payjoin adapter split, three carry concrete-network behavior, and three come from the rebuilt mnemonic-language prerequisite. They are not permission for new internal imports. Existing cycles and internal boundaries remain migration debt; broad facade extraction is separate work. The captured-network changes below retain the current API and avoid an unrelated feature migration. The diagram and the exact allowlist in `test/architecture/foreground_sync_dependencies_test.dart` record the same observed additions.
 
 | Source → owner | Provenance and reason retained | Observed import/export path |
 |---|---|---|
@@ -425,7 +423,6 @@ The architecture test records source dependencies, including internal imports an
 | `backup_settings → wallet` | Owner relocation: Keep existing wallet identity, catalog, metadata or address presentation attached to its relocated owner. | `lib/features/backup_settings/backup_settings_locator.dart -> lib/features/wallet/domain/usecases/get_wallets_usecase.dart` |
 | `bitbox → wallet` | Owner relocation: Keep existing wallet identity, catalog, metadata or address presentation attached to its relocated owner. | `lib/features/bitbox/ui/screens/bitbox_action_screen.dart -> lib/features/wallet/domain/wallet.dart` |
 | `broadcast_signed_tx → send` | Owner relocation: Keep existing transaction broadcast orchestration attached to the relocated send owner. | `lib/features/broadcast_signed_tx/locator.dart -> lib/features/send/domain/usecases/broadcast_bitcoin_transaction_usecase.dart` |
-| `buy → bitcoin_price` | Owner relocation: Keep the current base’s existing price/currency conversion registration attached to its owner; later develop removes these registrations. | `lib/features/buy/buy_locator.dart -> lib/features/bitcoin_price/domain/usecases/convert_sats_to_currency_amount_usecase.dart` |
 | `buy → fees` | Owner relocation: Keep existing fee lookup attached to the relocated fees owner. | `lib/features/buy/buy_locator.dart -> lib/features/fees/domain/get_network_fees_usecase.dart` |
 | `consolidation → send` | Owner relocation: Keep existing transaction broadcast orchestration attached to the relocated send owner. | `lib/features/consolidation/consolidation_locator.dart -> lib/features/send/domain/usecases/broadcast_liquid_transaction_usecase.dart` |
 | `dca → settings` | Owner relocation: Keep the existing environment/preferences consumer attached to the relocated settings owner. | `lib/features/dca/domain/usecases/set_dca_usecase.dart -> lib/features/settings/domain/settings_entity.dart` |
@@ -444,14 +441,12 @@ The architecture test records source dependencies, including internal imports an
 | `pay → fees` | Owner relocation: Keep existing fee lookup attached to the relocated fees owner. | `lib/features/pay/pay_locator.dart -> lib/features/fees/domain/get_network_fees_usecase.dart` |
 | `pay → settings` | Owner relocation: Keep the existing environment/preferences consumer attached to the relocated settings owner. | `lib/features/pay/ui/screens/pay_receive_payment_screen.dart -> lib/features/settings/domain/settings_entity.dart` |
 | `psbt_flow → wallet` | Network behavior: Transaction review retains the captured wallet/network when routing to signing and broadcast. | `lib/features/psbt_flow/show_psbt/show_psbt_screen.dart -> lib/features/wallet/domain/wallet.dart` |
-| `receive → bitcoin_price` | Owner relocation: Keep the current base’s existing price/currency conversion registration attached to its owner; later develop removes these registrations. | `lib/features/receive/receive_locator.dart -> lib/features/bitcoin_price/domain/usecases/get_available_currencies_usecase.dart` |
 | `recipients → exchange` | Owner relocation: Keep existing account/default-wallet operations attached to the relocated exchange owner. | `lib/features/recipients/recipients_locator.dart -> lib/features/exchange/domain/usecases/get_exchange_user_summary_usecase.dart` |
 | `recipients → settings` | Owner relocation: Keep the existing environment/preferences consumer attached to the relocated settings owner. | `lib/features/recipients/application/usecases/get_recipients_environment_usecase.dart -> lib/features/settings/domain/settings_entity.dart` |
 | `replace_by_fee → fees` | Owner relocation: Keep existing fee lookup attached to the relocated fees owner. | `lib/features/replace_by_fee/locator.dart -> lib/features/fees/domain/get_network_fees_usecase.dart` |
 | `replace_by_fee → send` | Owner relocation: Keep existing transaction broadcast orchestration attached to the relocated send owner. | `lib/features/replace_by_fee/locator.dart -> lib/features/send/domain/usecases/broadcast_bitcoin_transaction_usecase.dart` |
 | `sell → fees` | Owner relocation: Keep existing fee lookup attached to the relocated fees owner. | `lib/features/sell/sell_locator.dart -> lib/features/fees/domain/get_network_fees_usecase.dart` |
 | `sell → settings` | Owner relocation: Keep the existing environment/preferences consumer attached to the relocated settings owner. | `lib/features/sell/ui/screens/sell_success_screen.dart -> lib/features/settings/domain/settings_entity.dart` |
-| `send → bitcoin_price` | Owner relocation: Keep the current base’s existing price/currency conversion registration attached to its owner; later develop removes these registrations. | `lib/features/send/send_locator.dart -> lib/features/bitcoin_price/domain/usecases/get_available_currencies_usecase.dart` |
 | `send → electrum_settings` | Owner relocation: Keep existing concrete server selection attached to the Electrum settings owner. | `lib/features/send/data/bitcoin_blockchain_repository.dart -> lib/features/electrum_settings/domain/electrum_server_network.dart` |
 | `send → fees` | Owner relocation: Keep existing fee lookup attached to the relocated fees owner. | `lib/features/send/send_locator.dart -> lib/features/fees/domain/get_network_fees_usecase.dart` |
 | `send → settings` | Owner relocation: Keep the existing environment/preferences consumer attached to the relocated settings owner. | `lib/features/send/ui/widgets/coin_selection_bottom_sheet.dart -> lib/features/settings/domain/settings_entity.dart` |
@@ -459,10 +454,13 @@ The architecture test records source dependencies, including internal imports an
 | `status_check → electrum_settings` | Owner relocation: Keep existing concrete server selection attached to the Electrum settings owner. | `lib/features/status_check/data/electrum_connectivity_adapter.dart -> lib/features/electrum_settings/domain/electrum_server_network.dart` |
 | `status_check → wallet` | Owner relocation: Keep existing wallet identity, catalog, metadata or address presentation attached to its relocated owner. | `lib/features/status_check/locator.dart -> lib/features/wallet/domain/usecases/get_wallets_usecase.dart` |
 | `swap → autoswap` | Owner relocation: Keep existing autoswap settings persistence wiring in the relocated swap registration. | `lib/features/swap/swaps_core_locator.dart -> lib/features/autoswap/domain/repositories/auto_swap_settings_repository.dart` |
-| `swap → bitcoin_price` | Owner relocation: Keep the current base’s existing price/currency conversion registration attached to its owner; later develop removes these registrations. | `lib/features/swap/swap_locator.dart -> lib/features/bitcoin_price/domain/usecases/convert_sats_to_currency_amount_usecase.dart` |
 | `swap → fees` | Owner relocation: Keep existing fee lookup attached to the relocated fees owner. | `lib/features/swap/swap_locator.dart -> lib/features/fees/domain/get_network_fees_usecase.dart` |
 | `swap → settings` | Owner relocation: Keep the existing environment/preferences consumer attached to the relocated settings owner. | `lib/features/swap/ui/pages/swap_page.dart -> lib/features/settings/domain/settings_entity.dart` |
 | `transactions → electrum_settings` | #3103 split: Payjoin broadcasts and remote transaction lookup retain their Electrum server-selection dependency in the transactions owner. | `lib/features/transactions/data/payjoin_blockchain_adapter.dart -> lib/features/electrum_settings/domain/electrum_server_network.dart` |
 | `wizard → settings` | Owner relocation: Keep the existing environment/preferences consumer attached to the relocated settings owner. | `lib/features/wizard/ui/screens/wizard_screen.dart -> lib/features/settings/domain/settings_entity.dart` |
 
-The former `broadcast_signed_tx → settings` allowance is removed: broadcast now carries the captured wallet network instead of reading the mutable global environment.
+| `app_startup → import_mnemonic` | Language prerequisite: Restore UI uses the published mnemonic capability to preserve explicit language selection. | `lib/features/app_startup/ui/screens/restore_default_secret_screen.dart -> lib/features/import_mnemonic/public/import_mnemonic_facade.dart` |
+| `onboarding → import_mnemonic` | Language prerequisite: Recovery UI uses the same published mnemonic capability instead of duplicating language selection. | `lib/features/onboarding/ui/screens/onboarding_physical_recovery.dart -> lib/features/import_mnemonic/public/import_mnemonic_facade.dart` |
+| `import_mnemonic → electrum_settings` | Language prerequisite: The existing pre-import scan selects the captured concrete network. Its legacy internal type remains scoped migration debt, not a new facade exception. | `lib/features/import_mnemonic/domain/check_wallet_status_usecase.dart -> lib/features/electrum_settings/domain/electrum_server_network.dart` |
+
+The former `broadcast_signed_tx → settings` allowance is removed: broadcast now carries the captured wallet network instead of reading the mutable global environment. Develop also retires the four price-registration edges from buy, receive, send and swap; their allowances and diagram edges are removed.
