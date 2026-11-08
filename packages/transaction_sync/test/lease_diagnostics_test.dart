@@ -83,6 +83,53 @@ void main() {
     },
   );
 
+  test(
+    'reader refusals stay on console while writer refusals persist',
+    () async {
+      final directory = Directory.systemTemp.createTempSync('lease-refusal-');
+      final console = <String>[];
+      final previous = debugPrint;
+      debugPrint = (message, {wrapWidth}) {
+        if (message != null) console.add(message);
+      };
+      log = Logger.replace(directory: directory);
+      try {
+        for (final role in LeaseRole.values) {
+          final trace = LeaseDiagnostics(
+            role: role,
+            intent: role == LeaseRole.reader
+                ? LeaseIntent.snapshot
+                : LeaseIntent.sync,
+          );
+          for (final source in LeaseBusySource.values) {
+            trace.busy(source);
+          }
+        }
+        await log.flush();
+        await pumpEventQueue();
+        expect(
+          console.where(
+            (line) => line.contains('event=lease_busy role=reader'),
+          ),
+          hasLength(LeaseBusySource.values.length),
+        );
+        final persisted = (await log.readLogs())
+            .where((line) => line.contains('event=lease_busy'))
+            .toList();
+        expect(persisted, hasLength(LeaseBusySource.values.length));
+        for (final line in persisted) {
+          expect(line, contains('FINE'));
+          expect(line, contains('role=writer'));
+          expect(line, contains('waited_ms=0'));
+        }
+      } finally {
+        await log.flush();
+        debugPrint = previous;
+        directory.deleteSync(recursive: true);
+      }
+    },
+  );
+
   test('only holds of at least 1000 ms are persisted', () async {
     final directory = Directory.systemTemp.createTempSync('lease-threshold-');
     log = Logger.replace(directory: directory);
