@@ -1,13 +1,16 @@
+import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
-import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/generated/l10n/localization.dart';
-import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
-import 'package:bb_mobile/features/bitcoin_price/presentation/cubit/price_chart_cubit.dart';
-import 'package:bb_mobile/features/announcements/presentation/announcements_cubit.dart';
+import 'package:bb_mobile/features/wallet/domain/repositories/wallet_secret_references_repository.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/create_default_wallets_usecase.dart';
+import 'package:secrets/secrets.dart';
 import 'dart:async';
 
 import 'package:bb_mobile/features/bitcoin_price/presentation/bloc/bitcoin_price_bloc.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/create_network_wallet_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/load_network_wallet_setup_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
+import 'package:bb_mobile/features/wallet/presentation/network_wallet_setup_cubit.dart';
 import 'package:bb_mobile/features/wallet/ui/screens/wallet_home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -19,11 +22,11 @@ class _WalletBloc extends Mock implements WalletBloc {}
 
 class _PriceBloc extends Mock implements BitcoinPriceBloc {}
 
-class _Settings extends Mock implements SettingsCubit {}
+class _Settings extends Mock implements SettingsRepository {}
 
-class _Chart extends Mock implements PriceChartCubit {}
+class _References extends Mock implements WalletSecretReferencesRepository {}
 
-class _Announcements extends Mock implements AnnouncementsCubit {}
+class _Defaults extends Mock implements CreateDefaultWalletsUsecase {}
 
 void main() {
   testWidgets('pushing Receive never requests a sync; returning home does', (
@@ -33,39 +36,28 @@ void main() {
     final price = _PriceBloc();
     when(
       () => wallet.state,
-    ).thenReturn(const WalletState(status: WalletStatus.success));
+    ).thenReturn(const WalletState(failure: NoWalletsFoundFailure()));
     when(
       () => wallet.stream,
     ).thenAnswer((_) => const Stream<WalletState>.empty());
-    when(() => price.state).thenReturn(
-      const BitcoinPriceState(currency: 'USD', bitcoinPrice: 100000),
-    );
+    when(
+      () => price.state,
+    ).thenReturn(const BitcoinPriceState(loadingPrice: true));
     when(
       () => price.stream,
     ).thenAnswer((_) => const Stream<BitcoinPriceState>.empty());
     final settings = _Settings();
-    when(() => settings.state).thenReturn(
-      const SettingsState(
-        storedSettings: SettingsEntity(
-          environment: Environment.mainnet,
-          bitcoinUnit: BitcoinUnit.sats,
-          currencyCode: 'USD',
-        ),
+    when(settings.fetch).thenAnswer((_) => Completer<SettingsEntity>().future);
+    final references = _References();
+    NetworkWalletSetupCubit createSetupCubit() => NetworkWalletSetupCubit(
+      LoadNetworkWalletSetupUsecase(settings, references),
+      CreateNetworkWalletUsecase(
+        settings,
+        references,
+        Secrets(scratchDirectory: () async => '/tmp'),
+        _Defaults(),
       ),
     );
-    when(
-      () => settings.stream,
-    ).thenAnswer((_) => const Stream<SettingsState>.empty());
-    final chart = _Chart();
-    when(() => chart.state).thenReturn(const PriceChartState());
-    when(
-      () => chart.stream,
-    ).thenAnswer((_) => const Stream<PriceChartState>.empty());
-    final announcements = _Announcements();
-    when(() => announcements.state).thenReturn(const AnnouncementsState());
-    when(
-      () => announcements.stream,
-    ).thenAnswer((_) => const Stream<AnnouncementsState>.empty());
     final router = GoRouter(
       initialLocation: '/wallet',
       routes: [
@@ -74,7 +66,11 @@ void main() {
           routes: [
             GoRoute(
               path: '/wallet',
-              builder: (_, _) => const WalletHomeScreen(),
+              builder: (_, _) => WalletHomeScreen(
+                createSetupCubit: createSetupCubit,
+                onEmptyMainnet: () {},
+                onImportNetworkWallet: () {},
+              ),
             ),
           ],
         ),
@@ -95,16 +91,8 @@ void main() {
         providers: [
           BlocProvider<WalletBloc>.value(value: wallet),
           BlocProvider<BitcoinPriceBloc>.value(value: price),
-          BlocProvider<SettingsCubit>.value(value: settings),
-          BlocProvider<PriceChartCubit>.value(value: chart),
-          BlocProvider<AnnouncementsCubit>.value(value: announcements),
         ],
-        child: MaterialApp.router(
-          routerConfig: router,
-          theme: AppTheme.themeData(AppThemeType.light),
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
-          supportedLocales: AppLocalizations.supportedLocales,
-        ),
+        child: MaterialApp.router(routerConfig: router),
       ),
     );
     await tester.pumpAndSettle();
