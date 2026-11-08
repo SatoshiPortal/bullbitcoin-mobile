@@ -176,9 +176,9 @@ final class WalletTransactionSyncBackgroundTask {
         final sync = await writer.synchronize(
           claim.key,
           allowInitialScan: false,
-          // Background runs are the safety net for payments to addresses this
-          // device never revealed; the transaction cache keeps discovery cheap.
-          discover: true,
+          // Pinned bdk_chain discovery can miss revealed addresses beyond the stop gap.
+          // Remove this workaround once the binding pins bdk_chain >= 0.23.4: https://github.com/bitcoindevkit/bdk/pull/2222.
+          discover: false,
         );
         switch (sync) {
           case Err(failure: BackgroundSyncNeedsRepairFailure(:final revision)):
