@@ -216,8 +216,13 @@ final class RevisionStore implements WalletRevisionReader {
   }
 
   /// Clears a proven non-mutating attempt without invalidating snapshots.
+  /// A successful no-op sync preserves health; a failed sync marks it stale.
   @internal
-  void cancelUnchanged(WalletKey key, RevisionRecord? previous) {
+  void cancelUnchanged(
+    WalletKey key,
+    RevisionRecord? previous, {
+    bool syncSucceeded = false,
+  }) {
     final pending = record(key);
     if (pending?.intent != WriteIntent.load &&
         pending?.intent != WriteIntent.sync) {
@@ -233,7 +238,8 @@ final class RevisionStore implements WalletRevisionReader {
         'UPDATE revisions SET lifecycle=?, intent=NULL, candidate=NULL, sync_failed=? WHERE wallet=? AND network=?',
         [
           previous.state.lifecycle.name,
-          pending?.intent == WriteIntent.sync || previous.state.syncFailed
+          (pending?.intent == WriteIntent.sync && !syncSucceeded) ||
+                  previous.state.syncFailed
               ? 1
               : 0,
           key.id,

@@ -214,6 +214,33 @@ void main() {
     await BdkTestStore.saveWallet(wallet, walletModel.hexId);
   });
 
+  test(
+    'address filter matches the second output and rejects absent addresses',
+    () async {
+      final datasource = BdkWalletDatasource(
+        readWallet: BdkTestStore.createWallet,
+      );
+      final wallet = await BdkTestStore.createWallet(walletModel);
+      final second = wallet
+          .peekAddress(keychain: bdk.KeychainKind.external_, index: 1)
+          .address
+          .toString();
+      wallet.dispose();
+      final matches = await datasource.getTransactions(
+        wallet: walletModel,
+        toAddress: second,
+      );
+      expect(matches.map((tx) => tx.txId), contains(fundingTxId));
+      expect(
+        await datasource.getTransactions(
+          wallet: walletModel,
+          toAddress: _externalTestnetAddress,
+        ),
+        isEmpty,
+      );
+    },
+  );
+
   tearDown(() async {
     if (await tempDir.exists()) {
       await tempDir.delete(recursive: true);

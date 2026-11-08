@@ -2,7 +2,10 @@ import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/read_wallet_usecase.dart';
 import 'package:transaction_sync/read.dart';
 import 'package:transaction_sync/transaction_sync.dart'
-    show SyncReason, TransactionSyncBusyFailure;
+    show
+        SyncReason,
+        TransactionSyncBusyFailure,
+        TransactionSyncConnectionFailure;
 import 'package:bb_mobile/features/wallet/domain/wallet_discovery_failure.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet_failure_log_code.dart';
 import 'dart:async';
@@ -301,9 +304,8 @@ void main() {
     },
   );
 
-  test(
-    'Receive ticks skip running and queued coverage and cancel stale admission',
-    () async {
+  for (final cancel in ['never', 'beforeJoin', 'afterJoin']) {
+    test('Receive waits for covered passes (cancel=$cancel)', () async {
       final a = manualWallet('a');
       final liquid = manualWallet('liquid', liquid: true);
       when(() => readWallet.execute('a')).thenAnswer((_) async => Ok(a));
@@ -333,11 +335,18 @@ void main() {
       ).thenAnswer((_) async {});
       final global = coordinator.sync(only: {SyncKind.bitcoin});
       await Future<void>.delayed(Duration.zero);
-      await coordinator.pollWallet('a', isActive: () => true);
+      var runningEnded = false;
+      final running = coordinator
+          .pollWallet('a', isActive: () => true)
+          .then((_) => runningEnded = true);
       var active = true;
       final queued = coordinator.pollWallet('liquid', isActive: () => active);
       await Future<void>.delayed(Duration.zero);
-      await coordinator.pollWallet('liquid', isActive: () => true);
+      if (cancel == 'beforeJoin') active = false;
+      var joinedEnded = false;
+      final joined = coordinator
+          .pollWallet('liquid', isActive: () => true)
+          .then((_) => joinedEnded = true);
       verifyNever(
         () => syncWallet.execute(
           liquid,
@@ -346,9 +355,14 @@ void main() {
           reason: SyncReason.auto,
         ),
       );
-      active = false;
+      await Future<void>.delayed(Duration.zero);
+      expect(runningEnded, isFalse);
+      expect(joinedEnded, isFalse);
+      if (cancel == 'afterJoin') active = false;
       held.complete();
-      await Future.wait([global, queued]);
+      await Future.wait([global, queued, running, joined]);
+      expect(runningEnded, isTrue);
+      expect(joinedEnded, isTrue);
       verify(
         () => syncWallet.execute(
           a,
@@ -357,14 +371,14 @@ void main() {
           reason: SyncReason.auto,
         ),
       ).called(1);
-      verifyNever(
+      verify(
         () => syncWallet.execute(
           liquid,
           discover: false,
           allowInitialScan: any(named: 'allowInitialScan'),
           reason: SyncReason.auto,
         ),
-      );
+      ).called(1);
       await coordinator.pollWallet('liquid', isActive: () => true);
       verify(
         () => syncWallet.execute(
@@ -374,8 +388,8 @@ void main() {
           reason: SyncReason.auto,
         ),
       ).called(1);
-    },
-  );
+    });
+  }
 
   test(
     'Receive polling rechecks cancellation after asynchronous wallet admission',
@@ -394,7 +408,7 @@ void main() {
   );
 
   test(
-    'Receive polling skips a running targeted pass and rejects an inactive network',
+    'Receive polling awaits a running targeted pass and rejects an inactive network',
     () async {
       final a = manualWallet('a');
       when(() => readWallet.execute('a')).thenAnswer((_) async => Ok(a));
@@ -409,7 +423,12 @@ void main() {
       ).thenAnswer((_) => held.future);
       final first = coordinator.pollWallet('a', isActive: () => true);
       await Future<void>.delayed(Duration.zero);
-      await coordinator.pollWallet('a', isActive: () => true);
+      var joinedEnded = false;
+      final joined = coordinator
+          .pollWallet('a', isActive: () => true)
+          .then((_) => joinedEnded = true);
+      await Future<void>.delayed(Duration.zero);
+      expect(joinedEnded, isFalse);
       verify(
         () => syncWallet.execute(
           a,
@@ -419,7 +438,8 @@ void main() {
         ),
       ).called(1);
       held.complete();
-      await first;
+      await Future.wait([first, joined]);
+      expect(joinedEnded, isTrue);
       network = Environment.testnet;
       await coordinator.pollWallet('a', isActive: () => true);
       verifyNever(
@@ -431,6 +451,39 @@ void main() {
         ),
       );
       verifyZeroInteractions(getWallets);
+    },
+  );
+
+  test(
+    'pass summary preserves the native connection failure category',
+    () async {
+      final directory = Directory.systemTemp.createTempSync('connection-sync-');
+      log = Logger.replace(directory: directory, reporter: _Reporter());
+      addTearDown(() async {
+        await log.flush();
+        directory.deleteSync(recursive: true);
+      });
+      final wallet = manualWallet('connection-wallet');
+      when(
+        () => getWallets.execute(onlyBitcoin: true),
+      ).thenAnswer((_) async => Ok([wallet]));
+      when(
+        () => syncWallet.execute(
+          wallet,
+          discover: any(named: 'discover'),
+          reason: any(named: 'reason'),
+        ),
+      ).thenThrow(
+        const WalletSnapshotException(TransactionSyncConnectionFailure()),
+      );
+      await expectLater(
+        coordinator.sync(only: {SyncKind.bitcoin}),
+        throwsA(isA<SyncCoordinatorException>()),
+      );
+      expect(
+        (await log.readLogs()).join(),
+        contains('outcome=failed wallets=1 category=connection'),
+      );
     },
   );
 
