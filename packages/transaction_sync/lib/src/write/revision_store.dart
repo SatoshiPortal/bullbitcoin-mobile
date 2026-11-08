@@ -47,6 +47,14 @@ final class RevisionStore implements WalletRevisionReader {
       db.execute('PRAGMA busy_timeout = 5000');
       db.execute('PRAGMA journal_mode = WAL');
       db.execute('PRAGMA synchronous = FULL');
+      final existingColumns = db
+          .select('PRAGMA table_info(revisions)')
+          .map((row) => row['name'])
+          .toSet();
+      if (existingColumns.containsAll({'initialized_schema', 'sync_failed'})) {
+        return db;
+      }
+      db.execute('BEGIN IMMEDIATE');
       db.execute('''CREATE TABLE IF NOT EXISTS revisions (
         wallet TEXT NOT NULL, network TEXT NOT NULL,
         generation INTEGER NOT NULL, revision INTEGER NOT NULL,
@@ -61,6 +69,14 @@ final class RevisionStore implements WalletRevisionReader {
           'ALTER TABLE revisions ADD COLUMN initialized_schema INTEGER NOT NULL DEFAULT 0',
         );
       }
+      if (!db
+          .select('PRAGMA table_info(revisions)')
+          .any((row) => row['name'] == 'sync_failed')) {
+        db.execute(
+          'ALTER TABLE revisions ADD COLUMN sync_failed INTEGER NOT NULL DEFAULT 0',
+        );
+      }
+      db.execute('COMMIT');
       return db;
     } on Exception {
       db.dispose();
@@ -91,6 +107,7 @@ final class RevisionStore implements WalletRevisionReader {
         ),
         lifecycle: WalletLifecycle.values.byName(row['lifecycle'] as String),
         initializedSchema: row['initialized_schema'] as int,
+        syncFailed: row['sync_failed'] == 1,
       ),
       intent == null ? null : WriteIntent.values.byName(intent),
       row['candidate'] as int?,
@@ -164,8 +181,43 @@ final class RevisionStore implements WalletRevisionReader {
     );
   }
 
+  /// Clears a proven non-mutating attempt without invalidating snapshots.
   @internal
-  WalletRevision finish(WalletKey key, {int? issued, bool? needsSync}) {
+  void cancelUnchanged(WalletKey key, RevisionRecord? previous) {
+    final pending = record(key);
+    if (pending?.intent != WriteIntent.load &&
+        pending?.intent != WriteIntent.sync) {
+      throw StateError('Only a non-mutating load or sync may be cancelled');
+    }
+    if (previous == null) {
+      _db.execute('DELETE FROM revisions WHERE wallet=? AND network=?', [
+        key.id,
+        _network(key),
+      ]);
+    } else {
+      _db.execute(
+        'UPDATE revisions SET lifecycle=?, intent=NULL, candidate=NULL, sync_failed=? WHERE wallet=? AND network=?',
+        [
+          previous.state.lifecycle.name,
+          pending?.intent == WriteIntent.sync || previous.state.syncFailed
+              ? 1
+              : 0,
+          key.id,
+          _network(key),
+        ],
+      );
+      final current = record(key);
+      if (current != null) _publish(current.state);
+    }
+  }
+
+  @internal
+  WalletRevision finish(
+    WalletKey key, {
+    int? issued,
+    bool? needsSync,
+    bool? syncFailed,
+  }) {
     _db.execute('BEGIN IMMEDIATE');
     late WalletRevisionState state;
     try {
@@ -175,7 +227,7 @@ final class RevisionStore implements WalletRevisionReader {
       final creating = old.intent == WriteIntent.create;
       _db.execute(
         '''UPDATE revisions SET revision=revision+1,
-        lifecycle=?, intent=NULL, candidate=NULL, issued=?, needs_sync=?, initialized_schema=?
+        lifecycle=?, intent=NULL, candidate=NULL, issued=?, needs_sync=?, initialized_schema=?, sync_failed=?
         WHERE wallet=? AND network=?''',
         [
           (deleted ? WalletLifecycle.deleted : WalletLifecycle.active).name,
@@ -190,6 +242,11 @@ final class RevisionStore implements WalletRevisionReader {
                 }.contains(old.intent)
               ? writerSchemaVersion
               : old.state.initializedSchema,
+          (deleted || creating || needsSync == false
+                  ? false
+                  : syncFailed ?? old.state.syncFailed)
+              ? 1
+              : 0,
           key.id,
           _network(key),
         ],
@@ -230,7 +287,8 @@ final class RevisionStore implements WalletRevisionReader {
     final previous = _published[state.stamp.key];
     if (previous?.stamp == state.stamp &&
         previous?.lifecycle == state.lifecycle &&
-        previous?.initializedSchema == state.initializedSchema) {
+        previous?.initializedSchema == state.initializedSchema &&
+        previous?.syncFailed == state.syncFailed) {
       return;
     }
     _published[state.stamp.key] = state;

@@ -36,11 +36,13 @@ final class WalletRevisionState {
   final WalletRevision stamp;
   final WalletLifecycle lifecycle;
   final int initializedSchema;
+  final bool syncFailed;
 
   const WalletRevisionState({
     required this.stamp,
     required this.lifecycle,
     this.initializedSchema = 0,
+    this.syncFailed = false,
   });
 }
 

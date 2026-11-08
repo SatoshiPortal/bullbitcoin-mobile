@@ -19,3 +19,9 @@ abstract interface class WriterSyncOperation {
     required int? issuedReceiveIndex,
   });
 }
+
+/// Optional proof supplied by the engine. Unknown implementations are treated
+/// as potentially mutating; set true before entering any mutating native call.
+abstract interface class WriterSyncMutation {
+  bool get mayHaveMutated;
+}
