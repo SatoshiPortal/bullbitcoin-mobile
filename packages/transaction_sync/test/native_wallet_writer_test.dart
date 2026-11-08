@@ -433,6 +433,20 @@ void main() {
     },
   );
 
+  test('initial scan rejection precedes durable intent', () async {
+    final before = store.record(key)?.state.stamp;
+    final result = await writer.sync(
+      key,
+      expectedGeneration: 1,
+      preflight: () async =>
+          const Err(TransactionSyncInitialScanRequiredFailure()),
+      operation: Sync((_) => fail('must not sync')),
+    );
+    expect(result, isA<Err<WriterOutcome, TransactionSyncFailure>>());
+    expect(store.record(key)?.intent, isNull);
+    expect(store.record(key)?.state.stamp, before);
+  });
+
   test(
     'explicit advance skips reserved indices and persists the new address',
     () async {
