@@ -1,3 +1,5 @@
+import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
+import 'package:bb_mobile/core/exchange/domain/entity/sepa_payment_processor.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/features/fund_exchange/adapters/funding_gateway/bullbitcoin_api_funding_gateway.dart';
@@ -80,6 +82,30 @@ void main() {
     expect(network.sends, 0);
     dio.close();
   });
+
+  for (final storageFailure in [false, true]) {
+    test(
+      'EUR sell payout preserves credential refusal: $storageFailure',
+      () async {
+        credential = storageFailure
+            ? const Err(ExchangeApiKeyReadFailure())
+            : const Ok(null);
+        await expectLater(
+          orders.placeSellToRecipientOrderV2(
+            orderAmount: const FiatAmount(100),
+            recipientId: 'own-account',
+            paymentProcessor: SepaPaymentProcessor.regular,
+            network: OrderBitcoinNetwork.bitcoin,
+          ),
+          throwsA(
+            storageFailure
+                ? isA<ExchangeCredentialUnavailableException>()
+                : isA<ApiKeyException>(),
+          ),
+        );
+      },
+    );
+  }
 
   test(
     'no session yields contextual empty results or authentication failures',
