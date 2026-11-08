@@ -35,5 +35,7 @@ extension SwapFailureL10n on SwapFailure {
     SwapRateLimitedFailure(:final retryAfter) =>
       context.loc.swapErrorRateLimited(retryAfter?.inSeconds ?? 30),
     SwapNetworkFailure() || SwapTimeoutFailure() => context.loc.payNetworkError,
+    SwapPriceUnavailableFailure() =>
+      context.loc.bitcoinPriceExchangeRateUnavailable,
   };
 }

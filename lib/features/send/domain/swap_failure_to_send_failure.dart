@@ -32,4 +32,7 @@ SendFailure mapSwapFailureToSendFailure(SwapFailure failure) =>
         retryAfter: retryAfter,
         logMessage: failure.logMessage,
       ),
+      SwapPriceUnavailableFailure() => SendPriceUnavailableFailure(
+        failure.logMessage,
+      ),
     };

@@ -21,7 +21,7 @@ class SwapCoinSelectionBottomSheet extends StatelessWidget {
     );
 
     final exchangeRate = context.select(
-      (TransferBloc bloc) => bloc.state.exchangeRate ?? 0.0,
+      (TransferBloc bloc) => bloc.state.exchangeRate,
     );
 
     final fiatCurrency = context.select(
