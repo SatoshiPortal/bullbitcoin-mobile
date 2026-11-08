@@ -84,7 +84,7 @@ class CustomFeeListItem extends StatefulWidget {
   /// warning logic.
   final int txSize;
 
-  final double exchangeRate;
+  final double? exchangeRate;
   final String fiatCurrencyCode;
 
   /// Initial value of the abs/rel toggle when [initialFee] is null. Send
@@ -590,7 +590,7 @@ class _PreviewLine extends StatelessWidget {
   final bool isAbsolute;
   final int? previewFeeSat;
   final bool previewLoading;
-  final double exchangeRate;
+  final double? exchangeRate;
   final String fiatCurrencyCode;
 
   @override
@@ -618,9 +618,9 @@ class _PreviewLine extends StatelessWidget {
       return BullText(rateLabel, style: context.font.labelMedium);
     }
 
-    final showFiat = exchangeRate > 0 && fiatCurrencyCode.isNotEmpty;
-    final fiatEq = showFiat
-        ? ConvertAmount.satsToFiat(previewFeeSat!, exchangeRate)
+    final rate = exchangeRate;
+    final fiatEq = rate != null && rate > 0 && fiatCurrencyCode.isNotEmpty
+        ? ConvertAmount.satsToFiat(previewFeeSat!, rate)
         : null;
     final text = StringBuffer()
       ..write(rateLabel)
@@ -628,7 +628,7 @@ class _PreviewLine extends StatelessWidget {
       ..write(FormatAmount.satsApprox(previewFeeSat!))
       ..write(' ')
       ..write(context.loc.sendSats);
-    if (showFiat) {
+    if (fiatEq != null) {
       text
         ..write(' (~ ')
         ..write(fiatEq)

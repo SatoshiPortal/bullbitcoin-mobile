@@ -6164,7 +6164,7 @@
   "@fundExchangeJurisdictionMexico": {
     "description": "Dropdown option for Mexico jurisdiction"
   },
-  "sellInteracEmail": "Interac Email",
+  "sellInteracEmail": "Имейл за превода",
   "@sellInteracEmail": {
     "description": "Label for email to receive Interac payment"
   },
@@ -7779,7 +7779,7 @@
   "@sendSwapAmount": {
     "description": "Label for amount being swapped"
   },
-  "sellInteracTransfer": "Interac e-Transfer",
+  "sellInteracTransfer": "Паричен превод по имейл",
   "@sellInteracTransfer": {
     "description": "Option for Interac payment (Canada)"
   },
@@ -8490,7 +8490,7 @@
   "recipientsJurisdictionCostaRica": "🇨🇷 Коста Рика",
   "recipientsJurisdictionArgentina": "🇦🇷 Аржентина",
   "recipientsJurisdictionColombia": "🇨🇴 Колумбия",
-  "recipientsTypeInteracEmail": "Interac e-Transfer",
+  "recipientsTypeInteracEmail": "Паричен превод по имейл",
   "recipientsTypeBillPayment": "Плащане на сметка",
   "recipientsTypeBankTransfer": "Банков превод",
   "recipientsTypeSepa": "SEPA превод",
@@ -9823,7 +9823,7 @@
   "testBackupErrorSeedUnavailable": "Фразата ви за възстановяване не можа да бъде прочетена. Опитайте отново.",
   "testBackupErrorSeedNotMnemonic": "Този портфейл няма фраза за възстановяване за тестване.",
   "testBackupErrorCompletionFailed": "Фразата ви за възстановяване беше правилна, но не успяхме да запазим резултата. Опитайте отново.",
-  "withdrawInteracSecurityDetailsTitle": "Данни за сигурност на Interac",
+  "withdrawInteracSecurityDetailsTitle": "Данни за сигурност на превода",
   "withdrawInteracSaveAsDefault": "Запази тези данни по подразбиране",
   "withdrawInteracSecurityQuestionLengthError": "Контролният въпрос трябва да е между 3 и 40 знака",
   "withdrawInteracSecurityAnswerLengthError": "Контролният отговор трябва да е между 3 и 40 знака",
