@@ -146,6 +146,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
   StreamSubscription<Result<PayjoinSession, ReceiveFailure>>?
   _payjoinSubscription;
   StreamSubscription<WalletTransaction>? _walletTransactionSubscription;
+  int _receiveGeneration = 0;
   StreamSubscription<Result<OrderSwapRecord, ReceiveFailure>>?
   _orderSwapSubscription;
   late final StreamSubscription<bool> _payjoinSettingChangeSubscription;
@@ -226,6 +227,8 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
       await _onNewAddressGenerated(const ReceiveNewAddressGenerated(), emit);
       return;
     }
+    final generation = _invalidateTransactionObservation();
+    emit(state.copyWith(tx: null, creatingSwap: false));
     _pendingNewAddressWallet = null;
     final isWalletChange =
         event.wallet != null && state.wallet?.id != event.wallet!.id;
@@ -233,6 +236,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
       // Clear the previous wallet's payjoin receiver and stop watching it
       // so the URI does not embed a payjoin link from the old wallet.
       await _payjoinSubscription?.cancel();
+      if (generation != _receiveGeneration || emit.isDone) return;
       emit(_withoutPayjoin().copyWith(payjoinAttemptSettled: false));
     }
 
@@ -272,7 +276,11 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     final presetWallet = _wallet != null && _wallet.isBitcoin ? _wallet : null;
     Wallet? wallet = presetWallet ?? state.wallet;
     if (wallet == null) {
-      switch (await _getReceiveWalletsUsecase.execute(onlyBitcoin: true)) {
+      final walletsResult = await _getReceiveWalletsUsecase.execute(
+        onlyBitcoin: true,
+      );
+      if (generation != _receiveGeneration || emit.isDone) return;
+      switch (walletsResult) {
         case Ok(:final value):
           // firstWhere's orElse and .first both throw on an empty list, and
           //  there is no try/catch above this any more. An empty list is a
@@ -303,7 +311,9 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
       // If the bitcoin unit is not set yet, we need to get it from the settings
       // And set the input amount currency code to the bitcoin unit code
       // if no other currency code was selected yet.
-      switch (await _getReceiveSettingsUsecase.execute()) {
+      final settingsResult = await _getReceiveSettingsUsecase.execute();
+      if (generation != _receiveGeneration || emit.isDone) return;
+      switch (settingsResult) {
         case Ok(:final value):
           emit(
             state.copyWith(
@@ -321,7 +331,9 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
 
     if (state.fiatCurrencyCode.isEmpty) {
       // If the fiat currency code is not set yet, we need to get it from the settings
-      switch (await _getReceiveSettingsUsecase.execute()) {
+      final settingsResult = await _getReceiveSettingsUsecase.execute();
+      if (generation != _receiveGeneration || emit.isDone) return;
+      switch (settingsResult) {
         case Ok(:final value):
           emit(state.copyWith(fiatCurrencyCode: value.currencyCode));
         case Err(:final failure):
@@ -337,12 +349,15 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     var bitcoinAddress = state.bitcoinAddress;
     if (bitcoinAddress == null) {
       // If the bitcoin address is not set yet, we need to get it from the wallet
-      switch (await _prepareReceiveAddressUsecase.execute(
+      final addressResult = await _prepareReceiveAddressUsecase.execute(
         walletId: wallet.id,
-      )) {
+      );
+      if (generation != _receiveGeneration || emit.isDone) return;
+      switch (addressResult) {
         case Ok(:final value):
           bitcoinAddress = value;
           final note = await _loadAddressLabel(bitcoinAddress.address);
+          if (generation != _receiveGeneration || emit.isDone) return;
           emit(state.copyWith(bitcoinAddress: bitcoinAddress, note: note));
         case Err(:final failure):
           emit(state.copyWith(failure: failure, payjoinAttemptSettled: true));
@@ -362,7 +377,9 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     //  advertise a pj= endpoint.
     final bool payjoinEnabled;
     final int? payjoinMinAmountSat;
-    switch (await _getReceivePayjoinPolicyUsecase.execute()) {
+    final policyResult = await _getReceivePayjoinPolicyUsecase.execute();
+    if (generation != _receiveGeneration || emit.isDone) return;
+    switch (policyResult) {
       case Ok(:final value):
         payjoinEnabled = value.enabled;
         payjoinMinAmountSat = value.minimumAmountSat;
@@ -388,6 +405,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
         isTestnet: wallet.network.isTestnet,
         address: bitcoinAddress.address,
       );
+      if (generation != _receiveGeneration || emit.isDone) return;
       switch (result) {
         case Ok(:final value):
           // Same belt-and-suspenders re-check as _onPayjoinSettingChanged:
@@ -422,6 +440,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
       emit(_withoutPayjoin());
       // cancel the payjoin subscription as well if it exists
       await _payjoinSubscription?.cancel();
+      if (generation != _receiveGeneration || emit.isDone) return;
     }
 
     // Settled on EVERY path above — created, failed, cleared, or never
@@ -432,7 +451,9 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
 
     if (state.exchangeRate == null) {
       // If the exchange rate is not set yet, we need to get it from the settings
-      switch (await _convertReceiveAmountUsecase.execute()) {
+      final priceResult = await _convertReceiveAmountUsecase.execute();
+      if (generation != _receiveGeneration || emit.isDone) return;
+      switch (priceResult) {
         case Ok(:final value):
           emit(state.copyWith(exchangeRate: value));
         // Receiving works without a price: no fiat value is shown.
@@ -455,6 +476,8 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     ReceiveLightningStarted event,
     Emitter<ReceiveState> emit,
   ) async {
+    final generation = _invalidateTransactionObservation();
+    emit(state.copyWith(tx: null, creatingSwap: false));
     _pendingNewAddressWallet = null;
     // Emit a state with the Lightning type so the UI can update allready before
     // the async data is loaded. Remove values that should
@@ -478,7 +501,9 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
       // If the bitcoin unit is not set yet, we need to get it from the settings
       // And set the input amount currency code to the bitcoin unit code
       // if no other currency code was selected yet.
-      switch (await _getReceiveSettingsUsecase.execute()) {
+      final settingsResult = await _getReceiveSettingsUsecase.execute();
+      if (generation != _receiveGeneration || emit.isDone) return;
+      switch (settingsResult) {
         case Ok(:final value):
           emit(
             state.copyWith(
@@ -496,7 +521,9 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
 
     if (state.fiatCurrencyCode.isEmpty) {
       // If the fiat currency code is not set yet, we need to get it from the settings
-      switch (await _getReceiveSettingsUsecase.execute()) {
+      final settingsResult = await _getReceiveSettingsUsecase.execute();
+      if (generation != _receiveGeneration || emit.isDone) return;
+      switch (settingsResult) {
         case Ok(:final value):
           emit(state.copyWith(fiatCurrencyCode: value.currencyCode));
         case Err(:final failure):
@@ -514,10 +541,12 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     //  than on the bitcoin network.
     Wallet? wallet = _wallet?.isLiquid == true ? _wallet : null;
     if (wallet == null) {
-      switch (await _getReceiveWalletsUsecase.execute(
+      final walletsResult = await _getReceiveWalletsUsecase.execute(
         onlyLiquid: true,
         onlyDefaults: true,
-      )) {
+      );
+      if (generation != _receiveGeneration || emit.isDone) return;
+      switch (walletsResult) {
         case Ok(:final value):
           // .first throws on an empty list, and an empty list is a
           //  legitimate Ok from the use-case rather than a thrown failure.
@@ -538,7 +567,9 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
 
     if (state.exchangeRate == null) {
       // If the exchange rate is not set yet, we need to get it from the settings
-      switch (await _convertReceiveAmountUsecase.execute()) {
+      final priceResult = await _convertReceiveAmountUsecase.execute();
+      if (generation != _receiveGeneration || emit.isDone) return;
+      switch (priceResult) {
         case Ok(:final value):
           emit(state.copyWith(exchangeRate: value));
         // Receiving works without a price: no fiat value is shown.
@@ -560,6 +591,8 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
       await _onNewAddressGenerated(const ReceiveNewAddressGenerated(), emit);
       return;
     }
+    final generation = _invalidateTransactionObservation();
+    emit(state.copyWith(tx: null, creatingSwap: false));
     _pendingNewAddressWallet = null;
     // Emit a state with the Liquid type so the UI can update with the Liquid
     // receive UI already before the async data is loaded. Remove values that should
@@ -579,7 +612,9 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
       // If the bitcoin unit is not set yet, we need to get it from the settings
       // And set the input amount currency code to the bitcoin unit code
       // if no other currency code was selected yet.
-      switch (await _getReceiveSettingsUsecase.execute()) {
+      final settingsResult = await _getReceiveSettingsUsecase.execute();
+      if (generation != _receiveGeneration || emit.isDone) return;
+      switch (settingsResult) {
         case Ok(:final value):
           emit(
             state.copyWith(
@@ -597,7 +632,9 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
 
     if (state.fiatCurrencyCode.isEmpty) {
       // If the fiat currency code is not set yet, we need to get it from the settings
-      switch (await _getReceiveSettingsUsecase.execute()) {
+      final settingsResult = await _getReceiveSettingsUsecase.execute();
+      if (generation != _receiveGeneration || emit.isDone) return;
+      switch (settingsResult) {
         case Ok(:final value):
           emit(state.copyWith(fiatCurrencyCode: value.currencyCode));
         case Err(:final failure):
@@ -615,10 +652,12 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     // preselected wallet survives tab switches).
     Wallet? wallet = _wallet != null && _wallet.isLiquid ? _wallet : null;
     if (wallet == null) {
-      switch (await _getReceiveWalletsUsecase.execute(
+      final walletsResult = await _getReceiveWalletsUsecase.execute(
         onlyLiquid: true,
         onlyDefaults: true,
-      )) {
+      );
+      if (generation != _receiveGeneration || emit.isDone) return;
+      switch (walletsResult) {
         case Ok(:final value):
           // .first throws on an empty list, and an empty list is a
           //  legitimate Ok from the use-case rather than a thrown failure.
@@ -640,12 +679,15 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     var liquidAddress = state.liquidAddress;
     if (liquidAddress == null) {
       // If the liquid address is not set yet, we need to get it from the wallet
-      switch (await _prepareReceiveAddressUsecase.execute(
+      final addressResult = await _prepareReceiveAddressUsecase.execute(
         walletId: wallet.id,
-      )) {
+      );
+      if (generation != _receiveGeneration || emit.isDone) return;
+      switch (addressResult) {
         case Ok(:final value):
           liquidAddress = value;
           final note = await _loadAddressLabel(liquidAddress.address);
+          if (generation != _receiveGeneration || emit.isDone) return;
           emit(state.copyWith(liquidAddress: liquidAddress, note: note));
         case Err(:final failure):
           emit(state.copyWith(failure: failure));
@@ -655,7 +697,9 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
 
     if (state.exchangeRate == null) {
       // If the exchange rate is not set yet, we need to get it from the settings
-      switch (await _convertReceiveAmountUsecase.execute()) {
+      final priceResult = await _convertReceiveAmountUsecase.execute();
+      if (generation != _receiveGeneration || emit.isDone) return;
+      switch (priceResult) {
         case Ok(:final value):
           emit(state.copyWith(exchangeRate: value));
         // Receiving works without a price: no fiat value is shown.
@@ -821,6 +865,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     ReceiveAmountConfirmed event,
     Emitter<ReceiveState> emit,
   ) async {
+    final generation = _receiveGeneration;
     if (state.creatingSwap) return;
     final confirmedAmountSat = state.inputAmountSat;
 
@@ -849,6 +894,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
       amountSat: confirmedAmountSat,
       note: state.note,
     );
+    if (generation != _receiveGeneration || emit.isDone) return;
     switch (result) {
       case Ok(:final value):
         _watchOrderSwap(value.localId);
@@ -932,6 +978,8 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
       return;
     }
 
+    final generation = _invalidateTransactionObservation();
+    emit(state.copyWith(tx: null));
     _pendingNewAddressWallet = wallet;
     final walletId = wallet.id;
     final type = state.type;
@@ -950,10 +998,12 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
         // A new address needs its own payjoin session, so whether it will
         //  carry a pj= endpoint is unsettled again until the block below.
         emit(state.copyWith(payjoinAttemptSettled: false));
-        switch (await _prepareReceiveAddressUsecase.execute(
+        final addressResult = await _prepareReceiveAddressUsecase.execute(
           walletId: walletId,
           generateNew: true,
-        )) {
+        );
+        if (generation != _receiveGeneration || emit.isDone) return;
+        switch (addressResult) {
           case Ok(:final value):
             if (state.wallet?.id != walletId || state.type != type) return;
             if (identical(_pendingNewAddressWallet, wallet)) {
@@ -974,7 +1024,9 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
         // Same fail-closed handling as _onBitcoinStarted.
         final bool payjoinEnabled;
         final int? payjoinMinAmountSat;
-        switch (await _getReceivePayjoinPolicyUsecase.execute()) {
+        final policyResult = await _getReceivePayjoinPolicyUsecase.execute();
+        if (generation != _receiveGeneration || emit.isDone) return;
+        switch (policyResult) {
           case Ok(:final value):
             payjoinEnabled = value.enabled;
             payjoinMinAmountSat = value.minimumAmountSat;
@@ -996,6 +1048,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
             isTestnet: wallet.network.isTestnet,
             address: address.address,
           );
+          if (generation != _receiveGeneration || emit.isDone) return;
           if (state.wallet?.id != walletId || state.type != type) return;
           switch (result) {
             case Ok(:final value):
@@ -1028,10 +1081,12 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
         );
 
       case ReceiveType.liquid:
-        switch (await _prepareReceiveAddressUsecase.execute(
+        final addressResult = await _prepareReceiveAddressUsecase.execute(
           walletId: walletId,
           generateNew: true,
-        )) {
+        );
+        if (generation != _receiveGeneration || emit.isDone) return;
+        switch (addressResult) {
           case Ok(:final value):
             if (state.wallet?.id != walletId || state.type != type) return;
             if (identical(_pendingNewAddressWallet, wallet)) {
@@ -1263,7 +1318,11 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     Emitter<ReceiveState> emit,
   ) async {
     final tx = event.tx;
-
+    if (event.generation != _receiveGeneration ||
+        tx.walletId != state.wallet?.id ||
+        tx.network != state.wallet?.network) {
+      return;
+    }
     emit(state.copyWith(tx: tx));
   }
 
@@ -1367,18 +1426,26 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     });
   }
 
+  int _invalidateTransactionObservation() {
+    _receiveGeneration++;
+    _walletTransactionSubscription?.cancel();
+    _walletTransactionSubscription = null;
+    return _receiveGeneration;
+  }
+
   void _watchWalletTransactionToAddress({
     required String walletId,
     required String address,
   }) {
-    // Cancel the previous subscription if it exists
+    final generation = _receiveGeneration;
     _walletTransactionSubscription?.cancel();
     _walletTransactionSubscription = _watchWalletTransactionByAddressUsecase
         .execute(walletId: walletId, toAddress: address)
         .listen((tx) {
           // See _watchPayjoin's guard above for why this is needed.
           if (isClosed) return;
-          add(ReceiveTransactionReceived(tx));
+          if (generation != _receiveGeneration) return;
+          add(ReceiveTransactionReceived(tx, generation: generation));
         });
   }
 
