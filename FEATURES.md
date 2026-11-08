@@ -225,6 +225,10 @@ graph TB
     WALLETS -->|public orders + swap scheduling port| SWAPS
     WITHDRAWAL --> RECIPIENTS
 
+    %% Existing failure compatibility exports exposed by owner relocation
+    BACKUPS --> WALLETS
+    STATUS --> WALLETS
+
     %% Styling
     classDef coreStyle fill:#2d3748,stroke:#4a5568,stroke-width:3px,color:#fff
     classDef packageStyle fill:#234e52,stroke:#319795,stroke-width:2px,color:#e6fffa
@@ -330,3 +334,7 @@ To verify no cyclic dependencies exist, you can:
 - Add dependency cardinality (required vs optional dependencies)
 - Include compile-time vs runtime dependency distinction
 - Add layer groupings (ui, presentation, domain, data) per [ARCHITECTURE.md](ARCHITECTURE.md)
+
+## Wallet failure compatibility edges (2026-11-08)
+
+The shell ownership move relocates wallet failures while retaining the `lib/core/wallet/domain/wallet_failure.dart` compatibility export. Two existing consumers therefore resolve to the wallet owner: `backup_settings` through `presentation/cubit/backup_settings_cubit.dart`, and `status_check` through `domain/check_service_status_usecase.dart`. The source-edge allowlist and diagram record those observed dependencies. These legacy internal imports are migration debt, not permission for new cross-feature internals; move consumers to a published wallet failure surface in a scoped follow-up.

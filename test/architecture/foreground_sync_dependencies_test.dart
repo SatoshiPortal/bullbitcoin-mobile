@@ -19,7 +19,7 @@ const _allowedTargets = <String, String>{
   'app_unlock': 'pin_code wallet',
   'autobuy': 'default_wallets',
   'autoswap': 'labels swap wallet',
-  'backup_settings': 'recoverbull settings test_wallet_backup',
+  'backup_settings': 'recoverbull settings test_wallet_backup wallet',
   'bip85_entropy': 'wallet',
   'bitbox': 'import_watch_only_wallet',
   'bitcoin_price': 'settings',
@@ -56,6 +56,7 @@ const _allowedTargets = <String, String>{
   'settings':
       'address_view all_seed_view app_unlock autoswap backup_settings bip85_entropy bitcoin_price broadcast_signed_tx default_wallets electrum_settings exchange exchange_settings exchange_support_chat import_wallet labels logs mempool_settings pay pin_code recoverbull sp status_check test_wallet_backup tor_settings transactions wallet',
   'sp': 'wallet',
+  'status_check': 'wallet',
   'swap': 'consolidation exchange_support_chat labels send transactions wallet',
   'test_wallet_backup': 'onboarding wallet',
   'transactions': 'buy exchange labels pay replace_by_fee settings swap wallet',
