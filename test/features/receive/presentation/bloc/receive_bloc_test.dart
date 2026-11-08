@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
 import 'dart:typed_data';
 
 import 'package:bb_mobile/core/entities/signer_entity.dart' show SignerEntity;
@@ -1564,7 +1565,7 @@ void main() {
   });
 
   test(
-    'ignores a second Lightning confirmation while creation is in flight',
+    'ignores duplicate Lightning confirmation and permits it after reselection',
     () async {
       final creation = Completer<Result<OrderSwapRecord, ReceiveFailure>>();
       when(
@@ -1594,7 +1595,24 @@ void main() {
           note: any(named: 'note'),
         ),
       ).called(1);
+      bloc.add(const ReceiveBitcoinStarted(null));
+      await pumpEventQueue();
+      bloc.add(const ReceiveLightningStarted());
+      await pumpEventQueue();
       creation.complete(const Err(ReceiveSwapUnavailableFailure()));
+      await pumpEventQueue();
+      expect(bloc.state.creatingSwap, isFalse);
+      expect(bloc.state.failure, isNull);
+      bloc.add(const ReceiveAmountInputChanged('1000'));
+      bloc.add(const ReceiveAmountConfirmed());
+      await pumpEventQueue();
+      verify(
+        () => createOrderSwap.execute(
+          wallet: any(named: 'wallet'),
+          amountSat: 1000,
+          note: any(named: 'note'),
+        ),
+      ).called(1);
     },
   );
 
@@ -1984,6 +2002,107 @@ void main() {
       expect(empty.state.isPayjoinToggleable, isFalse);
     });
   });
+  for (final queued in [false, true]) {
+    test(
+      'wallet switch rejects a previous-wallet poll completion (queued=$queued)',
+      () async {
+        final walletA = _testWallet(origin: 'wallet-a');
+        final walletB = _testWallet(origin: 'wallet-b');
+        final aTransactions = StreamController<WalletTransaction>.broadcast(
+          sync: true,
+        );
+        final bPayjoin =
+            Completer<Result<PayjoinReceiverSession, ReceiveFailure>>();
+        when(
+          () => getWallets.execute(onlyBitcoin: true),
+        ).thenAnswer((_) async => Ok([walletA, walletB]));
+        when(
+          () => watchWalletTransaction.execute(
+            walletId: walletA.id,
+            toAddress: any(named: 'toAddress'),
+          ),
+        ).thenAnswer((_) => aTransactions.stream);
+        when(
+          () => receiveWithPayjoin.execute(
+            walletId: walletB.id,
+            address: any(named: 'address'),
+          ),
+        ).thenAnswer((_) => bPayjoin.future);
+        final bloc = buildBloc(withPresetWallet: false);
+        addTearDown(() async {
+          if (!bPayjoin.isCompleted) {
+            bPayjoin.complete(Ok(_receiver(id: 'pj-b', walletId: walletB.id)));
+          }
+          await pumpEventQueue();
+          await bloc.close();
+          await aTransactions.close();
+        });
+
+        // Home -> Receive loads both wallets, allowing the actual dropdown change.
+        bloc.add(const ReceiveBitcoinStarted(null));
+        await pumpEventQueue();
+        expect(bloc.state.wallets, hasLength(2));
+        expect(bloc.state.wallet?.id, walletA.id);
+        expect(aTransactions.hasListener, isTrue);
+        expect(bloc.state.tx, isNull);
+
+        final payment = WalletTransaction(
+          walletId: walletA.id,
+          network: walletA.network,
+          direction: WalletTransactionDirection.incoming,
+          status: WalletTransactionStatus.pending,
+          txId: 'payment-for-a',
+          amountSat: 1000,
+          feeSat: 0,
+          vsize: 100,
+          inputs: const [],
+          outputs: const [],
+          isRbf: false,
+        );
+
+        // A's periodic native poll is already running when the dropdown selects B.
+        // Native work finishes normally after the screen epoch changes; B's funded
+        // Payjoin setup is still awaiting its ordinary asynchronous network result.
+        bloc.add(ReceiveBitcoinStarted(walletB));
+        if (queued) aTransactions.add(payment);
+        await pumpEventQueue();
+        expect(bloc.state.wallet?.id, walletB.id);
+        expect(bloc.state.type, ReceiveType.bitcoin);
+        expect(bloc.state.payjoinAttemptSettled, isFalse);
+        verify(
+          () => receiveWithPayjoin.execute(
+            walletId: walletB.id,
+            address: any(named: 'address'),
+          ),
+        ).called(1);
+
+        // Also exercise a completion arriving after the selection was processed.
+        if (!queued) aTransactions.add(payment);
+        await pumpEventQueue();
+        expect(bloc.state.wallet?.id, walletB.id);
+        expect(
+          bloc.state.tx,
+          isNull,
+          reason:
+              'A must not trigger payment navigation using selected wallet B',
+        );
+        bloc.add(ReceiveBitcoinStarted(walletA));
+        await pumpEventQueue();
+        bPayjoin.complete(Ok(_receiver(id: 'pj-b', walletId: walletB.id)));
+        await pumpEventQueue();
+        expect(bloc.state.wallet?.id, walletA.id);
+        verifyNever(
+          () => watchWalletTransaction.execute(
+            walletId: walletB.id,
+            toAddress: any(named: 'toAddress'),
+          ),
+        );
+        aTransactions.add(payment);
+        await pumpEventQueue();
+        expect(bloc.state.tx, payment);
+      },
+    );
+  }
 }
 
 OrderSwapRecord _receiveOrderSwapRecord() => OrderSwapRecord(
