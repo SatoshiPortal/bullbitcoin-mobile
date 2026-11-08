@@ -401,9 +401,11 @@ Future<_Attempt> _performSync(_SyncParams params) async {
 }
 
 final class _NativeSyncOperation
-    implements WriterSyncOperation, WriterSyncMutation {
+    implements WriterSyncOperation, WriterSyncMutation, WriterSyncChanges {
   @override
   bool mayHaveMutated = false;
+  @override
+  bool hasChanges = true;
   final _SyncParams params;
   Result<SyncCompletion, TransactionSyncFailure>? result;
   _NativeSyncOperation(this.params);
@@ -416,6 +418,7 @@ final class _NativeSyncOperation
       params,
       issuedReceiveIndex,
       () => mayHaveMutated = true,
+      (changed) => hasChanges = changed,
     );
     result = attempt.result;
     return switch (attempt.result) {
@@ -451,6 +454,7 @@ Future<_Attempt> _performNativeSync(
   _SyncParams params,
   int? issuedReceiveIndex,
   void Function() markMutation,
+  void Function(bool) reportChanges,
 ) async {
   final watch = Stopwatch()..start();
   final descriptor = params.descriptor;
@@ -625,7 +629,7 @@ Future<_Attempt> _performNativeSync(
     try {
       markMutation();
       wallet.applyUpdate(update: update);
-      wallet.persist(persister: persister);
+      reportChanges(wallet.persist(persister: persister));
     } finally {
       update.dispose();
     }
