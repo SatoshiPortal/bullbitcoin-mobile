@@ -1,6 +1,9 @@
 import 'package:bb_mobile/features/wallet/domain/usecases/read_wallet_usecase.dart';
 import 'package:primitives/primitives.dart';
 import 'dart:async';
+import 'dart:io';
+
+import 'package:bull_logger/bull_logger.dart';
 
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_sync_result.dart';
 import 'package:bb_mobile/core/sync/sync_coordinator.dart';
@@ -103,6 +106,7 @@ WalletBloc _makeBloc({
   // The superuser + dev mode feature gate. Defaults on so existing tests see
   // the SP card enabled.
   bool gateEnabled = true,
+  Object? gateFailure,
 }) {
   checkSetup ??= _MockCheckSpWalletSetupForWallet();
   checkScanning ??= _MockCheckSpScanningForWallet();
@@ -139,7 +143,10 @@ WalletBloc _makeBloc({
   ).thenReturn(const Ok(false));
   when(() => checkWalletSyncing.execute()).thenReturn(const Ok(false));
   final checkSpFeatureGate = _MockCheckSpFeatureGate();
-  when(() => checkSpFeatureGate.execute()).thenAnswer((_) async => gateEnabled);
+  when(() => checkSpFeatureGate.execute()).thenAnswer((_) async {
+    if (gateFailure case final failure?) throw failure;
+    return gateEnabled;
+  });
 
   return WalletBloc(
     readWalletUsecase: _ReadWallet(),
@@ -187,6 +194,44 @@ Future<List<WalletState>> driveCollecting(
 
 void main() {
   group('WalletBloc SP: RefreshSpWallet handler', () {
+    test(
+      'feature gate failure persists a fixed warning without foreign text',
+      () async {
+        final directory = await Directory.systemTemp.createTemp('sp-gate-log-');
+        await initializeLogging(directory: directory);
+        addTearDown(() async {
+          await log.flush();
+          await directory.delete(recursive: true);
+        });
+        final refreshSp = _MockRefreshSpWalletForWallet();
+        final checkSetup = _MockCheckSpWalletSetupForWallet();
+        when(
+          () => checkSetup.execute(),
+        ).thenAnswer((_) async => const Ok(false));
+        when(
+          () => refreshSp.execute(),
+        ).thenAnswer((_) async => const Ok<SpWallet?, SpFailure>(null));
+        final bloc = _makeBloc(
+          refreshSp: refreshSp,
+          checkSetup: checkSetup,
+          gateFailure: Exception('foreign-gate-sentinel'),
+        );
+        addTearDown(bloc.close);
+
+        await drive(bloc, const RefreshSpWallet());
+
+        final lines = await log.readLogs();
+        final warnings = lines
+            .map((line) => line.split('\t'))
+            .where((row) => row[1] == 'WARNING');
+        expect(
+          warnings.map((row) => row[2]),
+          contains('SP feature gate refresh failed category=feature_gate'),
+        );
+        expect(lines.join('\n'), isNot(contains('foreign-gate-sentinel')));
+      },
+    );
+
     test(
       'spBalanceSat set in state when setup=true and wallet loaded',
       () async {
