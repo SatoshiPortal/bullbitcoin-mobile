@@ -1,5 +1,6 @@
 import 'lease_diagnostics.dart';
 import 'dart:io';
+import 'dart:math' as math;
 
 import 'package:primitives/primitives.dart';
 import 'package:sqlite3/sqlite3.dart';
@@ -10,6 +11,10 @@ import '../../transaction_sync.dart';
 /// sqlite3 2.9.4 uses a Dart Finalizer: killing the holder leaks the connection
 /// until process exit. Upgrading sqlite3 requires repeating the teardown tests.
 final class WriterLock {
+  // Measured holds: cache 10 ms, hydrate 131 ms, sync 266 ms; allow 1 s without blocking the UI isolate.
+  static const writerWaitLimit = Duration(milliseconds: 1000);
+  static const _retryStepsMs = [10, 20, 50, 100];
+
   final Database _db;
   bool _released = false;
   final LeaseDiagnostics _diagnostics;
@@ -40,14 +45,8 @@ final class WriterLock {
     var busySource = LeaseBusySource.leaseOpen;
     Database? db;
     try {
-      Directory(directory).createSync(recursive: true);
-      db = sqlite3.open(path(directory, key));
-      db.execute('PRAGMA busy_timeout = 0');
-      // Refuse an unexpected journal configuration; no WAL lock semantics.
-      if (db.select('PRAGMA journal_mode').single.values.single != 'delete') {
-        db.dispose();
-        return const Err(TransactionSyncStorageFailure());
-      }
+      db = _open(directory, key);
+      if (db == null) return const Err(TransactionSyncStorageFailure());
       busySource = LeaseBusySource.leaseBegin;
       db.execute('BEGIN IMMEDIATE');
       final lock = WriterLock._(db, trace);
@@ -65,6 +64,77 @@ final class WriterLock {
       db?.dispose();
       return const Err(TransactionSyncStorageFailure());
     }
+  }
+
+  /// Writer-only admission. Readers use [acquire] and never wait.
+  static Future<Result<WriterLock, TransactionSyncFailure>> acquireWriter(
+    String directory,
+    WalletKey key, {
+    required LeaseDiagnostics diagnostics,
+  }) async {
+    Database? db;
+    var busySource = LeaseBusySource.leaseOpen;
+    final waited = Stopwatch();
+    try {
+      db = _open(directory, key);
+      if (db == null) return const Err(TransactionSyncStorageFailure());
+      final connection = db;
+      busySource = LeaseBusySource.leaseBegin;
+      waited.start();
+      var step = 0;
+      while (true) {
+        try {
+          connection.execute('BEGIN IMMEDIATE');
+          final lock = WriterLock._(connection, diagnostics);
+          db = null; // The lease owns the connection from this point onward.
+          diagnostics.acquire(waitedMs: waited.elapsedMilliseconds);
+          return Ok(lock);
+        } on SqliteException catch (error) {
+          if (error.resultCode != 5) rethrow;
+        }
+        final remaining = writerWaitLimit - waited.elapsed;
+        if (remaining > Duration.zero) {
+          final delay = Duration(milliseconds: _retryStepsMs[step]);
+          await Future<void>.delayed(delay < remaining ? delay : remaining);
+          step = math.min(step + 1, _retryStepsMs.length - 1);
+        }
+        // Scheduling can exceed the requested delay; never begin after the budget.
+        if (waited.elapsed >= writerWaitLimit) {
+          diagnostics.busy(busySource, waitedMs: waited.elapsedMilliseconds);
+          return const Err(TransactionSyncBusyFailure());
+        }
+      }
+    } on SqliteException catch (error) {
+      if (error.resultCode == 5) {
+        diagnostics.busy(busySource, waitedMs: waited.elapsedMilliseconds);
+      }
+      return Err(
+        error.resultCode == 5
+            ? const TransactionSyncBusyFailure()
+            : const TransactionSyncStorageFailure(),
+      );
+    } on FileSystemException {
+      return const Err(TransactionSyncStorageFailure());
+    } finally {
+      db?.dispose();
+    }
+  }
+
+  static Database? _open(String directory, WalletKey key) {
+    Directory(directory).createSync(recursive: true);
+    final db = sqlite3.open(path(directory, key));
+    try {
+      db.execute('PRAGMA busy_timeout = 0');
+      // Refuse an unexpected journal configuration; no WAL lock semantics.
+      if (db.select('PRAGMA journal_mode').single.values.single == 'delete') {
+        return db;
+      }
+    } on Object {
+      db.dispose();
+      rethrow;
+    }
+    db.dispose();
+    return null;
   }
 
   /// Call only after all native futures have settled. No timeout or cancellation

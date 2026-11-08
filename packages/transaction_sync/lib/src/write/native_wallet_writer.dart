@@ -245,7 +245,7 @@ final class NativeWalletWriter implements LiquidReadAdmission {
       },
       scope: leaseScope,
     );
-    final acquisition = WriterLock.acquire(
+    final acquisition = await WriterLock.acquireWriter(
       lockDirectory,
       key,
       diagnostics: trace,

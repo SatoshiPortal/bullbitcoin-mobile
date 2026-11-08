@@ -81,7 +81,13 @@ final class LeaseDiagnostics {
     },
   );
 
-  void acquire() => _emit('lease_acquire', 0);
+  void acquire({int waitedMs = 0}) {
+    _emit('lease_acquire', 0);
+    if (waitedMs >= 100) {
+      _emit('lease_wait', 0, waitedMs: waitedMs, level: WriterLogLevel.fine);
+    }
+  }
+
   void release(int heldMs) {
     _emit('lease_release', heldMs);
     if (heldMs >= 1000) {
@@ -89,13 +95,14 @@ final class LeaseDiagnostics {
     }
   }
 
-  void busy(LeaseBusySource source) =>
-      _emit('lease_busy', 0, busySource: source);
+  void busy(LeaseBusySource source, {int waitedMs = 0}) =>
+      _emit('lease_busy', 0, busySource: source, waitedMs: waitedMs);
 
   void _emit(
     String event,
     int heldMs, {
     LeaseBusySource? busySource,
+    int? waitedMs,
     WriterLogLevel level = WriterLogLevel.info,
   }) {
     // Capture inside the owner isolate, before forwarding to its logging owner.
@@ -105,7 +112,7 @@ final class LeaseDiagnostics {
         busySource == null ? level : WriterLogLevel.fine,
         'event=$event role=${_field(role)} intent=${_field(intent)} '
         'scope=${_field(scope)} source=${_field(source)} read=${_field(read)} '
-        'held_ms=$heldMs${busySource == null ? '' : ' busy_source=${_field(busySource)} waited_ms=0'} owner_at=$timestamp',
+        'held_ms=$heldMs${busySource == null ? '' : ' busy_source=${_field(busySource)}'}${waitedMs == null ? '' : ' waited_ms=$waitedMs'} owner_at=$timestamp',
       );
     } on Object {
       // Best effort diagnostics must never leak a lease or change an outcome.
