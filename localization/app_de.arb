@@ -3813,6 +3813,10 @@
       }
     }
   },
+  "legacyStorageStepEnsureSwapsCompleted": "Stellen Sie sicher, dass alle Swaps abgeschlossen sind.",
+  "legacyStorageStepUninstall": "Deinstallieren Sie die App von Ihrem Gerät.",
+  "legacyStorageStepReinstall": "Laden Sie die neueste Version herunter und installieren Sie sie neu.",
+  "legacyStorageStepRestoreBackup": "Stellen Sie Ihre Sicherung wieder her.",
   "walletSetupErrorTryAgain": "Beim Einrichten Ihrer Wallet ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut.",
   "importMnemonicDuplicateError": "Diese Mnemonic existiert bereits",
   "coreScreensResolvingInputs": "Transaktionseingaben werden verarbeitet…",
