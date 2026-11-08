@@ -25,3 +25,10 @@ abstract interface class WriterSyncOperation {
 abstract interface class WriterSyncMutation {
   bool get mayHaveMutated;
 }
+
+/// Optional proof for a successful sync. False means the native persister
+/// reported no changes, not merely an unchanged balance or transaction count.
+/// Unknown engines and failed operations remain conservative.
+abstract interface class WriterSyncChanges {
+  bool get hasChanges;
+}

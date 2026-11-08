@@ -286,6 +286,12 @@ final class NativeWalletWriter implements LiquidReadAdmission {
       }
     }
     _value(result);
+    if (operation case WriterSyncChanges(
+      hasChanges: false,
+    ) when !record.needsSync && !record.state.syncFailed) {
+      revisions.cancelUnchanged(key, record, syncSucceeded: true);
+      return WriterUnchanged(record.state.stamp);
+    }
     return WriterCommitted(revisions.finish(key, needsSync: false));
   });
 
