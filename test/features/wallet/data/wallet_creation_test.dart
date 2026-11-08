@@ -97,7 +97,13 @@ void main() {
       walletMetadataDatasource: metadata,
       bdkWalletDatasource: bitcoin,
       lwkWalletDatasource: _Liquid(),
-      synchronize: (_, {discover = false, reason = SyncReason.auto}) async {},
+      synchronize:
+          (
+            _, {
+            discover = false,
+            allowInitialScan = true,
+            reason = SyncReason.auto,
+          }) async {},
       isSyncing: ({walletId}) => false,
       syncStarted: const Stream.empty(),
       syncFinished: const Stream.empty(),
