@@ -106,6 +106,27 @@ void main() {
     return (bitcoin: bitcoin, liquid: liquid, sp: sp);
   }
 
+  test('one activity interval covers all kinds and none for a no-op', () async {
+    final activity = <bool>[];
+    final subscription = coordinator.syncPassActivity.listen(activity.add);
+    addTearDown(subscription.cancel);
+    final gates = wireGates();
+    final pass = coordinator.sync();
+    await pumpEventQueue();
+    expect(activity, [true]);
+    gates.bitcoin.complete();
+    await pumpEventQueue();
+    expect(activity, [true]);
+    gates.liquid.complete();
+    await pumpEventQueue();
+    expect(activity, [true]);
+    gates.sp.complete();
+    await pass;
+    expect(activity, [true, false]);
+    await coordinator.sync();
+    expect(activity, [true, false]);
+  });
+
   test('pull refresh and automatic sync both use revealed scripts', () async {
     final wallet = _Wallet();
     when(
@@ -241,6 +262,9 @@ void main() {
     test(
       'targeted discovery survives routine failure=$failRoutine and stays serialized',
       () async {
+        final activity = <bool>[];
+        final subscription = coordinator.syncPassActivity.listen(activity.add);
+        addTearDown(subscription.cancel);
         final a = manualWallet('a');
         final b = manualWallet('b');
         final routineGate = Completer<void>();
@@ -287,6 +311,8 @@ void main() {
         await settledRoutine;
         await pumpEventQueue();
         expect(done, isFalse);
+        expect(activity, [true]);
+        expect(coordinator.isSyncPassActive, isTrue);
         verify(
           () =>
               syncWallet.execute(a, discover: true, reason: SyncReason.manual),
@@ -301,6 +327,8 @@ void main() {
         manualGate.complete();
         await Future.wait([manual, duplicate]);
         expect(done, isTrue);
+        expect(activity, [true, false]);
+        expect(coordinator.isSyncPassActive, isFalse);
       },
     );
   }
