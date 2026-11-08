@@ -7880,7 +7880,7 @@
   "@fundExchangeJurisdictionMexico": {
     "description": "Dropdown option for Mexico jurisdiction"
   },
-  "sellInteracEmail": "Emailová adresa",
+  "sellInteracEmail": "E-mail pro převod",
   "@sellInteracEmail": {
     "description": "Label for email to receive Interac payment"
   },
@@ -9926,7 +9926,7 @@
   "@autoswapTitle": {
     "description": "Header title for auto transfer settings bottom sheet"
   },
-  "sellInteracTransfer": "Interac e-Transfer",
+  "sellInteracTransfer": "Převod peněz e-mailem",
   "@sellInteracTransfer": {
     "description": "Option for Interac payment (Canada)"
   },
@@ -10923,7 +10923,7 @@
   "recipientsJurisdictionCostaRica": "🇨🇷 Kostarika",
   "recipientsJurisdictionArgentina": "🇦🇷 Argentina",
   "recipientsJurisdictionColombia": "🇨🇴 Kolumbie",
-  "recipientsTypeInteracEmail": "Interac e-Transfer",
+  "recipientsTypeInteracEmail": "Převod peněz e-mailem",
   "recipientsTypeBillPayment": "Platba účtu",
   "recipientsTypeBankTransfer": "Bankovní převod",
   "recipientsTypeSepa": "SEPA převod",
@@ -11692,7 +11692,7 @@
   "testBackupErrorSeedUnavailable": "Vaši obnovovací frázi se nepodařilo přečíst. Zkuste to prosím znovu.",
   "testBackupErrorSeedNotMnemonic": "Tato peněženka nemá obnovovací frázi k otestování.",
   "testBackupErrorCompletionFailed": "Vaše obnovovací fráze byla správná, ale výsledek se nepodařilo uložit. Zkuste to prosím znovu.",
-  "withdrawInteracSecurityDetailsTitle": "Bezpečnostní údaje Interac",
+  "withdrawInteracSecurityDetailsTitle": "Bezpečnostní údaje převodu",
   "withdrawInteracSaveAsDefault": "Uložit tyto údaje jako výchozí",
   "withdrawInteracSecurityQuestionLengthError": "Bezpečnostní otázka musí mít 3–40 znaků",
   "withdrawInteracSecurityAnswerLengthError": "Bezpečnostní odpověď musí mít 3–40 znaků",

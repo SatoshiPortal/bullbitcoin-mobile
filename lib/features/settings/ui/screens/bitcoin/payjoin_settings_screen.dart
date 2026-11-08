@@ -14,7 +14,8 @@ import 'package:bull_ui/bull_ui.dart' show BullBorderedTile, BullSwitch, Gap;
 import 'package:go_router/go_router.dart';
 
 /// Payjoin settings: one switch per action, payments with other users
-/// (off by default) and exchange orders (on by default), a row that re-opens
+/// (sending on, receiving off by default) and exchange orders (on by
+/// default), a row that re-opens
 /// the one-time disclaimer pop-up, and a row navigating to the advanced
 /// settings page (minimum amount, session expiry, servers). The disclaimer
 /// shows automatically the first time receiving from users is turned on (see

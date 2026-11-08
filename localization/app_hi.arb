@@ -7965,7 +7965,7 @@
   "@fundExchangeJurisdictionMexico": {
     "description": "Dropdown option for Mexico jurisdiction"
   },
-  "sellInteracEmail": "Interac ईमेल",
+  "sellInteracEmail": "ट्रांसफर के लिए ईमेल",
   "@sellInteracEmail": {
     "description": "Label for email to receive Interac payment"
   },
@@ -10119,7 +10119,7 @@
   "@autoswapTitle": {
     "description": "Header title for auto transfer settings bottom sheet"
   },
-  "sellInteracTransfer": "इंटरैक ई-ट्रांसफर",
+  "sellInteracTransfer": "ईमेल मनी ट्रांसफर",
   "@sellInteracTransfer": {
     "description": "Option for Interac payment (Canada)"
   },
@@ -11609,7 +11609,7 @@
   "recipientsJurisdictionCostaRica": "🇨🇷 Costa Rica",
   "recipientsJurisdictionArgentina": "🇦🇷 Argentina",
   "recipientsJurisdictionColombia": "🇨🇴 Colombia",
-  "recipientsTypeInteracEmail": "इंटरैक ई-ट्रांसफर",
+  "recipientsTypeInteracEmail": "ईमेल मनी ट्रांसफर",
   "recipientsTypeBillPayment": "बिल भुगतान",
   "recipientsTypeBankTransfer": "बैंक ट्रांसफर",
   "recipientsTypeSepa": "SEPA ट्रांसफर",
@@ -11879,7 +11879,7 @@
   "testBackupErrorSeedUnavailable": "आपका रिकवरी वाक्यांश पढ़ा नहीं जा सका। कृपया फिर से प्रयास करें।",
   "testBackupErrorSeedNotMnemonic": "इस वॉलेट में जाँचने के लिए कोई रिकवरी वाक्यांश नहीं है।",
   "testBackupErrorCompletionFailed": "आपका रिकवरी वाक्यांश सही था, लेकिन हम परिणाम सहेज नहीं सके। कृपया फिर से प्रयास करें।",
-  "withdrawInteracSecurityDetailsTitle": "Interac सुरक्षा विवरण",
+  "withdrawInteracSecurityDetailsTitle": "ट्रांसफर सुरक्षा विवरण",
   "withdrawInteracSaveAsDefault": "इन विवरणों को डिफ़ॉल्ट के रूप में सहेजें",
   "withdrawInteracSecurityQuestionLengthError": "सुरक्षा प्रश्न 3–40 अक्षरों का होना चाहिए",
   "withdrawInteracSecurityAnswerLengthError": "सुरक्षा उत्तर 3–40 अक्षरों का होना चाहिए",
