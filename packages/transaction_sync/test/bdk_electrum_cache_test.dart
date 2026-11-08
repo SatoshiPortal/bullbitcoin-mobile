@@ -558,6 +558,39 @@ void main() {
       },
     );
 
+    test(
+      'unchanged revealed scripts preserve revision; changed scripts advance it',
+      () async {
+        final revisions = RevisionStore(writerMetadataPath(dir.path));
+        Future<WalletRevisionState> readState() async {
+          final result = await revisions.read(descriptor.key);
+          expect(
+            result,
+            isA<Ok<WalletRevisionState, TransactionSyncFailure>>(),
+          );
+          return (result as Ok<WalletRevisionState, TransactionSyncFailure>)
+              .value;
+        }
+
+        try {
+          await fixture.load('S10-no-change', 0);
+          completed(await sync.execute(descriptor));
+          final initial = await readState();
+          final unchanged = completed(await sync.execute(descriptor));
+          expect(unchanged.mode, SyncMode.revealedScripts);
+          expect((await readState()).stamp, initial.stamp);
+          await fixture.load('S5-incoming-older-revealed', 1);
+          final changed = completed(await sync.execute(descriptor));
+          expect(changed.mode, SyncMode.revealedScripts);
+          final state = await readState();
+          expect(state.stamp.revision, greaterThan(initial.stamp.revision));
+          expect(state.syncFailed, isFalse);
+        } finally {
+          await revisions.close();
+        }
+      },
+    );
+
     test('successful sync publishes an initialized durable revision', () async {
       await fixture.load(electrumFixtureScenarios.first, 0);
       completed(await sync.execute(descriptor));
