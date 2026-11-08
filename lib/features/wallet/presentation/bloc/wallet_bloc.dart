@@ -477,8 +477,8 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     try {
       final enabled = await _checkSpFeatureGateForWalletUsecase.execute();
       emit(state.copyWith(isSpFeatureEnabled: enabled));
-    } catch (e) {
-      log.warning('[WalletBloc] SP feature gate refresh failed: $e');
+    } catch (_) {
+      log.warning('SP feature gate refresh failed category=feature_gate');
     }
 
     final bool isSpWalletSetup;
