@@ -6,7 +6,6 @@ import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/utils/address_script_conversions.dart';
 import 'package:bb_mobile/core/utils/generic_extensions.dart';
-import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/wallet/data/models/balance_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/transaction_input_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/transaction_output_model.dart';
@@ -735,18 +734,20 @@ class BdkWalletDatasource {
   }
 
   Future<({BigInt satoshis, int transactions})> dryScan({
-    required List<int> entropy,
-    required String passphrase,
-    required ScriptType scriptType,
+    required String externalDescriptor,
+    required String internalDescriptor,
     required bool isTestnet,
     required ElectrumConnection electrumServer,
   }) {
+    final rootIsolateToken = ServicesBinding.rootIsolateToken;
+    if (rootIsolateToken == null) {
+      throw StateError('A dry scan must start from the root isolate');
+    }
     return compute(
       _performDryScan,
       _DryScanParams(
-        entropy: entropy,
-        passphrase: passphrase,
-        scriptType: scriptType,
+        externalDescriptor: externalDescriptor,
+        internalDescriptor: internalDescriptor,
         isTestnet: isTestnet,
         electrumUrl: electrumServer.url,
         electrumSocks5: electrumServer.socks5,
@@ -754,7 +755,7 @@ class BdkWalletDatasource {
         electrumTimeout: electrumServer.effectiveTimeout,
         electrumRetry: electrumServer.retry,
         electrumValidateDomain: electrumServer.validateDomain,
-        rootIsolateToken: ServicesBinding.rootIsolateToken!,
+        rootIsolateToken: rootIsolateToken,
       ),
     );
   }
@@ -777,9 +778,8 @@ int confirmationsFromTip({required int tip, required int? height}) {
 }
 
 class _DryScanParams {
-  final List<int> entropy;
-  final String passphrase;
-  final ScriptType scriptType;
+  final String externalDescriptor;
+  final String internalDescriptor;
   final bool isTestnet;
   final String electrumUrl;
   final String? electrumSocks5;
@@ -790,9 +790,8 @@ class _DryScanParams {
   final RootIsolateToken rootIsolateToken;
 
   _DryScanParams({
-    required this.entropy,
-    required this.passphrase,
-    required this.scriptType,
+    required this.externalDescriptor,
+    required this.internalDescriptor,
     required this.isTestnet,
     required this.electrumUrl,
     required this.electrumSocks5,
@@ -816,92 +815,74 @@ Future<({BigInt satoshis, int transactions})> _performDryScan(
       ? bdk.NetworkKind.test
       : bdk.NetworkKind.main;
 
-  final bdkMnemonic = bdk.Mnemonic.fromEntropy(
-    entropy: Uint8List.fromList(params.entropy),
-  );
-
-  final descriptorSecretKey = bdk.DescriptorSecretKey(
-    networkKind: bdkNetworkKind,
-    mnemonic: bdkMnemonic,
-    password: params.passphrase,
-  );
-
-  final (external, internal) = switch (params.scriptType) {
-    ScriptType.bip84 => (
-      bdk.Descriptor.newBip84(
-        secretKey: descriptorSecretKey,
-        keychainKind: bdk.KeychainKind.external_,
-        networkKind: bdkNetworkKind,
-      ),
-      bdk.Descriptor.newBip84(
-        secretKey: descriptorSecretKey,
-        keychainKind: bdk.KeychainKind.internal,
-        networkKind: bdkNetworkKind,
-      ),
-    ),
-    ScriptType.bip49 => (
-      bdk.Descriptor.newBip49(
-        secretKey: descriptorSecretKey,
-        keychainKind: bdk.KeychainKind.external_,
-        networkKind: bdkNetworkKind,
-      ),
-      bdk.Descriptor.newBip49(
-        secretKey: descriptorSecretKey,
-        keychainKind: bdk.KeychainKind.internal,
-        networkKind: bdkNetworkKind,
-      ),
-    ),
-    ScriptType.bip44 => (
-      bdk.Descriptor.newBip44(
-        secretKey: descriptorSecretKey,
-        keychainKind: bdk.KeychainKind.external_,
-        networkKind: bdkNetworkKind,
-      ),
-      bdk.Descriptor.newBip44(
-        secretKey: descriptorSecretKey,
-        keychainKind: bdk.KeychainKind.internal,
-        networkKind: bdkNetworkKind,
-      ),
-    ),
-  };
-
-  final wallet = bdk.Wallet(
-    descriptor: external,
-    changeDescriptor: internal,
-    network: bdkNetwork,
-    persister: bdk.Persister.newInMemory(),
-    lookahead: 0,
-  );
-
-  final blockchain = _createElectrumClient(
-    url: params.electrumUrl,
-    socks5: params.electrumSocks5,
-    timeout: params.electrumTimeout,
-    retry: params.electrumRetry,
-    validateDomain: params.electrumValidateDomain,
-  );
-
+  bdk.Descriptor? external;
+  bdk.Descriptor? internal;
   try {
-    final scanRequest = wallet.startFullScan().build();
-    final update = blockchain.fullScan(
-      request: scanRequest,
-      stopGap: params.electrumStopGap,
-      batchSize: _batchSizeFor(params.electrumStopGap),
-      fetchPrevTxouts: false,
+    external = bdk.Descriptor(
+      descriptor: params.externalDescriptor,
+      networkKind: bdkNetworkKind,
     );
-    wallet.applyUpdate(update: update);
-  } catch (e, st) {
-    log.warning('probe_scan failed', error: e, trace: st);
-    rethrow;
+    internal = bdk.Descriptor(
+      descriptor: params.internalDescriptor,
+      networkKind: bdkNetworkKind,
+    );
+    final persister = bdk.Persister.newInMemory();
+    try {
+      final wallet = bdk.Wallet(
+        descriptor: external,
+        changeDescriptor: internal,
+        network: bdkNetwork,
+        persister: persister,
+        lookahead: 0,
+      );
+      try {
+        final blockchain = _createElectrumClient(
+          url: params.electrumUrl,
+          socks5: params.electrumSocks5,
+          timeout: params.electrumTimeout,
+          retry: params.electrumRetry,
+          validateDomain: params.electrumValidateDomain,
+        );
+        try {
+          final requestBuilder = wallet.startFullScan();
+          try {
+            final request = requestBuilder.build();
+            try {
+              final update = blockchain.fullScan(
+                request: request,
+                stopGap: params.electrumStopGap,
+                batchSize: _batchSizeFor(params.electrumStopGap),
+                fetchPrevTxouts: false,
+              );
+              try {
+                wallet.applyUpdate(update: update);
+                final balance = wallet.balance();
+                return (
+                  satoshis: BigInt.from(balance.confirmed.toSat()),
+                  transactions: wallet.transactions().length,
+                );
+              } finally {
+                update.dispose();
+              }
+            } finally {
+              request.dispose();
+            }
+          } finally {
+            requestBuilder.dispose();
+          }
+        } finally {
+          blockchain.dispose();
+        }
+      } finally {
+        wallet.dispose();
+      }
+    } finally {
+      persister.dispose();
+    }
+  } finally {
+    internal?.dispose();
+    external?.dispose();
   }
-
-  final balance = wallet.balance();
-  final transactions = wallet.transactions();
-
-  return (
-    satoshis: BigInt.from(balance.confirmed.toSat()),
-    transactions: transactions.length,
-  );
 }
 
 int _batchSizeFor(int stopGap) => (stopGap ~/ 4).clamp(50, 1000);

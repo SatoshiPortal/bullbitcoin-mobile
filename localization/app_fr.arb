@@ -4966,5 +4966,15 @@
   "backgroundNotificationsDenied": "Non autorisées dans les réglages système",
   "backgroundNotificationsRequest": "Autoriser les notifications",
   "backgroundNotificationsSettings": "Ouvrir les réglages de notification",
-  "backgroundPaymentCount": "{count, plural, =1{Vous avez reçu un paiement} other{Vous avez reçu {count} paiements}}"
+  "backgroundPaymentCount": "{count, plural, =1{Vous avez reçu un paiement} other{Vous avez reçu {count} paiements}}",
+  "mnemonicLanguageLabel": "Langue de la phrase de récupération",
+  "mnemonicLanguageSuggestion": "Ces mots correspondent à la langue {language}. Sélectionnez-la pour continuer.",
+  "mnemonicLanguageAmbiguous": "Ces mots correspondent à plusieurs langues. Sélectionnez la langue de votre phrase de récupération.",
+  "mnemonicDefaultEnglishOnly": "Les portefeuilles par défaut nécessitent actuellement une phrase de récupération en anglais. Après la configuration, vous pouvez importer une autre langue dans un portefeuille Bitcoin séparé.",
+  "mnemonicLanguageName": "{language, select, english{Anglais} french{Français} spanish{Espagnol} italian{Italien} portuguese{Portugais} czech{Tchèque} korean{Coréen} simplifiedChinese{Chinois (simplifié)} traditionalChinese{Chinois (traditionnel)} japanese{Japonais} other{Langue inconnue}}",
+  "mnemonicOtherLanguageWordsError": "Ces mots figurent dans la liste de mots « {language} », pas « {selected} », et ne forment pas non plus une phrase de récupération valide dans cette langue. Vérifiez chaque mot et sa position.",
+  "importMnemonicScanServerUnavailable": "Impossible de joindre un serveur pour vérifier ce portefeuille. Vous pouvez quand même l'importer.",
+  "importMnemonicScanTimeout": "Le serveur a mis trop de temps à vérifier ce portefeuille. Vous pouvez quand même l'importer.",
+  "importMnemonicScanInvalidMnemonic": "Ces mots n'ont pas pu être vérifiés pour ce type de portefeuille.",
+  "importMnemonicScanUnavailable": "Vérification du solde indisponible. Vous pouvez quand même importer ce portefeuille."
 }

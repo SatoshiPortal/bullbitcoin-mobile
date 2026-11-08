@@ -2,10 +2,12 @@ import 'dart:async';
 import 'dart:isolate';
 import 'dart:typed_data';
 
-import 'package:bip39_mnemonic/bip39_mnemonic.dart' show MnemonicException;
+import 'package:bip39_mnemonic/bip39_mnemonic.dart'
+    show Language, MnemonicException;
 import 'package:bull_logger/bull_logger.dart';
 import 'package:primitives/primitives.dart';
-import 'package:secrets/src/crypto/crypto.dart' show Backup, Deriver;
+import 'package:secrets/src/crypto/crypto.dart'
+    show Backup, Deriver, Descriptors;
 import 'package:secrets/src/data/boundary.dart';
 import 'package:secrets/src/data/exceptions.dart';
 import 'package:secrets/src/data/fss_datasource.dart';
@@ -105,29 +107,67 @@ class SecretRepository {
   /// Fingerprint a candidate mnemonic would have, without storing it.
   Future<Result<Fingerprint, SecretFailure>> idOf({
     required List<String> words,
+    Language language = Language.english,
     String? passphrase,
   }) => boundary(
     () => Isolate.run(
       () => Deriver.fingerprint.fingerprint(
-        Deriver.fingerprint.seed(words, passphrase: passphrase ?? ''),
+        Deriver.fingerprint.seed(
+          words,
+          passphrase: passphrase ?? '',
+          language: language,
+        ),
       ),
     ),
     orElse: InvalidMnemonicFailure.new,
   );
+
+  /// Public descriptors of words that are not stored, for each of [scriptTypes]: nothing is read from or written to the keystore.
+  ///
+  /// One seed serves every script type, so the PBKDF2 runs once. It is derived, used and wiped inside one isolate; only the public descriptor strings cross back. The material is seed-only, so no library ever receives the words. Invalid words are an [InvalidMnemonicFailure]; a failed derivation is a [UseSecretFailure].
+  Future<Result<Map<ScriptType, Descriptors>, SecretFailure>>
+  previewBitcoinDescriptors({
+    required List<String> words,
+    required Language language,
+    String? passphrase,
+    required BitcoinNetwork network,
+    required Set<ScriptType> scriptTypes,
+  }) {
+    // Copied now: the derivation runs in another isolate, after the caller may have reused its list.
+    final candidate = List<String>.of(words);
+    final types = Set<ScriptType>.of(scriptTypes);
+    final pass = passphrase ?? '';
+    return boundary(
+      () => Isolate.run(
+        () => _previewDescriptors(
+          words: candidate,
+          language: language,
+          passphrase: pass,
+          network: network,
+          scriptTypes: types,
+        ),
+      ),
+      // Invalid words are bip39's exception, which the boundary maps to [InvalidMnemonicFailure] on its own; anything else failed the derivation.
+      orElse: UseSecretFailure.new,
+    );
+  }
 
   // ------------------------------------------------------------------ writes
 
   /// Stores a mnemonic and returns its description. Mnemonics are the only kind anything writes; [Seed] stays readable for entries that predate that.
   Future<Result<SecretInfo, SecretFailure>> store({
     required List<String> words,
+    Language language = Language.english,
     String? passphrase,
     bool rejectExisting = false,
     Set<Fingerprint>? acceptOnly,
   }) => boundary(() async {
     // Validated as words first — count, wordlist, checksum — so a bad count reads as "invalid mnemonic" like a bad checksum, not as the model's FormatException. Cheap: no seed yet.
-    Deriver.fingerprint.check(words);
+    final normalized = Deriver.fingerprint.normalizeWords(words);
+    Deriver.fingerprint.check(normalized, language: language);
     final model = MnemonicSecretModel(
-      mnemonicWords: words,
+      mnemonicWords: normalized,
+      language: language,
       // Absent and empty are one passphrase to BIP39 and to this package; the
       // disk has always said `null` for it, so a fresh write says the same.
       passphrase: (passphrase == null || passphrase.isEmpty)
@@ -141,24 +181,31 @@ class SecretRepository {
         'the words do not derive to an accepted fingerprint',
       );
     }
-    await _source.storeSecret(
+    // Restoration may keep an equivalent entry in another wordlist: describe
+    // that one, since every later operation reads it, not the candidate.
+    final kept = await _source.storeSecret(
       id: id,
       secret: model,
       seedOf: (m) => Isolate.run(() => _seedOf(m)),
       rejectExisting: rejectExisting,
     );
-    return _describe(id, model);
+    return _describe(id, kept);
   }, orElse: StoreSecretFailure.new);
 
   /// Compares the full seed, not merely the collision-prone fingerprint.
   Future<Result<SecretInfo?, SecretFailure>> find({
     required List<String> words,
+    Language language = Language.english,
     String? passphrase,
   }) {
     final candidate = List<String>.of(words);
     return boundary(() async {
       final seed = await Isolate.run(
-        () => Deriver.fingerprint.seed(candidate, passphrase: passphrase ?? ''),
+        () => Deriver.fingerprint.seed(
+          candidate,
+          passphrase: passphrase ?? '',
+          language: language,
+        ),
       );
       final id = Deriver.fingerprint.fingerprint(seed);
       final stored = await _source.fetchSecret(id);
@@ -187,6 +234,7 @@ class SecretRepository {
       Err(:final failure) => Err(failure),
       Ok(:final value) => (await store(
         words: value.words,
+        language: value.language,
         passphrase: passphrase,
       )).map((info) => (info: info, metadata: value.metadata)),
     };
@@ -200,7 +248,7 @@ class SecretRepository {
     () => Isolate.run(() {
       final opened = Backup.recoverbull.open(file: file, backupKey: key);
       return Deriver.fingerprint.fingerprint(
-        Deriver.fingerprint.seed(opened.words),
+        Deriver.fingerprint.seed(opened.words, language: opened.language),
       );
     }),
     orElse: UseSecretFailure.new,
@@ -239,9 +287,13 @@ class SecretRepository {
     switch (model) {
       case BytesSecretModel(:final bytes):
         return SecretInfo.seed(id: id, lengthInBits: bytes.length * 8);
-      case MnemonicSecretModel(:final mnemonicWords, :final passphrase):
+      case MnemonicSecretModel(
+        :final mnemonicWords,
+        :final passphrase,
+        :final language,
+      ):
         try {
-          Deriver.fingerprint.check(mnemonicWords);
+          Deriver.fingerprint.check(mnemonicWords, language: language);
         } on MnemonicException {
           throw const FormatException('stored words are not a BIP39 mnemonic');
         }
@@ -249,6 +301,7 @@ class SecretRepository {
         return SecretInfo.mnemonic(
           id: id,
           wordCount: mnemonicWords.length,
+          language: language,
           hasPassphrase: hasPassphrase,
         );
     }
@@ -260,6 +313,39 @@ class SecretRepository {
       return await Isolate.run(body);
     } on MnemonicException {
       throw const FormatException('stored words are not a BIP39 mnemonic');
+    }
+  }
+
+  /// Runs in an isolate; static so it captures nothing but its arguments.
+  ///
+  /// The seed buffer is ours and is zeroed before the isolate returns. Copies made inside bip32_keys, bdk and the master xprv string are immutable or library-internal: they die with the isolate's heap, but their erasure cannot be guaranteed.
+  static Future<Map<ScriptType, Descriptors>> _previewDescriptors({
+    required List<String> words,
+    required Language language,
+    required String passphrase,
+    required BitcoinNetwork network,
+    required Set<ScriptType> scriptTypes,
+  }) async {
+    final seed = Deriver.fingerprint.seed(
+      words,
+      passphrase: passphrase,
+      language: language,
+    );
+    try {
+      final material = Seed(
+        id: Deriver.fingerprint.fingerprint(seed),
+        seedBytes: seed,
+      );
+      return {
+        for (final scriptType in scriptTypes)
+          scriptType: await Deriver.bitcoin.descriptors(
+            material,
+            scriptType: scriptType,
+            network: network,
+          ),
+      };
+    } finally {
+      seed.fillRange(0, seed.length, 0);
     }
   }
 
@@ -280,13 +366,22 @@ class SecretRepository {
     switch (model) {
       case BytesSecretModel(:final bytes):
         return Seed(id: id, seedBytes: Uint8List.fromList(bytes));
-      case MnemonicSecretModel(:final mnemonicWords, :final passphrase):
+      case MnemonicSecretModel(
+        :final mnemonicWords,
+        :final passphrase,
+        :final language,
+      ):
         final pass = passphrase ?? '';
         return Mnemonic(
           id: id,
           words: mnemonicWords,
+          language: language,
           passphrase: pass,
-          seedBytes: Deriver.fingerprint.seed(mnemonicWords, passphrase: pass),
+          seedBytes: Deriver.fingerprint.seed(
+            mnemonicWords,
+            passphrase: pass,
+            language: language,
+          ),
         );
     }
   }
@@ -295,17 +390,33 @@ class SecretRepository {
     BytesSecretModel(:final bytes) => Deriver.fingerprint.fingerprint(
       Uint8List.fromList(bytes),
     ),
-    MnemonicSecretModel(:final mnemonicWords, :final passphrase) =>
+    MnemonicSecretModel(
+      :final mnemonicWords,
+      :final passphrase,
+      :final language,
+    ) =>
       Deriver.fingerprint.fingerprint(
-        Deriver.fingerprint.seed(mnemonicWords, passphrase: passphrase ?? ''),
+        Deriver.fingerprint.seed(
+          mnemonicWords,
+          passphrase: passphrase ?? '',
+          language: language,
+        ),
       ),
   };
 
   /// The full seed a model derives to. For the one comparison a fingerprint is not enough for — see `FlutterSecureStorageDatasource._holdsSameSecret`.
   static Uint8List _seedOf(SecretModel model) => switch (model) {
     BytesSecretModel(:final bytes) => Uint8List.fromList(bytes),
-    MnemonicSecretModel(:final mnemonicWords, :final passphrase) =>
-      Deriver.fingerprint.seed(mnemonicWords, passphrase: passphrase ?? ''),
+    MnemonicSecretModel(
+      :final mnemonicWords,
+      :final passphrase,
+      :final language,
+    ) =>
+      Deriver.fingerprint.seed(
+        mnemonicWords,
+        passphrase: passphrase ?? '',
+        language: language,
+      ),
   };
 }
 

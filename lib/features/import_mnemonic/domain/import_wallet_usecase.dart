@@ -1,3 +1,4 @@
+import 'package:bip39_mnemonic/bip39_mnemonic.dart' show Language;
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:secrets/secrets.dart';
 import 'package:bull_logger/bull_logger.dart';
@@ -29,12 +30,14 @@ class ImportWalletUsecase {
   @useResult
   Future<Result<Wallet, ImportMnemonicFailure>> execute({
     required List<String> mnemonicWords,
+    Language language = Language.english,
     ScriptType scriptType = ScriptType.bip84,
     String passphrase = '',
     String? label,
   }) => _imports.synchronized(
     () => _execute(
       mnemonicWords: mnemonicWords,
+      language: language,
       scriptType: scriptType,
       passphrase: passphrase,
       label: label,
@@ -43,15 +46,20 @@ class ImportWalletUsecase {
 
   Future<Result<Wallet, ImportMnemonicFailure>> _execute({
     required List<String> mnemonicWords,
+    required Language language,
     required ScriptType scriptType,
     required String passphrase,
     required String? label,
   }) async {
     switch (await _checkDuplicateMnemonicUsecase.execute(
       mnemonicWords: mnemonicWords,
+      language: language,
       passphrase: passphrase,
     )) {
       case Err(:final failure):
+        log.warning(
+          'Wallet import refused reason=${failure is ImportMnemonicDuplicateFailure ? 'duplicate' : 'preflight'}',
+        );
         return Err(failure);
       case Ok():
         break;
@@ -67,6 +75,7 @@ class ImportWalletUsecase {
       final Secret secret;
       switch (await _secrets.import(
         words: mnemonicWords,
+        language: language,
         passphrase: passphrase,
       )) {
         case Ok(:final value):
@@ -98,7 +107,9 @@ class ImportWalletUsecase {
         label: label,
       );
 
-      log.fine('Wallet imported');
+      log.fine(
+        'Wallet imported language=${language.name} network=${bitcoinNetwork.name} script=${scriptType.name}',
+      );
 
       return Ok(wallet);
     } catch (e) {

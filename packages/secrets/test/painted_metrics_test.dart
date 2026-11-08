@@ -1,4 +1,7 @@
 import 'dart:io';
+
+import 'package:bip39_mnemonic/bip39_mnemonic.dart' show Language;
+import 'package:unorm_dart/unorm_dart.dart' show nfc, nfkd;
 import 'dart:typed_data';
 
 import 'package:flutter/services.dart' show FontLoader;
@@ -54,6 +57,31 @@ void main() {
       box.getMaxIntrinsicHeight(width),
       box.getDryLayout(BoxConstraints(maxWidth: width)),
     ];
+  }
+
+  for (final language in Language.values) {
+    testWidgets('${language.name} public metrics never identify a word', (
+      tester,
+    ) async {
+      final first = await metricsOf(
+        tester,
+        PaintedWord(language.list.first, language: language, style: style),
+      );
+      final last = await metricsOf(
+        tester,
+        PaintedWord(language.list.last, language: language, style: style),
+      );
+      expect(last, first);
+      final composed = await metricsOf(
+        tester,
+        PaintedWord(nfc(language.list.last), language: language, style: style),
+      );
+      final decomposed = await metricsOf(
+        tester,
+        PaintedWord(nfkd(language.list.last), language: language, style: style),
+      );
+      expect(composed, decomposed);
+    });
   }
 
   testWidgets('every word measures the same', (tester) async {

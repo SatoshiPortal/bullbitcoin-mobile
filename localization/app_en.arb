@@ -15713,14 +15713,6 @@
   "@replaceByFeeUnverifiableTransaction": {
     "description": "Shown on the fee-bump screen when the original transaction's signatures could not be verified (not proof of manipulation); the bump is refused."
   },
-  "viewerCopyLinkDisclosePayjoin": "Copy link (disclose Payjoin)",
-  "@viewerCopyLinkDisclosePayjoin": {
-    "description": "Button to copy a block explorer link for a Payjoin transaction that discloses which inputs and outputs belong to the sender and the recipient"
-  },
-  "viewerViewInExplorerDisclosePayjoin": "View in explorer (disclose Payjoin)",
-  "@viewerViewInExplorerDisclosePayjoin": {
-    "description": "Button to open a Payjoin transaction in the block explorer with a link that discloses which inputs and outputs belong to the sender and the recipient"
-  },
   "recoverbullVaultPassphraseNotIncluded": "Your wallet has a passphrase, and this vault does not contain it. Keep the passphrase with your backup: the vault alone restores a different wallet.",
   "@recoverbullVaultPassphraseNotIncluded": {
     "description": "Warning shown after creating a vault for a wallet that has a BIP39 passphrase, since the vault format carries the words only"
@@ -15805,5 +15797,71 @@
         "type": "int"
       }
     }
+  },
+  "mnemonicLanguageLabel": "Recovery phrase language",
+  "@mnemonicLanguageLabel": {
+    "description": "Label for the BIP39 wordlist picker, independent of app language."
+  },
+  "mnemonicLanguageSuggestion": "These words match {language}. Select that language to continue.",
+  "@mnemonicLanguageSuggestion": {
+    "description": "Suggestion only; never silently changes the mnemonic language.",
+    "placeholders": {
+      "language": {
+        "type": "String"
+      }
+    }
+  },
+  "mnemonicLanguageAmbiguous": "These words match more than one language. Select the language of your recovery phrase.",
+  "@mnemonicLanguageAmbiguous": {
+    "description": "Requires explicit language confirmation when wordlists overlap."
+  },
+  "mnemonicDefaultEnglishOnly": "Default wallets currently require an English recovery phrase. After setup, you can import other languages as a separate Bitcoin wallet.",
+  "@mnemonicDefaultEnglishOnly": {
+    "description": "Explains the temporary Liquid SDK restriction before default-wallet recovery."
+  },
+  "mnemonicLanguageName": "{language, select, english{English} french{French} spanish{Spanish} italian{Italian} portuguese{Portuguese} czech{Czech} korean{Korean} simplifiedChinese{Chinese (Simplified)} traditionalChinese{Chinese (Traditional)} japanese{Japanese} other{Unknown language}}",
+  "@mnemonicLanguageName": {
+    "description": "Localized BIP39 wordlist names keyed by Language.name, not UI locales.",
+    "placeholders": {
+      "language": {
+        "type": "String"
+      }
+    }
+  },
+  "mnemonicOtherLanguageWordsError": "These words belong to the {language} word list, not {selected}, and do not form a valid recovery phrase in {language} either. Check each word and its position.",
+  "@mnemonicOtherLanguageWordsError": {
+    "description": "Complete phrase whose words belong to another BIP39 wordlist than the selected one, with an invalid checksum there too. Never names a word.",
+    "placeholders": {
+      "language": {
+        "type": "String"
+      },
+      "selected": {
+        "type": "String"
+      }
+    }
+  },
+  "importMnemonicScanServerUnavailable": "Couldn't reach a server to check this wallet. You can still import it.",
+  "@importMnemonicScanServerUnavailable": {
+    "description": "ImportMnemonic: scan of one wallet type failed because no Electrum server could be reached; the import stays possible"
+  },
+  "importMnemonicScanTimeout": "The server took too long to check this wallet. You can still import it.",
+  "@importMnemonicScanTimeout": {
+    "description": "ImportMnemonic: scan of one wallet type timed out; the import stays possible"
+  },
+  "importMnemonicScanInvalidMnemonic": "These words could not be checked for this wallet type.",
+  "@importMnemonicScanInvalidMnemonic": {
+    "description": "ImportMnemonic: the words could not be derived to scan one wallet type"
+  },
+  "importMnemonicScanUnavailable": "Balance check unavailable. You can still import this wallet.",
+  "@importMnemonicScanUnavailable": {
+    "description": "ImportMnemonic: generic message when the scan of one wallet type failed for an unexpected reason; the import stays possible"
+  },
+  "viewerCopyLinkDisclosePayjoin": "Copy link (disclose Payjoin)",
+  "@viewerCopyLinkDisclosePayjoin": {
+    "description": "Button to copy a block explorer link for a Payjoin transaction that discloses which inputs and outputs belong to the sender and the recipient"
+  },
+  "viewerViewInExplorerDisclosePayjoin": "View in explorer (disclose Payjoin)",
+  "@viewerViewInExplorerDisclosePayjoin": {
+    "description": "Button to open a Payjoin transaction in the block explorer with a link that discloses which inputs and outputs belong to the sender and the recipient"
   }
 }

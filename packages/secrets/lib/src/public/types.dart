@@ -20,6 +20,7 @@ export 'package:secrets/src/domain/domain.dart'
         MnemonicRequiredFailure,
         MnemonicWordCount,
         PassphraseUnsupportedFailure,
+        LanguageUnsupportedFailure,
         SecretFailure,
         SecretInfo,
         SecretKind,

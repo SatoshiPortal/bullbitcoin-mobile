@@ -1,3 +1,4 @@
+import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:primitives/primitives.dart' show Fingerprint;
 import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
@@ -38,9 +39,7 @@ class CreateDefaultWalletsUsecase {
     if (secret != null && mnemonicWords != null) {
       throw ArgumentError('Provide either a secret or mnemonic words');
     }
-    if (secret?.info.hasPassphrase ?? false) {
-      throw ArgumentError('Default wallets cannot use a passphrase');
-    }
+    if (secret != null) _requireDefaultCapable(secret.info);
     try {
       await _resumeProvisioning?.call();
       final settings = await _settingsRepository.fetch();
@@ -117,6 +116,7 @@ class CreateDefaultWalletsUsecase {
             ),
           };
 
+      _requireDefaultCapable(defaultSecret.info);
       final created = <Wallet>[];
       // Keep successful members and their custody if a later member fails.
       if (!hasBitcoin) {
@@ -147,6 +147,26 @@ class CreateDefaultWalletsUsecase {
       rethrow;
     } catch (e) {
       throw CreateDefaultWalletsException(e.toString());
+    }
+  }
+
+  /// Refuses a secret both default wallets cannot be built from, before any wallet write.
+  static void _requireDefaultCapable(SecretInfo info) {
+    if (info.hasPassphrase) {
+      throw ArgumentError('Default wallets cannot use a passphrase');
+    }
+    // Liquid derives from words: a raw seed has none.
+    if (!info.isMnemonic) {
+      throw CreateDefaultWalletsException(
+        'Default wallets require a mnemonic, not a raw seed',
+      );
+    }
+    // TODO: remove after bull_sdk pins lwk-dart PR #95 and secrets uses its
+    // seed-based Liquid APIs.
+    if (info.language != bip39.Language.english) {
+      throw CreateDefaultWalletsException(
+        'Default wallets require an English mnemonic',
+      );
     }
   }
 

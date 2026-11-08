@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:bip39_mnemonic/bip39_mnemonic.dart' show Language;
 import 'package:bull_logger/bull_logger.dart';
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
@@ -78,10 +79,12 @@ final class Secrets {
   @useResult
   Future<Result<Secret, SecretFailure>> import({
     required List<String> words,
+    Language language = Language.english,
     String? passphrase,
     Set<Fingerprint>? acceptOnly,
   }) async => (await _repository.store(
     words: words,
+    language: language,
     passphrase: passphrase,
     rejectExisting: true,
     acceptOnly: acceptOnly,
@@ -132,9 +135,11 @@ final class Secrets {
   @useResult
   Future<Result<bool, SecretFailure>> contains({
     required List<String> words,
+    Language language = Language.english,
     String? passphrase,
   }) async => (await find(
     words: words,
+    language: language,
     passphrase: passphrase,
   )).map((secret) => secret != null);
 
@@ -143,11 +148,38 @@ final class Secrets {
   @useResult
   Future<Result<Secret?, SecretFailure>> find({
     required List<String> words,
+    Language language = Language.english,
     String? passphrase,
   }) async => (await _repository.find(
     words: words,
+    language: language,
     passphrase: passphrase,
   )).map((info) => info == null ? null : _handle(info));
+
+  // ----------------------------------------------------------------- preview
+
+  /// Public derivations from words that are not stored, such as a scan before import.
+  SecretPreview get preview => SecretPreview._(this);
+
+  /// External and internal public descriptors of account 0 for words that are not stored, in [language] and with [passphrase], keyed by each of [scriptTypes].
+  ///
+  /// Stateless: the keystore is neither read nor written, and the seed is derived once for every script type, used and wiped in a separate isolate. Only public descriptor strings leave it. Invalid words return [InvalidMnemonicFailure]. For English words they equal those of the same words once imported (`secret.derive.descriptors.bitcoin`); `import` accepts English only for now.
+  @internal
+  @useResult
+  Future<Result<Map<ScriptType, Descriptors>, SecretFailure>>
+  previewBitcoinDescriptors({
+    required List<String> words,
+    Language language = Language.english,
+    String? passphrase,
+    required BitcoinNetwork network,
+    required Set<ScriptType> scriptTypes,
+  }) => _repository.previewBitcoinDescriptors(
+    words: words,
+    language: language,
+    passphrase: passphrase,
+    network: network,
+    scriptTypes: scriptTypes,
+  );
 
   // ----------------------------------------------------------------- restore
 
@@ -227,6 +259,26 @@ extension type const Recoverbull._(Secrets _secrets) {
     required EncryptedVault vault,
     required VaultKey key,
   }) => _secrets.inspectRecoverbull(vault: vault, key: key);
+}
+
+/// Public derivations from words that are not stored. Nothing is written and no material is returned.
+extension type const SecretPreview._(Secrets _secrets) {
+  /// Public Bitcoin descriptors of account 0 for unstored words, one pair per script type. See [Secrets.previewBitcoinDescriptors].
+  @useResult
+  Future<Result<Map<ScriptType, Descriptors>, SecretFailure>>
+  bitcoinDescriptors({
+    required List<String> words,
+    Language language = Language.english,
+    String? passphrase,
+    required BitcoinNetwork network,
+    required Set<ScriptType> scriptTypes,
+  }) => _secrets.previewBitcoinDescriptors(
+    words: words,
+    language: language,
+    passphrase: passphrase,
+    network: network,
+    scriptTypes: scriptTypes,
+  );
 }
 
 /// Database encryption keys scoped to one module.

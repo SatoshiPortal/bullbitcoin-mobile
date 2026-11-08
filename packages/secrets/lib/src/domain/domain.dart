@@ -1,6 +1,6 @@
 /// What the package speaks in: value types and the failure vocabulary.
 ///
-/// No behaviour, no foreign dependency beyond `primitives` — the one
+/// Pure value vocabulary, including the BIP39 Language enum — the one
 /// directory that needs no device to be verified, which the import
 /// invariant test keeps true. The entry point for every other module;
 /// nothing outside imports a file in here directly.
@@ -16,3 +16,5 @@ export 'secret_material.dart' show Mnemonic, SecretMaterial, Seed;
 export 'swap_master_key.dart' show SwapMasterKey;
 export 'mnemonic_word.dart';
 export 'mnemonic_word_count.dart' show MnemonicWordCount;
+
+export 'mnemonic_language.dart' show decodeLanguage, encodeLanguage;

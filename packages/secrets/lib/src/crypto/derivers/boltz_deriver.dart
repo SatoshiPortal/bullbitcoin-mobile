@@ -1,3 +1,5 @@
+import 'package:secrets/src/crypto/exceptions.dart';
+import 'package:bip39_mnemonic/bip39_mnemonic.dart' show Language;
 import 'package:bull_sdk/boltz.dart' as boltz;
 import 'package:primitives/primitives.dart';
 import 'package:secrets/src/domain/domain.dart';
@@ -30,6 +32,9 @@ final class BoltzDeriver {
     Mnemonic secret, {
     required BitcoinNetwork network,
   }) async {
+    if (secret.language != Language.english) {
+      throw const LanguageUnsupported('Boltz requires an English mnemonic');
+    }
     final derived = await boltz.SwapMasterKey.create(
       walletMnemonic: secret.words.join(' '),
       walletPassphrase: secret.passphrase.isEmpty ? null : secret.passphrase,

@@ -1,4 +1,7 @@
+import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasource.dart';
+import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_model.dart';
 import 'package:primitives/primitives.dart' show Fingerprint;
+import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
@@ -21,6 +24,10 @@ class _MockSettingsRepository extends Mock implements SettingsRepository {}
 class _MockWalletRepository extends Mock implements WalletRepository {}
 
 class _MockWallet extends Mock implements Wallet {}
+
+class _MockMetadata extends Mock implements WalletMetadataDatasource {}
+
+class _MockMetadataRow extends Mock implements WalletMetadataModel {}
 
 void main() {
   const words = [
@@ -101,6 +108,70 @@ void main() {
         label: any(named: 'label'),
       ),
     ).thenAnswer((_) async => answer());
+  }
+
+  for (final language in bip39.Language.values) {
+    test(
+      'imports ${language.name} only as a non-default Bitcoin wallet',
+      () async {
+        final wallet = _MockWallet();
+        stubCreateWallet(() async => wallet);
+        final words = bip39.Mnemonic(List.filled(16, 0), language).words;
+        final metadata = _MockMetadata();
+        when(() => metadata.fetchAll()).thenAnswer((_) async => []);
+        final usecase = ImportWalletUsecase(
+          checkDuplicateMnemonicUsecase: CheckDuplicateMnemonicUsecase(
+            secrets: secrets,
+            metadata: metadata,
+            settings: settingsRepository,
+          ),
+          secrets: secrets,
+          settingsRepository: settingsRepository,
+          walletRepository: walletRepository,
+        );
+        final result = await usecase.execute(
+          mnemonicWords: words,
+          language: language,
+          label: 'Vector',
+        );
+        expect(result, isA<Ok<Wallet, ImportMnemonicFailure>>());
+        expect((result as Ok).value, wallet);
+        final entries =
+            (await secrets.list() as Ok<List<SecretEntry>, SecretFailure>)
+                .value;
+        final secret = entries.single as Secret;
+        expect(secret.info.language, language);
+        verify(
+          () => walletRepository.createWallet(
+            secret: any(
+              that: isA<Secret>().having((s) => s.id, 'id', secret.id),
+              named: 'secret',
+            ),
+            network: Network.bitcoinMainnet,
+            scriptType: ScriptType.bip84,
+            isDefault: false,
+            sync: false,
+            label: 'Vector',
+          ),
+        ).called(1);
+        final row = _MockMetadataRow();
+        when(() => row.masterFingerprint).thenReturn(secret.id.hex);
+        when(() => row.id).thenReturn('wpkh([${secret.id.hex}/84h/0h/0h])');
+        when(() => metadata.fetchAll()).thenAnswer((_) async => [row]);
+        final duplicate = await usecase.execute(
+          mnemonicWords: words,
+          language: language,
+        );
+        expect(
+          (duplicate as Err).failure,
+          isA<ImportMnemonicDuplicateFailure>(),
+        );
+        expect(
+          (await secrets.exists(secret.id) as Ok<bool, SecretFailure>).value,
+          isTrue,
+        );
+      },
+    );
   }
 
   group('ImportWalletUsecase', () {

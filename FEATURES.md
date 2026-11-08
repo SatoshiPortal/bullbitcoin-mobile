@@ -44,6 +44,8 @@ graph TB
     BULL_PRICER[Bull Pricer Package<br/>Bitcoin price and history]
 
     %% Feature modules
+    IMPORT_MNEMONIC[Mnemonic Import]
+    ONBOARDING[Onboarding]
     SETTINGS[Settings]
     LOGS[Logs<br/>Workspace Feature]
     ELECTRUM_SETTINGS[Electrum Settings]
@@ -114,6 +116,10 @@ graph TB
     SEND --> BULL_PRICER
     STATUS --> BULL_PRICER
     SWAPS --> BULL_PRICER
+
+    IMPORT_MNEMONIC --> WALLETS
+    ONBOARDING --> IMPORT_MNEMONIC
+    APP_STARTUP --> IMPORT_MNEMONIC
 
     %% Feature-to-feature dependencies (extracted from draw.io diagram)
     ADDRESS_MGMT --> LABELS
@@ -248,7 +254,7 @@ graph TB
 
     class CORE coreStyle
     class SECRETS,PRIMITIVES,BULL_PAYJOIN,BULL_PRICER,TOR packageStyle
-    class SETTINGS,PIN_CODE,LABELS,HW_WALLETS,BTC_PRICE,NETWORK,BIP85,FEES,WALLETS,EXCHANGE,EXCHANGE_SETTINGS,EXCHANGE_SUPPORT_CHAT,APP_STARTUP,UTXO_MGMT,ADDRESS_MGMT,RECIPIENTS,FUNDING,BACKUPS,SWAPS,WITHDRAWAL,STATUS,SEND,RECEIVE,TRANSFER,TX_HISTORY,REPLACE_BY_FEE,BG_TASKS,AUTOSWAP,AUTOBUY,DCA,DEFAULT_WALLETS,LIMIT_ORDERS,SELL,PAY,BUY,COINS,ANNOUNCEMENTS,CONSOLIDATION,ALL_SEED_VIEW,APP_UNLOCK,SP featureStyle
+    class IMPORT_MNEMONIC,ONBOARDING,SETTINGS,PIN_CODE,LABELS,HW_WALLETS,BTC_PRICE,NETWORK,BIP85,FEES,WALLETS,EXCHANGE,EXCHANGE_SETTINGS,EXCHANGE_SUPPORT_CHAT,APP_STARTUP,UTXO_MGMT,ADDRESS_MGMT,RECIPIENTS,FUNDING,BACKUPS,SWAPS,WITHDRAWAL,STATUS,SEND,RECEIVE,TRANSFER,TX_HISTORY,REPLACE_BY_FEE,BG_TASKS,AUTOSWAP,AUTOBUY,DCA,DEFAULT_WALLETS,LIMIT_ORDERS,SELL,PAY,BUY,COINS,ANNOUNCEMENTS,CONSOLIDATION,ALL_SEED_VIEW,APP_UNLOCK,SP featureStyle
 ```
 
 ## About Package Dependency Diagrams
@@ -350,3 +356,5 @@ To verify no cyclic dependencies exist, you can:
 ## Wallet failure compatibility edges (2026-11-08)
 
 The shell ownership move relocates wallet failures while retaining the `lib/core/wallet/domain/wallet_failure.dart` compatibility export. Two existing consumers therefore resolve to the wallet owner: `backup_settings` through `presentation/cubit/backup_settings_cubit.dart`, and `status_check` through `domain/check_service_status_usecase.dart`. The source-edge allowlist and diagram record those observed dependencies. These legacy internal imports are migration debt, not permission for new cross-feature internals; move consumers to a published wallet failure surface in a scoped follow-up.
+
+The mnemonic import feature currently imports Wallets internals. Replace that dependency with the Wallets public facade in a scoped follow-up; the graph records the existing dependency rather than implying facade compliance.

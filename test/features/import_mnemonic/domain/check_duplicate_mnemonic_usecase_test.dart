@@ -3,6 +3,8 @@ import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_model.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
+import 'package:unorm_dart/unorm_dart.dart' show nfc;
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/import_mnemonic/domain/check_duplicate_mnemonic_usecase.dart';
 import 'package:bb_mobile/features/import_mnemonic/domain/import_mnemonic_failure.dart';
@@ -57,6 +59,48 @@ void main() {
       settings: settings,
     );
   });
+
+  for (final language in bip39.Language.values) {
+    test(
+      'recognizes ${language.name} duplicates across Unicode forms',
+      () async {
+        final words = bip39.Mnemonic(List.filled(16, 0), language).words;
+        expect(
+          await usecase.execute(mnemonicWords: words, language: language),
+          isA<Ok<void, ImportMnemonicFailure>>(),
+        );
+        expect(
+          await secrets.import(words: words, language: language),
+          isA<Ok<Secret, SecretFailure>>(),
+        );
+        final stored =
+            (await secrets.list() as Ok<List<SecretEntry>, SecretFailure>)
+                    .value
+                    .single
+                as Secret;
+        final row = _Row();
+        when(() => row.masterFingerprint).thenReturn(stored.id.hex);
+        when(() => row.id).thenReturn('wpkh([${stored.id.hex}/84h/0h/0h])');
+        when(() => metadata.fetchAll()).thenAnswer((_) async => [row]);
+        final duplicate = await usecase.execute(
+          mnemonicWords: words.map(nfc).toList(),
+          language: language,
+        );
+        expect(
+          (duplicate as Err).failure,
+          isA<ImportMnemonicDuplicateFailure>(),
+        );
+        expect(
+          await usecase.execute(
+            mnemonicWords: words,
+            language: language,
+            passphrase: 'TREZOR',
+          ),
+          isA<Ok<void, ImportMnemonicFailure>>(),
+        );
+      },
+    );
+  }
 
   group('CheckDuplicateMnemonicUsecase', () {
     test('returns Ok when the mnemonic is not stored', () async {

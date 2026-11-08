@@ -8,7 +8,9 @@ What the package promises, how it is built and how to audit it. The [README](../
 
 The grouped interface is the only public spelling: `secret.derive.xpub`, `secret.derive.descriptors.bitcoin`, `secret.sign.psbt`, `secret.backup.recoverbull`, `secret.verify.mnemonic` and `secret.widgets.mnemonicView`. Extension types forward directly to internal implementation methods on `Secret`. Those flat methods remain together for audit, but their `@internal` annotations exclude them from the consumer API. The forwarding invariant prevents the groups from implementing additional behavior or handling material themselves.
 
-`import` returns a `Secret` on success and a dedicated duplicate failure for an existing entry. An import never silently overwrites a stored secret. `contains(words:, passphrase:)` combines candidate validation and a preliminary existence check; `exists(id)` checks a known fingerprint. Neither replaces the import's own duplicate decision. `idOf` is not public.
+`secrets.preview` is the one operation on words that are not stored. `bitcoinDescriptors` derives one seed from the candidate words in their own BIP39 language and with their passphrase, off the keystore and in a separate isolate, and returns only the public descriptors of each requested script type; it creates no handle, because a handle that held unstored words would be the cached material handles never are. The isolate zeroes the seed buffer before returning; copies inside bip32_keys, bdk and the master xprv string are immutable or library-internal, so their erasure cannot be guaranteed. The material it builds is seed-only, so no word-based library can run on it. The descriptors equal those of an import of the same words in the same language, since `import` and `contains` take the same `language` parameter. The wallet package scans with those descriptors before import and never receives the words.
+
+`import` returns a `Secret` on success and a dedicated duplicate failure for an existing entry. An import never silently overwrites a stored secret. `contains(words:, language:, passphrase:)` combines candidate validation and a preliminary existence check; `exists(id)` checks a known fingerprint. Neither replaces the import's own duplicate decision. `idOf` is not public.
 
 `list` returns `List<SecretEntry>`. The sealed family has two alternatives: `Secret` for a usable entry and `UnreadableSecret` carrying the failure and a fingerprint when recoverable. This preserves individual unreadable entries without making a usable handle's properties nullable. A global read failure returns an `Err`, not an empty list.
 
@@ -26,13 +28,23 @@ Run `make secrets-api-docs` after changing the public API and include the README
 
 ## Passphrase
 
-Account xpub derivation, Bitcoin signing, BIP85 and the swap key honour a BIP39 passphrase. Liquid descriptors and signatures derive from the words alone and ignore it. A RecoverBull vault contains the words only; its encryption key derives from the original secret, including its passphrase. Two secrets with the same words and different passphrases therefore share a Liquid descriptor but have different Bitcoin fingerprints.
+Account xpub derivation, Bitcoin signing, BIP85 and the swap key honour a BIP39 passphrase. Liquid descriptors and signatures derive from the words alone and ignore it. A RecoverBull vault contains the words and a `mnemonicLanguage` field (including English), without the passphrase; its encryption key derives from the original secret, including its passphrase. Two secrets with the same words and different passphrases therefore share a Liquid descriptor but have different Bitcoin fingerprints.
 
 These methods return their values directly. There is no passphrase wrapper: the behavior is part of each operation's contract. One operation refuses instead: `silentPayments.account`, because bwk derives from the words alone (`SpAccount.createFromMnemonic`, `mnemonic.to_seed("")`) and the account would be the passphrase-less sibling's — `PassphraseUnsupportedFailure`. `secrets.recoverbull.restore(vault:, key:, passphrase:)` accepts the passphrase separately; the vault cannot verify whether the supplied passphrase is correct. Without one, it restores the passphrase-less wallet.
 
 **Default wallets never have a passphrase.** The app generates or imports their words without one. A restored `Secret` handle is also rejected by `CreateDefaultWalletsUsecase` if it carries a passphrase, before any wallet is created. Liquid, RecoverBull recovery, BIP85, swaps, Silent Payments and the physical backup check rely on this invariant. Passphrase-protected Bitcoin wallets are imported non-default wallets.
 
-The bound lwk API accepts `network` and `mnemonic`, with no passphrase parameter. Its `lwk_signer` 0.18.0 implementation uses `mnemonic.to_seed("")` (verified 2026-09-14). Changing that behavior would move existing Liquid wallets; it is not a migration omission. Device vectors compare the descriptors produced from identical words with and without a passphrase.
+The bound lwk API accepts `network` and `mnemonic`, with no passphrase parameter. Its `lwk_signer` 0.18.0 implementation uses `mnemonic.to_seed("")` (verified 2026-09-14). The application refuses passphrases for default wallets, so it has no existing Liquid passphrase wallets to migrate. This step preserves the bound word-based behavior until the SDK exposes seed-based APIs. Device vectors compare the descriptors produced from identical words with and without a passphrase.
+
+## BIP39 language
+
+The language is an explicit import/preview parameter and stored metadata, not inferred from words. Stored mnemonic JSON has an optional `language` key, written only for non-English. Its value comes from a package-owned table of the bitcoin/bips wordlist file names (`english`, `japanese`, `korean`, `spanish`, `chinese_simplified`, `chinese_traditional`, `french`, `italian`, `czech`, `portuguese`), never from the bip39 package's Dart identifiers; a golden test pins all ten in both directions. Absent means English; an explicit null or unknown value fails parsing. English JSON remains byte-identical. Raw seed entries have no language. The domain references only the existing pure-Dart `Language` enum, guarded by the import invariant, rather than duplicating that vocabulary.
+
+`FingerprintDeriver.seed` is the single PBKDF2 implementation used by preview, import, duplicate checks, verification and all seed-based operations. Words normalize to NFKD before storage and verification. ⚠️ Japanese and Korean words are therefore stored decomposed (kana with voiced marks and Hangul syllables become several code points); any consumer that compares or displays them must normalise its own input to NFKD first, and NFC for display if it needs composed text. Passphrases retain their historical stored representation and normalize during seed computation. Full seed comparison handles differing word spellings, language or passphrase; invalid existing material stays occupied and cannot be overwritten.
+
+Bitcoin signing parses the Dart-derived master xprv with BDK, never the words. The key-material gate audits that signer location specifically, allowing only xprv parsing and disposal there. Liquid, Boltz and BWK still require English words in the pinned SDK, and non-English calls return `LanguageUnsupportedFailure`. Liquid's seed API awaits the bull_sdk bump to lwk-dart PR #95. The app offers the six Latin-script wordlists for non-default Bitcoin import; non-Latin selection waits for the dedicated keyboards tracked in #3088. Generation and default-wallet recovery remain English. Picker and detection suggestions never silently resolve an ambiguous wordlist.
+
+Every new RecoverBull vault records its wordlist in the reserved `mnemonicLanguage` plaintext field using the same wire table, including `english`. Historical keyless vaults restore as English unchanged. Open, restore and fingerprint inspection use that language. Unknown values return `InvalidVaultFailure`. Caller metadata is snapshotted before the keystore read; `mnemonic` and `mnemonicLanguage` are reserved, while historical caller `language` metadata stays untouched. BIP85 child language remains independent of the parent; application paths and Ark index 11811 use English children.
 
 ## Networks
 
@@ -42,7 +54,7 @@ The bound lwk API accepts `network` and `mnemonic`, with no passphrase parameter
 
 `secret.backup.recoverbull(metadata:)` returns `({EncryptedVault vault, VaultKey key})`. The vault exposes its encoded document through `json`; its derivation path is read from that document, never supplied as a second source of truth. It never contains the key. Both values redact their default string representation; their record does too. Keep the recovery key apart from the vault.
 
-`secrets.recoverbull.restore(vault:, key:)` decrypts and stores the words internally, returning a `Secret` and the caller's metadata. Unlike direct import, restoration is idempotent when the same secret is already present; it returns the existing handle without overwriting the entry. `secrets.recoverbull.fingerprint(vault:, key:)` instead computes the passphrase-less fingerprint without any keystore read or write. Inspection does not trust a fingerprint from metadata and never imports a temporary secret. RecoverBull presentation keeps a verification status, not a decrypted vault.
+`secrets.recoverbull.restore(vault:, key:)` decrypts and stores the English words internally, returning a `Secret` and the caller's metadata. Unlike direct import, restoration is idempotent when the same secret is already present; it returns the existing handle without overwriting the entry. `secrets.recoverbull.fingerprint(vault:, key:)` instead computes the passphrase-less fingerprint without any keystore read or write. Inspection does not trust a fingerprint from metadata and never imports a temporary secret. RecoverBull presentation keeps a verification status, not a decrypted vault.
 
 ## Database keys
 
@@ -67,7 +79,7 @@ The README's operation table is the full inventory — every output, whether it 
 | `secret.derive.bip85.mnemonic(…)` | the same child as words |
 | `secret.derive.swapKey(network:)` | the swap-scoped credential boltz takes on every call |
 
-⚠️ **One library receives the stored words: bwk.** `secret.silentPayments.account(…)` opens the Silent Payments account inside the package, so the words never reach the app — but bwk-dart builds an account from a mnemonic only, and the account it returns holds the keys until it is disposed. It is a capability, not an exit to the host. A key-based bwk constructor (bwk-bitcoin/bwk#114) would let the package pass derived keys instead.
+⚠️ **BWK retains keys after the call.** `secret.silentPayments.account(…)` opens the Silent Payments account inside the package, so the words never reach the app — but bwk-dart builds an account from a mnemonic only, and the account it returns holds the keys until it is disposed. It is a capability, not an exit to the host. A key-based bwk constructor (bwk-bitcoin/bwk#114) would let the package pass derived keys instead.
 
 **The stored mnemonic has no exit.** `Secret.revealMnemonic` is `@internal`:
 the only callers are this package's own sealed widgets, `MnemonicView`
@@ -86,7 +98,7 @@ pixels. The host's capture protection blocks a screenshot; it cannot stop
 code inside the app reading a rendered image back
 (`RenderRepaintBoundary.toImage`), which only review can rule out. Layout
 does not leak the words: every painted cell takes the size of the widest
-BIP39 word, or of the widest printable ASCII character for a passphrase, in
+BIP39 word in the revealed secret's own language, or of the widest printable ASCII character for a passphrase, in
 the style, so what a host can measure (`RenderBox.size`, intrinsic sizes)
 follows the word count and the passphrase length, never their content. The
 package's own tests read the painted text
@@ -162,8 +174,7 @@ Two rules make this real, and both are tests:
   bdk, lwk, boltz, bwk and recoverbull live under `crypto/`; the keystore and
   its federated platform packages under `data/` and `testing/`; Flutter
   under `widgets/`, `data/` and `testing/` (the plugin's
-  `PlatformException`); `domain/` imports nothing foreign — it is the one
-  directory that needs no device to be verified; `public/` orchestrates
+  `PlatformException`); `domain/` imports pure value dependencies only, including the existing BIP39 `Language` enum through `show Language` — it needs no device to be verified; `public/` orchestrates
   and computes nothing.
 
 **Derivers are static.** `Deriver.bitcoin.xpub(…)`, `Deriver.bip85.hex(…)`,
@@ -177,9 +188,7 @@ a signer — so `Secret` carries only what genuinely holds state: the
 repository (the serialised keystore queue) and that closure.
 
 **Adding a signer** (Ark is the expected next one): a `<chain>_signer.dart`
-under `crypto/signers/`, exported from `signers.dart`; it takes
-`Mnemonic` and turns it into a sentence with `mnemonicSentence`
-and nothing else; a `static const` on `Signer`; the operation on `Secret`
+under `crypto/signers/`, exported from `signers.dart`; it consumes the BIP39 seed or a derived key. An English-only word adapter must explicitly refuse other languages before calling its library; a `static const` on `Signer`; the operation on `Secret`
 beside the others. If the library needs a host resource, it is a
 parameter of the operation, never a field — that is what keeps the
 namespace `const`. There is deliberately no common
@@ -205,7 +214,7 @@ The boundary has structural checks in `test/invariants_test.dart` and `test/inte
 | material leaves at four named methods | the set of `Secret` methods returning material is exactly `{revealMnemonic, bip85Hex, bip85Mnemonic, swapKey}` — and `revealMnemonic` is `@internal` |
 | the public surface is a literal list | the export graph is walked and compared name for name |
 | modules are fronted by their entry point | every cross-module import targets `<module>/<module>.dart` |
-| foreign dependencies stay in their module | bdk/lwk/boltz/bwk/recoverbull only under `crypto/`, the keystore only under `data/` and `testing/`, Flutter only under `widgets/`, `data/` and `testing/`, nothing foreign under `domain/` |
+| foreign dependencies stay in their module | bdk/lwk/boltz/bwk/recoverbull only under `crypto/`, the keystore only under `data/` and `testing/`, Flutter only under `widgets/`, `data/` and `testing/`, only pure value dependencies under `domain/`, including the BIP39 `Language` enum (no mnemonic operations) |
 | the testing library never reaches production code | nothing under this package's `lib/` imports `package:secrets/testing.dart` or `src/testing/` |
 | nothing unexported is constructible from outside | every public constructor of an unexported class under `lib/src/` is `@internal` — a dot shorthand (`.new()`) builds a type from context alone, without naming or importing it |
 | no exported signature hands out an unexported type | no exported, non-`@internal` member mentions one in its parameters or return type |
@@ -218,7 +227,7 @@ or `package:secrets/src/` outside the package, the app's own secure store
 excepted. The `PR custody review` workflow comments on a pull request that
 adds one, asking the contributor why.
 
-The second part of `make custody-check` resolves production Dart symbols and rejects known private-key derivation and vault-opening operations outside `secrets`. Its named exceptions cover pre-import scanning, swap-scoped credentials and the public-only xpub decoding adapter. Public-key operations, mnemonic validation and formatting of an exported BIP85 child remain valid. The gate also rejects imports or exports of `secrets/testing.dart` and references to its test-support declarations throughout application and workspace production code, including aliases and re-exports. Unresolved production code fails the gate. This is an operation policy, not complete data-flow analysis or proof that arbitrary strings cannot carry secrets. Pre-import scanning still belongs to a future sync extraction; RecoverBull restoration and inspection are migrated.
+The second part of `make custody-check` resolves production Dart symbols and rejects known private-key derivation and vault-opening operations outside `secrets`. Its named exceptions cover swap-scoped credentials and the public-only xpub decoding adapter. Public-key operations, mnemonic validation and formatting of an exported BIP85 child remain valid. The gate also rejects imports or exports of `secrets/testing.dart` and references to its test-support declarations throughout application and workspace production code, including aliases and re-exports. Unresolved production code fails the gate. This is an operation policy, not complete data-flow analysis or proof that arbitrary strings cannot carry secrets. Pre-import scanning, RecoverBull restoration and inspection are migrated.
 
 So an audit is: run the suite, then read four files —
 `src/public/secret.dart` for what the package does, `src/data/boundary.dart`
@@ -458,7 +467,7 @@ type.
 
 No signer touches the app's wallet databases: signing needs the keys and
 the descriptors, not the transaction history. The bdk wallet is built
-from the BIP39 words with the same `SignOptions` the app's own datasource
+from the Dart master xprv of the language-aware BIP39 seed with the same `SignOptions` the app's own datasource
 used before the migration — a refactor must not change how signatures
 are produced.
 
