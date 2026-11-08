@@ -226,11 +226,13 @@ class PdkPayjoinDatasource {
   /// Sends a session [request] through the relays allowed for [payjoinUri].
   Future<T> _throughSessionRelays<T>(
     String payjoinUri,
-    Future<T> Function(String relay) request,
-  ) async => _throughRelays(
+    Future<T> Function(String relay) request, {
+    CancelToken? cancelToken,
+  }) async => _throughRelays(
     payjoinDirectoryOf(payjoinUri),
     allowedRelays(payjoinUri, servers: _servers),
     request,
+    cancelToken: cancelToken,
   );
 
   /// Sends [request] to [directory] through each of [relays], a non-empty
@@ -243,10 +245,12 @@ class PdkPayjoinDatasource {
   Future<T> _throughRelays<T>(
     core.Uri? directory,
     List<core.Uri> relays,
-    Future<T> Function(String relay) request,
-  ) async {
+    Future<T> Function(String relay) request, {
+    CancelToken? cancelToken,
+  }) async {
     final failed = <(core.Uri, Object)>[];
     for (final relay in [...relays]..shuffle(_random)) {
+      if (cancelToken?.cancelError case final error?) throw error;
       try {
         final result = await request(relay.toString());
         for (final (failedRelay, error) in failed) {
@@ -272,6 +276,7 @@ class PdkPayjoinDatasource {
         // Same on the receiver side, an expired session included.
         rethrow;
       } catch (e) {
+        if (cancelToken?.isCancelled ?? false) rethrow;
         failed.add((relay, e));
       }
     }
@@ -294,7 +299,9 @@ class PdkPayjoinDatasource {
   ) {
     if (_failingServers.add((failure, _hostKey(server)))) {
       _log.warning(code: failure, server: server, error: error);
-    } else {}
+    } else {
+      _log.info(code: failure, server: server);
+    }
   }
 
   /// Logs that [server] answered again in the role whose [failure] it had.
@@ -1143,7 +1150,7 @@ class PdkPayjoinDatasource {
           }
           rethrow;
         }
-      });
+      }, cancelToken: cancelToken);
     } on ReceiverCreateRequestException catch (e) {
       if (e.isExpired()) {
         throw PayjoinExpiredException('Payjoin receiver expired');
@@ -1192,7 +1199,7 @@ class PdkPayjoinDatasource {
           }
           rethrow;
         }
-      });
+      }, cancelToken: cancelToken);
     } on PayjoinExpiredException {
       rethrow;
     } on CreateRequestException {
