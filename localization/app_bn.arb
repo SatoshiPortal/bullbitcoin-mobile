@@ -7743,7 +7743,7 @@
   "@fundExchangeJurisdictionMexico": {
     "description": "Dropdown option for Mexico jurisdiction"
   },
-  "sellInteracEmail": "Interac ইমেইল",
+  "sellInteracEmail": "ট্রান্সফারের ইমেইল",
   "@sellInteracEmail": {
     "description": "Label for email to receive Interac payment"
   },
@@ -9832,7 +9832,7 @@
   "@autoswapTitle": {
     "description": "Header title for auto transfer settings bottom sheet"
   },
-  "sellInteracTransfer": "Interac e-Transfer",
+  "sellInteracTransfer": "ইমেইল মানি ট্রান্সফার",
   "@sellInteracTransfer": {
     "description": "Option for Interac payment (Canada)"
   },
@@ -11626,7 +11626,7 @@
   "recipientsJurisdictionCostaRica": "🇨🇷 কোস্টা রিকা",
   "recipientsJurisdictionArgentina": "🇦🇷 আর্জেন্টিনা",
   "recipientsJurisdictionColombia": "🇨🇴 কলম্বিয়া",
-  "recipientsTypeInteracEmail": "Interac e-Transfer",
+  "recipientsTypeInteracEmail": "ইমেইল মানি ট্রান্সফার",
   "recipientsTypeBillPayment": "বিল পরিশোধ",
   "recipientsTypeBankTransfer": "ব্যাংক ট্রান্সফার",
   "recipientsTypeSepa": "SEPA ট্রান্সফার",
@@ -11896,7 +11896,7 @@
   "testBackupErrorSeedUnavailable": "আপনার পুনরুদ্ধার বাক্যাংশ পড়া যায়নি। আবার চেষ্টা করুন।",
   "testBackupErrorSeedNotMnemonic": "এই ওয়ালেটে পরীক্ষা করার মতো কোনো পুনরুদ্ধার বাক্যাংশ নেই।",
   "testBackupErrorCompletionFailed": "আপনার পুনরুদ্ধার বাক্যাংশ সঠিক ছিল, কিন্তু আমরা ফলাফল সংরক্ষণ করতে পারিনি। আবার চেষ্টা করুন।",
-  "withdrawInteracSecurityDetailsTitle": "Interac নিরাপত্তার বিবরণ",
+  "withdrawInteracSecurityDetailsTitle": "ট্রান্সফারের নিরাপত্তার বিবরণ",
   "withdrawInteracSaveAsDefault": "এই বিবরণগুলো ডিফল্ট হিসেবে সংরক্ষণ করুন",
   "withdrawInteracSecurityQuestionLengthError": "নিরাপত্তা প্রশ্ন 3-40 অক্ষরের হতে হবে",
   "withdrawInteracSecurityAnswerLengthError": "নিরাপত্তা উত্তর 3-40 অক্ষরের হতে হবে",

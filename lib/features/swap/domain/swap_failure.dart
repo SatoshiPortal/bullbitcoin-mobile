@@ -77,6 +77,12 @@ final class SwapStorageFailure extends SwapFailure {
   const SwapStorageFailure([super.logMessage]);
 }
 
+/// No price of bitcoin in the fiat currency: a transfer works without one, and
+/// shows no fiat value.
+final class SwapPriceUnavailableFailure extends SwapFailure {
+  const SwapPriceUnavailableFailure([super.logMessage]);
+}
+
 final class SwapUnexpectedFailure extends SwapFailure {
   const SwapUnexpectedFailure([super.logMessage]);
 }

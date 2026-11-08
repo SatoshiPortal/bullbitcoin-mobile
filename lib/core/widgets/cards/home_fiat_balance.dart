@@ -1,11 +1,10 @@
-import 'package:bb_mobile/core/price/domain/usecases/get_available_currencies_usecase.dart';
+import 'package:bull_pricer/bull_pricer.dart';
 import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/price_input/price_input.dart';
 import 'package:bb_mobile/features/bitcoin_price/presentation/bloc/bitcoin_price_bloc.dart';
 import 'package:bb_mobile/core/widgets/text/currency_text.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
-import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shimmer/shimmer.dart';
@@ -23,24 +22,14 @@ class HomeFiatBalance extends StatelessWidget {
   final bool showBalanceLoading;
 
   Future<void> _openCurrencyBottomSheet(BuildContext context) async {
-    List<String> availableCurrencies;
-
-    try {
-      final blocState = context.read<BitcoinPriceBloc>().state;
-      if (blocState.availableCurrencies != null &&
-          blocState.availableCurrencies!.isNotEmpty) {
-        availableCurrencies = blocState.availableCurrencies!;
-      } else {
-        final usecase = locator<GetAvailableCurrenciesUsecase>();
-        availableCurrencies = await usecase.execute();
-      }
-    } catch (e) {
-      return;
-    }
-
-    if (availableCurrencies.isEmpty || !context.mounted) {
-      return;
-    }
+    final blocCurrencies = context
+        .read<BitcoinPriceBloc>()
+        .state
+        .availableCurrencies;
+    final availableCurrencies =
+        blocCurrencies != null && blocCurrencies.isNotEmpty
+        ? blocCurrencies
+        : SupportedCurrency.codes;
 
     final currentCurrency =
         context.read<SettingsCubit>().state.currencyCode ?? 'CAD';
