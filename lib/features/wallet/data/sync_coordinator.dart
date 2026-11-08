@@ -385,6 +385,8 @@ class SyncCoordinator {
         : 'failed';
     final category = busy
         ? 'busy'
+        : error is WalletSnapshotException
+        ? error.failure.logCode
         : error is WalletFailure
         ? error.logCode
         : error == null
