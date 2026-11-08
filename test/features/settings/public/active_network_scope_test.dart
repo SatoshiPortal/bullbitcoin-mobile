@@ -1,4 +1,3 @@
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'dart:async';
 
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
@@ -54,7 +53,7 @@ void main() {
       changes.add(
         SettingsState(
           storedSettings: SettingsEntity(
-            environment: Environment.testnet,
+            environment: Environment.regtest,
             bitcoinUnit: BitcoinUnit.sats,
             currencyCode: 'USD',
           ),

@@ -59,7 +59,13 @@ void main() {
         walletMetadataDatasource: metadata,
         bdkWalletDatasource: bdk,
         lwkWalletDatasource: _Lwk(),
-        synchronize: (_, {discover = false, reason = SyncReason.auto}) async {},
+        synchronize:
+            (
+              _, {
+              discover = false,
+              allowInitialScan = true,
+              reason = SyncReason.auto,
+            }) async {},
         isSyncing: ({walletId}) => false,
         syncStarted: const Stream.empty(),
         syncFinished: const Stream.empty(),
@@ -94,7 +100,12 @@ void main() {
           bdkWalletDatasource: bdk,
           lwkWalletDatasource: lwk,
           synchronize:
-              (_, {discover = false, reason = SyncReason.auto}) async {},
+              (
+                _, {
+                discover = false,
+                allowInitialScan = true,
+                reason = SyncReason.auto,
+              }) async {},
           isSyncing: ({walletId}) => false,
           syncStarted: const Stream.empty(),
           syncFinished: const Stream.empty(),

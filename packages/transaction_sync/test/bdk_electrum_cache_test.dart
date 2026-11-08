@@ -1,4 +1,5 @@
 import 'support/connections.dart';
+import 'support/regtest_wallet.dart';
 import 'package:transaction_sync/write.dart';
 import 'package:transaction_sync/src/write/writer_lock.dart';
 import 'package:bull_logger/bull_logger.dart';
@@ -318,8 +319,8 @@ void main() {
           lockDirectory: writerLockDirectory(dir.path),
           revisions: revisions,
           documentsDirectory: dir.path,
-          catalog: _SingleWalletCatalog(descriptor),
-          reservedAddresses: _NoReservedAddresses(),
+          catalog: SingleWalletCatalog(descriptor),
+          reservedAddresses: NoReservedAddresses(),
         );
         try {
           expect(
@@ -781,28 +782,4 @@ void main() {
       expect(File(BdkElectrumCache.pathFor(path)).existsSync(), isFalse);
     });
   });
-}
-
-final class _SingleWalletCatalog implements WalletCatalogPort {
-  final PublicWalletDescriptor descriptor;
-  _SingleWalletCatalog(this.descriptor);
-
-  @override
-  Future<Result<PublicWalletDescriptor, TransactionSyncFailure>> find(
-    WalletKey key,
-  ) async => key == descriptor.key
-      ? Ok(descriptor)
-      : const Err(TransactionSyncNotFoundFailure());
-
-  @override
-  Future<Result<List<PublicWalletDescriptor>, TransactionSyncFailure>>
-  list() async => Ok([descriptor]);
-}
-
-final class _NoReservedAddresses implements ReservedAddressPort {
-  @override
-  Future<Result<bool, TransactionSyncFailure>> isReserved(
-    WalletKey key,
-    String address,
-  ) async => const Ok(false);
 }

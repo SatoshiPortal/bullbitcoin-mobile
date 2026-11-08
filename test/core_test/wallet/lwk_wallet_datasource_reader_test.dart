@@ -29,7 +29,7 @@ void main() {
     final wallet = WalletModel.publicLwk(
       id: 'outputs',
       combinedCtDescriptor: 'unused',
-      isTestnet: true,
+      network: Network.liquidTestnet,
     );
     expect(await reader.isAddressUsed('recipient', wallet: wallet), isTrue);
     expect(await reader.isAddressUsed('recipient-ct', wallet: wallet), isTrue);

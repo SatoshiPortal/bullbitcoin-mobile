@@ -1,3 +1,4 @@
+import '../../../../fake_index_price_reader.dart';
 import 'dart:io';
 
 import 'package:bull_logger/bull_logger.dart';
@@ -19,8 +20,6 @@ import 'package:bull_pricer/bull_pricer.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart' hide Network, ScriptType;
-
-import '../../../../fake_index_price_reader.dart';
 
 class _Reporter extends Mock implements LoggerReporter {}
 
