@@ -1,71 +1,62 @@
 import 'dart:async';
 
-import 'package:bb_mobile/core/price/domain/rate.dart';
-import 'package:bb_mobile/core/price/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
-import 'package:bb_mobile/core/price/domain/usecases/get_available_currencies_usecase.dart';
-import 'package:bb_mobile/core/price/domain/usecases/get_price_history_usecase.dart';
-import 'package:bb_mobile/core/price/domain/usecases/refresh_price_history_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/watch_currency_changes_usecase.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/features/bitcoin_price/domain/usecases/get_bitcoin_price_usecase.dart';
+import 'package:bb_mobile/features/bitcoin_price/domain/usecases/get_price_history_usecase.dart';
 import 'package:bb_mobile/features/bitcoin_price/presentation/bloc/bitcoin_price_bloc.dart';
 import 'package:bb_mobile/features/bitcoin_price/presentation/cubit/price_chart_cubit.dart';
 import 'package:bb_mobile/features/bitcoin_price/ui/price_chart_widget.dart';
 import 'package:bb_mobile/generated/l10n/localization.dart';
+import 'package:bull_pricer/bull_pricer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
-class _MockConvertSatsToCurrencyAmountUsecase extends Mock
-    implements ConvertSatsToCurrencyAmountUsecase {}
-
-class _MockGetAvailableCurrenciesUsecase extends Mock
-    implements GetAvailableCurrenciesUsecase {}
+class _MockGetBitcoinPriceUsecase extends Mock
+    implements GetBitcoinPriceUsecase {}
 
 class _MockGetPriceHistoryUsecase extends Mock
     implements GetPriceHistoryUsecase {}
-
-class _MockRefreshPriceHistoryUsecase extends Mock
-    implements RefreshPriceHistoryUsecase {}
 
 class _MockGetSettingsUsecase extends Mock implements GetSettingsUsecase {}
 
 class _MockWatchCurrencyChangesUsecase extends Mock
     implements WatchCurrencyChangesUsecase {}
 
-Rate _rate(double price, int day) => Rate(
-  fromCurrency: 'BTC',
-  toCurrency: 'CAD',
-  interval: RateTimelineInterval.day,
-  createdAt: DateTime(2026, 1, day),
-  price: price,
+PricePoint _point(double price, int day) => PricePoint(
+  currency: SupportedCurrency.cad,
+  fiatAmount: price,
+  time: DateTime.utc(2026, 1, day),
 );
 
 void main() {
-  testWidgets('settles after the chart animations finish', (tester) async {
+  Future<PriceChartCubit> pumpChart(
+    WidgetTester tester,
+    List<PricePoint> prices, {
+    int? selectedDataPointIndex,
+  }) async {
     final watchCurrencyChanges = _MockWatchCurrencyChangesUsecase();
     when(
       () => watchCurrencyChanges.execute(),
     ).thenAnswer((_) => const Stream<String>.empty());
 
     final bitcoinPriceBloc = BitcoinPriceBloc(
-      getAvailableCurrenciesUsecase: _MockGetAvailableCurrenciesUsecase(),
       getSettingsUsecase: _MockGetSettingsUsecase(),
-      convertSatsToCurrencyAmountUsecase:
-          _MockConvertSatsToCurrencyAmountUsecase(),
+      getBitcoinPriceUsecase: _MockGetBitcoinPriceUsecase(),
       watchCurrencyChangesUsecase: watchCurrencyChanges,
     );
     final priceChartCubit =
         PriceChartCubit(
           getPriceHistoryUsecase: _MockGetPriceHistoryUsecase(),
-          refreshPriceHistoryUsecase: _MockRefreshPriceHistoryUsecase(),
           getSettingsUsecase: _MockGetSettingsUsecase(),
         )..emit(
           PriceChartState(
-            prices: [_rate(100, 1), _rate(120, 2), _rate(110, 3)],
+            prices: prices,
             currency: 'CAD',
-            selectedDataPointIndex: 1,
+            selectedDataPointIndex: selectedDataPointIndex,
           ),
         );
     addTearDown(bitcoinPriceBloc.close);
@@ -87,6 +78,32 @@ void main() {
         ),
       ),
     );
+    return priceChartCubit;
+  }
+
+  // A single point used to divide the chart width by zero and paint NaN
+  // offsets on every frame.
+  testWidgets('a single point paints without error', (tester) async {
+    await pumpChart(tester, [_point(100, 1)]);
+    await tester.pump(const Duration(seconds: 2));
+
+    expect(tester.takeException(), isNull);
+  });
+
+  // Equal prices used to divide by a zero price range.
+  testWidgets('a flat line paints without error', (tester) async {
+    await pumpChart(tester, [_point(100, 1), _point(100, 2), _point(100, 3)]);
+    await tester.pump(const Duration(seconds: 2));
+
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('settles after the chart animations finish', (tester) async {
+    final priceChartCubit = await pumpChart(tester, [
+      _point(100, 1),
+      _point(120, 2),
+      _point(110, 3),
+    ], selectedDataPointIndex: 1);
 
     expect(find.byType(CustomPaint), findsWidgets);
     expect(tester.binding.transientCallbackCount, greaterThan(0));

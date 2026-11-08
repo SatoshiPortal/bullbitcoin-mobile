@@ -81,9 +81,9 @@ class SwapConfirmPage extends StatelessWidget {
                         TransferBloc bloc,
                       ) {
                         final amount = bloc.state.inputAmountSat;
-                        final rate = bloc.state.exchangeRate ?? 0.0;
+                        final rate = bloc.state.exchangeRate;
                         final currency = bloc.state.fiatCurrencyCode ?? 'CAD';
-                        if (rate == 0.0) return '';
+                        if (rate == null) return '';
                         final fiatAmount = amount * rate / 100000000;
                         return '${fiatAmount.toStringAsFixed(2)} $currency';
                       });

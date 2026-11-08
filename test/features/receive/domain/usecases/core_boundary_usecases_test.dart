@@ -2,8 +2,6 @@ import 'dart:io';
 
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/entities/signer_entity.dart';
-import 'package:bb_mobile/core/price/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
-import 'package:bb_mobile/core/price/domain/usecases/get_available_currencies_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
@@ -14,25 +12,21 @@ import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/receive_failure.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/convert_receive_amount_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/get_receive_address_at_index_usecase.dart';
-import 'package:bb_mobile/features/receive/domain/usecases/get_receive_currencies_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/get_receive_settings_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/get_receive_wallets_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/prepare_receive_address_usecase.dart';
+import 'package:bull_pricer/bull_pricer.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart' hide Network, ScriptType;
+
+import '../../../../fake_index_price_reader.dart';
 
 class _Reporter extends Mock implements LoggerReporter {}
 
 class _MockGetWalletsUsecase extends Mock implements GetWalletsUsecase {}
 
 class _MockGetSettingsUsecase extends Mock implements GetSettingsUsecase {}
-
-class _MockGetAvailableCurrenciesUsecase extends Mock
-    implements GetAvailableCurrenciesUsecase {}
-
-class _MockConvertSatsToCurrencyAmountUsecase extends Mock
-    implements ConvertSatsToCurrencyAmountUsecase {}
 
 class _MockGetReceiveAddressUsecase extends Mock
     implements GetReceiveAddressUsecase {}
@@ -147,34 +141,74 @@ void main() {
     });
   });
 
-  group('GetReceiveCurrenciesUsecase', () {
-    test('converts a throw into a sanitized failure', () async {
-      final inner = _MockGetAvailableCurrenciesUsecase();
-      when(() => inner.execute()).thenThrow(Exception(_rawReason));
-
-      final result = await GetReceiveCurrenciesUsecase(inner).execute();
-
-      switch (result) {
-        case Ok():
-          fail('a throw must not be reported as currencies');
-        case Err(:final failure):
-          expect(failure, isA<ReceiveUnexpectedFailure>());
-          expect(failure.logMessage, contains('app.sqlite'));
-      }
-    });
-  });
-
   group('ConvertReceiveAmountUsecase', () {
-    test('converts a throw into a sanitized failure', () async {
-      final inner = _MockConvertSatsToCurrencyAmountUsecase();
-      when(
-        () => inner.execute(
-          amountSat: any(named: 'amountSat'),
-          currencyCode: any(named: 'currencyCode'),
-        ),
-      ).thenThrow(Exception(_rawReason));
+    late _MockGetSettingsUsecase getSettings;
+    late FakeIndexPriceReader getIndexPrice;
+    late ConvertReceiveAmountUsecase usecase;
 
-      final result = await ConvertReceiveAmountUsecase(inner).execute();
+    setUp(() {
+      getSettings = _MockGetSettingsUsecase();
+      when(getSettings.execute).thenAnswer(
+        (_) async => SettingsEntity(
+          environment: Environment.mainnet,
+          bitcoinUnit: BitcoinUnit.sats,
+          currencyCode: 'CAD',
+        ),
+      );
+      getIndexPrice = FakeIndexPriceReader(fiatAmount: 100000);
+      usecase = ConvertReceiveAmountUsecase(
+        getSettingsUsecase: getSettings,
+        getIndexPrice: getIndexPrice.call,
+      );
+    });
+
+    test('without an amount, gives the mainnet price of one bitcoin', () async {
+      final result = await usecase.execute();
+
+      expect((result as Ok<double, ReceiveFailure>).value, 100000);
+      expect(getIndexPrice.requests.single, (
+        network: BitcoinNetwork.mainnet,
+        currency: SupportedCurrency.cad,
+      ));
+    });
+
+    test('values an amount in the requested currency', () async {
+      final result = await usecase.execute(
+        amountSat: BigInt.from(50000),
+        currencyCode: 'EUR',
+      );
+
+      expect((result as Ok<double, ReceiveFailure>).value, 50);
+      expect(getIndexPrice.requests.single.currency, SupportedCurrency.eur);
+    });
+
+    // Its own failure, so the bloc can tell it from one that stops receiving.
+    test('no price is a price unavailable failure', () async {
+      getIndexPrice.failure = const PricerNetworkFailure('offline');
+
+      final result = await usecase.execute();
+
+      expect(
+        (result as Err<double, ReceiveFailure>).failure,
+        isA<ReceivePriceUnavailableFailure>(),
+      );
+    });
+
+    test('a currency without a price is a price unavailable failure, never '
+        'asked', () async {
+      final result = await usecase.execute(currencyCode: 'JPY');
+
+      expect(
+        (result as Err<double, ReceiveFailure>).failure,
+        isA<ReceivePriceUnavailableFailure>(),
+      );
+      expect(getIndexPrice.requests, isEmpty);
+    });
+
+    test('converts a settings throw into a sanitized failure', () async {
+      when(getSettings.execute).thenThrow(Exception(_rawReason));
+
+      final result = await usecase.execute();
 
       switch (result) {
         case Ok():

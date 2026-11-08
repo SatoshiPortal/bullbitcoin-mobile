@@ -1,5 +1,3 @@
-import 'package:bb_mobile/core/price/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
-import 'package:bb_mobile/core/price/domain/usecases/get_available_currencies_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/poll_receive_wallet_usecase.dart';
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
@@ -16,7 +14,6 @@ import 'package:bb_mobile/features/receive/domain/usecases/create_receive_order_
 import 'package:bb_mobile/features/receive/domain/usecases/convert_receive_amount_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/fetch_receive_note_suggestions_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/get_receive_address_at_index_usecase.dart';
-import 'package:bb_mobile/features/receive/domain/usecases/get_receive_currencies_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/get_receive_settings_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/get_receive_wallets_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/load_receive_address_label_usecase.dart';
@@ -31,6 +28,7 @@ import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
 import 'package:bb_mobile/features/settings/public/settings_facade.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
+import 'package:bull_pricer/bull_pricer.dart';
 import 'package:get_it/get_it.dart';
 
 class ReceiveLocator {
@@ -85,13 +83,10 @@ class ReceiveLocator {
     locator.registerFactory<GetReceiveSettingsUsecase>(
       () => GetReceiveSettingsUsecase(locator<GetSettingsUsecase>()),
     );
-    locator.registerFactory<GetReceiveCurrenciesUsecase>(
-      () =>
-          GetReceiveCurrenciesUsecase(locator<GetAvailableCurrenciesUsecase>()),
-    );
     locator.registerFactory<ConvertReceiveAmountUsecase>(
       () => ConvertReceiveAmountUsecase(
-        locator<ConvertSatsToCurrencyAmountUsecase>(),
+        getSettingsUsecase: locator<GetSettingsUsecase>(),
+        getIndexPrice: Pricer.getIndexPrice,
       ),
     );
     locator.registerFactory<PrepareReceiveAddressUsecase>(
@@ -115,7 +110,6 @@ class ReceiveLocator {
     locator.registerFactoryParam<ReceiveBloc, Wallet?, void>(
       (wallet, _) => ReceiveBloc(
         getReceiveWalletsUsecase: locator<GetReceiveWalletsUsecase>(),
-        getReceiveCurrenciesUsecase: locator<GetReceiveCurrenciesUsecase>(),
         getReceiveSettingsUsecase: locator<GetReceiveSettingsUsecase>(),
         convertReceiveAmountUsecase: locator<ConvertReceiveAmountUsecase>(),
         prepareReceiveAddressUsecase: locator<PrepareReceiveAddressUsecase>(),
