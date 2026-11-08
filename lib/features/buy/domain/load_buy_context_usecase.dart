@@ -1,16 +1,17 @@
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
-import 'package:bb_mobile/core/price/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/fees/domain/get_network_fees_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_receive_address_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/features/buy/domain/buy_failure.dart';
 import 'package:bull_logger/bull_logger.dart';
+import 'package:bull_pricer/bull_pricer.dart';
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
 
@@ -20,7 +21,7 @@ class LoadBuyContextUsecase {
   final GetWalletsUsecase _getWalletsUsecase;
   final GetReceiveAddressUsecase _getReceiveAddressUsecase;
   final GetNetworkFeesUsecase _getNetworkFeesUsecase;
-  final ConvertSatsToCurrencyAmountUsecase _convertSatsToCurrencyAmountUsecase;
+  final IndexPriceReader _getIndexPrice;
 
   const LoadBuyContextUsecase({
     required this._getExchangeUserSummaryUsecase,
@@ -28,7 +29,7 @@ class LoadBuyContextUsecase {
     required this._getWalletsUsecase,
     required this._getReceiveAddressUsecase,
     required this._getNetworkFeesUsecase,
-    required this._convertSatsToCurrencyAmountUsecase,
+    required this._getIndexPrice,
   });
 
   /// The exchange account summary and the app settings, which the buy screen
@@ -96,25 +97,45 @@ class LoadBuyContextUsecase {
     }
   }
 
+  /// [amountSat] in [currencyCode], or in the settings currency when none is
+  /// given. Without an amount, the price of one bitcoin.
   @useResult
   Future<Result<double, BuyFailure>> satsToCurrency({
     BigInt? amountSat,
     String? currencyCode,
   }) async {
+    final SettingsEntity settings;
     try {
-      return Ok(
-        await _convertSatsToCurrencyAmountUsecase.execute(
-          amountSat: amountSat,
-          currencyCode: currencyCode,
-        ),
-      );
+      settings = await _getSettingsUsecase.execute();
     } catch (e, st) {
       log.severe(
-        message: 'Failed to convert sats to the display currency',
+        message: 'Failed to read the settings for the buy price',
         error: e,
         trace: st,
       );
       return Err(BuyUnexpectedFailure('$e'));
+    }
+    final code = currencyCode ?? settings.currencyCode;
+    final currency = SupportedCurrency.tryFromCode(code);
+    if (currency == null) {
+      return Err(BuyUnexpectedFailure('Currency not available: $code'));
+    }
+    final price = await _getIndexPrice(
+      network: settings.environment.isTestnet
+          ? BitcoinNetwork.testnet
+          : BitcoinNetwork.mainnet,
+      currency: currency,
+    );
+    switch (price) {
+      case Ok(:final value):
+        return Ok(
+          value.fiatValueOf(
+            amountSat ?? ConversionConstants.satsAmountOfOneBitcoin,
+          ),
+        );
+      case Err(:final failure):
+        log.warning('Buy price unavailable: ${failure.runtimeType}');
+        return Err(BuyQuoteUnavailableFailure(failure.logMessage));
     }
   }
 }

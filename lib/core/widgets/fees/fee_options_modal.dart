@@ -203,7 +203,7 @@ BullSelectableListItem _presetItem({
   required NetworkFee? rate,
   required BitcoinFeePreviewSlot slot,
   required bool loading,
-  required double exchangeRate,
+  required double? exchangeRate,
   required String fiatCurrencyCode,
 }) {
   if (rate == null) {
@@ -226,7 +226,8 @@ BullSelectableListItem _presetItem({
       isSubtitle2Loading: loading,
     );
   }
-  final fiatPart = exchangeRate > 0 && fiatCurrencyCode.isNotEmpty
+  final fiatPart =
+      exchangeRate != null && exchangeRate > 0 && fiatCurrencyCode.isNotEmpty
       ? ' (~ ${ConvertAmount.satsToFiat(previewFeeSat, exchangeRate)} '
             '$fiatCurrencyCode)'
       : '';

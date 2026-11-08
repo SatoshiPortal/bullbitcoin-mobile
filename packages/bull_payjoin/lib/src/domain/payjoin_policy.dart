@@ -22,7 +22,10 @@ final class PayjoinPolicy {
   static const minimumSessionLifetime = Duration(minutes: 1);
   static const maximumSessionLifetime = Duration(hours: 24);
 
-  /// Off by default: a user counterparty learns one of our UTXOs.
+  /// On by default: the receiver opted in by advertising a pj= endpoint, and
+  /// as the sender, the wallet's inputs are already in the original
+  /// transaction the receiver gets, so the payjoin reveals nothing new to it.
+  /// Only seeds fresh installs; a stored choice is never overridden.
   final bool sendEnabled;
 
   /// Off by default and behind the disclaimer: the receiver carries the
@@ -73,7 +76,7 @@ final class PayjoinPolicy {
   }
 
   factory PayjoinPolicy.defaults() => PayjoinPolicy(
-    sendEnabled: false,
+    sendEnabled: true,
     receiveEnabled: false,
     buyEnabled: true,
     sellEnabled: true,
