@@ -1287,13 +1287,19 @@ class PayBloc extends Bloc<PayEvent, PayState>
 
   void _emitSendPaymentError(Emitter<PayState> emit, PayFailure error) {
     final current = _currentPaymentState;
-    if (current == null || current.isPayinBroadcast) return;
+    if (current == null) return;
+    final confirmationDeadline = current.payOrder.confirmationDeadline;
+    log.fine(
+      'Pay confirm refused: failure=${error.runtimeType}, '
+      'broadcast=${current.isPayinBroadcast}, '
+      'secondsToDeadline=${confirmationDeadline?.difference(clock.now()).inSeconds}',
+    );
+    if (current.isPayinBroadcast) return;
     emit(current.copyWith(error: error, isConfirmingPayment: false));
 
     // Confirm is live again. If the lock lapsed during this failed attempt,
     // the refresh the scheduler fired meanwhile was skipped as in flight, so
     // ask now — unless a retry is already on its way.
-    final confirmationDeadline = current.payOrder.confirmationDeadline;
     if (confirmationDeadline != null &&
         !confirmationDeadline.isAfter(clock.now()) &&
         !_quoteScheduler.isPending) {

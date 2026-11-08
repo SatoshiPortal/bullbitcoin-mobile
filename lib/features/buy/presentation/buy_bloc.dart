@@ -457,6 +457,10 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
     // no longer the one the exchange would apply.
     final deadline = state.buyOrder?.confirmationDeadline;
     if (deadline != null && !deadline.isAfter(clock.now())) {
+      log.fine(
+        'Buy confirm refused: failure=BuyQuoteExpiredFailure, '
+        'secondsToDeadline=${deadline.difference(clock.now()).inSeconds}',
+      );
       emit(state.copyWith(failure: const BuyQuoteExpiredFailure()));
       if (!_quoteScheduler.isPending) add(const BuyEvent.refreshOrder());
       return;

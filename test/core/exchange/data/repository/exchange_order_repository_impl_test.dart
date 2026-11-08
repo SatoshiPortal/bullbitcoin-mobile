@@ -4,6 +4,7 @@ import 'package:bb_mobile/core/exchange/data/datasources/bullbitcoin_api_key_dat
 import 'package:bb_mobile/core/exchange/data/models/api_key_model.dart';
 import 'package:bb_mobile/core/exchange/data/models/order_model.dart';
 import 'package:bb_mobile/core/exchange/data/repository/exchange_order_repository_impl.dart';
+import 'package:bb_mobile/core/exchange/data/services/exchange_clock_offset.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/sepa_payment_processor.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -28,15 +29,18 @@ ExchangeApiKeyModel _activeApiKey() => ExchangeApiKeyModel(
 void main() {
   late _MockApiDatasource api;
   late _MockApiKeyDatasource apiKeys;
+  late ExchangeClockOffset clockOffset;
   late ExchangeOrderRepositoryImpl repository;
 
   setUp(() {
     api = _MockApiDatasource();
     apiKeys = _MockApiKeyDatasource();
+    clockOffset = ExchangeClockOffset();
     repository = ExchangeOrderRepositoryImpl(
       bullbitcoinApiDatasource: api,
       bullbitcoinApiKeyDatasource: apiKeys,
       isTestnet: false,
+      clockOffset: clockOffset,
     );
     when(
       () => apiKeys.get(isTestnet: any(named: 'isTestnet')),
@@ -188,5 +192,75 @@ void main() {
         throwsA(isA<BullBitcoinApiConfidentialSepaNotActivatedException>()),
       );
     });
+  });
+
+  group('payjoin is offered on sell and pay only with a correct clock', () {
+    const bip21 = 'bitcoin:bc1qexample?amount=0.001&pj=HTTPS://PJ.EXAMPLE/X';
+
+    void deviceAheadBy(Duration ahead) => clockOffset.observe(
+      serverTime: DateTime.utc(2026, 7, 1, 12),
+      deviceTime: DateTime.utc(2026, 7, 1, 12).add(ahead),
+    );
+
+    Future<String?> payjoinOf(String orderType) async {
+      stubOrders([
+        orderJsonFixture(orderType: orderType, overrides: {'bip21URI': bip21}),
+      ]);
+      return (await repository.getOrders()).single.payjoinBip21;
+    }
+
+    test('a correct clock keeps the sell payjoin', () async {
+      deviceAheadBy(const Duration(seconds: 5));
+
+      expect(await payjoinOf('Sell Bitcoin'), bip21);
+    });
+
+    test('a clock that is off drops the sell payjoin', () async {
+      deviceAheadBy(const Duration(minutes: 30));
+
+      expect(await payjoinOf('Sell Bitcoin'), isNull);
+    });
+
+    test('a clock that is off keeps the buy payjoin', () async {
+      deviceAheadBy(const Duration(minutes: 30));
+
+      expect(await payjoinOf('Buy Bitcoin'), bip21);
+    });
+  });
+
+  group('the confirmation deadline follows the device clock', () {
+    final serverDeadline = DateTime.parse('2026-07-01T12:10:00.000Z');
+
+    test('a device clock within tolerance keeps the server deadline', () async {
+      clockOffset.observe(
+        serverTime: DateTime.utc(2026, 7, 1, 12),
+        deviceTime: DateTime.utc(2026, 7, 1, 12, 0, 8),
+      );
+      stubOrders([orderJsonFixture()]);
+
+      final orders = await repository.getOrders();
+
+      expect(orders.single.confirmationDeadline, serverDeadline);
+    });
+
+    test(
+      'a device clock 30 minutes fast sees the deadline 30 minutes later',
+      () async {
+        clockOffset.observe(
+          serverTime: DateTime.utc(2026, 7, 1, 12),
+          deviceTime: DateTime.utc(2026, 7, 1, 12, 30),
+        );
+        stubOrders([orderJsonFixture()]);
+
+        final order = (await repository.getOrders()).single;
+
+        expect(
+          order.confirmationDeadline,
+          serverDeadline.add(const Duration(minutes: 30)),
+        );
+        // Display timestamps are not moved.
+        expect(order.createdAt, DateTime.parse('2026-07-01T12:00:00.000Z'));
+      },
+    );
   });
 }

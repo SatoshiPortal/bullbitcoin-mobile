@@ -9,6 +9,7 @@ import 'package:bb_mobile/core/exchange/data/repository/exchange_notification_re
 import 'package:bb_mobile/core/exchange/data/repository/exchange_order_repository_impl.dart';
 import 'package:bb_mobile/core/exchange/data/repository/exchange_support_chat_repository_impl.dart';
 import 'package:bb_mobile/core/exchange/data/repository/exchange_user_repository_impl.dart';
+import 'package:bb_mobile/core/exchange/data/services/exchange_clock_offset.dart';
 import 'package:bb_mobile/core/exchange/data/services/exchange_notification_service.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_api_key_repository.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_notification_repository.dart';
@@ -47,6 +48,10 @@ class ExchangeLocator {
     // release.
     const orderApiTimeout = Duration(seconds: 30);
 
+    // One device for both environments: one clock offset, measured from every
+    // order response before the repository maps it.
+    locator.registerLazySingleton<ExchangeClockOffset>(ExchangeClockOffset.new);
+
     locator.registerLazySingleton<BullbitcoinApiDatasource>(
       () => BullbitcoinApiDatasource(
         bullbitcoinApiHttpClient: Dio(
@@ -56,7 +61,7 @@ class ExchangeLocator {
             receiveTimeout: orderApiTimeout,
             sendTimeout: orderApiTimeout,
           ),
-        ),
+        )..interceptors.add(locator<ExchangeClockOffset>().interceptor),
       ),
       instanceName: 'mainnetExchangeApiDatasource',
     );
@@ -70,7 +75,7 @@ class ExchangeLocator {
             receiveTimeout: orderApiTimeout,
             sendTimeout: orderApiTimeout,
           ),
-        ),
+        )..interceptors.add(locator<ExchangeClockOffset>().interceptor),
       ),
       instanceName: 'testnetExchangeApiDatasource',
     );
@@ -180,6 +185,7 @@ class ExchangeLocator {
         ),
         bullbitcoinApiKeyDatasource: locator<BullbitcoinApiKeyDatasource>(),
         isTestnet: false,
+        clockOffset: locator<ExchangeClockOffset>(),
       ),
       instanceName: 'mainnetExchangeOrderRepository',
     );
@@ -190,6 +196,7 @@ class ExchangeLocator {
         ),
         bullbitcoinApiKeyDatasource: locator<BullbitcoinApiKeyDatasource>(),
         isTestnet: true,
+        clockOffset: locator<ExchangeClockOffset>(),
       ),
       instanceName: 'testnetExchangeOrderRepository',
     );
