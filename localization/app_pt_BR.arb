@@ -7745,7 +7745,7 @@
   "@autoswapWarningDescription": {
     "description": "Description text at the top of the autoswap warning bottom sheet"
   },
-  "sellInteracEmail": "E-mail Interac",
+  "sellInteracEmail": "E-mail para a transferência",
   "@sellInteracEmail": {
     "description": "Label for email to receive Interac payment"
   },
@@ -9617,7 +9617,7 @@
   "@sendHardwareWallet": {
     "description": "Option to sign with hardware device"
   },
-  "sellInteracTransfer": "Interac e-Transfer",
+  "sellInteracTransfer": "Transferência de dinheiro por e-mail",
   "@sellInteracTransfer": {
     "description": "Option for Interac payment (Canada)"
   },
@@ -10935,7 +10935,7 @@
   "recipientsJurisdictionCostaRica": "🇨🇷 Costa Rica",
   "recipientsJurisdictionArgentina": "🇦🇷 Argentina",
   "recipientsJurisdictionColombia": "🇨🇴 Colômbia",
-  "recipientsTypeInteracEmail": "Transferência Interac",
+  "recipientsTypeInteracEmail": "Transferência de dinheiro por e-mail",
   "recipientsTypeBillPayment": "Pagamento de contas",
   "recipientsTypeBankTransfer": "Transferência bancária",
   "recipientsTypeSepa": "Transferência SEPA",
@@ -11704,7 +11704,7 @@
   "testBackupErrorSeedUnavailable": "Não foi possível ler sua frase de recuperação. Tente novamente.",
   "testBackupErrorSeedNotMnemonic": "Esta carteira não tem frase de recuperação para testar.",
   "testBackupErrorCompletionFailed": "Sua frase de recuperação estava correta, mas não conseguimos salvar o resultado. Tente novamente.",
-  "withdrawInteracSecurityDetailsTitle": "Dados de segurança do Interac",
+  "withdrawInteracSecurityDetailsTitle": "Dados de segurança da transferência",
   "withdrawInteracSaveAsDefault": "Salvar estes dados como padrão",
   "withdrawInteracSecurityQuestionLengthError": "A pergunta de segurança deve ter entre 3 e 40 caracteres",
   "withdrawInteracSecurityAnswerLengthError": "A resposta de segurança deve ter entre 3 e 40 caracteres",

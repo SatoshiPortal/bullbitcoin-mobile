@@ -4,7 +4,7 @@ part of 'price_chart_cubit.dart';
 sealed class PriceChartState with _$PriceChartState {
   const factory PriceChartState({
     @Default(false) bool isLoading,
-    @Default([]) List<Rate> prices,
+    @Default([]) List<PricePoint> prices,
     String? currency,
     int? selectedDataPointIndex,
     PriceChartFailure? failure,
@@ -14,7 +14,7 @@ sealed class PriceChartState with _$PriceChartState {
   const PriceChartState._();
 
   bool get hasPrices => prices.isNotEmpty;
-  Rate? get selectedPrice {
+  PricePoint? get selectedPrice {
     if (selectedDataPointIndex != null &&
         selectedDataPointIndex! >= 0 &&
         selectedDataPointIndex! < prices.length) {

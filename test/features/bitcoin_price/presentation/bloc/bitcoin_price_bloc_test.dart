@@ -1,52 +1,59 @@
 import 'dart:async';
 
-import 'package:bb_mobile/core/price/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
-import 'package:bb_mobile/core/price/domain/usecases/get_available_currencies_usecase.dart';
+import 'package:bull_pricer/bull_pricer.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/settings/domain/watch_currency_changes_usecase.dart';
-import 'package:bb_mobile/features/bitcoin_price/domain/bitcoin_price_failure.dart';
+import 'package:bb_mobile/features/bitcoin_price/domain/usecases/get_bitcoin_price_usecase.dart';
 import 'package:bb_mobile/features/bitcoin_price/presentation/bloc/bitcoin_price_bloc.dart';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-
-class _MockGetAvailableCurrenciesUsecase extends Mock
-    implements GetAvailableCurrenciesUsecase {}
+import 'package:primitives/primitives.dart';
 
 class _MockGetSettingsUsecase extends Mock implements GetSettingsUsecase {}
 
-class _MockConvertSatsToCurrencyAmountUsecase extends Mock
-    implements ConvertSatsToCurrencyAmountUsecase {}
+class _MockGetBitcoinPriceUsecase extends Mock
+    implements GetBitcoinPriceUsecase {}
 
 class _MockWatchCurrencyChangesUsecase extends Mock
     implements WatchCurrencyChangesUsecase {}
 
-void main() {
-  const currencies = ['USD', 'CAD'];
+/// The price the use case gives: [price] when it lands with one, no rate when
+/// it lands with none, and an unexpected failure when it fails.
+Future<Result<double, PricerFailure>> _result(Future<double?> price) async {
+  try {
+    final value = await price;
+    return value == null
+        ? const Err(PricerNetworkFailure('no price'))
+        : Ok(value);
+  } on Exception catch (e) {
+    return Err(PricerUnexpectedFailure('$e'));
+  }
+}
 
-  late _MockGetAvailableCurrenciesUsecase getAvailableCurrencies;
+void main() {
+  final currencies = SupportedCurrency.codes;
+
   late _MockGetSettingsUsecase getSettings;
-  late _MockConvertSatsToCurrencyAmountUsecase convertSatsToCurrency;
+  late _MockGetBitcoinPriceUsecase getBitcoinPrice;
   late _MockWatchCurrencyChangesUsecase watchCurrencyChanges;
 
   BitcoinPriceBloc buildBloc() => BitcoinPriceBloc(
-    getAvailableCurrenciesUsecase: getAvailableCurrencies,
     getSettingsUsecase: getSettings,
-    convertSatsToCurrencyAmountUsecase: convertSatsToCurrency,
+    getBitcoinPriceUsecase: getBitcoinPrice,
     watchCurrencyChangesUsecase: watchCurrencyChanges,
   );
 
-  void stubPrice(Future<double> Function() answer) {
+  void stubPrice(Future<double?> Function() answer, {String currency = 'USD'}) {
     when(
-      () => convertSatsToCurrency.execute(currencyCode: 'USD'),
-    ).thenAnswer((_) => answer());
+      () => getBitcoinPrice.execute(currencyCode: currency),
+    ).thenAnswer((_) => _result(answer()));
   }
 
   setUp(() {
-    getAvailableCurrencies = _MockGetAvailableCurrenciesUsecase();
     getSettings = _MockGetSettingsUsecase();
-    convertSatsToCurrency = _MockConvertSatsToCurrencyAmountUsecase();
+    getBitcoinPrice = _MockGetBitcoinPriceUsecase();
     watchCurrencyChanges = _MockWatchCurrencyChangesUsecase();
 
     when(
@@ -59,17 +66,14 @@ void main() {
         currencyCode: 'USD',
       ),
     );
-    when(
-      () => getAvailableCurrencies.execute(),
-    ).thenAnswer((_) async => currencies);
   });
 
   group('offline start', () {
-    // The price datasource maps a network error to a zero rate.
+    // The pricer has no price: offline, or rate limited.
     blocTest<BitcoinPriceBloc, BitcoinPriceState>(
       'keeps the currency and its list when the price fails',
       build: () {
-        stubPrice(() async => 0);
+        stubPrice(() async => null);
         return buildBloc();
       },
       act: (bloc) => bloc.add(const BitcoinPriceStarted()),
@@ -79,11 +83,13 @@ void main() {
         expect(bloc.state.hasValidFiatRate, isFalse);
         expect(bloc.state.startupFailed, isTrue);
         expect(bloc.state.loadingPrice, isFalse);
+        expect(bloc.state.failure, isNull);
       },
     );
 
     blocTest<BitcoinPriceBloc, BitcoinPriceState>(
-      'keeps the currency and its list when the price throws',
+      'keeps the currency and its list, and shows a failure other than '
+      'offline',
       build: () {
         stubPrice(() async => throw Exception('offline'));
         return buildBloc();
@@ -94,6 +100,7 @@ void main() {
         expect(bloc.state.availableCurrencies, currencies);
         expect(bloc.state.hasValidFiatRate, isFalse);
         expect(bloc.state.startupFailed, isTrue);
+        expect(bloc.state.failure, isA<PricerUnexpectedFailure>());
       },
     );
 
@@ -103,7 +110,7 @@ void main() {
       'recovers the price on a refresh once back online',
       build: () {
         online = false;
-        stubPrice(() async => online ? 100000 : 0);
+        stubPrice(() async => online ? 100000 : null);
         return buildBloc();
       },
       act: (bloc) async {
@@ -135,7 +142,7 @@ void main() {
     },
   );
 
-  // A refresh only reaches the pricer once the repository's price is over a
+  // A refresh only reaches the pricer once the cached price is over a
   // minute old, so the price still on screen is outdated: with no answer,
   // show no price rather than that one.
   blocTest<BitcoinPriceBloc, BitcoinPriceState>(
@@ -173,8 +180,7 @@ void main() {
           online = false;
           return 100000;
         }
-        // The datasource reports an unreachable pricer as a zero rate.
-        return 0;
+        return null;
       });
       return buildBloc();
     },
@@ -186,7 +192,7 @@ void main() {
     verify: (bloc) {
       expect(bloc.state.bitcoinPrice, isNull);
       expect(bloc.state.hasValidFiatRate, isFalse);
-      expect(bloc.state.failure, isA<BitcoinPriceInvalidRateFailure>());
+      expect(bloc.state.failure, isA<PricerNetworkFailure>());
     },
   );
 
@@ -205,9 +211,7 @@ void main() {
         // test releases it, after the currency has changed.
         return usdCalls == 1 ? Future.value(100000) : slowUsdRefresh.future;
       });
-      when(
-        () => convertSatsToCurrency.execute(currencyCode: 'EUR'),
-      ).thenAnswer((_) async => 90000);
+      stubPrice(() async => 90000, currency: 'EUR');
       return buildBloc();
     },
     act: (bloc) async {
@@ -234,9 +238,7 @@ void main() {
     build: () {
       slowUsdStart = Completer<double>();
       stubPrice(() => slowUsdStart.future);
-      when(
-        () => convertSatsToCurrency.execute(currencyCode: 'EUR'),
-      ).thenAnswer((_) async => 90000);
+      stubPrice(() async => 90000, currency: 'EUR');
       return buildBloc();
     },
     act: (bloc) async {
@@ -267,11 +269,10 @@ void main() {
         ..add(const BitcoinPriceFetched());
       await bloc.stream.firstWhere((s) => s.hasValidFiatRate);
     },
+    // Only the full load is deduplicated here: a price read that overlaps it
+    // shares the pricer's request in flight, so the API is asked once.
     verify: (bloc) {
       verify(() => getSettings.execute()).called(1);
-      verify(
-        () => convertSatsToCurrency.execute(currencyCode: 'USD'),
-      ).called(1);
     },
   );
 
@@ -286,9 +287,7 @@ void main() {
         usdCalls++;
         return usdCalls == 1 ? Future.value(100000) : failingUsdRefresh.future;
       });
-      when(
-        () => convertSatsToCurrency.execute(currencyCode: 'EUR'),
-      ).thenAnswer((_) async => 90000);
+      stubPrice(() async => 90000, currency: 'EUR');
       return buildBloc();
     },
     act: (bloc) async {
@@ -321,24 +320,22 @@ void main() {
     }
 
     test('a burst towards the loaded currency reads it once', () async {
-      // Re-reading the shown currency is allowed: the price repository serves
-      // it from its minute-long cache, so the pricer is not asked again.
+      // Re-reading the shown currency is allowed: the pricer serves it from
+      // its minute-long cache, so the price service is not asked again.
       final answer = Completer<double>();
       stubPrice(() async => 70000);
       final bloc = buildBloc();
       addTearDown(bloc.close);
       bloc.add(const BitcoinPriceStarted());
       await pumpEventQueue();
-      clearInteractions(convertSatsToCurrency);
+      clearInteractions(getBitcoinPrice);
       stubPrice(() => answer.future);
 
       await burst(bloc, 'USD');
       answer.complete(71000);
       await pumpEventQueue();
 
-      verify(
-        () => convertSatsToCurrency.execute(currencyCode: 'USD'),
-      ).called(1);
+      verify(() => getBitcoinPrice.execute(currencyCode: 'USD')).called(1);
       expect(bloc.state.bitcoinPrice, 71000);
     });
 
@@ -352,9 +349,7 @@ void main() {
         final second = Completer<double>();
         var usdCalls = 0;
         stubPrice(() => ++usdCalls == 1 ? first.future : second.future);
-        when(
-          () => convertSatsToCurrency.execute(currencyCode: 'CAD'),
-        ).thenAnswer((_) async => 95000);
+        stubPrice(() async => 95000, currency: 'CAD');
         final bloc = buildBloc();
         addTearDown(bloc.close);
 
@@ -380,9 +375,7 @@ void main() {
     test('an answer for a currency left since does not overwrite', () async {
       final usd = Completer<double>();
       stubPrice(() => usd.future);
-      when(
-        () => convertSatsToCurrency.execute(currencyCode: 'CAD'),
-      ).thenAnswer((_) async => 95000);
+      stubPrice(() async => 95000, currency: 'CAD');
       final bloc = buildBloc();
       addTearDown(bloc.close);
 
@@ -407,15 +400,13 @@ void main() {
       answer.complete(70000);
       await pumpEventQueue();
 
-      verify(
-        () => convertSatsToCurrency.execute(currencyCode: 'USD'),
-      ).called(1);
+      verify(() => getBitcoinPrice.execute(currencyCode: 'USD')).called(1);
       expect(bloc.state.currency, 'USD');
       expect(bloc.state.bitcoinPrice, 70000);
     });
 
     test('a currency whose fetch failed is fetched again', () async {
-      stubPrice(() async => 0);
+      stubPrice(() async => null);
       final bloc = buildBloc();
       addTearDown(bloc.close);
       bloc.add(const BitcoinPriceCurrencyChanged(currencyCode: 'USD'));
@@ -426,18 +417,14 @@ void main() {
       bloc.add(const BitcoinPriceCurrencyChanged(currencyCode: 'USD'));
       await pumpEventQueue();
 
-      verify(
-        () => convertSatsToCurrency.execute(currencyCode: 'USD'),
-      ).called(2);
+      verify(() => getBitcoinPrice.execute(currencyCode: 'USD')).called(2);
       expect(bloc.state.bitcoinPrice, 70000);
     });
 
     test('switching to another currency still fetches it', () async {
       final cad = Completer<double>();
       stubPrice(() async => 70000);
-      when(
-        () => convertSatsToCurrency.execute(currencyCode: 'CAD'),
-      ).thenAnswer((_) => cad.future);
+      stubPrice(() => cad.future, currency: 'CAD');
       final bloc = buildBloc();
       addTearDown(bloc.close);
       bloc.add(const BitcoinPriceStarted());
@@ -447,9 +434,7 @@ void main() {
       cad.complete(95000);
       await pumpEventQueue();
 
-      verify(
-        () => convertSatsToCurrency.execute(currencyCode: 'CAD'),
-      ).called(1);
+      verify(() => getBitcoinPrice.execute(currencyCode: 'CAD')).called(1);
       expect(bloc.state.currency, 'CAD');
       expect(bloc.state.bitcoinPrice, 95000);
     });

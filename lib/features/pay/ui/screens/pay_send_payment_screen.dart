@@ -198,7 +198,7 @@ class PaySendPaymentScreen extends StatelessWidget {
                                 // TODO: Use localization labels instead of hardcoded strings.
                                 // CANADA types
                                 RecipientType.interacEmailCad =>
-                                  'Interac e-Transfer',
+                                  context.loc.recipientsTypeInteracEmail,
                                 RecipientType.billPaymentCad => 'Bill Payment',
                                 RecipientType.bankTransferCad =>
                                   'Bank Transfer',

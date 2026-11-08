@@ -4,7 +4,6 @@ import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repos
 import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_order_usercase.dart';
 import 'package:bb_mobile/core/fees/domain/get_network_fees_usecase.dart';
-import 'package:bb_mobile/core/price/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/bitcoin_wallet_repository.dart';
@@ -35,6 +34,7 @@ import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_pres
 import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_usecase.dart';
 import 'package:bb_mobile/features/transactions/transactions_facade.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
+import 'package:bull_pricer/bull_pricer.dart';
 import 'package:get_it/get_it.dart';
 
 class SellLocator {
@@ -90,8 +90,7 @@ class SellLocator {
         getSettingsUsecase: locator<GetSettingsUsecase>(),
         getNetworkFeesUsecase: locator<GetNetworkFeesUsecase>(),
         getAddressAtIndexUsecase: locator<GetAddressAtIndexUsecase>(),
-        convertSatsToCurrencyAmountUsecase:
-            locator<ConvertSatsToCurrencyAmountUsecase>(),
+        getIndexPrice: Pricer.getIndexPrice,
         getOrderUsecase: locator<GetOrderUsecase>(),
       ),
     );

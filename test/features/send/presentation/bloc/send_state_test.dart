@@ -742,5 +742,12 @@ void main() {
       );
       expect(state.inputAmountSat, 0);
     });
+
+    test('has no fiat value, rather than a zero one', () {
+      const state = SendState(confirmedAmountSat: 1000);
+      expect(state.inputAmountFiat, isNull);
+      expect(state.confirmedAmountFiat, isNull);
+      expect(state.formattedConfirmedAmountFiat, isEmpty);
+    });
   });
 }

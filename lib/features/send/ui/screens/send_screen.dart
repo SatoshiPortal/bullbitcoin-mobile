@@ -1018,7 +1018,9 @@ class _OnchainTransactionReview extends StatelessWidget {
           sendWalletLabel: selectedWallet?.displayLabel(context) ?? '',
           receiveWalletLabel: paymentRequestAddress,
           formattedBitcoinAmount: formattedBitcoinAmount,
-          formattedFiatEquivalent: '~$formattedFiatEquivalent',
+          formattedFiatEquivalent: formattedFiatEquivalent.isEmpty
+              ? ''
+              : '~$formattedFiatEquivalent',
           absoluteFees: formattedAbsoluteFees,
           selectedFeeOptionTitle: feeSelectionRowLabel(
             context,
@@ -1108,7 +1110,9 @@ class _LiquidOnchainSendInfoSection extends StatelessWidget {
       sendWalletLabel: selectedWallet?.displayLabel(context) ?? '',
       receiveWalletLabel: paymentRequestAddress,
       formattedBitcoinAmount: formattedBitcoinAmount,
-      formattedFiatEquivalent: '~$formattedFiatEquivalent',
+      formattedFiatEquivalent: formattedFiatEquivalent.isEmpty
+          ? ''
+          : '~$formattedFiatEquivalent',
       absoluteFees: formattedAbsoluteFees,
       selectedFeeOptionTitle: '',
       note: label,
@@ -2011,14 +2015,16 @@ class SendSucessScreen extends StatelessWidget {
                     maxLines: 4,
                     textAlign: .center,
                   ),
-                  const Gap(4),
-                  BullText(
-                    '~$fiatEquivalent',
-                    style: context.font.bodyMedium,
-                    color: context.appColors.secondary,
-                    maxLines: 4,
-                    textAlign: .center,
-                  ),
+                  if (fiatEquivalent.isNotEmpty) ...[
+                    const Gap(4),
+                    BullText(
+                      '~$fiatEquivalent',
+                      style: context.font.bodyMedium,
+                      color: context.appColors.secondary,
+                      maxLines: 4,
+                      textAlign: .center,
+                    ),
+                  ],
                 ],
               ),
             ),
