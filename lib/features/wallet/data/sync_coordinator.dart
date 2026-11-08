@@ -235,6 +235,7 @@ class SyncCoordinator {
     if (!_isAppResumed || !isActive()) return;
     if (wallet != null) {
       final kind = wallet.isLiquid ? SyncKind.liquid : SyncKind.bitcoin;
+      if (!_supports(kind, wallet.network.environment)) return;
       bool covers(_SyncPass pass) =>
           pass.walletId == walletId ||
           (pass.walletId == null && pass.kind == kind);

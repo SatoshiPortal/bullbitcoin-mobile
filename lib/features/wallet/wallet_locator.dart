@@ -1,4 +1,3 @@
-import 'package:bb_mobile/features/wallet/domain/usecases/read_wallet_usecase.dart';
 import 'data/catalog_wallet_secret_references_repository.dart';
 import 'domain/repositories/wallet_secret_references_repository.dart';
 import 'domain/usecases/load_network_wallet_setup_usecase.dart';
@@ -8,6 +7,7 @@ import 'package:background_tasks/background_tasks.dart';
 import 'package:flutter/widgets.dart';
 import 'data/payment_notifications.dart';
 import 'data/wallet_payment_observer.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/read_wallet_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/watch_wallet_transaction_by_tx_id_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/watch_wallet_transaction_by_address_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/watch_wallet_revisions_usecase.dart';
