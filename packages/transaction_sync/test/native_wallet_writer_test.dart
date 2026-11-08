@@ -1,3 +1,5 @@
+import 'dart:async';
+import 'package:transaction_sync/src/write/lease_diagnostics.dart';
 import 'dart:io';
 import 'package:bull_logger/bull_logger.dart';
 
@@ -169,6 +171,116 @@ void main() {
     await store.close();
     dir.deleteSync(recursive: true);
   });
+
+  test(
+    'wait diagnostics persist from 100 ms with safe caller context',
+    () async {
+      log = Logger.replace(directory: dir);
+      final trace = LeaseDiagnostics(
+        role: LeaseRole.writer,
+        intent: LeaseIntent.receive,
+        scope: LeaseScope.compute,
+        source: LeaseSource.addressList,
+      );
+      trace.acquire(waitedMs: 99);
+      await log.flush();
+      expect(
+        await log.readLogs(),
+        isNot(contains(contains('event=lease_wait'))),
+      );
+      trace.acquire(waitedMs: 100);
+      await log.flush();
+      final lines = (await log.readLogs())
+          .where((line) => line.contains('event=lease_wait'))
+          .toList();
+      expect(lines, hasLength(1));
+      expect(lines.single, contains('FINE'));
+      expect(
+        lines.single,
+        contains(
+          'role=writer intent=receive scope=compute source=address_list',
+        ),
+      );
+      expect(lines.single, contains('held_ms=0 waited_ms=100'));
+    },
+  );
+
+  for (final holdMs in [100, 800, 1200]) {
+    for (final intent in ['receive', 'create']) {
+      test(
+        '$intent waits asynchronously for a reader holding $holdMs ms',
+        () async {
+          log = Logger.replace(directory: dir);
+          final admitted = await writer.acquire(key) as Ok;
+          final reader = admitted.value as LiquidReadLease;
+          final released = Future<void>.delayed(
+            Duration(milliseconds: holdMs),
+            reader.release,
+          );
+          var ticks = 0;
+          final heartbeat = Timer.periodic(const Duration(milliseconds: 10), (
+            _,
+          ) {
+            ticks++;
+          });
+          final watch = Stopwatch()..start();
+          try {
+            final result = intent == 'receive'
+                ? await writer.receive(key, expectedGeneration: 1)
+                : await writer.create(key, expectedGeneration: 1);
+            final elapsedMs = watch.elapsedMilliseconds;
+            if (holdMs < 1000) {
+              expect(result, isA<Ok>());
+              expect(elapsedMs, greaterThanOrEqualTo(holdMs));
+            } else {
+              expect(
+                result,
+                isA<Err>().having(
+                  (r) => r.failure,
+                  'failure',
+                  isA<TransactionSyncBusyFailure>(),
+                ),
+              );
+              expect(elapsedMs, inInclusiveRange(1000, 1199));
+            }
+            expect(ticks, greaterThanOrEqualTo(3));
+            await log.flush();
+            final lines = await log.readLogs();
+            final event = holdMs < 1000 ? 'lease_wait' : 'lease_busy';
+            final waits = lines
+                .where((line) => line.contains('event=$event role=writer'))
+                .toList();
+            expect(waits, hasLength(1));
+            expect(waits.single, contains('FINE'));
+            expect(
+              waits.single,
+              contains('intent=$intent scope=foreground source=other'),
+            );
+            final waitedMs = int.parse(
+              RegExp(r'waited_ms=(\d+)').firstMatch(waits.single)?.group(1) ??
+                  '-1',
+            );
+            expect(
+              waitedMs,
+              inInclusiveRange(holdMs < 1000 ? holdMs : 1000, elapsedMs),
+            );
+            expect(
+              lines.where(
+                (line) => line.contains('event=lease_busy role=writer'),
+              ),
+              hasLength(holdMs < 1000 ? 0 : 1),
+            );
+          } finally {
+            heartbeat.cancel();
+            await released;
+            await log.flush();
+          }
+          // A timed-out contender must not leave a control transaction behind.
+          expect(await writer.receive(key, expectedGeneration: 1), isA<Ok>());
+        },
+      );
+    }
+  }
 
   test(
     'unknown native cause has one persisted owner without foreign data',
