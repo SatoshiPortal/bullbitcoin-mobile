@@ -43,6 +43,7 @@ class WalletRepository implements SeedReferencePort, WalletReaderRepository {
   final Future<void> Function(
     WalletMetadataModel, {
     bool discover,
+    bool allowInitialScan,
     SyncReason reason,
   })
   _syncWallet;
@@ -59,6 +60,7 @@ class WalletRepository implements SeedReferencePort, WalletReaderRepository {
     required Future<void> Function(
       WalletMetadataModel, {
       bool discover,
+      bool allowInitialScan,
       SyncReason reason,
     })
     synchronize,
@@ -631,6 +633,7 @@ class WalletRepository implements SeedReferencePort, WalletReaderRepository {
   Future<void> sync(
     Wallet wallet, {
     bool discover = false,
+    bool allowInitialScan = true,
     SyncReason reason = SyncReason.auto,
   }) async {
     await _syncWallet(
@@ -648,6 +651,7 @@ class WalletRepository implements SeedReferencePort, WalletReaderRepository {
         signer: Signer.fromEntity(wallet.signer),
       ),
       discover: discover,
+      allowInitialScan: allowInitialScan,
       reason: reason,
     );
   }

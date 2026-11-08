@@ -13,10 +13,16 @@ class SyncWalletUsecase {
   Future<void> execute(
     Wallet wallet, {
     bool discover = false,
+    bool allowInitialScan = true,
     SyncReason reason = SyncReason.auto,
   }) async {
     try {
-      await _wallet.sync(wallet, discover: discover, reason: reason);
+      await _wallet.sync(
+        wallet,
+        discover: discover,
+        reason: reason,
+        allowInitialScan: allowInitialScan,
+      );
     } on WalletSnapshotException {
       rethrow;
     } catch (e) {

@@ -17,11 +17,15 @@ final class ForegroundWalletSync {
   Stream<String> get started => _sync.started.map((key) => key.id);
   Stream<String> get finished => _sync.finished.map((event) => event.key.id);
   Stream<ElectrumSyncResult> get results => _sync.finished
-      // Contention says nothing about server reachability. Completion still
+      // Contention or a deferred initial scan says nothing about server reachability. Completion still
       // reaches finished so callers clear their syncing state.
       .where(
         (event) => switch (event.result) {
-          Err(failure: TransactionSyncBusyFailure()) => false,
+          Err(
+            failure: TransactionSyncBusyFailure() ||
+                TransactionSyncInitialScanRequiredFailure(),
+          ) =>
+            false,
           _ => true,
         },
       )
@@ -37,6 +41,7 @@ final class ForegroundWalletSync {
   Future<void> synchronize(
     WalletMetadataModel metadata, {
     bool discover = false,
+    bool allowInitialScan = true,
     SyncReason reason = SyncReason.auto,
   }) async {
     final descriptor = WalletCatalogPortImpl.descriptorFromMetadata(metadata);
@@ -48,6 +53,7 @@ final class ForegroundWalletSync {
         var result = await _sync.execute(
           value,
           discover: discover,
+          allowInitialScan: allowInitialScan,
           reason: reason,
         );
         final native = _native;
@@ -58,6 +64,7 @@ final class ForegroundWalletSync {
           result = await _sync.execute(
             value,
             discover: discover,
+            allowInitialScan: allowInitialScan,
             reason: reason,
           );
         }

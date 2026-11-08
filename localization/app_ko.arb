@@ -7965,7 +7965,7 @@
   "@fundExchangeJurisdictionMexico": {
     "description": "Dropdown option for Mexico jurisdiction"
   },
-  "sellInteracEmail": "Interac 이메일",
+  "sellInteracEmail": "송금용 이메일",
   "@sellInteracEmail": {
     "description": "Label for email to receive Interac payment"
   },
@@ -10119,7 +10119,7 @@
   "@autoswapTitle": {
     "description": "Header title for auto transfer settings bottom sheet"
   },
-  "sellInteracTransfer": "인터랙 e-Transfer",
+  "sellInteracTransfer": "이메일 송금",
   "@sellInteracTransfer": {
     "description": "Option for Interac payment (Canada)"
   },
@@ -11426,7 +11426,7 @@
   "recipientsJurisdictionCostaRica": "🇨🇷 코스타리카",
   "recipientsJurisdictionArgentina": "🇦🇷 아르헨티나",
   "recipientsJurisdictionColombia": "🇨🇴 콜롬비아",
-  "recipientsTypeInteracEmail": "Interac e-Transfer",
+  "recipientsTypeInteracEmail": "이메일 송금",
   "recipientsTypeBillPayment": "청구서 납부",
   "recipientsTypeBankTransfer": "계좌 이체",
   "recipientsTypeSepa": "SEPA 이체",
@@ -11692,7 +11692,7 @@
   "testBackupErrorSeedUnavailable": "복구 문구를 읽을 수 없습니다. 다시 시도해 주세요.",
   "testBackupErrorSeedNotMnemonic": "이 지갑에는 테스트할 복구 문구가 없습니다.",
   "testBackupErrorCompletionFailed": "복구 문구는 정확했지만 결과를 저장하지 못했습니다. 다시 시도해 주세요.",
-  "withdrawInteracSecurityDetailsTitle": "Interac 보안 정보",
+  "withdrawInteracSecurityDetailsTitle": "송금 보안 정보",
   "withdrawInteracSaveAsDefault": "이 정보를 기본값으로 저장",
   "withdrawInteracSecurityQuestionLengthError": "보안 질문은 3~40자여야 합니다",
   "withdrawInteracSecurityAnswerLengthError": "보안 답변은 3~40자여야 합니다",

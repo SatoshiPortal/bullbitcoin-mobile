@@ -7,6 +7,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart' show BitcoinNetwork;
 
 void main() {
+  late StreamController<void> finishes;
   late StreamController<bool> activity;
   late StreamController<WalletRevisionState> revisions;
   late StreamSubscription<TransactionHistoryUpdate> subscription;
@@ -37,6 +38,7 @@ void main() {
   }
 
   void setup() {
+    finishes = StreamController<void>.broadcast();
     activity = StreamController<bool>.broadcast(sync: true);
     revisions = StreamController<WalletRevisionState>.broadcast();
     active = false;
@@ -44,6 +46,7 @@ void main() {
     watcher = WatchTransactionReloadsUsecase(
       WalletFacade(
         revisions.stream,
+        syncFinished: finishes.stream,
         syncPassActivity: activity.stream,
         isSyncPassActive: () => active,
       ),
@@ -63,6 +66,7 @@ void main() {
         clock.flushMicrotasks();
         activity.close();
         revisions.close();
+        finishes.close();
         clock.flushMicrotasks();
       }
     });
@@ -79,6 +83,7 @@ void main() {
       clock.flushMicrotasks();
       expect(reloads, 0);
       setActive(false);
+      clock.elapse(Duration.zero);
       expect(reloads, 1);
       clock.elapse(const Duration(seconds: 10));
       clock.flushMicrotasks();
@@ -100,6 +105,7 @@ void main() {
       clock.flushMicrotasks();
       expect(reloads, 0);
       setActive(false);
+      clock.elapse(Duration.zero);
       expect(reloads, 1);
     }),
   );
@@ -108,6 +114,7 @@ void main() {
     'direct and background deliveries coalesce outside a pass',
     () => check((clock) {
       revision('a');
+      finishes.add(null);
       revision('b');
       clock.flushMicrotasks();
       clock.elapse(const Duration(seconds: 3));
@@ -117,6 +124,24 @@ void main() {
       clock.flushMicrotasks();
       clock.elapse(const Duration(seconds: 3));
       clock.flushMicrotasks();
+      expect(reloads, 2);
+    }),
+  );
+
+  test(
+    'a new pass cancels a queued completion but later direct finishes reload',
+    () => check((clock) {
+      setActive(true);
+      setActive(false);
+      setActive(true);
+      clock.elapse(Duration.zero);
+      expect(reloads, 0);
+      setActive(false);
+      clock.elapse(Duration.zero);
+      expect(reloads, 1);
+      finishes.add(null);
+      clock.flushMicrotasks();
+      clock.elapse(const Duration(seconds: 3));
       expect(reloads, 2);
     }),
   );
@@ -151,6 +176,7 @@ void main() {
       expect(reloads, 0);
       expect(activity.hasListener, isFalse);
       expect(revisions.hasListener, isFalse);
+      expect(finishes.hasListener, isFalse);
     }),
   );
 }

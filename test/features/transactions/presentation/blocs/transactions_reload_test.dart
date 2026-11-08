@@ -109,6 +109,7 @@ void main() {
     );
     final facade = WalletFacade(
       revisions.stream,
+      syncFinished: finishes.stream.map((_) {}),
       syncPassActivity: coordinator.syncPassActivity,
       isSyncPassActive: () => coordinator.isSyncPassActive,
     );
@@ -130,8 +131,6 @@ void main() {
         await entry.$2.future;
         revisions.add(_revision(entry.$1.id));
         finishes.add(entry.$1);
-        await Future<void>.value();
-        await Future<void>.value();
       });
     }
     when(

@@ -157,6 +157,14 @@ void main() {
       await pumpEventQueue();
       expect(results, isEmpty);
       expect(finished, [id]);
+      policy.failure = const TransactionSyncInitialScanRequiredFailure();
+      await expectLater(
+        bridge.synchronize(row, allowInitialScan: false),
+        throwsA(isA<WalletSnapshotException>()),
+      );
+      await pumpEventQueue();
+      expect(results, isEmpty);
+      expect(finished, [id, id]);
       policy.failure = const TransactionSyncConnectionFailure();
       await expectLater(
         bridge.synchronize(row),
@@ -445,9 +453,9 @@ void main() {
   );
 
   test(
-    'single-wallet usecase forwards discovery through the repository',
+    'single-wallet usecase forwards discovery and initial-scan policy',
     () async {
-      final requests = <bool>[];
+      final requests = <(bool, bool)>[];
       final repository = WalletRepository(
         walletMetadataDatasource: metadata,
         bdkWalletDatasource: bdk,
@@ -456,8 +464,9 @@ void main() {
             (
               metadata, {
               bool discover = false,
+              allowInitialScan = true,
               SyncReason reason = SyncReason.auto,
-            }) async => requests.add(discover),
+            }) async => requests.add((discover, allowInitialScan)),
         isSyncing: ({String? walletId}) => false,
         syncStarted: const Stream.empty(),
         syncFinished: const Stream.empty(),
@@ -468,7 +477,8 @@ void main() {
       final usecase = SyncWalletUsecase(walletRepository: repository);
       await usecase.execute(wallet);
       await usecase.execute(wallet, discover: true);
-      expect(requests, [false, true]);
+      await usecase.execute(wallet, allowInitialScan: false);
+      expect(requests, [(false, true), (true, true), (false, false)]);
     },
   );
 
@@ -652,6 +662,7 @@ void main() {
             (
               value, {
               bool discover = false,
+              allowInitialScan = true,
               SyncReason reason = SyncReason.auto,
             }) async {
               expect(provisioned, isTrue);
