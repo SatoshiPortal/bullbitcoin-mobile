@@ -88,4 +88,109 @@ void main() {
 
     expect(find.text('order-42'), findsOneWidget);
   });
+
+  group('payout payjoin', () {
+    late _MockBuyBloc buyBloc;
+    late _MockBuyOrder order;
+
+    setUpAll(() => registerFallbackValue(const BuyEvent.refreshOrder()));
+
+    Future<void> pumpSuccess(
+      WidgetTester tester, {
+      required Duration age,
+    }) async {
+      buyBloc = _MockBuyBloc();
+      final settingsCubit = _MockSettingsCubit();
+      order = _MockBuyOrder();
+      when(() => buyBloc.state).thenReturn(BuyState(buyOrder: order));
+      when(
+        () => buyBloc.stream,
+      ).thenAnswer((_) => const Stream<BuyState>.empty());
+      when(() => settingsCubit.state).thenReturn(
+        const SettingsState(
+          storedSettings: SettingsEntity(
+            environment: Environment.testnet,
+            bitcoinUnit: BitcoinUnit.sats,
+            currencyCode: 'USD',
+          ),
+        ),
+      );
+      when(
+        () => settingsCubit.stream,
+      ).thenAnswer((_) => const Stream<SettingsState>.empty());
+      when(() => order.orderId).thenReturn('order-42');
+      when(() => order.payoutAmount).thenReturn(0.0001);
+      when(() => order.payinAmount).thenReturn(10.0);
+      when(() => order.payinCurrency).thenReturn('USD');
+      when(() => order.bitcoinAddress).thenReturn(null);
+      when(() => order.transactionId).thenReturn(null);
+      when(() => order.scheduledPayoutTime).thenReturn(null);
+      when(
+        () => order.payjoinOutcome,
+      ).thenReturn(OrderPayjoinOutcome.inProgress);
+      when(() => order.createdAt).thenReturn(DateTime.now().subtract(age));
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.themeData(AppThemeType.light),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: MultiBlocProvider(
+            providers: [
+              BlocProvider<BuyBloc>.value(value: buyBloc),
+              BlocProvider<SettingsCubit>.value(value: settingsCubit),
+            ],
+            child: const BuySuccessScreen(),
+          ),
+        ),
+      );
+    }
+
+    testWidgets('is followed while the exchange may still settle it', (
+      tester,
+    ) async {
+      await pumpSuccess(tester, age: Duration.zero);
+
+      expect(find.text('Payjoin in progress'), findsOneWidget);
+      await tester.pump(const Duration(seconds: 10));
+      verify(() => buyBloc.add(const BuyEvent.refreshOrder())).called(2);
+
+      await tester.pumpWidget(const SizedBox.shrink());
+    });
+
+    // The exchange stops negotiating five minutes after creating the order and
+    // may report nothing until its ordinary payout goes out.
+    testWidgets('is no longer claimed nor read once its window has passed', (
+      tester,
+    ) async {
+      await pumpSuccess(tester, age: const Duration(minutes: 7));
+
+      expect(find.text('Payjoin in progress'), findsNothing);
+      await tester.pump(const Duration(minutes: 5));
+      verifyNever(() => buyBloc.add(any()));
+
+      await tester.pumpWidget(const SizedBox.shrink());
+    });
+
+    testWidgets('stops being read when its window closes on screen', (
+      tester,
+    ) async {
+      await pumpSuccess(tester, age: const Duration(minutes: 5, seconds: 50));
+      expect(find.text('Payjoin in progress'), findsOneWidget);
+
+      // Fake time does not move the wall clock: age the order instead.
+      when(() => order.createdAt).thenReturn(
+        DateTime.now().subtract(const Duration(minutes: 6, seconds: 1)),
+      );
+      await tester.pump(const Duration(seconds: 5));
+      await tester.pump();
+      expect(find.text('Payjoin in progress'), findsNothing);
+
+      clearInteractions(buyBloc);
+      await tester.pump(const Duration(minutes: 5));
+      verifyNever(() => buyBloc.add(any()));
+
+      await tester.pumpWidget(const SizedBox.shrink());
+    });
+  });
 }

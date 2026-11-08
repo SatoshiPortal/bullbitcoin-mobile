@@ -12,18 +12,15 @@ dependencies:
   bull_sdk:
     git:
       url: https://github.com/SatoshiPortal/bull_sdk
-      ref: 7f3956c9a648bb19833694ec2e5b0c06bd200eca
+      ref: 1b01dc5e962c4c068fc4934b8125b839e2cd3264
       path: packages/bull_sdk
   crypto: ^3.0.7
   dio: ^5.9.0
   drift: ^2.29.0
   freezed_annotation: ^3.1.0
   meta: ^1.17.0
-  payjoin:
-    git:
-      url: https://github.com/SatoshiPortal/payjoin-rust
-      ref: 51da8ed79ee57536f4be223a01e6ecb163986f28
-      path: payjoin-ffi/dart
+  # Use the published archive for its release-locked native Cargo dependencies.
+  payjoin: 0.25.1
   primitives:
   sqlite3: ^2.9.4
   synchronized: ^3.4.0

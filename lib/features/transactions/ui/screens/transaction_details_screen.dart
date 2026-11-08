@@ -13,6 +13,7 @@ import 'package:bb_mobile/features/transactions/domain/transaction_label_policy.
 import 'package:bb_mobile/features/transactions/presentation/transaction_failure_l10n.dart';
 import 'package:bb_mobile/features/transactions/ui/widgets/broadcast_payjoin_original_tx_button.dart';
 import 'package:bb_mobile/features/transactions/ui/widgets/order_swap_status_description.dart';
+import 'package:bb_mobile/features/transactions/ui/widgets/retry_swap_button.dart';
 import 'package:bb_mobile/features/transactions/ui/widgets/swap_progress_indicator.dart';
 import 'package:bb_mobile/features/transactions/ui/widgets/swap_status_description.dart';
 import 'package:bb_mobile/features/transactions/ui/widgets/transaction_details_amount.dart';
@@ -75,6 +76,9 @@ class TransactionDetailsScreen extends StatelessWidget {
       (TransactionDetailsCubit bloc) =>
           bloc.state.isBroadcastingPayjoinOriginalTx,
     );
+    final retryingSwap = context.select(
+      (TransactionDetailsCubit bloc) => bloc.state.retryingSwap,
+    );
 
     final isOutgoing = tx?.isOutgoing;
     final isIncoming = tx?.isIncoming;
@@ -102,7 +106,7 @@ class TransactionDetailsScreen extends StatelessWidget {
       appBarBottom: PreferredSize(
         preferredSize: const Size.fromHeight(3.0),
         child: BullFadingLinearProgress(
-          trigger: isBroadcastingPayjoinOriginalTx,
+          trigger: isBroadcastingPayjoinOriginalTx || retryingSwap,
           backgroundColor: context.appColors.onPrimary,
           foregroundColor: context.appColors.primary,
         ),
@@ -118,6 +122,10 @@ class TransactionDetailsScreen extends StatelessWidget {
       beforeDetails: [
         if (isOngoingSwap == true && swap != null) ...[
           SwapStatusDescription(swap: swap),
+          if (swap.requiresAction) ...[
+            const Gap(16),
+            RetrySwapButton(swap: swap),
+          ],
           const Gap(16),
         ],
         if (isOngoingSwap == true && orderSwap != null) ...[

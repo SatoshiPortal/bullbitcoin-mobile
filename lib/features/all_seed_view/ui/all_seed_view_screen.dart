@@ -185,7 +185,7 @@ class _AllSeedViewScreenState extends State<AllSeedViewScreen>
                     if (state.swapMasterKey != null) ...[
                       const SizedBox(height: 24),
                       BullText(
-                        'Swap mnemonic',
+                        context.loc.allSeedViewSwapMnemonicTitle,
                         style: context.font.headlineSmall?.copyWith(
                           fontWeight: .bold,
                         ),
@@ -313,7 +313,7 @@ class _AllSeedViewScreenState extends State<AllSeedViewScreen>
       builder: (dialogContext) => AlertDialog(
         backgroundColor: context.appColors.surface,
         title: Text(
-          'Delete swap mnemonic?',
+          context.loc.allSeedViewDeleteSwapMnemonicTitle,
           style: context.font.headlineSmall?.copyWith(
             color: context.appColors.error,
             fontWeight: .bold,
@@ -321,9 +321,7 @@ class _AllSeedViewScreenState extends State<AllSeedViewScreen>
         ),
         content: SingleChildScrollView(
           child: Text(
-            'This removes the swap master key from secure storage. It will be '
-            're-derived from your wallet seed the next time the app needs it, '
-            'with the same fingerprint. Ongoing swaps are unaffected.',
+            context.loc.allSeedViewDeleteSwapMnemonicMessage,
             style: context.font.bodyMedium?.copyWith(
               color: context.appColors.onSurface,
             ),
@@ -395,12 +393,17 @@ class _AllSeedViewScreenState extends State<AllSeedViewScreen>
             ),
             const SizedBox(height: 8),
             BullText(
-              'Fingerprint: ${swapKey.fingerprint} (${swapKey.network})',
+              context.loc.allSeedViewSwapFingerprint(
+                swapKey.fingerprint,
+                swapKey.network,
+              ),
               style: context.font.bodyMedium,
               color: context.appColors.onSurface.withValues(alpha: 0.7),
             ),
             BullText(
-              'Linked wallet: ${swapKey.walletFingerprint}',
+              context.loc.allSeedViewSwapLinkedWallet(
+                swapKey.walletFingerprint,
+              ),
               style: context.font.bodyMedium,
               color: context.appColors.onSurface.withValues(alpha: 0.7),
             ),

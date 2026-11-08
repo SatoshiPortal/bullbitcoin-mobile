@@ -1,14 +1,24 @@
 import 'package:bb_mobile/core/background_tasks/tasks.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
-import 'package:bull_logger/bull_logger.dart' show log;
+import 'package:bull_logger/bull_logger.dart' show initializeLogging, log;
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/sync_wallet_usecase.dart';
 import 'package:bb_mobile/locator.dart';
-import 'package:bb_mobile/main.dart';
+import 'package:bb_mobile/native_libraries.dart';
+import 'package:bb_mobile/payjoin_setup.dart' show payjoinDatabaseFilename;
+import 'package:bb_mobile/report_logger_adapter.dart';
 import 'package:get_it/get_it.dart';
+import 'package:path/path.dart' as p;
+import 'package:path_provider/path_provider.dart';
 import 'package:workmanager/workmanager.dart';
 
 import 'package:bb_mobile/core/utils/result.dart';
+
+/// Removes schedules persisted by releases that enabled background execution.
+Future<void> cancelLegacyBackgroundTasks() async {
+  await Workmanager().initialize(backgroundTasksHandler);
+  await Workmanager().cancelAll();
+}
 
 @pragma('vm:entry-point')
 void backgroundTasksHandler() {
@@ -19,8 +29,13 @@ void backgroundTasksHandler() {
 
 Future<bool> tasksHandler(String task) async {
   final startTime = DateTime.now();
+  final bullDirectory = await getApplicationDocumentsDirectory();
 
-  await Bull.initLogs(background: true);
+  await initializeLogging(
+    directory: bullDirectory,
+    background: true,
+    reporter: const ReportLoggerAdapter(),
+  );
   // Note: `Report.init` is intentionally NOT called here. The BG isolate
   // has its own Dart-side Sentry hub but the native plugin (Sentry
   // Android / iOS) is a process-level singleton. Calling
@@ -31,9 +46,18 @@ Future<bool> tasksHandler(String task) async {
   // only; they don't reach Sentry. If/when we need BG observability,
   // switch to envelope-forwarding (write events to a queue here, ship
   // them next time the main isolate boots).
-  await Bull.initFlutterRustBridgeDependencies();
+  await initFlutterRustBridgeDependencies();
 
   try {
+    // A schedule left by an older release can fire while the updated app is
+    // starting. Opening the database here would run the pending migrations
+    // on a second connection, concurrently with the app's (#3045). Only the
+    // app migrates.
+    if (!await SqliteDatabase.isAtCurrentSchema()) {
+      log.fine('Background task $task skipped: database not migrated yet');
+      return true;
+    }
+
     final driftIsolate = await SqliteDatabase.createIsolateWithSpawn();
     final sqlite = SqliteDatabase(
       await driftIsolate.connect(singleClientMode: true),
@@ -48,6 +72,7 @@ Future<bool> tasksHandler(String task) async {
     await AppLocator.setup(
       locator,
       sqlite,
+      payjoinDatabasePath: p.join(bullDirectory.path, payjoinDatabaseFilename),
       startPayjoinRecovery: false,
       // No order-swap polling either: the watcher is lifecycle-gated to the
       // foreground app, and this isolate runs on a ~30s iOS background budget.

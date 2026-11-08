@@ -6,6 +6,7 @@ import 'package:bb_mobile/features/swap/presentation/transfer_bloc.dart';
 import 'package:bb_mobile/features/swap/presentation/swap_failure_l10n.dart';
 import 'package:bb_mobile/features/swap/presentation/transfer_confirm_error.dart';
 import 'package:bb_mobile/core/widgets/fees/fee_options_modal.dart';
+import 'package:bb_mobile/core/widgets/fees/fee_selection_label.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
@@ -80,15 +81,23 @@ class SwapConfirmPage extends StatelessWidget {
                         TransferBloc bloc,
                       ) {
                         final amount = bloc.state.inputAmountSat;
-                        final rate = bloc.state.exchangeRate ?? 0.0;
+                        final rate = bloc.state.exchangeRate;
                         final currency = bloc.state.fiatCurrencyCode ?? 'CAD';
-                        if (rate == 0.0) return '';
+                        if (rate == null) return '';
                         final fiatAmount = amount * rate / 100000000;
                         return '${fiatAmount.toStringAsFixed(2)} $currency';
                       });
-                      final selectedFeeOptionTitle = context.select(
-                        (TransferBloc bloc) =>
-                            bloc.state.selectedFeeOption.title(),
+                      final selectedFeeOption = context.select(
+                        (TransferBloc bloc) => bloc.state.selectedFeeOption,
+                      );
+                      final customFee = context.select(
+                        (TransferBloc bloc) => bloc.state.customFee,
+                      );
+                      final selectedFeeOptionTitle = feeSelectionRowLabel(
+                        context,
+                        selection: selectedFeeOption,
+                        customFee: customFee,
+                        fastestLabel: context.loc.sendFastFee,
                       );
                       final toWalletLabel = context.select(
                         (TransferBloc bloc) =>

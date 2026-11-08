@@ -7582,7 +7582,7 @@
   "@fundExchangeJurisdictionMexico": {
     "description": "Dropdown option for Mexico jurisdiction"
   },
-  "sellInteracEmail": "ایمیل Interac",
+  "sellInteracEmail": "ایمیل برای انتقال",
   "@sellInteracEmail": {
     "description": "Label for email to receive Interac payment"
   },
@@ -9405,7 +9405,7 @@
   "@autoswapTitle": {
     "description": "Header title for auto transfer settings bottom sheet"
   },
-  "sellInteracTransfer": "Interac e-Transfer",
+  "sellInteracTransfer": "انتقال پول از طریق ایمیل",
   "@sellInteracTransfer": {
     "description": "Option for Interac payment (Canada)"
   },
@@ -11444,7 +11444,7 @@
   "recipientsJurisdictionCostaRica": "🇨🇷 کاستاریکا",
   "recipientsJurisdictionArgentina": "🇦🇷 آرژانتین",
   "recipientsJurisdictionColombia": "🇨🇴 کلمبیا",
-  "recipientsTypeInteracEmail": "Interac e-Transfer",
+  "recipientsTypeInteracEmail": "انتقال پول از طریق ایمیل",
   "recipientsTypeBillPayment": "پرداخت صورتحساب",
   "recipientsTypeBankTransfer": "انتقال بانک",
   "recipientsTypeSepa": "انتقال SEPA",
@@ -11716,7 +11716,7 @@
   "testBackupErrorSeedUnavailable": "عبارت بازیابی شما خوانده نشد. لطفاً دوباره تلاش کنید.",
   "testBackupErrorSeedNotMnemonic": "این کیف‌پول عبارت بازیابی برای آزمایش ندارد.",
   "testBackupErrorCompletionFailed": "عبارت بازیابی شما درست بود، اما نتوانستیم نتیجه را ذخیره کنیم. لطفاً دوباره تلاش کنید.",
-  "withdrawInteracSecurityDetailsTitle": "جزئیات امنیتی Interac",
+  "withdrawInteracSecurityDetailsTitle": "جزئیات امنیتی انتقال",
   "withdrawInteracSaveAsDefault": "ذخیره این جزئیات به‌عنوان پیش‌فرض",
   "withdrawInteracSecurityQuestionLengthError": "پرسش امنیتی باید ۳ تا ۴۰ نویسه باشد",
   "withdrawInteracSecurityAnswerLengthError": "پاسخ امنیتی باید ۳ تا ۴۰ نویسه باشد",
@@ -11864,5 +11864,9 @@
   "recipientsConfidentialSepaNameMustMatchHint": "نام‌ها در حساب بانکی و IBAN مجازی شما باید یکسان باشند، وگرنه انتقال‌ها به‌طور خودکار برگشت داده می‌شوند.",
   "copiedToClipboard": "در کلیپ‌بورد کپی شد",
   "recipientsFieldBankAccountIban": "شماره حساب بانکی (IBAN)",
-  "recipientsTypeConfidentialSepaDescription": "برداشت‌ها به‌صورت انتقال به خودتان با نام حساب شما نمایش داده می‌شوند"
+  "recipientsTypeConfidentialSepaDescription": "برداشت‌ها به‌صورت انتقال به خودتان با نام حساب شما نمایش داده می‌شوند",
+  "sellPayoutBalance": "افزودن به موجودی حساب من",
+  "sellPayoutSepaDescription": "برداشت‌ها به‌صورت ارسال‌شده توسط Leonod نمایش داده می‌شوند",
+  "sellPayoutTitle": "انتخاب گیرنده",
+  "sellPayoutNewBadge": "جدید"
 }

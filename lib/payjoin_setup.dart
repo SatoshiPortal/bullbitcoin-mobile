@@ -16,25 +16,19 @@ import 'package:bb_mobile/payjoin_runtime_adapters.dart';
 import 'package:bb_mobile/recoverable_payjoin.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:get_it/get_it.dart';
-import 'package:path/path.dart' as p;
-import 'package:path_provider/path_provider.dart';
+
+const payjoinDatabaseFilename = 'payjoin.sqlite';
 
 abstract final class PayjoinSetup {
   static void setup(
     GetIt locator,
-    SqliteDatabase database, {
-    String? databasePath,
+    SqliteDatabase database,
+    String databasePath, {
     bool startRecovery = true,
   }) {
     final runtime = RecoverablePayjoin(() async {
-      final path =
-          databasePath ??
-          p.join(
-            (await getApplicationDocumentsDirectory()).path,
-            'payjoin.sqlite',
-          );
       return openPayjoin(
-        databasePath: path,
+        databasePath: databasePath,
         wallet: PayjoinWalletAdapter(
           locator<SeedDatasource>(),
           locator<BdkWalletDatasource>(),

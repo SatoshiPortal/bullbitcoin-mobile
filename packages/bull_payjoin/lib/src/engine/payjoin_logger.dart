@@ -1,6 +1,8 @@
 import 'dart:convert';
 
 import 'package:bull_payjoin/src/domain/payjoin_ports.dart';
+import 'package:bull_payjoin/src/engine/payjoin_constants.dart';
+import 'package:bull_payjoin/src/engine/payjoin_servers.dart';
 import 'package:crypto/crypto.dart';
 
 final class PayjoinLogger {
@@ -16,8 +18,15 @@ final class PayjoinLogger {
     required PayjoinLogCode code,
     PayjoinLogRole? role,
     String? sessionRef,
+    Uri? server,
   }) {
-    _write(PayjoinLogLevel.info, code, role: role, sessionRef: sessionRef);
+    _write(
+      PayjoinLogLevel.info,
+      code,
+      role: role,
+      sessionRef: sessionRef,
+      server: server,
+    );
   }
 
   /// A persisted FINE milestone with an explicit, stable code.
@@ -25,6 +34,7 @@ final class PayjoinLogger {
     required PayjoinLogCode code,
     PayjoinLogRole? role,
     String? sessionRef,
+    Uri? server,
     Object? error,
   }) {
     _write(
@@ -32,6 +42,7 @@ final class PayjoinLogger {
       code,
       role: role,
       sessionRef: sessionRef,
+      server: server,
       error: error,
     );
   }
@@ -40,6 +51,7 @@ final class PayjoinLogger {
     PayjoinLogCode code = PayjoinLogCode.lifecycle,
     PayjoinLogRole? role,
     String? sessionRef,
+    Uri? server,
     Object? error,
     StackTrace? trace,
   }) {
@@ -48,6 +60,7 @@ final class PayjoinLogger {
       code,
       role: role,
       sessionRef: sessionRef,
+      server: server,
       error: error,
       trace: trace,
     );
@@ -77,6 +90,7 @@ final class PayjoinLogger {
     PayjoinLogCode code, {
     PayjoinLogRole? role,
     String? sessionRef,
+    Uri? server,
     Object? error,
     StackTrace? trace,
   }) {
@@ -86,10 +100,22 @@ final class PayjoinLogger {
         code: code,
         role: role,
         sessionRef: _safeSessionRef(sessionRef),
+        server: _ownServer(server),
         error: error,
         trace: trace,
       ),
     );
+  }
+
+  /// The app's own server on the host of [url]; null for any other host, so
+  /// a directory chosen by a payment request never reaches logs.
+  Uri? _ownServer(Uri? url) {
+    final host = url == null ? null : payjoinHostOf(url);
+    if (host == null) return null;
+    for (final server in PayjoinConstants.serverUrls) {
+      if (payjoinHostOf(server) == host) return server;
+    }
+    return null;
   }
 
   String? _safeSessionRef(String? value) {

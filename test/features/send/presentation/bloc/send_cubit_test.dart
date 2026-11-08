@@ -4,8 +4,6 @@ import 'dart:typed_data';
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_liquid_transaction_usecase.dart';
 import 'package:bb_mobile/core/entities/signer_entity.dart';
-import 'package:bb_mobile/core/price/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
-import 'package:bb_mobile/core/price/domain/usecases/get_available_currencies_usecase.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/fees/domain/get_network_fees_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
@@ -31,6 +29,7 @@ import 'package:bb_mobile/features/send/domain/usecases/calculate_liquid_pset_si
 import 'package:bb_mobile/features/send/domain/usecases/create_send_cross_chain_swap_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/create_send_swap_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/detect_bitcoin_string_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/get_send_exchange_rate_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/get_send_payjoin_enabled_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/get_send_cross_chain_quote_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/get_send_swap_quote_usecase.dart';
@@ -76,17 +75,14 @@ class _MockDetectBitcoinStringUsecase extends Mock
 
 class _MockGetSettingsUsecase extends Mock implements GetSettingsUsecase {}
 
-class _MockConvertSatsToCurrencyAmountUsecase extends Mock
-    implements ConvertSatsToCurrencyAmountUsecase {}
+class _MockGetSendExchangeRateUsecase extends Mock
+    implements GetSendExchangeRateUsecase {}
 
 class _MockGetNetworkFeesUsecase extends Mock
     implements GetNetworkFeesUsecase {}
 
 class _MockGetWalletUtxosUsecase extends Mock
     implements GetWalletUtxosUsecase {}
-
-class _MockGetAvailableCurrenciesUsecase extends Mock
-    implements GetAvailableCurrenciesUsecase {}
 
 class _MockPrepareBitcoinSendUsecase extends Mock
     implements PrepareBitcoinSendUsecase {}
@@ -216,10 +212,9 @@ class _TestableSendCubit extends SendCubit {
     required super.bestWalletUsecase,
     required super.detectBitcoinStringUsecase,
     required super.getSettingsUsecase,
-    required super.convertSatsToCurrencyAmountUsecase,
+    required super.getSendExchangeRateUsecase,
     required super.getNetworkFeesUsecase,
     required super.getWalletUtxosUsecase,
-    required super.getAvailableCurrenciesUsecase,
     required super.prepareBitcoinSendUsecase,
     required super.validateBitcoinSelectionUsecase,
     required super.prepareLiquidSendUsecase,
@@ -354,10 +349,9 @@ void main() {
   late _MockSelectBestWalletUsecase bestWalletUsecase;
   late _MockDetectBitcoinStringUsecase detectBitcoinStringUsecase;
   late _MockGetSettingsUsecase getSettingsUsecase;
-  late _MockConvertSatsToCurrencyAmountUsecase convertSatsUsecase;
+  late _MockGetSendExchangeRateUsecase getSendExchangeRateUsecase;
   late _MockGetNetworkFeesUsecase getNetworkFeesUsecase;
   late _MockGetWalletUtxosUsecase getWalletUtxosUsecase;
-  late _MockGetAvailableCurrenciesUsecase getAvailableCurrenciesUsecase;
   late _MockPrepareBitcoinSendUsecase prepareBitcoinSendUsecase;
   late _MockValidateBitcoinSelectionUsecase validateBitcoinSelectionUsecase;
   late _MockPrepareLiquidSendUsecase prepareLiquidSendUsecase;
@@ -412,10 +406,9 @@ void main() {
     bestWalletUsecase: bestWalletUsecase,
     detectBitcoinStringUsecase: detectBitcoinStringUsecase,
     getSettingsUsecase: getSettingsUsecase,
-    convertSatsToCurrencyAmountUsecase: convertSatsUsecase,
+    getSendExchangeRateUsecase: getSendExchangeRateUsecase,
     getNetworkFeesUsecase: getNetworkFeesUsecase,
     getWalletUtxosUsecase: getWalletUtxosUsecase,
-    getAvailableCurrenciesUsecase: getAvailableCurrenciesUsecase,
     prepareBitcoinSendUsecase: prepareBitcoinSendUsecase,
     validateBitcoinSelectionUsecase: validateBitcoinSelectionUsecase,
     prepareLiquidSendUsecase: prepareLiquidSendUsecase,
@@ -508,10 +501,9 @@ void main() {
     bestWalletUsecase = _MockSelectBestWalletUsecase();
     detectBitcoinStringUsecase = _MockDetectBitcoinStringUsecase();
     getSettingsUsecase = _MockGetSettingsUsecase();
-    convertSatsUsecase = _MockConvertSatsToCurrencyAmountUsecase();
+    getSendExchangeRateUsecase = _MockGetSendExchangeRateUsecase();
     getNetworkFeesUsecase = _MockGetNetworkFeesUsecase();
     getWalletUtxosUsecase = _MockGetWalletUtxosUsecase();
-    getAvailableCurrenciesUsecase = _MockGetAvailableCurrenciesUsecase();
     prepareBitcoinSendUsecase = _MockPrepareBitcoinSendUsecase();
     validateBitcoinSelectionUsecase = _MockValidateBitcoinSelectionUsecase();
     when(
@@ -1073,15 +1065,46 @@ void main() {
           exchangeRate: 70000,
         ),
       );
-      // The datasource reports an unreachable pricer as a zero rate.
       when(
-        () => convertSatsUsecase.execute(currencyCode: 'CAD'),
-      ).thenAnswer((_) async => 0);
+        () => getSendExchangeRateUsecase.execute(currencyCode: 'CAD'),
+      ).thenAnswer((_) async => const Err(SendPriceUnavailableFailure()));
 
       await cubit.onCurrencyChanged('CAD');
 
       expect(cubit.state.inputAmountCurrencyCode, BitcoinUnit.sats.code);
       expect(cubit.state.isInputAmountFiat, isFalse);
+    });
+
+    test('a price that does not come leaves no rate, not a zero one', () async {
+      final cubit = buildCubit();
+      addTearDown(cubit.close);
+      cubit.setStateForTest(
+        const SendState(fiatCurrencyCode: 'USD', exchangeRate: 70000),
+      );
+      when(
+        () => getSendExchangeRateUsecase.execute(currencyCode: 'USD'),
+      ).thenAnswer((_) async => const Err(SendPriceUnavailableFailure()));
+
+      await cubit.getExchangeRate();
+
+      expect(cubit.state.exchangeRate, isNull);
+      expect(cubit.state.failure, isNull);
+    });
+
+    test('a failure other than no price is shown', () async {
+      final cubit = buildCubit();
+      addTearDown(cubit.close);
+      cubit.setStateForTest(
+        const SendState(fiatCurrencyCode: 'USD', exchangeRate: 70000),
+      );
+      when(
+        () => getSendExchangeRateUsecase.execute(currencyCode: 'USD'),
+      ).thenAnswer((_) async => const Err(SendUnexpectedFailure('settings')));
+
+      await cubit.getExchangeRate();
+
+      expect(cubit.state.exchangeRate, isNull);
+      expect(cubit.state.failure, isA<SendUnexpectedFailure>());
     });
   });
 

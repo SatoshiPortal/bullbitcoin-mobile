@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/widgets/address_viewer.dart';
@@ -11,7 +12,7 @@ import 'package:go_router/go_router.dart';
 
 class CommonCoinSelectionBottomSheet extends StatefulWidget {
   final BitcoinUnit bitcoinUnit;
-  final double exchangeRate;
+  final double? exchangeRate;
   final String fiatCurrency;
   final List<WalletUtxo> utxos;
   final List<WalletUtxo> initialSelectedUtxos;
@@ -86,9 +87,10 @@ class _CommonCoinSelectionBottomSheetState
 
     final isAmountSufficient = selectedUtxoTotalSat >= widget.amountToSendSat;
 
-    final selectedFiatEquivalent = widget.exchangeRate > 0
+    final rate = widget.exchangeRate;
+    final selectedFiatEquivalent = rate != null && rate > 0
         ? FormatAmount.fiat(
-            ConvertAmount.satsToFiat(selectedUtxoTotalSat, widget.exchangeRate),
+            ConvertAmount.satsToFiat(selectedUtxoTotalSat, rate),
             widget.fiatCurrency,
           )
         : null;
@@ -103,7 +105,7 @@ class _CommonCoinSelectionBottomSheetState
             children: [
               Center(
                 child: BullText(
-                  "Select amount",
+                  context.loc.selectAmountTitle,
                   style: context.font.headlineMedium?.copyWith(
                     color: context.appColors.secondary,
                   ),
@@ -137,7 +139,7 @@ class _CommonCoinSelectionBottomSheetState
           ],
           const Gap(8),
           BullText(
-            'Amount requested: $amountToSend',
+            context.loc.amountRequestedLabel(amountToSend),
             style: context.font.bodySmall?.copyWith(
               color: context.appColors.onSurfaceVariant,
             ),
@@ -145,7 +147,7 @@ class _CommonCoinSelectionBottomSheetState
           if (!isAmountSufficient) ...[
             const Gap(8),
             BullText(
-              'Selected amount is insufficient',
+              context.loc.sendSelectedUtxosInsufficient,
               style: context.font.bodySmall?.copyWith(
                 color: context.appColors.error,
               ),
@@ -173,7 +175,7 @@ class _CommonCoinSelectionBottomSheetState
           ),
           const Gap(24),
           BullButton.big(
-            label: "Done",
+            label: context.loc.doneButton,
             onPressed: selectedUtxoTotalSat >= widget.amountToSendSat
                 ? _onDonePressed
                 : () {},
@@ -197,7 +199,7 @@ class CommonCoinSelectTile extends StatelessWidget {
   final bool selected;
   final VoidCallback onTap;
   final BitcoinUnit bitcoinUnit;
-  final double exchangeRate;
+  final double? exchangeRate;
   final String fiatCurrency;
 
   const CommonCoinSelectTile({
@@ -216,10 +218,13 @@ class CommonCoinSelectTile extends StatelessWidget {
         ? FormatAmount.btc(ConvertAmount.satsToBtc(utxo.amountSat.toInt()))
         : FormatAmount.sats(utxo.amountSat.toInt());
 
-    final fiatEquivalent = FormatAmount.fiat(
-      ConvertAmount.satsToFiat(utxo.amountSat.toInt(), exchangeRate),
-      fiatCurrency,
-    );
+    final rate = exchangeRate;
+    final fiatEquivalent = rate != null && rate > 0
+        ? FormatAmount.fiat(
+            ConvertAmount.satsToFiat(utxo.amountSat.toInt(), rate),
+            fiatCurrency,
+          )
+        : null;
 
     final address = utxo.address;
     final addressType = utxo.addressKeyChain == WalletAddressKeyChain.external
@@ -268,12 +273,13 @@ class CommonCoinSelectTile extends StatelessWidget {
                       ),
                     ),
                   ),
-                  BullText(
-                    '~$fiatEquivalent',
-                    style: context.font.labelSmall?.copyWith(
-                      color: context.appColors.onSurfaceVariant,
+                  if (fiatEquivalent != null)
+                    BullText(
+                      '~$fiatEquivalent',
+                      style: context.font.labelSmall?.copyWith(
+                        color: context.appColors.onSurfaceVariant,
+                      ),
                     ),
-                  ),
                   const SizedBox(height: 12),
 
                   Divider(color: context.appColors.secondaryFixedDim),
@@ -281,7 +287,7 @@ class CommonCoinSelectTile extends StatelessWidget {
                   Row(
                     children: [
                       BullText(
-                        'Address: ',
+                        context.loc.addressLabel,
                         style: context.font.labelMedium?.copyWith(
                           color: context.appColors.onSurfaceVariant,
                         ),
@@ -294,7 +300,7 @@ class CommonCoinSelectTile extends StatelessWidget {
                         ),
                       ),
                       BullText(
-                        'Type: ',
+                        context.loc.typeLabel,
                         style: context.font.labelMedium?.copyWith(
                           color: context.appColors.onSurfaceVariant,
                         ),

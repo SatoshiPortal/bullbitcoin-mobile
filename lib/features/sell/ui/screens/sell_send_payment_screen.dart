@@ -1,3 +1,5 @@
+import 'package:bb_mobile/features/sell/domain/sell_order_payin_x.dart';
+import 'package:bb_mobile/features/sell/ui/widgets/sell_payout_details_v2.dart';
 import 'package:bb_mobile/core/widgets/lists/payment_detail_row.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
@@ -41,6 +43,12 @@ class SellSendPaymentScreen extends StatelessWidget {
       (SellBloc bloc) => switch (bloc.state) {
         SellPaymentState(:final selectedWallet) => selectedWallet,
         SellPreparingPaymentState(:final selectedWallet) => selectedWallet,
+        _ => null,
+      },
+    );
+    final recipient = context.select(
+      (SellBloc bloc) => switch (bloc.state) {
+        SellPaymentState(:final payoutRecipient) => payoutRecipient,
         _ => null,
       },
     );
@@ -153,29 +161,32 @@ class SellSendPaymentScreen extends StatelessWidget {
                       PaymentDetailRow(
                         title: context.loc.sellDepositAddress,
                         isAddress: true,
-                        value: order?.toAddress,
-                        copyValue: order?.toAddress,
+                        value: order?.sellPayinAddress,
+                        copyValue: order?.sellPayinAddress,
                       ),
-                      PaymentDetailRow(
-                        title: context.loc.sellPayoutRecipient,
-                        value: switch (order?.payoutMethod) {
-                          OrderPaymentMethod.cadBalance =>
-                            context.loc.sellCadBalance,
-                          OrderPaymentMethod.crcBalance =>
-                            context.loc.sellCrcBalance,
-                          OrderPaymentMethod.eurBalance =>
-                            context.loc.sellEurBalance,
-                          OrderPaymentMethod.usdBalance =>
-                            context.loc.sellUsdBalance,
-                          OrderPaymentMethod.mxnBalance =>
-                            context.loc.sellMxnBalance,
-                          OrderPaymentMethod.arsBalance =>
-                            context.loc.sellArsBalance,
-                          OrderPaymentMethod.copBalance =>
-                            context.loc.sellCopBalance,
-                          _ => order?.payoutMethod.name,
-                        },
-                      ),
+                      if (recipient != null)
+                        SellPayoutDetailsV2(recipient: recipient)
+                      else
+                        PaymentDetailRow(
+                          title: context.loc.sellPayoutRecipient,
+                          value: switch (order?.payoutMethod) {
+                            OrderPaymentMethod.cadBalance =>
+                              context.loc.sellCadBalance,
+                            OrderPaymentMethod.crcBalance =>
+                              context.loc.sellCrcBalance,
+                            OrderPaymentMethod.eurBalance =>
+                              context.loc.sellEurBalance,
+                            OrderPaymentMethod.usdBalance =>
+                              context.loc.sellUsdBalance,
+                            OrderPaymentMethod.mxnBalance =>
+                              context.loc.sellMxnBalance,
+                            OrderPaymentMethod.arsBalance =>
+                              context.loc.sellArsBalance,
+                            OrderPaymentMethod.copBalance =>
+                              context.loc.sellCopBalance,
+                            _ => order?.payoutMethod.name,
+                          },
+                        ),
                       const _Divider(),
                       PaymentDetailRow(
                         title: context.loc.sellPayinAmount,
@@ -201,9 +212,9 @@ class SellSendPaymentScreen extends StatelessWidget {
                         value: order == null
                             ? null
                             : FormatAmount.fiat(
-                                order.exchangeRateAmount ??
+                                order.sellExchangeRateAmount ??
                                     order.payoutAmount / order.payinAmount,
-                                order.exchangeRateCurrency ??
+                                order.sellExchangeRateCurrency ??
                                     order.payoutCurrency,
                               ),
                       ),

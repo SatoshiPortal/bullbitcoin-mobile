@@ -1,5 +1,7 @@
+import 'package:bb_mobile/features/sell/ui/widgets/sell_payout_details_v2.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:bb_mobile/features/sell/presentation/sell_failure_l10n.dart';
+import 'package:bb_mobile/features/sell/domain/sell_order_payin_x.dart';
 import 'package:bb_mobile/core/widgets/loading/payment_preparation_view.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
@@ -54,6 +56,12 @@ class SellReceivePaymentScreen extends StatelessWidget {
       (SellBloc bloc) => bloc.state is SellPaymentState
           ? (bloc.state as SellPaymentState).sellOrder
           : null,
+    );
+    final recipient = context.select(
+      (SellBloc bloc) => switch (bloc.state) {
+        SellPaymentState(:final payoutRecipient) => payoutRecipient,
+        _ => null,
+      },
     );
     final bitcoinUnit = context.select((SellBloc bloc) {
       final state = bloc.state;
@@ -139,29 +147,32 @@ class SellReceivePaymentScreen extends StatelessWidget {
                 color: context.appColors.secondaryFixedDim,
               ),
               const Gap(16),
-              _buildDetailRow(
-                context,
-                context.loc.sellPayoutRecipient,
-                order == null
-                    ? context.loc.sellLoadingGeneric
-                    : switch (order.payoutMethod) {
-                        OrderPaymentMethod.cadBalance =>
-                          context.loc.sellCadBalance,
-                        OrderPaymentMethod.crcBalance =>
-                          context.loc.sellCrcBalance,
-                        OrderPaymentMethod.eurBalance =>
-                          context.loc.sellEurBalance,
-                        OrderPaymentMethod.usdBalance =>
-                          context.loc.sellUsdBalance,
-                        OrderPaymentMethod.mxnBalance =>
-                          context.loc.sellMxnBalance,
-                        OrderPaymentMethod.arsBalance =>
-                          context.loc.sellArsBalance,
-                        OrderPaymentMethod.copBalance =>
-                          context.loc.sellCopBalance,
-                        _ => order.payoutMethod.name,
-                      },
-              ),
+              if (recipient != null)
+                SellPayoutDetailsV2(recipient: recipient)
+              else
+                _buildDetailRow(
+                  context,
+                  context.loc.sellPayoutRecipient,
+                  order == null
+                      ? context.loc.sellLoadingGeneric
+                      : switch (order.payoutMethod) {
+                          OrderPaymentMethod.cadBalance =>
+                            context.loc.sellCadBalance,
+                          OrderPaymentMethod.crcBalance =>
+                            context.loc.sellCrcBalance,
+                          OrderPaymentMethod.eurBalance =>
+                            context.loc.sellEurBalance,
+                          OrderPaymentMethod.usdBalance =>
+                            context.loc.sellUsdBalance,
+                          OrderPaymentMethod.mxnBalance =>
+                            context.loc.sellMxnBalance,
+                          OrderPaymentMethod.arsBalance =>
+                            context.loc.sellArsBalance,
+                          OrderPaymentMethod.copBalance =>
+                            context.loc.sellCopBalance,
+                          _ => order.payoutMethod.name,
+                        },
+                ),
               const Gap(8),
               _buildDetailRow(
                 context,
@@ -192,9 +203,9 @@ class SellReceivePaymentScreen extends StatelessWidget {
                 order == null
                     ? context.loc.sellLoadingGeneric
                     : FormatAmount.fiat(
-                        order.exchangeRateAmount ??
+                        order.sellExchangeRateAmount ??
                             order.payoutAmount / order.payinAmount,
-                        order.exchangeRateCurrency ?? order.payoutCurrency,
+                        order.sellExchangeRateCurrency ?? order.payoutCurrency,
                       ),
               ),
               const Gap(8),
@@ -310,17 +321,10 @@ class SellReceivePaymentScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildPaymentInput(BuildContext context, SellOrder order) {
-    final fullText = switch (order.payinMethod) {
-      OrderPaymentMethod.bitcoin => order.bitcoinAddress ?? '',
-      OrderPaymentMethod.liquid => order.liquidAddress ?? '',
-      OrderPaymentMethod.lnInvoice => order.lightningInvoice ?? '',
-      _ =>
-        order.bitcoinAddress ??
-            order.liquidAddress ??
-            order.lightningInvoice ??
-            '',
-    };
+  Widget _buildPaymentInput(BuildContext context, Order order) {
+    final fullText = order.payinMethod == OrderPaymentMethod.lnInvoice
+        ? order.sellLightningInvoice ?? ''
+        : order.sellPayinAddress ?? '';
 
     return order.payinMethod == OrderPaymentMethod.lnInvoice
         ? InvoiceViewer(fullText)

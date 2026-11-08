@@ -16,11 +16,16 @@ class SepaVirtualPayeeActivationScreen extends StatelessWidget {
     required this.recipientId,
     required this.onActivated,
     required this.onUseRegularSepa,
+    this.onReturnHome,
   });
 
   final String recipientId;
   final VoidCallback onActivated;
   final VoidCallback onUseRegularSepa;
+
+  /// Leaves the flow for the app home while activation continues in the
+  /// background. When null, the button is not shown.
+  final VoidCallback? onReturnHome;
 
   @override
   Widget build(BuildContext context) {
@@ -31,6 +36,7 @@ class SepaVirtualPayeeActivationScreen extends StatelessWidget {
       child: SepaVirtualPayeeActivationView(
         onActivated: onActivated,
         onUseRegularSepa: onUseRegularSepa,
+        onReturnHome: onReturnHome,
       ),
     );
   }
@@ -41,14 +47,17 @@ class SepaVirtualPayeeActivationView extends StatelessWidget {
     super.key,
     required this.onActivated,
     required this.onUseRegularSepa,
+    this.onReturnHome,
   });
 
   final VoidCallback onActivated;
   final VoidCallback onUseRegularSepa;
+  final VoidCallback? onReturnHome;
 
   @override
   Widget build(BuildContext context) {
     final colors = context.bull;
+    final onReturnHome = this.onReturnHome;
 
     return BlocConsumer<
       SepaVirtualPayeeActivationCubit,
@@ -158,6 +167,15 @@ class SepaVirtualPayeeActivationView extends StatelessWidget {
                           outlined: true,
                           borderColor: colors.outline,
                         ),
+                        if (onReturnHome != null) ...[
+                          const Gap(12),
+                          BullButton.big(
+                            label: context.loc.recipientsReturnHome,
+                            onPressed: onReturnHome,
+                            bgColor: colors.primary,
+                            textColor: colors.onPrimary,
+                          ),
+                        ],
                       ],
                     ],
                   ),

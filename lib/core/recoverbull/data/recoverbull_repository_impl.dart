@@ -11,6 +11,7 @@ import 'package:bb_mobile/core/recoverbull/domain/recoverbull_failure.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:convert/convert.dart' as convert;
+import 'package:meta/meta.dart';
 import 'package:recoverbull/recoverbull.dart' as recoverbull;
 import 'package:socks5_proxy/exceptions.dart';
 import 'package:bull_tor/tor.dart';
@@ -187,13 +188,44 @@ class RecoverBullRepositoryImpl implements RecoverBullRepository {
     );
   }
 
-  /// Health probe: completes normally when the server is reachable, throws
-  /// otherwise. Kept throwing (not Result) on purpose so the shared status
-  /// checker — `CheckServerConnectionUsecase`, which turns the throw/return
-  /// into the bool — is unaffected by the Result migration.
   @override
-  Future<void> checkConnection(TorProxyEndpoint endpoint) async {
-    await _remoteDatasource.checkConnection(endpoint);
+  Future<Result<void, RecoverBullCoreFailure>> checkConnection(
+    TorProxyEndpoint endpoint,
+  ) async {
+    try {
+      await _remoteDatasource.checkConnection(endpoint);
+      return const Ok(null);
+    } on KeyServerProbeException catch (e) {
+      return Err(probeFailure(e));
+    } catch (e) {
+      return Err(KeyServerUnavailableFailure(e.toString()));
+    }
+  }
+
+  /// The Tor connect reason wins: when it exists, `KeyServer` only saw a message.
+  @visibleForTesting
+  static KeyServerUnavailableFailure probeFailure(KeyServerProbeException e) {
+    final error = e.error;
+    final status = error is recoverbull.KeyServerException ? error.code : null;
+    final cause = switch (e.connectFailure) {
+      TorConnectFailure.timeout => KeyServerUnreachableCause.circuitTimeout,
+      TorConnectFailure.torNetworkUnreachable =>
+        KeyServerUnreachableCause.torNetworkUnreachable,
+      TorConnectFailure.hostUnreachable =>
+        KeyServerUnreachableCause.onionUnreachable,
+      TorConnectFailure.refused => KeyServerUnreachableCause.connectionRefused,
+      TorConnectFailure.proxyUnreachable => KeyServerUnreachableCause.proxyGone,
+      TorConnectFailure.other => KeyServerUnreachableCause.unknown,
+      null when error is TimeoutException =>
+        KeyServerUnreachableCause.circuitTimeout,
+      null when status != null => KeyServerUnreachableCause.httpError,
+      null => KeyServerUnreachableCause.badResponse,
+    };
+    return KeyServerUnavailableFailure.because(
+      cause,
+      httpStatus: cause == KeyServerUnreachableCause.httpError ? status : null,
+      logMessage: e.toString(),
+    );
   }
 
   @override

@@ -5,70 +5,56 @@ import 'package:bb_mobile/core/recoverbull/domain/usecases/ensure_recoverbull_to
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 
-/// Reaches the key server, retrying on a backoff.
+/// Reaches the key server once.
 ///
-/// Reaching it is an onion-service lookup — a descriptor fetch, then a
-/// rendezvous — which routinely needs more than one try just after a cold
-/// bootstrap. The schedule and the attempt accounting live here so the screen
-/// only renders what an attempt reports.
+/// An attempt is bounded by the session's connect budget and the probe's deadline. Whether to try again, on the same route or on a new circuit, is the user's call on the connecting screen.
 class ConnectToKeyServerUsecase {
-  /// How many times the server is contacted before giving up. Published
-  /// because the screen shows the attempt out of this total.
-  static const int maxAttempts = 3;
-
   final CheckServerConnectionUsecase _checkServerConnectionUsecase;
   final EnsureRecoverBullTorSessionUsecase _ensureTorSessionUsecase;
 
-  /// Injected so a test does not have to spend the backoff in real time.
-  final Future<void> Function(Duration) _wait;
-
   ConnectToKeyServerUsecase(
     this._checkServerConnectionUsecase,
-    this._ensureTorSessionUsecase, {
-    Future<void> Function(Duration)? wait,
-  }) : _wait = wait ?? Future<void>.delayed;
+    this._ensureTorSessionUsecase,
+  );
 
-  /// [onAttempt] fires before each call with a 1-based attempt number, so the
-  /// caller can show which attempt is in flight rather than which one failed.
-  ///
-  /// The first attempt, including Tor route acquisition, is immediate. Delaying
-  /// it would add a second to every start, including the common case where the
-  /// server answers at once.
-  Future<Result<bool, RecoverBullCoreFailure>> execute({
-    required void Function(int attempt) onAttempt,
+  Future<Result<void, RecoverBullCoreFailure>> execute({
     RecoverBullTorRoute? route,
   }) async {
     // A supplied route remains owned by its flow; standalone callers retain the existing acquire-and-close behavior.
     final ownsRoute = route == null;
+    final startedAt = DateTime.now();
     try {
-      for (var attempt = 1; attempt <= maxAttempts; attempt++) {
-        if (attempt > 1) await _wait(Duration(seconds: attempt - 1));
-        onAttempt(attempt);
-        if (route == null) {
-          final ensured = await _ensureTorSessionUsecase.execute();
-          switch (ensured) {
-            case Ok(:final value):
-              route = value;
-            case Err(:final failure):
-              return Err(failure);
-          }
-        }
-        final result = await _checkServerConnectionUsecase.execute(
-          route: route,
-        );
-        switch (result) {
-          case Ok(value: true):
-            return const Ok(true);
-          case Ok():
-            break;
-          case Err(:final failure)
-              when failure is ExternalTorProxyUnavailableFailure:
+      if (route == null) {
+        final ensured = await _ensureTorSessionUsecase.execute();
+        switch (ensured) {
+          case Ok(:final value):
+            route = value;
+          case Err(:final failure):
             return Err(failure);
-          case Err():
-            break;
         }
       }
-      return const Ok(false);
+      final checked = await _checkServerConnectionUsecase.execute(route: route);
+      final result = switch (checked) {
+        Ok(value: true) => const Ok<void, RecoverBullCoreFailure>(null),
+        Ok() => const Err<void, RecoverBullCoreFailure>(
+          KeyServerUnavailableFailure(),
+        ),
+        Err(:final failure) => Err<void, RecoverBullCoreFailure>(failure),
+      };
+      final seconds = DateTime.now().difference(startedAt).inSeconds;
+      switch (result) {
+        case Ok():
+          log.fine('Key server attempt succeeded in ${seconds}s');
+          return result;
+        case Err(:final failure):
+          final reason = switch (failure) {
+            KeyServerUnavailableFailure(:final cause, :final httpStatus) =>
+              httpStatus == null ? cause.name : '${cause.name} $httpStatus',
+            _ => failure.runtimeType.toString(),
+          };
+          log.warning('Key server attempt failed in ${seconds}s: $reason');
+          return Err(failure);
+      }
     } finally {
       try {
         if (ownsRoute && route != null) await route.close();

@@ -84,6 +84,9 @@ void main() {
 
     Future<Result<BuyOrder, BuyFailure>> refreshCall() =>
         refresh.execute(orderId: 'quote-order');
+    // A confirmed order is read as it stands, without asking for a new quote.
+    Future<Result<BuyOrder, BuyFailure>> readCall() =>
+        refresh.execute(orderId: 'quote-order', confirmed: true);
 
     setUp(() {
       refresh = _MockRefreshBuyOrderUsecase();
@@ -280,6 +283,7 @@ void main() {
       when(
         () => confirm.execute(orderId: 'quote-order'),
       ).thenAnswer((_) async => Ok(order));
+      when(readCall).thenAnswer((_) async => Ok(order));
       return inFakeTime((time) {
         bloc.add(const BuyEvent.confirmOrder());
         time.flushMicrotasks();
@@ -288,9 +292,10 @@ void main() {
         // The success screen still polls the order.
         bloc.add(const BuyEvent.refreshOrder());
         time.flushMicrotasks();
-        verify(refreshCall).called(1);
+        verify(readCall).called(1);
         time.elapse(const Duration(seconds: 10));
         time.flushMicrotasks();
+        verifyNever(readCall);
         verifyNever(refreshCall);
       });
     });
@@ -325,7 +330,7 @@ void main() {
         () => confirm.execute(orderId: 'quote-order'),
       ).thenAnswer((_) async => Ok(order));
       when(
-        refreshCall,
+        readCall,
       ).thenAnswer((_) async => const Err(BuyUnexpectedFailure('offline')));
       return inFakeTime((time) {
         bloc.add(const BuyEvent.confirmOrder());
@@ -333,9 +338,10 @@ void main() {
         // The success screen reads the order and the read fails.
         bloc.add(const BuyEvent.refreshOrder());
         time.flushMicrotasks();
-        verify(refreshCall).called(1);
+        verify(readCall).called(1);
         time.elapse(const Duration(minutes: 1));
         time.flushMicrotasks();
+        verifyNever(readCall);
         verifyNever(refreshCall);
       });
     });

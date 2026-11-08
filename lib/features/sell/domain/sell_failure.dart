@@ -4,6 +4,14 @@ sealed class SellFailure extends Failure {
   const SellFailure([super.logMessage]);
 }
 
+final class SellConfidentialSepaNotActivatedFailure extends SellFailure {
+  const SellConfidentialSepaNotActivatedFailure();
+}
+
+final class SellNetworkFailure extends SellFailure {
+  const SellNetworkFailure();
+}
+
 /// The API rejected the request because the session is not (or no longer)
 /// authenticated.
 final class SellUnauthenticatedFailure extends SellFailure {

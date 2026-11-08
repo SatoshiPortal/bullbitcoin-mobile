@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:flutter/material.dart';
 import 'package:keyboard_actions/keyboard_actions.dart';
 
@@ -43,7 +44,7 @@ class BBKeyboardActions extends StatelessWidget {
                         child: Align(
                           alignment: Alignment.center,
                           child: Text(
-                            'Done',
+                            context.loc.doneButton,
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w500,

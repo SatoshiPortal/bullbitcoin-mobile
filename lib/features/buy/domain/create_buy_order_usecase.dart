@@ -3,21 +3,13 @@ import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/features/buy/domain/buy_failure.dart';
+import 'package:bb_mobile/features/buy/domain/buy_payjoin_window.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
 
 class CreateBuyOrderUsecase {
-  /// Maximum requested lifetime for an exchange payout receiver.
-  ///
-  /// The exchange starts its five-minute window when it creates the order. Our
-  /// receiver starts first so its URI can be included in that request; one
-  /// additional minute prevents receiver setup, network latency, or clock skew
-  /// from making it expire before the exchange. A shorter user-configured
-  /// session lifetime still takes precedence in the Payjoin runtime.
-  static const _payjoinPayoutWindow = Duration(minutes: 6);
-
   final ExchangeOrderRepository _mainnetExchangeOrderRepository;
   final ExchangeOrderRepository _testnetExchangeOrderRepository;
   final SettingsRepository _settingsRepository;
@@ -87,10 +79,8 @@ class CreateBuyOrderUsecase {
               address: toAddress,
               amount: Sats.fromInt(payjoinAmountSat),
               isTrade: true,
-              // The exchange gives up five minutes after creating the order.
-              // This receiver starts before that request, so request one
-              // additional minute to cover setup and network latency. The
-              // user's configured session lifetime may shorten this window.
+              // The window the exchange negotiates a payout payjoin in. The
+              // user's configured session lifetime may shorten it.
               // The previous 24h protocol maximum only resumed and re-watched
               // a dead session on every app start for a day.
               //
@@ -100,7 +90,7 @@ class CreateBuyOrderUsecase {
               // no coins — `getUtxosFrozenByOngoingPayjoins` skips a session
               // whose proposal PSBT is null, which is exactly a session no
               // sender ever contacted.
-              expiresAt: DateTime.now().add(_payjoinPayoutWindow),
+              expiresAt: DateTime.now().add(BuyPayjoinWindow.duration),
             ),
           );
           switch (result) {

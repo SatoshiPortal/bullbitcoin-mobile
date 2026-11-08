@@ -26,6 +26,13 @@ abstract interface class ExchangeOrderRepository {
     required OrderBitcoinNetwork network,
     bool usePayjoin = false,
   });
+  Future<FiatPaymentOrder> placeSellToRecipientOrderV2({
+    required OrderAmount orderAmount,
+    required String recipientId,
+    required OrderBitcoinNetwork network,
+    required SepaPaymentProcessor paymentProcessor,
+    bool usePayjoin = false,
+  });
   Future<FiatPaymentOrder> placePayOrder({
     required OrderAmount orderAmount,
     required String recipientId,

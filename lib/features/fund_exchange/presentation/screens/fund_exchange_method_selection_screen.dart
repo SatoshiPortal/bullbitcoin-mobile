@@ -87,6 +87,10 @@ class _FundExchangeMethodSelectionScreenState
       (FundExchangeBloc bloc) =>
           bloc.state.isStarted && bloc.state.isFundingRestricted,
     );
+    final isLoadingAvailability = context.select(
+      (FundExchangeBloc bloc) =>
+          bloc.state.isLoadingConfidentialSepaAvailability,
+    );
 
     return Scaffold(
       appBar: AppBar(
@@ -95,7 +99,10 @@ class _FundExchangeMethodSelectionScreenState
           preferredSize: const Size.fromHeight(3),
           child: BullFadingLinearProgress(
             height: 3,
-            trigger: isLoadingFundingDetails || isLoadingFundingInstitutions,
+            trigger:
+                isLoadingFundingDetails ||
+                isLoadingFundingInstitutions ||
+                isLoadingAvailability,
             backgroundColor: context.appColors.surface,
             foregroundColor: context.appColors.primary,
           ),

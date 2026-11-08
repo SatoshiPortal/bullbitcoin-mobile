@@ -321,6 +321,30 @@ void main() {
     expect(warning, isNot(contains('private-relay')));
   });
 
+  test('a server failure names the server and its transport kind', () {
+    final previousLogger = log;
+    final logger = _MockLogger();
+    log = logger;
+    addTearDown(() => log = previousLogger);
+
+    const AppPayjoinLogAdapter().write(
+      PayjoinLogEvent(
+        level: PayjoinLogLevel.warning,
+        code: PayjoinLogCode.relayUnreachable,
+        server: Uri.https('pj.bullbitcoin.com'),
+        error: DioException.connectionError(
+          requestOptions: RequestOptions(path: 'https://pj.bullbitcoin.com/x'),
+          reason: 'Failed host lookup',
+        ),
+      ),
+    );
+
+    expect(
+      verify(() => logger.warning(captureAny())).captured.single,
+      'Payjoin pj.bullbitcoin.com relayUnreachable: OHTTP relay did not answer, trying another cause=DioException.connectionError',
+    );
+  });
+
   test('a relay rejection does not imply an unreachable directory', () {
     final previousLogger = log;
     final logger = _MockLogger();
