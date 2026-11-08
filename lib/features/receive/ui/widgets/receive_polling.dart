@@ -9,6 +9,7 @@ import 'package:go_router/go_router.dart';
 class ReceivePolling extends StatefulWidget {
   final String? walletId;
   final bool isLiquid;
+  final int? revealGeneration;
   final PollReceiveWalletUsecase poll;
   final Widget child;
 
@@ -16,14 +17,13 @@ class ReceivePolling extends StatefulWidget {
     super.key,
     required this.walletId,
     required this.isLiquid,
+    this.revealGeneration,
     required this.poll,
     required this.child,
   });
 
-  // Bitcoin revealed-script sync is cheap enough to detect a payment promptly.
-  static const bitcoinInterval = Duration(seconds: 15);
-  // LWK scans the full Liquid wallet, so allow twice the Bitcoin interval.
-  static const liquidInterval = Duration(seconds: 30);
+  // Leave both native engines idle for 20 seconds after each completed pass.
+  static const receiveResyncDelay = Duration(seconds: 20);
 
   @override
   State<ReceivePolling> createState() => _ReceivePollingState();
@@ -45,7 +45,15 @@ class _ReceivePollingState extends State<ReceivePolling> {
     _lifecycle = AppLifecycleListener(
       onStateChange: (state) {
         _resumed = state == AppLifecycleState.resumed;
-        _restart();
+        if (!_resumed) {
+          _restart();
+          return;
+        }
+        // Background frames may be suspended; first consume current bloc state.
+        final generation = _generation;
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted && _resumed && _generation == generation) _restart();
+        });
       },
     );
   }
@@ -85,7 +93,8 @@ class _ReceivePollingState extends State<ReceivePolling> {
   void didUpdateWidget(ReceivePolling oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.walletId != widget.walletId ||
-        oldWidget.isLiquid != widget.isLiquid) {
+        oldWidget.isLiquid != widget.isLiquid ||
+        oldWidget.revealGeneration != widget.revealGeneration) {
       _restart();
     }
   }
@@ -94,21 +103,28 @@ class _ReceivePollingState extends State<ReceivePolling> {
     _timer?.cancel();
     final generation = ++_generation;
     final walletId = widget.walletId;
-    if (!_resumed || !_visible || walletId == null) return;
-    // No immediate call on entry/resume; each new visibility epoch waits fully.
-    _timer = Timer.periodic(
-      widget.isLiquid
-          ? ReceivePolling.liquidInterval
-          : ReceivePolling.bitcoinInterval,
-      (_) {
-        widget.poll
-            .execute(
-              walletId,
-              isActive: () => mounted && _generation == generation,
-            )
-            .ignore();
-      },
-    );
+    if (!_resumed ||
+        !_visible ||
+        walletId == null ||
+        widget.revealGeneration == null) {
+      return;
+    }
+    _sync(walletId, generation).ignore();
+  }
+
+  Future<void> _sync(String walletId, int generation) async {
+    bool isActive() => mounted && _generation == generation;
+    try {
+      // The facade future settles at the requested or already covering pass end.
+      await widget.poll.execute(walletId, isActive: isActive);
+    } finally {
+      if (isActive()) {
+        _timer = Timer(
+          ReceivePolling.receiveResyncDelay,
+          () => _sync(walletId, generation).ignore(),
+        );
+      }
+    }
   }
 
   @override

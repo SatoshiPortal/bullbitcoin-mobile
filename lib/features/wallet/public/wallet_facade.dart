@@ -42,6 +42,7 @@ final class WalletFacade {
     return discover(walletId);
   }
 
+  /// Settles when the requested or already covering wallet pass ends.
   /// Best-effort routine sync; a false predicate cancels pending admission.
   Future<void> pollWallet(
     String walletId, {

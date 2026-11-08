@@ -211,7 +211,7 @@ class SyncCoordinator {
   }
 
   /// Screen polling has its own cadence, independent of the global throttle.
-  /// Skip work already covered by the FIFO; never join or upgrade discovery.
+  /// Await covered work in the FIFO without upgrading or duplicating it.
   Future<void> pollWallet(
     String walletId, {
     required bool Function() isActive,
@@ -225,7 +225,27 @@ class SyncCoordinator {
           pass.walletId == walletId ||
           (pass.walletId == null && pass.kind == kind);
       final running = _running;
-      if ((running != null && covers(running)) || _queue.any(covers)) return;
+      final covered = running != null && covers(running)
+          ? running
+          : _queue
+                .where(
+                  (pass) => covers(pass) && (pass.isActive?.call() ?? true),
+                )
+                .firstOrNull;
+      if (covered != null) {
+        final waiter = Completer<Object?>();
+        covered.waiters.add(waiter);
+        await waiter.future;
+        // A queued screen request may have expired while we were waiting.
+        // Its skipped admission is not the new screen's immediate sync.
+        if (covered.wallets == 0 &&
+            covered.isActive?.call() == false &&
+            _isAppResumed &&
+            isActive()) {
+          await pollWallet(walletId, isActive: isActive);
+        }
+        return;
+      }
       final pass = _SyncPass(
         kind,
         false,

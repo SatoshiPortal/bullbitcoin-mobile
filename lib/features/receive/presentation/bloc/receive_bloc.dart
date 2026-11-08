@@ -228,7 +228,13 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
       return;
     }
     final generation = _invalidateTransactionObservation();
-    emit(state.copyWith(tx: null, creatingSwap: false));
+    emit(
+      state.copyWith(
+        tx: null,
+        creatingSwap: false,
+        revealedAddressGeneration: null,
+      ),
+    );
     _pendingNewAddressWallet = null;
     final isWalletChange =
         event.wallet != null && state.wallet?.id != event.wallet!.id;
@@ -356,6 +362,12 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
       switch (addressResult) {
         case Ok(:final value):
           bitcoinAddress = value;
+          emit(
+            state.copyWith(
+              bitcoinAddress: value,
+              revealedAddressGeneration: generation,
+            ),
+          );
           final note = await _loadAddressLabel(bitcoinAddress.address);
           if (generation != _receiveGeneration || emit.isDone) return;
           emit(state.copyWith(bitcoinAddress: bitcoinAddress, note: note));
@@ -477,7 +489,13 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     Emitter<ReceiveState> emit,
   ) async {
     final generation = _invalidateTransactionObservation();
-    emit(state.copyWith(tx: null, creatingSwap: false));
+    emit(
+      state.copyWith(
+        tx: null,
+        creatingSwap: false,
+        revealedAddressGeneration: null,
+      ),
+    );
     _pendingNewAddressWallet = null;
     // Emit a state with the Lightning type so the UI can update allready before
     // the async data is loaded. Remove values that should
@@ -592,7 +610,13 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
       return;
     }
     final generation = _invalidateTransactionObservation();
-    emit(state.copyWith(tx: null, creatingSwap: false));
+    emit(
+      state.copyWith(
+        tx: null,
+        creatingSwap: false,
+        revealedAddressGeneration: null,
+      ),
+    );
     _pendingNewAddressWallet = null;
     // Emit a state with the Liquid type so the UI can update with the Liquid
     // receive UI already before the async data is loaded. Remove values that should
@@ -677,7 +701,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     emit(state.copyWith(wallet: wallet));
 
     var liquidAddress = state.liquidAddress;
-    if (liquidAddress == null) {
+    if (liquidAddress == null || liquidAddress.walletId != wallet.id) {
       // If the liquid address is not set yet, we need to get it from the wallet
       final addressResult = await _prepareReceiveAddressUsecase.execute(
         walletId: wallet.id,
@@ -686,6 +710,12 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
       switch (addressResult) {
         case Ok(:final value):
           liquidAddress = value;
+          emit(
+            state.copyWith(
+              liquidAddress: value,
+              revealedAddressGeneration: generation,
+            ),
+          );
           final note = await _loadAddressLabel(liquidAddress.address);
           if (generation != _receiveGeneration || emit.isDone) return;
           emit(state.copyWith(liquidAddress: liquidAddress, note: note));
@@ -694,6 +724,9 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
           return;
       }
     }
+
+    // A retained address carries the earlier successful reveal outcome.
+    emit(state.copyWith(revealedAddressGeneration: generation));
 
     // Start watching for transactions on the wallet address
     _watchWalletTransactionToAddress(
@@ -979,7 +1012,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     }
 
     final generation = _invalidateTransactionObservation();
-    emit(state.copyWith(tx: null));
+    emit(state.copyWith(tx: null, revealedAddressGeneration: null));
     _pendingNewAddressWallet = wallet;
     final walletId = wallet.id;
     final type = state.type;
@@ -1010,6 +1043,12 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
               _pendingNewAddressWallet = null;
             }
             address = value;
+            emit(
+              state.copyWith(
+                bitcoinAddress: address,
+                revealedAddressGeneration: generation,
+              ),
+            );
           case Err(:final failure):
             if (state.wallet?.id != walletId || state.type != type) return;
             // Release the QR: no new address means no new payjoin session
@@ -1093,7 +1132,12 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
               _pendingNewAddressWallet = null;
             }
             address = value;
-            emit(state.copyWith(liquidAddress: address));
+            emit(
+              state.copyWith(
+                liquidAddress: address,
+                revealedAddressGeneration: generation,
+              ),
+            );
           case Err(:final failure):
             if (state.wallet?.id != walletId || state.type != type) return;
             emit(state.copyWith(failure: failure));

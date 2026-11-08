@@ -29,11 +29,13 @@ class ReceiveScaffold extends StatelessWidget {
       (ReceiveBloc bloc) => (
         bloc.state.type == ReceiveType.lightning ? null : bloc.state.wallet?.id,
         bloc.state.wallet?.isLiquid ?? false,
+        bloc.state.revealedAddressGeneration,
       ),
     );
     return ReceivePolling(
       walletId: target.$1,
       isLiquid: target.$2,
+      revealGeneration: target.$3,
       poll: poll,
       child: _buildScaffold(context),
     );
