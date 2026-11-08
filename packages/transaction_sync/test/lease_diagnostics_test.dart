@@ -71,6 +71,8 @@ void main() {
         expect(persisted, hasLength(1));
         expect(persisted.single, contains('FINE'));
         expect(persisted.single, contains('busy_source=lease_begin'));
+        expect(persisted.single, contains('waited_ms=0'));
+        expect(persisted.join(), isNot(contains('event=lease_long_hold')));
         expect(lines.join(), isNot(contains(key.id)));
         expect(lines.join(), isNot(contains(directory.path)));
       } finally {
@@ -80,6 +82,97 @@ void main() {
       }
     },
   );
+
+  test('only holds of at least 1000 ms are persisted', () async {
+    final directory = Directory.systemTemp.createTempSync('lease-threshold-');
+    log = Logger.replace(directory: directory);
+    try {
+      final trace = LeaseDiagnostics(
+        role: LeaseRole.writer,
+        intent: LeaseIntent.sync,
+        scope: LeaseScope.compute,
+        source: LeaseSource.syncStarted,
+      );
+      trace.release(999);
+      await log.flush();
+      expect(
+        await log.readLogs(),
+        isNot(contains(contains('lease_long_hold'))),
+      );
+      trace.release(1000);
+      await log.flush();
+      final lines = (await log.readLogs())
+          .where((line) => line.contains('event=lease_long_hold'))
+          .toList();
+      expect(lines, hasLength(1));
+      expect(lines.single, contains('FINE'));
+      expect(lines.single, contains('role=writer intent=sync scope=compute'));
+      expect(
+        lines.single,
+        contains('source=sync_started read=hydrate held_ms=1000'),
+      );
+    } finally {
+      await log.flush();
+      directory.deleteSync(recursive: true);
+    }
+  });
+
+  for (final role in LeaseRole.values) {
+    test('real ${role.name} long hold is persisted once on release', () async {
+      final directory = Directory.systemTemp.createTempSync('lease-long-');
+      log = Logger.replace(directory: directory);
+      final key = WalletKey(
+        id: 'never-log-this-id',
+        network: BitcoinNetwork.testnet,
+      );
+      final trace = LeaseDiagnostics(
+        role: role,
+        intent: role == LeaseRole.reader
+            ? LeaseIntent.snapshot
+            : LeaseIntent.sync,
+        scope: LeaseScope.headless,
+        source: LeaseSource.balance,
+      );
+      final acquired =
+          WriterLock.acquire(directory.path, key, diagnostics: trace) as Ok;
+      final lock = acquired.value as WriterLock;
+      try {
+        await Future<void>.delayed(const Duration(milliseconds: 1050));
+        await log.flush();
+        expect(
+          await log.readLogs(),
+          isNot(contains(contains('lease_long_hold'))),
+        );
+        lock.release();
+        lock.release();
+        await log.flush();
+        final lines = (await log.readLogs())
+            .where((line) => line.contains('event=lease_'))
+            .toList();
+        expect(lines, hasLength(1));
+        expect(lines.single, contains('FINE'));
+        expect(
+          lines.single,
+          contains('event=lease_long_hold role=${role.name}'),
+        );
+        expect(
+          lines.single,
+          contains('scope=headless source=balance read=hydrate'),
+        );
+        final held = RegExp(
+          r'held_ms=(\d+)',
+        ).firstMatch(lines.single)?.group(1);
+        expect(held, isNotNull);
+        expect(int.tryParse(held ?? ''), greaterThanOrEqualTo(1000));
+        expect(lines.single, isNot(contains(key.id)));
+        expect(lines.single, isNot(contains(directory.path)));
+      } finally {
+        lock.release();
+        await log.flush();
+        directory.deleteSync(recursive: true);
+      }
+    });
+  }
 
   test('throwing diagnostic cannot retain an acquired lease', () {
     final directory = Directory.systemTemp.createTempSync('lease-callback-');
