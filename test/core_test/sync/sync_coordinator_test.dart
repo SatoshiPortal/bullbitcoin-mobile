@@ -2,7 +2,10 @@ import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/read_wallet_usecase.dart';
 import 'package:transaction_sync/read.dart';
 import 'package:transaction_sync/transaction_sync.dart'
-    show SyncReason, TransactionSyncBusyFailure;
+    show
+        SyncReason,
+        TransactionSyncBusyFailure,
+        TransactionSyncConnectionFailure;
 import 'package:bb_mobile/features/wallet/domain/wallet_discovery_failure.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet_failure_log_code.dart';
 import 'dart:async';
@@ -431,6 +434,39 @@ void main() {
         ),
       );
       verifyZeroInteractions(getWallets);
+    },
+  );
+
+  test(
+    'pass summary preserves the native connection failure category',
+    () async {
+      final directory = Directory.systemTemp.createTempSync('connection-sync-');
+      log = Logger.replace(directory: directory, reporter: _Reporter());
+      addTearDown(() async {
+        await log.flush();
+        directory.deleteSync(recursive: true);
+      });
+      final wallet = manualWallet('connection-wallet');
+      when(
+        () => getWallets.execute(onlyBitcoin: true),
+      ).thenAnswer((_) async => Ok([wallet]));
+      when(
+        () => syncWallet.execute(
+          wallet,
+          discover: any(named: 'discover'),
+          reason: any(named: 'reason'),
+        ),
+      ).thenThrow(
+        const WalletSnapshotException(TransactionSyncConnectionFailure()),
+      );
+      await expectLater(
+        coordinator.sync(only: {SyncKind.bitcoin}),
+        throwsA(isA<SyncCoordinatorException>()),
+      );
+      expect(
+        (await log.readLogs()).join(),
+        contains('outcome=failed wallets=1 category=connection'),
+      );
     },
   );
 
