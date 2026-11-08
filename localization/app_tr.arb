@@ -7890,7 +7890,7 @@
   "@fundExchangeJurisdictionMexico": {
     "description": "Dropdown option for Mexico jurisdiction"
   },
-  "sellInteracEmail": "Interac Email",
+  "sellInteracEmail": "Transfer e-postası",
   "@sellInteracEmail": {
     "description": "Label for email to receive Interac payment"
   },
@@ -10018,7 +10018,7 @@
   "@autoswapTitle": {
     "description": "Header title for auto transfer settings bottom sheet"
   },
-  "sellInteracTransfer": "Interac e-Transfer",
+  "sellInteracTransfer": "E-posta ile para transferi",
   "@sellInteracTransfer": {
     "description": "Option for Interac payment (Canada)"
   },
@@ -11420,7 +11420,7 @@
   "recipientsJurisdictionCostaRica": "🇨🇷 Kosta Rika",
   "recipientsJurisdictionArgentina": "🇦🇷 Arjantin",
   "recipientsJurisdictionColombia": "🇨🇴 Kolombiya",
-  "recipientsTypeInteracEmail": "Interac e-Transfer",
+  "recipientsTypeInteracEmail": "E-posta ile para transferi",
   "recipientsTypeBillPayment": "Fatura Ödemesi",
   "recipientsTypeBankTransfer": "Banka Transferi",
   "recipientsTypeSepa": "SEPA Transferi",
@@ -11692,7 +11692,7 @@
   "testBackupErrorSeedUnavailable": "Kurtarma ifadeniz okunamadı. Lütfen tekrar deneyin.",
   "testBackupErrorSeedNotMnemonic": "Bu cüzdanın test edilecek bir kurtarma ifadesi yok.",
   "testBackupErrorCompletionFailed": "Kurtarma ifadeniz doğruydu, ancak sonucu kaydedemedik. Lütfen tekrar deneyin.",
-  "withdrawInteracSecurityDetailsTitle": "Interac güvenlik bilgileri",
+  "withdrawInteracSecurityDetailsTitle": "Transfer güvenlik bilgileri",
   "withdrawInteracSaveAsDefault": "Bu bilgileri varsayılan olarak kaydet",
   "withdrawInteracSecurityQuestionLengthError": "Güvenlik sorusu 3–40 karakter olmalıdır",
   "withdrawInteracSecurityAnswerLengthError": "Güvenlik cevabı 3–40 karakter olmalıdır",

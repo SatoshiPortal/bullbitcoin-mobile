@@ -56,6 +56,8 @@ extension SendFailureL10n on SendFailure {
       isBroadcastFailure
           ? context.loc.sendErrorBroadcastFailed
           : context.loc.sendErrorConfirmationFailed,
+    SendPriceUnavailableFailure() =>
+      context.loc.bitcoinPriceExchangeRateUnavailable,
     SendUnexpectedFailure() => context.loc.oopsSomethingWentWrong,
   };
 }

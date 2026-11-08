@@ -1,12 +1,15 @@
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/bitcoin_price/domain/bitcoin_price_failure.dart';
+import 'package:bull_pricer/bull_pricer.dart';
 import 'package:flutter/widgets.dart';
 
-extension BitcoinPriceFailureL10n on BitcoinPriceFailure {
+extension PricerFailureL10n on PricerFailure {
   String toTranslated(BuildContext context) => switch (this) {
-    BitcoinPriceInvalidRateFailure() =>
+    PricerNetworkFailure() ||
+    PricerRateLimitedFailure() ||
+    PricerUnsupportedNetworkFailure() =>
       context.loc.bitcoinPriceExchangeRateUnavailable,
-    BitcoinPriceUnexpectedFailure() => context.loc.oopsSomethingWentWrong,
+    PricerUnexpectedFailure() => context.loc.oopsSomethingWentWrong,
   };
 }
 

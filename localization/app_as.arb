@@ -3550,7 +3550,7 @@
   "@sellBankTransfer": {
     "description": "Option for bank deposit"
   },
-  "sellInteracTransfer": "Interac e-Transfer",
+  "sellInteracTransfer": "ইমেইল মানি ট্ৰান্সফাৰ",
   "@sellInteracTransfer": {
     "description": "Option for Interac payment (Canada)"
   },
@@ -3586,7 +3586,7 @@
   "@sellIBAN": {
     "description": "Label for International Bank Account Number"
   },
-  "sellInteracEmail": "Interac ইমেইল",
+  "sellInteracEmail": "ট্ৰান্সফাৰৰ ইমেইল",
   "@sellInteracEmail": {
     "description": "Label for email to receive Interac payment"
   },
@@ -8793,7 +8793,7 @@
   "recipientsJurisdictionCostaRica": "🇨🇷 Costa Rica",
   "recipientsJurisdictionArgentina": "🇦🇷 Argentina",
   "recipientsJurisdictionColombia": "🇨🇴 Colombia",
-  "recipientsTypeInteracEmail": "Interac e-Transfer",
+  "recipientsTypeInteracEmail": "ইমেইল মানি ট্ৰান্সফাৰ",
   "recipientsTypeBillPayment": "Bill Payment",
   "recipientsTypeBankTransfer": "Bank Transfer",
   "recipientsTypeSepa": "SEPA Transfer",
@@ -9063,7 +9063,7 @@
   "testBackupErrorSeedUnavailable": "আপোনাৰ পুনৰুদ্ধাৰ বাক্যাংশ পঢ়িব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
   "testBackupErrorSeedNotMnemonic": "এই ৱালেটত পৰীক্ষা কৰিবলৈ কোনো পুনৰুদ্ধাৰ বাক্যাংশ নাই।",
   "testBackupErrorCompletionFailed": "আপোনাৰ পুনৰুদ্ধাৰ বাক্যাংশ শুদ্ধ আছিল, কিন্তু আমি ফলাফল সংৰক্ষণ কৰিব নোৱাৰিলোঁ। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
-  "withdrawInteracSecurityDetailsTitle": "Interac সুৰক্ষা বিৱৰণ",
+  "withdrawInteracSecurityDetailsTitle": "ট্ৰান্সফাৰৰ সুৰক্ষা বিৱৰণ",
   "withdrawInteracSaveAsDefault": "এই বিৱৰণসমূহ ডিফল্ট হিচাপে সংৰক্ষণ কৰক",
   "withdrawInteracSecurityQuestionLengthError": "সুৰক্ষা প্ৰশ্ন 3-40টা আখৰৰ হ’ব লাগিব",
   "withdrawInteracSecurityAnswerLengthError": "সুৰক্ষা উত্তৰ 3-40টা আখৰৰ হ’ব লাগিব",
