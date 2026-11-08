@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/wallet/domain/usecases/read_wallet_usecase.dart';
 import 'package:transaction_sync/read.dart';
 import 'package:transaction_sync/transaction_sync.dart'
     show TransactionSyncBusyFailure;
@@ -35,6 +36,8 @@ import 'package:bb_mobile/features/wallet/domain/usecases/watch_sp_wallet_usecas
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+
+class _ReadWallet extends Mock implements ReadWalletUsecase {}
 
 class _MockGetWalletsUsecase extends Mock implements GetWalletsUsecase {}
 
@@ -74,9 +77,11 @@ class _MockCheckSpFeatureGateForWalletUsecase extends Mock
 WalletBloc createBloc(
   GetExternalTorProxyStatusUsecase externalStatus, {
   GetWalletsUsecase? getWallets,
+  ReadWalletUsecase? readWallet,
   GetUnconfirmedIncomingBalanceUsecase? getUnconfirmed,
 }) {
   return WalletBloc(
+    readWalletUsecase: readWallet ?? _stubbedReadWallet(),
     getWalletsUsecase: getWallets ?? _MockGetWalletsUsecase(),
     checkWalletSyncingUsecase: _MockCheckWalletSyncingUsecase(),
     watchWalletSyncEventsUsecase: _stubbedWatchers(),
@@ -86,13 +91,11 @@ WalletBloc createBloc(
     deleteWalletUsecase: _MockDeleteWalletUsecase(),
     checkBackupNeededUsecase: _MockCheckBackupNeededUsecase(),
     getExternalTorProxyStatusUsecase: externalStatus,
-    checkSpWalletSetupForWalletUsecase:
-        _MockCheckSpWalletSetupForWalletUsecase(),
-    checkSpScanningForWalletUsecase: _MockCheckSpScanningForWalletUsecase(),
-    refreshSpWalletForWalletUsecase: _MockRefreshSpWalletForWalletUsecase(),
-    watchSpWalletUsecase: _MockWatchSpWalletUsecase(),
-    checkSpFeatureGateForWalletUsecase:
-        _MockCheckSpFeatureGateForWalletUsecase(),
+    checkSpWalletSetupForWalletUsecase: _stubbedSpSetup(),
+    checkSpScanningForWalletUsecase: _stubbedSpScanning(),
+    refreshSpWalletForWalletUsecase: _stubbedSpRefresh(),
+    watchSpWalletUsecase: _stubbedSpWatch(),
+    checkSpFeatureGateForWalletUsecase: _stubbedSpGate(),
   );
 }
 
@@ -104,9 +107,10 @@ void main() {
   registerFallbackValue(SyncReason.auto);
   TestWidgetsFlutterBinding.ensureInitialized();
   test(
-    'started only sets indicator; finished refreshes wallets and balance',
+    'started only sets indicator; finished refreshes its wallet and balance',
     () async {
       final wallets = _MockGetWalletsUsecase();
+      final readWallet = _stubbedReadWallet();
       final balance = _MockGetUnconfirmedIncomingBalanceUsecase();
       when(
         () => wallets.execute(),
@@ -117,9 +121,11 @@ void main() {
       final bloc = createBloc(
         _MockExternalTorStatusUsecase(),
         getWallets: wallets,
+        readWallet: readWallet,
         getUnconfirmed: balance,
       );
       addTearDown(bloc.close);
+      bloc.emit(WalletState(wallets: [_syncedWallet]));
       final started = bloc.stream.firstWhere(
         (s) => s.syncStatus[_syncedWallet.id] == true,
       );
@@ -127,16 +133,218 @@ void main() {
       await started;
       verifyZeroInteractions(wallets);
       verifyZeroInteractions(balance);
-      expect(bloc.state.wallets, isEmpty);
+      expect(bloc.state.wallets, [_syncedWallet]);
       final finished = bloc.stream.firstWhere(
         (s) => s.syncStatus[_syncedWallet.id] == false,
       );
       bloc.add(WalletSyncFinished(_syncedWallet));
       await finished;
+      await pumpEventQueue();
       expect(bloc.state.wallets, [_syncedWallet]);
       expect(bloc.state.unconfirmedIncomingBalance, 42);
-      verify(() => wallets.execute()).called(1);
+      verifyNever(() => wallets.execute());
+      verify(() => readWallet.execute(_syncedWallet.id)).called(1);
       verify(() => balance.execute(walletIds: [_syncedWallet.id])).called(1);
+    },
+  );
+
+  test('finishing A never admits a reader for B', () async {
+    final read = _stubbedReadWallet();
+    final wallets = _MockGetWalletsUsecase();
+    final balance = _MockGetUnconfirmedIncomingBalanceUsecase();
+    final other = _syncedWallet.copyWith(
+      origin: 'other',
+      balanceSat: BigInt.from(7),
+    );
+    when(
+      () => wallets.execute(),
+    ).thenAnswer((_) async => Ok([_syncedWallet, other]));
+    when(
+      () => balance.execute(walletIds: any(named: 'walletIds')),
+    ).thenAnswer((_) async => const Ok(42));
+    final bloc = createBloc(
+      _MockExternalTorStatusUsecase(),
+      getWallets: wallets,
+      readWallet: read,
+      getUnconfirmed: balance,
+    );
+    addTearDown(bloc.close);
+    bloc.emit(
+      WalletState(
+        wallets: [other, _syncedWallet],
+        syncStatus: {other.id: true, _syncedWallet.id: true},
+      ),
+    );
+    bloc.add(WalletSyncFinished(_syncedWallet));
+    await pumpEventQueue();
+    verifyNever(() => wallets.execute());
+    verify(() => read.execute(_syncedWallet.id)).called(1);
+    verifyNever(() => read.execute(other.id));
+    expect(bloc.state.wallets.map((w) => w.id), [other.id, _syncedWallet.id]);
+    expect(bloc.state.wallets.first, same(other));
+    expect(bloc.state.syncStatus, {other.id: true, _syncedWallet.id: false});
+  });
+
+  test('revisions of different wallets both land without reordering', () async {
+    final other = _syncedWallet.copyWith(
+      origin: 'other',
+      balanceSat: BigInt.from(7),
+    );
+    final updated = _syncedWallet.copyWith(balanceSat: BigInt.from(11));
+    final updatedOther = other.copyWith(balanceSat: BigInt.from(13));
+    final a = Completer<Result<Wallet, WalletFailure>>();
+    final b = Completer<Result<Wallet, WalletFailure>>();
+    final read = _ReadWallet();
+    when(() => read.execute(_syncedWallet.id)).thenAnswer((_) => a.future);
+    when(() => read.execute(other.id)).thenAnswer((_) => b.future);
+    final wallets = _MockGetWalletsUsecase();
+    final bloc = createBloc(
+      _MockExternalTorStatusUsecase(),
+      getWallets: wallets,
+      readWallet: read,
+    );
+    addTearDown(bloc.close);
+    bloc.emit(
+      WalletState(
+        wallets: [other, _syncedWallet],
+        syncStatus: {other.id: true},
+      ),
+    );
+    bloc.add(WalletRevisionChanged(_syncedWallet.id));
+    bloc.add(WalletRevisionChanged(other.id));
+    await pumpEventQueue();
+    b.complete(Ok(updatedOther));
+    await pumpEventQueue();
+    a.complete(Ok(updated));
+    await pumpEventQueue();
+    expect(bloc.state.wallets, [updatedOther, updated]);
+    expect(bloc.state.totalBalance(), 24);
+    expect(bloc.state.syncStatus, {other.id: true});
+    verifyZeroInteractions(wallets);
+  });
+
+  test(
+    'older revisions cannot overwrite newer ones; unknown ids are ignored',
+    () async {
+      final first = Completer<Result<Wallet, WalletFailure>>();
+      final second = Completer<Result<Wallet, WalletFailure>>();
+      final read = _ReadWallet();
+      var count = 0;
+      when(
+        () => read.execute(_syncedWallet.id),
+      ).thenAnswer((_) => count++ == 0 ? first.future : second.future);
+      final bloc = createBloc(
+        _MockExternalTorStatusUsecase(),
+        readWallet: read,
+      );
+      addTearDown(bloc.close);
+      bloc.emit(WalletState(wallets: [_syncedWallet]));
+      bloc.add(WalletRevisionChanged(_syncedWallet.id));
+      await pumpEventQueue();
+      bloc.add(WalletRevisionChanged(_syncedWallet.id));
+      await pumpEventQueue();
+      final updated = _syncedWallet.copyWith(balanceSat: BigInt.from(11));
+      second.complete(Ok(updated));
+      await pumpEventQueue();
+      first.complete(Ok(_syncedWallet));
+      await pumpEventQueue();
+      expect(bloc.state.wallets, [updated]);
+      bloc.emit(const WalletState());
+      bloc.add(WalletRevisionChanged('unknown'));
+      await pumpEventQueue();
+      expect(bloc.state.wallets, isEmpty);
+      verifyNever(() => read.execute('unknown'));
+    },
+  );
+
+  test(
+    'removing a wallet while its revision read is pending never resurrects it',
+    () async {
+      final pending = Completer<Result<Wallet, WalletFailure>>();
+      final read = _ReadWallet();
+      when(
+        () => read.execute(_syncedWallet.id),
+      ).thenAnswer((_) => pending.future);
+      final bloc = createBloc(
+        _MockExternalTorStatusUsecase(),
+        readWallet: read,
+      );
+      addTearDown(bloc.close);
+      bloc.emit(WalletState(wallets: [_syncedWallet]));
+      bloc.add(WalletRevisionChanged(_syncedWallet.id));
+      await pumpEventQueue();
+      bloc.emit(const WalletState());
+      pending.complete(Ok(_syncedWallet));
+      await pumpEventQueue();
+      expect(bloc.state.wallets, isEmpty);
+    },
+  );
+
+  for (final targetedFinishesFirst in [true, false]) {
+    test(
+      'full refresh preserves a newer targeted balance (targeted first: $targetedFinishesFirst)',
+      () async {
+        final pending = Completer<Result<List<Wallet>, WalletFailure>>();
+        final wallets = _MockGetWalletsUsecase();
+        when(() => wallets.execute()).thenAnswer((_) => pending.future);
+        final targeted = Completer<Result<Wallet, WalletFailure>>();
+        final read = _ReadWallet();
+        final updated = _syncedWallet.copyWith(balanceSat: BigInt.from(19));
+        when(
+          () => read.execute(_syncedWallet.id),
+        ).thenAnswer((_) => targeted.future);
+        final bloc = createBloc(
+          _MockExternalTorStatusUsecase(),
+          getWallets: wallets,
+          readWallet: read,
+        );
+        addTearDown(bloc.close);
+        bloc.emit(WalletState(wallets: [_syncedWallet]));
+        bloc.add(const WalletRefreshed());
+        await pumpEventQueue();
+        bloc.add(WalletRevisionChanged(_syncedWallet.id));
+        await pumpEventQueue();
+        if (targetedFinishesFirst) {
+          targeted.complete(Ok(updated));
+          await pumpEventQueue();
+        }
+        pending.complete(Ok([_syncedWallet]));
+        await pumpEventQueue();
+        if (!targetedFinishesFirst) {
+          targeted.complete(Ok(updated));
+          await pumpEventQueue();
+        }
+        expect(bloc.state.wallets, [updated]);
+        expect(bloc.state.isRefreshing, isFalse);
+      },
+    );
+  }
+
+  test(
+    'older incoming balance reads cannot overwrite newer finishes',
+    () async {
+      final first = Completer<Result<int, WalletFailure>>();
+      final second = Completer<Result<int, WalletFailure>>();
+      final balance = _MockGetUnconfirmedIncomingBalanceUsecase();
+      var count = 0;
+      when(
+        () => balance.execute(walletIds: any(named: 'walletIds')),
+      ).thenAnswer((_) => count++ == 0 ? first.future : second.future);
+      final bloc = createBloc(
+        _MockExternalTorStatusUsecase(),
+        getUnconfirmed: balance,
+      );
+      addTearDown(bloc.close);
+      bloc.emit(WalletState(wallets: [_syncedWallet]));
+      bloc.add(WalletSyncFinished(_syncedWallet));
+      await pumpEventQueue();
+      bloc.add(WalletSyncFinished(_syncedWallet));
+      await pumpEventQueue();
+      second.complete(const Ok(20));
+      await pumpEventQueue();
+      first.complete(const Ok(10));
+      await pumpEventQueue();
+      expect(bloc.state.unconfirmedIncomingBalance, 20);
     },
   );
 
@@ -173,6 +381,7 @@ void main() {
           syncWalletUsecase: single,
         );
         final bloc = WalletBloc(
+          readWalletUsecase: _stubbedReadWallet(),
           getWalletsUsecase: getWallets,
           checkWalletSyncingUsecase: _MockCheckWalletSyncingUsecase(),
           watchWalletSyncEventsUsecase: _stubbedWatchers(),
@@ -284,6 +493,7 @@ void main() {
         syncWalletUsecase: single,
       );
       final bloc = WalletBloc(
+        readWalletUsecase: _stubbedReadWallet(),
         getWalletsUsecase: getWallets,
         checkWalletSyncingUsecase: _MockCheckWalletSyncingUsecase(),
         watchWalletSyncEventsUsecase: _stubbedWatchers(),
@@ -522,6 +732,7 @@ WalletBloc _blocWithFailingLoad(
   ).thenAnswer((_) async => Err<List<Wallet>, WalletFailure>(failure));
 
   return WalletBloc(
+    readWalletUsecase: _stubbedReadWallet(),
     getWalletsUsecase: getWallets,
     checkWalletSyncingUsecase: _MockCheckWalletSyncingUsecase(),
     watchWalletSyncEventsUsecase: _stubbedWatchers(),
@@ -632,6 +843,7 @@ WalletBloc _blocWithFailingSync(WalletFailure failure) {
   ).thenReturn(const Ok<bool, WalletFailure>(false));
 
   return WalletBloc(
+    readWalletUsecase: _stubbedReadWallet(),
     getWalletsUsecase: getWallets,
     checkWalletSyncingUsecase: syncing,
     watchWalletSyncEventsUsecase: _stubbedWatchers(),
@@ -647,4 +859,10 @@ WalletBloc _blocWithFailingSync(WalletFailure failure) {
     checkBackupNeededUsecase: _MockCheckBackupNeededUsecase(),
     getExternalTorProxyStatusUsecase: _MockExternalTorStatusUsecase(),
   );
+}
+
+ReadWalletUsecase _stubbedReadWallet() {
+  final read = _ReadWallet();
+  when(() => read.execute(any())).thenAnswer((_) async => Ok(_syncedWallet));
+  return read;
 }

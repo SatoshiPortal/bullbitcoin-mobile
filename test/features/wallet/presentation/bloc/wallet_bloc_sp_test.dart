@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/wallet/domain/usecases/read_wallet_usecase.dart';
 import 'package:primitives/primitives.dart';
 import 'dart:async';
 
@@ -141,6 +142,7 @@ WalletBloc _makeBloc({
   when(() => checkSpFeatureGate.execute()).thenAnswer((_) async => gateEnabled);
 
   return WalletBloc(
+    readWalletUsecase: _ReadWallet(),
     getWalletsUsecase: getWallets,
     checkWalletSyncingUsecase: checkWalletSyncing,
     checkBackupNeededUsecase: _MockCheckBackupNeeded(),
@@ -660,3 +662,5 @@ void main() {
     });
   });
 }
+
+class _ReadWallet extends Mock implements ReadWalletUsecase {}
