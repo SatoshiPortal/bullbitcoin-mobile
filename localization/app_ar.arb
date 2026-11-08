@@ -7411,7 +7411,7 @@
   "@fundExchangeJurisdictionMexico": {
     "description": "Dropdown option for Mexico jurisdiction"
   },
-  "sellInteracEmail": "Interac Email",
+  "sellInteracEmail": "البريد الإلكتروني للتحويل",
   "@sellInteracEmail": {
     "description": "Label for email to receive Interac payment"
   },
@@ -9412,7 +9412,7 @@
   "@autoswapTitle": {
     "description": "Header title for auto transfer settings bottom sheet"
   },
-  "sellInteracTransfer": "Interac e-Transfer",
+  "sellInteracTransfer": "تحويل مالي عبر البريد الإلكتروني",
   "@sellInteracTransfer": {
     "description": "Option for Interac payment (Canada)"
   },
@@ -11423,7 +11423,7 @@
   "recipientsJurisdictionCostaRica": "🇨🇷 كوستاريكا",
   "recipientsJurisdictionArgentina": "🇦🇷 الأرجنتين",
   "recipientsJurisdictionColombia": "🇨🇴 كولومبيا",
-  "recipientsTypeInteracEmail": "تحويل Interac الإلكتروني",
+  "recipientsTypeInteracEmail": "تحويل مالي عبر البريد الإلكتروني",
   "recipientsTypeBillPayment": "دفع فاتورة",
   "recipientsTypeBankTransfer": "تحويل مصرفي",
   "recipientsTypeSepa": "تحويل SEPA",
@@ -11695,7 +11695,7 @@
   "testBackupErrorSeedUnavailable": "تعذّرت قراءة عبارة الاسترداد الخاصة بك. حاول مرة أخرى.",
   "testBackupErrorSeedNotMnemonic": "لا تحتوي هذه المحفظة على عبارة استرداد لاختبارها.",
   "testBackupErrorCompletionFailed": "كانت عبارة الاسترداد صحيحة، لكن لم نتمكن من حفظ النتيجة. حاول مرة أخرى.",
-  "withdrawInteracSecurityDetailsTitle": "تفاصيل أمان Interac",
+  "withdrawInteracSecurityDetailsTitle": "تفاصيل أمان التحويل",
   "withdrawInteracSaveAsDefault": "حفظ هذه التفاصيل كإعداد افتراضي",
   "withdrawInteracSecurityQuestionLengthError": "يجب أن يتكون سؤال الأمان من 3 إلى 40 حرفًا",
   "withdrawInteracSecurityAnswerLengthError": "يجب أن تتكون إجابة الأمان من 3 إلى 40 حرفًا",

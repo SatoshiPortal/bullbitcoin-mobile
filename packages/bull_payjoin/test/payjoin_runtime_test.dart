@@ -157,7 +157,7 @@ void main() {
 
     // Nothing to migrate: the root settings payjoin columns only existed in
     // the unreleased schema 14, so a freshly opened payjoin database starts on
-    // the conservative defaults, payjoin disabled.
+    // the defaults, receiving from users disabled.
     final loaded = switch (policy) {
       Ok(:final value) => value,
       Err(:final failure) => throw failure,
@@ -165,7 +165,7 @@ void main() {
     final defaults = PayjoinPolicy.defaults();
     expect(loaded.receiveEnabled, defaults.receiveEnabled);
     expect(loaded.receiveEnabled, isFalse);
-    expect(loaded.sendEnabled, isFalse);
+    expect(loaded.sendEnabled, isTrue);
     expect(loaded.buyEnabled, isTrue);
     expect(loaded.sellEnabled, isTrue);
     expect(loaded.minimumAmount.value, defaults.minimumAmount.value);

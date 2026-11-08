@@ -118,14 +118,14 @@ class TransactionViewer extends StatelessWidget {
     return width;
   }
 
-  Future<String> _getExplorerUrl() async {
+  Future<String> _getExplorerUrl({bool disclosePayjoin = false}) async {
     switch (_network) {
       case _TransactionNetwork.bitcoin:
         final builder = locator<MempoolUrlBuilder>();
         return builder.bitcoinTxid(
           data,
           isTestnet: _isTestnet,
-          fragment: explorerUrlFragment,
+          fragment: disclosePayjoin ? explorerUrlFragment : null,
         );
       case _TransactionNetwork.liquid:
         final builder = locator<MempoolUrlBuilder>();
@@ -146,6 +146,7 @@ class TransactionViewer extends StatelessWidget {
         clipboardText: clipboardText ?? data,
         dialogContext: dialogContext,
         getExplorerUrl: _getExplorerUrl,
+        canDisclosePayjoin: explorerUrlFragment != null,
       ),
     );
   }
@@ -157,12 +158,14 @@ class _TransactionDetailSheet extends StatelessWidget {
     required this.clipboardText,
     required this.dialogContext,
     required this.getExplorerUrl,
+    required this.canDisclosePayjoin,
   });
 
   final String data;
   final String clipboardText;
   final BuildContext dialogContext;
-  final Future<String> Function() getExplorerUrl;
+  final Future<String> Function({bool disclosePayjoin}) getExplorerUrl;
+  final bool canDisclosePayjoin;
 
   @override
   Widget build(BuildContext context) {
@@ -192,6 +195,12 @@ class _TransactionDetailSheet extends StatelessWidget {
           _buildCopyLinkAction(context),
           const Gap(16),
           _buildOpenLinkAction(context),
+          if (canDisclosePayjoin) ...[
+            const Gap(16),
+            _buildCopyLinkAction(context, disclosePayjoin: true),
+            const Gap(16),
+            _buildOpenLinkAction(context, disclosePayjoin: true),
+          ],
         ],
       ),
     );
@@ -212,12 +221,17 @@ class _TransactionDetailSheet extends StatelessWidget {
     );
   }
 
-  Widget _buildCopyLinkAction(BuildContext context) {
+  Widget _buildCopyLinkAction(
+    BuildContext context, {
+    bool disclosePayjoin = false,
+  }) {
     return BullViewerActionButton(
       icon: Icons.link,
-      label: context.loc.viewerCopyLink,
+      label: disclosePayjoin
+          ? context.loc.viewerCopyLinkDisclosePayjoin
+          : context.loc.viewerCopyLink,
       onTap: () async {
-        final url = await getExplorerUrl();
+        final url = await getExplorerUrl(disclosePayjoin: disclosePayjoin);
         Clipboard.setData(ClipboardData(text: url));
         if (dialogContext.mounted) {
           Navigator.of(dialogContext).pop();
@@ -230,12 +244,17 @@ class _TransactionDetailSheet extends StatelessWidget {
     );
   }
 
-  Widget _buildOpenLinkAction(BuildContext context) {
+  Widget _buildOpenLinkAction(
+    BuildContext context, {
+    bool disclosePayjoin = false,
+  }) {
     return BullViewerActionButton(
       icon: Icons.open_in_new,
-      label: context.loc.viewerViewInExplorer,
+      label: disclosePayjoin
+          ? context.loc.viewerViewInExplorerDisclosePayjoin
+          : context.loc.viewerViewInExplorer,
       onTap: () async {
-        final url = await getExplorerUrl();
+        final url = await getExplorerUrl(disclosePayjoin: disclosePayjoin);
         if (dialogContext.mounted) {
           Navigator.of(dialogContext).pop();
         }
