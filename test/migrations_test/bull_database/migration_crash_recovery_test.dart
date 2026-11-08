@@ -82,14 +82,19 @@ void main() {
   // upgrade after every possible number of commits, then relaunches with the
   // current code. The relaunch must reach the current schema, validate, and
   // keep every label that survived the crash.
+  // Exhaustive file-backed crash points exceed 30 s when suites share disk I/O.
   group('killed after any commit while upgrading on an older release', () {
     for (final MapEntry(key: version, value: fixture) in _fixtures.entries) {
-      test('from schema $version, the next launch recovers', () async {
-        await _everyCrashPoint(
-          seed: (file) => _seedFixture(file, version, fixture),
-          crashingOpen: (executor) => _ReleasedMigrationOrder(executor),
-        );
-      });
+      test(
+        'from schema $version, the next launch recovers',
+        () async {
+          await _everyCrashPoint(
+            seed: (file) => _seedFixture(file, version, fixture),
+            crashingOpen: (executor) => _ReleasedMigrationOrder(executor),
+          );
+        },
+        timeout: const Timeout(Duration(minutes: 2)),
+      );
     }
   });
 

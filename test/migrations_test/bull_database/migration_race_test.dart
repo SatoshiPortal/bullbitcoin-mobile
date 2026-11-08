@@ -1,3 +1,4 @@
+import '../../../tools/testing/sqlite_test_timing.dart';
 import 'dart:io';
 
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
@@ -53,37 +54,42 @@ void main() {
   for (final MapEntry(key: version, value: fixture) in _fixtures.entries) {
     for (final background in [false, true]) {
       final mode = background ? 'separate isolates' : 'one isolate';
-      test('two connections migrating concurrently from schema $version '
-          '($mode) leave the next launch at the current schema with every '
-          'label', () async {
-        for (var run = 0; run < (background ? 10 : 1); run++) {
-          final dir = await Directory.systemTemp.createTemp('bull_race');
-          addTearDown(() => dir.delete(recursive: true));
-          final file = File('${dir.path}/${SqliteDatabase.name}.sqlite');
+      test(
+        'two connections migrating concurrently from schema $version '
+        '($mode) leave the next launch at the current schema with every '
+        'label',
+        () async {
+          for (var run = 0; run < (background ? 10 : 1); run++) {
+            final dir = await Directory.systemTemp.createTemp('bull_race');
+            addTearDown(() => dir.delete(recursive: true));
+            final file = File('${dir.path}/${SqliteDatabase.name}.sqlite');
 
-          final seeded = fixture(NativeDatabase(file));
-          await seeded.customSelect('SELECT 1').get();
-          await seeded.close();
-          _seedLabels(file, version);
+            final seeded = fixture(NativeDatabase(file));
+            await seeded.customSelect('SELECT 1').get();
+            await seeded.close();
+            _seedLabels(file, version);
 
-          final opened = await Future.wait([
-            _open(_connection(file, background: background)),
-            _open(_connection(file, background: background)),
-          ]);
-          expect(opened, contains(true));
+            final opened = await Future.wait([
+              _open(_connection(file, background: background)),
+              _open(_connection(file, background: background)),
+            ]);
+            expect(opened, contains(true));
 
-          final relaunch = SqliteDatabase(_connection(file));
-          final userVersion = await relaunch
-              .customSelect('PRAGMA user_version')
-              .map((row) => row.read<int>('user_version'))
-              .getSingle();
-          expect(userVersion, SqliteDatabase.currentSchemaVersion);
-          await relaunch.validateDatabaseSchema();
-          final labels = await relaunch.select(relaunch.labels).get();
-          expect(labels, hasLength(_labelCount));
-          await relaunch.close();
-        }
-      });
+            final relaunch = SqliteDatabase(_connection(file));
+            final userVersion = await relaunch
+                .customSelect('PRAGMA user_version')
+                .map((row) => row.read<int>('user_version'))
+                .getSingle();
+            expect(userVersion, SqliteDatabase.currentSchemaVersion);
+            await relaunch.validateDatabaseSchema();
+            final labels = await relaunch.select(relaunch.labels).get();
+            expect(labels, hasLength(_labelCount));
+            await relaunch.close();
+          }
+        },
+        timeout: const Timeout(Duration(minutes: 2)),
+        skip: sqliteTimingSkipReason,
+      );
     }
   }
 }
