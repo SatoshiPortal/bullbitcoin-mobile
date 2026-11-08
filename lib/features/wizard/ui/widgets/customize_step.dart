@@ -1,3 +1,4 @@
+import 'package:bull_pricer/bull_pricer.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
@@ -76,7 +77,7 @@ class CustomizeStep extends StatelessWidget {
               final picked = await BullBottomSheet.show<String>(
                 context: context,
                 child: CurrencyBottomSheet(
-                  availableCurrencies: CurrencyConstants.supportedFiat,
+                  availableCurrencies: SupportedCurrency.codes,
                   selectedValue: defaultCurrency,
                 ),
               );
