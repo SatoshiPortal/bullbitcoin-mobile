@@ -95,8 +95,13 @@ final class LeaseDiagnostics {
     }
   }
 
-  void busy(LeaseBusySource source, {int waitedMs = 0}) =>
-      _emit('lease_busy', 0, busySource: source, waitedMs: waitedMs);
+  void busy(LeaseBusySource source, {int waitedMs = 0}) => _emit(
+    'lease_busy',
+    0,
+    busySource: source,
+    waitedMs: waitedMs,
+    level: role == LeaseRole.writer ? WriterLogLevel.fine : WriterLogLevel.info,
+  );
 
   void _emit(
     String event,
@@ -109,7 +114,7 @@ final class LeaseDiagnostics {
     final timestamp = DateTime.now().toUtc().toIso8601String();
     try {
       sink(
-        busySource == null ? level : WriterLogLevel.fine,
+        level,
         'event=$event role=${_field(role)} intent=${_field(intent)} '
         'scope=${_field(scope)} source=${_field(source)} read=${_field(read)} '
         'held_ms=$heldMs${busySource == null ? '' : ' busy_source=${_field(busySource)}'}${waitedMs == null ? '' : ' waited_ms=$waitedMs'} owner_at=$timestamp',
