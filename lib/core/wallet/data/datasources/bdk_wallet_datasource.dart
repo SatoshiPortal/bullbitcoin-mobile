@@ -386,7 +386,7 @@ class BdkWalletDatasource {
         if (toAddress != null && toAddress.isNotEmpty) {
           // Filter transactions by address by returning null for non-matching transactions
           // and then removing null values from the list with whereType at the end of the method
-          final matches = await Future.any(
+          final matches = (await Future.wait(
             outputs.map((output) async {
               final address =
                   await AddressScriptConversions.bitcoinAddressFromScriptPubkey(
@@ -396,7 +396,7 @@ class BdkWalletDatasource {
               if (address == null) return false;
               return address == toAddress;
             }),
-          ).catchError((_) => false);
+          )).any((matches) => matches);
 
           if (!matches) return null;
         }

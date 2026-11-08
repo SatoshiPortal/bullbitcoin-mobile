@@ -93,16 +93,14 @@ final class WriterLock {
           if (error.resultCode != 5) rethrow;
         }
         final remaining = writerWaitLimit - waited.elapsed;
-        if (remaining > Duration.zero) {
-          final delay = Duration(milliseconds: _retryStepsMs[step]);
-          await Future<void>.delayed(delay < remaining ? delay : remaining);
-          step = math.min(step + 1, _retryStepsMs.length - 1);
-        }
-        // Scheduling can exceed the requested delay; never begin after the budget.
-        if (waited.elapsed >= writerWaitLimit) {
+        if (remaining <= Duration.zero) {
           diagnostics.busy(busySource, waitedMs: waited.elapsedMilliseconds);
           return const Err(TransactionSyncBusyFailure());
         }
+        final delay = Duration(milliseconds: _retryStepsMs[step]);
+        await Future<void>.delayed(delay < remaining ? delay : remaining);
+        step = math.min(step + 1, _retryStepsMs.length - 1);
+        // Even a late wakeup gets one final non-blocking acquisition attempt.
       }
     } on SqliteException catch (error) {
       if (error.resultCode == 5) {

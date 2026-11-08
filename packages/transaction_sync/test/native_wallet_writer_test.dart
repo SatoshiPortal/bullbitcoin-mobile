@@ -127,6 +127,12 @@ class RepairSync implements WriterSyncOperation {
   }) async => const Err(TransactionSyncNeedsRepairFailure());
 }
 
+class UnchangedSync extends Sync implements WriterSyncChanges {
+  UnchangedSync() : super((_) {});
+  @override
+  bool get hasChanges => false;
+}
+
 class UnrecognizedNativeDescriptorException implements Exception {
   @override
   String toString() => 'sensitive-sentinel';
@@ -595,6 +601,49 @@ void main() {
       await empty.close();
     }
   });
+
+  test(
+    'unchanged successful sync preserves revision but publishes recovery',
+    () async {
+      final before = store.record(key)?.state.stamp;
+      final unchanged = await writer.sync(
+        key,
+        expectedGeneration: 1,
+        operation: UnchangedSync(),
+      );
+      expect(unchanged, isA<Ok<WriterOutcome, TransactionSyncFailure>>());
+      expect(
+        (unchanged as Ok<WriterOutcome, TransactionSyncFailure>).value,
+        isA<WriterUnchanged>(),
+      );
+      expect(store.record(key)?.state.stamp, before);
+      expect(store.record(key)?.state.syncFailed, isFalse);
+      expect(store.record(key)?.intent, isNull);
+      expect(
+        await writer.sync(
+          key,
+          expectedGeneration: 1,
+          operation: FailedSync(false),
+        ),
+        isA<Err>(),
+      );
+      expect(store.record(key)?.state.syncFailed, isTrue);
+      final recovered = await writer.sync(
+        key,
+        expectedGeneration: 1,
+        operation: UnchangedSync(),
+      );
+      expect(
+        (recovered as Ok<WriterOutcome, TransactionSyncFailure>).value,
+        isA<WriterCommitted>(),
+      );
+      expect(store.record(key)?.state.syncFailed, isFalse);
+      expect(
+        store.record(key)?.state.stamp.revision,
+        (before?.revision ?? 0) + 1,
+      );
+    },
+  );
 
   for (final mutated in [false, true]) {
     test('failed sync clears intent with mutation=$mutated', () async {

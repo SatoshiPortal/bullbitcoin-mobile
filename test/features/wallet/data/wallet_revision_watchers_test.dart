@@ -42,10 +42,14 @@ void main() {
         () =>
             repository.getWalletTransaction('fixture-tx', walletId: 'fixture'),
       ).thenAnswer((_) async => tx);
-      final byAddress = WatchWalletTransactionByAddressUsecase(
-        walletTransactionRepository: repository,
-        walletFacade: facade,
-      ).execute(walletId: 'fixture', toAddress: 'fixture-address').first;
+      final addressUpdates = <WalletTransaction>[];
+      final byAddress =
+          WatchWalletTransactionByAddressUsecase(
+                walletTransactionRepository: repository,
+                walletFacade: facade,
+              )
+              .execute(walletId: 'fixture', toAddress: 'fixture-address')
+              .listen(addressUpdates.add);
       final byId = WatchWalletTransactionByTxIdUsecase(
         walletTransactionRepository: repository,
         walletFacade: facade,
@@ -59,12 +63,29 @@ void main() {
         lifecycle: WalletLifecycle.active,
         initializedSchema: 1,
       );
+      await pumpEventQueue();
+      expect(addressUpdates, [tx]);
+      verify(
+        () => repository.getWalletTransactions(
+          walletId: 'fixture',
+          toAddress: 'fixture-address',
+        ),
+      ).called(1);
+      clearInteractions(repository);
       revisions.add(revision('other'));
       await pumpEventQueue();
       verifyZeroInteractions(repository);
       revisions.add(revision('fixture'));
-      expect(await byAddress, tx);
       expect(await byId, tx);
+      await pumpEventQueue();
+      expect(addressUpdates, [tx, tx]);
+      verify(
+        () => repository.getWalletTransactions(
+          walletId: 'fixture',
+          toAddress: 'fixture-address',
+        ),
+      ).called(1);
+      await byAddress.cancel();
       await revisions.close();
     },
   );

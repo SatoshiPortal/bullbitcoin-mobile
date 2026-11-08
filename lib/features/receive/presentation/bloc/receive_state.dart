@@ -15,6 +15,8 @@ abstract class ReceiveState with _$ReceiveState {
     @Default('') String inputAmountCurrencyCode,
     @Default('') String inputAmount,
     int? confirmedAmountSat,
+    // Set only after address preparation has durably revealed the address.
+    int? revealedAddressGeneration,
     WalletAddress? bitcoinAddress,
     LnReceiveSwap? lightningSwap,
     OrderSwapRecord? orderSwap,

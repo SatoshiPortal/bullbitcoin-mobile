@@ -169,13 +169,11 @@ class LwkWalletDatasource {
       if (outputs.isEmpty) {
         return false;
       }
-      final isUsed = await Future.any(
-        outputs.map((output) async {
-          return output.address.confidential == address ||
-              output.address.standard == address;
-        }),
+      return outputs.any(
+        (output) =>
+            output.address.confidential == address ||
+            output.address.standard == address,
       );
-      return isUsed;
     } catch (e) {
       if (e is lwk.LwkError) {
         throw e.msg;

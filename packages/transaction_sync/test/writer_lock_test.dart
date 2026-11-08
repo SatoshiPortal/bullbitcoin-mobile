@@ -6,6 +6,7 @@ import 'package:primitives/primitives.dart';
 import 'package:test/test.dart';
 import 'package:transaction_sync/transaction_sync.dart';
 import 'package:transaction_sync/src/write/writer_lock.dart';
+import 'package:transaction_sync/src/write/lease_diagnostics.dart';
 
 final _key = WalletKey(id: 'lock-test', network: LiquidNetwork.testnet);
 
@@ -86,6 +87,34 @@ void main() {
       exited.close();
     },
   );
+
+  test('writer tries acquisition after its final delayed wakeup', () async {
+    final held = WriterLock.acquire(directory.path, _key) as Ok;
+    final holder = held.value as WriterLock;
+    addTearDown(holder.release);
+    final result = await runZoned(
+      () => WriterLock.acquireWriter(
+        directory.path,
+        _key,
+        diagnostics: LeaseDiagnostics(
+          role: LeaseRole.writer,
+          intent: LeaseIntent.sync,
+        ),
+      ),
+      zoneSpecification: ZoneSpecification(
+        createTimer: (self, parent, zone, duration, callback) =>
+            parent.createTimer(zone, duration, () {
+              // Model a delayed scheduler waking after the budget, with the
+              // holder released before the waiter resumes its final attempt.
+              sleep(WriterLock.writerWaitLimit);
+              holder.release();
+              callback();
+            }),
+      ),
+    );
+    if (result case Ok(:final value)) addTearDown(value.release);
+    expect(result, isA<Ok<WriterLock, TransactionSyncFailure>>());
+  });
 
   test('network is part of lock identity', () {
     final first = WriterLock.acquire(directory.path, _key) as Ok;
