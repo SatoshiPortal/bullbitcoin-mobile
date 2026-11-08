@@ -69,18 +69,14 @@ void main() {
           await usecase.execute(mnemonicWords: words, language: language),
           isA<Ok<void, ImportMnemonicFailure>>(),
         );
-        expect(
-          await secrets.import(words: words, language: language),
-          isA<Ok<Secret, SecretFailure>>(),
-        );
-        final stored =
-            (await secrets.list() as Ok<List<SecretEntry>, SecretFailure>)
-                    .value
-                    .single
-                as Secret;
+        final imported = await secrets.import(words: words, language: language);
+        final secret = switch (imported) {
+          Ok(:final value) => value,
+          Err(:final failure) => fail('import failed: ${failure.runtimeType}'),
+        };
         final row = _Row();
-        when(() => row.masterFingerprint).thenReturn(stored.id.hex);
-        when(() => row.id).thenReturn('wpkh([${stored.id.hex}/84h/0h/0h])');
+        when(() => row.masterFingerprint).thenReturn(secret.id.hex);
+        when(() => row.networkCode).thenReturn('bitcoinMainnet');
         when(() => metadata.fetchAll()).thenAnswer((_) async => [row]);
         final duplicate = await usecase.execute(
           mnemonicWords: words.map(nfc).toList(),

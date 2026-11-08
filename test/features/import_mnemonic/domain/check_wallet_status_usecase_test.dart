@@ -74,7 +74,10 @@ void main() {
         ),
       );
 
-  setUpAll(() => registerFallbackValue(_FakeConnection()));
+  setUpAll(() {
+    registerFallbackValue(_FakeConnection());
+    registerFallbackValue(Network.bitcoinMainnet);
+  });
 
   late Directory logDirectory;
   tearDown(() async {
@@ -93,7 +96,7 @@ void main() {
       () => wallets.dryScan(
         externalDescriptor: any(named: 'externalDescriptor'),
         internalDescriptor: any(named: 'internalDescriptor'),
-        isTestnet: any(named: 'isTestnet'),
+        network: any(named: 'network'),
         electrumServer: any(named: 'electrumServer'),
       ),
     ).thenAnswer((_) async => (satoshis: BigInt.from(1234), transactions: 2));
@@ -141,7 +144,10 @@ void main() {
         () => wallets.dryScan(
           externalDescriptor: expected.external,
           internalDescriptor: expected.internal,
-          isTestnet: env.isTestnet,
+          network: Network.fromEnvironment(
+            environment: env.networkEnv,
+            isLiquid: false,
+          ),
           electrumServer: servers.connection,
         ),
       ).called(1);
@@ -182,7 +188,7 @@ void main() {
       () => wallets.dryScan(
         externalDescriptor: any(named: 'externalDescriptor'),
         internalDescriptor: any(named: 'internalDescriptor'),
-        isTestnet: any(named: 'isTestnet'),
+        network: any(named: 'network'),
         electrumServer: any(named: 'electrumServer'),
       ),
     );
@@ -201,7 +207,7 @@ void main() {
             that: startsWith('sh('),
           ),
           internalDescriptor: any(named: 'internalDescriptor'),
-          isTestnet: any(named: 'isTestnet'),
+          network: any(named: 'network'),
           electrumServer: any(named: 'electrumServer'),
         ),
       ).thenThrow(Exception('unreachable server'));
@@ -244,7 +250,7 @@ void main() {
           () => wallets.dryScan(
             externalDescriptor: pair.external,
             internalDescriptor: pair.internal,
-            isTestnet: false,
+            network: Network.bitcoinMainnet,
             electrumServer: servers.connection,
           ),
         ).called(1);
@@ -261,7 +267,7 @@ void main() {
       () => wallets.dryScan(
         externalDescriptor: any(named: 'externalDescriptor'),
         internalDescriptor: any(named: 'internalDescriptor'),
-        isTestnet: any(named: 'isTestnet'),
+        network: any(named: 'network'),
         electrumServer: any(named: 'electrumServer'),
       ),
     ).thenThrow(StateError('wpkh([73c5da0a/84h/0h/0h]xpub...)'));
@@ -291,7 +297,7 @@ void main() {
       () => wallets.dryScan(
         externalDescriptor: any(named: 'externalDescriptor'),
         internalDescriptor: any(named: 'internalDescriptor'),
-        isTestnet: any(named: 'isTestnet'),
+        network: any(named: 'network'),
         electrumServer: any(named: 'electrumServer'),
       ),
     ).thenThrow(TimeoutException('no answer'));

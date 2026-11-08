@@ -1,5 +1,5 @@
-import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
 import 'package:primitives/primitives.dart' show Fingerprint;
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
@@ -23,9 +23,9 @@ class _MockSettingsRepository extends Mock implements SettingsRepository {}
 
 class _MockWalletRepository extends Mock implements WalletRepository {}
 
-class _MockWallet extends Mock implements Wallet {}
-
 class _MockMetadata extends Mock implements WalletMetadataDatasource {}
+
+class _MockWallet extends Mock implements Wallet {}
 
 class _MockMetadataRow extends Mock implements WalletMetadataModel {}
 
@@ -154,9 +154,10 @@ void main() {
             label: 'Vector',
           ),
         ).called(1);
+        // The first successful provisioning now references this secret on mainnet.
         final row = _MockMetadataRow();
         when(() => row.masterFingerprint).thenReturn(secret.id.hex);
-        when(() => row.id).thenReturn('wpkh([${secret.id.hex}/84h/0h/0h])');
+        when(() => row.networkCode).thenReturn('bitcoinMainnet');
         when(() => metadata.fetchAll()).thenAnswer((_) async => [row]);
         final duplicate = await usecase.execute(
           mnemonicWords: words,
