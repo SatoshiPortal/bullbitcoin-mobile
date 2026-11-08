@@ -1,3 +1,5 @@
+import 'package:bb_mobile/features/settings/public/settings_facade.dart'
+    show ActiveNetworkScope;
 import 'dart:io';
 
 import 'package:bb_mobile/core/screens/route_error_screen.dart';
@@ -192,7 +194,9 @@ class AppRouter {
       WalletRouter.walletDetailRoute,
       ConsolidationRouter.route,
       SettingsRouter.route,
-      TransactionsRouter.transactionsRoute,
+      TransactionsRouter.transactionsRoute(
+        scope: (child) => ActiveNetworkScope(child: child),
+      ),
       TransactionsRouter.exportTransactionsRoute,
       ...TransactionsRouter.transactionDetailsRoutes,
       ReceiveRouter.route,

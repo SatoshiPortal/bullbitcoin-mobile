@@ -93,9 +93,15 @@ class SyncCoordinator {
   final Map<String, _SyncPass> _manualPasses = {};
   _SyncPass? _running;
   bool _draining = false;
+  final _activity = StreamController<bool>.broadcast(sync: true);
+
   Future<void>? _activeDrain;
   final Map<SyncKind, String> _lastOutcome = {};
   final Map<SyncKind, DateTime> _lastSuccessAt = <SyncKind, DateTime>{};
+
+  /// Covers the whole foreground queue, including discovery and queued kinds.
+  bool get isSyncPassActive => _draining;
+  Stream<bool> get syncPassActivity => _activity.stream;
 
   /// Schedule `kinds` (or the trigger's default kinds when `only` is null) and
   /// resolve once every requested kind that actually runs has settled. Resolution tracks
@@ -259,7 +265,9 @@ class SyncCoordinator {
   }
 
   Future<void> _drainOnce() async {
+    if (_queue.isEmpty) return;
     _draining = true;
+    _activity.add(true);
     try {
       while (_queue.isNotEmpty) {
         final pass = _queue.removeFirst();
@@ -287,6 +295,7 @@ class SyncCoordinator {
       }
     } finally {
       _draining = false;
+      if (!_activity.isClosed) _activity.add(false);
     }
   }
 
@@ -441,6 +450,7 @@ class SyncCoordinator {
 
   void dispose() {
     _lifecycleListener.dispose();
+    unawaited(_activity.close());
   }
 }
 

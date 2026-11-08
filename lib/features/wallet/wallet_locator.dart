@@ -66,6 +66,8 @@ class WalletLocator {
       () => WalletFacade(
         locator<WalletNativeRuntime>().changes,
         discoverWallet: (id) => locator<SyncCoordinator>().discoverWallet(id),
+        syncPassActivity: locator<SyncCoordinator>().syncPassActivity,
+        isSyncPassActive: () => locator<SyncCoordinator>().isSyncPassActive,
       ),
     );
     locator.registerFactory<CreateDefaultWalletsUsecase>(

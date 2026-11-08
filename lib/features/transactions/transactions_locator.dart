@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/transactions/domain/usecases/watch_transaction_reloads_usecase.dart';
 import 'package:bb_mobile/features/transactions/domain/usecases/watch_wallet_revisions_usecase.dart';
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
@@ -178,6 +179,9 @@ class TransactionsLocator {
     locator.registerFactoryParam<TransactionsCubit, String?, bool?>(
       (walletId, exchangeOnly) => TransactionsCubit(
         watchWalletRevisionsUsecase: WatchWalletRevisionsUsecase(
+          locator<WalletFacade>(),
+        ),
+        watchTransactionReloadsUsecase: WatchTransactionReloadsUsecase(
           locator<WalletFacade>(),
         ),
         walletId: walletId,

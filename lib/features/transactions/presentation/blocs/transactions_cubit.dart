@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/transactions/domain/usecases/watch_transaction_reloads_usecase.dart';
 import 'package:bb_mobile/features/transactions/domain/usecases/watch_wallet_revisions_usecase.dart';
 import 'dart:async';
 import 'dart:collection';
@@ -22,6 +23,7 @@ part 'transactions_state.dart';
 class TransactionsCubit extends Cubit<TransactionsState> {
   TransactionsCubit({
     WatchWalletRevisionsUsecase? watchWalletRevisionsUsecase,
+    WatchTransactionReloadsUsecase? watchTransactionReloadsUsecase,
     String? walletId,
     bool exchangeOnly = false,
     required this._getTransactionsUsecase,
@@ -31,6 +33,19 @@ class TransactionsCubit extends Cubit<TransactionsState> {
   }) : super(
          TransactionsState(walletId: walletId, exchangeOnly: exchangeOnly),
        ) {
+    if (walletId == null) {
+      _revisionsSubscription = watchTransactionReloadsUsecase?.execute().listen(
+        (update) {
+          switch (update) {
+            case TransactionHistoryUpdate.syncing:
+              emit(state.copyWith(isSyncing: true));
+            case TransactionHistoryUpdate.reload:
+              loadTxs();
+          }
+        },
+      );
+      return;
+    }
     _startedSyncSubscription = _watchStartedWalletSyncsUsecase
         .execute(walletId: walletId)
         .listen((_) => emit(state.copyWith(isSyncing: true)));

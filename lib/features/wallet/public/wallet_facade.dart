@@ -14,7 +14,17 @@ final class WalletFacade {
   final Stream<WalletRevisionState> _revisions;
   final Future<Result<void, WalletDiscoveryFailure>> Function(String)?
   _discoverWallet;
-  const WalletFacade(this._revisions, {this._discoverWallet});
+  final Stream<bool> _syncPassActivity;
+  final bool Function()? _isSyncPassActive;
+  const WalletFacade(
+    this._revisions, {
+    this._discoverWallet,
+    this._syncPassActivity = const Stream.empty(),
+    this._isSyncPassActive,
+  });
+
+  bool get isSyncPassActive => _isSyncPassActive?.call() ?? false;
+  Stream<bool> watchSyncPassActivity() => _syncPassActivity;
 
   Future<Result<void, WalletDiscoveryFailure>> discoverWallet(
     String walletId,
