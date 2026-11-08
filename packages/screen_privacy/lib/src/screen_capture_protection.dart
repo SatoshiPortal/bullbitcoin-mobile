@@ -1,7 +1,6 @@
-import 'package:logging/logging.dart';
+import 'package:bull_logger/bull_logger.dart';
+import 'package:flutter/services.dart';
 import 'package:no_screenshot/no_screenshot.dart';
-
-final _log = Logger('ScreenCaptureProtection');
 
 /// Controls OS-level screen-capture blocking (Android `FLAG_SECURE`, iOS secure
 /// overlay) via the `no_screenshot` plugin.
@@ -19,6 +18,7 @@ class ScreenCaptureProtection {
 
   int _activeCount = 0;
   bool _enabledByUser = true;
+  bool _channelFailed = false;
 
   /// Whether the user wants sensitive screens protected from capture.
   ///
@@ -33,10 +33,18 @@ class ScreenCaptureProtection {
   }
 
   /// Registers one more mounted protected screen.
-  Future<void> acquire() async {
+  ///
+  /// Returns whether the screen may show its secret: capture blocking is in
+  /// effect, or the user turned it off. `false` means the plugin refused or
+  /// failed, and the secret must stay hidden.
+  Future<bool> acquire() async {
     _activeCount++;
-    await _sync();
+    return _sync();
   }
+
+  /// Applies the current state again — the retry for an [acquire] that
+  /// returned `false`. Same verdict as [acquire].
+  Future<bool> resync() => _sync();
 
   /// Unregisters one previously [acquire]d protected screen.
   Future<void> release() async {
@@ -44,24 +52,33 @@ class ScreenCaptureProtection {
     await _sync();
   }
 
-  Future<void> _sync() async {
+  Future<bool> _sync() async {
     final shouldProtect = _enabledByUser && _activeCount > 0;
     try {
       if (shouldProtect) {
-        await _noScreenshot.screenshotOff();
-      } else {
-        await _noScreenshot.screenshotOn();
+        // `false` is the plugin saying the flag is not set (no window yet on
+        // iOS, a native failure on Android): not a secret screen's green light.
+        final protected = await _noScreenshot.screenshotOff();
+        if (protected) _channelFailed = false;
+        return protected;
       }
+      await _noScreenshot.screenshotOn();
+      _channelFailed = false;
+      return true;
     } catch (e, st) {
-      // Callers fire-and-forget this, so a platform-channel failure would
-      // otherwise vanish as an unhandled async error. On a secret screen a
-      // silent failure means we may be showing the mnemonic without
-      // FLAG_SECURE set, so make it loud rather than let it disappear.
-      _log.severe(
-        'failed to ${shouldProtect ? 'enable' : 'disable'} capture blocking',
-        e,
-        st,
-      );
+      if (!_channelFailed &&
+          e is! PlatformException &&
+          e is! MissingPluginException) {
+        log.severe(
+          message: 'Privacy channel failed reason=unexpected',
+          error: 'platform',
+          trace: st,
+        );
+      } else if (!_channelFailed && !shouldProtect) {
+        log.warning('Privacy release failed reason=platform');
+      }
+      _channelFailed = true;
+      return !shouldProtect;
     }
   }
 }

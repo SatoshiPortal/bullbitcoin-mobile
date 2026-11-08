@@ -15848,5 +15848,13 @@
   "viewerViewInExplorerDisclosePayjoin": "View in explorer (disclose Payjoin)",
   "@viewerViewInExplorerDisclosePayjoin": {
     "description": "Button to open a Payjoin transaction in the block explorer with a link that discloses which inputs and outputs belong to the sender and the recipient"
+  },
+  "screenPrivacyContinueAnyway": "Continue anyway",
+  "@screenPrivacyContinueAnyway": {
+    "description": "Button that shows the secret although screen-capture blocking could not be enabled (explicit user consent)"
+  },
+  "screenPrivacyUnavailableMessage": "Screen capture protection could not be enabled. Screenshots and screen recordings of this screen may not be blocked.",
+  "@screenPrivacyUnavailableMessage": {
+    "description": "Shown instead of a secret (recovery phrase, seed, BIP85 child) when the OS screen-capture blocking could not be enabled after automatic retries; followed by Retry and Continue anyway buttons"
   }
 }

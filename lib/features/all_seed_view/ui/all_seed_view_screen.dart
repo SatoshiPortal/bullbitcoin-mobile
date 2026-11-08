@@ -33,6 +33,8 @@ class _AllSeedViewScreenState extends State<AllSeedViewScreen>
   @override
   void initState() {
     super.initState();
+    // From the re-authentication on, so the PIN pad is covered too; the gate
+    // below asks again before the seeds can draw.
     unawaited(enableScreenPrivacy());
   }
 
@@ -83,7 +85,13 @@ class _AllSeedViewScreenState extends State<AllSeedViewScreen>
                     : const SizedBox(height: 3),
               ),
             ),
-            body: Builder(
+            body: ScreenPrivacyGate(
+              protect: enableScreenPrivacy,
+              labels: ScreenPrivacyGateLabels(
+                message: context.loc.screenPrivacyUnavailableMessage,
+                retry: context.loc.retry,
+                continueAnyway: context.loc.screenPrivacyContinueAnyway,
+              ),
               builder: (context) {
                 if (state.loading) {
                   return Center(

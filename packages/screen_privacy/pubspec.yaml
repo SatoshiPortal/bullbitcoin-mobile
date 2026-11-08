@@ -11,7 +11,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  logging: ^1.2.0
+  bull_ui:
+  bull_logger:
   no_screenshot: ^1.1.0
 
 dev_dependencies:
@@ -19,3 +20,6 @@ dev_dependencies:
     sdk: flutter
   lints: ^6.1.0
   test: ^1.31.0
+
+flutter:
+  uses-material-design: true
