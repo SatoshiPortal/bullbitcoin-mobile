@@ -32,6 +32,8 @@ extension ReceiveFailureL10n on ReceiveFailure {
     ReceiveRateLimitedFailure(:final retryAfter) =>
       context.loc.swapErrorRateLimited(retryAfter?.inSeconds ?? 30),
     ReceiveNetworkFailure() => context.loc.payNetworkError,
+    ReceivePriceUnavailableFailure() =>
+      context.loc.bitcoinPriceExchangeRateUnavailable,
     ReceiveAmountAboveProtocolLimitFailure(:final limitAmountSat) =>
       context.loc.receiveErrorAmountAboveProtocolLimit(
         FormatAmount.sats(limitAmountSat),

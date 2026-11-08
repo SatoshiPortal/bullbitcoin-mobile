@@ -1,6 +1,5 @@
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_liquid_transaction_usecase.dart';
-import 'package:bb_mobile/core/price/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
 import 'package:bb_mobile/core/fees/domain/get_network_fees_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
@@ -41,6 +40,7 @@ import 'package:bb_mobile/features/swap/domain/usecases/get_order_swap_usecase.d
 import 'package:bb_mobile/features/swap/domain/usecases/get_order_swaps_usecase.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/get_pending_order_swaps_usecase.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/get_swap_app_update_required_usecase.dart';
+import 'package:bb_mobile/features/swap/domain/usecases/get_swap_exchange_rate_usecase.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/get_order_swaps_awaiting_labels_usecase.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/mark_order_swap_broadcast_unknown_usecase.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/mark_order_swap_payin_broadcast_usecase.dart';
@@ -55,6 +55,7 @@ import 'package:bb_mobile/features/swap/domain/usecases/watch_swap_app_update_re
 import 'package:bb_mobile/features/swap/order_swap_watcher.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:dio/dio.dart';
+import 'package:bull_pricer/bull_pricer.dart';
 import 'package:get_it/get_it.dart';
 
 class SwapLocator {
@@ -168,6 +169,12 @@ class SwapLocator {
     );
     locator.registerFactory<WatchSwapAppUpdateRequiredUsecase>(
       () => WatchSwapAppUpdateRequiredUsecase(locator<OrderSwapRepository>()),
+    );
+    locator.registerFactory<GetSwapExchangeRateUsecase>(
+      () => GetSwapExchangeRateUsecase(
+        getSettingsUsecase: locator<GetSettingsUsecase>(),
+        getIndexPrice: Pricer.getIndexPrice,
+      ),
     );
     locator.registerFactory<SwapFacade>(
       () => SwapFacade(
@@ -301,8 +308,7 @@ class SwapLocator {
         detectBitcoinStringUsecase: locator<DetectBitcoinStringUsecase>(),
         getReceiveAddressUsecase: locator<GetReceiveAddressUsecase>(),
         getWalletUtxosUsecase: locator<GetWalletUtxosUsecase>(),
-        convertSatsToCurrencyAmountUsecase:
-            locator<ConvertSatsToCurrencyAmountUsecase>(),
+        getSwapExchangeRateUsecase: locator<GetSwapExchangeRateUsecase>(),
         previewBitcoinFeeUsecase: locator<PreviewBitcoinFeeUsecase>(),
         previewBitcoinFeePresetsUsecase:
             locator<PreviewBitcoinFeePresetsUsecase>(),

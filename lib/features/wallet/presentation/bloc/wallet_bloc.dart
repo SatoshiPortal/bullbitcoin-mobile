@@ -295,6 +295,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     WalletRefreshed event,
     Emitter<WalletState> emit,
   ) async {
+    final catalog = _catalogGeneration;
     emit(state.copyWith(isRefreshing: true));
 
     // The sync schedules bitcoin → liquid → swaps → sp sequentially with per-kind dedup,
@@ -312,7 +313,11 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
       if (failure is! WalletSyncBusyFailure) syncFailure = failure;
     }
 
-    final catalog = ++_catalogGeneration;
+    if (emit.isDone) return;
+    if (catalog != _catalogGeneration) {
+      emit(state.copyWith(isRefreshing: false));
+      return;
+    }
     final updates = Map<String, int>.of(_walletUpdateVersions);
     final List<Wallet> wallets;
     final result = await _getWalletsUsecase.execute();
@@ -333,6 +338,20 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
           ),
         );
         return;
+    }
+
+    // Ordinary rereads must not invalidate a fresh incoming aggregate.
+    // A changed catalogue still makes reads from the old membership obsolete.
+    final previousKeys = {
+      for (final wallet in state.wallets) (wallet.id, wallet.network),
+    };
+    final loadedKeys = {
+      for (final wallet in wallets) (wallet.id, wallet.network),
+    };
+    if (previousKeys.length != loadedKeys.length ||
+        !previousKeys.containsAll(loadedKeys)) {
+      _catalogGeneration++;
+      _walletReadVersions.clear();
     }
 
     add(const RefreshSpWallet());

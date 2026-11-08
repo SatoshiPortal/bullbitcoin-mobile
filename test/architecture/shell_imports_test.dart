@@ -34,7 +34,6 @@ const _legacyImports = {
   'lib/features/recipients/ui/screens/recipient_selection_screen_v2.dart -> locator.dart',
   'lib/features/recipients/ui/screens/virtual_iban_funding_screen.dart -> locator.dart',
   'lib/features/autobuy/ui/autobuy_router.dart -> locator.dart',
-  'lib/features/bitcoin_price/ui/price_chart_widget.dart -> locator.dart',
   'lib/features/limit_orders/ui/limit_orders_router.dart -> locator.dart',
   'lib/features/sp/ui/sp_router.dart -> locator.dart',
   'lib/features/pin_code/ui/pin_code_setting_flow.dart -> locator.dart',

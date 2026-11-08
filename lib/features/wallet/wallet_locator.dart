@@ -69,7 +69,10 @@ class WalletLocator {
     locator.registerLazySingleton<WalletFacade>(
       () => WalletFacade(
         locator<WalletNativeRuntime>().changes,
+        pollWallet: (id, {required isActive}) =>
+            locator<SyncCoordinator>().pollWallet(id, isActive: isActive),
         discoverWallet: (id) => locator<SyncCoordinator>().discoverWallet(id),
+        syncFinished: locator<ForegroundWalletSync>().finished.map((_) {}),
         syncPassActivity: locator<SyncCoordinator>().syncPassActivity,
         isSyncPassActive: () => locator<SyncCoordinator>().isSyncPassActive,
       ),

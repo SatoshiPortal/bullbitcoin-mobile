@@ -23,6 +23,7 @@ workspace:
   - packages/screen_privacy
   - packages/bull_reporting
   - packages/bull_logger
+  - packages/bull_pricer
   - features/logs
 
 dependencies:
@@ -30,6 +31,7 @@ dependencies:
     sdk: flutter
   secrets:
   bull_payjoin:
+  bull_pricer:
   bull_ui:
   primitives:
   background_tasks:

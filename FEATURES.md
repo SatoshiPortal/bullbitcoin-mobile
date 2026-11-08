@@ -41,6 +41,7 @@ graph TB
     TOR_SETTINGS --> BULL_LOGGER
     BULL_LOGGER[Bull Logger Package<br/>Logger, diagnostics, log files]
     BULL_PAYJOIN[Bull Payjoin Package<br/>Public contract]
+    BULL_PRICER[Bull Pricer Package<br/>Bitcoin price and history]
 
     %% Feature modules
     SETTINGS[Settings]
@@ -103,6 +104,16 @@ graph TB
     SETTINGS --> LOGS
     CORE --> BULL_PAYJOIN
     BULL_PAYJOIN --> PRIMITIVES
+    CORE --> BULL_PRICER
+    BULL_PRICER --> PRIMITIVES
+    BTC_PRICE --> BULL_PRICER
+    BUY --> BULL_PRICER
+    PAY --> BULL_PRICER
+    RECEIVE --> BULL_PRICER
+    SELL --> BULL_PRICER
+    SEND --> BULL_PRICER
+    STATUS --> BULL_PRICER
+    SWAPS --> BULL_PRICER
 
     %% Feature-to-feature dependencies (extracted from draw.io diagram)
     ADDRESS_MGMT --> LABELS
@@ -166,6 +177,7 @@ graph TB
     PAY --> BULL_PAYJOIN
     PIN_CODE --> CORE
     RECEIVE --> BULL_PAYJOIN
+    RECEIVE -->|public targeted routine sync| WALLETS
     RECEIVE --> SETTINGS
     RECEIVE --> SWAPS
     RECEIVE --> TX_HISTORY
@@ -212,7 +224,7 @@ graph TB
     TRANSFER --> RECEIVE
     TX_HISTORY --> BULL_PAYJOIN
     TX_HISTORY --> SWAPS
-    TX_HISTORY -->|public revisions and sync pass activity| WALLETS
+    TX_HISTORY -->|public revisions, raw sync finishes and pass activity| WALLETS
     UTXO_MGMT --> LABELS
     UTXO_MGMT --> WALLETS
     WALLETS --> BIP85
@@ -235,7 +247,7 @@ graph TB
     classDef featureStyle fill:#1a202c,stroke:#2d3748,stroke-width:2px,color:#e2e8f0
 
     class CORE coreStyle
-    class SECRETS,PRIMITIVES,BULL_PAYJOIN,TOR packageStyle
+    class SECRETS,PRIMITIVES,BULL_PAYJOIN,BULL_PRICER,TOR packageStyle
     class SETTINGS,PIN_CODE,LABELS,HW_WALLETS,BTC_PRICE,NETWORK,BIP85,FEES,WALLETS,EXCHANGE,EXCHANGE_SETTINGS,EXCHANGE_SUPPORT_CHAT,APP_STARTUP,UTXO_MGMT,ADDRESS_MGMT,RECIPIENTS,FUNDING,BACKUPS,SWAPS,WITHDRAWAL,STATUS,SEND,RECEIVE,TRANSFER,TX_HISTORY,REPLACE_BY_FEE,BG_TASKS,AUTOSWAP,AUTOBUY,DCA,DEFAULT_WALLETS,LIMIT_ORDERS,SELL,PAY,BUY,COINS,ANNOUNCEMENTS,CONSOLIDATION,ALL_SEED_VIEW,APP_UNLOCK,SP featureStyle
 ```
 

@@ -113,7 +113,7 @@ abstract class SendState with _$SendState {
     @Default([]) List<String> fiatCurrencyCodes,
     @Default('CAD') String fiatCurrencyCode,
     @Default('') String inputAmountCurrencyCode,
-    @Default(0) double exchangeRate,
+    double? exchangeRate,
     @Default('') String label,
     @Default([]) List<WalletUtxo> utxos,
     @Default([]) List<WalletUtxo> selectedUtxos,
@@ -188,7 +188,7 @@ abstract class SendState with _$SendState {
     return [
       BitcoinUnit.btc.code,
       BitcoinUnit.sats.code,
-      if (exchangeRate > 0) ...fiatCurrencyCodes,
+      if (exchangeRate != null) ...fiatCurrencyCodes,
     ];
   }
 
@@ -272,14 +272,15 @@ abstract class SendState with _$SendState {
         BitcoinUnit.btc.code,
         BitcoinUnit.sats.code,
       ].contains(inputAmountCurrencyCode) &&
-      exchangeRate > 0;
+      exchangeRate != null;
 
   int get inputAmountSat {
     int amountSat = 0;
+    final rate = exchangeRate;
     if (amount.isNotEmpty) {
-      if (isInputAmountFiat) {
+      if (isInputAmountFiat && rate != null) {
         final amountFiat = double.tryParse(amount) ?? 0;
-        amountSat = ConvertAmount.fiatToSats(amountFiat, exchangeRate);
+        amountSat = ConvertAmount.fiatToSats(amountFiat, rate);
       } else if (!_isBitcoinUnit(inputAmountCurrencyCode)) {
         // A fiat amount with no price has no sats value. Reading it as BTC
         // would turn 0.01 typed in a USD field into 0.01 BTC.
@@ -302,16 +303,20 @@ abstract class SendState with _$SendState {
 
   double get inputAmountBtc => ConvertAmount.satsToBtc(inputAmountSat);
 
-  double get inputAmountFiat {
-    return ConvertAmount.btcToFiat(inputAmountBtc, exchangeRate);
+  double? get inputAmountFiat {
+    final rate = exchangeRate;
+    return rate == null ? null : ConvertAmount.btcToFiat(inputAmountBtc, rate);
   }
 
   double get confirmedAmountBtc => confirmedAmountSat != null
       ? ConvertAmount.satsToBtc(confirmedAmountSat!)
       : 0;
 
-  double get confirmedAmountFiat {
-    return ConvertAmount.btcToFiat(confirmedAmountBtc, exchangeRate);
+  double? get confirmedAmountFiat {
+    final rate = exchangeRate;
+    return rate == null
+        ? null
+        : ConvertAmount.btcToFiat(confirmedAmountBtc, rate);
   }
 
   int? get lightningPayinAmountSat =>
@@ -343,7 +348,9 @@ abstract class SendState with _$SendState {
   }
 
   String get formattedConfirmedAmountFiat {
-    return FormatAmount.fiat(confirmedAmountFiat, fiatCurrencyCode);
+    // No price: no fiat equivalent rather than a misleading zero.
+    final fiat = confirmedAmountFiat;
+    return fiat == null ? '' : FormatAmount.fiat(fiat, fiatCurrencyCode);
   }
 
   String get formattedAmountInputEquivalent {
@@ -356,12 +363,10 @@ abstract class SendState with _$SendState {
       } else {
         return FormatAmount.btc(inputAmountBtc);
       }
-    } else if (exchangeRate <= 0) {
-      // No price: no fiat equivalent rather than a misleading zero.
-      return '';
-    } else {
-      return FormatAmount.fiat(inputAmountFiat, fiatCurrencyCode);
     }
+    // No price: no fiat equivalent rather than a misleading zero.
+    final fiat = inputAmountFiat;
+    return fiat == null ? '' : FormatAmount.fiat(fiat, fiatCurrencyCode);
   }
 
   static bool _isBitcoinUnit(String code) =>
@@ -375,12 +380,14 @@ abstract class SendState with _$SendState {
       return FormatAmount.btc(ConvertAmount.satsToBtc(balance.toInt()));
     } else if (inputAmountCurrencyCode == BitcoinUnit.sats.code) {
       return FormatAmount.sats(balance.toInt());
-    } else {
-      return FormatAmount.fiat(
-        ConvertAmount.satsToFiat(balance.toInt(), exchangeRate),
-        inputAmountCurrencyCode,
-      );
     }
+    // A fiat input always has a price: without one, none is offered.
+    final rate = exchangeRate;
+    if (rate == null) return '';
+    return FormatAmount.fiat(
+      ConvertAmount.satsToFiat(balance.toInt(), rate),
+      inputAmountCurrencyCode,
+    );
   }
 
   String formattedApproximateBalance() {
@@ -391,9 +398,10 @@ abstract class SendState with _$SendState {
 
     if (inputAmountCurrencyCode == BitcoinUnit.btc.code ||
         inputAmountCurrencyCode == BitcoinUnit.sats.code) {
-      if (exchangeRate <= 0) return '';
+      final rate = exchangeRate;
+      if (rate == null) return '';
       return FormatAmount.fiat(
-        ConvertAmount.satsToFiat(satsBalance, exchangeRate),
+        ConvertAmount.satsToFiat(satsBalance, rate),
         fiatCurrencyCode,
       );
     } else {

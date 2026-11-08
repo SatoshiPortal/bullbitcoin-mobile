@@ -17,14 +17,22 @@ final class WalletFacade {
   final Stream<WalletRevisionState> _revisions;
   final Future<Result<void, WalletDiscoveryFailure>> Function(String)?
   _discoverWallet;
+  final Future<void> Function(String, {required bool Function() isActive})?
+  _pollWallet;
+  final Stream<void> _syncFinished;
   final Stream<bool> _syncPassActivity;
   final bool Function()? _isSyncPassActive;
   const WalletFacade(
     this._revisions, {
     this._discoverWallet,
+    this._pollWallet,
+    this._syncFinished = const Stream.empty(),
     this._syncPassActivity = const Stream.empty(),
     this._isSyncPassActive,
   });
+
+  /// Raw completion, including failures without a revision; never hydrates a wallet.
+  Stream<void> watchSyncFinished() => _syncFinished;
 
   bool get isSyncPassActive => _isSyncPassActive?.call() ?? false;
   Stream<bool> watchSyncPassActivity() => _syncPassActivity;
@@ -36,6 +44,12 @@ final class WalletFacade {
     if (discover == null) return const Err(WalletDiscoveryUnavailableFailure());
     return discover(walletId);
   }
+
+  /// Best-effort routine sync; a false predicate cancels pending admission.
+  Future<void> pollWallet(
+    String walletId, {
+    required bool Function() isActive,
+  }) async => _pollWallet?.call(walletId, isActive: isActive);
 
   Stream<WalletRevisionState> watchRevisions({String? walletId}) =>
       _revisions.where(

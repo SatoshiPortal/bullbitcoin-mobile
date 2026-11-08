@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'dart:async';
 
 import 'package:bb_mobile/features/wallet/domain/sync_kind.dart';
@@ -21,6 +22,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';
+
+class _WalletRepository extends Mock implements WalletRepository {}
 
 class _RefreshPending extends Mock implements RefreshPendingOrderSwapsUsecase {}
 
@@ -47,6 +50,7 @@ void main() {
     locator = GetIt.asNewInstance();
     locator.registerSingleton<GetWalletsUsecase>(_GetWallets());
     locator.registerSingleton<SyncWalletUsecase>(_SyncWallet());
+    locator.registerSingleton<WalletRepository>(_WalletRepository());
     SyncLocator.setupForeground(locator);
     // Resolution before either facade exists must remain safe.
     coordinator = locator<SyncCoordinator>();

@@ -197,13 +197,16 @@ void main() {
     },
   );
 
-  test('background run asks for discovery but never an initial scan', () async {
-    await baseline();
-    writer.operation = () async => Ok(outcome());
-    await task().executeAll();
-    expect(writer.discover, [true]);
-    expect(writer.allowInitialScan, [false]);
-  });
+  test(
+    'background run asks for revealed scripts but never an initial scan',
+    () async {
+      await baseline();
+      writer.operation = () async => Ok(outcome());
+      await task().executeAll();
+      expect(writer.discover, [false]);
+      expect(writer.allowInitialScan, [false]);
+    },
+  );
 
   test(
     'background commit replay announces payment with no new discovery',

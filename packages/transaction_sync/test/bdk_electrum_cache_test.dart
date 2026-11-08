@@ -289,6 +289,84 @@ void main() {
       },
     );
 
+    // Pinned bdk_chain 0.23.3 discovery misses this payment; revealed scripts must cover it.
+    test(
+      'revealed scripts find a payment at index 30 beyond stop gap 20',
+      () async {
+        final installed = _Wallet.open(path);
+        final script = _hex(
+          installed.wallet
+              .peekAddress(keychain: bdk.KeychainKind.external_, index: 30)
+              .address
+              .scriptPubkey()
+              .toBytes(),
+        );
+        installed.close();
+        File(path).deleteSync();
+        // Only T4 pays this wallet; the fixture's initial T1 is foreign.
+        final isolated = await ElectrumFixture.start({
+          for (final name in _walletScripts().keys) name: '0014${'cd' * 20}',
+          'ext5': script,
+        });
+        addTearDown(isolated.close);
+        sync = ElectrumSync(
+          connections: FixtureConnections([isolated.url]),
+          documentsDirectory: () async => dir.path,
+        );
+        final revisions = RevisionStore(writerMetadataPath(dir.path));
+        final writer = NativeWalletWriter(
+          lockDirectory: writerLockDirectory(dir.path),
+          revisions: revisions,
+          documentsDirectory: dir.path,
+          catalog: _SingleWalletCatalog(descriptor),
+          reservedAddresses: _NoReservedAddresses(),
+        );
+        try {
+          expect(
+            await writer.create(descriptor.key, expectedGeneration: 0),
+            isA<Ok>(),
+          );
+          await isolated.load('S7-incoming-unrevealed-in-gap', 0);
+          expect(
+            completed(await sync.execute(descriptor)).mode,
+            SyncMode.initialScan,
+          );
+          for (var index = 0; index <= 30; index++) {
+            final issued = await writer.receive(
+              descriptor.key,
+              expectedGeneration: 1,
+              advance: index > 0,
+            );
+            expect(
+              issued,
+              isA<Ok<ReceiveAddressIssued, TransactionSyncFailure>>(),
+            );
+            expect(
+              (issued as Ok<ReceiveAddressIssued, TransactionSyncFailure>)
+                  .value
+                  .index,
+              index,
+            );
+          }
+        } finally {
+          await revisions.close();
+        }
+        final phase = await isolated.load('S7-incoming-unrevealed-in-gap', 1);
+        expect(
+          completed(await sync.execute(descriptor, discover: false)).mode,
+          SyncMode.revealedScripts,
+        );
+        final reopened = _Wallet.open(path);
+        try {
+          expect(_observe(reopened.wallet, phase.ids), {
+            'T4': phase.truth['T4'],
+          });
+        } finally {
+          reopened.close();
+        }
+      },
+    );
+
     test(
       'concurrent routine calls share one operation and paired events',
       () async {
@@ -671,4 +749,28 @@ void main() {
       expect(File(BdkElectrumCache.pathFor(path)).existsSync(), isFalse);
     });
   });
+}
+
+final class _SingleWalletCatalog implements WalletCatalogPort {
+  final PublicWalletDescriptor descriptor;
+  _SingleWalletCatalog(this.descriptor);
+
+  @override
+  Future<Result<PublicWalletDescriptor, TransactionSyncFailure>> find(
+    WalletKey key,
+  ) async => key == descriptor.key
+      ? Ok(descriptor)
+      : const Err(TransactionSyncNotFoundFailure());
+
+  @override
+  Future<Result<List<PublicWalletDescriptor>, TransactionSyncFailure>>
+  list() async => Ok([descriptor]);
+}
+
+final class _NoReservedAddresses implements ReservedAddressPort {
+  @override
+  Future<Result<bool, TransactionSyncFailure>> isReserved(
+    WalletKey key,
+    String address,
+  ) async => const Ok(false);
 }

@@ -17,7 +17,6 @@ import 'package:bb_mobile/core/storage/tables/mempool_servers_table.dart';
 import 'package:bb_mobile/core/storage/tables/mempool_settings_table.dart';
 import 'package:bb_mobile/core/storage/tables/payjoin_receivers_table.dart';
 import 'package:bb_mobile/core/storage/tables/payjoin_senders_table.dart';
-import 'package:bb_mobile/core/storage/tables/prices_table.dart';
 import 'package:bb_mobile/core/storage/tables/recoverbull_table.dart';
 import 'package:bb_mobile/core/storage/tables/settings_table.dart';
 import 'package:bb_mobile/core/storage/tables/swaps_table.dart';
@@ -51,7 +50,6 @@ part 'sqlite_database.g.dart';
     AutoSwap,
     Bip85Derivations,
     Recoverbull,
-    Prices,
     FrozenUtxos,
     DismissedAnnouncements,
     OrderSwaps,
@@ -131,7 +129,7 @@ class SqliteDatabase extends _$SqliteDatabase {
   /// Current drift schema version. Bump in lockstep with adding a new
   /// `Schema<N-1>To<N>.migrate` step in [migration] and regenerating the
   /// schema snapshots (`make drift-migrations`).
-  static const int currentSchemaVersion = 15;
+  static const int currentSchemaVersion = 16;
 
   @override
   int get schemaVersion => currentSchemaVersion;
@@ -189,6 +187,7 @@ class SqliteDatabase extends _$SqliteDatabase {
         from12To13: _reportingMigration('from12To13', Schema12To13.migrate),
         from13To14: _reportingMigration('from13To14', Schema13To14.migrate),
         from14To15: _reportingMigration('from14To15', Schema14To15.migrate),
+        from15To16: _reportingMigration('from15To16', Schema15To16.migrate),
       ),
       // Backfills `Report.fromVersion` for installs that predate the
       // `_lastVersionKey` SharedPreferences marker (added in v6.6.0).

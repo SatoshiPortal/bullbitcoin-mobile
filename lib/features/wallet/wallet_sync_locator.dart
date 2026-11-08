@@ -1,3 +1,6 @@
+import 'package:bb_mobile/features/wallet/domain/usecases/read_wallet_usecase.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
+import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/features/wallet/data/coordinated_swap_sync.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/sync_order_swaps_usecase.dart';
@@ -44,6 +47,9 @@ class SyncLocator {
   }) {
     locator.registerLazySingleton<SyncCoordinator>(
       () => SyncCoordinator(
+        readNetwork: () async =>
+            (await locator<SettingsRepository>().fetch()).environment,
+        readWalletUsecase: ReadWalletUsecase(locator<WalletRepository>()),
         getWalletsUsecase: locator<GetWalletsUsecase>(),
         syncWalletUsecase: locator<SyncWalletUsecase>(),
         syncSwaps: syncSwaps,

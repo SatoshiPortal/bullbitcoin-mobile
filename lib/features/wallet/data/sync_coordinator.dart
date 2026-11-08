@@ -1,3 +1,5 @@
+import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/read_wallet_usecase.dart';
 import 'package:transaction_sync/read.dart';
 import 'package:transaction_sync/transaction_sync.dart'
     show SyncReason, TransactionSyncBusyFailure;
@@ -53,6 +55,8 @@ class SyncCoordinator {
     this._syncSp,
     this._syncSpOutcome,
     this._refreshRevisions,
+    this._readNetwork,
+    this._readWalletUsecase,
   }) : _getWallets = getWalletsUsecase,
        _syncWallet = syncWalletUsecase {
     final lifecycleState = WidgetsBinding.instance.lifecycleState;
@@ -71,6 +75,8 @@ class SyncCoordinator {
   /// caller passes [SyncTrigger.user].
   static const Duration _minSyncInterval = Duration(seconds: 2);
 
+  final Future<Environment> Function()? _readNetwork;
+  final ReadWalletUsecase? _readWalletUsecase;
   final GetWalletsUsecase _getWallets;
   final SyncWalletUsecase _syncWallet;
   final Future<void> Function()? _syncSwaps;
@@ -209,6 +215,56 @@ class SyncCoordinator {
     }
   }
 
+  /// Screen polling has its own cadence, independent of the global throttle.
+  /// Skip work already covered by the FIFO; never join or upgrade discovery.
+  Future<void> pollWallet(
+    String walletId, {
+    required bool Function() isActive,
+  }) async {
+    if (!_isAppResumed || !isActive()) return;
+    final wallet = await _readPollingWallet(walletId);
+    if (!_isAppResumed || !isActive()) return;
+    if (wallet != null) {
+      final kind = wallet.isLiquid ? SyncKind.liquid : SyncKind.bitcoin;
+      bool covers(_SyncPass pass) =>
+          pass.walletId == walletId ||
+          (pass.walletId == null && pass.kind == kind);
+      final running = _running;
+      if ((running != null && covers(running)) || _queue.any(covers)) return;
+      final pass = _SyncPass(
+        kind,
+        false,
+        SyncTrigger.automatic,
+        walletId: walletId,
+        walletNetwork: wallet.network,
+        isActive: isActive,
+      );
+      final waiter = Completer<Object?>();
+      pass.waiters.add(waiter);
+      _queue.add(pass);
+      unawaited(_drain());
+      // The pass and native boundary own diagnostics, including quiet busy.
+      await waiter.future;
+    }
+  }
+
+  Future<Wallet?> _readPollingWallet(String walletId) async {
+    // Polling must not hydrate unrelated wallets just to select its target.
+    final result = await _readWalletUsecase?.execute(walletId);
+    if (result case Ok(:final value)) {
+      final readNetwork = _readNetwork;
+      final environment = readNetwork == null
+          ? Environment.mainnet
+          : await readNetwork();
+      final walletEnvironment = switch (value.network) {
+        Network.bitcoinMainnet || Network.liquidMainnet => Environment.mainnet,
+        Network.bitcoinTestnet || Network.liquidTestnet => Environment.testnet,
+      };
+      if (walletEnvironment == environment) return value;
+    }
+    return null;
+  }
+
   /// The sp kind only resumes the SP chain scan, which a user gesture must not
   /// start: the SP side of a pull-to-refresh is the snapshot read the wallet
   /// does right after.
@@ -309,7 +365,7 @@ class SyncCoordinator {
         error is WalletSnapshotException &&
         error.failure is TransactionSyncBusyFailure;
     final walletId = pass.walletId;
-    if (walletId != null) {
+    if (walletId != null && pass.isActive == null) {
       _manualPasses.remove(walletId);
       log.fine(
         'Wallet discovery finished reason=manual outcome=${busy
@@ -386,6 +442,27 @@ class SyncCoordinator {
   Future<Object?> _runTask(_SyncPass pass) async {
     final walletId = pass.walletId;
     if (walletId != null) {
+      final isActive = pass.isActive;
+      if (isActive != null) {
+        pass.wallets = 0;
+        if (!_isAppResumed || !isActive()) return null;
+        final wallet = await _readPollingWallet(walletId);
+        if (!_isAppResumed ||
+            !isActive() ||
+            wallet == null ||
+            wallet.network != pass.walletNetwork) {
+          return null;
+        }
+        pass.wallets = 1;
+        // Receive must not bootstrap an unscanned Bitcoin wallet.
+        await _syncWallet.execute(
+          wallet,
+          discover: false,
+          allowInitialScan: false,
+          reason: pass.reason,
+        );
+        return null;
+      }
       log.fine('Wallet discovery started reason=manual');
       if (!_isAppResumed) return const WalletDiscoveryUnavailableFailure();
       // Re-resolve from the active environment after waiting in the queue.
@@ -480,6 +557,7 @@ final class _SyncPass {
   final SyncKind kind;
   final String? walletId;
   final Network? walletNetwork;
+  final bool Function()? isActive;
   bool discover;
   SyncTrigger trigger;
   int? wallets;
@@ -492,10 +570,11 @@ final class _SyncPass {
     this.trigger, {
     this.walletId,
     this.walletNetwork,
+    this.isActive,
   });
 
   // Queued passes follow the user-trigger upgrade; joined running passes keep their original reason.
-  SyncReason get reason => walletId != null
+  SyncReason get reason => walletId != null && isActive == null
       ? SyncReason.manual
       : trigger == SyncTrigger.user
       ? SyncReason.pull

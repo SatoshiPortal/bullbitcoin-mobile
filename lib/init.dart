@@ -12,6 +12,7 @@ import 'package:bb_mobile/native_libraries.dart';
 import 'package:bull_payjoin/bull_payjoin.dart' show payjoinDatabaseFilename;
 import 'package:bb_mobile/features/wizard/public/wizard_facade.dart';
 import 'package:bull_logger/bull_logger.dart';
+import 'package:bull_pricer/bull_pricer.dart';
 import 'package:bull_tor/tor.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:path/path.dart' as p;
@@ -40,6 +41,12 @@ class Bull {
     );
 
     await initFlutterRustBridgeDependencies();
+
+    // Foreground only: background tasks never read a price, and must not open
+    // the pricer's database while the app may be upgrading it.
+    await Pricer.init(
+      databasePath: p.join(bullDirectory.path, 'pricer.sqlite'),
+    );
 
     // The Locator setup might depend on the initialization of the libraries above
     //  so it's important to call it after the initialization

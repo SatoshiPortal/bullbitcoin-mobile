@@ -1,3 +1,5 @@
+import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/read_wallet_usecase.dart';
 import 'package:transaction_sync/read.dart';
 import 'package:transaction_sync/transaction_sync.dart'
     show SyncReason, TransactionSyncBusyFailure;
@@ -18,6 +20,8 @@ import 'package:bull_logger/bull_logger.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+
+class _MockReadWallet extends Mock implements ReadWalletUsecase {}
 
 class _MockGetWallets extends Mock implements GetWalletsUsecase {}
 
@@ -55,21 +59,27 @@ void main() {
   // an AppLifecycleListener, so the binding must exist.
   TestWidgetsFlutterBinding.ensureInitialized();
 
+  late _MockReadWallet readWallet;
   late _MockGetWallets getWallets;
   late _MockSyncWallet syncWallet;
   late _MockSyncSwaps syncSwaps;
   late SyncCoordinator coordinator;
   late Future<void> Function() spCallback;
   var revisionReads = 0;
+  var network = Environment.mainnet;
 
   setUp(() {
+    readWallet = _MockReadWallet();
     getWallets = _MockGetWallets();
     syncWallet = _MockSyncWallet();
     syncSwaps = _MockSyncSwaps();
     when(syncSwaps.call).thenAnswer((_) async {});
     spCallback = () async {};
     revisionReads = 0;
+    network = Environment.mainnet;
     coordinator = SyncCoordinator(
+      readWalletUsecase: readWallet,
+      readNetwork: () async => network,
       getWalletsUsecase: getWallets,
       syncWalletUsecase: syncWallet,
       syncSwaps: syncSwaps.call,
@@ -209,6 +219,220 @@ void main() {
     when(() => wallet.isLiquid).thenReturn(liquid);
     return wallet;
   }
+
+  test(
+    'Receive polling targets one wallet with auto provenance and no throttle',
+    () async {
+      final directory = Directory.systemTemp.createTempSync(
+        'receive-poll-logs-',
+      );
+      final reporter = _Reporter();
+      log = Logger.replace(directory: directory, reporter: reporter);
+      addTearDown(() async {
+        await log.flush();
+        directory.deleteSync(recursive: true);
+      });
+      final a = manualWallet('a');
+      final b = manualWallet('b');
+      when(() => readWallet.execute('a')).thenAnswer((_) async => Ok(a));
+      when(() => getWallets.execute()).thenAnswer((_) async => Ok([a, b]));
+      when(
+        () => getWallets.execute(onlyBitcoin: true),
+      ).thenAnswer((_) async => Ok([a]));
+      when(
+        () => syncWallet.execute(
+          a,
+          discover: false,
+          allowInitialScan: any(named: 'allowInitialScan'),
+          reason: SyncReason.auto,
+        ),
+      ).thenAnswer((_) async {});
+      // A just-completed global pass must not swallow the next periodic tick.
+      await coordinator.sync(only: {SyncKind.bitcoin});
+      await coordinator.pollWallet('a', isActive: () => true);
+      await coordinator.pollWallet('a', isActive: () => true);
+      verify(
+        () => syncWallet.execute(
+          a,
+          discover: false,
+          allowInitialScan: true,
+          reason: SyncReason.auto,
+        ),
+      ).called(1);
+      // Global sync keeps bootstrap; both Receive ticks explicitly reject it.
+      verify(
+        () => syncWallet.execute(
+          a,
+          discover: false,
+          allowInitialScan: false,
+          reason: SyncReason.auto,
+        ),
+      ).called(2);
+      verifyNever(
+        () => syncWallet.execute(
+          b,
+          discover: any(named: 'discover'),
+          allowInitialScan: any(named: 'allowInitialScan'),
+          reason: any(named: 'reason'),
+        ),
+      );
+      when(
+        () => syncWallet.execute(
+          a,
+          discover: false,
+          allowInitialScan: any(named: 'allowInitialScan'),
+          reason: SyncReason.auto,
+        ),
+      ).thenThrow(const WalletSnapshotException(TransactionSyncBusyFailure()));
+      await coordinator.pollWallet('a', isActive: () => true);
+      final lines = (await log.readLogs()).join();
+      expect(
+        lines,
+        contains(
+          'Sync pass finished kind=bitcoin reason=auto outcome=settled wallets=1',
+        ),
+      );
+      expect(
+        lines,
+        contains('reason=auto outcome=busy wallets=1 category=busy'),
+      );
+      expect(lines, isNot(contains('discovery')));
+      expect(reporter.errors, isEmpty);
+    },
+  );
+
+  test(
+    'Receive ticks skip running and queued coverage and cancel stale admission',
+    () async {
+      final a = manualWallet('a');
+      final liquid = manualWallet('liquid', liquid: true);
+      when(() => readWallet.execute('a')).thenAnswer((_) async => Ok(a));
+      when(
+        () => readWallet.execute('liquid'),
+      ).thenAnswer((_) async => Ok(liquid));
+      when(() => getWallets.execute()).thenAnswer((_) async => Ok([a, liquid]));
+      when(
+        () => getWallets.execute(onlyBitcoin: true),
+      ).thenAnswer((_) async => Ok([a]));
+      final held = Completer<void>();
+      when(
+        () => syncWallet.execute(
+          a,
+          discover: false,
+          allowInitialScan: any(named: 'allowInitialScan'),
+          reason: SyncReason.auto,
+        ),
+      ).thenAnswer((_) => held.future);
+      when(
+        () => syncWallet.execute(
+          liquid,
+          discover: false,
+          allowInitialScan: any(named: 'allowInitialScan'),
+          reason: SyncReason.auto,
+        ),
+      ).thenAnswer((_) async {});
+      final global = coordinator.sync(only: {SyncKind.bitcoin});
+      await Future<void>.delayed(Duration.zero);
+      await coordinator.pollWallet('a', isActive: () => true);
+      var active = true;
+      final queued = coordinator.pollWallet('liquid', isActive: () => active);
+      await Future<void>.delayed(Duration.zero);
+      await coordinator.pollWallet('liquid', isActive: () => true);
+      verifyNever(
+        () => syncWallet.execute(
+          liquid,
+          discover: false,
+          allowInitialScan: any(named: 'allowInitialScan'),
+          reason: SyncReason.auto,
+        ),
+      );
+      active = false;
+      held.complete();
+      await Future.wait([global, queued]);
+      verify(
+        () => syncWallet.execute(
+          a,
+          discover: false,
+          allowInitialScan: any(named: 'allowInitialScan'),
+          reason: SyncReason.auto,
+        ),
+      ).called(1);
+      verifyNever(
+        () => syncWallet.execute(
+          liquid,
+          discover: false,
+          allowInitialScan: any(named: 'allowInitialScan'),
+          reason: SyncReason.auto,
+        ),
+      );
+      await coordinator.pollWallet('liquid', isActive: () => true);
+      verify(
+        () => syncWallet.execute(
+          liquid,
+          discover: false,
+          allowInitialScan: any(named: 'allowInitialScan'),
+          reason: SyncReason.auto,
+        ),
+      ).called(1);
+    },
+  );
+
+  test(
+    'Receive polling rechecks cancellation after asynchronous wallet admission',
+    () async {
+      final a = manualWallet('a');
+      final read = Completer<Result<Wallet, WalletFailure>>();
+      var active = true;
+      when(() => readWallet.execute('a')).thenAnswer((_) => read.future);
+      final poll = coordinator.pollWallet('a', isActive: () => active);
+      active = false;
+      read.complete(Ok(a));
+      await poll;
+      verifyZeroInteractions(syncWallet);
+      verifyZeroInteractions(getWallets);
+    },
+  );
+
+  test(
+    'Receive polling skips a running targeted pass and rejects an inactive network',
+    () async {
+      final a = manualWallet('a');
+      when(() => readWallet.execute('a')).thenAnswer((_) async => Ok(a));
+      final held = Completer<void>();
+      when(
+        () => syncWallet.execute(
+          a,
+          discover: false,
+          allowInitialScan: any(named: 'allowInitialScan'),
+          reason: SyncReason.auto,
+        ),
+      ).thenAnswer((_) => held.future);
+      final first = coordinator.pollWallet('a', isActive: () => true);
+      await Future<void>.delayed(Duration.zero);
+      await coordinator.pollWallet('a', isActive: () => true);
+      verify(
+        () => syncWallet.execute(
+          a,
+          discover: false,
+          allowInitialScan: any(named: 'allowInitialScan'),
+          reason: SyncReason.auto,
+        ),
+      ).called(1);
+      held.complete();
+      await first;
+      network = Environment.testnet;
+      await coordinator.pollWallet('a', isActive: () => true);
+      verifyNever(
+        () => syncWallet.execute(
+          a,
+          discover: false,
+          allowInitialScan: any(named: 'allowInitialScan'),
+          reason: SyncReason.auto,
+        ),
+      );
+      verifyZeroInteractions(getWallets);
+    },
+  );
 
   test(
     'busy discovery fails and routine busy does not throttle a retry',

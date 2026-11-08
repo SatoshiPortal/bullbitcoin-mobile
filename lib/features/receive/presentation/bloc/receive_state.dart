@@ -11,7 +11,7 @@ abstract class ReceiveState with _$ReceiveState {
     BitcoinUnit? bitcoinUnit,
     @Default([]) List<String> fiatCurrencyCodes,
     @Default('') String fiatCurrencyCode,
-    @Default(0) double exchangeRate,
+    double? exchangeRate,
     @Default('') String inputAmountCurrencyCode,
     @Default('') String inputAmount,
     int? confirmedAmountSat,
@@ -63,7 +63,7 @@ abstract class ReceiveState with _$ReceiveState {
     return [
       BitcoinUnit.btc.code,
       BitcoinUnit.sats.code,
-      if (exchangeRate > 0) ...fiatCurrencyCodes,
+      if (exchangeRate != null) ...fiatCurrencyCodes,
     ];
   }
 
@@ -78,8 +78,12 @@ abstract class ReceiveState with _$ReceiveState {
 
     if (inputAmount.isNotEmpty) {
       if (isInputAmountFiat) {
+        // A fiat amount with no price has no sats value.
+        final rate = exchangeRate;
         final amountFiat = double.tryParse(inputAmount) ?? 0;
-        amountSat = ConvertAmount.fiatToSats(amountFiat, exchangeRate);
+        amountSat = rate == null
+            ? 0
+            : ConvertAmount.fiatToSats(amountFiat, rate);
       } else if (inputAmountCurrencyCode == BitcoinUnit.sats.code) {
         amountSat = int.tryParse(inputAmount) ?? 0;
       } else {
@@ -93,8 +97,9 @@ abstract class ReceiveState with _$ReceiveState {
 
   double get inputAmountBtc => ConvertAmount.satsToBtc(inputAmountSat);
 
-  double get inputAmountFiat {
-    return ConvertAmount.btcToFiat(inputAmountBtc, exchangeRate);
+  double? get inputAmountFiat {
+    final rate = exchangeRate;
+    return rate == null ? null : ConvertAmount.btcToFiat(inputAmountBtc, rate);
   }
 
   // The QR code data should always show the full payment request when all parameters are available,
@@ -198,14 +203,17 @@ abstract class ReceiveState with _$ReceiveState {
   double get confirmedAmountBtc =>
       ConvertAmount.satsToBtc(confirmedAmountSat ?? 0);
 
-  double get confirmedAmountFiat {
-    return ConvertAmount.btcToFiat(confirmedAmountBtc, exchangeRate);
+  double? get confirmedAmountFiat {
+    final rate = exchangeRate;
+    return rate == null
+        ? null
+        : ConvertAmount.btcToFiat(confirmedAmountBtc, rate);
   }
 
   String get formattedConfirmedAmountFiat {
     // No price: no fiat equivalent rather than a misleading zero.
-    if (exchangeRate <= 0) return '';
-    return FormatAmount.fiat(confirmedAmountFiat, fiatCurrencyCode);
+    final fiat = confirmedAmountFiat;
+    return fiat == null ? '' : FormatAmount.fiat(fiat, fiatCurrencyCode);
   }
 
   String get formattedAmountInputEquivalent {
@@ -218,11 +226,9 @@ abstract class ReceiveState with _$ReceiveState {
       } else {
         return FormatAmount.btc(inputAmountBtc);
       }
-    } else if (exchangeRate <= 0) {
-      return '';
-    } else {
-      return FormatAmount.fiat(inputAmountFiat, fiatCurrencyCode);
     }
+    final fiat = inputAmountFiat;
+    return fiat == null ? '' : FormatAmount.fiat(fiat, fiatCurrencyCode);
   }
 
   bool get isBitcoin {
@@ -405,10 +411,12 @@ abstract class ReceiveState with _$ReceiveState {
   bool get isPayjoinSuppressedByAmount =>
       payjoin != null && hasUtxos && isRequestedAmountBelowPayjoinMinimum;
 
-  double get payjoinAmountFiat {
+  double? get payjoinAmountFiat {
+    final rate = exchangeRate;
+    if (rate == null) return null;
     final payjoinAmountSat = payjoin?.amountSat ?? 0;
     final payjoinAmountBtc = ConvertAmount.satsToBtc(payjoinAmountSat);
-    return ConvertAmount.btcToFiat(payjoinAmountBtc, exchangeRate);
+    return ConvertAmount.btcToFiat(payjoinAmountBtc, rate);
   }
 
   bool get isLightning => type == ReceiveType.lightning;

@@ -7965,7 +7965,7 @@
   "@fundExchangeJurisdictionMexico": {
     "description": "Dropdown option for Mexico jurisdiction"
   },
-  "sellInteracEmail": "อีเมล",
+  "sellInteracEmail": "อีเมลสำหรับการโอน",
   "@sellInteracEmail": {
     "description": "Label for email to receive Interac payment"
   },
@@ -10119,7 +10119,7 @@
   "@autoswapTitle": {
     "description": "Header title for auto transfer settings bottom sheet"
   },
-  "sellInteracTransfer": "คลัง",
+  "sellInteracTransfer": "โอนเงินผ่านอีเมล",
   "@sellInteracTransfer": {
     "description": "Option for Interac payment (Canada)"
   },
@@ -11424,7 +11424,7 @@
   "recipientsJurisdictionCostaRica": "🇨🇷 คอสตาริกา",
   "recipientsJurisdictionArgentina": "🇦🇷 อาร์เจนตินา",
   "recipientsJurisdictionColombia": "🇨🇴 โคลอมเบีย",
-  "recipientsTypeInteracEmail": "Interac e-Transfer",
+  "recipientsTypeInteracEmail": "โอนเงินผ่านอีเมล",
   "recipientsTypeBillPayment": "ชำระบิล",
   "recipientsTypeBankTransfer": "โอนเงินผ่านธนาคาร",
   "recipientsTypeSepa": "SEPA Transfer",
@@ -11696,7 +11696,7 @@
   "testBackupErrorSeedUnavailable": "ไม่สามารถอ่านวลีกู้คืนของคุณได้ โปรดลองอีกครั้ง",
   "testBackupErrorSeedNotMnemonic": "กระเป๋าเงินนี้ไม่มีวลีกู้คืนให้ทดสอบ",
   "testBackupErrorCompletionFailed": "วลีกู้คืนของคุณถูกต้อง แต่เราไม่สามารถบันทึกผลลัพธ์ได้ โปรดลองอีกครั้ง",
-  "withdrawInteracSecurityDetailsTitle": "รายละเอียดความปลอดภัยของ Interac",
+  "withdrawInteracSecurityDetailsTitle": "รายละเอียดความปลอดภัยของการโอน",
   "withdrawInteracSaveAsDefault": "บันทึกรายละเอียดเหล่านี้เป็นค่าเริ่มต้น",
   "withdrawInteracSecurityQuestionLengthError": "คำถามความปลอดภัยต้องมี 3–40 อักขระ",
   "withdrawInteracSecurityAnswerLengthError": "คำตอบความปลอดภัยต้องมี 3–40 อักขระ",
