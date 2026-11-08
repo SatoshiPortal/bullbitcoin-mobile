@@ -77,6 +77,7 @@ class _MockCheckSpFeatureGateForWalletUsecase extends Mock
 WalletBloc createBloc(
   GetExternalTorProxyStatusUsecase externalStatus, {
   GetWalletsUsecase? getWallets,
+  SyncWalletsUsecase? refreshSync,
   ReadWalletUsecase? readWallet,
   GetUnconfirmedIncomingBalanceUsecase? getUnconfirmed,
 }) {
@@ -85,7 +86,7 @@ WalletBloc createBloc(
     getWalletsUsecase: getWallets ?? _MockGetWalletsUsecase(),
     checkWalletSyncingUsecase: _MockCheckWalletSyncingUsecase(),
     watchWalletSyncEventsUsecase: _stubbedWatchers(),
-    syncWalletsUsecase: _stubbedSync(),
+    syncWalletsUsecase: refreshSync ?? _stubbedSync(),
     getUnconfirmedIncomingBalanceUsecase:
         getUnconfirmed ?? _MockGetUnconfirmedIncomingBalanceUsecase(),
     deleteWalletUsecase: _MockDeleteWalletUsecase(),
@@ -104,6 +105,56 @@ class _MockSyncWalletUsecase extends Mock implements SyncWalletUsecase {}
 class _ViewWalletBloc extends Mock implements WalletBloc {}
 
 void main() {
+  for (final catalogueChanged in [false, true]) {
+    test(
+      'pass completion preserves incoming unless catalogue changed: $catalogueChanged',
+      () async {
+        final syncGate = Completer<Result<void, WalletFailure>>();
+        final sync = _MockSyncWalletsUsecase();
+        when(
+          () => sync.execute(trigger: SyncTrigger.user),
+        ).thenAnswer((_) => syncGate.future);
+        final pending = Completer<Result<int, WalletFailure>>();
+        final balance = _MockGetUnconfirmedIncomingBalanceUsecase();
+        final wallets = _MockGetWalletsUsecase();
+        when(
+          () => balance.execute(walletIds: any(named: 'walletIds')),
+        ).thenAnswer((_) => pending.future);
+        when(() => wallets.execute()).thenAnswer(
+          (_) async => Ok(catalogueChanged ? <Wallet>[] : [_syncedWallet]),
+        );
+        final bloc = createBloc(
+          _MockExternalTorStatusUsecase(),
+          getWallets: wallets,
+          getUnconfirmed: balance,
+          refreshSync: sync,
+        );
+        addTearDown(bloc.close);
+        bloc.emit(
+          WalletState(
+            wallets: [_syncedWallet],
+            unconfirmedIncomingBalance: 1000,
+          ),
+        );
+        bloc.add(const WalletRefreshed(trigger: SyncTrigger.user));
+        await pumpEventQueue();
+        expect(bloc.state.isRefreshing, isTrue);
+        bloc.add(WalletSyncFinished(_syncedWallet));
+        await pumpEventQueue();
+        verify(() => balance.execute(walletIds: [_syncedWallet.id])).called(1);
+        syncGate.complete(const Ok(null));
+        await pumpEventQueue();
+        expect(bloc.state.isRefreshing, isFalse);
+        pending.complete(const Ok(0));
+        await pumpEventQueue();
+        expect(
+          bloc.state.unconfirmedIncomingBalance,
+          catalogueChanged ? 1000 : 0,
+        );
+      },
+    );
+  }
+
   registerFallbackValue(SyncReason.auto);
   TestWidgetsFlutterBinding.ensureInitialized();
   test(
