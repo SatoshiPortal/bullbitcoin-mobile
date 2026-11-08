@@ -464,3 +464,5 @@ The architecture test records source dependencies, including internal imports an
 | `import_mnemonic → electrum_settings` | Language prerequisite: The existing pre-import scan selects the captured concrete network. Its legacy internal type remains scoped migration debt, not a new facade exception. | `lib/features/import_mnemonic/domain/check_wallet_status_usecase.dart -> lib/features/electrum_settings/domain/electrum_server_network.dart` |
 
 The former `broadcast_signed_tx → settings` allowance is removed: broadcast now carries the captured wallet network instead of reading the mutable global environment. Develop also retires the four price-registration edges from buy, receive, send and swap; their allowances and diagram edges are removed.
+
+Develop also removes the price chart’s shell locator import; its obsolete entry is removed from `shell_imports_test.dart`. The existing `bip85_entropy → wallet` baseline remains unchanged.

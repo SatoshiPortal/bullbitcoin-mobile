@@ -17,11 +17,13 @@ const _allowedTargets = <String, String>{
   'address_view': 'settings wallet',
   'all_seed_view': 'app_unlock wallet',
   'announcements': 'settings swap',
-  'app_startup': 'app_unlock import_mnemonic logs onboarding pin_code settings wallet',
+  'app_startup':
+      'app_unlock import_mnemonic logs onboarding pin_code settings wallet',
   'app_unlock': 'pin_code wallet',
   'autobuy': 'default_wallets exchange wallet',
   'autoswap': 'labels send settings swap wallet',
   'backup_settings': 'recoverbull settings test_wallet_backup wallet',
+  'bip85_entropy': 'wallet',
   'bitbox': 'import_watch_only_wallet wallet',
   'bitcoin_price': 'settings',
   'broadcast_signed_tx': 'send wallet',
@@ -31,7 +33,8 @@ const _allowedTargets = <String, String>{
   'dca': 'exchange fund_exchange settings wallet',
   'default_wallets': 'exchange wallet',
   'electrum_settings': 'tor_settings wallet',
-  'exchange': 'autobuy bitcoin_price dca exchange_support_chat fund_exchange settings transactions withdraw',
+  'exchange':
+      'autobuy bitcoin_price dca exchange_support_chat fund_exchange settings transactions withdraw',
   'exchange_settings': 'exchange',
   'exchange_support_chat': 'exchange',
   'fees': 'electrum_settings wallet',
@@ -39,14 +42,17 @@ const _allowedTargets = <String, String>{
   'import_coldcard': 'import_watch_only_wallet',
   'import_mnemonic': 'electrum_settings wallet',
   'import_qr_device': 'import_watch_only_wallet',
-  'import_wallet': 'bitbox import_coldcard import_mnemonic import_qr_device import_watch_only_wallet ledger settings',
+  'import_wallet':
+      'bitbox import_coldcard import_mnemonic import_qr_device import_watch_only_wallet ledger settings',
   'import_watch_only_wallet': 'wallet',
   'labels': 'wallet',
   'ledger': 'import_watch_only_wallet wallet',
   'limit_orders': 'default_wallets exchange fund_exchange wallet',
   'mempool_settings': 'settings',
-  'onboarding': 'electrum_settings import_mnemonic mempool_settings recoverbull settings tor_settings wallet',
-  'pay': 'bitcoin_price exchange fees recipients send settings transactions wallet',
+  'onboarding':
+      'electrum_settings import_mnemonic mempool_settings recoverbull settings tor_settings wallet',
+  'pay':
+      'bitcoin_price exchange fees recipients send settings transactions wallet',
   'pin_code': 'app_unlock settings test_wallet_backup wallet',
   'psbt_flow': 'broadcast_signed_tx wallet',
   'receive': 'bitbox labels ledger settings swap transactions wallet',
@@ -54,15 +60,21 @@ const _allowedTargets = <String, String>{
   'recoverbull': 'recoverbull_google_drive tor_settings wallet',
   'recoverbull_google_drive': 'recoverbull',
   'replace_by_fee': 'exchange_support_chat fees send wallet',
-  'sell': 'bitcoin_price exchange fees labels recipients send settings transactions wallet',
-  'send': 'bitbox consolidation electrum_settings fees labels ledger psbt_flow settings sp swap transactions wallet',
-  'settings': 'address_view all_seed_view app_unlock autoswap backup_settings bip85_entropy bitcoin_price broadcast_signed_tx default_wallets electrum_settings exchange exchange_settings exchange_support_chat import_wallet labels logs mempool_settings pay pin_code recoverbull sp status_check swap test_wallet_backup tor_settings transactions wallet',
+  'sell':
+      'bitcoin_price exchange fees labels recipients send settings transactions wallet',
+  'send':
+      'bitbox consolidation electrum_settings fees labels ledger psbt_flow settings sp swap transactions wallet',
+  'settings':
+      'address_view all_seed_view app_unlock autoswap backup_settings bip85_entropy bitcoin_price broadcast_signed_tx default_wallets electrum_settings exchange exchange_settings exchange_support_chat import_wallet labels logs mempool_settings pay pin_code recoverbull sp status_check swap test_wallet_backup tor_settings transactions wallet',
   'sp': 'wallet',
   'status_check': 'electrum_settings wallet',
-  'swap': 'autoswap consolidation exchange_support_chat fees labels send settings transactions wallet',
+  'swap':
+      'autoswap consolidation exchange_support_chat fees labels send settings transactions wallet',
   'test_wallet_backup': 'onboarding wallet',
-  'transactions': 'buy electrum_settings exchange labels pay replace_by_fee settings swap wallet',
-  'wallet': 'announcements backup_settings bitcoin_price coins consolidation electrum_settings exchange exchange_support_chat import_watch_only_wallet labels onboarding receive send settings sp swap tor_settings transactions',
+  'transactions':
+      'buy electrum_settings exchange labels pay replace_by_fee settings swap wallet',
+  'wallet':
+      'announcements backup_settings bitcoin_price coins consolidation electrum_settings exchange exchange_support_chat import_watch_only_wallet labels onboarding receive send settings sp swap tor_settings transactions',
   'withdraw': 'exchange recipients transactions',
   'wizard': 'settings',
 };
