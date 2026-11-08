@@ -246,9 +246,6 @@ graph TB
     WALLETS -->|public orders + swap scheduling port| SWAPS
     WITHDRAWAL --> RECIPIENTS
 
-    %% Existing failure compatibility exports exposed by owner relocation
-    BACKUPS --> WALLETS
-    STATUS --> WALLETS
     %% Reviewed source dependencies exposed by network owner moves (2026-11-07)
     BITBOX[BitBox]
     LEDGER[Ledger]
