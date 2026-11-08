@@ -1,18 +1,21 @@
-import 'package:bb_mobile/core/price/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/fees/domain/get_network_fees_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
+import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_receive_address_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/features/buy/domain/buy_failure.dart';
 import 'package:bb_mobile/features/buy/domain/load_buy_context_usecase.dart';
+import 'package:bull_pricer/bull_pricer.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';
+
+import '../../../fake_index_price_reader.dart';
 
 class _MockGetUserSummary extends Mock
     implements GetExchangeUserSummaryUsecase {}
@@ -25,13 +28,17 @@ class _MockGetReceiveAddress extends Mock implements GetReceiveAddressUsecase {}
 
 class _MockGetNetworkFees extends Mock implements GetNetworkFeesUsecase {}
 
-class _MockConvertSatsToCurrency extends Mock
-    implements ConvertSatsToCurrencyAmountUsecase {}
-
 class _MockFeeOptions extends Mock implements FeeOptions {}
 
 /// A reason of the shape these core reads produce, quoting a key.
 const _rawReason = 'DioException 500 apikey=secret123';
+
+SettingsEntity _settings({Environment environment = Environment.mainnet}) =>
+    SettingsEntity(
+      environment: environment,
+      bitcoinUnit: BitcoinUnit.sats,
+      currencyCode: 'USD',
+    );
 
 void main() {
   late _MockGetUserSummary getUserSummary;
@@ -39,7 +46,7 @@ void main() {
   late _MockGetWallets getWallets;
   late _MockGetReceiveAddress getReceiveAddress;
   late _MockGetNetworkFees getNetworkFees;
-  late _MockConvertSatsToCurrency convertSatsToCurrency;
+  late FakeIndexPriceReader getIndexPrice;
   late LoadBuyContextUsecase usecase;
 
   setUp(() {
@@ -48,14 +55,14 @@ void main() {
     getWallets = _MockGetWallets();
     getReceiveAddress = _MockGetReceiveAddress();
     getNetworkFees = _MockGetNetworkFees();
-    convertSatsToCurrency = _MockConvertSatsToCurrency();
+    getIndexPrice = FakeIndexPriceReader();
     usecase = LoadBuyContextUsecase(
       getExchangeUserSummaryUsecase: getUserSummary,
       getSettingsUsecase: getSettings,
       getWalletsUsecase: getWallets,
       getReceiveAddressUsecase: getReceiveAddress,
       getNetworkFeesUsecase: getNetworkFees,
-      convertSatsToCurrencyAmountUsecase: convertSatsToCurrency,
+      getIndexPrice: getIndexPrice.call,
     );
   });
 
@@ -154,30 +161,75 @@ void main() {
     );
   });
 
-  test('returns the converted amount', () async {
-    when(
-      () => convertSatsToCurrency.execute(
-        amountSat: any(named: 'amountSat'),
-        currencyCode: any(named: 'currencyCode'),
-      ),
-    ).thenAnswer((_) async => 42.5);
+  group('satsToCurrency', () {
+    setUp(() => when(getSettings.execute).thenAnswer((_) async => _settings()));
 
-    final result = await usecase.satsToCurrency(currencyCode: 'CAD');
+    test(
+      'values the amount at the mainnet price of the settings currency',
+      () async {
+        getIndexPrice.fiatAmount = 100000;
 
-    expect((result as Ok<double, BuyFailure>).value, 42.5);
-  });
+        final result = await usecase.satsToCurrency(
+          amountSat: BigInt.from(50000),
+        );
 
-  test('a failed conversion is sanitized', () async {
-    when(
-      () => convertSatsToCurrency.execute(
-        amountSat: any(named: 'amountSat'),
-        currencyCode: any(named: 'currencyCode'),
-      ),
-    ).thenThrow(Exception(_rawReason));
-
-    expect(
-      await usecase.satsToCurrency(currencyCode: 'CAD'),
-      isA<Err<double, BuyFailure>>(),
+        expect((result as Ok<double, BuyFailure>).value, 50);
+        expect(getIndexPrice.requests.single, (
+          network: BitcoinNetwork.mainnet,
+          currency: SupportedCurrency.usd,
+        ));
+      },
     );
+
+    test('without an amount, gives the price of one bitcoin', () async {
+      getIndexPrice.fiatAmount = 100000;
+
+      final result = await usecase.satsToCurrency(currencyCode: 'CAD');
+
+      expect((result as Ok<double, BuyFailure>).value, 100000);
+      expect(getIndexPrice.requests.single.currency, SupportedCurrency.cad);
+    });
+
+    test('asks the testnet price in the testnet environment', () async {
+      when(
+        getSettings.execute,
+      ).thenAnswer((_) async => _settings(environment: Environment.testnet));
+
+      final result = await usecase.satsToCurrency();
+
+      expect(result, isA<Ok<double, BuyFailure>>());
+      expect(getIndexPrice.requests.single.network, BitcoinNetwork.testnet);
+    });
+
+    test('no price is an unavailable quote, not a zero rate', () async {
+      getIndexPrice.failure = const PricerNetworkFailure('offline');
+
+      final result = await usecase.satsToCurrency(currencyCode: 'CAD');
+
+      expect(
+        (result as Err<double, BuyFailure>).failure,
+        isA<BuyQuoteUnavailableFailure>(),
+      );
+    });
+
+    test('a currency without a price is unexpected, never asked', () async {
+      final result = await usecase.satsToCurrency(currencyCode: 'JPY');
+
+      expect(
+        (result as Err<double, BuyFailure>).failure,
+        isA<BuyUnexpectedFailure>(),
+      );
+      expect(getIndexPrice.requests, isEmpty);
+    });
+
+    test('a failed settings read is sanitized', () async {
+      when(getSettings.execute).thenThrow(Exception(_rawReason));
+
+      expect(
+        await usecase.satsToCurrency(currencyCode: 'CAD'),
+        isA<Err<double, BuyFailure>>(),
+      );
+      expect(getIndexPrice.requests, isEmpty);
+    });
   });
 }

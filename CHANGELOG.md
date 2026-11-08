@@ -6,6 +6,10 @@ All notable changes to Bull Bitcoin Mobile will be documented in this file.
 
 ## [Unreleased]
 
+### Security And Privacy
+
+- **Payjoin Send on by default**: when a recipient's payment request offers Payjoin, new installs now attempt it, since the recipient chose to offer it and the original transaction already reveals the sender's inputs to them. When updating, your previous Send setting is preserved. Each send can still opt out on the confirmation screen, and Receive stays off by default.
+
 ---
 
 ## [6.15.0] - 2026-10-22

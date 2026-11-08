@@ -105,6 +105,12 @@ final class ReceiveBroadcastOriginalTxUnavailableFailure
   const ReceiveBroadcastOriginalTxUnavailableFailure([super.logMessage]);
 }
 
+/// No price of bitcoin in the fiat currency: receiving works without one, and
+/// shows no fiat value.
+final class ReceivePriceUnavailableFailure extends ReceiveFailure {
+  const ReceivePriceUnavailableFailure([super.logMessage]);
+}
+
 /// Catch-all. [logMessage] is for logs ONLY and MUST never reach the UI.
 final class ReceiveUnexpectedFailure extends ReceiveFailure {
   const ReceiveUnexpectedFailure([super.logMessage]);
