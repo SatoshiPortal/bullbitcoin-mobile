@@ -254,9 +254,11 @@ final class NativeWalletWriter implements LiquidReadAdmission {
     WalletKey key, {
     required int expectedGeneration,
     required WriterSyncOperation operation,
+    Future<Result<void, TransactionSyncFailure>> Function()? preflight,
   }) => _run(key, expectedGeneration, WriteIntent.sync, () async {
     final record = _active(key, expectedGeneration);
     final descriptor = await _descriptor(key);
+    if (preflight != null) _value(await preflight());
     revisions.begin(key, WriteIntent.sync);
     late Result<void, TransactionSyncFailure> result;
     try {

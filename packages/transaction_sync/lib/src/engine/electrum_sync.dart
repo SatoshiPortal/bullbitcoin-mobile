@@ -79,6 +79,7 @@ final class ElectrumSync {
     PublicWalletDescriptor descriptor, {
     bool discover = false,
     SyncReason reason = SyncReason.auto,
+    bool allowInitialScan = true,
   }) {
     final key = descriptor.key;
     final previous = _active[key];
@@ -102,6 +103,7 @@ final class ElectrumSync {
           descriptor,
           runId: runId,
           discover: discover,
+          allowInitialScan: allowInitialScan,
           onConnection: (connection) {
             connectionSummary =
                 'route=${descriptor is LiquidWalletDescriptor || connection.socks5?.isNotEmpty != true ? 'direct' : 'proxy'} stop_gap=${connection.stopGap}';
@@ -159,6 +161,7 @@ final class ElectrumSync {
     PublicWalletDescriptor descriptor, {
     required int runId,
     required bool discover,
+    required bool allowInitialScan,
     required void Function(WalletConnection) onConnection,
   }) async {
     final String root;
@@ -233,6 +236,7 @@ final class ElectrumSync {
               generation,
               events.sendPort,
               runId,
+              allowInitialScan,
             ),
           );
           retryable = attempt.retryable;
@@ -255,6 +259,7 @@ final class _SyncParams {
   final int generation;
   final SendPort diagnostics;
   final int runId;
+  final bool allowInitialScan;
 
   const _SyncParams(
     this.descriptor,
@@ -264,6 +269,7 @@ final class _SyncParams {
     this.generation,
     this.diagnostics,
     this.runId,
+    this.allowInitialScan,
   );
 }
 
@@ -365,6 +371,9 @@ Future<_Attempt> _performSync(_SyncParams params) async {
       params.descriptor.key,
       expectedGeneration: params.generation,
       operation: operation,
+      preflight: params.allowInitialScan
+          ? null
+          : () => _checkInitialScan(params),
     );
     return switch (result) {
       Err(:final failure) => (
@@ -671,6 +680,56 @@ bdk.ElectrumClient _connect(
       return build();
     }
     rethrow;
+  }
+}
+
+// Runs under the writer lock, BEFORE recording an intent. A deferred initial
+// scan must leave no pending write and must never initialize an absent store.
+Future<Result<void, TransactionSyncFailure>> _checkInitialScan(
+  _SyncParams params,
+) async {
+  final descriptor = params.descriptor;
+  if (descriptor is! BitcoinWalletDescriptor) return const Ok(null);
+  final path = nativeWalletStoragePath(params.root, descriptor.key);
+  if (!File(path).existsSync()) {
+    return const Err(TransactionSyncNotFoundFailure());
+  }
+  final kind = descriptor.key.network == BitcoinNetwork.mainnet
+      ? bdk.NetworkKind.main
+      : bdk.NetworkKind.test;
+  final external = bdk.Descriptor(
+    descriptor: descriptor.externalDescriptor,
+    networkKind: kind,
+  );
+  final internal = bdk.Descriptor(
+    descriptor: descriptor.internalDescriptor,
+    networkKind: kind,
+  );
+  bdk.Persister? persister;
+  bdk.Wallet? wallet;
+  try {
+    persister = bdk.Persister.newSqlite(path: path);
+    wallet = bdk.Wallet.load(
+      descriptor: external,
+      changeDescriptor: internal,
+      persister: persister,
+      lookahead: 25,
+    );
+    final checkpoint = wallet.latestCheckpoint();
+    try {
+      return checkpoint.height == 0
+          ? const Err(TransactionSyncInitialScanRequiredFailure())
+          : const Ok(null);
+    } finally {
+      checkpoint.hash.dispose();
+    }
+  } on Exception {
+    return const Err(TransactionSyncStorageFailure());
+  } finally {
+    wallet?.dispose();
+    persister?.dispose();
+    internal.dispose();
+    external.dispose();
   }
 }
 

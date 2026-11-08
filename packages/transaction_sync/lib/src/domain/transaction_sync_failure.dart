@@ -15,6 +15,7 @@ sealed class TransactionSyncFailure extends Failure {
     TransactionSyncConnectionFailure() => 'connection',
     TransactionSyncNeedsRepairFailure() => 'needs_repair',
     TransactionSyncRestartRequiredFailure() => 'restart_required',
+    TransactionSyncInitialScanRequiredFailure() => 'initial_scan_required',
   };
 }
 
@@ -52,4 +53,9 @@ final class TransactionSyncNeedsRepairFailure extends TransactionSyncFailure {
 final class TransactionSyncRestartRequiredFailure
     extends TransactionSyncFailure {
   const TransactionSyncRestartRequiredFailure();
+}
+
+final class TransactionSyncInitialScanRequiredFailure
+    extends TransactionSyncFailure {
+  const TransactionSyncInitialScanRequiredFailure();
 }
