@@ -18,12 +18,14 @@ workspace:
   - packages/bull_tor
   - packages/screen_privacy
   - packages/bull_logger
+  - packages/bull_pricer
   - features/logs
 
 dependencies:
   flutter:
     sdk: flutter
   bull_payjoin:
+  bull_pricer:
   bull_ui:
   primitives:
   bull_tor:

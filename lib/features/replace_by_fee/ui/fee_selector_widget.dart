@@ -54,7 +54,7 @@ class BumpFeeSelectorWidget extends StatelessWidget {
               feePresets: null,
               minRelay: minRelay,
               txSize: txSize,
-              exchangeRate: 0.0,
+              exchangeRate: null,
               fiatCurrencyCode: '',
               defaultAbsolute: false,
               tileColor: context.appColors.onSecondary,
