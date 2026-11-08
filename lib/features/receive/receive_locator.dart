@@ -1,5 +1,7 @@
 import 'package:bb_mobile/core/price/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
 import 'package:bb_mobile/core/price/domain/usecases/get_available_currencies_usecase.dart';
+import 'package:bb_mobile/features/receive/domain/usecases/poll_receive_wallet_usecase.dart';
+import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_address_at_index_usecase.dart';
@@ -33,6 +35,9 @@ import 'package:get_it/get_it.dart';
 
 class ReceiveLocator {
   static void setup(GetIt locator) {
+    locator.registerFactory<PollReceiveWalletUsecase>(
+      () => PollReceiveWalletUsecase(locator<WalletFacade>()),
+    );
     locator.registerFactory<ReceiveWithPayjoinUsecase>(
       () => ReceiveWithPayjoinUsecase(locator<PayjoinReceiver>()),
     );

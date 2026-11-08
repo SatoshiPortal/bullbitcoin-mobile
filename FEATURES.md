@@ -145,6 +145,7 @@ graph TB
     PAY --> BULL_PAYJOIN
     PIN_CODE --> CORE
     RECEIVE --> BULL_PAYJOIN
+    RECEIVE -->|public targeted routine sync| WALLETS
     RECEIVE --> SETTINGS
     RECEIVE --> SWAPS
     RECEIVE --> TX_HISTORY
