@@ -7,7 +7,7 @@ import 'package:bb_mobile/core/seed/domain/usecases/process_and_separate_seeds_u
 import 'package:bb_mobile/core/swaps/domain/usecases/delete_swap_master_key_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_master_key_usecase.dart';
 import 'package:bb_mobile/core/utils/result.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
+import 'package:bb_mobile/features/all_seed_view/domain/get_seed_fingerprints_in_use_usecase.dart';
 import 'package:bb_mobile/features/all_seed_view/presentation/all_seed_view_cubit.dart';
 import 'package:bb_mobile/features/app_unlock/public/app_unlock_facade.dart';
 import 'package:bb_mobile/features/app_unlock/ui/pin_code_unlock_screen.dart';
@@ -16,7 +16,8 @@ import 'package:mocktail/mocktail.dart';
 
 class _MockGetAllSeedsUsecase extends Mock implements GetAllSeedsUsecase {}
 
-class _MockGetWalletsUsecase extends Mock implements GetWalletsUsecase {}
+class _MockGetSeedFingerprintsInUseUsecase extends Mock
+    implements GetSeedFingerprintsInUseUsecase {}
 
 class _MockDeleteSeedUsecase extends Mock implements DeleteSeedUsecase {}
 
@@ -31,7 +32,7 @@ class _MockDeleteSwapMasterKeyUsecase extends Mock
 
 void main() {
   late _MockGetAllSeedsUsecase getAllSeedsUsecase;
-  late _MockGetWalletsUsecase getWalletsUsecase;
+  late _MockGetSeedFingerprintsInUseUsecase getSeedFingerprintsInUseUsecase;
   late _MockProcessAndSeparateSeedsUsecase processAndSeparateSeedsUsecase;
   late _MockGetSwapMasterKeyUsecase getSwapMasterKeyUsecase;
   late AllSeedViewCubit cubit;
@@ -54,14 +55,16 @@ void main() {
 
   setUp(() {
     getAllSeedsUsecase = _MockGetAllSeedsUsecase();
-    getWalletsUsecase = _MockGetWalletsUsecase();
+    getSeedFingerprintsInUseUsecase = _MockGetSeedFingerprintsInUseUsecase();
     processAndSeparateSeedsUsecase = _MockProcessAndSeparateSeedsUsecase();
     getSwapMasterKeyUsecase = _MockGetSwapMasterKeyUsecase();
 
     when(
       () => getAllSeedsUsecase.execute(),
     ).thenAnswer((_) async => Ok([aSeed]));
-    when(() => getWalletsUsecase.execute()).thenAnswer((_) async => Ok([]));
+    when(
+      () => getSeedFingerprintsInUseUsecase.execute(),
+    ).thenAnswer((_) async => const Ok(<String>{}));
     when(
       () => processAndSeparateSeedsUsecase.execute(
         seeds: any(named: 'seeds'),
@@ -74,7 +77,7 @@ void main() {
 
     cubit = AllSeedViewCubit(
       getAllSeedsUsecase: getAllSeedsUsecase,
-      getWalletsUsecase: getWalletsUsecase,
+      getSeedFingerprintsInUseUsecase: getSeedFingerprintsInUseUsecase,
       deleteSeedUsecase: _MockDeleteSeedUsecase(),
       processAndSeparateSeedsUsecase: processAndSeparateSeedsUsecase,
       getSwapMasterKeyUsecase: getSwapMasterKeyUsecase,
