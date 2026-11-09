@@ -100,3 +100,8 @@ final class PayUnsupportedNetworkFailure extends PayFailure {
 final class PaySpendBlockedFailure extends PayFailure {
   const PaySpendBlockedFailure();
 }
+
+/// The existing proposal remains reserved until it can safely continue.
+final class PayPayjoinPausedFailure extends PayFailure {
+  const PayPayjoinPausedFailure();
+}

@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/pay/domain/retry_payjoin_proposal_usecase.dart';
 import 'dart:io';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart' as app;
 import 'dart:async';
@@ -122,6 +123,7 @@ class _SeedablePayBloc extends PayBloc {
     required super.sendWithPayjoinUsecase,
     required super.watchPayjoinUsecase,
     required super.getPayjoinUsecase,
+    required super.retryPayjoinProposalUsecase,
     required super.previewBitcoinFeeUsecase,
     required super.previewBitcoinFeePresetsUsecase,
   });
@@ -130,6 +132,8 @@ class _SeedablePayBloc extends PayBloc {
 }
 
 class _PrivacyReporter extends Mock implements LoggerReporter {}
+
+class _MockRetryPayjoin extends Mock implements RetryPayjoinProposalUsecase {}
 
 void main() {
   // Unsigned single-input single-output PSBT with a witness UTXO — enough for
@@ -176,6 +180,7 @@ void main() {
   late _MockSendWithPayjoin sendWithPayjoin;
   late _MockWatchPayjoin watchPayjoin;
   late _MockGetPayjoin getPayjoin;
+  late _MockRetryPayjoin retryPayjoin;
   late _MockPreviewBitcoinFeePresets previewBitcoinFeePresets;
   late _MockPayOrder payOrder;
   late _MockWallet wallet;
@@ -315,6 +320,7 @@ void main() {
       () => watchPayjoin.execute(any()),
     ).thenAnswer((_) => const Stream.empty());
     getPayjoin = _MockGetPayjoin();
+    retryPayjoin = _MockRetryPayjoin();
     when(() => getPayjoin.execute(any())).thenAnswer((_) async => null);
 
     bloc = _SeedablePayBloc(
@@ -334,6 +340,7 @@ void main() {
       sendWithPayjoinUsecase: sendWithPayjoin,
       watchPayjoinUsecase: watchPayjoin,
       getPayjoinUsecase: getPayjoin,
+      retryPayjoinProposalUsecase: retryPayjoin,
       previewBitcoinFeeUsecase: _MockPreviewBitcoinFee(),
       previewBitcoinFeePresetsUsecase: previewBitcoinFeePresets,
     );
@@ -1132,6 +1139,7 @@ void main() {
           sendWithPayjoinUsecase: sendWithPayjoin,
           watchPayjoinUsecase: watchPayjoin,
           getPayjoinUsecase: getPayjoin,
+          retryPayjoinProposalUsecase: retryPayjoin,
           previewBitcoinFeeUsecase: _MockPreviewBitcoinFee(),
           previewBitcoinFeePresetsUsecase: previewBitcoinFeePresets,
         );

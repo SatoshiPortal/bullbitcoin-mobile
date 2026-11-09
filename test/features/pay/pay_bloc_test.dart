@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/pay/domain/retry_payjoin_proposal_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
@@ -98,6 +99,7 @@ class _SeedablePayBloc extends PayBloc {
     required super.sendWithPayjoinUsecase,
     required super.watchPayjoinUsecase,
     required super.getPayjoinUsecase,
+    required super.retryPayjoinProposalUsecase,
     required super.previewBitcoinFeeUsecase,
     required super.previewBitcoinFeePresetsUsecase,
   });
@@ -148,6 +150,8 @@ const _recipient = RecipientViewModel(
   type: RecipientType.bankTransferCad,
 );
 
+class _MockRetryPayjoin extends Mock implements RetryPayjoinProposalUsecase {}
+
 void main() {
   late _MockPreparePayLiquidPayinUsecase prepareLiquidPayin;
   late _MockSignPayPayinUsecase signPayin;
@@ -169,6 +173,7 @@ void main() {
     sendWithPayjoinUsecase: _MockSendWithPayjoinUsecase(),
     watchPayjoinUsecase: _MockWatchPayjoinUsecase(),
     getPayjoinUsecase: _MockGetPayjoinUsecase(),
+    retryPayjoinProposalUsecase: _MockRetryPayjoin(),
     loadPayNetworkFeesUsecase: _MockLoadPayNetworkFeesUsecase(),
     calculatePayAbsoluteFeesUsecase: _MockCalculatePayAbsoluteFeesUsecase(),
     getPayPayinAddressUsecase: _MockGetPayPayinAddressUsecase(),

@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/pay/domain/pay_failure.dart';
 import 'package:bb_mobile/core/widgets/lists/payment_detail_row.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
@@ -464,6 +465,19 @@ class _BottomButtons extends StatelessWidget {
     final isReady = context.select(
       (PayBloc bloc) => bloc.state is PayPaymentState,
     );
+    final paused = context.select(
+      (PayBloc bloc) => switch (bloc.state) {
+        PayPaymentState(:final pausedPayjoinSession) => pausedPayjoinSession,
+        _ => null,
+      },
+    );
+    final retrying = context.select(
+      (PayBloc bloc) => switch (bloc.state) {
+        PayPaymentState(:final isRetryingPayjoinProposal) =>
+          isRetryingPayjoinProposal,
+        _ => false,
+      },
+    );
     final pastDeadlineTxid = context.select(
       (PayBloc bloc) => switch (bloc.state) {
         PayPaymentState(
@@ -509,6 +523,16 @@ class _BottomButtons extends StatelessWidget {
             actionLabel: context.loc.exchangePaymentSentLeave,
             onAction: () => _leavePastDeadlinePayin(context),
           )
+        else if (paused != null && !isPayinBroadcast)
+          BullButton.big(
+            label: context.loc.retry,
+            disabled: retrying || !paused.canRetryProposal,
+            onPressed: () => context.read<PayBloc>().add(
+              const PayEvent.payjoinProposalRetryRequested(),
+            ),
+            bgColor: context.appColors.secondary,
+            textColor: context.appColors.onSecondary,
+          )
         else if (isConfirmingPayment || isPayinBroadcast)
           BullAsyncStatus.progress(
             label: isPayinBroadcast
@@ -537,7 +561,9 @@ class _PayError extends StatelessWidget {
   Widget build(BuildContext context) {
     final payError = context.select(
       (PayBloc bloc) => bloc.state is PayPaymentState
-          ? (bloc.state as PayPaymentState).error
+          ? ((bloc.state as PayPaymentState).pausedPayjoinSession != null
+                ? const PayPayjoinPausedFailure()
+                : (bloc.state as PayPaymentState).error)
           : null,
     );
 

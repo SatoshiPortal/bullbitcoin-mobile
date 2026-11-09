@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/sell/domain/retry_payjoin_proposal_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart' as app;
 import 'dart:async';
 import 'dart:io';
@@ -122,6 +123,7 @@ class _SeedableSellBloc extends SellBloc {
     required super.sendWithPayjoinUsecase,
     required super.watchPayjoinUsecase,
     required super.getPayjoinUsecase,
+    required super.retryPayjoinProposalUsecase,
     required super.calculateSellLiquidFeesUsecase,
     required super.loadSellWalletUtxosUsecase,
     required super.readSellPayinTxidUsecase,
@@ -135,6 +137,8 @@ class _SeedableSellBloc extends SellBloc {
 }
 
 class _PrivacyReporter extends Mock implements LoggerReporter {}
+
+class _MockRetryPayjoin extends Mock implements RetryPayjoinProposalUsecase {}
 
 void main() {
   // Unsigned single-input single-output PSBT with a witness UTXO, enough for
@@ -171,6 +175,7 @@ void main() {
   late _MockSendWithPayjoin sendWithPayjoin;
   late _MockWatchPayjoin watchPayjoin;
   late _MockGetPayjoin getPayjoin;
+  late _MockRetryPayjoin retryPayjoin;
   late _MockRefreshSellOrder refreshSellOrder;
   late _MockLabelsFacade labelsFacade;
   late _MockLabelCompletedSellOrderUsecase labelCompletedSellOrder;
@@ -253,6 +258,7 @@ void main() {
       () => watchPayjoin.execute(any()),
     ).thenAnswer((_) => const Stream.empty());
     getPayjoin = _MockGetPayjoin();
+    retryPayjoin = _MockRetryPayjoin();
     when(
       () => getPayjoin.execute(any()),
     ).thenAnswer((_) async => const Ok<PayjoinSession?, SellFailure>(null));
@@ -343,6 +349,7 @@ void main() {
       sendWithPayjoinUsecase: sendWithPayjoin,
       watchPayjoinUsecase: watchPayjoin,
       getPayjoinUsecase: getPayjoin,
+      retryPayjoinProposalUsecase: retryPayjoin,
       calculateSellLiquidFeesUsecase: _MockCalculateSellLiquidFees(),
       loadSellWalletUtxosUsecase: _MockLoadSellWalletUtxos(),
       readSellPayinTxidUsecase: const ReadSellPayinTxidUsecase(),
@@ -1225,6 +1232,7 @@ void main() {
           sendWithPayjoinUsecase: sendWithPayjoin,
           watchPayjoinUsecase: watchPayjoin,
           getPayjoinUsecase: getPayjoin,
+          retryPayjoinProposalUsecase: retryPayjoin,
           calculateSellLiquidFeesUsecase: _MockCalculateSellLiquidFees(),
           loadSellWalletUtxosUsecase: _MockLoadSellWalletUtxos(),
           readSellPayinTxidUsecase: const ReadSellPayinTxidUsecase(),

@@ -112,3 +112,8 @@ final class SellUnsupportedNetworkFailure extends SellFailure {
 final class SellSpendBlockedFailure extends SellFailure {
   const SellSpendBlockedFailure();
 }
+
+/// The existing proposal remains reserved until it can safely continue.
+final class SellPayjoinPausedFailure extends SellFailure {
+  const SellPayjoinPausedFailure();
+}
