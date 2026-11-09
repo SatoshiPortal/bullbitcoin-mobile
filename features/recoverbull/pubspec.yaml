@@ -15,7 +15,9 @@ dependencies:
   primitives:
   secrets:
   bull_logger:
+  drift: ^2.29.0
   convert: ^3.1.2
+  crypto: ^3.0.7
   meta: ^1.17.0
   recoverbull:
     git:
@@ -23,6 +25,9 @@ dependencies:
       ref: 293b0d709f6c7775180f775c6a5fe99a39f175ce
 
 dev_dependencies:
+  build_runner: ^2.10.4
+  drift_dev: ^2.29.0
+  sqlite3: ^2.9.4
   flutter_test:
     sdk: flutter
   flutter_lints: ^6.0.0
