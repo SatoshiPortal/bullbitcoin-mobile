@@ -585,5 +585,8 @@
   "recoverbullGoogleDriveErrorSelectFailed": "Επιθυμήθηκε να επιλέξει το θύλακα από το Google Drive",
   "@recoverbullGoogleDriveErrorSelectFailed": {
     "description": "Error message when selecting/loading a drive backup fails"
-  }
+  },
+  "backupKeyWarningMessage": "Προειδοποίηση: Να είστε προσεκτικοί όπου εξοικονομείτε το κλειδί ασφαλείας.",
+  "backupKeySeparationWarning": "Είναι εξαιρετικά σημαντικό να μην αποθηκεύσετε το κλειδί ασφαλείας στο ίδιο μέρος όπου εξοικονομείτε το αρχείο αντιγράφων ασφαλείας σας. Πάντα να τα αποθηκεύει σε ξεχωριστές συσκευές ή ξεχωριστά παρόχους cloud.",
+  "backupKeyExampleWarning": "Για παράδειγμα, εάν χρησιμοποιήσατε το Google Drive για το αρχείο αντιγράφων ασφαλείας σας, μην χρησιμοποιείτε το Google Drive για το εφεδρικό σας κλειδί."
 }

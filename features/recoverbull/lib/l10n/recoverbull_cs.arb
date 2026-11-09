@@ -585,5 +585,8 @@
   "recoverbullRecoveryContinueButton": "Pokračovat",
   "@recoverbullRecoveryContinueButton": {
     "description": "Button text to proceed with importing the wallet"
-  }
+  },
+  "backupKeyWarningMessage": "Upozornění: Buďte opatrní, kde uložíte záložní klíč.",
+  "backupKeySeparationWarning": "Je kriticky důležité, abyste neuložili záložní klíč na stejném místě, kde uložíte záložní soubor. Vždy je uložíte na samostatných zařízeních nebo samostatných poskytovatelů cloudu.",
+  "backupKeyExampleWarning": "Například pokud používáte Disk Google pro záložní soubor, nepoužívejte Disk Google pro váš záložní klíč."
 }

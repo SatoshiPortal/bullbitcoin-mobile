@@ -573,5 +573,8 @@
   "recoverbullVaultRecoveryTitle": "Възстановяване на Recoverbull трезор",
   "recoverbullErrorRejected": "Отхвърлено от ключовия сървър",
   "recoverbullErrorServiceUnavailable": "Услугата не е достъпна. Моля, проверете връзката си.",
-  "recoverbullErrorInvalidVaultFile": "Невалиден файл на трезора."
+  "recoverbullErrorInvalidVaultFile": "Невалиден файл на трезора.",
+  "backupKeyWarningMessage": "Внимание: Бъдете внимателни къде съхранявате резервния ключ.",
+  "backupKeySeparationWarning": "Изключително важно е да не съхранявате резервния ключ на едно и също място, на което съхранявате резервния файл. Винаги ги съхранявайте на отделни устройства или на различни облачни доставчици.",
+  "backupKeyExampleWarning": "Например, ако използвате Google Drive за резервния файл, не използвайте Google Drive за резервния ключ."
 }

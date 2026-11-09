@@ -22,6 +22,7 @@ dependencies:
   bull_ui:
   screen_privacy:
   flutter_bloc: ^9.1.1
+  go_router: ^17.0.0
   file_picker: 10.3.6
   googleapis: ^15.0.0
   google_sign_in: ^6.3.0

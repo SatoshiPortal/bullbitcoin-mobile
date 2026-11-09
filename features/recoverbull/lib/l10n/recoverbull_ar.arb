@@ -585,5 +585,8 @@
   "recoverbullVaultRecoveryTitle": "استرداد الخزنة",
   "@recoverbullVaultRecoveryTitle": {
     "description": "Title for recoverbull vault recovery screen"
-  }
+  },
+  "backupKeyWarningMessage": "تحذير: كن حذراً أين تنقذ مفتاح الدعم.",
+  "backupKeySeparationWarning": "من المهم جداً أن لا تنقذ المفتاح الإحتياطي في نفس المكان حيث تنقذ ملفك الإحتياطي دائماً يخزنها على أجهزة منفصلة أو على متعهدين سحاب منفصلين.",
+  "backupKeyExampleWarning": "على سبيل المثال، إذا استخدمت \"جوجل درايف\" لملفك الإحتياطي لا تستخدم \"جوجل درايف\" لمفتاحك الإحتياطي."
 }

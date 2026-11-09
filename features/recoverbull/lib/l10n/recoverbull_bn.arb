@@ -624,5 +624,8 @@
   "recoverbullErrorDecryptedVaultNotSet": "ডিক্রিপ্ট করা ভল্ট সেট করা হয়নি",
   "@recoverbullErrorDecryptedVaultNotSet": {
     "description": "Error when attempting operation without decrypted vault"
-  }
+  },
+  "backupKeyWarningMessage": "সতর্কতা: ব্যাকআপ কী কোথায় সংরক্ষণ করবেন তা সাবধানে বিবেচনা করুন।",
+  "backupKeySeparationWarning": "এটি খুবই গুরুত্বপূর্ণ যে আপনি ব্যাকআপ কীটি সেই একই জায়গায় সংরক্ষণ করবেন না যেখানে আপনি আপনার ব্যাকআপ ফাইল সংরক্ষণ করেন। এগুলো সর্বদা আলাদা ডিভাইস বা আলাদা ক্লাউড পরিষেবায় সংরক্ষণ করুন।",
+  "backupKeyExampleWarning": "উদাহরণস্বরূপ, যদি আপনি আপনার ব্যাকআপ ফাইলের জন্য Google Drive ব্যবহার করেন, তবে ব্যাকআপ কী-এর জন্য Google Drive ব্যবহার করবেন না।"
 }

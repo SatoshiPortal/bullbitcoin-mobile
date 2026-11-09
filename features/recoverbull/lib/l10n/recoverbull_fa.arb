@@ -585,5 +585,8 @@
   "recoverbullVaultRecoveryTitle": "بازیابی مجدد",
   "@recoverbullVaultRecoveryTitle": {
     "description": "Title for recoverbull vault recovery screen"
-  }
+  },
+  "backupKeyWarningMessage": "هشدار: مراقب باشید که کلید پشتیبان را کجا ذخیره می کنید.",
+  "backupKeySeparationWarning": "بسیار مهم است که شما کلید پشتیبان را در همان جایی که فایل پشتیبان خود را ذخیره می کنید ذخیره نکنید. همیشه آنها را در دستگاه های جداگانه یا ارائه دهندگان ابر جداگانه ذخیره کنید.",
+  "backupKeyExampleWarning": "به عنوان مثال، اگر از Google Drive برای فایل پشتیبان خود استفاده می کنید، از Google Drive برای کلید پشتیبان خود استفاده نکنید."
 }

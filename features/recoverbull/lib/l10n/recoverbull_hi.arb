@@ -627,5 +627,8 @@
   "recoverbullErrorDecryptedVaultNotSet": "डिक्रिप्टेड वॉल्ट सेट नहीं है",
   "@recoverbullErrorDecryptedVaultNotSet": {
     "description": "Error when attempting operation without decrypted vault"
-  }
+  },
+  "backupKeyWarningMessage": "चेतावनी: ध्यान रखें कि आप बैकअप कुंजी कहाँ सेव करते हैं।।",
+  "backupKeySeparationWarning": "यह गंभीर रूप से महत्वपूर्ण है कि आप बैकअप कुंजी को उसी स्थान पर नहीं बचाते हैं जहां आप अपनी बैकअप फ़ाइल को बचाते हैं। हमेशा उन्हें अलग-अलग उपकरणों या अलग क्लाउड प्रदाताओं पर स्टोर करें।।",
+  "backupKeyExampleWarning": "उदाहरण के लिए, यदि आप अपनी बैकअप फ़ाइल के लिए Google ड्राइव का उपयोग करते हैं, तो अपनी बैकअप कुंजी के लिए Google ड्राइव का उपयोग न करें।।"
 }

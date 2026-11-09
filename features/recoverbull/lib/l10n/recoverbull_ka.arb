@@ -150,5 +150,8 @@
   "recoverbullRecoveryErrorMissingDerivationPath": "სარეზერვო ასლის ფაილს აკლია დერივაციის გზა.",
   "recoverbullErrorRejected": "უარყოფილია გასაღების სერვერის მიერ",
   "recoverbullErrorServiceUnavailable": "სერვისი მიუწვდომელია. გთხოვთ, შეამოწმოთ თქვენი კავშირი.",
-  "recoverbullErrorInvalidVaultFile": "საცავის ფაილი არასწორია."
+  "recoverbullErrorInvalidVaultFile": "საცავის ფაილი არასწორია.",
+  "backupKeyWarningMessage": "გაფრთხილება: იყავით ფრთხილად, სად ინახავთ სარეზერვო ასლის გასაღებს.",
+  "backupKeySeparationWarning": "კრიტიკულად მნიშვნელოვანია, რომ სარეზერვო ასლის გასაღები არ შეინახოთ იმავე ადგილას, სადაც თქვენი სარეზერვო ასლის ფაილი. ყოველთვის შეინახეთ ისინი სხვადასხვა მოწყობილობაზე ან სხვადასხვა ღრუბლოვან პროვაიდერთან.",
+  "backupKeyExampleWarning": "მაგალითად, თუ სარეზერვო ასლის ფაილისთვის Google Drive გამოიყენეთ, არ გამოიყენოთ Google Drive გასაღებისთვის."
 }

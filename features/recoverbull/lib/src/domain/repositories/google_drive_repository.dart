@@ -13,11 +13,15 @@ abstract interface class GoogleDriveRepository {
   Future<void> disconnect();
   Future<Result<List<DriveFileMetadata>, RecoverBullFailure>>
   fetchAllMetadata();
-  Future<Result<EncryptedVault, RecoverBullFailure>> fetchVault(String fileId);
-  Future<Result<String, RecoverBullFailure>> fetchRawFile(String fileId);
+  Future<Result<EncryptedVault, RecoverBullFailure>> fetchVault(
+    DriveFileMetadata file,
+  );
+  Future<Result<String, RecoverBullFailure>> fetchRawFile(
+    DriveFileMetadata file,
+  );
   Future<Result<EncryptedVault, RecoverBullFailure>> fetchLatestVault();
   Future<Result<Null, RecoverBullFailure>> store(EncryptedVault vault);
-  Future<Result<Null, RecoverBullFailure>> trash(String fileId);
+  Future<Result<Null, RecoverBullFailure>> trash(DriveFileMetadata file);
 }
 
 abstract interface class GoogleDriveDiscoverySession {

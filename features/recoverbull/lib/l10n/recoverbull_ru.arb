@@ -255,5 +255,8 @@
   "recoverbullErrorRejected": "Отклоняется ключевым сервером",
   "recoverbullSelectRecoverWallet": "Recover Wallet",
   "recoverbullSelectCustomLocation": "Пользовательское расположение",
-  "recoverbullGoogleDriveErrorSelectFailed": "Не удалось выбрать хранилище из Google Drive"
+  "recoverbullGoogleDriveErrorSelectFailed": "Не удалось выбрать хранилище из Google Drive",
+  "backupKeyWarningMessage": "Предупреждение: Будьте осторожны, где вы сохраняете резервный ключ.",
+  "backupKeySeparationWarning": "Крайне важно, чтобы вы не сохранили резервный ключ в том же месте, где вы сохраняете резервный файл. Всегда храните их на отдельных устройствах или отдельных облачных провайдерах.",
+  "backupKeyExampleWarning": "Например, если вы использовали Google Drive для резервного файла, не используйте Google Drive для резервного ключа."
 }

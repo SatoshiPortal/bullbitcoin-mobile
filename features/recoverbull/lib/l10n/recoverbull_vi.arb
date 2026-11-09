@@ -150,5 +150,8 @@
   "recoverbullRecoveryErrorMissingDerivationPath": "Tệp sao lưu thiếu đường dẫn phái sinh.",
   "recoverbullErrorRejected": "Bị máy chủ khóa từ chối",
   "recoverbullErrorServiceUnavailable": "Dịch vụ không khả dụng. Vui lòng kiểm tra kết nối của bạn.",
-  "recoverbullErrorInvalidVaultFile": "Tệp kho lưu trữ không hợp lệ."
+  "recoverbullErrorInvalidVaultFile": "Tệp kho lưu trữ không hợp lệ.",
+  "backupKeyWarningMessage": "Cảnh báo: Hãy cẩn thận nơi bạn lưu khóa sao lưu.",
+  "backupKeySeparationWarning": "Điều vô cùng quan trọng là không được lưu khóa sao lưu ở cùng nơi với tệp sao lưu của bạn. Luôn lưu trữ chúng trên các thiết bị hoặc nhà cung cấp đám mây khác nhau.",
+  "backupKeyExampleWarning": "Ví dụ, nếu bạn dùng Google Drive cho tệp sao lưu, đừng dùng Google Drive cho khóa sao lưu của bạn."
 }

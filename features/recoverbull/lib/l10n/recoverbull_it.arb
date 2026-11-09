@@ -255,5 +255,8 @@
     }
   },
   "recoverbullRecoveryErrorWalletExists": "Questo portafoglio esiste già.",
-  "recoverbullErrorUnexpected": "Errore inaspettato, vedi log"
+  "recoverbullErrorUnexpected": "Errore inaspettato, vedi log",
+  "backupKeyWarningMessage": "Attenzione: scegli con cura dove salvare la chiave di backup.",
+  "backupKeySeparationWarning": "È fondamentale non salvare la chiave di backup nello stesso posto in cui salvi il file di backup. Conservali sempre su dispositivi diversi o su servizi cloud diversi.",
+  "backupKeyExampleWarning": "Ad esempio, se si utilizza Google Drive per il file di backup, non utilizzare Google Drive per la chiave di backup."
 }

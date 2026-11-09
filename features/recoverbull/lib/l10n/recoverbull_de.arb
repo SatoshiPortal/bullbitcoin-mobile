@@ -256,5 +256,8 @@
   "recoverbullErrorRejected": "Von Key-Server abgelehnt.",
   "recoverbullSelectRecoverWallet": "Wallet wiederherstellen",
   "recoverbullSelectCustomLocation": "Benutzerdefinierter Ort",
-  "recoverbullGoogleDriveErrorSelectFailed": "Tresor wurde nicht aus Google Drive ausgewählt."
+  "recoverbullGoogleDriveErrorSelectFailed": "Tresor wurde nicht aus Google Drive ausgewählt.",
+  "backupKeyWarningMessage": "Warnung: Seien Sie vorsichtig, wo Sie den Sicherungsschlüssel speichern.",
+  "backupKeySeparationWarning": "Es ist kritisch wichtig, dass Sie den Sicherungsschlüssel nicht an derselben Stelle speichern, wo Sie Ihre Sicherungsdatei speichern. Speichern Sie sie immer auf separaten Geräten oder separaten Cloud-Anbietern.",
+  "backupKeyExampleWarning": "Zum Beispiel, wenn Sie Google Drive für Ihre Backup-Datei verwendet haben, verwenden Sie nicht Google Drive für Ihren Backup-Schlüssel."
 }

@@ -255,5 +255,8 @@
   "recoverbullErrorRejected": "关键服务器重新启用",
   "recoverbullSelectRecoverWallet": "恢复钱包",
   "recoverbullSelectCustomLocation": "习俗地点",
-  "recoverbullGoogleDriveErrorSelectFailed": "未能从谷歌风暴中选取ault"
+  "recoverbullGoogleDriveErrorSelectFailed": "未能从谷歌风暴中选取ault",
+  "backupKeyWarningMessage": "警告: 如果你节省了支助钥匙,则谨慎行事.",
+  "backupKeySeparationWarning": "至关重要的是,你不要在你拯救了你的后备档案的同一地点节省备用钥匙。 管道将其储存在单独的装置或单独的云层供应商上.",
+  "backupKeyExampleWarning": "例如,如果你用谷歌驱使你的备份,就不使用谷歌驱使的主机."
 }

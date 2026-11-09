@@ -150,5 +150,8 @@
   "recoverbullRecoveryErrorMissingDerivationPath": "Faili ya nakala rudufu inakosa njia ya derivation.",
   "recoverbullErrorRejected": "Imekataliwa na Seva ya Funguo",
   "recoverbullErrorServiceUnavailable": "Huduma haipatikani. Tafadhali angalia muunganisho wako.",
-  "recoverbullErrorInvalidVaultFile": "Faili ya hifadhi si sahihi."
+  "recoverbullErrorInvalidVaultFile": "Faili ya hifadhi si sahihi.",
+  "backupKeyWarningMessage": "Onyo: Kuwa mwangalifu unapohifadhi funguo ya nakala rudufu.",
+  "backupKeySeparationWarning": "Ni muhimu sana usihifadhi funguo ya nakala rudufu mahali pamoja na faili yako ya nakala rudufu. Daima zihifadhi kwenye vifaa tofauti au watoa huduma tofauti wa wingu.",
+  "backupKeyExampleWarning": "Kwa mfano, ikiwa ulitumia Google Drive kwa faili yako ya nakala rudufu, usitumie Google Drive kwa funguo yako ya nakala rudufu."
 }

@@ -579,5 +579,8 @@
   "recoverbullErrorInvalidVaultFile": "অবৈধ vault ফাইল।",
   "@recoverbullErrorInvalidVaultFile": {
     "description": "Error message when vault file format is invalid"
-  }
+  },
+  "backupKeyWarningMessage": "সতৰ্কবাণী: আপুনি বেকআপ key ক'ত সংৰক্ষণ কৰিছে সেই বিষয়ে সাৱধান হওক।",
+  "backupKeySeparationWarning": "অতি গুৰুত্বপূৰ্ণ যে আপুনি বেকআপ key আৰু বেকআপ ফাইল একেটা ঠাইতে সংৰক্ষণ নকৰে। সদায় সেইবোৰ পৃথক ডিভাইচত বা পৃথক cloud প্ৰদানকৰ্তাত ৰাখক।",
+  "backupKeyExampleWarning": "উদাহৰণস্বৰূপে, যদি আপুনি বেকআপ ফাইলৰ বাবে Google Drive ব্যৱহাৰ কৰিছে, তেন্তে বেকআপ key-ৰ বাবে Google Drive ব্যৱহাৰ নকৰিব।"
 }

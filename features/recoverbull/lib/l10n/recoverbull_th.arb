@@ -585,5 +585,8 @@
   "recoverbullGoogleDriveErrorSelectFailed": "ค้นหาเลือก vault จาก Google Drive",
   "@recoverbullGoogleDriveErrorSelectFailed": {
     "description": "Error message when selecting/loading a drive backup fails"
-  }
+  },
+  "backupKeyWarningMessage": "คําเตือน: ระมัดระวังที่คุณประหยัดเงิน.",
+  "backupKeySeparationWarning": "มันเป็นสิ่งสําคัญที่คุณไม่ได้บันทึกการสํารองข้อมูลคีย์เดียวกันที่ทุกที่ที่คุณบันทึกไฟล์ของคุณ เป็นเจ้าของอุปกรณ์แยกต่างหากหรือแยกคลาวด์.",
+  "backupKeyExampleWarning": "ตัวอย่างเช่นถ้าคุณใช้ Google Drive สําหรับไฟล์การสํารองข้อมูลของคุณไม่ได้ใช้ Google Drive สําหรับการสํารองข้อมูลของคุณ."
 }

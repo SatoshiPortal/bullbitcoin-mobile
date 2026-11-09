@@ -255,5 +255,8 @@
   "recoverbullRecoveryErrorMissingDerivationPath": "Ruta de derivación faltante en el archivo de respaldo.",
   "recoverbullErrorRejected": "Rechazado por el servidor de claves",
   "recoverbullErrorServiceUnavailable": "Servicio no disponible. Por favor, verifica tu conexión.",
-  "recoverbullErrorInvalidVaultFile": "Archivo de bóveda inválido."
+  "recoverbullErrorInvalidVaultFile": "Archivo de bóveda inválido.",
+  "backupKeyWarningMessage": "Advertencia: Ten cuidado dónde guardas la clave de respaldo.",
+  "backupKeySeparationWarning": "Es críticamente importante que no guardes la clave de respaldo en el mismo lugar donde guardas tu archivo de respaldo. Siempre guárdalos en dispositivos separados o proveedores de nube separados.",
+  "backupKeyExampleWarning": "Por ejemplo, si usaste Google Drive para tu archivo de respaldo, no uses Google Drive para tu clave de respaldo."
 }

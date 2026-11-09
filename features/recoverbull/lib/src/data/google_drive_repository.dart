@@ -16,6 +16,7 @@ final class GoogleDriveRepositoryImpl implements GoogleDriveRepository {
   Future<void> _queue = Future<void>.value();
   int _accountGeneration = 0;
   bool _disposed = false;
+  final _selections = Expando<({String account, int generation})>();
 
   GoogleDriveRepositoryImpl({required GoogleDriveAppDatasource datasource})
     : _dataSource = datasource;
@@ -75,11 +76,12 @@ final class GoogleDriveRepositoryImpl implements GoogleDriveRepository {
 
   @override
   Future<Result<EncryptedVault, RecoverBullFailure>> fetchVault(
-    String fileId,
+    DriveFileMetadata file,
   ) async {
     return _serialized(() async {
       try {
-        return Ok(EncryptedVaultMapper.parse(await _fetchContent(fileId)));
+        await _checkSelection(file);
+        return Ok(EncryptedVaultMapper.parse(await _fetchContent(file.id)));
       } on Exception {
         log.warning('recoverbull.drive.operation.failed');
         return const Err(RecoverBullUnexpectedFailure());
@@ -90,10 +92,13 @@ final class GoogleDriveRepositoryImpl implements GoogleDriveRepository {
   /// Raw file content (not parsed as a vault) — used when exporting a backup
   /// file verbatim to local storage.
   @override
-  Future<Result<String, RecoverBullFailure>> fetchRawFile(String fileId) async {
+  Future<Result<String, RecoverBullFailure>> fetchRawFile(
+    DriveFileMetadata file,
+  ) async {
     return _serialized(() async {
       try {
-        return Ok(await _fetchContent(fileId));
+        await _checkSelection(file);
+        return Ok(await _fetchContent(file.id));
       } on Exception {
         log.warning('recoverbull.drive.operation.failed');
         return const Err(RecoverBullUnexpectedFailure());
@@ -115,6 +120,7 @@ final class GoogleDriveRepositoryImpl implements GoogleDriveRepository {
         final latest = backups.reduce(
           (a, b) => a.createdTime.compareTo(b.createdTime) > 0 ? a : b,
         );
+        await _checkSelection(latest);
         return Ok(EncryptedVaultMapper.parse(await _fetchContent(latest.id)));
       } on Exception {
         log.warning('recoverbull.drive.operation.failed');
@@ -138,10 +144,11 @@ final class GoogleDriveRepositoryImpl implements GoogleDriveRepository {
   }
 
   @override
-  Future<Result<Null, RecoverBullFailure>> trash(String fileId) async {
+  Future<Result<Null, RecoverBullFailure>> trash(DriveFileMetadata file) async {
     return _serialized(() async {
       try {
-        await _dataSource.trash(fileId);
+        await _checkSelection(file);
+        await _dataSource.trash(file.id);
         return const Ok(null);
       } on Exception {
         log.warning('recoverbull.drive.operation.failed');
@@ -151,8 +158,24 @@ final class GoogleDriveRepositoryImpl implements GoogleDriveRepository {
   }
 
   Future<List<DriveFileMetadata>> _fetchAllMetadata() async {
+    final account = await _dataSource.connectSilently();
+    if (account == null) throw const _DiscoverySessionExpiredException();
+    final generation = _accountGeneration;
     final files = await _dataSource.fetchAllMetadata();
-    return files.map((file) => file.toEntity()).toList();
+    return files.map((file) {
+      final entity = file.toEntity();
+      _selections[entity] = (account: account, generation: generation);
+      return entity;
+    }).toList();
+  }
+
+  Future<void> _checkSelection(DriveFileMetadata file) async {
+    final selection = _selections[file];
+    if (selection == null ||
+        selection.generation != _accountGeneration ||
+        await _dataSource.connectSilently() != selection.account) {
+      throw const _DiscoverySessionExpiredException();
+    }
   }
 
   Future<String> _fetchContent(String fileId) async {

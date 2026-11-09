@@ -255,5 +255,8 @@
   "recoverbullErrorRejected": "Відхилено Key Server",
   "recoverbullSelectRecoverWallet": "Відновлення гаманця",
   "recoverbullSelectCustomLocation": "Місцезнаходження",
-  "recoverbullGoogleDriveErrorSelectFailed": "Вимкнено для вибору за замовчуванням з Google Диску"
+  "recoverbullGoogleDriveErrorSelectFailed": "Вимкнено для вибору за замовчуванням з Google Диску",
+  "backupKeyWarningMessage": "Попередження: Будьте обережні, де ви зберігаєте ключ резервного копіювання.",
+  "backupKeySeparationWarning": "Важливо, що ви не зберігаєте ключ резервного копіювання на одному місці, де ви зберігаєте файл резервного копіювання. Завжди зберігати їх на окремих пристроях або окремих хмарних провайдерах.",
+  "backupKeyExampleWarning": "Наприклад, якщо ви використовували Google Диск для файлів резервної копії, не використовуйте Google Диск для ключа резервного копіювання."
 }

@@ -255,5 +255,8 @@
   "recoverbullRecoveryErrorMissingDerivationPath": "Varmuuskopiotiedostosta puuttuu derivointipolku.",
   "recoverbullErrorRejected": "Avainpalvelin hylkäsi pyynnön",
   "recoverbullErrorServiceUnavailable": "Palvelu ei ole käytettävissä. Tarkista yhteytesi.",
-  "recoverbullErrorInvalidVaultFile": "Virheellinen holvitiedosto."
+  "recoverbullErrorInvalidVaultFile": "Virheellinen holvitiedosto.",
+  "backupKeyWarningMessage": "Varoitus: Ole varovainen, mihin tallennat varmuuskopioavaimen.",
+  "backupKeySeparationWarning": "On elintärkeää, ettet tallenna varmuuskopioavainta samaan paikkaan kuin varmuuskopiotiedostoa. Säilytä ne aina eri laitteilla tai eri pilvipalveluissa.",
+  "backupKeyExampleWarning": "Esimerkiksi jos käytit Google Drivea varmuuskopiotiedostoon, älä käytä Google Drivea varmuuskopioavaimelle."
 }

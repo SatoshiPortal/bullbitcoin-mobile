@@ -585,5 +585,8 @@
   "recoverbullGoogleDriveErrorSelectFailed": "Google Drive'dan uzaklaşmak için başarısız oldu",
   "@recoverbullGoogleDriveErrorSelectFailed": {
     "description": "Error message when selecting/loading a drive backup fails"
-  }
+  },
+  "backupKeyWarningMessage": "Uyarı: Yedek anahtarını nereden kurtardığınızı dikkatli olun.",
+  "backupKeySeparationWarning": "Yedekleme dosyasını kurtardığınız aynı yerde yedekleme anahtarını kurtarmamanız önemlidir. Her zaman onları ayrı cihazlara veya ayrı bulut sağlayıcılarına saklayın.",
+  "backupKeyExampleWarning": "Örneğin, Google Drive'ı yedekleme dosyasınız için kullandıysanız, Google Drive'ı yedekleme anahtarınız için kullanmayın."
 }

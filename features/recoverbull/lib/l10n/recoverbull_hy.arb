@@ -150,5 +150,8 @@
   "recoverbullRecoveryErrorMissingDerivationPath": "Պահուստի ֆայլում բացակայում է ածանցման ուղին։",
   "recoverbullErrorRejected": "Մերժվել է բանալիների սերվերի կողմից",
   "recoverbullErrorServiceUnavailable": "Ծառայությունը հասանելի չէ։ Խնդրում ենք ստուգել ձեր կապակցումը։",
-  "recoverbullErrorInvalidVaultFile": "Անվավեր պահոցի ֆայլ։"
+  "recoverbullErrorInvalidVaultFile": "Անվավեր պահոցի ֆայլ։",
+  "backupKeyWarningMessage": "Զգուշացում․ Զգույշ եղեք, թե որտեղ եք պահում պահուստի բանալին։",
+  "backupKeySeparationWarning": "Չափազանց կարևոր է, որ պահուստի բանալին չպահեք նույն վայրում, որտեղ պահում եք ձեր պահուստի ֆայլը։ Միշտ պահեք դրանք առանձին սարքերում կամ առանձին ամպային ծառայություններում։",
+  "backupKeyExampleWarning": "Օրինակ, եթե օգտագործել եք Google Drive ձեր պահուստի ֆայլի համար, մի օգտագործեք Google Drive-ը ձեր պահուստի բանալու համար։"
 }

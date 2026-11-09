@@ -585,5 +585,8 @@
   },
   "@recoverbullConnectingTor": {
     "description": "Message shown while establishing Tor connection"
-  }
+  },
+  "backupKeyWarningMessage": "Atenção: Tenha cuidado onde você salvar a chave de backup.",
+  "backupKeySeparationWarning": "É importante que você não salve a chave de backup no mesmo lugar onde você salva seu arquivo de backup. Sempre armazená-los em dispositivos separados ou provedores de nuvem separados.",
+  "backupKeyExampleWarning": "Por exemplo, se você usou o Google Drive para seu arquivo de backup, não use o Google Drive para sua chave de backup."
 }

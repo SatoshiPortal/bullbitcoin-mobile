@@ -584,5 +584,8 @@
   "recoverbullErrorInvalidVaultFile": "Invalid vault file.",
   "@recoverbullErrorInvalidVaultFile": {
     "description": "Error message when vault file format is invalid"
-  }
+  },
+  "backupKeyWarningMessage": "Chetavni: Backup key kahaan save kar rahe ho, dhyaan rakho.",
+  "backupKeySeparationWarning": "Yeh bahut zaroori hai ki backup key aur backup file ek hi jagah save na karo. Inhe hamesha alag devices ya alag cloud providers par store karo.",
+  "backupKeyExampleWarning": "Misal ke taur par, agar backup file ke liye Google Drive use kiya toh backup key ke liye Google Drive mat use karo."
 }

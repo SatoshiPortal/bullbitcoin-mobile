@@ -76,7 +76,10 @@ class _ViewVaultKeyPageState extends State<ViewVaultKeyPage>
     body: SafeArea(
       child: Column(
         children: [
-          BullTopBar(title: context.loc.recoverbullVaultKey),
+          BullTopBar(
+            title: context.loc.recoverbullVaultKey,
+            onBack: () => Navigator.of(context).pop(),
+          ),
           if (_protected != true)
             BullText(
               _protected == null

@@ -796,5 +796,11 @@
   "recoverbullDismissAlerts": "Dismiss alerts",
   "@recoverbullDismissAlerts": {
     "description": "Acknowledges the currently visible backup alerts without changing any backup"
-  }
+  },
+  "backupKeyWarningMessage": "Warning: Be careful where you save the backup key.",
+  "@backupKeyWarningMessage": {},
+  "backupKeySeparationWarning": "It is critically important that you do not save the backup key at the same place where you save your backup file. Always store them on separate devices or separate cloud providers.",
+  "@backupKeySeparationWarning": {},
+  "backupKeyExampleWarning": "For example, if you used Google Drive for your backup file, do not use Google Drive for your backup key.",
+  "@backupKeyExampleWarning": {}
 }

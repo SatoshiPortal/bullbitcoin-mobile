@@ -585,5 +585,8 @@
   "recoverbullGoogleDriveErrorSelectFailed": "Google Drive에서 vault를 선택 해제",
   "@recoverbullGoogleDriveErrorSelectFailed": {
     "description": "Error message when selecting/loading a drive backup fails"
-  }
+  },
+  "backupKeyWarningMessage": "경고: 백업 키를 저장하는 것을 조심하십시오.",
+  "backupKeySeparationWarning": "백업 파일을 저장하는 동시에 백업 키를 저장하지 않는 것이 중요합니다. 항상 별도의 장치 또는 별도의 클라우드 공급자에 저장합니다.",
+  "backupKeyExampleWarning": "예를 들어, 백업 파일에 Google Drive를 사용한다면, 백업 키에 Google Drive를 사용하지 마십시오."
 }

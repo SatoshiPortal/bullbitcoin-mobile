@@ -314,5 +314,8 @@
   "recoverbullActivityAlert": "Le serveur de sauvegarde a signalé une activité que cet appareil ne peut pas expliquer. Elle peut provenir d’un autre de vos appareils. Vérifiez vos sauvegardes.",
   "recoverbullLockoutAlert": "Le serveur a limité l’accès à une sauvegarde après des demandes répétées. Vérifiez vos sauvegardes et réessayez plus tard.",
   "recoverbullMonitoringUnknown": "La couverture de l’activité des sauvegardes est inconnue. La surveillance est indicative et ne peut pas garantir la sécurité de votre sauvegarde.",
-  "recoverbullDismissAlerts": "Fermer les alertes"
+  "recoverbullDismissAlerts": "Fermer les alertes",
+  "backupKeyWarningMessage": "Attention : Faites attention à l'endroit où vous enregistrez la clé de sauvegarde.",
+  "backupKeySeparationWarning": "Il est essentiel que vous n'enregistriez pas la clé de sauvegarde au même endroit que votre fichier de sauvegarde. Stockez-les toujours sur des appareils séparés ou des fournisseurs de cloud différents.",
+  "backupKeyExampleWarning": "Par exemple, si vous avez utilisé Google Drive pour votre fichier de sauvegarde, n'utilisez pas Google Drive pour votre clé de sauvegarde."
 }
