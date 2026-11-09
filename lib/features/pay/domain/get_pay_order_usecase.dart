@@ -21,16 +21,21 @@ class GetPayOrderUsecase {
     final Order order;
     try {
       order = await _getOrderUsecase.execute(orderId: orderId);
-    } catch (e, st) {
-      log.severe(message: 'Failed to read the pay order', error: e, trace: st);
-      return Err(PayUnexpectedFailure('$e'));
+    } catch (_) {
+      const diagnostic = 'pay_order_read_failed category=unexpected';
+      log.severe(
+        message: diagnostic,
+        error: Exception(diagnostic),
+        trace: StackTrace.current,
+      );
+      return const Err(PayUnexpectedFailure(diagnostic));
     }
 
     if (order is! FiatPaymentOrder) {
+      const diagnostic = 'pay_order_read_failed category=invalid_type';
       log.severe(
-        error:
-            'Expected a FiatPaymentOrder for $orderId but received '
-            '${order.runtimeType}',
+        message: diagnostic,
+        error: Exception(diagnostic),
         trace: StackTrace.current,
       );
       return const Err(

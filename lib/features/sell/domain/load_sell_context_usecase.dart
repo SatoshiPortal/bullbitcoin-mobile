@@ -144,9 +144,14 @@ class LoadSellContextUsecase {
   Future<Result<Order, SellFailure>> order({required String orderId}) async {
     try {
       return Ok(await _getOrderUsecase.execute(orderId: orderId));
-    } catch (e, st) {
-      log.severe(message: 'Failed to load the sell order', error: e, trace: st);
-      return Err(SellUnexpectedFailure('$e'));
+    } catch (_) {
+      const diagnostic = 'sell_order_read_failed category=unexpected';
+      log.severe(
+        message: diagnostic,
+        error: Exception(diagnostic),
+        trace: StackTrace.current,
+      );
+      return const Err(SellUnexpectedFailure(diagnostic));
     }
   }
 }

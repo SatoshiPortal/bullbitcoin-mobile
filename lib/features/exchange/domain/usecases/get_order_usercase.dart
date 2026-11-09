@@ -24,9 +24,14 @@ class GetOrderUsecase {
           : _mainnetExchangeOrderRepository;
       final order = await repo.getOrder(orderId);
       return order;
-    } catch (e) {
-      log.severe(error: e, trace: StackTrace.current);
-      throw GetOrderException('$e');
+    } catch (_) {
+      const diagnostic = 'exchange_order_read_failed category=unexpected';
+      log.severe(
+        message: diagnostic,
+        error: Exception(diagnostic),
+        trace: StackTrace.current,
+      );
+      throw GetOrderException(diagnostic);
     }
   }
 }
