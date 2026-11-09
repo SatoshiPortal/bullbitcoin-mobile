@@ -51,6 +51,7 @@ class RecoverbullMonitoredVaults extends Table {
   IntColumn get observedRequests => integer().nullable()();
   IntColumn get window => integer().nullable()();
   IntColumn get collection => integer().nullable()();
+  IntColumn get exactWindow => integer().nullable()();
   IntColumn get ownRequests => integer().withDefault(const Constant(0))();
   BoolColumn get unknown => boolean().withDefault(const Constant(true))();
 

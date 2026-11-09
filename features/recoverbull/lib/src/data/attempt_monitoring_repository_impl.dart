@@ -241,13 +241,18 @@ final class AttemptMonitoringRepositoryImpl
     required bool enabled,
     bool completing = false,
   }) async {
-    final window = sample.windowStartedAt.millisecondsSinceEpoch;
+    final window = sample.publicWindow;
+    final exact = completing
+        ? sample.windowStartedAt.millisecondsSinceEpoch
+        : null;
     final anchor = row.anchorRequests;
     final previousWindow = row.window;
+    final previousExact = row.exactWindow;
     final previousCollection = row.collection;
     final pending = await _pending(row.server, row.digest);
     // Cached snapshots may precede an inline status; never move backwards.
-    if ((previousWindow != null && window < previousWindow) ||
+    if ((exact != null && previousExact != null && exact < previousExact) ||
+        (previousWindow != null && window < previousWindow) ||
         (collection != null &&
             previousCollection != null &&
             collection < previousCollection)) {
@@ -256,6 +261,7 @@ final class AttemptMonitoringRepositoryImpl
     final discontinuity =
         anchor == null ||
         window != previousWindow ||
+        (exact != null && previousExact != null && exact != previousExact) ||
         (collection != null &&
             previousCollection != null &&
             collection != previousCollection);
@@ -266,10 +272,12 @@ final class AttemptMonitoringRepositoryImpl
           anchorRequests: Value(sample.requests),
           observedRequests: Value(sample.requests),
           window: Value(window),
+          exactWindow: Value(exact),
           collection: collection == null
               ? const Value.absent()
               : Value(collection),
-          ownRequests: Value(pending),
+          // The completing request is already included in this new anchor.
+          ownRequests: Value(pending - (completing ? 1 : 0)),
           unknown: const Value(true),
         ),
       );
@@ -290,6 +298,7 @@ final class AttemptMonitoringRepositoryImpl
       row,
       RecoverbullMonitoredVaultsCompanion(
         observedRequests: Value(sample.requests),
+        exactWindow: exact == null ? const Value.absent() : Value(exact),
         collection: collection == null
             ? const Value.absent()
             : Value(collection),

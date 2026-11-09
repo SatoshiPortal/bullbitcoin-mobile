@@ -7,6 +7,17 @@ final class AttemptObservation {
   final DateTime windowStartedAt;
   final DateTime? resetsAt;
 
+  /// Public snapshots deliberately truncate timestamps to UTC hours.
+  int get publicWindow {
+    final utc = windowStartedAt.toUtc();
+    return DateTime.utc(
+      utc.year,
+      utc.month,
+      utc.day,
+      utc.hour,
+    ).millisecondsSinceEpoch;
+  }
+
   AttemptObservation({
     required this.attempts,
     required this.requests,
