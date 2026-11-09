@@ -1,6 +1,7 @@
 import 'support/connections.dart';
 import 'support/regtest_wallet.dart';
 import 'package:transaction_sync/write.dart';
+import 'package:transaction_sync/read.dart';
 import 'package:transaction_sync/src/write/writer_lock.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:primitives/primitives.dart';
@@ -558,6 +559,192 @@ void main() {
         }
       },
     );
+
+    for (final visible in [true, false]) {
+      test('chained send diagnostic: broadcast visible=$visible', () async {
+        await fixture.load('S10-no-change', 0);
+        completed(await sync.execute(descriptor));
+        final revisions = RevisionStore(writerMetadataPath(dir.path));
+        addTearDown(revisions.close);
+        final writer = NativeWalletWriter(
+          lockDirectory: writerLockDirectory(dir.path),
+          revisions: revisions,
+          documentsDirectory: dir.path,
+          catalog: SingleWalletCatalog(descriptor),
+          reservedAddresses: NoReservedAddresses(),
+        );
+        final reader = WalletSnapshotReader(
+          documentsDirectory: dir.path,
+          readiness: PersistedWalletReadiness(revisions),
+          requiredSchemaVersion: writerSchemaVersion,
+          revisions: revisions,
+          liquidAdmission: writer,
+        );
+        Future<WalletReadSnapshot<bdk.Wallet>> read() async =>
+            switch (await reader.bitcoin(descriptor)) {
+              Ok(:final value) => value,
+              Err(:final failure) => throw StateError('$failure'),
+            };
+        final mnemonic = bdk.Mnemonic.fromString(mnemonic: _testMnemonic);
+        final secret = bdk.DescriptorSecretKey(
+          networkKind: bdk.NetworkKind.test,
+          mnemonic: mnemonic,
+          password: null,
+        );
+        addTearDown(mnemonic.dispose);
+        addTearDown(secret.dispose);
+        final signers = [
+          for (final keychain in [
+            bdk.KeychainKind.external_,
+            bdk.KeychainKind.internal,
+          ])
+            bdk.SignersContainer.fromDescriptor(
+              descriptor: bdk.Descriptor.newBip84(
+                secretKey: secret,
+                keychainKind: keychain,
+                networkKind: bdk.NetworkKind.test,
+              ),
+            ),
+        ];
+        for (final signer in signers) {
+          addTearDown(signer.dispose);
+        }
+        bdk.Transaction build(bdk.Wallet wallet) {
+          final recipient = bdk.Script(
+            rawOutputScript: Uint8List.fromList([
+              0,
+              20,
+              ...List.filled(20, 0xab),
+            ]),
+          );
+          final psbt = bdk.TxBuilder()
+              .addRecipient(
+                script: recipient,
+                amount: bdk.Amount.fromSat(satoshi: 10000),
+              )
+              .feeAbsolute(feeAmount: bdk.Amount.fromSat(satoshi: 1000))
+              .finish(wallet: wallet);
+          try {
+            expect(
+              wallet.signWithSigners(
+                psbt: psbt,
+                signers: signers,
+                signOptions: null,
+              ),
+              isTrue,
+            );
+            return psbt.extractTx();
+          } finally {
+            psbt.dispose();
+            recipient.dispose();
+          }
+        }
+
+        Set<(String, int)> inputs(bdk.Transaction tx) => {
+          for (final input in tx.input())
+            (input.previousOutput.txid.toString(), input.previousOutput.vout),
+        };
+        String change(bdk.Transaction tx, bdk.Wallet wallet) => _hex(
+          tx
+              .output()
+              .singleWhere((o) => wallet.isMine(script: o.scriptPubkey))
+              .scriptPubkey
+              .toBytes(),
+        );
+
+        final before = await read();
+        final a = build(before.wallet);
+        addTearDown(a.dispose);
+        final aId = a.computeTxid().toString();
+        final aInputs = inputs(a);
+        final aChange = change(a, before.wallet);
+        expect(aInputs, hasLength(1));
+        await fixture.exposeBroadcasts(visible);
+        final client = bdk.ElectrumClient(
+          url: fixture.url,
+          socks5: null,
+          timeout: 5,
+          retry: 0,
+          validateDomain: false,
+        );
+        final gate = BitcoinSpendGate(
+          revisions: revisions,
+          lockDirectory: writerLockDirectory(dir.path),
+          catalog: SingleWalletCatalog(descriptor),
+        );
+        final admitted = await gate.acquire(descriptor.key);
+        expect(admitted, isA<BitcoinSpendAdmission>());
+        final admission = admitted as BitcoinSpendAdmission;
+        try {
+          expect(client.transactionBroadcast(tx: a).toString(), aId);
+          expect(admission.accepted(aId).durable, isTrue);
+        } finally {
+          admission.close();
+          client.dispose();
+        }
+        // A real unrelated checkpoint update forces revision publication even
+        // when the accepted broadcast is missing from script histories.
+        await fixture.advanceTip();
+        final completion = completed(await sync.execute(descriptor));
+        final after = await read();
+        expect(after.revision.revision, greaterThan(before.revision.revision));
+        expect(after.revision, completion.revision);
+        expect(after.stale, isFalse);
+        expect(identical(after.wallet, before.wallet), isFalse);
+        final canonical = after.wallet.getTx(
+          txid: bdk.Txid.fromString(hex: aId),
+        );
+        expect(canonical != null, visible);
+        if (!visible) {
+          expect(await gate.check(descriptor.key), BitcoinSpendStatus.pending);
+          // Restart reads durable state, not a Cubit flag. No second build is
+          // admitted until a subsequent successful pass observes the payment.
+          final restartedRevisions = RevisionStore(
+            writerMetadataPath(dir.path),
+            existingOnly: true,
+          );
+          final restarted = BitcoinSpendGate(
+            revisions: restartedRevisions,
+            lockDirectory: writerLockDirectory(dir.path),
+            catalog: SingleWalletCatalog(descriptor),
+          );
+          expect(
+            await restarted.check(descriptor.key),
+            BitcoinSpendStatus.pending,
+          );
+          await restartedRevisions.close();
+          await fixture.exposeBroadcasts(true);
+          completed(await sync.execute(descriptor));
+        }
+        expect(await gate.check(descriptor.key), BitcoinSpendStatus.ready);
+        final spending = await read();
+        final b = build(spending.wallet);
+        addTearDown(b.dispose);
+        final overlap = inputs(b).intersection(aInputs);
+        // Only synthetic booleans/counts: no production wallet data.
+        print(
+          'CHAINED visible=$visible canonical=${canonical != null} '
+          'revisionAdvanced=true fresh=${!after.stale} '
+          'overlap=${overlap.length} '
+          'spendsChange=${inputs(b).any((i) => i.$1 == aId)} '
+          'distinctChange=${change(b, spending.wallet) != aChange}',
+        );
+        expect(
+          overlap,
+          isEmpty,
+          reason: 'An accepted own broadcast must protect its inputs',
+        );
+        if (visible) {
+          expect(inputs(b).any((i) => i.$1 == aId), isTrue);
+          expect(change(b, spending.wallet), isNot(aChange));
+        }
+        // Later canonical loss must restore the durable barrier, including if
+        // the new endpoint omits a previously observed transaction.
+        await fixture.exposeBroadcasts(false);
+        completed(await sync.execute(descriptor));
+        expect(await gate.check(descriptor.key), BitcoinSpendStatus.pending);
+      });
+    }
 
     test(
       'unchanged revealed scripts preserve revision; changed scripts advance it',

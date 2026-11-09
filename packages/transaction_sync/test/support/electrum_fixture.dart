@@ -5,6 +5,7 @@ import 'dart:isolate';
 import 'dart:typed_data';
 
 import 'package:crypto/crypto.dart';
+import 'package:bull_sdk/bdk.dart' as bdk;
 
 /// Wallet transaction scenarios served by [ElectrumFixture]. Each has a first
 /// chain state, synced as a new wallet would, and a second one to sync next.
@@ -70,6 +71,15 @@ final class ElectrumFixture {
     );
   }
 
+  /// Broadcast acceptance and script-history visibility are independent.
+  Future<void> exposeBroadcasts(bool visible) async {
+    await _call(['broadcastVisibility', visible]);
+  }
+
+  Future<void> advanceTip() async {
+    await _call(['advanceTip']);
+  }
+
   void close() => _isolate.kill(priority: Isolate.immediate);
 
   Future<Object?> _call(List<Object?> command) async {
@@ -101,6 +111,8 @@ final class ElectrumFixture {
         reply.send(switch (command[0]) {
           'load' => chain.load(command[1] as String, command[2] as int),
           'requests' => chain.takeRequests(),
+          'broadcastVisibility' => chain.exposeBroadcasts(command[1] as bool),
+          'advanceTip' => chain.advanceTip(),
           _ => StateError('unknown command ${command[0]}'),
         });
       } catch (error) {
@@ -118,6 +130,8 @@ final class _Chain {
   List<Uint8List> headers = [_genesis];
   List<String> mempool = [];
   int? snapshot;
+  bool broadcastsVisible = false;
+  final Set<String> broadcasts = {};
   Map<String, int> counts = {};
   Set<String> scriptHashes = {};
   Set<String> fetchedTxids = {};
@@ -131,6 +145,27 @@ final class _Chain {
     scriptHashes = {};
     fetchedTxids = {};
     return taken;
+  }
+
+  bool exposeBroadcasts(bool visible) {
+    broadcastsVisible = visible;
+    mempool.removeWhere(broadcasts.contains);
+    if (visible) mempool.addAll(broadcasts);
+    return true;
+  }
+
+  bool advanceTip() {
+    final height = headers.length;
+    blocks.add([]);
+    headers.add(
+      _header(
+        _sha256d(headers.last),
+        _sha256(utf8.encode('broadcast-tip-$height')),
+        1296688602 + height * 600,
+        height * 100,
+      ),
+    );
+    return true;
   }
 
   Map<String, Object?> answer(Map request) {
@@ -171,6 +206,18 @@ final class _Chain {
             .where((s) => _rhex(_sha256(_bytes(s))) == hash)
             .firstOrNull;
         result = script == null ? [] : _history(script);
+      case 'blockchain.transaction.broadcast':
+        final raw = _bytes(params[0] as String);
+        final tx = bdk.Transaction(transactionBytes: raw);
+        try {
+          final txid = tx.computeTxid().toString();
+          txs[txid] = raw;
+          broadcasts.add(txid);
+          if (broadcastsVisible) mempool.add(txid);
+          result = txid;
+        } finally {
+          tx.dispose();
+        }
       case 'blockchain.transaction.get':
         final txid = params[0] as String;
         fetchedTxids.add(txid);
@@ -195,6 +242,8 @@ final class _Chain {
   }
 
   List<Object> load(String scenario, int phase) {
+    broadcasts.clear();
+    broadcastsVisible = false;
     final s = scripts;
     final foreign = s['foreign'] as String;
     String spk(String name) => s[name] ?? (throw StateError('no $name'));
@@ -423,6 +472,23 @@ Uint8List _tx(
 }
 
 (List<(String, int)>, List<(int, String)>) _parse(Uint8List raw) {
+  if (raw[4] == 0 && raw[5] == 1) {
+    final tx = bdk.Transaction(transactionBytes: raw);
+    try {
+      return (
+        [
+          for (final i in tx.input())
+            (i.previousOutput.txid.toString(), i.previousOutput.vout),
+        ],
+        [
+          for (final o in tx.output())
+            (o.value.toSat(), _hex(o.scriptPubkey.toBytes())),
+        ],
+      );
+    } finally {
+      tx.dispose();
+    }
+  }
   final data = ByteData.sublistView(raw);
   var i = 4;
   final inputs = <(String, int)>[];
