@@ -1,3 +1,5 @@
+import 'package:bb_mobile/features/wallet/public/wallet_facade.dart'
+    show WalletFacade;
 import 'package:bb_mobile/features/wallet/domain/wallet.dart' as app;
 import 'package:bb_mobile/features/send/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/broadcast_liquid_transaction_usecase.dart';
@@ -24,6 +26,7 @@ void main() {
     bitcoin = _MockBroadcastBitcoin();
     liquid = _MockBroadcastLiquid();
     usecase = BroadcastSellPayinUsecase(
+      wallet: const WalletFacade(Stream.empty()),
       broadcastBitcoinTransactionUsecase: bitcoin,
       broadcastLiquidTransactionUsecase: liquid,
     );
@@ -40,6 +43,7 @@ void main() {
 
     final result = await usecase.bitcoin(
       'signed',
+      walletId: 'source',
       isPsbt: true,
       network: app.Network.bitcoinMainnet,
     );
@@ -58,6 +62,7 @@ void main() {
 
     final result = await usecase.bitcoin(
       'signed',
+      walletId: 'source',
       isPsbt: true,
       network: app.Network.bitcoinMainnet,
     );
@@ -75,7 +80,7 @@ void main() {
   test('returns the liquid txid', () async {
     when(() => liquid.execute(any())).thenAnswer((_) async => 'txid-2');
 
-    final result = await usecase.liquid('signed-pset');
+    final result = await usecase.liquid('signed-pset', walletId: 'source');
 
     expect((result as Ok<String, SellFailure>).value, 'txid-2');
   });
@@ -83,7 +88,7 @@ void main() {
   test('a rejected liquid broadcast is sanitized', () async {
     when(() => liquid.execute(any())).thenThrow(Exception(_rawReason));
 
-    final result = await usecase.liquid('signed-pset');
+    final result = await usecase.liquid('signed-pset', walletId: 'source');
 
     expect(
       (result as Err<String, SellFailure>).failure,

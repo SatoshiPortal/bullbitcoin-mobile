@@ -318,6 +318,7 @@ void main() {
     when(
       () => broadcastSellPayin.bitcoin(
         any(),
+        walletId: any(named: 'walletId'),
         isPsbt: any(named: 'isPsbt'),
         network: app.Network.bitcoinMainnet,
       ),
@@ -614,6 +615,7 @@ void main() {
       verifyNever(
         () => broadcastSellPayin.bitcoin(
           any(),
+          walletId: any(named: 'walletId'),
           isPsbt: any(named: 'isPsbt'),
           network: app.Network.bitcoinMainnet,
         ),
@@ -920,6 +922,7 @@ void main() {
         verifyNever(
           () => broadcastSellPayin.bitcoin(
             any(),
+            walletId: any(named: 'walletId'),
             isPsbt: any(named: 'isPsbt'),
             network: app.Network.bitcoinMainnet,
           ),
@@ -958,6 +961,7 @@ void main() {
         verify(
           () => broadcastSellPayin.bitcoin(
             any(),
+            walletId: any(named: 'walletId'),
             isPsbt: any(named: 'isPsbt'),
             network: app.Network.bitcoinMainnet,
           ),
@@ -1120,6 +1124,7 @@ void main() {
     verifyNever(
       () => broadcastSellPayin.bitcoin(
         any(),
+        walletId: any(named: 'walletId'),
         isPsbt: any(named: 'isPsbt'),
         network: app.Network.bitcoinMainnet,
       ),
@@ -1381,6 +1386,7 @@ void main() {
       verifyNever(
         () => broadcastSellPayin.bitcoin(
           any(),
+          walletId: any(named: 'walletId'),
           isPsbt: any(named: 'isPsbt'),
           network: app.Network.bitcoinMainnet,
         ),
@@ -1557,6 +1563,7 @@ void main() {
       verifyNever(
         () => broadcastSellPayin.bitcoin(
           any(),
+          walletId: any(named: 'walletId'),
           isPsbt: any(named: 'isPsbt'),
           network: app.Network.bitcoinMainnet,
         ),

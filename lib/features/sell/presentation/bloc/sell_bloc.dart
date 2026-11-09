@@ -776,7 +776,10 @@ class SellBloc extends Bloc<SellEvent, SellState>
           _emitSendPaymentError(emit, const SellQuoteExpiredFailure());
           return;
         }
-        final broadcast = await _broadcastSellPayinUsecase.liquid(signedPset);
+        final broadcast = await _broadcastSellPayinUsecase.liquid(
+          signedPset,
+          walletId: wallet.id,
+        );
         if (broadcast case Err(:final failure)) {
           _emitSendPaymentError(emit, failure);
           return;
@@ -985,6 +988,7 @@ class SellBloc extends Bloc<SellEvent, SellState>
           }
           final broadcast = await _broadcastSellPayinUsecase.bitcoin(
             signedTx.signedPsbt,
+            walletId: wallet.id,
             isPsbt: true,
             network: wallet.network,
           );

@@ -191,6 +191,7 @@ graph TB
     RECEIVE --> SWAPS
     RECEIVE --> TX_HISTORY
     RECIPIENTS --> EXCHANGE
+    SELL -->|public targeted routine sync| WALLETS
     SELL --> EXCHANGE
     SELL --> RECIPIENTS
     SELL --> BULL_PAYJOIN
