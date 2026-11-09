@@ -249,7 +249,7 @@ final class Secret extends SecretEntry {
           path: path,
         ),
       );
-      log.info('SECRET_BACKUP: Backup sealed for ${info.id} at $path');
+      log.fine('secret.backup.sealed');
       return (
         vault: EncryptedVault(
           json: Backup.recoverbull.seal(
