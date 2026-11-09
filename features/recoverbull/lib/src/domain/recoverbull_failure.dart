@@ -59,3 +59,15 @@ final class KeyServerFailure extends RecoverBullFailure {
 
   const KeyServerFailure(this.kind, {this.retryAfter});
 }
+
+final class RecoverBullStorageFullFailure extends RecoverBullFailure {
+  const RecoverBullStorageFullFailure();
+}
+
+final class RecoverBullStorageDamagedFailure extends RecoverBullFailure {
+  const RecoverBullStorageDamagedFailure();
+}
+
+final class RecoverBullJournalFailure extends RecoverBullFailure {
+  const RecoverBullJournalFailure();
+}

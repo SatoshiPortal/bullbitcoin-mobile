@@ -17,6 +17,8 @@ class RecoverbullState extends Table {
       boolean().withDefault(const Constant(true))();
   BoolColumn get legacyImportComplete =>
       boolean().withDefault(const Constant(false))();
+  IntColumn get monitoringRevision =>
+      integer().withDefault(const Constant(0))();
   IntColumn get generation => integer().withDefault(const Constant(0))();
 
   @override
@@ -41,7 +43,52 @@ class RecoverbullBackupStatus extends Table {
   Set<Column<Object>> get primaryKey => {network, fingerprint, vaultDigest};
 }
 
-@DriftDatabase(tables: [RecoverbullState, RecoverbullBackupStatus])
+class RecoverbullMonitoredVaults extends Table {
+  TextColumn get server => text()();
+  BlobColumn get digest =>
+      blob().customConstraint('NOT NULL CHECK (length(digest) = 32)')();
+  IntColumn get anchorRequests => integer().nullable()();
+  IntColumn get observedRequests => integer().nullable()();
+  IntColumn get window => integer().nullable()();
+  IntColumn get collection => integer().nullable()();
+  IntColumn get ownRequests => integer().withDefault(const Constant(0))();
+  BoolColumn get unknown => boolean().withDefault(const Constant(true))();
+
+  @override
+  Set<Column<Object>> get primaryKey => {server, digest};
+}
+
+class RecoverbullOwnOperations extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  TextColumn get server => text()();
+  BlobColumn get digest =>
+      blob().customConstraint('NOT NULL CHECK (length(digest) = 32)')();
+}
+
+class RecoverbullAlerts extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  TextColumn get server => text()();
+  BlobColumn get digest =>
+      blob().customConstraint('NOT NULL CHECK (length(digest) = 32)')();
+  IntColumn get window => integer()();
+  TextColumn get kind => text()();
+  BoolColumn get acknowledged => boolean().withDefault(const Constant(false))();
+
+  @override
+  List<Set<Column<Object>>> get uniqueKeys => [
+    {server, digest, window, kind},
+  ];
+}
+
+@DriftDatabase(
+  tables: [
+    RecoverbullState,
+    RecoverbullBackupStatus,
+    RecoverbullMonitoredVaults,
+    RecoverbullOwnOperations,
+    RecoverbullAlerts,
+  ],
+)
 final class RecoverBullDatabase extends _$RecoverBullDatabase {
   static const schema = 1;
 

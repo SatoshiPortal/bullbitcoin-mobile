@@ -760,5 +760,37 @@
   "recoverbullTorReady": "Ready",
   "@recoverbullTorReady": {
     "description": "Status of the Tor network row once Tor is bootstrapped; no connection to the server exists yet"
+  },
+  "recoverbullStorageFull": "Your phone storage is full. Free up space, then retry. You can still recover with your vault key.",
+  "@recoverbullStorageFull": {
+    "description": "RecoverBull foreground backup safety message"
+  },
+  "recoverbullStorageDamaged": "The local backup data is damaged. Recovery with your vault key is still available.",
+  "@recoverbullStorageDamaged": {
+    "description": "RecoverBull foreground backup safety message"
+  },
+  "recoverbullJournalUnavailable": "Could not save the local backup operation. Please retry. You can also recover with your vault key.",
+  "@recoverbullJournalUnavailable": {
+    "description": "RecoverBull foreground backup safety message"
+  },
+  "recoverbullGenericFailure": "Something went wrong. Please try again.",
+  "@recoverbullGenericFailure": {
+    "description": "RecoverBull foreground backup safety message"
+  },
+  "recoverbullHistoricalUnknown": "This older backup has not been checked by the current backup system. Test it again to confirm its verification status. Your existing vault remains available.",
+  "@recoverbullHistoricalUnknown": {
+    "description": "RecoverBull foreground backup safety message"
+  },
+  "recoverbullActivityAlert": "The backup server reported activity this device could not explain. It may be from another device you use. Review your backups.",
+  "@recoverbullActivityAlert": {
+    "description": "RecoverBull foreground backup safety message"
+  },
+  "recoverbullLockoutAlert": "The server has limited access to a backup after repeated requests. Review your backups and try again later.",
+  "@recoverbullLockoutAlert": {
+    "description": "RecoverBull foreground backup safety message"
+  },
+  "recoverbullMonitoringUnknown": "Backup activity coverage is unknown. Monitoring is advisory and cannot confirm that your backup is safe.",
+  "@recoverbullMonitoringUnknown": {
+    "description": "RecoverBull foreground backup safety message"
   }
 }

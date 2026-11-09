@@ -11,6 +11,7 @@ import '../domain/recoverbull_failure.dart';
 import '../domain/recoverbull_server_url.dart';
 import '../domain/repositories/backup_metadata_repository.dart';
 import 'database/recoverbull_database.dart';
+import 'recoverbull_storage_failure.dart';
 
 final class BackupMetadataRepositoryImpl implements BackupMetadataRepository {
   final RecoverBullDatabase _database;
@@ -198,8 +199,8 @@ final class BackupMetadataRepositoryImpl implements BackupMetadataRepository {
   ) async {
     try {
       return await action();
-    } on Exception {
-      return const Err(VaultStorageFailure());
+    } on Exception catch (error) {
+      return Err(recoverBullStorageFailure(error));
     }
   }
 }
