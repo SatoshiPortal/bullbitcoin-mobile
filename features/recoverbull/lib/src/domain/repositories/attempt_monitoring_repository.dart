@@ -8,6 +8,8 @@ import '../entities/encrypted_vault.dart';
 import '../recoverbull_failure.dart';
 
 abstract interface class AttemptMonitoringRepository {
+  Stream<Result<BackupMonitoring, RecoverBullFailure>> watchStatus();
+
   @useResult
   Future<Result<void, RecoverBullFailure>> register(
     BackupSettings settings,

@@ -313,5 +313,6 @@
   "recoverbullHistoricalUnknown": "Cette ancienne sauvegarde n’a pas été vérifiée par le système actuel. Testez-la à nouveau pour confirmer son état de vérification. Votre coffre existant reste accessible.",
   "recoverbullActivityAlert": "Le serveur de sauvegarde a signalé une activité que cet appareil ne peut pas expliquer. Elle peut provenir d’un autre de vos appareils. Vérifiez vos sauvegardes.",
   "recoverbullLockoutAlert": "Le serveur a limité l’accès à une sauvegarde après des demandes répétées. Vérifiez vos sauvegardes et réessayez plus tard.",
-  "recoverbullMonitoringUnknown": "La couverture de l’activité des sauvegardes est inconnue. La surveillance est indicative et ne peut pas garantir la sécurité de votre sauvegarde."
+  "recoverbullMonitoringUnknown": "La couverture de l’activité des sauvegardes est inconnue. La surveillance est indicative et ne peut pas garantir la sécurité de votre sauvegarde.",
+  "recoverbullDismissAlerts": "Fermer les alertes"
 }

@@ -792,5 +792,9 @@
   "recoverbullMonitoringUnknown": "Backup activity coverage is unknown. Monitoring is advisory and cannot confirm that your backup is safe.",
   "@recoverbullMonitoringUnknown": {
     "description": "RecoverBull foreground backup safety message"
+  },
+  "recoverbullDismissAlerts": "Dismiss alerts",
+  "@recoverbullDismissAlerts": {
+    "description": "Acknowledges the currently visible backup alerts without changing any backup"
   }
 }

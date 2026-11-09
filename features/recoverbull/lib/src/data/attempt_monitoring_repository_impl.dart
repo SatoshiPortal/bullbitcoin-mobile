@@ -328,6 +328,29 @@ final class AttemptMonitoringRepositoryImpl
   }
 
   @override
+  Stream<Result<BackupMonitoring, RecoverBullFailure>> watchStatus() async* {
+    // The watched query establishes its subscription before the first read.
+    final changes = _database
+        .customSelect(
+          'SELECT monitoring_revision FROM recoverbull_state',
+          readsFrom: {
+            _database.recoverbullState,
+            _database.recoverbullMonitoredVaults,
+            _database.recoverbullOwnOperations,
+            _database.recoverbullAlerts,
+          },
+        )
+        .watch();
+    try {
+      await for (final _ in changes) {
+        yield await status();
+      }
+    } on Exception catch (error) {
+      yield Err(recoverBullStorageFailure(error));
+    }
+  }
+
+  @override
   Future<Result<BackupMonitoring, RecoverBullFailure>> status() => _guard(
     () async {
       final state = await _state();
