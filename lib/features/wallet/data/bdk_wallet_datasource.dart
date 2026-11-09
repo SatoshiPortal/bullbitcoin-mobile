@@ -373,7 +373,10 @@ class BdkWalletDatasource {
       () => _readWallet(wallet),
     );
 
-    final transactions = bdkWallet.transactions();
+    // Both mapping passes reuse these strings after releasing their owned temporary native handles.
+    final transactions = bdkWallet.transactions().map((tx) {
+      return (tx, _consumeTxid(tx.transaction.computeTxid()));
+    }).toList();
 
     final allTransactionOutputs = await _getAllOutputsOfTransactions(
       transactions,
@@ -383,11 +386,9 @@ class BdkWalletDatasource {
 
     // Map the transactions to WalletTransactionModel
     final List<WalletTransactionModel?> walletTxs = await Future.wait(
-      transactions.map((tx) async {
-        final (inputs, outputs) = (
-          tx.transaction.input(),
-          tx.transaction.output(),
-        );
+      transactions.map((entry) async {
+        final (tx, txId) = entry;
+        final outputs = tx.transaction.output();
 
         if (toAddress != null && toAddress.isNotEmpty) {
           // Filter transactions by address by returning null for non-matching transactions
@@ -408,30 +409,28 @@ class BdkWalletDatasource {
         }
 
         // Map inputs and outputs to their respective models
-        final inputModels = inputs.asMap().entries.map((entry) {
+        final inputModels = tx.transaction.input().asMap().entries.map((entry) {
           final input = entry.value;
           final vin = entry.key;
           final previousOutput = input.previousOutput;
+          final previousTxId = _consumeTxid(previousOutput.txid);
           final output = allTransactionOutputs.firstWhereOrNull(
             (output) =>
-                output.txId == previousOutput.txid.toString() &&
+                output.txId == previousTxId &&
                 output.vout == previousOutput.vout,
           );
 
           return TransactionInputModel.bitcoin(
-            txId: tx.transaction.computeTxid().toString(),
+            txId: txId,
             vin: vin,
             isOwn: output?.isOwn ?? false,
             scriptSig: input.scriptSig.toBytes(),
-            previousTxId: previousOutput.txid.toString(),
+            previousTxId: previousTxId,
             previousTxVout: previousOutput.vout,
           );
         }).toList();
         final outputModels = allTransactionOutputs
-            .where(
-              (output) =>
-                  output.txId == tx.transaction.computeTxid().toString(),
-            )
+            .where((output) => output.txId == txId)
             .toList();
 
         // Check if all inputs and outputs are owned by the wallet itself
@@ -462,7 +461,7 @@ class BdkWalletDatasource {
         );
 
         return WalletTransactionModel(
-          txId: tx.transaction.computeTxid().toString(),
+          txId: txId,
           isIncoming: isIncoming,
           amountSat: netAmountSat.toInt(),
           feeSat: fee.toInt(),
@@ -601,8 +600,17 @@ class BdkWalletDatasource {
     return sent - received - fee;
   }
 
+  /// Consumes only a freshly acquired txid, never a shared wallet handle.
+  static String _consumeTxid(bdk.Txid txid) {
+    try {
+      return txid.toString();
+    } finally {
+      txid.dispose();
+    }
+  }
+
   Future<List<BitcoinTransactionOutputModel>> _getAllOutputsOfTransactions(
-    List<bdk.CanonicalTx> transactions, {
+    List<(bdk.CanonicalTx, String)> transactions, {
     required WalletModel wallet,
     required bdk.Wallet bdkWallet,
   }) async {
@@ -612,17 +620,20 @@ class BdkWalletDatasource {
     final changeOutpoints = <Outpoint>{
       for (final output in bdkWallet.listOutput())
         if (output.keychain == bdk.KeychainKind.internal)
-          (txId: output.outpoint.txid.toString(), vout: output.outpoint.vout),
+          (
+            txId: _consumeTxid(output.outpoint.txid),
+            vout: output.outpoint.vout,
+          ),
     };
 
     final listOfOutputs = await Future.wait(
-      transactions.map((tx) async {
+      transactions.map((entry) async {
+        final (tx, txId) = entry;
         final outputs = tx.transaction.output();
         final models = await Future.wait(
           outputs.asMap().entries.map((outputEntry) async {
             final vout = outputEntry.key;
             final output = outputEntry.value;
-            final txId = tx.transaction.computeTxid().toString();
             final scriptPubkeyBytes = output.scriptPubkey.toBytes();
             final address =
                 await AddressScriptConversions.bitcoinAddressFromScriptPubkey(

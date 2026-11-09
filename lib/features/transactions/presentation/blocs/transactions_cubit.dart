@@ -36,11 +36,12 @@ class TransactionsCubit extends Cubit<TransactionsState> {
     if (walletId == null) {
       _revisionsSubscription = watchTransactionReloadsUsecase?.execute().listen(
         (update) {
+          if (_closing) return;
           switch (update) {
             case TransactionHistoryUpdate.syncing:
               emit(state.copyWith(isSyncing: true));
             case TransactionHistoryUpdate.reload:
-              loadTxs();
+              _scheduleReload(debounce: false);
           }
         },
       );
@@ -48,7 +49,9 @@ class TransactionsCubit extends Cubit<TransactionsState> {
     }
     _startedSyncSubscription = _watchStartedWalletSyncsUsecase
         .execute(walletId: walletId)
-        .listen((_) => emit(state.copyWith(isSyncing: true)));
+        .listen((_) {
+          if (!_closing) emit(state.copyWith(isSyncing: true));
+        });
     _revisionsSubscription = watchWalletRevisionsUsecase
         ?.execute(walletId: walletId)
         .listen((_) => _scheduleReload());
@@ -66,6 +69,10 @@ class TransactionsCubit extends Cubit<TransactionsState> {
   StreamSubscription? _finishedSyncSubscription;
   StreamSubscription? _revisionsSubscription;
   Timer? _debounceTimer;
+  Future<void>? _loadFuture;
+  bool _reloadPending = false;
+  bool _closing = false;
+  int _reloadDeferrals = 0;
 
   /// Bumped every time [loadTxs] replaces the list, so a [refreshLabels] that
   /// started from an older snapshot can tell it lost the race and drop its
@@ -74,6 +81,7 @@ class TransactionsCubit extends Cubit<TransactionsState> {
 
   @override
   Future<void> close() async {
+    _closing = true;
     _debounceTimer?.cancel();
     await _revisionsSubscription?.cancel();
     await Future.wait([
@@ -83,14 +91,49 @@ class TransactionsCubit extends Cubit<TransactionsState> {
     return super.close();
   }
 
-  Future<void> loadTxs() async {
+  /// Holds stream-triggered reads until the pull's full refresh has settled.
+  void deferReloads() {
+    _reloadDeferrals++;
+    _debounceTimer?.cancel();
+  }
+
+  /// A read already active before the pull cannot satisfy its final reload.
+  Future<void> resumeReloads() async {
+    try {
+      await _loadFuture;
+    } finally {
+      _reloadDeferrals--;
+      if (_reloadDeferrals == 0) await loadTxs();
+    }
+  }
+
+  Future<void> loadTxs() {
+    _debounceTimer?.cancel();
+    if (_closing) return Future.value();
+    final active = _loadFuture;
+    if (active != null) return active;
+    if (_reloadDeferrals > 0) return Future.value();
+    return _loadFuture = _loadUntilSettled().whenComplete(() {
+      _loadFuture = null;
+    });
+  }
+
+  Future<void> _loadUntilSettled() async {
+    do {
+      // Only invalidations received before this read are acknowledged here.
+      _reloadPending = false;
+      await _loadTxs();
+    } while (_reloadPending && !_closing && _reloadDeferrals == 0);
+  }
+
+  Future<void> _loadTxs() async {
     // Load local txs from db to get latest state from tx details page updates
     emit(state.copyWith(isSyncing: true));
 
     final result = await _getTransactionsUsecase.execute(
       walletId: state.walletId,
     );
-    if (isClosed) return;
+    if (_closing) return;
 
     switch (result) {
       case Ok(:final value):
@@ -112,7 +155,7 @@ class TransactionsCubit extends Cubit<TransactionsState> {
     final refreshed = await _refreshTransactionLabelsUsecase.execute(
       transactions,
     );
-    if (isClosed ||
+    if (_closing ||
         // A load landed while we were reading; its transactions are newer and
         // carry freshly read labels anyway.
         _loadGeneration != generation ||
@@ -128,10 +171,15 @@ class TransactionsCubit extends Cubit<TransactionsState> {
     emit(state.copyWith(filter: filter));
   }
 
-  Future<void> _scheduleReload() async {
+  void _scheduleReload({bool debounce = true}) {
+    if (_closing) return;
+    _reloadPending = true;
     _debounceTimer?.cancel();
-    _debounceTimer = Timer(const Duration(seconds: 3), () {
-      loadTxs();
-    });
+    if (_reloadDeferrals > 0 || _loadFuture != null) return;
+    if (debounce) {
+      _debounceTimer = Timer(const Duration(seconds: 3), loadTxs);
+    } else {
+      unawaited(loadTxs());
+    }
   }
 }
