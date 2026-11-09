@@ -47,6 +47,7 @@ class _VaultFlowPageState extends State<VaultFlowPage> with PrivacyScreen {
   bool _manual = false;
   bool _keyWarningAccepted = false;
   bool? _protected;
+  late Future<bool> _protection;
   int _privacyGeneration = 0;
   String? _inputError;
   VaultKey? _key;
@@ -66,6 +67,7 @@ class _VaultFlowPageState extends State<VaultFlowPage> with PrivacyScreen {
           if (mounted) {
             setState(() {
               _protected = null;
+              _protection = Completer<bool>().future;
               _key = null;
             });
           }
@@ -91,7 +93,11 @@ class _VaultFlowPageState extends State<VaultFlowPage> with PrivacyScreen {
 
   Future<void> _acquirePrivacy() async {
     final generation = ++_privacyGeneration;
-    final protected = await enableScreenPrivacy();
+    setState(() {
+      _protected = null;
+      _protection = enableScreenPrivacy();
+    });
+    final protected = await _protection;
     if (mounted && generation == _privacyGeneration) {
       setState(() => _protected = protected);
     }
@@ -409,60 +415,71 @@ class _VaultFlowPageState extends State<VaultFlowPage> with PrivacyScreen {
                   () => cubit.retryProviderSave(_provider),
                   disabled: state.busy,
                 ),
-              ] else if (_protected != true)
-                _text(
-                  _protected == null
-                      ? context.loc.recoverbullPleaseWait
-                      : context.loc.recoverbullUnexpectedError,
-                )
-              else ...[
-                _text(
-                  _manual
-                      ? context.loc.recoverbullVaultKeyInput
-                      : context.loc.recoverbullPassword,
-                ),
-                ExcludeSemantics(
-                  child: BullInputText(
-                    controller: _password,
-                    value: _password.text,
-                    onChanged: (_) {},
-                    obscure: true,
-                    disabled: state.busy,
-                    enableSuggestions: false,
-                    autocorrect: false,
-                    smartQuotesType: SmartQuotesType.disabled,
-                    smartDashesType: SmartDashesType.disabled,
+              ] else
+                BullScreenPrivacyGate(
+                  protection: _protection,
+                  unavailableMessage: context.loc.recoverbullUnexpectedError,
+                  retryLabel: context.loc.recoverbullRetry,
+                  onRetry: _acquirePrivacy,
+                  unavailableBuilder: (_) => Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      _text(context.loc.recoverbullUnexpectedError),
+                      _button(context.loc.recoverbullRetry, _acquirePrivacy),
+                    ],
+                  ),
+                  builder: (_) => Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      _text(
+                        _manual
+                            ? context.loc.recoverbullVaultKeyInput
+                            : context.loc.recoverbullPassword,
+                      ),
+                      ExcludeSemantics(
+                        child: BullInputText(
+                          controller: _password,
+                          value: _password.text,
+                          onChanged: (_) {},
+                          obscure: true,
+                          disabled: state.busy,
+                          enableSuggestions: false,
+                          autocorrect: false,
+                          smartQuotesType: SmartQuotesType.disabled,
+                          smartDashesType: SmartDashesType.disabled,
+                        ),
+                      ),
+                      if (widget.flow == RecoverBullFlow.secureVault) ...[
+                        _text(
+                          context.loc.recoverbullReenterConfirm(
+                            context.loc.recoverbullPassword,
+                          ),
+                        ),
+                        ExcludeSemantics(
+                          child: BullInputText(
+                            controller: _confirmation,
+                            value: _confirmation.text,
+                            onChanged: (_) {},
+                            obscure: true,
+                            disabled: state.busy,
+                            enableSuggestions: false,
+                            autocorrect: false,
+                            smartQuotesType: SmartQuotesType.disabled,
+                            smartDashesType: SmartDashesType.disabled,
+                          ),
+                        ),
+                      ],
+                      if (_inputError case final message?) _text(message),
+                      _button(
+                        context.loc.recoverbullContinue,
+                        () => _submit(presentation),
+                        disabled:
+                            state.busy ||
+                            (!_manual && settings?.permissionGranted != true),
+                      ),
+                    ],
                   ),
                 ),
-                if (widget.flow == RecoverBullFlow.secureVault) ...[
-                  _text(
-                    context.loc.recoverbullReenterConfirm(
-                      context.loc.recoverbullPassword,
-                    ),
-                  ),
-                  ExcludeSemantics(
-                    child: BullInputText(
-                      controller: _confirmation,
-                      value: _confirmation.text,
-                      onChanged: (_) {},
-                      obscure: true,
-                      disabled: state.busy,
-                      enableSuggestions: false,
-                      autocorrect: false,
-                      smartQuotesType: SmartQuotesType.disabled,
-                      smartDashesType: SmartDashesType.disabled,
-                    ),
-                  ),
-                ],
-                if (_inputError case final message?) _text(message),
-                _button(
-                  context.loc.recoverbullContinue,
-                  () => _submit(presentation),
-                  disabled:
-                      state.busy ||
-                      (!_manual && settings?.permissionGranted != true),
-                ),
-              ],
             ],
             if (settings?.permissionGranted == true) ...[
               _button(

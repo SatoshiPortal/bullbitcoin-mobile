@@ -105,6 +105,40 @@ void main() {
     );
   }
 
+  testWidgets(
+    'privacy retry reveals inputs without hiding nonsecret controls',
+    (tester) async {
+      var protected = false;
+      tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+        _channel,
+        (call) async => call.method != 'screenshotOff' || protected,
+      );
+      await tester.pumpWidget(
+        app(
+          VaultFlowPage(
+            flow: RecoverBullFlow.recoverVault,
+            presentation: () async => flow(),
+            copiedMessage: 'Copied',
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(find.byType(BullInputText), findsNothing);
+      expect(find.textContaining('phone storage is full'), findsOneWidget);
+      expect(find.text('Enter a vault key instead'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+
+      protected = true;
+      await tester.tap(find.widgetWithText(BullButton, 'Retry'));
+      await tester.pumpAndSettle();
+      expect(find.byType(BullInputText), findsOneWidget);
+      expect(find.textContaining('phone storage is full'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+      await tester.pumpWidget(app(const SizedBox.shrink()));
+      await tester.pumpAndSettle();
+    },
+  );
+
   testWidgets('late initialization after route close disposes the flow', (
     tester,
   ) async {

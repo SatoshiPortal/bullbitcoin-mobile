@@ -2,7 +2,6 @@ import 'package:bb_mobile/core/core_locator.dart';
 import 'package:bb_mobile/features/settings/public/recoverbull_bindings.dart';
 import 'package:bb_mobile/features/wallet/public/recoverbull_bindings.dart';
 import 'package:bull_recoverbull/bull_recoverbull.dart';
-import 'package:secrets/secrets.dart';
 import 'package:bull_tor/tor.dart';
 import 'package:bb_mobile/features/status_check/status_locator.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
@@ -63,6 +62,8 @@ import 'package:bb_mobile/features/withdraw/withdraw_locator.dart';
 import 'package:bb_mobile/features/wizard/wizard_locator.dart';
 import 'package:get_it/get_it.dart';
 import 'package:bull_logs/bull_logs.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:secrets/secrets.dart';
 
 final GetIt locator = GetIt.instance;
 
@@ -100,6 +101,15 @@ class AppLocator {
     bool startAutoswapWatcher = true,
   }) async {
     locator.enableRegisteringMultipleInstancesOfOneType();
+
+    // One instance per isolate; background tasks must not use its keystore.
+    // Liquid signing removes its temporary children after use. Stale caches
+    // contain blinding material, so keep them in the OS's non-backed-up cache.
+    locator.registerLazySingleton<Secrets>(
+      () => Secrets(
+        scratchDirectory: () async => (await getTemporaryDirectory()).path,
+      ),
+    );
 
     // Register core dependencies first
     CoreLocator.register(locator, database);

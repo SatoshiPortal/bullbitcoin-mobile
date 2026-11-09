@@ -44,7 +44,11 @@ void main() {
       );
       await tester.pump();
       expect(find.byType(BullCopyField), findsNothing);
-      expect(find.byType(BullButton), findsNothing);
+      expect(find.widgetWithText(BullButton, 'Vault key'), findsNothing);
+      expect(
+        find.widgetWithText(BullButton, 'Retry'),
+        mode == 'pending' ? findsNothing : findsOneWidget,
+      );
       expect(find.text(key.hex), findsNothing);
       await tester.pumpWidget(_app(const SizedBox.shrink()));
       if (!pending.isCompleted) pending.complete(true);

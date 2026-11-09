@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bull_ui/bull_ui.dart';
 import 'package:screen_privacy/screen_privacy.dart';
 import 'package:secrets/secrets.dart' show VaultKey;
@@ -24,6 +26,7 @@ class _ViewVaultKeyPageState extends State<ViewVaultKeyPage>
   final _clipboard = SensitiveClipboard();
   bool _revealed = false;
   bool? _protected;
+  late Future<bool> _protection;
   int _privacyGeneration = 0;
   late final AppLifecycleListener _lifecycle;
 
@@ -38,6 +41,7 @@ class _ViewVaultKeyPageState extends State<ViewVaultKeyPage>
           _privacyGeneration++;
           setState(() {
             _protected = null;
+            _protection = Completer<bool>().future;
             _revealed = false;
           });
         }
@@ -48,7 +52,11 @@ class _ViewVaultKeyPageState extends State<ViewVaultKeyPage>
 
   Future<void> _acquirePrivacy() async {
     final generation = ++_privacyGeneration;
-    final protected = await enableScreenPrivacy();
+    setState(() {
+      _protected = null;
+      _protection = enableScreenPrivacy();
+    });
+    final protected = await _protection;
     if (mounted && generation == _privacyGeneration) {
       setState(() => _protected = protected);
     }
@@ -72,7 +80,15 @@ class _ViewVaultKeyPageState extends State<ViewVaultKeyPage>
   }
 
   @override
-  Widget build(BuildContext context) => BullScaffold(
+  Widget build(BuildContext context) => BullScreenPrivacyGate(
+    protection: _protection,
+    unavailableMessage: context.loc.recoverbullUnexpectedError,
+    retryLabel: context.loc.recoverbullRetry,
+    onRetry: _acquirePrivacy,
+    builder: _buildProtected,
+  );
+
+  Widget _buildProtected(BuildContext context) => BullScaffold(
     body: SafeArea(
       child: Column(
         children: [
