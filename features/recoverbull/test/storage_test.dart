@@ -164,23 +164,18 @@ void main() {
   );
 
   test(
-    'recognized corruption is archived without reviving legacy consent',
+    'corruption remains intact and manual temporary storage is available',
     () async {
       await File(path).writeAsString('not a sqlite database');
-      final repository = BackupMetadataRepositoryImpl(await owner.open());
-      _ok(
-        await repository.importLegacy(
-          LegacyBackupSettings(server: first, permissionGranted: true),
-        ),
+      await expectLater(owner.open(), throwsA(anything));
+      expect(await File(path).readAsString(), 'not a sqlite database');
+      expect(directory.listSync().whereType<File>(), hasLength(1));
+      final temporary = await owner.openTemporary();
+      final repository = BackupMetadataRepositoryImpl(
+        temporary,
+        durable: false,
       );
       expect(_ok(await repository.settings()).permissionGranted, isFalse);
-      final archives = directory
-          .listSync()
-          .whereType<File>()
-          .where((file) => file.path.contains('.corrupt-'))
-          .toList();
-      expect(archives, hasLength(1));
-      expect(await archives.single.readAsString(), 'not a sqlite database');
     },
   );
 }
