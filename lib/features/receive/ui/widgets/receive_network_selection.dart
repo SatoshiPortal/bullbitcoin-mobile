@@ -1,3 +1,4 @@
+import 'package:primitives/primitives.dart' as primitives;
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/receive/domain/enums/receive_network_type.dart';
@@ -8,14 +9,22 @@ import 'package:go_router/go_router.dart';
 import 'package:bull_ui/bull_ui.dart' show BullSegmented;
 
 class ReceiveNetworkSelection extends StatelessWidget {
-  const ReceiveNetworkSelection({super.key, this.wallet});
+  const ReceiveNetworkSelection({super.key, this.wallet, this.network});
 
   final Wallet? wallet;
+  final primitives.Network? network;
 
   @override
   Widget build(BuildContext context) {
+    final activeNetwork = network;
     final availableNetworks =
-        wallet?.availableReceiveNetworks ?? ReceiveNetworkType.values;
+        wallet?.availableReceiveNetworks ??
+        [
+          if (activeNetwork != null)
+            for (final type in ReceiveNetworkType.values)
+              if (type.supportsNetwork(activeNetwork)) type,
+        ];
+    if (availableNetworks.isEmpty) return const SizedBox.shrink();
     final defaultNetwork =
         wallet?.defaultReceiveNetwork ?? ReceiveNetworkType.bitcoin;
 

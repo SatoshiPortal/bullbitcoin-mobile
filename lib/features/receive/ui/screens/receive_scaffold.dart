@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/wallet/domain/network_x.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/poll_receive_wallet_usecase.dart';
 import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
 import 'package:bb_mobile/features/receive/ui/widgets/receive_polling.dart';
@@ -42,6 +43,17 @@ class ReceiveScaffold extends StatelessWidget {
   }
 
   Widget _buildScaffold(BuildContext context) {
+    final selectedWallet = context.select(
+      (ReceiveBloc bloc) => bloc.state.wallet,
+    );
+    // Lightning uses a Liquid settlement wallet; retain the entry's chain choices.
+    final entryWallet = wallet;
+    final selectionWallet = entryWallet == null
+        ? null
+        : selectedWallet != null &&
+              selectedWallet.isLiquid == entryWallet.isLiquid
+        ? selectedWallet
+        : entryWallet;
     return GestureDetector(
       onTap: () {
         FocusScope.of(context).unfocus();
@@ -67,7 +79,10 @@ class ReceiveScaffold extends StatelessWidget {
           crossAxisAlignment: .stretch,
           children: [
             const Gap(10),
-            ReceiveNetworkSelection(wallet: wallet),
+            ReceiveNetworkSelection(
+              wallet: selectionWallet,
+              network: selectedWallet?.network.shared,
+            ),
             Expanded(child: child),
           ],
         ),

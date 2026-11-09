@@ -9,10 +9,7 @@ import 'package:primitives/primitives.dart' as primitives;
 /// network at compile time rather than at runtime. The bridge is where
 /// that gap is paid, once.
 ///
-/// `primitives` also carries signet and regtest, which the app's enum
-/// does not have yet. Nothing is lost in this direction — the mapping is
-/// total — but adding those environments to the app later will not need
-/// anything from `secrets`.
+/// Both enums include regtest; only `primitives` includes signet. This total mapping describes identity, while `NetworkCapabilities` determines which operations are supported.
 extension NetworkX on Network {
   /// The shared chain-typed network for an operation supported on either chain.
   primitives.Network get shared => switch (this) {

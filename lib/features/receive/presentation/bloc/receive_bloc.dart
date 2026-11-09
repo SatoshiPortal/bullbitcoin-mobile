@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/receive/domain/enums/receive_network_type.dart';
 import 'package:primitives/primitives.dart'
     show NetworkCapabilities, NetworkCapability;
 import 'package:bb_mobile/features/wallet/domain/network_x.dart';
@@ -522,11 +523,12 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
       ),
     );
 
-    if (state.bitcoinUnit == null) {
-      // If the bitcoin unit is not set yet, we need to get it from the settings
-      // And set the input amount currency code to the bitcoin unit code
-      // if no other currency code was selected yet.
-      final settingsResult = await _getReceiveSettingsUsecase.execute();
+    {
+      // Admission is checked on every entry, including restored routes.
+      final settingsResult = await _getReceiveSettingsUsecase.execute(
+        mode: ReceiveNetworkType.lightning,
+        selectedNetwork: (state.wallet ?? _wallet)?.network.shared,
+      );
       if (generation != _receiveGeneration || emit.isDone) return;
       switch (settingsResult) {
         case Ok(:final value):
@@ -639,11 +641,12 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
       ),
     );
 
-    if (state.bitcoinUnit == null) {
-      // If the bitcoin unit is not set yet, we need to get it from the settings
-      // And set the input amount currency code to the bitcoin unit code
-      // if no other currency code was selected yet.
-      final settingsResult = await _getReceiveSettingsUsecase.execute();
+    {
+      // Admission is checked on every entry, including restored routes.
+      final settingsResult = await _getReceiveSettingsUsecase.execute(
+        mode: ReceiveNetworkType.liquid,
+        selectedNetwork: (state.wallet ?? _wallet)?.network.shared,
+      );
       if (generation != _receiveGeneration || emit.isDone) return;
       switch (settingsResult) {
         case Ok(:final value):
