@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:screen_privacy/screen_privacy.dart';
 import 'package:secrets/secrets.dart';
-import 'package:bb_mobile/core/widgets/screen_privacy_gate.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap_master_key_info.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
@@ -14,6 +13,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
     show
+        BullScreenPrivacyGate,
         BullButton,
         BullDialog,
         BullFadingLinearProgress,
@@ -47,7 +47,9 @@ class _AllSeedViewScreenState extends State<AllSeedViewScreen>
   Widget build(BuildContext context) {
     // Nothing draws before capture blocking is confirmed: the gate waits for
     // the OS flag and hides the seeds if the platform refused it.
-    return ScreenPrivacyGate(
+    return BullScreenPrivacyGate(
+      unavailableMessage: context.loc.screenPrivacyUnavailable,
+      retryLabel: context.loc.retry,
       protection: _privacyFuture,
       onRetry: () => setState(() {
         _privacyFuture = enableScreenPrivacy();
