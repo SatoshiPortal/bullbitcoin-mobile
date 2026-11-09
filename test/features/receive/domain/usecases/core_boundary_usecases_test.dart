@@ -15,7 +15,7 @@ import 'package:bb_mobile/features/receive/domain/usecases/prepare_receive_addre
 import 'package:bull_pricer/bull_pricer.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:primitives/primitives.dart' hide ScriptType;
+import 'package:primitives/primitives.dart' hide Network, ScriptType;
 
 import '../../../../fake_index_price_reader.dart';
 

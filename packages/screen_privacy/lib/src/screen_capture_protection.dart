@@ -33,10 +33,18 @@ class ScreenCaptureProtection {
   }
 
   /// Registers one more mounted protected screen.
-  Future<void> acquire() async {
+  ///
+  /// Returns whether the screen may show its secret: capture blocking is in
+  /// effect, or the user turned it off. `false` means the plugin refused or
+  /// failed, and the secret must stay hidden.
+  Future<bool> acquire() async {
     _activeCount++;
-    await _sync();
+    return _sync();
   }
+
+  /// Applies the current state again — the retry for an [acquire] that
+  /// returned `false`. Same verdict as [acquire].
+  Future<bool> resync() => _sync();
 
   /// Unregisters one previously [acquire]d protected screen.
   Future<void> release() async {
@@ -44,14 +52,20 @@ class ScreenCaptureProtection {
     await _sync();
   }
 
-  Future<void> _sync() async {
+  Future<bool> _sync() async {
     final shouldProtect = _enabledByUser && _activeCount > 0;
     try {
       if (shouldProtect) {
-        await _noScreenshot.screenshotOff();
-      } else {
-        await _noScreenshot.screenshotOn();
+        // `false` is the plugin saying the flag is not set (no window yet on
+        // iOS, a native failure on Android): not a secret screen's green light.
+        final protected = await _noScreenshot.screenshotOff();
+        if (!protected) {
+          _log.severe('capture blocking was refused by the platform');
+        }
+        return protected;
       }
+      await _noScreenshot.screenshotOn();
+      return true;
     } catch (e, st) {
       // Callers fire-and-forget this, so a platform-channel failure would
       // otherwise vanish as an unhandled async error. On a secret screen a
@@ -62,6 +76,7 @@ class ScreenCaptureProtection {
         e,
         st,
       );
+      return !shouldProtect;
     }
   }
 }

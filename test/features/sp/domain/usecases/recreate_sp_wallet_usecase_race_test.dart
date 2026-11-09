@@ -19,6 +19,7 @@ import 'package:bb_mobile/features/sp/presentation/sp_cubit.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:secrets/secrets.dart' show Secret;
 
 import '../../sp_cubit_harness.dart';
 import '../../sp_fakes.dart';
@@ -33,7 +34,8 @@ class _MockSpBackendConfigRepository extends Mock
 void main() {
   late MockSpAccountRepository repository;
   late _MockSpBackendConfigRepository configRepository;
-  late MockGetDefaultSeedUsecase getDefaultSeedUsecase;
+  late MockGetSpSecretUsecase getSpSecretUsecase;
+  late Secret secret;
   late EnsureSpSessionUsecase ensureSpSessionUsecase;
   late LoadSpWalletDataUsecase loadSpWalletDataUsecase;
   late RecreateSpWalletUsecase recreateSpWalletUsecase;
@@ -48,16 +50,18 @@ void main() {
   late int createCount;
   late StreamController<SpNotification> notif;
 
-  setUpAll(() {
+  setUpAll(() async {
+    registerFallbackValue(await spSecret());
     TestWidgetsFlutterBinding.ensureInitialized();
     registerFallbackValue(BitcoinNetwork.regtest);
     registerFallbackValue(spBackendConfig());
   });
 
-  setUp(() {
+  setUp(() async {
+    secret = await spSecret();
     repository = MockSpAccountRepository();
     configRepository = _MockSpBackendConfigRepository();
-    getDefaultSeedUsecase = MockGetDefaultSeedUsecase();
+    getSpSecretUsecase = MockGetSpSecretUsecase();
     // One guard, as the locator registers it: it is what keeps a recreate and
     // a revoke off the same session.
     guard = SpSessionGuard();
@@ -120,17 +124,17 @@ void main() {
       () => configRepository.delete(),
     ).thenAnswer((_) async => const Ok(null));
     when(
-      () => repository.createFromMnemonic(
+      () => repository.createFromSecret(
         network: any(named: 'network'),
         blindbitUrl: any(named: 'blindbitUrl'),
         electrumUrl: any(named: 'electrumUrl'),
-        mnemonic: any(named: 'mnemonic'),
+        secret: any(named: 'secret'),
       ),
     ).thenAnswer((_) async {
       // Mirror the adapter single-owner guard: a create over a live session is
       // the exact leak this test guards against.
       if (hasSession) {
-        throw StateError('createFromMnemonic over a live session');
+        throw StateError('createFromSecret over a live session');
       }
       createCount++;
       hasSession = true;
@@ -150,8 +154,8 @@ void main() {
     when(() => repository.minBirthdayHeight()).thenReturn(const Ok(0));
 
     when(
-      () => getDefaultSeedUsecase.execute(),
-    ).thenAnswer((_) async => Ok(spMnemonicSeed()));
+      () => getSpSecretUsecase.execute(any()),
+    ).thenAnswer((_) async => Ok(secret));
     when(() => configRepository.fetch()).thenAnswer(
       (_) async => Ok<SpBackendConfig?, SpFailure>(spBackendConfig()),
     );
@@ -163,14 +167,14 @@ void main() {
       repository: repository,
       files: repository,
       configRepository: configRepository,
-      getDefaultSeedUsecase: getDefaultSeedUsecase,
+      getSpSecretUsecase: getSpSecretUsecase,
     );
     loadSpWalletDataUsecase = LoadSpWalletDataUsecase(
       repository: repository,
       ensureSpSessionUsecase: ensureSpSessionUsecase,
     );
     recreateSpWalletUsecase = RecreateSpWalletUsecase(
-      getDefaultSeedUsecase: getDefaultSeedUsecase,
+      getSpSecretUsecase: getSpSecretUsecase,
       repository: repository,
       files: repository,
       configRepository: configRepository,
@@ -218,7 +222,7 @@ void main() {
         );
   });
 
-  test('recreate with a subscribed cubit reaches createFromMnemonic once, no '
+  test('recreate with a subscribed cubit reaches createFromSecret once, no '
       'racing self-heal create', () async {
     // Subscribe the cubit to the live session (reuses it, no create).
     await cubit.load();
@@ -227,7 +231,7 @@ void main() {
 
     // Recreate disposes (closing the notif stream, which triggers the cubit
     // self-heal) then creates the new session. The self-heal must not slip a
-    // second createFromMnemonic through while teardown is in progress.
+    // second createFromSecret through while teardown is in progress.
     final result = await recreateSpWalletUsecase.execute(
       network: BitcoinNetwork.regtest,
       blindbitUrl: 'http://blindbit.new',

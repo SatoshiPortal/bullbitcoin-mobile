@@ -13,6 +13,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 
+import '../sp_fakes.dart';
+
 // Tests for the live-session side of the adapter. No real FFI session is ever
 // established: the datasource is injected, so a fake stands in for the Rust
 // account and every error the boundary is supposed to map can be thrown at it.
@@ -146,15 +148,15 @@ void main() {
   Directory accountDirOf() =>
       Directory('${tempDir.path}/${SpStorageNames.accountName}');
 
-  Future<Result<void, SpFailure>> createOn(BwkSpAccountRepository repo) =>
-      repo.createFromMnemonic(
+  Future<Result<void, SpFailure>> createOn(BwkSpAccountRepository repo) async =>
+      repo.createFromSecret(
         network: BitcoinNetwork.mainnet,
-        mnemonic: 'abandon abandon abandon',
+        secret: await spSecret(),
         blindbitUrl: 'http://blindbit.example',
         electrumUrl: 'tcp://electrum.example:50001',
       );
 
-  group('createFromMnemonic lock clearing', () {
+  group('createFromSecret lock clearing', () {
     test(
       'clears every stale advisory lock before opening the account',
       () async {
@@ -178,7 +180,7 @@ void main() {
     });
   });
 
-  group('createFromMnemonic single-owner guard', () {
+  group('createFromSecret single-owner guard', () {
     test('a live session is refused instead of opening a second one', () async {
       final repo = makeRepo(ffi: _FakeFfiDatasource());
 

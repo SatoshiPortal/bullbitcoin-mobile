@@ -1,4 +1,4 @@
-.PHONY: all setup clean deps deps-update bootstrap analyze build-runner translations hooks ios-pod-update ios-simulator ios-release drift-migrations devcontainer devcontainer-up container-tools container-app android release debug beta verify verify-rustc-pins action-pins-check pr-governance-test test unit-test integration-test catalogue fvm-check
+.PHONY: secrets-api-docs secrets-api-docs-check custody-check custody-ci-check all setup clean deps deps-update bootstrap analyze build-runner translations hooks ios-pod-update ios-simulator ios-release drift-migrations devcontainer devcontainer-up container-tools container-app android release debug beta verify verify-rustc-pins action-pins-check pr-governance-ci-test test unit-test integration-test catalogue fvm-check
 
 fvm-check:
 	@echo "🔍 Checking FVM"
@@ -44,7 +44,7 @@ analyze:
 	@echo "🔍 Analyze whole project (matches CI: --fatal-warnings --fatal-infos)"
 	@fvm flutter analyze --fatal-warnings --fatal-infos
 
-# Check-only gates, one target per gate of the CI `checks` job in analyze_and_test.yml (which invokes these targets so each definition lives in exactly one place). `make checks` runs the whole job locally: green here means the checks job is green in CI. The pre-commit hook deliberately does NOT call fix-check/format-check: it runs its own staged-only variants in parallel with `make analyze` for speed.
+# Local Dart/Flutter gates. CI also runs the Node-based custody import and PR governance checks; Node is not required for `make checks`. The pre-commit hook deliberately does NOT call fix-check/format-check: it runs its own staged-only variants in parallel with `make analyze` for speed.
 fix-check:
 	@echo "🧹 dart fix should have nothing to suggest"
 	@bash -c 'set -o pipefail; fvm dart fix --dry-run | tee /dev/stderr | grep -q "Nothing to fix!"'
@@ -58,7 +58,26 @@ bull-ui-check:
 	@echo "🧱 bull_ui import boundary (coins/ui imports only package:bull_ui)"
 	@if grep -rEl "package:flutter/(material|cupertino|widgets)\.dart" lib/features/coins/ui; then echo "lib/features/coins/ui must import only package:bull_ui/bull_ui.dart, not Flutter UI directly"; exit 1; fi
 
-checks: analyze bull-ui-check fix-check format-check unit-test
+# Resolved-symbol custody policy, available locally with the pinned Dart SDK.
+# Named exceptions cover pre-import scanning and exported swap child keys.
+custody-check:
+	@echo "🔒 custody key material: resolved Dart symbols"
+	@fvm dart packages/secrets/tool/key_material_gate.dart
+
+# CI-only import/dependency/internal-seal policy, shared with PR custody review.
+# Node is confined to these explicit CI targets, outside `make checks`.
+custody-ci-check:
+	@echo "🔒 custody imports and internal seal (CI only)"
+	@node tools/pr_governance/custody-check.js
+
+# The README's simplified public API trees are generated from resolved exports.
+secrets-api-docs:
+	@fvm dart packages/secrets/tool/api_docs.dart
+
+secrets-api-docs-check:
+	@fvm dart packages/secrets/tool/api_docs.dart --check
+
+checks: analyze bull-ui-check custody-check secrets-api-docs-check fix-check format-check unit-test
 
 # Supply-chain regression gate: every external GitHub Actions `uses:` reference
 # must stay pinned to a full commit SHA (mutable tags can be repointed).
@@ -67,9 +86,9 @@ action-pins-check:
 	@echo "📌 Checking GitHub Actions are pinned to a commit SHA"
 	@bash tools/check_action_pins.sh
 
-pr-governance-test:
-	@echo "🛡️ Testing PR governance policy"
-	@node --test tools/pr_governance/policy.test.js
+pr-governance-ci-test:
+	@echo "🛡️ Testing PR governance and custody policy (CI only)"
+	@node --test tools/pr_governance/policy.test.js tools/pr_governance/custody.test.js
 
 build-runner:
 	@echo "🏗️ Build runner for json_serializable and flutter_gen"
@@ -390,19 +409,11 @@ devcontainer-up:
 
 test: unit-test integration-test
 
+# One run per workspace member that has a test/ directory, each with its own tool, the app included (melos useRootAsPackage). melos iterates the declared `workspace:` list, not a directory glob, so a member added anywhere — features/ included — is tested without editing this target. `melos exec` is called directly through `fvm dart run`: `melos run` would re-invoke a bare `melos` from PATH, which the pinned SDK forbids. Fail-fast and one package at a time, like the loop it replaces.
 unit-test:
-	@echo "🏃‍ running unit tests"
-	@fvm flutter test test/ --reporter=compact
-	@set -e; for p in packages/*/; do \
-		if [ -d "$${p}test" ]; then \
-			echo "🏃‍ running $${p}test"; \
-			if grep -qE '^  flutter:$$' "$${p}pubspec.yaml"; then \
-				( cd "$$p" && fvm flutter test --reporter=compact ); \
-			else \
-				( cd "$$p" && fvm dart test --reporter=compact ); \
-			fi; \
-		fi; \
-	done
+	@echo "🏃‍ running unit tests of every workspace member"
+	@fvm dart run melos exec --flutter --dir-exists=test --concurrency 1 --fail-fast -- fvm flutter test --reporter=compact
+	@fvm dart run melos exec --no-flutter --dir-exists=test --concurrency 1 --fail-fast -- fvm dart test --reporter=compact
 
 # integration_test/all_test.dart is a single aggregator entrypoint: it runs
 # Bull.init() once, then every test file's main(isInitialized: true). On the

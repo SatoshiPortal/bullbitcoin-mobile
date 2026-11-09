@@ -8,7 +8,6 @@ import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/core/ledger/ledger_locator.dart';
 import 'package:bb_mobile/core/mempool/mempool_locator.dart';
 import 'package:bb_mobile/core/recoverbull/recoverbull_locator.dart';
-import 'package:bb_mobile/core/seed/seed_locator.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart'
     as settings;
 import 'package:bb_mobile/core/settings/settings_locator.dart';
@@ -42,7 +41,6 @@ class CoreLocator {
     await MempoolLocator.registerDatasources(locator);
     RecoverbullLocator.registerDatasources(locator);
     await StorageLocator.registerDatasources(locator);
-    SeedLocator.registerDatasources(locator);
     await SwapsLocator.registerDatasources(locator);
     await WalletLocator.registerDatasources(locator);
     await SettingsLocator.registerDatasources(locator);
@@ -85,7 +83,6 @@ class CoreLocator {
     FeesLocator.registerRepositories(locator);
     MempoolLocator.registerRepositories(locator);
     await SettingsLocator.registerRepositories(locator);
-    SeedLocator.registerRepositories(locator);
     RecoverbullLocator.registerRepositories(locator);
     SwapsLocator.registerRepositories(locator);
     WalletLocator.registerRepositories(locator);
@@ -97,7 +94,6 @@ class CoreLocator {
   static void registerServices(GetIt locator) {
     ExchangeLocator.registerServices(locator);
     MempoolLocator.registerServices(locator);
-    SeedLocator.registerServices(locator);
   }
 
   static void registerUsecases(GetIt locator) {
@@ -109,8 +105,6 @@ class CoreLocator {
     FeesLocator.registerUseCases(locator);
     MempoolLocator.registerUsecases(locator);
     RecoverbullLocator.registerUsecases(locator);
-    SeedLocator.registerUsecases(locator);
-    StorageLocator.registerUsecases(locator);
     SettingsLocator.registerUsecases(locator);
     SwapsLocator.registerUsecases(locator);
     WalletLocator.registerUsecases(locator);

@@ -24,7 +24,7 @@ graph TB
     TOR[Tor<br/>Workspace Package]
     PIN_CODE[Pin Code]
     LABELS[Labels]
-    SECRETS[Secrets]
+    SECRETS[Secrets Package<br/>Custody: storage, derivation, signing, backup]
     HW_WALLETS[Hardware Wallets]
     BTC_PRICE[Bitcoin Price]
     NETWORK[Network]
@@ -90,9 +90,11 @@ graph TB
     %% Feature-to-feature dependencies (extracted from draw.io diagram)
     ADDRESS_MGMT --> LABELS
     ALL_SEED_VIEW --> APP_UNLOCK
+    ALL_SEED_VIEW --> SECRETS
     ANNOUNCEMENTS --> SETTINGS
     ANNOUNCEMENTS --> SWAPS
     APP_STARTUP --> WALLETS
+    APP_STARTUP --> SECRETS
     APP_STARTUP --> LOGS
     AUTOSWAP --> SWAPS
     APP_STARTUP --> TOR
@@ -149,7 +151,6 @@ graph TB
     RECEIVE --> SWAPS
     RECEIVE --> TX_HISTORY
     RECIPIENTS --> EXCHANGE
-    SECRETS --> CORE
     SELL --> EXCHANGE
     SELL --> RECIPIENTS
     SELL --> BULL_PAYJOIN
@@ -171,6 +172,7 @@ graph TB
     STATUS --> BULL_PAYJOIN
     STATUS --> TOR
     SWAPS --> BULL_PAYJOIN
+    SWAPS --> SECRETS
     SWAPS --> EXCHANGE
     SWAPS --> LABELS
     SETTINGS --> SP
@@ -181,6 +183,7 @@ graph TB
     WALLETS --> TOR
     WALLETS --> ELECTRUM_SETTINGS
     RECOVERBULL --> TOR
+    RECOVERBULL --> SECRETS
     TRANSFER --> CONSOLIDATION
     TRANSFER --> SEND
     TRANSFER --> RECEIVE
@@ -194,6 +197,7 @@ graph TB
     WALLETS --> HW_WALLETS
     WALLETS --> NETWORK
     WALLETS --> SECRETS
+    SP --> SECRETS
     WALLETS --> SETTINGS
     WALLETS --> SWAPS
     WITHDRAWAL --> RECIPIENTS
@@ -204,8 +208,8 @@ graph TB
     classDef featureStyle fill:#1a202c,stroke:#2d3748,stroke-width:2px,color:#e2e8f0
 
     class CORE coreStyle
-    class PRIMITIVES,BULL_PAYJOIN,BULL_PRICER,TOR packageStyle
-    class SETTINGS,PIN_CODE,LABELS,SECRETS,HW_WALLETS,BTC_PRICE,NETWORK,BIP85,FEES,WALLETS,EXCHANGE,EXCHANGE_SETTINGS,EXCHANGE_SUPPORT_CHAT,APP_STARTUP,UTXO_MGMT,ADDRESS_MGMT,RECIPIENTS,FUNDING,BACKUPS,SWAPS,WITHDRAWAL,STATUS,SEND,RECEIVE,TRANSFER,TX_HISTORY,REPLACE_BY_FEE,BG_TASKS,AUTOSWAP,AUTOBUY,DCA,DEFAULT_WALLETS,LIMIT_ORDERS,SELL,PAY,BUY,COINS,ANNOUNCEMENTS,CONSOLIDATION,ALL_SEED_VIEW,APP_UNLOCK,SP featureStyle
+    class SECRETS,PRIMITIVES,BULL_PAYJOIN,BULL_PRICER,TOR packageStyle
+    class SETTINGS,PIN_CODE,LABELS,HW_WALLETS,BTC_PRICE,NETWORK,BIP85,FEES,WALLETS,EXCHANGE,EXCHANGE_SETTINGS,EXCHANGE_SUPPORT_CHAT,APP_STARTUP,UTXO_MGMT,ADDRESS_MGMT,RECIPIENTS,FUNDING,BACKUPS,SWAPS,WITHDRAWAL,STATUS,SEND,RECEIVE,TRANSFER,TX_HISTORY,REPLACE_BY_FEE,BG_TASKS,AUTOSWAP,AUTOBUY,DCA,DEFAULT_WALLETS,LIMIT_ORDERS,SELL,PAY,BUY,COINS,ANNOUNCEMENTS,CONSOLIDATION,ALL_SEED_VIEW,APP_UNLOCK,SP featureStyle
 ```
 
 ## About Package Dependency Diagrams
@@ -253,11 +257,11 @@ graph TB
 
 2. **Core Primitives**:
    - Canonical location: `packages/primitives`; compatibility exports remain in `lib/core` during migration.
-   - Extracted examples: `Failure`, `Result`, `Fingerprint`, network types, `Outpoint`, `Sats`, and `FeeRate`. Security-domain types such as `Secret` remain future extraction work.
+   - Extracted examples: `Failure`, `Result`, `Fingerprint`, network types, `Outpoint`, `Sats`, and `FeeRate`. Security-domain types such as `Secret` now live in `packages/secrets`, which owns them rather than exposing them as primitives.
    - Shared types used across multiple features, avoiding redundant definitions
    - Immutable, validated value objects that ensure domain integrity
 
-> Migration note: `lib/core` is shared infrastructure (no business logic). Shared *domain* modules that historically landed in `lib/core/<domain>` (e.g. `wallet`, `secrets`) graduate into `packages/<domain>` under the melos workspace — each exposing its repository interfaces + domain types + shared use-cases through a public API, never a bloc or screen. See [ARCHITECTURE.md](ARCHITECTURE.md).
+> Migration note: `lib/core` is shared infrastructure (no business logic). Shared *domain* modules that historically landed in `lib/core/<domain>` (e.g. `wallet`) graduate into `packages/<domain>` under the melos workspace — each exposing its repository interfaces + domain types + shared use-cases through a public API, never a bloc or screen. See [ARCHITECTURE.md](ARCHITECTURE.md).
 
 ## Key Dependency Patterns
 
@@ -266,7 +270,7 @@ graph TB
 - **Core**: Foundation for all features
 - **Tor**: `packages/bull_tor` — embedded Onion lifecycle with isolated RecoverBull and Bitcoin Electrum `.onion` sessions, plus provider-agnostic local SOCKS5 verification. Depends on Flutter for app-directory storage and an iOS plugin that excludes Tor state from backups, which are infrastructure-package exceptions in AGENTS.md
 - **Wallets**: Used by Send, UTXO Management, Transaction History, Backups, App Startup
-- **Secrets**: Used by Wallets, BIP85
+- **Secrets** (workspace package): Used by Wallets, BIP85, App Startup, All Seed View, RecoverBull, Swaps, Silent Payments
 - **Settings**: Used by Wallets, BIP85, Bitcoin Price
 - **Recipients**: Used by Pay, Withdrawal
 - **UTXO Management**: Used by Send, Swaps, Payjoin
