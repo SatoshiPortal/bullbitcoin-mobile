@@ -1,6 +1,6 @@
 'use strict';
 
-// Tree-wide custody gate for `make checks` and CI: every tracked Dart file and pubspec, every line.
+// CI-only tree-wide custody gate: every tracked Dart file and pubspec, every line.
 const { execFileSync } = require('node:child_process');
 const { readFileSync, existsSync } = require('node:fs');
 const { reviewTree } = require('./custody');

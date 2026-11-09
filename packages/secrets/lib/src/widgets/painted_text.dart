@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' show Language;
 import 'package:flutter/widgets.dart';
 import 'package:meta/meta.dart';
@@ -16,7 +18,7 @@ final class PaintedWord extends _PaintedText {
 
 /// A passphrase painted without exposing its text to the host.
 ///
-/// One cell per character, so its length shows and its characters do not.
+/// Shaped as one paragraph inside a box sized only from its rune count.
 final class PaintedPassphrase extends _PaintedText {
   @internal
   PaintedPassphrase(String passphrase, {super.style, super.key})
@@ -45,7 +47,7 @@ final class PaintedMnemonic extends _PaintedText {
 
 /// Secret text shares one private renderer. The host can place its widget but cannot read its text; screenshot protection belongs to the host screen.
 ///
-/// Every cell has the same size, set by public text alone (the widest NFKD word in the secret's BIP39 wordlist, or the widest printable ASCII character, in the style), so neither the layout nor the intrinsic sizes a host can measure depend on the secret.
+/// Layout and intrinsic sizes use public cell metrics and a cell count only. Mnemonic words occupy fixed cells sized from the widest NFKD word in their BIP39 wordlist; passphrases are shaped privately within the same length-based box.
 abstract class _PaintedText extends LeafRenderObjectWidget {
   final List<String> _cells;
   final _Cell _kind;
@@ -145,6 +147,7 @@ final class _RenderPaintedText extends RenderBox {
   List<TextPainter> _painters = const [];
   late _Cell _kind;
   late Language _language;
+  late int _cellCount;
   late String _plain;
   late TextStyle _style;
   late TextDirection _direction;
@@ -176,12 +179,13 @@ final class _RenderPaintedText extends RenderBox {
     }
     _kind = kind;
     _language = language;
+    _cellCount = cells.length;
     _plain = plain;
     _style = style;
     _direction = direction;
     _scaler = scaler;
     _painters = [
-      for (final cell in cells)
+      for (final cell in kind == _Cell.character ? [plain] : cells)
         TextPainter(
           text: TextSpan(text: cell, style: style),
           textDirection: direction,
@@ -205,7 +209,7 @@ final class _RenderPaintedText extends RenderBox {
         _style == style &&
         _direction == direction &&
         _scaler == scaler &&
-        _painters.length == cells.length) {
+        _cellCount == cells.length) {
       return;
     }
     _set(cells, kind, language, plain, style, direction, scaler);
@@ -215,7 +219,7 @@ final class _RenderPaintedText extends RenderBox {
   _Metrics get _metrics =>
       _metricsOf(_kind, _language, _style, _direction, _scaler);
 
-  int get _count => _painters.length;
+  int get _count => _cellCount;
 
   /// How many cells fit on a line of [maxWidth]: at least one, at most all.
   int _perLine(double maxWidth) {
@@ -256,6 +260,9 @@ final class _RenderPaintedText extends RenderBox {
   @override
   void performLayout() {
     size = constraints.constrain(_sizeFor(constraints.maxWidth));
+    if (_kind == _Cell.character) {
+      _painters.single.layout(maxWidth: size.width);
+    }
   }
 
   // Like RenderParagraph: the text is a hit target, so a host's
@@ -265,6 +272,34 @@ final class _RenderPaintedText extends RenderBox {
 
   @override
   void paint(PaintingContext context, Offset offset) {
+    if (_count == 0 || size.isEmpty) return;
+    if (_kind == _Cell.character) {
+      final painter = _painters.single;
+      final width = painter.computeLineMetrics().fold(
+        0.0,
+        (width, line) => math.max(width, line.width),
+      );
+      // Shape the whole passphrase, but keep its layout independent of it.
+      final scale = math.min(
+        1.0,
+        math.min(
+          size.width / math.max(1.0, width),
+          size.height / math.max(1.0, painter.height),
+        ),
+      );
+      final x = _direction == TextDirection.rtl
+          ? size.width - painter.width * scale
+          : 0.0;
+      final canvas = context.canvas;
+      canvas.save();
+      canvas.translate(offset.dx, offset.dy);
+      canvas.clipRect(Offset.zero & size);
+      canvas.translate(x, 0);
+      canvas.scale(scale);
+      painter.paint(canvas, Offset.zero);
+      canvas.restore();
+      return;
+    }
     final m = _metrics;
     final columns = _perLine(size.width);
     for (var i = 0; i < _painters.length; i++) {
