@@ -79,9 +79,12 @@ class WalletDetailScreen extends StatelessWidget {
                     context.read<BitcoinPriceBloc>().add(
                       const BitcoinPriceFetched(),
                     );
-                    await context.read<WalletBloc>().refresh();
-                    if (context.mounted) {
-                      await context.read<TransactionsCubit>().loadTxs();
+                    final transactions = context.read<TransactionsCubit>();
+                    transactions.deferReloads();
+                    try {
+                      await context.read<WalletBloc>().refresh();
+                    } finally {
+                      await transactions.resumeReloads();
                     }
                   },
                   slivers: [
