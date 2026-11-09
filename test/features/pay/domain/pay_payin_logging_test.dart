@@ -72,7 +72,7 @@ void main() {
                 )
               : await usecase.liquid('signed', walletId: 'source');
           const code = 'pay_payin_broadcast_failed';
-          final message = '$code chain=$chain category=unknown';
+          final message = '$code chain=$chain category=unexpected';
           await log.flush();
           final disk = await log.logsFile.readAsString();
           expect(

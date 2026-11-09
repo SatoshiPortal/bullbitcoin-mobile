@@ -134,6 +134,8 @@ class _SeedableSellBloc extends SellBloc {
   void seed(SellState state) => emit(state);
 }
 
+class _PrivacyReporter extends Mock implements LoggerReporter {}
+
 void main() {
   // Unsigned single-input single-output PSBT with a witness UTXO, enough for
   // BitcoinTx.fromPsbt to extract a txid.
@@ -467,6 +469,58 @@ void main() {
   });
 
   group('SellBloc — broadcast latch', () {
+    test(
+      'confirmation Error persists and reports only safe metadata',
+      () async {
+        const foreign =
+            'tcp://private-electrum.invalid:50001 foreign-rejection';
+        final directory = await Directory.systemTemp.createTemp('confirm-log-');
+        final reporter = _PrivacyReporter();
+        registerFallbackValue(StackTrace.empty);
+        log = Logger.replace(directory: directory, reporter: reporter);
+        addTearDown(() async {
+          await log.flush();
+          log = Logger.replace(directory: Directory.current);
+          await directory.delete(recursive: true);
+        });
+        bloc.seed(
+          (bloc.state as SellPaymentState).copyWith(isPayjoinEnabled: false),
+        );
+        when(
+          () => broadcastSellPayin.bitcoin(
+            any(),
+            walletId: any(named: 'walletId'),
+            isPsbt: any(named: 'isPsbt'),
+            network: app.Network.bitcoinMainnet,
+          ),
+        ).thenAnswer(
+          (_) =>
+              Future.error(StateError(foreign), StackTrace.fromString(foreign)),
+        );
+        bloc.add(const SellEvent.sendPaymentConfirmed());
+        await bloc.stream.firstWhere(
+          (state) => state is SellPaymentState && state.error != null,
+        );
+        await pumpEventQueue();
+        await log.flush();
+        final disk = await log.logsFile.readAsString();
+        expect(disk, isNot(contains('private-electrum.invalid')));
+        const code = 'sell_payin_confirmation_failed';
+        expect(disk, contains(code));
+        final captured = verify(
+          () => reporter.reportError(
+            message: '$code category=unexpected',
+            exception: captureAny(named: 'exception'),
+            stackTrace: captureAny(named: 'stackTrace'),
+            category: ReportCategory.error,
+          ),
+        ).captured;
+        expect(captured[0].toString(), 'Exception: $code');
+        expect(captured[1].toString(), isNot(contains(foreign)));
+        expect((bloc.state as SellPaymentState).isConfirmingPayment, isFalse);
+      },
+    );
+
     test('audit reproducer (H6): a wallet selection during confirmation '
         'is ignored', () async {
       bloc.seed(

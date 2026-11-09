@@ -1,3 +1,7 @@
+import 'package:flutter/foundation.dart' show debugPrint;
+import 'dart:io';
+import 'package:bb_mobile/core/errors/send_errors.dart';
+import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/features/send/domain/usecases/watch_wallet_revisions_usecase.dart';
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart' as app;
@@ -67,6 +71,8 @@ import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:primitives/primitives.dart' show BitcoinNetwork, Sats;
 import 'package:bb_mobile/features/send/presentation/send_wallet_view.dart';
 import 'package:bb_mobile/features/send/presentation/send_mode.dart';
+
+class _BroadcastReporter extends Mock implements LoggerReporter {}
 
 class _MockLabelsFacade extends Mock implements LabelsFacade {}
 
@@ -988,6 +994,61 @@ void main() {
       label: label,
     );
 
+    for (final wrapped in [true, false]) {
+      test(
+        'broadcast failure persists no foreign text wrapped=$wrapped',
+        () async {
+          const foreign =
+              'tcp://private-electrum.invalid:50001 foreign-rejection';
+          final directory = await Directory.systemTemp.createTemp('send-log-');
+          final reporter = _BroadcastReporter();
+          final console = <String>[];
+          final previousPrint = debugPrint;
+          debugPrint = (message, {wrapWidth}) {
+            if (message != null) console.add(message);
+          };
+          log = Logger.replace(directory: directory, reporter: reporter);
+          addTearDown(() async {
+            debugPrint = previousPrint;
+            await log.flush();
+            log = Logger.replace(directory: Directory.current);
+            await directory.delete(recursive: true);
+          });
+          final cubit = buildCubit();
+          addTearDown(cubit.close);
+          final error = wrapped
+              ? BroadcastTransactionException(foreign)
+              : Exception(foreign);
+          when(
+            () => broadcastBitcoinTxUsecase.execute(
+              any(),
+              isPsbt: any(named: 'isPsbt'),
+              network: app.Network.bitcoinMainnet,
+            ),
+          ).thenAnswer(
+            (_) => Future.error(error, StackTrace.fromString(foreign)),
+          );
+          cubit.setStateForTest(plainSignedState());
+          await cubit.broadcastTransaction();
+          await log.flush();
+          final disk = await log.logsFile.readAsString();
+          expect(disk, isNot(contains('private-electrum.invalid')));
+          expect(
+            console.join('\n'),
+            isNot(contains('private-electrum.invalid')),
+          );
+          verifyZeroInteractions(reporter);
+          expect(disk, contains('send_broadcast_failed category=unexpected'));
+          expect(cubit.state.txId, isNull);
+          expect(cubit.state.broadcastingTransaction, isFalse);
+          final failure =
+              cubit.state.failure as SendTransactionConfirmationFailure;
+          expect(failure.isBroadcastFailure, wrapped);
+          expect(failure.logMessage, isNot(contains(foreign)));
+        },
+      );
+    }
+
     void stubBroadcast() {
       when(
         () => broadcastBitcoinTxUsecase.execute(
@@ -1017,6 +1078,42 @@ void main() {
         ).called(1);
         expect(cubit.state.txId, 'broadcast-txid');
         expect(cubit.state.step, SendStep.success);
+        expect(cubit.state.failure, isNull);
+      },
+    );
+
+    test(
+      'post-broadcast refresh failure keeps success and logs no foreign text',
+      () async {
+        const foreign =
+            'tcp://private-electrum.invalid:50001 foreign-rejection';
+        final directory = await Directory.systemTemp.createTemp(
+          'send-refresh-log-',
+        );
+        log = Logger.replace(directory: directory);
+        addTearDown(() async {
+          await log.flush();
+          log = Logger.replace(directory: Directory.current);
+          await directory.delete(recursive: true);
+        });
+        final cubit = buildCubit();
+        addTearDown(cubit.close);
+        stubBroadcast();
+        when(
+          () => getWalletUsecase.execute(any(), sync: true),
+        ).thenAnswer((_) async => throw Exception(foreign));
+        cubit.setStateForTest(plainSignedState());
+        await cubit.broadcastTransaction();
+        await pumpEventQueue();
+        await log.flush();
+        final disk = await log.logsFile.readAsString();
+        expect(disk, isNot(contains('private-electrum.invalid')));
+        expect(
+          disk,
+          contains('send_post_broadcast_refresh_failed category=unexpected'),
+        );
+        expect(cubit.state.step, SendStep.success);
+        expect(cubit.state.txId, 'broadcast-txid');
         expect(cubit.state.failure, isNull);
       },
     );

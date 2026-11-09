@@ -19,6 +19,49 @@ class _Settings extends Mock implements SettingsRepository {}
 class _SettingsValue extends Mock implements SettingsEntity {}
 
 void main() {
+  for (final isLiquid in [false, true]) {
+    test(
+      'broadcast preserves programmer Error identity liquid=$isLiquid',
+      () async {
+        final settings = _Settings();
+        final bitcoin = _Blockchain();
+        final liquid = _LiquidBlockchain();
+        final error = StateError('synthetic programmer failure');
+        when(settings.fetch).thenAnswer(
+          (_) async => const SettingsEntity(
+            environment: Environment.mainnet,
+            bitcoinUnit: BitcoinUnit.sats,
+            currencyCode: 'USD',
+          ),
+        );
+        when(
+          () =>
+              bitcoin.broadcastPsbt('signed', network: Network.bitcoinMainnet),
+        ).thenAnswer((_) async => throw error);
+        when(
+          () => liquid.broadcastTransaction(
+            signedPset: 'signed',
+            isTestnet: false,
+          ),
+        ).thenAnswer((_) async => throw error);
+        final future = isLiquid
+            ? BroadcastLiquidTransactionUsecase(
+                liquidBlockchainRepository: liquid,
+                settingsRepository: settings,
+              ).execute('signed')
+            : BroadcastBitcoinTransactionUsecase(
+                bitcoinBlockchainRepository: bitcoin,
+                settingsRepository: settings,
+              ).execute(
+                'signed',
+                isPsbt: true,
+                network: Network.bitcoinMainnet,
+              );
+        await expectLater(future, throwsA(same(error)));
+      },
+    );
+  }
+
   test(
     'explicit Liquid testnet broadcast still checks current authorization',
     () async {

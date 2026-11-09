@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart' as app;
 import 'dart:async';
 
@@ -127,6 +128,8 @@ class _SeedablePayBloc extends PayBloc {
 
   void seed(PayState state) => emit(state);
 }
+
+class _PrivacyReporter extends Mock implements LoggerReporter {}
 
 void main() {
   // Unsigned single-input single-output PSBT with a witness UTXO — enough for
@@ -423,6 +426,58 @@ void main() {
   });
 
   group('PayBloc — broadcast latch', () {
+    test(
+      'confirmation Error persists and reports only safe metadata',
+      () async {
+        const foreign =
+            'tcp://private-electrum.invalid:50001 foreign-rejection';
+        final directory = await Directory.systemTemp.createTemp('confirm-log-');
+        final reporter = _PrivacyReporter();
+        registerFallbackValue(StackTrace.empty);
+        log = Logger.replace(directory: directory, reporter: reporter);
+        addTearDown(() async {
+          await log.flush();
+          log = Logger.replace(directory: Directory.current);
+          await directory.delete(recursive: true);
+        });
+        bloc.seed(
+          (bloc.state as PayPaymentState).copyWith(isPayjoinEnabled: false),
+        );
+        when(
+          () => broadcastPayPayin.bitcoin(
+            any(),
+            walletId: any(named: 'walletId'),
+            isPsbt: any(named: 'isPsbt'),
+            network: app.Network.bitcoinMainnet,
+          ),
+        ).thenAnswer(
+          (_) =>
+              Future.error(StateError(foreign), StackTrace.fromString(foreign)),
+        );
+        bloc.add(const PayEvent.sendPaymentConfirmed());
+        await bloc.stream.firstWhere(
+          (state) => state is PayPaymentState && state.error != null,
+        );
+        await pumpEventQueue();
+        await log.flush();
+        final disk = await log.logsFile.readAsString();
+        expect(disk, isNot(contains('private-electrum.invalid')));
+        const code = 'pay_payin_confirmation_failed';
+        expect(disk, contains(code));
+        final captured = verify(
+          () => reporter.reportError(
+            message: '$code category=unexpected',
+            exception: captureAny(named: 'exception'),
+            stackTrace: captureAny(named: 'stackTrace'),
+            category: ReportCategory.error,
+          ),
+        ).captured;
+        expect(captured[0].toString(), 'Exception: $code');
+        expect(captured[1].toString(), isNot(contains(foreign)));
+        expect((bloc.state as PayPaymentState).isConfirmingPayment, isFalse);
+      },
+    );
+
     test(
       'does not report success while a Payjoin is only requested',
       () async {
