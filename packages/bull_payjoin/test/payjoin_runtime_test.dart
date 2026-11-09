@@ -37,6 +37,7 @@ final class _WalletPort implements PayjoinWalletPort {
 final class _BlockchainPort implements PayjoinBlockchainPort {
   @override
   Future<void> broadcastPsbt({
+    required String walletId,
     required BitcoinNetwork network,
     required String psbt,
   }) async {}
@@ -49,6 +50,12 @@ final class _BlockchainPort implements PayjoinBlockchainPort {
 }
 
 final class _TransactionPort implements PayjoinTransactionPort {
+  @override
+  Future<bool> protectObservedSpend({
+    required String walletId,
+    required String transactionId,
+  }) async => true;
+
   @override
   Future<bool> isTransactionVisible({
     required String walletId,

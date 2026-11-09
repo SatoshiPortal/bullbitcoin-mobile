@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/send/public/send_facade.dart';
 import 'dart:io';
 
 import 'package:bb_mobile/core/errors/send_errors.dart';
@@ -48,6 +49,7 @@ void main() {
               : Exception(foreign);
           when(
             () => bitcoin.execute(
+              walletId: any(named: 'walletId'),
               any(),
               isPsbt: true,
               network: Network.bitcoinMainnet,
@@ -60,8 +62,7 @@ void main() {
           );
           final usecase = BroadcastSellPayinUsecase(
             wallet: const WalletFacade(Stream.empty()),
-            broadcastBitcoinTransactionUsecase: bitcoin,
-            broadcastLiquidTransactionUsecase: liquid,
+            send: SendFacade(bitcoin: bitcoin.execute, liquid: liquid.execute),
           );
           final result = chain == 'bitcoin'
               ? await usecase.bitcoin(

@@ -156,6 +156,12 @@ void main() {
     pdk = _MockPdkPayjoinDatasource();
     blockchain = _MockBlockchainPort();
     transactions = _MockTransactionPort();
+    when(
+      () => transactions.protectObservedSpend(
+        walletId: any(named: 'walletId'),
+        transactionId: any(named: 'transactionId'),
+      ),
+    ).thenAnswer((_) async => true);
     labels = _MockLabelsPort();
     wallet = _MockWalletPort();
     requests = StreamController<PayjoinReceiverModel>.broadcast();
@@ -288,6 +294,7 @@ void main() {
       await local.storeSender(model);
       when(
         () => blockchain.broadcastPsbt(
+          walletId: any(named: 'walletId'),
           network: any(named: 'network'),
           psbt: any(named: 'psbt'),
         ),
@@ -310,6 +317,7 @@ void main() {
       await local.storeSender(expiredSender());
       when(
         () => blockchain.broadcastPsbt(
+          walletId: any(named: 'walletId'),
           network: any(named: 'network'),
           psbt: any(named: 'psbt'),
         ),
@@ -352,6 +360,7 @@ void main() {
         await local.storeSender(expiredSender());
         when(
           () => blockchain.broadcastPsbt(
+            walletId: any(named: 'walletId'),
             network: any(named: 'network'),
             psbt: any(named: 'psbt'),
           ),
@@ -382,6 +391,7 @@ void main() {
     await failing.storeSender(expiredSender());
     when(
       () => blockchain.broadcastPsbt(
+        walletId: any(named: 'walletId'),
         network: any(named: 'network'),
         psbt: any(named: 'psbt'),
       ),
@@ -1058,12 +1068,82 @@ void main() {
     );
   });
 
+  test(
+    'receiver retains its reservation until durable spend handoff succeeds',
+    () async {
+      final model = receiver(
+        originalTransaction: Uint8List.fromList([1, 2, 3]),
+        originalTransactionId: 'original-tx',
+        proposalPsbt: oneInputPsbt,
+        transactionId: 'payjoin-tx',
+      );
+      await local.storeReceiver(model);
+      when(
+        () => transactions.isTransactionVisible(
+          walletId: model.walletId,
+          transactionId: 'payjoin-tx',
+          refresh: true,
+        ),
+      ).thenAnswer((_) async => true);
+      when(
+        () => transactions.protectObservedSpend(
+          walletId: model.walletId,
+          transactionId: 'payjoin-tx',
+        ),
+      ).thenAnswer((_) async => false);
+      await engine.tryBroadcastOriginalTransaction(model.toEntity());
+      expect((await local.fetchReceiver(model.id))?.isCompleted, isFalse);
+      expect(await engine.getUtxosFrozenByOngoingPayjoins(), isNotEmpty);
+      verifyNever(
+        () => blockchain.broadcastTransaction(
+          network: any(named: 'network'),
+          transaction: any(named: 'transaction'),
+        ),
+      );
+      when(
+        () => transactions.protectObservedSpend(
+          walletId: model.walletId,
+          transactionId: 'payjoin-tx',
+        ),
+      ).thenAnswer((_) async => true);
+      when(
+        () => labels.labelTransaction(
+          walletId: any(named: 'walletId'),
+          transactionId: any(named: 'transactionId'),
+        ),
+      ).thenAnswer((_) async {});
+      await engine.tryBroadcastOriginalTransaction(model.toEntity());
+      expect((await local.fetchReceiver(model.id))?.isCompleted, isTrue);
+      expect(await engine.getUtxosFrozenByOngoingPayjoins(), isEmpty);
+    },
+  );
+
+  test(
+    'a spend gate refusal never expires a sender or releases its inputs',
+    () async {
+      final model = expiredSender();
+      await local.storeSender(model);
+      when(
+        () => blockchain.broadcastPsbt(
+          walletId: any(named: 'walletId'),
+          network: any(named: 'network'),
+          psbt: any(named: 'psbt'),
+        ),
+      ).thenThrow(const PayjoinSpendBlockedException());
+      await engine.resumePayjoinsOnStartup();
+      expect((await local.fetchSender(model.id))?.isExpired, isFalse);
+      expect((await local.fetchSender(model.id))?.isAborted, isFalse);
+      expect(await engine.getUtxosFrozenByOngoingPayjoins(), isNotEmpty);
+    },
+  );
+
   group('an expired sender is terminal from our side', () {
     test('a failed fallback releases the frozen inputs', () async {
       final model = expiredSender();
       await local.storeSender(model);
       when(
         () => blockchain.broadcastPsbt(
+          walletId: any(named: 'walletId'),
           network: any(named: 'network'),
           psbt: any(named: 'psbt'),
         ),
@@ -1081,6 +1161,7 @@ void main() {
       await local.storeSender(model);
       when(
         () => blockchain.broadcastPsbt(
+          walletId: any(named: 'walletId'),
           network: any(named: 'network'),
           psbt: any(named: 'psbt'),
         ),
@@ -1096,6 +1177,7 @@ void main() {
       await local.storeSender(model);
       when(
         () => blockchain.broadcastPsbt(
+          walletId: any(named: 'walletId'),
           network: any(named: 'network'),
           psbt: any(named: 'psbt'),
         ),
@@ -1109,6 +1191,7 @@ void main() {
       // original could then confirm alongside it and pay the order twice.
       verify(
         () => blockchain.broadcastPsbt(
+          walletId: any(named: 'walletId'),
           network: any(named: 'network'),
           psbt: any(named: 'psbt'),
         ),
@@ -1124,6 +1207,7 @@ void main() {
 
       verifyNever(
         () => blockchain.broadcastPsbt(
+          walletId: any(named: 'walletId'),
           network: any(named: 'network'),
           psbt: any(named: 'psbt'),
         ),
@@ -1460,6 +1544,7 @@ void main() {
       ).thenAnswer((_) async => 'c2lnbmVk');
       when(
         () => blockchain.broadcastPsbt(
+          walletId: any(named: 'walletId'),
           network: any(named: 'network'),
           psbt: any(named: 'psbt'),
         ),
@@ -1515,6 +1600,7 @@ void main() {
     ).thenAnswer((_) async => 'c2lnbmVk');
     when(
       () => blockchain.broadcastPsbt(
+        walletId: any(named: 'walletId'),
         network: any(named: 'network'),
         psbt: any(named: 'psbt'),
       ),
@@ -1543,6 +1629,7 @@ void main() {
     expect(row?.txId, payjoinTxId);
     verifyNever(
       () => blockchain.broadcastPsbt(
+        walletId: any(named: 'walletId'),
         network: any(named: 'network'),
         psbt: live.originalPsbt,
       ),
@@ -1602,6 +1689,7 @@ void main() {
         await local.storeSender(fresh);
         when(
           () => blockchain.broadcastPsbt(
+            walletId: any(named: 'walletId'),
             network: any(named: 'network'),
             psbt: any(named: 'psbt'),
           ),
@@ -1617,6 +1705,7 @@ void main() {
 
         final captured = verify(
           () => blockchain.broadcastPsbt(
+            walletId: any(named: 'walletId'),
             network: any(named: 'network'),
             psbt: captureAny(named: 'psbt'),
           ),

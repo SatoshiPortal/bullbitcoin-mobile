@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/send/public/send_facade.dart';
 import 'dart:async';
 
 import 'package:bb_mobile/features/pay/domain/broadcast_pay_payin_usecase.dart';
@@ -33,6 +34,7 @@ void main() {
           );
           when(
             () => bitcoin.execute(
+              walletId: any(named: 'walletId'),
               'signed',
               isPsbt: true,
               network: Network.bitcoinTestnet,
@@ -43,8 +45,7 @@ void main() {
           ).thenAnswer((_) => broadcast.future);
           final usecase = BroadcastPayPayinUsecase(
             wallet: facade,
-            broadcastBitcoinTransactionUsecase: bitcoin,
-            broadcastLiquidTransactionUsecase: liquid,
+            send: SendFacade(bitcoin: bitcoin.execute, liquid: liquid.execute),
           );
           final result = isLiquid
               ? usecase.liquid('signed', walletId: 'source-wallet')

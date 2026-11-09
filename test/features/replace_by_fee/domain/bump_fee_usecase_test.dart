@@ -53,6 +53,7 @@ void main() {
       ).thenAnswer((_) async => 'signed-psbt');
       when(
         () => broadcastUsecase.execute(
+          walletId: any(named: 'walletId'),
           'signed-psbt',
           isPsbt: true,
           network: app.Network.bitcoinMainnet,

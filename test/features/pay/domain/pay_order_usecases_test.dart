@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
 import 'package:bb_mobile/core/errors/exchange_errors.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
@@ -27,6 +28,7 @@ class _MockPayOrder extends Mock implements FiatPaymentOrder {}
 const _rawReason = 'DioException 500 apiKey=live_secret_abc';
 
 void main() {
+  var spendStatus = BitcoinSpendStatus.ready;
   late _MockExchangeOrderRepository mainnet;
   late _MockExchangeOrderRepository testnet;
   late _MockSettingsRepository settings;
@@ -38,6 +40,7 @@ void main() {
   });
 
   setUp(() {
+    spendStatus = BitcoinSpendStatus.ready;
     mainnet = _MockExchangeOrderRepository();
     testnet = _MockExchangeOrderRepository();
     settings = _MockSettingsRepository();
@@ -53,6 +56,10 @@ void main() {
   });
 
   PlacePayOrderUsecase buildPlace() => PlacePayOrderUsecase(
+    wallet: WalletFacade(
+      const Stream.empty(),
+      spendStatus: (_, {replacing}) async => spendStatus,
+    ),
     mainnetExchangeOrderRepository: mainnet,
     testnetExchangeOrderRepository: testnet,
     settingsRepository: settings,
@@ -66,10 +73,26 @@ void main() {
   );
 
   Future<Result<FiatPaymentOrder, PayFailure>> place() => buildPlace().execute(
+    walletId: 'wallet-1',
     orderAmount: const FiatAmount(100),
     recipientId: 'recipient-1',
     network: OrderBitcoinNetwork.bitcoin,
   );
+
+  test('gated Bitcoin wallet creates no exchange order', () async {
+    spendStatus = BitcoinSpendStatus.pending;
+    final result = await place();
+    expect(
+      result,
+      isA<Err>().having(
+        (result) => result.failure,
+        'failure',
+        isA<PaySpendBlockedFailure>(),
+      ),
+    );
+    verifyZeroInteractions(mainnet);
+    verifyZeroInteractions(payjoinPolicy);
+  });
 
   for (final refresh in [false, true]) {
     test(
@@ -120,6 +143,7 @@ void main() {
       ).thenAnswer((_) async => _MockPayOrder());
 
       final _ = await buildPlace().execute(
+        walletId: 'wallet-1',
         orderAmount: const FiatAmount(100),
         recipientId: 'recipient-1',
         network: OrderBitcoinNetwork.bitcoin,

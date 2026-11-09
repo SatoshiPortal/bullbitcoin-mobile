@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/send/public/send_facade.dart';
 import 'package:primitives/primitives.dart' hide Network;
 import 'dart:io';
 
@@ -26,6 +27,55 @@ class _Settings extends Mock implements SettingsRepository {}
 class _Reporter extends Mock implements LoggerReporter {}
 
 void main() {
+  test(
+    'final admission refuses a prebuilt local spend before network IO',
+    () async {
+      final bitcoin = _Bitcoin();
+      final settings = _Settings();
+      final usecase = BroadcastBitcoinTransactionUsecase(
+        bitcoinBlockchainRepository: bitcoin,
+        settingsRepository: settings,
+        wallet: WalletFacade(
+          const Stream.empty(),
+          broadcastBitcoin: (_, _, _) async =>
+              const Err(WalletSpendBlockedFailure(BitcoinSpendStatus.pending)),
+        ),
+      );
+      await expectLater(
+        usecase.execute(
+          'prebuilt',
+          isPsbt: true,
+          network: Network.bitcoinMainnet,
+          walletId: 'source',
+        ),
+        throwsA(isA<WalletSpendBlockedException>()),
+      );
+      verifyZeroInteractions(bitcoin);
+      verifyZeroInteractions(settings);
+    },
+  );
+
+  test('accepted local-record failure remains a successful payment', () async {
+    final usecase = BroadcastBitcoinTransactionUsecase(
+      bitcoinBlockchainRepository: _Bitcoin(),
+      settingsRepository: _Settings(),
+      wallet: WalletFacade(
+        const Stream.empty(),
+        broadcastBitcoin: (_, _, _) async =>
+            const Ok(BitcoinBroadcastReceipt('accepted-txid', durable: false)),
+      ),
+    );
+    expect(
+      await usecase.execute(
+        'signed',
+        isPsbt: true,
+        network: Network.bitcoinMainnet,
+        walletId: 'source',
+      ),
+      'accepted-txid',
+    );
+  });
+
   const foreign = 'tcp://private-electrum.invalid:50001 foreign-rejection';
   for (final feature in ['sell', 'pay']) {
     for (final chain in ['bitcoin', 'liquid']) {
@@ -86,6 +136,11 @@ void main() {
             (_) => Future.error(error, StackTrace.fromString(foreign)),
           );
           final btc = BroadcastBitcoinTransactionUsecase(
+            wallet: WalletFacade(
+              const Stream.empty(),
+              broadcastBitcoin: (_, _, broadcast) async =>
+                  Ok(BitcoinBroadcastReceipt(await broadcast(), durable: true)),
+            ),
             bitcoinBlockchainRepository: bitcoin,
             settingsRepository: settings,
           );
@@ -97,8 +152,7 @@ void main() {
           if (feature == 'sell') {
             final usecase = BroadcastSellPayinUsecase(
               wallet: wallet,
-              broadcastBitcoinTransactionUsecase: btc,
-              broadcastLiquidTransactionUsecase: lbtc,
+              send: SendFacade(bitcoin: btc.execute, liquid: lbtc.execute),
             );
             if (chain == 'bitcoin') {
               expect(
@@ -119,8 +173,7 @@ void main() {
           } else {
             final usecase = BroadcastPayPayinUsecase(
               wallet: wallet,
-              broadcastBitcoinTransactionUsecase: btc,
-              broadcastLiquidTransactionUsecase: lbtc,
+              send: SendFacade(bitcoin: btc.execute, liquid: lbtc.execute),
             );
             if (chain == 'bitcoin') {
               expect(

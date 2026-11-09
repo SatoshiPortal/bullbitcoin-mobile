@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/send/public/send_facade.dart';
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart'
     show WalletFacade;
 import 'package:bb_mobile/features/wallet/domain/wallet.dart' as app;
@@ -226,6 +227,7 @@ void main() {
         () => broadcast.execute(
           any(),
           isPsbt: any(named: 'isPsbt'),
+          walletId: any(named: 'walletId'),
           network: app.Network.bitcoinMainnet,
         ),
       ).thenThrow(Exception(_rawReason));
@@ -233,8 +235,10 @@ void main() {
       final result =
           await BroadcastPayPayinUsecase(
             wallet: const WalletFacade(Stream.empty()),
-            broadcastBitcoinTransactionUsecase: broadcast,
-            broadcastLiquidTransactionUsecase: _MockBroadcastLiquid(),
+            send: SendFacade(
+              bitcoin: broadcast.execute,
+              liquid: _MockBroadcastLiquid().execute,
+            ),
           ).bitcoin(
             'rawtx',
             walletId: 'source',
