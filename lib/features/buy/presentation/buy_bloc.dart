@@ -1,5 +1,7 @@
 import 'dart:math' as math;
 
+import 'package:bb_mobile/features/buy/domain/sync_buy_receipt_usecase.dart';
+
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
 import 'package:bb_mobile/core/exchange/domain/order_deadline_scheduler.dart';
@@ -29,6 +31,7 @@ part 'buy_state.dart';
 
 class BuyBloc extends Bloc<BuyEvent, BuyState> {
   BuyBloc({
+    required this._syncBuyReceiptUsecase,
     required this._loadBuyContextUsecase,
     required this._confirmBuyOrderUsecase,
     required this._createBuyOrderUsecase,
@@ -71,6 +74,7 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
     onGiveUp: () => add(const BuyEvent.quoteRefreshGaveUp()),
   );
 
+  final SyncBuyReceiptUsecase _syncBuyReceiptUsecase;
   final LoadBuyContextUsecase _loadBuyContextUsecase;
   final ConfirmBuyOrderUsecase _confirmBuyOrderUsecase;
   final CreateBuyOrderUsecase _createBuyOrderUsecase;
@@ -289,6 +293,10 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
       }
       switch (orderResult) {
         case Ok(:final value):
+          _syncBuyReceiptUsecase.execute(
+            order: value,
+            destinationWalletId: wallet?.id,
+          );
           emit(state.copyWith(buyOrder: value));
           _isQuoteConfirmed = false;
           _quoteScheduler.track(value.confirmationDeadline);
@@ -405,6 +413,7 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
       }
 
       if (!isCurrent()) return;
+      _syncBuyReceiptUsecase.execute(order: order);
       emit(state.copyWith(buyOrder: order));
       // A confirmed, paid or expired order has no quote left to keep fresh:
       // the accelerate screen reads orders through a bloc that never saw the
@@ -489,6 +498,7 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
           ? confirmedOrder.copyWith(bip21URI: state.buyOrder?.bip21URI)
           : confirmedOrder;
 
+      _syncBuyReceiptUsecase.execute(order: order);
       emit(state.copyWith(buyOrder: order));
       // Confirmed at this quote; there is nothing left to refresh.
       _isQuoteConfirmed = true;

@@ -143,6 +143,7 @@ graph TB
     BACKUPS --> TOR
     BACKUPS --> WALLETS
     BTC_PRICE --> SETTINGS
+    BUY -->|public targeted routine sync| WALLETS
     BUY --> EXCHANGE
     BUY --> RECEIVE
     BUY --> BULL_PAYJOIN

@@ -42,6 +42,7 @@ void main() {
     when(
       () => settingsCubit.stream,
     ).thenAnswer((_) => const Stream<SettingsState>.empty());
+    when(() => order.payoutStatus).thenReturn(OrderPayoutStatus.inProgress);
     when(() => order.orderId).thenReturn('order-42');
     when(() => order.payoutAmount).thenReturn(0.001);
     when(() => order.payinAmount).thenReturn(100.0);
@@ -118,6 +119,7 @@ void main() {
       when(
         () => settingsCubit.stream,
       ).thenAnswer((_) => const Stream<SettingsState>.empty());
+      when(() => order.payoutStatus).thenReturn(OrderPayoutStatus.inProgress);
       when(() => order.orderId).thenReturn('order-42');
       when(() => order.payoutAmount).thenReturn(0.0001);
       when(() => order.payinAmount).thenReturn(10.0);

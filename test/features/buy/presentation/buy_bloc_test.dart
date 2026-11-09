@@ -1,5 +1,8 @@
 import 'dart:async';
 
+import 'package:bb_mobile/features/buy/domain/sync_buy_receipt_usecase.dart';
+import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
+
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/features/buy/domain/accelerate_buy_order_usecase.dart';
 import 'package:bb_mobile/features/buy/domain/buy_failure.dart';
@@ -40,6 +43,7 @@ class _MockLoadBuyContextUsecase extends Mock
 
 class _SeedableBuyBloc extends BuyBloc {
   _SeedableBuyBloc({
+    required super.syncBuyReceiptUsecase,
     required super.loadBuyContextUsecase,
     required super.confirmBuyOrderUsecase,
     required super.createBuyOrderUsecase,
@@ -72,6 +76,9 @@ void main() {
     setUpAll(() => registerFallbackValue(_MockBuyOrder()));
 
     _SeedableBuyBloc build() => _SeedableBuyBloc(
+      syncBuyReceiptUsecase: SyncBuyReceiptUsecase(
+        const WalletFacade(Stream.empty()),
+      ),
       loadBuyContextUsecase: _MockLoadBuyContextUsecase(),
       confirmBuyOrderUsecase: confirm,
       createBuyOrderUsecase: _MockCreateBuyOrderUsecase(),
@@ -388,6 +395,9 @@ void main() {
         () => cancel.execute(any()),
       ).thenAnswer((_) async => const Ok<void, BuyFailure>(null));
       bloc = _SeedableBuyBloc(
+        syncBuyReceiptUsecase: SyncBuyReceiptUsecase(
+          const WalletFacade(Stream.empty()),
+        ),
         loadBuyContextUsecase: load,
         confirmBuyOrderUsecase: _MockConfirmBuyOrderUsecase(),
         createBuyOrderUsecase: _MockCreateBuyOrderUsecase(),
@@ -458,6 +468,9 @@ void main() {
         () => load.satsToCurrency(currencyCode: 'CAD'),
       ).thenAnswer((_) async => const Ok<double, BuyFailure>(100000));
       bloc = _SeedableBuyBloc(
+        syncBuyReceiptUsecase: SyncBuyReceiptUsecase(
+          const WalletFacade(Stream.empty()),
+        ),
         loadBuyContextUsecase: load,
         confirmBuyOrderUsecase: _MockConfirmBuyOrderUsecase(),
         createBuyOrderUsecase: create,
@@ -606,6 +619,9 @@ void main() {
         () => cancelAbandonedPayjoin.execute(order),
       ).thenAnswer((_) async => const Ok<void, BuyFailure>(null));
       final bloc = _SeedableBuyBloc(
+        syncBuyReceiptUsecase: SyncBuyReceiptUsecase(
+          const WalletFacade(Stream.empty()),
+        ),
         loadBuyContextUsecase: _MockLoadBuyContextUsecase(),
         confirmBuyOrderUsecase: _MockConfirmBuyOrderUsecase(),
         createBuyOrderUsecase: _MockCreateBuyOrderUsecase(),
