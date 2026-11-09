@@ -171,6 +171,7 @@ graph TB
     SWAPS --> EXCHANGE_SUPPORT_CHAT
     REPLACE_BY_FEE --> EXCHANGE_SUPPORT_CHAT
     DCA --> EXCHANGE
+    PAY -->|public targeted routine sync| WALLETS
     PAY --> EXCHANGE
     TX_HISTORY --> EXCHANGE
     WALLETS --> EXCHANGE

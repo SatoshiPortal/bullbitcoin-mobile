@@ -1,4 +1,4 @@
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
+import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
 import 'package:bb_mobile/features/send/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/broadcast_liquid_transaction_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/pay_failure.dart';
@@ -7,10 +7,12 @@ import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart' hide Network;
 
 class BroadcastPayPayinUsecase {
+  final WalletFacade _wallet;
   final BroadcastBitcoinTransactionUsecase _broadcastBitcoinTransactionUsecase;
   final BroadcastLiquidTransactionUsecase _broadcastLiquidTransactionUsecase;
 
   const BroadcastPayPayinUsecase({
+    required this._wallet,
     required this._broadcastBitcoinTransactionUsecase,
     required this._broadcastLiquidTransactionUsecase,
   });
@@ -18,17 +20,18 @@ class BroadcastPayPayinUsecase {
   @useResult
   Future<Result<String, PayFailure>> bitcoin(
     String transaction, {
+    required String walletId,
     required bool isPsbt,
     required Network network,
   }) async {
     try {
-      return Ok(
-        await _broadcastBitcoinTransactionUsecase.execute(
-          transaction,
-          isPsbt: isPsbt,
-          network: network,
-        ),
+      final txid = await _broadcastBitcoinTransactionUsecase.execute(
+        transaction,
+        isPsbt: isPsbt,
+        network: network,
       );
+      _wallet.pollWallet(walletId, isActive: () => true).ignore();
+      return Ok(txid);
     } catch (e, st) {
       log.severe(
         message: 'Failed to broadcast the Bitcoin pay payin',
@@ -40,9 +43,14 @@ class BroadcastPayPayinUsecase {
   }
 
   @useResult
-  Future<Result<String, PayFailure>> liquid(String signedPset) async {
+  Future<Result<String, PayFailure>> liquid(
+    String signedPset, {
+    required String walletId,
+  }) async {
     try {
-      return Ok(await _broadcastLiquidTransactionUsecase.execute(signedPset));
+      final txid = await _broadcastLiquidTransactionUsecase.execute(signedPset);
+      _wallet.pollWallet(walletId, isActive: () => true).ignore();
+      return Ok(txid);
     } catch (e, st) {
       log.severe(
         message: 'Failed to broadcast the Liquid pay payin',

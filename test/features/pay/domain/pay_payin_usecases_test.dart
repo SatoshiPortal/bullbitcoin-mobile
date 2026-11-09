@@ -1,3 +1,5 @@
+import 'package:bb_mobile/features/wallet/public/wallet_facade.dart'
+    show WalletFacade;
 import 'package:bb_mobile/features/wallet/domain/wallet.dart' as app;
 import 'package:bb_mobile/features/send/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
@@ -228,10 +230,17 @@ void main() {
         ),
       ).thenThrow(Exception(_rawReason));
 
-      final result = await BroadcastPayPayinUsecase(
-        broadcastBitcoinTransactionUsecase: broadcast,
-        broadcastLiquidTransactionUsecase: _MockBroadcastLiquid(),
-      ).bitcoin('rawtx', isPsbt: true, network: app.Network.bitcoinMainnet);
+      final result =
+          await BroadcastPayPayinUsecase(
+            wallet: const WalletFacade(Stream.empty()),
+            broadcastBitcoinTransactionUsecase: broadcast,
+            broadcastLiquidTransactionUsecase: _MockBroadcastLiquid(),
+          ).bitcoin(
+            'rawtx',
+            walletId: 'source',
+            isPsbt: true,
+            network: app.Network.bitcoinMainnet,
+          );
 
       final failure = (result as Err<String, PayFailure>).failure;
       expect(failure, isA<PayUnexpectedFailure>());

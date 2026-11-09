@@ -218,7 +218,7 @@ void main() {
       ),
     ).thenAnswer((_) async => const Ok<String, PayFailure>('signed-pset'));
     when(
-      () => broadcastPayin.liquid(any()),
+      () => broadcastPayin.liquid(any(), walletId: any(named: 'walletId')),
     ).thenAnswer((_) async => const Ok<String, PayFailure>('txid'));
   });
 

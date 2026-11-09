@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
 import 'package:bb_mobile/features/send/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/broadcast_liquid_transaction_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
@@ -96,6 +97,7 @@ class PayLocator {
     );
     locator.registerFactory<BroadcastPayPayinUsecase>(
       () => BroadcastPayPayinUsecase(
+        wallet: locator<WalletFacade>(),
         broadcastBitcoinTransactionUsecase:
             locator<BroadcastBitcoinTransactionUsecase>(),
         broadcastLiquidTransactionUsecase:

@@ -631,7 +631,10 @@ class PayBloc extends Bloc<PayEvent, PayState>
           _emitSendPaymentError(emit, const PayQuoteExpiredFailure());
           return;
         }
-        switch (await _broadcastPayPayinUsecase.liquid(signedPset)) {
+        switch (await _broadcastPayPayinUsecase.liquid(
+          signedPset,
+          walletId: wallet.id,
+        )) {
           case Err(:final failure):
             _emitSendPaymentError(emit, failure);
             return;
@@ -786,6 +789,7 @@ class PayBloc extends Bloc<PayEvent, PayState>
           }
           switch (await _broadcastPayPayinUsecase.bitcoin(
             signedTx.signedPsbt,
+            walletId: wallet.id,
             isPsbt: true,
             network: wallet.network,
           )) {
