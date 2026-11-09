@@ -72,8 +72,8 @@ void main() {
         fail('a rejected broadcast must not report a txid');
       case Err(:final failure):
         expect(failure, isA<SellUnexpectedFailure>());
-        // The node's reason quotes a change address; logs only.
-        expect(failure.logMessage, contains('min relay fee'));
+        // Foreign node text must not escape through a later failure logger.
+        expect(failure.logMessage, 'sell_payin_broadcast_failed');
     }
   });
 
