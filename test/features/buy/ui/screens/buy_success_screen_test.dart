@@ -160,21 +160,48 @@ void main() {
       await tester.pumpWidget(const SizedBox.shrink());
     });
 
-    // The exchange stops negotiating five minutes after creating the order and
-    // may report nothing until its ordinary payout goes out.
-    testWidgets('is no longer claimed nor read once its window has passed', (
+    testWidgets('plain payout is followed until completed, then stops', (
       tester,
     ) async {
-      await pumpSuccess(tester, age: const Duration(minutes: 7));
-
-      expect(find.text('Payjoin in progress'), findsNothing);
-      await tester.pump(const Duration(minutes: 5));
+      await pumpSuccess(tester, age: Duration.zero);
+      when(() => order.payjoinOutcome).thenReturn(OrderPayjoinOutcome.none);
+      await tester.pump(const Duration(seconds: 5));
+      verify(() => buyBloc.add(const BuyEvent.refreshOrder())).called(1);
+      when(() => order.payoutStatus).thenReturn(OrderPayoutStatus.completed);
+      await tester.pump(const Duration(seconds: 15));
       verifyNever(() => buyBloc.add(any()));
-
       await tester.pumpWidget(const SizedBox.shrink());
     });
 
-    testWidgets('stops being read when its window closes on screen', (
+    testWidgets('does not poll while inactive and resumes on the next tick', (
+      tester,
+    ) async {
+      await pumpSuccess(tester, age: Duration.zero);
+      tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.inactive);
+      await tester.pump(const Duration(seconds: 10));
+      verifyNever(() => buyBloc.add(any()));
+      tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
+      await tester.pump(const Duration(seconds: 5));
+      verify(() => buyBloc.add(const BuyEvent.refreshOrder())).called(1);
+      await tester.pumpWidget(const SizedBox.shrink());
+    });
+
+    // The exchange stops negotiating five minutes after creating the order and
+    // may report nothing until its ordinary payout goes out.
+    testWidgets(
+      'keeps reading the payout after the payjoin window has passed',
+      (tester) async {
+        await pumpSuccess(tester, age: const Duration(minutes: 7));
+
+        expect(find.text('Payjoin in progress'), findsNothing);
+        await tester.pump(const Duration(minutes: 5));
+        verify(() => buyBloc.add(const BuyEvent.refreshOrder())).called(60);
+
+        await tester.pumpWidget(const SizedBox.shrink());
+      },
+    );
+
+    testWidgets('hides expired payjoin but keeps reading its payout', (
       tester,
     ) async {
       await pumpSuccess(tester, age: const Duration(minutes: 5, seconds: 50));
@@ -190,7 +217,7 @@ void main() {
 
       clearInteractions(buyBloc);
       await tester.pump(const Duration(minutes: 5));
-      verifyNever(() => buyBloc.add(any()));
+      verify(() => buyBloc.add(const BuyEvent.refreshOrder())).called(60);
 
       await tester.pumpWidget(const SizedBox.shrink());
     });

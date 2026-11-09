@@ -72,13 +72,13 @@ void main() {
     late _MockCancelAbandonedBuyPayjoinUsecase cancel;
     late _MockLabelCompletedBuyOrderUsecase labels;
     late BuyOrder order;
+    late SyncBuyReceiptUsecase receipt;
+    final syncedWallets = <String>[];
 
     setUpAll(() => registerFallbackValue(_MockBuyOrder()));
 
     _SeedableBuyBloc build() => _SeedableBuyBloc(
-      syncBuyReceiptUsecase: SyncBuyReceiptUsecase(
-        const WalletFacade(Stream.empty()),
-      ),
+      syncBuyReceiptUsecase: receipt,
       loadBuyContextUsecase: _MockLoadBuyContextUsecase(),
       confirmBuyOrderUsecase: confirm,
       createBuyOrderUsecase: _MockCreateBuyOrderUsecase(),
@@ -125,6 +125,15 @@ void main() {
       when(
         () => labels.execute(order: any(named: 'order')),
       ).thenAnswer((_) async => const Ok(null));
+      syncedWallets.clear();
+      receipt = SyncBuyReceiptUsecase(
+        WalletFacade(
+          const Stream.empty(),
+          pollWallet: (id, {required isActive}) async {
+            syncedWallets.add(id);
+          },
+        ),
+      );
       bloc = build();
       bloc.seed(BuyState(buyOrder: order));
     });
@@ -228,6 +237,46 @@ void main() {
         verifyNever(refreshCall);
       });
     });
+
+    for (final confirmFirst in [false, true]) {
+      test(
+        'completed payout sync is forwarded after ${confirmFirst ? "confirmation" : "refresh"}',
+        () async {
+          receipt.execute(
+            order: order,
+            destinationWalletId: 'captured-destination',
+          );
+          final completed = order.copyWith(
+            payoutStatus: OrderPayoutStatus.completed,
+            payinStatus: OrderPayinStatus.completed,
+          );
+          bloc.seed(
+            BuyState(
+              buyOrder: order.copyWith(
+                confirmationDeadline: DateTime.now().add(
+                  const Duration(minutes: 1),
+                ),
+              ),
+            ),
+          );
+          when(refreshCall).thenAnswer((_) async => Ok(completed));
+          when(readCall).thenAnswer((_) async => Ok(completed));
+          when(
+            () => confirm.execute(orderId: 'quote-order'),
+          ).thenAnswer((_) async => Ok(completed));
+          bloc.add(
+            confirmFirst
+                ? const BuyEvent.confirmOrder()
+                : const BuyEvent.refreshOrder(),
+          );
+          await pumpEventQueue();
+          expect(syncedWallets, ['captured-destination']);
+          bloc.add(const BuyEvent.refreshOrder());
+          await pumpEventQueue();
+          expect(syncedWallets, ['captured-destination']);
+        },
+      );
+    }
 
     test('a lapsed quote is refreshed, never confirmed', () async {
       bloc.add(const BuyEvent.confirmOrder());
