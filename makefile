@@ -103,6 +103,11 @@ build-runner-watch:
 translations:
 	@echo "🌐 Generating translations files"
 	@fvm flutter gen-l10n
+	@$(MAKE) recoverbull-translations
+
+.PHONY: recoverbull-translations
+recoverbull-translations:
+	@(cd features/recoverbull && fvm flutter gen-l10n)
 
 hooks:
 	@CURRENT_HOOKS_PATH=$$(git config --local core.hooksPath); \

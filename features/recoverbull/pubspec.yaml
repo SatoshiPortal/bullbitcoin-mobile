@@ -9,12 +9,20 @@ environment:
 
 resolution: workspace
 
+flutter:
+  generate: true
+
 dependencies:
   flutter:
     sdk: flutter
   primitives:
   secrets:
   bull_logger:
+  bull_ui:
+  screen_privacy:
+  flutter_localizations:
+    sdk: flutter
+  intl: any
   drift: ^2.29.0
   convert: ^3.1.2
   crypto: ^3.0.7
