@@ -128,7 +128,11 @@ class _VaultFlowPageState extends State<VaultFlowPage> with PrivacyScreen {
 
   Future<void> _submit(VaultFlowPresentation presentation) async {
     final cubit = presentation.cubit;
-    if (_protected != true || cubit.state.busy) return;
+    if (_protected != true ||
+        cubit.state.busy ||
+        cubit.state.hasPendingProviderSave) {
+      return;
+    }
     final input = _password.text;
     final privacyGeneration = _privacyGeneration;
     if (input.isEmpty) {
@@ -398,7 +402,14 @@ class _VaultFlowPageState extends State<VaultFlowPage> with PrivacyScreen {
                   }),
                   disabled: state.busy,
                 ),
-              if (_protected != true)
+              if (state.hasPendingProviderSave) ...[
+                _text(context.loc.recoverbullPendingProviderSave),
+                _button(
+                  context.loc.recoverbullRetryProviderSave,
+                  () => cubit.retryProviderSave(_provider),
+                  disabled: state.busy,
+                ),
+              ] else if (_protected != true)
                 _text(
                   _protected == null
                       ? context.loc.recoverbullPleaseWait

@@ -37,20 +37,43 @@ final class ManageVaultSessionUsecase {
     this._complete,
   );
 
+  bool get hasPendingProviderSave => _create.hasPendingProviderSave;
+
   Future<Result<void, RecoverBullFailure>> connect({bool newRoute = false}) =>
       _run((server, _) => server.probe(), newRoute: newRoute);
 
   Future<Result<VaultCompletion, RecoverBullFailure>> create({
     required VaultProvider provider,
     required String password,
-  }) => _run(
-    (server, settings) => _create.execute(
-      settings: settings,
-      server: server,
-      provider: provider,
-      password: password,
-    ),
-  );
+  }) {
+    if (hasPendingProviderSave) {
+      return Future.value(const Err(VaultContextChangedFailure()));
+    }
+    return _run(
+      (server, settings) => _create.execute(
+        settings: settings,
+        server: server,
+        provider: provider,
+        password: password,
+      ),
+    );
+  }
+
+  Future<Result<VaultCompletion, RecoverBullFailure>> retryProviderSave(
+    VaultProvider provider,
+  ) async {
+    if (_closed) return const Err(VaultCancelledFailure());
+    if (_active != null) return const Err(VaultContextChangedFailure());
+    final active = Completer<void>();
+    _active = active;
+    try {
+      // Saving an already sealed vault needs neither consent nor a Tor route.
+      return await _create.retryProviderSave(provider);
+    } finally {
+      _active = null;
+      active.complete();
+    }
+  }
 
   Future<Result<VaultCompletion, RecoverBullFailure>> verify({
     required EncryptedVault vault,

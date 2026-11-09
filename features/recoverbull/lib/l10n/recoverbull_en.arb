@@ -802,5 +802,13 @@
   "backupKeySeparationWarning": "It is critically important that you do not save the backup key at the same place where you save your backup file. Always store them on separate devices or separate cloud providers.",
   "@backupKeySeparationWarning": {},
   "backupKeyExampleWarning": "For example, if you used Google Drive for your backup file, do not use Google Drive for your backup key.",
-  "@backupKeyExampleWarning": {}
+  "@backupKeyExampleWarning": {},
+  "recoverbullPendingProviderSave": "Your backup is ready but saving did not complete. Retry saving the same backup using the password you already confirmed. This does not change its password.",
+  "@recoverbullPendingProviderSave": {
+    "description": "Explains save-only retry after a provider cancellation or failure"
+  },
+  "recoverbullRetryProviderSave": "Retry saving backup",
+  "@recoverbullRetryProviderSave": {
+    "description": "Retry provider save without creating a vault or changing its password"
+  }
 }

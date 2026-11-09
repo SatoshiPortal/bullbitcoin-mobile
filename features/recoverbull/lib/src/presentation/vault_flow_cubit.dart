@@ -19,6 +19,7 @@ import '../domain/usecases/manage_vault_session_usecase.dart';
 
 final class VaultFlowState {
   final bool busy;
+  final bool hasPendingProviderSave;
   final BackupSettings? settings;
   final EncryptedVault? vault;
   final List<DriveFileMetadata>? files;
@@ -27,6 +28,7 @@ final class VaultFlowState {
 
   const VaultFlowState({
     this.busy = false,
+    this.hasPendingProviderSave = false,
     this.settings,
     this.vault,
     this.files,
@@ -73,6 +75,7 @@ final class VaultFlowCubit extends Cubit<VaultFlowState> {
     emit(
       VaultFlowState(
         busy: busy,
+        hasPendingProviderSave: _session?.hasPendingProviderSave ?? false,
         settings: settings ?? state.settings,
         vault: vault ?? state.vault,
         files: files,
@@ -141,6 +144,15 @@ final class VaultFlowCubit extends Cubit<VaultFlowState> {
     final value = await _run(
       () =>
           _session?.create(provider: provider, password: password) ??
+          Future.value(Err<VaultCompletion, RecoverBullFailure>(unavailable)),
+    );
+    if (value != null) _publish(vault: value.vault, completion: value);
+  }
+
+  Future<void> retryProviderSave(VaultProvider provider) async {
+    final value = await _run(
+      () =>
+          _session?.retryProviderSave(provider) ??
           Future.value(Err<VaultCompletion, RecoverBullFailure>(unavailable)),
     );
     if (value != null) _publish(vault: value.vault, completion: value);
