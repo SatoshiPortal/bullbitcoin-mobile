@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/errors/send_errors.dart';
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
 import 'package:bb_mobile/features/send/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/broadcast_liquid_transaction_usecase.dart';
@@ -32,13 +33,8 @@ class BroadcastPayPayinUsecase {
       );
       _wallet.pollWallet(walletId, isActive: () => true).ignore();
       return Ok(txid);
-    } catch (e, st) {
-      log.severe(
-        message: 'Failed to broadcast the Bitcoin pay payin',
-        error: e,
-        trace: st,
-      );
-      return Err(PayUnexpectedFailure('$e'));
+    } on Exception catch (e) {
+      return Err(_broadcastFailure(e, 'bitcoin'));
     }
   }
 
@@ -51,13 +47,25 @@ class BroadcastPayPayinUsecase {
       final txid = await _broadcastLiquidTransactionUsecase.execute(signedPset);
       _wallet.pollWallet(walletId, isActive: () => true).ignore();
       return Ok(txid);
-    } catch (e, st) {
-      log.severe(
-        message: 'Failed to broadcast the Liquid pay payin',
-        error: e,
-        trace: st,
-      );
-      return Err(PayUnexpectedFailure('$e'));
+    } on Exception catch (e) {
+      return Err(_broadcastFailure(e, 'liquid'));
     }
+  }
+
+  PayFailure _broadcastFailure(Exception error, String chain) {
+    const code = 'pay_payin_broadcast_failed';
+    final message = '$code chain=$chain category=unknown';
+    if (error is BroadcastTransactionException) {
+      // Send currently erases the typed cause and RPC code. Never parse or
+      // forward its foreign message to recover a more specific category.
+      log.warning(message);
+    } else {
+      log.severe(
+        message: message,
+        error: Exception(code),
+        trace: StackTrace.current,
+      );
+    }
+    return PayUnexpectedFailure(code);
   }
 }
