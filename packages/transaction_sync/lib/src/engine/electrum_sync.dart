@@ -365,7 +365,10 @@ Future<_Attempt> _performSync(_SyncParams params) async {
     probe?.dispose();
   }
   if (params.descriptor is LiquidWalletDescriptor) await BullSdk.init();
-  final revisions = RevisionStore(writerMetadataPath(params.root));
+  final revisions = RevisionStore(
+    writerMetadataPath(params.root),
+    existingOnly: params.headless,
+  );
   final writer = NativeWalletWriter(
     lockDirectory: writerLockDirectory(params.root),
     revisions: revisions,
@@ -466,7 +469,16 @@ Future<_Attempt> _performSync(_SyncParams params) async {
 }
 
 final class _NativeSyncOperation
-    implements WriterSyncOperation, WriterSyncMutation, WriterSyncChanges {
+    implements
+        WriterSyncOperation,
+        WriterSyncMutation,
+        WriterSyncChanges,
+        WriterSyncSpendObservation {
+  List<String> _spendTxids = [];
+  @override
+  Set<String> observedSpendTransactions = {};
+  @override
+  void trackSpendTransactions(List<String> txids) => _spendTxids = txids;
   @override
   bool mayHaveMutated = false;
   @override
@@ -484,6 +496,8 @@ final class _NativeSyncOperation
       issuedReceiveIndex,
       () => mayHaveMutated = true,
       (changed) => hasChanges = changed,
+      _spendTxids,
+      (observed) => observedSpendTransactions = observed,
     );
     result = attempt.result;
     return switch (attempt.result) {
@@ -520,6 +534,8 @@ Future<_Attempt> _performNativeSync(
   int? issuedReceiveIndex,
   void Function() markMutation,
   void Function(bool) reportChanges,
+  List<String> spendTxids,
+  void Function(Set<String>) reportSpendObservation,
 ) async {
   final watch = Stopwatch()..start();
   final descriptor = params.descriptor;
@@ -720,9 +736,16 @@ Future<_Attempt> _performNativeSync(
     }
     failure = const TransactionSyncStorageFailure();
     try {
+      final before = wallet.staged();
+      final cleanStage = before == null;
+      before?.dispose();
       markMutation();
       wallet.applyUpdate(update: update);
+      final observed = cleanStage
+          ? _observedSpends(wallet, spendTxids)
+          : <String>{};
       reportChanges(wallet.persist(persister: persister));
+      reportSpendObservation(observed);
     } finally {
       update.dispose();
     }
@@ -883,3 +906,63 @@ Future<Result<void, TransactionSyncFailure>> _checkInitialScan(
 @visibleForTesting
 String electrumClientUrl(String url) =>
     url.contains('://') ? url : 'ssl://$url';
+
+/// No local insertion is performed. Only advancing server deltas can prove
+/// unconfirmed visibility; canonical confirmation is separate chain evidence.
+Set<String> _observedSpends(bdk.Wallet wallet, List<String> tracked) {
+  if (tracked.isEmpty) return {};
+  final staged = wallet.staged();
+  final positive = <String>{};
+  try {
+    final graph = staged?.txGraphChangeset();
+    if (graph != null) {
+      positive.addAll(graph.lastSeen.keys.map((id) => id.toString()));
+      positive.addAll(graph.anchors.map((anchor) => anchor.txid.toString()));
+      for (final tx in graph.txs) {
+        tx.dispose();
+      }
+      for (final entry in graph.txouts.entries) {
+        entry.key.dispose();
+        entry.value.scriptPubkey.dispose();
+        entry.value.value.dispose();
+      }
+      for (final id in {
+        ...graph.lastSeen.keys,
+        ...graph.firstSeen.keys,
+        ...graph.lastEvicted.keys,
+      }) {
+        id.dispose();
+      }
+      for (final anchor in graph.anchors) {
+        anchor.txid.dispose();
+        anchor.confirmationBlockTime.blockId.hash.dispose();
+      }
+    }
+    final observed = <String>{};
+    for (final id in tracked) {
+      final txid = bdk.Txid.fromString(hex: id);
+      try {
+        final tx = wallet.getTx(txid: txid);
+        if (tx != null) {
+          if (positive.contains(id) ||
+              tx.chainPosition is bdk.ConfirmedChainPosition) {
+            observed.add(id);
+          }
+          tx.transaction.dispose();
+          if (tx.chainPosition case bdk.ConfirmedChainPosition(
+            :final confirmationBlockTime,
+            :final transitively,
+          )) {
+            confirmationBlockTime.blockId.hash.dispose();
+            transitively?.dispose();
+          }
+        }
+      } finally {
+        txid.dispose();
+      }
+    }
+    return observed;
+  } finally {
+    staged?.dispose();
+  }
+}

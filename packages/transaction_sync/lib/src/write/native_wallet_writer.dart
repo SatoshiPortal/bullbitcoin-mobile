@@ -3,6 +3,7 @@ import 'dart:math' as math;
 
 import 'writer_diagnostics.dart';
 import 'store_identity.dart';
+import 'bitcoin_spend_gate_store.dart';
 
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
@@ -261,6 +262,19 @@ final class NativeWalletWriter implements LiquidReadAdmission {
     final record = _active(key, expectedGeneration);
     final descriptor = await _descriptor(key);
     if (preflight != null) _value(await preflight());
+    BitcoinSpendGateStore? gates;
+    if (key.network is BitcoinNetwork) {
+      gates = BitcoinSpendGateStore(revisions.spendGatePath);
+      try {
+        final tracked = gates.tracked(descriptor);
+        if (operation case final WriterSyncSpendObservation observer) {
+          observer.trackSpendTransactions(tracked);
+        }
+        gates.requireValidation(key);
+      } finally {
+        gates.close();
+      }
+    }
     revisions.begin(key, WriteIntent.sync);
     late Result<void, TransactionSyncFailure> result;
     try {
@@ -288,6 +302,20 @@ final class NativeWalletWriter implements LiquidReadAdmission {
       }
     }
     _value(result);
+    if (operation case WriterSyncSpendObservation(
+      :final observedSpendTransactions,
+    ) when key.network is BitcoinNetwork) {
+      final observed = BitcoinSpendGateStore(revisions.spendGatePath);
+      try {
+        observed.observed(
+          descriptor,
+          expectedGeneration,
+          observedSpendTransactions,
+        );
+      } finally {
+        observed.close();
+      }
+    }
     if (operation case WriterSyncChanges(
       hasChanges: false,
     ) when !record.needsSync && !record.state.syncFailed) {
@@ -391,6 +419,11 @@ final class NativeWalletWriter implements LiquidReadAdmission {
     final lock = (acquisition as Ok<WriterLock, TransactionSyncFailure>).value;
     final watch = Stopwatch()..start();
     try {
+      if (key.network is BitcoinNetwork &&
+          intent != WriteIntent.receive &&
+          intent != WriteIntent.sync) {
+        revisions.invalidateSpendGate(key);
+      }
       final admitted = revisions.record(key);
       _expectGeneration(admitted, expectedGeneration);
       if (!reconcile &&
@@ -449,6 +482,9 @@ final class NativeWalletWriter implements LiquidReadAdmission {
   }) async {
     final record = revisions.record(key);
     if (record == null || record.intent == null) return;
+    if (key.network is BitcoinNetwork && record.intent != WriteIntent.receive) {
+      revisions.invalidateSpendGate(key);
+    }
     _diagnostics(
       WriterLogLevel.warning,
       'Wallet writer reconciling interrupted intent=${record.intent?.name} network=${key.network} generation=${record.state.stamp.generation} revision=${record.state.stamp.revision}',

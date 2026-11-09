@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 import 'store_identity.dart';
+import 'bitcoin_spend_gate_store.dart';
 
 import 'package:primitives/primitives.dart';
 import 'package:meta/meta.dart';
@@ -44,12 +45,47 @@ final class RevisionStore implements WalletRevisionReader {
   final _changes = StreamController<WalletRevisionState>.broadcast();
   final _published = <WalletKey, WalletRevisionState>{};
 
-  RevisionStore(this._path) : _db = _open(_path);
+  RevisionStore(this._path, {bool existingOnly = false})
+    : _db = _open(_path, existingOnly: existingOnly) {
+    try {
+      if (!existingOnly) BitcoinSpendGateStore.provision(spendGatePath);
+      final gates = BitcoinSpendGateStore(spendGatePath);
+      gates.close();
+    } catch (_) {
+      _db.dispose();
+      rethrow;
+    }
+  }
+
+  String get spendGatePath => '$_path.spend-gate.sqlite';
+  bool get recoveryPending => File('$_path.recovery').existsSync();
+
+  /// Recovery cannot silently forget protection when native metadata is rebuilt.
+  void invalidateSpendGate(WalletKey key) {
+    if (key.network is! BitcoinNetwork) return;
+    final gates = BitcoinSpendGateStore(spendGatePath);
+    try {
+      gates.requireValidation(key);
+    } finally {
+      gates.close();
+    }
+  }
 
   /// Called only after the complete catalog adoption pass has recorded outcomes.
-  void completeRecovery() => File('$_path.recovery').deleteSync();
+  void completeRecovery() {
+    final gates = BitcoinSpendGateStore(spendGatePath);
+    try {
+      gates.requireRecoveryValidation();
+    } finally {
+      gates.close();
+    }
+    File('$_path.recovery').deleteSync();
+  }
 
-  static Database _open(String path) {
+  static Database _open(String path, {required bool existingOnly}) {
+    if (existingOnly && !File(path).existsSync()) {
+      throw const BitcoinSpendGateUnavailable();
+    }
     File(path).parent.createSync(recursive: true);
     final db = sqlite3.open(path);
     try {
@@ -68,6 +104,7 @@ final class RevisionStore implements WalletRevisionReader {
       })) {
         return db;
       }
+      if (existingOnly) throw const BitcoinSpendGateUnavailable();
       db.execute('BEGIN IMMEDIATE');
       db.execute('''CREATE TABLE IF NOT EXISTS revisions (
         wallet TEXT NOT NULL, network TEXT NOT NULL,

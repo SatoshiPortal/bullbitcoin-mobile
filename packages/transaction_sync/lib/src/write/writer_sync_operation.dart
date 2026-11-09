@@ -32,3 +32,11 @@ abstract interface class WriterSyncMutation {
 abstract interface class WriterSyncChanges {
   bool get hasChanges;
 }
+
+/// Positive evidence from this pass, captured before native persistence and
+/// returned only after persistence succeeds. Cached unconfirmed presence is not
+/// evidence. Confirmed canonical membership reconciles native spend safety.
+abstract interface class WriterSyncSpendObservation {
+  void trackSpendTransactions(List<String> txids);
+  Set<String> get observedSpendTransactions;
+}
