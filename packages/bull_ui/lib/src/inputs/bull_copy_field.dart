@@ -17,6 +17,7 @@ class BullCopyField extends StatelessWidget {
     required this.text,
     required this.copiedMessage,
     this.clipboardText,
+    this.onCopy,
     this.maxLines,
     this.overflow,
   });
@@ -29,6 +30,10 @@ class BullCopyField extends StatelessWidget {
 
   /// What goes to the clipboard when it differs from [text].
   final String? clipboardText;
+
+  /// Optional owner of copying and confirmation, for values requiring a
+  /// lifetime policy such as secret clipboard expiry.
+  final VoidCallback? onCopy;
 
   final int? maxLines;
   final TextOverflow? overflow;
@@ -64,10 +69,12 @@ class BullCopyField extends StatelessWidget {
               visualDensity: VisualDensity.compact,
               iconSize: 20,
               icon: Icon(Icons.copy_sharp, color: colors.secondary),
-              onPressed: () {
-                Clipboard.setData(ClipboardData(text: toCopy));
-                BullSnackBar.show(context, message: copiedMessage);
-              },
+              onPressed:
+                  onCopy ??
+                  () {
+                    Clipboard.setData(ClipboardData(text: toCopy));
+                    BullSnackBar.show(context, message: copiedMessage);
+                  },
             ),
           const Gap(8),
         ],
