@@ -1,3 +1,6 @@
+import 'package:bull_payjoin/src/data/payjoin_database.dart';
+import 'package:bull_payjoin/src/data/local_payjoin_datasource.dart';
+import 'package:bull_payjoin/src/data/payjoin_model.dart';
 import 'dart:io';
 import 'dart:typed_data';
 
@@ -152,6 +155,58 @@ void main() {
     expect(event.role, PayjoinLogRole.sender);
     expect(event.error, isNotNull);
   });
+
+  test(
+    'recovered paused proposal is typed in both session reads and events',
+    () async {
+      final initial = switch (await open()) {
+        Ok(:final value) => value,
+        Err(:final failure) => throw failure,
+      };
+      await initial.dispose();
+      final database = PayjoinDatabase.open('${directory.path}/payjoin.sqlite');
+      final model = PayjoinSenderModel(
+        uri: 'bitcoin:tb1qsender?pj=https://payjo.in',
+        isTestnet: true,
+        sender: '[]',
+        walletId: 'wallet-1',
+        originalPsbt: 'cHNidP8=',
+        originalTxId: 'original-tx',
+        amountSat: 50000,
+        createdAt: DateTime.now().millisecondsSinceEpoch ~/ 1000 - 7200,
+        expireAfterSec: 3600,
+        proposalPsbt: 'cHNidP8=',
+        txId: 'proposal-tx',
+      );
+      await LocalPayjoinDatasource(db: database).storeSender(model);
+      await database.close();
+      final lifecycle = switch (await open()) {
+        Ok(:final value) => value,
+        Err(:final failure) => throw failure,
+      };
+      addTearDown(lifecycle.dispose);
+      final event = lifecycle.payjoin.sessions
+          .watch(sessionIds: {model.id})
+          .first;
+      expect(await lifecycle.resume(), isA<Ok<void, PayjoinFailure>>());
+      final update = switch (await event) {
+        Ok(:final value) => value as PayjoinSenderSession,
+        Err(:final failure) => throw failure,
+      };
+      expect(update.spendFailure, isA<PayjoinSpendBlockedFailure>());
+      expect(update.isOngoing, isTrue);
+      expect(update.canRetryProposal, isFalse);
+      final read = switch (await lifecycle.payjoin.sessions.byId(model.id)) {
+        Ok(:final value) => value as PayjoinSenderSession,
+        Err(:final failure) => throw failure,
+      };
+      expect(read.spendFailure, isA<PayjoinSpendBlockedFailure>());
+      expect(
+        await lifecycle.payjoin.sender.retryProposal(model.id),
+        isA<Err<PayjoinSession, PayjoinFailure>>(),
+      );
+    },
+  );
 
   test('opens roles over the seeded policy and disposes cleanly', () async {
     final result = await open();

@@ -57,6 +57,7 @@ void main() {
   late _MockLabelsPort labels;
   late _MockWalletPort wallet;
   late StreamController<PayjoinReceiverModel> requests;
+  late StreamController<PayjoinSenderModel> proposals;
   late PayjoinRepositoryImpl engine;
   late _CaptureLogPort logs;
 
@@ -165,8 +166,9 @@ void main() {
     labels = _MockLabelsPort();
     wallet = _MockWalletPort();
     requests = StreamController<PayjoinReceiverModel>.broadcast();
+    proposals = StreamController<PayjoinSenderModel>.broadcast();
     when(() => pdk.requestsForReceivers).thenAnswer((_) => requests.stream);
-    when(() => pdk.proposalsForSenders).thenAnswer((_) => const Stream.empty());
+    when(() => pdk.proposalsForSenders).thenAnswer((_) => proposals.stream);
     when(() => pdk.expiredPayjoins).thenAnswer((_) => const Stream.empty());
     when(() => pdk.dispose()).thenAnswer((_) async {});
     when(() => pdk.stopPolling(any())).thenReturn(null);
@@ -197,6 +199,7 @@ void main() {
   tearDown(() async {
     await engine.dispose();
     await requests.close();
+    await proposals.close();
     await database.close();
   });
 
@@ -1454,6 +1457,260 @@ void main() {
     },
   );
 
+  test(
+    'transient spend refusal resumes the same proposal on wallet refresh',
+    () async {
+      final txid = (await BitcoinTx.fromPsbt(oneInputPsbt)).txid;
+      final live = sender().copyWith(
+        originalPsbt: oneInputPsbt,
+        proposalPsbt: oneInputPsbt,
+        txId: txid,
+      );
+      await local.storeSender(live);
+      final walletEvents = StreamController<void>.broadcast();
+      addTearDown(walletEvents.close);
+      when(
+        () => transactions.watchWallet(any()),
+      ).thenAnswer((_) => walletEvents.stream);
+      var blocked = true;
+      var attempts = 0;
+      when(
+        () => wallet.signPsbt(
+          walletId: any(named: 'walletId'),
+          network: any(named: 'network'),
+          psbt: any(named: 'psbt'),
+        ),
+      ).thenAnswer((_) async {
+        attempts++;
+        if (blocked) throw const PayjoinSpendBlockedException();
+        return oneInputPsbt;
+      });
+      when(
+        () => blockchain.broadcastPsbt(
+          walletId: any(named: 'walletId'),
+          network: any(named: 'network'),
+          psbt: any(named: 'psbt'),
+        ),
+      ).thenAnswer((_) async {});
+      await engine.resumePayjoinsOnStartup();
+      expect(attempts, 1);
+      blocked = false;
+      walletEvents.add(null);
+      await Future<void>.delayed(const Duration(milliseconds: 100));
+      walletEvents.add(null);
+      await Future<void>.delayed(const Duration(milliseconds: 100));
+      final row = await local.fetchSender(live.id);
+      expect(
+        attempts,
+        2,
+        reason:
+            'Refresh must retry the retained proposal after admission recovers',
+      );
+      expect(row?.isCompleted, isTrue);
+      expect(row?.isAborted, isFalse);
+      expect(row?.txId, txid);
+      verify(
+        () => blockchain.broadcastPsbt(
+          walletId: live.walletId,
+          network: BitcoinNetwork.testnet,
+          psbt: oneInputPsbt,
+        ),
+      ).called(1);
+    },
+  );
+
+  group('paused proposal recovery', () {
+    late StreamController<void> walletEvents;
+    late PayjoinSenderModel model;
+    var blocked = true;
+    var attempts = 0;
+    var broadcasts = 0;
+    var failBroadcast = false;
+
+    setUp(() async {
+      blocked = true;
+      attempts = 0;
+      broadcasts = 0;
+      failBroadcast = false;
+      walletEvents = StreamController<void>.broadcast();
+      addTearDown(walletEvents.close);
+      model = sender().copyWith(
+        originalPsbt: oneInputPsbt,
+        proposalPsbt: oneInputPsbt,
+        txId: (await BitcoinTx.fromPsbt(oneInputPsbt)).txid,
+      );
+      when(
+        () => transactions.watchWallet(any()),
+      ).thenAnswer((_) => walletEvents.stream);
+      when(
+        () => wallet.signPsbt(
+          walletId: any(named: 'walletId'),
+          network: any(named: 'network'),
+          psbt: any(named: 'psbt'),
+        ),
+      ).thenAnswer((inv) async {
+        attempts++;
+        expect(inv.namedArguments[#psbt], oneInputPsbt);
+        if (blocked) throw const PayjoinSpendBlockedException();
+        return oneInputPsbt;
+      });
+      when(
+        () => blockchain.broadcastPsbt(
+          walletId: any(named: 'walletId'),
+          network: any(named: 'network'),
+          psbt: any(named: 'psbt'),
+        ),
+      ).thenAnswer((_) async {
+        broadcasts++;
+        if (failBroadcast) throw Exception('offline');
+      });
+    });
+
+    Future<void> refresh() async {
+      walletEvents.add(null);
+      await pumpEventQueue(times: 40);
+    }
+
+    Future<void> expectReserved() async {
+      final row = await local.fetchSender(model.id);
+      expect(row?.isExpired, isFalse);
+      expect(row?.isCompleted, isFalse);
+      expect(row?.isAborted, isFalse);
+      expect(await engine.getUtxosFrozenByOngoingPayjoins(), hasLength(1));
+      expect(
+        engine.proposalSpendFailure(model.id),
+        isA<PayjoinSpendBlockedFailure>(),
+      );
+    }
+
+    test(
+      'budget survives refresh bursts and foreground; explicit retry uses same proposal',
+      () async {
+        await local.storeSender(model);
+        await engine.resumePayjoinsOnStartup();
+        for (var i = 0; i < 8; i++) {
+          await refresh();
+        }
+        expect(attempts, PayjoinRepositoryImpl.proposalRetryLimit);
+        await expectReserved();
+        blocked = false;
+        await engine.resumePayjoinsOnStartup();
+        await refresh();
+        expect(broadcasts, 0);
+        final result = await engine.retryProposal(model.id);
+        expect(result, isA<Ok<internal.Payjoin, PayjoinFailure>>());
+        expect(broadcasts, 1);
+        expect((await local.fetchSender(model.id))?.isCompleted, isTrue);
+        expect(engine.proposalSpendFailure(model.id), isNull);
+      },
+    );
+
+    test(
+      'proposal received at expiry remains recorded and never resumes original fallback',
+      () async {
+        final expired = expiredSender();
+        await local.storeSender(expired);
+        model = expired.copyWith(proposalPsbt: oneInputPsbt, txId: model.txId);
+        proposals.add(model);
+        await pumpEventQueue(times: 40);
+        expect((await local.fetchSender(model.id))?.proposalPsbt, oneInputPsbt);
+        await expectReserved();
+        await engine.resumePayjoinsOnStartup();
+        expect(attempts, 0);
+        expect(broadcasts, 0);
+        await expectReserved();
+      },
+    );
+
+    test('deadline stops retries without releasing inputs', () async {
+      engine.proposalRetryWindow = const Duration(milliseconds: 20);
+      await local.storeSender(model);
+      await engine.resumePayjoinsOnStartup();
+      await Future<void>.delayed(const Duration(milliseconds: 40));
+      blocked = false;
+      await refresh();
+      expect(attempts, 1);
+      expect(broadcasts, 0);
+      await expectReserved();
+    });
+
+    test(
+      'retry broadcast error keeps reservation and never falls back',
+      () async {
+        await local.storeSender(model);
+        await engine.resumePayjoinsOnStartup();
+        blocked = false;
+        failBroadcast = true;
+        await refresh();
+        expect(attempts, 2);
+        expect(broadcasts, 1);
+        await expectReserved();
+        await refresh();
+        expect(attempts, 2);
+        // An original fallback would sign the original a third time.
+      },
+    );
+
+    test('visibility uncertainty pauses before signing', () async {
+      await local.storeSender(model);
+      await engine.resumePayjoinsOnStartup();
+      blocked = false;
+      when(
+        () => transactions.isTransactionVisible(
+          walletId: any(named: 'walletId'),
+          transactionId: any(named: 'transactionId'),
+          refresh: any(named: 'refresh'),
+        ),
+      ).thenThrow(Exception('offline'));
+      await refresh();
+      expect(attempts, 1);
+      expect(broadcasts, 0);
+      await expectReserved();
+    });
+
+    test(
+      'observed original settles without signing the proposal again',
+      () async {
+        await local.storeSender(model);
+        await engine.resumePayjoinsOnStartup();
+        when(
+          () => transactions.isTransactionVisible(
+            walletId: any(named: 'walletId'),
+            transactionId: any(named: 'transactionId'),
+            refresh: any(named: 'refresh'),
+          ),
+        ).thenAnswer(
+          (inv) async =>
+              inv.namedArguments[#transactionId] == model.originalTxId,
+        );
+        blocked = false;
+        await refresh();
+        expect(attempts, 1);
+        expect(broadcasts, 0);
+        expect((await local.fetchSender(model.id))?.isAborted, isTrue);
+      },
+    );
+
+    test(
+      'restart after protocol expiry only observes and keeps reservations',
+      () async {
+        model = expiredSender(
+          proposalPsbt: oneInputPsbt,
+          transactionId: model.txId,
+        );
+        await local.storeSender(model);
+        await engine.resumePayjoinsOnStartup();
+        blocked = false;
+        await refresh();
+        final result = await engine.retryProposal(model.id);
+        expect(result, isA<Err<internal.Payjoin, PayjoinFailure>>());
+        expect(attempts, 0);
+        expect(broadcasts, 0);
+        await expectReserved();
+      },
+    );
+  });
+
   group('a retried sender', () {
     // A second proposal for the same payment, on a payjoin of its own.
     const retriedProposalPsbt =
@@ -1529,7 +1786,7 @@ void main() {
 
     test('watches its own payjoin alongside the superseded one', () async {
       // The retried payjoin reaches the network but our client sees an error,
-      //  and the wallet has not synced it yet, so the session expires. Its own
+      //  and the wallet has not synced it yet, so the session stays paused. Its own
       //  payjoin watcher must still be armed despite the superseded one.
       final retried = await strandAndRetry();
       await local.recordSenderProposal(
@@ -1550,7 +1807,11 @@ void main() {
         ),
       ).thenThrow(StateError('connection reset after send'));
       await engine.resumePayjoinsOnStartup();
-      expect((await local.fetchSender(retried.id))?.isExpired, isTrue);
+      expect((await local.fetchSender(retried.id))?.isExpired, isFalse);
+      expect(
+        engine.proposalSpendFailure(retried.id),
+        isA<PayjoinSpendBlockedFailure>(),
+      );
 
       onlyVisible(retriedTxId);
       walletEvents.add(null);

@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/send/domain/usecases/retry_payjoin_proposal_usecase.dart';
 import 'package:flutter/foundation.dart' show debugPrint;
 import 'dart:io';
 import 'package:bb_mobile/core/errors/send_errors.dart';
@@ -230,6 +231,7 @@ class _TestableSendCubit extends SendCubit {
     required super.prepareLiquidSendUsecase,
     required super.sendWithPayjoinUsecase,
     required super.watchPayjoinUsecase,
+    required super.retryPayjoinProposalUsecase,
     required super.getWalletsUsecase,
     required super.getWalletUsecase,
     required super.createSendSwapUsecase,
@@ -342,7 +344,9 @@ PayjoinSenderSession _sender({
   required PayjoinStatus status,
   String? txId,
   String originalTxId = 'sender-orig-txid',
+  PayjoinSpendBlockedFailure? spendFailure,
 }) => PayjoinSenderSession(
+  spendFailure: spendFailure,
   status: status,
   uri: 'bitcoin:bc1qaddr?amount=0.0005&pj=https://payjo.in',
   network: BitcoinNetwork.mainnet,
@@ -350,7 +354,7 @@ PayjoinSenderSession _sender({
   originalTransactionId: originalTxId,
   amount: Sats.fromInt(50000),
   createdAt: DateTime(2026),
-  expiresAt: DateTime(2026).add(const Duration(minutes: 1)),
+  expiresAt: DateTime.now().add(const Duration(minutes: 1)),
   transactionId: txId,
 );
 
@@ -426,6 +430,7 @@ void main() {
     prepareLiquidSendUsecase: prepareLiquidSendUsecase,
     sendWithPayjoinUsecase: sendWithPayjoinUsecase,
     watchPayjoinUsecase: watchPayjoinUsecase,
+    retryPayjoinProposalUsecase: _MockRetryPayjoinProposalUsecase(),
     getWalletsUsecase: getWalletsUsecase,
     getWalletUsecase: getWalletUsecase,
     createSendSwapUsecase: createSendSwapUsecase,
@@ -631,6 +636,34 @@ void main() {
   );
 
   group('SendCubit._watchPayjoin', () {
+    test(
+      'paused proposal keeps payment context and surfaces typed refusal until completion',
+      () async {
+        final cubit = await armWatcher(buildCubit());
+        addTearDown(cubit.close);
+        final previousStep = cubit.state.step;
+        final previousTxId = cubit.state.txId;
+        payjoinEvents.add(
+          _sender(
+            status: PayjoinStatus.proposed,
+            spendFailure: const PayjoinSpendBlockedFailure(),
+          ),
+        );
+        await pumpEventQueue();
+        expect(cubit.state.step, previousStep);
+        expect(cubit.state.txId, previousTxId);
+        expect(cubit.state.failure, isA<SendPayjoinPausedFailure>());
+        expect(cubit.state.payjoinSender?.canRetryProposal, isTrue);
+        payjoinEvents.add(
+          _sender(status: PayjoinStatus.completed, txId: 'accepted-proposal'),
+        );
+        await pumpEventQueue();
+        expect(cubit.state.step, SendStep.success);
+        expect(cubit.state.failure, isNull);
+        expect(cubit.state.txId, 'accepted-proposal');
+      },
+    );
+
     test(
       'confirm starts payjoin even when the regular PSBT was pre-signed',
       () async {
@@ -2542,3 +2575,6 @@ void main() {
     });
   });
 }
+
+class _MockRetryPayjoinProposalUsecase extends Mock
+    implements RetryPayjoinProposalUsecase {}

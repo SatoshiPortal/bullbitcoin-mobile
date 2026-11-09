@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/send/domain/usecases/retry_payjoin_proposal_usecase.dart';
 import 'package:bb_mobile/core/utils/result.dart' as core;
 import 'package:bb_mobile/features/send/domain/send_failure.dart';
 import 'package:bb_mobile/features/send/domain/usecases/send_with_payjoin_usecase.dart';
@@ -31,6 +32,23 @@ Future<core.Result<PayjoinSenderSession, SendFailure>> _start(
 );
 
 void main() {
+  test(
+    'proposal retry forwards only the retained session id and maps refusal',
+    () async {
+      final sender = _MockPayjoinSender();
+      when(
+        () => sender.retryProposal('same-session'),
+      ).thenAnswer((_) async => const Err(PayjoinSpendBlockedFailure()));
+      final result = await RetryPayjoinProposalUsecase(
+        sender,
+      ).execute('same-session');
+      expect(result, isA<core.Err<PayjoinSession, SendFailure>>());
+      expect((result as core.Err).failure, isA<SendPayjoinPausedFailure>());
+      verify(() => sender.retryProposal('same-session')).called(1);
+      verifyNoMoreInteractions(sender);
+    },
+  );
+
   test('regtest is refused before creating a sender session', () async {
     final sender = _MockPayjoinSender();
     final result = await SendWithPayjoinUsecase(sender).execute(
