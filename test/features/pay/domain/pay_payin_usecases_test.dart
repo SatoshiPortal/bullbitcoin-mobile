@@ -244,7 +244,7 @@ void main() {
 
       final failure = (result as Err<String, PayFailure>).failure;
       expect(failure, isA<PayUnexpectedFailure>());
-      expect(failure.logMessage, contains(_rawReason));
+      expect(failure.logMessage, 'pay_payin_broadcast_failed');
     });
   });
 
