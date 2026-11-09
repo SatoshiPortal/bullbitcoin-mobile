@@ -3,7 +3,8 @@ import 'package:bb_mobile/features/receive/domain/usecases/prepare_receive_addre
 import 'package:primitives/primitives.dart' show Err;
 import 'dart:io';
 
-import 'package:bull_sdk/bull_sdk.dart';
+import 'package:bull_sdk/lwk.dart' as lwk;
+import 'package:bull_sdk/src/rust/frb_generated.dart' show BullSdk, BullSdkApi;
 
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart'
@@ -32,8 +33,14 @@ class _Labels extends Mock implements LabelsFacade {}
 
 class _Reporter extends Mock implements LoggerReporter {}
 
+class _SdkApi extends Mock implements BullSdkApi {}
+
 void main() {
-  setUpAll(BullSdk.init);
+  final sdk = _SdkApi();
+  // Liquid validation uses FRB; busy/recovery behavior does not need its FFI.
+  setUpAll(() => BullSdk.initMock(api: sdk));
+  tearDownAll(BullSdk.dispose);
+  setUp(() => reset(sdk));
   for (final origin in [
     'wpkh([aabbccdd/84h/0h/0h])',
     'elwpkh([aabbccdd/84h/1776h/0h])',
@@ -71,6 +78,9 @@ void main() {
           await log.flush();
           await directory.delete(recursive: true);
         });
+        when(
+          () => sdk.lwkApiTypesAddressValidate(addressString: issuedAddress),
+        ).thenAnswer((_) async => lwk.LiquidNetwork.mainnet);
         native = _Native();
         labels = _Labels();
         final metadata = _Metadata();
@@ -101,6 +111,13 @@ void main() {
           expect(address.address, issuedAddress);
           expect(address.index, 7);
           expect(attempts, 3);
+          if (origin.startsWith('el')) {
+            verify(
+              () =>
+                  sdk.lwkApiTypesAddressValidate(addressString: issuedAddress),
+            ).called(1);
+          }
+          verifyNoMoreInteractions(sdk);
           expect(
             (await log.readLogs()).map(
               (line) => line.split('\t').sublist(1, 3),
@@ -125,6 +142,7 @@ void main() {
         expect(await prepare.execute(walletId: origin), isA<Err>());
         verify(() => native.receive(row, advance: false)).called(5);
         verifyNever(() => labels.fetchByReference(any()));
+        verifyZeroInteractions(sdk);
         expect(
           (await log.readLogs()).map((line) => line.split('\t').sublist(1, 3)),
           [
@@ -146,6 +164,7 @@ void main() {
           throwsA(same(error)),
         );
         verify(() => native.receive(row, advance: false)).called(1);
+        verifyZeroInteractions(sdk);
       });
 
       test('label failure after issuance never replays an advance', () async {
@@ -159,6 +178,12 @@ void main() {
           throwsA(same(error)),
         );
         verify(() => native.receive(row, advance: true)).called(1);
+        if (origin.startsWith('el')) {
+          verify(
+            () => sdk.lwkApiTypesAddressValidate(addressString: issuedAddress),
+          ).called(1);
+        }
+        verifyNoMoreInteractions(sdk);
       });
     });
   }
