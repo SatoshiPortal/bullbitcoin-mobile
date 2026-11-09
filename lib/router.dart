@@ -29,8 +29,8 @@ import 'package:bb_mobile/features/onboarding/ui/onboarding_router.dart';
 import 'package:bb_mobile/features/pay/ui/pay_router.dart';
 import 'package:bb_mobile/features/psbt_flow/psbt_router.dart';
 import 'package:bb_mobile/features/receive/ui/receive_router.dart';
-import 'package:bb_mobile/features/recoverbull/router.dart';
-import 'package:bb_mobile/features/recoverbull_google_drive/router.dart';
+import 'package:bull_recoverbull/bull_recoverbull.dart';
+import 'package:bb_mobile/features/wallet/public/recoverbull_bindings.dart';
 import 'package:bb_mobile/features/replace_by_fee/router.dart';
 import 'package:bb_mobile/features/sell/ui/sell_router.dart';
 import 'package:bb_mobile/features/send/ui/send_router.dart';
@@ -58,7 +58,7 @@ class AppRouter {
   static final GlobalKey<NavigatorState> rootNavigatorKey =
       GlobalKey<NavigatorState>(debugLabel: 'rootNav');
 
-  static final router = GoRouter(
+  static final GoRouter router = GoRouter(
     navigatorKey: rootNavigatorKey,
     initialLocation: WalletRoute.walletHome.path,
     // Breadcrumbs only — `enableAutoTransactions: false` skips the
@@ -226,8 +226,13 @@ class AppRouter {
         exitRedirectPath: WalletRoute.walletHome.path,
       ),
       ...ImportQrDeviceRouter.routes,
-      RecoverBullRouter.route,
-      RecoverBullGoogleDriveRouter.route,
+      locator<RecoverBullFeature>().route(
+        copiedMessage: (context) => context.loc.copiedToClipboard,
+        onRecovered: (context) {
+          WalletRecoverBullBindings.recovered(context);
+          router.goNamed(WalletRoute.walletHome.name);
+        },
+      ),
       LabelsRouter.route,
       StatusCheckRouter.route,
     ],

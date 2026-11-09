@@ -1,3 +1,4 @@
+import 'package:bull_recoverbull/bull_recoverbull.dart' as rb;
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/result.dart';
@@ -12,10 +13,15 @@ import 'package:meta/meta.dart';
 class CheckBackupNeededUsecase {
   final WalletRepository _walletRepository;
   final SettingsRepository _settingsRepository;
+  final Future<rb.Result<rb.BackupStatus, rb.RecoverBullFailure>> Function(
+    rb.VaultContext,
+  )
+  _backupStatus;
 
   CheckBackupNeededUsecase({
     required this._walletRepository,
     required this._settingsRepository,
+    required this._backupStatus,
   });
 
   @useResult
@@ -23,9 +29,9 @@ class CheckBackupNeededUsecase {
     final Environment environment;
     try {
       environment = (await _settingsRepository.fetch()).environment;
-    } catch (e, st) {
-      log.severe(message: 'CheckBackupNeeded: settings', error: e, trace: st);
-      return Err(WalletStorageFailure('settings fetch: ${e.runtimeType}'));
+    } on Exception {
+      log.warning('recoverbull.backup.status.unavailable');
+      return const Err(WalletStorageFailure());
     }
 
     final List<Wallet> defaultWallets;
@@ -39,13 +45,27 @@ class CheckBackupNeededUsecase {
         return Err(failure);
     }
 
-    return Ok(
-      defaultWallets.isNotEmpty &&
-          defaultWallets.any(
-            (wallet) =>
-                !wallet.isEncryptedVaultTested &&
-                !wallet.isPhysicalBackupTested,
-          ),
+    if (defaultWallets.isEmpty ||
+        defaultWallets.every((wallet) => wallet.isPhysicalBackupTested)) {
+      return const Ok(false);
+    }
+    final bitcoin = defaultWallets
+        .where((wallet) => wallet.network.isBitcoin)
+        .firstOrNull;
+    if (bitcoin == null) return const Ok(true);
+    final status = await _backupStatus(
+      rb.VaultContext(
+        fingerprint: rb.Fingerprint(bitcoin.masterFingerprint),
+        network: bitcoin.network.isTestnet
+            ? rb.BitcoinNetwork.testnet
+            : rb.BitcoinNetwork.mainnet,
+      ),
     );
+    // Unavailable metadata cannot certify a backup; its historical flag is
+    // availability information, not evidence of a successful verification.
+    return Ok(switch (status) {
+      rb.Ok(:final value) => !value.isVerified,
+      rb.Err() => true,
+    });
   }
 }

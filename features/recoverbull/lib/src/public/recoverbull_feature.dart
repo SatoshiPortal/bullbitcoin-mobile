@@ -67,7 +67,7 @@ final class RecoverBullFeature {
 
   GoRoute route({
     required String Function(BuildContext) copiedMessage,
-    required VoidCallback onRecovered,
+    required void Function(BuildContext) onRecovered,
   }) => GoRoute(
     path: '/recoverbull-flows',
     name: 'recoverbullFlows',
@@ -85,7 +85,7 @@ final class RecoverBullFeature {
           vault: request is RecoverBullFlowRequest ? request.vault : null,
         ),
         copiedMessage: copiedMessage(context),
-        onRecovered: onRecovered,
+        onRecovered: () => onRecovered(context),
       );
     },
   );

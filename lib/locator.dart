@@ -1,5 +1,10 @@
 import 'package:bb_mobile/core/core_locator.dart';
-import 'package:bb_mobile/core/status/status_locator.dart';
+import 'package:bb_mobile/features/settings/public/recoverbull_bindings.dart';
+import 'package:bb_mobile/features/wallet/public/recoverbull_bindings.dart';
+import 'package:bull_recoverbull/bull_recoverbull.dart';
+import 'package:secrets/secrets.dart';
+import 'package:bull_tor/tor.dart';
+import 'package:bb_mobile/features/status_check/status_locator.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/sync/sync_locator.dart';
 import 'package:bb_mobile/core/sync/sync_coordinator.dart';
@@ -62,6 +67,29 @@ import 'package:bull_logs/bull_logs.dart';
 final GetIt locator = GetIt.instance;
 
 class AppLocator {
+  /// Foreground-only composition. Headless setup never opens this database.
+  static Future<void> setupRecoverBull(
+    GetIt locator, {
+    required String databasePath,
+  }) async {
+    SettingsRecoverBullBindings.setup(locator);
+    WalletRecoverBullBindings.setup(locator);
+    final feature = await RecoverBullFeature.mount(
+      databasePath: databasePath,
+      secrets: locator<Secrets>(),
+      wallets: locator<RecoverBullWalletPort>(),
+      environment: locator<RecoverBullEnvironmentPort>(),
+      legacy: locator<RecoverBullLegacySettingsPort>(),
+      routes: locator<RecoverBullRoutePort>(),
+      clients: locator<TorHttpClientFactory>(),
+    );
+    locator.registerSingleton<RecoverBullFeature>(
+      feature,
+      dispose: (value) => value.dispose(),
+    );
+    locator.registerSingleton<RecoverBullFacade>(feature.facade);
+  }
+
   /// Call this in the `main` function **before** `runApp()`
   static Future<void> setup(
     GetIt locator,
