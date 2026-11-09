@@ -1007,13 +1007,14 @@ class SellBloc extends Bloc<SellEvent, SellState>
         }
       }
       if (!waitingForPayjoin) await _completeAfterBroadcast(emit);
-    } catch (e, st) {
+    } catch (_) {
+      const code = 'sell_payin_confirmation_failed';
       log.severe(
-        message: 'Unexpected error while confirming the sell payin',
-        error: e,
-        trace: st,
+        message: '$code category=unexpected',
+        error: Exception(code),
+        trace: StackTrace.current,
       );
-      _emitSendPaymentError(emit, SellUnexpectedFailure(e.toString()));
+      _emitSendPaymentError(emit, SellUnexpectedFailure(code));
     } finally {
       final current = _currentPaymentState;
       // Once broadcast, the confirmation stays in flight until the order

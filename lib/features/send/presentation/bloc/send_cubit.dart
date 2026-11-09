@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/send/domain/broadcast_failure.dart';
 import 'package:bb_mobile/features/wallet/domain/network_x.dart';
 import 'package:bb_mobile/features/send/domain/usecases/watch_wallet_revisions_usecase.dart';
 import 'package:bull_pricer/bull_pricer.dart';
@@ -2334,10 +2335,14 @@ class SendCubit extends Cubit<SendState>
       }
 
       unawaited(
-        _getWalletUsecase.execute(wallet.id, sync: true).catchError((e) {
-          log.warning('Failed to sync wallet after broadcast: $e');
-          return null;
-        }),
+        _getWalletUsecase
+            .execute(wallet.id, sync: true)
+            .then<void>((_) {})
+            .catchError((Object _) {
+              log.warning(
+                'send_post_broadcast_refresh_failed category=unexpected',
+              );
+            }),
       );
     } on GetWalletException catch (e) {
       if (!isClosed) {
@@ -2349,7 +2354,9 @@ class SendCubit extends Cubit<SendState>
         );
       }
     } on BroadcastTransactionException catch (e) {
-      log.warning('Failed to broadcast transaction: ${e.message}');
+      log.warning(
+        'send_broadcast_failed category=${BroadcastFailureCategory.of(e).name}',
+      );
       if (!isClosed) {
         emit(
           state.copyWith(
@@ -2361,17 +2368,13 @@ class SendCubit extends Cubit<SendState>
           ),
         );
       }
-    } catch (e, st) {
-      log.warning(
-        'Unexpected broadcast transaction error',
-        error: e,
-        trace: st,
-      );
+    } catch (_) {
+      log.warning('send_broadcast_failed category=unexpected');
       if (!isClosed) {
         emit(
           state.copyWith(
-            failure: SendTransactionConfirmationFailure(
-              logMessage: e.toString(),
+            failure: const SendTransactionConfirmationFailure(
+              logMessage: 'send_broadcast_failed',
             ),
             broadcastingTransaction: false,
           ),
@@ -2635,9 +2638,13 @@ class SendCubit extends Cubit<SendState>
           txId: state.txId!,
         );
       }
-    } catch (e) {
+    } catch (_) {
       emit(state.copyWith(step: SendStep.confirm));
-      log.severe(error: e, trace: StackTrace.current);
+      log.severe(
+        message: 'send_confirmation_failed category=unexpected',
+        error: Exception('send_confirmation_failed'),
+        trace: StackTrace.current,
+      );
     }
   }
 
@@ -2708,11 +2715,13 @@ class SendCubit extends Cubit<SendState>
             unawaited(
               _getWalletUsecase
                   .execute(state.selectedWallet!.id, sync: true)
-                  .catchError((Object e) {
+                  .then<void>((_) {})
+                  .catchError((Object _) {
                     // Fire-and-forget refresh: without this the throw becomes
                     // an unhandled zone error, matching the sibling syncs.
-                    log.warning('Failed to sync wallet after transfer: $e');
-                    return null;
+                    log.warning(
+                      'send_post_transfer_refresh_failed category=unexpected',
+                    );
                   }),
             );
           }
@@ -2781,10 +2790,14 @@ class SendCubit extends Cubit<SendState>
             _payjoinSubscription?.cancel();
             if (walletId != null) {
               unawaited(
-                _getWalletUsecase.execute(walletId, sync: true).catchError((e) {
-                  log.warning('Failed to sync wallet after payjoin: $e');
-                  return null;
-                }),
+                _getWalletUsecase
+                    .execute(walletId, sync: true)
+                    .then<void>((_) {})
+                    .catchError((Object _) {
+                      log.warning(
+                        'send_post_payjoin_refresh_failed category=unexpected',
+                      );
+                    }),
               );
             }
             // broadcastTransaction never reaches its own label-store call for

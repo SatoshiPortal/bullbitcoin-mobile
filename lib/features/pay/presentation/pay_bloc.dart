@@ -802,16 +802,14 @@ class PayBloc extends Bloc<PayEvent, PayState>
         }
       }
       if (!waitingForPayjoin) await _completeAfterBroadcast(emit);
-    } catch (e, st) {
+    } catch (_) {
+      const code = 'pay_payin_confirmation_failed';
       log.severe(
-        message: 'Unexpected error while confirming the payment',
-        error: e,
-        trace: st,
+        message: '$code category=unexpected',
+        error: Exception(code),
+        trace: StackTrace.current,
       );
-      _emitSendPaymentError(
-        emit,
-        PayUnexpectedFailure('send payment threw: ${e.runtimeType}'),
-      );
+      _emitSendPaymentError(emit, PayUnexpectedFailure(code));
     } finally {
       final current = _currentPaymentState;
       if (current != null &&

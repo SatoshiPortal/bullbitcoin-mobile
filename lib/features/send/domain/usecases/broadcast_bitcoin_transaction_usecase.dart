@@ -1,6 +1,7 @@
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/send/data/bitcoin_blockchain_repository.dart';
-import 'package:bb_mobile/core/errors/send_errors.dart';
+import 'package:bb_mobile/features/send/domain/broadcast_failure.dart';
+import 'package:bb_mobile/features/send/data/broadcast_failure_mapper.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:convert/convert.dart';
 import 'package:bull_logger/bull_logger.dart';
@@ -31,7 +32,9 @@ class BroadcastBitcoinTransactionUsecase {
           log.warning(
             'Broadcast refused network=${network.name} category=authorization',
           );
-          throw const UnsupportedNetworkException();
+          throw CategorizedBroadcastException(
+            BroadcastFailureCategory.authorization,
+          );
         }
       }
       if (isPsbt) {
@@ -44,8 +47,8 @@ class BroadcastBitcoinTransactionUsecase {
         hex.decode(transaction),
         network: network,
       );
-    } catch (e) {
-      throw BroadcastTransactionException(e.toString());
+    } on Exception catch (e) {
+      throw CategorizedBroadcastException(mapBroadcastFailure(e));
     }
   }
 }

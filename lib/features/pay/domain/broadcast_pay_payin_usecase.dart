@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/send/public/broadcast_failure.dart';
 import 'package:bb_mobile/core/errors/send_errors.dart';
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
 import 'package:bb_mobile/features/send/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
@@ -54,10 +55,9 @@ class BroadcastPayPayinUsecase {
 
   PayFailure _broadcastFailure(Exception error, String chain) {
     const code = 'pay_payin_broadcast_failed';
-    final message = '$code chain=$chain category=unknown';
+    final category = BroadcastFailureCategory.of(error);
+    final message = '$code chain=$chain category=${category.name}';
     if (error is BroadcastTransactionException) {
-      // Send currently erases the typed cause and RPC code. Never parse or
-      // forward its foreign message to recover a more specific category.
       log.warning(message);
     } else {
       log.severe(
