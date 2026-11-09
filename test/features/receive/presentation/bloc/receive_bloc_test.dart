@@ -1,3 +1,5 @@
+import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
+import 'package:bb_mobile/features/receive/domain/enums/receive_network_type.dart';
 import 'dart:async';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
@@ -35,6 +37,8 @@ import 'package:fake_async/fake_async.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:primitives/primitives.dart' show BitcoinNetwork;
+
+class _MockSettings extends Mock implements GetSettingsUsecase {}
 
 class _MockGetReceiveWalletsUsecase extends Mock
     implements GetReceiveWalletsUsecase {}
@@ -239,9 +243,10 @@ void main() {
     Wallet? wallet,
     bool withPresetWallet = true,
     WatchWalletTransactionByAddressUsecase? observation,
+    GetReceiveSettingsUsecase? settings,
   }) => ReceiveBloc(
     getReceiveWalletsUsecase: getWallets,
-    getReceiveSettingsUsecase: getSettings,
+    getReceiveSettingsUsecase: settings ?? getSettings,
     convertReceiveAmountUsecase: convertSatsToCurrency,
     prepareReceiveAddressUsecase: getReceiveAddress,
     createReceiveOrderSwapUsecase: createOrderSwap,
@@ -308,7 +313,12 @@ void main() {
 
     // Payjoin is enabled by default here so the guard group can create a
     // session; the gated group overrides this stub to disable it.
-    when(() => getSettings.execute()).thenAnswer(
+    when(
+      () => getSettings.execute(
+        mode: any(named: 'mode'),
+        selectedNetwork: any(named: 'selectedNetwork'),
+      ),
+    ).thenAnswer(
       (_) async => const Ok(
         SettingsEntity(
           environment: Environment.mainnet,
@@ -358,6 +368,59 @@ void main() {
     await payjoinEnabledChangeController.close();
     await payjoinMinAmountChangeController.close();
   });
+
+  for (final mode in [
+    ReceiveNetworkType.lightning,
+    ReceiveNetworkType.liquid,
+  ]) {
+    for (final preset in [false, true]) {
+      for (final warm in [false, true]) {
+        test(
+          '$mode regtest refusal preset=$preset warm=$warm precedes Liquid lookup',
+          () async {
+            final inner = _MockSettings();
+            when(() => inner.execute()).thenAnswer(
+              (_) async => SettingsEntity(
+                environment: preset ? Environment.mainnet : Environment.regtest,
+                bitcoinUnit: BitcoinUnit.sats,
+                currencyCode: 'USD',
+              ),
+            );
+            final selected = _testWallet(network: Network.bitcoinRegtest);
+            when(
+              () => getWallets.execute(onlyBitcoin: true),
+            ).thenAnswer((_) async => Ok([selected]));
+            final bloc = buildBloc(
+              wallet: selected,
+              withPresetWallet: preset,
+              settings: GetReceiveSettingsUsecase(inner),
+            );
+            addTearDown(bloc.close);
+            if (warm) {
+              final ready = bloc.stream.firstWhere(
+                (s) => s.bitcoinUnit != null && s.payjoinAttemptSettled,
+              );
+              bloc.add(const ReceiveBitcoinStarted(null));
+              await ready;
+            }
+            final refused = bloc.stream.firstWhere(
+              (s) => s.failure is ReceiveUnsupportedNetworkFailure,
+            );
+            bloc.add(
+              mode == ReceiveNetworkType.lightning
+                  ? const ReceiveLightningStarted()
+                  : const ReceiveLiquidStarted(),
+            );
+            await refused;
+            expect(bloc.state.revealedAddressGeneration, isNull);
+            verifyNever(
+              () => getWallets.execute(onlyLiquid: true, onlyDefaults: true),
+            );
+          },
+        );
+      }
+    }
+  }
 
   group('ReceivePayjoinOriginalTxBroadcasted guard', () {
     test(
@@ -739,7 +802,12 @@ void main() {
     });
 
     test('when a startup read fails', () async {
-      when(() => getSettings.execute()).thenAnswer(
+      when(
+        () => getSettings.execute(
+          mode: any(named: 'mode'),
+          selectedNetwork: any(named: 'selectedNetwork'),
+        ),
+      ).thenAnswer(
         (_) async => const Err(ReceiveUnexpectedFailure('prefs unreadable')),
       );
 
@@ -1536,7 +1604,12 @@ void main() {
       bloc.add(const ReceiveBitcoinStarted(null));
       await pumpEventQueue();
 
-      when(() => getSettings.execute()).thenAnswer(
+      when(
+        () => getSettings.execute(
+          mode: any(named: 'mode'),
+          selectedNetwork: any(named: 'selectedNetwork'),
+        ),
+      ).thenAnswer(
         (_) async => const Err(ReceiveUnexpectedFailure('prefs unreadable')),
       );
 
