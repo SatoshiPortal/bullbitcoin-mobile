@@ -1,0 +1,28 @@
+name: bull_recoverbull
+description: RecoverBull backup and recovery workflows backed by Secrets.
+publish_to: none
+version: 0.1.0
+
+environment:
+  sdk: "3.12.2"
+  flutter: "3.44.9"
+
+resolution: workspace
+
+dependencies:
+  flutter:
+    sdk: flutter
+  primitives:
+  secrets:
+  bull_logger:
+  convert: ^3.1.2
+  meta: ^1.17.0
+  recoverbull:
+    git:
+      url: https://github.com/SatoshiPortal/recoverbull-client-dart.git
+      ref: 293b0d709f6c7775180f775c6a5fe99a39f175ce
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0

@@ -21,6 +21,7 @@ workspace:
   - packages/bull_logger
   - packages/bull_pricer
   - features/logs
+  - features/recoverbull
 
 dependencies:
   flutter:
