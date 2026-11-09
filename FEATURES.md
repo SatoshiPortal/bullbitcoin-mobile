@@ -172,7 +172,8 @@ graph TB
     SWAPS --> EXCHANGE_SUPPORT_CHAT
     REPLACE_BY_FEE --> EXCHANGE_SUPPORT_CHAT
     DCA --> EXCHANGE
-    PAY -->|public targeted routine sync| WALLETS
+    PAY -->|public spend admission and routine sync| WALLETS
+    PAY -->|public protected broadcast| SEND
     PAY --> EXCHANGE
     TX_HISTORY --> EXCHANGE
     WALLETS --> EXCHANGE
@@ -193,7 +194,8 @@ graph TB
     RECEIVE --> SWAPS
     RECEIVE --> TX_HISTORY
     RECIPIENTS --> EXCHANGE
-    SELL -->|public targeted routine sync| WALLETS
+    SELL -->|public spend admission and routine sync| WALLETS
+    SELL -->|public protected broadcast| SEND
     SELL --> EXCHANGE
     SELL --> RECIPIENTS
     SELL --> BULL_PAYJOIN
@@ -206,7 +208,7 @@ graph TB
     SEND --> SWAPS
     SEND --> TX_HISTORY
     SEND --> UTXO_MGMT
-    SEND -->|public revision stream| WALLETS
+    SEND -->|public spend admission and revisions| WALLETS
     SETTINGS -->|public wallet discovery| WALLETS
     SETTINGS --> CORE
     SETTINGS --> BULL_PAYJOIN

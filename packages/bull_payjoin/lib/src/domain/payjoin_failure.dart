@@ -55,3 +55,7 @@ final class PayjoinFallbackUnavailableFailure extends PayjoinFailure {
 final class PayjoinUnexpectedFailure extends PayjoinFailure {
   const PayjoinUnexpectedFailure([super.logMessage]);
 }
+
+final class PayjoinSpendBlockedFailure extends PayjoinFailure {
+  const PayjoinSpendBlockedFailure();
+}

@@ -409,6 +409,7 @@ class SellBloc extends Bloc<SellEvent, SellState>
     if (!isCurrent()) return;
     try {
       final orderResult = await _createSellOrderUsecase.execute(
+        walletId: event.wallet.id,
         orderAmount: walletSelectionState.orderAmount,
         currency: walletSelectionState.fiatCurrency,
         recipient: event.recipient,
@@ -519,6 +520,7 @@ class SellBloc extends Bloc<SellEvent, SellState>
 
     try {
       final orderResult = await _createSellOrderUsecase.execute(
+        walletId: null,
         orderAmount: walletSelectionState.orderAmount,
         currency: walletSelectionState.fiatCurrency,
         network: event.network,

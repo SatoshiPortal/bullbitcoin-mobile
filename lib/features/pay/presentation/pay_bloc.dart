@@ -317,6 +317,7 @@ class PayBloc extends Bloc<PayEvent, PayState>
 
     final FiatPaymentOrder createdPayOrder;
     switch (await _placePayOrderUsecase.execute(
+      walletId: event.wallet.id,
       orderAmount: walletSelectionState.amount,
       recipientId: walletSelectionState.selectedRecipient.id,
       network: event.wallet.isLiquid
@@ -421,6 +422,7 @@ class PayBloc extends Bloc<PayEvent, PayState>
     emit(preparing);
 
     switch (await _placePayOrderUsecase.execute(
+      walletId: null,
       orderAmount: walletSelectionState.amount,
       recipientId: walletSelectionState.selectedRecipient.id,
       network: event.network,

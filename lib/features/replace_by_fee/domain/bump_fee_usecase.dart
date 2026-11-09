@@ -1,3 +1,5 @@
+import 'package:bb_mobile/features/wallet/public/wallet_facade.dart'
+    show WalletSpendBlockedException, BitcoinSpendStatus;
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/send/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
@@ -81,8 +83,16 @@ class BumpFeeUsecase {
         psbt,
         isPsbt: true,
         network: network,
+        walletId: walletId,
       );
       return Ok(broadcastedTxid);
+    } on WalletSpendBlockedException catch (e) {
+      return Err(
+        ReplaceByFeeSpendBlockedFailure(
+          replacementUnsupported:
+              e.status == BitcoinSpendStatus.replacementUnsupported,
+        ),
+      );
     } on ManipulatedTransactionException catch (e, st) {
       log.severe(
         message: 'Refused to bump a transaction with invalid signatures',

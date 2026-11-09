@@ -1,3 +1,5 @@
+import 'package:bb_mobile/features/wallet/public/wallet_facade.dart'
+    show WalletSpendBlockedException;
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bb_mobile/core/wallet/domain/insufficient_funds_exception.dart';
@@ -48,6 +50,8 @@ class PreparePayBitcoinPayinUsecase {
         txSize: prepared.txSize,
         isToSelf: prepared.isToSelf,
       ));
+    } on WalletSpendBlockedException {
+      return const Err(PaySpendBlockedFailure());
     } on InsufficientFundsException catch (e, st) {
       // PrepareBitcoinSendUsecase rethrows this rather than wrapping it,
       // precisely so the caller can name it. The estimate's balance check

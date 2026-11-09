@@ -4,6 +4,7 @@ library;
 export 'src/domain/payjoin_failure.dart'
     show
         PayjoinFailure,
+        PayjoinSpendBlockedFailure,
         PayjoinInvalidInputFailure,
         PayjoinUnavailableFailure,
         PayjoinWalletUnavailableFailure,
@@ -22,6 +23,7 @@ export 'src/domain/payjoin_policy.dart'
 export 'src/domain/payjoin_ports.dart'
     show
         PayjoinWalletPort,
+        PayjoinSpendBlockedException,
         PayjoinBlockchainPort,
         PayjoinTransactionPort,
         PayjoinLabelsPort,

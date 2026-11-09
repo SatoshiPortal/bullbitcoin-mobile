@@ -1,8 +1,7 @@
 import 'package:bb_mobile/features/send/public/broadcast_failure.dart';
 import 'package:bb_mobile/core/errors/send_errors.dart';
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
-import 'package:bb_mobile/features/send/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
-import 'package:bb_mobile/features/send/domain/usecases/broadcast_liquid_transaction_usecase.dart';
+import 'package:bb_mobile/features/send/public/send_facade.dart';
 import 'package:bb_mobile/features/pay/domain/pay_failure.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:meta/meta.dart';
@@ -10,14 +9,9 @@ import 'package:primitives/primitives.dart' hide Network;
 
 class BroadcastPayPayinUsecase {
   final WalletFacade _wallet;
-  final BroadcastBitcoinTransactionUsecase _broadcastBitcoinTransactionUsecase;
-  final BroadcastLiquidTransactionUsecase _broadcastLiquidTransactionUsecase;
+  final SendFacade _send;
 
-  const BroadcastPayPayinUsecase({
-    required this._wallet,
-    required this._broadcastBitcoinTransactionUsecase,
-    required this._broadcastLiquidTransactionUsecase,
-  });
+  const BroadcastPayPayinUsecase({required this._wallet, required this._send});
 
   @useResult
   Future<Result<String, PayFailure>> bitcoin(
@@ -27,13 +21,16 @@ class BroadcastPayPayinUsecase {
     required Network network,
   }) async {
     try {
-      final txid = await _broadcastBitcoinTransactionUsecase.execute(
+      final txid = await _send.bitcoin(
         transaction,
         isPsbt: isPsbt,
+        walletId: walletId,
         network: network,
       );
       _wallet.pollWallet(walletId, isActive: () => true).ignore();
       return Ok(txid);
+    } on WalletSpendBlockedException {
+      return const Err(PaySpendBlockedFailure());
     } on Exception catch (e) {
       return Err(_broadcastFailure(e, 'bitcoin'));
     }
@@ -45,7 +42,7 @@ class BroadcastPayPayinUsecase {
     required String walletId,
   }) async {
     try {
-      final txid = await _broadcastLiquidTransactionUsecase.execute(signedPset);
+      final txid = await _send.liquid(signedPset);
       _wallet.pollWallet(walletId, isActive: () => true).ignore();
       return Ok(txid);
     } on Exception catch (e) {

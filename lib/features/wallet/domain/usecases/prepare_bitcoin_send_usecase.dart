@@ -1,3 +1,4 @@
+import '../wallet_spend_failure.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
@@ -71,6 +72,8 @@ class PrepareBitcoinSendUsecase {
         walletId: walletId,
       );
       return (unsignedPsbt: psbt, txSize: size, isToSelf: isToSelf);
+    } on WalletSpendBlockedException {
+      rethrow;
     } on NoSpendableUtxoException {
       rethrow;
     } on InsufficientFundsException {

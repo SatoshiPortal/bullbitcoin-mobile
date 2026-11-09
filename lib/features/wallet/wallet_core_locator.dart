@@ -1,3 +1,4 @@
+import 'data/wallet_native_runtime.dart';
 import 'package:secrets/secrets.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
@@ -43,6 +44,7 @@ class WalletLocator {
   static void registerRepositories(GetIt locator) {
     locator.registerLazySingleton<BitcoinWalletRepository>(
       () => BitcoinWalletRepository(
+        requireSpend: locator<WalletNativeRuntime>().requireSpend,
         walletMetadataDatasource: locator<WalletMetadataDatasource>(),
         bdkWalletDatasource: locator<BdkWalletDatasource>(),
         secrets: locator<Secrets>(),

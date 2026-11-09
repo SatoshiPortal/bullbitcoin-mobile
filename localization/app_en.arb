@@ -16039,5 +16039,13 @@
   "networkWalletReuseSecret": "Reuse an existing wallet secret",
   "@networkWalletReuseSecret": {
     "description": "Create wallets on the selected network with an existing secret"
+  },
+  "walletSpendAwaitingObservation": "Spending is temporarily unavailable while this wallet reconciles a previous payment. Refresh the wallet or use Scan for missing transactions, then try again.",
+  "@walletSpendAwaitingObservation": {
+    "description": "Bitcoin wallet spend gate; no timeout releases inputs. Refresh or discovery retries observation."
+  },
+  "walletSpendReplacementUnavailable": "Fee bumping is unavailable for this payment. Wait for confirmation.",
+  "@walletSpendReplacementUnavailable": {
+    "description": "RBF limitation for retained tracked Bitcoin broadcasts."
   }
 }

@@ -8,6 +8,7 @@ extension SendFailureL10n on SendFailure {
     BuildContext context, {
     String? formattedFrozenBalance,
   }) => switch (this) {
+    SendSpendBlockedFailure() => context.loc.walletSpendAwaitingObservation,
     SendInvalidPaymentRequestFailure(:final isUnsupportedQr) =>
       isUnsupportedQr
           ? context.loc.sendErrorUnsupportedQrCodeFormat

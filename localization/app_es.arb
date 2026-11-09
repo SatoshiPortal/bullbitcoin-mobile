@@ -4845,5 +4845,7 @@
   "sellPayoutBalance": "Agregar a mi saldo de cuenta",
   "sellPayoutSepaDescription": "Los retiros aparecen como enviados por Leonod",
   "sellPayoutTitle": "Seleccionar destinatario",
-  "sellPayoutNewBadge": "NUEVO"
+  "sellPayoutNewBadge": "NUEVO",
+  "walletSpendAwaitingObservation": "Los gastos no están disponibles temporalmente mientras esta cartera verifica un pago anterior. Actualiza la cartera o busca transacciones faltantes y vuelve a intentarlo.",
+  "walletSpendReplacementUnavailable": "No se pueden aumentar las comisiones de este pago. Espera su confirmación."
 }

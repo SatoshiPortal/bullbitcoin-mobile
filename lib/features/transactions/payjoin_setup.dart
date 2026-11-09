@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
 import 'dart:async';
 
 import 'package:bb_mobile/core/blockchain/data/datasources/bdk_bitcoin_blockchain_datasource.dart';
@@ -33,10 +34,12 @@ abstract final class PayjoinSetup {
           locator<Secrets>(),
           locator<BdkWalletDatasource>(),
           locator<WalletMetadataDatasource>(),
+          locator<WalletFacade>(),
         ),
         blockchain: AppPayjoinBlockchainAdapter(
           locator<BdkBitcoinBlockchainDatasource>(),
           locator<ElectrumServersPort>(),
+          locator<WalletFacade>(),
         ),
         fees: AppPayjoinFeesAdapter(locator<FeesRepository>()),
         transactions: AppPayjoinTransactionAdapter(
@@ -44,6 +47,7 @@ abstract final class PayjoinSetup {
           locator<WalletTransactionRepository>(),
           locator<BdkBitcoinBlockchainDatasource>(),
           locator<ElectrumServersPort>(),
+          spendWallet: locator<WalletFacade>(),
         ),
         labels: locator<LabelsFacade>().payjoinLabels(),
         legacyData: PayjoinLegacyDataAdapter(database),

@@ -1,3 +1,5 @@
+import 'public/send_facade.dart';
+import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
 import 'package:bb_mobile/core/blockchain/data/datasources/bdk_bitcoin_blockchain_datasource.dart';
 import 'package:bb_mobile/core/blockchain/data/datasources/lwk_liquid_blockchain_datasource.dart';
 import 'package:bb_mobile/features/send/data/bitcoin_blockchain_repository.dart';
@@ -37,8 +39,15 @@ class BlockchainLocator {
   }
 
   static void registerUsecases(GetIt locator) {
+    locator.registerFactory<SendFacade>(
+      () => SendFacade(
+        bitcoin: locator<BroadcastBitcoinTransactionUsecase>().execute,
+        liquid: locator<BroadcastLiquidTransactionUsecase>().execute,
+      ),
+    );
     locator.registerFactory<BroadcastBitcoinTransactionUsecase>(
       () => BroadcastBitcoinTransactionUsecase(
+        wallet: locator<WalletFacade>(),
         bitcoinBlockchainRepository: locator<BitcoinBlockchainRepository>(),
         settingsRepository: locator<SettingsRepository>(),
       ),

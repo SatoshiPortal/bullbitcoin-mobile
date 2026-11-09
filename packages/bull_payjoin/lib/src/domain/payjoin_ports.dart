@@ -43,6 +43,7 @@ abstract interface class PayjoinBlockchainPort {
   });
 
   Future<void> broadcastPsbt({
+    required String walletId,
     required BitcoinNetwork network,
     required String psbt,
   });
@@ -58,6 +59,12 @@ abstract interface class PayjoinFeesPort {
 }
 
 abstract interface class PayjoinTransactionPort {
+  /// Transfer owned-input protection before releasing a terminal session.
+  Future<bool> protectObservedSpend({
+    required String walletId,
+    required String transactionId,
+  });
+
   Stream<void> watchWallet(String walletId);
 
   Future<bool> isTransactionVisible({
@@ -321,4 +328,10 @@ final class PayjoinLogEvent {
       );
     }
   }
+}
+
+/// A local spend barrier is not a failed network broadcast and must never
+/// trigger the competing original-transaction fallback.
+final class PayjoinSpendBlockedException implements Exception {
+  const PayjoinSpendBlockedException();
 }

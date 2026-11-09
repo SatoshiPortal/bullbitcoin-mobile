@@ -52,7 +52,16 @@ Future<BackgroundTaskHandler> setupBackgroundWalletTask(
   final catalog = WalletCatalogPortImpl(
     WalletMetadataDatasource(sqlite: sqlite),
   );
-  final revisions = RevisionStore(writerMetadataPath(documents.path));
+  final RevisionStore revisions;
+  try {
+    revisions = RevisionStore(
+      writerMetadataPath(documents.path),
+      existingOnly: true,
+    );
+  } on Exception {
+    log.fine('Background wallet task deferred: writer metadata unavailable');
+    return () async => const BackgroundTaskExecutionResult.success();
+  }
   resources.onClose(revisions.close);
   final queue = SqliteWalletSyncJobQueue(
     databasePath: p.join(

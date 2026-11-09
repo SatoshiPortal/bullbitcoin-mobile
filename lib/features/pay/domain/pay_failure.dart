@@ -96,3 +96,7 @@ final class PayUnexpectedFailure extends PayFailure {
 final class PayUnsupportedNetworkFailure extends PayFailure {
   const PayUnsupportedNetworkFailure();
 }
+
+final class PaySpendBlockedFailure extends PayFailure {
+  const PaySpendBlockedFailure();
+}

@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
 import 'package:bb_mobile/core/errors/exchange_errors.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
@@ -13,12 +14,14 @@ class PlacePayOrderUsecase {
   final ExchangeOrderRepository _testnetExchangeOrderRepository;
   final SettingsRepository _settingsRepository;
   final PayjoinPolicyAccess _payjoinPolicy;
+  final WalletFacade _wallet;
 
   PlacePayOrderUsecase({
     required this._mainnetExchangeOrderRepository,
     required this._testnetExchangeOrderRepository,
     required this._settingsRepository,
     required this._payjoinPolicy,
+    required this._wallet,
   });
 
   /// [usePayjoin] behaves as in CreateSellOrderUsecase: a payment is a sell to a
@@ -26,12 +29,18 @@ class PlacePayOrderUsecase {
   @useResult
   Future<Result<FiatPaymentOrder, PayFailure>> execute({
     required OrderAmount orderAmount,
+    required String? walletId,
     required String recipientId,
     required OrderBitcoinNetwork network,
     String? paymentDescription,
     bool usePayjoin = false,
   }) async {
     try {
+      if (walletId != null &&
+          network == OrderBitcoinNetwork.bitcoin &&
+          await _wallet.spendStatus(walletId) != BitcoinSpendStatus.ready) {
+        return const Err(PaySpendBlockedFailure());
+      }
       final settings = await _settingsRepository.fetch();
       if (!NetworkCapabilities.supports(
         BitcoinNetwork.fromName(settings.environment.name),

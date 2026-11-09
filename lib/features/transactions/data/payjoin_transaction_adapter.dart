@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
 import 'dart:async';
 
 import 'package:bb_mobile/core/blockchain/data/datasources/bdk_bitcoin_blockchain_datasource.dart';
@@ -15,6 +16,7 @@ final class AppPayjoinTransactionAdapter implements PayjoinTransactionPort {
   final WalletTransactionRepository _transactions;
   final BdkBitcoinBlockchainDatasource _blockchain;
   final ElectrumServersPort _servers;
+  final WalletFacade? _spendWallet;
   // Pacing between two wallet syncs of [_reconcileWallet]; tests shorten it.
   final Duration reconcileDelay;
 
@@ -23,8 +25,16 @@ final class AppPayjoinTransactionAdapter implements PayjoinTransactionPort {
     this._transactions,
     this._blockchain,
     this._servers, {
+    this._spendWallet,
     this.reconcileDelay = const Duration(seconds: 5),
   });
+
+  @override
+  Future<bool> protectObservedSpend({
+    required String walletId,
+    required String transactionId,
+  }) async =>
+      _spendWallet?.protectObservedSpend(walletId, transactionId) ?? false;
 
   @override
   Stream<void> watchWallet(String walletId) => _wallets.walletSyncFinishedStream

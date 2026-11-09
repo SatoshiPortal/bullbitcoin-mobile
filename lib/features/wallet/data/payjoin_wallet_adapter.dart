@@ -1,3 +1,4 @@
+import '../public/wallet_facade.dart';
 import 'dart:typed_data';
 
 import 'package:secrets/secrets.dart';
@@ -14,8 +15,14 @@ final class PayjoinWalletAdapter implements PayjoinWalletPort {
   final Secrets _secrets;
   final BdkWalletDatasource _wallet;
   final WalletMetadataDatasource _metadata;
+  final WalletFacade _gate;
 
-  const PayjoinWalletAdapter(this._secrets, this._wallet, this._metadata);
+  const PayjoinWalletAdapter(
+    this._secrets,
+    this._wallet,
+    this._metadata,
+    this._gate,
+  );
 
   @override
   Future<String> signPsbt({
@@ -23,6 +30,9 @@ final class PayjoinWalletAdapter implements PayjoinWalletPort {
     required BitcoinNetwork network,
     required String psbt,
   }) async {
+    if (await _gate.spendStatus(walletId) != BitcoinSpendStatus.ready) {
+      throw const PayjoinSpendBlockedException();
+    }
     final (secret, metadata) = await _loadSecret(walletId, network);
     // The receiver's own input in a payjoin proposal carries no derivation
     // path, and the package signs only what it can derive: the watch-only
@@ -68,6 +78,9 @@ final class PayjoinWalletAdapter implements PayjoinWalletPort {
     required String walletId,
     required BitcoinNetwork network,
   }) async {
+    if (await _gate.spendStatus(walletId) != BitcoinSpendStatus.ready) {
+      throw const PayjoinSpendBlockedException();
+    }
     final metadata = await _loadMetadata(walletId, network);
     final wallet = WalletModel.fromMetadata(metadata);
     final utxos = await _wallet.getUtxos(wallet: wallet);

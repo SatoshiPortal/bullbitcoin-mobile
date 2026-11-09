@@ -1,3 +1,6 @@
+import 'package:transaction_sync/transaction_sync.dart' show WalletRevision;
+import '../domain/wallet_spend_failure.dart';
+import 'package:transaction_sync/write.dart' show BitcoinSpendStatus;
 import 'package:transaction_sync/read.dart' show validateAddress;
 import 'dart:typed_data';
 
@@ -23,12 +26,15 @@ import 'package:bb_mobile/core/wallet/domain/unverifiable_transaction_exception.
 class BitcoinWalletRepository implements BitcoinSendPort {
   final WalletMetadataDatasource _walletMetadataDatasource;
   final Secrets _secrets;
+  final Future<WalletRevision> Function(String, {String? replacing})
+  _requireSpend;
   final BdkWalletDatasource _bdkWallet;
   final FrozenWalletUtxoDatasource _frozenUtxos;
 
   BitcoinWalletRepository({
     required this._walletMetadataDatasource,
     required this._secrets,
+    required this._requireSpend,
     required BdkWalletDatasource bdkWalletDatasource,
     required FrozenWalletUtxoDatasource frozenWalletUtxoDatasource,
   }) : _bdkWallet = bdkWalletDatasource,
@@ -45,6 +51,7 @@ class BitcoinWalletRepository implements BitcoinSendPort {
     List<WalletUtxo>? selected,
     bool? replaceByFee,
   }) async {
+    final admission = await _requireSpend(walletId);
     final metadata = await _walletMetadataDatasource.fetch(walletId);
 
     if (metadata == null) {
@@ -130,6 +137,9 @@ class BitcoinWalletRepository implements BitcoinSendPort {
       replaceByFee: replaceByFee ?? true,
     );
 
+    if (await _requireSpend(walletId) != admission) {
+      throw const WalletSpendBlockedException(BitcoinSpendStatus.unavailable);
+    }
     return psbt;
   }
 
@@ -304,6 +314,7 @@ class BitcoinWalletRepository implements BitcoinSendPort {
     required String txid,
     required RelativeFee newFeeRate,
   }) async {
+    final admission = await _requireSpend(walletId, replacing: txid);
     final signatureStatus = await getTransactionSignatureStatus(
       walletId: walletId,
       txid: txid,
@@ -338,6 +349,9 @@ class BitcoinWalletRepository implements BitcoinSendPort {
       txid: txid,
       feeRate: newFeeRate,
     );
+    if (await _requireSpend(walletId, replacing: txid) != admission) {
+      throw const WalletSpendBlockedException(BitcoinSpendStatus.unavailable);
+    }
     return signPsbt(psbt, walletId: walletId);
   }
 }

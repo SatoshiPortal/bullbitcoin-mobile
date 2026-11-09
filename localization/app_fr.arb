@@ -4981,5 +4981,7 @@
   "networkFeatureUnavailable": "Cette fonctionnalité est indisponible sur le réseau sélectionné.",
   "networkSelectorTitle": "Réseau",
   "networkWalletSetupTitle": "Aucun portefeuille sur ce réseau",
-  "networkWalletReuseSecret": "Réutiliser le secret d’un portefeuille existant"
+  "networkWalletReuseSecret": "Réutiliser le secret d’un portefeuille existant",
+  "walletSpendAwaitingObservation": "Les dépenses sont temporairement indisponibles pendant la vérification du paiement précédent. Actualisez le portefeuille ou recherchez les transactions manquantes, puis réessayez.",
+  "walletSpendReplacementUnavailable": "Il est impossible de modifier les frais de ce paiement. Attendez sa confirmation."
 }

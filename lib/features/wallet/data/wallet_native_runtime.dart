@@ -16,6 +16,7 @@ import 'package:transaction_sync/transaction_sync.dart';
 import 'package:transaction_sync/write.dart';
 
 import 'wallet_catalog_port_impl.dart';
+import '../domain/wallet_spend_failure.dart';
 
 /// Owns application lifecycle orchestration; the shell only composes this owner.
 /// The repository compensates catalog insertion on native creation failure.
@@ -213,9 +214,9 @@ final class WalletNativeRuntime implements WalletNativeLifecycle {
       }
     }
     if (services.recoveredMetadata) {
-      // Every catalog entry now has an outcome. Later explicit retries (or a
-      // restart) may resume provisioning, including entries with no native store.
-      // Lost deletion metadata cannot distinguish these from interrupted deletes.
+      // Every catalog entry has an outcome. completeRecovery durably invalidates
+      // all retained spend observations before removing the global barrier,
+      // including obligations whose native store could not be adopted.
       services.revisions.completeRecovery();
       services.recoveredMetadata = false;
     }
@@ -313,6 +314,112 @@ final class WalletNativeRuntime implements WalletNativeLifecycle {
       throw const WalletSnapshotException(TransactionSyncNotFoundFailure());
     }
     return state?.issuedReceiveIndex;
+  }
+
+  Future<BitcoinSpendGate> get _spendGate async {
+    final services = await _services;
+    return BitcoinSpendGate(
+      revisions: services.revisions,
+      lockDirectory: writerLockDirectory(services.documents),
+      catalog: _catalog,
+    );
+  }
+
+  Future<WalletKey> _spendKey(String walletId) async {
+    final metadata = await _metadata.fetch(walletId);
+    if (metadata == null || !metadata.isBitcoin) {
+      throw const WalletSpendBlockedException(BitcoinSpendStatus.unavailable);
+    }
+    return WalletKey(id: walletId, network: metadata.network.shared);
+  }
+
+  Future<BitcoinSpendStatus> spendStatus(
+    String walletId, {
+    String? replacing,
+  }) async {
+    try {
+      return (await _spendGate).check(
+        await _spendKey(walletId),
+        replacing: replacing,
+      );
+    } on Exception {
+      return BitcoinSpendStatus.unavailable;
+    }
+  }
+
+  Future<WalletRevision> requireSpend(
+    String walletId, {
+    String? replacing,
+  }) async {
+    final admission = await (await _spendGate).acquire(
+      await _spendKey(walletId),
+      replacing: replacing,
+    );
+    if (admission case BitcoinSpendRefused(:final status)) {
+      throw WalletSpendBlockedException(status);
+    }
+    final lease = admission as BitcoinSpendAdmission;
+    try {
+      return lease.revision;
+    } finally {
+      lease.close();
+    }
+  }
+
+  Future<Result<BitcoinBroadcastReceipt, WalletSpendFailure>> broadcastBitcoin(
+    String walletId,
+    BitcoinNetwork network,
+    Future<String> Function() broadcast,
+  ) async {
+    final key = await _spendKey(walletId);
+    if (key.network != network) {
+      return const Err(
+        WalletSpendBlockedFailure(BitcoinSpendStatus.unavailable),
+      );
+    }
+    final admission = await (await _spendGate).acquire(key);
+    if (admission case BitcoinSpendRefused(:final status)) {
+      return Err(WalletSpendBlockedFailure(status));
+    }
+    final lease = admission as BitcoinSpendAdmission;
+    var accepted = false;
+    try {
+      final txid = await broadcast();
+      accepted = true;
+      final receipt = lease.accepted(txid);
+      if (!receipt.durable) {
+        log.warning(
+          'Bitcoin accepted spend recording pending category=storage',
+        );
+      }
+      if (receipt.durable) log.fine('Bitcoin accepted spend recorded');
+      return Ok(receipt);
+    } finally {
+      try {
+        lease.close();
+      } on Exception {
+        if (!accepted) rethrow;
+        log.warning('Bitcoin accepted spend cleanup pending category=storage');
+      }
+    }
+  }
+
+  /// Called before a Payjoin terminal transition releases owned-input guards.
+  Future<bool> protectObservedSpend(String walletId, String txid) async {
+    try {
+      final admission = await (await _spendGate).acquire(
+        await _spendKey(walletId),
+        handoff: true,
+      );
+      if (admission is! BitcoinSpendAdmission) return false;
+      try {
+        return admission.accepted(txid).durable;
+      } finally {
+        admission.close();
+      }
+    } on Exception {
+      return false;
+    }
   }
 
   Future<bdk.Wallet> bitcoin(WalletModel model) async =>

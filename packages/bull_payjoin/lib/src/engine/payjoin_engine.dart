@@ -493,7 +493,10 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       if (completed != null) return Ok(completed);
     }
     if (competingTxId != null && competingTxId == freshEntity.originalTxId) {
-      final aborted = await _completeOnOriginalTransactionSeen(freshEntity.id);
+      final aborted = await _completeOnOriginalTransactionSeen(
+        freshEntity.id,
+        competingTxId,
+      );
       if (aborted != null) return Ok(aborted);
     }
     if (!freshEntity.canManuallyBroadcastOriginal ||
@@ -689,6 +692,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       } else {
         payjoin as PayjoinSender;
         await _blockchain.broadcastPsbt(
+          walletId: payjoin.walletId,
           network: network,
           psbt: payjoin.originalPsbt,
         );
@@ -780,6 +784,10 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       }
 
       return resolvedModel.toEntity();
+    } on api.PayjoinSpendBlockedException {
+      // Keep the session's reservation. A local refusal is neither an expiry
+      // nor a network rejection and must not release its original inputs.
+      rethrow;
     } catch (e) {
       // A failure after the broadcast is a bookkeeping failure: the original
       // is on the network, and reporting it as unsent would invite paying
@@ -1035,6 +1043,21 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
         role: api.PayjoinLogRole.sender,
         sessionRef: payjoin.logRef,
       );
+    } on api.PayjoinSpendBlockedException {
+      final proposalId = payjoin.txId;
+      if (proposalId != null) {
+        _watchForBroadcast(
+          payjoinId: payjoin.id,
+          walletId: payjoin.walletId,
+          txId: proposalId,
+        );
+      }
+      _watchForFallback(
+        payjoinId: payjoin.id,
+        walletId: payjoin.walletId,
+        originalTxId: payjoin.originalTxId,
+      );
+      return;
     } catch (e) {
       _log.severe(
         code: api.PayjoinLogCode.broadcastFailure,
@@ -1784,7 +1807,11 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     required String finalizedPsbt,
     required primitives.BitcoinNetwork network,
   }) async {
-    await _blockchain.broadcastPsbt(network: network, psbt: finalizedPsbt);
+    await _blockchain.broadcastPsbt(
+      walletId: payjoinModel.walletId,
+      network: network,
+      psbt: finalizedPsbt,
+    );
 
     // From this point the real payjoin is on the network. Local persistence,
     // syncing and watcher setup must never throw back to the caller's fallback
@@ -1948,7 +1975,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     txId: originalTxId,
     watchers: _fallbackWatchers,
     pollTimers: _fallbackPollTimers,
-    onSeen: _onOriginalTransactionSeen,
+    onSeen: (id) => _onOriginalTransactionSeen(id, originalTxId),
     kind: 'fallback',
     // '|' never appears in a session id: a sender id is a percent-encoded
     // BIP21 URI, a receiver id is a 16-hex-char sha256 prefix.
@@ -2157,6 +2184,13 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       return null;
     }
 
+    if (!await _transactions.protectObservedSpend(
+      walletId: model.walletId,
+      transactionId: observedTxId,
+    )) {
+      return null;
+    }
+
     final PayjoinModel completedModel = model is PayjoinReceiverModel
         ? model.copyWith(
             txId: model.txId ?? observedTxId,
@@ -2210,13 +2244,19 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
   /// a real payjoin. `txId` is cleared for the same reason
   /// [_broadcastOriginalTransaction] clears it. Never labels the transaction
   /// "payjoin" — this is by definition not a real one.
-  Future<void> _onOriginalTransactionSeen(String payjoinId) => _withSessionLock(
+  Future<void> _onOriginalTransactionSeen(
+    String payjoinId,
+    String observedTxId,
+  ) => _withSessionLock(
     payjoinId,
-    () => _completeOnOriginalTransactionSeen(payjoinId),
+    () => _completeOnOriginalTransactionSeen(payjoinId, observedTxId),
   );
 
   /// Body of [_onOriginalTransactionSeen] for callers holding the session lock.
-  Future<Payjoin?> _completeOnOriginalTransactionSeen(String payjoinId) async {
+  Future<Payjoin?> _completeOnOriginalTransactionSeen(
+    String payjoinId,
+    String observedTxId,
+  ) async {
     final receiverModel = await _localPayjoinDatasource.fetchReceiver(
       payjoinId,
     );
@@ -2224,6 +2264,14 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
         receiverModel ?? await _localPayjoinDatasource.fetchSender(payjoinId);
     if (model == null || model.isCompleted || model.isAborted) {
       _stopWatching(payjoinId);
+      return null;
+    }
+
+    if (model is PayjoinSenderModel &&
+        !await _transactions.protectObservedSpend(
+          walletId: model.walletId,
+          transactionId: observedTxId,
+        )) {
       return null;
     }
 

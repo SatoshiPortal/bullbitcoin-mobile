@@ -268,6 +268,8 @@ final class _PayjoinRoles implements _PayjoinRuntimeContract {
     late final String signed;
     try {
       signed = await _engineWalletSign(request);
+    } on PayjoinSpendBlockedException {
+      return const Err(PayjoinSpendBlockedFailure());
     } catch (error, trace) {
       _log.warning(
         code: PayjoinLogCode.signingFailure,
@@ -361,6 +363,8 @@ final class _PayjoinRoles implements _PayjoinRuntimeContract {
       return (await _engine.tryBroadcastOriginalTransaction(
         current,
       )).map(_toSession);
+    } on PayjoinSpendBlockedException {
+      return const Err(PayjoinSpendBlockedFailure());
     } catch (_) {
       return const Err(PayjoinBroadcastFailure('Broadcast failed'));
     }

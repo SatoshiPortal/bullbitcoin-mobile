@@ -41,6 +41,8 @@ class SendWithPayjoinUsecase {
     switch (result) {
       case Ok(:final value):
         return core.Ok(value);
+      case Err(failure: PayjoinSpendBlockedFailure()):
+        return const core.Err(SendSpendBlockedFailure());
       case Err(:final failure):
         // Both parts: Failure has no toString() override, so passing the value
         // itself would log "Instance of 'PayjoinX'" and drop the message,

@@ -126,3 +126,7 @@ final class SendPriceUnavailableFailure extends SendFailure {
 final class SendUnexpectedFailure extends SendFailure {
   const SendUnexpectedFailure([super.logMessage]);
 }
+
+final class SendSpendBlockedFailure extends SendFailure {
+  const SendSpendBlockedFailure();
+}

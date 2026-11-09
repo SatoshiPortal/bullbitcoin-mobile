@@ -1,3 +1,5 @@
+import 'package:bb_mobile/features/wallet/public/wallet_facade.dart'
+    show WalletSpendBlockedException;
 import 'package:bb_mobile/features/send/domain/broadcast_failure.dart';
 import 'package:bb_mobile/features/wallet/domain/network_x.dart';
 import 'package:bb_mobile/features/send/domain/usecases/watch_wallet_revisions_usecase.dart';
@@ -1992,6 +1994,15 @@ class SendCubit extends Cubit<SendState>
     } catch (e) {
       if (generation != _transactionGeneration) return;
       _invalidateSignedTransaction();
+      if (e is WalletSpendBlockedException) {
+        emit(
+          state.copyWith(
+            failure: const SendSpendBlockedFailure(),
+            buildingTransaction: false,
+          ),
+        );
+        return;
+      }
       log.severe(error: e, trace: StackTrace.current);
       if (e is ConsolidationRequiredException) {
         emit(
@@ -2280,6 +2291,7 @@ class SendCubit extends Cubit<SendState>
           persistedPayin ??
               (isPsbt ? state.signedBitcoinPsbt! : state.signedBitcoinTx!),
           network: wallet.network,
+          walletId: wallet.id,
           isPsbt: persistedPayinIsPsbt ?? isPsbt,
         );
       }
@@ -2349,6 +2361,15 @@ class SendCubit extends Cubit<SendState>
         emit(
           state.copyWith(
             failure: SendTransactionConfirmationFailure(logMessage: e.message),
+            broadcastingTransaction: false,
+          ),
+        );
+      }
+    } on WalletSpendBlockedException {
+      if (!isClosed) {
+        emit(
+          state.copyWith(
+            failure: const SendSpendBlockedFailure(),
             broadcastingTransaction: false,
           ),
         );

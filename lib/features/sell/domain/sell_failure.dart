@@ -108,3 +108,7 @@ final class SellUnexpectedFailure extends SellFailure {
 final class SellUnsupportedNetworkFailure extends SellFailure {
   const SellUnsupportedNetworkFailure();
 }
+
+final class SellSpendBlockedFailure extends SellFailure {
+  const SellSpendBlockedFailure();
+}

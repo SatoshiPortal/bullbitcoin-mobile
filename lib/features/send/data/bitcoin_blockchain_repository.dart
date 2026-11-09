@@ -1,3 +1,5 @@
+import 'package:transaction_sync/write.dart'
+    show bitcoinPsbtTransactionId, bitcoinRawTransactionId;
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'dart:typed_data';
 
@@ -21,8 +23,9 @@ class BitcoinBlockchainRepository {
   Future<String> broadcastPsbt(
     String finalizedPsbt, {
     required Network network,
-  }) {
-    return _serversPort.runWithFallback<String>(
+  }) async {
+    final txid = bitcoinPsbtTransactionId(finalizedPsbt);
+    await _serversPort.runWithFallback<String>(
       network: switch (network) {
         Network.bitcoinMainnet => ElectrumServerNetwork.bitcoinMainnet,
         Network.bitcoinTestnet => ElectrumServerNetwork.bitcoinTestnet,
@@ -32,13 +35,15 @@ class BitcoinBlockchainRepository {
       operation: (connection) =>
           _blockchain.broadcastPsbt(finalizedPsbt, connection: connection),
     );
+    return txid;
   }
 
   Future<String> broadcastTransaction(
     List<int> transaction, {
     required Network network,
-  }) {
-    return _serversPort.runWithFallback<String>(
+  }) async {
+    final txid = bitcoinRawTransactionId(transaction);
+    await _serversPort.runWithFallback<String>(
       network: switch (network) {
         Network.bitcoinMainnet => ElectrumServerNetwork.bitcoinMainnet,
         Network.bitcoinTestnet => ElectrumServerNetwork.bitcoinTestnet,
@@ -50,5 +55,6 @@ class BitcoinBlockchainRepository {
         connection: connection,
       ),
     );
+    return txid;
   }
 }

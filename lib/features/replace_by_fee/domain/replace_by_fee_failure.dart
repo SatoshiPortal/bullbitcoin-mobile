@@ -37,3 +37,8 @@ final class ReplaceByFeeUnverifiableTransactionFailure
 final class ReplaceByFeeUnexpectedFailure extends ReplaceByFeeFailure {
   const ReplaceByFeeUnexpectedFailure([super.logMessage]);
 }
+
+final class ReplaceByFeeSpendBlockedFailure extends ReplaceByFeeFailure {
+  final bool replacementUnsupported;
+  const ReplaceByFeeSpendBlockedFailure({this.replacementUnsupported = false});
+}

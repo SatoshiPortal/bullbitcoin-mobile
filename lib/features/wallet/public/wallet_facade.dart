@@ -1,9 +1,15 @@
+import 'package:transaction_sync/write.dart'
+    show BitcoinSpendStatus, BitcoinBroadcastReceipt;
+import '../domain/wallet_spend_failure.dart';
+export '../domain/wallet_spend_failure.dart';
+export 'package:transaction_sync/write.dart'
+    show BitcoinSpendStatus, BitcoinBroadcastReceipt;
 export 'package:bb_mobile/features/wallet/domain/seed_reference_port.dart'
     show SeedReferences;
 export '../domain/wallet.dart' show Network;
 export '../domain/network_x.dart' show NetworkX;
 import 'package:transaction_sync/transaction_sync.dart';
-import 'package:primitives/primitives.dart' show Result, Err;
+import 'package:primitives/primitives.dart' show Result, Err, BitcoinNetwork;
 import '../domain/wallet_discovery_failure.dart';
 export 'package:primitives/primitives.dart' show Result;
 export '../domain/wallet_discovery_failure.dart';
@@ -16,6 +22,15 @@ export '../background_setup.dart'
 
 /// Wallet-owned invalidations. A revision is not a successful network sync.
 final class WalletFacade {
+  final Future<BitcoinSpendStatus> Function(String, {String? replacing})?
+  _spendStatus;
+  final Future<Result<BitcoinBroadcastReceipt, WalletSpendFailure>> Function(
+    String,
+    BitcoinNetwork,
+    Future<String> Function(),
+  )?
+  _broadcastBitcoin;
+  final Future<bool> Function(String, String)? _protectObservedSpend;
   final Stream<WalletRevisionState> _revisions;
   final Future<Result<void, WalletDiscoveryFailure>> Function(String)?
   _discoverWallet;
@@ -26,12 +41,33 @@ final class WalletFacade {
   final bool Function()? _isSyncPassActive;
   const WalletFacade(
     this._revisions, {
+    this._spendStatus,
+    this._broadcastBitcoin,
+    this._protectObservedSpend,
     this._discoverWallet,
     this._pollWallet,
     this._syncFinished = const Stream.empty(),
     this._syncPassActivity = const Stream.empty(),
     this._isSyncPassActive,
   });
+
+  Future<BitcoinSpendStatus> spendStatus(
+    String walletId, {
+    String? replacing,
+  }) async =>
+      _spendStatus?.call(walletId, replacing: replacing) ??
+      BitcoinSpendStatus.unavailable;
+
+  Future<Result<BitcoinBroadcastReceipt, WalletSpendFailure>> broadcastBitcoin(
+    String walletId,
+    BitcoinNetwork network,
+    Future<String> Function() broadcast,
+  ) async =>
+      _broadcastBitcoin?.call(walletId, network, broadcast) ??
+      const Err(WalletSpendBlockedFailure(BitcoinSpendStatus.unavailable));
+
+  Future<bool> protectObservedSpend(String walletId, String txid) async =>
+      _protectObservedSpend?.call(walletId, txid) ?? false;
 
   /// Raw completion, including failures without a revision; never hydrates a wallet.
   Stream<void> watchSyncFinished() => _syncFinished;

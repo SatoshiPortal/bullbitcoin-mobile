@@ -4,6 +4,7 @@ import 'package:flutter/widgets.dart';
 
 extension SellFailureL10n on SellFailure {
   String toTranslated(BuildContext context) => switch (this) {
+    SellSpendBlockedFailure() => context.loc.walletSpendAwaitingObservation,
     SellConfidentialSepaNotActivatedFailure() =>
       context.loc.withdrawConfidentialSepaNotActivatedError,
     SellNetworkFailure() => context.loc.exchangeErrorNetwork,
