@@ -12,6 +12,7 @@ const _rawReason =
     'bc1qsecret, xprv9s21ZrQH143K3';
 
 final _everyFailure = <SellFailure>[
+  const SellPayjoinPausedFailure(),
   const SellUnauthenticatedFailure(_rawReason),
   const SellBelowMinAmountFailure(
     minAmount: 10,

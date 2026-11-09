@@ -859,6 +859,138 @@ void main() {
       timeout: const Timeout(Duration(seconds: 20)),
     );
 
+    for (final outcome in ['failure', 'completed', 'expired', 'late']) {
+      test(
+        'paused proposal preserves the payment and retries safely: $outcome',
+        () async {
+          final previousLogger = log;
+          final logger = _MockLogger();
+          log = logger;
+          addTearDown(() => log = previousLogger);
+          const bip21 =
+              'bitcoin:bc1q0000000000000000000000000000000000000'
+              '?amount=0.001&pj=https://payjo.in/session';
+          when(() => sellOrder.payjoinBip21).thenReturn(bip21);
+          PayjoinSenderSession session(PayjoinStatus status) =>
+              PayjoinSenderSession(
+                status: status,
+                spendFailure: status == PayjoinStatus.proposed
+                    ? const PayjoinSpendBlockedFailure()
+                    : null,
+                hasProposal: status != PayjoinStatus.requested,
+                uri: bip21,
+                network: BitcoinNetwork.mainnet,
+                walletId: 'wallet-1',
+                originalTransactionId: expectedTxid,
+                amount: Sats.fromInt(100000),
+                createdAt: DateTime.now().subtract(const Duration(minutes: 10)),
+                expiresAt: DateTime.now().add(
+                  Duration(minutes: outcome == 'expired' ? -5 : 5),
+                ),
+              );
+          when(
+            () => sendWithPayjoin.execute(
+              walletId: any(named: 'walletId'),
+              network: any(named: 'network'),
+              bip21: any(named: 'bip21'),
+              unsignedOriginalPsbt: any(named: 'unsignedOriginalPsbt'),
+              amountSat: any(named: 'amountSat'),
+              networkFeesSatPerVb: any(named: 'networkFeesSatPerVb'),
+              expireAfterSec: any(named: 'expireAfterSec'),
+            ),
+          ).thenAnswer(
+            (_) async => Ok<PayjoinSenderSession, SellFailure>(
+              session(PayjoinStatus.requested),
+            ),
+          );
+          final updates =
+              StreamController<Result<PayjoinSession, SellFailure>>();
+          addTearDown(updates.close);
+          when(
+            () => watchPayjoin.execute(bip21),
+          ).thenAnswer((_) => updates.stream);
+          final retry = Completer<Result<PayjoinSession, SellFailure>>();
+          when(
+            () => retryPayjoin.execute(bip21),
+          ).thenAnswer((_) => retry.future);
+
+          bloc.add(const SellEvent.sendPaymentConfirmed());
+          await untilCalled(() => watchPayjoin.execute(bip21));
+          updates.add(Ok(session(PayjoinStatus.proposed)));
+          await pumpEventQueue();
+          final paused = bloc.state as SellPaymentState;
+          expect(paused.isPayinBroadcast, isFalse);
+          expect(paused.isConfirmingPayment, isTrue);
+          expect(
+            paused.error,
+            isA<SellPayjoinPausedFailure>(),
+            reason:
+                'A paused retained proposal must expose localized recoverable feedback rather than an indefinite confirming spinner',
+          );
+
+          expect(paused.pausedPayjoinSession?.id, bip21);
+          expect(paused.sellOrder, same(sellOrder));
+          clearInteractions(sendWithPayjoin);
+          clearInteractions(prepareSellBitcoinPayin);
+          // Confirm must neither reconstruct the payin nor erase the pause.
+          bloc.add(const SellEvent.sendPaymentConfirmed());
+          await pumpEventQueue();
+          expect(
+            (bloc.state as SellPaymentState).error,
+            isA<SellPayjoinPausedFailure>(),
+          );
+          bloc.add(const SellEvent.payjoinProposalRetryRequested());
+          bloc.add(const SellEvent.payjoinProposalRetryRequested());
+          await pumpEventQueue();
+          if (outcome == 'expired') {
+            verifyNever(() => retryPayjoin.execute(any()));
+          } else {
+            verify(() => retryPayjoin.execute(bip21)).called(1);
+            expect(
+              (bloc.state as SellPaymentState).isRetryingPayjoinProposal,
+              isTrue,
+            );
+            if (outcome == 'late') {
+              updates.add(Ok(session(PayjoinStatus.completed)));
+              await pumpEventQueue();
+            }
+            if (outcome == 'completed') {
+              // Successful completion still belongs to the watched session.
+              updates.add(Ok(session(PayjoinStatus.completed)));
+              retry.complete(Ok(session(PayjoinStatus.completed)));
+            } else {
+              retry.complete(const Err(SellPayjoinPausedFailure()));
+            }
+            await pumpEventQueue();
+          }
+          if (outcome == 'completed' || outcome == 'late') {
+            final settled = bloc.state;
+            expect(
+              settled is SellSuccessState ||
+                  (settled is SellPaymentState &&
+                      settled.isPayinBroadcast &&
+                      settled.pausedPayjoinSession == null &&
+                      settled.error == null),
+              isTrue,
+            );
+          } else {
+            final retained = bloc.state as SellPaymentState;
+            expect(
+              retained.pausedPayjoinSession,
+              same(paused.pausedPayjoinSession),
+            );
+            expect(retained.error, isA<SellPayjoinPausedFailure>());
+            expect(retained.isConfirmingPayment, isTrue);
+            expect(retained.isRetryingPayjoinProposal, isFalse);
+            expect(retained.isPayinBroadcast, isFalse);
+            expect(retained.sellOrder, same(sellOrder));
+          }
+          verifyZeroInteractions(sendWithPayjoin);
+          verifyZeroInteractions(prepareSellBitcoinPayin);
+        },
+      );
+    }
+
     test('absolute custom fees pass their actual rate to Payjoin', () async {
       const bip21 =
           'bitcoin:bc1q0000000000000000000000000000000000000'
