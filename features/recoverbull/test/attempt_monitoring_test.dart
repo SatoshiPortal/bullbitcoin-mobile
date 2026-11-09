@@ -200,6 +200,35 @@ void main() {
     expect(ok(await repository.status()).unknown, isTrue);
   });
 
+  test(
+    'exact fetch timestamps reconcile with hour-truncated public samples',
+    () async {
+      final own = ok(await repository.begin(settings, vault));
+      ok(
+        await repository.complete(
+          own,
+          observation: observation(11, window.add(const Duration(minutes: 13))),
+        ),
+      );
+      await sample(12);
+      expect(
+        ok(await repository.status()).alerts.single.kind,
+        BackupAlertKind.unexplainedActivity,
+      );
+    },
+  );
+
+  test(
+    'first inline baseline does not credit its completed request twice',
+    () async {
+      await database.delete(database.recoverbullMonitoredVaults).go();
+      final own = ok(await repository.begin(settings, vault));
+      ok(await repository.complete(own, observation: observation(1, window)));
+      await sample(2);
+      expect(ok(await repository.status()).alerts, hasLength(1));
+    },
+  );
+
   test('temporary storage never admits a counted operation', () async {
     final temporary = AttemptMonitoringRepositoryImpl(database, durable: false);
     expect(
