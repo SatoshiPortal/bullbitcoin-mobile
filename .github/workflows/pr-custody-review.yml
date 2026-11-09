@@ -1,6 +1,6 @@
 name: PR custody review
 
-# Asks a contributor why, in a comment on the pull request, when its added lines touch the boundary around users' seeds: an ignore of the package:secrets seal, a new importer of flutter_secure_storage, an import of package:secrets internals, or a keystore dependency in another pubspec. `make custody-check` fails the checks job on the same rules; this is the conversation that goes with it. The rules: tools/pr_governance/custody.js.
+# Asks a contributor why, in a comment on the pull request, when its added lines touch the boundary around users' seeds: an ignore of the package:secrets seal, a new importer of flutter_secure_storage, an import of package:secrets internals, or a keystore dependency in another pubspec. `make custody-ci-check` fails the checks job on the same rules; this is the conversation that goes with it. The rules: tools/pr_governance/custody.js.
 
 on:
   pull_request_target:
