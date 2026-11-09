@@ -21,6 +21,12 @@ dependencies:
   bull_tor:
   bull_ui:
   screen_privacy:
+  flutter_bloc: ^9.1.1
+  file_picker: 10.3.6
+  googleapis: ^15.0.0
+  google_sign_in: ^6.3.0
+  extension_google_sign_in_as_googleapis_auth: ^2.0.13
+  http: ^1.2.2
   flutter_localizations:
     sdk: flutter
   intl: any

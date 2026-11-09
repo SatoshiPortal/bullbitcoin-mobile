@@ -61,7 +61,9 @@ final class AttemptMonitoringRepositoryImpl
     if (!_durable) {
       return Err(_unavailableFailure ?? const RecoverBullJournalFailure());
     }
-    if (!_current(await _state(), settings)) {
+    final state = await _state();
+    if (state.server != settings.server.toString() ||
+        state.generation != settings.generation) {
       return const Err(VaultContextChangedFailure());
     }
     await _enroll(settings.server.toString(), _digest(vault));
