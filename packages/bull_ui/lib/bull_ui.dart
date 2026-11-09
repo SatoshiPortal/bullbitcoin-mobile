@@ -133,6 +133,7 @@ export 'src/controls/bull_swipe_action.dart';
 export 'src/controls/bull_switch.dart';
 
 // Feedback.
+export 'src/feedback/bull_screen_privacy_gate.dart';
 export 'src/feedback/bull_countdown.dart';
 export 'src/feedback/bull_async_status.dart';
 export 'src/feedback/bull_fading_linear_progress.dart';
