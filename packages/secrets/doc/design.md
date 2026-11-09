@@ -211,14 +211,14 @@ The boundary has structural checks in `test/invariants_test.dart` and `test/inte
 | no exported signature hands out an unexported type | no exported, non-`@internal` member mentions one in its parameters or return type |
 
 The on-disk format never moving is pinned byte for byte by
-`test/secret_model_golden_test.dart`. `make custody-check`, in `make checks` and CI, refuses any `// ignore:` of
+`test/secret_model_golden_test.dart`. The CI-only `make custody-ci-check` refuses any `// ignore:` of
 `invalid_use_of_internal_member` in the workspace — `cannot-ignore` does not
 hold that diagnostic on Dart 3.12.2 — and any import of `flutter_secure_storage`
 or `package:secrets/src/` outside the package, the app's own secure store
 excepted. The `PR custody review` workflow comments on a pull request that
 adds one, asking the contributor why.
 
-The second part of `make custody-check` resolves production Dart symbols and rejects known private-key derivation and vault-opening operations outside `secrets`. Its named exceptions cover pre-import scanning, swap-scoped credentials and the public-only xpub decoding adapter. Public-key operations, mnemonic validation and formatting of an exported BIP85 child remain valid. The gate also rejects imports or exports of `secrets/testing.dart` and references to its test-support declarations throughout application and workspace production code, including aliases and re-exports. Unresolved production code fails the gate. This is an operation policy, not complete data-flow analysis or proof that arbitrary strings cannot carry secrets. Pre-import scanning still belongs to a future sync extraction; RecoverBull restoration and inspection are migrated.
+Local `make custody-check`, included in `make checks`, requires only Dart. It resolves production Dart symbols to reject known private-key derivation and vault-opening operations outside `secrets`. Its named exceptions cover pre-import scanning, swap-scoped credentials and the public-only xpub decoding adapter. Public-key operations, mnemonic validation and formatting of an exported BIP85 child remain valid. The gate also rejects imports or exports of `secrets/testing.dart` and references to its test-support declarations throughout application and workspace production code, including aliases and re-exports. Unresolved production code fails the gate. This is an operation policy, not complete data-flow analysis or proof that arbitrary strings cannot carry secrets. Pre-import scanning still belongs to a future sync extraction; RecoverBull restoration and inspection are migrated.
 
 So an audit is: run the suite, then read four files —
 `src/public/secret.dart` for what the package does, `src/data/boundary.dart`
