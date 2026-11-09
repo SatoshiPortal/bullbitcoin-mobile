@@ -11,6 +11,8 @@ export 'src/domain/recoverbull_failure.dart'
     show
         RecoverBullFailure,
         RecoverBullUnexpectedFailure,
+        KeyServerFailure,
+        KeyServerFailureKind,
         VaultInvalidFailure,
         VaultSecretMissingFailure,
         VaultKeystoreLockedFailure,

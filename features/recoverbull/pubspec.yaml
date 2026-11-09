@@ -18,6 +18,7 @@ dependencies:
   primitives:
   secrets:
   bull_logger:
+  bull_tor:
   bull_ui:
   screen_privacy:
   flutter_localizations:

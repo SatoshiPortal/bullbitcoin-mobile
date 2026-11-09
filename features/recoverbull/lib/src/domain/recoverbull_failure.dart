@@ -43,3 +43,19 @@ final class VaultCancelledFailure extends RecoverBullFailure {
 final class RecoverBullUnexpectedFailure extends RecoverBullFailure {
   const RecoverBullUnexpectedFailure();
 }
+
+enum KeyServerFailureKind {
+  credentials,
+  locked,
+  unavailable,
+  timeout,
+  badResponse,
+  rejected,
+}
+
+final class KeyServerFailure extends RecoverBullFailure {
+  final KeyServerFailureKind kind;
+  final Duration? retryAfter;
+
+  const KeyServerFailure(this.kind, {this.retryAfter});
+}
