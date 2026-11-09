@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:bull_recoverbull/bull_recoverbull.dart';
+import 'package:bull_recoverbull/generated/l10n/recoverbull_localizations.dart';
 import 'package:bull_recoverbull/src/data/attempt_monitoring_repository_impl.dart';
 import 'package:bull_recoverbull/src/data/backup_metadata_repository_impl.dart';
 import 'package:bull_recoverbull/src/data/database/recoverbull_database.dart';
@@ -14,15 +15,29 @@ import 'package:bull_recoverbull/src/domain/repositories/vault_file_repository.d
 import 'package:bull_recoverbull/src/domain/usecases/complete_vault_usecase.dart';
 import 'package:bull_recoverbull/src/domain/usecases/create_and_store_vault_usecase.dart';
 import 'package:bull_recoverbull/src/domain/usecases/create_vault_usecase.dart';
+import 'package:bull_recoverbull/src/domain/usecases/delete_drive_vault_usecase.dart';
+import 'package:bull_recoverbull/src/domain/usecases/export_drive_vault_usecase.dart';
 import 'package:bull_recoverbull/src/domain/usecases/fetch_vault_key_usecase.dart';
+import 'package:bull_recoverbull/src/domain/usecases/list_drive_vaults_usecase.dart';
+import 'package:bull_recoverbull/src/domain/usecases/manage_backup_settings_usecase.dart';
 import 'package:bull_recoverbull/src/domain/usecases/manage_vault_session_usecase.dart';
 import 'package:bull_recoverbull/src/domain/usecases/open_key_server_usecase.dart';
+import 'package:bull_recoverbull/src/domain/usecases/pick_vault_usecase.dart';
+import 'package:bull_recoverbull/src/domain/usecases/read_drive_vault_usecase.dart';
 import 'package:bull_recoverbull/src/domain/usecases/restore_vault_usecase.dart';
 import 'package:bull_recoverbull/src/domain/usecases/save_vault_usecase.dart';
 import 'package:bull_recoverbull/src/domain/usecases/test_vault_usecase.dart';
+import 'package:bull_recoverbull/src/presentation/vault_flow_cubit.dart';
+import 'package:bull_recoverbull/src/presentation/vault_flow_presentation.dart';
+import 'package:bull_recoverbull/src/ui/screens/vault_flow_page.dart';
+import 'package:bull_ui/bull_ui.dart';
+import 'package:bull_ui/testing.dart';
 import 'package:drift/native.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart' show Failure;
+import 'package:screen_privacy/screen_privacy.dart';
 import 'package:secrets/secrets.dart' as custody;
 import 'package:secrets/testing.dart';
 
@@ -80,6 +95,162 @@ void main() {
     provider: VaultProvider.customLocation,
     password: 'public test password',
   );
+
+  test('pending provider save rejects a replacement password', () async {
+    final first = save();
+    await files.started.future;
+    files.pending.complete(const Err(VaultCancelledFailure()));
+    expect(await first, isA<Err<VaultCompletion, RecoverBullFailure>>());
+    files.pending = Completer<Result<void, RecoverBullFailure>>()
+      ..complete(const Ok(null));
+    final retried = await create.execute(
+      settings: settings,
+      server: server,
+      provider: VaultProvider.customLocation,
+      password: 'replacement password',
+    );
+    expect(
+      retried,
+      isA<Err<VaultCompletion, RecoverBullFailure>>(),
+      reason: 'A pending save must not silently accept a new password',
+    );
+    expect(files.calls, 1);
+    expect(create.hasPendingProviderSave, isTrue);
+    final saved = ok(
+      await create.retryProviderSave(VaultProvider.customLocation),
+    );
+    expect(create.hasPendingProviderSave, isFalse);
+    expect(files.savedVaults, [saved.vault, saved.vault]);
+    expect(server.storedPassword, 'public test password');
+    expect(server.stores, 1);
+    expect(server.trashed, 0);
+  });
+
+  for (final failure in [
+    const VaultCancelledFailure(),
+    const VaultStorageFailure(),
+  ]) {
+    testWidgets('provider $failure offers save-only retry', (tester) async {
+      const channel = MethodChannel('com.flutterplaza.no_screenshot_methods');
+      ScreenCaptureProtection.instance.enabledByUser = true;
+      tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+        channel,
+        (_) async => true,
+      );
+      addTearDown(
+        () => tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+          channel,
+          null,
+        ),
+      );
+      final sessions = _Sessions(server);
+      final session = ManageVaultSessionUsecase(
+        metadata,
+        OpenKeyServerUsecase(metadata, sessions),
+        FetchVaultKeyUsecase(monitoring),
+        create,
+        complete,
+      );
+      final cubit = VaultFlowCubit(
+        ManageBackupSettingsUsecase(metadata, const VaultStorageFailure()),
+        (
+          pick: PickVaultUsecase(files),
+          list: ListDriveVaultsUsecase(_Drive()),
+          select: ReadDriveVaultUsecase(_Drive()),
+          delete: DeleteDriveVaultUsecase(_Drive()),
+          export: ExportDriveVaultUsecase(files, _Drive()),
+        ),
+        session,
+        complete,
+        unavailable: const VaultStorageFailure(),
+      );
+      final presentation = VaultFlowPresentation(
+        cubit,
+        const Ok(BitcoinNetwork.testnet),
+        null,
+      );
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: ThemeData(extensions: const [testBullTheme]),
+          localizationsDelegates:
+              RecoverBullLocalizations.localizationsDelegates,
+          supportedLocales: RecoverBullLocalizations.supportedLocales,
+          home: VaultFlowPage(
+            flow: RecoverBullFlow.secureVault,
+            presentation: () async => presentation,
+            copiedMessage: 'Copied',
+          ),
+        ),
+      );
+      await tester.runAsync(() async {
+        await cubit.settings();
+      });
+      await tester.pumpAndSettle();
+      expect(find.byType(BullInputText), findsNWidgets(2));
+      await tester.enterText(
+        find.byType(TextField).at(0),
+        'public test password',
+      );
+      await tester.enterText(
+        find.byType(TextField).at(1),
+        'public test password',
+      );
+      await tester.ensureVisible(find.text('Continue'));
+      await tester.runAsync(() async {
+        await tester.tap(find.text('Continue'));
+        await files.started.future;
+        files.pending.complete(Err(failure));
+        // Wait for the real flow result, not a fabricated cubit state.
+        await cubit.stream.firstWhere((state) => !state.busy);
+      });
+      await tester.pumpAndSettle();
+      expect(find.byType(BullInputText), findsNothing);
+      expect(find.text('Continue'), findsNothing);
+      expect(find.text('Retry saving backup'), findsOneWidget);
+      expect(
+        find.textContaining('password you already confirmed'),
+        findsOneWidget,
+      );
+      expect(cubit.state.hasPendingProviderSave, isTrue);
+      // A changed consent generation must not cause the save-only retry to
+      // acquire another server session. The pending file keeps its old key.
+      await tester.runAsync(
+        () => metadata.changeServer(Uri.parse('https://other.example')),
+      );
+      await tester.runAsync(() async {
+        final rejected = await session.create(
+          provider: VaultProvider.customLocation,
+          password: 'replacement password',
+        );
+        expect(rejected, isA<Err<VaultCompletion, RecoverBullFailure>>());
+      });
+      expect(sessions.opens, 1);
+      expect(files.calls, 1);
+      files.pending = Completer<Result<void, RecoverBullFailure>>()
+        ..complete(const Ok(null));
+      await tester.ensureVisible(find.text('Retry saving backup'));
+      await tester.runAsync(() async {
+        final completed = cubit.stream.firstWhere(
+          (state) => state.completion != null,
+        );
+        await tester.tap(find.text('Retry saving backup'));
+        await completed;
+      });
+      await tester.pumpAndSettle();
+      expect(cubit.state.hasPendingProviderSave, isFalse);
+      expect(cubit.state.completion, isNotNull);
+      expect(files.savedVaults, [
+        files.savedVaults.first,
+        files.savedVaults.first,
+      ]);
+      expect(server.storedPassword, 'public test password');
+      expect(server.stores, 1);
+      expect(sessions.opens, 1);
+      await tester.pumpWidget(const SizedBox.shrink());
+      await tester.runAsync(presentation.close);
+      expect(server.trashed, 0);
+    });
+  }
 
   test('close during store cleans up through the durable journal', () async {
     server.pendingStore = Completer();
@@ -247,12 +418,14 @@ final class _Wallets implements RecoverBullWalletPort {
 
 final class _Files extends Fake implements VaultFileRepository {
   int calls = 0;
+  final savedVaults = <EncryptedVault>[];
   final started = Completer<void>();
-  final pending = Completer<Result<void, RecoverBullFailure>>();
+  var pending = Completer<Result<void, RecoverBullFailure>>();
   @override
   Future<Result<void, RecoverBullFailure>> save(EncryptedVault vault) {
     calls++;
-    started.complete();
+    savedVaults.add(vault);
+    if (!started.isCompleted) started.complete();
     return pending.future;
   }
 }
@@ -263,6 +436,8 @@ final class _Server extends Fake implements KeyServerRepository {
   final started = Completer<void>();
   Completer<Result<void, RecoverBullFailure>>? pendingStore;
   int trashed = 0;
+  int stores = 0;
+  String? storedPassword;
   int closes = 0;
   final fetchStarted = Completer<void>();
   final pendingFetch = Completer<Result<VaultKeyFetch, RecoverBullFailure>>();
@@ -286,7 +461,9 @@ final class _Server extends Fake implements KeyServerRepository {
     String password,
     VaultKey key,
   ) {
-    started.complete();
+    stores++;
+    storedPassword = password;
+    if (!started.isCompleted) started.complete();
     return pendingStore?.future ?? Future.value(const Ok(null));
   }
 
