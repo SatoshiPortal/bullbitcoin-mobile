@@ -810,5 +810,50 @@
   "recoverbullRetryProviderSave": "Retry saving backup",
   "@recoverbullRetryProviderSave": {
     "description": "Retry provider save without creating a vault or changing its password"
+  },
+  "recoverbullLockoutWithDuration": "The server has limited access to a backup after repeated requests. Review your backups and try again in {duration}.",
+  "@recoverbullLockoutWithDuration": {
+    "description": "Backup lockout with a readable server retry delay.",
+    "placeholders": {
+      "duration": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullLockoutDays": "{count, plural, one{1 day} other{{count} days}}",
+  "@recoverbullLockoutDays": {
+    "description": "Whole days remaining in a key-server lockout.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "recoverbullLockoutHours": "{count, plural, one{1 hour} other{{count} hours}}",
+  "@recoverbullLockoutHours": {
+    "description": "Whole hours remaining in a key-server lockout.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "recoverbullLockoutMinutes": "{count, plural, one{1 minute} other{{count} minutes}}",
+  "@recoverbullLockoutMinutes": {
+    "description": "Whole minutes remaining in a key-server lockout.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "recoverbullLockoutSeconds": "{count, plural, one{1 second} other{{count} seconds}}",
+  "@recoverbullLockoutSeconds": {
+    "description": "Whole seconds remaining in a key-server lockout.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   }
 }

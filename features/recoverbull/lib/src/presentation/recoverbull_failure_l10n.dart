@@ -13,6 +13,13 @@ extension RecoverBullFailureL10n on RecoverBullFailure {
       context.loc.recoverbullErrorVaultBelongsToAnotherWallet,
     KeyServerFailure(kind: KeyServerFailureKind.credentials) =>
       context.loc.recoverbullErrorInvalidCredentials,
+    KeyServerFailure(
+      kind: KeyServerFailureKind.locked,
+      retryAfter: final Duration delay,
+    ) =>
+      context.loc.recoverbullLockoutWithDuration(
+        _lockoutDuration(context, delay),
+      ),
     KeyServerFailure(kind: KeyServerFailureKind.locked) =>
       context.loc.recoverbullLockoutAlert,
     KeyServerFailure() => context.loc.recoverbullErrorConnectionFailed,
@@ -25,4 +32,16 @@ extension RecoverBullFailureL10n on RecoverBullFailure {
     VaultCancelledFailure() ||
     RecoverBullUnexpectedFailure() => context.loc.recoverbullGenericFailure,
   };
+
+  String _lockoutDuration(BuildContext context, Duration delay) {
+    final loc = context.loc;
+    if (delay.inDays >= 1) return loc.recoverbullLockoutDays(delay.inDays);
+    if (delay.inHours >= 1) return loc.recoverbullLockoutHours(delay.inHours);
+    if (delay.inMinutes >= 1) {
+      return loc.recoverbullLockoutMinutes(delay.inMinutes);
+    }
+    return loc.recoverbullLockoutSeconds(
+      delay.inSeconds < 1 ? 1 : delay.inSeconds,
+    );
+  }
 }

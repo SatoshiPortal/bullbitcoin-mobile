@@ -319,5 +319,10 @@
   "backupKeySeparationWarning": "Il est essentiel que vous n'enregistriez pas la clé de sauvegarde au même endroit que votre fichier de sauvegarde. Stockez-les toujours sur des appareils séparés ou des fournisseurs de cloud différents.",
   "backupKeyExampleWarning": "Par exemple, si vous avez utilisé Google Drive pour votre fichier de sauvegarde, n'utilisez pas Google Drive pour votre clé de sauvegarde.",
   "recoverbullPendingProviderSave": "Votre sauvegarde est prête, mais son enregistrement n’a pas abouti. Réessayez d’enregistrer cette même sauvegarde, qui utilise le mot de passe déjà confirmé. Son mot de passe ne sera pas modifié.",
-  "recoverbullRetryProviderSave": "Réessayer d’enregistrer la sauvegarde"
+  "recoverbullRetryProviderSave": "Réessayer d’enregistrer la sauvegarde",
+  "recoverbullLockoutWithDuration": "Le serveur a limité l’accès à une sauvegarde après des demandes répétées. Vérifiez vos sauvegardes et réessayez dans {duration}.",
+  "recoverbullLockoutDays": "{count, plural, one{1 jour} other{{count} jours}}",
+  "recoverbullLockoutHours": "{count, plural, one{1 heure} other{{count} heures}}",
+  "recoverbullLockoutMinutes": "{count, plural, one{1 minute} other{{count} minutes}}",
+  "recoverbullLockoutSeconds": "{count, plural, one{1 seconde} other{{count} secondes}}"
 }
