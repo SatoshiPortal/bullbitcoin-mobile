@@ -2,7 +2,7 @@
 
 // Changes that touch the boundary around users' seeds, and why each is flagged.
 //
-// One policy, two uses: `custody-check.js` fails `make checks` on the whole tree, and the
+// One policy, two uses: `custody-check.js` fails `make custody-ci-check` on the whole tree, and the
 // `PR custody review` workflow comments on a pull request's added lines to ask the contributor why.
 
 const MARKER = '<!-- bull-custody-review -->';

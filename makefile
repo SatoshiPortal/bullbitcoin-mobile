@@ -1,4 +1,4 @@
-.PHONY: secrets-api-docs secrets-api-docs-check custody-check all setup clean deps deps-update bootstrap analyze build-runner translations hooks ios-pod-update ios-simulator ios-release drift-migrations devcontainer devcontainer-up container-tools container-app android release debug beta verify verify-rustc-pins action-pins-check pr-governance-test test unit-test integration-test catalogue fvm-check
+.PHONY: secrets-api-docs secrets-api-docs-check custody-check custody-ci-check all setup clean deps deps-update bootstrap analyze build-runner translations hooks ios-pod-update ios-simulator ios-release drift-migrations devcontainer devcontainer-up container-tools container-app android release debug beta verify verify-rustc-pins action-pins-check pr-governance-ci-test test unit-test integration-test catalogue fvm-check
 
 fvm-check:
 	@echo "🔍 Checking FVM"
@@ -44,7 +44,7 @@ analyze:
 	@echo "🔍 Analyze whole project (matches CI: --fatal-warnings --fatal-infos)"
 	@fvm flutter analyze --fatal-warnings --fatal-infos
 
-# Check-only gates, one target per gate of the CI `checks` job in analyze_and_test.yml (which invokes these targets so each definition lives in exactly one place). `make checks` runs the whole job locally: green here means the checks job is green in CI. The pre-commit hook deliberately does NOT call fix-check/format-check: it runs its own staged-only variants in parallel with `make analyze` for speed.
+# Local Dart/Flutter gates. CI also runs the Node-based custody import and PR governance checks; Node is not required for `make checks`. The pre-commit hook deliberately does NOT call fix-check/format-check: it runs its own staged-only variants in parallel with `make analyze` for speed.
 fix-check:
 	@echo "🧹 dart fix should have nothing to suggest"
 	@bash -c 'set -o pipefail; fvm dart fix --dry-run | tee /dev/stderr | grep -q "Nothing to fix!"'
@@ -58,12 +58,17 @@ bull-ui-check:
 	@echo "🧱 bull_ui import boundary (coins/ui imports only package:bull_ui)"
 	@if grep -rEl "package:flutter/(material|cupertino|widgets)\.dart" lib/features/coins/ui; then echo "lib/features/coins/ui must import only package:bull_ui/bull_ui.dart, not Flutter UI directly"; exit 1; fi
 
-# The custody boundary around users' seeds, as a gate: no `// ignore:` of invalid_use_of_internal_member (the seal on package:secrets — `cannot-ignore` does not hold that diagnostic on Dart 3.12.2, checked 2026-09-24), no import of flutter_secure_storage outside packages/secrets and the app's own secure store, no import of package:secrets/src/ outside the package, and no keystore dependency in another pubspec. Every git-tracked Dart file and pubspec of the workspace, the root app and every melos member alike. The keystore rules live in tools/pr_governance/custody.js, shared with the PR custody review workflow that asks a contributor why. packages/secrets/tool/key_material_gate.dart resolves production Dart symbols to reject private derivation and vault decryption outside the package; its named exceptions cover the exported swap child key and public-only xpub decoding.
+# Resolved-symbol custody policy, available locally with the pinned Dart SDK.
+# Named exceptions cover exported swap child keys and public-only xpub decoding.
 custody-check:
-	@echo "🔒 custody boundary: seal, keystore plugin, package internals, key material"
-	@node --test tools/pr_governance/custody.test.js > /dev/null
-	@node tools/pr_governance/custody-check.js
+	@echo "🔒 custody key material: resolved Dart symbols"
 	@fvm dart packages/secrets/tool/key_material_gate.dart
+
+# CI-only import/dependency/internal-seal policy, shared with PR custody review.
+# Node is confined to these explicit CI targets, outside `make checks`.
+custody-ci-check:
+	@echo "🔒 custody imports and internal seal (CI only)"
+	@node tools/pr_governance/custody-check.js
 
 # The README's simplified public API trees are generated from resolved exports.
 secrets-api-docs:
@@ -81,8 +86,8 @@ action-pins-check:
 	@echo "📌 Checking GitHub Actions are pinned to a commit SHA"
 	@bash tools/check_action_pins.sh
 
-pr-governance-test:
-	@echo "🛡️ Testing PR governance policy"
+pr-governance-ci-test:
+	@echo "🛡️ Testing PR governance and custody policy (CI only)"
 	@node --test tools/pr_governance/policy.test.js tools/pr_governance/custody.test.js
 
 build-runner:
