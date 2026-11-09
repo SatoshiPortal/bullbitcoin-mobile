@@ -672,6 +672,7 @@ void main() {
         ).called(1);
         verifyNever(
           () => broadcastBitcoinTxUsecase.execute(
+            walletId: any(named: 'walletId'),
             any(),
             isPsbt: any(named: 'isPsbt'),
             network: app.Network.bitcoinMainnet,
@@ -1021,6 +1022,7 @@ void main() {
               : Exception(foreign);
           when(
             () => broadcastBitcoinTxUsecase.execute(
+              walletId: 'w1',
               any(),
               isPsbt: any(named: 'isPsbt'),
               network: app.Network.bitcoinMainnet,
@@ -1049,9 +1051,40 @@ void main() {
       );
     }
 
+    test('spend refusal exposes the localized failure without retry', () async {
+      final cubit = buildCubit();
+      addTearDown(cubit.close);
+      when(
+        () => broadcastBitcoinTxUsecase.execute(
+          'signed-psbt',
+          walletId: 'w1',
+          isPsbt: true,
+          network: app.Network.bitcoinMainnet,
+        ),
+      ).thenThrow(
+        const WalletSpendBlockedException(BitcoinSpendStatus.pending),
+      );
+      cubit.setStateForTest(plainSignedState());
+
+      await cubit.broadcastTransaction();
+
+      expect(cubit.state.failure, isA<SendSpendBlockedFailure>());
+      expect(cubit.state.broadcastingTransaction, isFalse);
+      expect(cubit.state.txId, isNull);
+      verify(
+        () => broadcastBitcoinTxUsecase.execute(
+          'signed-psbt',
+          walletId: 'w1',
+          isPsbt: true,
+          network: app.Network.bitcoinMainnet,
+        ),
+      ).called(1);
+    });
+
     void stubBroadcast() {
       when(
         () => broadcastBitcoinTxUsecase.execute(
+          walletId: 'w1',
           any(),
           isPsbt: any(named: 'isPsbt'),
           network: app.Network.bitcoinMainnet,
@@ -1071,6 +1104,7 @@ void main() {
 
         verify(
           () => broadcastBitcoinTxUsecase.execute(
+            walletId: 'w1',
             'signed-psbt',
             isPsbt: true,
             network: app.Network.bitcoinMainnet,
@@ -1128,6 +1162,7 @@ void main() {
 
       verify(
         () => broadcastBitcoinTxUsecase.execute(
+          walletId: 'w1',
           'signed-psbt',
           isPsbt: true,
           network: app.Network.bitcoinMainnet,
@@ -1173,6 +1208,7 @@ void main() {
       expect(cubit.state.signedBitcoinPsbt, isNull);
       verifyNever(
         () => broadcastBitcoinTxUsecase.execute(
+          walletId: any(named: 'walletId'),
           any(),
           isPsbt: any(named: 'isPsbt'),
           network: app.Network.bitcoinMainnet,

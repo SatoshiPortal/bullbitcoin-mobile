@@ -478,6 +478,7 @@ void main() {
       final broadcast = Completer<String>();
       when(
         () => broadcastBitcoinTx.execute(
+          walletId: _wallet.id,
           any(),
           isPsbt: any(named: 'isPsbt'),
           network: app.Network.bitcoinMainnet,
