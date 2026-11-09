@@ -1,6 +1,9 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:bull_recoverbull/src/data/datasources/google_drive_datasource.dart';
+import 'package:bull_recoverbull/src/data/google_drive_repository.dart';
+import 'package:bull_recoverbull/bull_recoverbull.dart';
+import 'package:bull_recoverbull/src/domain/entities/drive_file_metadata.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
@@ -20,6 +23,22 @@ void main() {
     );
   });
   tearDown(() => datasource.dispose());
+
+  test('a Drive delete confirmation cannot cross an account change', () async {
+    client.hasFile = true;
+    final repository = GoogleDriveRepositoryImpl(datasource: datasource);
+    await repository.connect();
+    final files = await repository.fetchAllMetadata();
+    final selected =
+        (files as Ok<List<DriveFileMetadata>, RecoverBullFailure>).value.single;
+    google.account = _Account('second@example.invalid');
+    expect(
+      await repository.trash(selected),
+      isA<Err<Null, RecoverBullFailure>>(),
+    );
+    expect(client.writes, 0);
+    repository.dispose();
+  });
 
   test('a failed silent discovery preserves the foreground client', () async {
     await datasource.connect();
@@ -93,13 +112,24 @@ final class _Google extends Fake implements GoogleSignIn {
 
 final class _Client extends http.BaseClient {
   int closes = 0;
+  int writes = 0;
+  bool hasFile = false;
   @override
-  Future<http.StreamedResponse> send(http.BaseRequest request) async =>
-      http.StreamedResponse(
-        Stream.value(utf8.encode('{"files":[]}')),
-        200,
-        headers: {'content-type': 'application/json'},
-      );
+  Future<http.StreamedResponse> send(http.BaseRequest request) async {
+    if (request.method != 'GET') writes++;
+    return http.StreamedResponse(
+      Stream.value(
+        utf8.encode(
+          hasFile
+              ? '{"files":[{"id":"file","name":"vault.json","createdTime":"2026-11-09T00:00:00Z"}]}'
+              : '{"files":[]}',
+        ),
+      ),
+      200,
+      headers: {'content-type': 'application/json'},
+    );
+  }
+
   @override
   void close() {
     closes++;
