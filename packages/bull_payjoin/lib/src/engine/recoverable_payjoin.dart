@@ -149,6 +149,14 @@ final class _RecoverablePayjoinSender implements PayjoinSender {
   const _RecoverablePayjoinSender(this._owner);
 
   @override
+  Future<Result<PayjoinSession, PayjoinFailure>> retryProposal(
+    String sessionId,
+  ) async {
+    await _owner._readyForRoleCall();
+    return _owner._delegate.sender.retryProposal(sessionId);
+  }
+
+  @override
   Future<Result<PayjoinSenderSession, PayjoinFailure>> start(
     StartPayjoinSender request,
   ) async {

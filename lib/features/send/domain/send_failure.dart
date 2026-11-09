@@ -130,3 +130,7 @@ final class SendUnexpectedFailure extends SendFailure {
 final class SendSpendBlockedFailure extends SendFailure {
   const SendSpendBlockedFailure();
 }
+
+final class SendPayjoinPausedFailure extends SendFailure {
+  const SendPayjoinPausedFailure();
+}

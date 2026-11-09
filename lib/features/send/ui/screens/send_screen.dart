@@ -1,5 +1,7 @@
 import 'dart:math' as math;
 
+import 'package:bb_mobile/features/send/domain/send_failure.dart';
+
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/address_viewer.dart';
 import 'package:bb_mobile/core/screens/send_confirm_screen.dart' hide SendType;
@@ -1711,6 +1713,14 @@ class SendSendingScreen extends StatelessWidget {
     final isPayjoin = context.select(
       (SendCubit cubit) => cubit.state.payjoinSender != null,
     );
+    final pausedFailure = context.select(
+      (SendCubit cubit) => cubit.state.failure is SendPayjoinPausedFailure
+          ? cubit.state.failure
+          : null,
+    );
+    final canRetryProposal = context.select(
+      (SendCubit cubit) => cubit.state.payjoinSender?.canRetryProposal ?? false,
+    );
     // Same canonical getter the manual-fallback button on the transaction
     // details screen is gated on (Payjoin.canManuallyBroadcastOriginal) —
     // reusing it here, rather than a hand-rolled `proposalPsbt == null`
@@ -1746,11 +1756,12 @@ class SendSendingScreen extends StatelessWidget {
           child: Column(
             children: [
               const Gap(192),
-              Gif(
-                autostart: Autostart.loop,
-                height: 123,
-                image: AssetImage(Assets.animations.cubesLoading.path),
-              ),
+              if (pausedFailure == null)
+                Gif(
+                  autostart: Autostart.loop,
+                  height: 123,
+                  image: AssetImage(Assets.animations.cubesLoading.path),
+                ),
               if (!isLnSwap && !isPayjoin) ...[
                 const Gap(8),
                 BullText(
@@ -1795,12 +1806,24 @@ class SendSendingScreen extends StatelessWidget {
                 ),
                 const Gap(8),
                 BullText(
-                  context.loc.sendCoordinatingPayjoinTransaction,
+                  pausedFailure?.toTranslated(context) ??
+                      context.loc.sendCoordinatingPayjoinTransaction,
                   style: context.font.bodyMedium,
-                  maxLines: 4,
+                  maxLines: 10,
                   textAlign: TextAlign.center,
                 ),
-                if (showFallbackCountdown &&
+                if (pausedFailure != null && canRetryProposal) ...[
+                  const Gap(16),
+                  BullButton.big(
+                    onPressed: () =>
+                        context.read<SendCubit>().retryPayjoinProposal(),
+                    label: context.loc.retry,
+                    bgColor: context.appColors.secondary,
+                    textColor: context.appColors.onSecondary,
+                  ),
+                ],
+                if (pausedFailure == null &&
+                    showFallbackCountdown &&
                     payjoinExpiresAt != null &&
                     isImminent) ...[
                   const Gap(8),

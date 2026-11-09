@@ -45,6 +45,19 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
 
   final StreamController<Payjoin> _payjoinStreamController;
 
+  final Map<String, _ProposalRetry> _proposalRetries = {};
+  final Set<String> _manualProposalRetries = {};
+  bool _disposed = false;
+
+  @visibleForTesting
+  Duration proposalRetryWindow = const Duration(seconds: 30);
+  static const proposalRetryLimit = 3;
+
+  api.PayjoinSpendBlockedFailure? proposalSpendFailure(String id) =>
+      _proposalRetries.containsKey(id)
+      ? const api.PayjoinSpendBlockedFailure()
+      : null;
+
   // Per-session subscriptions watching for a completed payjoin transaction to
   // appear on-chain, keyed by (payjoin id, txid). Kept so each can be
   // cancelled once its transaction is seen (the watch stream re-emits on every
@@ -128,6 +141,13 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
   /// event controllers don't outlive this repository — this repository owns
   /// the datasource's lifecycle (it's the sole subscriber to its streams).
   Future<void> dispose() async {
+    _disposed = true;
+    for (final retry in _proposalRetries.values) {
+      retry.stop();
+      retry.expiryTimer?.cancel();
+      await retry.subscription?.cancel();
+    }
+    _proposalRetries.clear();
     for (final timer in _broadcastPollTimers.values) {
       timer.cancel();
     }
@@ -962,29 +982,215 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     required int minAmountSat,
   }) => amountSat != null && amountSat < minAmountSat;
 
-  Future<void> _processPayjoinProposal(PayjoinSenderModel payjoinModel) =>
-      _withSessionLock(payjoinModel.id, () async {
-        // Same hardening as _processPayjoinRequest: this runs as a bare stream
-        // .listen() callback, so any await throwing outside a try (the re-fetch
-        // and update below, or the terminal-persist tail) would surface as an
-        // unhandled zone error — and with the sender poll already cancelled by
-        // the time this fires, nothing else would ever emit a terminal event,
-        // stranding the session until the app restarts.
-        try {
-          await _processPayjoinProposalInner(payjoinModel);
-        } catch (e) {
-          _log.severe(
-            code: api.PayjoinLogCode.storageFailure,
-            sessionRef: payjoinModel.toEntity().logRef,
-            error: e,
-            trace: StackTrace.current,
-          );
+  // The stored proposal and original remain reserved. A pause is not a
+  // terminal database transition and never authorizes a competing fallback.
+  void _pauseProposal(PayjoinSenderModel model, {bool allowRetry = true}) {
+    if (_disposed) return;
+    final retry = _proposalRetries.putIfAbsent(model.id, () {
+      final expiresAt = model.toEntity().expiresAt;
+      final retryUntil = DateTime.now().add(proposalRetryWindow);
+      final state = _ProposalRetry(
+        model,
+        expiresAt.isBefore(retryUntil) ? expiresAt : retryUntil,
+      );
+      final remaining = model.toEntity().expiresAt.difference(DateTime.now());
+      if (remaining > Duration.zero) {
+        state.expiryTimer = Timer(remaining, () {
+          state.stop();
+          if (!_disposed && identical(_proposalRetries[model.id], state)) {
+            _payjoinStreamController.add(model.toEntity());
+          }
+        });
+      }
+      _log.warning(
+        code: api.PayjoinLogCode.proposalSpendPaused,
+        sessionRef: model.toEntity().logRef,
+      );
+      return state;
+    });
+    final proposalId = model.txId;
+    if (proposalId != null) {
+      _watchForBroadcast(
+        payjoinId: model.id,
+        walletId: model.walletId,
+        txId: proposalId,
+      );
+    }
+    _watchForFallback(
+      payjoinId: model.id,
+      walletId: model.walletId,
+      originalTxId: model.originalTxId,
+    );
+    if (!allowRetry || model.isExpiryTimePassed) {
+      retry.stop();
+    } else if (!retry.started) {
+      retry.started = true;
+      final remaining = model.toEntity().expiresAt.difference(DateTime.now());
+      final window = remaining < proposalRetryWindow
+          ? remaining
+          : proposalRetryWindow;
+      retry.timer = Timer(window, () {
+        retry.stop();
+        if (!_disposed && identical(_proposalRetries[model.id], retry)) {
+          _payjoinStreamController.add(model.toEntity());
         }
       });
+      try {
+        retry.subscription = _transactions.watchWallet(model.walletId).listen((
+          _,
+        ) {
+          if (retry.inFlight || retry.stopped) return;
+          retry.inFlight = true;
+          unawaited(
+            _retryProposal(
+              model.id,
+              expected: retry,
+            ).whenComplete(() => retry.inFlight = false),
+          );
+        }, onError: (Object _, StackTrace _) => retry.stop());
+      } catch (_) {
+        retry.stop();
+      }
+    }
+    _payjoinStreamController.add(model.toEntity());
+  }
+
+  Future<Result<Payjoin, api.PayjoinFailure>> retryProposal(String id) async {
+    if (!_manualProposalRetries.add(id)) {
+      return const Err(api.PayjoinSpendBlockedFailure());
+    }
+    try {
+      await _retryProposal(id, manual: true);
+    } finally {
+      _manualProposalRetries.remove(id);
+    }
+    final current = await getPayjoinById(id);
+    if (current == null) {
+      return const Err(api.PayjoinSessionNotFoundFailure('Session not found'));
+    }
+    if (current is! PayjoinSender ||
+        current.isExpired ||
+        current.proposalPsbt == null) {
+      return const Err(
+        api.PayjoinInvalidSessionTransitionFailure('No retained live proposal'),
+      );
+    }
+    if (proposalSpendFailure(id) != null) {
+      return const Err(api.PayjoinSpendBlockedFailure());
+    }
+    return Ok(current);
+  }
+
+  Future<void> _retryProposal(
+    String id, {
+    bool manual = false,
+    _ProposalRetry? expected,
+  }) => _withSessionLock(id, () async {
+    if (_disposed ||
+        (expected != null && !identical(_proposalRetries[id], expected))) {
+      return;
+    }
+    try {
+      final model = await _localPayjoinDatasource.fetchSender(id);
+      if (model == null ||
+          model.isCompleted ||
+          model.isAborted ||
+          model.isExpired) {
+        return;
+      }
+      if (model.proposalPsbt == null) return;
+      var retry = _proposalRetries[id];
+      if (retry != null &&
+          (retry.model.proposalPsbt != model.proposalPsbt ||
+              retry.model.originalPsbt != model.originalPsbt)) {
+        return;
+      }
+      if (manual) {
+        retry?.stop();
+        retry?.expiryTimer?.cancel();
+        _proposalRetries.remove(id);
+        _pauseProposal(model);
+        retry = _proposalRetries[id];
+      }
+      if (retry == null || retry.stopped) return;
+      if (!DateTime.now().isBefore(retry.deadline) ||
+          retry.attempts >= proposalRetryLimit) {
+        retry.stop();
+        return;
+      }
+      if (model.isExpiryTimePassed) {
+        _pauseProposal(model, allowRetry: false);
+        return;
+      }
+      retry.attempts++;
+      // Ask the remote visibility boundary; unknown is never absence.
+      final proposalId = model.txId;
+      if (proposalId != null &&
+          await _transactions.isTransactionVisible(
+            walletId: model.walletId,
+            transactionId: proposalId,
+            refresh: true,
+          )) {
+        await _completeOnPayjoinTransactionSeen(id, proposalId);
+        return;
+      }
+      if (await _transactions.isTransactionVisible(
+        walletId: model.walletId,
+        transactionId: model.originalTxId,
+        refresh: true,
+      )) {
+        await _completeOnOriginalTransactionSeen(id, model.originalTxId);
+        return;
+      }
+      // The deadline stops new attempts, never detaches an in-flight wire call.
+      if (retry.stopped ||
+          _disposed ||
+          model.isExpiryTimePassed ||
+          !DateTime.now().isBefore(retry.deadline)) {
+        return;
+      }
+      await _processPayjoinProposalInner(model, allowOriginalFallback: false);
+      if (retry.attempts >= proposalRetryLimit) retry.stop();
+    } catch (_) {
+      final retry = _proposalRetries[id];
+      retry?.stop();
+      if (!_disposed && retry != null) {
+        _payjoinStreamController.add(retry.model.toEntity());
+      }
+    }
+  });
+
+  Future<void> _processPayjoinProposal(
+    PayjoinSenderModel payjoinModel, {
+    bool allowOriginalFallback = true,
+  }) => _withSessionLock(payjoinModel.id, () async {
+    if (_proposalRetries.containsKey(payjoinModel.id)) return;
+    // Same hardening as _processPayjoinRequest: this runs as a bare stream
+    // .listen() callback, so any await throwing outside a try (the re-fetch
+    // and update below, or the terminal-persist tail) would surface as an
+    // unhandled zone error — and with the sender poll already cancelled by
+    // the time this fires, nothing else would ever emit a terminal event,
+    // stranding the session until the app restarts.
+    try {
+      await _processPayjoinProposalInner(
+        payjoinModel,
+        allowOriginalFallback: allowOriginalFallback,
+      );
+    } catch (e) {
+      _log.severe(
+        code: api.PayjoinLogCode.storageFailure,
+        sessionRef: payjoinModel.toEntity().logRef,
+        error: e,
+        trace: StackTrace.current,
+      );
+    }
+  });
 
   Future<void> _processPayjoinProposalInner(
-    PayjoinSenderModel payjoinModel,
-  ) async {
+    PayjoinSenderModel payjoinModel, {
+    bool allowOriginalFallback = true,
+  }) async {
+    if (_disposed) return;
     // The proposal event carries the datasource's own in-memory copy, which
     // may have resolved since (e.g. the fallback watcher aborted the session
     // when the counterparty broadcast the original while this proposal was in
@@ -994,15 +1200,26 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     final persisted = await _localPayjoinDatasource.fetchSender(
       payjoinModel.id,
     );
-    if (persisted != null && (persisted.isCompleted || persisted.isAborted)) {
+    if (persisted == null ||
+        persisted.isCompleted ||
+        persisted.isAborted ||
+        persisted.isExpired) {
       return;
     }
 
+    if (persisted.proposalPsbt != null &&
+        persisted.proposalPsbt != payjoinModel.proposalPsbt) {
+      return;
+    }
     // Update the local database with the new payjoin proposal
     final recorded = await _localPayjoinDatasource.recordSenderProposal(
       payjoinModel,
     );
     if (!recorded) return;
+    if (persisted.isExpiryTimePassed) {
+      _pauseProposal(payjoinModel, allowRetry: false);
+      return;
+    }
 
     final payjoin = payjoinModel.toEntity() as PayjoinSender;
     _log.fine(
@@ -1013,6 +1230,8 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
 
     _payjoinStreamController.add(payjoin);
 
+    final proposalPsbt = payjoin.proposalPsbt;
+    if (proposalPsbt == null) return;
     PayjoinSender? result;
     String? finalizedPsbt;
     try {
@@ -1021,13 +1240,17 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
         network: payjoin.isTestnet
             ? primitives.BitcoinNetwork.testnet
             : primitives.BitcoinNetwork.mainnet,
-        psbt: payjoin.proposalPsbt!,
+        psbt: proposalPsbt,
       );
       _log.fine(
         code: api.PayjoinLogCode.proposalSigned,
         role: api.PayjoinLogRole.sender,
         sessionRef: payjoin.logRef,
       );
+      if (_disposed || payjoinModel.isExpiryTimePassed) {
+        _pauseProposal(payjoinModel, allowRetry: false);
+        return;
+      }
       result = await _broadcastPsbt(
         payjoinModel: payjoinModel,
         finalizedPsbt: finalizedPsbt,
@@ -1044,21 +1267,13 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
         sessionRef: payjoin.logRef,
       );
     } on api.PayjoinSpendBlockedException {
-      final proposalId = payjoin.txId;
-      if (proposalId != null) {
-        _watchForBroadcast(
-          payjoinId: payjoin.id,
-          walletId: payjoin.walletId,
-          txId: proposalId,
-        );
-      }
-      _watchForFallback(
-        payjoinId: payjoin.id,
-        walletId: payjoin.walletId,
-        originalTxId: payjoin.originalTxId,
-      );
+      _pauseProposal(payjoinModel);
       return;
     } catch (e) {
+      if (!allowOriginalFallback || _proposalRetries.containsKey(payjoin.id)) {
+        _pauseProposal(payjoinModel, allowRetry: false);
+        return;
+      }
       _log.severe(
         code: api.PayjoinLogCode.broadcastFailure,
         sessionRef: payjoin.logRef,
@@ -1227,6 +1442,12 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
         ? await _localPayjoinDatasource.fetchReceiver(payjoinModel.id)
         : await _localPayjoinDatasource.fetchSender(payjoinModel.id);
     if (freshModel == null || freshModel.isCompleted || freshModel.isAborted) {
+      return;
+    }
+    if (freshModel is PayjoinSenderModel &&
+        freshModel.proposalPsbt != null &&
+        !freshModel.isExpired) {
+      _pauseProposal(freshModel, allowRetry: false);
       return;
     }
     // Classified from what this device recorded, never from what the
@@ -1630,7 +1851,10 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       } else {
         // If the proposal psbt is present, it means a payjoin proposal was
         //  already received  and it should be processed.
-        await _processPayjoinProposal(model);
+        if (!_proposalRetries.containsKey(model.id)) {
+          _pauseProposal(model);
+          await _retryProposal(model.id);
+        }
       }
     }
   }
@@ -2319,6 +2543,10 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
   /// awaiting it would make completion latency depend on the upstream
   /// stream's teardown.
   void _stopWatching(String payjoinId) {
+    final retry = _proposalRetries.remove(payjoinId);
+    retry?.stop();
+    retry?.expiryTimer?.cancel();
+
     _receiverFallbackAvailableAt.remove(payjoinId);
     // Both watcher kinds are keyed per (session, txid) — '$payjoinId|$txId' —
     // because a retried sender watches its superseded transactions alongside
@@ -2408,4 +2636,24 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
 
 class NoInputsToPayjoinException extends PayjoinEngineException {
   NoInputsToPayjoinException(super.message);
+}
+
+final class _ProposalRetry {
+  final PayjoinSenderModel model;
+  final DateTime deadline;
+  int attempts = 0;
+  bool started = false;
+  bool stopped = false;
+  bool inFlight = false;
+  Timer? timer;
+  Timer? expiryTimer;
+  StreamSubscription<void>? subscription;
+
+  _ProposalRetry(this.model, this.deadline);
+
+  void stop() {
+    stopped = true;
+    timer?.cancel();
+    unawaited(subscription?.cancel());
+  }
 }

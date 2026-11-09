@@ -16047,5 +16047,9 @@
   "walletSpendReplacementUnavailable": "Fee bumping is unavailable for this payment. Wait for confirmation.",
   "@walletSpendReplacementUnavailable": {
     "description": "RBF limitation for retained tracked Bitcoin broadcasts."
+  },
+  "sendPayjoinSpendPaused": "This Payjoin payment is paused because the wallet cannot safely continue. Its inputs remain reserved. Refresh the wallet or use Scan for missing transactions, then retry this proposal while it is still valid. If it has expired, check the payment in Transactions before taking further action.",
+  "@sendPayjoinSpendPaused": {
+    "description": "A retained Payjoin proposal cannot proceed; keep reservations and retry the same proposal only."
   }
 }

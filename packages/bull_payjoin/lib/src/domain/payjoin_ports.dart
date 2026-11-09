@@ -267,6 +267,7 @@ enum PayjoinLogCode {
   proposalSent('Payjoin proposal sent to the sender'),
   proposalReceived('Payjoin proposal received from the receiver'),
   proposalSigned('Payjoin proposal signed'),
+  proposalSpendPaused('Proposal paused while wallet spending is unavailable'),
   payjoinBroadcast('Payjoin transaction broadcast'),
   fallbackBroadcast('Original transaction broadcast instead of a payjoin'),
   fallbackObserved('Original transaction seen on the network instead'),

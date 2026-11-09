@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/send/domain/usecases/retry_payjoin_proposal_usecase.dart';
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart'
     show WalletSpendBlockedException;
 import 'package:bb_mobile/features/send/domain/broadcast_failure.dart';
@@ -97,6 +98,7 @@ class SendCubit extends Cubit<SendState>
     required this._prepareLiquidSendUsecase,
     required this._sendWithPayjoinUsecase,
     required this._watchPayjoinUsecase,
+    required this._retryPayjoinProposalUsecase,
     required this._getWalletsUsecase,
     required this._getWalletUsecase,
     required this._createSendSwapUsecase,
@@ -174,6 +176,7 @@ class SendCubit extends Cubit<SendState>
   final BroadcastBitcoinTransactionUsecase _broadcastBitcoinTxUsecase;
   final SendWithPayjoinUsecase _sendWithPayjoinUsecase;
   final WatchPayjoinUsecase _watchPayjoinUsecase;
+  final RetryPayjoinProposalUsecase _retryPayjoinProposalUsecase;
   final UpdatePaidSendSwapUsecase _updatePaidSendSwapUsecase;
   final CalculateLiquidAbsoluteFeesUsecase _calculateLiquidAbsoluteFeesUsecase;
 
@@ -2753,6 +2756,24 @@ class SendCubit extends Cubit<SendState>
     });
   }
 
+  Future<void> retryPayjoinProposal() async {
+    final sender = state.payjoinSender;
+    if (sender == null || !sender.canRetryProposal) return;
+    final result = await _retryPayjoinProposalUsecase.execute(sender.id);
+    if (isClosed ||
+        state.payjoinSender?.isCompleted == true ||
+        state.payjoinSender?.isAborted == true) {
+      return;
+    }
+    switch (result) {
+      case Err(:final failure):
+        emit(state.copyWith(failure: failure));
+      case Ok():
+        // Session updates remain owned by the existing subscription.
+        break;
+    }
+  }
+
   /// Watches the sender side of an in-flight payjoin and resolves the send
   /// flow once it terminates. The payjoin negotiation runs asynchronously in
   /// the repository; without this the UI would sit on the "coordinating"
@@ -2802,6 +2823,7 @@ class SendCubit extends Cubit<SendState>
             emit(
               state.copyWith(
                 payjoinSender: payjoin,
+                failure: null,
                 // Prefer the payjoin txid; fall back to the original tx that
                 //  was broadcast when the negotiation didn't complete.
                 txId: payjoin.txId ?? payjoin.originalTxId,
@@ -2869,7 +2891,14 @@ class SendCubit extends Cubit<SendState>
               ),
             );
           } else {
-            emit(state.copyWith(payjoinSender: payjoin));
+            emit(
+              state.copyWith(
+                payjoinSender: payjoin,
+                failure: payjoin.spendFailure == null
+                    ? null
+                    : const SendPayjoinPausedFailure(),
+              ),
+            );
           }
         });
   }

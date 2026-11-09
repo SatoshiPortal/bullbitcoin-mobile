@@ -194,6 +194,7 @@ abstract interface class _PayjoinRuntimeContract {
   );
   Future<Result<PayjoinSession, PayjoinFailure>> broadcastOriginal(String id);
   Future<Result<bool, PayjoinFailure>> canBroadcastOriginal(String id);
+  Future<Result<PayjoinSession, PayjoinFailure>> retryProposal(String id);
   Future<Result<void, PayjoinFailure>> cancel(String id);
   Future<Result<void, PayjoinFailure>> disableAll();
   Future<Result<PayjoinSession?, PayjoinFailure>> byId(String id);
@@ -247,6 +248,7 @@ final class _PayjoinRoles implements _PayjoinRuntimeContract {
   PayjoinSession _toSession(engine.Payjoin value) => _mapSession(
     value,
     fallbackAvailableAt: _engine.receiverFallbackAvailableAt(value.id),
+    spendFailure: _engine.proposalSpendFailure(value.id),
   );
 
   @override
@@ -367,6 +369,17 @@ final class _PayjoinRoles implements _PayjoinRuntimeContract {
       return const Err(PayjoinSpendBlockedFailure());
     } catch (_) {
       return const Err(PayjoinBroadcastFailure('Broadcast failed'));
+    }
+  }
+
+  @override
+  Future<Result<PayjoinSession, PayjoinFailure>> retryProposal(
+    String id,
+  ) async {
+    try {
+      return (await _engine.retryProposal(id)).map(_toSession);
+    } catch (_) {
+      return const Err(PayjoinStorageFailure('Proposal retry failed'));
     }
   }
 
@@ -597,6 +610,10 @@ final class _SenderRole implements PayjoinSender {
       _runtime.broadcastOriginal(id);
 
   @override
+  Future<Result<PayjoinSession, PayjoinFailure>> retryProposal(String id) =>
+      _runtime.retryProposal(id);
+
+  @override
   Future<Result<bool, PayjoinFailure>> canBroadcastOriginal(String id) =>
       _runtime.canBroadcastOriginal(id);
 }
@@ -688,6 +705,7 @@ final class _DiagnosticsRole implements PayjoinDiagnostics {
 PayjoinSession _mapSession(
   engine.Payjoin value, {
   DateTime? fallbackAvailableAt,
+  PayjoinSpendBlockedFailure? spendFailure,
 }) {
   final network = value.isTestnet
       ? BitcoinNetwork.testnet
@@ -696,6 +714,7 @@ PayjoinSession _mapSession(
   final ownership = _deriveOwnership(value);
   return switch (value) {
     engine.PayjoinSender() => PayjoinSenderSession(
+      spendFailure: spendFailure,
       status: status,
       uri: value.id,
       network: network,
