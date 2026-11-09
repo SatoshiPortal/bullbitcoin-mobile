@@ -413,6 +413,27 @@ void main() {
             );
             await refused;
             expect(bloc.state.revealedAddressGeneration, isNull);
+            expect(bloc.state.canConfirmAmount, isFalse);
+            for (final event in <ReceiveEvent>[
+              const ReceiveAmountInputChanged('1000'),
+              const ReceiveAmountCurrencyChanged('sats'),
+              const ReceiveAmountConfirmed(),
+            ]) {
+              bloc.add(event);
+              await Future<void>.delayed(Duration.zero);
+              expect(
+                bloc.state.admissionFailure,
+                isA<ReceiveUnsupportedNetworkFailure>(),
+              );
+              expect(
+                bloc.state.failure,
+                isA<ReceiveUnsupportedNetworkFailure>(),
+              );
+              expect(bloc.state.canConfirmAmount, isFalse);
+              expect(bloc.state.creatingSwap, isFalse);
+              expect(bloc.state.confirmedAmountSat, isNull);
+            }
+            verifyZeroInteractions(createOrderSwap);
             verifyNever(
               () => getWallets.execute(onlyLiquid: true, onlyDefaults: true),
             );
