@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:screen_privacy/screen_privacy.dart';
-import 'package:bb_mobile/core/widgets/screen_privacy_gate.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
@@ -14,7 +13,8 @@ import 'package:bb_mobile/features/test_wallet_backup/ui/screens/verify_mnemonic
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show BullButton, BullText, Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show BullButton, BullScreenPrivacyGate, BullText, Gap;
 import 'package:secrets/secrets.dart' show Secret, SecretExtension;
 
 class ShowMnemonicScreen extends StatefulWidget {
@@ -38,7 +38,9 @@ class _ShowMnemonicScreenState extends State<ShowMnemonicScreen>
   Widget build(BuildContext context) {
     // Nothing draws before capture blocking is confirmed: the gate waits for
     // the OS flag and hides the words if the platform refused it.
-    return ScreenPrivacyGate(
+    return BullScreenPrivacyGate(
+      unavailableMessage: context.loc.screenPrivacyUnavailable,
+      retryLabel: context.loc.retry,
       protection: _privacyFuture,
       onRetry: () => setState(() {
         _privacyFuture = enableScreenPrivacy();
