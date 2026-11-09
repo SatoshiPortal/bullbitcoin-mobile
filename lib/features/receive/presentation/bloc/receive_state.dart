@@ -7,6 +7,9 @@ abstract class ReceiveState with _$ReceiveState {
   const factory ReceiveState({
     ReceiveType? type,
     Wallet? wallet,
+    // Admission belongs to the current route, independently of form errors.
+    @Default(false) bool walletAdmitted,
+    ReceiveFailure? admissionFailure,
     @Default([]) List<Wallet> wallets,
     BitcoinUnit? bitcoinUnit,
     @Default([]) List<String> fiatCurrencyCodes,
@@ -53,6 +56,9 @@ abstract class ReceiveState with _$ReceiveState {
     @Default(false) bool creatingSwap,
   }) = _ReceiveState;
   const ReceiveState._();
+
+  bool get canConfirmAmount =>
+      walletAdmitted && wallet != null && admissionFailure == null;
 
   /// True while the entered amount itself is invalid, so continuing cannot
   /// possibly succeed. Distinct from any other [failure] — a failed swap

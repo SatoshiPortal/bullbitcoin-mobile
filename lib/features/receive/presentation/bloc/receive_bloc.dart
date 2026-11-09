@@ -241,6 +241,8 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
         tx: null,
         creatingSwap: false,
         revealedAddressGeneration: null,
+        walletAdmitted: false,
+        admissionFailure: null,
       ),
     );
     _pendingNewAddressWallet = null;
@@ -319,7 +321,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
           return;
       }
     }
-    emit(state.copyWith(wallet: wallet));
+    emit(state.copyWith(wallet: wallet, walletAdmitted: true));
 
     if (state.bitcoinUnit == null) {
       // If the bitcoin unit is not set yet, we need to get it from the settings
@@ -502,6 +504,8 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
         tx: null,
         creatingSwap: false,
         revealedAddressGeneration: null,
+        walletAdmitted: false,
+        admissionFailure: null,
       ),
     );
     _pendingNewAddressWallet = null;
@@ -541,7 +545,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
             ),
           );
         case Err(:final failure):
-          emit(state.copyWith(failure: failure));
+          emit(state.copyWith(admissionFailure: failure, failure: failure));
           return;
       }
     }
@@ -590,7 +594,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
           return;
       }
     }
-    emit(state.copyWith(wallet: wallet));
+    emit(state.copyWith(wallet: wallet, walletAdmitted: true));
 
     if (state.exchangeRate == null) {
       // If the exchange rate is not set yet, we need to get it from the settings
@@ -624,6 +628,8 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
         tx: null,
         creatingSwap: false,
         revealedAddressGeneration: null,
+        walletAdmitted: false,
+        admissionFailure: null,
       ),
     );
     _pendingNewAddressWallet = null;
@@ -659,7 +665,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
             ),
           );
         case Err(:final failure):
-          emit(state.copyWith(failure: failure));
+          emit(state.copyWith(admissionFailure: failure, failure: failure));
           return;
       }
     }
@@ -708,7 +714,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
           return;
       }
     }
-    emit(state.copyWith(wallet: wallet));
+    emit(state.copyWith(wallet: wallet, walletAdmitted: true));
 
     var liquidAddress = state.liquidAddress;
     if (liquidAddress == null || liquidAddress.walletId != wallet.id) {
@@ -765,6 +771,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     ReceiveAmountInputChanged event,
     Emitter<ReceiveState> emit,
   ) async {
+    if (state.admissionFailure != null) return;
     String amount;
     ReceiveFailure? amountFailure;
 
@@ -848,6 +855,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     ReceiveAmountCurrencyChanged event,
     Emitter<ReceiveState> emit,
   ) async {
+    if (state.admissionFailure != null) return;
     double? exchangeRate = state.exchangeRate;
     String fiatCurrencyCode = state.fiatCurrencyCode;
 
@@ -910,6 +918,17 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
   ) async {
     final generation = _receiveGeneration;
     if (state.creatingSwap) return;
+    final wallet = state.wallet;
+    if (!state.canConfirmAmount || wallet == null) {
+      emit(
+        state.copyWith(
+          failure:
+              state.admissionFailure ??
+              const ReceiveAddressUnavailableFailure(),
+        ),
+      );
+      return;
+    }
     final confirmedAmountSat = state.inputAmountSat;
 
     if (state.type != ReceiveType.lightning) {
@@ -933,7 +952,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
       ),
     );
     final result = await _createReceiveOrderSwapUsecase.execute(
-      wallet: state.wallet!,
+      wallet: wallet,
       amountSat: confirmedAmountSat,
       note: state.note,
     );
@@ -942,7 +961,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
       case Ok(:final value):
         _watchOrderSwap(value.localId);
         _watchWalletTransactionToAddress(
-          walletId: state.wallet!.id,
+          walletId: wallet.id,
           address: value.destination,
         );
         emit(
