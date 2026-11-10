@@ -10,7 +10,7 @@ final class SettingsRecoverBullBindings {
     final adapter = RecoverBullSettingsAdapter(
       locator<SettingsRepository>(),
       locator<SqliteDatabase>(),
-      locator<EmbeddedTor>(),
+      locator<Tor>().embedded,
       locator<Tor>(),
     );
     locator.registerSingleton<RecoverBullRoutePort>(adapter);
