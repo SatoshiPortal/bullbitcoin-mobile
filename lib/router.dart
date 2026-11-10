@@ -58,6 +58,16 @@ class AppRouter {
   static final GlobalKey<NavigatorState> rootNavigatorKey =
       GlobalKey<NavigatorState>(debugLabel: 'rootNav');
 
+  static final _exchangeConfig = ExchangeRouterConfig(
+    isSuperuser: (context) =>
+        context.read<SettingsCubit>().state.isSuperuser ?? false,
+    homePath: WalletRoute.walletHome.path,
+    buildHomeCards: () => [locator<LimitOrdersFacade>().buildDashboardCard()],
+    onHomeRefresh: () => locator<LimitOrdersFacade>().refreshDashboard(),
+    onExit: (context) => context.goNamed(WalletRoute.walletHome.name),
+    onOpenSettings: (context) => context.pushNamed(SettingsRoute.settings.name),
+  );
+
   static final router = GoRouter(
     navigatorKey: rootNavigatorKey,
     initialLocation: WalletRoute.walletHome.path,
@@ -90,9 +100,7 @@ class AppRouter {
           final tabIndex = location.startsWith(ExchangeRoute.exchangeHome.path)
               ? 1
               : 0;
-          final isSupportChat =
-              location.contains('/support-chat') ||
-              location.contains('/login-support');
+          final isSupportLogin = location.contains('/login-support');
 
           return MultiBlocProvider(
             providers: [
@@ -113,7 +121,7 @@ class AppRouter {
                   appBar: tabIndex == 0 ? const WalletHomeAppBar() : null,
                   extendBodyBehindAppBar: true,
                   body: child,
-                  bottomNavigationBar: isSupportChat
+                  bottomNavigationBar: isSupportLogin
                       ? null
                       : Column(
                           mainAxisSize: MainAxisSize.min,
@@ -170,23 +178,10 @@ class AppRouter {
         },
         routes: [
           WalletRouter.walletHomeRoute,
-          ...ExchangeRouter.routes(
-            ExchangeRouterConfig(
-              isSuperuser: (context) =>
-                  context.read<SettingsCubit>().state.isSuperuser ?? false,
-              homePath: WalletRoute.walletHome.path,
-              buildHomeCards: () => [
-                locator<LimitOrdersFacade>().buildDashboardCard(),
-              ],
-              onHomeRefresh: () =>
-                  locator<LimitOrdersFacade>().refreshDashboard(),
-              onExit: (context) => context.goNamed(WalletRoute.walletHome.name),
-              onOpenSettings: (context) =>
-                  context.pushNamed(SettingsRoute.settings.name),
-            ),
-          ),
+          ...ExchangeRouter.routes(_exchangeConfig),
         ],
       ),
+      ExchangeRouter.supportChatRoute(_exchangeConfig),
       OnboardingRouter.route,
       AppUnlockRouter.route,
       WalletRouter.walletDetailRoute,

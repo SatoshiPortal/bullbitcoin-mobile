@@ -44,6 +44,19 @@ class ExchangeRouterConfig {
 }
 
 class ExchangeRouter {
+  static GoRoute supportChatRoute(ExchangeRouterConfig config) =>
+      ExchangeSupportChatRouter.route(
+        isLoggedIn: (context) => context.read<ExchangeCubit>().state.hasUser,
+        loginScreenBuilder: (draft) => ExchangeSupportLoginScreen(draft: draft),
+        onExit: (context, fromExchange) {
+          if (fromExchange) {
+            context.goNamed(ExchangeRoute.exchangeHome.name);
+          } else {
+            config.onExit(context);
+          }
+        },
+      );
+
   static List<RouteBase> routes(ExchangeRouterConfig config) => [
     GoRoute(
       name: ExchangeRoute.exchangeHome.name,
@@ -106,17 +119,6 @@ class ExchangeRouter {
           key: state.pageKey,
           child: const ExchangeSupportLoginScreen(),
         );
-      },
-    ),
-    ExchangeSupportChatRouter.route(
-      isLoggedIn: (context) => context.read<ExchangeCubit>().state.hasUser,
-      loginScreenBuilder: (draft) => ExchangeSupportLoginScreen(draft: draft),
-      onExit: (context, fromExchange) {
-        if (fromExchange) {
-          context.goNamed(ExchangeRoute.exchangeHome.name);
-        } else {
-          config.onExit(context);
-        }
       },
     ),
     GoRoute(
