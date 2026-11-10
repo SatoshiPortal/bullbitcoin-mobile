@@ -9,6 +9,7 @@ import 'package:secrets/src/crypto/crypto.dart';
 import 'package:secrets/src/data/data.dart';
 import 'package:secrets/src/domain/domain.dart';
 import 'package:secrets/src/public/secret.dart';
+import 'package:secrets/src/public/ephemeral_mnemonic.dart';
 
 /// The only door into stored key material.
 ///
@@ -74,6 +75,15 @@ final class Secrets {
     rejectExisting: true,
   )).map(_handle);
 
+  /// Generates an independent mnemonic without writing to the keystore.
+  /// The caller owns the sealed setup session and must dispose it when finished.
+  @useResult
+  Future<Result<EphemeralMnemonic, SecretFailure>> generateEphemeral({
+    MnemonicLength wordCount = MnemonicLength.words24,
+  }) async => (await EphemeralMnemonicRepository.generate(
+    wordCount,
+  )).map(EphemeralMnemonic.new);
+
   /// Imports user-supplied words and returns a newly stored secret. The caller must release its input afterwards. Invalid words return [InvalidMnemonicFailure]; an existing secret returns [SecretAlreadyExistsFailure] without changing storage.
   ///
   /// With [acceptOnly], words that derive to any other fingerprint return [FingerprintMismatchFailure] and nothing is written.
@@ -90,6 +100,27 @@ final class Secrets {
     rejectExisting: true,
     acceptOnly: acceptOnly,
   )).map(_handle);
+
+  /// Retains the words-only sibling of a verified stored secret.
+  /// The original entry is preserved; an existing sibling must contain the same seed.
+  @useResult
+  Future<Result<Secret, SecretFailure>> retainCanonical(Fingerprint id) async =>
+      (await _repository.retainCanonical(id)).map(_handle);
+
+  @internal
+  Future<Result<PublicAccountKey, SecretFailure>> previewAccount({
+    required List<String> words,
+    Language language = Language.english,
+    required String derivationPath,
+    required BitcoinNetwork network,
+    String passphrase = '',
+  }) => _repository.previewAccount(
+    words: words,
+    language: language,
+    derivationPath: derivationPath,
+    network: network,
+    passphrase: passphrase,
+  );
 
   // ----------------------------------------------------------------- queries
 
@@ -266,6 +297,21 @@ extension type const SecretPreview._(Secrets _secrets) {
     passphrase: passphrase,
     network: network,
     scriptTypes: scriptTypes,
+  );
+
+  @useResult
+  Future<Result<PublicAccountKey, SecretFailure>> account({
+    required List<String> words,
+    Language language = Language.english,
+    required String derivationPath,
+    required BitcoinNetwork network,
+    String passphrase = '',
+  }) => _secrets.previewAccount(
+    words: words,
+    language: language,
+    derivationPath: derivationPath,
+    network: network,
+    passphrase: passphrase,
   );
 }
 

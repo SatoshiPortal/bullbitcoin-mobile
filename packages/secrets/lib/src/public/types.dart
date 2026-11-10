@@ -12,6 +12,8 @@ export 'package:bip39_mnemonic/bip39_mnemonic.dart'
 export 'package:secrets/src/crypto/crypto.dart' show Descriptors;
 export 'package:secrets/src/domain/domain.dart'
     show
+        PublicAccountKey,
+        DescriptorSigningKey,
         DatabaseKey,
         DatabaseKeyCorruptFailure,
         EncryptedVault,

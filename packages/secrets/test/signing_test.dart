@@ -1,10 +1,10 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:convert/convert.dart' as convert;
 
 import 'package:bip32_keys/bip32_keys.dart';
+import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:bull_sdk/bdk.dart' as bdk;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
@@ -31,9 +31,10 @@ void main() {
   ];
 
   late Secret secret;
+  late FakeSecureStoragePlatform storage;
 
-  setUpAll(() async {
-    FakeSecureStoragePlatform().install();
+  setUp(() async {
+    storage = FakeSecureStoragePlatform()..install();
     secret = ok(
       await Secrets(scratchDirectory: () async => '/tmp').import(words: words),
     );
@@ -194,6 +195,164 @@ void main() {
           );
           expect(err(result), isA<UseSecretFailure>(), reason: '$network');
         }
+      },
+    );
+  });
+  group('sign.descriptorPsbt', () {
+    for (final language in [Language.english, Language.japanese]) {
+      final sourceWords = bip39.Mnemonic(List.filled(16, 0), language).words;
+      test(
+        '${language.name} temporary signing preserves storage and partial signatures',
+        () async {
+          secret = ok(
+            await Secrets(scratchDirectory: () async => '/tmp').import(
+              words: sourceWords,
+              language: language,
+              passphrase: 'stored',
+            ),
+          );
+          final stored = Map<String, String>.of(storage.entries);
+          final storedId = secret.id;
+          const path = "m/84'/0'/1'";
+          final account = ok(
+            await secret.derive.account(
+              derivationPath: path,
+              network: BitcoinNetwork.mainnet,
+              passphrase: 'operation',
+            ),
+          );
+          final expression =
+              "[${account.fingerprint.hex}/84'/0'/1']${account.xpub}/<0;1>/*";
+          final signed = ok(
+            await secret.sign.descriptorPsbt(
+              _witnessPsbt(
+                accountIndex: 1,
+                seed: Uint8List.fromList(
+                  bip39.Mnemonic.fromWords(
+                    words: sourceWords,
+                    language: language,
+                    passphrase: 'operation',
+                  ).seed,
+                ),
+              ).psbt,
+              descriptor: 'wpkh($expression)',
+              passphrase: 'operation',
+              network: BitcoinNetwork.mainnet,
+              keys: [
+                DescriptorSigningKey(
+                  publicExpression: expression,
+                  derivationPath: path,
+                  xpub: account.xpub,
+                ),
+              ],
+            ),
+          );
+          expect(secret.id, storedId);
+          expect(account.fingerprint, isNot(storedId));
+          expect(storage.entries, stored);
+          final parsed = bdk.Psbt(psbtBase64: signed);
+          try {
+            final input = parsed.input().single;
+            expect(input.partialSigs, hasLength(1));
+            expect(input.finalScriptWitness, isNull);
+          } finally {
+            parsed.dispose();
+          }
+        },
+      );
+    }
+
+    test(
+      'raw seeds sign descriptors without adding passphrase support',
+      () async {
+        final raw = FakeSecureStoragePlatform(
+          entries: {
+            'seed_73c5da0a': jsonEncode({
+              'bytes': bip39.Mnemonic.fromWords(words: words).seed,
+              'runtimeType': 'bytes',
+            }),
+          },
+        )..install();
+        final seed = ok(
+          await Secrets(
+            scratchDirectory: () async => '/tmp',
+          ).fetch(Fingerprint('73c5da0a')),
+        );
+        final entries = Map<String, String>.of(raw.entries);
+        const path = "m/84'/0'/1'";
+        final account = ok(
+          await seed.derive.account(
+            derivationPath: path,
+            network: BitcoinNetwork.mainnet,
+            passphrase: '',
+          ),
+        );
+        final expression = "[73c5da0a/84'/0'/1']${account.xpub}/<0;1>/*";
+        final keys = [
+          DescriptorSigningKey(
+            publicExpression: expression,
+            derivationPath: path,
+            xpub: account.xpub,
+          ),
+        ];
+        final signed = ok(
+          await seed.sign.descriptorPsbt(
+            _witnessPsbt(accountIndex: 1).psbt,
+            descriptor: 'wpkh($expression)',
+            network: BitcoinNetwork.mainnet,
+            keys: keys,
+            passphrase: '',
+          ),
+        );
+        final parsed = bdk.Psbt(psbtBase64: signed);
+        try {
+          expect(parsed.input().single.partialSigs, hasLength(1));
+        } finally {
+          parsed.dispose();
+        }
+        expect(
+          err(
+            await seed.sign.descriptorPsbt(
+              _witnessPsbt(accountIndex: 1).psbt,
+              descriptor: 'wpkh($expression)',
+              network: BitcoinNetwork.mainnet,
+              keys: keys,
+              passphrase: 'not supported',
+            ),
+          ),
+          isA<PassphraseUnsupportedFailure>(),
+        );
+        expect(raw.entries, entries);
+      },
+    );
+
+    test(
+      'refuses a selected xpub that is not derived by this secret',
+      () async {
+        final account = ok(
+          await secret.derive.account(
+            derivationPath: "m/84'/0'/1'",
+            network: BitcoinNetwork.mainnet,
+          ),
+        );
+        final expression =
+            "[${account.fingerprint.hex}/84'/0'/1']${account.xpub}/<0;1>/*";
+        final failure = err(
+          await secret.sign.descriptorPsbt(
+            _witnessPsbt(accountIndex: 1).psbt,
+            descriptor: 'wpkh($expression)',
+            network: BitcoinNetwork.mainnet,
+            keys: [
+              DescriptorSigningKey(
+                publicExpression: expression,
+                derivationPath: "m/84'/0'/0'",
+                xpub: account.xpub,
+              ),
+            ],
+          ),
+        );
+        expect(failure, isA<UseSecretFailure>());
+        expect(failure.logMessage, isNot(contains('xprv')));
       },
     );
   });

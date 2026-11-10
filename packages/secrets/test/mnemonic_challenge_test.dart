@@ -79,8 +79,7 @@ void main() {
   /// test can find a word by text and a placed tile by its number.
   Widget hosted(Secret secret) => Directionality(
     textDirection: TextDirection.ltr,
-    child: MnemonicChallenge(
-      secret: secret,
+    child: secret.widgets.mnemonicChallenge(
       placeholder: const Text('reading'),
       failureBuilder: (_, failure, retry) => Column(
         children: [
@@ -121,8 +120,7 @@ void main() {
     await tester.pumpWidget(
       Directionality(
         textDirection: TextDirection.ltr,
-        child: MnemonicChallenge(
-          secret: secret,
+        child: secret.widgets.mnemonicChallenge(
           failureBuilder: (_, _, _) => const SizedBox(),
           onSolved: () {},
           onMistake: () {},

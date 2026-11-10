@@ -58,6 +58,49 @@ final class Secret extends SecretEntry {
 
   // ------------------------------------------------------------ derivation
 
+  /// Public key and actual root fingerprint at an explicit BIP32 path.
+  /// An omitted passphrase uses the stored one; an empty override uses words alone.
+  @internal
+  Future<Result<PublicAccountKey, SecretFailure>> account({
+    required String derivationPath,
+    required BitcoinNetwork network,
+    String? passphrase,
+  }) => _repository.use(
+    info,
+    (material) => Deriver.bitcoin.account(
+      material,
+      derivationPath: derivationPath,
+      network: network,
+      passphrase: passphrase,
+    ),
+  );
+
+  /// Adds signatures for the selected public descriptor keys without finalizing.
+  /// Private descriptors and native signing handles exist only inside this call.
+  @internal
+  Future<Result<String, SecretFailure>> signDescriptorPsbt(
+    String psbt, {
+    required String descriptor,
+    required BitcoinNetwork network,
+    required List<DescriptorSigningKey> keys,
+    String? passphrase,
+    bool signWithTapInternalKey = false,
+  }) {
+    final selected = List<DescriptorSigningKey>.of(keys);
+    return _repository.use(
+      info,
+      (material) => Signer.bitcoin.signDescriptorPsbt(
+        material,
+        psbt: psbt,
+        descriptor: descriptor,
+        network: network,
+        keys: selected,
+        passphrase: passphrase,
+        signWithTapInternalKey: signWithTapInternalKey,
+      ),
+    );
+  }
+
   /// Account-level extended **public** key for a Bitcoin or Liquid wallet. The encoding — xpub/zpub, tpub/vpub — follows from script type and network.
   @internal
   Future<Result<String, SecretFailure>> xpub({

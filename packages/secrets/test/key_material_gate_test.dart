@@ -89,6 +89,34 @@ class BitcoinSigner {
 """;
       expect(await inspect('signer_xprv', xprv, policyPath: path), isEmpty);
       expect(await inspect('outside_signer', xprv), isNotEmpty);
+      const descriptor = """
+import 'package:bull_sdk/bdk.dart' as bdk;
+class BitcoinSigner {
+  void signDescriptorPsbt(String value, bdk.DerivationPath path) {
+    final root = bdk.DescriptorSecretKey.fromString(privateKey: value);
+    final account = root.derive(path: path);
+    account.toString();
+    account.dispose();
+    root.dispose();
+  }
+}
+""";
+      expect(
+        await inspect('descriptor_signer', descriptor, policyPath: path),
+        isEmpty,
+      );
+      expect(
+        await inspect('descriptor_outside_signer', descriptor),
+        isNotEmpty,
+      );
+      expect(
+        await inspect(
+          'descriptor_wrong_method',
+          descriptor.replaceAll('signDescriptorPsbt', '_other'),
+          policyPath: path,
+        ),
+        isNotEmpty,
+      );
       const words = """
 import 'package:bull_sdk/bdk.dart' as bdk;
 class BitcoinSigner {
@@ -97,6 +125,14 @@ class BitcoinSigner {
 """;
       expect(
         await inspect('signer_words', words, policyPath: path),
+        isNotEmpty,
+      );
+      expect(
+        await inspect(
+          'descriptor_words',
+          words.replaceAll('_wallet', 'signDescriptorPsbt'),
+          policyPath: path,
+        ),
         isNotEmpty,
       );
       expect(
