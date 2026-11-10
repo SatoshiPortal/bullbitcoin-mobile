@@ -100,7 +100,6 @@ class AppRouter {
           final tabIndex = location.startsWith(ExchangeRoute.exchangeHome.path)
               ? 1
               : 0;
-          final isSupportLogin = location.contains('/login-support');
 
           return MultiBlocProvider(
             providers: [
@@ -121,56 +120,52 @@ class AppRouter {
                   appBar: tabIndex == 0 ? const WalletHomeAppBar() : null,
                   extendBodyBehindAppBar: true,
                   body: child,
-                  bottomNavigationBar: isSupportLogin
-                      ? null
-                      : Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            BottomNavigationBar(
-                              currentIndex: tabIndex,
-                              onTap: (index) {
-                                if (index == 0) {
-                                  context.goNamed(WalletRoute.walletHome.name);
-                                } else {
-                                  // Exchange tab
-                                  if (Platform.isIOS) {
-                                    final isSuperuser =
-                                        context
-                                            .read<SettingsCubit>()
-                                            .state
-                                            .isSuperuser ??
-                                        false;
-                                    if (isSuperuser) {
-                                      context.goNamed(
-                                        ExchangeRoute.exchangeHome.name,
-                                      );
-                                    } else {
-                                      context.goNamed(
-                                        ExchangeRoute.exchangeLanding.name,
-                                      );
-                                    }
-                                  } else {
-                                    context.goNamed(
-                                      ExchangeRoute.exchangeHome.name,
-                                    );
-                                  }
-                                }
-                              },
-                              items: [
-                                BottomNavigationBarItem(
-                                  icon: const Icon(Icons.currency_bitcoin),
-                                  label: context.loc.navigationTabWallet,
-                                  backgroundColor: context.appColors.background,
-                                ),
-                                BottomNavigationBarItem(
-                                  icon: const Icon(Icons.attach_money),
-                                  label: context.loc.navigationTabExchange,
-                                  backgroundColor: context.appColors.background,
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
+                  bottomNavigationBar: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      BottomNavigationBar(
+                        currentIndex: tabIndex,
+                        onTap: (index) {
+                          if (index == 0) {
+                            context.goNamed(WalletRoute.walletHome.name);
+                          } else {
+                            // Exchange tab
+                            if (Platform.isIOS) {
+                              final isSuperuser =
+                                  context
+                                      .read<SettingsCubit>()
+                                      .state
+                                      .isSuperuser ??
+                                  false;
+                              if (isSuperuser) {
+                                context.goNamed(
+                                  ExchangeRoute.exchangeHome.name,
+                                );
+                              } else {
+                                context.goNamed(
+                                  ExchangeRoute.exchangeLanding.name,
+                                );
+                              }
+                            } else {
+                              context.goNamed(ExchangeRoute.exchangeHome.name);
+                            }
+                          }
+                        },
+                        items: [
+                          BottomNavigationBarItem(
+                            icon: const Icon(Icons.currency_bitcoin),
+                            label: context.loc.navigationTabWallet,
+                            backgroundColor: context.appColors.background,
+                          ),
+                          BottomNavigationBarItem(
+                            icon: const Icon(Icons.attach_money),
+                            label: context.loc.navigationTabExchange,
+                            backgroundColor: context.appColors.background,
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),

@@ -16,7 +16,6 @@ import 'package:go_router/go_router.dart';
 enum ExchangeRoute {
   exchangeHome('/exchange'),
   exchangeLanding('/exchange/landing'),
-  exchangeLoginForSupport('/exchange/login-support'),
   exchangeAuth('/exchange/auth'),
   exchangeKyc('kyc');
 
@@ -109,16 +108,6 @@ class ExchangeRouter {
         }
 
         return NoTransitionPage(key: state.pageKey, child: landingScreen);
-      },
-    ),
-    GoRoute(
-      name: ExchangeRoute.exchangeLoginForSupport.name,
-      path: ExchangeRoute.exchangeLoginForSupport.path,
-      pageBuilder: (context, state) {
-        return NoTransitionPage(
-          key: state.pageKey,
-          child: const ExchangeSupportLoginScreen(),
-        );
       },
     ),
     GoRoute(
