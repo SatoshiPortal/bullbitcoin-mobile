@@ -138,7 +138,11 @@ void main() {
         // The one upward import: a sealed widget wraps the handle it draws
         // for, and `public/` has no entry point — it is the top.
         if (mine == 'widgets' &&
-            {'public/secret.dart', 'public/extensions.dart'}.contains(path)) {
+            {
+              'public/secret.dart',
+              'public/extensions.dart',
+              'public/ephemeral_mnemonic.dart',
+            }.contains(path)) {
           continue;
         }
         if (path != '$target/$target.dart') {
@@ -290,6 +294,10 @@ import 'package:bip39_mnemonic/bip39_mnemonic.dart'
       'Secrets', 'Secret', 'SecretEntry', 'UnreadableSecret', 'RestoredVault',
       // exhaustive custody references supplied by seed owners
       'SeedReferencePort', 'SeedReferencesUnavailable',
+      'PublicAccountKey',
+      'DescriptorSigningKey',
+      'EphemeralMnemonic',
+      'EphemeralMnemonicExtension',
       // the grouped spelling: forwards, holds nothing
       'SecretExtension', 'SecretDerivation', 'SecretDescriptors', 'SecretBip85',
       'SecretSigning', 'SecretBackup', 'SecretVerification',
@@ -385,6 +393,8 @@ import 'package:bip39_mnemonic/bip39_mnemonic.dart'
     const inventory = {
       // derived: public keys, descriptors, signatures, a verdict
       'xpub': 'derived',
+      'account': 'derived',
+      'signDescriptorPsbt': 'derived',
       'bitcoinDescriptors': 'derived',
       'liquidDescriptor': 'derived',
       'signPsbt': 'derived',

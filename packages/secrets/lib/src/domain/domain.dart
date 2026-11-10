@@ -16,3 +16,4 @@ export 'secret_material.dart' show Mnemonic, SecretMaterial, Seed;
 export 'swap_master_key.dart' show SwapMasterKey;
 export 'mnemonic_word.dart';
 export 'mnemonic_language.dart' show languageFromLabel;
+export 'public_account_key.dart' show PublicAccountKey, DescriptorSigningKey;

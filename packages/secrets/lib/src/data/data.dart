@@ -11,3 +11,4 @@ export 'exceptions.dart';
 export 'fss_datasource.dart' show FlutterSecureStorageDatasource;
 export 'models/key_model.dart' show KeyKind;
 export 'secret_repository.dart' show SecretRepository;
+export 'ephemeral_mnemonic_repository.dart' show EphemeralMnemonicRepository;
