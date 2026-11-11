@@ -12,7 +12,7 @@ Each asynchronous `Future<Result<T, SecretFailure>>` is shown as `T`. Other retu
 
 ```text
 Secrets
-|-- generate([wordCount: MnemonicWordCount.words12]) -> Secret
+|-- generate([wordCount: MnemonicLength.words12]) -> Secret
 |-- import(words:, [passphrase:], [acceptOnly:]) -> Secret
 |-- fetch(id) -> Secret
 |-- list() -> List<SecretEntry>
@@ -75,7 +75,7 @@ import 'package:primitives/primitives.dart';
 import 'package:secrets/secrets.dart';
 
 Future<Result<String, SecretFailure>> createAccount(Secrets secrets) async {
-  switch (await secrets.generate(wordCount: MnemonicWordCount.words12)) {
+  switch (await secrets.generate(wordCount: MnemonicLength.words12)) {
     case Ok(:final value):
       return value.derive.xpub(
         network: BitcoinNetwork.testnet,
@@ -131,7 +131,7 @@ The stored words, passphrase, seed and master xprv have no public getter. The gr
 
 ## Derivation, signing and verification
 
-Account xpub derivation accepts the shared `Network`, either `BitcoinNetwork` or `LiquidNetwork`. Descriptors and signatures remain chain-specific. `accountIndex` defaults to zero and selects the same Bitcoin account for xpub derivation, descriptors and signing. Mnemonic generation and BIP85 mnemonic derivation both use `MnemonicWordCount` through `wordCount`. BIP85 is independent of the network; the application allocates child indices.
+Account xpub derivation accepts the shared `Network`, either `BitcoinNetwork` or `LiquidNetwork`. Descriptors and signatures remain chain-specific. `accountIndex` defaults to zero and selects the same Bitcoin account for xpub derivation, descriptors and signing. Mnemonic generation and BIP85 mnemonic derivation both use `MnemonicLength` through `wordCount`. BIP85 is independent of the network; the application allocates child indices.
 
 Account xpub derivation, Bitcoin signing, BIP85 and swap credentials honor the stored passphrase. Liquid descriptors and signatures derive from words alone and ignore it. A Liquid-network xpub therefore does not necessarily describe the keys in the Liquid descriptor, especially with a passphrase or a different script type. BIP85 can export other languages; stored mnemonic import currently validates English words. Silent Payments cannot honour a passphrase — bwk derives from the words alone — so `silentPayments.account` refuses a secret that has one with `PassphraseUnsupportedFailure`.
 
