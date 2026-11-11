@@ -47,7 +47,11 @@ final class AppPayjoinBlockchainAdapter implements PayjoinBlockchainPort {
       );
       return txid;
     });
-    if (result is Err) throw const PayjoinSpendBlockedException();
+    if (result case Err(failure: WalletSpendBlockedFailure(:final status))) {
+      throw PayjoinSpendBlockedException(
+        busy: status == BitcoinSpendStatus.busy,
+      );
+    }
     // Accepted/local-record-pending remains accepted; the owner blocks further
     // spends. Never throw a post-accept local failure into the fallback catch.
   }

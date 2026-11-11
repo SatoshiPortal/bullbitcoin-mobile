@@ -1,6 +1,6 @@
 import 'package:bb_mobile/features/send/domain/usecases/retry_payjoin_proposal_usecase.dart';
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart'
-    show WalletSpendBlockedException;
+    show BitcoinSpendStatus, WalletSpendBlockedException;
 import 'package:bb_mobile/features/send/domain/broadcast_failure.dart';
 import 'package:bb_mobile/features/wallet/domain/network_x.dart';
 import 'package:bb_mobile/features/send/domain/usecases/watch_wallet_revisions_usecase.dart';
@@ -2000,7 +2000,9 @@ class SendCubit extends Cubit<SendState>
       if (e is WalletSpendBlockedException) {
         emit(
           state.copyWith(
-            failure: const SendSpendBlockedFailure(),
+            failure: SendSpendBlockedFailure(
+              busy: e.status == BitcoinSpendStatus.busy,
+            ),
             buildingTransaction: false,
           ),
         );
@@ -2368,11 +2370,13 @@ class SendCubit extends Cubit<SendState>
           ),
         );
       }
-    } on WalletSpendBlockedException {
+    } on WalletSpendBlockedException catch (e) {
       if (!isClosed) {
         emit(
           state.copyWith(
-            failure: const SendSpendBlockedFailure(),
+            failure: SendSpendBlockedFailure(
+              busy: e.status == BitcoinSpendStatus.busy,
+            ),
             broadcastingTransaction: false,
           ),
         );

@@ -31,7 +31,9 @@ final class PayjoinWalletAdapter implements PayjoinWalletPort {
       final status = await _gate.spendStatus(walletId);
       if (status == BitcoinSpendStatus.ready) return;
       if (status != BitcoinSpendStatus.busy || attempt == 5) {
-        throw const PayjoinSpendBlockedException();
+        throw PayjoinSpendBlockedException(
+          busy: status == BitcoinSpendStatus.busy,
+        );
       }
     }
   }
