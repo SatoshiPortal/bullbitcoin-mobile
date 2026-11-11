@@ -157,13 +157,6 @@ class CreateDefaultWalletsUsecase {
         'Default wallets require a mnemonic, not a raw seed',
       );
     }
-    // TODO: remove after bull_sdk pins lwk-dart PR #95 and secrets uses its
-    // seed-based Liquid APIs.
-    if (info.language != Language.english) {
-      throw CreateDefaultWalletsException(
-        'Default wallets require an English mnemonic',
-      );
-    }
   }
 
   Future<Result<Secret, SecretFailure>> _resolveSecret(
