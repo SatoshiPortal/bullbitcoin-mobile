@@ -113,6 +113,33 @@ void main() {
     },
   );
 
+  test('proof that a spend cannot confirm releases it for good', () async {
+    await accepted();
+    final store = BitcoinSpendGateStore(revisions.spendGatePath);
+    try {
+      store.observed(
+        wallet,
+        1,
+        {txid},
+        inputs: {
+          txid: {'${'b' * 64}:0', '${'b' * 64}:1'},
+        },
+      );
+      expect(store.trackedInputs(wallet), {
+        txid: {'${'b' * 64}:0', '${'b' * 64}:1'},
+      });
+      // Revalidation alone releases nothing: absence is not evidence.
+      store.requireValidation(wallet.key);
+      store.observed(wallet, 1, {});
+      expect(await gate.check(wallet.key), BitcoinSpendStatus.pending);
+      store.observed(wallet, 1, {}, released: {txid});
+      expect(store.tracked(wallet), isEmpty);
+      expect(await gate.check(wallet.key), BitcoinSpendStatus.ready);
+    } finally {
+      store.close();
+    }
+  });
+
   test('revision quarantine marker keeps spend admission closed', () async {
     await accepted();
     final store = BitcoinSpendGateStore(revisions.spendGatePath);

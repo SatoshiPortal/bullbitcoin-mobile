@@ -609,7 +609,7 @@ void main() {
         for (final signer in signers) {
           addTearDown(signer.dispose);
         }
-        bdk.Transaction build(bdk.Wallet wallet) {
+        bdk.Transaction build(bdk.Wallet wallet, {int sats = 10000}) {
           final recipient = bdk.Script(
             rawOutputScript: Uint8List.fromList([
               0,
@@ -620,7 +620,7 @@ void main() {
           final psbt = bdk.TxBuilder()
               .addRecipient(
                 script: recipient,
-                amount: bdk.Amount.fromSat(satoshi: 10000),
+                amount: bdk.Amount.fromSat(satoshi: sats),
               )
               .feeAbsolute(feeAmount: bdk.Amount.fromSat(satoshi: 1000))
               .finish(wallet: wallet);
@@ -738,11 +738,53 @@ void main() {
           expect(inputs(b).any((i) => i.$1 == aId), isTrue);
           expect(change(b, spending.wallet), isNot(aChange));
         }
-        // Later canonical loss must restore the durable barrier, including if
-        // the new endpoint omits a previously observed transaction.
+        // A clean pass that evicts the observed payment proves it can no
+        // longer confirm from this wallet's view: the obligation is released.
         await fixture.exposeBroadcasts(false);
         completed(await sync.execute(descriptor));
-        expect(await gate.check(descriptor.key), BitcoinSpendStatus.pending);
+        expect(await gate.check(descriptor.key), BitcoinSpendStatus.ready);
+
+        // A discovery scan carries no eviction evidence. The payment is then
+        // released only once a confirmed transaction spends one of its inputs.
+        await fixture.dropBroadcasts();
+        await fixture.exposeBroadcasts(true);
+        final funded = await read();
+        final c = build(funded.wallet, sats: 11000);
+        final d = build(funded.wallet, sats: 12000);
+        addTearDown(c.dispose);
+        addTearDown(d.dispose);
+        final cId = c.computeTxid().toString();
+        final dId = d.computeTxid().toString();
+        expect(inputs(d), inputs(c));
+        final rival = bdk.ElectrumClient(
+          url: fixture.url,
+          socks5: null,
+          timeout: 5,
+          retry: 0,
+          validateDomain: false,
+        );
+        addTearDown(rival.dispose);
+        final second = await gate.acquire(descriptor.key);
+        try {
+          expect(rival.transactionBroadcast(tx: c).toString(), cId);
+          expect(
+            (second as BitcoinSpendAdmission).accepted(cId).durable,
+            isTrue,
+          );
+        } finally {
+          if (second case final BitcoinSpendAdmission lease) lease.close();
+        }
+        completed(await sync.execute(descriptor));
+        expect(await gate.check(descriptor.key), BitcoinSpendStatus.ready);
+        // Another device sharing the seed replaces it; the replacement confirms.
+        expect(rival.transactionBroadcast(tx: d).toString(), dId);
+        await fixture.confirmBroadcast(dId);
+        completed(await sync.execute(descriptor, discover: true));
+        final settled = await read();
+        final gone = bdk.Txid.fromString(hex: cId);
+        addTearDown(gone.dispose);
+        expect(settled.wallet.getTx(txid: gone), isNull);
+        expect(await gate.check(descriptor.key), BitcoinSpendStatus.ready);
       });
     }
 
