@@ -1,4 +1,5 @@
 import 'package:bb_mobile/features/address_view/presentation/address_view_bloc.dart';
+import 'package:flutter/widgets.dart';
 import 'package:bb_mobile/features/address_view/ui/screens/addresses_screen.dart';
 import 'package:bb_mobile/features/all_seed_view/presentation/all_seed_view_cubit.dart';
 import 'package:bb_mobile/features/all_seed_view/ui/all_seed_view_screen.dart';
@@ -133,16 +134,19 @@ class SettingsRouter {
       GoRoute(
         name: SettingsRoute.swapRescue.name,
         path: SettingsRoute.swapRescue.path,
-        builder: (context, state) {
-          final restorable = state.extra! as RestorableSwap;
-          return BlocProvider(
+        redirect: (context, state) => state.extra is RestorableSwap
+            ? null
+            : state.namedLocation(SettingsRoute.swapRestore.name),
+        builder: (context, state) => switch (state.extra) {
+          final RestorableSwap restorable => BlocProvider(
             create: (_) => SwapRescueCubit(
               rescueSwapUsecase: locator<RescueSwapUsecase>(),
               getWalletsUsecase: locator<GetWalletsUsecase>(),
               restored: restorable.swap,
             ),
             child: SwapRescueDetailsScreen(restorable: restorable),
-          );
+          ),
+          _ => const SizedBox.shrink(),
         },
       ),
       GoRoute(

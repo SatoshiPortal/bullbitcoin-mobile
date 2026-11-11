@@ -29,12 +29,13 @@ class SwapRescueDetailsScreen extends StatelessWidget {
                 context.loc.swapRescueSuccess,
               );
               context.pop();
-            } else if (state.status == SwapRescueStatus.error &&
-                state.error != null) {
-              SnackBarUtils.showSnackBar(
-                context,
-                state.error!.toTranslated(context),
-              );
+            } else if (state.status == SwapRescueStatus.error) {
+              if (state.error case final error?) {
+                SnackBarUtils.showSnackBar(
+                  context,
+                  error.toTranslated(context),
+                );
+              }
             }
           },
           builder: (context, state) {

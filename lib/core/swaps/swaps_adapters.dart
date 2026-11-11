@@ -42,11 +42,15 @@ class AppSwapsLog implements swaps.SwapsLog {
   @override
   void warning(String message) => log.warning(message);
   @override
-  void severe(String message, {Object? error, StackTrace? trace}) => log.severe(
-    message: message,
-    error: error ?? message,
-    trace: trace ?? StackTrace.current,
-  );
+  void severe(String message, {Object? error, StackTrace? trace}) {
+    log.warning(message);
+    log.severe(
+      message: 'SWAPS: engine failure',
+      error: error?.runtimeType ?? 'swaps',
+      trace: trace ?? StackTrace.current,
+    );
+  }
+
   @override
   Future<void> flush() => log.flush();
 }
