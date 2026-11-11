@@ -270,6 +270,62 @@ Future<void> main({bool isInitialized = false}) async {
     });
 
     test(
+      'the same entropy in French gets its own Liquid wallet and swap key',
+      () async {
+        // Entropy 00…00 in both wordlists: one entropy, two BIP39 seeds,
+        // since the seed is PBKDF2 over the sentence. Liquid and Boltz derive
+        // from that seed, so the French secret must get wallets of its own,
+        // not the English sibling's and not a refusal.
+        Future<Secret> importIn(List<String> words, Language language) async =>
+            switch (await secrets.import(words: words, language: language)) {
+              Ok(:final value) => value,
+              Err(failure: SecretAlreadyExistsFailure(:final id)) => unwrap(
+                await secrets.fetch(id),
+              ),
+              Err(:final failure) => fail('import: ${failure.runtimeType}'),
+            };
+        final english = await importIn([
+          ...List.filled(11, 'abandon'),
+          'about',
+        ], Language.english);
+        final french = await importIn([
+          ...List.filled(11, 'abaisser'),
+          'abeille',
+        ], Language.french);
+        expect(french.id.hex, isNot(english.id.hex));
+
+        final englishLiquid = unwrap(
+          await english.derive.descriptors.liquid(
+            network: LiquidNetwork.mainnet,
+          ),
+        );
+        final frenchLiquid = unwrap(
+          await french.derive.descriptors.liquid(
+            network: LiquidNetwork.mainnet,
+          ),
+        );
+        expect(frenchLiquid, isNot(englishLiquid));
+        // The key origin is the master fingerprint of the seed it came from,
+        // which Dart computes independently of lwk.
+        expect(frenchLiquid, contains(french.id.hex));
+        expect(englishLiquid, contains(english.id.hex));
+
+        for (final secret in [english, french]) {
+          final key = unwrap(
+            await secret.derive.swapKey(network: BitcoinNetwork.mainnet),
+          );
+          final child = unwrap(
+            await secret.derive.bip85.mnemonic(
+              wordCount: MnemonicLength.words12,
+              index: 26589,
+            ),
+          );
+          expect(key.mnemonic, child.join(' '));
+        }
+      },
+    );
+
+    test(
       'a vault restores its words with a separately supplied passphrase',
       () async {
         final withPassphrase = await importWords(passphrase: 'TREZOR');

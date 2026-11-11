@@ -15,5 +15,4 @@ export 'secret_listing.dart' show InfoListing, SecretListing;
 export 'secret_material.dart' show Mnemonic, SecretMaterial, Seed;
 export 'swap_master_key.dart' show SwapMasterKey;
 export 'mnemonic_word.dart';
-
-export 'mnemonic_language.dart' show decodeLanguage, encodeLanguage;
+export 'mnemonic_language.dart' show languageFromLabel;

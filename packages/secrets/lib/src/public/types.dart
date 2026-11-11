@@ -6,7 +6,8 @@
 /// never reach a caller by accident.
 library;
 
-export 'package:bip39_mnemonic/bip39_mnemonic.dart' show MnemonicLength;
+export 'package:bip39_mnemonic/bip39_mnemonic.dart'
+    show Language, MnemonicLength;
 
 export 'package:secrets/src/crypto/crypto.dart' show Descriptors;
 export 'package:secrets/src/domain/domain.dart'

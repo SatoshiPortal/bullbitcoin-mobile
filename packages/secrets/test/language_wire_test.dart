@@ -8,15 +8,15 @@ import 'package:secrets/src/crypto/crypto.dart' show Backup;
 import 'package:secrets/src/crypto/exceptions.dart' show InvalidVault;
 import 'package:secrets/src/data/models/secret_model.dart';
 
-/// The stored and vault spellings of each wordlist are a frozen contract: the BIP39 wordlist file names of bitcoin/bips, never the Dart identifiers of the bip39 package.
+/// The stored and vault spellings of each wordlist are a frozen contract: bip39's `Language.label`, never the Dart identifiers of the bip39 package. Pinned here so a change of label in bip39 cannot silently change bytes on devices.
 void main() {
   const golden = {
     bip39.Language.english: 'english',
     bip39.Language.japanese: 'japanese',
     bip39.Language.korean: 'korean',
     bip39.Language.spanish: 'spanish',
-    bip39.Language.simplifiedChinese: 'chinese_simplified',
-    bip39.Language.traditionalChinese: 'chinese_traditional',
+    bip39.Language.simplifiedChinese: 'chinese-simplified',
+    bip39.Language.traditionalChinese: 'chinese-traditional',
     bip39.Language.french: 'french',
     bip39.Language.italian: 'italian',
     bip39.Language.czech: 'czech',

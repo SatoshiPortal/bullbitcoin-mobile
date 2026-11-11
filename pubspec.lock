@@ -174,9 +174,9 @@ packages:
     dependency: "direct main"
     description:
       path: "packages/bitbox-transport"
-      ref: f4ee00bf61a810d034a397a41a2e40cd7903aa51
-      resolved-ref: f4ee00bf61a810d034a397a41a2e40cd7903aa51
-      url: "https://github.com/SatoshiPortal/bull_sdk"
+      ref: e538cbc6fe51a9a6ce425d2513e0c1422ca89132
+      resolved-ref: e538cbc6fe51a9a6ce425d2513e0c1422ca89132
+      url: "https://github.com/ethicnology-agent/bull_sdk"
     source: git
     version: "0.1.0"
   bitcoin_base:
@@ -240,9 +240,9 @@ packages:
     dependency: "direct main"
     description:
       path: "packages/boltz-stream"
-      ref: f4ee00bf61a810d034a397a41a2e40cd7903aa51
-      resolved-ref: f4ee00bf61a810d034a397a41a2e40cd7903aa51
-      url: "https://github.com/SatoshiPortal/bull_sdk"
+      ref: e538cbc6fe51a9a6ce425d2513e0c1422ca89132
+      resolved-ref: e538cbc6fe51a9a6ce425d2513e0c1422ca89132
+      url: "https://github.com/ethicnology-agent/bull_sdk"
     source: git
     version: "0.1.0"
   boolean_selector:
@@ -329,9 +329,9 @@ packages:
     dependency: "direct main"
     description:
       path: "packages/bull_sdk"
-      ref: f4ee00bf61a810d034a397a41a2e40cd7903aa51
-      resolved-ref: f4ee00bf61a810d034a397a41a2e40cd7903aa51
-      url: "https://github.com/SatoshiPortal/bull_sdk"
+      ref: e538cbc6fe51a9a6ce425d2513e0c1422ca89132
+      resolved-ref: e538cbc6fe51a9a6ce425d2513e0c1422ca89132
+      url: "https://github.com/ethicnology-agent/bull_sdk"
     source: git
     version: "1.0.0+1"
   camera:
@@ -1502,9 +1502,9 @@ packages:
     dependency: transitive
     description:
       path: "packages/onion"
-      ref: f4ee00bf61a810d034a397a41a2e40cd7903aa51
-      resolved-ref: f4ee00bf61a810d034a397a41a2e40cd7903aa51
-      url: "https://github.com/SatoshiPortal/bull_sdk"
+      ref: e538cbc6fe51a9a6ce425d2513e0c1422ca89132
+      resolved-ref: e538cbc6fe51a9a6ce425d2513e0c1422ca89132
+      url: "https://github.com/ethicnology-agent/bull_sdk"
     source: git
     version: "0.1.0"
   package_config:
@@ -1808,9 +1808,9 @@ packages:
     dependency: transitive
     description:
       path: "packages/bull_sdk/rust_builder"
-      ref: f4ee00bf61a810d034a397a41a2e40cd7903aa51
-      resolved-ref: f4ee00bf61a810d034a397a41a2e40cd7903aa51
-      url: "https://github.com/SatoshiPortal/bull_sdk"
+      ref: e538cbc6fe51a9a6ce425d2513e0c1422ca89132
+      resolved-ref: e538cbc6fe51a9a6ce425d2513e0c1422ca89132
+      url: "https://github.com/ethicnology-agent/bull_sdk"
     source: git
     version: "0.0.1"
   rxdart:
@@ -1825,9 +1825,9 @@ packages:
     dependency: "direct main"
     description:
       path: "packages/satoshifier"
-      ref: f4ee00bf61a810d034a397a41a2e40cd7903aa51
-      resolved-ref: f4ee00bf61a810d034a397a41a2e40cd7903aa51
-      url: "https://github.com/SatoshiPortal/bull_sdk"
+      ref: e538cbc6fe51a9a6ce425d2513e0c1422ca89132
+      resolved-ref: e538cbc6fe51a9a6ce425d2513e0c1422ca89132
+      url: "https://github.com/ethicnology-agent/bull_sdk"
     source: git
     version: "0.0.1"
   sentry:

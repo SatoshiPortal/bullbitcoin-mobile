@@ -38,23 +38,6 @@ import 'package:secrets/src/domain/domain.dart';
 export 'bitcoin_signer.dart' show BitcoinSigner;
 export 'liquid_signer.dart' show LiquidSigner;
 
-/// The English BIP39 sentence the legacy Liquid signer consumes.
-///
-/// One place, so the rule cannot drift between chains: the libraries
-/// take the words as one space-joined string, and a seed-only secret —
-/// `Seed`, which exists only to read entries that predate the
-/// current format — has no words to give. Callers reach this only with
-/// [Mnemonic]; the switch is here for the day a signer is handed
-/// the base type by mistake.
-String mnemonicSentence(SecretMaterial secret) => switch (secret) {
-  Mnemonic(:final words) => words.join(' '),
-  Seed() => throw ArgumentError.value(
-    secret.info.kind,
-    'secret',
-    'signing derives from BIP39 words',
-  ),
-};
-
 /// The signers, by chain. Not instantiable; a namespace.
 abstract final class Signer {
   /// PSBT, through bdk.

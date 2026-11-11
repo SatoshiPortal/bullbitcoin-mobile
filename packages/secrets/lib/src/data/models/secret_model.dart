@@ -54,7 +54,7 @@ sealed class SecretModel {
       _kMnemonic => MnemonicSecretModel(
         mnemonicWords: _words(json[_kWords]),
         language: json.containsKey(_kLanguage)
-            ? decodeLanguage(json[_kLanguage])
+            ? languageFromLabel(json[_kLanguage])
             : Language.english,
         passphrase: _optionalString(json[_kPassphrase], _kPassphrase),
       ),
@@ -135,7 +135,7 @@ final class MnemonicSecretModel extends SecretModel {
   @internal
   factory MnemonicSecretModel({
     required List<String> mnemonicWords,
-    Language language = Language.english,
+    required Language language,
     String? passphrase,
   }) {
     if (!SecretModel._wordCounts.contains(mnemonicWords.length)) {
@@ -166,8 +166,7 @@ final class MnemonicSecretModel extends SecretModel {
     SecretModel._kWords: mnemonicWords,
     SecretModel._kPassphrase: passphrase,
     SecretModel._kDiscriminator: SecretModel._kMnemonic,
-    if (language != Language.english)
-      SecretModel._kLanguage: encodeLanguage(language),
+    if (language != Language.english) SecretModel._kLanguage: language.label,
   };
 }
 

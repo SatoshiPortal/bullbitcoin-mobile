@@ -28,6 +28,7 @@ class LiquidBlockchainRepositoryImpl implements LiquidBlockchainRepository {
       operation: (connection) => _blockchain.broadcastTransaction(
         signedPset: signedPset,
         electrumServerUrl: connection.url,
+        isTestnet: isTestnet,
       ),
     );
   }
