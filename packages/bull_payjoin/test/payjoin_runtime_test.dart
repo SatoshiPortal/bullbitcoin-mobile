@@ -53,6 +53,10 @@ final class _BlockchainPort implements PayjoinBlockchainPort {
 }
 
 final class _TransactionPort implements PayjoinTransactionPort {
+  final bool offline;
+
+  _TransactionPort({this.offline = false});
+
   @override
   Future<bool> protectObservedSpend({
     required String walletId,
@@ -64,7 +68,7 @@ final class _TransactionPort implements PayjoinTransactionPort {
     required String walletId,
     required String transactionId,
     bool refresh = false,
-  }) async => false;
+  }) async => offline ? throw StateError('offline') : false;
 
   @override
   Future<void> refreshWallet(String walletId) async {}
@@ -115,13 +119,16 @@ void main() {
 
   tearDown(() => directory.delete(recursive: true));
 
-  Future<Result<PayjoinLifecycle, PayjoinFailure>> open({PayjoinLogPort? log}) {
+  Future<Result<PayjoinLifecycle, PayjoinFailure>> open({
+    PayjoinLogPort? log,
+    bool offline = false,
+  }) {
     return openPayjoin(
       databasePath: '${directory.path}/payjoin.sqlite',
       wallet: _WalletPort(),
       blockchain: _BlockchainPort(),
       fees: _FeesPort(),
-      transactions: _TransactionPort(),
+      transactions: _TransactionPort(offline: offline),
       labels: _LabelsPort(),
       legacyData: const _LegacyData(),
       log: log ?? _LogPort(),
@@ -180,7 +187,8 @@ void main() {
       );
       await LocalPayjoinDatasource(db: database).storeSender(model);
       await database.close();
-      final lifecycle = switch (await open()) {
+      // Unknown visibility keeps an expired proposal paused, not released.
+      final lifecycle = switch (await open(offline: true)) {
         Ok(:final value) => value,
         Err(:final failure) => throw failure,
       };

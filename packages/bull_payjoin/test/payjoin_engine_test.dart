@@ -1605,8 +1605,17 @@ void main() {
       },
     );
 
+    Future<void> expectReleased() async {
+      final row = await local.fetchSender(model.id);
+      expect(row?.isExpired, isTrue);
+      expect(row?.isCompleted, isFalse);
+      expect(row?.isAborted, isFalse);
+      expect(await engine.getUtxosFrozenByOngoingPayjoins(), isEmpty);
+      expect(engine.proposalSpendFailure(model.id), isNull);
+    }
+
     test(
-      'proposal received at expiry remains recorded and never resumes original fallback',
+      'proposal received at expiry is recorded, then released without any broadcast',
       () async {
         final expired = expiredSender();
         await local.storeSender(expired);
@@ -1618,7 +1627,7 @@ void main() {
         await engine.resumePayjoinsOnStartup();
         expect(attempts, 0);
         expect(broadcasts, 0);
-        await expectReserved();
+        await expectReleased();
       },
     );
 
@@ -1692,7 +1701,7 @@ void main() {
     );
 
     test(
-      'restart after protocol expiry only observes and keeps reservations',
+      'restart after protocol expiry releases the inputs without any broadcast',
       () async {
         model = expiredSender(
           proposalPsbt: oneInputPsbt,
@@ -1706,9 +1715,133 @@ void main() {
         expect(result, isA<Err<internal.Payjoin, PayjoinFailure>>());
         expect(attempts, 0);
         expect(broadcasts, 0);
-        await expectReserved();
+        await expectReleased();
       },
     );
+
+    test('a released session is not resumed again on later starts', () async {
+      model = expiredSender(
+        proposalPsbt: oneInputPsbt,
+        transactionId: model.txId,
+      );
+      await local.storeSender(model);
+      await engine.resumePayjoinsOnStartup();
+      await engine.resumePayjoinsOnStartup();
+      await engine.resumePayjoinsOnStartup();
+      expect(logs.withCode(PayjoinLogCode.sessionResumed), hasLength(1));
+      expect(await local.fetchAll(onlyUnfinished: true), isEmpty);
+      // Two lookups in total, both from the single expiry decision.
+      verify(
+        () => transactions.isTransactionVisible(
+          walletId: any(named: 'walletId'),
+          transactionId: any(named: 'transactionId'),
+          refresh: true,
+        ),
+      ).called(2);
+      expect(attempts, 0);
+      expect(broadcasts, 0);
+    });
+
+    test(
+      'a paused proposal stays reserved until the session expires, then is released',
+      () async {
+        // Expires between one and two seconds from now.
+        model = model.copyWith(
+          createdAt: DateTime.now().millisecondsSinceEpoch ~/ 1000 - 3598,
+        );
+        engine.proposalRetryWindow = const Duration(milliseconds: 20);
+        await local.storeSender(model);
+        await engine.resumePayjoinsOnStartup();
+        await Future<void>.delayed(const Duration(milliseconds: 40));
+        await engine.resumePayjoinsOnStartup();
+        expect(attempts, 1);
+        await expectReserved();
+        await Future<void>.delayed(const Duration(milliseconds: 2100));
+        await pumpEventQueue(times: 40);
+        blocked = false;
+        await refresh();
+        expect(attempts, 1);
+        expect(broadcasts, 0);
+        await expectReleased();
+      },
+    );
+
+    test('an expired session whose payjoin is on the network completes '
+        'instead of expiring', () async {
+      model = expiredSender(
+        proposalPsbt: oneInputPsbt,
+        transactionId: model.txId,
+      );
+      await local.storeSender(model);
+      when(
+        () => transactions.isTransactionVisible(
+          walletId: any(named: 'walletId'),
+          transactionId: any(named: 'transactionId'),
+          refresh: any(named: 'refresh'),
+        ),
+      ).thenAnswer(
+        (inv) async => inv.namedArguments[#transactionId] == model.txId,
+      );
+      await engine.resumePayjoinsOnStartup();
+      final row = await local.fetchSender(model.id);
+      expect(row?.isCompleted, isTrue);
+      expect(row?.isExpired, isFalse);
+      expect(attempts, 0);
+      expect(broadcasts, 0);
+    });
+
+    test('an expired session whose original is on the network aborts '
+        'instead of expiring', () async {
+      model = expiredSender(
+        proposalPsbt: oneInputPsbt,
+        transactionId: model.txId,
+      );
+      await local.storeSender(model);
+      when(
+        () => transactions.isTransactionVisible(
+          walletId: any(named: 'walletId'),
+          transactionId: any(named: 'transactionId'),
+          refresh: any(named: 'refresh'),
+        ),
+      ).thenAnswer(
+        (inv) async => inv.namedArguments[#transactionId] == model.originalTxId,
+      );
+      await engine.resumePayjoinsOnStartup();
+      final row = await local.fetchSender(model.id);
+      expect(row?.isAborted, isTrue);
+      expect(row?.isExpired, isFalse);
+      expect(attempts, 0);
+      expect(broadcasts, 0);
+    });
+
+    test('an expired session stays reserved while visibility is unknown, '
+        'then is released once it is known', () async {
+      model = expiredSender(
+        proposalPsbt: oneInputPsbt,
+        transactionId: model.txId,
+      );
+      await local.storeSender(model);
+      when(
+        () => transactions.isTransactionVisible(
+          walletId: any(named: 'walletId'),
+          transactionId: any(named: 'transactionId'),
+          refresh: any(named: 'refresh'),
+        ),
+      ).thenThrow(Exception('offline'));
+      await engine.resumePayjoinsOnStartup();
+      await expectReserved();
+      when(
+        () => transactions.isTransactionVisible(
+          walletId: any(named: 'walletId'),
+          transactionId: any(named: 'transactionId'),
+          refresh: any(named: 'refresh'),
+        ),
+      ).thenAnswer((_) async => false);
+      await engine.resumePayjoinsOnStartup();
+      expect(attempts, 0);
+      expect(broadcasts, 0);
+      await expectReleased();
+    });
   });
 
   group('a retried sender', () {
