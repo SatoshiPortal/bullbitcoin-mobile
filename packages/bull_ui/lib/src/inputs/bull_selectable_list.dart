@@ -1,7 +1,7 @@
 import 'package:bull_ui/src/data_display/bull_text.dart';
 import 'package:bull_ui/src/feedback/bull_shimmer.dart';
 import 'package:bull_ui/src/theme/bull_theme.dart';
-import 'package:bull_ui/src/theme/bull_tokens.dart';
+import 'package:bull_ui/src/theme/bull_shapes.dart';
 import 'package:flutter/material.dart';
 import 'package:bull_ui/src/layout/gap.dart';
 
@@ -93,7 +93,7 @@ class _BullSelectableRow extends StatelessWidget {
       onTap: onSelected,
       child: Material(
         elevation: isSelected ? 4 : 1,
-        borderRadius: BorderRadius.circular(BullRadius.xxs),
+        borderRadius: BorderRadius.circular(context.bullShapes.card),
         clipBehavior: Clip.hardEdge,
         color: colors.surface,
         shadowColor: colors.border,
