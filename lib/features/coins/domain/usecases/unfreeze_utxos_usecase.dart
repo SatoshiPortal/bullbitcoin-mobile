@@ -25,10 +25,10 @@ class UnfreezeUtxosUsecase {
     } on Exception catch (error, stackTrace) {
       log.warning(
         'Failed to unfreeze wallet coins',
-        error: error,
+        error: error.runtimeType,
         trace: stackTrace,
       );
-      return Err(CoinsUnfreezeFailure(error.toString()));
+      return Err(CoinsUnfreezeFailure(error.runtimeType.toString()));
     }
   }
 }

@@ -1,5 +1,5 @@
 import 'package:bull_ui/src/theme/bull_theme.dart';
-import 'package:bull_ui/src/theme/bull_tokens.dart';
+import 'package:bull_ui/src/theme/bull_shapes.dart';
 import 'package:flutter/material.dart';
 
 /// Modal bottom sheet.
@@ -32,8 +32,8 @@ class BullBottomSheet extends StatelessWidget {
       // own decoration can never show a mismatched corner.
       clipBehavior: Clip.antiAlias,
       shape: RoundedRectangleBorder(
-        borderRadius: const BorderRadius.vertical(
-          top: Radius.circular(BullRadius.sm),
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(context.bullShapes.sheet),
         ),
         side: BorderSide(color: colors.secondaryFixedDim),
       ),

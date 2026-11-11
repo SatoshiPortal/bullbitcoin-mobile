@@ -1,7 +1,7 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:flutter/material.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullShapesX, Gap;
 
 enum ButtonSize { small, large }
 
@@ -64,7 +64,7 @@ class BBButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final radius = BorderRadius.circular(size == ButtonSize.large ? 2 : 2);
+    final radius = BorderRadius.circular(context.bullShapes.button);
 
     final image = iconData != null
         ? Icon(iconData, size: 20, color: textColor)

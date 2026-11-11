@@ -6,7 +6,7 @@ import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:flutter/material.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullShapesX, Gap;
 import 'package:go_router/go_router.dart';
 
 class ExchangeLandingScreen extends StatelessWidget {
@@ -77,7 +77,9 @@ class ExchangeLandingScreen extends StatelessWidget {
                           color: context.appColors.outline,
                           width: 0,
                         ),
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(
+                          context.bullShapes.card,
+                        ),
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -131,7 +133,9 @@ class ExchangeLandingScreen extends StatelessWidget {
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
                         color: context.appColors.warningContainer,
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: BorderRadius.circular(
+                          context.bullShapes.card,
+                        ),
                       ),
                       child: BBText(
                         context.loc.exchangeLandingDisclaimerLegal,

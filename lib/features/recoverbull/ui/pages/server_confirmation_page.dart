@@ -10,7 +10,7 @@ import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullButton, BullInfoCard, BullText, Gap;
+    show BullButton, BullInfoCard, BullShapesX, BullText, Gap;
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -108,7 +108,9 @@ class _RequestPermissionPageState extends State<RequestPermissionPage> {
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
                       color: context.appColors.cardBackground,
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(
+                        context.bullShapes.card,
+                      ),
                       border: Border.all(
                         color: context.appColors.border,
                         width: 1,

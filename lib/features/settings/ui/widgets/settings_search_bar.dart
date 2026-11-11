@@ -1,6 +1,6 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bull_ui/bull_ui.dart' show BullRadius, Gap;
+import 'package:bull_ui/bull_ui.dart' show BullShapesX, Gap;
 import 'package:flutter/material.dart';
 
 /// The settings search entry point: a rounded bar at the top of the list.
@@ -28,7 +28,7 @@ class SettingsSearchBar extends StatelessWidget {
       excludeSemantics: true,
       child: Material(
         color: context.appColors.surfaceContainerHighest,
-        borderRadius: BorderRadius.circular(BullRadius.xxs),
+        borderRadius: BorderRadius.circular(context.bullShapes.input),
         clipBehavior: Clip.antiAlias,
         child: InkWell(
           onTap: onTap,

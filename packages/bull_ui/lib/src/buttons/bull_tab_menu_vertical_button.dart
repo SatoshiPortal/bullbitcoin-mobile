@@ -1,3 +1,4 @@
+import 'package:bull_ui/src/theme/bull_shapes.dart';
 import 'package:bull_ui/src/data_display/bull_text.dart';
 import 'package:bull_ui/src/theme/bull_theme.dart';
 import 'package:flutter/material.dart';
@@ -29,7 +30,7 @@ class BullTabMenuVerticalButton extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: onTap != null ? colors.surface : colors.border,
-        borderRadius: BorderRadius.circular(2.76),
+        borderRadius: BorderRadius.circular(context.bullShapes.card),
         border: Border.all(color: colors.border, width: 0.69),
         boxShadow: [
           BoxShadow(color: colors.border, offset: const Offset(0, 2)),
@@ -37,7 +38,7 @@ class BullTabMenuVerticalButton extends StatelessWidget {
       ),
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(2.76),
+        borderRadius: BorderRadius.circular(context.bullShapes.card),
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Row(
