@@ -1,8 +1,8 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/fund_exchange/domain/primitives/funding_jurisdiction.dart';
 import 'package:flutter/material.dart';
+import 'package:bull_ui/bull_ui.dart' show BullText;
 
 class FundExchangeJurisdictionDropdown extends StatelessWidget {
   final FundingJurisdiction initialValue;
@@ -38,42 +38,42 @@ class FundExchangeJurisdictionDropdown extends StatelessWidget {
             items: [
               DropdownMenuItem(
                 value: FundingJurisdiction.canada,
-                child: BBText(
+                child: BullText(
                   context.loc.fundExchangeJurisdictionCanada,
                   style: context.font.headlineSmall,
                 ),
               ),
               DropdownMenuItem(
                 value: FundingJurisdiction.europe,
-                child: BBText(
+                child: BullText(
                   context.loc.fundExchangeJurisdictionEurope,
                   style: context.font.headlineSmall,
                 ),
               ),
               DropdownMenuItem(
                 value: FundingJurisdiction.mexico,
-                child: BBText(
+                child: BullText(
                   context.loc.fundExchangeJurisdictionMexico,
                   style: context.font.headlineSmall,
                 ),
               ),
               DropdownMenuItem(
                 value: FundingJurisdiction.costaRica,
-                child: BBText(
+                child: BullText(
                   context.loc.fundExchangeJurisdictionCostaRica,
                   style: context.font.headlineSmall,
                 ),
               ),
               DropdownMenuItem(
                 value: FundingJurisdiction.argentina,
-                child: BBText(
+                child: BullText(
                   context.loc.fundExchangeJurisdictionArgentina,
                   style: context.font.headlineSmall,
                 ),
               ),
               DropdownMenuItem(
                 value: FundingJurisdiction.colombia,
-                child: BBText(
+                child: BullText(
                   context.loc.fundExchangeJurisdictionColombia,
                   style: context.font.headlineSmall,
                 ),
