@@ -2123,6 +2123,10 @@ void main() {
       for (final (name, Exception refusal) in [
         ('refused by the spend gate', const PayjoinSpendBlockedException()),
         (
+          'refused by a busy wallet',
+          const PayjoinSpendBlockedException(busy: true),
+        ),
+        (
           'that never reached the network',
           const PayjoinBroadcastNotAttemptedException(),
         ),

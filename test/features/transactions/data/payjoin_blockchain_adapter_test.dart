@@ -73,17 +73,26 @@ void main() {
     expect(servers.calls, 0);
   });
 
-  test('a spend refusal stays a spend refusal', () async {
-    await expectLater(
-      broadcast(
-        gate: (_, _, _) async => const Err(
-          WalletSpendBlockedFailure(BitcoinSpendStatus.unavailable),
+  for (final (status, busy) in [
+    (BitcoinSpendStatus.unavailable, false),
+    (BitcoinSpendStatus.busy, true),
+  ]) {
+    test('a ${status.name} spend refusal stays a spend refusal', () async {
+      await expectLater(
+        broadcast(
+          gate: (_, _, _) async => Err(WalletSpendBlockedFailure(status)),
         ),
-      ),
-      throwsA(isA<PayjoinSpendBlockedException>()),
-    );
-    expect(servers.calls, 0);
-  });
+        throwsA(
+          isA<PayjoinSpendBlockedException>().having(
+            (refusal) => refusal.busy,
+            'busy',
+            busy,
+          ),
+        ),
+      );
+      expect(servers.calls, 0);
+    });
+  }
 
   test('a failure inside the network callback keeps its unknown '
       'outcome', () async {
