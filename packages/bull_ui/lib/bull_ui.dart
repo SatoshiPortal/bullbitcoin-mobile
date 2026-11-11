@@ -164,6 +164,10 @@ export 'src/data_display/bull_stat_tile.dart';
 export 'src/data_display/bull_text.dart';
 export 'src/data_display/bull_transaction_direction_badge.dart';
 
+// Support.
+export 'src/support/bull_support_button.dart';
+export 'src/support/bull_support_scope.dart';
+
 // Overlays.
 export 'src/overlays/bull_bottom_sheet.dart';
 export 'src/overlays/bull_dialog.dart';

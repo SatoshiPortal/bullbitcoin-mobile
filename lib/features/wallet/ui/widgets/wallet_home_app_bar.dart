@@ -1,16 +1,15 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar_bull_logo.dart';
 import 'package:bb_mobile/features/bitcoin_price/presentation/cubit/price_chart_cubit.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
-import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
-import 'package:bb_mobile/features/exchange_support_chat/public/exchange_support_chat_facade.dart';
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullSupportButton, Gap;
 import 'package:go_router/go_router.dart';
 
 class WalletHomeAppBar extends StatefulWidget implements PreferredSizeWidget {
@@ -82,30 +81,8 @@ class _WalletHomeAppBarState extends State<WalletHomeAppBar> {
                         context.read<PriceChartCubit>().showChart();
                       },
                     ),
-                    IconButton(
-                      padding: EdgeInsets.zero,
-                      constraints: const BoxConstraints(),
-                      visualDensity: VisualDensity.compact,
-                      icon: Icon(
-                        Icons.chat_bubble_outline,
-                        color: context.appColors.onPrimary,
-                        size: 24,
-                      ),
-                      onPressed: () {
-                        final notLoggedIn = context
-                            .read<ExchangeCubit>()
-                            .state
-                            .notLoggedIn;
-                        if (notLoggedIn) {
-                          context.pushNamed(
-                            ExchangeRoute.exchangeLoginForSupport.name,
-                          );
-                        } else {
-                          context.pushNamed(
-                            ExchangeSupportChatFacade.routeName,
-                          );
-                        }
-                      },
+                    BullSupportButton.icon(
+                      label: context.loc.exchangeSupportChatTitle,
                     ),
                   ],
                 ),
