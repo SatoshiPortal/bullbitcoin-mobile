@@ -21,13 +21,6 @@ final class _WalletPort implements PayjoinWalletPort {
       (Outpoint _) => false;
 
   @override
-  Future<String Function(String psbt)> createPsbtProcessor({
-    required String walletId,
-    required BitcoinNetwork network,
-  }) async =>
-      (String psbt) => psbt;
-
-  @override
   Future<String> signPsbt({
     required String walletId,
     required BitcoinNetwork network,
@@ -125,6 +118,34 @@ void main() {
     );
   }
 
+  test('a sender that cannot start says why in the log', () async {
+    final log = _LogPort();
+    final lifecycle = switch (await open(log: log)) {
+      Ok(:final value) => value,
+      Err(:final failure) => throw failure,
+    };
+    addTearDown(lifecycle.dispose);
+
+    final result = await lifecycle.payjoin.sender.start(
+      StartPayjoinSender(
+        walletId: 'wallet-1',
+        network: BitcoinNetwork.testnet,
+        bip21Uri: 'bitcoin:tb1qnopayjoinendpoint?amount=0.001',
+        unsignedOriginalPsbt: 'cHNidP8=',
+        amount: Sats.fromInt(100000),
+        feeRate: FeeRate(2),
+      ),
+    );
+
+    expect(result, isA<Err<PayjoinSenderSession, PayjoinFailure>>());
+    final event = log.events.singleWhere(
+      (event) => event.code == PayjoinLogCode.sessionStartFailed,
+    );
+    expect(event.level, PayjoinLogLevel.warning);
+    expect(event.role, PayjoinLogRole.sender);
+    expect(event.error, isNotNull);
+  });
+
   test('opens roles over the seeded policy and disposes cleanly', () async {
     final result = await open();
     final lifecycle = switch (result) {
@@ -136,7 +157,7 @@ void main() {
 
     // Nothing to migrate: the root settings payjoin columns only existed in
     // the unreleased schema 14, so a freshly opened payjoin database starts on
-    // the conservative defaults, payjoin disabled.
+    // the defaults, receiving from users disabled.
     final loaded = switch (policy) {
       Ok(:final value) => value,
       Err(:final failure) => throw failure,
@@ -144,7 +165,7 @@ void main() {
     final defaults = PayjoinPolicy.defaults();
     expect(loaded.receiveEnabled, defaults.receiveEnabled);
     expect(loaded.receiveEnabled, isFalse);
-    expect(loaded.sendEnabled, isFalse);
+    expect(loaded.sendEnabled, isTrue);
     expect(loaded.buyEnabled, isTrue);
     expect(loaded.sellEnabled, isTrue);
     expect(loaded.minimumAmount.value, defaults.minimumAmount.value);

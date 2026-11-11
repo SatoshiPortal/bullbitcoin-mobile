@@ -15,17 +15,27 @@ void main() {
     policy.load,
   ).thenAnswer((_) async => Ok<PayjoinPolicy, PayjoinFailure>(value));
 
-  test('off by default', () async {
+  test('on by default', () async {
     stubPolicy(PayjoinPolicy.defaults());
 
-    expect(await GetSendPayjoinEnabledUsecase(policy).execute(), isFalse);
+    expect(await GetSendPayjoinEnabledUsecase(policy).execute(), isTrue);
   });
 
   test('follows the send switch, not the receive one', () async {
-    stubPolicy(PayjoinPolicy.defaults().copyWith(receiveEnabled: true));
+    stubPolicy(
+      PayjoinPolicy.defaults().copyWith(
+        sendEnabled: false,
+        receiveEnabled: true,
+      ),
+    );
     expect(await GetSendPayjoinEnabledUsecase(policy).execute(), isFalse);
 
-    stubPolicy(PayjoinPolicy.defaults().copyWith(sendEnabled: true));
+    stubPolicy(
+      PayjoinPolicy.defaults().copyWith(
+        sendEnabled: true,
+        receiveEnabled: false,
+      ),
+    );
     expect(await GetSendPayjoinEnabledUsecase(policy).execute(), isTrue);
   });
 

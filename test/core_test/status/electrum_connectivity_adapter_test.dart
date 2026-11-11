@@ -26,7 +26,7 @@ void main() {
     expect(online, isTrue);
     expect(serversPort.network, ElectrumServerNetwork.bitcoinMainnet);
     expect(statusPort.proxyEndpoint?.authority, '127.0.0.1:41001');
-    expect(statusPort.timeout, 30);
+    expect(statusPort.timeout, ElectrumConnection.onionMinimumTimeout);
     expect(statusPort.retry, 1);
   });
 

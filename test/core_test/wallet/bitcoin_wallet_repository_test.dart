@@ -1,3 +1,5 @@
+import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
+import 'package:primitives/primitives.dart';
 // Unit tests for the repository-boundary guarantees of
 // `BitcoinWalletRepository.buildPsbt`:
 //
@@ -25,7 +27,8 @@
 import 'dart:typed_data';
 
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
-import 'package:bb_mobile/core/seed/data/datasources/seed_datasource.dart';
+import 'package:secrets/secrets.dart';
+import 'package:secrets/testing.dart';
 import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/bdk_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/frozen_wallet_utxo_datasource.dart';
@@ -37,16 +40,11 @@ import 'package:bb_mobile/core/wallet/data/models/wallet_utxo_model.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/bitcoin_wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/bitcoin_transaction_recipient.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
-import 'package:bb_mobile/core/wallet/domain/no_spendable_utxo_exception.dart';
-import 'package:bb_mobile/core/wallet/domain/selected_inputs_unavailable_exception.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:primitives/primitives.dart' show Sats;
 
 class _MockWalletMetadataDatasource extends Mock
     implements WalletMetadataDatasource {}
-
-class _MockSeedDatasource extends Mock implements SeedDatasource {}
 
 class _MockBdkWalletDatasource extends Mock implements BdkWalletDatasource {}
 
@@ -101,12 +99,14 @@ void main() {
   });
 
   setUp(() {
+    FakeSecureStoragePlatform().install();
     metadataDatasource = _MockWalletMetadataDatasource();
     bdkDatasource = _MockBdkWalletDatasource();
     frozenDatasource = _MockFrozenWalletUtxoDatasource();
     repository = BitcoinWalletRepository(
       walletMetadataDatasource: metadataDatasource,
-      seedDatasource: _MockSeedDatasource(),
+      // `Secrets` is final: the seam is the keystore below it, installed in `setUp`. No secret is stored — these cases never reach one.
+      secrets: Secrets(scratchDirectory: () async => '/tmp'),
       bdkWalletDatasource: bdkDatasource,
       frozenWalletUtxoDatasource: frozenDatasource,
     );
@@ -171,7 +171,7 @@ void main() {
           ).captured.single
           as bool;
 
-  Future<void> buildPsbt({
+  Future<Result<String, WalletFailure>> buildPsbt({
     List<({String txId, int vout})>? unspendable,
     List<WalletUtxo>? selected,
     bool selectedOnly = false,
@@ -205,7 +205,13 @@ void main() {
             _utxo(txId: 'tx-free', vout: 1),
           ],
         ),
-        throwsA(isA<NoSpendableUtxoException>()),
+        completion(
+          isA<Err<String, WalletFailure>>().having(
+            (error) => error.failure,
+            'failure',
+            isA<WalletSelectedInputsUnavailableFailure>(),
+          ),
+        ),
       );
       verifyNever(
         () => bdkDatasource.buildPsbt(
@@ -264,7 +270,13 @@ void main() {
               _utxo(txId: 'tx-free', vout: 1),
             ],
           ),
-          throwsA(isA<NoSpendableUtxoException>()),
+          completion(
+            isA<Err<String, WalletFailure>>().having(
+              (error) => error.failure,
+              'failure',
+              isA<WalletSelectedInputsUnavailableFailure>(),
+            ),
+          ),
         );
         verifyNever(
           () => bdkDatasource.buildPsbt(
@@ -300,7 +312,13 @@ void main() {
           selected: [_utxo(txId: 'tx-frozen', vout: 0)],
           selectedOnly: true,
         ),
-        throwsA(isA<SelectedInputsUnavailableException>()),
+        completion(
+          isA<Err<String, WalletFailure>>().having(
+            (error) => error.failure,
+            'failure',
+            isA<WalletSelectedInputsUnavailableFailure>(),
+          ),
+        ),
       );
       verifyNever(
         () => bdkDatasource.buildPsbt(
@@ -367,16 +385,19 @@ void main() {
   });
 
   test('maps fixed and remainder recipients into datasource models', () async {
-    await repository.buildPsbt(
-      walletId: _walletId,
-      recipients: [
-        BitcoinTransactionRecipient.fixed(
-          address: 'tb1qfixed',
-          amountSat: Sats.fromInt(25000),
-        ),
-        BitcoinTransactionRecipient.remainder(address: 'tb1qremaining'),
-      ],
-      networkFee: const NetworkFee.relativeSatPerKwu(1000),
+    expect(
+      await repository.buildPsbt(
+        walletId: _walletId,
+        recipients: [
+          BitcoinTransactionRecipient.fixed(
+            address: 'tb1qfixed',
+            amountSat: Sats.fromInt(25000),
+          ),
+          BitcoinTransactionRecipient.remainder(address: 'tb1qremaining'),
+        ],
+        networkFee: const NetworkFee.relativeSatPerKwu(1000),
+      ),
+      isA<Ok<String, WalletFailure>>(),
     );
 
     final recipients =

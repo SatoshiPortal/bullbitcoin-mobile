@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:meta/meta.dart';
 import 'package:bb_mobile/core/mempool/domain/errors/mempool_failure.dart';
 import 'package:bb_mobile/core/mempool/domain/ports/mempool_server_validator_port.dart';
 import 'package:bb_mobile/core/mempool/domain/ports/mempool_tor_session_port.dart';
@@ -19,7 +20,14 @@ class HttpMempoolServerValidator implements MempoolServerValidatorPort {
     required this._torSessionPort,
     required this._torHttpClientFactory,
   });
-  static const _timeout = Duration(seconds: 5);
+  static const _clearnetTimeout = Duration(seconds: 5);
+
+  /// An onion server gets Tor's connect deadline, so Tor's budget expires first; a clearnet one keeps a short validation timeout.
+  @visibleForTesting
+  static Duration timeoutFor(Uri uri) =>
+      uri.host.toLowerCase().endsWith('.onion')
+      ? torConnectDeadline
+      : _clearnetTimeout;
 
   /// Genesis block hash per network — the chain's own, checksum-protected
   /// identity. Used to prove a custom server really serves the network the
@@ -61,12 +69,13 @@ class HttpMempoolServerValidator implements MempoolServerValidatorPort {
         }
       }
 
+      final timeout = timeoutFor(uri);
       final dio = Dio(
         BaseOptions(
           baseUrl: fullUrl,
-          connectTimeout: _timeout,
-          receiveTimeout: _timeout,
-          sendTimeout: _timeout,
+          connectTimeout: timeout,
+          receiveTimeout: timeout,
+          sendTimeout: timeout,
         ),
       );
       if (torClient != null) {

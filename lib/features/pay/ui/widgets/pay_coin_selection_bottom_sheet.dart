@@ -50,7 +50,7 @@ class PayCoinSelectionBottomSheet extends StatelessWidget {
 
     return CommonCoinSelectionBottomSheet(
       bitcoinUnit: BitcoinUnit.btc,
-      exchangeRate: exchangeRate ?? 0.0,
+      exchangeRate: exchangeRate,
       fiatCurrency: fiatCurrency,
       utxos: utxos,
       initialSelectedUtxos: selectedUtxos,

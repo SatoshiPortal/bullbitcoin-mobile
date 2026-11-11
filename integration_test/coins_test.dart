@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
-import 'package:bb_mobile/core/seed/data/models/seed_model.dart';
+import 'package:secrets/secrets.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/wallet/domain/no_spendable_utxo_exception.dart';
@@ -16,7 +16,7 @@ import 'package:bb_mobile/core/wallet/domain/repositories/wallet_utxo_repository
 import 'package:bb_mobile/core/wallet/domain/usecases/prepare_bitcoin_send_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_environment_usecase.dart';
 import 'package:bb_mobile/locator.dart';
-import 'package:bb_mobile/main.dart';
+import 'package:bb_mobile/init.dart';
 import 'package:bull_sdk/bdk.dart' as bdk;
 import 'package:drift/drift.dart' show driftRuntimeOptions;
 import 'package:drift/native.dart';
@@ -161,11 +161,14 @@ Future<void> main({bool isInitialized = false}) async {
           await locator<SetEnvironmentUsecase>().execute(Environment.testnet),
           isA<Ok<void, SettingsFailure>>(),
         );
-        final seed = SeedModel.mnemonic(
-          mnemonicWords: mnemonic!.split(' '),
-        ).toEntity();
+        final secret = switch (await locator<Secrets>().import(
+          words: mnemonic!.split(' '),
+        )) {
+          Ok(:final value) => value,
+          Err(:final failure) => fail('import failed: ${failure.runtimeType}'),
+        };
         wallet = await walletRepository.createWallet(
-          seed: seed,
+          secret: secret,
           network: Network.bitcoinTestnet,
           scriptType: ScriptType.bip84,
         );
@@ -222,7 +225,7 @@ Future<void> main({bool isInitialized = false}) async {
           walletId: wallet.id,
         );
 
-        final prepared = await prepareBitcoinSendUsecase.execute(
+        final preparationResult = await prepareBitcoinSendUsecase.execute(
           walletId: wallet.id,
           recipients: [
             BitcoinTransactionRecipient.remainder(address: receive.address),
@@ -230,6 +233,12 @@ Future<void> main({bool isInitialized = false}) async {
           selectedInputs: [selected],
           networkFee: NetworkFee.relativeFromSatPerVbyte(2),
         );
+        final prepared = switch (preparationResult) {
+          Ok(:final value) => value,
+          Err(:final failure) => fail(
+            'Bitcoin preparation failed: ${failure.runtimeType}',
+          ),
+        };
 
         final inputs = bdk.Psbt(
           psbtBase64: prepared.unsignedPsbt,

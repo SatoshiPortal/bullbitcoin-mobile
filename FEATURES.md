@@ -11,8 +11,11 @@ graph TB
     %% Core infrastructure
     CORE[Core<br/>---<br/>Database, Secure Storage,<br/>API Clients, Tor Adapters, UI Kit,<br/>DI & Router setup,<br/>PIN encrypted storage,<br/>Domain Primitives/Value Objects]
     PRIMITIVES[Primitives Package]
+    SCREEN_AWAKE[Screen Awake Package]
+    WAKELOCK_PLUS[wakelock_plus Plugin]
     BULL_LOGGER[Bull Logger Package<br/>Logger, diagnostics, log files]
     BULL_PAYJOIN[Bull Payjoin Package<br/>Public contract]
+    BULL_PRICER[Bull Pricer Package<br/>Bitcoin price and history]
 
     %% Feature modules
     SETTINGS[Settings]
@@ -23,7 +26,7 @@ graph TB
     TOR[Tor<br/>Workspace Package]
     PIN_CODE[Pin Code]
     LABELS[Labels]
-    SECRETS[Secrets]
+    SECRETS[Secrets Package<br/>Custody: storage, derivation, signing, backup]
     HW_WALLETS[Hardware Wallets]
     BTC_PRICE[Bitcoin Price]
     NETWORK[Network]
@@ -33,6 +36,7 @@ graph TB
     EXCHANGE[Exchange]
     EXCHANGE_SETTINGS[Exchange Settings]
     EXCHANGE_SUPPORT_CHAT[Exchange Support Chat]
+    SUPPORT[Support]
     APP_STARTUP[App Startup]
     UTXO_MGMT[UTXO Management]
     ADDRESS_MGMT[Address Management]
@@ -43,9 +47,11 @@ graph TB
     WITHDRAWAL[Withdrawal]
     STATUS[Status]
     SEND[Send]
+    BROADCAST_SIGNED_TX[Broadcast Signed Transaction]
     RECEIVE[Receive]
     TRANSFER[Transfer]
     TX_HISTORY[Transaction History]
+    REPLACE_BY_FEE[Replace By Fee]
     BG_TASKS[Background Tasks]
     DCA[DCA]
     DEFAULT_WALLETS[Default Wallets]
@@ -74,13 +80,28 @@ graph TB
     SETTINGS --> LOGS
     CORE --> BULL_PAYJOIN
     BULL_PAYJOIN --> PRIMITIVES
+    CORE --> BULL_PRICER
+    BULL_PRICER --> PRIMITIVES
+    BTC_PRICE --> BULL_PRICER
+    BUY --> BULL_PRICER
+    PAY --> BULL_PRICER
+    RECEIVE --> BULL_PRICER
+    SELL --> BULL_PRICER
+    SEND --> BULL_PRICER
+    STATUS --> BULL_PRICER
+    SWAPS --> BULL_PRICER
+    HW_WALLETS --> SCREEN_AWAKE
+    SCREEN_AWAKE --> BULL_LOGGER
+    SCREEN_AWAKE --> WAKELOCK_PLUS
 
     %% Feature-to-feature dependencies (extracted from draw.io diagram)
     ADDRESS_MGMT --> LABELS
     ALL_SEED_VIEW --> APP_UNLOCK
+    ALL_SEED_VIEW --> SECRETS
     ANNOUNCEMENTS --> SETTINGS
     ANNOUNCEMENTS --> SWAPS
     APP_STARTUP --> WALLETS
+    APP_STARTUP --> SECRETS
     APP_STARTUP --> LOGS
     AUTOSWAP --> SWAPS
     APP_STARTUP --> TOR
@@ -113,9 +134,7 @@ graph TB
     EXCHANGE --> FUNDING
     EXCHANGE --> TX_HISTORY
     EXCHANGE --> WITHDRAWAL
-    SETTINGS --> EXCHANGE_SUPPORT_CHAT
-    WALLETS --> EXCHANGE_SUPPORT_CHAT
-    SWAPS --> EXCHANGE_SUPPORT_CHAT
+    SUPPORT --> EXCHANGE_SUPPORT_CHAT
     DCA --> EXCHANGE
     PAY --> EXCHANGE
     TX_HISTORY --> EXCHANGE
@@ -136,10 +155,11 @@ graph TB
     RECEIVE --> SWAPS
     RECEIVE --> TX_HISTORY
     RECIPIENTS --> EXCHANGE
-    SECRETS --> CORE
     SELL --> EXCHANGE
+    SELL --> RECIPIENTS
     SELL --> BULL_PAYJOIN
     SELL --> TX_HISTORY
+    BROADCAST_SIGNED_TX --> SEND
     SEND --> CONSOLIDATION
     SEND --> FEES
     SEND --> NETWORK
@@ -157,6 +177,7 @@ graph TB
     STATUS --> BULL_PAYJOIN
     STATUS --> TOR
     SWAPS --> BULL_PAYJOIN
+    SWAPS --> SECRETS
     SWAPS --> EXCHANGE
     SWAPS --> LABELS
     SETTINGS --> SP
@@ -167,6 +188,7 @@ graph TB
     WALLETS --> TOR
     WALLETS --> ELECTRUM_SETTINGS
     RECOVERBULL --> TOR
+    RECOVERBULL --> SECRETS
     TRANSFER --> CONSOLIDATION
     TRANSFER --> SEND
     TRANSFER --> RECEIVE
@@ -180,6 +202,7 @@ graph TB
     WALLETS --> HW_WALLETS
     WALLETS --> NETWORK
     WALLETS --> SECRETS
+    SP --> SECRETS
     WALLETS --> SETTINGS
     WALLETS --> SWAPS
     WITHDRAWAL --> RECIPIENTS
@@ -190,8 +213,8 @@ graph TB
     classDef featureStyle fill:#1a202c,stroke:#2d3748,stroke-width:2px,color:#e2e8f0
 
     class CORE coreStyle
-    class PRIMITIVES,BULL_PAYJOIN,TOR packageStyle
-    class SETTINGS,PIN_CODE,LABELS,SECRETS,HW_WALLETS,BTC_PRICE,NETWORK,BIP85,FEES,WALLETS,EXCHANGE,EXCHANGE_SETTINGS,EXCHANGE_SUPPORT_CHAT,APP_STARTUP,UTXO_MGMT,ADDRESS_MGMT,RECIPIENTS,FUNDING,BACKUPS,SWAPS,WITHDRAWAL,STATUS,SEND,RECEIVE,TRANSFER,TX_HISTORY,BG_TASKS,AUTOSWAP,AUTOBUY,DCA,DEFAULT_WALLETS,LIMIT_ORDERS,SELL,PAY,BUY,COINS,ANNOUNCEMENTS,CONSOLIDATION,ALL_SEED_VIEW,APP_UNLOCK,SP featureStyle
+    class SECRETS,PRIMITIVES,BULL_PAYJOIN,BULL_PRICER,TOR,SCREEN_AWAKE packageStyle
+    class SETTINGS,PIN_CODE,LABELS,HW_WALLETS,BTC_PRICE,NETWORK,BIP85,FEES,WALLETS,EXCHANGE,EXCHANGE_SETTINGS,EXCHANGE_SUPPORT_CHAT,SUPPORT,APP_STARTUP,UTXO_MGMT,ADDRESS_MGMT,RECIPIENTS,FUNDING,BACKUPS,SWAPS,WITHDRAWAL,STATUS,SEND,RECEIVE,TRANSFER,TX_HISTORY,REPLACE_BY_FEE,BG_TASKS,AUTOSWAP,AUTOBUY,DCA,DEFAULT_WALLETS,LIMIT_ORDERS,SELL,PAY,BUY,COINS,ANNOUNCEMENTS,CONSOLIDATION,ALL_SEED_VIEW,APP_UNLOCK,SP featureStyle
 ```
 
 ## About Package Dependency Diagrams
@@ -239,11 +262,11 @@ graph TB
 
 2. **Core Primitives**:
    - Canonical location: `packages/primitives`; compatibility exports remain in `lib/core` during migration.
-   - Extracted examples: `Failure`, `Result`, `Fingerprint`, network types, `Outpoint`, `Sats`, and `FeeRate`. Security-domain types such as `Secret` remain future extraction work.
+   - Extracted examples: `Failure`, `Result`, `Fingerprint`, network types, `Outpoint`, `Sats`, and `FeeRate`. Security-domain types such as `Secret` now live in `packages/secrets`, which owns them rather than exposing them as primitives.
    - Shared types used across multiple features, avoiding redundant definitions
    - Immutable, validated value objects that ensure domain integrity
 
-> Migration note: `lib/core` is shared infrastructure (no business logic). Shared *domain* modules that historically landed in `lib/core/<domain>` (e.g. `wallet`, `secrets`) graduate into `packages/<domain>` under the melos workspace — each exposing its repository interfaces + domain types + shared use-cases through a public API, never a bloc or screen. See [ARCHITECTURE.md](ARCHITECTURE.md).
+> Migration note: `lib/core` is shared infrastructure (no business logic). Shared *domain* modules that historically landed in `lib/core/<domain>` (e.g. `wallet`) graduate into `packages/<domain>` under the melos workspace — each exposing its repository interfaces + domain types + shared use-cases through a public API, never a bloc or screen. See [ARCHITECTURE.md](ARCHITECTURE.md).
 
 ## Key Dependency Patterns
 
@@ -252,7 +275,7 @@ graph TB
 - **Core**: Foundation for all features
 - **Tor**: `packages/bull_tor` — embedded Onion lifecycle with isolated RecoverBull and Bitcoin Electrum `.onion` sessions, plus provider-agnostic local SOCKS5 verification. Depends on Flutter for app-directory storage and an iOS plugin that excludes Tor state from backups, which are infrastructure-package exceptions in AGENTS.md
 - **Wallets**: Used by Send, UTXO Management, Transaction History, Backups, App Startup
-- **Secrets**: Used by Wallets, BIP85
+- **Secrets** (workspace package): Used by Wallets, BIP85, App Startup, All Seed View, RecoverBull, Swaps, Silent Payments
 - **Settings**: Used by Wallets, BIP85, Bitcoin Price
 - **Recipients**: Used by Pay, Withdrawal
 - **UTXO Management**: Used by Send, Swaps, Payjoin

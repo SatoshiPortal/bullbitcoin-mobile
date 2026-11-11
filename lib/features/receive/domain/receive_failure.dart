@@ -86,6 +86,12 @@ final class ReceivePayjoinPolicyUnavailableFailure extends ReceiveFailure {
   const ReceivePayjoinPolicyUnavailableFailure([super.logMessage]);
 }
 
+/// Checking for a competing transaction failed before any broadcast.
+final class ReceiveBroadcastOriginalTxVerificationFailure
+    extends ReceiveFailure {
+  const ReceiveBroadcastOriginalTxVerificationFailure([super.logMessage]);
+}
+
 /// Broadcasting the sender's original (non-payjoin) transaction failed.
 final class ReceiveBroadcastOriginalTxFailure extends ReceiveFailure {
   const ReceiveBroadcastOriginalTxFailure([super.logMessage]);
@@ -97,6 +103,12 @@ final class ReceiveBroadcastOriginalTxFailure extends ReceiveFailure {
 final class ReceiveBroadcastOriginalTxUnavailableFailure
     extends ReceiveFailure {
   const ReceiveBroadcastOriginalTxUnavailableFailure([super.logMessage]);
+}
+
+/// No price of bitcoin in the fiat currency: receiving works without one, and
+/// shows no fiat value.
+final class ReceivePriceUnavailableFailure extends ReceiveFailure {
+  const ReceivePriceUnavailableFailure([super.logMessage]);
 }
 
 /// Catch-all. [logMessage] is for logs ONLY and MUST never reach the UI.

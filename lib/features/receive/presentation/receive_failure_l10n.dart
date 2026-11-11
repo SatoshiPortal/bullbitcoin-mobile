@@ -19,7 +19,9 @@ extension ReceiveFailureL10n on ReceiveFailure {
     ReceiveAmountOutOfBoundsFailure() ||
     ReceiveInvalidInvoiceFailure() ||
     ReceiveSwapUnavailableFailure() ||
-    ReceiveUnexpectedFailure() => context.loc.oopsSomethingWentWrong,
+    ReceiveUnexpectedFailure() ||
+    ReceiveBroadcastOriginalTxVerificationFailure() =>
+      context.loc.oopsSomethingWentWrong,
     ReceiveSwapRouteUnavailableFailure(:final inNetwork?, :final outNetwork?) =>
       context.loc.swapErrorRouteUnavailable(
         inNetwork.toTranslated(context),
@@ -30,6 +32,8 @@ extension ReceiveFailureL10n on ReceiveFailure {
     ReceiveRateLimitedFailure(:final retryAfter) =>
       context.loc.swapErrorRateLimited(retryAfter?.inSeconds ?? 30),
     ReceiveNetworkFailure() => context.loc.payNetworkError,
+    ReceivePriceUnavailableFailure() =>
+      context.loc.bitcoinPriceExchangeRateUnavailable,
     ReceiveAmountAboveProtocolLimitFailure(:final limitAmountSat) =>
       context.loc.receiveErrorAmountAboveProtocolLimit(
         FormatAmount.sats(limitAmountSat),

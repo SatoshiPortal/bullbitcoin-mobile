@@ -6,6 +6,8 @@ sealed class FundExchangeState with _$FundExchangeState {
     @Default(false) bool isStarted,
     UserSummary? userSummary,
     @Default(false) bool isConfidentialSepaAvailable,
+    @Default(false) bool isLoadingConfidentialSepaAvailability,
+    FundExchangeFailure? confidentialSepaAvailabilityFailure,
     @Default(false) bool isLoadingFundingInstitutions,
     List<FundingInstitution>? fundingInstitutions,
     FundExchangeFailure? listFundingInstitutionsFailure,

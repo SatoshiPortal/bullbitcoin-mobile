@@ -1,4 +1,9 @@
 import 'package:bb_mobile/core/failures/failure.dart';
+import 'package:bb_mobile/core/recoverbull/domain/recoverbull_failure.dart'
+    show KeyServerUnreachableCause;
+
+export 'package:bb_mobile/core/recoverbull/domain/recoverbull_failure.dart'
+    show KeyServerUnreachableCause;
 
 /// Closed set of every failure the RecoverBull (vault backup/restore) flow
 /// surfaces to the user.
@@ -26,7 +31,15 @@ final class VaultNotSetFailure extends RecoverBullFailure {
 }
 
 final class KeyServerConnectionFailure extends RecoverBullFailure {
-  const KeyServerConnectionFailure();
+  final KeyServerUnreachableCause cause;
+
+  /// The HTTP status when [cause] is [KeyServerUnreachableCause.httpError].
+  final int? httpStatus;
+
+  const KeyServerConnectionFailure({
+    this.cause = KeyServerUnreachableCause.unknown,
+    this.httpStatus,
+  });
 }
 
 final class VaultCreationFailure extends RecoverBullFailure {

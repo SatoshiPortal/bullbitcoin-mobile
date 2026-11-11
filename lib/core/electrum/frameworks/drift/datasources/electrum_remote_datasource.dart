@@ -65,7 +65,7 @@ class ElectrumRemoteDatasource {
     }
 
     // An onion circuit is built before the first byte moves, so the shared
-    // connection policy raises the configured timeout to at least 30 seconds.
+    // connection policy raises the configured timeout to Tor's connect deadline.
     final timeout = Duration(seconds: connection.effectiveTimeout);
 
     Socket? socket;

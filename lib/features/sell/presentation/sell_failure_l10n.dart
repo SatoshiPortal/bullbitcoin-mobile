@@ -4,6 +4,9 @@ import 'package:flutter/widgets.dart';
 
 extension SellFailureL10n on SellFailure {
   String toTranslated(BuildContext context) => switch (this) {
+    SellConfidentialSepaNotActivatedFailure() =>
+      context.loc.withdrawConfidentialSepaNotActivatedError,
+    SellNetworkFailure() => context.loc.exchangeErrorNetwork,
     SellUnauthenticatedFailure() => context.loc.sellUnauthenticatedError,
     SellBelowMinAmountFailure() => context.loc.sellBelowMinAmountError,
     SellAboveMaxAmountFailure() => context.loc.sellAboveMaxAmountError,
@@ -16,6 +19,8 @@ extension SellFailureL10n on SellFailure {
       context.loc.sellInsufficientBalanceError,
     SellFeeBelowRelayFloorFailure() => context.loc.sellErrorFeeBelowRelayFloor,
     SellFeesUnavailableFailure() => context.loc.sellErrorFeesUnavailable,
+    SellQuoteExpiredFailure() => context.loc.sellQuoteExpiredError,
+    SellQuoteUnavailableFailure() => context.loc.exchangeQuoteUnavailableError,
     // Never `logMessage`. That arm used to return the raw exception text —
     // "PrepareBitcoinSendException: ..." — straight to the payment screen.
     SellUnexpectedFailure() => context.loc.sellUnexpectedError,
