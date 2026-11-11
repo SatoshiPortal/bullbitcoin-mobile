@@ -100,6 +100,22 @@ void main() {
       );
     });
 
+    testWidgets('a busy wallet is told to retry, not to await a payment', (
+      tester,
+    ) async {
+      final busy = await _translate(
+        tester,
+        const SellSpendBlockedFailure(busy: true),
+      );
+      final awaiting = await _translate(
+        tester,
+        const SellSpendBlockedFailure(),
+      );
+
+      expect(busy, isNot(awaiting));
+      expect(busy, contains('busy'));
+    });
+
     testWidgets('every variant reads differently from the catch-all', (
       tester,
     ) async {

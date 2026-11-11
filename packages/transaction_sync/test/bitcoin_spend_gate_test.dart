@@ -7,6 +7,7 @@ import 'package:transaction_sync/transaction_sync.dart';
 import 'package:transaction_sync/write.dart';
 import 'package:transaction_sync/src/write/bitcoin_spend_gate_store.dart';
 import 'package:transaction_sync/src/write/revision_store.dart';
+import 'package:transaction_sync/src/write/writer_lock.dart';
 
 final class _Catalog implements WalletCatalogPort {
   final List<PublicWalletDescriptor> wallets;
@@ -167,6 +168,18 @@ void main() {
     } finally {
       store.close();
     }
+  });
+
+  test('writer contention is busy, not an unobserved payment', () async {
+    final held =
+        WriterLock.acquire(writerLockDirectory(dir.path), wallet.key)
+            as Ok<WriterLock, TransactionSyncFailure>;
+    try {
+      expect(await gate.check(wallet.key), BitcoinSpendStatus.busy);
+    } finally {
+      held.value.release();
+    }
+    expect(await gate.check(wallet.key), BitcoinSpendStatus.ready);
   });
 
   test('revision quarantine marker keeps spend admission closed', () async {

@@ -90,11 +90,25 @@ void main() {
       isA<Err>().having(
         (result) => result.failure,
         'failure',
-        isA<SellSpendBlockedFailure>(),
+        isA<SellSpendBlockedFailure>().having((f) => f.busy, 'busy', isFalse),
       ),
     );
     verifyZeroInteractions(mainnet);
     verifyZeroInteractions(payjoinPolicy);
+  });
+
+  test('a busy wallet is not reported as awaiting a payment', () async {
+    spendStatus = BitcoinSpendStatus.busy;
+    final result = await run();
+    expect(
+      result,
+      isA<Err>().having(
+        (result) => result.failure,
+        'failure',
+        isA<SellSpendBlockedFailure>().having((f) => f.busy, 'busy', isTrue),
+      ),
+    );
+    verifyZeroInteractions(mainnet);
   });
 
   test('regtest refuses sell creation before backend IO', () async {
