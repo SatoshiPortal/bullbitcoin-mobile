@@ -98,7 +98,8 @@ enum _Cell {
 
   /// The public text a cell must hold, whatever the secret puts in it.
   Iterable<String> templates(Language language) => switch (this) {
-    _Cell.word => language.list.map(nfkd),
+    // bip39's wordlists are NFKD already (pinned by seed_pbkdf2_test.dart).
+    _Cell.word => language.list,
     _Cell.character => [
       for (var code = 0x21; code <= 0x7e; code++) String.fromCharCode(code),
     ],

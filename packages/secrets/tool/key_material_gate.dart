@@ -203,8 +203,12 @@ const _unresolvedSensitiveMembers = {
   'deriveHardened',
   'secretBytes',
   'newConfidential',
+  'newConfidentialFromSeed',
   'restoreBackup',
   'signedPsetWithExtraDetails',
+  'signedPsetWithExtraDetailsWithSeed',
+  'signTxWithSeed',
+  'createFromSeed',
 };
 
 const _bridgeLibrary = 'package:bull_sdk/src/rust/frb_generated.dart';
@@ -255,15 +259,23 @@ String? materialSymbol(Element element) {
                 'newBip84',
                 'newBip86',
               }.contains(member)),
-    _ when uri.startsWith('package:bull_sdk/src/rust/third_party/lwk/') =>
-      symbol == 'Descriptor.newConfidential' ||
-          {
-            'Wallet.signTx',
-            'Wallet.signedPsetWithExtraDetails',
-          }.contains(symbol),
+    _ when uri.startsWith('package:bull_sdk/src/rust/third_party/lwk/') => {
+      'Descriptor.newConfidential',
+      'Descriptor.newConfidentialFromSeed',
+      'Wallet.signTx',
+      'Wallet.signTxWithSeed',
+      'Wallet.signedPsetWithExtraDetails',
+      'Wallet.signedPsetWithExtraDetailsWithSeed',
+    }.contains(symbol),
     _ when uri.startsWith('package:bull_sdk/src/rust/third_party/boltz/') =>
       owner == 'SwapMasterKey' &&
-          {'new', 'create', 'xprv', 'mnemonic'}.contains(member),
+          {
+            'new',
+            'create',
+            'createFromSeed',
+            'xprv',
+            'mnemonic',
+          }.contains(member),
     _ when uri.startsWith('package:bull_sdk/src/rust/third_party/dart_bwk/') =>
       owner == 'SpAccount' &&
           (member?.startsWith('createFromMnemonic') ?? false),

@@ -258,6 +258,8 @@ void main() {
       'MnemonicView', 'MnemonicChallenge', 'MnemonicTile', 'SecretWidgets',
       // what generate takes: a closed set, never an int
       'MnemonicLength',
+      // the BIP39 wordlist a mnemonic is written in, so consumers need not import bip39
+      'Language',
       // what operations hand back
       'Descriptors',
       'SwapMasterKey',

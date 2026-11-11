@@ -121,40 +121,50 @@ void main() {
     );
   });
 
-  test(
-    'refuses a non-English default before reading or creating wallets',
-    () async {
-      final imported = await secrets.import(
-        words: [...List.filled(11, 'あいこくしん'), 'あおぞら'],
-        language: bip39.Language.japanese,
-      );
-      final secret = switch (imported) {
-        Ok(:final value) => value,
-        Err(:final failure) => fail('import failed: ${failure.runtimeType}'),
-      };
-      await expectLater(
-        create.execute(secret: secret),
-        throwsA(
-          isA<CreateDefaultWalletsException>()
-              .having(
-                (e) => e.runtimeType,
-                'exact exception type',
-                CreateDefaultWalletsException,
-              )
-              .having(
-                (e) => e.message,
-                'message',
-                'Default wallets require an English mnemonic',
-              ),
+  void stubCreation(List<s.Secret> received) {
+    when(
+      () => wallets.createWallet(
+        secret: any(named: 'secret'),
+        network: any(named: 'network'),
+        scriptType: ScriptType.bip84,
+        isDefault: true,
+        birthday: null,
+      ),
+    ).thenAnswer((invocation) async {
+      received.add(invocation.namedArguments[#secret] as s.Secret);
+      return _Wallet();
+    });
+  }
+
+  test('creates both default wallets from a non-English mnemonic', () async {
+    final imported = await secrets.import(
+      words: [...List.filled(11, 'あいこくしん'), 'あおぞら'],
+      language: bip39.Language.japanese,
+    );
+    final secret = switch (imported) {
+      Ok(:final value) => value,
+      Err(:final failure) => fail('import failed: ${failure.runtimeType}'),
+    };
+    final received = <s.Secret>[];
+    stubCreation(received);
+
+    expect(await create.execute(secret: secret), hasLength(2));
+    expect(received.map((r) => r.id), [secret.id, secret.id]);
+    for (final network in [Network.bitcoinMainnet, Network.liquidMainnet]) {
+      verify(
+        () => wallets.createWallet(
+          secret: any(named: 'secret'),
+          network: network,
+          scriptType: ScriptType.bip84,
+          isDefault: true,
+          birthday: null,
         ),
-      );
-      verifyZeroInteractions(wallets);
-      verifyZeroInteractions(settings);
-    },
-  );
+      ).called(1);
+    }
+  });
 
   test(
-    'words resolving to a stored non-English duplicate create no wallet',
+    'words resolving to a stored non-English duplicate use that entry',
     () async {
       // Valid in both the English and the French wordlists: one seed, so the
       // English import resolves to the French entry already stored.
@@ -167,33 +177,17 @@ void main() {
         words: shared,
         language: bip39.Language.french,
       );
-      expect(imported, isA<Ok<s.Secret, s.SecretFailure>>());
+      final french = switch (imported) {
+        Ok(:final value) => value,
+        Err(:final failure) => fail('import failed: ${failure.runtimeType}'),
+      };
       final persisted = Map<String, String>.of(storage.entries);
-      await expectLater(
-        create.execute(mnemonicWords: shared),
-        throwsA(
-          isA<CreateDefaultWalletsException>()
-              .having(
-                (e) => e.runtimeType,
-                'exact exception type',
-                CreateDefaultWalletsException,
-              )
-              .having(
-                (e) => e.message,
-                'message',
-                'Default wallets require an English mnemonic',
-              ),
-        ),
-      );
-      verifyNever(
-        () => wallets.createWallet(
-          secret: any(named: 'secret'),
-          network: any(named: 'network'),
-          scriptType: ScriptType.bip84,
-          isDefault: true,
-          birthday: null,
-        ),
-      );
+      final received = <s.Secret>[];
+      stubCreation(received);
+
+      expect(await create.execute(mnemonicWords: shared), hasLength(2));
+      expect(received.map((r) => r.id), [french.id, french.id]);
+      expect(received.first.info.language, bip39.Language.french);
       expect(storage.entries, persisted);
     },
   );
