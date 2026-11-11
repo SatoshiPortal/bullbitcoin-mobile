@@ -1,3 +1,4 @@
+import 'package:bull_ui/bull_ui.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -80,19 +81,19 @@ class BBTextFormField extends StatelessWidget {
                 : context.appColors.onSecondary,
             filled: true,
             border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8.0),
+              borderRadius: BorderRadius.circular(context.bullShapes.input),
               borderSide: BorderSide(
                 color: context.appColors.secondaryFixedDim,
               ),
             ),
             enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8.0),
+              borderRadius: BorderRadius.circular(context.bullShapes.input),
               borderSide: BorderSide(
                 color: context.appColors.secondaryFixedDim,
               ),
             ),
             disabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8.0),
+              borderRadius: BorderRadius.circular(context.bullShapes.input),
               borderSide: BorderSide(
                 color: context.appColors.secondaryFixedDim.withValues(
                   alpha: 0.5,

@@ -2,7 +2,7 @@ import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:flutter/material.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullShapesX, Gap;
 
 class WalletDetailBalanceCard extends StatelessWidget {
   const WalletDetailBalanceCard({
@@ -48,7 +48,7 @@ class WalletDetailBalanceCard extends StatelessWidget {
             width: 9,
           ),
         ),
-        borderRadius: BorderRadius.circular(2),
+        borderRadius: BorderRadius.circular(context.bullShapes.card),
       ),
       child: Stack(
         children: [

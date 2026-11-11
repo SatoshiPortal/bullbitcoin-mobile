@@ -1,6 +1,7 @@
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/widgets/translation_warning_bottom_sheet.dart';
+import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter/material.dart';
 
 /// A compact bordered language picker shared across the app (wizard, app
@@ -33,7 +34,9 @@ class AppLanguagePicker extends StatelessWidget {
     return PopupMenuButton<Language>(
       initialValue: value,
       constraints: BoxConstraints(maxHeight: Device.screen.height * 0.50),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(context.bullShapes.card),
+      ),
       itemBuilder: (context) => Language.values
           .map(
             (l) => PopupMenuItem<Language>(
@@ -55,7 +58,8 @@ class AppLanguagePicker extends StatelessWidget {
       },
       child: DecoratedBox(
         decoration: ShapeDecoration(
-          shape: StadiumBorder(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(context.bullShapes.button),
             side: BorderSide(color: theme.colorScheme.outline),
           ),
         ),
