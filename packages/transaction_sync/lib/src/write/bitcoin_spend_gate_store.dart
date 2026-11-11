@@ -87,7 +87,7 @@ final class BitcoinSpendGateStore {
   ).isNotEmpty;
 
   /// Spent outpoints (`txid:vout`) of each tracked transaction, empty until a
-  /// sync has seen it. They let a later sync prove it can no longer confirm.
+  /// sync has seen it. They let a later sync recognize a conflicting spend.
   Map<String, Set<String>> trackedInputs(PublicWalletDescriptor descriptor) {
     tracked(descriptor);
     final key = descriptor.key;
@@ -145,14 +145,13 @@ final class BitcoinSpendGateStore {
   void requireRecoveryValidation() =>
       _db.execute('UPDATE broadcasts SET observed=0');
 
-  /// [released] obligations are forgotten: only positive evidence from a
-  /// persisted sync that they can no longer confirm may name them, never time.
+  /// [txids] stop blocking until the next pass resets them: seen in this
+  /// pass, or settled by a conflict proven in it. No row is ever deleted.
   void observed(
     PublicWalletDescriptor descriptor,
     int generation,
     Set<String> txids, {
     Map<String, Set<String>> inputs = const {},
-    Set<String> released = const {},
   }) {
     tracked(descriptor);
     final wallet = [descriptor.key.id, descriptor.key.network.env.name];
@@ -168,12 +167,6 @@ final class BitcoinSpendGateStore {
         _db.execute(
           'UPDATE broadcasts SET inputs=? WHERE wallet=? AND network=? AND txid=? AND inputs IS NULL',
           [outpoints.join(' '), ...wallet, txid],
-        );
-      }
-      for (final txid in released) {
-        _db.execute(
-          'DELETE FROM broadcasts WHERE wallet=? AND network=? AND txid=?',
-          [...wallet, txid],
         );
       }
       _db.execute('COMMIT');

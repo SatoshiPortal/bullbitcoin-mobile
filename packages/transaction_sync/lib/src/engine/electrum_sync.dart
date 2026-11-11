@@ -480,7 +480,7 @@ final class _NativeSyncOperation
   @override
   Map<String, Set<String>> spendTransactionInputs = {};
   @override
-  Set<String> releasedSpendTransactions = {};
+  Set<String> settledSpendTransactions = {};
   @override
   void trackSpendTransactions(Map<String, Set<String>> inputsByTxid) =>
       _trackedSpends = inputsByTxid;
@@ -505,7 +505,7 @@ final class _NativeSyncOperation
       (evidence) {
         observedSpendTransactions = evidence.observed;
         spendTransactionInputs = evidence.inputs;
-        releasedSpendTransactions = evidence.released;
+        settledSpendTransactions = evidence.settled;
       },
     );
     result = attempt.result;
@@ -919,7 +919,7 @@ String electrumClientUrl(String url) =>
 typedef _SpendEvidence = ({
   Set<String> observed,
   Map<String, Set<String>> inputs,
-  Set<String> released,
+  Set<String> settled,
 });
 
 String _outpoint(bdk.OutPoint outpoint) => '${outpoint.txid}:${outpoint.vout}';
@@ -945,28 +945,27 @@ Set<String> _takeInputs(bdk.CanonicalTx tx) {
 
 /// No local insertion is performed. Only advancing server deltas can prove
 /// unconfirmed visibility; canonical confirmation is separate chain evidence.
-/// A tracked spend that left the canonical set is released only on positive
-/// evidence: this pass evicted it, or a confirmed transaction (or a tracked
-/// replacement observed in this pass) spends one of its recorded inputs.
+/// A tracked spend that left the canonical set is settled, for this pass
+/// only, when a canonical transaction spends one of its recorded inputs and
+/// is confirmed, or is itself a tracked spend observed in this pass. An
+/// eviction is one endpoint's omission: like any absence, it settles nothing.
 _SpendEvidence _spendEvidence(
   bdk.Wallet wallet,
   Map<String, Set<String>> tracked,
 ) {
   final observed = <String>{};
   final inputs = <String, Set<String>>{};
-  final released = <String>{};
+  final settled = <String>{};
   if (tracked.isEmpty) {
-    return (observed: observed, inputs: inputs, released: released);
+    return (observed: observed, inputs: inputs, settled: settled);
   }
   final staged = wallet.staged();
   final positive = <String>{};
-  final evicted = <String>{};
   try {
     final graph = staged?.txGraphChangeset();
     if (graph != null) {
       positive.addAll(graph.lastSeen.keys.map((id) => id.toString()));
       positive.addAll(graph.anchors.map((anchor) => anchor.txid.toString()));
-      evicted.addAll(graph.lastEvicted.keys.map((id) => id.toString()));
       for (final tx in graph.txs) {
         tx.dispose();
       }
@@ -993,11 +992,7 @@ _SpendEvidence _spendEvidence(
       try {
         final tx = wallet.getTx(txid: txid);
         if (tx == null) {
-          if (evicted.contains(id) && !positive.contains(id)) {
-            released.add(id);
-          } else if (tracked[id]?.isNotEmpty ?? false) {
-            displaced.add(id);
-          }
+          if (tracked[id]?.isNotEmpty ?? false) displaced.add(id);
           continue;
         }
         if (positive.contains(id) ||
@@ -1013,20 +1008,20 @@ _SpendEvidence _spendEvidence(
     if (displaced.isNotEmpty) {
       // Outpoints spent by a confirmed transaction, or by a tracked
       // replacement this pass observed.
-      final settled = <String>{};
+      final spent = <String>{};
       for (final tx in wallet.transactions()) {
         final id = tx.transaction.computeTxid();
         final confirmed = tx.chainPosition is bdk.ConfirmedChainPosition;
         final proof = confirmed || observed.contains(id.toString());
         id.dispose();
-        final spent = _takeInputs(tx);
-        if (proof) settled.addAll(spent);
+        final outpoints = _takeInputs(tx);
+        if (proof) spent.addAll(outpoints);
       }
-      released.addAll(
-        displaced.where((id) => tracked[id]?.any(settled.contains) ?? false),
+      settled.addAll(
+        displaced.where((id) => tracked[id]?.any(spent.contains) ?? false),
       );
     }
-    return (observed: observed, inputs: inputs, released: released);
+    return (observed: observed, inputs: inputs, settled: settled);
   } finally {
     staged?.dispose();
   }

@@ -305,24 +305,21 @@ final class NativeWalletWriter implements LiquidReadAdmission {
     if (operation case WriterSyncSpendObservation(
       :final observedSpendTransactions,
       :final spendTransactionInputs,
-      :final releasedSpendTransactions,
+      :final settledSpendTransactions,
     ) when key.network is BitcoinNetwork) {
       final observed = revisions.openSpendGate();
       try {
-        observed.observed(
-          descriptor,
-          expectedGeneration,
-          observedSpendTransactions,
-          inputs: spendTransactionInputs,
-          released: releasedSpendTransactions,
-        );
+        observed.observed(descriptor, expectedGeneration, {
+          ...observedSpendTransactions,
+          ...settledSpendTransactions,
+        }, inputs: spendTransactionInputs);
       } finally {
         observed.close();
       }
-      if (releasedSpendTransactions.isNotEmpty) {
+      if (settledSpendTransactions.isNotEmpty) {
         _diagnostics(
           WriterLogLevel.fine,
-          'Bitcoin spend obligations released count=${releasedSpendTransactions.length}',
+          'Bitcoin spend obligations settled by conflict count=${settledSpendTransactions.length}',
         );
       }
     }
