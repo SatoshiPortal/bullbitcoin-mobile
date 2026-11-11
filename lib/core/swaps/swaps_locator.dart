@@ -184,6 +184,17 @@ class SwapsLocator {
         swapRepository: locator<SwapRepository>(),
       ),
     );
+    locator.registerFactory<GetSwapLimitsAndFeesUsecase>(
+      () => GetSwapLimitsAndFeesUsecase(
+        swapRepository: locator<SwapRepository>(),
+      ),
+    );
+    locator.registerFactory<RecordSwapLockupUsecase>(
+      () => RecordSwapLockupUsecase(
+        swapRepository: locator<SwapRepository>(),
+        swapWatcher: locator<SwapWatcher>(),
+      ),
+    );
     locator.registerFactory<LogSwapCensusUsecase>(
       () => LogSwapCensusUsecase(swapRepository: locator<SwapRepository>()),
     );

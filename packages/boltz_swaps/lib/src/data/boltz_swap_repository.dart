@@ -1224,6 +1224,21 @@ class BoltzSwapRepository implements SwapRepository {
     return limits;
   }
 
+  @override
+  Future<(SwapLimits, SwapFees)> limitsAndFees(SwapType type) =>
+      getSwapLimitsAndFees(type);
+
+  @override
+  Future<void> markLockupBroadcast({
+    required String swapId,
+    required String txid,
+    int? lockupFeeSat,
+  }) => updatePaidSendSwap(
+    swapId: swapId,
+    txid: txid,
+    absoluteFees: lockupFeeSat,
+  );
+
   Future<void> updateSwapLimitsAndFees(SwapType type) async {
     await _boltz.updateFees(swapType: type);
   }

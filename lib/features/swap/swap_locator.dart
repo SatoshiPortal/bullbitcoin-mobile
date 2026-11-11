@@ -30,6 +30,7 @@ import 'package:bb_mobile/features/send/domain/usecases/sign_bitcoin_tx_usecase.
 import 'package:bb_mobile/features/send/domain/usecases/sign_liquid_tx_usecase.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/features/swap/presentation/transfer_bloc.dart';
+import 'package:boltz_swaps/boltz_swaps.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:bb_mobile/features/swap/data/datasources/exchange_public_api_datasource.dart';
 import 'package:bb_mobile/features/swap/data/datasources/order_swap_local_datasource.dart';
@@ -326,6 +327,11 @@ class SwapLocator {
             locator<PreviewBitcoinFeePresetsUsecase>(),
         checkLiquidConsolidationUsecase:
             locator<CheckLiquidConsolidationUsecase>(),
+        getSwapRouteUsecase: locator<GetSwapRouteUsecase>(),
+        getSwapLimitsAndFeesUsecase: locator<GetSwapLimitsAndFeesUsecase>(),
+        createChainSwapUsecase: locator<CreateChainSwapUsecase>(),
+        recordSwapLockupUsecase: locator<RecordSwapLockupUsecase>(),
+        watchSwapUsecase: locator<WatchSwapUsecase>(),
       ),
     );
   }

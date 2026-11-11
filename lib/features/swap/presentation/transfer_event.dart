@@ -58,4 +58,6 @@ sealed class TransferEvent with _$TransferEvent {
   const factory TransferEvent.orderSwapUpdated(
     Result<OrderSwapRecord, SwapFailure> result,
   ) = TransferOrderSwapUpdated;
+  const factory TransferEvent.boltzSwapUpdated(Swap swap) =
+      TransferBoltzSwapUpdated;
 }

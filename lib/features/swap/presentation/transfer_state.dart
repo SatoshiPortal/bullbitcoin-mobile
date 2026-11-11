@@ -24,6 +24,7 @@ sealed class TransferState with _$TransferState {
     FeeOptions? bitcoinNetworkFees,
     (SwapLimits, SwapFees)? btcToLbtcSwapLimitsAndFees,
     (SwapLimits, SwapFees)? lbtcToBtcSwapLimitsAndFees,
+    SwapRoute? swapRoute,
     Wallet? fromWallet,
     Wallet? toWallet,
     int? maxAmountSat,
@@ -246,6 +247,7 @@ sealed class TransferState with _$TransferState {
     final balanceSat = fromWallet?.balanceSat.toInt() ?? 0;
     if (inputAmountSat > balanceSat) return null;
 
+    if (swapRoute != SwapRoute.boltz) return null;
     final limits = swapLimits;
     if (limits == null) return null;
 

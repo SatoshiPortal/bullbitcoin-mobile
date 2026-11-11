@@ -40,7 +40,9 @@ import 'package:bb_mobile/features/send/domain/usecases/sign_liquid_tx_usecase.d
 import 'package:bb_mobile/features/swap/domain/entities/order_swap_network.dart';
 import 'package:bb_mobile/features/swap/domain/entities/order_swap.dart';
 import 'package:bb_mobile/features/swap/domain/entities/order_swap_record.dart';
+import 'package:bb_mobile/features/swap/domain/entities/swap_route.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/get_swap_exchange_rate_usecase.dart';
+import 'package:bb_mobile/features/swap/domain/usecases/get_swap_route_usecase.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/create_order_swap_usecase.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/get_order_swap_quote_usecase.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/get_pending_order_swaps_usecase.dart';
@@ -131,9 +133,22 @@ class _MockPreviewPresets extends Mock
 class _MockCheckConsolidation extends Mock
     implements CheckLiquidConsolidationUsecase {}
 
+class _MockGetSwapRoute extends Mock implements GetSwapRouteUsecase {}
+
+class _MockGetLimitsAndFees extends Mock
+    implements GetSwapLimitsAndFeesUsecase {}
+
+class _MockCreateChainSwap extends Mock implements CreateChainSwapUsecase {}
+
+class _MockRecordLockup extends Mock implements RecordSwapLockupUsecase {}
+
+class _MockWatchSwap extends Mock implements WatchSwapUsecase {}
+
 void main() {
   setUpAll(() {
     registerFallbackValue(const RelativeFee(250));
+    registerFallbackValue(OrderSwapEnvironment.mainnet);
+    registerFallbackValue(OrderSwapNetwork.bitcoin);
     registerFallbackValue(BigInt.zero);
   });
 
@@ -161,6 +176,12 @@ void main() {
   late _MockSignBitcoin signBitcoin;
   late _MockReplacePrepared replacePrepared;
   late _MockVerifyChain verifyChain;
+  late _MockGetQuote getQuote;
+  late _MockGetSwapRoute getSwapRoute;
+  late _MockGetLimitsAndFees getLimitsAndFees;
+  late _MockCreateChainSwap createChainSwap;
+  late _MockRecordLockup recordLockup;
+  late _MockWatchSwap watchSwap;
   late OrderSwapRecord prepared;
   late TransferBloc bloc;
 
@@ -189,7 +210,19 @@ void main() {
     signBitcoin = _MockSignBitcoin();
     replacePrepared = _MockReplacePrepared();
     verifyChain = _MockVerifyChain();
+    getQuote = _MockGetQuote();
+    getSwapRoute = _MockGetSwapRoute();
+    getLimitsAndFees = _MockGetLimitsAndFees();
+    createChainSwap = _MockCreateChainSwap();
+    recordLockup = _MockRecordLockup();
+    watchSwap = _MockWatchSwap();
     prepared = _prepared();
+    when(
+      () => getSwapRoute.execute(),
+    ).thenAnswer((_) async => SwapRoute.exchange);
+    when(
+      () => watchSwap.execute(any()),
+    ).thenAnswer((_) => const Stream<Swap>.empty());
     when(
       () => getWallet.execute('wallet-1', sync: true),
     ).thenAnswer((_) async => _wallet());
@@ -231,6 +264,11 @@ void main() {
       previewBitcoinFeeUsecase: _MockPreviewFee(),
       previewBitcoinFeePresetsUsecase: _MockPreviewPresets(),
       checkLiquidConsolidationUsecase: _MockCheckConsolidation(),
+      getSwapRouteUsecase: getSwapRoute,
+      getSwapLimitsAndFeesUsecase: getLimitsAndFees,
+      createChainSwapUsecase: createChainSwap,
+      recordSwapLockupUsecase: recordLockup,
+      watchSwapUsecase: watchSwap,
     );
   });
 
@@ -1632,6 +1670,268 @@ void main() {
     await Future<void>.delayed(Duration.zero);
 
     expect(bloc.state.swapFailure, isA<SwapOrderExpiredFailure>());
+  });
+
+  group('Boltz-first transfers', () {
+    TransferState crossChain({bool receiveExactAmount = false}) =>
+        TransferState(
+          fromWallet: _wallet(balanceSat: BigInt.from(100000)),
+          toWallet: _liquidWallet(id: 'wallet-2'),
+          bitcoinUnit: BitcoinUnit.sats,
+          bitcoinNetworkFees: _feeOptions(),
+          receiveExactAmount: receiveExactAmount,
+        );
+
+    void stubCreateChain(Result<ChainSwap, SwapsFailure> result) => when(
+      () => createChainSwap.execute(
+        sendWalletId: 'wallet-1',
+        amountSat: any(named: 'amountSat'),
+        fromLiquid: false,
+        receiveWalletId: 'wallet-2',
+      ),
+    ).thenAnswer((_) async => result);
+
+    void stubLockupBuild() {
+      when(
+        () => prepareBitcoin.execute(
+          walletId: 'wallet-1',
+          address: 'payin-address',
+          amountSat: 1000,
+          networkFee: any(named: 'networkFee'),
+          drain: false,
+          replaceByFee: true,
+        ),
+      ).thenAnswer(
+        (_) async =>
+            (unsignedPsbt: 'lockup-unsigned', txSize: 100, isToSelf: false),
+      );
+      when(
+        () => verifyChain.execute(
+          psbtOrPset: 'lockup-unsigned',
+          swap: _swap(),
+          walletId: 'wallet-1',
+        ),
+      ).thenAnswer((_) async {});
+      when(
+        () =>
+            signBitcoin.execute(walletId: 'wallet-1', psbt: 'lockup-unsigned'),
+      ).thenAnswer((_) async => (signedPsbt: 'lockup-signed', txSize: 100));
+      when(
+        () => calculateBitcoin.execute(psbt: 'lockup-signed'),
+      ).thenAnswer((_) async => 1200);
+    }
+
+    test('creates a Boltz chain swap and signs its verified lockup', () async {
+      when(
+        () => getSwapRoute.execute(),
+      ).thenAnswer((_) async => SwapRoute.boltz);
+      stubCreateChain(Ok(_swap()));
+      stubLockupBuild();
+      bloc.emit(crossChain());
+
+      bloc.add(const TransferEvent.swapCreated('1000'));
+      await bloc.stream.firstWhere((state) => !state.isCreatingSwap);
+
+      expect(bloc.state.swap?.id, 'swap-1');
+      expect(bloc.state.bitcoinAbsoluteFeesSat, 1200);
+      expect(bloc.state.orderSwap, isNull);
+      expect(bloc.state.signedPsbt, 'lockup-signed');
+      verify(
+        () => verifyChain.execute(
+          psbtOrPset: 'lockup-unsigned',
+          swap: _swap(),
+          walletId: 'wallet-1',
+        ),
+      ).called(1);
+      verify(() => watchSwap.execute('swap-1')).called(1);
+      verifyNever(
+        () => getQuote.execute(
+          environment: any(named: 'environment'),
+          amountSat: any(named: 'amountSat'),
+          isInAmountFixed: any(named: 'isInAmountFixed'),
+          inNetwork: any(named: 'inNetwork'),
+          outNetwork: any(named: 'outNetwork'),
+        ),
+      );
+    });
+
+    test('Boltz unavailable without the opt-in surfaces a failure', () async {
+      when(
+        () => getSwapRoute.execute(),
+      ).thenAnswer((_) async => SwapRoute.boltz);
+      stubCreateChain(const Err(SwapsBoltzUnavailableFailure()));
+      bloc.emit(crossChain());
+
+      bloc.add(const TransferEvent.swapCreated('1000'));
+      await bloc.stream.firstWhere((state) => !state.isCreatingSwap);
+
+      expect(bloc.state.swapFailure, isA<SwapNetworkFailure>());
+      verifyNever(
+        () => getQuote.execute(
+          environment: any(named: 'environment'),
+          amountSat: any(named: 'amountSat'),
+          isInAmountFixed: any(named: 'isInAmountFixed'),
+          inNetwork: any(named: 'inNetwork'),
+          outNetwork: any(named: 'outNetwork'),
+        ),
+      );
+    });
+
+    test('falls back to the exchange when the user opted in', () async {
+      when(
+        () => getSwapRoute.execute(),
+      ).thenAnswer((_) async => SwapRoute.boltzWithExchangeFallback);
+      stubCreateChain(
+        const Err(
+          SwapsAmountOutOfLimitsFailure(minSat: 25000, maxSat: 1000000),
+        ),
+      );
+      when(
+        () => getReceiveAddress.execute(walletId: any(named: 'walletId')),
+      ).thenAnswer(
+        (_) async => WalletAddress(
+          walletId: 'wallet-2',
+          index: 0,
+          address: 'lq1destination',
+          createdAt: DateTime.utc(2026),
+          updatedAt: DateTime.utc(2026),
+        ),
+      );
+      when(
+        () => getQuote.execute(
+          environment: any(named: 'environment'),
+          amountSat: any(named: 'amountSat'),
+          isInAmountFixed: any(named: 'isInAmountFixed'),
+          inNetwork: any(named: 'inNetwork'),
+          outNetwork: any(named: 'outNetwork'),
+        ),
+      ).thenAnswer((_) async => const Err(SwapNetworkFailure()));
+      bloc.emit(crossChain());
+
+      bloc.add(const TransferEvent.swapCreated('1000'));
+      await bloc.stream.firstWhere((state) => !state.isCreatingSwap);
+
+      verify(
+        () => getQuote.execute(
+          environment: any(named: 'environment'),
+          amountSat: any(named: 'amountSat'),
+          isInAmountFixed: any(named: 'isInAmountFixed'),
+          inNetwork: any(named: 'inNetwork'),
+          outNetwork: any(named: 'outNetwork'),
+        ),
+      ).called(1);
+    });
+
+    test('a Boltz refusal never falls back', () async {
+      when(
+        () => getSwapRoute.execute(),
+      ).thenAnswer((_) async => SwapRoute.boltzWithExchangeFallback);
+      stubCreateChain(const Err(SwapsBoltzRejectedFailure()));
+      bloc.emit(crossChain());
+
+      bloc.add(const TransferEvent.swapCreated('1000'));
+      await bloc.stream.firstWhere((state) => !state.isCreatingSwap);
+
+      expect(bloc.state.swapFailure, isA<SwapProviderFailure>());
+      verifyNever(
+        () => getQuote.execute(
+          environment: any(named: 'environment'),
+          amountSat: any(named: 'amountSat'),
+          isInAmountFixed: any(named: 'isInAmountFixed'),
+          inNetwork: any(named: 'inNetwork'),
+          outNetwork: any(named: 'outNetwork'),
+        ),
+      );
+    });
+
+    test('exact receive pays the amount plus Boltz fees', () async {
+      when(
+        () => getSwapRoute.execute(),
+      ).thenAnswer((_) async => SwapRoute.boltz);
+      when(() => getLimitsAndFees.execute(SwapType.bitcoinToLiquid)).thenAnswer(
+        (_) async => const Ok((
+          SwapLimits(min: 100, max: 1000000),
+          SwapFees(boltzPercent: 0.1, lockupFee: 100, claimFee: 50),
+        )),
+      );
+      stubCreateChain(const Err(SwapsBoltzRejectedFailure()));
+      bloc.emit(crossChain(receiveExactAmount: true));
+
+      bloc.add(const TransferEvent.swapCreated('1000'));
+      await bloc.stream.firstWhere((state) => !state.isCreatingSwap);
+
+      final paid =
+          verify(
+                () => createChainSwap.execute(
+                  sendWalletId: 'wallet-1',
+                  amountSat: captureAny(named: 'amountSat'),
+                  fromLiquid: false,
+                  receiveWalletId: 'wallet-2',
+                ),
+              ).captured.single
+              as int;
+      expect(paid, greaterThan(1000));
+    });
+
+    test('confirm broadcasts the lockup and records it on the swap', () async {
+      final funded = _swap().copyWith(
+        status: SwapStatus.paid,
+        sendTxid: 'lockup-txid',
+      );
+      when(
+        () => broadcastBitcoin.execute('lockup-signed', isPsbt: true),
+      ).thenAnswer((_) async => 'lockup-txid');
+      when(
+        () => recordLockup.execute(
+          swapId: 'swap-1',
+          txid: 'lockup-txid',
+          lockupFeeSat: 1200,
+        ),
+      ).thenAnswer((_) async => Ok(funded));
+      bloc.emit(
+        crossChain().copyWith(
+          swap: _swap(),
+          signedPsbt: 'lockup-signed',
+          bitcoinAbsoluteFeesSat: 1200,
+        ),
+      );
+
+      bloc.add(const TransferEvent.confirmed());
+      await bloc.stream.firstWhere((state) => state.txId == 'lockup-txid');
+
+      expect(bloc.state.swap?.status, SwapStatus.paid);
+      verify(
+        () => recordLockup.execute(
+          swapId: 'swap-1',
+          txid: 'lockup-txid',
+          lockupFeeSat: 1200,
+        ),
+      ).called(1);
+    });
+
+    test('watched Boltz updates move the in-progress swap', () async {
+      final controller = StreamController<Swap>();
+      addTearDown(controller.close);
+      when(
+        () => watchSwap.execute('swap-1'),
+      ).thenAnswer((_) => controller.stream);
+      when(
+        () => getSwapRoute.execute(),
+      ).thenAnswer((_) async => SwapRoute.boltz);
+      stubCreateChain(Ok(_swap()));
+      stubLockupBuild();
+      bloc.emit(crossChain());
+      bloc.add(const TransferEvent.swapCreated('1000'));
+      await bloc.stream.firstWhere((state) => !state.isCreatingSwap);
+      bloc.emit(bloc.state.copyWith(txId: 'lockup-txid'));
+
+      controller.add(_swap().copyWith(status: SwapStatus.completed));
+      await bloc.stream.firstWhere(
+        (state) => state.swap?.status == SwapStatus.completed,
+      );
+
+      expect(bloc.state.swap?.status, SwapStatus.completed);
+    });
   });
 }
 

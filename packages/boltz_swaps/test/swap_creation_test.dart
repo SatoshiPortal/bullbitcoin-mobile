@@ -12,6 +12,8 @@ class _MockLnSendSwap extends Mock implements LnSendSwap {}
 
 class _MockLnReceiveSwap extends Mock implements LnReceiveSwap {}
 
+class _MockSwapWatcher extends Mock implements SwapWatcher {}
+
 BoltzApiException _status(String status) => BoltzApiException(
   kind: 'HTTPStatusNotSuccess',
   message: 'HTTP Status Not Success: $status, {"error":"x"}',
@@ -61,7 +63,10 @@ void main() {
 
   late _MockSwapRepository repository;
 
-  setUpAll(() => registerFallbackValue(SwapType.bitcoinToLiquid));
+  setUpAll(() {
+    registerFallbackValue(SwapType.bitcoinToLiquid);
+    registerFallbackValue(_MockChainSwap() as Swap);
+  });
 
   setUp(() {
     repository = _MockSwapRepository();
@@ -241,6 +246,66 @@ void main() {
 
       expect((result as Err).failure, isA<SwapsBoltzUnavailableFailure>());
       verify(() => repository.limits(SwapType.lightningToBitcoin)).called(1);
+    });
+  });
+
+  group('GetSwapLimitsAndFeesUsecase', () {
+    test('reports Boltz unavailable when the fees cannot load', () async {
+      when(
+        () => repository.limitsAndFees(SwapType.bitcoinToLiquid),
+      ).thenThrow(_status('503 Service Unavailable'));
+
+      final result = await GetSwapLimitsAndFeesUsecase(
+        swapRepository: repository,
+      ).execute(SwapType.bitcoinToLiquid);
+
+      expect((result as Err).failure, isA<SwapsBoltzUnavailableFailure>());
+    });
+  });
+
+  group('RecordSwapLockupUsecase', () {
+    late _MockSwapWatcher watcher;
+    late RecordSwapLockupUsecase usecase;
+
+    setUp(() {
+      watcher = _MockSwapWatcher();
+      usecase = RecordSwapLockupUsecase(
+        swapRepository: repository,
+        swapWatcher: watcher,
+      );
+    });
+
+    test('records the lockup and hands the swap to the watcher', () async {
+      final swap = _MockChainSwap();
+      when(
+        () => repository.markLockupBroadcast(
+          swapId: 's1',
+          txid: 'tx',
+          lockupFeeSat: 300,
+        ),
+      ).thenAnswer((_) async {});
+      when(() => repository.get('s1')).thenAnswer((_) async => swap);
+      when(() => watcher.processSwap(swap)).thenAnswer((_) async {});
+
+      final result = await usecase.execute(
+        swapId: 's1',
+        txid: 'tx',
+        lockupFeeSat: 300,
+      );
+
+      expect((result as Ok).value, same(swap));
+      verify(() => watcher.processSwap(swap)).called(1);
+    });
+
+    test('reports a failure when the lockup cannot be recorded', () async {
+      when(
+        () => repository.markLockupBroadcast(swapId: 's1', txid: 'tx'),
+      ).thenThrow(SwapsException('storage locked'));
+
+      final result = await usecase.execute(swapId: 's1', txid: 'tx');
+
+      expect(result, isA<Err>());
+      verifyNever(() => watcher.processSwap(any()));
     });
   });
 }

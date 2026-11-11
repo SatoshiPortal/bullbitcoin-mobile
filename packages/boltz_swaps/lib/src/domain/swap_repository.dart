@@ -29,6 +29,17 @@ abstract class SwapRepository {
   /// What the backend currently accepts for [type], in sats.
   Future<SwapLimits> limits(SwapType type);
 
+  /// [limits] together with the backend's current fees for [type].
+  Future<(SwapLimits, SwapFees)> limitsAndFees(SwapType type);
+
+  /// Records that our lockup for a send-side swap ([LnSendSwap] or
+  /// [ChainSwap]) was broadcast as [txid]. Never moves a swap backwards.
+  Future<void> markLockupBroadcast({
+    required String swapId,
+    required String txid,
+    int? lockupFeeSat,
+  });
+
   Future<LnReceiveSwap> createLightningReceive({
     required String walletId,
     required int amountSat,
