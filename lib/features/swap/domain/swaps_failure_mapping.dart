@@ -3,11 +3,12 @@ import 'package:boltz_swaps/boltz_swaps.dart';
 
 extension SwapsFailureToSwapFailure on SwapsFailure {
   SwapFailure toSwapFailure({required int amountSat}) => switch (this) {
-    SwapsAmountOutOfLimitsFailure(:final minSat, :final maxSat) =>
-      SwapAmountOutOfBoundsFailure(
-        limitAmountSat: BigInt.from(amountSat < minSat ? minSat : maxSat),
-        isMinimum: amountSat < minSat,
+    final SwapsAmountOutOfLimitsFailure limits => SwapAmountOutOfBoundsFailure(
+      limitAmountSat: BigInt.from(
+        limits.isBelowMinimum(amountSat) ? limits.minSat : limits.maxSat,
       ),
+      isMinimum: limits.isBelowMinimum(amountSat),
+    ),
     SwapsBoltzUnavailableFailure() ||
     SwapsNetworkFailure() => SwapNetworkFailure(logMessage),
     SwapsBoltzRejectedFailure() => SwapProviderFailure(logMessage),

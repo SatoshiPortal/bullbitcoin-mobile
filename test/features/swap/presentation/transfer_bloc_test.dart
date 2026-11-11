@@ -1873,6 +1873,59 @@ void main() {
       expect(paid, greaterThan(1000));
     });
 
+    test('a max transfer is priced against a Taproot lockup', () async {
+      when(
+        () => getSwapRoute.execute(),
+      ).thenAnswer((_) async => SwapRoute.boltz);
+      when(
+        () => prepareBitcoin.execute(
+          walletId: 'wallet-1',
+          address:
+              'tb1p0e9sutev5p0whwkdqdzy6gw03m6g66zuullc4erh80u7qezneskqjfymf6',
+          networkFee: any(named: 'networkFee'),
+          drain: true,
+          selectedInputs: any(named: 'selectedInputs'),
+        ),
+      ).thenAnswer(
+        (_) async => (unsignedPsbt: 'max-psbt', txSize: 120, isToSelf: false),
+      );
+      when(
+        () => calculateBitcoin.execute(psbt: 'max-psbt'),
+      ).thenAnswer((_) async => 500);
+      stubCreateChain(const Err(SwapsBoltzRejectedFailure()));
+      bloc.emit(crossChain().copyWith(maxAmountSat: 99000));
+
+      bloc.add(const TransferEvent.swapCreated('99000'));
+      await bloc.stream.firstWhere((state) => !state.isCreatingSwap);
+
+      final paid =
+          verify(
+                () => createChainSwap.execute(
+                  sendWalletId: 'wallet-1',
+                  amountSat: captureAny(named: 'amountSat'),
+                  fromLiquid: false,
+                  receiveWalletId: 'wallet-2',
+                ),
+              ).captured.single
+              as int;
+      expect(paid, 99500);
+    });
+
+    test(
+      'a stale exchange order update never attaches to a Boltz swap',
+      () async {
+        bloc.emit(
+          crossChain().copyWith(swap: _swap(), signedPsbt: 'lockup-signed'),
+        );
+
+        bloc.add(TransferEvent.orderSwapUpdated(Ok(prepared)));
+        await pumpEventQueue();
+
+        expect(bloc.state.orderSwap, isNull);
+        expect(bloc.state.swap?.sendTxid, isNull);
+      },
+    );
+
     test('confirm broadcasts the lockup and records it on the swap', () async {
       final funded = _swap().copyWith(
         status: SwapStatus.paid,

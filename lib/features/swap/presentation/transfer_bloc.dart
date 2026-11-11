@@ -557,6 +557,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
     Emitter<TransferState> emit,
   ) async {
     final generation = ++_transactionGeneration;
+    await _stopWatchingSwaps();
     emit(
       state.copyWith(
         swap: null,
@@ -765,7 +766,23 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
         : SwapType.bitcoinToLiquid;
 
     var paymentAmountSat = inputAmountSat;
-    if (state.receiveExactAmount && !isMaxSend) {
+    if (isMaxSend) {
+      final networkFee =
+          state.selectedFee ??
+          (fromWallet.isLiquid
+              ? state.liquidNetworkFees?.fastest
+              : state.bitcoinNetworkFees?.fastest);
+      if (networkFee == null) {
+        throw BuildTransactionException('network_fees_unavailable');
+      }
+      final maxAmountSat = await _boltzMaxAmountSat(
+        fromWallet,
+        networkFee: networkFee,
+      );
+      if (generation != _transactionGeneration) return null;
+      if (maxAmountSat == null) throw InsufficientFundsSwapException();
+      paymentAmountSat = maxAmountSat;
+    } else if (state.receiveExactAmount) {
       final limitsAndFees = await _getSwapLimitsAndFeesUsecase.execute(
         swapType,
       );
@@ -2214,65 +2231,11 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
       final receiveAddress = await _getReceiveAddressUsecase.execute(
         walletId: fromWallet.id,
       );
-
-      // Create a dummy drain transaction to calculate the absolute fees
-      int absoluteFees;
-      if (!fromWallet.isLiquid) {
-        final preparation = await _prepareBitcoinSendUsecase.execute(
-          walletId: fromWallet.id,
-          recipients: [
-            BitcoinTransactionRecipient.remainder(
-              address: receiveAddress.address,
-            ),
-          ],
-          networkFee: networkFee,
-
-          selectedInputs: state.selectedUtxos,
-        );
-
-        final PreparedBitcoinSend dummyDrainTxInfo;
-        switch (preparation) {
-          case Ok(:final value):
-            dummyDrainTxInfo = value;
-          case Err():
-            return null;
-        }
-        absoluteFees = await _calculateBitcoinAbsoluteFeesUsecase.execute(
-          psbt: dummyDrainTxInfo.unsignedPsbt,
-        );
-
-        log.info("Absolute fees: $absoluteFees");
-      } else {
-        final dummyResult = await _prepareLiquidSendUsecase.execute(
-          walletId: fromWallet.id,
-          address: receiveAddress.address,
-          // networkFee was selected from the Liquid FeeOptions, always RelativeFee.
-          feeRate: networkFee as RelativeFee,
-          drain: true,
-        );
-
-        final String dummyPset;
-        switch (dummyResult) {
-          case Ok(:final value):
-            dummyPset = value;
-          case Err():
-            return null;
-        }
-        absoluteFees = await _calculateLiquidAbsoluteFeesUsecase.execute(
-          pset: dummyPset,
-        );
-        log.info("Absolute fees: $absoluteFees");
-      }
-
-      final selectedBalanceSat = state.selectedUtxos.fold(
-        0,
-        (sum, utxo) => sum + utxo.amountSat.toInt(),
+      return await _drainableAmountSat(
+        fromWallet,
+        address: receiveAddress.address,
+        networkFee: networkFee,
       );
-      final balanceSat = state.selectedUtxos.isEmpty
-          ? fromWallet.balanceSat.toInt()
-          : selectedBalanceSat;
-      final maxAmountSat = balanceSat - absoluteFees;
-      return maxAmountSat < 0 ? 0 : maxAmountSat;
     } catch (e) {
       log.severe(
         message: 'Error getting max amount sat in transfer bloc',
@@ -2281,6 +2244,90 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
       );
       return null;
     }
+  }
+
+  /// A Boltz lockup is a Taproot output, larger than the wallet's own
+  /// receive output, so a max transfer to Boltz is priced against a Taproot
+  /// address of the same network at the fee the lockup is built with.
+  /// Otherwise the drained lockup falls a few sats short of the swap amount
+  /// and [VerifyChainSwapAmountSendUsecase] rejects it.
+  Future<int?> _boltzMaxAmountSat(
+    Wallet fromWallet, {
+    required NetworkFee networkFee,
+  }) => _drainableAmountSat(
+    fromWallet,
+    address: switch (fromWallet.network) {
+      Network.bitcoinMainnet =>
+        'bc1p0e9sutev5p0whwkdqdzy6gw03m6g66zuullc4erh80u7qezneskq9pj5n4',
+      Network.bitcoinTestnet =>
+        'tb1p0e9sutev5p0whwkdqdzy6gw03m6g66zuullc4erh80u7qezneskqjfymf6',
+      Network.liquidMainnet =>
+        'lq1pqvxwxl7pckz6p4vq0dh7dv8ae3lha97w4wjqls8p508xc2jus85sf3xgkzdkm3qdgmckph0a303qvnfyxsffyszy8s2w5ev5ys93xx0we046p4uqlt24',
+      Network.liquidTestnet =>
+        'tlq1pqvxwxl7pckz6p4vq0dh7dv8ae3lha97w4wjqls8p508xc2jus85sf3xgkzdkm3qdgmckph0a303qvnfyxsffyszy8s2w5ev5ys93xx0w78z5h5l8mzyz',
+    },
+    networkFee: networkFee,
+  );
+
+  Future<int?> _drainableAmountSat(
+    Wallet fromWallet, {
+    required String address,
+    required NetworkFee networkFee,
+  }) async {
+    int absoluteFees;
+    if (!fromWallet.isLiquid) {
+      final preparation = await _prepareBitcoinSendUsecase.execute(
+        walletId: fromWallet.id,
+        recipients: [BitcoinTransactionRecipient.remainder(address: address)],
+        networkFee: networkFee,
+        selectedInputs: state.selectedUtxos,
+      );
+
+      final PreparedBitcoinSend dummyDrainTxInfo;
+      switch (preparation) {
+        case Ok(:final value):
+          dummyDrainTxInfo = value;
+        case Err():
+          return null;
+      }
+      absoluteFees = await _calculateBitcoinAbsoluteFeesUsecase.execute(
+        psbt: dummyDrainTxInfo.unsignedPsbt,
+      );
+
+      log.info("Absolute fees: $absoluteFees");
+    } else {
+      if (networkFee is! RelativeFee) {
+        throw BuildTransactionException('network_fees_unavailable');
+      }
+      final dummyResult = await _prepareLiquidSendUsecase.execute(
+        walletId: fromWallet.id,
+        address: address,
+        feeRate: networkFee,
+        drain: true,
+      );
+
+      final String dummyPset;
+      switch (dummyResult) {
+        case Ok(:final value):
+          dummyPset = value;
+        case Err():
+          return null;
+      }
+      absoluteFees = await _calculateLiquidAbsoluteFeesUsecase.execute(
+        pset: dummyPset,
+      );
+      log.info("Absolute fees: $absoluteFees");
+    }
+
+    final selectedBalanceSat = state.selectedUtxos.fold(
+      0,
+      (sum, utxo) => sum + utxo.amountSat.toInt(),
+    );
+    final balanceSat = state.selectedUtxos.isEmpty
+        ? fromWallet.balanceSat.toInt()
+        : selectedBalanceSat;
+    final maxAmountSat = balanceSat - absoluteFees;
+    return maxAmountSat < 0 ? 0 : maxAmountSat;
   }
 
   bool _isInsufficientFundsException(Object e) {
@@ -2298,7 +2345,10 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
     }
     final orderSwap = (event.result as Ok<OrderSwapRecord, SwapFailure>).value;
     final currentSwap = state.swap;
-    if (currentSwap is! ChainSwap) return;
+    if (currentSwap is! ChainSwap ||
+        state.orderSwap?.localId != orderSwap.localId) {
+      return;
+    }
     final status = transferSwapStatusForOrderSwap(orderSwap.localStatus);
     emit(
       state.copyWith(
@@ -2349,6 +2399,13 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
       await _boltzSwapSubscription?.cancel();
       _boltzSwapSubscription = null;
     }
+  }
+
+  Future<void> _stopWatchingSwaps() async {
+    await _orderSwapSubscription?.cancel();
+    _orderSwapSubscription = null;
+    await _boltzSwapSubscription?.cancel();
+    _boltzSwapSubscription = null;
   }
 
   void _watchBoltzSwap(String swapId) {
