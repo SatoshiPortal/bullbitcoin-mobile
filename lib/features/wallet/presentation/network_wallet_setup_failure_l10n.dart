@@ -7,7 +7,6 @@ import 'package:flutter/widgets.dart';
 extension NetworkWalletSetupFailureL10n on NetworkWalletSetupFailure {
   String toTranslated(BuildContext context) => switch (this) {
     NetworkWalletSetupSecretFailure(:final reason) => switch (reason) {
-      DefaultWalletSecretRefusal.nonEnglish ||
       DefaultWalletSecretRefusal.nonMnemonic =>
         context.loc.mnemonicDefaultEnglishOnly,
       DefaultWalletSecretRefusal.passphrase =>
