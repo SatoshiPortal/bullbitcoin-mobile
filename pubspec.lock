@@ -174,8 +174,8 @@ packages:
     dependency: "direct main"
     description:
       path: "packages/bitbox-transport"
-      ref: "51f12a71b3dade8a9078c30254870853be073138"
-      resolved-ref: "51f12a71b3dade8a9078c30254870853be073138"
+      ref: "571ab40a3dd2c458c7c212a95a2f192e0d0cef4b"
+      resolved-ref: "571ab40a3dd2c458c7c212a95a2f192e0d0cef4b"
       url: "https://github.com/ethicnology-agent/bull_sdk"
     source: git
     version: "0.1.0"
@@ -240,8 +240,8 @@ packages:
     dependency: "direct main"
     description:
       path: "packages/boltz-stream"
-      ref: "51f12a71b3dade8a9078c30254870853be073138"
-      resolved-ref: "51f12a71b3dade8a9078c30254870853be073138"
+      ref: "571ab40a3dd2c458c7c212a95a2f192e0d0cef4b"
+      resolved-ref: "571ab40a3dd2c458c7c212a95a2f192e0d0cef4b"
       url: "https://github.com/ethicnology-agent/bull_sdk"
     source: git
     version: "0.1.0"
@@ -329,8 +329,8 @@ packages:
     dependency: "direct main"
     description:
       path: "packages/bull_sdk"
-      ref: "51f12a71b3dade8a9078c30254870853be073138"
-      resolved-ref: "51f12a71b3dade8a9078c30254870853be073138"
+      ref: "571ab40a3dd2c458c7c212a95a2f192e0d0cef4b"
+      resolved-ref: "571ab40a3dd2c458c7c212a95a2f192e0d0cef4b"
       url: "https://github.com/ethicnology-agent/bull_sdk"
     source: git
     version: "1.0.0+1"
@@ -1462,8 +1462,8 @@ packages:
     dependency: transitive
     description:
       path: "packages/onion"
-      ref: "51f12a71b3dade8a9078c30254870853be073138"
-      resolved-ref: "51f12a71b3dade8a9078c30254870853be073138"
+      ref: "571ab40a3dd2c458c7c212a95a2f192e0d0cef4b"
+      resolved-ref: "571ab40a3dd2c458c7c212a95a2f192e0d0cef4b"
       url: "https://github.com/ethicnology-agent/bull_sdk"
     source: git
     version: "0.1.0"
@@ -1768,8 +1768,8 @@ packages:
     dependency: transitive
     description:
       path: "packages/bull_sdk/rust_builder"
-      ref: "51f12a71b3dade8a9078c30254870853be073138"
-      resolved-ref: "51f12a71b3dade8a9078c30254870853be073138"
+      ref: "571ab40a3dd2c458c7c212a95a2f192e0d0cef4b"
+      resolved-ref: "571ab40a3dd2c458c7c212a95a2f192e0d0cef4b"
       url: "https://github.com/ethicnology-agent/bull_sdk"
     source: git
     version: "0.0.1"
@@ -1785,8 +1785,8 @@ packages:
     dependency: "direct main"
     description:
       path: "packages/satoshifier"
-      ref: "51f12a71b3dade8a9078c30254870853be073138"
-      resolved-ref: "51f12a71b3dade8a9078c30254870853be073138"
+      ref: "571ab40a3dd2c458c7c212a95a2f192e0d0cef4b"
+      resolved-ref: "571ab40a3dd2c458c7c212a95a2f192e0d0cef4b"
       url: "https://github.com/ethicnology-agent/bull_sdk"
     source: git
     version: "0.0.1"
