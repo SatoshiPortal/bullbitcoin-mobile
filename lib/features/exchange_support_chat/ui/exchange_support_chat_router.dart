@@ -13,11 +13,19 @@ class ExchangeSupportChatRouter {
     path: '/exchange/support-chat',
     builder: (context, state) {
       final draft = state.extra as ExchangeSupportChatDraft?;
-      if (!isLoggedIn(context)) return loginScreenBuilder(draft);
       final fromExchange = state.uri.queryParameters['from'] == 'exchange';
-      return ExchangeSupportChatScreen(
-        onExit: () => onExit(context, fromExchange),
-        initialMessage: draft?.initialMessage,
+      void exit() => onExit(context, fromExchange);
+      return PopScope(
+        canPop: context.canPop(),
+        onPopInvokedWithResult: (didPop, _) {
+          if (!didPop) exit();
+        },
+        child: isLoggedIn(context)
+            ? ExchangeSupportChatScreen(
+                onExit: exit,
+                initialMessage: draft?.initialMessage,
+              )
+            : loginScreenBuilder(draft),
       );
     },
   );

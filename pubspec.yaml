@@ -19,6 +19,7 @@ workspace:
   - packages/transaction_sync
   - packages/bull_tor
   - packages/screen_privacy
+  - packages/screen_awake
   - packages/bull_logger
   - packages/bull_pricer
   - features/logs
@@ -34,6 +35,7 @@ dependencies:
   transaction_sync:
   bull_tor:
   screen_privacy:
+  screen_awake:
   bull_logger:
   bull_logs:
   flutter_bloc: ^9.1.1

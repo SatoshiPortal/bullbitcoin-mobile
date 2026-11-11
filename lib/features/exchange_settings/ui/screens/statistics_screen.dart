@@ -236,7 +236,7 @@ class _StatisticsCard extends StatelessWidget {
       padding: const EdgeInsets.all(BullSpacing.md),
       decoration: BoxDecoration(
         color: context.bull.surface,
-        borderRadius: BorderRadius.circular(BullRadius.sm),
+        borderRadius: BorderRadius.circular(context.bullShapes.card),
         boxShadow: [
           BoxShadow(
             color: context.bull.overlay.withValues(alpha: 0.05),
@@ -333,7 +333,7 @@ class _MultiValueStatCard extends StatelessWidget {
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
               color: context.bull.primary.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(BullRadius.sm),
+              borderRadius: BorderRadius.circular(context.bullShapes.card),
             ),
             child: Icon(icon, color: context.bull.primary, size: 24),
           ),

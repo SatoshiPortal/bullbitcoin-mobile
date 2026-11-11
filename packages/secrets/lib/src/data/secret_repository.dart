@@ -2,10 +2,12 @@ import 'dart:async';
 import 'dart:isolate';
 import 'dart:typed_data';
 
-import 'package:bip39_mnemonic/bip39_mnemonic.dart' show MnemonicException;
+import 'package:bip39_mnemonic/bip39_mnemonic.dart'
+    show Language, MnemonicException;
 import 'package:bull_logger/bull_logger.dart';
 import 'package:primitives/primitives.dart';
-import 'package:secrets/src/crypto/crypto.dart' show Backup, Deriver;
+import 'package:secrets/src/crypto/crypto.dart'
+    show Backup, Deriver, Descriptors;
 import 'package:secrets/src/data/boundary.dart';
 import 'package:secrets/src/data/exceptions.dart';
 import 'package:secrets/src/data/fss_datasource.dart';
@@ -114,6 +116,36 @@ class SecretRepository {
     ),
     orElse: InvalidMnemonicFailure.new,
   );
+
+  /// Public descriptors of words that are not stored, for each of [scriptTypes]: nothing is read from or written to the keystore.
+  ///
+  /// One seed serves every script type, so the PBKDF2 runs once. It is derived, used and wiped inside one isolate; only the public descriptor strings cross back. The material is seed-only, so no library ever receives the words. Invalid words are an [InvalidMnemonicFailure]; a failed derivation is a [UseSecretFailure].
+  Future<Result<Map<ScriptType, Descriptors>, SecretFailure>>
+  previewBitcoinDescriptors({
+    required List<String> words,
+    required Language language,
+    String? passphrase,
+    required BitcoinNetwork network,
+    required Set<ScriptType> scriptTypes,
+  }) {
+    // Copied now: the derivation runs in another isolate, after the caller may have reused its list.
+    final candidate = List<String>.of(words);
+    final types = Set<ScriptType>.of(scriptTypes);
+    final pass = passphrase ?? '';
+    return boundary(
+      () => Isolate.run(
+        () => _previewDescriptors(
+          words: candidate,
+          language: language,
+          passphrase: pass,
+          network: network,
+          scriptTypes: types,
+        ),
+      ),
+      // Invalid words are bip39's exception, which the boundary maps to [InvalidMnemonicFailure] on its own; anything else failed the derivation.
+      orElse: UseSecretFailure.new,
+    );
+  }
 
   // ------------------------------------------------------------------ writes
 
@@ -260,6 +292,39 @@ class SecretRepository {
       return await Isolate.run(body);
     } on MnemonicException {
       throw const FormatException('stored words are not a BIP39 mnemonic');
+    }
+  }
+
+  /// Runs in an isolate; static so it captures nothing but its arguments.
+  ///
+  /// The seed buffer is ours and is zeroed before the isolate returns. Copies made inside bip32_keys, bdk and the master xprv string are immutable or library-internal: they die with the isolate's heap, but their erasure cannot be guaranteed.
+  static Future<Map<ScriptType, Descriptors>> _previewDescriptors({
+    required List<String> words,
+    required Language language,
+    required String passphrase,
+    required BitcoinNetwork network,
+    required Set<ScriptType> scriptTypes,
+  }) async {
+    final seed = Deriver.fingerprint.seed(
+      words,
+      passphrase: passphrase,
+      language: language,
+    );
+    try {
+      final material = Seed(
+        id: Deriver.fingerprint.fingerprint(seed),
+        seedBytes: seed,
+      );
+      return {
+        for (final scriptType in scriptTypes)
+          scriptType: await Deriver.bitcoin.descriptors(
+            material,
+            scriptType: scriptType,
+            network: network,
+          ),
+      };
+    } finally {
+      seed.fillRange(0, seed.length, 0);
     }
   }
 
