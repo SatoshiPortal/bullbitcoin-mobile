@@ -24,8 +24,9 @@ class PayjoinSenders extends Table {
   BoolColumn get isCompleted => boolean()();
   BoolColumn get isAborted => boolean()();
   // A payment of this session may be on the network without a recorded
-  // outcome: its proposal went to broadcast, or one of its transactions was
-  // observed. Such a session is never expired from a later negative lookup.
+  // outcome: one of its transactions went to broadcast or was observed. Such
+  // a session is never expired from a later negative lookup. Senders that
+  // were unfinished when schema 3 arrived are assumed to hold it.
   BoolColumn get hasNetworkEvidence =>
       boolean().withDefault(const Constant(false))();
 
@@ -148,19 +149,38 @@ final class PayjoinDatabase extends _$PayjoinDatabase {
         );
       },
       from2To3: (m, schema) async {
-        // Re-runnable: skip when an interrupted upgrade already added it.
-        final columns = await customSelect(
-          "PRAGMA table_info('payjoin_senders')",
-        ).get();
-        if (columns.any(
-          (column) => column.read<String>('name') == 'has_network_evidence',
-        )) {
-          return;
+        try {
+          // One transaction: the column never exists without its backfill.
+          await transaction(() async {
+            await m.addColumn(
+              schema.payjoinSenders,
+              schema.payjoinSenders.hasNetworkEvidence,
+            );
+            // Schema 2 kept no trace of a payment that went out without a
+            // recorded outcome. An unfinished sender is therefore assumed to
+            // hold evidence; only sessions created from now on start without.
+            await customStatement(
+              'UPDATE payjoin_senders SET has_network_evidence = 1 '
+              'WHERE is_expired = 0 AND is_completed = 0 AND is_aborted = 0',
+            );
+          });
+        } catch (e) {
+          // A re-run, or another connection migrating at the same time, finds
+          // the column already there with its backfill: nothing left to do,
+          // and never a second backfill over later rows. Anything else is a
+          // real storage failure.
+          if (!'$e'.contains('duplicate column name: has_network_evidence')) {
+            rethrow;
+          }
+          final columns = await customSelect(
+            "PRAGMA table_info('payjoin_senders')",
+          ).get();
+          if (!columns.any(
+            (column) => column.read<String>('name') == 'has_network_evidence',
+          )) {
+            rethrow;
+          }
         }
-        await m.addColumn(
-          schema.payjoinSenders,
-          schema.payjoinSenders.hasNetworkEvidence,
-        );
       },
     ),
   );
