@@ -21,10 +21,10 @@ class VerifySignedTxUsecase {
           ? await BitcoinTx.fromPsbt(signedTransaction)
           : await BitcoinTx.fromBytes(hex.decode(signedTransaction));
       intended = await BitcoinTx.fromPsbt(unsignedPsbt);
-    } on Exception catch (error) {
-      return Err(
+    } on Exception {
+      return const Err(
         SignedTransactionVerificationFailure(
-          'Could not decode the signed transaction: $error',
+          'Could not decode the signed transaction',
         ),
       );
     }
