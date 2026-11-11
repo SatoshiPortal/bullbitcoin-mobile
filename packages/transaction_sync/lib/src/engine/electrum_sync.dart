@@ -1011,7 +1011,8 @@ _SpendEvidence _spendEvidence(
       }
     }
     if (displaced.isNotEmpty) {
-      // Outpoints spent by a transaction that can no longer be displaced.
+      // Outpoints spent by a confirmed transaction, or by a tracked
+      // replacement this pass observed.
       final settled = <String>{};
       for (final tx in wallet.transactions()) {
         final id = tx.transaction.computeTxid();
