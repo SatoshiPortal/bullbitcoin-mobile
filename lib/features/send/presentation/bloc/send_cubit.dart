@@ -488,8 +488,8 @@ class SendCubit extends Cubit<SendState>
     try {
       emit(state.copyWith(loadingBestWallet: true));
       final pendingInput = _pendingPaymentRequestInput;
-      if (pendingInput?.generation == inputGeneration) {
-        await pendingInput!.future;
+      if (pendingInput != null && pendingInput.generation == inputGeneration) {
+        await pendingInput.future;
       }
       if (inputGeneration != _paymentRequestInputGeneration) return;
       if (isSpMode) {
@@ -503,7 +503,8 @@ class SendCubit extends Cubit<SendState>
       }
       if (inputGeneration != _paymentRequestInputGeneration) return;
 
-      if (!state.hasValidPaymentRequest) {
+      final paymentRequest = state.paymentRequest;
+      if (!state.hasValidPaymentRequest || paymentRequest == null) {
         emit(
           state.copyWith(
             loadingBestWallet: false,
@@ -516,7 +517,6 @@ class SendCubit extends Cubit<SendState>
       }
 
       if (state.isSweep) {
-        final paymentRequest = state.paymentRequest!;
         final wallet = _wallet ?? state.selectedBitcoinWallet;
         if (wallet == null) {
           emit(
@@ -550,8 +550,7 @@ class SendCubit extends Cubit<SendState>
         return;
       }
 
-      if (state.paymentRequest!.isBolt11) {
-        final paymentRequest = state.paymentRequest! as Bolt11PaymentRequest;
+      if (paymentRequest is Bolt11PaymentRequest) {
         if (paymentRequest.expiresAt <=
             DateTime.now().millisecondsSinceEpoch ~/ 1000) {
           emit(
@@ -581,8 +580,8 @@ class SendCubit extends Cubit<SendState>
       } else {
         final selection = _bestWalletUsecase.execute(
           wallets: state.wallets,
-          request: state.paymentRequest!,
-          amountSat: state.paymentRequest!.amountSat,
+          request: paymentRequest,
+          amountSat: paymentRequest.amountSat,
         );
         switch (selection) {
           case Ok(:final value):
@@ -599,11 +598,11 @@ class SendCubit extends Cubit<SendState>
         }
       }
 
-      final sendType = SendType.from(state.paymentRequest!);
+      final sendType = SendType.from(paymentRequest);
 
       // Pre-populate label from the embedded invoice description or BIP21 label
       // if the user hasn't manually set one already.
-      _applyEmbeddedPaymentLabel(state.paymentRequest!);
+      _applyEmbeddedPaymentLabel(paymentRequest);
 
       await _setSelectedWallet(wallet, manual: false);
       if (inputGeneration != _paymentRequestInputGeneration) return;
@@ -620,8 +619,7 @@ class SendCubit extends Cubit<SendState>
         return;
       }
 
-      if (state.paymentRequest!.isBolt11) {
-        final paymentRequest = state.paymentRequest! as Bolt11PaymentRequest;
+      if (paymentRequest is Bolt11PaymentRequest) {
         if (paymentRequest.amountSat == 0) {
           emit(state.copyWith(step: SendStep.amount, loadingBestWallet: false));
           return;
@@ -664,8 +662,8 @@ class SendCubit extends Cubit<SendState>
         }
         return;
       }
-      if (state.paymentRequest!.isBip21) {
-        if (state.paymentRequest!.amountSat == null) {
+      if (paymentRequest.isBip21) {
+        if (paymentRequest.amountSat == null) {
           emit(state.copyWith(step: SendStep.amount, loadingBestWallet: false));
         } else {
           await handleChainSwap();
@@ -676,7 +674,7 @@ class SendCubit extends Cubit<SendState>
         }
         return;
       }
-      if (state.paymentRequest!.isLnAddress) {
+      if (paymentRequest.isLnAddress) {
         emit(state.copyWith(step: SendStep.amount, loadingBestWallet: false));
       } else {
         emit(state.copyWith(step: SendStep.amount, loadingBestWallet: false));
@@ -1729,6 +1727,26 @@ class SendCubit extends Cubit<SendState>
         }
         return;
       }
+      final wallet = state.selectedWallet;
+      if (wallet == null) {
+        emit(
+          state.copyWith(
+            failure: const SendTransactionBuildFailure('No wallet selected'),
+            buildingTransaction: false,
+          ),
+        );
+        return;
+      }
+      final selectedFee = state.selectedFee;
+      if (selectedFee == null) {
+        emit(
+          state.copyWith(
+            failure: const SendFeesUnavailableFailure(),
+            buildingTransaction: false,
+          ),
+        );
+        return;
+      }
       final address = state.lightningOrder?.order != null
           ? state.lightningOrder!.order!.payinAddress
           : (state.chainSwap != null)
@@ -1743,12 +1761,12 @@ class SendCubit extends Cubit<SendState>
           ? state.chainSwap!.paymentAmount
           : state.confirmedAmountSat;
       // Fees can be selectedFee as it defaults to Fastest
-      if (state.selectedWallet!.network.isLiquid) {
+      if (wallet.network.isLiquid) {
         // ignore: avoid_bool_literals_in_conditional_expressions
         final drain = state.lightningOrder != null ? false : state.sendMax;
         final feeRateResult = await _resolveLiquidFeeRate(
-          fee: state.selectedFee!,
-          walletId: state.selectedWallet!.id,
+          fee: selectedFee,
+          walletId: wallet.id,
           address: address,
           amountSat: amount,
           drain: drain,
@@ -1763,7 +1781,7 @@ class SendCubit extends Cubit<SendState>
             return;
         }
         final pset = await _prepareLiquidSendUsecase.execute(
-          walletId: state.selectedWallet!.id,
+          walletId: wallet.id,
           address: address,
           feeRate: liquidFeeRate,
           amountSat: amount,
@@ -1775,7 +1793,7 @@ class SendCubit extends Cubit<SendState>
           final payin = await _verifyExchangePayinUsecase.execute(
             psbtOrPset: pset,
             record: order,
-            walletId: state.selectedWallet!.id,
+            walletId: wallet.id,
           );
           if (generation != _transactionGeneration) return;
           if (payin case Err(:final failure)) {
@@ -1794,12 +1812,12 @@ class SendCubit extends Cubit<SendState>
           await _verifyChainSwapAmountSendUsecase.execute(
             psbtOrPset: pset,
             swap: state.chainSwap!,
-            walletId: state.selectedWallet!.id,
+            walletId: wallet.id,
           );
           if (generation != _transactionGeneration) return;
         }
         // final signedPset = await _signLiquidTxUsecase.execute(
-        //   walletId: state.selectedWallet!.id,
+        //   walletId: wallet.id,
         //   pset: pset,
         // );
         final absoluteFees = await _calculateLiquidAbsoluteFeesUsecase.execute(
@@ -1844,7 +1862,6 @@ class SendCubit extends Cubit<SendState>
       } else {
         // ignore: avoid_bool_literals_in_conditional_expressions
         final drain = state.lightningOrder != null ? false : state.sendMax;
-        final selectedFee = state.selectedFee!;
         // CRITICAL: if a preview PSBT exists for the current selection,
         // REUSE it instead of calling _prepareBitcoinSendUsecase again.
         // BDK's TxBuilder.finish() picks UTXOs non-deterministically
@@ -1869,7 +1886,7 @@ class SendCubit extends Cubit<SendState>
         final canUseCache = !state.isSweep && cachedSlot.isCacheReady;
         if (canUseCache && state.selectedUtxos.isNotEmpty) {
           await _validateBitcoinSelectionUsecase.execute(
-            walletId: state.selectedWallet!.id,
+            walletId: wallet.id,
             selectedInputs: state.selectedUtxos,
           );
           if (generation != _transactionGeneration) return;
@@ -1895,7 +1912,7 @@ class SendCubit extends Cubit<SendState>
                 isToSelf: state.isToSelf ?? false,
               ))
             : await _prepareBitcoinSendUsecase.execute(
-                walletId: state.selectedWallet!.id,
+                walletId: wallet.id,
                 address: address,
                 networkFee: selectedFee,
                 amountSat: amount,
@@ -1923,7 +1940,7 @@ class SendCubit extends Cubit<SendState>
           final payin = await _verifyExchangePayinUsecase.execute(
             psbtOrPset: txPreparation.unsignedPsbt,
             record: order,
-            walletId: state.selectedWallet!.id,
+            walletId: wallet.id,
           );
           // Supersession first, as in the Liquid branch above: verification
           // awaits a repository call, so a newer build can start during it.
@@ -1983,12 +2000,12 @@ class SendCubit extends Cubit<SendState>
           await _verifyChainSwapAmountSendUsecase.execute(
             psbtOrPset: txPreparation.unsignedPsbt,
             swap: state.chainSwap!,
-            walletId: state.selectedWallet!.id,
+            walletId: wallet.id,
           );
           if (generation != _transactionGeneration) return;
         }
 
-        if (!state.selectedWallet!.signsLocally) {
+        if (!wallet.signsLocally) {
           // psbt.fee() reads input/output deltas — works on unsigned PSBTs
           // since BDK finalizes coin selection at build time.
           final bitcoinAbsoluteFeesSat =
@@ -2008,7 +2025,7 @@ class SendCubit extends Cubit<SendState>
         } else {
           final signedPsbtAndTxSize = await _signBitcoinTxUsecase.execute(
             psbt: txPreparation.unsignedPsbt,
-            walletId: state.selectedWallet!.id,
+            walletId: wallet.id,
           );
           final bitcoinAbsoluteFeesSat =
               await _calculateBitcoinAbsoluteFeesUsecase.execute(

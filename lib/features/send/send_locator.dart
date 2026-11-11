@@ -241,9 +241,10 @@ class SendLocator {
     >(
       (wallet, options) => SendCubit(
         wallet: wallet,
-        mode: options?.spWalletLabel == null
-            ? const SendModeBitcoin()
-            : SendModeSp(walletLabel: options!.spWalletLabel!),
+        mode: switch (options?.spWalletLabel) {
+          final label? => SendModeSp(walletLabel: label),
+          null => const SendModeBitcoin(),
+        },
         initialSweepOutpoints: options?.sweepOutpoints ?? const {},
         labelsFacade: locator<LabelsFacade>(),
         bestWalletUsecase: locator<SelectBestWalletUsecase>(),
