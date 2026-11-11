@@ -3,10 +3,7 @@ import 'package:bb_mobile/features/all_seed_view/domain/usecases/get_all_secrets
 import 'package:bb_mobile/features/all_seed_view/domain/usecases/separate_secrets_usecase.dart';
 import 'package:primitives/primitives.dart' show Fingerprint;
 import 'package:secrets/secrets.dart';
-import 'package:bb_mobile/core/swaps/domain/entity/swap_master_key_info.dart';
-import 'package:bb_mobile/core/swaps/domain/usecases/delete_swap_master_key_usecase.dart';
-import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_master_key_usecase.dart';
-import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_mnemonic_usecase.dart';
+import 'package:boltz_swaps/boltz_swaps.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';

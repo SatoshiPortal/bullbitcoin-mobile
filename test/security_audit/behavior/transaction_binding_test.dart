@@ -12,8 +12,8 @@ import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
-import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
-import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
+import 'package:boltz_swaps/boltz_swaps.dart' hide Environment;
+import 'package:boltz_swaps/boltz_swaps.dart' as swaps show Environment;
 import 'package:bb_mobile/core/wallet/domain/entities/transaction_output.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
@@ -43,7 +43,7 @@ class _MockSettingsRepository extends Mock implements SettingsRepository {}
 class _MockWalletTransactionRepository extends Mock
     implements WalletTransactionRepository {}
 
-class _MockBoltzSwapRepository extends Mock implements BoltzSwapRepository {}
+class _MockBoltzSwapRepository extends Mock implements SwapRepository {}
 
 class _MockPayjoinSessions extends Mock implements PayjoinSessions {}
 
@@ -118,7 +118,7 @@ void main() {
       () => payjoinSessions.list(any()),
     ).thenAnswer((_) async => const Ok([]));
     when(
-      () => boltzSwapRepository.getAllSwaps(walletId: any(named: 'walletId')),
+      () => boltzSwapRepository.all(walletId: any(named: 'walletId')),
     ).thenAnswer((_) async => <Swap>[]);
     when(() => orderRepository.getOrders()).thenAnswer((_) async => <Order>[]);
     when(
@@ -214,7 +214,7 @@ void main() {
         ),
       ).thenAnswer((_) async => [tx]);
       when(
-        () => boltzSwapRepository.getAllSwaps(walletId: any(named: 'walletId')),
+        () => boltzSwapRepository.all(walletId: any(named: 'walletId')),
       ).thenAnswer(
         (_) async => [
           Swap.lnSend(
@@ -222,7 +222,7 @@ void main() {
             keyIndex: 0,
             type: SwapType.bitcoinToLightning,
             status: SwapStatus.pending,
-            environment: Environment.mainnet,
+            environment: swaps.Environment.mainnet,
             creationTime: DateTime.utc(2026, 7, 29, 12),
             sendWalletId: 'wallet-1',
             invoice: 'lnbc1',

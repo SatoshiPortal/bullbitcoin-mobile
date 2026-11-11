@@ -1,5 +1,4 @@
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
-import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
+import 'package:boltz_swaps/boltz_swaps.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

@@ -1,5 +1,4 @@
-import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
-import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_usecase.dart';
+import 'package:boltz_swaps/boltz_swaps.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/transactions/domain/transaction_failure.dart';
 import 'package:bull_logger/bull_logger.dart';
@@ -15,7 +14,7 @@ class GetTransactionSwapUsecase {
   @useResult
   Future<Result<Swap, TransactionFailure>> execute(String swapId) async {
     try {
-      return Ok(await _getSwapUsecase.execute(swapId));
+      return Ok(await _getSwapUsecase.execute(swapId: swapId));
     } catch (e, st) {
       log.severe(
         message: 'Failed to load the swap of a transaction',

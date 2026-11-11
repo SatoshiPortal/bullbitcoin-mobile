@@ -1,8 +1,7 @@
 import 'dart:async';
 
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
-import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
-import 'package:bb_mobile/core/swaps/domain/usecases/retry_swap_usecase.dart';
+import 'package:boltz_swaps/boltz_swaps.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
@@ -1113,22 +1112,27 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
   }
 
   Future<void> _retrySwap(Swap swap) async {
-    try {
-      final updated = await _retrySwapUsecase.execute(swap);
-      if (!isClosed) {
-        emit(
-          state.copyWith(
-            transaction: state.transaction?.copyWith(swap: updated),
-          ),
+    final result = await _retrySwapUsecase.execute(swap: swap);
+    switch (result) {
+      case Ok(:final value):
+        if (!isClosed) {
+          emit(
+            state.copyWith(
+              transaction: state.transaction?.copyWith(swap: value),
+            ),
+          );
+        }
+      case Err(:final failure):
+        log.warning(
+          'Transaction details swap retry failed: ${failure.runtimeType}',
         );
-      }
-    } catch (e) {
-      log.warning('Transaction details swap retry failed: $e');
-      if (!isClosed) {
-        emit(
-          state.copyWith(failure: TransactionSwapRetryFailure(e.toString())),
-        );
-      }
+        if (!isClosed) {
+          emit(
+            state.copyWith(
+              failure: TransactionSwapRetryFailure(failure.logMessage),
+            ),
+          );
+        }
     }
     // Always clear the flag, whichever branch ran, or the bar spins forever.
     if (!isClosed) {

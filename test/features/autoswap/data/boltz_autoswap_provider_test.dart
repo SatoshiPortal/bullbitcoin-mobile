@@ -5,9 +5,9 @@ import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
-import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
+import 'package:boltz_swaps/boltz_swaps.dart' hide Environment;
+import 'package:boltz_swaps/boltz_swaps.dart' as swaps show Environment;
 import 'package:bb_mobile/core/swaps/domain/entity/auto_swap.dart';
-import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/liquid_wallet_repository.dart';
@@ -153,7 +153,7 @@ void main() {
                 keyIndex: 0,
                 type: SwapType.liquidToBitcoin,
                 status: SwapStatus.pending,
-                environment: Environment.testnet,
+                environment: swaps.Environment.testnet,
                 creationTime: DateTime.utc(2026),
                 sendWalletId: 'liquid-wallet',
                 paymentAddress: 'tlq1payin',

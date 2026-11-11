@@ -2,7 +2,7 @@ import 'package:bb_mobile/core/electrum/domain/ports/electrum_servers_port.dart'
 import 'package:secrets/secrets.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
-import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
+import 'package:boltz_swaps/boltz_swaps.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/bdk_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/frozen_wallet_utxo_datasource.dart';

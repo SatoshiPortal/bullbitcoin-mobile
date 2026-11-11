@@ -1,6 +1,6 @@
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
-import 'package:bb_mobile/core/swaps/domain/repositories/swap_history_repository.dart';
+import 'package:boltz_swaps/boltz_swaps.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:meta/meta.dart';
@@ -24,7 +24,7 @@ import 'package:primitives/primitives.dart';
 class GetTransactionsByTxIdUsecase {
   final SettingsRepository _settingsRepository;
   final WalletTransactionRepository _walletTransactionRepository;
-  final SwapHistoryRepository _boltzSwapRepository;
+  final SwapRepository _boltzSwapRepository;
   final PayjoinSessions _payjoinSessions;
   final ExchangeOrderRepository _mainnetExchangeOrderRepository;
   final ExchangeOrderRepository _testnetExchangeOrderRepository;
@@ -59,7 +59,7 @@ class GetTransactionsByTxIdUsecase {
         orderSwaps,
       ) = await (
         _walletTransactionRepository.getWalletTransactions(txId: txId),
-        _boltzSwapRepository.getSwapByTxId(txId),
+        _boltzSwapRepository.byTxId(txId),
         _payjoinSessions.byTransactionId(txId),
         orderRepository.getOrderByTxId(txId),
         _getTransactionOrderSwapsUsecase.execute(),

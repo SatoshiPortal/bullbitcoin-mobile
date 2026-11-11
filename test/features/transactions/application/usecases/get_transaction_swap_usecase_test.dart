@@ -1,7 +1,4 @@
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
-import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
-import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_usecase.dart';
-import 'package:bb_mobile/core/swaps/domain/usecases/watch_swap_usecase.dart';
+import 'package:boltz_swaps/boltz_swaps.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/transactions/application/usecases/get_transaction_swap_usecase.dart';
 import 'package:bb_mobile/features/transactions/application/usecases/watch_transaction_swap_usecase.dart';
@@ -49,13 +46,15 @@ void main() {
 
     test('forwards the swap on success', () async {
       final swap = _swap();
-      when(() => getSwap.execute('swap-1')).thenAnswer((_) async => swap);
+      when(
+        () => getSwap.execute(swapId: 'swap-1'),
+      ).thenAnswer((_) async => swap);
 
       expect(_valueOf(await usecase.execute('swap-1')), swap);
     });
 
     test('sanitizes a thrown Boltz reason', () async {
-      when(() => getSwap.execute('swap-1')).thenThrow(
+      when(() => getSwap.execute(swapId: 'swap-1')).thenThrow(
         GetSwapException('boltz: swap not found for preimage abc123'),
       );
 
@@ -104,7 +103,7 @@ void main() {
     test('turns a throw on subscribe into a failure value', () async {
       when(
         () => watchSwap.execute('swap-1'),
-      ).thenThrow(WatchSwapException('no such swap'));
+      ).thenThrow(SwapsException('no such swap'));
 
       final emitted = await usecase.execute('swap-1').toList();
 

@@ -37,6 +37,7 @@ dependencies:
   screen_awake:
   bull_logger:
   bull_logs:
+  boltz_swaps:
   flutter_bloc: ^9.1.1
   get_it: ^9.1.1
   flutter_svg: ^2.2.4

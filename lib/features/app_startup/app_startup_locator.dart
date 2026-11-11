@@ -7,9 +7,11 @@ import 'package:bb_mobile/features/app_startup/domain/usecases/check_for_existin
 import 'package:bb_mobile/features/app_startup/domain/usecases/initialize_required_tor_usecase.dart';
 import 'package:bb_mobile/features/app_startup/domain/usecases/reset_app_data_usecase.dart';
 import 'package:bb_mobile/features/app_startup/domain/usecases/restore_missing_default_secret_usecase.dart';
+import 'package:bb_mobile/features/app_startup/domain/usecases/start_swap_engine_usecase.dart';
 import 'package:bb_mobile/features/app_startup/presentation/bloc/app_startup_bloc.dart';
 import 'package:bb_mobile/features/app_unlock/domain/usecases/check_pin_code_exists_usecase.dart';
 import 'package:bb_mobile/features/pin_code/data/repositories/pin_code_repository.dart';
+import 'package:boltz_swaps/boltz_swaps.dart';
 import 'package:get_it/get_it.dart';
 import 'package:bull_tor/tor.dart';
 
@@ -45,6 +47,12 @@ class AppStartupLocator {
         locator<Tor>(),
       ),
     );
+    locator.registerFactory<StartSwapEngineUsecase>(
+      () => StartSwapEngineUsecase(
+        locator<LogSwapCensusUsecase>(),
+        locator<SwapWatcher>(),
+      ),
+    );
 
     // Bloc
     locator.registerFactory<AppStartupBloc>(
@@ -56,6 +64,7 @@ class AppStartupLocator {
         initializeRequiredTorUsecase: locator<InitializeRequiredTorUsecase>(),
         restoreMissingDefaultSecretUsecase:
             locator<RestoreMissingDefaultSecretUsecase>(),
+        startSwapEngineUsecase: locator<StartSwapEngineUsecase>(),
       ),
     );
   }

@@ -24,7 +24,7 @@ import 'package:bb_mobile/features/transactions/application/usecases/get_transac
 import 'package:bb_mobile/features/transactions/application/usecases/get_transaction_wallet_usecase.dart';
 import 'package:bb_mobile/features/transactions/application/usecases/save_transaction_note_usecase.dart';
 import 'package:bb_mobile/features/transactions/application/usecases/watch_transaction_swap_usecase.dart';
-import 'package:bb_mobile/core/swaps/domain/usecases/retry_swap_usecase.dart';
+import 'package:boltz_swaps/boltz_swaps.dart';
 import 'package:bb_mobile/features/transactions/domain/transaction_failure.dart';
 import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transaction_details/transaction_details_cubit.dart';
@@ -166,17 +166,22 @@ void main() {
   late _MockGetTransactionOrderUsecase getOrder;
   late _MockRetrySwapUsecase retrySwap;
 
-  TransactionDetailsCubit buildCubit() => TransactionDetailsCubit(
+  TransactionDetailsCubit buildCubit({
+    GetTransactionSwapUsecase? getTransactionSwapUsecase,
+    WatchTransactionSwapUsecase? watchTransactionSwapUsecase,
+  }) => TransactionDetailsCubit(
     getTransactionWalletUsecase: getWallet,
     getTransactionsByTxIdUsecase: getTransactionsByTxId,
     getWalletTransactionUsecase: getWalletTransaction,
     getTransactionOrderSwapUsecase: getTransactionOrderSwap,
     watchWalletTransactionByTxIdUsecase: watchWalletTransactionByTxId,
-    getTransactionSwapUsecase: _MockGetTransactionSwapUsecase(),
+    getTransactionSwapUsecase:
+        getTransactionSwapUsecase ?? _MockGetTransactionSwapUsecase(),
     getPayjoinByIdUsecase: getPayjoinById,
     getPayjoinByTxIdUsecase: getPayjoinByTxId,
     getTransactionOrderUsecase: getOrder,
-    watchTransactionSwapUsecase: _MockWatchTransactionSwapUsecase(),
+    watchTransactionSwapUsecase:
+        watchTransactionSwapUsecase ?? _MockWatchTransactionSwapUsecase(),
     watchPayjoinUsecase: watchPayjoin,
     watchTransactionOrderSwapUsecase: watchTransactionOrderSwap,
     saveTransactionNoteUsecase: _MockSaveTransactionNoteUsecase(),
@@ -1070,6 +1075,67 @@ void main() {
       expect(cubit.retrySwap(), isFalse);
 
       verifyZeroInteractions(retrySwap);
+      expect(cubit.state.retryingSwap, isFalse);
+    });
+  });
+
+  group('TransactionDetailsCubit.retrySwap outcome', () {
+    final claimable = Swap.lnReceive(
+      id: 'swap-1',
+      keyIndex: 0,
+      type: SwapType.lightningToBitcoin,
+      status: SwapStatus.claimable,
+      environment: Environment.mainnet,
+      creationTime: DateTime.utc(2026),
+      receiveWalletId: 'w1',
+      invoice: 'lnbc1',
+    );
+
+    Future<TransactionDetailsCubit> cubitWithClaimableSwap() async {
+      final getSwap = _MockGetTransactionSwapUsecase();
+      final watchSwap = _MockWatchTransactionSwapUsecase();
+      when(
+        () => getSwap.execute('swap-1'),
+      ).thenAnswer((_) async => Ok(claimable));
+      when(
+        () => watchSwap.execute('swap-1'),
+      ).thenAnswer((_) => const Stream.empty());
+      final cubit = buildCubit(
+        getTransactionSwapUsecase: getSwap,
+        watchTransactionSwapUsecase: watchSwap,
+      );
+      await cubit.initBySwapId('swap-1', walletId: 'w1');
+      return cubit;
+    }
+
+    test('reflects the swap the engine returns after a retry', () async {
+      final completed = claimable.copyWith(status: SwapStatus.completed);
+      when(
+        () => retrySwap.execute(swap: claimable),
+      ).thenAnswer((_) async => Ok(completed));
+      final cubit = await cubitWithClaimableSwap();
+      addTearDown(cubit.close);
+
+      expect(cubit.retrySwap(), isTrue);
+      await pumpEventQueue();
+
+      expect(cubit.state.swap?.status, SwapStatus.completed);
+      expect(cubit.state.swapRetryFailure, isNull);
+      expect(cubit.state.retryingSwap, isFalse);
+    });
+
+    test('holds a retry failure when the engine refuses', () async {
+      when(() => retrySwap.execute(swap: claimable)).thenAnswer(
+        (_) async => const Err(SwapsNetworkFailure('electrum unreachable')),
+      );
+      final cubit = await cubitWithClaimableSwap();
+      addTearDown(cubit.close);
+
+      expect(cubit.retrySwap(), isTrue);
+      await pumpEventQueue();
+
+      expect(cubit.state.swapRetryFailure, isA<TransactionSwapRetryFailure>());
+      expect(cubit.state.swap?.status, SwapStatus.claimable);
       expect(cubit.state.retryingSwap, isFalse);
     });
   });

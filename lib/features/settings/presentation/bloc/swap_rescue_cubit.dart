@@ -1,6 +1,8 @@
-import 'package:bb_mobile/core/swaps/domain/entity/restored_swap.dart';
-import 'package:bb_mobile/core/swaps/domain/usecases/rescue_swap_usecase.dart';
+import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
+import 'package:boltz_swaps/boltz_swaps.dart';
+import 'package:bull_logger/bull_logger.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 enum SwapRescueStatus { loading, ready, rescuing, success, error }
@@ -9,7 +11,7 @@ class SwapRescueState {
   final SwapRescueStatus status;
   final List<Wallet> wallets;
   final String? selectedWalletId;
-  final String? error;
+  final SwapsFailure? error;
 
   const SwapRescueState({
     this.status = SwapRescueStatus.loading,
@@ -27,7 +29,7 @@ class SwapRescueState {
     SwapRescueStatus? status,
     List<Wallet>? wallets,
     String? selectedWalletId,
-    String? error,
+    SwapsFailure? error,
   }) {
     return SwapRescueState(
       status: status ?? this.status,
@@ -40,28 +42,45 @@ class SwapRescueState {
 
 class SwapRescueCubit extends Cubit<SwapRescueState> {
   final RescueSwapUsecase _rescueSwapUsecase;
+  final GetWalletsUsecase _getWalletsUsecase;
   final RestoredSwap _restored;
 
-  SwapRescueCubit({required this._rescueSwapUsecase, required this._restored})
-    : super(const SwapRescueState()) {
+  SwapRescueCubit({
+    required this._rescueSwapUsecase,
+    required this._getWalletsUsecase,
+    required this._restored,
+  }) : super(const SwapRescueState()) {
     _loadWallets();
   }
 
   Future<void> _loadWallets() async {
     emit(state.copyWith(status: SwapRescueStatus.loading));
-    try {
-      final wallets = await _rescueSwapUsecase.candidateWallets(_restored);
-      if (isClosed) return;
-      emit(
-        state.copyWith(
-          status: SwapRescueStatus.ready,
-          wallets: wallets,
-          selectedWalletId: wallets.isNotEmpty ? wallets.first.id : null,
-        ),
-      );
-    } catch (e) {
-      if (isClosed) return;
-      emit(state.copyWith(status: SwapRescueStatus.error, error: e.toString()));
+    final result = await _getWalletsUsecase.execute(
+      onlyBitcoin: !_restored.actsOnLiquid,
+      onlyLiquid: _restored.actsOnLiquid,
+    );
+    if (isClosed) return;
+    switch (result) {
+      case Ok(:final value):
+        emit(
+          state.copyWith(
+            status: SwapRescueStatus.ready,
+            wallets: value,
+            selectedWalletId: value.isNotEmpty ? value.first.id : null,
+          ),
+        );
+      case Err(:final failure):
+        log.warning(
+          'SWAPS: rescue wallets read failed: ${failure.runtimeType}',
+        );
+        emit(
+          state.copyWith(
+            status: SwapRescueStatus.error,
+            error: SwapsUnexpectedFailure(
+              'wallets read failed: ${failure.runtimeType}',
+            ),
+          ),
+        );
     }
   }
 
@@ -73,16 +92,20 @@ class SwapRescueCubit extends Cubit<SwapRescueState> {
     final walletId = state.selectedWalletId;
     if (walletId == null) return;
     emit(state.copyWith(status: SwapRescueStatus.rescuing));
-    try {
-      await _rescueSwapUsecase.execute(
-        restored: _restored,
-        selectedWalletId: walletId,
-      );
-      if (isClosed) return;
-      emit(state.copyWith(status: SwapRescueStatus.success));
-    } catch (e) {
-      if (isClosed) return;
-      emit(state.copyWith(status: SwapRescueStatus.error, error: e.toString()));
+    final result = await _rescueSwapUsecase.execute(
+      restored: _restored,
+      selectedWalletId: walletId,
+    );
+    if (isClosed) return;
+    switch (result) {
+      case Ok(:final value):
+        log.fine(
+          'SWAPS: rescue of ${value.id} finished with status '
+          '${value.status.name}',
+        );
+        emit(state.copyWith(status: SwapRescueStatus.success));
+      case Err(:final failure):
+        emit(state.copyWith(status: SwapRescueStatus.error, error: failure));
     }
   }
 }

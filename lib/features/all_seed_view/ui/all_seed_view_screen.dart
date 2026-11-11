@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:screen_privacy/screen_privacy.dart';
 import 'package:secrets/secrets.dart';
-import 'package:bb_mobile/core/swaps/domain/entity/swap_master_key_info.dart';
+import 'package:boltz_swaps/boltz_swaps.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/all_seed_view/domain/all_seed_view_failure.dart';

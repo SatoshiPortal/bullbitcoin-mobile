@@ -4845,5 +4845,10 @@
   "sellPayoutBalance": "Agregar a mi saldo de cuenta",
   "sellPayoutSepaDescription": "Los retiros aparecen como enviados por Leonod",
   "sellPayoutTitle": "Seleccionar destinatario",
-  "sellPayoutNewBadge": "NUEVO"
+  "sellPayoutNewBadge": "NUEVO",
+  "swapsFailureMasterKeyUnavailable": "Esta billetera no puede restaurar swaps: no hay semilla bitcoin disponible para derivar la clave de swap.",
+  "swapsFailureNotRestorable": "No se pudo reconstruir este swap desde el servidor. Contacte a soporte con su ID de swap.",
+  "swapsFailureRefundNotFinal": "El reembolso aún no es gastable (timelock). Inténtelo de nuevo más tarde.",
+  "swapsFailureNetwork": "No se pudo conectar con ningún servidor. Verifique su conexión e inténtelo de nuevo.",
+  "swapsFailureUnexpected": "Algo salió mal con el swap. Inténtelo de nuevo."
 }

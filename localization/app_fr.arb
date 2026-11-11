@@ -4952,5 +4952,10 @@
   "screenPrivacyUnavailable": "La protection de l’écran n’a pas pu être activée : ce secret reste masqué.",
   "appStartupMissingSecretMessage": "Cet appareil ne contient plus la phrase de récupération de votre portefeuille. Saisissez-la à nouveau pour le retrouver.",
   "appStartupRestoreSecretButton": "Saisir ma phrase de récupération",
-  "appStartupRestoreMismatch": "Cette phrase de récupération appartient à un autre portefeuille. Saisissez celle du portefeuille de cet appareil."
+  "appStartupRestoreMismatch": "Cette phrase de récupération appartient à un autre portefeuille. Saisissez celle du portefeuille de cet appareil.",
+  "swapsFailureMasterKeyUnavailable": "Ce portefeuille ne peut pas restaurer les swaps : aucune seed bitcoin disponible pour dériver la clé de swap.",
+  "swapsFailureNotRestorable": "Ce swap n'a pas pu être reconstruit depuis le serveur. Contactez le support avec votre identifiant de swap.",
+  "swapsFailureRefundNotFinal": "Le remboursement n'est pas encore dépensable (timelock). Réessayez plus tard.",
+  "swapsFailureNetwork": "Impossible de joindre un serveur. Vérifiez votre connexion et réessayez.",
+  "swapsFailureUnexpected": "Une erreur est survenue avec le swap. Veuillez réessayer."
 }
