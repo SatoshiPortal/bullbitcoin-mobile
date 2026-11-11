@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/electrum/domain/errors/electrum_fallback_exception.dart';
 import 'package:bb_mobile/core/electrum/domain/ports/electrum_servers_port.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_connection.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_network.dart';
@@ -34,7 +35,8 @@ final class _Servers extends ElectrumServersPort {
             ),
           );
         } catch (error) {
-          if (i == 1 || !(isTransient?.call(error) ?? false)) rethrow;
+          if (!(isTransient?.call(error) ?? false)) rethrow;
+          if (i == 1) throw AllElectrumServersFailedException([]);
         }
       }
       throw StateError('Unreachable');
@@ -126,6 +128,29 @@ void main() {
       expect(
         (result as Err<int, TransactionSyncFailure>).failure,
         same(lastFailure),
+      );
+      expect(servers.open, isFalse);
+    },
+  );
+
+  test(
+    'a thrown exception does not preserve a previous retryable failure',
+    () async {
+      final servers = _Servers();
+      final result = await WalletConnectionPolicyImpl(servers).run<int>(
+        network: BitcoinNetwork.mainnet,
+        mayRetry: (_) => true,
+        operation: (_) async {
+          if (servers.attempts == 1) {
+            return const Err(TransactionSyncBusyFailure());
+          }
+          throw Exception('connection failed');
+        },
+      );
+      expect(servers.attempts, 2);
+      expect(
+        (result as Err<int, TransactionSyncFailure>).failure,
+        isA<TransactionSyncConnectionFailure>(),
       );
       expect(servers.open, isFalse);
     },
