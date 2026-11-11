@@ -4,7 +4,7 @@ import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/fees/custom_fee_list_item.dart';
 import 'package:bb_mobile/features/replace_by_fee/domain/fee_entity.dart';
 import 'package:flutter/material.dart';
-import 'package:bull_ui/bull_ui.dart' show BullText, Gap;
+import 'package:bull_ui/bull_ui.dart' show BullShapesX, BullText, Gap;
 
 class BumpFeeSelectorWidget extends StatelessWidget {
   const BumpFeeSelectorWidget({
@@ -97,7 +97,7 @@ class _FastestTile extends StatelessWidget {
       onTap: onTap,
       child: Material(
         elevation: isSelected ? 4 : 1,
-        borderRadius: BorderRadius.circular(2),
+        borderRadius: BorderRadius.circular(context.bullShapes.card),
         clipBehavior: .hardEdge,
         color: context.appColors.onSecondary,
         shadowColor: context.appColors.secondary,

@@ -1,4 +1,3 @@
-import 'package:bb_mobile/core/electrum/domain/ports/electrum_servers_port.dart';
 import 'package:secrets/secrets.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
@@ -16,7 +15,6 @@ import 'package:bb_mobile/core/wallet/data/repositories/wallet_utxo_repository_i
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_utxo_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/check_backup_needed_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/check_wallet_status_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/check_wallet_syncing_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/create_default_wallets_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/delete_wallet_usecase.dart';
@@ -188,13 +186,6 @@ class WalletLocator {
       () => WatchWalletTransactionByTxIdUsecase(
         walletTransactionRepository: locator<WalletTransactionRepository>(),
         walletRepository: locator<WalletRepository>(),
-      ),
-    );
-    locator.registerFactory<CheckWalletStatusUsecase>(
-      () => CheckWalletStatusUsecase(
-        locator<SettingsRepository>(),
-        locator<ElectrumServersPort>(),
-        locator<BitcoinWalletRepository>(),
       ),
     );
     locator.registerFactory<SyncWalletUsecase>(

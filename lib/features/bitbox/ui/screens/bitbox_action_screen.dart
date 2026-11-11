@@ -22,6 +22,7 @@ import 'package:bb_mobile/features/bitbox/presentation/cubit/bitbox_operation_st
 import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_router.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/watch_only_wallet_entity.dart';
 import 'package:bb_mobile/locator.dart';
+import 'package:screen_awake/screen_awake.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
@@ -31,6 +32,7 @@ import 'package:bull_ui/bull_ui.dart'
         BullInstructionsSheet,
         BullSelectableList,
         BullSelectableListItem,
+        BullShapesX,
         BullSnackBar,
         BullText,
         BullTopBar,
@@ -123,18 +125,21 @@ class _BitBoxActionViewState extends State<_BitBoxActionView> {
           }
         },
         builder: (context, state) {
-          return Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: SingleChildScrollView(
-              physics: const ClampingScrollPhysics(),
-              child: Center(
-                child: Column(
-                  children: [
-                    const Gap(32),
-                    _buildMainContent(context, state),
-                    const Gap(32),
-                    _buildActionButtons(context, state),
-                  ],
+          return ScreenAwakeScope(
+            enabled: !state.isInitial && !state.isSuccess && !state.isError,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: SingleChildScrollView(
+                physics: const ClampingScrollPhysics(),
+                child: Center(
+                  child: Column(
+                    children: [
+                      const Gap(32),
+                      _buildMainContent(context, state),
+                      const Gap(32),
+                      _buildActionButtons(context, state),
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -215,7 +220,7 @@ class _BitBoxActionViewState extends State<_BitBoxActionView> {
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
             color: context.appColors.surface,
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(context.bullShapes.card),
             border: Border.all(
               color: context.appColors.primary.withValues(alpha: 0.3),
               width: 2,
@@ -300,7 +305,7 @@ class _BitBoxActionViewState extends State<_BitBoxActionView> {
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
             color: context.appColors.surface,
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(context.bullShapes.card),
             border: Border.all(
               color: context.appColors.border.withValues(alpha: 0.3),
               width: 1,
@@ -471,13 +476,13 @@ class _BitBoxActionViewState extends State<_BitBoxActionView> {
               width: double.infinity,
               decoration: BoxDecoration(
                 color: context.appColors.surface,
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(context.bullShapes.input),
                 border: Border.all(color: context.appColors.border, width: 1),
               ),
               child: Material(
                 color: context.appColors.transparent,
                 child: InkWell(
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(context.bullShapes.input),
                   onTap: () => _showScriptTypeSelection(context),
                   child: Padding(
                     padding: const EdgeInsets.symmetric(
