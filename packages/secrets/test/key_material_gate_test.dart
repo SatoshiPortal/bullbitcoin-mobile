@@ -452,6 +452,26 @@ class SwapMasterKeyModel {
     },
   );
 
+  test('seed-based Liquid and swap entry points are checked', () async {
+    final violations = await inspect('seed_entry_points', '''
+import 'package:bull_sdk/boltz.dart' as boltz;
+import 'package:bull_sdk/lwk.dart' as lwk;
+final descriptor = lwk.Descriptor.newConfidentialFromSeed;
+Object sign(lwk.Wallet wallet) => wallet.signTxWithSeed;
+Object details(lwk.Wallet wallet) =>
+    wallet.signedPsetWithExtraDetailsWithSeed;
+final swap = boltz.SwapMasterKey.createFromSeed;
+''');
+    expect(violations, hasLength(4));
+    expect(violations.join(), contains('#Descriptor.newConfidentialFromSeed'));
+    expect(violations.join(), contains('#Wallet.signTxWithSeed'));
+    expect(
+      violations.join(),
+      contains('#Wallet.signedPsetWithExtraDetailsWithSeed'),
+    );
+    expect(violations.join(), contains('#SwapMasterKey.createFromSeed'));
+  });
+
   test('Silent Payments accounts built from words are checked', () async {
     final violations = await inspect('bwk_constructors', '''
 import 'package:bull_sdk/bwk.dart';
