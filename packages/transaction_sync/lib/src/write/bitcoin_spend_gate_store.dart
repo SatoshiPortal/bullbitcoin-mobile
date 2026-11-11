@@ -17,7 +17,9 @@ final class BitcoinSpendGateStore {
       db = sqlite3.open(path, mode: OpenMode.readWrite);
       db.execute('PRAGMA busy_timeout = 1000');
       db.execute('PRAGMA synchronous = FULL');
-      if (db.userVersion != 1) throw const BitcoinSpendGateUnavailable();
+      if (db.userVersion != 1 || !_hasInputs(db)) {
+        throw const BitcoinSpendGateUnavailable();
+      }
       return db;
     } on Exception {
       db?.dispose();
@@ -25,6 +27,10 @@ final class BitcoinSpendGateStore {
       throw const BitcoinSpendGateUnavailable();
     }
   }
+
+  static bool _hasInputs(Database db) => db
+      .select('PRAGMA table_info(broadcasts)')
+      .any((row) => row['name'] == 'inputs');
 
   static void provision(String path) {
     final marker = File('$path.provisioned');
@@ -39,11 +45,16 @@ final class BitcoinSpendGateStore {
           wallet TEXT NOT NULL, network TEXT NOT NULL,
           descriptor TEXT NOT NULL, generation INTEGER NOT NULL,
           txid TEXT NOT NULL, observed INTEGER NOT NULL DEFAULT 0,
+          inputs TEXT,
           PRIMARY KEY(wallet, network, txid))''');
         db.userVersion = 1;
         db.execute('COMMIT');
       }
       if (db.userVersion != 1) throw const BitcoinSpendGateUnavailable();
+      // Development stores created before release evidence lack the column.
+      if (!_hasInputs(db)) {
+        db.execute('ALTER TABLE broadcasts ADD COLUMN inputs TEXT');
+      }
       marker.writeAsStringSync('1\n', flush: true);
     } on Exception {
       throw const BitcoinSpendGateUnavailable();
@@ -70,6 +81,20 @@ final class BitcoinSpendGateStore {
     'SELECT 1 FROM broadcasts WHERE wallet=? AND network=? AND generation<>? LIMIT 1',
     [key.id, key.network.env.name, generation],
   ).isNotEmpty;
+
+  /// Spent outpoints (`txid:vout`) of each tracked transaction, empty until a
+  /// sync has seen it. They let a later sync prove it can no longer confirm.
+  Map<String, Set<String>> trackedInputs(PublicWalletDescriptor descriptor) {
+    tracked(descriptor);
+    final key = descriptor.key;
+    return {
+      for (final row in _db.select(
+        'SELECT txid, inputs FROM broadcasts WHERE wallet=? AND network=?',
+        [key.id, key.network.env.name],
+      ))
+        row['txid'] as String: {...?(row['inputs'] as String?)?.split(' ')},
+    };
+  }
 
   bool blocked(PublicWalletDescriptor descriptor, {String? replacing}) {
     final ids = tracked(descriptor);
@@ -112,23 +137,35 @@ final class BitcoinSpendGateStore {
   void requireRecoveryValidation() =>
       _db.execute('UPDATE broadcasts SET observed=0');
 
+  /// [released] obligations are forgotten: only positive evidence from a
+  /// persisted sync that they can no longer confirm may name them, never time.
   void observed(
     PublicWalletDescriptor descriptor,
     int generation,
-    Set<String> txids,
-  ) {
+    Set<String> txids, {
+    Map<String, Set<String>> inputs = const {},
+    Set<String> released = const {},
+  }) {
     tracked(descriptor);
+    final wallet = [descriptor.key.id, descriptor.key.network.env.name];
     _db.execute('BEGIN IMMEDIATE');
     try {
       for (final txid in txids) {
         _db.execute(
           'UPDATE broadcasts SET observed=1, generation=? WHERE wallet=? AND network=? AND txid=?',
-          [
-            generation,
-            descriptor.key.id,
-            descriptor.key.network.env.name,
-            txid,
-          ],
+          [generation, ...wallet, txid],
+        );
+      }
+      for (final MapEntry(key: txid, value: outpoints) in inputs.entries) {
+        _db.execute(
+          'UPDATE broadcasts SET inputs=? WHERE wallet=? AND network=? AND txid=? AND inputs IS NULL',
+          [outpoints.join(' '), ...wallet, txid],
+        );
+      }
+      for (final txid in released) {
+        _db.execute(
+          'DELETE FROM broadcasts WHERE wallet=? AND network=? AND txid=?',
+          [...wallet, txid],
         );
       }
       _db.execute('COMMIT');

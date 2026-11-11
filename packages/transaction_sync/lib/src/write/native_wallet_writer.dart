@@ -266,7 +266,7 @@ final class NativeWalletWriter implements LiquidReadAdmission {
     if (key.network is BitcoinNetwork) {
       gates = BitcoinSpendGateStore(revisions.spendGatePath);
       try {
-        final tracked = gates.tracked(descriptor);
+        final tracked = gates.trackedInputs(descriptor);
         if (operation case final WriterSyncSpendObservation observer) {
           observer.trackSpendTransactions(tracked);
         }
@@ -304,6 +304,8 @@ final class NativeWalletWriter implements LiquidReadAdmission {
     _value(result);
     if (operation case WriterSyncSpendObservation(
       :final observedSpendTransactions,
+      :final spendTransactionInputs,
+      :final releasedSpendTransactions,
     ) when key.network is BitcoinNetwork) {
       final observed = BitcoinSpendGateStore(revisions.spendGatePath);
       try {
@@ -311,9 +313,17 @@ final class NativeWalletWriter implements LiquidReadAdmission {
           descriptor,
           expectedGeneration,
           observedSpendTransactions,
+          inputs: spendTransactionInputs,
+          released: releasedSpendTransactions,
         );
       } finally {
         observed.close();
+      }
+      if (releasedSpendTransactions.isNotEmpty) {
+        _diagnostics(
+          WriterLogLevel.fine,
+          'Bitcoin spend obligations released count=${releasedSpendTransactions.length}',
+        );
       }
     }
     if (operation case WriterSyncChanges(
