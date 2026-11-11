@@ -14,7 +14,11 @@ import 'dart:async';
 import 'package:bb_mobile/features/send/domain/usecases/create_boltz_send_swap_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/get_send_swap_route_usecase.dart';
 import 'package:boltz_swaps/boltz_swaps.dart'
-    show RecordSwapLockupUsecase, WatchSwapUsecase;
+    show
+        CreateChainSwapUsecase,
+        GetSwapLimitsAndFeesUsecase,
+        RecordSwapLockupUsecase,
+        WatchSwapUsecase;
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_liquid_transaction_usecase.dart';
 import 'package:bb_mobile/core/entities/signer_entity.dart';
@@ -52,7 +56,6 @@ import 'package:bb_mobile/features/send/domain/usecases/select_best_wallet_useca
 import 'package:bb_mobile/features/send/domain/usecases/send_with_payjoin_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/sign_bitcoin_tx_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/sign_liquid_tx_usecase.dart';
-import 'package:bb_mobile/features/send/domain/usecases/update_paid_send_swap_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/update_send_swap_payin_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/validate_coin_control_payment_request_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/verify_exchange_payin_usecase.dart';
@@ -119,8 +122,11 @@ class _MockGetWalletUsecase extends Mock implements GetWalletUsecase {}
 class _MockCreateSendSwapUsecase extends Mock
     implements CreateSendSwapUsecase {}
 
-class _MockUpdatePaidSendSwapUsecase extends Mock
-    implements UpdatePaidSendSwapUsecase {}
+class _MockGetSwapLimitsAndFeesUsecase extends Mock
+    implements GetSwapLimitsAndFeesUsecase {}
+
+class _MockCreateChainSwapUsecase extends Mock
+    implements CreateChainSwapUsecase {}
 
 class _MockGetSendSwapQuoteUsecase extends Mock
     implements GetSendSwapQuoteUsecase {}
@@ -235,7 +241,6 @@ class _TestSendCubit extends SendCubit {
     required super.resolveLightningAddressUsecase,
     required super.updateSendSwapPayinUsecase,
     required super.watchSendSwapUsecase,
-    required super.updatePaidSendSwapUsecase,
     required super.sendWithPayjoinUsecase,
     required super.watchPayjoinUsecase,
     required super.watchFinishedWalletSyncsUsecase,
@@ -262,6 +267,8 @@ class _TestSendCubit extends SendCubit {
     required super.createBoltzSendSwapUsecase,
     required super.recordSwapLockupUsecase,
     required super.watchSwapUsecase,
+    required super.getSwapLimitsAndFeesUsecase,
+    required super.createChainSwapUsecase,
   });
 
   void seed(SendState state) => emit(state);
@@ -343,7 +350,6 @@ void main() {
       resolveLightningAddressUsecase: _MockResolveLightningAddressUsecase(),
       updateSendSwapPayinUsecase: _MockUpdateSendSwapPayinUsecase(),
       watchSendSwapUsecase: _MockWatchSendSwapUsecase(),
-      updatePaidSendSwapUsecase: _MockUpdatePaidSendSwapUsecase(),
       sendWithPayjoinUsecase: _MockSendWithPayjoinUsecase(),
       watchPayjoinUsecase: _MockWatchPayjoinUsecase(),
       watchFinishedWalletSyncsUsecase: _MockWatchFinishedWalletSyncsUsecase(),
@@ -376,6 +382,8 @@ void main() {
       createBoltzSendSwapUsecase: _MockCreateBoltzSendSwapUsecase(),
       recordSwapLockupUsecase: _MockRecordSwapLockupUsecase(),
       watchSwapUsecase: _MockWatchSwapUsecase(),
+      getSwapLimitsAndFeesUsecase: _MockGetSwapLimitsAndFeesUsecase(),
+      createChainSwapUsecase: _MockCreateChainSwapUsecase(),
     );
   });
 

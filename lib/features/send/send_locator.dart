@@ -7,7 +7,6 @@ import 'package:bb_mobile/core/fees/domain/get_network_fees_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:boltz_swaps/boltz_swaps.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/verify_chain_swap_amount_send_usecase.dart';
-import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/bitcoin_wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/liquid_wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
@@ -45,7 +44,6 @@ import 'package:bb_mobile/features/send/domain/usecases/select_best_wallet_useca
 import 'package:bb_mobile/features/send/domain/usecases/send_with_payjoin_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/sign_bitcoin_tx_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/sign_liquid_tx_usecase.dart';
-import 'package:bb_mobile/features/send/domain/usecases/update_paid_send_swap_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/verify_send_signed_tx_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/watch_payjoin_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/update_send_swap_payin_usecase.dart';
@@ -153,14 +151,6 @@ class SendLocator {
     );
     locator.registerFactory<WatchSendSwapUsecase>(
       () => WatchSendSwapUsecase(locator<SwapFacade>()),
-    );
-    locator.registerFactory<UpdatePaidSendSwapUsecase>(
-      () => UpdatePaidSendSwapUsecase(
-        swapRepository: locator<BoltzSwapRepository>(
-          instanceName:
-              LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
-        ),
-      ),
     );
     locator.registerFactory<SelectBestWalletUsecase>(
       () => SelectBestWalletUsecase(),
@@ -289,7 +279,6 @@ class SendLocator {
             locator<ResolveLightningAddressUsecase>(),
         updateSendSwapPayinUsecase: locator<UpdateSendSwapPayinUsecase>(),
         watchSendSwapUsecase: locator<WatchSendSwapUsecase>(),
-        updatePaidSendSwapUsecase: locator<UpdatePaidSendSwapUsecase>(),
         sendWithPayjoinUsecase: locator<SendWithPayjoinUsecase>(),
         watchPayjoinUsecase: locator<WatchPayjoinUsecase>(),
         watchFinishedWalletSyncsUsecase:
@@ -327,6 +316,8 @@ class SendLocator {
         getSendSwapRouteUsecase: locator<GetSendSwapRouteUsecase>(),
         createBoltzSendSwapUsecase: locator<CreateBoltzSendSwapUsecase>(),
         recordSwapLockupUsecase: locator<RecordSwapLockupUsecase>(),
+        getSwapLimitsAndFeesUsecase: locator<GetSwapLimitsAndFeesUsecase>(),
+        createChainSwapUsecase: locator<CreateChainSwapUsecase>(),
         watchSwapUsecase: locator<WatchSwapUsecase>(),
       ),
     );

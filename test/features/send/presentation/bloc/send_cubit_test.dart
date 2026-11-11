@@ -47,7 +47,6 @@ import 'package:bb_mobile/features/send/domain/usecases/sign_bitcoin_tx_usecase.
 import 'package:bb_mobile/features/send/domain/usecases/sign_liquid_tx_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/send_with_payjoin_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/watch_payjoin_usecase.dart';
-import 'package:bb_mobile/features/send/domain/usecases/update_paid_send_swap_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/verify_exchange_payin_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/update_send_swap_payin_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/verify_send_signed_tx_usecase.dart';
@@ -142,8 +141,11 @@ class _MockOrderSwapQuote extends Mock implements OrderSwapQuote {}
 
 class _MockOrderSwapRecord extends Mock implements OrderSwapRecord {}
 
-class _MockUpdatePaidSendSwapUsecase extends Mock
-    implements UpdatePaidSendSwapUsecase {}
+class _MockGetSwapLimitsAndFeesUsecase extends Mock
+    implements boltz.GetSwapLimitsAndFeesUsecase {}
+
+class _MockCreateChainSwapUsecase extends Mock
+    implements boltz.CreateChainSwapUsecase {}
 
 class _MockWatchFinishedWalletSyncsUsecase extends Mock
     implements WatchFinishedWalletSyncsUsecase {}
@@ -263,7 +265,6 @@ class _TestableSendCubit extends SendCubit {
     required super.resolveLightningAddressUsecase,
     required super.updateSendSwapPayinUsecase,
     required super.watchSendSwapUsecase,
-    required super.updatePaidSendSwapUsecase,
     required super.watchFinishedWalletSyncsUsecase,
     required super.signBitcoinTxUsecase,
     required super.signLiquidTxUsecase,
@@ -292,6 +293,8 @@ class _TestableSendCubit extends SendCubit {
     required super.createBoltzSendSwapUsecase,
     required super.recordSwapLockupUsecase,
     required super.watchSwapUsecase,
+    required super.getSwapLimitsAndFeesUsecase,
+    required super.createChainSwapUsecase,
     super.parsePaymentRequest,
   });
 
@@ -440,7 +443,8 @@ void main() {
   late _MockResolveLightningAddressUsecase resolveLightningAddressUsecase;
   late _MockUpdateSendSwapPayinUsecase updateSendSwapPayinUsecase;
   late _MockWatchSendSwapUsecase watchSendSwapUsecase;
-  late _MockUpdatePaidSendSwapUsecase updatePaidSendSwapUsecase;
+  late _MockGetSwapLimitsAndFeesUsecase getSwapLimitsAndFeesUsecase;
+  late _MockCreateChainSwapUsecase createChainSwapUsecase;
   late _MockWatchFinishedWalletSyncsUsecase watchFinishedWalletSyncsUsecase;
   late _MockSignBitcoinTxUsecase signBitcoinTxUsecase;
   late _MockSignLiquidTxUsecase signLiquidTxUsecase;
@@ -508,7 +512,6 @@ void main() {
     resolveLightningAddressUsecase: resolveLightningAddressUsecase,
     updateSendSwapPayinUsecase: updateSendSwapPayinUsecase,
     watchSendSwapUsecase: watchSendSwapUsecase,
-    updatePaidSendSwapUsecase: updatePaidSendSwapUsecase,
     watchFinishedWalletSyncsUsecase: watchFinishedWalletSyncsUsecase,
     signBitcoinTxUsecase: signBitcoinTxUsecase,
     signLiquidTxUsecase: signLiquidTxUsecase,
@@ -544,6 +547,8 @@ void main() {
     createBoltzSendSwapUsecase: createBoltzSendSwapUsecase,
     recordSwapLockupUsecase: recordSwapLockupUsecase,
     watchSwapUsecase: watchSwapUsecase,
+    getSwapLimitsAndFeesUsecase: getSwapLimitsAndFeesUsecase,
+    createChainSwapUsecase: createChainSwapUsecase,
     parsePaymentRequest: parsePaymentRequest,
   );
 
@@ -642,7 +647,8 @@ void main() {
     resolveLightningAddressUsecase = _MockResolveLightningAddressUsecase();
     updateSendSwapPayinUsecase = _MockUpdateSendSwapPayinUsecase();
     watchSendSwapUsecase = _MockWatchSendSwapUsecase();
-    updatePaidSendSwapUsecase = _MockUpdatePaidSendSwapUsecase();
+    getSwapLimitsAndFeesUsecase = _MockGetSwapLimitsAndFeesUsecase();
+    createChainSwapUsecase = _MockCreateChainSwapUsecase();
     watchFinishedWalletSyncsUsecase = _MockWatchFinishedWalletSyncsUsecase();
     signBitcoinTxUsecase = _MockSignBitcoinTxUsecase();
     signLiquidTxUsecase = _MockSignLiquidTxUsecase();
@@ -6122,5 +6128,335 @@ void main() {
         expect(cubit.state.isLnInvoicePaid, isTrue);
       },
     );
+  });
+
+  group('Boltz-first cross-chain send', () {
+    const liquidRequest = PaymentRequest.bip21(
+      network: Network.liquidMainnet,
+      uri: 'liquidnetwork:lq1recipient?amount=0.0005',
+      address: 'lq1recipient',
+      amountSat: 50000,
+    );
+
+    boltz.ChainSwap chainSwap({
+      String id = 'boltzChain01',
+      boltz.SwapStatus status = boltz.SwapStatus.pending,
+    }) =>
+        boltz.Swap.chain(
+              id: id,
+              keyIndex: 0,
+              type: boltz.SwapType.bitcoinToLiquid,
+              status: status,
+              environment: boltz.Environment.mainnet,
+              creationTime: DateTime.utc(2026),
+              sendWalletId: 'w1',
+              paymentAddress: 'bc1pchainlockup',
+              paymentAmount: 50600,
+              receiveAddress: 'lq1recipient',
+            )
+            as boltz.ChainSwap;
+
+    SendState crossChainState({
+      PaymentRequest paymentRequest = liquidRequest,
+    }) => SendState(
+      step: SendStep.address,
+      sendType: SendType.liquid,
+      selectedWallet: SendWalletBitcoin(_bitcoinLocalWallet()),
+      paymentRequest: paymentRequest,
+      amount: '50000',
+      inputAmountCurrencyCode: 'sats',
+      bitcoinFeesList: _feeOptions(),
+      liquidFeesList: _feeOptions(),
+    );
+
+    void stubRoute(SwapRoute route) => when(
+      () => getSendSwapRouteUsecase.execute(),
+    ).thenAnswer((_) async => route);
+
+    void stubFees(
+      Result<(boltz.SwapLimits, boltz.SwapFees), boltz.SwapsFailure> result,
+    ) => when(
+      () => getSwapLimitsAndFeesUsecase.execute(boltz.SwapType.bitcoinToLiquid),
+    ).thenAnswer((_) async => result);
+
+    const fees = Ok<(boltz.SwapLimits, boltz.SwapFees), boltz.SwapsFailure>((
+      boltz.SwapLimits(min: 1000, max: 10000000),
+      boltz.SwapFees(boltzPercent: 0.1, lockupFee: 100, claimFee: 50),
+    ));
+
+    void stubCreateChain(Result<boltz.ChainSwap, boltz.SwapsFailure> result) =>
+        when(
+          () => createChainSwapUsecase.execute(
+            sendWalletId: 'w1',
+            amountSat: any(named: 'amountSat'),
+            fromLiquid: false,
+            externalRecipientAddress: 'lq1recipient',
+          ),
+        ).thenAnswer((_) async => result);
+
+    void stubExchangeQuoteFailure() => when(
+      () => getSendCrossChainQuoteUsecase.execute(
+        wallet: any(named: 'wallet'),
+        amountSat: any(named: 'amountSat'),
+        isInAmountFixed: any(named: 'isInAmountFixed'),
+      ),
+    ).thenAnswer((_) async => const Err(SendInvoiceAmountRequiredFailure()));
+
+    void verifyNoExchangeQuote() => verifyNever(
+      () => getSendCrossChainQuoteUsecase.execute(
+        wallet: any(named: 'wallet'),
+        amountSat: any(named: 'amountSat'),
+        isInAmountFixed: any(named: 'isInAmountFixed'),
+      ),
+    );
+
+    test(
+      'creates a Boltz chain swap that pays the requested amount plus fees',
+      () async {
+        final cubit = buildCubit();
+        addTearDown(cubit.close);
+        stubRoute(SwapRoute.boltz);
+        stubFees(fees);
+        stubCreateChain(Ok(chainSwap()));
+        cubit.setStateForTest(crossChainState());
+
+        await cubit.handleChainSwap();
+
+        expect(cubit.state.chainSwap?.id, 'boltzChain01');
+        expect(cubit.state.lightningOrder, isNull);
+        expect(cubit.state.step, SendStep.confirm);
+        expect(cubit.state.confirmedAmountSat, 50000);
+        final paid =
+            verify(
+                  () => createChainSwapUsecase.execute(
+                    sendWalletId: 'w1',
+                    amountSat: captureAny(named: 'amountSat'),
+                    fromLiquid: false,
+                    externalRecipientAddress: 'lq1recipient',
+                  ),
+                ).captured.single
+                as int;
+        expect(
+          paid,
+          const boltz.SwapFees(
+            boltzPercent: 0.1,
+            lockupFee: 100,
+            claimFee: 50,
+          ).calculateSwapAmountFromReceivableAmount(50000),
+        );
+        expect(paid, greaterThan(50000));
+        verify(() => watchSwapUsecase.execute('boltzChain01')).called(1);
+        verifyNoExchangeQuote();
+      },
+    );
+
+    test('builds and signs the verified lockup for the chain swap', () async {
+      final cubit = buildCubit();
+      addTearDown(cubit.close);
+      when(
+        () => getWalletUtxosUsecase.execute(walletId: any(named: 'walletId')),
+      ).thenAnswer((_) async => <WalletUtxo>[]);
+      when(
+        () => prepareBitcoinSendUsecase.execute(
+          walletId: 'w1',
+          address: 'bc1pchainlockup',
+          networkFee: any(named: 'networkFee'),
+          amountSat: 50600,
+          drain: false,
+          selectedInputs: any(named: 'selectedInputs'),
+          replaceByFee: any(named: 'replaceByFee'),
+        ),
+      ).thenAnswer(
+        (_) async =>
+            (unsignedPsbt: 'chain-unsigned', txSize: 150, isToSelf: false),
+      );
+      when(
+        () => calculateBitcoinAbsoluteFeesUsecase.execute(
+          psbt: any(named: 'psbt'),
+        ),
+      ).thenAnswer((_) async => 300);
+      when(
+        () => verifyChainSwapAmountSendUsecase.execute(
+          psbtOrPset: any(named: 'psbtOrPset'),
+          swap: any(named: 'swap'),
+          walletId: any(named: 'walletId'),
+        ),
+      ).thenAnswer((_) async {});
+      when(
+        () => signBitcoinTxUsecase.execute(
+          psbt: 'chain-unsigned',
+          walletId: 'w1',
+        ),
+      ).thenAnswer((_) async => (signedPsbt: 'chain-signed', txSize: 150));
+      cubit.setStateForTest(
+        crossChainState().copyWith(
+          step: SendStep.confirm,
+          chainSwap: chainSwap(),
+          confirmedAmountSat: 50000,
+        ),
+      );
+
+      await cubit.createTransaction();
+
+      verify(
+        () => verifyChainSwapAmountSendUsecase.execute(
+          psbtOrPset: 'chain-unsigned',
+          swap: chainSwap(),
+          walletId: 'w1',
+        ),
+      ).called(1);
+      expect(cubit.state.signedBitcoinPsbt, 'chain-signed');
+    });
+
+    test('Boltz unavailable without the opt-in surfaces a failure', () async {
+      final cubit = buildCubit();
+      addTearDown(cubit.close);
+      stubRoute(SwapRoute.boltz);
+      stubFees(fees);
+      stubCreateChain(const Err(boltz.SwapsBoltzUnavailableFailure()));
+      cubit.setStateForTest(crossChainState());
+
+      await cubit.handleChainSwap();
+
+      expect(cubit.state.failure, isA<SendSwapCreationFailure>());
+      expect(cubit.state.chainSwap, isNull);
+      expect(cubit.state.creatingSwap, isFalse);
+      verifyNoExchangeQuote();
+    });
+
+    test('falls back to the exchange when the user opted in', () async {
+      final cubit = buildCubit();
+      addTearDown(cubit.close);
+      stubRoute(SwapRoute.boltzWithExchangeFallback);
+      stubFees(const Err(boltz.SwapsBoltzUnavailableFailure()));
+      stubExchangeQuoteFailure();
+      cubit.setStateForTest(crossChainState());
+
+      await cubit.handleChainSwap();
+
+      verify(
+        () => getSendCrossChainQuoteUsecase.execute(
+          wallet: any(named: 'wallet'),
+          amountSat: BigInt.from(50000),
+          isInAmountFixed: false,
+        ),
+      ).called(1);
+      verifyNever(
+        () => createChainSwapUsecase.execute(
+          sendWalletId: any(named: 'sendWalletId'),
+          amountSat: any(named: 'amountSat'),
+          fromLiquid: any(named: 'fromLiquid'),
+          externalRecipientAddress: any(named: 'externalRecipientAddress'),
+        ),
+      );
+      expect(cubit.state.chainSwap, isNull);
+    });
+
+    test('a Boltz refusal never falls back', () async {
+      final cubit = buildCubit();
+      addTearDown(cubit.close);
+      stubRoute(SwapRoute.boltzWithExchangeFallback);
+      stubFees(fees);
+      stubCreateChain(const Err(boltz.SwapsBoltzRejectedFailure()));
+      cubit.setStateForTest(crossChainState());
+
+      await cubit.handleChainSwap();
+
+      expect(cubit.state.failure, isA<SendSwapCreationFailure>());
+      verifyNoExchangeQuote();
+    });
+
+    test(
+      'a destination on the other network is refused before Boltz',
+      () async {
+        final cubit = buildCubit();
+        addTearDown(cubit.close);
+        stubRoute(SwapRoute.boltz);
+        cubit.setStateForTest(
+          crossChainState(
+            paymentRequest: const PaymentRequest.bip21(
+              network: Network.liquidTestnet,
+              uri: 'liquidtestnet:tlq1recipient?amount=0.0005',
+              address: 'tlq1recipient',
+              amountSat: 50000,
+            ),
+          ),
+        );
+
+        await cubit.handleChainSwap();
+
+        expect(cubit.state.failure, isA<SendInvalidPaymentRequestFailure>());
+        verifyNever(
+          () => getSwapLimitsAndFeesUsecase.execute(
+            boltz.SwapType.bitcoinToLiquid,
+          ),
+        );
+      },
+    );
+
+    test('broadcast records the chain lockup on the swap', () async {
+      final cubit = buildCubit();
+      addTearDown(cubit.close);
+      final funded = chainSwap(status: boltz.SwapStatus.paid);
+      when(
+        () => broadcastBitcoinTxUsecase.execute(
+          'chain-signed',
+          isPsbt: any(named: 'isPsbt'),
+        ),
+      ).thenAnswer((_) async => 'chain-txid');
+      when(
+        () => recordSwapLockupUsecase.execute(
+          swapId: 'boltzChain01',
+          txid: 'chain-txid',
+          lockupFeeSat: 300,
+        ),
+      ).thenAnswer((_) async => Ok(funded));
+      cubit.setStateForTest(
+        crossChainState().copyWith(
+          step: SendStep.sending,
+          chainSwap: chainSwap(),
+          signedBitcoinPsbt: 'chain-signed',
+          bitcoinAbsoluteFeesSat: 300,
+        ),
+      );
+
+      await cubit.broadcastTransaction();
+
+      verify(
+        () => recordSwapLockupUsecase.execute(
+          swapId: 'boltzChain01',
+          txid: 'chain-txid',
+          lockupFeeSat: 300,
+        ),
+      ).called(1);
+      expect(cubit.state.txId, 'chain-txid');
+      expect(cubit.state.chainSwap?.status, boltz.SwapStatus.paid);
+      expect(cubit.state.step, SendStep.success);
+    });
+
+    test('watched chain updates apply; other swaps are ignored', () async {
+      final updates = StreamController<boltz.Swap>();
+      addTearDown(updates.close);
+      when(
+        () => watchSwapUsecase.execute('boltzChain01'),
+      ).thenAnswer((_) => updates.stream);
+      final cubit = buildCubit();
+      addTearDown(cubit.close);
+      stubRoute(SwapRoute.boltz);
+      stubFees(fees);
+      stubCreateChain(Ok(chainSwap()));
+      cubit.setStateForTest(crossChainState());
+      await cubit.handleChainSwap();
+
+      updates.add(
+        chainSwap(id: 'otherChain01', status: boltz.SwapStatus.completed),
+      );
+      await pumpEventQueue();
+      expect(cubit.state.chainSwap?.status, boltz.SwapStatus.pending);
+
+      updates.add(chainSwap(status: boltz.SwapStatus.completed));
+      await pumpEventQueue();
+      expect(cubit.state.chainSwap?.status, boltz.SwapStatus.completed);
+    });
   });
 }
