@@ -711,10 +711,14 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
         model = await _localPayjoinDatasource.fetchReceiver(payjoin.id);
       } else {
         payjoin as PayjoinSender;
-        await _blockchain.broadcastPsbt(
-          walletId: payjoin.walletId,
-          network: network,
-          psbt: payjoin.originalPsbt,
+        final sender = payjoin;
+        await _sendSenderPayment(
+          sender.id,
+          () => _blockchain.broadcastPsbt(
+            walletId: sender.walletId,
+            network: network,
+            psbt: sender.originalPsbt,
+          ),
         );
         broadcasted = true;
         model = await _localPayjoinDatasource.fetchSender(payjoin.id);
@@ -1372,6 +1376,12 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       );
       if (freshModel != null &&
           (freshModel.isCompleted || freshModel.isAborted)) {
+        return;
+      }
+      // An attempt whose outcome is unknown may still pay: keep the inputs
+      // reserved and the proposal retained instead of declaring a failure.
+      if (freshModel != null && freshModel.hasNetworkEvidence) {
+        _pauseProposal(freshModel, allowRetry: false);
         return;
       }
       final failedModel = (freshModel ?? payjoinModel).copyWith(
@@ -2118,41 +2128,63 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     );
   }
 
+  /// The one boundary every sender payment crosses, payjoin or original. The
+  /// evidence is written before [wire] runs, so a crash or an error with an
+  /// unknown outcome still finds it on the next start; a failed write throws
+  /// before anything was sent. It is withdrawn only when the port states that
+  /// nothing reached the network, and only if this attempt recorded it.
+  Future<void> _sendSenderPayment(
+    String payjoinId,
+    Future<void> Function() wire,
+  ) async {
+    final recorded = await _recordSenderNetworkEvidence(payjoinId);
+    try {
+      await wire();
+    } on api.PayjoinSpendBlockedException {
+      await _withdrawSenderNetworkEvidence(payjoinId, recorded: recorded);
+      rethrow;
+    } on api.PayjoinBroadcastNotAttemptedException {
+      await _withdrawSenderNetworkEvidence(payjoinId, recorded: recorded);
+      rethrow;
+    }
+  }
+
+  /// Best effort: evidence that could not be withdrawn stays, which only
+  /// keeps the session reserved.
+  Future<void> _withdrawSenderNetworkEvidence(
+    String payjoinId, {
+    required bool recorded,
+  }) async {
+    if (!recorded) return;
+    try {
+      await _localPayjoinDatasource.setSenderNetworkEvidence(
+        payjoinId,
+        present: false,
+      );
+    } catch (e, st) {
+      _log.warning(
+        code: api.PayjoinLogCode.storageFailure,
+        role: api.PayjoinLogRole.sender,
+        sessionRef: Payjoin.logRefForId(payjoinId),
+        error: e,
+        trace: st,
+      );
+    }
+  }
+
   Future<PayjoinSender> _broadcastPsbt({
     required PayjoinSenderModel payjoinModel,
     required String finalizedPsbt,
     required primitives.BitcoinNetwork network,
   }) async {
-    // Written before the wire call: a crash or an error with an unknown
-    // outcome must still find it on the next start. A failed write throws
-    // before anything was sent.
-    final recorded = await _recordSenderNetworkEvidence(payjoinModel.id);
-    try {
-      await _blockchain.broadcastPsbt(
+    await _sendSenderPayment(
+      payjoinModel.id,
+      () => _blockchain.broadcastPsbt(
         walletId: payjoinModel.walletId,
         network: network,
         psbt: finalizedPsbt,
-      );
-    } on api.PayjoinSpendBlockedException {
-      // Refused before the wire: withdraw only what this attempt recorded.
-      if (recorded) {
-        try {
-          await _localPayjoinDatasource.setSenderNetworkEvidence(
-            payjoinModel.id,
-            present: false,
-          );
-        } catch (e, st) {
-          _log.warning(
-            code: api.PayjoinLogCode.storageFailure,
-            role: api.PayjoinLogRole.sender,
-            sessionRef: payjoinModel.toEntity().logRef,
-            error: e,
-            trace: st,
-          );
-        }
-      }
-      rethrow;
-    }
+      ),
+    );
 
     // From this point the real payjoin is on the network. Local persistence,
     // syncing and watcher setup must never throw back to the caller's fallback

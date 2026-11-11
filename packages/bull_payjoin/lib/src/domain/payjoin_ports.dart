@@ -336,3 +336,10 @@ final class PayjoinLogEvent {
 final class PayjoinSpendBlockedException implements Exception {
   const PayjoinSpendBlockedException();
 }
+
+/// A broadcast that failed before anything was handed to the network. Thrown
+/// by a [PayjoinBlockchainPort] only when that is certain; any other failure
+/// is treated as a payment that may have gone out.
+final class PayjoinBroadcastNotAttemptedException implements Exception {
+  const PayjoinBroadcastNotAttemptedException();
+}
