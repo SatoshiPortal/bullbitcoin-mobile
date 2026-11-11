@@ -32,6 +32,7 @@ import 'package:bull_ui/bull_ui.dart'
         BullInstructionsSheet,
         BullSelectableList,
         BullSelectableListItem,
+        BullShapesX,
         BullSnackBar,
         BullText,
         BullTopBar,
@@ -219,7 +220,7 @@ class _BitBoxActionViewState extends State<_BitBoxActionView> {
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
             color: context.appColors.surface,
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(context.bullShapes.card),
             border: Border.all(
               color: context.appColors.primary.withValues(alpha: 0.3),
               width: 2,
@@ -304,7 +305,7 @@ class _BitBoxActionViewState extends State<_BitBoxActionView> {
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
             color: context.appColors.surface,
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(context.bullShapes.card),
             border: Border.all(
               color: context.appColors.border.withValues(alpha: 0.3),
               width: 1,
@@ -475,13 +476,13 @@ class _BitBoxActionViewState extends State<_BitBoxActionView> {
               width: double.infinity,
               decoration: BoxDecoration(
                 color: context.appColors.surface,
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(context.bullShapes.input),
                 border: Border.all(color: context.appColors.border, width: 1),
               ),
               child: Material(
                 color: context.appColors.transparent,
                 child: InkWell(
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(context.bullShapes.input),
                   onTap: () => _showScriptTypeSelection(context),
                   child: Padding(
                     padding: const EdgeInsets.symmetric(

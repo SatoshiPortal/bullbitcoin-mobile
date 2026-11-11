@@ -1,3 +1,4 @@
+import 'package:bull_ui/bull_ui.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_status.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
@@ -26,7 +27,7 @@ class ServerListItem extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
           color: context.appColors.cardBackground,
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(context.bullShapes.card),
           border: Border.all(
             color: disabled
                 ? context.appColors.border.withValues(alpha: 0.5)
@@ -72,7 +73,9 @@ class ServerListItem extends StatelessWidget {
                               ),
                               decoration: BoxDecoration(
                                 color: context.appColors.tertiaryContainer,
-                                borderRadius: BorderRadius.circular(4),
+                                borderRadius: BorderRadius.circular(
+                                  context.bullShapes.badge,
+                                ),
                               ),
                               child: Text(
                                 server.protocol.toUpperCase(),

@@ -1,3 +1,4 @@
+import 'package:bull_ui/bull_ui.dart' show BullShapesX;
 import 'package:bb_mobile/core/mempool/domain/value_objects/mempool_server_network.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
@@ -69,7 +70,7 @@ class _NetworkChip extends StatelessWidget {
           color: isSelected
               ? context.appColors.primary
               : context.appColors.surface,
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(context.bullShapes.dot),
           border: isSelected
               ? null
               : Border.all(color: context.appColors.outline),
