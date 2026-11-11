@@ -1411,9 +1411,16 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
   }
 
   /// Whether an expired sender holding a proposal may release its inputs:
-  /// neither its payjoin nor its original is on the network. A transaction
-  /// that is visible settles the session here; a lookup that fails is unknown,
-  /// never absence, and keeps the reservation.
+  /// neither its payjoin nor its original is on the network, and the row holds
+  /// no evidence that one ever went out or was seen. A transaction that is
+  /// visible settles the session here. A lookup that fails is unknown, never
+  /// absence, and two negative lookups never outweigh recorded evidence: both
+  /// keep the reservation until a later resume or observer reconciles it.
+  ///
+  /// ⚠️ Known limit: while the device is offline, or the evidence is never
+  /// confirmed nor refuted, the session stays reserved, its inputs stay frozen
+  /// and every resume repeats this pair of lookups. Broadcasting the original
+  /// by hand from the transaction is the remaining way out.
   Future<bool> _isUnobservedAtExpiry(PayjoinSenderModel sender) async {
     try {
       final payjoinTxId = sender.txId ?? await _deriveSenderPayjoinTxId(sender);
@@ -1437,7 +1444,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
         );
         return false;
       }
-      return true;
+      return !sender.hasNetworkEvidence;
     } catch (e, st) {
       _log.warning(
         code: api.PayjoinLogCode.watchFailure,
@@ -2100,16 +2107,52 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
         .toList();
   }
 
+  /// Records in the sender's row that one of its payments may be on the
+  /// network. Returns whether this call is the one that recorded it.
+  Future<bool> _recordSenderNetworkEvidence(String payjoinId) async {
+    final sender = await _localPayjoinDatasource.fetchSender(payjoinId);
+    if (sender == null || sender.hasNetworkEvidence) return false;
+    return _localPayjoinDatasource.setSenderNetworkEvidence(
+      payjoinId,
+      present: true,
+    );
+  }
+
   Future<PayjoinSender> _broadcastPsbt({
     required PayjoinSenderModel payjoinModel,
     required String finalizedPsbt,
     required primitives.BitcoinNetwork network,
   }) async {
-    await _blockchain.broadcastPsbt(
-      walletId: payjoinModel.walletId,
-      network: network,
-      psbt: finalizedPsbt,
-    );
+    // Written before the wire call: a crash or an error with an unknown
+    // outcome must still find it on the next start. A failed write throws
+    // before anything was sent.
+    final recorded = await _recordSenderNetworkEvidence(payjoinModel.id);
+    try {
+      await _blockchain.broadcastPsbt(
+        walletId: payjoinModel.walletId,
+        network: network,
+        psbt: finalizedPsbt,
+      );
+    } on api.PayjoinSpendBlockedException {
+      // Refused before the wire: withdraw only what this attempt recorded.
+      if (recorded) {
+        try {
+          await _localPayjoinDatasource.setSenderNetworkEvidence(
+            payjoinModel.id,
+            present: false,
+          );
+        } catch (e, st) {
+          _log.warning(
+            code: api.PayjoinLogCode.storageFailure,
+            role: api.PayjoinLogRole.sender,
+            sessionRef: payjoinModel.toEntity().logRef,
+            error: e,
+            trace: st,
+          );
+        }
+      }
+      rethrow;
+    }
 
     // From this point the real payjoin is on the network. Local persistence,
     // syncing and watcher setup must never throw back to the caller's fallback
@@ -2482,6 +2525,10 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       return null;
     }
 
+    // Seen on the network: kept even if the settlement below is refused.
+    if (model is PayjoinSenderModel) {
+      await _recordSenderNetworkEvidence(payjoinId);
+    }
     if (!await _transactions.protectObservedSpend(
       walletId: model.walletId,
       transactionId: observedTxId,
@@ -2565,6 +2612,10 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       return null;
     }
 
+    // Seen on the network: kept even if the settlement below is refused.
+    if (model is PayjoinSenderModel) {
+      await _recordSenderNetworkEvidence(payjoinId);
+    }
     if (model is PayjoinSenderModel &&
         !await _transactions.protectObservedSpend(
           walletId: model.walletId,
