@@ -682,6 +682,26 @@ void main() {
   }
 
   group('SendCubit selected-coin sweep', () {
+    test(
+      'reports a missing wallet before constructing a transaction',
+      () async {
+        final cubit = buildCubit();
+        addTearDown(cubit.close);
+        cubit.setStateForTest(
+          SendState(
+            bitcoinFeesList: _sweepFeeOptions,
+            liquidFeesList: _sweepFeeOptions,
+          ),
+        );
+
+        await cubit.createTransaction();
+
+        expect(cubit.state.failure, isA<SendTransactionBuildFailure>());
+        expect(cubit.state.buildingTransaction, isFalse);
+        expect(cubit.state.unsignedPsbt, isNull);
+      },
+    );
+
     test('sets sweep intent before wallet loading completes', () async {
       final wallet = _bitcoinLocalWallet();
       final selected = walletUtxoFixture(
