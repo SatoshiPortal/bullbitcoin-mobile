@@ -1,6 +1,6 @@
 import 'package:bb_mobile/core/utils/bitcoin_tx.dart';
 import 'package:bb_mobile/core/utils/result.dart';
-import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
+import 'package:bb_mobile/features/send/domain/send_failure.dart';
 import 'package:convert/convert.dart';
 import 'package:meta/meta.dart';
 
@@ -9,7 +9,7 @@ import 'package:meta/meta.dart';
 /// Signatures and witness data may change; the transaction skeleton may not.
 class VerifySignedTxUsecase {
   @useResult
-  Future<Result<void, SignedTransactionVerificationFailure>> execute({
+  Future<Result<void, SendFailure>> execute({
     required String unsignedPsbt,
     required String signedTransaction,
     bool isPsbt = false,
@@ -23,16 +23,17 @@ class VerifySignedTxUsecase {
       intended = await BitcoinTx.fromPsbt(unsignedPsbt);
     } on Exception {
       return const Err(
-        SignedTransactionVerificationFailure(
-          'Could not decode the signed transaction',
+        SendTransactionConfirmationFailure(
+          logMessage: 'Could not decode the signed transaction',
         ),
       );
     }
 
     if (!_isSameUnsignedTransaction(signed, intended)) {
       return const Err(
-        SignedTransactionVerificationFailure(
-          'The signed transaction does not match the confirmed transaction',
+        SendTransactionConfirmationFailure(
+          logMessage:
+              'The signed transaction does not match the confirmed transaction',
         ),
       );
     }

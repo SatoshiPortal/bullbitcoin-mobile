@@ -47,6 +47,7 @@ graph TB
     WITHDRAWAL[Withdrawal]
     STATUS[Status]
     SEND[Send]
+    BROADCAST_SIGNED_TX[Broadcast Signed Transaction]
     RECEIVE[Receive]
     TRANSFER[Transfer]
     TX_HISTORY[Transaction History]
@@ -158,6 +159,7 @@ graph TB
     SELL --> RECIPIENTS
     SELL --> BULL_PAYJOIN
     SELL --> TX_HISTORY
+    BROADCAST_SIGNED_TX --> SEND
     SEND --> CONSOLIDATION
     SEND --> FEES
     SEND --> NETWORK

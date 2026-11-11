@@ -30,7 +30,6 @@ import 'package:bb_mobile/core/wallet/domain/usecases/check_liquid_consolidation
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_utxos_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/sync_wallet_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/verify_signed_tx_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_electrum_sync_results_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_started_wallet_syncs_usecase.dart';
@@ -221,6 +220,5 @@ class WalletLocator {
     locator.registerFactory<SyncWalletUsecase>(
       () => SyncWalletUsecase(walletRepository: locator<WalletRepository>()),
     );
-    locator.registerFactory<VerifySignedTxUsecase>(VerifySignedTxUsecase.new);
   }
 }
