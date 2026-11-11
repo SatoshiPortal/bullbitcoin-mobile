@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:bip39_mnemonic/bip39_mnemonic.dart' show Language;
 import 'package:convert/convert.dart' as convert;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';

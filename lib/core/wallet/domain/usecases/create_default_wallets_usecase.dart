@@ -1,5 +1,4 @@
 import 'package:bb_mobile/core/errors/bull_exception.dart';
-import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:secrets/secrets.dart';
 import 'package:bull_logger/bull_logger.dart';
@@ -160,7 +159,7 @@ class CreateDefaultWalletsUsecase {
     }
     // TODO: remove after bull_sdk pins lwk-dart PR #95 and secrets uses its
     // seed-based Liquid APIs.
-    if (info.language != bip39.Language.english) {
+    if (info.language != Language.english) {
       throw CreateDefaultWalletsException(
         'Default wallets require an English mnemonic',
       );

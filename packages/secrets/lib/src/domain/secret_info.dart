@@ -42,7 +42,7 @@ final class SecretInfo {
   const SecretInfo.mnemonic({
     required this.id,
     required this.wordCount,
-    Language this.language = Language.english,
+    required Language this.language,
     required this.hasPassphrase,
   }) : kind = SecretKind.mnemonic,
        lengthInBits = null;
