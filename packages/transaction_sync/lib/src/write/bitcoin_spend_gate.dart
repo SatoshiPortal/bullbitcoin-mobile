@@ -102,8 +102,8 @@ final class BitcoinSpendGate {
         store.requireValidation(key);
       }
       // An observed tracked spend may be replaced. Broadcasting the
-      // replacement records it as a new obligation; the pass that sees it
-      // evicts and releases the one it replaced.
+      // replacement records it as a new obligation; a pass that sees the
+      // replacement settles the original by conflict, never by eviction.
       final status =
           replacing != null &&
               tracked.contains(replacing) &&
