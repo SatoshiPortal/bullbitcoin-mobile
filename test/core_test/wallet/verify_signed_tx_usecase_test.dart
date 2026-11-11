@@ -26,6 +26,22 @@ void main() {
   });
 
   group('VerifySignedTxUsecase', () {
+    test('keeps malformed input out of the diagnostic reason', () async {
+      final result = await usecase.execute(
+        unsignedPsbt: unsignedPsbt,
+        signedTransaction: 'private-payment-input',
+      );
+
+      expect(
+        result,
+        isA<Err<void, SignedTransactionVerificationFailure>>().having(
+          (error) => error.failure.logMessage,
+          'safe diagnostic reason',
+          'Could not decode the signed transaction',
+        ),
+      );
+    });
+
     test('accepts a signed transaction matching the PSBT', () async {
       final result = await usecase.execute(
         unsignedPsbt: unsignedPsbt,
