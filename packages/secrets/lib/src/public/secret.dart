@@ -127,7 +127,7 @@ final class Secret extends SecretEntry {
   /// BIP85 child mnemonic words. **Returns key material** — a child the caller asked this feature to produce, not the stored secret, so it is not gated behind [RevealReason].
   @internal
   Future<Result<List<String>, SecretFailure>> bip85Mnemonic({
-    required MnemonicWordCount wordCount,
+    required MnemonicLength wordCount,
     required int index,
     Language language = Language.english,
   }) {
@@ -137,7 +137,7 @@ final class Secret extends SecretEntry {
       (m) => Deriver.bip85.mnemonic(
         m,
         language: language,
-        length: MnemonicLength.fromWords(wordCount.count),
+        length: wordCount,
         index: index,
       ),
     );
