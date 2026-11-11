@@ -4,7 +4,7 @@ import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullBottomSheet, BullButton, BullText;
+    show BullBottomSheet, BullButton, BullShapesX, BullText;
 
 class TranslationWarningBottomSheet extends StatelessWidget {
   const TranslationWarningBottomSheet({super.key});
@@ -37,8 +37,10 @@ class TranslationWarningBottomSheet extends StatelessWidget {
     final grabWidth = Device.screen.width * 0.10;
     final iconSize = Device.screen.height * 0.06;
     return Container(
-      decoration: const BoxDecoration(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(context.bullShapes.sheet),
+        ),
       ),
       child: SafeArea(
         child: Padding(
@@ -51,7 +53,7 @@ class TranslationWarningBottomSheet extends StatelessWidget {
                 height: 4,
                 decoration: BoxDecoration(
                   color: context.appColors.outline.withValues(alpha: 0.3),
-                  borderRadius: BorderRadius.circular(2),
+                  borderRadius: BorderRadius.circular(context.bullShapes.dot),
                 ),
               ),
               SizedBox(height: gapL),

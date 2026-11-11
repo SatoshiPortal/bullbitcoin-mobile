@@ -3,7 +3,7 @@ import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullDialog, BullShimmerLine, BullSnackBar, Gap;
+    show BullDialog, BullShapesX, BullShimmerLine, BullSnackBar, Gap;
 
 class CopyInput extends StatelessWidget {
   const CopyInput({
@@ -37,7 +37,7 @@ class CopyInput extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: context.appColors.onSecondary,
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(context.bullShapes.input),
         border: Border.all(color: context.appColors.secondaryFixedDim),
       ),
       child: Row(
@@ -102,6 +102,9 @@ class CopyInput extends StatelessWidget {
     BullDialog.show(
       context: context,
       builder: (dialogContext) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(dialogContext.bullShapes.sheet),
+        ),
         backgroundColor: context.appColors.surface,
         title: modalTitle != null
             ? Text(

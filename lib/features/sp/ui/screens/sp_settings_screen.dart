@@ -13,7 +13,7 @@ import 'package:bb_mobile/features/sp/presentation/sp_state.dart';
 import 'package:bb_mobile/features/sp/ui/sp_router.dart';
 import 'package:bb_mobile/features/sp/ui/widgets/sp_backend_config_form.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullDialog, BullSettingsEntryItem, Gap;
+    show BullDialog, BullSettingsEntryItem, BullShapesX, Gap;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -311,7 +311,7 @@ class _NotificationConsoleSection extends StatelessWidget {
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
             color: context.appColors.surface,
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: BorderRadius.circular(context.bullShapes.card),
             border: Border.all(color: context.appColors.border),
           ),
           child: console.isEmpty
@@ -355,6 +355,9 @@ Future<bool> _confirm(
   final result = await BullDialog.show<bool>(
     context: context,
     builder: (context) => AlertDialog(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(context.bullShapes.sheet),
+      ),
       title: Text(title),
       content: Text(content),
       actions: [

@@ -22,6 +22,7 @@ workspace:
   - packages/bull_tor
   - packages/screen_privacy
   - packages/bull_reporting
+  - packages/screen_awake
   - packages/bull_logger
   - packages/bull_pricer
   - features/logs
@@ -41,6 +42,7 @@ dependencies:
   bull_tor:
   screen_privacy:
   bull_reporting:
+  screen_awake:
   bull_logger:
   bull_logs:
   flutter_bloc: ^9.1.1

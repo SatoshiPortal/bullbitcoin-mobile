@@ -383,6 +383,16 @@ final directories = <_widgetbook.WidgetbookNode>[
         ],
       ),
       _widgetbook.WidgetbookComponent(
+        name: 'BullReferenceNotice',
+        useCases: [
+          _widgetbook.WidgetbookUseCase(
+            name: 'Default',
+            builder: _bull_ui_catalogue_use_cases_use_cases
+                .bullReferenceNoticeUseCase,
+          ),
+        ],
+      ),
+      _widgetbook.WidgetbookComponent(
         name: 'BullRefreshIndicator',
         useCases: [
           _widgetbook.WidgetbookUseCase(
@@ -438,6 +448,16 @@ final directories = <_widgetbook.WidgetbookNode>[
             name: 'Unchecked',
             builder: _bull_ui_catalogue_use_cases_use_cases
                 .bullCheckboxUncheckedUseCase,
+          ),
+        ],
+      ),
+      _widgetbook.WidgetbookComponent(
+        name: 'BullCopyField',
+        useCases: [
+          _widgetbook.WidgetbookUseCase(
+            name: 'Default',
+            builder:
+                _bull_ui_catalogue_use_cases_use_cases.bullCopyFieldUseCase,
           ),
         ],
       ),
@@ -590,6 +610,21 @@ final directories = <_widgetbook.WidgetbookNode>[
             name: 'Inline',
             builder:
                 _bull_ui_catalogue_use_cases_use_cases.bullPickerSheetUseCase,
+          ),
+        ],
+      ),
+    ],
+  ),
+  _widgetbook.WidgetbookFolder(
+    name: 'support',
+    children: [
+      _widgetbook.WidgetbookComponent(
+        name: 'BullSupportButton',
+        useCases: [
+          _widgetbook.WidgetbookUseCase(
+            name: 'Default',
+            builder:
+                _bull_ui_catalogue_use_cases_use_cases.bullSupportButtonUseCase,
           ),
         ],
       ),

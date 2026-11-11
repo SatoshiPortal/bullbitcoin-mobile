@@ -8,7 +8,12 @@ import 'package:bb_mobile/features/tor_settings/public/tor_settings_facade.dart'
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullBottomSheet, BullButton, BullInfoCard, BullSettingsEntryItem;
+    show
+        BullBottomSheet,
+        BullButton,
+        BullInfoCard,
+        BullSettingsEntryItem,
+        BullShapesX;
 
 bool shouldShowTorInAdvancedOptions(ElectrumSettingsState state) =>
     !state.isLiquid && state.hasActiveCustomBitcoinOnionServer;
@@ -170,19 +175,25 @@ class _SetAdvancedOptionsBottomSheetState
                           fillColor: context.appColors.surface,
                           filled: true,
                           border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8.0),
+                            borderRadius: BorderRadius.circular(
+                              context.bullShapes.input,
+                            ),
                             borderSide: BorderSide(
                               color: context.appColors.border,
                             ),
                           ),
                           enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8.0),
+                            borderRadius: BorderRadius.circular(
+                              context.bullShapes.input,
+                            ),
                             borderSide: BorderSide(
                               color: context.appColors.border,
                             ),
                           ),
                           disabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8.0),
+                            borderRadius: BorderRadius.circular(
+                              context.bullShapes.input,
+                            ),
                             borderSide: BorderSide(
                               color: context.appColors.border.withValues(
                                 alpha: 0.5,
@@ -256,19 +267,25 @@ class _SetAdvancedOptionsBottomSheetState
                           fillColor: context.appColors.surface,
                           filled: true,
                           border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8.0),
+                            borderRadius: BorderRadius.circular(
+                              context.bullShapes.input,
+                            ),
                             borderSide: BorderSide(
                               color: context.appColors.border,
                             ),
                           ),
                           enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8.0),
+                            borderRadius: BorderRadius.circular(
+                              context.bullShapes.input,
+                            ),
                             borderSide: BorderSide(
                               color: context.appColors.border,
                             ),
                           ),
                           disabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8.0),
+                            borderRadius: BorderRadius.circular(
+                              context.bullShapes.input,
+                            ),
                             borderSide: BorderSide(
                               color: context.appColors.border.withValues(
                                 alpha: 0.5,
@@ -356,19 +373,25 @@ class _SetAdvancedOptionsBottomSheetState
                           fillColor: context.appColors.surface,
                           filled: true,
                           border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8.0),
+                            borderRadius: BorderRadius.circular(
+                              context.bullShapes.input,
+                            ),
                             borderSide: BorderSide(
                               color: context.appColors.border,
                             ),
                           ),
                           enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8.0),
+                            borderRadius: BorderRadius.circular(
+                              context.bullShapes.input,
+                            ),
                             borderSide: BorderSide(
                               color: context.appColors.border,
                             ),
                           ),
                           disabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8.0),
+                            borderRadius: BorderRadius.circular(
+                              context.bullShapes.input,
+                            ),
                             borderSide: BorderSide(
                               color: context.appColors.border.withValues(
                                 alpha: 0.5,

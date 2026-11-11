@@ -5,6 +5,7 @@ import 'package:bb_mobile/features/settings/domain/settings_failure.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/settings_failure_listener.dart';
 import 'package:bb_mobile/generated/l10n/localization.dart';
+import 'package:bull_ui/testing.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -44,6 +45,7 @@ void main() {
               overlayReady ? navigatorKey.currentState?.overlay : null,
           child: MaterialApp(
             navigatorKey: navigatorKey,
+            theme: ThemeData(extensions: testBullExtensions),
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
             home: const Scaffold(body: SizedBox()),
