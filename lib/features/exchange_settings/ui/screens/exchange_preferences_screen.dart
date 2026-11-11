@@ -217,7 +217,7 @@ class _EmailNotificationsToggle extends StatelessWidget {
       padding: const EdgeInsets.all(BullSpacing.md),
       decoration: BoxDecoration(
         color: context.bull.surface,
-        borderRadius: BorderRadius.circular(BullRadius.sm),
+        borderRadius: BorderRadius.circular(context.bullShapes.card),
         boxShadow: [
           BoxShadow(
             color: context.bull.overlay.withValues(alpha: 0.05),

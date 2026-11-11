@@ -208,7 +208,7 @@ final class _LogsFilterSheetState extends State<_LogsFilterSheet> {
                   height: 4,
                   decoration: BoxDecoration(
                     color: context.bull.textMuted,
-                    borderRadius: BorderRadius.circular(2),
+                    borderRadius: BorderRadius.circular(context.bullShapes.dot),
                   ),
                 ),
               ),

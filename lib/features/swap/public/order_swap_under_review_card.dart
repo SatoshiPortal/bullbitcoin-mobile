@@ -1,11 +1,9 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/features/exchange_support_chat/public/exchange_support_chat_facade.dart';
 import 'package:bb_mobile/features/swap/domain/entities/order_swap_record.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullButton, BullInfoCard, BullText, Gap;
+    show BullInfoCard, BullSupportButton, BullText, Gap;
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 
 class OrderSwapUnderReviewCard extends StatelessWidget {
   final OrderSwapRecord orderSwap;
@@ -36,21 +34,13 @@ class OrderSwapUnderReviewCard extends StatelessWidget {
           boldDescription: true,
         ),
         const Gap(12),
-        BullButton.big(
+        BullSupportButton.big(
           label: context.loc.swapUnderReviewContactSupport,
-          onPressed: () {
-            final message = context.loc.swapUnderReviewSupportMessage(
-              order.orderId,
-              requestId,
-              order.orderNumber,
-            );
-            context.pushNamed(
-              ExchangeSupportChatFacade.routeName,
-              extra: ExchangeSupportChatDraft(initialMessage: message),
-            );
-          },
-          bgColor: context.appColors.secondary,
-          textColor: context.appColors.onSecondary,
+          message: context.loc.swapUnderReviewSupportMessage(
+            order.orderId,
+            requestId,
+            order.orderNumber,
+          ),
         ),
       ],
     );

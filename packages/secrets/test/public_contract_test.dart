@@ -300,7 +300,7 @@ void main() {
         );
         expect(
           () => secret.derive.bip85.mnemonic(
-            wordCount: MnemonicWordCount.words12,
+            wordCount: MnemonicLength.words12,
             index: index,
           ),
           throwsArgumentError,

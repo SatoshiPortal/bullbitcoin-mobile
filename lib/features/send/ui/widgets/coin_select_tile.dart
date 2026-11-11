@@ -7,7 +7,7 @@ import 'package:bb_mobile/core/widgets/address_viewer.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bb_mobile/features/labels/ui/labels_widget.dart';
-import 'package:bull_ui/bull_ui.dart' show BullCheckbox, BullText;
+import 'package:bull_ui/bull_ui.dart' show BullCheckbox, BullShapesX, BullText;
 import 'package:flutter/material.dart';
 
 class CoinSelectTile extends StatelessWidget {
@@ -54,7 +54,7 @@ class CoinSelectTile extends StatelessWidget {
         margin: const EdgeInsets.symmetric(vertical: 8),
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(4),
+          borderRadius: BorderRadius.circular(context.bullShapes.card),
           border: Border.all(
             color: context.appColors.onSurfaceVariant,
             width: 1.5,
@@ -69,7 +69,9 @@ class CoinSelectTile extends StatelessWidget {
                 children: [
                   ListTile(
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(2),
+                      borderRadius: BorderRadius.circular(
+                        context.bullShapes.card,
+                      ),
                     ),
                     tileColor: context.appColors.transparent,
                     contentPadding: EdgeInsets.zero,

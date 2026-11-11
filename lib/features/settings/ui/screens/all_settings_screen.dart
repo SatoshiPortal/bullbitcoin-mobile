@@ -1,15 +1,12 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
-import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
-import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
-import 'package:bb_mobile/features/exchange_support_chat/public/exchange_support_chat_facade.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/settings_item.dart';
 import 'package:bb_mobile/features/settings/ui/settings_route.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/settings_search_bar.dart';
 import 'package:bb_mobile/features/status_check/presentation/cubit.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullSupportButton, Gap;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -136,36 +133,8 @@ class _AllSettingsScreenState extends State<AllSettingsScreen> {
                         ],
                       ),
                     ),
-                    InkWell(
-                      onTap: () {
-                        final notLoggedIn = context
-                            .read<ExchangeCubit>()
-                            .state
-                            .notLoggedIn;
-                        if (notLoggedIn) {
-                          context.goNamed(
-                            ExchangeRoute.exchangeLoginForSupport.name,
-                          );
-                        } else {
-                          context.goNamed(ExchangeSupportChatFacade.routeName);
-                        }
-                      },
-                      child: Column(
-                        mainAxisSize: .min,
-                        children: [
-                          Icon(
-                            Icons.headset_mic,
-                            color: context.appColors.onSurface,
-                          ),
-                          const Gap(8),
-                          Text(
-                            context.loc.settingsGetHelpLabel,
-                            style: theme.textTheme.bodyMedium?.copyWith(
-                              color: context.appColors.onSurface,
-                            ),
-                          ),
-                        ],
-                      ),
+                    BullSupportButton.tile(
+                      label: context.loc.settingsGetHelpLabel,
                     ),
                   ],
                 ),
