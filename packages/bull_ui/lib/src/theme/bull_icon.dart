@@ -24,6 +24,8 @@ abstract final class BullIcons {
   static const IconData accountTree = Icons.account_tree;
   static const IconData deleteOutline = Icons.delete_outline;
   static const IconData errorOutline = Icons.error_outline;
+  static const IconData chatBubbleOutline = Icons.chat_bubble_outline;
+  static const IconData headsetMic = Icons.headset_mic;
 }
 
 /// A thin wrapper over the Flutter [Icon] so feature code never touches

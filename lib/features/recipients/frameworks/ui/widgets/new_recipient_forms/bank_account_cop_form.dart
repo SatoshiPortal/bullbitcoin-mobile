@@ -10,7 +10,7 @@ import 'package:bb_mobile/features/recipients/presentation/models/cop_document_t
 import 'package:bb_mobile/features/recipients/presentation/models/recipient_form_data_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullShapesX, Gap;
 
 class BankAccountCopForm extends StatefulWidget {
   const BankAccountCopForm({super.key, this.hookError});
@@ -88,13 +88,13 @@ class BankAccountCopFormState extends State<BankAccountCopForm> {
             elevation: 4,
             shadowColor: context.appColors.onSurface.withValues(alpha: 0.7),
             color: context.appColors.surface,
-            borderRadius: BorderRadius.circular(4.0),
+            borderRadius: BorderRadius.circular(context.bullShapes.input),
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: DropdownButtonFormField<CopBankInstitution?>(
                 isExpanded: true,
                 alignment: Alignment.centerLeft,
-                borderRadius: BorderRadius.circular(4.0),
+                borderRadius: BorderRadius.circular(context.bullShapes.input),
                 dropdownColor: context.appColors.surface,
                 decoration: const InputDecoration(border: InputBorder.none),
                 icon: Icon(
@@ -145,14 +145,14 @@ class BankAccountCopFormState extends State<BankAccountCopForm> {
             elevation: 4,
             shadowColor: context.appColors.onSurface.withValues(alpha: 0.7),
             color: context.appColors.surface,
-            borderRadius: BorderRadius.circular(4.0),
+            borderRadius: BorderRadius.circular(context.bullShapes.input),
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: DropdownButton<CopBankAccountType>(
                 isExpanded: true,
                 alignment: Alignment.centerLeft,
                 underline: const SizedBox.shrink(),
-                borderRadius: BorderRadius.circular(4.0),
+                borderRadius: BorderRadius.circular(context.bullShapes.input),
                 dropdownColor: context.appColors.surface,
                 icon: Icon(
                   Icons.keyboard_arrow_down,
@@ -212,14 +212,14 @@ class BankAccountCopFormState extends State<BankAccountCopForm> {
             elevation: 4,
             shadowColor: context.appColors.onSurface.withValues(alpha: 0.7),
             color: context.appColors.surface,
-            borderRadius: BorderRadius.circular(4.0),
+            borderRadius: BorderRadius.circular(context.bullShapes.input),
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: DropdownButton<CopDocumentType>(
                 isExpanded: true,
                 alignment: Alignment.centerLeft,
                 underline: const SizedBox.shrink(),
-                borderRadius: BorderRadius.circular(4.0),
+                borderRadius: BorderRadius.circular(context.bullShapes.input),
                 dropdownColor: context.appColors.surface,
                 icon: Icon(
                   Icons.keyboard_arrow_down,

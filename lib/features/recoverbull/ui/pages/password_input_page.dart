@@ -8,7 +8,7 @@ import 'package:bb_mobile/features/recoverbull/utils/password_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullButton, BullDialPad, BullText, BullTopBar, Gap;
+    show BullButton, BullDialPad, BullShapesX, BullText, BullTopBar, Gap;
 import 'package:go_router/go_router.dart';
 
 enum InputType { pin, password, vaultKey }
@@ -44,7 +44,7 @@ class _PasswordInputPageState extends State<PasswordInputPage> {
   @override
   Widget build(BuildContext context) {
     final borderDecoration = OutlineInputBorder(
-      borderRadius: BorderRadius.circular(2),
+      borderRadius: BorderRadius.circular(context.bullShapes.input),
       borderSide: BorderSide(color: context.appColors.border),
     );
 
