@@ -264,7 +264,7 @@ final class NativeWalletWriter implements LiquidReadAdmission {
     if (preflight != null) _value(await preflight());
     BitcoinSpendGateStore? gates;
     if (key.network is BitcoinNetwork) {
-      gates = BitcoinSpendGateStore(revisions.spendGatePath);
+      gates = revisions.openSpendGate();
       try {
         final tracked = gates.trackedInputs(descriptor);
         if (operation case final WriterSyncSpendObservation observer) {
@@ -307,7 +307,7 @@ final class NativeWalletWriter implements LiquidReadAdmission {
       :final spendTransactionInputs,
       :final releasedSpendTransactions,
     ) when key.network is BitcoinNetwork) {
-      final observed = BitcoinSpendGateStore(revisions.spendGatePath);
+      final observed = revisions.openSpendGate();
       try {
         observed.observed(
           descriptor,

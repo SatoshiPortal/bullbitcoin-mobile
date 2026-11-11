@@ -39,22 +39,26 @@ final class BitcoinSpendGateStore {
     }
     final db = sqlite3.open(path);
     try {
-      if (db.userVersion == 0) {
+      // The first Bitcoin paths of two isolates may provision concurrently.
+      db.execute('PRAGMA busy_timeout = 1000');
+      if (db.userVersion == 0 || !_hasInputs(db)) {
         db.execute('BEGIN IMMEDIATE');
-        db.execute('''CREATE TABLE IF NOT EXISTS broadcasts (
+        if (db.userVersion == 0) {
+          db.execute('''CREATE TABLE IF NOT EXISTS broadcasts (
           wallet TEXT NOT NULL, network TEXT NOT NULL,
           descriptor TEXT NOT NULL, generation INTEGER NOT NULL,
           txid TEXT NOT NULL, observed INTEGER NOT NULL DEFAULT 0,
           inputs TEXT,
           PRIMARY KEY(wallet, network, txid))''');
-        db.userVersion = 1;
+          db.userVersion = 1;
+        }
+        // Development stores created before release evidence lack the column.
+        if (db.userVersion == 1 && !_hasInputs(db)) {
+          db.execute('ALTER TABLE broadcasts ADD COLUMN inputs TEXT');
+        }
         db.execute('COMMIT');
       }
       if (db.userVersion != 1) throw const BitcoinSpendGateUnavailable();
-      // Development stores created before release evidence lack the column.
-      if (!_hasInputs(db)) {
-        db.execute('ALTER TABLE broadcasts ADD COLUMN inputs TEXT');
-      }
       marker.writeAsStringSync('1\n', flush: true);
     } on Exception {
       throw const BitcoinSpendGateUnavailable();

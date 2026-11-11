@@ -90,7 +90,7 @@ final class BitcoinSpendGate {
       if (found case Err()) throw const BitcoinSpendGateUnavailable();
       final descriptor =
           (found as Ok<PublicWalletDescriptor, TransactionSyncFailure>).value;
-      store = BitcoinSpendGateStore(revisions.spendGatePath);
+      store = revisions.openSpendGate();
       final pendingKey = (revisions.spendGatePath, key);
       final pending = _pending[pendingKey];
       if (pending != null) {

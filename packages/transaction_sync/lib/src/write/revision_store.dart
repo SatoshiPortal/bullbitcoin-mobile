@@ -42,28 +42,35 @@ final class RevisionRecord {
 final class RevisionStore implements WalletRevisionReader {
   final Database _db;
   final String _path;
+  final bool _existingOnly;
+  bool _spendGateProvisioned = false;
   final _changes = StreamController<WalletRevisionState>.broadcast();
   final _published = <WalletKey, WalletRevisionState>{};
 
   RevisionStore(this._path, {bool existingOnly = false})
-    : _db = _open(_path, existingOnly: existingOnly) {
-    try {
-      if (!existingOnly) BitcoinSpendGateStore.provision(spendGatePath);
-      final gates = BitcoinSpendGateStore(spendGatePath);
-      gates.close();
-    } catch (_) {
-      _db.dispose();
-      rethrow;
-    }
-  }
+    : _existingOnly = existingOnly,
+      _db = _open(_path, existingOnly: existingOnly);
 
   String get spendGatePath => '$_path.spend-gate.sqlite';
+
+  /// Only Bitcoin spend and write paths open the gate: a damaged gate refuses
+  /// them, never Liquid work or revision reads. Headless openers do not
+  /// provision it; they defer until the foreground has.
+  @internal
+  BitcoinSpendGateStore openSpendGate() {
+    if (!_existingOnly && !_spendGateProvisioned) {
+      BitcoinSpendGateStore.provision(spendGatePath);
+      _spendGateProvisioned = true;
+    }
+    return BitcoinSpendGateStore(spendGatePath);
+  }
+
   bool get recoveryPending => File('$_path.recovery').existsSync();
 
   /// Recovery cannot silently forget protection when native metadata is rebuilt.
   void invalidateSpendGate(WalletKey key) {
     if (key.network is! BitcoinNetwork) return;
-    final gates = BitcoinSpendGateStore(spendGatePath);
+    final gates = openSpendGate();
     try {
       gates.requireValidation(key);
     } finally {
@@ -73,7 +80,7 @@ final class RevisionStore implements WalletRevisionReader {
 
   /// Called only after the complete catalog adoption pass has recorded outcomes.
   void completeRecovery() {
-    final gates = BitcoinSpendGateStore(spendGatePath);
+    final gates = openSpendGate();
     try {
       gates.requireRecoveryValidation();
     } finally {
