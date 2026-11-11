@@ -43,7 +43,7 @@ class CheckWalletStatusUsecase {
       final settings = await _settingsRepository.fetch();
       isTestnet = settings.environment.isTestnet;
 
-      descriptors = switch (await _secrets.preview.bitcoinDescriptors(
+      switch (await _secrets.preview.bitcoinDescriptors(
         words: words,
         language: language,
         passphrase: passphrase,
@@ -52,12 +52,17 @@ class CheckWalletStatusUsecase {
             : primitives.BitcoinNetwork.mainnet,
         scriptTypes: {for (final scriptType in scriptTypes) scriptType.shared},
       )) {
-        primitives.Ok(:final value) => value,
-        // Only the failure's type travels: its message may describe the words.
-        primitives.Err(:final failure) => throw CheckWalletStatusException(
-          'Could not derive the descriptors to scan: ${failure.runtimeType}',
-        ),
-      };
+        case primitives.Ok(:final value):
+          descriptors = value;
+        case primitives.Err(:final failure):
+          // Only the failure's type travels: its message may describe the words.
+          log.warning('${failure.runtimeType}');
+          throw CheckWalletStatusException(
+            'Could not derive the descriptors to scan: ${failure.runtimeType}',
+          );
+      }
+    } on CheckWalletStatusException {
+      rethrow;
     } catch (e) {
       log.severe(error: e, trace: StackTrace.current);
       throw CheckWalletStatusException(e.toString());
@@ -70,13 +75,18 @@ class CheckWalletStatusUsecase {
           primitives.ScriptType.bip49 => ScriptType.bip49,
           primitives.ScriptType.bip44 => ScriptType.bip44,
         }: _handled(
-          _scan(descriptors: pair, isTestnet: isTestnet),
+          _scan(
+            descriptors: pair,
+            scriptType: scriptType,
+            isTestnet: isTestnet,
+          ),
         ),
     };
   }
 
   Future<({BigInt satoshis, int transactions})> _scan({
     required Descriptors descriptors,
+    required primitives.ScriptType scriptType,
     required bool isTestnet,
   }) async {
     try {
@@ -92,7 +102,16 @@ class CheckWalletStatusUsecase {
               electrumServer: connection,
             ),
           );
-    } on ElectrumFallbackException {
+    } on ElectrumFallbackException catch (e) {
+      final category = switch (e) {
+        NoElectrumServersConfiguredException() => 'no_servers',
+        OnionServerWithoutTorException() => 'onion_without_tor',
+        ClearnetServerWithoutConfiguredTorException() => 'tor_unavailable',
+        AllElectrumServersFailedException() => 'all_servers_failed',
+      };
+      log.warning(
+        'Pre-import scan failed scriptType=${scriptType.name} failure=$category',
+      );
       // Preserve the typed exception so callers retain the per-server
       // attempts (failure tier, urls, root-cause errors) for diagnostics.
       rethrow;
