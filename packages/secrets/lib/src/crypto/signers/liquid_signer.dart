@@ -22,9 +22,8 @@ import 'package:meta/meta.dart';
 /// whenever the GC got to it. The scratch directory goes the same way —
 /// see [signPset].
 ///
-/// ⚠️ A passphrase is ignored: Liquid signs with [liquidSeed], the seed
-/// every existing Liquid wallet was derived from. See doc/design.md,
-/// § Passphrase.
+/// Signs with [liquidSeed], the secret's full BIP39 seed, passphrase
+/// included.
 final class LiquidSigner {
   @internal
   const LiquidSigner();
