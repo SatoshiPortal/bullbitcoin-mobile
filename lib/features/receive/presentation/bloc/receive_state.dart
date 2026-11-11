@@ -255,7 +255,10 @@ abstract class ReceiveState with _$ReceiveState {
       case ReceiveType.lightning:
         return orderSwap?.localStatus ==
                 OrderSwapLocalStatus.payoutInProgress ||
-            (lightningSwap != null && lightningSwap!.status == SwapStatus.paid);
+            switch (lightningSwap?.status) {
+              SwapStatus.paid || SwapStatus.claimable => true,
+              _ => false,
+            };
       case ReceiveType.liquid:
         return false;
       case _:
@@ -284,6 +287,13 @@ abstract class ReceiveState with _$ReceiveState {
     OrderSwapLocalStatus.refunded => true,
     _ => false,
   };
+
+  bool get hasTerminalLightningSwapFailure =>
+      hasTerminalOrderSwapFailure ||
+      switch (lightningSwap?.status) {
+        SwapStatus.expired || SwapStatus.failed => true,
+        _ => false,
+      };
 
   /// Whether the payjoin flow owns navigation for this receive, so the
   /// shell's generic "payment received → transaction details" listener must

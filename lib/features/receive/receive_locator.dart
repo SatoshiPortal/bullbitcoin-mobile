@@ -8,7 +8,9 @@ import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/broadcast_original_transaction_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/get_receive_payjoin_policy_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/receive_with_payjoin_usecase.dart';
+import 'package:bb_mobile/features/receive/domain/usecases/create_boltz_receive_swap_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/create_receive_order_swap_usecase.dart';
+import 'package:bb_mobile/features/receive/domain/usecases/get_receive_swap_route_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/convert_receive_amount_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/fetch_receive_note_suggestions_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/get_receive_address_at_index_usecase.dart';
@@ -24,6 +26,8 @@ import 'package:bb_mobile/features/receive/domain/usecases/watch_receive_payjoin
 import 'package:bb_mobile/features/receive/domain/usecases/watch_receive_payjoin_enabled_usecase.dart';
 import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
 import 'package:bb_mobile/features/settings/public/settings_facade.dart';
+import 'package:boltz_swaps/boltz_swaps.dart'
+    show CreateLightningReceiveSwapUsecase, WatchSwapUsecase;
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:bull_pricer/bull_pricer.dart';
@@ -50,6 +54,14 @@ class ReceiveLocator {
       () => CreateReceiveOrderSwapUsecase(
         locator<SwapFacade>(),
         locator<GetReceiveAddressUsecase>(),
+      ),
+    );
+    locator.registerFactory<GetReceiveSwapRouteUsecase>(
+      () => GetReceiveSwapRouteUsecase(locator<SwapFacade>()),
+    );
+    locator.registerFactory<CreateBoltzReceiveSwapUsecase>(
+      () => CreateBoltzReceiveSwapUsecase(
+        locator<CreateLightningReceiveSwapUsecase>(),
       ),
     );
     locator.registerFactory<SetReceivePayjoinEnabledUsecase>(
@@ -111,6 +123,9 @@ class ReceiveLocator {
         getReceiveAddressAtIndexUsecase:
             locator<GetReceiveAddressAtIndexUsecase>(),
         createReceiveOrderSwapUsecase: locator<CreateReceiveOrderSwapUsecase>(),
+        getReceiveSwapRouteUsecase: locator<GetReceiveSwapRouteUsecase>(),
+        createBoltzReceiveSwapUsecase: locator<CreateBoltzReceiveSwapUsecase>(),
+        watchSwapUsecase: locator<WatchSwapUsecase>(),
         receiveWithPayjoinUsecase: locator<ReceiveWithPayjoinUsecase>(),
         broadcastOriginalTransactionUsecase:
             locator<BroadcastOriginalTransactionUsecase>(),

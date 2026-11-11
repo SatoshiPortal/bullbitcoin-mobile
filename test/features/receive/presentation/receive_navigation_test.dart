@@ -1,6 +1,7 @@
 import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
 import 'package:bb_mobile/features/receive/presentation/receive_navigation.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
+import 'package:boltz_swaps/boltz_swaps.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -17,6 +18,43 @@ void main() {
       expect(canReuseConfirmedReceiveDetails(state), isFalse);
     },
   );
+
+  test('reuses a live Boltz invoice for the same amount, never a dead one', () {
+    ReceiveState withSwap(SwapStatus status) => ReceiveState(
+      type: ReceiveType.lightning,
+      inputAmount: '1000',
+      inputAmountCurrencyCode: 'sats',
+      confirmedAmountSat: 1000,
+      lightningSwap:
+          Swap.lnReceive(
+                id: 'boltz-1',
+                keyIndex: 0,
+                type: SwapType.lightningToLiquid,
+                status: status,
+                environment: Environment.testnet,
+                creationTime: DateTime.utc(2026),
+                receiveWalletId: 'wallet-1',
+                invoice: 'lntb-invoice',
+              )
+              as LnReceiveSwap,
+    );
+
+    expect(
+      canReuseConfirmedReceiveDetails(withSwap(SwapStatus.pending)),
+      isTrue,
+    );
+    expect(
+      canReuseConfirmedReceiveDetails(withSwap(SwapStatus.claimable)),
+      isTrue,
+    );
+    for (final status in [
+      SwapStatus.expired,
+      SwapStatus.failed,
+      SwapStatus.completed,
+    ]) {
+      expect(canReuseConfirmedReceiveDetails(withSwap(status)), isFalse);
+    }
+  });
 
   test('opens order swap details when that is the available transaction', () {
     final state = ReceiveState(

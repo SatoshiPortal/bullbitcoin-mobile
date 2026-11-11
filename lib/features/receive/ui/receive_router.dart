@@ -100,8 +100,8 @@ class ReceiveRouter {
               ),
               BlocListener<ReceiveBloc, ReceiveState>(
                 listenWhen: (previous, current) =>
-                    previous.hasTerminalOrderSwapFailure != true &&
-                    current.hasTerminalOrderSwapFailure,
+                    previous.hasTerminalLightningSwapFailure != true &&
+                    current.hasTerminalLightningSwapFailure,
                 listener: (context, state) {
                   context.goNamed(ReceiveRoute.receiveLightning.name);
                 },

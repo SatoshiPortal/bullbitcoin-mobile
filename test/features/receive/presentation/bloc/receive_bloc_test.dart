@@ -19,7 +19,9 @@ import 'package:bb_mobile/features/receive/domain/usecases/save_receive_address_
 import 'package:bb_mobile/features/receive/domain/usecases/get_receive_payjoin_policy_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/broadcast_original_transaction_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/receive_with_payjoin_usecase.dart';
+import 'package:bb_mobile/features/receive/domain/usecases/create_boltz_receive_swap_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/create_receive_order_swap_usecase.dart';
+import 'package:bb_mobile/features/receive/domain/usecases/get_receive_swap_route_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/set_receive_payjoin_enabled_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/watch_receive_order_swap_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/watch_receive_payjoin_min_amount_usecase.dart';
@@ -27,6 +29,7 @@ import 'package:bb_mobile/features/receive/domain/usecases/watch_receive_payjoin
 import 'package:bb_mobile/features/receive/domain/usecases/watch_payjoin_usecase.dart';
 import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
+import 'package:boltz_swaps/boltz_swaps.dart' as swaps;
 import 'package:clock/clock.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:fake_async/fake_async.dart';
@@ -51,6 +54,14 @@ class _MockGetReceiveAddressAtIndexUsecase extends Mock
 
 class _MockCreateReceiveOrderSwapUsecase extends Mock
     implements CreateReceiveOrderSwapUsecase {}
+
+class _MockGetReceiveSwapRouteUsecase extends Mock
+    implements GetReceiveSwapRouteUsecase {}
+
+class _MockCreateBoltzReceiveSwapUsecase extends Mock
+    implements CreateBoltzReceiveSwapUsecase {}
+
+class _MockWatchSwapUsecase extends Mock implements swaps.WatchSwapUsecase {}
 
 class _MockReceiveWithPayjoinUsecase extends Mock
     implements ReceiveWithPayjoinUsecase {}
@@ -209,6 +220,25 @@ PayjoinReceiverSession _receiver({
   fallbackAvailableAt: fallbackAvailableAt,
 );
 
+swaps.LnReceiveSwap _boltzReceiveSwap({
+  String id = 'boltz-1',
+  swaps.SwapStatus status = swaps.SwapStatus.pending,
+  swaps.SwapType type = swaps.SwapType.lightningToLiquid,
+  String receiveWalletId = 'w1',
+}) =>
+    swaps.Swap.lnReceive(
+          id: id,
+          keyIndex: 0,
+          type: type,
+          status: status,
+          environment: swaps.Environment.testnet,
+          creationTime: DateTime.utc(2026),
+          receiveWalletId: receiveWalletId,
+          invoice: 'lntb10u1boltz',
+          receiveAddress: 'tlq1-claim',
+        )
+        as swaps.LnReceiveSwap;
+
 void main() {
   late _MockGetReceiveWalletsUsecase getWallets;
   late _MockGetReceiveSettingsUsecase getSettings;
@@ -226,6 +256,9 @@ void main() {
   late _MockWatchReceivePayjoinMinAmountUsecase watchPayjoinMinAmount;
   late _MockCreateReceiveOrderSwapUsecase createOrderSwap;
   late _MockWatchReceiveOrderSwapUsecase watchOrderSwap;
+  late _MockGetReceiveSwapRouteUsecase getSwapRoute;
+  late _MockCreateBoltzReceiveSwapUsecase createBoltzSwap;
+  late _MockWatchSwapUsecase watchSwap;
   late StreamController<bool> payjoinEnabledChangeController;
   late StreamController<int> payjoinMinAmountChangeController;
 
@@ -242,6 +275,9 @@ void main() {
         prepareReceiveAddressUsecase: getReceiveAddress,
         getReceiveAddressAtIndexUsecase: _MockGetReceiveAddressAtIndexUsecase(),
         createReceiveOrderSwapUsecase: createOrderSwap,
+        getReceiveSwapRouteUsecase: getSwapRoute,
+        createBoltzReceiveSwapUsecase: createBoltzSwap,
+        watchSwapUsecase: watchSwap,
         receiveWithPayjoinUsecase: receiveWithPayjoin,
         broadcastOriginalTransactionUsecase: broadcastOriginalTransaction,
         watchPayjoinUsecase: watchPayjoin,
@@ -275,6 +311,15 @@ void main() {
     watchWalletTransaction = _MockWatchWalletTransactionByAddressUsecase();
     createOrderSwap = _MockCreateReceiveOrderSwapUsecase();
     watchOrderSwap = _MockWatchReceiveOrderSwapUsecase();
+    getSwapRoute = _MockGetReceiveSwapRouteUsecase();
+    when(
+      () => getSwapRoute.execute(),
+    ).thenAnswer((_) async => SwapRoute.exchange);
+    createBoltzSwap = _MockCreateBoltzReceiveSwapUsecase();
+    watchSwap = _MockWatchSwapUsecase();
+    when(
+      () => watchSwap.execute(any()),
+    ).thenAnswer((_) => const Stream.empty());
     loadAddressLabel = _MockLoadReceiveAddressLabelUsecase();
     saveAddressLabel = _MockSaveReceiveAddressLabelUsecase();
     watchPayjoinEnabledChanges = _MockWatchReceivePayjoinEnabledUsecase();
@@ -1602,6 +1647,232 @@ void main() {
       creation.complete(const Err(ReceiveSwapUnavailableFailure()));
     },
   );
+
+  group('Boltz-first Lightning receive', () {
+    late StreamController<swaps.Swap> swapUpdates;
+
+    setUp(() {
+      swapUpdates = StreamController<swaps.Swap>.broadcast();
+      when(
+        () => getSwapRoute.execute(),
+      ).thenAnswer((_) async => SwapRoute.boltz);
+      when(
+        () => watchSwap.execute(any()),
+      ).thenAnswer((_) => swapUpdates.stream);
+      when(
+        () => getWallets.execute(sync: true),
+      ).thenAnswer((_) async => const Ok([]));
+    });
+
+    tearDown(() => swapUpdates.close());
+
+    void stubBoltz(Result<swaps.LnReceiveSwap, swaps.SwapsFailure> result) =>
+        when(
+          () => createBoltzSwap.execute(
+            wallet: any(named: 'wallet'),
+            amountSat: any(named: 'amountSat'),
+            note: any(named: 'note'),
+          ),
+        ).thenAnswer((_) async => result);
+
+    Future<ReceiveBloc> confirmLightning({
+      Wallet? wallet,
+      String note = '',
+    }) async {
+      final bloc = buildBloc(
+        wallet: wallet ?? _testWallet(network: Network.liquidTestnet),
+      );
+      addTearDown(bloc.close);
+      bloc.add(const ReceiveLightningStarted());
+      await pumpEventQueue();
+      if (note.isNotEmpty) bloc.add(ReceiveNoteChanged(note));
+      bloc.add(const ReceiveAmountInputChanged('1000'));
+      bloc.add(const ReceiveAmountConfirmed());
+      await pumpEventQueue();
+      return bloc;
+    }
+
+    test('creates the invoice through Boltz and labels the claim address '
+        'with the note', () async {
+      stubBoltz(Ok(_boltzReceiveSwap()));
+
+      final bloc = await confirmLightning(note: 'coffee');
+
+      expect(bloc.state.lightningSwap?.id, 'boltz-1');
+      expect(bloc.state.confirmedAmountSat, 1000);
+      expect(bloc.state.creatingSwap, isFalse);
+      expect(bloc.state.paymentRequest, 'LNTB10U1BOLTZ');
+      verify(
+        () => createBoltzSwap.execute(
+          wallet: any(named: 'wallet'),
+          amountSat: 1000,
+          note: 'coffee',
+        ),
+      ).called(1);
+      verify(
+        () => saveAddressLabel.execute(
+          address: 'tlq1-claim',
+          walletId: any(named: 'walletId'),
+          note: 'coffee',
+        ),
+      ).called(1);
+      verify(
+        () => watchWalletTransaction.execute(
+          walletId: any(named: 'walletId'),
+          toAddress: 'tlq1-claim',
+        ),
+      ).called(1);
+      verifyNever(
+        () => createOrderSwap.execute(
+          wallet: any(named: 'wallet'),
+          amountSat: any(named: 'amountSat'),
+          note: any(named: 'note'),
+        ),
+      );
+    });
+
+    test('Boltz unreachable without the fallback surfaces a network failure '
+        'and never asks the exchange', () async {
+      stubBoltz(const Err(swaps.SwapsBoltzUnavailableFailure('418')));
+
+      final bloc = await confirmLightning();
+
+      expect(bloc.state.failure, isA<ReceiveNetworkFailure>());
+      expect(bloc.state.creatingSwap, isFalse);
+      verifyNever(
+        () => createOrderSwap.execute(
+          wallet: any(named: 'wallet'),
+          amountSat: any(named: 'amountSat'),
+          note: any(named: 'note'),
+        ),
+      );
+    });
+
+    test('Boltz unreachable with the fallback on creates an exchange '
+        'order instead', () async {
+      when(
+        () => getSwapRoute.execute(),
+      ).thenAnswer((_) async => SwapRoute.boltzWithExchangeFallback);
+      stubBoltz(const Err(swaps.SwapsBoltzUnavailableFailure('418')));
+      final record = _receiveOrderSwapRecord();
+      when(
+        () => createOrderSwap.execute(
+          wallet: any(named: 'wallet'),
+          amountSat: 1000,
+          note: any(named: 'note'),
+        ),
+      ).thenAnswer((_) async => Ok(record));
+      when(
+        () => watchOrderSwap.execute(record.localId),
+      ).thenAnswer((_) => const Stream.empty());
+
+      final bloc = await confirmLightning();
+
+      expect(bloc.state.orderSwap?.localId, record.localId);
+      expect(bloc.state.lightningSwap, isNull);
+      expect(bloc.state.failure, isNull);
+    });
+
+    test(
+      'a Boltz rejection does not fall back even with the fallback on',
+      () async {
+        when(
+          () => getSwapRoute.execute(),
+        ).thenAnswer((_) async => SwapRoute.boltzWithExchangeFallback);
+        stubBoltz(const Err(swaps.SwapsBoltzRejectedFailure('bad invoice')));
+
+        final bloc = await confirmLightning();
+
+        expect(bloc.state.failure, isA<ReceiveSwapUnavailableFailure>());
+        verifyNever(
+          () => createOrderSwap.execute(
+            wallet: any(named: 'wallet'),
+            amountSat: any(named: 'amountSat'),
+            note: any(named: 'note'),
+          ),
+        );
+      },
+    );
+
+    test('an amount outside the Boltz limits reports the minimum', () async {
+      stubBoltz(
+        const Err(
+          swaps.SwapsAmountOutOfLimitsFailure(minSat: 2500, maxSat: 2500000),
+        ),
+      );
+
+      final bloc = await confirmLightning();
+
+      final failure = bloc.state.failure;
+      expect(failure, isA<ReceiveAmountOutOfBoundsFailure>());
+      failure as ReceiveAmountOutOfBoundsFailure;
+      expect(failure.isMinimum, isTrue);
+      expect(failure.limitAmountSat, BigInt.from(2500));
+    });
+
+    test('a bitcoin wallet the flow was entered with receives Lightning '
+        'on-chain through Boltz', () async {
+      final bitcoinWallet = _testWallet(
+        origin: 'btc-w',
+        network: Network.bitcoinTestnet,
+      );
+      stubBoltz(
+        Ok(
+          _boltzReceiveSwap(
+            type: swaps.SwapType.lightningToBitcoin,
+            receiveWalletId: bitcoinWallet.id,
+          ),
+        ),
+      );
+
+      final bloc = await confirmLightning(wallet: bitcoinWallet);
+
+      expect(bloc.state.wallet?.id, bitcoinWallet.id);
+      expect(bloc.state.isBitcoin, isTrue);
+      verifyNever(
+        () => getWallets.execute(onlyLiquid: true, onlyDefaults: true),
+      );
+    });
+
+    test('follows the swap to completion and syncs the wallets', () async {
+      stubBoltz(Ok(_boltzReceiveSwap()));
+      final bloc = await confirmLightning();
+
+      swapUpdates.add(_boltzReceiveSwap(status: swaps.SwapStatus.claimable));
+      await pumpEventQueue();
+      expect(bloc.state.isPaymentInProgress, isTrue);
+      expect(bloc.state.isPaymentReceived, isFalse);
+
+      swapUpdates.add(_boltzReceiveSwap(status: swaps.SwapStatus.completed));
+      await pumpEventQueue();
+      expect(bloc.state.isPaymentReceived, isTrue);
+      verify(() => getWallets.execute(sync: true)).called(1);
+    });
+
+    test('an expired invoice is a terminal failure', () async {
+      stubBoltz(Ok(_boltzReceiveSwap()));
+      final bloc = await confirmLightning();
+
+      swapUpdates.add(_boltzReceiveSwap(status: swaps.SwapStatus.expired));
+      await pumpEventQueue();
+
+      expect(bloc.state.hasTerminalLightningSwapFailure, isTrue);
+      expect(bloc.state.failure, isA<ReceiveSwapUnavailableFailure>());
+    });
+
+    test('ignores updates for another swap', () async {
+      stubBoltz(Ok(_boltzReceiveSwap()));
+      final bloc = await confirmLightning();
+
+      swapUpdates.add(
+        _boltzReceiveSwap(id: 'other', status: swaps.SwapStatus.completed),
+      );
+      await pumpEventQueue();
+
+      expect(bloc.state.lightningSwap?.status, swaps.SwapStatus.pending);
+      expect(bloc.state.isPaymentReceived, isFalse);
+    });
+  });
 
   group('preselected-wallet network guard', () {
     // The preselected wallet survives tab switches (the shell's bloc is
