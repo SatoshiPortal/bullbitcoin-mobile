@@ -1,3 +1,4 @@
+import 'package:bull_ui/src/theme/bull_shapes.dart';
 import 'package:bull_ui/src/data_display/bull_text.dart';
 import 'package:bull_ui/src/theme/bull_theme.dart';
 import 'package:flutter/material.dart';
@@ -29,7 +30,7 @@ class BullViewerActionButton extends StatelessWidget {
     final colors = context.bull;
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(8),
+      borderRadius: BorderRadius.circular(context.bullShapes.button),
       child: ConstrainedBox(
         constraints: const BoxConstraints(minHeight: 44),
         child: Padding(

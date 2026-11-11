@@ -64,11 +64,12 @@ class AppTheme {
         ? Brightness.dark
         : Brightness.light;
     final fonts = AppFonts.textTheme;
+    const shapes = BullShapes.standard;
 
     return ThemeData(
       useMaterial3: true,
       brightness: brightness,
-      extensions: [_bullThemeFrom(colors)],
+      extensions: [_bullThemeFrom(colors), shapes],
       colorScheme: ColorScheme.fromSeed(
         seedColor: colors.primary,
         brightness: brightness,
@@ -132,7 +133,7 @@ class AppTheme {
       cardTheme: CardThemeData(
         color: colors.cardBackground,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(2),
+          borderRadius: BorderRadius.circular(shapes.card),
           side: BorderSide(color: colors.border),
         ),
         elevation: 0,
@@ -162,7 +163,7 @@ class AppTheme {
       listTileTheme: ListTileThemeData(
         tileColor: colors.surface,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(2),
+          borderRadius: BorderRadius.circular(shapes.card),
           side: BorderSide(color: colors.border),
         ),
         textColor: colors.text,
@@ -200,6 +201,7 @@ class WidgetStyles {
     BuildContext context,
     String hintText,
   ) {
+    final shapes = context.bullShapes;
     return InputDecoration(
       fillColor: context.appColors.surface,
       filled: true,
@@ -209,15 +211,15 @@ class WidgetStyles {
       ),
       contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 10),
       border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(4),
+        borderRadius: BorderRadius.circular(shapes.input),
         borderSide: BorderSide(color: context.appColors.border),
       ),
       enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(4),
+        borderRadius: BorderRadius.circular(shapes.input),
         borderSide: BorderSide(color: context.appColors.border),
       ),
       focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(shapes.input),
         borderSide: BorderSide(color: context.appColors.border, width: 2.0),
       ),
     );

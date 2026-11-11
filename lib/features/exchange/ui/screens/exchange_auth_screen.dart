@@ -19,7 +19,7 @@ import 'package:webview_cookie_manager/webview_cookie_manager.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:webview_flutter_android/webview_flutter_android.dart';
 import 'package:webview_flutter_wkwebview/webview_flutter_wkwebview.dart';
-import 'package:bull_ui/bull_ui.dart' show BullDialog;
+import 'package:bull_ui/bull_ui.dart' show BullDialog, BullShapesX;
 
 class ExchangeAuthScreen extends StatefulWidget {
   final VoidCallback onExit;
@@ -364,6 +364,9 @@ class _ExchangeAuthScreenState extends State<ExchangeAuthScreen> {
     await BullDialog.show(
       context: context,
       builder: (dialogContext) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(dialogContext.bullShapes.sheet),
+        ),
         title: Text(context.loc.exchangeAuthLoginFailedTitle),
         content: Text(
           failure?.toTranslated(context) ??

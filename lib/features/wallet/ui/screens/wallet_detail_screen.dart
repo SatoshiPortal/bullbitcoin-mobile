@@ -22,7 +22,13 @@ import 'package:bb_mobile/features/wallet/ui/widgets/wallet_detail_txs_list.dart
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullPullableBody, BullShimmerBox, BullShimmerLine, BullText, Gap;
+    show
+        BullPullableBody,
+        BullShapesX,
+        BullShimmerBox,
+        BullShimmerLine,
+        BullText,
+        Gap;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -210,7 +216,7 @@ class _CoinsEntryTileState extends State<_CoinsEntryTile> {
   }
 
   Widget _buildCard(BuildContext context) {
-    final radius = BorderRadius.circular(2);
+    final radius = BorderRadius.circular(context.bullShapes.card);
     final utxos = _utxos;
     final subtitle = utxos == null ? null : _subtitle(context, utxos);
     return Padding(

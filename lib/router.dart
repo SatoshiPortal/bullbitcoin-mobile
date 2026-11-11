@@ -61,6 +61,17 @@ class AppRouter {
   static final GlobalKey<NavigatorState> rootNavigatorKey =
       GlobalKey<NavigatorState>(debugLabel: 'rootNav');
 
+  static final _exchangeConfig = ExchangeRouterConfig(
+    networkUnavailable: () => locator<ExchangeFacade>().networkUnavailable(),
+    isSuperuser: (context) =>
+        context.read<SettingsCubit>().state.isSuperuser ?? false,
+    homePath: WalletRoute.walletHome.path,
+    buildHomeCards: () => [locator<LimitOrdersFacade>().buildDashboardCard()],
+    onHomeRefresh: () => locator<LimitOrdersFacade>().refreshDashboard(),
+    onExit: (context) => context.goNamed(WalletRoute.walletHome.name),
+    onOpenSettings: (context) => context.pushNamed(SettingsRoute.settings.name),
+  );
+
   static final router = GoRouter(
     navigatorKey: rootNavigatorKey,
     initialLocation: WalletRoute.walletHome.path,
@@ -94,9 +105,6 @@ class AppRouter {
           final tabIndex = location.startsWith(ExchangeRoute.exchangeHome.path)
               ? 1
               : 0;
-          final isSupportChat =
-              location.contains('/support-chat') ||
-              location.contains('/login-support');
 
           return MultiBlocProvider(
             providers: [
@@ -117,63 +125,57 @@ class AppRouter {
                   appBar: tabIndex == 0 ? const WalletHomeAppBar() : null,
                   extendBodyBehindAppBar: true,
                   body: child,
-                  bottomNavigationBar: isSupportChat
-                      ? null
-                      : NetworkCapabilityVisibility(
-                          capability: NetworkCapability.exchange,
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              BottomNavigationBar(
-                                currentIndex: tabIndex,
-                                onTap: (index) {
-                                  if (index == 0) {
-                                    context.goNamed(
-                                      WalletRoute.walletHome.name,
-                                    );
-                                  } else {
-                                    // Exchange tab
-                                    if (Platform.isIOS) {
-                                      final isSuperuser =
-                                          context
-                                              .read<SettingsCubit>()
-                                              .state
-                                              .isSuperuser ??
-                                          false;
-                                      if (isSuperuser) {
-                                        context.goNamed(
-                                          ExchangeRoute.exchangeHome.name,
-                                        );
-                                      } else {
-                                        context.goNamed(
-                                          ExchangeRoute.exchangeLanding.name,
-                                        );
-                                      }
-                                    } else {
-                                      context.goNamed(
-                                        ExchangeRoute.exchangeHome.name,
-                                      );
-                                    }
-                                  }
-                                },
-                                items: [
-                                  BottomNavigationBarItem(
-                                    icon: const Icon(Icons.currency_bitcoin),
-                                    label: context.loc.navigationTabWallet,
-                                    backgroundColor:
-                                        context.appColors.background,
-                                  ),
-                                  BottomNavigationBarItem(
-                                    icon: const Icon(Icons.attach_money),
-                                    label: context.loc.navigationTabExchange,
-                                    backgroundColor:
-                                        context.appColors.background,
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
+                  bottomNavigationBar: NetworkCapabilityVisibility(
+                    capability: NetworkCapability.exchange,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        BottomNavigationBar(
+                          currentIndex: tabIndex,
+                          onTap: (index) {
+                            if (index == 0) {
+                              context.goNamed(WalletRoute.walletHome.name);
+                            } else {
+                              // Exchange tab
+                              if (Platform.isIOS) {
+                                final isSuperuser =
+                                    context
+                                        .read<SettingsCubit>()
+                                        .state
+                                        .isSuperuser ??
+                                    false;
+                                if (isSuperuser) {
+                                  context.goNamed(
+                                    ExchangeRoute.exchangeHome.name,
+                                  );
+                                } else {
+                                  context.goNamed(
+                                    ExchangeRoute.exchangeLanding.name,
+                                  );
+                                }
+                              } else {
+                                context.goNamed(
+                                  ExchangeRoute.exchangeHome.name,
+                                );
+                              }
+                            }
+                          },
+                          items: [
+                            BottomNavigationBarItem(
+                              icon: const Icon(Icons.currency_bitcoin),
+                              label: context.loc.navigationTabWallet,
+                              backgroundColor: context.appColors.background,
+                            ),
+                            BottomNavigationBarItem(
+                              icon: const Icon(Icons.attach_money),
+                              label: context.loc.navigationTabExchange,
+                              backgroundColor: context.appColors.background,
+                            ),
+                          ],
                         ),
+                      ],
+                    ),
+                  ),
                 ),
               ),
             ),
@@ -183,25 +185,10 @@ class AppRouter {
           WalletRouter.walletHomeRoute(
             createSetupCubit: () => locator<NetworkWalletSetupCubit>(),
           ),
-          ...ExchangeRouter.routes(
-            ExchangeRouterConfig(
-              networkUnavailable: () =>
-                  locator<ExchangeFacade>().networkUnavailable(),
-              isSuperuser: (context) =>
-                  context.read<SettingsCubit>().state.isSuperuser ?? false,
-              homePath: WalletRoute.walletHome.path,
-              buildHomeCards: () => [
-                locator<LimitOrdersFacade>().buildDashboardCard(),
-              ],
-              onHomeRefresh: () =>
-                  locator<LimitOrdersFacade>().refreshDashboard(),
-              onExit: (context) => context.goNamed(WalletRoute.walletHome.name),
-              onOpenSettings: (context) =>
-                  context.pushNamed(SettingsRoute.settings.name),
-            ),
-          ),
+          ...ExchangeRouter.routes(_exchangeConfig),
         ],
       ),
+      ExchangeRouter.supportChatRoute(_exchangeConfig),
       OnboardingRouter.route,
       AppUnlockRouter.route,
       WalletRouter.walletDetailRoute,

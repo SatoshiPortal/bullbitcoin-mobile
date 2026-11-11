@@ -3,7 +3,7 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/pay/ui/widgets/sinpe_receipt_card.dart';
 import 'package:flutter/material.dart';
-import 'package:bull_ui/bull_ui.dart' show BullBottomSheet, Gap;
+import 'package:bull_ui/bull_ui.dart' show BullBottomSheet, BullShapesX, Gap;
 import 'package:go_router/go_router.dart';
 
 Future<void> showSinpeReceiptBottomSheet(
@@ -25,7 +25,7 @@ Future<void> showSinpeReceiptBottomSheet(
                 height: 4,
                 decoration: BoxDecoration(
                   color: context.appColors.outline.withValues(alpha: 0.3),
-                  borderRadius: BorderRadius.circular(2),
+                  borderRadius: BorderRadius.circular(context.bullShapes.dot),
                 ),
               ),
               const Gap(16),

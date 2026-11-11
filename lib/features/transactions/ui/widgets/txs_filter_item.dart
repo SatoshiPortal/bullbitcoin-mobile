@@ -1,6 +1,6 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:flutter/material.dart';
-import 'package:bull_ui/bull_ui.dart' show BullText;
+import 'package:bull_ui/bull_ui.dart' show BullShapesX, BullText;
 
 class TxsFilterItem extends StatelessWidget {
   const TxsFilterItem({
@@ -24,7 +24,7 @@ class TxsFilterItem extends StatelessWidget {
           color: isSelected
               ? context.appColors.onSurface
               : context.appColors.transparent,
-          borderRadius: BorderRadius.circular(2.0),
+          borderRadius: BorderRadius.circular(context.bullShapes.button),
           border: Border.all(
             color: isSelected
                 ? context.appColors.onSurface

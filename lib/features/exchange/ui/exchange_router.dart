@@ -16,7 +16,6 @@ import 'package:go_router/go_router.dart';
 enum ExchangeRoute {
   exchangeHome('/exchange'),
   exchangeLanding('/exchange/landing'),
-  exchangeLoginForSupport('/exchange/login-support'),
   exchangeAuth('/exchange/auth'),
   exchangeKyc('kyc');
 
@@ -46,6 +45,19 @@ class ExchangeRouterConfig {
 }
 
 class ExchangeRouter {
+  static GoRoute supportChatRoute(ExchangeRouterConfig config) =>
+      ExchangeSupportChatRouter.route(
+        isLoggedIn: (context) => context.read<ExchangeCubit>().state.hasUser,
+        loginScreenBuilder: (draft) => ExchangeSupportLoginScreen(draft: draft),
+        onExit: (context, fromExchange) {
+          if (fromExchange) {
+            context.goNamed(ExchangeRoute.exchangeHome.name);
+          } else {
+            config.onExit(context);
+          }
+        },
+      );
+
   static List<RouteBase> routes(ExchangeRouterConfig config) => [
     GoRoute(
       name: ExchangeRoute.exchangeHome.name,
@@ -102,29 +114,6 @@ class ExchangeRouter {
         }
 
         return NoTransitionPage(key: state.pageKey, child: landingScreen);
-      },
-    ),
-    GoRoute(
-      name: ExchangeRoute.exchangeLoginForSupport.name,
-      path: ExchangeRoute.exchangeLoginForSupport.path,
-      redirect: (context, state) async =>
-          await config.networkUnavailable() ? config.homePath : null,
-      pageBuilder: (context, state) {
-        return NoTransitionPage(
-          key: state.pageKey,
-          child: const ExchangeSupportLoginScreen(),
-        );
-      },
-    ),
-    ExchangeSupportChatRouter.route(
-      isLoggedIn: (context) => context.read<ExchangeCubit>().state.hasUser,
-      loginScreenBuilder: (draft) => ExchangeSupportLoginScreen(draft: draft),
-      onExit: (context, fromExchange) {
-        if (fromExchange) {
-          context.goNamed(ExchangeRoute.exchangeHome.name);
-        } else {
-          config.onExit(context);
-        }
       },
     ),
     GoRoute(

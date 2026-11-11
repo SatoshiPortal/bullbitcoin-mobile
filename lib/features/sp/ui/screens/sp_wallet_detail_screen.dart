@@ -20,7 +20,7 @@ import 'package:bb_mobile/features/sp/domain/entities/sp_payment.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_cubit.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_state.dart';
 import 'package:bb_mobile/features/sp/ui/sp_router.dart';
-import 'package:bull_ui/bull_ui.dart' show BullPullableBody, Gap;
+import 'package:bull_ui/bull_ui.dart' show BullPullableBody, BullShapesX, Gap;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -161,7 +161,7 @@ class _HeaderValidationCard extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: InkWell(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(context.bullShapes.card),
         // The fix is another server, so go where it is changed.
         onTap: () => context.pushNamed(
           invalidChain
@@ -174,7 +174,7 @@ class _HeaderValidationCard extends StatelessWidget {
             color: failed
                 ? context.appColors.errorContainer
                 : context.appColors.surface,
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(context.bullShapes.card),
           ),
           child: Row(
             children: [
@@ -355,7 +355,9 @@ class _SpScanNudgeCardState extends State<_SpScanNudgeCard> {
         margin: EdgeInsets.zero,
         elevation: 0,
         color: context.appColors.surfaceContainerHighest,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(context.bullShapes.card),
+        ),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           child: Row(

@@ -10,7 +10,7 @@ import 'package:bb_mobile/features/psbt_flow/show_animated_qr/show_animated_qr_s
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show BullText, Gap;
+import 'package:bull_ui/bull_ui.dart' show BullShapesX, BullText, Gap;
 
 class ShowAnimatedQrWidget extends StatelessWidget {
   final String psbt;
@@ -68,7 +68,7 @@ class _ShowAnimatedQrViewState extends State<_ShowAnimatedQrView> {
             height: 300,
             decoration: BoxDecoration(
               color: context.appColors.surfaceFixed,
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(context.bullShapes.card),
             ),
             child: const Center(child: CircularProgressIndicator()),
           );
@@ -80,7 +80,7 @@ class _ShowAnimatedQrViewState extends State<_ShowAnimatedQrView> {
             height: 300,
             decoration: BoxDecoration(
               color: context.appColors.surfaceFixed,
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(context.bullShapes.card),
             ),
             child: Center(
               child: Text(
@@ -99,7 +99,7 @@ class _ShowAnimatedQrViewState extends State<_ShowAnimatedQrView> {
         return Container(
           decoration: BoxDecoration(
             color: context.appColors.background,
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(context.bullShapes.card),
           ),
           child: Column(
             mainAxisAlignment: .start,

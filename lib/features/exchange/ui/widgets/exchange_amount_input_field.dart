@@ -5,7 +5,7 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:flutter/material.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullAmountInputFormatter, BullShimmerLine, Gap;
+    show BullAmountInputFormatter, BullShapesX, BullShimmerLine, Gap;
 import 'package:intl/intl.dart';
 
 class ExchangeAmountInputField extends StatelessWidget {
@@ -52,7 +52,7 @@ class ExchangeAmountInputField extends StatelessWidget {
         Card(
           elevation: 1,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(4.0),
+            borderRadius: BorderRadius.circular(context.bullShapes.input),
           ),
           child: Padding(
             padding: const EdgeInsets.symmetric(

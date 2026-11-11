@@ -1,3 +1,4 @@
+import 'package:bull_ui/bull_ui.dart';
 import 'dart:math' as math;
 
 import 'package:bb_mobile/core/themes/app_theme.dart';
@@ -107,7 +108,9 @@ class _TorBullMascotState extends State<TorBullMascot>
                     height: 9,
                     decoration: BoxDecoration(
                       color: context.appColors.scrim.withValues(alpha: 0.28),
-                      borderRadius: BorderRadius.circular(50),
+                      borderRadius: BorderRadius.circular(
+                        context.bullShapes.dot,
+                      ),
                     ),
                   ),
                 ),

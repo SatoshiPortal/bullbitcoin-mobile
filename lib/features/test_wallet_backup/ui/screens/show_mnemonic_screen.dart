@@ -14,7 +14,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullButton, BullScreenPrivacyGate, BullText, Gap;
+    show BullButton, BullScreenPrivacyGate, BullShapesX, BullText, Gap;
 import 'package:secrets/secrets.dart' show Secret, SecretExtension;
 
 class ShowMnemonicScreen extends StatefulWidget {
@@ -240,11 +240,11 @@ class _MnemonicDisplayState extends State<_MnemonicDisplay> {
           Container(
             decoration: BoxDecoration(
               border: Border.all(color: context.appColors.border),
-              borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(11),
-                topRight: Radius.circular(11),
-                bottomLeft: Radius.circular(2),
-                bottomRight: Radius.circular(2),
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(context.bullShapes.card),
+                topRight: Radius.circular(context.bullShapes.card),
+                bottomLeft: Radius.circular(context.bullShapes.card),
+                bottomRight: Radius.circular(context.bullShapes.card),
               ),
             ),
             child: Column(
@@ -254,11 +254,11 @@ class _MnemonicDisplayState extends State<_MnemonicDisplay> {
                   padding: const EdgeInsets.symmetric(vertical: 10),
                   decoration: BoxDecoration(
                     color: context.appColors.secondaryFixedDim,
-                    borderRadius: const BorderRadius.only(
-                      topLeft: Radius.circular(11),
-                      topRight: Radius.circular(11),
-                      bottomLeft: Radius.circular(2),
-                      bottomRight: Radius.circular(2),
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(context.bullShapes.card),
+                      topRight: Radius.circular(context.bullShapes.card),
+                      bottomLeft: Radius.circular(context.bullShapes.card),
+                      bottomRight: Radius.circular(context.bullShapes.card),
                     ),
                   ),
                   child: BullText(
@@ -379,7 +379,7 @@ class _RecoveryPhraseWord extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 4),
         decoration: BoxDecoration(
           color: context.appColors.surface,
-          borderRadius: BorderRadius.circular(2.76),
+          borderRadius: BorderRadius.circular(context.bullShapes.card),
           border: Border.all(color: context.appColors.border, width: 0.69),
           boxShadow: [
             BoxShadow(
@@ -403,7 +403,7 @@ class _RecoveryPhraseWord extends StatelessWidget {
                     color: context.appColors.secondary,
                     width: 0.82,
                   ),
-                  borderRadius: BorderRadius.circular(2.46),
+                  borderRadius: BorderRadius.circular(context.bullShapes.badge),
                 ),
                 child: Center(
                   child: BullText(

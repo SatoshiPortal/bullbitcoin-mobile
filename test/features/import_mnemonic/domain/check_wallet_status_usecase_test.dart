@@ -14,9 +14,12 @@ import 'package:secrets/secrets.dart';
 import 'package:secrets/testing.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/wallet/data/bitcoin_wallet_repository.dart';
+import 'package:bb_mobile/core/electrum/domain/errors/electrum_fallback_exception.dart';
 import 'package:bb_mobile/core/electrum/domain/ports/electrum_servers_port.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_connection.dart';
 import 'package:bb_mobile/features/electrum_settings/domain/electrum_server_network.dart';
+
+class _MockReporter extends Mock implements LoggerReporter {}
 
 class _MockSettingsRepository extends Mock implements SettingsRepository {}
 
@@ -36,6 +39,7 @@ class _FakeConnection extends ElectrumConnection {
 }
 
 class _FakeServersPort implements ElectrumServersPort {
+  ElectrumFallbackException? failure;
   final networks = <ElectrumServerNetwork>[];
   final connection = _FakeConnection();
 
@@ -44,8 +48,10 @@ class _FakeServersPort implements ElectrumServersPort {
     required ElectrumServerNetwork network,
     required Future<T> Function(ElectrumConnection connection) operation,
     bool Function(Object error)? isTransient,
-  }) {
+  }) async {
     networks.add(network);
+    final error = failure;
+    if (error != null) throw error;
     return operation(connection);
   }
 }
@@ -56,6 +62,8 @@ void main() {
     'abandon', 'abandon', 'abandon', 'abandon', 'abandon', 'about',
   ];
 
+  late _MockReporter reporter;
+  late Directory logDirectory;
   late _MockSettingsRepository settings;
   late _FakeServersPort servers;
   late _MockBitcoinWalletRepository wallets;
@@ -79,14 +87,10 @@ void main() {
     registerFallbackValue(Network.bitcoinMainnet);
   });
 
-  late Directory logDirectory;
-  tearDown(() async {
-    await log.flush();
-    await logDirectory.delete(recursive: true);
-  });
   setUp(() async {
     logDirectory = await Directory.systemTemp.createTemp('scan-log-');
-    log = Logger.replace(directory: logDirectory);
+    reporter = _MockReporter();
+    log = Logger.replace(directory: logDirectory, reporter: reporter);
     storage = FakeSecureStoragePlatform()..install();
     secrets = Secrets(scratchDirectory: () async => '/tmp');
     settings = _MockSettingsRepository();
@@ -100,6 +104,11 @@ void main() {
         electrumServer: any(named: 'electrumServer'),
       ),
     ).thenAnswer((_) async => (satoshis: BigInt.from(1234), transactions: 2));
+  });
+
+  tearDown(() async {
+    await log.flush();
+    await logDirectory.delete(recursive: true);
   });
 
   for (final (env, network, legacy) in [
@@ -193,7 +202,54 @@ void main() {
       ),
     );
     expect(servers.networks, isEmpty);
+    verifyZeroInteractions(reporter);
+    final rows = (await log.readLogs()).map((line) => line.split('\t'));
+    expect(
+      rows.every((row) => row.skip(3).every((field) => field.isEmpty)),
+      isTrue,
+    );
+    expect(rows.map((row) => (row[1], row[2])), [
+      ('WARNING', 'Import scan blocked stage=derive reason=invalid_mnemonic'),
+    ]);
   });
+
+  test(
+    'failed scan persists only its script type and failure category',
+    () async {
+      environment(Environment.mainnet);
+      final failure = AllElectrumServersFailedException([
+        const ElectrumServerAttempt(
+          url: 'ssl://electrum.example:50002',
+          isCustom: true,
+          error: 'descriptor-and-address-sentinel',
+        ),
+      ]);
+      servers.failure = failure;
+
+      final scans = await usecase()(
+        words: words,
+        language: bip39.Language.english,
+        passphrase: '',
+        scriptTypes: {ScriptType.bip49},
+      );
+      await expectLater(scans[ScriptType.bip49], throwsA(same(failure)));
+
+      verifyZeroInteractions(reporter);
+      final rows = (await log.readLogs()).map((line) => line.split('\t'));
+      expect(
+        rows.every((row) => row.skip(3).every((field) => field.isEmpty)),
+        isTrue,
+      );
+      expect(rows.map((row) => row[1]).toList(), ['FINE', 'WARNING']);
+      expect(rows.map((row) => row[2]).toList(), [
+        'Import scan started network=mainnet script=bip49',
+        matches(
+          r'^Import scan failed network=mainnet script=bip49 '
+          r'reason=all_servers_failed duration_ms=[0-9]+$',
+        ),
+      ]);
+    },
+  );
 
   test(
     'derives once and scans each script type with its own descriptors',

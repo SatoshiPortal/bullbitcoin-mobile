@@ -1,3 +1,4 @@
+import 'package:bull_ui/bull_ui.dart';
 import 'package:bb_mobile/features/buy/ui/widgets/buy_cubes_loader.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
@@ -19,7 +20,7 @@ class AccelerateTransactionListTile extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: context.appColors.onPrimary, // or Colors.white
-        borderRadius: BorderRadius.circular(4),
+        borderRadius: BorderRadius.circular(context.bullShapes.card),
         border: Border.all(color: context.appColors.secondary),
         boxShadow: [
           BoxShadow(
