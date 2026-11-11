@@ -4,6 +4,7 @@ import 'package:boltz_swaps/src/util.dart';
 import 'package:boltz_swaps/src/data/boltz_api.dart';
 import 'package:boltz_swaps/src/domain/swap_repository.dart';
 import 'package:boltz_swaps/src/data/models/swap_model.dart';
+import 'package:boltz_swaps/src/domain/entities/derived_swap_master_key.dart';
 import 'package:boltz_swaps/src/domain/entities/restored_swap.dart';
 import 'package:boltz_swaps/src/domain/entities/swap.dart';
 import 'package:boltz_swaps/src/domain/entities/swap_master_key_info.dart';
@@ -42,10 +43,11 @@ typedef FastestFee =
 typedef WalletsList =
     Future<List<SwapWalletInfo>> Function({required bool isTestnet});
 
-/// The default bitcoin wallet's seed for deriving the swap master key; null
-/// when unavailable (watch-only / hardware-only / pre-onboarding).
-typedef MasterSeedSource =
-    Future<SwapSeedSource?> Function({required bool isTestnet});
+/// The swap master key derived from the default bitcoin wallet by the app's
+/// secrets layer; null when unavailable (watch-only / hardware-only /
+/// pre-onboarding). Only invoked when no key is stored yet.
+typedef SwapMasterKeySource =
+    Future<DerivedSwapMasterKey?> Function({required bool isTestnet});
 
 class BoltzSwapRepository implements SwapRepository {
   final BoltzDatasource _boltz;
@@ -56,7 +58,7 @@ class BoltzSwapRepository implements SwapRepository {
   final WalletTxsLookup _walletTxs;
   final FastestFee _fastestFee;
   final WalletsList _wallets;
-  final MasterSeedSource _masterSeedSource;
+  final SwapMasterKeySource _swapMasterKeySource;
 
   /// Serializes swap creation so two concurrent creations can never compute
   /// the same key index from a stale table scan.
@@ -71,7 +73,7 @@ class BoltzSwapRepository implements SwapRepository {
     required this._walletTxs,
     required this._fastestFee,
     required this._wallets,
-    required this._masterSeedSource,
+    required this._swapMasterKeySource,
   });
 
   Future<T> _withCreationLock<T>(Future<T> Function() action) {
@@ -578,20 +580,15 @@ class BoltzSwapRepository implements SwapRepository {
         isTestnet: _isTestnet,
       );
 
-  /// Derives + persists the swap master key from the default wallet's seed.
-  /// Called once, only when [swapMasterKeyReady] reported a miss, so swap
-  /// creation and restore can READ the key from storage and never derive lazily.
-  Future<void> deriveSwapMasterKey({
-    required String mnemonic,
-    required String walletFingerprint,
-  }) => _boltz.deriveSwapMasterKey(
-    mnemonic: mnemonic,
-    walletFingerprint: walletFingerprint,
-    isTestnet: _isTestnet,
-  );
+  /// Persists a swap master key the app's secrets layer derived. Called once,
+  /// only when [swapMasterKeyReady] reported a miss, so swap creation and
+  /// restore READ the key from storage and never derive lazily.
+  Future<void> storeSwapMasterKey(DerivedSwapMasterKey key) =>
+      _boltz.storeSwapMasterKey(key: key, isTestnet: _isTestnet);
 
-  /// Reads the swap master key (the "swap mnemonic") for [walletFingerprint]
-  /// for display/management in the seed viewer. Null when none is stored.
+  /// What the seed viewer shows about the swap master key for
+  /// [walletFingerprint]; null when none is stored. Carries no words — see
+  /// [getSwapMnemonic].
   Future<SwapMasterKeyInfo?> getSwapMasterKeyInfo({
     required String walletFingerprint,
   }) async {
@@ -601,11 +598,20 @@ class BoltzSwapRepository implements SwapRepository {
     );
     if (model == null) return null;
     return SwapMasterKeyInfo(
-      mnemonic: model.mnemonic,
       fingerprint: model.fingerprint,
       walletFingerprint: walletFingerprint,
       network: model.network,
     );
+  }
+
+  /// The swap mnemonic for [walletFingerprint], read at the moment it is
+  /// drawn so the words never sit in screen state.
+  Future<String?> getSwapMnemonic({required String walletFingerprint}) async {
+    final model = await _boltz.getSwapMasterKeyForWallet(
+      walletFingerprint: walletFingerprint,
+      isTestnet: _isTestnet,
+    );
+    return model?.mnemonic;
   }
 
   /// Deletes the swap master key (and its index counter) for
@@ -2218,30 +2224,27 @@ class BoltzSwapRepository implements SwapRepository {
   /// unconditionally; the engine now self-ensures instead of trusting a
   /// startup hook that can be refactored away.
   Future<void> _ensureMasterKey() async {
-    // Readiness is checked before touching the seed source: the seed source
-    // decrypts the wallet mnemonic, which must only happen on the one first
-    // derivation, never on every create/restore/rescue.
+    // Readiness is checked before asking the key source: deriving reads the
+    // wallet seed, which must only happen on the one first derivation, never
+    // on every create/restore/rescue.
     final fingerprint = await defaultBitcoinFingerprint();
     if (fingerprint != null &&
         await swapMasterKeyReady(walletFingerprint: fingerprint)) {
       return;
     }
-    final source = await _masterSeedSource(isTestnet: _isTestnet);
-    if (source == null) {
+    final key = await _swapMasterKeySource(isTestnet: _isTestnet);
+    if (key == null) {
       throw SwapsException(
         'no default bitcoin wallet seed available to derive the swap '
         'master key (watch-only or hardware-only wallet)',
       );
     }
-    if (await swapMasterKeyReady(walletFingerprint: source.fingerprint)) {
+    if (await swapMasterKeyReady(walletFingerprint: key.walletFingerprint)) {
       return;
     }
-    await deriveSwapMasterKey(
-      mnemonic: source.mnemonic,
-      walletFingerprint: source.fingerprint,
-    );
+    await storeSwapMasterKey(key);
     swapsLog.fine(
-      'SWAPS: swap master key derived for wallet ${source.fingerprint}',
+      'SWAPS: swap master key stored for wallet ${key.walletFingerprint}',
     );
   }
 

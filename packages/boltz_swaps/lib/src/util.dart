@@ -116,15 +116,6 @@ class SwapWalletInfo {
   });
 }
 
-/// Seed material for deriving the swap master key, handed in by the app's
-/// seed layer at point of use and never stored by the engine.
-class SwapSeedSource {
-  final String mnemonic;
-  final String fingerprint;
-
-  const SwapSeedSource({required this.mnemonic, required this.fingerprint});
-}
-
 /// Runs [operation] against the app's active electrum servers in priority
 /// order (custom-if-set else defaults, never mixing tiers — the app's
 /// privacy rule stays behind the app's implementation).

@@ -3,6 +3,7 @@ import 'package:mocktail/mocktail.dart';
 import 'package:boltz_swaps/src/data/boltz_api.dart';
 import 'package:boltz_swaps/src/data/models/swap_master_key_model.dart';
 import 'package:boltz_swaps/src/data/boltz_swap_repository.dart';
+import 'package:boltz_swaps/src/domain/entities/derived_swap_master_key.dart';
 import 'package:boltz_swaps/src/domain/entities/swap.dart';
 import 'package:boltz_swaps/src/data/models/swap_model.dart';
 import 'package:boltz_swaps/src/data/swap_storage.dart';
@@ -73,8 +74,15 @@ void main() {
           required bool isTestnet,
         }) async => fastest,
     wallets: ({required bool isTestnet}) async => const [],
-    masterSeedSource: ({required bool isTestnet}) async =>
-        const SwapSeedSource(mnemonic: 'ab cd', fingerprint: 'f00dbabe'),
+    swapMasterKeySource: ({required bool isTestnet}) async =>
+        const DerivedSwapMasterKey(
+          walletFingerprint: 'f00dbabe',
+          xprv: 'xprv',
+          xpub: 'xpub',
+          mnemonic: 'ab cd',
+          fingerprint: 'cafe0001',
+          isTestnet: false,
+        ),
   );
 
   Swap chainSwap({
@@ -326,7 +334,7 @@ void main() {
                 required bool isTestnet,
               }) async => 50,
           wallets: ({required bool isTestnet}) async => const [],
-          masterSeedSource: ({required bool isTestnet}) async => null,
+          swapMasterKeySource: ({required bool isTestnet}) async => null,
         );
         when(
           () => storage.fetchAll(

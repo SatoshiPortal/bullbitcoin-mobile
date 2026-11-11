@@ -9,6 +9,7 @@ import 'package:boltz_swaps/src/data/models/swap_model.dart';
 import 'package:boltz_swaps/src/data/models/swap_tx_outspend_model.dart';
 import 'package:boltz_swaps/src/data/swap_status_mapper.dart';
 import 'package:boltz_swaps/src/data/models/boltz_network.dart';
+import 'package:boltz_swaps/src/domain/entities/derived_swap_master_key.dart';
 import 'package:boltz_swaps/src/domain/entities/swap.dart' as swap_entity;
 import 'package:boltz_swaps/src/domain/entities/swap_tx_outspend.dart';
 import 'package:boltz_swaps/src/log.dart';
@@ -43,7 +44,7 @@ class BoltzDatasource {
   final SwapStorage _boltzStore;
 
   /// Default-wallet fingerprint the swap master key is keyed under, bound by
-  /// [swapMasterKeyReady] / [deriveSwapMasterKey] when wallets become ready.
+  /// [swapMasterKeyReady] / [storeSwapMasterKey] when wallets become ready.
   /// Public (non-secret) id only; the key material itself lives in secure
   /// storage and is read on demand.
   String? _swapMasterKeyWalletFingerprint;
@@ -176,13 +177,13 @@ class BoltzDatasource {
   // network alone. Keying by fingerprint is what makes restore correct and
   // stops a different default wallet (or a stale key the iOS keychain kept
   // after the app was deleted) from ever being read for the current wallet.
-  // [deriveSwapMasterKey] is the only place that derives; every swap operation
+  // [storeSwapMasterKey] is the only place that writes; every swap operation
   // READS via [getSwapMasterKey].
 
   /// Binds the swap master key to [walletFingerprint] for subsequent reads and
   /// reports whether it already exists in storage. Cheap: no seed read, no
-  /// derivation — the caller decrypts the wallet seed and calls
-  /// [deriveSwapMasterKey] only on a miss. The fingerprint binding is set ONLY
+  /// derivation — the caller has the secrets layer derive the key and calls
+  /// [storeSwapMasterKey] only on a miss. The fingerprint binding is set ONLY
   /// when the key is confirmed present, so a read can never resolve to a
   /// fingerprint whose key was never stored.
   Future<bool> swapMasterKeyReady({
@@ -198,22 +199,22 @@ class BoltzDatasource {
     return exists;
   }
 
-  Future<void> deriveSwapMasterKey({
-    required String mnemonic,
-    required String walletFingerprint,
+  Future<void> storeSwapMasterKey({
+    required DerivedSwapMasterKey key,
     required bool isTestnet,
   }) async {
-    final model = await SwapMasterKeyModel.create(
-      mnemonic: mnemonic,
-      isTestnet: isTestnet,
-    );
+    if (key.isTestnet != isTestnet) {
+      throw SwapsException(
+        'swap master key network does not match the engine network',
+      );
+    }
     await _boltzStore.storeSwapMasterKey(
-      model,
-      walletFingerprint: walletFingerprint,
+      SwapMasterKeyModel.fromDerived(key),
+      walletFingerprint: key.walletFingerprint,
     );
-    // Bind only after a successful store, so a failed derive leaves the key
+    // Bind only after a successful store, so a failed store leaves the key
     // "not initialized" rather than bound to an absent blob.
-    _swapMasterKeyWalletFingerprint = walletFingerprint;
+    _swapMasterKeyWalletFingerprint = key.walletFingerprint;
   }
 
   Future<SwapMasterKeyModel> getSwapMasterKey({required bool isTestnet}) async {
