@@ -16040,9 +16040,9 @@
   "@networkWalletReuseSecret": {
     "description": "Create wallets on the selected network with an existing secret"
   },
-  "walletSpendAwaitingObservation": "Spending is temporarily unavailable while this wallet reconciles a previous payment. Refresh the wallet or use Scan for missing transactions, then try again.",
+  "walletSpendAwaitingObservation": "Spending is unavailable until this wallet is synced and has seen its previous payments on the network. Refresh the wallet or use Scan for missing transactions, then try again.",
   "@walletSpendAwaitingObservation": {
-    "description": "Bitcoin wallet spend gate; no timeout releases inputs. Refresh or discovery retries observation."
+    "description": "Bitcoin wallet spend gate. No timeout releases a payment: a sync must see it, or prove it can no longer confirm. A payment no sync ever sees keeps the wallet blocked, so the text promises no end."
   },
   "walletSpendReplacementUnavailable": "Fee bumping is unavailable until this wallet sees the payment on the network. Refresh the wallet, then try again.",
   "@walletSpendReplacementUnavailable": {
