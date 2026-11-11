@@ -1,12 +1,12 @@
 // dart format width=80
 // ignore_for_file: unused_local_variable, unused_import
+import 'dart:async';
 import 'dart:io';
 
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
 import 'package:drift_dev/api/migrations_native.dart';
 import 'package:bull_payjoin/src/data/payjoin_database.dart';
-import 'package:sqlite3/sqlite3.dart';
 import 'package:test/test.dart';
 import 'generated/schema.dart';
 
@@ -224,47 +224,91 @@ void main() {
     await second.close();
   });
 
-  test('a second connection migrating at the same time opens safely', () async {
+  test('two connections reaching the v2 to v3 step together both '
+      'open', () async {
     final directory = await Directory.systemTemp.createTemp('payjoin-v3-');
     addTearDown(() => directory.delete(recursive: true));
-    final path = '${directory.path}/payjoin.sqlite';
+    final file = File('${directory.path}/payjoin.sqlite');
     final old = v2.DatabaseAtV2(
       NativeDatabase(
-        File(path),
+        file,
         setup: (db) => db.execute('PRAGMA journal_mode = WAL;'),
       ),
     );
     await seedSenders(old);
     await old.close();
 
-    // The first migrator, stopped inside its step: column added and backfilled
-    // but not committed, version still 2 for everyone else.
-    final first = sqlite3.open(path);
-    first.execute('PRAGMA busy_timeout = 2000;');
-    first.execute('BEGIN IMMEDIATE;');
-    first.execute(
-      'ALTER TABLE payjoin_senders ADD COLUMN has_network_evidence INTEGER '
-      'NOT NULL DEFAULT 0 CHECK (has_network_evidence IN (0, 1));',
+    // Each connection runs in its own isolate, like the app's: one waiting on
+    // the other's write lock cannot stall the one that has to commit.
+    final barrier = _AlterBarrier();
+    PayjoinDatabase open() => PayjoinDatabase.forTesting(
+      NativeDatabase.createInBackground(
+        file,
+        setup: (db) => db.execute('PRAGMA busy_timeout = 2000;'),
+      ).interceptWith(barrier),
     );
-    first.execute(
-      'UPDATE payjoin_senders SET has_network_evidence = 1 '
-      'WHERE is_expired = 0 AND is_completed = 0 AND is_aborted = 0;',
-    );
+    final first = open();
+    final second = open();
+    addTearDown(first.close);
+    addTearDown(second.close);
 
-    final second = PayjoinDatabase.open(path);
-    final opened = evidenceByUri(second);
-    await Future<void>.delayed(const Duration(milliseconds: 800));
-    first.execute('PRAGMA user_version = 3;');
-    first.execute('COMMIT;');
-    first.dispose();
+    final evidence = await Future.wait([
+      evidenceByUri(first),
+      evidenceByUri(second),
+    ]);
 
-    expect(await opened, {
+    // Both steps were inside the migration, about to add the column, at once.
+    expect(barrier.arrivals, 2);
+    const migrated = {
       'unfinished-with-proposal': 1,
       'unfinished-without-proposal': 1,
       'expired': 0,
       'completed': 0,
       'aborted': 0,
-    });
-    await second.close();
+    };
+    expect(evidence, [migrated, migrated]);
   });
+}
+
+/// Routes the migration's own statements through [interceptor]: drift hands
+/// `beforeOpen` the raw executor otherwise.
+final class _MigrationUser implements QueryExecutorUser {
+  final QueryExecutorUser _user;
+  final QueryInterceptor _interceptor;
+
+  _MigrationUser(this._user, this._interceptor);
+
+  @override
+  int get schemaVersion => _user.schemaVersion;
+
+  @override
+  Future<void> beforeOpen(QueryExecutor executor, OpeningDetails details) =>
+      _user.beforeOpen(executor.interceptWith(_interceptor), details);
+}
+
+/// Holds every connection right before its `ALTER TABLE` until two are
+/// there, so both have decided to migrate before either adds the column.
+/// Fails the open instead of waiting forever when the second never arrives.
+final class _AlterBarrier extends QueryInterceptor {
+  final _both = Completer<void>();
+  int arrivals = 0;
+
+  @override
+  Future<bool> ensureOpen(QueryExecutor executor, QueryExecutorUser user) =>
+      executor.ensureOpen(_MigrationUser(user, this));
+
+  @override
+  Future<void> runCustom(
+    QueryExecutor executor,
+    String statement,
+    List<Object?> args,
+  ) async {
+    if (statement.startsWith('ALTER TABLE') &&
+        statement.contains('has_network_evidence')) {
+      arrivals++;
+      if (arrivals == 2) _both.complete();
+      await _both.future.timeout(const Duration(seconds: 10));
+    }
+    return executor.runCustom(statement, args);
+  }
 }
