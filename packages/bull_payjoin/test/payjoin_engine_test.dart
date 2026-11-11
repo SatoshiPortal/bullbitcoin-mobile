@@ -1875,9 +1875,70 @@ void main() {
         await expectReserved();
       });
 
-      test('a broadcast refused by the spend gate leaves no evidence and is '
-          'released', () async {
-        await local.storeSender(model);
+      for (final (name, Exception refusal) in [
+        ('refused by the spend gate', const PayjoinSpendBlockedException()),
+        (
+          'that never reached the network',
+          const PayjoinBroadcastNotAttemptedException(),
+        ),
+      ]) {
+        test('a broadcast $name leaves no evidence and is released', () async {
+          await local.storeSender(model);
+          blocked = false;
+          when(
+            () => blockchain.broadcastPsbt(
+              walletId: any(named: 'walletId'),
+              network: any(named: 'network'),
+              psbt: any(named: 'psbt'),
+            ),
+          ).thenThrow(refusal);
+          await engine.resumePayjoinsOnStartup();
+          expect(attempts, 1);
+          expect(
+            (await local.fetchSender(model.id))?.hasNetworkEvidence,
+            isFalse,
+          );
+          await expectReserved();
+          await Future<void>.delayed(pastExpiry);
+          await engine.resumePayjoinsOnStartup();
+          await expectReleased();
+        });
+
+        test('a broadcast $name keeps evidence recorded earlier', () async {
+          await local.storeSender(model.copyWith(hasNetworkEvidence: true));
+          blocked = false;
+          when(
+            () => blockchain.broadcastPsbt(
+              walletId: any(named: 'walletId'),
+              network: any(named: 'network'),
+              psbt: any(named: 'psbt'),
+            ),
+          ).thenThrow(refusal);
+          await engine.resumePayjoinsOnStartup();
+          expect(
+            (await local.fetchSender(model.id))?.hasNetworkEvidence,
+            isTrue,
+          );
+        });
+      }
+
+      test('a first attempt whose payjoin and original both fail with an '
+          'unknown outcome stays reserved', () async {
+        await local.storeSender(model.copyWith(proposalPsbt: null, txId: null));
+        blocked = false;
+        failBroadcast = true;
+        proposals.add(model);
+        await pumpEventQueue(times: 100);
+        expect(broadcasts, 2);
+        final row = await local.fetchSender(model.id);
+        expect(row?.hasNetworkEvidence, isTrue);
+        expect(row?.txId, model.txId);
+        await expectReserved();
+      });
+
+      test('a first attempt that never reached the network fails as '
+          'before', () async {
+        await local.storeSender(model.copyWith(proposalPsbt: null, txId: null));
         blocked = false;
         when(
           () => blockchain.broadcastPsbt(
@@ -1885,14 +1946,49 @@ void main() {
             network: any(named: 'network'),
             psbt: any(named: 'psbt'),
           ),
-        ).thenThrow(const PayjoinSpendBlockedException());
-        await engine.resumePayjoinsOnStartup();
-        expect(attempts, 1);
-        await expectReserved();
-        await Future<void>.delayed(pastExpiry);
-        await engine.resumePayjoinsOnStartup();
-        await expectReleased();
+        ).thenThrow(const PayjoinBroadcastNotAttemptedException());
+        proposals.add(model);
+        await pumpEventQueue(times: 100);
+        final row = await local.fetchSender(model.id);
+        expect(row?.hasNetworkEvidence, isFalse);
+        expect(row?.isExpired, isTrue);
+        expect(row?.txId, isNull);
+        expect(await engine.getUtxosFrozenByOngoingPayjoins(), isEmpty);
       });
+
+      for (final (name, send) in [
+        (
+          'automatic at expiry',
+          (PayjoinSenderModel _) => engine.resumePayjoinsOnStartup(),
+        ),
+        (
+          'manual',
+          (PayjoinSenderModel live) =>
+              engine.tryBroadcastOriginalTransaction(live.toEntity()),
+        ),
+      ]) {
+        test('the original, $name, records evidence before the wire', () async {
+          final unproposed = name == 'manual'
+              ? model.copyWith(proposalPsbt: null, txId: null)
+              : expiredSender();
+          await local.storeSender(unproposed);
+          bool? evidenceAtWire;
+          when(
+            () => blockchain.broadcastPsbt(
+              walletId: any(named: 'walletId'),
+              network: any(named: 'network'),
+              psbt: any(named: 'psbt'),
+            ),
+          ).thenAnswer((_) async {
+            evidenceAtWire = (await local.fetchSender(
+              unproposed.id,
+            ))?.hasNetworkEvidence;
+            throw Exception('unknown original outcome');
+          });
+          await send(unproposed);
+          expect(evidenceAtWire, isTrue);
+        });
+      }
 
       for (final (name, observed) in [
         ('payjoin', (PayjoinSenderModel m) => m.txId),
