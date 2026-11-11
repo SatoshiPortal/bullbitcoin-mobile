@@ -4,15 +4,12 @@ import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/outpoint.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_utxos_usecase.dart';
 import 'package:bb_mobile/core/widgets/cards/wallet_detail_balance_card.dart';
 import 'package:bb_mobile/core/widgets/text/currency_text.dart';
 import 'package:bb_mobile/features/bitcoin_price/presentation/bloc/bitcoin_price_bloc.dart';
-import 'package:bb_mobile/features/coins/ui/coins_router.dart';
 import 'package:bb_mobile/features/consolidation/public/consolidation_facade.dart';
-import 'package:bb_mobile/features/send/public/send_facade.dart';
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transactions_cubit.dart';
 import 'package:bb_mobile/features/transactions/ui/widgets/txs_syncing_indicator.dart';
@@ -30,9 +27,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 class WalletDetailScreen extends StatelessWidget {
-  const WalletDetailScreen({super.key, required this.walletId});
+  const WalletDetailScreen({
+    super.key,
+    required this.walletId,
+    required this.onOpenCoins,
+  });
 
   final String walletId;
+  final Future<void> Function(BuildContext context, Wallet wallet) onOpenCoins;
 
   @override
   Widget build(BuildContext context) {
@@ -108,7 +110,10 @@ class WalletDetailScreen extends StatelessWidget {
                     if (wallet.isBitcoin) ...[
                       const SliverToBoxAdapter(child: Gap(8)),
                       SliverToBoxAdapter(
-                        child: _CoinsEntryTile(wallet: wallet),
+                        child: _CoinsEntryTile(
+                          wallet: wallet,
+                          onOpenCoins: onOpenCoins,
+                        ),
                       ),
                     ],
                     if (wallet.isLiquid)
@@ -146,9 +151,10 @@ class WalletDetailScreen extends StatelessWidget {
 /// frozen total as a subtitle. Hidden for Liquid (freeze-exclusion plumbing
 /// exists for Bitcoin only); shown for watch-only Bitcoin wallets.
 class _CoinsEntryTile extends StatefulWidget {
-  const _CoinsEntryTile({required this.wallet});
+  const _CoinsEntryTile({required this.wallet, required this.onOpenCoins});
 
   final Wallet wallet;
+  final Future<void> Function(BuildContext context, Wallet wallet) onOpenCoins;
 
   @override
   State<_CoinsEntryTile> createState() => _CoinsEntryTileState();
@@ -214,20 +220,7 @@ class _CoinsEntryTileState extends State<_CoinsEntryTile> {
       child: InkWell(
         borderRadius: radius,
         onTap: () async {
-          final sweepOutpoints = await context.pushNamed<Set<Outpoint>>(
-            CoinsRoute.coins.name,
-            extra: widget.wallet,
-          );
-          if (!context.mounted) return;
-          if (sweepOutpoints != null && sweepOutpoints.isNotEmpty) {
-            await context.pushNamed(
-              SendRoute.send.name,
-              extra: SendRouteArgs.sweep(
-                wallet: widget.wallet,
-                outpoints: sweepOutpoints,
-              ),
-            );
-          }
+          await widget.onOpenCoins(context, widget.wallet);
           if (mounted) _reload();
         },
         child: Container(
