@@ -31,7 +31,7 @@ void main() {
     expect(opened.metadata, isEmpty);
   });
 
-  for (final language in bip39.Language.values) {
+  for (final language in Language.values) {
     for (final passphrase in ['', 'TREZOR']) {
       test(
         '${language.name} restores its own seed, passphrase: ${passphrase.isNotEmpty}',
