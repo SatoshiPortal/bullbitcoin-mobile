@@ -1,7 +1,6 @@
 import 'package:bb_mobile/features/app_startup/ui/screens/restore_default_secret_screen.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bull_logs/bull_logs.dart';
 import 'package:get_it/get_it.dart';
@@ -14,8 +13,7 @@ import 'package:bb_mobile/features/onboarding/ui/screens/onboarding_splash.dart'
 import 'package:bb_mobile/router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
-import 'package:url_launcher/url_launcher.dart';
+import 'package:bull_ui/bull_ui.dart' show BullSupportButton, Gap;
 
 class AppStartupWidget extends StatefulWidget {
   const AppStartupWidget({super.key, required this.app});
@@ -166,12 +164,7 @@ class _AppStartupFailureScreenState extends State<AppStartupFailureScreen> {
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 12),
-              BBButton.big(
-                onPressed: () {
-                  final url = Uri.parse(SettingsConstants.webSupportLink);
-                  // ignore: deprecated_member_use
-                  launchUrl(url, mode: LaunchMode.externalApplication);
-                },
+              BullSupportButton.big(
                 label: context.loc.appStartupContactSupportButton,
                 bgColor: context.appColors.primary,
                 textColor: context.appColors.onPrimary,
