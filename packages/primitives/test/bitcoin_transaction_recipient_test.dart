@@ -1,6 +1,9 @@
-import 'package:bb_mobile/core/wallet/domain/entities/bitcoin_transaction_recipient.dart';
-import 'package:flutter_test/flutter_test.dart';
-import 'package:primitives/primitives.dart' show Sats;
+import 'package:test/test.dart';
+import 'package:primitives/primitives.dart'
+    show
+        Sats,
+        BitcoinTransactionRecipient,
+        validateBitcoinTransactionRecipients;
 
 void main() {
   test('fixed recipient requires a destination and positive amount', () {
