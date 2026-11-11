@@ -1536,6 +1536,23 @@ void main() {
       confirmedAmountSat: 30000,
     );
 
+    test(
+      'rejects amount confirmation when the wallet is unavailable',
+      () async {
+        final cubit = buildCubit();
+        addTearDown(cubit.close);
+        cubit.setStateForTest(
+          readyState(_bitcoinLocalWallet()).copyWith(selectedWallet: null),
+        );
+
+        await cubit.onAmountConfirmed();
+
+        expect(cubit.state.failure, isA<SendTransactionBuildFailure>());
+        expect(cubit.state.amountConfirmedClicked, isFalse);
+        expect(cubit.state.unsignedPsbt, isNull);
+      },
+    );
+
     test('returns from multi-recipient sweep confirmation to amounts', () {
       final cubit = buildCubit();
       addTearDown(cubit.close);
