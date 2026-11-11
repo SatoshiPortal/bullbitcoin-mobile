@@ -37,6 +37,16 @@ class _FailingAbortLocal extends LocalPayjoinDatasource {
       Future.error(StateError('disk full'));
 }
 
+/// Records nothing as completed: the write that follows a successful payjoin
+/// broadcast is what fails.
+class _FailingCompleteLocal extends LocalPayjoinDatasource {
+  _FailingCompleteLocal({required super.db});
+
+  @override
+  Future<bool> markCompleted(PayjoinModel payjoin) =>
+      Future.error(StateError('disk full'));
+}
+
 final class _CaptureLogPort implements PayjoinLogPort {
   final events = <PayjoinLogEvent>[];
 
@@ -1812,6 +1822,146 @@ void main() {
       expect(row?.isExpired, isFalse);
       expect(attempts, 0);
       expect(broadcasts, 0);
+    });
+
+    group('evidence of a payment outlives a later negative lookup', () {
+      // Expires between one and two seconds from now; the strict whole-second
+      // expiry getter needs up to one more second before a resume sees it.
+      const pastExpiry = Duration(milliseconds: 3100);
+
+      setUp(() {
+        model = model.copyWith(
+          createdAt: DateTime.now().millisecondsSinceEpoch ~/ 1000 - 3598,
+        );
+      });
+
+      test('a broadcast that succeeded but could not be recorded is never '
+          'expired', () async {
+        final failing = _FailingCompleteLocal(db: database);
+        final failingEngine = PayjoinRepositoryImpl(
+          localPayjoinDatasource: failing,
+          pdkPayjoinDatasource: pdk,
+          log: PayjoinLogger(logs),
+          wallet: wallet,
+          blockchain: blockchain,
+          transactions: transactions,
+          policy: policy,
+          labels: labels,
+        );
+        addTearDown(failingEngine.dispose);
+        await local.storeSender(model);
+        blocked = false;
+        await failingEngine.resumePayjoinsOnStartup();
+        expect(broadcasts, 1);
+        expect(logs.withCode(PayjoinLogCode.payjoinBroadcast), hasLength(1));
+        expect((await local.fetchSender(model.id))?.isCompleted, isFalse);
+        await Future<void>.delayed(pastExpiry);
+        // A cold start: nothing held in memory by the first engine is left.
+        await failingEngine.dispose();
+        await engine.resumePayjoinsOnStartup();
+        expect(broadcasts, 1);
+        await expectReserved();
+      });
+
+      test('a broadcast with an unknown outcome is never expired', () async {
+        await local.storeSender(model);
+        blocked = false;
+        failBroadcast = true;
+        await engine.resumePayjoinsOnStartup();
+        expect(broadcasts, 1);
+        await Future<void>.delayed(pastExpiry);
+        await engine.resumePayjoinsOnStartup();
+        expect(broadcasts, 1);
+        await expectReserved();
+      });
+
+      test('a broadcast refused by the spend gate leaves no evidence and is '
+          'released', () async {
+        await local.storeSender(model);
+        blocked = false;
+        when(
+          () => blockchain.broadcastPsbt(
+            walletId: any(named: 'walletId'),
+            network: any(named: 'network'),
+            psbt: any(named: 'psbt'),
+          ),
+        ).thenThrow(const PayjoinSpendBlockedException());
+        await engine.resumePayjoinsOnStartup();
+        expect(attempts, 1);
+        await expectReserved();
+        await Future<void>.delayed(pastExpiry);
+        await engine.resumePayjoinsOnStartup();
+        await expectReleased();
+      });
+
+      for (final (name, observed) in [
+        ('payjoin', (PayjoinSenderModel m) => m.txId),
+        ('original', (PayjoinSenderModel m) => m.originalTxId),
+      ]) {
+        test('an observed $name whose settlement was refused is never '
+            'expired, then settles', () async {
+          final observedId = observed(model);
+          if (observedId == null) fail('Missing fixture txid');
+          await local.storeSender(model);
+          await engine.resumePayjoinsOnStartup();
+          when(
+            () => transactions.protectObservedSpend(
+              walletId: any(named: 'walletId'),
+              transactionId: any(named: 'transactionId'),
+            ),
+          ).thenAnswer((_) async => false);
+          when(
+            () => transactions.isTransactionVisible(
+              walletId: any(named: 'walletId'),
+              transactionId: any(named: 'transactionId'),
+              refresh: any(named: 'refresh'),
+            ),
+          ).thenAnswer(
+            (inv) async => inv.namedArguments[#transactionId] == observedId,
+          );
+          await refresh();
+          verify(
+            () => transactions.protectObservedSpend(
+              walletId: model.walletId,
+              transactionId: observedId,
+            ),
+          ).called(greaterThan(0));
+          when(
+            () => transactions.isTransactionVisible(
+              walletId: any(named: 'walletId'),
+              transactionId: any(named: 'transactionId'),
+              refresh: any(named: 'refresh'),
+            ),
+          ).thenAnswer((_) async => false);
+          await Future<void>.delayed(pastExpiry);
+          await engine.resumePayjoinsOnStartup();
+          expect(attempts, 1);
+          expect(broadcasts, 0);
+          await expectReserved();
+
+          // Reconciliation: the transaction is seen again and the gate lets go.
+          when(
+            () => transactions.protectObservedSpend(
+              walletId: any(named: 'walletId'),
+              transactionId: any(named: 'transactionId'),
+            ),
+          ).thenAnswer((_) async => true);
+          when(
+            () => transactions.isTransactionVisible(
+              walletId: any(named: 'walletId'),
+              transactionId: any(named: 'transactionId'),
+              refresh: any(named: 'refresh'),
+            ),
+          ).thenAnswer(
+            (inv) async => inv.namedArguments[#transactionId] == observedId,
+          );
+          await engine.resumePayjoinsOnStartup();
+          final row = await local.fetchSender(model.id);
+          expect(row?.isExpired, isFalse);
+          expect(name == 'payjoin' ? row?.isCompleted : row?.isAborted, isTrue);
+          expect(await engine.getUtxosFrozenByOngoingPayjoins(), isEmpty);
+        });
+      }
     });
 
     test('an expired session stays reserved while visibility is unknown, '
