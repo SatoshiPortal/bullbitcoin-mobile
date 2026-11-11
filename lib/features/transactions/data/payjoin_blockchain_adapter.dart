@@ -12,12 +12,14 @@ final class AppPayjoinBlockchainAdapter implements PayjoinBlockchainPort {
   final BdkBitcoinBlockchainDatasource _blockchain;
   final ElectrumServersPort _servers;
   final WalletFacade _wallet;
+  final String Function(String psbt) _transactionId;
 
   const AppPayjoinBlockchainAdapter(
     this._blockchain,
     this._servers,
-    this._wallet,
-  );
+    this._wallet, {
+    this._transactionId = bitcoinPsbtTransactionId,
+  });
 
   @override
   Future<void> broadcastTransaction({
@@ -35,18 +37,29 @@ final class AppPayjoinBlockchainAdapter implements PayjoinBlockchainPort {
     required BitcoinNetwork network,
     required String psbt,
   }) async {
-    final txid = bitcoinPsbtTransactionId(psbt);
-    final result = await _wallet.broadcastBitcoin(walletId, network, () async {
-      await _servers.runWithFallback<String>(
-        network: ElectrumServerNetwork.fromNetworkEnv(
-          network.env,
-          isLiquid: false,
-        ),
-        operation: (connection) =>
-            _blockchain.broadcastPsbt(psbt, connection: connection),
-      );
-      return txid;
-    });
+    // Set on entering the network callback, before any server is contacted:
+    // a failure while it is still false provably sent nothing.
+    var reachedNetwork = false;
+    final Object result;
+    try {
+      final txid = _transactionId(psbt);
+      result = await _wallet.broadcastBitcoin(walletId, network, () async {
+        reachedNetwork = true;
+        await _servers.runWithFallback<String>(
+          network: ElectrumServerNetwork.fromNetworkEnv(
+            network.env,
+            isLiquid: false,
+          ),
+          operation: (connection) =>
+              _blockchain.broadcastPsbt(psbt, connection: connection),
+        );
+        return txid;
+      });
+    } catch (_) {
+      // Past the callback the outcome is unknown and stays untyped.
+      if (reachedNetwork) rethrow;
+      throw const PayjoinBroadcastNotAttemptedException();
+    }
     if (result is Err) throw const PayjoinSpendBlockedException();
     // Accepted/local-record-pending remains accepted; the owner blocks further
     // spends. Never throw a post-accept local failure into the fallback catch.
