@@ -5,7 +5,7 @@ import 'package:bb_mobile/features/buy/ui/buy_payout_method_label.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullShapesX, Gap;
 
 class BuyDestinationInputFields extends StatefulWidget {
   const BuyDestinationInputFields({super.key});
@@ -62,7 +62,7 @@ class _BuyDestinationInputFieldsState extends State<BuyDestinationInputFields> {
           child: Material(
             elevation: 4,
             color: context.appColors.surface,
-            borderRadius: BorderRadius.circular(4.0),
+            borderRadius: BorderRadius.circular(context.bullShapes.input),
             child: Center(
               child: DropdownButtonFormField<String>(
                 alignment: Alignment.centerLeft,
@@ -137,7 +137,7 @@ class _BuyDestinationInputFieldsState extends State<BuyDestinationInputFields> {
             child: Material(
               elevation: 2,
               color: context.appColors.onSecondary,
-              borderRadius: BorderRadius.circular(2.0),
+              borderRadius: BorderRadius.circular(context.bullShapes.input),
               child: Center(
                 child: TextFormField(
                   controller: _bitcoinAddressInputController,

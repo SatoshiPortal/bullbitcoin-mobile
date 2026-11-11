@@ -10,7 +10,8 @@ import 'package:bb_mobile/features/recoverbull_google_drive/router.dart';
 import 'package:bull_tor/tor.dart' show TorReady;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show BullButton, BullText, Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show BullButton, BullShapesX, BullText, Gap;
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
@@ -52,7 +53,7 @@ class VaultSelectedPage extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               decoration: BoxDecoration(
                 border: Border.all(color: context.appColors.onSurface),
-                borderRadius: BorderRadius.circular(4),
+                borderRadius: BorderRadius.circular(context.bullShapes.card),
               ),
               child: Column(
                 crossAxisAlignment: .start,

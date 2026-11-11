@@ -1,5 +1,5 @@
 import 'package:bull_ui/src/theme/bull_icon.dart';
-import 'package:bull_ui/src/theme/bull_tokens.dart';
+import 'package:bull_ui/src/theme/bull_shapes.dart';
 import 'package:flutter/material.dart';
 
 /// A generic small pill: background + foreground + optional leading icon +
@@ -14,7 +14,7 @@ class BullBadge extends StatelessWidget {
     this.icon,
     this.iconSize = 11,
     this.uppercase = false,
-    this.radius = BullRadius.xxs,
+    this.radius,
     this.border,
   });
 
@@ -36,8 +36,8 @@ class BullBadge extends StatelessWidget {
   /// When true, the label is upper-cased (keychain badge style).
   final bool uppercase;
 
-  /// Corner radius.
-  final double radius;
+  /// Corner radius. Defaults to [BullShapes.badge].
+  final double? radius;
 
   /// Optional outline. When null the pill has no border (the default).
   final BoxBorder? border;
@@ -48,7 +48,7 @@ class BullBadge extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
       decoration: BoxDecoration(
         color: background,
-        borderRadius: BorderRadius.circular(radius),
+        borderRadius: BorderRadius.circular(radius ?? context.bullShapes.badge),
         border: border,
       ),
       child: Row(

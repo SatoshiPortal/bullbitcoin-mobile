@@ -1,6 +1,6 @@
 import 'package:bull_ui/src/theme/bull_theme.dart';
-import 'package:bull_ui/src/theme/bull_tokens.dart';
 import 'package:custom_sliding_segmented_control/custom_sliding_segmented_control.dart';
+import 'package:bull_ui/src/theme/bull_shapes.dart';
 import 'package:flutter/material.dart';
 
 /// Full-width sliding segmented control.
@@ -54,7 +54,7 @@ class _BullSegmentedState extends State<BullSegmented> {
     final colors = context.bull;
     return Center(
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(BullRadius.xxs),
+        borderRadius: BorderRadius.circular(context.bullShapes.button),
         clipBehavior: Clip.antiAliasWithSaveLayer,
         child: CustomSlidingSegmentedControl<String>(
           initialValue: widget.initialValue ?? widget.items.first,
@@ -70,11 +70,11 @@ class _BullSegmentedState extends State<BullSegmented> {
           customSegmentSettings: CustomSegmentSettings(),
           decoration: BoxDecoration(
             color: colors.textMuted.withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(BullRadius.xxs),
+            borderRadius: BorderRadius.circular(context.bullShapes.button),
           ),
           thumbDecoration: BoxDecoration(
             color: colors.surface,
-            borderRadius: BorderRadius.circular(BullRadius.xxs),
+            borderRadius: BorderRadius.circular(context.bullShapes.button),
           ),
           children: {
             for (final item in widget.items)

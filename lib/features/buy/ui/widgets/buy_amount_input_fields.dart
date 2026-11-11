@@ -5,7 +5,7 @@ import 'package:bb_mobile/features/buy/presentation/buy_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show BullShimmerLine, Gap;
+import 'package:bull_ui/bull_ui.dart' show BullShapesX, BullShimmerLine, Gap;
 import 'package:intl/intl.dart';
 
 class BuyAmountInputFields extends StatefulWidget {
@@ -65,7 +65,7 @@ class _BuyAmountInputFieldsState extends State<BuyAmountInputFields> {
         Card(
           elevation: 1,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(4.0),
+            borderRadius: BorderRadius.circular(context.bullShapes.input),
           ),
           child: Padding(
             padding: const EdgeInsets.symmetric(
@@ -211,7 +211,7 @@ class _BuyAmountInputFieldsState extends State<BuyAmountInputFields> {
             elevation: 4,
             shadowColor: context.appColors.onSurface.withValues(alpha: 0.7),
             color: context.appColors.surface,
-            borderRadius: BorderRadius.circular(4.0),
+            borderRadius: BorderRadius.circular(context.bullShapes.input),
             child: Center(
               child: DropdownButtonFormField<String>(
                 initialValue: currency?.code,

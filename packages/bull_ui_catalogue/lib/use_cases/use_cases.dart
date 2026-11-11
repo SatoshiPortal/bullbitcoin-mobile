@@ -133,6 +133,50 @@ m.Widget bullViewerActionButtonUseCase(m.BuildContext context) {
   );
 }
 
+enum _SupportVariant { big, icon, text, tile }
+
+@widgetbook.UseCase(name: 'Default', type: BullSupportButton)
+m.Widget bullSupportButtonUseCase(m.BuildContext context) {
+  final variant = context.knobs.object.dropdown<_SupportVariant>(
+    label: 'variant',
+    options: _SupportVariant.values,
+    labelBuilder: (v) => v.name,
+  );
+  final label = context.knobs.string(
+    label: 'label',
+    initialValue: 'Contact support',
+  );
+  final message = context.knobs.stringOrNull(
+    label: 'message',
+    defaultToNull: true,
+  );
+  final button = switch (variant) {
+    _SupportVariant.big => BullSupportButton.big(
+      label: label,
+      message: message,
+    ),
+    _SupportVariant.icon => BullSupportButton.icon(
+      label: label,
+      message: message,
+      color: context.bull.text,
+    ),
+    _SupportVariant.text => BullSupportButton.text(
+      label: label,
+      message: message,
+    ),
+    _SupportVariant.tile => BullSupportButton.tile(
+      label: label,
+      message: message,
+    ),
+  };
+  // The catalogue has no support channel: a no-op scope keeps the button
+  // enabled. Without the scope it renders disabled.
+  return _frame(
+    context,
+    BullSupportScope(onContactSupport: (context, {message}) {}, child: button),
+  );
+}
+
 @widgetbook.UseCase(name: 'Default', type: BullTabMenuVerticalButton)
 m.Widget bullTabMenuVerticalButtonUseCase(m.BuildContext context) {
   return _frame(

@@ -1,4 +1,5 @@
-import 'package:bip39_mnemonic/bip39_mnemonic.dart' show Language;
+import 'package:bip39_mnemonic/bip39_mnemonic.dart'
+    show Language, MnemonicLength;
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
 import 'package:secrets/src/public/secret.dart';
@@ -114,7 +115,7 @@ extension type const SecretBip85._(Secret _secret) {
   /// See [Secret.bip85Mnemonic].
   @useResult
   Future<Result<List<String>, SecretFailure>> mnemonic({
-    required MnemonicWordCount wordCount,
+    required MnemonicLength wordCount,
     required int index,
     Language language = Language.english,
   }) => _secret.bip85Mnemonic(
