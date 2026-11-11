@@ -96,9 +96,13 @@ final class BitcoinSpendGateStore {
     };
   }
 
-  bool blocked(PublicWalletDescriptor descriptor, {String? replacing}) {
-    final ids = tracked(descriptor);
-    if (replacing != null && ids.contains(replacing)) return true;
+  bool isObserved(WalletKey key, String txid) => _db.select(
+    'SELECT 1 FROM broadcasts WHERE wallet=? AND network=? AND txid=? AND observed=1',
+    [key.id, key.network.env.name, txid],
+  ).isNotEmpty;
+
+  bool blocked(PublicWalletDescriptor descriptor) {
+    tracked(descriptor);
     return _db.select(
       'SELECT 1 FROM broadcasts WHERE wallet=? AND network=? AND observed=0 LIMIT 1',
       [descriptor.key.id, descriptor.key.network.env.name],

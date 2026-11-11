@@ -4847,6 +4847,6 @@
   "sellPayoutTitle": "Seleccionar destinatario",
   "sellPayoutNewBadge": "NUEVO",
   "walletSpendAwaitingObservation": "Los gastos no están disponibles temporalmente mientras esta cartera verifica un pago anterior. Actualiza la cartera o busca transacciones faltantes y vuelve a intentarlo.",
-  "walletSpendReplacementUnavailable": "No se pueden aumentar las comisiones de este pago. Espera su confirmación.",
+  "walletSpendReplacementUnavailable": "No se pueden aumentar las comisiones hasta que esta cartera vea el pago en la red. Actualiza la cartera y vuelve a intentarlo.",
   "sendPayjoinSpendPaused": "Este pago Payjoin está en pausa porque la cartera no puede continuar de forma segura. Sus entradas siguen reservadas. Actualiza la cartera o busca las transacciones faltantes y vuelve a intentar esta propuesta mientras siga siendo válida. Si ha caducado, revisa el pago en Transacciones antes de hacer nada más."
 }

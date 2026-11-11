@@ -16044,9 +16044,9 @@
   "@walletSpendAwaitingObservation": {
     "description": "Bitcoin wallet spend gate; no timeout releases inputs. Refresh or discovery retries observation."
   },
-  "walletSpendReplacementUnavailable": "Fee bumping is unavailable for this payment. Wait for confirmation.",
+  "walletSpendReplacementUnavailable": "Fee bumping is unavailable until this wallet sees the payment on the network. Refresh the wallet, then try again.",
   "@walletSpendReplacementUnavailable": {
-    "description": "RBF limitation for retained tracked Bitcoin broadcasts."
+    "description": "RBF is refused only while the tracked Bitcoin broadcast it replaces has not been observed by a sync."
   },
   "sendPayjoinSpendPaused": "This Payjoin payment is paused because the wallet cannot safely continue. Its inputs remain reserved. Refresh the wallet or use Scan for missing transactions, then retry this proposal while it is still valid. If it has expired, check the payment in Transactions before taking further action.",
   "@sendPayjoinSpendPaused": {

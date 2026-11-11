@@ -6,7 +6,14 @@ import 'writer_lock.dart';
 import 'lease_diagnostics.dart';
 
 /// No timeout, absence or recovery operation grants spend permission.
-enum BitcoinSpendStatus { ready, pending, unavailable, replacementUnsupported }
+enum BitcoinSpendStatus {
+  ready,
+  pending,
+  unavailable,
+
+  /// The tracked transaction to replace has not been observed by a sync yet.
+  replacementPending,
+}
 
 final class BitcoinBroadcastReceipt {
   final String txid;
@@ -86,12 +93,18 @@ final class BitcoinSpendGate {
       if (store.generationMismatch(key, record.state.stamp.generation)) {
         store.requireValidation(key);
       }
-      if (!handoff &&
-          (store.blocked(descriptor) ||
-              (replacing != null && tracked.contains(replacing)))) {
-        final status = replacing != null && tracked.contains(replacing)
-            ? BitcoinSpendStatus.replacementUnsupported
-            : BitcoinSpendStatus.pending;
+      // An observed tracked spend may be replaced. Broadcasting the
+      // replacement records it as a new obligation; the pass that sees it
+      // evicts and releases the one it replaced.
+      final status =
+          replacing != null &&
+              tracked.contains(replacing) &&
+              !store.isObserved(key, replacing)
+          ? BitcoinSpendStatus.replacementPending
+          : store.blocked(descriptor)
+          ? BitcoinSpendStatus.pending
+          : null;
+      if (!handoff && status != null) {
         store.close();
         lock.release();
         return BitcoinSpendRefused(status);

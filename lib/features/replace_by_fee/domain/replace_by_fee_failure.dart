@@ -39,6 +39,7 @@ final class ReplaceByFeeUnexpectedFailure extends ReplaceByFeeFailure {
 }
 
 final class ReplaceByFeeSpendBlockedFailure extends ReplaceByFeeFailure {
-  final bool replacementUnsupported;
-  const ReplaceByFeeSpendBlockedFailure({this.replacementUnsupported = false});
+  /// The wallet has not yet seen the payment to replace on the network.
+  final bool replacementPending;
+  const ReplaceByFeeSpendBlockedFailure({this.replacementPending = false});
 }
