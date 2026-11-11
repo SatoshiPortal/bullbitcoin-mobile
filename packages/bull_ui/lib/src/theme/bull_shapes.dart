@@ -111,8 +111,7 @@ extension BullShapesX on BuildContext {
     final shapes = Theme.of(this).extension<BullShapes>();
     if (shapes == null) {
       throw StateError(
-        'No BullShapes registered: add BullShapes.standard (or a fork\'s '
-        'own BullShapes) to ThemeData.extensions.',
+        'No BullShapes registered: add BullShapes.standard to ThemeData.extensions.',
       );
     }
     return shapes;
