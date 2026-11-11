@@ -436,6 +436,8 @@ class SwapLimits {
   final int max;
 
   const SwapLimits({required this.min, required this.max});
+
+  bool accepts(int amountSat) => amountSat >= min && amountSat <= max;
 }
 
 class Invoice {

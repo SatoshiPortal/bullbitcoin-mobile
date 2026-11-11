@@ -1,3 +1,4 @@
+import 'package:boltz_swaps/src/util.dart';
 import 'package:primitives/primitives.dart';
 
 /// The swap engine's modeled failures — one sealed family, per the
@@ -32,6 +33,31 @@ final class SwapsNetworkFailure extends SwapsFailure {
   const SwapsNetworkFailure([super.logMessage]);
 }
 
+/// The Boltz backend did not answer, answered with a server error, or
+/// answered 418. Nothing was created and no funds moved.
+final class SwapsBoltzUnavailableFailure extends SwapsFailure {
+  const SwapsBoltzUnavailableFailure([super.logMessage]);
+}
+
+/// Boltz answered and refused the request (any other 4xx). Nothing was
+/// created and no funds moved.
+final class SwapsBoltzRejectedFailure extends SwapsFailure {
+  const SwapsBoltzRejectedFailure([super.logMessage]);
+}
+
+/// The amount is outside what Boltz currently accepts for this swap type.
+final class SwapsAmountOutOfLimitsFailure extends SwapsFailure {
+  final int minSat;
+  final int maxSat;
+
+  const SwapsAmountOutOfLimitsFailure({
+    required this.minSat,
+    required this.maxSat,
+  });
+
+  bool isBelowMinimum(int amountSat) => amountSat < minSat;
+}
+
 /// The catch-all. The raw reason lives in `logMessage` for diagnosis only.
 final class SwapsUnexpectedFailure extends SwapsFailure {
   const SwapsUnexpectedFailure([super.logMessage]);
@@ -62,4 +88,16 @@ SwapsFailure classifySwapsFailure(Object error) {
     return SwapsNetworkFailure(message);
   }
   return SwapsUnexpectedFailure(message);
+}
+
+/// Maps an error raised while creating a swap. Boltz backend errors keep
+/// their transport/status meaning; anything else goes through
+/// [classifySwapsFailure].
+SwapsFailure classifySwapCreationFailure(Object error) {
+  if (error is BoltzApiException) {
+    return error.isUnreachable
+        ? SwapsBoltzUnavailableFailure(error.message)
+        : SwapsBoltzRejectedFailure(error.message);
+  }
+  return classifySwapsFailure(error);
 }

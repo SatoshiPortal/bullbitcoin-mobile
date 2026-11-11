@@ -136,3 +136,27 @@ class SwapsException implements Exception {
   @override
   String toString() => message;
 }
+
+/// A call to the Boltz backend failed. [kind] is boltz-client's error
+/// variant name; [statusCode] is set only when Boltz answered with a non-2xx
+/// status, so a null code with an `HTTP`/`IO` kind means no answer at all.
+class BoltzApiException implements Exception {
+  final String kind;
+  final String message;
+  final int? statusCode;
+
+  BoltzApiException({required this.kind, required this.message})
+    : statusCode = kind == 'HTTPStatusNotSuccess'
+          ? int.tryParse(_statusPattern.firstMatch(message)?.group(1) ?? '')
+          : null;
+
+  static final _statusPattern = RegExp(r'HTTP Status Not Success: (\d{3})');
+
+  bool get isUnreachable => switch (statusCode) {
+    null => kind == 'HTTP' || kind == 'IO' || kind == 'WebSocket',
+    final code => code >= 500 || code == 418,
+  };
+
+  @override
+  String toString() => message;
+}

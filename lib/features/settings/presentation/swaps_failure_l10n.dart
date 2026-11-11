@@ -8,7 +8,10 @@ extension SwapsFailureL10n on SwapsFailure {
       context.loc.swapsFailureMasterKeyUnavailable,
     SwapsNotRestorableFailure() => context.loc.swapsFailureNotRestorable,
     SwapsRefundNotFinalFailure() => context.loc.swapsFailureRefundNotFinal,
-    SwapsNetworkFailure() => context.loc.swapsFailureNetwork,
+    SwapsNetworkFailure() ||
+    SwapsBoltzUnavailableFailure() => context.loc.swapsFailureNetwork,
+    SwapsBoltzRejectedFailure() ||
+    SwapsAmountOutOfLimitsFailure() => context.loc.swapsFailureUnexpected,
 
     // Never `logMessage`: the raw reason is logged at the boundary and is
     // never fit to show a user.

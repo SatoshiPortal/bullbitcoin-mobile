@@ -85,19 +85,23 @@ class BoltzDatasource {
 
   Future<void> updateFees({required swap_entity.SwapType swapType}) async {
     final allFees = Fees(boltzUrl: _httpsUrl);
-    switch (swapType) {
-      case swap_entity.SwapType.lightningToBitcoin:
-      case swap_entity.SwapType.lightningToLiquid:
-        _reverseFeesAndLimits = await allFees.reverse();
-        _reverseFeesFetchedAt = DateTime.now();
-      case swap_entity.SwapType.bitcoinToLightning:
-      case swap_entity.SwapType.liquidToLightning:
-        _submarineFeesAndLimits = await allFees.submarine();
-        _submarineFeesFetchedAt = DateTime.now();
-      case swap_entity.SwapType.bitcoinToLiquid:
-      case swap_entity.SwapType.liquidToBitcoin:
-        _chainFeesAndLimits = await allFees.chain();
-        _chainFeesFetchedAt = DateTime.now();
+    try {
+      switch (swapType) {
+        case swap_entity.SwapType.lightningToBitcoin:
+        case swap_entity.SwapType.lightningToLiquid:
+          _reverseFeesAndLimits = await allFees.reverse();
+          _reverseFeesFetchedAt = DateTime.now();
+        case swap_entity.SwapType.bitcoinToLightning:
+        case swap_entity.SwapType.liquidToLightning:
+          _submarineFeesAndLimits = await allFees.submarine();
+          _submarineFeesFetchedAt = DateTime.now();
+        case swap_entity.SwapType.bitcoinToLiquid:
+        case swap_entity.SwapType.liquidToBitcoin:
+          _chainFeesAndLimits = await allFees.chain();
+          _chainFeesFetchedAt = DateTime.now();
+      }
+    } on BoltzError catch (e) {
+      throw BoltzApiException(kind: e.kind, message: e.message);
     }
   }
 
@@ -375,7 +379,7 @@ class BoltzDatasource {
       return swapModel;
     } catch (e) {
       if (e is BoltzError) {
-        throw e.message;
+        throw BoltzApiException(kind: e.kind, message: e.message);
       } else {
         rethrow;
       }
@@ -457,7 +461,7 @@ class BoltzDatasource {
       return swapModel;
     } catch (e) {
       if (e is BoltzError) {
-        throw e.message;
+        throw BoltzApiException(kind: e.kind, message: e.message);
       } else {
         rethrow;
       }
@@ -588,7 +592,7 @@ class BoltzDatasource {
       return swapModel;
     } catch (e) {
       if (e is BoltzError) {
-        throw e.message;
+        throw BoltzApiException(kind: e.kind, message: e.message);
       } else {
         rethrow;
       }
@@ -647,7 +651,7 @@ class BoltzDatasource {
       return swapModel;
     } catch (e) {
       if (e is BoltzError) {
-        throw e.message;
+        throw BoltzApiException(kind: e.kind, message: e.message);
       } else {
         rethrow;
       }
@@ -808,7 +812,7 @@ class BoltzDatasource {
       return swapModel;
     } catch (e) {
       if (e is BoltzError) {
-        throw e.message;
+        throw BoltzApiException(kind: e.kind, message: e.message);
       } else {
         rethrow;
       }
@@ -870,7 +874,7 @@ class BoltzDatasource {
       return swapModel;
     } catch (e) {
       if (e is BoltzError) {
-        throw e.message;
+        throw BoltzApiException(kind: e.kind, message: e.message);
       } else {
         rethrow;
       }

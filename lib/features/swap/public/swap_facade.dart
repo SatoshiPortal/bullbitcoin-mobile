@@ -9,7 +9,9 @@ import 'package:bb_mobile/features/swap/domain/usecases/get_order_swaps_usecase.
 import 'package:bb_mobile/features/swap/domain/usecases/get_order_swap_usecase.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/get_order_swaps_awaiting_labels_usecase.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/get_pending_order_swaps_usecase.dart';
+import 'package:bb_mobile/features/swap/domain/entities/swap_route.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/get_swap_app_update_required_usecase.dart';
+import 'package:bb_mobile/features/swap/domain/usecases/get_swap_route_usecase.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/mark_order_swap_broadcast_unknown_usecase.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/mark_order_swap_payin_broadcast_usecase.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/mark_order_swap_labels_applied_usecase.dart';
@@ -24,6 +26,7 @@ export 'package:bb_mobile/features/swap/domain/entities/order_swap.dart';
 export 'package:bb_mobile/features/swap/domain/entities/order_swap_network.dart';
 export 'package:bb_mobile/features/swap/domain/entities/order_swap_quote.dart';
 export 'package:bb_mobile/features/swap/domain/entities/order_swap_record.dart';
+export 'package:bb_mobile/features/swap/domain/entities/swap_route.dart';
 export 'package:bb_mobile/features/swap/domain/swap_failure.dart';
 export 'package:bb_mobile/features/swap/public/order_swap_under_review_card.dart';
 
@@ -44,6 +47,7 @@ class SwapFacade {
   final RefreshOrderSwapsUsecase _refreshOrders;
   final GetSwapAppUpdateRequiredUsecase _getAppUpdateRequired;
   final WatchSwapAppUpdateRequiredUsecase _watchAppUpdateRequired;
+  final GetSwapRouteUsecase _getRoute;
 
   SwapFacade(
     this._getQuote,
@@ -62,11 +66,14 @@ class SwapFacade {
     this._refreshOrders,
     this._getAppUpdateRequired,
     this._watchAppUpdateRequired,
+    this._getRoute,
   );
 
   bool get isAppUpdateRequired => _getAppUpdateRequired.execute();
 
   Stream<bool> watchAppUpdateRequired() => _watchAppUpdateRequired.execute();
+
+  Future<SwapRoute> getRoute() => _getRoute.execute();
 
   Future<Result<OrderSwapQuote, SwapFailure>> getQuote({
     required OrderSwapEnvironment environment,

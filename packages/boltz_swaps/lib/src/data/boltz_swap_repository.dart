@@ -1218,6 +1218,12 @@ class BoltzSwapRepository implements SwapRepository {
     }
   }
 
+  @override
+  Future<SwapLimits> limits(SwapType type) async {
+    final (limits, _) = await getSwapLimitsAndFees(type);
+    return limits;
+  }
+
   Future<void> updateSwapLimitsAndFees(SwapType type) async {
     await _boltz.updateFees(swapType: type);
   }

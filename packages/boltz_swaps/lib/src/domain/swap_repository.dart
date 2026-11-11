@@ -26,6 +26,9 @@ abstract class SwapRepository {
   /// with funds at risk.
   Future<List<Swap>> ongoing({String? walletId});
 
+  /// What the backend currently accepts for [type], in sats.
+  Future<SwapLimits> limits(SwapType type);
+
   Future<LnReceiveSwap> createLightningReceive({
     required String walletId,
     required int amountSat,
