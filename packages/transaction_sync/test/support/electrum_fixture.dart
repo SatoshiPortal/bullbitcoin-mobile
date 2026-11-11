@@ -85,6 +85,11 @@ final class ElectrumFixture {
     await _call(['dropBroadcasts']);
   }
 
+  /// Replaces the tip block with two empty ones: its transactions unconfirm.
+  Future<void> reorgTip() async {
+    await _call(['reorgTip']);
+  }
+
   /// Mines one broadcast; the others leave the mempool as its conflicts would.
   Future<void> confirmBroadcast(String txid) async {
     await _call(['confirmBroadcast', txid]);
@@ -124,6 +129,7 @@ final class ElectrumFixture {
           'broadcastVisibility' => chain.exposeBroadcasts(command[1] as bool),
           'advanceTip' => chain.advanceTip(),
           'dropBroadcasts' => chain.dropBroadcasts(),
+          'reorgTip' => chain.reorgTip(),
           'confirmBroadcast' => chain.confirmBroadcast(command[1] as String),
           _ => StateError('unknown command ${command[0]}'),
         });
@@ -184,6 +190,13 @@ final class _Chain {
     mempool.removeWhere(broadcasts.contains);
     broadcasts.clear();
     return true;
+  }
+
+  bool reorgTip() {
+    blocks.removeLast();
+    headers.removeLast();
+    advanceTip();
+    return advanceTip();
   }
 
   bool confirmBroadcast(String txid) {

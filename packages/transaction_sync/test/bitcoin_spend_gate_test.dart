@@ -119,9 +119,10 @@ void main() {
           await gate.check(wallet.key, replacing: replacement),
           BitcoinSpendStatus.replacementPending,
         );
-        // The pass that sees the replacement evicts and releases the original.
-        store.observed(wallet, 1, {replacement}, released: {txid});
-        expect(store.tracked(wallet), [replacement]);
+        // The pass that sees the replacement settles the original it
+        // conflicts with; both stay recorded.
+        store.observed(wallet, 1, {replacement, txid});
+        expect(store.tracked(wallet), [txid, replacement]);
         expect(
           await gate.check(wallet.key, replacing: replacement),
           BitcoinSpendStatus.ready,
@@ -144,28 +145,19 @@ void main() {
     },
   );
 
-  test('proof that a spend cannot confirm releases it for good', () async {
+  test('a settled spend is retained and blocks again after a reset', () async {
     await accepted();
     final store = BitcoinSpendGateStore(revisions.spendGatePath);
     try {
-      store.observed(
-        wallet,
-        1,
-        {txid},
-        inputs: {
-          txid: {'${'b' * 64}:0', '${'b' * 64}:1'},
-        },
-      );
-      expect(store.trackedInputs(wallet), {
-        txid: {'${'b' * 64}:0', '${'b' * 64}:1'},
-      });
-      // Revalidation alone releases nothing: absence is not evidence.
+      final spent = {'${'b' * 64}:0', '${'b' * 64}:1'};
+      store.observed(wallet, 1, {txid}, inputs: {txid: spent});
+      expect(await gate.check(wallet.key), BitcoinSpendStatus.ready);
+      // The next pass starts from nothing: absence is not evidence, and a
+      // conflict that settled the spend must be proven again.
       store.requireValidation(wallet.key);
       store.observed(wallet, 1, {});
       expect(await gate.check(wallet.key), BitcoinSpendStatus.pending);
-      store.observed(wallet, 1, {}, released: {txid});
-      expect(store.tracked(wallet), isEmpty);
-      expect(await gate.check(wallet.key), BitcoinSpendStatus.ready);
+      expect(store.trackedInputs(wallet), {txid: spent});
     } finally {
       store.close();
     }

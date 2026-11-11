@@ -1,6 +1,7 @@
 import 'support/connections.dart';
 import 'support/regtest_wallet.dart';
 import 'package:transaction_sync/write.dart';
+import 'package:transaction_sync/src/write/bitcoin_spend_gate_store.dart';
 import 'package:transaction_sync/read.dart';
 import 'package:transaction_sync/src/write/writer_lock.dart';
 import 'package:bull_logger/bull_logger.dart';
@@ -738,24 +739,50 @@ void main() {
           expect(inputs(b).any((i) => i.$1 == aId), isTrue);
           expect(change(b, spending.wallet), isNot(aChange));
         }
-        // A clean pass that evicts the observed payment proves it can no
-        // longer confirm from this wallet's view: the obligation is released.
+        // Later canonical loss must restore the durable barrier, including if
+        // the new endpoint omits a previously observed transaction.
         await fixture.exposeBroadcasts(false);
         completed(await sync.execute(descriptor));
-        expect(await gate.check(descriptor.key), BitcoinSpendStatus.ready);
+        // The native wallet would now spend the payment's input again: only
+        // the gate stands between an endpoint's omission and a chained spend.
+        final withheld = await read();
+        final again = build(withheld.wallet);
+        final c = build(withheld.wallet, sats: 11000);
+        final d = build(withheld.wallet, sats: 12000);
+        for (final tx in [again, c, d]) {
+          addTearDown(tx.dispose);
+          expect(inputs(tx).intersection(aInputs), isNotEmpty);
+        }
+        expect(await gate.check(descriptor.key), BitcoinSpendStatus.pending);
+        expect(await gate.acquire(descriptor.key), isA<BitcoinSpendRefused>());
+        // Repetition, another endpoint and a discovery scan prove nothing more.
+        completed(await sync.execute(descriptor));
+        final fallback = ElectrumSync(
+          connections: FixtureConnections(['tcp://127.0.0.1:1', fixture.url]),
+          documentsDirectory: () async => dir.path,
+        );
+        completed(await fallback.execute(descriptor));
+        completed(await sync.execute(descriptor, discover: true));
+        expect(await gate.check(descriptor.key), BitcoinSpendStatus.pending);
 
-        // A discovery scan carries no eviction evidence. The payment is then
-        // released only once a confirmed transaction spends one of its inputs.
-        await fixture.dropBroadcasts();
+        bool settled(String txid) {
+          final store = BitcoinSpendGateStore(revisions.spendGatePath);
+          try {
+            expect(store.tracked(descriptor), contains(txid));
+            return store.isObserved(descriptor.key, txid);
+          } finally {
+            store.close();
+          }
+        }
+
+        // Seeing the payment again lifts the barrier; it is then replaced.
+        // BDK timestamps in seconds: a sighting must postdate the eviction.
+        await Future<void>.delayed(const Duration(milliseconds: 1100));
         await fixture.exposeBroadcasts(true);
-        final funded = await read();
-        final c = build(funded.wallet, sats: 11000);
-        final d = build(funded.wallet, sats: 12000);
-        addTearDown(c.dispose);
-        addTearDown(d.dispose);
+        completed(await sync.execute(descriptor));
+        expect(await gate.check(descriptor.key), BitcoinSpendStatus.ready);
         final cId = c.computeTxid().toString();
         final dId = d.computeTxid().toString();
-        expect(inputs(d), inputs(c));
         final rival = bdk.ElectrumClient(
           url: fixture.url,
           socks5: null,
@@ -764,27 +791,46 @@ void main() {
           validateDomain: false,
         );
         addTearDown(rival.dispose);
-        final second = await gate.acquire(descriptor.key);
+        final replacing = await gate.acquire(descriptor.key);
         try {
+          await fixture.dropBroadcasts();
+          await fixture.exposeBroadcasts(true);
           expect(rival.transactionBroadcast(tx: c).toString(), cId);
           expect(
-            (second as BitcoinSpendAdmission).accepted(cId).durable,
+            (replacing as BitcoinSpendAdmission).accepted(cId).durable,
             isTrue,
           );
         } finally {
-          if (second case final BitcoinSpendAdmission lease) lease.close();
+          if (replacing case final BitcoinSpendAdmission lease) lease.close();
         }
+        expect(await gate.check(descriptor.key), BitcoinSpendStatus.pending);
+        // A tracked replacement seen in the pass settles the payment it
+        // conflicts with, for that pass only: nothing is forgotten.
         completed(await sync.execute(descriptor));
         expect(await gate.check(descriptor.key), BitcoinSpendStatus.ready);
-        // Another device sharing the seed replaces it; the replacement confirms.
+        expect(settled(aId), isTrue);
+        expect(settled(cId), isTrue);
+        // The conflict is no longer seen: protection of both is reinstated.
+        await fixture.exposeBroadcasts(false);
+        completed(await sync.execute(descriptor));
+        expect(await gate.check(descriptor.key), BitcoinSpendStatus.pending);
+        expect(settled(aId), isFalse);
+        expect(settled(cId), isFalse);
+
+        // A discovery scan carries no eviction delta: a confirmed conflict
+        // from another device still settles both.
         expect(rival.transactionBroadcast(tx: d).toString(), dId);
         await fixture.confirmBroadcast(dId);
         completed(await sync.execute(descriptor, discover: true));
-        final settled = await read();
-        final gone = bdk.Txid.fromString(hex: cId);
-        addTearDown(gone.dispose);
-        expect(settled.wallet.getTx(txid: gone), isNull);
         expect(await gate.check(descriptor.key), BitcoinSpendStatus.ready);
+        expect(settled(aId), isTrue);
+        expect(settled(cId), isTrue);
+        // Its block is reorganized away: an unconfirmed foreign conflict
+        // settles nothing.
+        await fixture.reorgTip();
+        completed(await sync.execute(descriptor));
+        expect(await gate.check(descriptor.key), BitcoinSpendStatus.pending);
+        expect(settled(aId), isFalse);
       });
     }
 
