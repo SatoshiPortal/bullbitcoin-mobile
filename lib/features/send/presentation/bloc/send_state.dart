@@ -170,6 +170,7 @@ abstract class SendState with _$SendState {
     // confirm
     String? txId,
     PayjoinSenderSession? payjoinSender,
+    @Default(false) bool isRetryingPayjoinProposal,
     WalletTransaction? walletTransaction,
     @Default(false) bool sendMax,
     @Default(false) bool amountConfirmedClicked,

@@ -359,6 +359,7 @@ PayjoinSenderSession _sender({
 );
 
 void main() {
+  late _MockRetryPayjoinProposalUsecase retryPayjoinProposalUsecase;
   late _MockLabelsFacade labelsFacade;
   late _MockSelectBestWalletUsecase bestWalletUsecase;
   late _MockDetectBitcoinStringUsecase detectBitcoinStringUsecase;
@@ -430,7 +431,7 @@ void main() {
     prepareLiquidSendUsecase: prepareLiquidSendUsecase,
     sendWithPayjoinUsecase: sendWithPayjoinUsecase,
     watchPayjoinUsecase: watchPayjoinUsecase,
-    retryPayjoinProposalUsecase: _MockRetryPayjoinProposalUsecase(),
+    retryPayjoinProposalUsecase: retryPayjoinProposalUsecase,
     getWalletsUsecase: getWalletsUsecase,
     getWalletUsecase: getWalletUsecase,
     createSendSwapUsecase: createSendSwapUsecase,
@@ -516,6 +517,7 @@ void main() {
   });
 
   setUp(() {
+    retryPayjoinProposalUsecase = _MockRetryPayjoinProposalUsecase();
     labelsFacade = _MockLabelsFacade();
     bestWalletUsecase = _MockSelectBestWalletUsecase();
     detectBitcoinStringUsecase = _MockDetectBitcoinStringUsecase();
@@ -636,6 +638,98 @@ void main() {
   );
 
   group('SendCubit._watchPayjoin', () {
+    test(
+      'drops a second proposal retry while the first is in flight',
+      () async {
+        final cubit = buildCubit();
+        addTearDown(cubit.close);
+        final paused = _sender(
+          status: PayjoinStatus.proposed,
+          spendFailure: const PayjoinSpendBlockedFailure(),
+        );
+        cubit.setStateForTest(cubit.state.copyWith(payjoinSender: paused));
+        final pending = Completer<Result<PayjoinSession, SendFailure>>();
+        when(
+          () => retryPayjoinProposalUsecase.execute(paused.id),
+        ).thenAnswer((_) => pending.future);
+        final first = cubit.retryPayjoinProposal();
+        final second = cubit.retryPayjoinProposal();
+        verify(() => retryPayjoinProposalUsecase.execute(paused.id)).called(1);
+        pending.complete(const Err(SendSpendBlockedFailure()));
+        await Future.wait([first, second]);
+        expect(cubit.state.failure, isA<SendSpendBlockedFailure>());
+        await cubit.retryPayjoinProposal();
+        verify(() => retryPayjoinProposalUsecase.execute(paused.id)).called(1);
+      },
+    );
+
+    test('proposal retry discards a result for a replaced session', () async {
+      final cubit = buildCubit();
+      addTearDown(cubit.close);
+      final paused = _sender(
+        status: PayjoinStatus.proposed,
+        spendFailure: const PayjoinSpendBlockedFailure(),
+      );
+      cubit.setStateForTest(cubit.state.copyWith(payjoinSender: paused));
+      final pending = Completer<Result<PayjoinSession, SendFailure>>();
+      when(
+        () => retryPayjoinProposalUsecase.execute(paused.id),
+      ).thenAnswer((_) => pending.future);
+      final retry = cubit.retryPayjoinProposal();
+      cubit.setStateForTest(cubit.state.copyWith(payjoinSender: null));
+      pending.complete(const Err(SendSpendBlockedFailure()));
+      await retry;
+      expect(cubit.state.failure, isNull);
+      expect(cubit.state.payjoinSender, isNull);
+    });
+
+    test('proposal retry releases its guard after an exception', () async {
+      final cubit = buildCubit();
+      addTearDown(cubit.close);
+      final paused = _sender(
+        status: PayjoinStatus.proposed,
+        spendFailure: const PayjoinSpendBlockedFailure(),
+      );
+      cubit.setStateForTest(cubit.state.copyWith(payjoinSender: paused));
+      when(
+        () => retryPayjoinProposalUsecase.execute(paused.id),
+      ).thenThrow(Exception('retry failed'));
+      await expectLater(cubit.retryPayjoinProposal(), throwsException);
+      when(
+        () => retryPayjoinProposalUsecase.execute(paused.id),
+      ).thenAnswer((_) async => Ok(paused));
+      await cubit.retryPayjoinProposal();
+      verify(() => retryPayjoinProposalUsecase.execute(paused.id)).called(2);
+    });
+
+    for (final terminal in [
+      PayjoinStatus.completed,
+      PayjoinStatus.aborted,
+      PayjoinStatus.expired,
+    ]) {
+      test('late proposal retry does not overwrite $terminal', () async {
+        final cubit = buildCubit();
+        addTearDown(cubit.close);
+        final paused = _sender(
+          status: PayjoinStatus.proposed,
+          spendFailure: const PayjoinSpendBlockedFailure(),
+        );
+        cubit.setStateForTest(cubit.state.copyWith(payjoinSender: paused));
+        final pending = Completer<Result<PayjoinSession, SendFailure>>();
+        when(
+          () => retryPayjoinProposalUsecase.execute(paused.id),
+        ).thenAnswer((_) => pending.future);
+        final retry = cubit.retryPayjoinProposal();
+        cubit.setStateForTest(
+          cubit.state.copyWith(payjoinSender: _sender(status: terminal)),
+        );
+        pending.complete(const Err(SendSpendBlockedFailure()));
+        await retry;
+        expect(cubit.state.failure, isNull);
+        expect(cubit.state.payjoinSender?.status, terminal);
+      });
+    }
+
     test(
       'paused proposal keeps payment context and surfaces typed refusal until completion',
       () async {

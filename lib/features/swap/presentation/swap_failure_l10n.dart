@@ -5,6 +5,7 @@ import 'package:flutter/widgets.dart';
 
 extension SwapFailureL10n on SwapFailure {
   String toTranslated(BuildContext context) => switch (this) {
+    SwapSpendBlockedFailure() => context.loc.walletSpendAwaitingObservation,
     SwapUnsupportedNetworkFailure() => context.loc.networkFeatureUnavailable,
     SwapAmountOutOfBoundsFailure(
       limitAmountSat: final limit?,
