@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:bip39_mnemonic/bip39_mnemonic.dart' show MnemonicLength;
 import 'package:bull_logger/bull_logger.dart';
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
@@ -66,7 +67,7 @@ final class Secrets {
   /// Generates a fresh mnemonic, stores it, returns its handle.
   @useResult
   Future<Result<Secret, SecretFailure>> generate({
-    MnemonicWordCount wordCount = MnemonicWordCount.words12,
+    MnemonicLength wordCount = MnemonicLength.words12,
   }) async => (await _repository.store(
     words: Generator.mnemonic(wordCount: wordCount),
     rejectExisting: true,
