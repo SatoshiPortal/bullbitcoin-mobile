@@ -63,6 +63,19 @@ final class WalletUnexpectedFailure extends WalletFailure {
   const WalletUnexpectedFailure([super.logMessage]);
 }
 
-final class SignedTransactionVerificationFailure extends WalletFailure {
-  const SignedTransactionVerificationFailure([super.logMessage]);
+/// An explicit selection is empty or a selected coin is no longer spendable.
+final class WalletSelectedInputsUnavailableFailure extends WalletFailure {
+  const WalletSelectedInputsUnavailableFailure([super.logMessage]);
+}
+
+final class WalletNoSpendableInputsFailure extends WalletFailure {
+  const WalletNoSpendableInputsFailure([super.logMessage]);
+}
+
+final class WalletInsufficientFundsFailure extends WalletFailure {
+  const WalletInsufficientFundsFailure([super.logMessage]);
+}
+
+final class WalletTransactionBuildFailure extends WalletFailure {
+  const WalletTransactionBuildFailure([super.logMessage]);
 }

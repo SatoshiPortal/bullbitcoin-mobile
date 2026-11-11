@@ -1,10 +1,12 @@
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/recipients/domain/usecases/get_account_owner_name_usecase.dart';
 import 'package:bb_mobile/features/recipients/domain/usecases/watch_virtual_iban_usecase.dart';
+import 'package:bb_mobile/features/recipients/domain/value_objects/recipient_type.dart';
 import 'package:bb_mobile/features/recipients/presentation/recipients_failure_l10n.dart';
 import 'package:bb_mobile/features/recipients/presentation/virtual_iban_onboarding_cubit.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bull_ui/bull_ui.dart';
+import 'package:flutter/material.dart' show MaterialPageRoute;
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 /// Where the user started Confidential SEPA, which decides the wording once
@@ -19,12 +21,31 @@ class VirtualIbanOnboardingScreen extends StatelessWidget {
     super.key,
     required this.onActivated,
     required this.onUseRegularSepa,
+    this.onReturnHome,
     this.purpose = VirtualIbanOnboardingPurpose.withdraw,
   });
 
   final VoidCallback onActivated;
   final VoidCallback onUseRegularSepa;
+
+  /// Leaves the flow for the app home while activation continues in the
+  /// background. When null, the button is not shown.
+  final VoidCallback? onReturnHome;
   final VirtualIbanOnboardingPurpose purpose;
+
+  static Future<RecipientType?> showForWithdraw(BuildContext context) {
+    return Navigator.of(context).push<RecipientType>(
+      MaterialPageRoute(
+        builder: (onboardingContext) => VirtualIbanOnboardingScreen(
+          onActivated: () => Navigator.of(
+            onboardingContext,
+          ).pop(RecipientType.confidentialSepaEur),
+          onUseRegularSepa: () =>
+              Navigator.of(onboardingContext).pop(RecipientType.sepaEur),
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -36,6 +57,7 @@ class VirtualIbanOnboardingScreen extends StatelessWidget {
       child: VirtualIbanOnboardingView(
         onActivated: onActivated,
         onUseRegularSepa: onUseRegularSepa,
+        onReturnHome: onReturnHome,
         purpose: purpose,
       ),
     );
@@ -47,11 +69,13 @@ class VirtualIbanOnboardingView extends StatelessWidget {
     super.key,
     required this.onActivated,
     required this.onUseRegularSepa,
+    this.onReturnHome,
     this.purpose = VirtualIbanOnboardingPurpose.withdraw,
   });
 
   final VoidCallback onActivated;
   final VoidCallback onUseRegularSepa;
+  final VoidCallback? onReturnHome;
   final VirtualIbanOnboardingPurpose purpose;
 
   @override
@@ -80,6 +104,7 @@ class VirtualIbanOnboardingView extends StatelessWidget {
                 VirtualIbanOnboardingStep.activating => _ActivatingStep(
                   state: state,
                   onUseRegularSepa: onUseRegularSepa,
+                  onReturnHome: onReturnHome,
                 ),
                 VirtualIbanOnboardingStep.active => _ActiveStep(
                   onActivated: onActivated,
@@ -244,15 +269,21 @@ class _IntroStepState extends State<_IntroStep> {
 }
 
 class _ActivatingStep extends StatelessWidget {
-  const _ActivatingStep({required this.state, required this.onUseRegularSepa});
+  const _ActivatingStep({
+    required this.state,
+    required this.onUseRegularSepa,
+    this.onReturnHome,
+  });
 
   final VirtualIbanOnboardingState state;
   final VoidCallback onUseRegularSepa;
+  final VoidCallback? onReturnHome;
 
   @override
   Widget build(BuildContext context) {
     final colors = context.bull;
     final failure = state.failure;
+    final onReturnHome = this.onReturnHome;
     return _StatusLayout(
       icon: BullIcon(BullIcons.schedule, size: 48, color: colors.text),
       title: context.loc.recipientsVirtualIbanActivatingTitle,
@@ -268,6 +299,15 @@ class _ActivatingStep extends StatelessWidget {
           outlined: true,
           borderColor: colors.outline,
         ),
+        if (onReturnHome != null) ...[
+          const Gap(12),
+          BullButton.big(
+            label: context.loc.recipientsReturnHome,
+            onPressed: onReturnHome,
+            bgColor: colors.primary,
+            textColor: colors.onPrimary,
+          ),
+        ],
       ],
     );
   }

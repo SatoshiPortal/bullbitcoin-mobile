@@ -153,6 +153,51 @@ void main() {
       expect(await statusOf('r-2'), SepaVirtualPayeeStatus.active);
     });
 
+    test('refreshes a saved pending status from Fiat Republic', () async {
+      stubPages(mainnet, [
+        _page([_payee('r-1', status: 'CREATED')], 1),
+        _response({
+          'result': {'element': _payee('r-1', status: 'ACTIVE')},
+        }),
+      ]);
+
+      expect(await statusOf('r-1'), SepaVirtualPayeeStatus.active);
+      final requests = sentRequests(mainnet);
+      expect(requests.map((request) => request['method']), [
+        'listRecipientsFiat',
+        'activateSepaVirtualPayee',
+      ]);
+      expect(requests.last['params'], {'recipientId': 'r-1'});
+    });
+
+    test('keeps waiting when the refreshed payee is still pending', () async {
+      stubPages(mainnet, [
+        _page([_payee('r-1', status: 'CREATED')], 1),
+        _response({
+          'result': {'element': _payee('r-1', status: 'CREATED')},
+        }),
+      ]);
+
+      expect(await statusOf('r-1'), SepaVirtualPayeeStatus.pending);
+    });
+
+    test('a refused pending-status refresh is a load failure', () async {
+      stubPages(mainnet, [
+        _page([_payee('r-1', status: 'CREATED')], 1),
+        _refusal,
+      ]);
+
+      final result = await repository.findStatus(
+        recipientId: 'r-1',
+        isTestnet: false,
+      );
+
+      expect(
+        (result as Err<SepaVirtualPayeeStatus?, RecipientsFailure>).failure,
+        isA<RecipientsLoadFailure>(),
+      );
+    });
+
     test('finds an active recipient beyond the first page', () async {
       stubPages(mainnet, [
         _page(List.generate(50, (i) => _payee('other-$i')), 51),

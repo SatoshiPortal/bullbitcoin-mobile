@@ -7890,7 +7890,7 @@
   "@fundExchangeJurisdictionMexico": {
     "description": "Dropdown option for Mexico jurisdiction"
   },
-  "sellInteracEmail": "Interac Email",
+  "sellInteracEmail": "Transfer e-postası",
   "@sellInteracEmail": {
     "description": "Label for email to receive Interac payment"
   },
@@ -10018,7 +10018,7 @@
   "@autoswapTitle": {
     "description": "Header title for auto transfer settings bottom sheet"
   },
-  "sellInteracTransfer": "Interac e-Transfer",
+  "sellInteracTransfer": "E-posta ile para transferi",
   "@sellInteracTransfer": {
     "description": "Option for Interac payment (Canada)"
   },
@@ -10883,30 +10883,6 @@
       }
     }
   },
-  "legacyStorageBadgeActionRequired": "İŞLEM GEREKLİ",
-  "legacyStorageBadgeConfirm": "ONAYLA",
-  "legacyStorageNoBackupPageTitle": "CÜZDANINIZIN YEDEĞİNİ ALIN VE YENİDEN YÜKLEYİN",
-  "legacyStorageHasBackupPageTitle": "CÜZDANINIZI YENİDEN YÜKLEYİN",
-  "legacyStorageIntroDescription": "Cüzdanınız kısa süre içinde kullanımdan kalkacak bir yazılım üzerinde çalışıyor. Uygulama kaldırılıp yeniden yüklenmeden güncellenemez.",
-  "legacyStorageStepBackupWallet": "Cüzdanınızın yedeğini alın",
-  "legacyStorageStepExportLabels": "Etiketlerinizi dışa aktarın (varsa)",
-  "legacyStorageStepEnsureSwapsCompleted": "Tüm swap işlemlerinin tamamlandığından emin olun",
-  "legacyStorageStepUninstall": "Uygulamayı cihazınızdan kaldırın",
-  "legacyStorageStepReinstall": "En güncel sürümü indirip yeniden yükleyin",
-  "legacyStorageStepRestoreBackup": "Yedeğinizi geri yükleyin",
-  "legacyStorageImportantTitle": "Önemli",
-  "legacyStorageImportantBody": "Şu an gerçekten yedek alamayacaksanız bu işlemi atlamayın.",
-  "legacyStorageContinueFooterNoBackup": "Yedek almadan da uygulamayı kullanmaya devam edebilirsiniz, ancak bunu kesinlikle önermiyoruz.",
-  "legacyStorageContinueFooterHasBackup": "Uygulamayı kullanmaya devam edebilirsiniz, ancak bunu kesinlikle önermiyoruz.",
-  "legacyStorageBackupNowButton": "Şimdi yedekle",
-  "legacyStorageRiskAckButton": "Hayır, riski anlıyorum",
-  "legacyStorageAreYouSureTitle": "EMİN MİSİNİZ?",
-  "legacyStorageAreYouSureParagraphOne": "Cüzdanınızın Bitcoin özel anahtarlarını saklamak için kullanılan yazılım kullanımdan kalkıyor. İleride yaşanabilecek aksaklıkları önlemek için hemen yedek almanızı kesinlikle öneririz.",
-  "legacyStorageAreYouSureParagraphTwo": "Encrypted Vault yedekleme seçeneği yaklaşık 1 dakika sürer ve özel araç gerektirmez. Fiziksel yedek için ihtiyacınız olan tek şey kalem ve kağıttır.",
-  "legacyStorageContinueWithoutBackupButton": "Yedek almadan devam et",
-  "legacyStorageAcceptRisksCheckbox": "Yedek almamanın risklerini kabul ediyorum",
-  "legacyStorageHasBackupImportantBody": "Cüzdanı acilen kullanmanız mutlak gerekmedikçe veya bir takasın tamamlanmasını beklemiyorsanız, lütfen bu işlemi atlamayın.",
-  "legacyStorageRiskAckButtonHasBackup": "Riski anlıyorum",
   "walletSetupErrorTryAgain": "Cüzdanınızı ayarlarken bir şeyler ters gitti. Lütfen tekrar deneyin.",
   "importMnemonicDuplicateError": "Bu anımsatıcı cümle zaten mevcut",
   "transactionStatusPayjoinCompleted": "Payjoin tamamlandı",
@@ -11444,7 +11420,7 @@
   "recipientsJurisdictionCostaRica": "🇨🇷 Kosta Rika",
   "recipientsJurisdictionArgentina": "🇦🇷 Arjantin",
   "recipientsJurisdictionColombia": "🇨🇴 Kolombiya",
-  "recipientsTypeInteracEmail": "Interac e-Transfer",
+  "recipientsTypeInteracEmail": "E-posta ile para transferi",
   "recipientsTypeBillPayment": "Fatura Ödemesi",
   "recipientsTypeBankTransfer": "Banka Transferi",
   "recipientsTypeSepa": "SEPA Transferi",
@@ -11716,7 +11692,7 @@
   "testBackupErrorSeedUnavailable": "Kurtarma ifadeniz okunamadı. Lütfen tekrar deneyin.",
   "testBackupErrorSeedNotMnemonic": "Bu cüzdanın test edilecek bir kurtarma ifadesi yok.",
   "testBackupErrorCompletionFailed": "Kurtarma ifadeniz doğruydu, ancak sonucu kaydedemedik. Lütfen tekrar deneyin.",
-  "withdrawInteracSecurityDetailsTitle": "Interac güvenlik bilgileri",
+  "withdrawInteracSecurityDetailsTitle": "Transfer güvenlik bilgileri",
   "withdrawInteracSaveAsDefault": "Bu bilgileri varsayılan olarak kaydet",
   "withdrawInteracSecurityQuestionLengthError": "Güvenlik sorusu 3–40 karakter olmalıdır",
   "withdrawInteracSecurityAnswerLengthError": "Güvenlik cevabı 3–40 karakter olmalıdır",
@@ -11851,7 +11827,7 @@
   "recipientsVirtualIbanCopied": "Copied to klibi",
   "recipientsVirtualIbanDone": "Done",
   "recipientsVirtualIbanRecipientName": "Recipient name",
-  "recipientsVirtualIbanIbanLabel": "IBAN account number",
+  "recipientsVirtualIbanIbanLabel": "Sanal IBAN hesap numarası",
   "recipientsVirtualIbanCountry": "Banka hesabı ülke",
   "recipientsVirtualIbanBic": "BIC kodu",
   "fundExchangeMethodConfidentialSepa": "Gizli SEPA",
@@ -11862,5 +11838,11 @@
   "recipientsVirtualIbanBankAddress": "Banka adresi",
   "recipientsVirtualIbanBankAddressHelp": "Bankanız isterse diye resmi banka adresi.",
   "recipientsConfidentialSepaNameMustMatchHint": "Bankanızdaki ve sanal IBAN hesabınızdaki adlar eşleşmelidir; aksi takdirde transferler otomatik olarak iade edilir.",
-  "copiedToClipboard": "Panoya kopyalandı"
+  "copiedToClipboard": "Panoya kopyalandı",
+  "recipientsFieldBankAccountIban": "Banka hesap numarası (IBAN)",
+  "recipientsTypeConfidentialSepaDescription": "Para çekme işlemleri, hesap adınızla kendinize yapılan bir transfer olarak görünür",
+  "sellPayoutBalance": "Hesap bakiyeme ekle",
+  "sellPayoutSepaDescription": "Çekimler Leonod tarafından gönderilmiş olarak görünür",
+  "sellPayoutTitle": "Alıcı Seç",
+  "sellPayoutNewBadge": "YENİ"
 }

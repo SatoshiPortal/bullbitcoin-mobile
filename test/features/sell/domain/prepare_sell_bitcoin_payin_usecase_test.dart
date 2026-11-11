@@ -1,5 +1,5 @@
+import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/bitcoin_transaction_recipient.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/calculate_bitcoin_absolute_fees_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/prepare_bitcoin_send_usecase.dart';
 import 'package:bb_mobile/features/sell/domain/prepare_sell_bitcoin_payin_usecase.dart';
@@ -56,12 +56,12 @@ void main() {
         replaceByFee: any(named: 'replaceByFee'),
       ),
     ).thenAnswer(
-      (_) async => (
+      (_) async => Ok((
         unsignedPsbt: 'psbt',
         txSize: 110,
         isToSelf: false,
         recipientAmountsSat: [Sats.fromInt(100000)],
-      ),
+      )),
     );
   }
 
@@ -89,7 +89,9 @@ void main() {
         selectedInputs: any(named: 'selectedInputs'),
         replaceByFee: any(named: 'replaceByFee'),
       ),
-    ).thenThrow(Exception(_rawReason));
+    ).thenAnswer(
+      (_) async => const Err(WalletTransactionBuildFailure(_rawReason)),
+    );
 
     final result = await run();
 

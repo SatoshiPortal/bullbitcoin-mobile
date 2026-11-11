@@ -7745,7 +7745,7 @@
   "@autoswapWarningDescription": {
     "description": "Description text at the top of the autoswap warning bottom sheet"
   },
-  "sellInteracEmail": "E-mail Interac",
+  "sellInteracEmail": "E-mail para a transferência",
   "@sellInteracEmail": {
     "description": "Label for email to receive Interac payment"
   },
@@ -9617,7 +9617,7 @@
   "@sendHardwareWallet": {
     "description": "Option to sign with hardware device"
   },
-  "sellInteracTransfer": "Interac e-Transfer",
+  "sellInteracTransfer": "Transferência de dinheiro por e-mail",
   "@sellInteracTransfer": {
     "description": "Option for Interac payment (Canada)"
   },
@@ -10895,30 +10895,6 @@
       }
     }
   },
-  "legacyStorageBadgeActionRequired": "AÇÃO NECESSÁRIA",
-  "legacyStorageBadgeConfirm": "CONFIRMAR",
-  "legacyStorageNoBackupPageTitle": "FAÇA BACKUP E REINSTALE SUA CARTEIRA",
-  "legacyStorageHasBackupPageTitle": "REINSTALE SUA CARTEIRA",
-  "legacyStorageIntroDescription": "Sua carteira está rodando em um software que em breve será descontinuado. Ele não pode ser atualizado sem desinstalar e reinstalar o aplicativo.",
-  "legacyStorageStepBackupWallet": "Faça backup da sua carteira",
-  "legacyStorageStepExportLabels": "Exporte seus rótulos (se tiver)",
-  "legacyStorageStepEnsureSwapsCompleted": "Certifique-se de que todos os swaps foram concluídos",
-  "legacyStorageStepUninstall": "Desinstale o aplicativo do seu dispositivo",
-  "legacyStorageStepReinstall": "Baixe a versão mais recente e reinstale",
-  "legacyStorageStepRestoreBackup": "Restaure seu backup",
-  "legacyStorageImportantTitle": "Importante",
-  "legacyStorageImportantBody": "Não pule este processo a menos que realmente não consiga fazer um backup neste momento.",
-  "legacyStorageContinueFooterNoBackup": "Você pode continuar usando o aplicativo sem fazer backup, mas desaconselhamos fortemente.",
-  "legacyStorageContinueFooterHasBackup": "Você pode continuar usando o aplicativo, mas desaconselhamos fortemente.",
-  "legacyStorageBackupNowButton": "Fazer backup agora",
-  "legacyStorageRiskAckButton": "Não, entendo o risco",
-  "legacyStorageAreYouSureTitle": "TEM CERTEZA?",
-  "legacyStorageAreYouSureParagraphOne": "O software usado para guardar as chaves privadas Bitcoin da sua carteira está sendo descontinuado. Recomendamos fortemente que você faça um backup agora para evitar problemas no futuro.",
-  "legacyStorageAreYouSureParagraphTwo": "A opção Encrypted Vault leva cerca de 1 minuto e não precisa de ferramentas especiais. Para o backup físico, basta caneta e papel.",
-  "legacyStorageContinueWithoutBackupButton": "Continuar sem backup",
-  "legacyStorageAcceptRisksCheckbox": "Aceito os riscos de não fazer backup",
-  "legacyStorageHasBackupImportantBody": "Por favor, não pule este processo, a menos que você precise usar a carteira urgentemente ou esteja esperando uma troca ser concluída.",
-  "legacyStorageRiskAckButtonHasBackup": "Eu entendo o risco",
   "walletSetupErrorTryAgain": "Algo deu errado ao configurar sua carteira. Por favor, tente novamente.",
   "importMnemonicDuplicateError": "Esta mnemônica já existe",
   "coreScreensResolvingInputs": "Resolvendo entradas da transação...",
@@ -10959,7 +10935,7 @@
   "recipientsJurisdictionCostaRica": "🇨🇷 Costa Rica",
   "recipientsJurisdictionArgentina": "🇦🇷 Argentina",
   "recipientsJurisdictionColombia": "🇨🇴 Colômbia",
-  "recipientsTypeInteracEmail": "Transferência Interac",
+  "recipientsTypeInteracEmail": "Transferência de dinheiro por e-mail",
   "recipientsTypeBillPayment": "Pagamento de contas",
   "recipientsTypeBankTransfer": "Transferência bancária",
   "recipientsTypeSepa": "Transferência SEPA",
@@ -11728,7 +11704,7 @@
   "testBackupErrorSeedUnavailable": "Não foi possível ler sua frase de recuperação. Tente novamente.",
   "testBackupErrorSeedNotMnemonic": "Esta carteira não tem frase de recuperação para testar.",
   "testBackupErrorCompletionFailed": "Sua frase de recuperação estava correta, mas não conseguimos salvar o resultado. Tente novamente.",
-  "withdrawInteracSecurityDetailsTitle": "Dados de segurança do Interac",
+  "withdrawInteracSecurityDetailsTitle": "Dados de segurança da transferência",
   "withdrawInteracSaveAsDefault": "Salvar estes dados como padrão",
   "withdrawInteracSecurityQuestionLengthError": "A pergunta de segurança deve ter entre 3 e 40 caracteres",
   "withdrawInteracSecurityAnswerLengthError": "A resposta de segurança deve ter entre 3 e 40 caracteres",
@@ -11863,7 +11839,7 @@
   "recipientsVirtualIbanCopied": "Copiado para clipboard",
   "recipientsVirtualIbanDone": "Feito",
   "recipientsVirtualIbanRecipientName": "Nome do destinatário",
-  "recipientsVirtualIbanIbanLabel": "Número de conta IBAN",
+  "recipientsVirtualIbanIbanLabel": "Número da conta IBAN virtual",
   "recipientsVirtualIbanCountry": "País de conta bancária",
   "recipientsVirtualIbanBic": "Código BIC",
   "fundExchangeMethodConfidentialSepa": "SEPA Confidencial",
@@ -11874,5 +11850,11 @@
   "recipientsVirtualIbanBankAddress": "Endereço do banco",
   "recipientsVirtualIbanBankAddressHelp": "O endereço oficial do banco, caso seu banco solicite.",
   "recipientsConfidentialSepaNameMustMatchHint": "Os nomes do seu banco e do IBAN virtual precisam corresponder, caso contrário as transferências serão devolvidas automaticamente.",
-  "copiedToClipboard": "Copiado para a área de transferência"
+  "copiedToClipboard": "Copiado para a área de transferência",
+  "recipientsFieldBankAccountIban": "Número da conta bancária (IBAN)",
+  "recipientsTypeConfidentialSepaDescription": "Os saques aparecem como uma transferência para você mesmo com o nome da sua conta",
+  "sellPayoutBalance": "Adicionar ao saldo da minha conta",
+  "sellPayoutSepaDescription": "Os saques aparecem como enviados pela Leonod",
+  "sellPayoutTitle": "Selecionar destinatário",
+  "sellPayoutNewBadge": "NOVO"
 }

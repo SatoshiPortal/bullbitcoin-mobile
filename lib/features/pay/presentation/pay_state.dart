@@ -37,6 +37,10 @@ sealed class PayState with _$PayState {
     // Txid of the payin transaction once it is on the wire. Acts as a latch:
     // the send path must never run again for this order (#2522).
     String? payinBroadcastTxid,
+    // Set once the exchange reports, after the payin was broadcast, that the
+    // order's payment deadline expired before it saw the payment. The latch
+    // above stays: the order is paid as far as this device is concerned.
+    @Default(false) bool isPayinPastDeadline,
     PayFailure? error,
     int? absoluteFees,
     @Default([]) List<WalletUtxo> utxos,
@@ -274,6 +278,13 @@ extension PayPaymentStateX on PayPaymentState {
   bool get canConfirmPayment => isInternalWallet && selectedUtxos.isNotEmpty;
   bool get isProcessing => isConfirmingPayment || isPolling;
   bool get isPayinBroadcast => payinBroadcastTxid != null;
+
+  /// Leaving is safe before the confirmation starts, and after the broadcast
+  /// only once the exchange has reported the payin late: until then the screen
+  /// is what takes the order to success. The broadcast latch survives leaving
+  /// and still forbids paying this order again.
+  bool get canLeavePaymentScreen =>
+      !isConfirmingPayment && (!isPayinBroadcast || isPayinPastDeadline);
 
   /// Fee the payin must be built at, resolved from the committed selection.
   /// Null while the presets have not loaded (or custom was selected with no

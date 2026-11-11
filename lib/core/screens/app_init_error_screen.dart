@@ -6,8 +6,8 @@ import 'package:bb_mobile/core/widgets/app_language_picker.dart';
 import 'package:bb_mobile/generated/l10n/localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:bull_ui/bull_ui.dart' show BullButton, BullSnackBar, Gap;
-import 'package:url_launcher/url_launcher.dart';
+import 'package:bull_ui/bull_ui.dart'
+    show BullButton, BullSnackBar, BullSupportButton, Gap;
 
 class AppInitErrorScreen extends StatefulWidget {
   const AppInitErrorScreen({super.key, required this.error});
@@ -56,13 +56,6 @@ class _AppInitErrorScreenState extends State<AppInitErrorScreen> {
       if (!context.mounted) return;
       BullSnackBar.show(context, message: loc.logsExportFailedMessage);
     }
-  }
-
-  Future<void> _contactSupport() async {
-    await launchUrl(
-      Uri.parse(SettingsConstants.webSupportLink),
-      mode: LaunchMode.externalApplication,
-    );
   }
 
   Future<void> _deleteLogs(BuildContext context, AppLocalizations loc) async {
@@ -124,12 +117,11 @@ class _AppInitErrorScreenState extends State<AppInitErrorScreen> {
                       message: loc.appInitErrorNoBackupMessage,
                     ),
                     const Gap(32),
-                    BullButton.big(
+                    BullSupportButton.big(
                       label: loc.appInitErrorContactSupportButton,
-                      iconData: Icons.open_in_new,
+                      icon: Icons.open_in_new,
                       bgColor: context.appColors.primary,
                       textColor: context.appColors.onPrimary,
-                      onPressed: _contactSupport,
                     ),
                     const Gap(12),
                     BullButton.big(

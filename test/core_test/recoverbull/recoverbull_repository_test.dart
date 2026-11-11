@@ -276,4 +276,82 @@ void main() {
       );
     });
   });
+
+  group('probeFailure', () {
+    KeyServerUnavailableFailure probe(
+      Object error, [
+      TorConnectFailure? connectFailure,
+    ]) => RecoverBullRepositoryImpl.probeFailure(
+      KeyServerProbeException(error, connectFailure),
+    );
+
+    final wrapped = recoverbull.KeyServerException(message: 'wrapped');
+
+    test('takes the Tor connect reason over the wrapped message', () {
+      expect(
+        probe(wrapped, TorConnectFailure.timeout).cause,
+        KeyServerUnreachableCause.circuitTimeout,
+      );
+      expect(
+        probe(wrapped, TorConnectFailure.torNetworkUnreachable).cause,
+        KeyServerUnreachableCause.torNetworkUnreachable,
+      );
+      expect(
+        probe(wrapped, TorConnectFailure.hostUnreachable).cause,
+        KeyServerUnreachableCause.onionUnreachable,
+      );
+      expect(
+        probe(wrapped, TorConnectFailure.refused).cause,
+        KeyServerUnreachableCause.connectionRefused,
+      );
+      expect(
+        probe(wrapped, TorConnectFailure.proxyUnreachable).cause,
+        KeyServerUnreachableCause.proxyGone,
+      );
+      expect(
+        probe(wrapped, TorConnectFailure.other).cause,
+        KeyServerUnreachableCause.unknown,
+      );
+    });
+
+    test('reports a timeout without a connect reason as a circuit timeout', () {
+      expect(
+        probe(TimeoutException('slow')).cause,
+        KeyServerUnreachableCause.circuitTimeout,
+      );
+    });
+
+    test('keeps the HTTP status of a server error', () {
+      final failure = probe(recoverbull.KeyServerException(code: 503));
+
+      expect(failure.cause, KeyServerUnreachableCause.httpError);
+      expect(failure.httpStatus, 503);
+    });
+
+    test('treats a connected exchange that failed as a bad response', () {
+      expect(probe(wrapped).cause, KeyServerUnreachableCause.badResponse);
+    });
+
+    test('checkConnection returns the probe failure', () async {
+      final remote = _MockRemote();
+      final repository = RecoverBullRepositoryImpl(
+        remoteDatasource: remote,
+        recoverbullSettingsDatasource: _MockSettings(),
+      );
+      when(() => remote.checkConnection(endpoint)).thenThrow(
+        KeyServerProbeException(wrapped, TorConnectFailure.hostUnreachable),
+      );
+
+      final result = await repository.checkConnection(endpoint);
+
+      expect(
+        (result as Err<void, RecoverBullCoreFailure>).failure,
+        isA<KeyServerUnavailableFailure>().having(
+          (f) => f.cause,
+          'cause',
+          KeyServerUnreachableCause.onionUnreachable,
+        ),
+      );
+    });
+  });
 }

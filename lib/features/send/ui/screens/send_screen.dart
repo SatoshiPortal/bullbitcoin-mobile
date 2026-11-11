@@ -25,6 +25,7 @@ import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';
 import 'package:bb_mobile/features/send/presentation/send_failure_l10n.dart';
 import 'package:bb_mobile/features/send/ui/screens/open_the_camera_widget.dart';
 import 'package:bb_mobile/core/widgets/fees/fee_options_modal.dart';
+import 'package:bb_mobile/core/widgets/fees/fee_selection_label.dart';
 import 'package:bb_mobile/features/send/ui/widgets/advanced_options_bottom_sheet.dart';
 import 'package:bb_mobile/features/send/ui/widgets/multi_recipient_transaction_review.dart';
 import 'package:bb_mobile/features/send/ui/widgets/recipient_fields.dart';
@@ -371,7 +372,7 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
               focusNodes: [
                 _amountFocusNode,
                 for (final recipient in recipientDrafts)
-                  _recipientAmountFocusNodes[recipient.id]!,
+                  ?_recipientAmountFocusNodes[recipient.id],
               ],
               child: BlocListener<SendCubit, SendState>(
                 listenWhen: (previous, current) =>
@@ -572,8 +573,8 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                                                   currencyCode,
                                                 );
                                           },
-                                          error: balanceError
-                                              ? failure!.toTranslated(
+                                          error: balanceError && failure != null
+                                              ? failure.toTranslated(
                                                   context,
                                                   formattedFrozenBalance:
                                                       frozenBalanceHint,
@@ -1154,6 +1155,9 @@ class _OnchainTransactionReview extends StatelessWidget {
     final selectedFeeOption = context.select(
       (SendCubit cubit) => cubit.state.selectedFeeOption,
     );
+    final customFee = context.select(
+      (SendCubit cubit) => cubit.state.customFee,
+    );
     final feePercent = context.select(
       (SendCubit cubit) => cubit.state.getFeeAsPercentOfAmount(),
     );
@@ -1185,24 +1189,36 @@ class _OnchainTransactionReview extends StatelessWidget {
           sendWalletLabel: selectedWallet?.displayLabel(context) ?? '',
           receiveWalletLabel: paymentRequestAddress,
           formattedBitcoinAmount: formattedBitcoinAmount,
-          formattedFiatEquivalent: '~$formattedFiatEquivalent',
+          formattedFiatEquivalent: formattedFiatEquivalent.isEmpty
+              ? ''
+              : '~$formattedFiatEquivalent',
           absoluteFees: formattedAbsoluteFees,
-          selectedFeeOptionTitle: selectedFeeOption.title(),
+          selectedFeeOptionTitle: feeSelectionRowLabel(
+            context,
+            selection: selectedFeeOption,
+            customFee: customFee,
+            fastestLabel: context.loc.sendFastFee,
+          ),
           isToSelf: isToSelf,
           payjoinToggleValue: isPayjoinAvailable ? willAttemptPayjoin : null,
           onPayjoinToggleChanged: (attempt) =>
               context.read<SendCubit>().togglePayjoin(attempt),
-          selectedCoinsDetails: selectedCoins.count == 0
-              ? null
-              : _SelectedCoinsDetails(
-                  count: selectedCoins.count,
-                  totalSat: selectedCoins.totalSat,
-                ),
           note: label,
           onFeePriorityTap: hasFinalizedTx || isSpMode
               ? null
               : () => _showBitcoinFeeOptions(context),
         ),
+        if (selectedCoins.count > 0)
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: SendInfoRow(
+              title: context.loc.sendCoinControl,
+              details: _SelectedCoinsDetails(
+                count: selectedCoins.count,
+                totalSat: selectedCoins.totalSat,
+              ),
+            ),
+          ),
         if (showFeeWarning == true) ...[
           const Gap(16),
           _HighFeeWarning(feePercent),
@@ -1295,7 +1311,9 @@ class _LiquidOnchainSendInfoSection extends StatelessWidget {
       sendWalletLabel: selectedWallet?.displayLabel(context) ?? '',
       receiveWalletLabel: paymentRequestAddress,
       formattedBitcoinAmount: formattedBitcoinAmount,
-      formattedFiatEquivalent: '~$formattedFiatEquivalent',
+      formattedFiatEquivalent: formattedFiatEquivalent.isEmpty
+          ? ''
+          : '~$formattedFiatEquivalent',
       absoluteFees: formattedAbsoluteFees,
       selectedFeeOptionTitle: '',
       note: label,
@@ -1977,7 +1995,6 @@ class SendSendingScreen extends StatelessWidget {
                             seconds: PayjoinConstants.directoryPollingInterval,
                           ),
                         ),
-                        onTimeout: () {},
                       ),
                     ],
                   ),
@@ -2174,14 +2191,16 @@ class SendSucessScreen extends StatelessWidget {
                     maxLines: 4,
                     textAlign: .center,
                   ),
-                  const Gap(4),
-                  BullText(
-                    '~$fiatEquivalent',
-                    style: context.font.bodyMedium,
-                    color: context.appColors.secondary,
-                    maxLines: 4,
-                    textAlign: .center,
-                  ),
+                  if (fiatEquivalent.isNotEmpty) ...[
+                    const Gap(4),
+                    BullText(
+                      '~$fiatEquivalent',
+                      style: context.font.bodyMedium,
+                      color: context.appColors.secondary,
+                      maxLines: 4,
+                      textAlign: .center,
+                    ),
+                  ],
                 ],
               ),
             ),

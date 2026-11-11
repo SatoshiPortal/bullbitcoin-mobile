@@ -5,11 +5,13 @@ import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
+import 'package:bull_pricer/bull_pricer.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/utils/string_formatting.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
+import 'package:clock/clock.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_transaction_by_address_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/broadcast_original_transaction_usecase.dart';
@@ -19,7 +21,6 @@ import 'package:bb_mobile/features/receive/domain/receive_failure.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/convert_receive_amount_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/fetch_receive_note_suggestions_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/get_receive_address_at_index_usecase.dart';
-import 'package:bb_mobile/features/receive/domain/usecases/get_receive_currencies_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/get_receive_settings_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/get_receive_wallets_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/load_receive_address_label_usecase.dart';
@@ -45,7 +46,6 @@ part 'receive_state.dart';
 class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
   ReceiveBloc({
     required this._getReceiveWalletsUsecase,
-    required this._getReceiveCurrenciesUsecase,
     required this._getReceiveSettingsUsecase,
     required this._convertReceiveAmountUsecase,
     required this._prepareReceiveAddressUsecase,
@@ -76,6 +76,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     on<ReceiveNewAddressGenerated>(_onNewAddressGenerated);
     on<ReceivePayjoinUpdated>(_onPayjoinUpdated);
     on<ReceivePayjoinOriginalTxBroadcasted>(_onPayjoinOriginalTxBroadcasted);
+    on<ReceivePayjoinSenderWaitElapsed>(_onPayjoinSenderWaitElapsed);
     on<ReceiveTransactionReceived>(_onReceiveTransactionReceived);
     // restartable(): a rapid on/off/on toggle must not let a stale event's
     //  in-flight session creation land after a newer event already decided
@@ -124,7 +125,6 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
   }
 
   final GetReceiveWalletsUsecase _getReceiveWalletsUsecase;
-  final GetReceiveCurrenciesUsecase _getReceiveCurrenciesUsecase;
   final GetReceiveSettingsUsecase _getReceiveSettingsUsecase;
   final ConvertReceiveAmountUsecase _convertReceiveAmountUsecase;
   final PrepareReceiveAddressUsecase _prepareReceiveAddressUsecase;
@@ -154,8 +154,11 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
   late final StreamSubscription<bool> _payjoinSettingChangeSubscription;
   late final StreamSubscription<int> _payjoinMinAmountChangeSubscription;
 
+  Timer? _payjoinSenderWaitTimer;
+
   @override
   Future<void> close() async {
+    _payjoinSenderWaitTimer?.cancel();
     await Future.wait([
       _payjoinSubscription?.cancel() ?? Future.value(),
       _walletTransactionSubscription?.cancel() ?? Future.value(),
@@ -164,6 +167,25 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
       _payjoinMinAmountChangeSubscription.cancel(),
     ]);
     return super.close();
+  }
+
+  bool _waitForPayjoinSender(PayjoinReceiverSession? payjoin) {
+    _payjoinSenderWaitTimer?.cancel();
+    _payjoinSenderWaitTimer = null;
+    final until = payjoin?.fallbackAvailableAt;
+    if (payjoin == null || !payjoin.isOngoing || until == null) return false;
+    final remaining = until.difference(clock.now());
+    if (remaining <= Duration.zero) return false;
+    _payjoinSenderWaitTimer = Timer(remaining, () {
+      if (!isClosed) add(ReceivePayjoinSenderWaitElapsed(payjoin.id));
+    });
+    return true;
+  }
+
+  ReceiveState _withoutPayjoin() {
+    _payjoinSenderWaitTimer?.cancel();
+    _payjoinSenderWaitTimer = null;
+    return state.copyWith(payjoin: null, isWaitingForPayjoinSender: false);
   }
 
   /// Whether a payjoin receiver session should exist for [wallet] right now:
@@ -201,7 +223,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
       // Clear the previous wallet's payjoin receiver and stop watching it
       // so the URI does not embed a payjoin link from the old wallet.
       await _payjoinSubscription?.cancel();
-      emit(state.copyWith(payjoin: null, payjoinAttemptSettled: false));
+      emit(_withoutPayjoin().copyWith(payjoinAttemptSettled: false));
     }
 
     final eventWallet = event.wallet != null && event.wallet!.isBitcoin
@@ -299,14 +321,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     }
 
     if (state.fiatCurrencyCodes.isEmpty) {
-      // If the fiat currency codes are not set yet, we need to get them from the settings
-      switch (await _getReceiveCurrenciesUsecase.execute()) {
-        case Ok(:final value):
-          emit(state.copyWith(fiatCurrencyCodes: value));
-        case Err(:final failure):
-          emit(state.copyWith(failure: failure, payjoinAttemptSettled: true));
-          return;
-      }
+      emit(state.copyWith(fiatCurrencyCodes: SupportedCurrency.codes));
     }
 
     var bitcoinAddress = state.bitcoinAddress;
@@ -383,13 +398,18 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
           break;
       }
 
-      emit(state.copyWith(payjoin: payjoin));
+      emit(
+        state.copyWith(
+          payjoin: payjoin,
+          isWaitingForPayjoinSender: _waitForPayjoinSender(payjoin),
+        ),
+      );
     } else if (state.payjoin != null &&
         !_isPayjoinEligible(wallet, payjoinEnabled)) {
       // If the wallet is watch only, payjoin was turned off since we last
       //  created a receiver, or the wallet no longer has a balance to
       //  contribute, clear it.
-      emit(state.copyWith(payjoin: null));
+      emit(_withoutPayjoin());
       // cancel the payjoin subscription as well if it exists
       await _payjoinSubscription?.cancel();
     }
@@ -400,11 +420,14 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     //  added above cannot forget to release it and hang the screen.
     emit(state.copyWith(payjoinAttemptSettled: true));
 
-    if (state.exchangeRate == 0) {
+    if (state.exchangeRate == null) {
       // If the exchange rate is not set yet, we need to get it from the settings
       switch (await _convertReceiveAmountUsecase.execute()) {
         case Ok(:final value):
           emit(state.copyWith(exchangeRate: value));
+        // Receiving works without a price: no fiat value is shown.
+        case Err(failure: ReceivePriceUnavailableFailure()):
+          break;
         case Err(:final failure):
           emit(state.copyWith(failure: failure));
           return;
@@ -472,14 +495,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     }
 
     if (state.fiatCurrencyCodes.isEmpty) {
-      // If the fiat currency codes are not set yet, we need to get them from the settings
-      switch (await _getReceiveCurrenciesUsecase.execute()) {
-        case Ok(:final value):
-          emit(state.copyWith(fiatCurrencyCodes: value));
-        case Err(:final failure):
-          emit(state.copyWith(failure: failure));
-          return;
-      }
+      emit(state.copyWith(fiatCurrencyCodes: SupportedCurrency.codes));
     }
 
     // If no wallet is passed through the constructor, get the default liquid wallet,
@@ -509,11 +525,14 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     }
     emit(state.copyWith(wallet: wallet));
 
-    if (state.exchangeRate == 0) {
+    if (state.exchangeRate == null) {
       // If the exchange rate is not set yet, we need to get it from the settings
       switch (await _convertReceiveAmountUsecase.execute()) {
         case Ok(:final value):
           emit(state.copyWith(exchangeRate: value));
+        // Receiving works without a price: no fiat value is shown.
+        case Err(failure: ReceivePriceUnavailableFailure()):
+          break;
         case Err(:final failure):
           emit(state.copyWith(failure: failure));
           return;
@@ -571,14 +590,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     }
 
     if (state.fiatCurrencyCodes.isEmpty) {
-      // If the fiat currency codes are not set yet, we need to get them from the settings
-      switch (await _getReceiveCurrenciesUsecase.execute()) {
-        case Ok(:final value):
-          emit(state.copyWith(fiatCurrencyCodes: value));
-        case Err(:final failure):
-          emit(state.copyWith(failure: failure));
-          return;
-      }
+      emit(state.copyWith(fiatCurrencyCodes: SupportedCurrency.codes));
     }
 
     // If no liquid wallet is passed through the constructor, get the
@@ -624,11 +636,14 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
       }
     }
 
-    if (state.exchangeRate == 0) {
+    if (state.exchangeRate == null) {
       // If the exchange rate is not set yet, we need to get it from the settings
       switch (await _convertReceiveAmountUsecase.execute()) {
         case Ok(:final value):
           emit(state.copyWith(exchangeRate: value));
+        // Receiving works without a price: no fiat value is shown.
+        case Err(failure: ReceivePriceUnavailableFailure()):
+          break;
         case Err(:final failure):
           emit(state.copyWith(failure: failure));
           return;
@@ -702,7 +717,11 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
           );
           return;
         }
-        inputSat = ConvertAmount.fiatToSats(amountFiat, state.exchangeRate);
+        // A fiat amount is only offered with a price.
+        final rate = state.exchangeRate;
+        inputSat = rate == null
+            ? 0
+            : ConvertAmount.fiatToSats(amountFiat, rate);
       } else if (state.inputAmountCurrencyCode == BitcoinUnit.sats.code) {
         inputSat = int.tryParse(amount) ?? 0;
       } else {
@@ -725,7 +744,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     ReceiveAmountCurrencyChanged event,
     Emitter<ReceiveState> emit,
   ) async {
-    double exchangeRate = state.exchangeRate;
+    double? exchangeRate = state.exchangeRate;
     String fiatCurrencyCode = state.fiatCurrencyCode;
 
     if (![
@@ -740,6 +759,10 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
       )) {
         case Ok(:final value):
           exchangeRate = value;
+        // No price for that currency: stay on the current one, or a fiat
+        // amount would request zero sats.
+        case Err(failure: ReceivePriceUnavailableFailure()):
+          return;
         case Err(:final failure):
           emit(state.copyWith(failure: failure));
           return;
@@ -757,6 +780,9 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
       switch (await _convertReceiveAmountUsecase.execute()) {
         case Ok(:final value):
           exchangeRate = value;
+        // Bitcoin units work without a price: no fiat value is shown.
+        case Err(failure: ReceivePriceUnavailableFailure()):
+          exchangeRate = null;
         case Err(:final failure):
           emit(state.copyWith(failure: failure));
           return;
@@ -874,9 +900,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
       return;
     }
 
-    emit(
-      state.copyWith(bitcoinAddress: null, liquidAddress: null, payjoin: null),
-    );
+    emit(_withoutPayjoin().copyWith(bitcoinAddress: null, liquidAddress: null));
 
     if (state.wallet == null) {
       log.warning('New address requested with no wallet selected');
@@ -955,6 +979,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
           state.copyWith(
             bitcoinAddress: address,
             payjoin: payjoin,
+            isWaitingForPayjoinSender: _waitForPayjoinSender(payjoin),
             // Settled whether or not a session was created, and whether or
             //  not the wallet was eligible for one.
             payjoinAttemptSettled: true,
@@ -993,7 +1018,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     if (updatedPayjoin.isExpired &&
         !updatedPayjoin.hasOriginalTransaction &&
         state.payjoin?.id == updatedPayjoin.id) {
-      emit(state.copyWith(payjoin: null));
+      emit(_withoutPayjoin());
       if (state.payjoinGloballyEnabled == true) {
         await _onPayjoinSettingChanged(
           const ReceivePayjoinSettingChanged(true),
@@ -1006,8 +1031,28 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     if (state.type == ReceiveType.bitcoin &&
         state.payjoin?.id != null &&
         updatedPayjoin.id == state.payjoin!.id) {
-      emit(state.copyWith(payjoin: updatedPayjoin));
+      emit(
+        state.copyWith(
+          payjoin: updatedPayjoin,
+          isWaitingForPayjoinSender: _waitForPayjoinSender(updatedPayjoin),
+        ),
+      );
     }
+  }
+
+  void _onPayjoinSenderWaitElapsed(
+    ReceivePayjoinSenderWaitElapsed event,
+    Emitter<ReceiveState> emit,
+  ) {
+    if (event.sessionId != state.payjoin?.id) return;
+    _payjoinSenderWaitTimer = null;
+    // The timer runs on the monotonic clock while the deadline is wall time:
+    // if the wall clock has not reached it yet, this rearms for the rest.
+    emit(
+      state.copyWith(
+        isWaitingForPayjoinSender: _waitForPayjoinSender(state.payjoin),
+      ),
+    );
   }
 
   /// User tapped the payjoin toggle on the receive screen. Persists the new
@@ -1092,14 +1137,20 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
           // See _onBitcoinStarted: logged, not stored.
           break;
       }
-      emit(state.copyWith(payjoin: payjoin, payjoinAttemptSettled: true));
+      emit(
+        state.copyWith(
+          payjoin: payjoin,
+          payjoinAttemptSettled: true,
+          isWaitingForPayjoinSender: _waitForPayjoinSender(payjoin),
+        ),
+      );
       return;
     }
 
     if (state.payjoin != null && !_isPayjoinEligible(wallet, event.enabled)) {
       final payjoinSubscription = _payjoinSubscription;
       _payjoinSubscription = null;
-      emit(state.copyWith(payjoin: null));
+      emit(_withoutPayjoin());
       await payjoinSubscription?.cancel();
     }
 
@@ -1120,17 +1171,18 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     Emitter<ReceiveState> emit,
   ) async {
     final payjoin = state.payjoin;
-    // canManuallyBroadcastOriginal is a backstop against a stale UI snapshot:
-    //  once a proposal is sent (or the session resolved), broadcasting the
-    //  original would race the sender's payjoin transaction spending the same
-    //  inputs — either a no-op rejected by RBF's insufficient-fee rule
-    //  (observed live) or, worse, replacing a payment that already carried a
-    //  privacy benefit. The button's visibility is gated on the same getter,
-    //  so this can never disagree with what the UI showed.
+    // canOfferPayjoinFallback is a backstop against a stale UI snapshot:
+    //  while the sender should be broadcasting the payjoin (or once the
+    //  session resolved), broadcasting the original would race the sender's
+    //  payjoin transaction spending the same inputs — either a no-op
+    //  rejected by RBF's insufficient-fee rule (observed live) or, worse,
+    //  replacing a payment that already carried a privacy benefit. The
+    //  button's visibility is gated on the same getter, so this can never
+    //  disagree with what the UI showed.
     if (state.type == ReceiveType.bitcoin &&
         payjoin != null &&
         payjoin.hasOriginalTransaction &&
-        payjoin.canManuallyBroadcastOriginal) {
+        state.canOfferPayjoinFallback) {
       emit(
         state.copyWith(isBroadcastingOriginalTransaction: true, failure: null),
       );

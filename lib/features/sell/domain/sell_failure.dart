@@ -4,6 +4,14 @@ sealed class SellFailure extends Failure {
   const SellFailure([super.logMessage]);
 }
 
+final class SellConfidentialSepaNotActivatedFailure extends SellFailure {
+  const SellConfidentialSepaNotActivatedFailure();
+}
+
+final class SellNetworkFailure extends SellFailure {
+  const SellNetworkFailure();
+}
+
 /// The API rejected the request because the session is not (or no longer)
 /// authenticated.
 final class SellUnauthenticatedFailure extends SellFailure {
@@ -72,6 +80,19 @@ final class SellFeeBelowRelayFloorFailure extends SellFailure {
 /// The network fee rates could not be fetched, so no payin can be built.
 final class SellFeesUnavailableFailure extends SellFailure {
   const SellFeesUnavailableFailure([super.logMessage]);
+}
+
+/// The price lock lapsed before the payin was sent, so nothing was paid and a
+/// fresh quote must be confirmed instead. An exchange expires the order at its
+/// deadline: a payin sent after it is not credited to the order.
+final class SellQuoteExpiredFailure extends SellFailure {
+  const SellQuoteExpiredFailure([super.logMessage]);
+}
+
+/// The lock lapsed and the bounded retries brought no usable quote back:
+/// every answer was lapsed too, or the requests failed. Nothing was paid.
+final class SellQuoteUnavailableFailure extends SellFailure {
+  const SellQuoteUnavailableFailure([super.logMessage]);
 }
 
 /// The catch-all.

@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bull_ui/bull_ui.dart' show BullRadius;
 import 'package:flutter/material.dart';
 
@@ -14,7 +15,7 @@ class SnackBarUtils {
     _show(
       context,
       Text(
-        'Copied to clipboard',
+        context.loc.copiedToClipboard,
         textAlign: TextAlign.center,
         style: TextStyle(fontSize: 14, color: context.appColors.surface),
       ),

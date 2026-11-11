@@ -1,17 +1,16 @@
+import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'dart:typed_data';
 
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/wallet/domain/bitcoin_send_port.dart';
 import 'package:bb_mobile/core/wallet/domain/no_spendable_utxo_exception.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/bitcoin_transaction_recipient.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_utxo_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/selected_inputs_unavailable_exception.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/prepare_bitcoin_send_usecase.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:primitives/primitives.dart' show Ok, Outpoint, Sats;
+import 'package:primitives/primitives.dart' hide Network, ScriptType;
 
 class _MockPayjoinSessions extends Mock implements PayjoinSessions {}
 
@@ -48,6 +47,14 @@ void main() {
     BitcoinTransactionRecipient.remainder(address: address),
   ];
 
+  Matcher failsWith(Matcher failure) => completion(
+    isA<Err<PreparedBitcoinSend, WalletFailure>>().having(
+      (error) => error.failure,
+      'failure',
+      failure,
+    ),
+  );
+
   setUpAll(() {
     registerFallbackValue(NetworkFee.relativeFromSatPerVbyte(1));
     registerFallbackValue(<BitcoinTransactionRecipient>[]);
@@ -73,7 +80,7 @@ void main() {
         selectedOnly: any(named: 'selectedOnly'),
         replaceByFee: any(named: 'replaceByFee'),
       ),
-    ).thenAnswer((_) async => 'psbt');
+    ).thenAnswer((_) async => const Ok('psbt'));
     when(
       () => bitcoinWallet.getTxSize(psbt: any(named: 'psbt')),
     ).thenAnswer((_) async => 110);
@@ -121,10 +128,13 @@ void main() {
         () => payjoin.reservedOutpoints(),
       ).thenAnswer((_) async => const Ok({}));
 
-      await usecase.execute(
-        walletId: walletId,
-        recipients: fixedRecipients,
-        networkFee: networkFee,
+      expect(
+        await usecase.execute(
+          walletId: walletId,
+          recipients: fixedRecipients,
+          networkFee: networkFee,
+        ),
+        isA<Ok<PreparedBitcoinSend, WalletFailure>>(),
       );
 
       // Both unspendable sources are consulted on every build — no gate.
@@ -142,10 +152,13 @@ void main() {
       () => payjoin.reservedOutpoints(),
     ).thenAnswer((_) async => const Ok({(txId: 'tx-payjoin', vout: 2)}));
 
-    await usecase.execute(
-      walletId: walletId,
-      recipients: remainderRecipients,
-      networkFee: networkFee,
+    expect(
+      await usecase.execute(
+        walletId: walletId,
+        recipients: remainderRecipients,
+        networkFee: networkFee,
+      ),
+      isA<Ok<PreparedBitcoinSend, WalletFailure>>(),
     );
 
     final captured = verify(
@@ -193,7 +206,7 @@ void main() {
           recipients: remainderRecipients,
           networkFee: networkFee,
         ),
-        throwsA(isA<NoSpendableUtxoException>()),
+        failsWith(isA<WalletNoSpendableInputsFailure>()),
       );
     },
   );
@@ -225,7 +238,7 @@ void main() {
           recipients: fixedRecipients,
           networkFee: networkFee,
         ),
-        throwsA(isA<PrepareBitcoinSendException>()),
+        failsWith(isA<WalletTransactionBuildFailure>()),
       );
     },
   );
@@ -241,10 +254,13 @@ void main() {
         () => payjoin.reservedOutpoints(),
       ).thenAnswer((_) async => Ok({(txId: 'tx-payjoin', vout: 2), shared}));
 
-      await usecase.execute(
-        walletId: walletId,
-        recipients: fixedRecipients,
-        networkFee: networkFee,
+      expect(
+        await usecase.execute(
+          walletId: walletId,
+          recipients: fixedRecipients,
+          networkFee: networkFee,
+        ),
+        isA<Ok<PreparedBitcoinSend, WalletFailure>>(),
       );
 
       final unspendable = capturedUnspendable()!;
@@ -278,7 +294,7 @@ void main() {
         networkFee: networkFee,
         selectedInputs: [frozenInput, spendableInput],
       ),
-      throwsA(isA<NoSpendableUtxoException>()),
+      failsWith(isA<WalletSelectedInputsUnavailableFailure>()),
     );
     verifyNever(
       () => bitcoinWallet.buildPsbt(
@@ -310,7 +326,7 @@ void main() {
         networkFee: networkFee,
         selectedInputs: [reservedInput],
       ),
-      throwsA(isA<NoSpendableUtxoException>()),
+      failsWith(isA<WalletSelectedInputsUnavailableFailure>()),
     );
     verifyNever(
       () => bitcoinWallet.buildPsbt(
@@ -339,7 +355,7 @@ void main() {
         selectedInputs: [_utxo(txId: 'tx-reserved', vout: 0)],
         selectedOnly: true,
       ),
-      throwsA(isA<SelectedInputsUnavailableException>()),
+      failsWith(isA<WalletSelectedInputsUnavailableFailure>()),
     );
     verifyNever(
       () => bitcoinWallet.buildPsbt(
@@ -371,7 +387,7 @@ void main() {
         ],
         selectedOnly: true,
       ),
-      throwsA(isA<SelectedInputsUnavailableException>()),
+      failsWith(isA<WalletSelectedInputsUnavailableFailure>()),
     );
     verifyNever(
       () => bitcoinWallet.buildPsbt(
@@ -408,9 +424,10 @@ void main() {
         selectedInputs: [input],
       );
 
-      expect(result.unsignedPsbt, 'psbt');
-      expect(result.txSize, 110);
-      expect(result.isToSelf, false);
+      final prepared = (result as Ok<PreparedBitcoinSend, WalletFailure>).value;
+      expect(prepared.unsignedPsbt, 'psbt');
+      expect(prepared.txSize, 110);
+      expect(prepared.isToSelf, false);
       verify(
         () => bitcoinWallet.areAddressesOfWallet([address], walletId: walletId),
       ).called(1);
@@ -462,7 +479,8 @@ void main() {
         networkFee: networkFee,
       );
 
-      expect(result.recipientAmountsSat, [
+      final prepared = (result as Ok<PreparedBitcoinSend, WalletFailure>).value;
+      expect(prepared.recipientAmountsSat, [
         Sats.fromInt(12000),
         Sats.fromInt(87000),
       ]);

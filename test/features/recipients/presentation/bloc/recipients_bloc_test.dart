@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/recipients/application/usecases/add_recipient_usecase.dart';
 import 'package:bb_mobile/features/recipients/domain/usecases/get_account_owner_name_usecase.dart';
@@ -142,6 +144,104 @@ void main() {
 
       expect(bloc.state.selectableRecipientTypes, {RecipientType.sepaEur});
       expect(requestedTypes(), [RecipientType.sepaEur]);
+      expect(bloc.state.failedToLoadConfidentialSepaAvailability, isNull);
+      expect(bloc.state.isLoadingConfidentialSepaAvailability, isFalse);
+    });
+
+    test('keeps a failed check distinct from account ineligibility and '
+        'recovers on retry', () async {
+      final availability =
+          Completer<Result<ConfidentialSepaAvailability, RecipientsFailure>>();
+      when(
+        () => getConfidentialSepaAvailability.execute(),
+      ).thenAnswer((_) => availability.future);
+      final bloc = buildBloc(filters: sepaFilters);
+      addTearDown(bloc.close);
+
+      bloc.add(const RecipientsEvent.started());
+      await pumpEventQueue();
+
+      expect(bloc.state.isLoadingConfidentialSepaAvailability, isTrue);
+      expect(bloc.state.confidentialSepaAvailability, isNull);
+
+      availability.complete(const Err(RecipientsNetworkFailure()));
+      await pumpEventQueue();
+
+      expect(bloc.state.isLoadingConfidentialSepaAvailability, isFalse);
+      expect(bloc.state.confidentialSepaAvailability, isNull);
+      expect(
+        bloc.state.failedToLoadConfidentialSepaAvailability,
+        isA<RecipientsNetworkFailure>(),
+      );
+      verifyNever(() => getAccountOwnerName.execute());
+
+      final retry =
+          Completer<Result<ConfidentialSepaAvailability, RecipientsFailure>>();
+      when(
+        () => getConfidentialSepaAvailability.execute(),
+      ).thenAnswer((_) => retry.future);
+      bloc.add(const RecipientsEvent.confidentialSepaAvailabilityRetried());
+      await pumpEventQueue();
+
+      expect(bloc.state.isLoadingConfidentialSepaAvailability, isTrue);
+      expect(bloc.state.isLoadingRecipients, isTrue);
+      expect(bloc.state.failedToLoadConfidentialSepaAvailability, isNull);
+
+      retry.complete(const Ok(ConfidentialSepaAvailability.needsVirtualIban));
+      await pumpEventQueue();
+
+      expect(bloc.state.isLoadingConfidentialSepaAvailability, isFalse);
+      expect(bloc.state.canChooseSepaType, isTrue);
+      expect(
+        bloc.state.accountOwnerName,
+        const AccountOwnerName(firstName: 'Mary Ann', lastName: 'Smith'),
+      );
+    });
+
+    test('refresh retries a failed availability check', () async {
+      when(
+        () => getConfidentialSepaAvailability.execute(),
+      ).thenAnswer((_) async => const Err(RecipientsNetworkFailure()));
+      final bloc = buildBloc(filters: sepaFilters);
+      addTearDown(bloc.close);
+      bloc.add(const RecipientsEvent.started());
+      await pumpEventQueue();
+
+      when(
+        () => getConfidentialSepaAvailability.execute(),
+      ).thenAnswer((_) async => const Ok(ConfidentialSepaAvailability.ready));
+      bloc.add(const RecipientsEvent.refreshed());
+      await pumpEventQueue();
+
+      expect(bloc.state.failedToLoadConfidentialSepaAvailability, isNull);
+      expect(bloc.state.canChooseSepaType, isTrue);
+      verify(() => getConfidentialSepaAvailability.execute()).called(2);
+      verify(() => getRecipients.execute(any())).called(2);
+    });
+
+    test('an account name failure is visible and can be retried', () async {
+      when(
+        () => getAccountOwnerName.execute(),
+      ).thenAnswer((_) async => const Err(RecipientsUnexpectedFailure()));
+      final bloc = await startWith(ConfidentialSepaAvailability.ready);
+
+      expect(
+        bloc.state.failedToLoadConfidentialSepaAvailability,
+        isA<RecipientsUnexpectedFailure>(),
+      );
+      expect(bloc.state.accountOwnerName, isNull);
+      expect(bloc.state.isLoadingConfidentialSepaAvailability, isFalse);
+
+      when(() => getAccountOwnerName.execute()).thenAnswer(
+        (_) async => const Ok(
+          AccountOwnerName(firstName: 'Mary Ann', lastName: 'Smith'),
+        ),
+      );
+      bloc.add(const RecipientsEvent.confidentialSepaAvailabilityRetried());
+      await pumpEventQueue();
+
+      expect(bloc.state.failedToLoadConfidentialSepaAvailability, isNull);
+      expect(bloc.state.accountOwnerName, isNotNull);
     });
 
     test('is offered to an eligible user', () async {

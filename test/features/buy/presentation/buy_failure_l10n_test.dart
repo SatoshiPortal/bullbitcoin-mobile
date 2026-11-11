@@ -20,6 +20,8 @@ final _everyFailure = <BuyFailure>[
     currency: 'CAD',
     logMessage: _rawReason,
   ),
+  const BuyQuoteExpiredFailure(_rawReason),
+  const BuyQuoteUnavailableFailure(_rawReason),
   const BuyUnexpectedFailure(_rawReason),
 ];
 

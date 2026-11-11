@@ -7411,7 +7411,7 @@
   "@fundExchangeJurisdictionMexico": {
     "description": "Dropdown option for Mexico jurisdiction"
   },
-  "sellInteracEmail": "Interac Email",
+  "sellInteracEmail": "البريد الإلكتروني للتحويل",
   "@sellInteracEmail": {
     "description": "Label for email to receive Interac payment"
   },
@@ -9412,7 +9412,7 @@
   "@autoswapTitle": {
     "description": "Header title for auto transfer settings bottom sheet"
   },
-  "sellInteracTransfer": "Interac e-Transfer",
+  "sellInteracTransfer": "تحويل مالي عبر البريد الإلكتروني",
   "@sellInteracTransfer": {
     "description": "Option for Interac payment (Canada)"
   },
@@ -10886,30 +10886,6 @@
       }
     }
   },
-  "legacyStorageBadgeActionRequired": "إجراء مطلوب",
-  "legacyStorageBadgeConfirm": "تأكيد",
-  "legacyStorageNoBackupPageTitle": "احفظ نسخة احتياطية وأعد تثبيت محفظتك",
-  "legacyStorageHasBackupPageTitle": "أعد تثبيت محفظتك",
-  "legacyStorageIntroDescription": "محفظتك تعمل على برنامج سيتم إيقافه قريبًا. لا يمكن تحديثه دون إلغاء تثبيت التطبيق وإعادة تثبيته.",
-  "legacyStorageStepBackupWallet": "احفظ نسخة احتياطية لمحفظتك",
-  "legacyStorageStepExportLabels": "صدّر تسمياتك (إن وُجدت)",
-  "legacyStorageStepEnsureSwapsCompleted": "تأكد من اكتمال جميع عمليات التبادل",
-  "legacyStorageStepUninstall": "قم بإلغاء تثبيت التطبيق من جهازك",
-  "legacyStorageStepReinstall": "نزّل أحدث إصدار وأعد التثبيت",
-  "legacyStorageStepRestoreBackup": "استعِد نسختك الاحتياطية",
-  "legacyStorageImportantTitle": "هام",
-  "legacyStorageImportantBody": "لا تتخطَّ هذه العملية إلا إذا كنت لا تستطيع فعلًا عمل نسخة احتياطية في هذه اللحظة.",
-  "legacyStorageContinueFooterNoBackup": "يمكنك متابعة استخدام التطبيق دون عمل نسخة احتياطية، لكننا ننصح بشدة بعدم القيام بذلك.",
-  "legacyStorageContinueFooterHasBackup": "يمكنك متابعة استخدام التطبيق، لكننا ننصح بشدة بعدم القيام بذلك.",
-  "legacyStorageBackupNowButton": "احفظ نسخة احتياطية الآن",
-  "legacyStorageRiskAckButton": "لا، أتفهم المخاطر",
-  "legacyStorageAreYouSureTitle": "هل أنت متأكد؟",
-  "legacyStorageAreYouSureParagraphOne": "البرنامج المستخدم لتخزين مفاتيح بيتكوين الخاصة بمحفظتك يتم إيقافه. ننصح بشدة أن تعمل نسخة احتياطية الآن لتجنب أي تعطل في المستقبل.",
-  "legacyStorageAreYouSureParagraphTwo": "خيار النسخة الاحتياطية المشفّرة لا يستغرق سوى دقيقة، ولا يتطلب أدوات خاصة. أما النسخة الاحتياطية المادية، فكل ما تحتاجه قلم وورقة.",
-  "legacyStorageContinueWithoutBackupButton": "متابعة دون نسخة احتياطية",
-  "legacyStorageAcceptRisksCheckbox": "أوافق على مخاطر عدم عمل نسخة احتياطية",
-  "legacyStorageHasBackupImportantBody": "يرجى عدم تخطي هذه العملية إلا إذا كنت بحاجة ماسة إلى استخدام المحفظة بشكل عاجل أو في انتظار اكتمال عملية مبادلة.",
-  "legacyStorageRiskAckButtonHasBackup": "أفهم المخاطر",
   "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again.",
   "transactionSwapOpenWithin24h": "افتح التطبيق خلال 24 ساعة لإكمال عملية المبادلة الخاصة بك",
   "importMnemonicDuplicateError": "هذه العبارة التذكيرية موجودة بالفعل",
@@ -11447,7 +11423,7 @@
   "recipientsJurisdictionCostaRica": "🇨🇷 كوستاريكا",
   "recipientsJurisdictionArgentina": "🇦🇷 الأرجنتين",
   "recipientsJurisdictionColombia": "🇨🇴 كولومبيا",
-  "recipientsTypeInteracEmail": "تحويل Interac الإلكتروني",
+  "recipientsTypeInteracEmail": "تحويل مالي عبر البريد الإلكتروني",
   "recipientsTypeBillPayment": "دفع فاتورة",
   "recipientsTypeBankTransfer": "تحويل مصرفي",
   "recipientsTypeSepa": "تحويل SEPA",
@@ -11719,7 +11695,7 @@
   "testBackupErrorSeedUnavailable": "تعذّرت قراءة عبارة الاسترداد الخاصة بك. حاول مرة أخرى.",
   "testBackupErrorSeedNotMnemonic": "لا تحتوي هذه المحفظة على عبارة استرداد لاختبارها.",
   "testBackupErrorCompletionFailed": "كانت عبارة الاسترداد صحيحة، لكن لم نتمكن من حفظ النتيجة. حاول مرة أخرى.",
-  "withdrawInteracSecurityDetailsTitle": "تفاصيل أمان Interac",
+  "withdrawInteracSecurityDetailsTitle": "تفاصيل أمان التحويل",
   "withdrawInteracSaveAsDefault": "حفظ هذه التفاصيل كإعداد افتراضي",
   "withdrawInteracSecurityQuestionLengthError": "يجب أن يتكون سؤال الأمان من 3 إلى 40 حرفًا",
   "withdrawInteracSecurityAnswerLengthError": "يجب أن تتكون إجابة الأمان من 3 إلى 40 حرفًا",
@@ -11854,7 +11830,7 @@
   "recipientsVirtualIbanCopied": "مركب على لوح مشبك",
   "recipientsVirtualIbanDone": "تم",
   "recipientsVirtualIbanRecipientName": "الاسم المستقبِل",
-  "recipientsVirtualIbanIbanLabel": "IBAN account number",
+  "recipientsVirtualIbanIbanLabel": "رقم حساب IBAN الافتراضي",
   "recipientsVirtualIbanCountry": "بلد الحساب المصرفي",
   "recipientsVirtualIbanBic": "رمز BIC",
   "fundExchangeMethodConfidentialSepa": "SEPA السري",
@@ -11865,5 +11841,11 @@
   "recipientsVirtualIbanBankAddress": "عنوان المصرف",
   "recipientsVirtualIbanBankAddressHelp": "العنوان الرسمي للمصرف، إذا طلبه مصرفك.",
   "recipientsConfidentialSepaNameMustMatchHint": "يجب أن تتطابق الأسماء بين حسابك المصرفي وحساب IBAN الافتراضي، وإلا فستُعاد التحويلات تلقائيًا.",
-  "copiedToClipboard": "تم النسخ إلى الحافظة"
+  "copiedToClipboard": "تم النسخ إلى الحافظة",
+  "recipientsFieldBankAccountIban": "رقم الحساب المصرفي (IBAN)",
+  "recipientsTypeConfidentialSepaDescription": "تظهر عمليات السحب كتحويل إلى نفسك باسم حسابك",
+  "sellPayoutBalance": "إضافة إلى رصيد حسابي",
+  "sellPayoutSepaDescription": "تظهر عمليات السحب على أنها مرسلة من Leonod",
+  "sellPayoutTitle": "اختر المستلم",
+  "sellPayoutNewBadge": "جديد"
 }

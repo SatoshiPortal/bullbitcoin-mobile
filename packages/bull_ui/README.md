@@ -80,6 +80,8 @@ Duplicated from `lib/core/widgets/**` as dependency-clean `Bull*` copies (the
 
 **Chrome** — `BullScaffold`, `BullTopBar`, `BullSelectionActionBar`.
 
+**Support** — `BullSupportButton` (`.big`, `.icon`, `.text`, `.tile`) and `BullSupportScope`, which the app places above its screens to supply the contact-support action. Without a scope the button renders disabled.
+
 ## Not yet migrated (needs dep abstraction)
 
 These `core/widgets` widgets still reach into `package:bb_mobile/*` (or otherwise

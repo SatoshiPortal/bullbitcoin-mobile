@@ -12,12 +12,57 @@ final class _CaptureLogPort implements PayjoinLogPort {
 }
 
 void main() {
+  test('routine traces and persisted milestones use the wallet levels', () {
+    final port = _CaptureLogPort();
+    final logger = PayjoinLogger(port);
+
+    logger.info(
+      code: PayjoinLogCode.sessionResumed,
+      role: PayjoinLogRole.sender,
+      sessionRef: '0123456789abcdef',
+    );
+    expect(port.event?.level, PayjoinLogLevel.info);
+    expect(port.event?.code, PayjoinLogCode.sessionResumed);
+    expect(port.event?.role, PayjoinLogRole.sender);
+    expect(port.event?.sessionRef, '0123456789abcdef');
+
+    logger.fine(
+      code: PayjoinLogCode.sessionStarted,
+      role: PayjoinLogRole.sender,
+    );
+    expect(port.event?.level, PayjoinLogLevel.fine);
+    expect(port.event?.code, PayjoinLogCode.sessionStarted);
+    expect(port.event?.role, PayjoinLogRole.sender);
+  });
+
+  test('names only the servers of the app', () {
+    final port = _CaptureLogPort();
+    final logger = PayjoinLogger(port);
+
+    logger.warning(
+      code: PayjoinLogCode.relayUnreachable,
+      server: Uri.parse('https://pj.bullbitcoin.com'),
+    );
+    expect(port.event?.server, Uri.https('pj.bullbitcoin.com'));
+
+    logger.warning(
+      code: PayjoinLogCode.directoryUnreachable,
+      server: Uri.parse('HTTPS://PAYJOIN.LAB.VINTEUM.ORG/ABC#RK1Q'),
+    );
+    expect(port.event?.server, Uri.https('payjoin.lab.vinteum.org'));
+
+    logger.warning(
+      code: PayjoinLogCode.directoryUnreachable,
+      server: Uri.parse('https://receivers-own-directory.example/abc'),
+    );
+    expect(port.event?.server, isNull);
+  });
+
   test('a proposal persistence failure keeps its storage classification', () {
     final port = _CaptureLogPort();
     final logger = PayjoinLogger(port);
 
     logger.severe(
-      message: 'Payjoin proposal was sent but persistence failed',
       code: PayjoinLogCode.storageFailure,
       sessionRef: 'raw-session-id',
       error: StateError('write failed'),
@@ -27,28 +72,26 @@ void main() {
     expect(
       port.event?.code,
       PayjoinLogCode.storageFailure,
-      reason: 'all severe events currently collapse to lifecycle',
+      reason: 'a storage failure must stay distinguishable from other faults',
     );
     expect(port.event?.sessionRef, matches(RegExp(r'^[0-9a-f]{16}$')));
     expect(port.event?.sessionRef, isNot('raw-session-id'));
   });
 
-  test('the logger forwards the cause and drops the composed message', () {
+  test('the logger forwards structured cause and trace metadata', () {
     final port = _CaptureLogPort();
     final logger = PayjoinLogger(port);
     final cause = StateError('write failed');
+    final trace = StackTrace.current;
 
     logger.severe(
-      message: 'Payjoin proposal for bitcoin:tb1qaddress?amount=1 failed',
       code: PayjoinLogCode.storageFailure,
       error: cause,
-      trace: StackTrace.current,
+      trace: trace,
     );
 
-    // The cause is what makes a failure diagnosable; the message is the one
-    // field a call site composes, so it never leaves the package.
     expect(port.event?.error, same(cause));
-    expect(port.event?.trace, isNotNull);
+    expect(port.event?.trace, same(trace));
   });
 
   test('a warning keeps its cause too', () {
@@ -56,7 +99,7 @@ void main() {
     final logger = PayjoinLogger(port);
     final cause = StateError('relay timed out');
 
-    logger.warning('', code: PayjoinLogCode.relayFailure, error: cause);
+    logger.warning(code: PayjoinLogCode.relayFailure, error: cause);
 
     expect(port.event?.error, same(cause));
   });

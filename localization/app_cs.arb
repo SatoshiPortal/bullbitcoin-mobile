@@ -7880,7 +7880,7 @@
   "@fundExchangeJurisdictionMexico": {
     "description": "Dropdown option for Mexico jurisdiction"
   },
-  "sellInteracEmail": "Emailová adresa",
+  "sellInteracEmail": "E-mail pro převod",
   "@sellInteracEmail": {
     "description": "Label for email to receive Interac payment"
   },
@@ -9926,7 +9926,7 @@
   "@autoswapTitle": {
     "description": "Header title for auto transfer settings bottom sheet"
   },
-  "sellInteracTransfer": "Interac e-Transfer",
+  "sellInteracTransfer": "Převod peněz e-mailem",
   "@sellInteracTransfer": {
     "description": "Option for Interac payment (Canada)"
   },
@@ -10883,30 +10883,6 @@
       }
     }
   },
-  "legacyStorageBadgeActionRequired": "VYŽADUJE AKCI",
-  "legacyStorageBadgeConfirm": "POTVRDIT",
-  "legacyStorageNoBackupPageTitle": "ZÁLOHUJTE A PŘEINSTALUJTE PENĚŽENKU",
-  "legacyStorageHasBackupPageTitle": "PŘEINSTALUJTE PENĚŽENKU",
-  "legacyStorageIntroDescription": "Vaše peněženka běží na softwaru, který bude brzy ukončen. Nelze jej aktualizovat bez odinstalování a opětovné instalace aplikace.",
-  "legacyStorageStepBackupWallet": "Zazálohujte si peněženku",
-  "legacyStorageStepExportLabels": "Exportujte své štítky (pokud je máte)",
-  "legacyStorageStepEnsureSwapsCompleted": "Ujistěte se, že všechny swapy jsou dokončené",
-  "legacyStorageStepUninstall": "Odinstalujte aplikaci ze svého zařízení",
-  "legacyStorageStepReinstall": "Stáhněte nejnovější verzi a znovu nainstalujte",
-  "legacyStorageStepRestoreBackup": "Obnovte zálohu",
-  "legacyStorageImportantTitle": "Důležité",
-  "legacyStorageImportantBody": "Tento postup nepřeskakujte, ledaže opravdu nemůžete teď zálohu udělat.",
-  "legacyStorageContinueFooterNoBackup": "Můžete pokračovat v používání aplikace bez zálohy, ale rozhodně to nedoporučujeme.",
-  "legacyStorageContinueFooterHasBackup": "Můžete pokračovat v používání aplikace, ale rozhodně to nedoporučujeme.",
-  "legacyStorageBackupNowButton": "Zálohovat nyní",
-  "legacyStorageRiskAckButton": "Ne, riziko chápu",
-  "legacyStorageAreYouSureTitle": "JSTE SI JISTÍ?",
-  "legacyStorageAreYouSureParagraphOne": "Software používaný k uložení Bitcoin privátních klíčů peněženky se ukončuje. Důrazně doporučujeme zálohu vytvořit teď, aby v budoucnu nedošlo k žádným potížím.",
-  "legacyStorageAreYouSureParagraphTwo": "Šifrovaná záloha (Encrypted Vault) trvá asi 1 minutu a nepotřebujete žádné speciální nástroje. Pro fyzickou zálohu vám stačí pero a papír.",
-  "legacyStorageContinueWithoutBackupButton": "Pokračovat bez zálohy",
-  "legacyStorageAcceptRisksCheckbox": "Přijímám rizika spojená s tím, že nemám zálohu",
-  "legacyStorageHasBackupImportantBody": "Tento proces nepřeskakujte, pokud nezbytně nepotřebujete peněženku použít naléhavě nebo nečekáte na dokončení swapu.",
-  "legacyStorageRiskAckButtonHasBackup": "Rozumím riziku",
   "walletSetupErrorTryAgain": "Při nastavování peněženky se něco pokazilo. Zkuste to prosím znovu.",
   "importMnemonicDuplicateError": "Tato mnemotechnická fráze již existuje",
   "coreScreensResolvingInputs": "Načítání vstupů transakce...",
@@ -10947,7 +10923,7 @@
   "recipientsJurisdictionCostaRica": "🇨🇷 Kostarika",
   "recipientsJurisdictionArgentina": "🇦🇷 Argentina",
   "recipientsJurisdictionColombia": "🇨🇴 Kolumbie",
-  "recipientsTypeInteracEmail": "Interac e-Transfer",
+  "recipientsTypeInteracEmail": "Převod peněz e-mailem",
   "recipientsTypeBillPayment": "Platba účtu",
   "recipientsTypeBankTransfer": "Bankovní převod",
   "recipientsTypeSepa": "SEPA převod",
@@ -11716,7 +11692,7 @@
   "testBackupErrorSeedUnavailable": "Vaši obnovovací frázi se nepodařilo přečíst. Zkuste to prosím znovu.",
   "testBackupErrorSeedNotMnemonic": "Tato peněženka nemá obnovovací frázi k otestování.",
   "testBackupErrorCompletionFailed": "Vaše obnovovací fráze byla správná, ale výsledek se nepodařilo uložit. Zkuste to prosím znovu.",
-  "withdrawInteracSecurityDetailsTitle": "Bezpečnostní údaje Interac",
+  "withdrawInteracSecurityDetailsTitle": "Bezpečnostní údaje převodu",
   "withdrawInteracSaveAsDefault": "Uložit tyto údaje jako výchozí",
   "withdrawInteracSecurityQuestionLengthError": "Bezpečnostní otázka musí mít 3–40 znaků",
   "withdrawInteracSecurityAnswerLengthError": "Bezpečnostní odpověď musí mít 3–40 znaků",
@@ -11851,7 +11827,7 @@
   "recipientsVirtualIbanCopied": "Připojil se do schránky",
   "recipientsVirtualIbanDone": "Čeština",
   "recipientsVirtualIbanRecipientName": "Název příjemce",
-  "recipientsVirtualIbanIbanLabel": "Číslo účtu IBAN",
+  "recipientsVirtualIbanIbanLabel": "Číslo virtuálního účtu IBAN",
   "recipientsVirtualIbanCountry": "Bankovní účet",
   "recipientsVirtualIbanBic": "BIC kód",
   "fundExchangeMethodConfidentialSepa": "Důvěrný SEPA",
@@ -11862,5 +11838,11 @@
   "recipientsVirtualIbanBankAddress": "Adresa banky",
   "recipientsVirtualIbanBankAddressHelp": "Oficiální adresa banky pro případ, že ji vaše banka vyžaduje.",
   "recipientsConfidentialSepaNameMustMatchHint": "Jména u vaší banky a virtuálního IBAN se musí shodovat, jinak budou převody automaticky vráceny.",
-  "copiedToClipboard": "Zkopírováno do schránky"
+  "copiedToClipboard": "Zkopírováno do schránky",
+  "recipientsFieldBankAccountIban": "Číslo bankovního účtu (IBAN)",
+  "recipientsTypeConfidentialSepaDescription": "Výběry se zobrazují jako převod na vlastní účet pod názvem vašeho účtu",
+  "sellPayoutBalance": "Přidat k zůstatku mého účtu",
+  "sellPayoutSepaDescription": "Výběry se zobrazují jako odeslané společností Leonod",
+  "sellPayoutTitle": "Vybrat příjemce",
+  "sellPayoutNewBadge": "NOVÉ"
 }

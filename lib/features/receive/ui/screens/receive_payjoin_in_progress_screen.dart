@@ -141,12 +141,10 @@ class PayjoinInProgressPage extends StatelessWidget {
     );
     // The single source of truth ReceiveBloc's own action guard
     // (_onPayjoinOriginalTxBroadcasted) agrees with — see
-    // Payjoin.canManuallyBroadcastOriginal's doc comment. Deriving the
-    // button's visibility from the exact same getter as the action means
-    // they can never disagree.
+    // ReceiveState.canOfferPayjoinFallback. Deriving the button's visibility
+    // from the exact same getter as the action means they can never disagree.
     final canManuallyBroadcastOriginal = context.select(
-      (ReceiveBloc bloc) =>
-          bloc.state.payjoin?.canManuallyBroadcastOriginal ?? false,
+      (ReceiveBloc bloc) => bloc.state.canOfferPayjoinFallback,
     );
     final payjoinExpiresAt = context.select(
       (ReceiveBloc bloc) => bloc.state.payjoin?.expiresAt,
@@ -252,7 +250,7 @@ class PayjoinInProgressPage extends StatelessWidget {
                   // Gated on the same canManuallyBroadcastOriginal as the
                   // fallback button below — a single source of truth so the
                   // countdown never outlives the action it is counting down
-                  // to (see Payjoin.canManuallyBroadcastOriginal).
+                  // to (see ReceiveState.canOfferPayjoinFallback).
                   if (canManuallyBroadcastOriginal &&
                       payjoinExpiresAt != null &&
                       isFallbackImminent) ...[
@@ -273,7 +271,6 @@ class PayjoinInProgressPage extends StatelessWidget {
                                   PayjoinConstants.directoryPollingInterval,
                             ),
                           ),
-                          onTimeout: () {},
                         ),
                       ],
                     ),
@@ -287,14 +284,16 @@ class PayjoinInProgressPage extends StatelessWidget {
                     style: context.font.displaySmall,
                     textAlign: .center,
                   ),
-                  const Gap(4),
-                  BBText(
-                    '~${FormatAmount.fiat(amountFiat, fiatCurrencyCode)}',
-                    style: context.font.bodyMedium,
-                    color: context.appColors.secondary,
-                    maxLines: 4,
-                    textAlign: .center,
-                  ),
+                  if (amountFiat != null) ...[
+                    const Gap(4),
+                    BBText(
+                      '~${FormatAmount.fiat(amountFiat, fiatCurrencyCode)}',
+                      style: context.font.bodyMedium,
+                      color: context.appColors.secondary,
+                      maxLines: 4,
+                      textAlign: .center,
+                    ),
+                  ],
                 ],
               ],
             ),
@@ -329,10 +328,11 @@ class ReceiveBroadcastPayjoinButton extends StatelessWidget {
       (ReceiveBloc bloc) => bloc.state.isBroadcastingOriginalTransaction,
     );
     final broadcastFailure = context.select(
-      (ReceiveBloc bloc) =>
-          bloc.state.failure is ReceiveBroadcastOriginalTxFailure
-          ? bloc.state.failure
-          : null,
+      (ReceiveBloc bloc) => switch (bloc.state.failure) {
+        final ReceiveBroadcastOriginalTxFailure failure => failure,
+        final ReceiveBroadcastOriginalTxVerificationFailure failure => failure,
+        _ => null,
+      },
     );
     return Padding(
       padding: const EdgeInsets.all(16.0),

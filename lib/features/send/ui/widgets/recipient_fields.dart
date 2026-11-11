@@ -230,10 +230,10 @@ class RecipientAmounts extends StatelessWidget {
           ),
           if (index < recipients.length - 1) const Gap(12),
         ],
-        if (error != null) ...[
+        if (error case final message?) ...[
           const Gap(8),
           BullText(
-            error!,
+            message,
             style: context.font.bodySmall,
             color: context.appColors.error,
             textAlign: TextAlign.center,

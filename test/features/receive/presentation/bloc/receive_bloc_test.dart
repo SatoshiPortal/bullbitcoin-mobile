@@ -11,7 +11,6 @@ import 'package:bb_mobile/features/receive/domain/receive_failure.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/convert_receive_amount_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/fetch_receive_note_suggestions_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/get_receive_address_at_index_usecase.dart';
-import 'package:bb_mobile/features/receive/domain/usecases/get_receive_currencies_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/get_receive_settings_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/get_receive_wallets_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/load_receive_address_label_usecase.dart';
@@ -28,16 +27,15 @@ import 'package:bb_mobile/features/receive/domain/usecases/watch_receive_payjoin
 import 'package:bb_mobile/features/receive/domain/usecases/watch_payjoin_usecase.dart';
 import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
+import 'package:clock/clock.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:fake_async/fake_async.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:primitives/primitives.dart' show BitcoinNetwork;
 
 class _MockGetReceiveWalletsUsecase extends Mock
     implements GetReceiveWalletsUsecase {}
-
-class _MockGetReceiveCurrenciesUsecase extends Mock
-    implements GetReceiveCurrenciesUsecase {}
 
 class _MockGetReceiveSettingsUsecase extends Mock
     implements GetReceiveSettingsUsecase {}
@@ -197,6 +195,7 @@ PayjoinReceiverSession _receiver({
   Uint8List? originalTxBytes,
   String? proposalPsbt,
   PayjoinStatus status = PayjoinStatus.started,
+  DateTime? fallbackAvailableAt,
 }) => PayjoinReceiverSession(
   status: status,
   id: id,
@@ -207,12 +206,12 @@ PayjoinReceiverSession _receiver({
   expiresAt: DateTime(2026).add(const Duration(minutes: 1)),
   hasOriginalTransaction: originalTxBytes != null,
   hasProposal: proposalPsbt != null,
+  fallbackAvailableAt: fallbackAvailableAt,
 );
 
 void main() {
   late _MockGetReceiveWalletsUsecase getWallets;
   late _MockGetReceiveSettingsUsecase getSettings;
-  late _MockGetReceiveCurrenciesUsecase getAvailableCurrencies;
   late _MockConvertReceiveAmountUsecase convertSatsToCurrency;
   late _MockPrepareReceiveAddressUsecase getReceiveAddress;
   late _MockReceiveWithPayjoinUsecase receiveWithPayjoin;
@@ -238,7 +237,6 @@ void main() {
   ReceiveBloc buildBloc({Wallet? wallet, bool withPresetWallet = true}) =>
       ReceiveBloc(
         getReceiveWalletsUsecase: getWallets,
-        getReceiveCurrenciesUsecase: getAvailableCurrencies,
         getReceiveSettingsUsecase: getSettings,
         convertReceiveAmountUsecase: convertSatsToCurrency,
         prepareReceiveAddressUsecase: getReceiveAddress,
@@ -269,7 +267,6 @@ void main() {
       () => getWallets.execute(onlyBitcoin: true),
     ).thenAnswer((_) async => Ok([_testWallet(origin: 'default-btc')]));
     getSettings = _MockGetReceiveSettingsUsecase();
-    getAvailableCurrencies = _MockGetReceiveCurrenciesUsecase();
     convertSatsToCurrency = _MockConvertReceiveAmountUsecase();
     getReceiveAddress = _MockPrepareReceiveAddressUsecase();
     receiveWithPayjoin = _MockReceiveWithPayjoinUsecase();
@@ -316,9 +313,6 @@ void main() {
         ),
       ),
     );
-    when(
-      () => getAvailableCurrencies.execute(),
-    ).thenAnswer((_) async => const Ok(<String>[]));
     when(
       () => convertSatsToCurrency.execute(
         amountSat: any(named: 'amountSat'),
@@ -439,6 +433,196 @@ void main() {
       ).called(1);
       expect(bloc.state.payjoin, completedPayjoin);
       expect(bloc.state.isBroadcastingOriginalTransaction, isFalse);
+    });
+
+    test('waits for the sender after a proposal before offering the '
+        'fallback', () async {
+      final requestedPayjoin = _receiver(
+        status: PayjoinStatus.requested,
+        originalTxBytes: Uint8List.fromList([1, 2, 3]),
+      );
+      when(
+        () => receiveWithPayjoin.execute(
+          walletId: any(named: 'walletId'),
+          address: any(named: 'address'),
+        ),
+      ).thenAnswer((_) async => Ok(requestedPayjoin));
+      final proposedPayjoin = _receiver(
+        status: PayjoinStatus.proposed,
+        originalTxBytes: Uint8List.fromList([1, 2, 3]),
+        proposalPsbt: 'cHNidP9wcm9wb3NhbA==',
+        fallbackAvailableAt: clock.now().add(const Duration(seconds: 60)),
+      );
+      when(
+        () => broadcastOriginalTransaction.execute(any()),
+      ).thenAnswer((_) async => Ok(proposedPayjoin));
+
+      final bloc = buildBloc();
+      addTearDown(bloc.close);
+      bloc.add(const ReceiveBitcoinStarted(null));
+      await Future<void>.delayed(Duration.zero);
+
+      bloc.add(ReceivePayjoinUpdated(proposedPayjoin));
+      await Future<void>.delayed(Duration.zero);
+
+      // The sender normally broadcasts the payjoin within seconds.
+      expect(bloc.state.isWaitingForPayjoinSender, isTrue);
+      expect(bloc.state.canOfferPayjoinFallback, isFalse);
+      bloc.add(const ReceivePayjoinOriginalTxBroadcasted());
+      await Future<void>.delayed(Duration.zero);
+      verifyNever(() => broadcastOriginalTransaction.execute(any()));
+    });
+
+    test('reopening a proposed session keeps only its remaining wait', () {
+      fakeAsync((async) {
+        final session = _receiver(
+          status: PayjoinStatus.proposed,
+          originalTxBytes: Uint8List.fromList([1, 2, 3]),
+          proposalPsbt: 'proposal',
+          fallbackAvailableAt: clock.now().add(const Duration(seconds: 20)),
+        );
+        when(
+          () => receiveWithPayjoin.execute(
+            walletId: any(named: 'walletId'),
+            address: any(named: 'address'),
+          ),
+        ).thenAnswer((_) async => Ok(session));
+        final bloc = buildBloc();
+        bloc.add(const ReceiveBitcoinStarted(null));
+        async.flushMicrotasks();
+        expect(bloc.state.isWaitingForPayjoinSender, isTrue);
+        async.elapse(const Duration(seconds: 19));
+        expect(bloc.state.isWaitingForPayjoinSender, isTrue);
+        async.elapse(const Duration(seconds: 1));
+        async.flushMicrotasks();
+        expect(bloc.state.isWaitingForPayjoinSender, isFalse);
+        bloc.close();
+        async.flushMicrotasks();
+      });
+    });
+
+    test('the real sender timer expires after 60 seconds', () {
+      fakeAsync((async) {
+        final bloc = buildBloc();
+        bloc.add(const ReceiveBitcoinStarted(null));
+        async.flushMicrotasks();
+        bloc.add(
+          ReceivePayjoinUpdated(
+            _receiver(
+              status: PayjoinStatus.proposed,
+              originalTxBytes: Uint8List.fromList([1, 2, 3]),
+              proposalPsbt: 'proposal',
+              fallbackAvailableAt: clock.now().add(const Duration(seconds: 60)),
+            ),
+          ),
+        );
+        async.flushMicrotasks();
+        expect(bloc.state.isWaitingForPayjoinSender, isTrue);
+        async.elapse(const Duration(seconds: 59));
+        expect(bloc.state.canOfferPayjoinFallback, isFalse);
+        async.elapse(const Duration(seconds: 1));
+        async.flushMicrotasks();
+        expect(bloc.state.isWaitingForPayjoinSender, isFalse);
+        expect(bloc.state.canOfferPayjoinFallback, isTrue);
+        bloc.close();
+        async.flushMicrotasks();
+      });
+    });
+
+    test('a timer that fires before the wall-clock deadline rearms', () {
+      fakeAsync((async) {
+        final bloc = buildBloc();
+        bloc.add(const ReceiveBitcoinStarted(null));
+        async.flushMicrotasks();
+        bloc.add(
+          ReceivePayjoinUpdated(
+            _receiver(
+              status: PayjoinStatus.proposed,
+              originalTxBytes: Uint8List.fromList([1, 2, 3]),
+              proposalPsbt: 'proposal',
+              fallbackAvailableAt: clock.now().add(const Duration(seconds: 60)),
+            ),
+          ),
+        );
+        async.flushMicrotasks();
+        async.elapse(const Duration(seconds: 50));
+        // The monotonic timer can run ahead of the wall clock.
+        bloc.add(const ReceivePayjoinSenderWaitElapsed('pj1'));
+        async.flushMicrotasks();
+        expect(bloc.state.isWaitingForPayjoinSender, isTrue);
+        expect(bloc.state.canOfferPayjoinFallback, isFalse);
+        async.elapse(const Duration(seconds: 10));
+        async.flushMicrotasks();
+        expect(bloc.state.isWaitingForPayjoinSender, isFalse);
+        expect(bloc.state.canOfferPayjoinFallback, isTrue);
+        bloc.close();
+        async.flushMicrotasks();
+      });
+    });
+
+    for (final resolvedStatus in [
+      PayjoinStatus.completed,
+      PayjoinStatus.aborted,
+    ]) {
+      test('resolution to $resolvedStatus cancels the sender timer', () {
+        fakeAsync((async) {
+          final bloc = buildBloc();
+          bloc.add(const ReceiveBitcoinStarted(null));
+          async.flushMicrotasks();
+          bloc.add(
+            ReceivePayjoinUpdated(
+              _receiver(
+                status: PayjoinStatus.proposed,
+                originalTxBytes: Uint8List.fromList([1, 2, 3]),
+                proposalPsbt: 'proposal',
+                fallbackAvailableAt: clock.now().add(
+                  const Duration(seconds: 60),
+                ),
+              ),
+            ),
+          );
+          async.flushMicrotasks();
+          expect(bloc.state.isWaitingForPayjoinSender, isTrue);
+          bloc.add(ReceivePayjoinUpdated(_receiver(status: resolvedStatus)));
+          async.flushMicrotasks();
+          expect(bloc.state.isWaitingForPayjoinSender, isFalse);
+          expect(async.nonPeriodicTimerCount, 0);
+          bloc.close();
+          async.flushMicrotasks();
+        });
+      });
+    }
+
+    test('changing the address clears the wait and cancels its timer', () {
+      when(
+        () => getReceiveAddress.execute(
+          walletId: any(named: 'walletId'),
+          generateNew: true,
+        ),
+      ).thenAnswer((_) async => const Err(ReceiveAddressUnavailableFailure()));
+      fakeAsync((async) {
+        final bloc = buildBloc();
+        bloc.add(const ReceiveBitcoinStarted(null));
+        async.flushMicrotasks();
+        bloc.add(
+          ReceivePayjoinUpdated(
+            _receiver(
+              status: PayjoinStatus.proposed,
+              originalTxBytes: Uint8List.fromList([1, 2, 3]),
+              proposalPsbt: 'proposal',
+              fallbackAvailableAt: clock.now().add(const Duration(seconds: 60)),
+            ),
+          ),
+        );
+        async.flushMicrotasks();
+        expect(bloc.state.isWaitingForPayjoinSender, isTrue);
+        bloc.add(const ReceiveNewAddressGenerated());
+        async.flushMicrotasks();
+        expect(bloc.state.isWaitingForPayjoinSender, isFalse);
+        expect(async.nonPeriodicTimerCount, 0);
+        bloc.close();
+        async.flushMicrotasks();
+      });
     });
 
     test(
@@ -579,20 +763,6 @@ void main() {
       await pumpEventQueue();
 
       expect(bloc.state.failure, isA<ReceiveAddressUnavailableFailure>());
-      expect(bloc.state.payjoinAttemptSettled, isTrue);
-    });
-
-    test('when the currency list cannot be read', () async {
-      when(() => getAvailableCurrencies.execute()).thenAnswer(
-        (_) async => const Err(ReceiveUnexpectedFailure('exchange 503')),
-      );
-
-      final bloc = buildBloc();
-      addTearDown(bloc.close);
-      bloc.add(const ReceiveBitcoinStarted(null));
-      await pumpEventQueue();
-
-      expect(bloc.state.failure, isA<ReceiveUnexpectedFailure>());
       expect(bloc.state.payjoinAttemptSettled, isTrue);
     });
 
@@ -1234,6 +1404,35 @@ void main() {
   // _onAmountCurrencyChanged had no try/catch before this migration and
   // called two throwing use-cases, so a failed rate fetch escaped the handler
   // as an unhandled bloc error. These pin the Err path that replaced it.
+  group('no price', () {
+    test('receiving works on, with no fiat value and no failure', () async {
+      when(
+        () => convertSatsToCurrency.execute(
+          amountSat: any(named: 'amountSat'),
+          currencyCode: any(named: 'currencyCode'),
+        ),
+      ).thenAnswer((_) async => const Err(ReceivePriceUnavailableFailure()));
+
+      final bloc = buildBloc();
+      addTearDown(bloc.close);
+      bloc.add(const ReceiveBitcoinStarted(null));
+      await pumpEventQueue();
+
+      expect(bloc.state.failure, isNull);
+      expect(bloc.state.exchangeRate, isNull);
+      expect(bloc.state.inputAmountCurrencyCodes, [
+        BitcoinUnit.btc.code,
+        BitcoinUnit.sats.code,
+      ]);
+      verify(
+        () => watchWalletTransaction.execute(
+          walletId: any(named: 'walletId'),
+          toAddress: any(named: 'toAddress'),
+        ),
+      ).called(1);
+    });
+  });
+
   group('amount currency change', () {
     test('a failed rate fetch surfaces a failure instead of escaping the '
         'handler', () async {
@@ -1283,6 +1482,26 @@ void main() {
         expect(bloc.state.hasAmountInputFailure, isTrue);
       },
     );
+
+    test('a currency whose price does not come is not taken', () async {
+      when(
+        () => convertSatsToCurrency.execute(
+          amountSat: any(named: 'amountSat'),
+          currencyCode: any(named: 'currencyCode'),
+        ),
+      ).thenAnswer((_) async => const Err(ReceivePriceUnavailableFailure()));
+
+      final bloc = buildBloc();
+      addTearDown(bloc.close);
+      bloc.add(const ReceiveBitcoinStarted(null));
+      await pumpEventQueue();
+
+      bloc.add(const ReceiveAmountCurrencyChanged('USD'));
+      await pumpEventQueue();
+
+      // A fiat amount with no price would request zero sats.
+      expect(bloc.state.inputAmountCurrencyCode, isNot('USD'));
+    });
 
     test('switches currency and rate on success', () async {
       when(

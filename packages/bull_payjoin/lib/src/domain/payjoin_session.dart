@@ -68,8 +68,14 @@ sealed class PayjoinSession {
   String? get originalTxId => originalTransactionId;
   String? get txId => transactionId;
 
-  bool get canManuallyBroadcastOriginal {
+  bool get canManuallyBroadcastOriginal =>
+      canManuallyBroadcastOriginalAt(DateTime.now());
+
+  bool canManuallyBroadcastOriginalAt(DateTime now) {
     if (isCompleted || isAborted) return false;
+    if (this case PayjoinReceiverSession(:final fallbackAvailableAt?)) {
+      if (isOngoing && now.isBefore(fallbackAvailableAt)) return false;
+    }
     return switch (this) {
       PayjoinReceiverSession(:final hasOriginalTransaction) =>
         hasOriginalTransaction,
@@ -90,6 +96,10 @@ final class PayjoinReceiverSession extends PayjoinSession {
   final String payjoinUri;
   final bool hasOriginalTransaction;
 
+  /// Earliest manual fallback after publishing a proposal in this app run.
+  /// Shared by the receive and details screens; absent after a cold restart.
+  final DateTime? fallbackAvailableAt;
+
   PayjoinReceiverSession({
     required super.status,
     required super.id,
@@ -99,6 +109,7 @@ final class PayjoinReceiverSession extends PayjoinSession {
     required super.expiresAt,
     required this.payjoinUri,
     this.hasOriginalTransaction = false,
+    this.fallbackAvailableAt,
     super.amount,
     super.originalTransactionId,
     super.transactionId,

@@ -6,6 +6,7 @@ import 'package:bb_mobile/features/sp/domain/entities/sp_backend_config.dart';
 import 'package:bb_mobile/features/sp/domain/sp_failure.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:secrets/secrets.dart' show Secret;
 
 import '../../sp_fakes.dart';
 import 'package:bb_mobile/features/sp/domain/sp_session_guard.dart';
@@ -28,13 +29,15 @@ SpBackendConfig _previousConfig() => spBackendConfig(
 // the use case wires dispose/backup/create/discard (and the rollback) in the
 // right order.
 void main() {
-  late MockGetDefaultSeedUsecase getDefaultSeedUsecase;
+  late MockGetSpSecretUsecase getSpSecretUsecase;
+  late Secret secret;
   late MockSpAccountRepository repository;
   late _MockSpBackendConfigRepository configRepository;
   late _MockEnsureSpSessionUsecase ensureSpSessionUsecase;
   late RecreateSpWalletUsecase usecase;
 
-  setUpAll(() {
+  setUpAll(() async {
+    registerFallbackValue(await spSecret());
     registerFallbackValue(BitcoinNetwork.regtest);
     registerFallbackValue(
       SpBackendConfig(
@@ -45,13 +48,14 @@ void main() {
     );
   });
 
-  setUp(() {
-    getDefaultSeedUsecase = MockGetDefaultSeedUsecase();
+  setUp(() async {
+    secret = await spSecret();
+    getSpSecretUsecase = MockGetSpSecretUsecase();
     repository = MockSpAccountRepository();
     configRepository = _MockSpBackendConfigRepository();
     ensureSpSessionUsecase = _MockEnsureSpSessionUsecase();
     usecase = RecreateSpWalletUsecase(
-      getDefaultSeedUsecase: getDefaultSeedUsecase,
+      getSpSecretUsecase: getSpSecretUsecase,
       repository: repository,
       files: repository,
       configRepository: configRepository,
@@ -60,8 +64,8 @@ void main() {
     );
 
     when(
-      () => getDefaultSeedUsecase.execute(),
-    ).thenAnswer((_) async => Ok(spMnemonicSeed()));
+      () => getSpSecretUsecase.execute(any()),
+    ).thenAnswer((_) async => Ok(secret));
     when(() => repository.beginTeardown()).thenReturn(null);
     when(() => repository.endTeardown()).thenReturn(null);
     when(() => repository.dispose()).thenAnswer((_) async => const Ok(null));
@@ -86,11 +90,11 @@ void main() {
       ),
     ).thenAnswer((_) async => const Ok(null));
     when(
-      () => repository.createFromMnemonic(
+      () => repository.createFromSecret(
         network: any(named: 'network'),
         blindbitUrl: any(named: 'blindbitUrl'),
         electrumUrl: any(named: 'electrumUrl'),
-        mnemonic: any(named: 'mnemonic'),
+        secret: any(named: 'secret'),
       ),
     ).thenAnswer((_) async => const Ok(null));
   });
@@ -125,11 +129,11 @@ void main() {
                 ),
           ),
         ),
-        () => repository.createFromMnemonic(
+        () => repository.createFromSecret(
           network: BitcoinNetwork.mainnet,
           blindbitUrl: 'https://blindbit.example',
           electrumUrl: 'ssl://electrum.example:50002',
-          mnemonic: any(named: 'mnemonic'),
+          secret: any(named: 'secret'),
         ),
         () => repository.discardBackup(),
         () => repository.endTeardown(),
@@ -143,11 +147,11 @@ void main() {
     'previous config, then re-establishes before releasing the teardown',
     () async {
       when(
-        () => repository.createFromMnemonic(
+        () => repository.createFromSecret(
           network: any(named: 'network'),
           blindbitUrl: any(named: 'blindbitUrl'),
           electrumUrl: any(named: 'electrumUrl'),
-          mnemonic: any(named: 'mnemonic'),
+          secret: any(named: 'secret'),
         ),
       ).thenAnswer((_) async => const Err(SpUnexpected('create failed')));
 
@@ -181,11 +185,11 @@ void main() {
         () => repository.restoreAccountDir(),
       ).thenAnswer((_) async => const Ok(false));
       when(
-        () => repository.createFromMnemonic(
+        () => repository.createFromSecret(
           network: any(named: 'network'),
           blindbitUrl: any(named: 'blindbitUrl'),
           electrumUrl: any(named: 'electrumUrl'),
-          mnemonic: any(named: 'mnemonic'),
+          secret: any(named: 'secret'),
         ),
       ).thenAnswer((_) async => const Err(SpUnexpected('create failed')));
 
@@ -206,11 +210,11 @@ void main() {
 
   test('rollback releases the teardown bracket exactly once', () async {
     when(
-      () => repository.createFromMnemonic(
+      () => repository.createFromSecret(
         network: any(named: 'network'),
         blindbitUrl: any(named: 'blindbitUrl'),
         electrumUrl: any(named: 'electrumUrl'),
-        mnemonic: any(named: 'mnemonic'),
+        secret: any(named: 'secret'),
       ),
     ).thenAnswer((_) async => const Err(SpUnexpected('create failed')));
 
@@ -242,11 +246,11 @@ void main() {
         () => repository.restoreAccountDir(),
       ).thenAnswer((_) async => const Ok(false));
       when(
-        () => repository.createFromMnemonic(
+        () => repository.createFromSecret(
           network: any(named: 'network'),
           blindbitUrl: any(named: 'blindbitUrl'),
           electrumUrl: any(named: 'electrumUrl'),
-          mnemonic: any(named: 'mnemonic'),
+          secret: any(named: 'secret'),
         ),
       ).thenAnswer((_) async => const Err(SpUnexpected('create failed')));
 
@@ -294,7 +298,7 @@ void main() {
       failure.logMessage,
       'SP wallet recreate failed',
       reason:
-          'the block derives the mnemonic, so nothing caught may be '
+          'the block opens the account from the secret, so nothing caught may be '
           'written to the exportable log',
     );
     verify(() => repository.endTeardown()).called(1);
