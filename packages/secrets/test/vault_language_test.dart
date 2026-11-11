@@ -136,7 +136,11 @@ void main() {
       for (final key in ['mnemonic', 'mnemonicLanguage']) {
         await expectLater(
           secret.backup.recoverbull(metadata: {key: 'override'}),
-          throwsArgumentError,
+          throwsA(
+            isA<ArgumentError>()
+                .having((error) => error.invalidValue, 'invalidValue', key)
+                .having((error) => error.name, 'name', 'metadata'),
+          ),
         );
       }
     },
