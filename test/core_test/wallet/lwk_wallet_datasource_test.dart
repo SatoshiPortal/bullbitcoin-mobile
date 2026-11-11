@@ -171,6 +171,72 @@ void main() {
     },
   );
 
+  test('preserves an unclassified typed LWK build exception', () async {
+    const error = lwk.LwkError(msg: 'unclassified');
+    when(() => lwkWallet.utxos()).thenAnswer((_) async => []);
+    when(
+      () => lwkWallet.buildCustomTx(
+        utxos: any(named: 'utxos'),
+        outputs: any(named: 'outputs'),
+        drainTo: any(named: 'drainTo'),
+        feeRate: any(named: 'feeRate'),
+      ),
+    ).thenThrow(error);
+    await expectLater(
+      datasource.buildPset(
+        wallet: wallet,
+        address: 'recipient',
+        amountSat: 1000,
+        feeRate: fee,
+        selectedInputs: selection,
+      ),
+      throwsA(same(error)),
+    );
+  });
+
+  test('rejects a missing fixed amount before invoking the SDK', () async {
+    await expectLater(
+      datasource.buildPset(
+        wallet: wallet,
+        address: 'recipient',
+        feeRate: fee,
+        selectedInputs: selection,
+      ),
+      throwsA(isA<Exception>()),
+    );
+    verifyZeroInteractions(lwkWallet);
+  });
+
+  test(
+    'rejects a missing consolidation address index before building',
+    () async {
+      when(
+        () => lwkWallet.utxos(),
+      ).thenAnswer((_) async => [coin('first'), coin('second')]);
+      when(() => lwkWallet.addressLastUnused()).thenAnswer(
+        (_) async => const lwk.Address(standard: '', confidential: ''),
+      );
+      await expectLater(
+        datasource.consolidate(
+          wallet: wallet,
+          feeRate: fee,
+          highUtxoThreshold: 0,
+          maximumInputs: 2,
+          unspendable: {(txId: 'frozen', vout: 0)},
+        ),
+        throwsA(isA<Exception>()),
+      );
+      verifyNever(
+        () => lwkWallet.buildCustomTx(
+          utxos: any(named: 'utxos'),
+          outputs: any(named: 'outputs'),
+          drainTo: any(named: 'drainTo'),
+          feeRate: any(named: 'feeRate'),
+        ),
+      );
+    },
+  );
+
   test('lists only L-BTC coins for the wallet network', () async {
     when(() => lwkWallet.utxos()).thenAnswer(
       (_) async => [coin('lbtc'), coin('other-asset', asset: 'other')],

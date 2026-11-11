@@ -1,3 +1,4 @@
+import 'package:primitives/primitives.dart' show Ok;
 import 'package:bb_mobile/features/send/domain/usecases/prepare_send_bitcoin_transaction_usecase.dart';
 // Behavioral proof for two audit findings on SendCubit:
 //
@@ -448,7 +449,7 @@ void main() {
           amountSat: any(named: 'amountSat'),
           drain: any(named: 'drain'),
         ),
-      ).thenAnswer((_) async => 'pset-base64');
+      ).thenAnswer((_) async => const Ok('pset-base64'));
       when(
         () => calculateLiquidAbsoluteFeesUsecase.execute(
           pset: any(named: 'pset'),

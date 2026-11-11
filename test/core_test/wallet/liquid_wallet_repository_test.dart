@@ -1,5 +1,11 @@
+import 'dart:io';
+import 'package:bb_mobile/core/wallet/domain/insufficient_funds_exception.dart';
+import 'package:bb_mobile/core/wallet/domain/consolidation_required_exception.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
-import 'package:bb_mobile/core/seed/data/datasources/seed_datasource.dart';
+import 'package:secrets/secrets.dart';
+import 'package:secrets/testing.dart';
+import 'package:primitives/primitives.dart';
+import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/frozen_wallet_utxo_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/lwk_wallet_datasource.dart';
@@ -8,16 +14,12 @@ import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_utxo_model.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/liquid_wallet_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/outpoint.dart';
 import 'package:bb_mobile/core/wallet/domain/no_spendable_utxo_exception.dart';
-import 'package:bb_mobile/core/wallet/domain/selected_inputs_unavailable_exception.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
 class _MockMetadataDatasource extends Mock
     implements WalletMetadataDatasource {}
-
-class _MockSeedDatasource extends Mock implements SeedDatasource {}
 
 class _MockLwkDatasource extends Mock implements LwkWalletDatasource {}
 
@@ -32,6 +34,7 @@ void main() {
   late _MockLwkDatasource lwk;
   late _MockFrozenDatasource frozen;
   late LiquidWalletRepository repository;
+  late FakeSecureStoragePlatform store;
 
   setUpAll(() {
     registerFallbackValue(
@@ -48,9 +51,12 @@ void main() {
     final metadata = _MockMetadataDatasource();
     lwk = _MockLwkDatasource();
     frozen = _MockFrozenDatasource();
+    store = FakeSecureStoragePlatform()..install();
+    final scratch = Directory.systemTemp.createTempSync('ben-liquid-test-');
+    addTearDown(() => scratch.deleteSync(recursive: true));
     repository = LiquidWalletRepository(
       walletMetadataDatasource: metadata,
-      seedDatasource: _MockSeedDatasource(),
+      secrets: Secrets(scratchDirectory: () async => scratch.path),
       lwkWalletDatasource: lwk,
       frozenWalletUtxoDatasource: frozen,
     );
@@ -94,13 +100,14 @@ void main() {
     ).thenAnswer((_) async => 'pset');
   });
 
-  Future<String> build({Set<Outpoint>? selected}) => repository.buildPset(
-    walletId: walletId,
-    address: 'recipient',
-    amountSat: 10000,
-    feeRate: fee,
-    selectedInputs: selected,
-  );
+  Future<Result<String, WalletFailure>> build({Set<Outpoint>? selected}) =>
+      repository.buildPset(
+        walletId: walletId,
+        address: 'recipient',
+        amountSat: 10000,
+        feeRate: fee,
+        selectedInputs: selected,
+      );
 
   Set<Outpoint>? builtInputs() =>
       verify(
@@ -138,9 +145,10 @@ void main() {
     {first, (txId: 'missing', vout: 0)},
   ]) {
     test('rejects an unavailable selection $selection', () async {
-      await expectLater(
-        build(selected: selection),
-        throwsA(isA<SelectedInputsUnavailableException>()),
+      expect(
+        (await build(selected: selection) as Err<String, WalletFailure>)
+            .failure,
+        isA<WalletSelectedInputsUnavailableFailure>(),
       );
       verifyNever(
         () => lwk.buildPset(
@@ -159,9 +167,10 @@ void main() {
     when(() => frozen.getAllFrozen()).thenAnswer(
       (_) async => [(walletId: walletId, txId: first.txId, vout: first.vout)],
     );
-    await expectLater(
-      build(selected: {first, second}),
-      throwsA(isA<SelectedInputsUnavailableException>()),
+    expect(
+      (await build(selected: {first, second}) as Err<String, WalletFailure>)
+          .failure,
+      isA<WalletSelectedInputsUnavailableFailure>(),
     );
   });
 
@@ -174,6 +183,7 @@ void main() {
       repository.signPset(pset: 'pset', walletId: walletId),
       throwsA(isA<NoSpendableUtxoException>()),
     );
+    expect(store.reads, 0);
   });
 
   test('rejects automatic sends when all coins are frozen', () async {
@@ -183,6 +193,36 @@ void main() {
           (walletId: walletId, txId: coin.txId, vout: coin.vout),
       ],
     );
-    await expectLater(build(), throwsA(isA<NoSpendableUtxoException>()));
+    expect(
+      (await build() as Err<String, WalletFailure>).failure,
+      isA<WalletNoSpendableInputsFailure>(),
+    );
   });
+  for (final (exception, matcher) in <(Exception, Matcher)>[
+    (
+      InsufficientFundsException('shortfall'),
+      isA<WalletInsufficientFundsFailure>(),
+    ),
+    (
+      ConsolidationRequiredException('limit'),
+      isA<WalletConsolidationRequiredFailure>(),
+    ),
+    (Exception('private SDK diagnostic'), isA<WalletTransactionBuildFailure>()),
+  ]) {
+    test('maps ${exception.runtimeType} at the builder boundary', () async {
+      when(
+        () => lwk.buildPset(
+          wallet: any(named: 'wallet'),
+          address: any(named: 'address'),
+          feeRate: any(named: 'feeRate'),
+          amountSat: any(named: 'amountSat'),
+          drain: any(named: 'drain'),
+          selectedInputs: any(named: 'selectedInputs'),
+        ),
+      ).thenThrow(exception);
+      final result = await build(selected: {first});
+      expect((result as Err<String, WalletFailure>).failure, matcher);
+      expect(store.reads, 0);
+    });
+  }
 }

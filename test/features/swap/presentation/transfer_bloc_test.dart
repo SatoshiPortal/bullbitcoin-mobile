@@ -1,3 +1,6 @@
+import 'package:bb_mobile/features/swap/public/swap_facade.dart'
+    show OrderSwapQuote;
+import 'package:bb_mobile/features/send/public/send_facade.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'dart:async';
 import 'dart:typed_data';
@@ -130,8 +133,14 @@ class _MockCheckConsolidation extends Mock
 void main() {
   setUpAll(() {
     registerFallbackValue(const RelativeFee(250));
+    registerFallbackValue(BigInt.zero);
   });
 
+  late _MockPrepareLiquid prepareLiquid;
+  late _MockSignLiquid signLiquid;
+  late _MockBroadcastLiquid broadcastLiquid;
+  late _MockGetQuote getQuote;
+  late _MockCreateOrder createOrder;
   late _MockMarkUnknown markUnknown;
   late _MockMarkBroadcast markBroadcast;
   late _MockBroadcastBitcoin broadcastBitcoin;
@@ -155,6 +164,11 @@ void main() {
   late TransferBloc bloc;
 
   setUp(() {
+    prepareLiquid = _MockPrepareLiquid();
+    signLiquid = _MockSignLiquid();
+    broadcastLiquid = _MockBroadcastLiquid();
+    getQuote = _MockGetQuote();
+    createOrder = _MockCreateOrder();
     markUnknown = _MockMarkUnknown();
     markBroadcast = _MockMarkBroadcast();
     broadcastBitcoin = _MockBroadcastBitcoin();
@@ -191,18 +205,18 @@ void main() {
       getNetworkFeesUsecase: getNetworkFees,
       prepareBitcoinSendUsecase: prepareBitcoin,
       validateBitcoinSelectionUsecase: validateBitcoinSelection,
-      prepareLiquidSendUsecase: _MockPrepareLiquid(),
+      prepareLiquidSendUsecase: prepareLiquid,
       calculateBitcoinAbsoluteFeesUsecase: calculateBitcoin,
       calculateLiquidAbsoluteFeesUsecase: _MockCalculateLiquid(),
       getWalletUsecase: getWallet,
       signBitcoinTxUsecase: signBitcoin,
-      signLiquidTxUsecase: _MockSignLiquid(),
+      signLiquidTxUsecase: signLiquid,
       broadcastBitcoinTxUsecase: broadcastBitcoin,
-      broadcastLiquidTxUsecase: _MockBroadcastLiquid(),
+      broadcastLiquidTxUsecase: broadcastLiquid,
       verifyChainSwapAmountSendUsecase: verifyChain,
-      getOrderSwapQuoteUsecase: _MockGetQuote(),
+      getOrderSwapQuoteUsecase: getQuote,
       getPendingOrderSwapsUsecase: getPendingOrders,
-      createOrderSwapUsecase: _MockCreateOrder(),
+      createOrderSwapUsecase: createOrder,
       savePreparedOrderSwapPayinUsecase: _MockSavePrepared(),
       replacePreparedOrderSwapPayinUsecase: replacePrepared,
       refreshOrderSwapUsecase: refreshOrder,
@@ -220,6 +234,109 @@ void main() {
   });
 
   tearDown(() => bloc.close());
+
+  void stubLiquidCreation(
+    Future<Result<String, SendFailure>> Function() prepare,
+  ) {
+    when(
+      () => getReceiveAddress.execute(walletId: any(named: 'walletId')),
+    ).thenAnswer(
+      (_) async => WalletAddress(
+        walletId: 'wallet-1',
+        address: 'destination',
+        index: 0,
+        createdAt: DateTime.utc(2026),
+        updatedAt: DateTime.utc(2026),
+      ),
+    );
+    when(
+      () => getQuote.execute(
+        environment: OrderSwapEnvironment.testnet,
+        amountSat: BigInt.from(1000),
+        isInAmountFixed: false,
+        inNetwork: OrderSwapNetwork.liquid,
+        outNetwork: OrderSwapNetwork.bitcoin,
+      ),
+    ).thenAnswer(
+      (_) async => Ok(
+        OrderSwapQuote(
+          inAmountSat: BigInt.from(1010),
+          outAmountSat: BigInt.from(1000),
+          inNetwork: OrderSwapNetwork.liquid,
+          outNetwork: OrderSwapNetwork.bitcoin,
+          inCurrency: 'LBTC',
+          outCurrency: 'BTC',
+          feeBasisPoints: 100,
+          warnings: const [],
+        ),
+      ),
+    );
+    when(
+      () => createOrder.execute(
+        amountSat: BigInt.from(1000),
+        isInAmountFixed: false,
+        inNetwork: OrderSwapNetwork.liquid,
+        outNetwork: OrderSwapNetwork.bitcoin,
+        destinationAddress: 'destination',
+        fallbackAddress: 'destination',
+        purpose: OrderSwapPurpose.transfer,
+        environment: OrderSwapEnvironment.testnet,
+        sourceWalletId: 'wallet-1',
+        destinationWalletId: 'wallet-2',
+        quotedCounterpartAmountSat: BigInt.from(1010),
+      ),
+    ).thenAnswer((_) async => Ok(_prepared()));
+    when(
+      () => prepareLiquid.execute(
+        walletId: 'wallet-1',
+        address: 'liquid-address',
+        amountSat: 1010,
+        feeRate: any(named: 'feeRate'),
+        drain: false,
+      ),
+    ).thenAnswer((_) => prepare());
+    bloc.emit(
+      TransferState(
+        fromWallet: _liquidWallet().copyWith(balanceSat: BigInt.from(2000)),
+        toWallet: _destinationWallet(),
+        liquidNetworkFees: _feeOptions(),
+        signedPsbt: 'previous-pset',
+      ),
+    );
+  }
+
+  for (final failure in <SendFailure>[
+    const SendConsolidationRequiredFailure(),
+    const SendTransactionBuildFailure(),
+  ]) {
+    test(
+      'Liquid ${failure.runtimeType} stops verification and signing',
+      () async {
+        stubLiquidCreation(() async => Err(failure));
+        bloc.add(const TransferEvent.swapCreated('1000'));
+        await bloc.stream.firstWhere((state) => !state.isCreatingSwap);
+        verify(
+          () => prepareLiquid.execute(
+            walletId: 'wallet-1',
+            address: 'liquid-address',
+            amountSat: 1010,
+            feeRate: any(named: 'feeRate'),
+            drain: false,
+          ),
+        ).called(1);
+        expect(bloc.state.signedPsbt, isEmpty);
+        expect(
+          bloc.state.consolidationRequired,
+          failure is SendConsolidationRequiredFailure,
+        );
+        expect(bloc.state.swapCreationException, isNotNull);
+        expect(bloc.state.isCreatingSwap, isFalse);
+        verifyZeroInteractions(verifyChain);
+        verifyZeroInteractions(signLiquid);
+        verifyZeroInteractions(broadcastLiquid);
+      },
+    );
+  }
 
   test(
     'exposes insufficient funds when same-chain creation raises a shortfall',
