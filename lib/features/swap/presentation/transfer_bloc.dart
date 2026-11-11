@@ -1,5 +1,3 @@
-import 'package:bb_mobile/features/wallet/public/wallet_facade.dart'
-    show WalletSpendBlockedException;
 import 'dart:async';
 
 import 'package:bb_mobile/features/send/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
@@ -39,6 +37,7 @@ import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_usec
 import 'package:bb_mobile/features/send/domain/usecases/sign_bitcoin_tx_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/sign_liquid_tx_usecase.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/get_swap_exchange_rate_usecase.dart';
+import 'package:bb_mobile/features/swap/domain/usecases/check_swap_spend_admission_usecase.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/create_order_swap_usecase.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/get_order_swap_quote_usecase.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/get_pending_order_swaps_usecase.dart';
@@ -50,6 +49,8 @@ import 'package:bb_mobile/features/swap/domain/usecases/save_prepared_order_swap
 import 'package:bb_mobile/features/swap/domain/usecases/watch_order_swap_usecase.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:bb_mobile/features/swap/presentation/transfer_confirm_error.dart';
+import 'package:bb_mobile/features/wallet/public/wallet_facade.dart'
+    show WalletSpendBlockedException;
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -80,6 +81,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
     required this._getOrderSwapQuoteUsecase,
     required this._getPendingOrderSwapsUsecase,
     required this._createOrderSwapUsecase,
+    required this._checkSwapSpendAdmissionUsecase,
     required this._savePreparedOrderSwapPayinUsecase,
     required this._replacePreparedOrderSwapPayinUsecase,
     required this._refreshOrderSwapUsecase,
@@ -133,6 +135,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
   final GetOrderSwapQuoteUsecase _getOrderSwapQuoteUsecase;
   final GetPendingOrderSwapsUsecase _getPendingOrderSwapsUsecase;
   final CreateOrderSwapUsecase _createOrderSwapUsecase;
+  final CheckSwapSpendAdmissionUsecase _checkSwapSpendAdmissionUsecase;
   final SavePreparedOrderSwapPayinUsecase _savePreparedOrderSwapPayinUsecase;
   final ReplacePreparedOrderSwapPayinUsecase
   _replacePreparedOrderSwapPayinUsecase;
@@ -709,6 +712,17 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
     }
     if (quote.inAmountSat > availableAmountSat) {
       throw InsufficientFundsSwapException();
+    }
+
+    if (!fromWallet.isLiquid) {
+      final admission = await _checkSwapSpendAdmissionUsecase.execute(
+        fromWallet.id,
+      );
+      if (generation != _transactionGeneration) return;
+      if (admission case Err(:final failure)) {
+        emit(state.copyWith(swapFailure: failure));
+        return;
+      }
     }
 
     final createResult = await _createOrderSwapUsecase.execute(
@@ -1711,6 +1725,17 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
             return;
           }
         }
+        if (!fromWallet.isLiquid) {
+          final admission = await _checkSwapSpendAdmissionUsecase.execute(
+            fromWallet.id,
+          );
+          if (admission case Err(:final failure)) {
+            emit(state.copyWith(swapFailure: failure));
+            return;
+          }
+        }
+        // Admission can change after this pre-check. The gated broadcast is
+        // authoritative; a refusal there must preserve broadcast uncertainty.
         final broadcastStartResult = await _markOrderSwapBroadcastUnknownUsecase
             .execute(orderSwap.localId);
         if (broadcastStartResult case Err(:final failure)) {

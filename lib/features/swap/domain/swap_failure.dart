@@ -1,6 +1,7 @@
-import 'package:transaction_sync/write.dart' show BitcoinSpendStatus;
 import 'package:bb_mobile/core/failures/failure.dart';
 import 'package:bb_mobile/core/primitives/payment_network.dart';
+import 'package:bb_mobile/features/wallet/public/wallet_facade.dart'
+    show BitcoinSpendStatus;
 
 sealed class SwapFailure extends Failure {
   const SwapFailure([super.logMessage]);
