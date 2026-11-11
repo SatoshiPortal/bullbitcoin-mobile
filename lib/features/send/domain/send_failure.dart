@@ -128,7 +128,9 @@ final class SendUnexpectedFailure extends SendFailure {
 }
 
 final class SendSpendBlockedFailure extends SendFailure {
-  const SendSpendBlockedFailure();
+  /// The wallet is only busy with another operation: retrying shortly works.
+  final bool busy;
+  const SendSpendBlockedFailure({this.busy = false});
 }
 
 final class SendPayjoinPausedFailure extends SendFailure {

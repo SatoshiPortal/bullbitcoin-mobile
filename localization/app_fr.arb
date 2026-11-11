@@ -4984,5 +4984,6 @@
   "networkWalletReuseSecret": "Réutiliser le secret d’un portefeuille existant",
   "walletSpendAwaitingObservation": "Les dépenses sont temporairement indisponibles pendant la vérification du paiement précédent. Actualisez le portefeuille ou recherchez les transactions manquantes, puis réessayez.",
   "walletSpendReplacementUnavailable": "Il est impossible de modifier les frais tant que ce portefeuille ne voit pas le paiement sur le réseau. Actualisez le portefeuille, puis réessayez.",
-  "sendPayjoinSpendPaused": "Ce paiement Payjoin est en pause car le portefeuille ne peut pas continuer en toute sécurité. Ses entrées restent réservées. Actualisez le portefeuille ou utilisez Rechercher les transactions manquantes, puis réessayez cette proposition tant qu’elle est valide. Si elle a expiré, vérifiez le paiement dans Transactions avant toute autre action."
+  "sendPayjoinSpendPaused": "Ce paiement Payjoin est en pause car le portefeuille ne peut pas continuer en toute sécurité. Ses entrées restent réservées. Actualisez le portefeuille ou utilisez Rechercher les transactions manquantes, puis réessayez cette proposition tant qu’elle est valide. Si elle a expiré, vérifiez le paiement dans Transactions avant toute autre action.",
+  "walletSpendBusy": "Le portefeuille est occupé. Réessayez dans un instant."
 }

@@ -29,8 +29,10 @@ class BroadcastSellPayinUsecase {
       );
       _wallet.pollWallet(walletId, isActive: () => true).ignore();
       return Ok(txid);
-    } on WalletSpendBlockedException {
-      return const Err(SellSpendBlockedFailure());
+    } on WalletSpendBlockedException catch (e) {
+      return Err(
+        SellSpendBlockedFailure(busy: e.status == BitcoinSpendStatus.busy),
+      );
     } on Exception catch (e) {
       return Err(_broadcastFailure(e, 'bitcoin'));
     }

@@ -90,6 +90,7 @@ class BumpFeeUsecase {
       return Err(
         ReplaceByFeeSpendBlockedFailure(
           replacementPending: e.status == BitcoinSpendStatus.replacementPending,
+          busy: e.status == BitcoinSpendStatus.busy,
         ),
       );
     } on ManipulatedTransactionException catch (e, st) {

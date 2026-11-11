@@ -11,6 +11,9 @@ enum BitcoinSpendStatus {
   pending,
   unavailable,
 
+  /// Another operation, usually a sync, holds the wallet: retry shortly.
+  busy,
+
   /// The tracked transaction to replace has not been observed by a sync yet.
   replacementPending,
 }
@@ -62,8 +65,13 @@ final class BitcoinSpendGate {
         intent: LeaseIntent.sync,
       ),
     );
-    if (acquired case Err()) {
-      return const BitcoinSpendRefused(BitcoinSpendStatus.unavailable);
+    if (acquired case Err(:final failure)) {
+      // Contention says nothing about the wallet's payments.
+      return BitcoinSpendRefused(
+        failure is TransactionSyncBusyFailure
+            ? BitcoinSpendStatus.busy
+            : BitcoinSpendStatus.unavailable,
+      );
     }
     final lock = (acquired as Ok<WriterLock, TransactionSyncFailure>).value;
     BitcoinSpendGateStore? store;

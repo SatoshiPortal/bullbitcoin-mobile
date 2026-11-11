@@ -41,5 +41,11 @@ final class ReplaceByFeeUnexpectedFailure extends ReplaceByFeeFailure {
 final class ReplaceByFeeSpendBlockedFailure extends ReplaceByFeeFailure {
   /// The wallet has not yet seen the payment to replace on the network.
   final bool replacementPending;
-  const ReplaceByFeeSpendBlockedFailure({this.replacementPending = false});
+
+  /// The wallet is only busy with another operation: retrying shortly works.
+  final bool busy;
+  const ReplaceByFeeSpendBlockedFailure({
+    this.replacementPending = false,
+    this.busy = false,
+  });
 }

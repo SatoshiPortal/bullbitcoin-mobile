@@ -36,10 +36,13 @@ class PlacePayOrderUsecase {
     bool usePayjoin = false,
   }) async {
     try {
-      if (walletId != null &&
-          network == OrderBitcoinNetwork.bitcoin &&
-          await _wallet.spendStatus(walletId) != BitcoinSpendStatus.ready) {
-        return const Err(PaySpendBlockedFailure());
+      if (walletId != null && network == OrderBitcoinNetwork.bitcoin) {
+        final status = await _wallet.spendStatus(walletId);
+        if (status != BitcoinSpendStatus.ready) {
+          return Err(
+            PaySpendBlockedFailure(busy: status == BitcoinSpendStatus.busy),
+          );
+        }
       }
       final settings = await _settingsRepository.fetch();
       if (!NetworkCapabilities.supports(
