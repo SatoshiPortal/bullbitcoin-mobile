@@ -1,8 +1,8 @@
-import 'package:bb_mobile/core/price/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/pay/domain/calculate_pay_absolute_fees_usecase.dart';
+import 'package:bb_mobile/features/pay/domain/get_pay_exchange_rate_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/get_pay_payin_address_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/load_pay_network_fees_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/pay_failure.dart';
@@ -32,7 +32,7 @@ class EstimatePayPayinFeesUsecase {
   /// 0.1 sat/vByte = 25 sat/kwu — Liquid's network minrelayfee default.
   static const _liquidEstimateFeeRate = RelativeFee(25);
 
-  final ConvertSatsToCurrencyAmountUsecase _convertSatsToCurrencyAmountUsecase;
+  final GetPayExchangeRateUsecase _getPayExchangeRateUsecase;
   final GetPayPayinAddressUsecase _getPayPayinAddressUsecase;
   final LoadPayNetworkFeesUsecase _loadPayNetworkFeesUsecase;
   final PreparePayBitcoinPayinUsecase _preparePayBitcoinPayinUsecase;
@@ -40,7 +40,7 @@ class EstimatePayPayinFeesUsecase {
   final CalculatePayAbsoluteFeesUsecase _calculatePayAbsoluteFeesUsecase;
 
   const EstimatePayPayinFeesUsecase({
-    required this._convertSatsToCurrencyAmountUsecase,
+    required this._getPayExchangeRateUsecase,
     required this._getPayPayinAddressUsecase,
     required this._loadPayNetworkFeesUsecase,
     required this._preparePayBitcoinPayinUsecase,
@@ -55,17 +55,13 @@ class EstimatePayPayinFeesUsecase {
     required String currencyCode,
   }) async {
     final double exchangeRateEstimate;
-    try {
-      exchangeRateEstimate = await _convertSatsToCurrencyAmountUsecase.execute(
-        currencyCode: currencyCode,
-      );
-    } catch (e, st) {
-      log.severe(
-        message: 'Failed to read the exchange rate for the pay payin estimate',
-        error: e,
-        trace: st,
-      );
-      return Err(PayUnexpectedFailure('$e'));
+    switch (await _getPayExchangeRateUsecase.execute(
+      currencyCode: currencyCode,
+    )) {
+      case Ok(:final value):
+        exchangeRateEstimate = value;
+      case Err(:final failure):
+        return Err(failure);
     }
 
     final requiredAmountSat = ConvertAmount.fiatToSats(

@@ -1,40 +1,33 @@
-import 'dart:io' show Directory, Platform;
+import 'dart:io' show Platform;
 
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
-import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
+import 'package:secrets/secrets.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_address_repository.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/bitcoin_transaction_recipient.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_utxo_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/prepare_bitcoin_send_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/sign_bitcoin_tx_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_environment_usecase.dart';
 import 'package:bb_mobile/locator.dart';
-import 'package:bb_mobile/main.dart';
+import 'package:bb_mobile/init.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:bb_mobile/features/settings/domain/settings_failure.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:primitives/primitives.dart' hide ScriptType;
+import 'package:primitives/primitives.dart' hide Network, ScriptType;
 
 Future<void> main({bool isInitialized = false}) async {
   TestWidgetsFlutterBinding.ensureInitialized();
-  Directory? payjoinDirectory;
   if (!isInitialized) {
-    payjoinDirectory = await Directory.systemTemp.createTemp(
-      'payjoin-integration-',
-    );
-    await Bull.init(
-      payjoinDatabasePath: '${payjoinDirectory.path}/payjoin.sqlite',
-    );
+    await Bull.init();
   }
 
   final walletRepository = locator<WalletRepository>();
-  final seedRepository = locator<SeedRepository>();
+  final secrets = locator<Secrets>();
   final addressRepository = locator<WalletAddressRepository>();
   final utxoRepository = locator<WalletUtxoRepository>();
   final receiverRole = locator<PayjoinReceiver>();
@@ -76,13 +69,19 @@ Future<void> main({bool isInitialized = false}) async {
     final address = await addressRepository.generateNewReceiveAddress(
       walletId: walletId,
     );
-    final prepared = await prepareBitcoinSend.execute(
+    final preparationResult = await prepareBitcoinSend.execute(
       walletId: walletId,
       recipients: [
         BitcoinTransactionRecipient.remainder(address: address.address),
       ],
       networkFee: NetworkFee.relativeFromSatPerVbyte(testnetFeeRate),
     );
+    final prepared = switch (preparationResult) {
+      Ok(:final value) => value,
+      Err(:final failure) => fail(
+        'Bitcoin preparation failed: ${failure.runtimeType}',
+      ),
+    };
     final signed = await signBitcoinTx.execute(
       psbt: prepared.unsignedPsbt,
       walletId: walletId,
@@ -120,14 +119,12 @@ Future<void> main({bool isInitialized = false}) async {
 
   // Belongs to this file's own Bull.init above, not to the fixtures, so it
   // stays at the root scope and runs even when the funded group is skipped.
-  // A no-op under all_test.dart, which calls main(isInitialized: true) and
-  // therefore leaves payjoinDirectory null.
+  // all_test.dart owns the lifecycle when it calls main(isInitialized: true).
   tearDownAll(() async {
-    if (payjoinDirectory == null) return;
+    if (isInitialized) return;
     if (locator.isRegistered<PayjoinLifecycle>()) {
       await locator<PayjoinLifecycle>().dispose();
     }
-    await payjoinDirectory.delete(recursive: true);
   });
 
   test(
@@ -189,19 +186,25 @@ Future<void> main({bool isInitialized = false}) async {
         if (enabled case Err(:final failure)) throw failure;
       }
 
-      final receiverSeed = await seedRepository.createFromMnemonic(
-        mnemonicWords: receiverMnemonic!.split(' '),
-      );
-      final senderSeed = await seedRepository.createFromMnemonic(
-        mnemonicWords: senderMnemonic!.split(' '),
-      );
+      final receiverSecret = switch (await secrets.import(
+        words: receiverMnemonic!.split(' '),
+      )) {
+        Ok(:final value) => value,
+        Err(:final failure) => fail('import failed: ${failure.runtimeType}'),
+      };
+      final senderSecret = switch (await secrets.import(
+        words: senderMnemonic!.split(' '),
+      )) {
+        Ok(:final value) => value,
+        Err(:final failure) => fail('import failed: ${failure.runtimeType}'),
+      };
       receiverWallet = await walletRepository.createWallet(
-        seed: receiverSeed,
+        secret: receiverSecret,
         network: Network.bitcoinTestnet,
         scriptType: ScriptType.bip84,
       );
       senderWallet = await walletRepository.createWallet(
-        seed: senderSeed,
+        secret: senderSecret,
         network: Network.bitcoinTestnet,
         scriptType: ScriptType.bip84,
       );
@@ -273,7 +276,7 @@ Future<void> main({bool isInitialized = false}) async {
         expect(uri.queryParameters, contains('pj'));
 
         const feeRate = testnetFeeRate;
-        final prepared = await prepareBitcoinSend.execute(
+        final preparationResult = await prepareBitcoinSend.execute(
           walletId: senderWallet.id,
           recipients: [
             BitcoinTransactionRecipient.fixed(
@@ -283,6 +286,12 @@ Future<void> main({bool isInitialized = false}) async {
           ],
           networkFee: NetworkFee.relativeFromSatPerVbyte(feeRate),
         );
+        final prepared = switch (preparationResult) {
+          Ok(:final value) => value,
+          Err(:final failure) => fail(
+            'Bitcoin preparation failed: ${failure.runtimeType}',
+          ),
+        };
         final senderResult = await senderRole.start(
           StartPayjoinSender(
             walletId: senderWallet.id,

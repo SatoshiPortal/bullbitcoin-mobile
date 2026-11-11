@@ -24,6 +24,7 @@ import 'package:bb_mobile/features/transactions/application/usecases/get_transac
 import 'package:bb_mobile/features/transactions/application/usecases/get_transaction_wallet_usecase.dart';
 import 'package:bb_mobile/features/transactions/application/usecases/save_transaction_note_usecase.dart';
 import 'package:bb_mobile/features/transactions/application/usecases/watch_transaction_swap_usecase.dart';
+import 'package:bb_mobile/core/swaps/domain/usecases/retry_swap_usecase.dart';
 import 'package:bb_mobile/features/transactions/domain/transaction_failure.dart';
 import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transaction_details/transaction_details_cubit.dart';
@@ -78,6 +79,8 @@ class _MockGetTransactionOrderSwapUsecase extends Mock
 
 class _MockWatchTransactionOrderSwapUsecase extends Mock
     implements WatchTransactionOrderSwapUsecase {}
+
+class _MockRetrySwapUsecase extends Mock implements RetrySwapUsecase {}
 
 Wallet _testWallet({String origin = 'w1'}) => Wallet(
   origin: origin,
@@ -161,6 +164,7 @@ void main() {
   late _MockGetTransactionOrderSwapUsecase getTransactionOrderSwap;
   late _MockWatchTransactionOrderSwapUsecase watchTransactionOrderSwap;
   late _MockGetTransactionOrderUsecase getOrder;
+  late _MockRetrySwapUsecase retrySwap;
 
   TransactionDetailsCubit buildCubit() => TransactionDetailsCubit(
     getTransactionWalletUsecase: getWallet,
@@ -180,6 +184,7 @@ void main() {
     getTransactionNoteSuggestionsUsecase:
         _MockGetTransactionNoteSuggestionsUsecase(),
     broadcastOriginalTransactionUsecase: broadcastOriginalTransaction,
+    retrySwapUsecase: retrySwap,
   );
 
   setUpAll(() {
@@ -198,12 +203,13 @@ void main() {
     getTransactionOrderSwap = _MockGetTransactionOrderSwapUsecase();
     watchTransactionOrderSwap = _MockWatchTransactionOrderSwapUsecase();
     getOrder = _MockGetTransactionOrderUsecase();
+    retrySwap = _MockRetrySwapUsecase();
 
     when(() => broadcastOriginalTransaction.canExecute(any())).thenAnswer((
       invocation,
     ) async {
       final payjoin = invocation.positionalArguments.single as PayjoinSession;
-      return payjoin.canManuallyBroadcastOriginal;
+      return Ok(payjoin.canManuallyBroadcastOriginal);
     });
 
     when(
@@ -795,7 +801,10 @@ void main() {
         addTearDown(cubit.close);
         await cubit.initByPayjoinId(payjoin.uri);
 
-        expect(await cubit.canBroadcastPayjoinOriginalTx(), isFalse);
+        expect(
+          (await cubit.canBroadcastPayjoinOriginalTx() as Ok).value,
+          isFalse,
+        );
 
         expect(cubit.broadcastPayjoinOriginalTx(), isFalse);
 
@@ -814,7 +823,10 @@ void main() {
       addTearDown(cubit.close);
       await cubit.initByPayjoinId(payjoin.uri);
 
-      expect(await cubit.canBroadcastPayjoinOriginalTx(), isFalse);
+      expect(
+        (await cubit.canBroadcastPayjoinOriginalTx() as Ok).value,
+        isFalse,
+      );
 
       expect(cubit.broadcastPayjoinOriginalTx(), isFalse);
 
@@ -834,7 +846,7 @@ void main() {
       addTearDown(cubit.close);
       await cubit.initByPayjoinId(payjoin.uri);
 
-      expect(await cubit.canBroadcastPayjoinOriginalTx(), isTrue);
+      expect((await cubit.canBroadcastPayjoinOriginalTx() as Ok).value, isTrue);
 
       final completed = _sender(status: PayjoinStatus.aborted);
       when(() => broadcastOriginalTransaction.execute(any())).thenAnswer(
@@ -863,7 +875,7 @@ void main() {
       addTearDown(cubit.close);
       await cubit.initByPayjoinId(payjoin.uri);
 
-      expect(await cubit.canBroadcastPayjoinOriginalTx(), isTrue);
+      expect((await cubit.canBroadcastPayjoinOriginalTx() as Ok).value, isTrue);
 
       expect(cubit.broadcastPayjoinOriginalTx(), isTrue);
       await pumpEventQueue();
@@ -937,7 +949,7 @@ void main() {
       addTearDown(cubit.close);
       await cubit.initByPayjoinId(payjoin.id);
 
-      expect(await cubit.canBroadcastPayjoinOriginalTx(), isTrue);
+      expect((await cubit.canBroadcastPayjoinOriginalTx() as Ok).value, isTrue);
       expect(cubit.broadcastPayjoinOriginalTx(), isTrue);
       await pumpEventQueue();
 
@@ -1045,6 +1057,20 @@ void main() {
       await pumpEventQueue();
 
       verify(() => broadcastOriginalTransaction.execute(payjoin)).called(1);
+    });
+  });
+
+  group('TransactionDetailsCubit.retrySwap guard', () {
+    test('does nothing and never calls the usecase when there is no swap in '
+        'state', () async {
+      final cubit = buildCubit();
+      addTearDown(cubit.close);
+
+      expect(cubit.state.swap, isNull);
+      expect(cubit.retrySwap(), isFalse);
+
+      verifyZeroInteractions(retrySwap);
+      expect(cubit.state.retryingSwap, isFalse);
     });
   });
 
@@ -1220,7 +1246,10 @@ void main() {
         PayjoinStatus.completed,
       );
       expect(cubit.state.payjoin, completed);
-      expect(await cubit.canBroadcastPayjoinOriginalTx(), isFalse);
+      expect(
+        (await cubit.canBroadcastPayjoinOriginalTx() as Ok).value,
+        isFalse,
+      );
     });
 
     test('stays on payjoin-session data while nothing is broadcast, without '
@@ -1376,7 +1405,7 @@ void main() {
         expect(cubit.state.payjoin?.canManuallyBroadcastOriginal, isTrue);
         when(
           () => broadcastOriginalTransaction.canExecute(completedViaFallback),
-        ).thenAnswer((_) async => false);
+        ).thenAnswer((_) async => const Ok(false));
 
         payjoinEvents.add(completedViaFallback);
         await pumpEventQueue();
@@ -1385,7 +1414,10 @@ void main() {
         // the fallback transaction to appear in the wallet transaction list.
         expect(cubit.state.payjoin?.isAborted, isTrue);
         expect(cubit.state.payjoin?.isOngoing, isFalse);
-        expect(await cubit.canBroadcastPayjoinOriginalTx(), isFalse);
+        expect(
+          (await cubit.canBroadcastPayjoinOriginalTx() as Ok).value,
+          isFalse,
+        );
       },
     );
 

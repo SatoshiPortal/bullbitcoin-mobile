@@ -13,8 +13,12 @@ import 'package:bb_mobile/core/swaps/domain/usecases/save_auto_swap_settings_use
 import 'package:bb_mobile/core/swaps/domain/usecases/watch_auto_swap_settings_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/delete_swap_master_key_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_master_key_usecase.dart';
+import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_mnemonic_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/get_swaps_usecase.dart';
+import 'package:bb_mobile/core/swaps/domain/usecases/retry_swap_usecase.dart';
+import 'package:bb_mobile/core/fees/domain/get_network_fees_usecase.dart';
+import 'package:bb_mobile/core/wallet/data/repositories/wallet_address_repository.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/watch_swap_usecase.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
@@ -50,6 +54,14 @@ class SwapsLocator {
   }
 
   static void registerUsecases(GetIt locator) {
+    locator.registerFactory<GetSwapMnemonicUsecase>(
+      () => GetSwapMnemonicUsecase(
+        swapRepository: locator<BoltzSwapRepository>(
+          instanceName:
+              LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
+        ),
+      ),
+    );
     locator.registerFactory<GetSwapMasterKeyUsecase>(
       () => GetSwapMasterKeyUsecase(
         settingsRepository: locator<SettingsRepository>(),
@@ -87,6 +99,17 @@ class SwapsLocator {
           instanceName:
               LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
         ),
+      ),
+    );
+
+    locator.registerFactory<RetrySwapUsecase>(
+      () => RetrySwapUsecase(
+        boltzSwapRepository: locator<BoltzSwapRepository>(
+          instanceName:
+              LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
+        ),
+        getNetworkFeesUsecase: locator<GetNetworkFeesUsecase>(),
+        walletAddressRepository: locator<WalletAddressRepository>(),
       ),
     );
 

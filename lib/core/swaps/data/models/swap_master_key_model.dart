@@ -1,8 +1,8 @@
 import 'package:bb_mobile/core/swaps/domain/entity/boltz_network.dart';
 import 'package:bull_sdk/boltz.dart' as boltz;
 
-/// The dedicated swap master key (the "swap mnemonic"), derived from a wallet
-/// mnemonic and persisted per network. Boltz swap constructors derive their
+/// The dedicated swap master key (the "swap mnemonic"), derived inside
+/// `package:secrets` from the default wallet's secret and persisted per network. Boltz swap constructors derive their
 /// per-swap keys from this key + an index.
 class SwapMasterKeyModel {
   final String xprv;
@@ -24,17 +24,6 @@ class SwapMasterKeyModel {
     'mainnet' => BoltzNetwork.mainnet,
     _ => throw Exception('Unknown BoltzNetwork value: $network'),
   };
-
-  static Future<SwapMasterKeyModel> create({
-    required String mnemonic,
-    required bool isTestnet,
-  }) async {
-    final boltzKey = await boltz.SwapMasterKey.create(
-      walletMnemonic: mnemonic,
-      network: isTestnet ? boltz.Network.testnet : boltz.Network.mainnet,
-    );
-    return SwapMasterKeyModel.fromBoltz(boltzKey);
-  }
 
   factory SwapMasterKeyModel.fromBoltz(boltz.SwapMasterKey boltzKey) {
     return SwapMasterKeyModel(

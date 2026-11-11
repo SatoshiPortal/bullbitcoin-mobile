@@ -1,4 +1,3 @@
-import 'package:bb_mobile/core/price/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
 import 'package:bb_mobile/core/fees/domain/get_network_fees_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
@@ -18,6 +17,7 @@ import 'package:bb_mobile/features/buy/domain/get_buy_payjoin_enabled_usecase.da
 import 'package:bb_mobile/features/buy/domain/refresh_buy_order_usecase.dart';
 import 'package:bb_mobile/features/buy/presentation/buy_bloc.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
+import 'package:bull_pricer/bull_pricer.dart';
 import 'package:get_it/get_it.dart';
 
 class BuyLocator {
@@ -90,8 +90,7 @@ class BuyLocator {
         getWalletsUsecase: locator<GetWalletsUsecase>(),
         getReceiveAddressUsecase: locator<GetReceiveAddressUsecase>(),
         getNetworkFeesUsecase: locator<GetNetworkFeesUsecase>(),
-        convertSatsToCurrencyAmountUsecase:
-            locator<ConvertSatsToCurrencyAmountUsecase>(),
+        getIndexPrice: Pricer.getIndexPrice,
       ),
     );
     registerBlocs(locator);

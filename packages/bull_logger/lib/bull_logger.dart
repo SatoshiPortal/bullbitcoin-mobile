@@ -9,6 +9,7 @@ export 'src/diagnostic_context.dart'
         DiagnosticTorContext,
         PlatformDiagnosticContextSource;
 export 'src/logger.dart' show Logger, LoggerReporter, ReportCategory, log;
+export 'src/logging_setup.dart' show initializeLogging;
 export 'src/log_delivery.dart'
     show
         createLogBundleLines,

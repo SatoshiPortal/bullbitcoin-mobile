@@ -4,9 +4,9 @@ import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/app_startup/domain/app_startup_failure.dart';
 import 'package:bb_mobile/features/app_startup/domain/usecases/check_for_existing_default_wallets_usecase.dart';
-import 'package:bb_mobile/features/app_startup/domain/usecases/check_legacy_install_usecase.dart';
 import 'package:bb_mobile/features/app_startup/domain/usecases/initialize_required_tor_usecase.dart';
 import 'package:bb_mobile/features/app_startup/domain/usecases/reset_app_data_usecase.dart';
+import 'package:bb_mobile/features/app_startup/domain/usecases/restore_missing_default_secret_usecase.dart';
 import 'package:bb_mobile/features/app_unlock/domain/app_unlock_failure.dart';
 import 'package:bb_mobile/features/app_unlock/domain/usecases/check_pin_code_exists_usecase.dart';
 import 'package:flutter/foundation.dart';
@@ -26,8 +26,8 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState>
     required this._resetAppDataUsecase,
     required this._checkPinCodeExistsUsecase,
     required this._checkForExistingDefaultWalletsUsecase,
-    required this._checkLegacyInstallUsecase,
     required this._initializeRequiredTorUsecase,
+    required this._restoreMissingDefaultSecretUsecase,
   }) : super(const AppStartupState.initial()) {
     on<AppStartupStarted>(_onAppStartupStarted);
     WidgetsBinding.instance.addObserver(this);
@@ -37,8 +37,33 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState>
   final CheckPinCodeExistsUsecase _checkPinCodeExistsUsecase;
   final CheckForExistingDefaultWalletsUsecase
   _checkForExistingDefaultWalletsUsecase;
-  final CheckLegacyInstallUsecase _checkLegacyInstallUsecase;
   final InitializeRequiredTorUsecase _initializeRequiredTorUsecase;
+  final RestoreMissingDefaultSecretUsecase _restoreMissingDefaultSecretUsecase;
+
+  /// Stores the recovery phrase of a default wallet whose secret is missing,
+  /// then starts the app again. The words go straight to the use case and are
+  /// never held in state; the result is returned so the entry screen can say
+  /// why a phrase was refused.
+  Future<Result<void, AppStartupFailure>> restoreDefaultSecret(
+    List<String> words,
+  ) async {
+    final failure = switch (state) {
+      AppStartupFailureState(
+        :final AppStartupMissingDefaultSecretFailure failure,
+      ) =>
+        failure,
+      _ => null,
+    };
+    if (failure == null) {
+      return const Err(AppStartupRestoreFailure('no missing secret'));
+    }
+    final result = await _restoreMissingDefaultSecretUsecase.execute(
+      expectedFingerprint: failure.masterFingerprint,
+      words: words,
+    );
+    if (result is Ok) add(const AppStartupStarted());
+    return result;
+  }
 
   /// True while we're sitting on the splash because a startup step
   /// threw `KeychainLockedException` (iOS pre-first-unlock pre-warm).
@@ -79,29 +104,6 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState>
       case Err(:final failure):
         emit(AppStartupState.failure(failure));
         return;
-    }
-
-    // Pre-v5 ("BULL") installs are no longer migrated: gate them behind a
-    // backup screen. Only when the new DB is empty — the legacy marker can
-    // survive a failed migration while the user has since set up working
-    // v5+ wallets, and those current seeds are not legacy-format: gating
-    // such an install would show a backup screen missing its live wallets
-    // and instruct deleting them.
-    if (!doDefaultWalletsExist) {
-      switch (await _checkLegacyInstallUsecase.execute()) {
-        case Ok(value: true):
-          log.warning('Legacy (pre-v5) install detected — backup gate shown');
-          emit(const AppStartupState.legacyBackupRequired());
-          return;
-        case Ok():
-          break;
-        case Err(failure: AppStartupKeychainLockedFailure()):
-          _waitForKeychainUnlock();
-          return;
-        case Err(:final failure):
-          emit(AppStartupState.failure(failure));
-          return;
-      }
     }
 
     bool isPinCodeSet = false;

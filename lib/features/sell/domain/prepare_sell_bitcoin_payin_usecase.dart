@@ -1,5 +1,4 @@
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/bitcoin_transaction_recipient.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/calculate_bitcoin_absolute_fees_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/prepare_bitcoin_send_usecase.dart';
@@ -36,13 +35,20 @@ class PrepareSellBitcoinPayinUsecase {
     bool replaceByFee = true,
   }) async {
     try {
-      final prepared = await _prepareBitcoinSendUsecase.execute(
+      final result = await _prepareBitcoinSendUsecase.execute(
         walletId: walletId,
         recipients: recipients,
         networkFee: networkFee,
         selectedInputs: selectedInputs,
         replaceByFee: replaceByFee,
       );
+      final PreparedBitcoinSend prepared;
+      switch (result) {
+        case Ok(:final value):
+          prepared = value;
+        case Err(:final failure):
+          return Err(SellUnexpectedFailure(failure.logMessage));
+      }
       final absoluteFees = await _calculateBitcoinAbsoluteFeesUsecase.execute(
         psbt: prepared.unsignedPsbt,
       );
@@ -52,13 +58,13 @@ class PrepareSellBitcoinPayinUsecase {
         isToSelf: prepared.isToSelf,
         absoluteFees: absoluteFees,
       ));
-    } catch (e, st) {
+    } on Exception catch (e, st) {
       log.severe(
         message: 'Failed to build the Bitcoin sell payin',
-        error: e,
+        error: e.runtimeType,
         trace: st,
       );
-      return Err(SellUnexpectedFailure('$e'));
+      return const Err(SellUnexpectedFailure());
     }
   }
 }

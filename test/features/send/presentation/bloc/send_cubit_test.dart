@@ -1,12 +1,11 @@
+import 'package:bb_mobile/core/entities/signer_entity.dart';
+import 'package:bb_mobile/core/entities/signer_device_entity.dart';
+import 'package:bb_mobile/features/send/domain/usecases/prepare_send_bitcoin_transaction_usecase.dart';
 import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_liquid_transaction_usecase.dart';
-import 'package:bb_mobile/core/entities/signer_entity.dart';
-import 'package:bb_mobile/core/price/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
-import 'package:bb_mobile/core/price/domain/usecases/get_available_currencies_usecase.dart';
-import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 import 'package:bb_mobile/core/fees/domain/fee_preview_cache.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/fees/domain/get_network_fees_usecase.dart';
@@ -14,14 +13,11 @@ import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/verify_chain_swap_amount_send_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/bitcoin_transaction_recipient.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/outpoint.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bb_mobile/core/wallet/domain/insufficient_funds_exception.dart';
 import 'package:bb_mobile/core/wallet/domain/no_spendable_utxo_exception.dart';
-import 'package:bb_mobile/core/wallet/domain/selected_inputs_unavailable_exception.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/calculate_bitcoin_absolute_fees_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/check_liquid_consolidation_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
@@ -38,6 +34,7 @@ import 'package:bb_mobile/features/send/domain/usecases/calculate_liquid_pset_si
 import 'package:bb_mobile/features/send/domain/usecases/create_send_cross_chain_swap_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/create_send_swap_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/detect_bitcoin_string_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/get_send_exchange_rate_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/get_send_payjoin_enabled_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/get_send_cross_chain_quote_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/get_send_swap_quote_usecase.dart';
@@ -58,7 +55,6 @@ import 'package:bb_mobile/features/send/domain/usecases/verify_send_signed_tx_us
 import 'package:bb_mobile/features/send/domain/usecases/validate_coin_control_payment_request_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/watch_send_swap_usecase.dart';
 import 'package:bb_mobile/core/utils/payment_request.dart';
-import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/send/domain/usecases/prepare_sp_payment_for_send_usecase.dart';
 import 'package:bb_mobile/features/send/domain/sp_send_wallet.dart';
 import 'package:bb_mobile/features/send/domain/usecases/refresh_sp_wallet_for_send_usecase.dart';
@@ -72,7 +68,7 @@ import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
-import 'package:primitives/primitives.dart' show BitcoinNetwork, Sats;
+import 'package:primitives/primitives.dart' hide Network, ScriptType;
 import 'package:bb_mobile/features/send/presentation/send_wallet_view.dart';
 import 'package:bb_mobile/features/send/presentation/send_mode.dart';
 
@@ -90,8 +86,8 @@ class _MockGetSettingsUsecase extends Mock implements GetSettingsUsecase {}
 
 class _MockChainSwap extends Mock implements ChainSwap {}
 
-class _MockConvertSatsToCurrencyAmountUsecase extends Mock
-    implements ConvertSatsToCurrencyAmountUsecase {}
+class _MockGetSendExchangeRateUsecase extends Mock
+    implements GetSendExchangeRateUsecase {}
 
 class _MockGetNetworkFeesUsecase extends Mock
     implements GetNetworkFeesUsecase {}
@@ -99,11 +95,8 @@ class _MockGetNetworkFeesUsecase extends Mock
 class _MockGetWalletUtxosUsecase extends Mock
     implements GetWalletUtxosUsecase {}
 
-class _MockGetAvailableCurrenciesUsecase extends Mock
-    implements GetAvailableCurrenciesUsecase {}
-
 class _MockPrepareBitcoinSendUsecase extends Mock
-    implements PrepareBitcoinSendUsecase {}
+    implements PrepareSendBitcoinTransactionUsecase {}
 
 class _MockValidateBitcoinSelectionUsecase extends Mock
     implements ValidateBitcoinSelectionUsecase {}
@@ -239,10 +232,9 @@ class _TestableSendCubit extends SendCubit {
     required super.bestWalletUsecase,
     required super.detectBitcoinStringUsecase,
     required super.getSettingsUsecase,
-    required super.convertSatsToCurrencyAmountUsecase,
+    required super.getSendExchangeRateUsecase,
     required super.getNetworkFeesUsecase,
     required super.getWalletUtxosUsecase,
-    required super.getAvailableCurrenciesUsecase,
     required super.prepareBitcoinSendUsecase,
     required super.validateBitcoinSelectionUsecase,
     required super.prepareLiquidSendUsecase,
@@ -412,10 +404,9 @@ void main() {
   late _MockSelectBestWalletUsecase bestWalletUsecase;
   late _MockDetectBitcoinStringUsecase detectBitcoinStringUsecase;
   late _MockGetSettingsUsecase getSettingsUsecase;
-  late _MockConvertSatsToCurrencyAmountUsecase convertSatsUsecase;
+  late _MockGetSendExchangeRateUsecase getSendExchangeRateUsecase;
   late _MockGetNetworkFeesUsecase getNetworkFeesUsecase;
   late _MockGetWalletUtxosUsecase getWalletUtxosUsecase;
-  late _MockGetAvailableCurrenciesUsecase getAvailableCurrenciesUsecase;
   late _MockPrepareBitcoinSendUsecase prepareBitcoinSendUsecase;
   late _MockValidateBitcoinSelectionUsecase validateBitcoinSelectionUsecase;
   late _MockPrepareLiquidSendUsecase prepareLiquidSendUsecase;
@@ -478,10 +469,9 @@ void main() {
     bestWalletUsecase: bestWalletUsecase,
     detectBitcoinStringUsecase: detectBitcoinStringUsecase,
     getSettingsUsecase: getSettingsUsecase,
-    convertSatsToCurrencyAmountUsecase: convertSatsUsecase,
+    getSendExchangeRateUsecase: getSendExchangeRateUsecase,
     getNetworkFeesUsecase: getNetworkFeesUsecase,
     getWalletUtxosUsecase: getWalletUtxosUsecase,
-    getAvailableCurrenciesUsecase: getAvailableCurrenciesUsecase,
     prepareBitcoinSendUsecase: prepareBitcoinSendUsecase,
     validateBitcoinSelectionUsecase: validateBitcoinSelectionUsecase,
     prepareLiquidSendUsecase: prepareLiquidSendUsecase,
@@ -578,10 +568,9 @@ void main() {
     bestWalletUsecase = _MockSelectBestWalletUsecase();
     detectBitcoinStringUsecase = _MockDetectBitcoinStringUsecase();
     getSettingsUsecase = _MockGetSettingsUsecase();
-    convertSatsUsecase = _MockConvertSatsToCurrencyAmountUsecase();
+    getSendExchangeRateUsecase = _MockGetSendExchangeRateUsecase();
     getNetworkFeesUsecase = _MockGetNetworkFeesUsecase();
     getWalletUtxosUsecase = _MockGetWalletUtxosUsecase();
-    getAvailableCurrenciesUsecase = _MockGetAvailableCurrenciesUsecase();
     prepareBitcoinSendUsecase = _MockPrepareBitcoinSendUsecase();
     validateBitcoinSelectionUsecase = _MockValidateBitcoinSelectionUsecase();
     when(
@@ -704,13 +693,11 @@ void main() {
     when(
       () => getSendPayjoinEnabledUsecase.execute(),
     ).thenAnswer((_) async => true);
-    when(() => convertSatsUsecase.execute()).thenAnswer((_) async => 50000);
     when(
-      () => convertSatsUsecase.execute(currencyCode: 'USD'),
-    ).thenAnswer((_) async => 50000);
-    when(
-      () => getAvailableCurrenciesUsecase.execute(),
-    ).thenAnswer((_) async => ['USD']);
+      () => getSendExchangeRateUsecase.execute(
+        currencyCode: any(named: 'currencyCode'),
+      ),
+    ).thenAnswer((_) async => const Ok(50000.0));
     when(
       () => getWalletUtxosUsecase.execute(walletId: wallet.id),
     ).thenAnswer((_) async => utxos);
@@ -945,9 +932,11 @@ void main() {
             sats: 75000,
           );
           stubSweepLoad(wallet: wallet, utxos: [selected]);
-          final currencies = Completer<List<String>>();
+          final currencies = Completer<Result<double, SendFailure>>();
           when(
-            () => getAvailableCurrenciesUsecase.execute(),
+            () => getSendExchangeRateUsecase.execute(
+              currencyCode: any(named: 'currencyCode'),
+            ),
           ).thenAnswer((_) => currencies.future);
           final cubit = buildCubit(
             wallet: wallet,
@@ -974,7 +963,7 @@ void main() {
           expect(cubit.state.loadingBestWallet, isFalse);
           expect(loadCompleted, isFalse);
 
-          currencies.complete(['USD']);
+          currencies.complete(const Ok(50000.0));
           await load;
         },
       );
@@ -1165,6 +1154,26 @@ void main() {
   });
 
   group('SendCubit selected-coin sweep', () {
+    test(
+      'reports a missing wallet before constructing a transaction',
+      () async {
+        final cubit = buildCubit();
+        addTearDown(cubit.close);
+        cubit.setStateForTest(
+          SendState(
+            bitcoinFeesList: _sweepFeeOptions,
+            liquidFeesList: _sweepFeeOptions,
+          ),
+        );
+
+        await cubit.createTransaction();
+
+        expect(cubit.state.failure, isA<SendTransactionBuildFailure>());
+        expect(cubit.state.buildingTransaction, isFalse);
+        expect(cubit.state.unsignedPsbt, isNull);
+      },
+    );
+
     test('sets sweep intent before wallet loading completes', () async {
       final wallet = _bitcoinLocalWallet();
       final selected = walletUtxoFixture(
@@ -1205,6 +1214,7 @@ void main() {
           replaceByFee: any(named: 'replaceByFee'),
           selectedInputs: any(named: 'selectedInputs'),
           selectedOnly: any(named: 'selectedOnly'),
+          hasFrozenInputs: any(named: 'hasFrozenInputs'),
         ),
       );
 
@@ -1319,6 +1329,7 @@ void main() {
           replaceByFee: any(named: 'replaceByFee'),
           selectedInputs: any(named: 'selectedInputs'),
           selectedOnly: any(named: 'selectedOnly'),
+          hasFrozenInputs: any(named: 'hasFrozenInputs'),
         ),
       );
     });
@@ -1339,14 +1350,15 @@ void main() {
           replaceByFee: true,
           selectedInputs: any(named: 'selectedInputs'),
           selectedOnly: true,
+          hasFrozenInputs: any(named: 'hasFrozenInputs'),
         ),
       ).thenAnswer(
-        (_) async => (
+        (_) async => Ok((
           unsignedPsbt: 'unsigned',
           txSize: 110,
           isToSelf: false,
           recipientAmountsSat: [Sats.fromInt(74000)],
-        ),
+        )),
       );
       when(
         () =>
@@ -1396,9 +1408,10 @@ void main() {
             replaceByFee: true,
             selectedInputs: any(named: 'selectedInputs'),
             selectedOnly: true,
+            hasFrozenInputs: any(named: 'hasFrozenInputs'),
           ),
-        ).thenThrow(
-          SelectedInputsUnavailableException('selected input is reserved'),
+        ).thenAnswer(
+          (_) async => const Err(SendSelectedCoinsUnavailableFailure()),
         );
         final cubit = buildCubit(
           wallet: wallet,
@@ -1447,6 +1460,7 @@ void main() {
             replaceByFee: false,
             selectedInputs: any(named: 'selectedInputs'),
             selectedOnly: true,
+            hasFrozenInputs: any(named: 'hasFrozenInputs'),
           ),
         ).thenThrow(
           InsufficientFundsException('selected input cannot cover fee'),
@@ -1491,14 +1505,7 @@ void main() {
       stubSweepLoad(wallet: wallet, utxos: [selected]);
       final olderBuildStarted = Completer<void>();
       final olderBuildResult =
-          Completer<
-            ({
-              String unsignedPsbt,
-              int txSize,
-              bool isToSelf,
-              List<Sats> recipientAmountsSat,
-            })
-          >();
+          Completer<Result<PreparedBitcoinSend, SendFailure>>();
       when(
         () => prepareBitcoinSendUsecase.execute(
           walletId: wallet.id,
@@ -1507,6 +1514,7 @@ void main() {
           replaceByFee: true,
           selectedInputs: any(named: 'selectedInputs'),
           selectedOnly: true,
+          hasFrozenInputs: any(named: 'hasFrozenInputs'),
         ),
       ).thenAnswer((_) {
         olderBuildStarted.complete();
@@ -1520,6 +1528,7 @@ void main() {
           replaceByFee: false,
           selectedInputs: any(named: 'selectedInputs'),
           selectedOnly: true,
+          hasFrozenInputs: any(named: 'hasFrozenInputs'),
         ),
       ).thenThrow(
         InsufficientFundsException('selected input cannot cover fee'),
@@ -1555,12 +1564,14 @@ void main() {
       final olderBuild = cubit.createTransaction();
       await olderBuildStarted.future;
       await cubit.replaceByFeeChanged(false);
-      olderBuildResult.complete((
-        unsignedPsbt: 'older-unsigned',
-        txSize: 110,
-        isToSelf: false,
-        recipientAmountsSat: [Sats.fromInt(74000)],
-      ));
+      olderBuildResult.complete(
+        Ok((
+          unsignedPsbt: 'older-unsigned',
+          txSize: 110,
+          isToSelf: false,
+          recipientAmountsSat: [Sats.fromInt(74000)],
+        )),
+      );
       await olderBuild;
 
       expect(cubit.state.replaceByFee, isFalse);
@@ -1683,14 +1694,15 @@ void main() {
           replaceByFee: true,
           selectedInputs: any(named: 'selectedInputs'),
           selectedOnly: true,
+          hasFrozenInputs: any(named: 'hasFrozenInputs'),
         ),
       ).thenAnswer(
-        (_) async => (
+        (_) async => Ok((
           unsignedPsbt: 'unsigned',
           txSize: 110,
           isToSelf: false,
           recipientAmountsSat: [Sats.fromInt(74000)],
-        ),
+        )),
       );
       when(
         () =>
@@ -1724,6 +1736,7 @@ void main() {
           replaceByFee: true,
           selectedInputs: captureAny(named: 'selectedInputs'),
           selectedOnly: true,
+          hasFrozenInputs: any(named: 'hasFrozenInputs'),
         ),
       ).captured;
       final recipients = captured[0] as List<BitcoinTransactionRecipient>;
@@ -1758,14 +1771,15 @@ void main() {
             replaceByFee: true,
             selectedInputs: any(named: 'selectedInputs'),
             selectedOnly: true,
+            hasFrozenInputs: any(named: 'hasFrozenInputs'),
           ),
         ).thenAnswer(
-          (_) async => (
+          (_) async => Ok((
             unsignedPsbt: 'unsigned-multi-sweep',
             txSize: 140,
             isToSelf: false,
             recipientAmountsSat: [Sats.fromInt(10000), Sats.fromInt(64000)],
-          ),
+          )),
         );
         when(
           () => signBitcoinTxUsecase.execute(
@@ -1820,6 +1834,7 @@ void main() {
             replaceByFee: true,
             selectedInputs: captureAny(named: 'selectedInputs'),
             selectedOnly: true,
+            hasFrozenInputs: any(named: 'hasFrozenInputs'),
           ),
         ).captured;
         final recipients = captured[0] as List<BitcoinTransactionRecipient>;
@@ -1898,14 +1913,15 @@ void main() {
           replaceByFee: true,
           selectedInputs: any(named: 'selectedInputs'),
           selectedOnly: true,
+          hasFrozenInputs: any(named: 'hasFrozenInputs'),
         ),
       ).thenAnswer(
-        (_) async => (
+        (_) async => Ok((
           unsignedPsbt: 'unsigned',
           txSize: 110,
           isToSelf: false,
           recipientAmountsSat: [Sats.fromInt(74000)],
-        ),
+        )),
       );
       when(
         () => calculateBitcoinAbsoluteFeesUsecase.execute(psbt: 'unsigned'),
@@ -1968,6 +1984,23 @@ void main() {
       confirmedAmountSat: 30000,
     );
 
+    test(
+      'rejects amount confirmation when the wallet is unavailable',
+      () async {
+        final cubit = buildCubit();
+        addTearDown(cubit.close);
+        cubit.setStateForTest(
+          readyState(_bitcoinLocalWallet()).copyWith(selectedWallet: null),
+        );
+
+        await cubit.onAmountConfirmed();
+
+        expect(cubit.state.failure, isA<SendTransactionBuildFailure>());
+        expect(cubit.state.amountConfirmedClicked, isFalse);
+        expect(cubit.state.unsignedPsbt, isNull);
+      },
+    );
+
     test('returns from multi-recipient sweep confirmation to amounts', () {
       final cubit = buildCubit();
       addTearDown(cubit.close);
@@ -1995,14 +2028,15 @@ void main() {
           replaceByFee: true,
           selectedInputs: any(named: 'selectedInputs'),
           selectedOnly: false,
+          hasFrozenInputs: any(named: 'hasFrozenInputs'),
         ),
       ).thenAnswer(
-        (_) async => (
+        (_) async => Ok((
           unsignedPsbt: 'unsigned',
           txSize: 140,
           isToSelf: false,
           recipientAmountsSat: [Sats.fromInt(10000), Sats.fromInt(20000)],
-        ),
+        )),
       );
       when(
         () => calculateBitcoinAbsoluteFeesUsecase.execute(
@@ -2085,6 +2119,7 @@ void main() {
                     replaceByFee: true,
                     selectedInputs: any(named: 'selectedInputs'),
                     selectedOnly: false,
+                    hasFrozenInputs: any(named: 'hasFrozenInputs'),
                   ),
                 ).captured.single
                 as List<BitcoinTransactionRecipient>;
@@ -2261,8 +2296,8 @@ void main() {
 
     test('changing currency keeps the multi-recipient remainder', () async {
       when(
-        () => convertSatsUsecase.execute(currencyCode: 'USD'),
-      ).thenAnswer((_) async => 50000);
+        () => getSendExchangeRateUsecase.execute(currencyCode: 'USD'),
+      ).thenAnswer((_) async => const Ok(50000.0));
       final cubit = buildCubit();
       addTearDown(cubit.close);
       cubit.setStateForTest(
@@ -2463,6 +2498,7 @@ void main() {
           replaceByFee: any(named: 'replaceByFee'),
           selectedInputs: any(named: 'selectedInputs'),
           selectedOnly: any(named: 'selectedOnly'),
+          hasFrozenInputs: any(named: 'hasFrozenInputs'),
         ),
       );
     });
@@ -3028,15 +3064,7 @@ void main() {
       final firstWallet = _bitcoinLocalWallet();
       final secondWallet = _bitcoinWallet(balanceSat: 500000);
       final prepareStarted = Completer<void>();
-      final prepared =
-          Completer<
-            ({
-              String unsignedPsbt,
-              int txSize,
-              bool isToSelf,
-              List<Sats> recipientAmountsSat,
-            })
-          >();
+      final prepared = Completer<Result<PreparedBitcoinSend, SendFailure>>();
       when(
         () => getWalletUtxosUsecase.execute(walletId: firstWallet.id),
       ).thenAnswer((_) async => const []);
@@ -3055,6 +3083,7 @@ void main() {
           replaceByFee: true,
           selectedInputs: const [],
           selectedOnly: false,
+          hasFrozenInputs: any(named: 'hasFrozenInputs'),
         ),
       ).thenAnswer((_) {
         prepareStarted.complete();
@@ -3067,12 +3096,14 @@ void main() {
       final building = cubit.createTransaction();
       await prepareStarted.future;
       await cubit.updateSelectedWallet(secondWallet);
-      prepared.complete((
-        unsignedPsbt: 'old-wallet-psbt',
-        txSize: 140,
-        recipientAmountsSat: [Sats.fromInt(10000), Sats.fromInt(20000)],
-        isToSelf: false,
-      ));
+      prepared.complete(
+        Ok((
+          unsignedPsbt: 'old-wallet-psbt',
+          txSize: 140,
+          recipientAmountsSat: [Sats.fromInt(10000), Sats.fromInt(20000)],
+          isToSelf: false,
+        )),
+      );
 
       expect(await building, isFalse);
       expect(cubit.state.selectedBitcoinWallet, secondWallet);
@@ -3095,14 +3126,15 @@ void main() {
             replaceByFee: true,
             selectedInputs: const [],
             selectedOnly: false,
+            hasFrozenInputs: any(named: 'hasFrozenInputs'),
           ),
         ).thenAnswer(
-          (_) async => (
+          (_) async => Ok((
             unsignedPsbt: 'unsigned-remainder',
             txSize: 110,
             recipientAmountsSat: [Sats.fromInt(999000)],
             isToSelf: false,
-          ),
+          )),
         );
         when(
           () => calculateBitcoinAbsoluteFeesUsecase.execute(
@@ -3294,17 +3326,7 @@ void main() {
       'keeps the newest transaction when fee builds finish out of order',
       () async {
         final wallet = _bitcoinLocalWallet();
-        final builds =
-            <
-              Completer<
-                ({
-                  String unsignedPsbt,
-                  int txSize,
-                  List<Sats> recipientAmountsSat,
-                  bool isToSelf,
-                })
-              >
-            >[];
+        final builds = <Completer<Result<PreparedBitcoinSend, SendFailure>>>[];
         final firstStarted = Completer<void>();
         final secondStarted = Completer<void>();
         when(
@@ -3318,17 +3340,10 @@ void main() {
             replaceByFee: true,
             selectedInputs: any(named: 'selectedInputs'),
             selectedOnly: false,
+            hasFrozenInputs: any(named: 'hasFrozenInputs'),
           ),
         ).thenAnswer((_) {
-          final build =
-              Completer<
-                ({
-                  String unsignedPsbt,
-                  int txSize,
-                  List<Sats> recipientAmountsSat,
-                  bool isToSelf,
-                })
-              >();
+          final build = Completer<Result<PreparedBitcoinSend, SendFailure>>();
           builds.add(build);
           if (builds.length == 1) firstStarted.complete();
           if (builds.length == 2) secondStarted.complete();
@@ -3358,19 +3373,23 @@ void main() {
         await firstStarted.future;
         final newerSelection = cubit.feeOptionSelected(FeeSelection.slow);
         await secondStarted.future;
-        builds[1].complete((
-          unsignedPsbt: 'newer',
-          txSize: 140,
-          recipientAmountsSat: [Sats.fromInt(10000), Sats.fromInt(20000)],
-          isToSelf: false,
-        ));
+        builds[1].complete(
+          Ok((
+            unsignedPsbt: 'newer',
+            txSize: 140,
+            recipientAmountsSat: [Sats.fromInt(10000), Sats.fromInt(20000)],
+            isToSelf: false,
+          )),
+        );
         await newerSelection;
-        builds[0].complete((
-          unsignedPsbt: 'older',
-          txSize: 140,
-          recipientAmountsSat: [Sats.fromInt(10000), Sats.fromInt(20000)],
-          isToSelf: false,
-        ));
+        builds[0].complete(
+          Ok((
+            unsignedPsbt: 'older',
+            txSize: 140,
+            recipientAmountsSat: [Sats.fromInt(10000), Sats.fromInt(20000)],
+            isToSelf: false,
+          )),
+        );
         await olderSelection;
 
         expect(cubit.state.selectedFeeOption, FeeSelection.slow);
@@ -3394,6 +3413,7 @@ void main() {
             replaceByFee: true,
             selectedInputs: any(named: 'selectedInputs'),
             selectedOnly: false,
+            hasFrozenInputs: any(named: 'hasFrozenInputs'),
           ),
         ).thenThrow(InsufficientFundsException('remainder is dust'));
         final cubit = buildCubit();
@@ -3454,6 +3474,7 @@ void main() {
             replaceByFee: true,
             selectedInputs: any(named: 'selectedInputs'),
             selectedOnly: false,
+            hasFrozenInputs: any(named: 'hasFrozenInputs'),
           ),
         ).thenThrow(InsufficientFundsException('remainder is unavailable'));
         final cubit = buildCubit();
@@ -3511,14 +3532,15 @@ void main() {
             replaceByFee: true,
             selectedInputs: any(named: 'selectedInputs'),
             selectedOnly: false,
+            hasFrozenInputs: any(named: 'hasFrozenInputs'),
           ),
         ).thenAnswer(
-          (_) async => (
+          (_) async => Ok((
             unsignedPsbt: 'fresh-unsigned',
             txSize: 140,
             isToSelf: false,
             recipientAmountsSat: [Sats.fromInt(10000), Sats.fromInt(49900)],
-          ),
+          )),
         );
         when(
           () => calculateBitcoinAbsoluteFeesUsecase.execute(
@@ -3589,15 +3611,7 @@ void main() {
     test('does not confirm a transaction canceled while building', () async {
       final wallet = _bitcoinWatchOnlyWallet();
       final buildStarted = Completer<void>();
-      final build =
-          Completer<
-            ({
-              String unsignedPsbt,
-              int txSize,
-              bool isToSelf,
-              List<Sats> recipientAmountsSat,
-            })
-          >();
+      final build = Completer<Result<PreparedBitcoinSend, SendFailure>>();
       when(
         () => getWalletUtxosUsecase.execute(walletId: wallet.id),
       ).thenAnswer((_) async => const []);
@@ -3609,6 +3623,7 @@ void main() {
           replaceByFee: true,
           selectedInputs: any(named: 'selectedInputs'),
           selectedOnly: false,
+          hasFrozenInputs: any(named: 'hasFrozenInputs'),
         ),
       ).thenAnswer((_) {
         buildStarted.complete();
@@ -3621,12 +3636,14 @@ void main() {
       final confirming = cubit.onAmountConfirmed();
       await buildStarted.future;
       cubit.backClicked();
-      build.complete((
-        unsignedPsbt: 'canceled',
-        txSize: 140,
-        isToSelf: false,
-        recipientAmountsSat: [Sats.fromInt(10000), Sats.fromInt(20000)],
-      ));
+      build.complete(
+        Ok((
+          unsignedPsbt: 'canceled',
+          txSize: 140,
+          isToSelf: false,
+          recipientAmountsSat: [Sats.fromInt(10000), Sats.fromInt(20000)],
+        )),
+      );
       await confirming;
 
       expect(cubit.state.step, SendStep.address);
@@ -3661,6 +3678,7 @@ void main() {
                   replaceByFee: true,
                   selectedInputs: any(named: 'selectedInputs'),
                   selectedOnly: false,
+                  hasFrozenInputs: any(named: 'hasFrozenInputs'),
                 ),
               ).captured.single
               as List<BitcoinTransactionRecipient>;
@@ -3695,6 +3713,7 @@ void main() {
                       replaceByFee: true,
                       selectedInputs: any(named: 'selectedInputs'),
                       selectedOnly: false,
+                      hasFrozenInputs: any(named: 'hasFrozenInputs'),
                     ),
                   ).captured.single
                   as List<BitcoinTransactionRecipient>;
@@ -3803,6 +3822,7 @@ void main() {
               replaceByFee: any(named: 'replaceByFee'),
               selectedInputs: any(named: 'selectedInputs'),
               selectedOnly: any(named: 'selectedOnly'),
+              hasFrozenInputs: any(named: 'hasFrozenInputs'),
             ),
           );
         },
@@ -3822,6 +3842,7 @@ void main() {
           replaceByFee: true,
           selectedInputs: any(named: 'selectedInputs'),
           selectedOnly: false,
+          hasFrozenInputs: any(named: 'hasFrozenInputs'),
         ),
       ).thenThrow(InsufficientFundsException('outputs exceed wallet balance'));
       final cubit = buildCubit();
@@ -3842,6 +3863,7 @@ void main() {
                   replaceByFee: true,
                   selectedInputs: any(named: 'selectedInputs'),
                   selectedOnly: false,
+                  hasFrozenInputs: any(named: 'hasFrozenInputs'),
                 ),
               ).captured.single
               as List<BitcoinTransactionRecipient>;
@@ -4439,6 +4461,61 @@ void main() {
     },
   );
 
+  group('SendCubit input currency without a price', () {
+    test('keeps the bitcoin unit when the chosen fiat has no price', () async {
+      final cubit = buildCubit();
+      addTearDown(cubit.close);
+      cubit.setStateForTest(
+        SendState(
+          inputAmountCurrencyCode: BitcoinUnit.sats.code,
+          fiatCurrencyCode: 'USD',
+          fiatCurrencyCodes: const ['USD', 'CAD'],
+          exchangeRate: 70000,
+        ),
+      );
+      when(
+        () => getSendExchangeRateUsecase.execute(currencyCode: 'CAD'),
+      ).thenAnswer((_) async => const Err(SendPriceUnavailableFailure()));
+
+      await cubit.onCurrencyChanged('CAD');
+
+      expect(cubit.state.inputAmountCurrencyCode, BitcoinUnit.sats.code);
+      expect(cubit.state.isInputAmountFiat, isFalse);
+    });
+
+    test('a price that does not come leaves no rate, not a zero one', () async {
+      final cubit = buildCubit();
+      addTearDown(cubit.close);
+      cubit.setStateForTest(
+        const SendState(fiatCurrencyCode: 'USD', exchangeRate: 70000),
+      );
+      when(
+        () => getSendExchangeRateUsecase.execute(currencyCode: 'USD'),
+      ).thenAnswer((_) async => const Err(SendPriceUnavailableFailure()));
+
+      await cubit.getExchangeRate();
+
+      expect(cubit.state.exchangeRate, isNull);
+      expect(cubit.state.failure, isNull);
+    });
+
+    test('a failure other than no price is shown', () async {
+      final cubit = buildCubit();
+      addTearDown(cubit.close);
+      cubit.setStateForTest(
+        const SendState(fiatCurrencyCode: 'USD', exchangeRate: 70000),
+      );
+      when(
+        () => getSendExchangeRateUsecase.execute(currencyCode: 'USD'),
+      ).thenAnswer((_) async => const Err(SendUnexpectedFailure('settings')));
+
+      await cubit.getExchangeRate();
+
+      expect(cubit.state.exchangeRate, isNull);
+      expect(cubit.state.failure, isA<SendUnexpectedFailure>());
+    });
+  });
+
   group('SendCubit payment request input', () {
     test('stores sanitized input while parsing it', () async {
       final cubit = buildCubit();
@@ -4956,6 +5033,7 @@ void main() {
             selectedInputs: any(named: 'selectedInputs'),
             selectedOnly: true,
             replaceByFee: any(named: 'replaceByFee'),
+            hasFrozenInputs: any(named: 'hasFrozenInputs'),
           ),
         ).thenThrow(NoSpendableUtxoException('selected coin disappeared'));
         when(
@@ -5067,6 +5145,7 @@ void main() {
             selectedInputs: any(named: 'selectedInputs'),
             selectedOnly: true,
             replaceByFee: any(named: 'replaceByFee'),
+            hasFrozenInputs: any(named: 'hasFrozenInputs'),
           ),
         ).thenThrow(InsufficientFundsException('needed 5000, available 1000'));
         final selected = _utxo(amountSat: 1000);
@@ -5113,6 +5192,7 @@ void main() {
             selectedInputs: captureAny(named: 'selectedInputs'),
             selectedOnly: true,
             replaceByFee: any(named: 'replaceByFee'),
+            hasFrozenInputs: any(named: 'hasFrozenInputs'),
           ),
         ).captured;
         final recipients = captured[0] as List<BitcoinTransactionRecipient>;
@@ -5133,6 +5213,7 @@ void main() {
           networkFee: any(named: 'networkFee'),
           selectedInputs: any(named: 'selectedInputs'),
           replaceByFee: any(named: 'replaceByFee'),
+          hasFrozenInputs: any(named: 'hasFrozenInputs'),
         ),
       ).thenThrow(InsufficientFundsException('needed 10000, available 5000'));
       when(

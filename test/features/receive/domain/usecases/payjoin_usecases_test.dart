@@ -99,6 +99,22 @@ void main() {
       }
     });
 
+    test('a failed preflight is distinct from a failed broadcast', () async {
+      final sender = _MockPayjoinSender();
+      when(() => sender.broadcastOriginal('session-1')).thenAnswer(
+        (_) async => const Err<PayjoinSession, PayjoinFailure>(
+          PayjoinUnavailableFailure('Could not verify competing transactions'),
+        ),
+      );
+      final result = await BroadcastOriginalTransactionUsecase(
+        sender,
+      ).execute('session-1');
+      expect(
+        (result as Err<PayjoinSession, ReceiveFailure>).failure,
+        isA<ReceiveBroadcastOriginalTxVerificationFailure>(),
+      );
+    });
+
     test('maps any other package failure to the broadcast failure', () async {
       final sender = _MockPayjoinSender();
       when(() => sender.broadcastOriginal('session-1')).thenAnswer(

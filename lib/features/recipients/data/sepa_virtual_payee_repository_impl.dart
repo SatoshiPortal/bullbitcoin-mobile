@@ -49,7 +49,14 @@ final class SepaVirtualPayeeRepositoryImpl
       for (var page = 1; page <= _maxPages; page++) {
         final result = await datasource.list(page: page, pageSize: _pageSize);
         for (final payee in result.payees) {
-          if (payee.recipientId == recipientId) return Ok(payee.status);
+          if (payee.recipientId != recipientId) continue;
+          if (payee.status == SepaVirtualPayeeStatus.pending) {
+            // Listing reads the saved status. Activation is idempotent and
+            // refreshes an existing payee from Fiat Republic.
+            final refreshed = await datasource.activate(recipientId);
+            return Ok(refreshed.status);
+          }
+          return Ok(payee.status);
         }
         if (page * _pageSize >= result.totalPayees) break;
       }

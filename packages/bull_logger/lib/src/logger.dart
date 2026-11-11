@@ -24,9 +24,9 @@ abstract interface class LoggerReporter {
 }
 
 // The top-level holder is eagerly seeded with a placeholder anchored at
-// `Directory.current` so that any log line emitted before `Bull.initLogs`
+// `Directory.current` so that any log line emitted before `initializeLogging`
 // runs (e.g. from a thrown exception during early `WidgetsFlutterBinding`
-// init) doesn't hit a `LateInitializationError`. `Bull.initLogs` then
+// init) doesn't hit a `LateInitializationError`. `initializeLogging` then
 // calls [Logger.replace] which cancels this placeholder's
 // `dep.Logger.root.onRecord` subscription before attaching a new one —
 // preventing the duplicate-listener leak that occurred when both
@@ -55,7 +55,7 @@ class Logger {
   /// Tracks the currently-active Logger so [replace] can cancel its
   /// `dep.Logger.root.onRecord` subscription before installing the
   /// next one. Per-isolate (Dart isolates do not share static state),
-  /// so background-task isolates that call `Bull.initLogs` get their
+  /// so background-task isolates that call `initializeLogging` get their
   /// own single-listener lifecycle.
   static Logger? _current;
 
@@ -92,8 +92,8 @@ class Logger {
           );
         }
 
-        // Print the un-sanitized line so ANSI color codes survive to the terminal.
-        if (kDebugMode) debugPrint(content.map(_sanitize).join('\t'));
+        // Debug builds print the same sanitized content used for the file.
+        if (kDebugMode) debugPrint(content.join('\t'));
       } catch (e) {
         if (kDebugMode) debugPrint('[Logger listener failed] $e');
       } finally {
@@ -106,7 +106,7 @@ class Logger {
   /// instance (if any) by cancelling its `dep.Logger.root.onRecord`
   /// subscription. Idempotent: safe to call when no prior instance
   /// exists. Callers must reassign the top-level [log] holder to the
-  /// returned instance — `Bull.initLogs` is the canonical caller.
+  /// returned instance — `initializeLogging` is the canonical caller.
   static Logger replace({
     String name = 'Logger',
     required Directory directory,
@@ -190,7 +190,7 @@ class Logger {
   /// destroys the most recent (and most diagnostically useful) BG
   /// lines — the exact lines a user would share to support after a
   /// crash. Each isolate must therefore prune its own file; foreground
-  /// cold-start pruning is triggered by `Bull.initLogs`.
+  /// cold-start pruning is triggered by `initializeLogging`.
   Future<void> prune() => _enqueue(() async {
     final sizeInKb = (await logsFile.stat()).size ~/ 1000;
     if (sizeInKb <= _maxLogSizeKb) return;
@@ -282,46 +282,52 @@ class Logger {
   // Log level methods
   // ---------------------------------------------------------------------------
 
-  /// Logs information messages that are part of the normal operation of the app.
-  /// These messages are typically written to file only and not kept in memory.
-  /// Use for recording general app flow and user actions.
+  /// Debug-console chatter only: INFO is excluded from the on-disk support log.
+  /// Nothing is printed outside kDebugMode, and this method never invokes the reporter.
+  /// Use [fine] for a milestone that support must see in an export.
   void info(Object? message, {Object? error, StackTrace? trace}) {
     logger.info(message, error, trace);
   }
 
   /// Logs static configuration information at startup or during major configuration changes.
   /// Use for logging app settings, environment details, or significant state changes.
+  /// Persists to the support log without invoking the reporter.
   void config(Object? message, {Object? error, StackTrace? trace}) {
     logger.config(message, error, trace);
   }
 
   /// Logs basic tracing information for debugging.
   /// Use for high-level flow tracking during development and troubleshooting.
+  /// Persists to the support log without invoking the reporter, unlike [info].
   void fine(Object? message, {Object? error, StackTrace? trace}) {
     logger.fine(message, error, trace);
   }
 
-  /// Logs detailed tracing information.
-  /// Use for more granular debugging information than fine(), such as loop iterations or method entry/exit.
+  /// Detailed persisted diagnostics for bounded troubleshooting.
+  /// Does not invoke the reporter. Repetitive poll chatter belongs in [info].
   void finer(Object? message, {Object? error, StackTrace? trace}) {
     logger.finer(message, error, trace);
   }
 
-  /// Logs highly detailed tracing information.
-  /// Use for the most detailed level of debugging, such as variable values within loops.
+  /// The most detailed persisted diagnostics; keep them bounded and secret-free.
+  /// Does not invoke the reporter. Repetitive poll chatter belongs in [info].
   void finest(Object? message, {Object? error, StackTrace? trace}) {
     logger.finest(message, error, trace);
   }
 
   /// Logs potentially harmful situations that don't prevent the app from working.
   /// Use for recoverable errors or unexpected but handled conditions.
+  /// Persists to the support log without invoking the reporter.
   void warning(Object? message, {Object? error, StackTrace? trace}) {
     logger.warning(message, error, trace);
   }
 
   /// Logs serious errors that may prevent parts of the app from working correctly.
   /// Use for unrecoverable errors that require immediate attention.
-  /// [trace] is required to ensure proper error tracking in Sentry.
+  /// [trace] is persisted locally and forwarded to the reporter on the normal path when one is configured.
+  /// Persists and flushes locally, then invokes the optional reporter on the normal path.
+  /// App reporting requires an enabled SDK and user consent; reentrant calls write locally only.
+  /// The local sanitizer does not sanitize reporter arguments: keep [message] and [error] free of sensitive data.
   ///
   /// Optional [category] attaches a `category=<name>` Sentry tag for
   /// crash-cache filtering (e.g. [ReportCategory.migration] for
@@ -370,6 +376,8 @@ class Logger {
   /// milestones (install/upgrade, FSS fallback started, feature-flag
   /// flip, etc.). [message] is required — every such event carries a
   /// human-readable label for the Sentry UI and the on-disk TSV log.
+  /// Like [severe], invokes the optional reporter only on the normal path; reentrant calls stay local.
+  /// Message events may retain [message] in Sentry, so use a fixed label or explicitly allowlisted metadata, never user data.
   ///
   /// Optional [category] attaches a `category=<name>` Sentry tag for
   /// crash-cache filtering (e.g. [ReportCategory.migration] for

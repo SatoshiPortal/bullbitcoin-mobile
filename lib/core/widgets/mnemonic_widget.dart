@@ -34,7 +34,7 @@ class MnemonicWidget extends StatefulWidget {
   final bip39.Language language;
   final bip39.MnemonicLength initialLength;
   final Function(Mnemonic) onSubmit;
-  final String submitLabel;
+  final String? submitLabel;
   final bool allowPassphrase;
   final bool allowLabel;
   final bool allowMultipleMnemonicLength;
@@ -47,7 +47,7 @@ class MnemonicWidget extends StatefulWidget {
     this.language = bip39.Language.english,
     required this.initialLength,
     required this.onSubmit,
-    this.submitLabel = 'Submit',
+    this.submitLabel,
     this.allowPassphrase = true,
     this.allowLabel = true,
     this.allowMultipleMnemonicLength = true,
@@ -206,8 +206,8 @@ class _MnemonicWidgetState extends State<MnemonicWidget> {
                   if (widget.allowPassphrase) ...[
                     const Gap(16),
                     BullLabeledTextInput(
-                      label: 'Passphrase',
-                      hint: 'Optional Passphrase',
+                      label: context.loc.passphraseLabel,
+                      hint: context.loc.optionalPassphraseHint,
                       value: passphrase,
                       onChanged: updatePassphrase,
                       maxLines: 1,
@@ -227,8 +227,8 @@ class _MnemonicWidgetState extends State<MnemonicWidget> {
                   if (widget.allowLabel) ...[
                     const Gap(16),
                     BullLabeledTextInput(
-                      label: 'Label',
-                      hint: 'Required',
+                      label: context.loc.recipientsInfoLabel,
+                      hint: context.loc.requiredHint,
                       value: label,
                       onChanged: updateLabel,
                       maxLines: 1,
@@ -246,7 +246,7 @@ class _MnemonicWidgetState extends State<MnemonicWidget> {
 
                   const Gap(16),
                   BullButton.big(
-                    label: widget.submitLabel,
+                    label: widget.submitLabel ?? context.loc.submitButton,
                     onPressed: onSubmit,
                     bgColor: context.appColors.onSurface,
                     textColor: context.appColors.surface,

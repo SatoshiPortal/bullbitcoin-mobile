@@ -1,32 +1,35 @@
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
-import 'package:bb_mobile/core/seed/data/datasources/seed_datasource.dart';
-import 'package:bb_mobile/core/seed/data/models/seed_model.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/frozen_wallet_utxo_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/lwk_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_model.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/network_x.dart';
+import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
+import 'package:primitives/primitives.dart';
+import 'package:meta/meta.dart';
+import 'package:secrets/secrets.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/outpoint.dart';
 import 'package:bb_mobile/core/wallet/domain/liquid_send_port.dart';
 import 'package:bb_mobile/core/wallet/domain/no_spendable_utxo_exception.dart';
-import 'package:bb_mobile/core/wallet/domain/selected_inputs_unavailable_exception.dart';
+import 'package:bb_mobile/core/wallet/domain/insufficient_funds_exception.dart';
+import 'package:bb_mobile/core/wallet/domain/consolidation_required_exception.dart';
 
 class LiquidWalletRepository implements LiquidSendPort {
   final WalletMetadataDatasource _walletMetadataDatasource;
-  final SeedDatasource _seed;
+  final Secrets _secrets;
   final LwkWalletDatasource _lwkWallet;
   final FrozenWalletUtxoDatasource _frozenWalletUtxoDatasource;
 
   LiquidWalletRepository({
     required this._walletMetadataDatasource,
-    required SeedDatasource seedDatasource,
+    required this._secrets,
     required LwkWalletDatasource lwkWalletDatasource,
     required this._frozenWalletUtxoDatasource,
-  }) : _seed = seedDatasource,
-       _lwkWallet = lwkWalletDatasource;
+  }) : _lwkWallet = lwkWalletDatasource;
 
   @override
-  Future<String> buildPset({
+  @useResult
+  Future<Result<String, WalletFailure>> buildPset({
     required String walletId,
     required String address,
     int? amountSat,
@@ -34,50 +37,55 @@ class LiquidWalletRepository implements LiquidSendPort {
     bool? drain,
     Set<Outpoint>? selectedInputs,
   }) async {
-    final metadata = await _walletMetadataDatasource.fetch(walletId);
-
-    if (metadata == null) {
-      throw Exception('Wallet metadata not found for walletId: $walletId');
+    if (amountSat == null && drain != true) {
+      return const Err(WalletTransactionBuildFailure('Amount required'));
     }
-
-    if (!metadata.isLiquid) {
-      throw Exception('Wallet $walletId is not a Liquid wallet');
-    }
-
-    final wallet = WalletModel.publicLwk(
-      combinedCtDescriptor: metadata.externalPublicDescriptor,
-      isTestnet: metadata.isTestnet,
-      id: metadata.id,
-    );
-    final frozen = await _frozenOutpoints();
-    Set<Outpoint>? inputs = selectedInputs;
-    if (selectedInputs != null || frozen.isNotEmpty) {
-      final available = {
-        for (final utxo in await _lwkWallet.getUtxos(wallet: wallet))
-          if (!frozen.contains((txId: utxo.txId, vout: utxo.vout)))
-            (txId: utxo.txId, vout: utxo.vout),
-      };
-      if (selectedInputs != null &&
-          (selectedInputs.isEmpty || !available.containsAll(selectedInputs))) {
-        throw SelectedInputsUnavailableException(
-          'Selected Liquid coins are unavailable',
-        );
+    try {
+      final metadata = await _walletMetadataDatasource.fetch(walletId);
+      if (metadata == null) return const Err(WalletNotFoundFailure());
+      if (!metadata.isLiquid) {
+        return const Err(WalletTransactionBuildFailure('Not a Liquid wallet'));
       }
-      inputs ??= available;
-      if (inputs.isEmpty) {
-        throw NoSpendableUtxoException('No spendable Liquid coins');
+      final wallet = WalletModel.publicLwk(
+        combinedCtDescriptor: metadata.externalPublicDescriptor,
+        isTestnet: metadata.isTestnet,
+        id: metadata.id,
+      );
+      final frozen = await _frozenOutpoints();
+      Set<Outpoint>? inputs = selectedInputs;
+      if (selectedInputs != null || frozen.isNotEmpty) {
+        final available = {
+          for (final utxo in await _lwkWallet.getUtxos(wallet: wallet))
+            if (!frozen.contains((txId: utxo.txId, vout: utxo.vout)))
+              (txId: utxo.txId, vout: utxo.vout),
+        };
+        if (selectedInputs != null &&
+            (selectedInputs.isEmpty ||
+                !available.containsAll(selectedInputs))) {
+          return const Err(WalletSelectedInputsUnavailableFailure());
+        }
+        inputs ??= available;
+        if (inputs.isEmpty) return const Err(WalletNoSpendableInputsFailure());
       }
+      return Ok(
+        await _lwkWallet.buildPset(
+          wallet: wallet,
+          address: address,
+          amountSat: amountSat,
+          feeRate: feeRate,
+          drain: drain ?? false,
+          selectedInputs: inputs,
+        ),
+      );
+    } on InsufficientFundsException {
+      return const Err(WalletInsufficientFundsFailure());
+    } on ConsolidationRequiredException {
+      return const Err(WalletConsolidationRequiredFailure());
+    } on NoSpendableUtxoException {
+      return const Err(WalletNoSpendableInputsFailure());
+    } on Exception {
+      return const Err(WalletTransactionBuildFailure());
     }
-    final pset = await _lwkWallet.buildPset(
-      wallet: wallet,
-      address: address,
-      amountSat: amountSat,
-      feeRate: feeRate,
-      drain: drain ?? false,
-      selectedInputs: inputs,
-    );
-
-    return pset;
   }
 
   Future<(int, int)> getPsetSizeAndAbsoluteFees({required String pset}) async {
@@ -149,20 +157,25 @@ class LiquidWalletRepository implements LiquidSendPort {
       throw Exception('Wallet $walletId is not a Liquid wallet');
     }
 
-    final seed =
-        await _seed.get(metadata.masterFingerprint) as MnemonicSeedModel;
-    final mnemonic = seed.mnemonicWords.join(' ');
+    // The mnemonic stays inside `secrets`: it builds the lwk wallet in a
+    // scratch directory it removes afterwards, signs, and returns only
+    // the signed PSET.
+    final fingerprint = metadata.seedFingerprint;
+    if (fingerprint == null) {
+      throw Exception('No secret for wallet: not a seed-derived wallet');
+    }
+    final secret = switch (await _secrets.fetch(fingerprint)) {
+      Ok(:final value) => value,
+      Err(:final failure) => throw Exception('No secret for wallet: $failure'),
+    };
 
-    final wallet =
-        WalletModel.privateLwk(
-              id: metadata.id,
-              mnemonic: mnemonic,
-              isTestnet: metadata.isTestnet,
-            )
-            as PrivateLwkWalletModel;
-    final signedPsbt = await _lwkWallet.signPset(wallet: wallet, pset);
-
-    return signedPsbt;
+    return switch (await secret.sign.pset(
+      pset,
+      network: metadata.network.liquid,
+    )) {
+      Ok(:final value) => value,
+      Err(:final failure) => throw Exception('Failed to sign PSET: $failure'),
+    };
   }
 
   Future<Set<Outpoint>> _frozenOutpoints() async => {

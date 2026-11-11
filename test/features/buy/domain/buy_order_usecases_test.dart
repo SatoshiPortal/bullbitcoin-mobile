@@ -64,6 +64,18 @@ void main() {
       expect((result as Ok<BuyOrder, BuyFailure>).value, order);
     });
 
+    // A confirmed order has no quote left: reading it must not ask the
+    // exchange for a new one.
+    test('reads a confirmed order without asking for a new quote', () async {
+      final order = _MockBuyOrder();
+      when(() => mainnet.getOrder('order-1')).thenAnswer((_) async => order);
+
+      final result = await build().execute(orderId: 'order-1', confirmed: true);
+
+      expect((result as Ok<BuyOrder, BuyFailure>).value, order);
+      verifyNever(() => mainnet.refreshBuyOrder(any()));
+    });
+
     test('sanitizes a failure, keeping the reason for logs only', () async {
       when(
         () => mainnet.refreshBuyOrder('order-1'),

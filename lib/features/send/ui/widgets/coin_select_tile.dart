@@ -15,7 +15,7 @@ class CoinSelectTile extends StatelessWidget {
   final bool selected;
   final VoidCallback onTap;
   final BitcoinUnit bitcoinUnit;
-  final double exchangeRate;
+  final double? exchangeRate;
   final String fiatCurrency;
 
   const CoinSelectTile({
@@ -34,10 +34,13 @@ class CoinSelectTile extends StatelessWidget {
         ? FormatAmount.btc(ConvertAmount.satsToBtc(utxo.amountSat.toInt()))
         : FormatAmount.sats(utxo.amountSat.toInt());
 
-    final fiatEquivalent = FormatAmount.fiat(
-      ConvertAmount.satsToFiat(utxo.amountSat.toInt(), exchangeRate),
-      fiatCurrency,
-    ); // You can format this better
+    final rate = exchangeRate;
+    final fiatEquivalent = rate == null
+        ? null
+        : FormatAmount.fiat(
+            ConvertAmount.satsToFiat(utxo.amountSat.toInt(), rate),
+            fiatCurrency,
+          );
 
     final address = utxo.address;
     final addressType = utxo.addressKeyChain == WalletAddressKeyChain.external
@@ -98,12 +101,13 @@ class CoinSelectTile extends StatelessWidget {
                     ),
                   ),
                   // const SizedBox(height: 4),
-                  BullText(
-                    '~$fiatEquivalent',
-                    style: context.font.labelSmall?.copyWith(
-                      color: context.appColors.onSurfaceVariant,
+                  if (fiatEquivalent != null)
+                    BullText(
+                      '~$fiatEquivalent',
+                      style: context.font.labelSmall?.copyWith(
+                        color: context.appColors.onSurfaceVariant,
+                      ),
                     ),
-                  ),
                   const SizedBox(height: 4),
                   BullText(
                     confirmations,

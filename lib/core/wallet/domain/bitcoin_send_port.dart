@@ -1,10 +1,12 @@
+import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
+import 'package:meta/meta.dart';
+import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/bitcoin_transaction_recipient.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
-import 'package:primitives/primitives.dart' show Sats;
 
 abstract interface class BitcoinSendPort {
-  Future<String> buildPsbt({
+  @useResult
+  Future<Result<String, WalletFailure>> buildPsbt({
     required String walletId,
     required List<BitcoinTransactionRecipient> recipients,
     required NetworkFee networkFee,

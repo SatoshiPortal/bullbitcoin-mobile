@@ -5,7 +5,6 @@ import 'dart:typed_data';
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_liquid_transaction_usecase.dart';
 import 'package:bb_mobile/core/errors/send_errors.dart';
-import 'package:bb_mobile/core/price/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
 import 'package:bb_mobile/core/fees/domain/get_network_fees_usecase.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
@@ -14,7 +13,6 @@ import 'package:bb_mobile/core/swaps/domain/usecases/verify_chain_swap_amount_se
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/fees/domain/fee_preview_cache.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
-import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
@@ -38,6 +36,7 @@ import 'package:bb_mobile/features/send/domain/usecases/sign_liquid_tx_usecase.d
 import 'package:bb_mobile/features/swap/domain/entities/order_swap_network.dart';
 import 'package:bb_mobile/features/swap/domain/entities/order_swap.dart';
 import 'package:bb_mobile/features/swap/domain/entities/order_swap_record.dart';
+import 'package:bb_mobile/features/swap/domain/usecases/get_swap_exchange_rate_usecase.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/create_order_swap_usecase.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/get_order_swap_quote_usecase.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/get_pending_order_swaps_usecase.dart';
@@ -53,16 +52,9 @@ import 'package:bb_mobile/features/swap/domain/swap_failure.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:primitives/primitives.dart' show Sats;
+import 'package:primitives/primitives.dart' hide Network, ScriptType;
 
 class _MockGetSettings extends Mock implements GetSettingsUsecase {}
-
-typedef _PreparedBitcoinSend = ({
-  String unsignedPsbt,
-  int txSize,
-  bool isToSelf,
-  List<Sats> recipientAmountsSat,
-});
 
 class _MockGetWallets extends Mock implements GetWalletsUsecase {}
 
@@ -125,8 +117,7 @@ class _MockGetReceiveAddress extends Mock implements GetReceiveAddressUsecase {}
 
 class _MockGetUtxos extends Mock implements GetWalletUtxosUsecase {}
 
-class _MockConvertSats extends Mock
-    implements ConvertSatsToCurrencyAmountUsecase {}
+class _MockGetExchangeRate extends Mock implements GetSwapExchangeRateUsecase {}
 
 class _MockPreviewFee extends Mock implements PreviewBitcoinFeeUsecase {}
 
@@ -149,7 +140,7 @@ void main() {
   late _MockGetSettings getSettings;
   late _MockGetWallets getWallets;
   late _MockGetNetworkFees getNetworkFees;
-  late _MockConvertSats convertSats;
+  late _MockGetExchangeRate getExchangeRate;
   late _MockWatchOrder watchOrder;
   late _MockGetWallet getWallet;
   late _MockPrepareBitcoin prepareBitcoin;
@@ -172,7 +163,7 @@ void main() {
     getSettings = _MockGetSettings();
     getWallets = _MockGetWallets();
     getNetworkFees = _MockGetNetworkFees();
-    convertSats = _MockConvertSats();
+    getExchangeRate = _MockGetExchangeRate();
     watchOrder = _MockWatchOrder();
     getWallet = _MockGetWallet();
     prepareBitcoin = _MockPrepareBitcoin();
@@ -221,7 +212,7 @@ void main() {
       detectBitcoinStringUsecase: _MockDetectBitcoin(),
       getReceiveAddressUsecase: getReceiveAddress,
       getWalletUtxosUsecase: getUtxos,
-      convertSatsToCurrencyAmountUsecase: convertSats,
+      getSwapExchangeRateUsecase: getExchangeRate,
       previewBitcoinFeeUsecase: _MockPreviewFee(),
       previewBitcoinFeePresetsUsecase: _MockPreviewPresets(),
       checkLiquidConsolidationUsecase: _MockCheckConsolidation(),
@@ -458,12 +449,12 @@ void main() {
         replaceByFee: true,
       ),
     ).thenAnswer(
-      (_) async => (
+      (_) async => Ok((
         unsignedPsbt: 'psbt',
         txSize: 100,
         isToSelf: false,
         recipientAmountsSat: [Sats.fromInt(28800)],
-      ),
+      )),
     );
     when(
       () => calculateBitcoin.execute(psbt: 'psbt'),
@@ -518,12 +509,12 @@ void main() {
         replaceByFee: true,
       ),
     ).thenAnswer(
-      (_) async => (
+      (_) async => Ok((
         unsignedPsbt: 'psbt',
         txSize: 100,
         isToSelf: false,
         recipientAmountsSat: [Sats.fromInt(28800)],
-      ),
+      )),
     );
     when(
       () => calculateBitcoin.execute(psbt: 'psbt'),
@@ -575,12 +566,12 @@ void main() {
           replaceByFee: true,
         ),
       ).thenAnswer(
-        (_) async => (
+        (_) async => Ok((
           unsignedPsbt: 'psbt',
           txSize: 100,
           isToSelf: false,
           recipientAmountsSat: [Sats.fromInt(0)],
-        ),
+        )),
       );
       when(
         () => calculateBitcoin.execute(psbt: 'psbt'),
@@ -778,7 +769,8 @@ void main() {
     'an in-flight old amount rebuild cannot repopulate signedPsbt after amountChanged',
     () async {
       final prepareStarted = Completer<void>();
-      final prepareCompleter = Completer<_PreparedBitcoinSend>();
+      final prepareCompleter =
+          Completer<Result<PreparedBitcoinSend, WalletFailure>>();
       when(
         () => prepareBitcoin.execute(
           walletId: 'wallet-1',
@@ -805,12 +797,14 @@ void main() {
       bloc.add(const TransferEvent.feeOptionSelected(FeeSelection.economic));
       await prepareStarted.future;
       bloc.add(const TransferEvent.amountChanged('2000'));
-      prepareCompleter.complete((
-        unsignedPsbt: 'old-unsigned-psbt',
-        txSize: 100,
-        isToSelf: true,
-        recipientAmountsSat: [Sats.fromInt(1000)],
-      ));
+      prepareCompleter.complete(
+        Ok((
+          unsignedPsbt: 'old-unsigned-psbt',
+          txSize: 100,
+          isToSelf: true,
+          recipientAmountsSat: [Sats.fromInt(1000)],
+        )),
+      );
       await pumpEventQueue();
 
       expect(bloc.state.amount, '2000');
@@ -828,7 +822,8 @@ void main() {
     'an in-flight swap creation cannot repopulate signedPsbt after amountChanged',
     () async {
       final prepareStarted = Completer<void>();
-      final prepareCompleter = Completer<_PreparedBitcoinSend>();
+      final prepareCompleter =
+          Completer<Result<PreparedBitcoinSend, WalletFailure>>();
       when(
         () => prepareBitcoin.execute(
           walletId: 'wallet-1',
@@ -863,12 +858,14 @@ void main() {
       bloc.add(const TransferEvent.swapCreated('1000'));
       await prepareStarted.future;
       bloc.add(const TransferEvent.amountChanged('2000'));
-      prepareCompleter.complete((
-        unsignedPsbt: 'old-unsigned-psbt',
-        txSize: 100,
-        isToSelf: true,
-        recipientAmountsSat: [Sats.fromInt(1000)],
-      ));
+      prepareCompleter.complete(
+        Ok((
+          unsignedPsbt: 'old-unsigned-psbt',
+          txSize: 100,
+          isToSelf: true,
+          recipientAmountsSat: [Sats.fromInt(1000)],
+        )),
+      );
       await pumpEventQueue();
 
       expect(bloc.state.amount, '2000');
@@ -880,7 +877,8 @@ void main() {
     'an in-flight swap creation cannot repopulate after destination wallet changes',
     () async {
       final prepareStarted = Completer<void>();
-      final prepareCompleter = Completer<_PreparedBitcoinSend>();
+      final prepareCompleter =
+          Completer<Result<PreparedBitcoinSend, WalletFailure>>();
       final destination = _destinationWallet();
       final replacementDestination = _destinationWallet(id: 'wallet-3');
       when(
@@ -913,12 +911,14 @@ void main() {
           toWallet: replacementDestination,
         ),
       );
-      prepareCompleter.complete((
-        unsignedPsbt: 'old-unsigned-psbt',
-        txSize: 100,
-        isToSelf: true,
-        recipientAmountsSat: [Sats.fromInt(1000)],
-      ));
+      prepareCompleter.complete(
+        Ok((
+          unsignedPsbt: 'old-unsigned-psbt',
+          txSize: 100,
+          isToSelf: true,
+          recipientAmountsSat: [Sats.fromInt(1000)],
+        )),
+      );
       await pumpEventQueue();
 
       expect(bloc.state.toWallet, replacementDestination);
@@ -939,7 +939,8 @@ void main() {
     () async {
       final selected = _bitcoinUtxo('selected-tx');
       final prepareStarted = Completer<void>();
-      final prepareCompleter = Completer<_PreparedBitcoinSend>();
+      final prepareCompleter =
+          Completer<Result<PreparedBitcoinSend, WalletFailure>>();
       when(
         () => prepareBitcoin.execute(
           walletId: 'wallet-1',
@@ -972,12 +973,14 @@ void main() {
       bloc.add(const TransferEvent.swapCreated('1000'));
       await prepareStarted.future;
       bloc.add(TransferEvent.utxosSelected([selected]));
-      prepareCompleter.complete((
-        unsignedPsbt: 'unsigned-psbt',
-        txSize: 100,
-        isToSelf: true,
-        recipientAmountsSat: [Sats.fromInt(1000)],
-      ));
+      prepareCompleter.complete(
+        Ok((
+          unsignedPsbt: 'unsigned-psbt',
+          txSize: 100,
+          isToSelf: true,
+          recipientAmountsSat: [Sats.fromInt(1000)],
+        )),
+      );
       await bloc.stream.firstWhere(
         (state) => state.signedPsbt == 'signed-psbt',
       );
@@ -1038,12 +1041,12 @@ void main() {
           replaceByFee: false,
         ),
       ).thenAnswer(
-        (_) async => (
+        (_) async => Ok((
           unsignedPsbt: 'new-unsigned-psbt',
           txSize: 100,
           isToSelf: false,
           recipientAmountsSat: [Sats.fromInt(1000)],
-        ),
+        )),
       );
       when(
         () => verifyChain.execute(
@@ -1108,12 +1111,12 @@ void main() {
         replaceByFee: false,
       ),
     ).thenAnswer(
-      (_) async => (
+      (_) async => Ok((
         unsignedPsbt: 'new-unsigned-psbt',
         txSize: 100,
         isToSelf: false,
         recipientAmountsSat: [Sats.fromInt(1000)],
-      ),
+      )),
     );
     when(
       () => verifyChain.execute(
@@ -1216,8 +1219,8 @@ void main() {
       () => getNetworkFees.execute(isLiquid: any(named: 'isLiquid')),
     ).thenAnswer((_) async => _feeOptions());
     when(
-      () => convertSats.execute(currencyCode: 'USD'),
-    ).thenAnswer((_) async => 1.0);
+      () => getExchangeRate.execute(currencyCode: 'USD'),
+    ).thenAnswer((_) async => const Ok(1.0));
     when(
       () => watchOrder.execute('local-1'),
     ).thenAnswer((_) => const Stream.empty());
@@ -1247,8 +1250,8 @@ void main() {
       () => getNetworkFees.execute(isLiquid: any(named: 'isLiquid')),
     ).thenAnswer((_) async => _feeOptions());
     when(
-      () => convertSats.execute(currencyCode: 'USD'),
-    ).thenAnswer((_) async => 1.0);
+      () => getExchangeRate.execute(currencyCode: 'USD'),
+    ).thenAnswer((_) async => const Ok(1.0));
     when(
       () => watchOrder.execute('local-1'),
     ).thenAnswer((_) => const Stream.empty());
@@ -1258,6 +1261,67 @@ void main() {
 
     expect(bloc.state.amount, '0.00001');
     expect(bloc.state.inputAmountSat, 1000);
+  });
+
+  test('starts without a price: no rate and no start error', () async {
+    final settings = SettingsEntity(
+      environment: Environment.testnet,
+      bitcoinUnit: BitcoinUnit.btc,
+      currencyCode: 'USD',
+    );
+    when(() => getSettings.execute()).thenAnswer((_) async => settings);
+    when(
+      () => getPendingOrders.execute(),
+    ).thenAnswer((_) async => Ok([prepared]));
+    when(
+      () => getWallets.execute(),
+    ).thenAnswer((_) async => Ok([_liquidWallet(), _destinationWallet()]));
+    when(
+      () => getNetworkFees.execute(isLiquid: any(named: 'isLiquid')),
+    ).thenAnswer((_) async => _feeOptions());
+    when(
+      () => getExchangeRate.execute(currencyCode: 'USD'),
+    ).thenAnswer((_) async => const Err(SwapPriceUnavailableFailure()));
+    when(
+      () => watchOrder.execute('local-1'),
+    ).thenAnswer((_) => const Stream.empty());
+
+    bloc.add(const TransferEvent.started());
+    await bloc.stream.firstWhere((state) => !state.isStarting);
+
+    expect(bloc.state.exchangeRate, isNull);
+    expect(bloc.state.startError, isNull);
+    expect(bloc.state.inputAmountSat, 1000);
+  });
+
+  test('a failure other than no price stops the start', () async {
+    final settings = SettingsEntity(
+      environment: Environment.testnet,
+      bitcoinUnit: BitcoinUnit.btc,
+      currencyCode: 'USD',
+    );
+    when(() => getSettings.execute()).thenAnswer((_) async => settings);
+    when(
+      () => getPendingOrders.execute(),
+    ).thenAnswer((_) async => Ok([prepared]));
+    when(
+      () => getWallets.execute(),
+    ).thenAnswer((_) async => Ok([_liquidWallet(), _destinationWallet()]));
+    when(
+      () => getNetworkFees.execute(isLiquid: any(named: 'isLiquid')),
+    ).thenAnswer((_) async => _feeOptions());
+    when(
+      () => getExchangeRate.execute(currencyCode: 'USD'),
+    ).thenAnswer((_) async => const Err(SwapUnexpectedFailure('settings')));
+    when(
+      () => watchOrder.execute('local-1'),
+    ).thenAnswer((_) => const Stream.empty());
+
+    bloc.add(const TransferEvent.started());
+    await bloc.stream.firstWhere((state) => !state.isStarting);
+
+    expect(bloc.state.exchangeRate, isNull);
+    expect(bloc.state.startError, isNotNull);
   });
 
   test('resumes the persisted non-default wallet pair', () async {
@@ -1283,8 +1347,8 @@ void main() {
       () => getNetworkFees.execute(isLiquid: any(named: 'isLiquid')),
     ).thenAnswer((_) async => _feeOptions());
     when(
-      () => convertSats.execute(currencyCode: 'USD'),
-    ).thenAnswer((_) async => 1.0);
+      () => getExchangeRate.execute(currencyCode: 'USD'),
+    ).thenAnswer((_) async => const Ok(1.0));
     when(
       () => watchOrder.execute('local-1'),
     ).thenAnswer((_) => const Stream.empty());
@@ -1315,8 +1379,8 @@ void main() {
       () => getNetworkFees.execute(isLiquid: any(named: 'isLiquid')),
     ).thenAnswer((_) async => _feeOptions());
     when(
-      () => convertSats.execute(currencyCode: 'USD'),
-    ).thenAnswer((_) async => 1.0);
+      () => getExchangeRate.execute(currencyCode: 'USD'),
+    ).thenAnswer((_) async => const Ok(1.0));
     when(() => watchOrder.execute('local-1')).thenAnswer(
       (_) =>
           Stream.value(const Err(SwapStorageFailure('database unavailable'))),
@@ -1384,8 +1448,8 @@ void main() {
         () => getNetworkFees.execute(isLiquid: any(named: 'isLiquid')),
       ).thenAnswer((_) async => _feeOptions());
       when(
-        () => convertSats.execute(currencyCode: 'USD'),
-      ).thenAnswer((_) async => 1.0);
+        () => getExchangeRate.execute(currencyCode: 'USD'),
+      ).thenAnswer((_) async => const Ok(1.0));
 
       bloc.add(const TransferEvent.started());
       await bloc.stream.firstWhere((state) => !state.isStarting);

@@ -1,4 +1,3 @@
-import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
 import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/keychain_locked_exception.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bull_logger/bull_logger.dart';
@@ -8,16 +7,18 @@ import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/app_startup/domain/app_startup_failure.dart';
 import 'package:meta/meta.dart';
+import 'package:primitives/primitives.dart' show Fingerprint;
+import 'package:secrets/secrets.dart';
 
 class CheckForExistingDefaultWalletsUsecase {
   final SettingsRepository _settingsRepository;
   final WalletRepository _walletRepository;
-  final SeedRepository _seedRepository;
+  final Secrets _secrets;
 
   CheckForExistingDefaultWalletsUsecase({
     required this._settingsRepository,
     required this._walletRepository,
-    required this._seedRepository,
+    required this._secrets,
   });
 
   @useResult
@@ -83,9 +84,14 @@ class CheckForExistingDefaultWalletsUsecase {
         trace: StackTrace.current,
       );
       try {
-        final seed = await _seedRepository.get(
-          defaultWallets.first.masterFingerprint,
-        );
+        final secret = switch (await _secrets.fetch(
+          Fingerprint(defaultWallets.first.masterFingerprint),
+        )) {
+          Ok(:final value) => value,
+          Err(:final failure) => throw StateError(
+            'default secret unavailable: ${failure.runtimeType}',
+          ),
+        };
         final network = !hasBitcoin
             ? (environment.isMainnet
                   ? Network.bitcoinMainnet
@@ -94,7 +100,7 @@ class CheckForExistingDefaultWalletsUsecase {
                   ? Network.liquidMainnet
                   : Network.liquidTestnet);
         await _walletRepository.createWallet(
-          seed: seed,
+          secret: secret,
           network: network,
           scriptType: ScriptType.bip84,
           isDefault: true,
@@ -123,21 +129,44 @@ class CheckForExistingDefaultWalletsUsecase {
     }
 
     log.fine('FINE: found default wallet');
-    await Future.wait(
-      defaultWallets.map((wallet) async {
-        try {
-          await _seedRepository.get(wallet.masterFingerprint);
+    // Three outcomes, three remedies — which is the whole reason the package
+    // refuses to collapse them. A locked keystore is transient and the app
+    // waits for unlock; a genuine absence means the seed is gone while its
+    // wallet metadata is not; anything else is a read that failed, and
+    // treating that as an absence would be offering to replace a seed that
+    // is still there.
+    for (final wallet in defaultWallets) {
+      switch (await _secrets.fetch(Fingerprint(wallet.masterFingerprint))) {
+        case Ok():
           log.fine('FINE: Seed Found');
-        } catch (e) {
+        case Err(failure: KeystoreLockedFailure()):
+          log.warning(
+            'Keystore locked while checking ${wallet.masterFingerprint}; '
+            'waiting for unlock',
+          );
+          return const Err(AppStartupKeychainLockedFailure());
+        case Err(failure: SecretNotFoundFailure()):
           log.severe(
-            message: 'Seed not found for default wallet ',
-            error: e,
+            message: 'No secret for default wallet',
+            error: 'SecretNotFoundFailure',
             trace: StackTrace.current,
           );
-          rethrow;
-        }
-      }),
-    );
+          return Err(
+            AppStartupMissingDefaultSecretFailure(wallet.masterFingerprint),
+          );
+        case Err(:final failure):
+          log.severe(
+            message: 'Seed unreadable for default wallet',
+            error: failure.runtimeType.toString(),
+            trace: StackTrace.current,
+          );
+          return Err(
+            AppStartupWalletCheckFailure(
+              'default secret: ${failure.runtimeType}',
+            ),
+          );
+      }
+    }
     return const Ok(true);
   }
 

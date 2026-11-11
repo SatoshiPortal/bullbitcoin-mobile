@@ -143,7 +143,7 @@ class LwkWalletDatasource {
       return unspent.toList();
     } catch (e) {
       if (e is lwk.LwkError) {
-        throw e.msg;
+        rethrow;
       } else {
         rethrow;
       }
@@ -400,6 +400,9 @@ class LwkWalletDatasource {
     Set<Outpoint>? selectedInputs,
   }) async {
     try {
+      if (!drain && amountSat == null) {
+        throw Exception('Amount required unless draining');
+      }
       final lwkWallet = await _createPublicWallet(wallet);
       // LWK accepts sat/kvByte as a double. Our RelativeFee stores sat/kwu,
       // and 1 sat/kwu = 4 sat/kvByte, so the conversion is exact integer
@@ -420,7 +423,9 @@ class LwkWalletDatasource {
                 if (!drain)
                   lwk.TxOutputSpec(
                     address: address,
-                    satoshi: BigInt.from(amountSat!),
+                    satoshi: BigInt.from(
+                      amountSat ?? (throw Exception('Missing amount')),
+                    ),
                   ),
               ],
               drainTo: drain ? address : null,
@@ -442,7 +447,7 @@ class LwkWalletDatasource {
             : await _exceedsLiquidInputLimit(wallet)) {
           throw ConsolidationRequiredException(e.msg);
         }
-        throw e.msg;
+        rethrow;
       } else {
         rethrow;
       }
@@ -538,7 +543,10 @@ class LwkWalletDatasource {
         final limit = maximumInputs.clamp(1, 250);
         final batches = (coins.length / limit).ceil();
         final batchSize = (coins.length / batches).ceil();
-        final start = (await lwkWallet.addressLastUnused()).index!;
+        final start = (await lwkWallet.addressLastUnused()).index;
+        if (start == null) {
+          throw Exception('Missing consolidation address index');
+        }
         final psets = <String>[];
         for (var offset = 0; offset < coins.length; offset += batchSize) {
           final address = await lwkWallet.address(
@@ -576,7 +584,7 @@ class LwkWalletDatasource {
       return psets;
     } catch (e) {
       if (e is lwk.LwkError) {
-        throw e.msg;
+        rethrow;
       } else {
         rethrow;
       }
@@ -589,29 +597,6 @@ class LwkWalletDatasource {
     ).extractTx().getInputs())
       (txId: input.txid, vout: input.vout),
   };
-
-  Future<String> signPset(
-    String pset, {
-    required PrivateLwkWalletModel wallet,
-  }) async {
-    try {
-      final lwkWallet = await LwkFacade.createPrivateWallet(wallet);
-      final signedPset = await lwkWallet.signTx(
-        network: wallet.isTestnet
-            ? lwk.LiquidNetwork.testnet
-            : lwk.LiquidNetwork.mainnet,
-        pset: pset,
-        mnemonic: wallet.mnemonic,
-      );
-      return signedPset;
-    } catch (e) {
-      if (e is lwk.LwkError) {
-        throw e.msg;
-      } else {
-        rethrow;
-      }
-    }
-  }
 
   Future<(int, int)> decodeAbsoluteFeesFromPset(String pset) async {
     try {

@@ -2,14 +2,13 @@ import 'dart:typed_data';
 
 import 'package:bb_mobile/core/fees/domain/fee_preview_cache.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/bitcoin_transaction_recipient.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/calculate_bitcoin_absolute_fees_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/prepare_bitcoin_send_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:primitives/primitives.dart' show Sats;
+import 'package:primitives/primitives.dart' hide Network, ScriptType;
 
 class _MockPrepareBitcoinSendUsecase extends Mock
     implements PrepareBitcoinSendUsecase {}
@@ -69,12 +68,12 @@ void main() {
           selectedOnly: true,
         ),
       ).thenAnswer(
-        (_) async => (
+        (_) async => Ok((
           unsignedPsbt: 'unsigned',
           txSize: 155,
           recipientAmountsSat: [Sats.fromInt(12000), Sats.fromInt(37000)],
           isToSelf: true,
-        ),
+        )),
       );
       when(
         () => calculateFees.execute(psbt: 'unsigned'),

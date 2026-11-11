@@ -45,7 +45,9 @@ void main() {
 
   test('reachable server over the embedded route -> true', () async {
     when(() => ensureSession.execute()).thenAnswer((_) async => Ok(session));
-    when(() => repository.checkConnection(any())).thenAnswer((_) async {});
+    when(
+      () => repository.checkConnection(any()),
+    ).thenAnswer((_) async => const Ok(null));
 
     expect(await usecase.execute(), isA<Ok<bool, RecoverBullCoreFailure>>());
     verify(() => repository.checkConnection(endpoint)).called(1);
@@ -102,8 +104,31 @@ void main() {
     expect(sessionClosed, isTrue);
   });
 
+  test('keeps the cause the repository found', () async {
+    when(() => repository.checkConnection(endpoint)).thenAnswer(
+      (_) async => const Err(
+        KeyServerUnavailableFailure.because(
+          KeyServerUnreachableCause.onionUnreachable,
+        ),
+      ),
+    );
+
+    final result = await usecase.execute(route: session);
+
+    expect(
+      (result as Err<bool, RecoverBullCoreFailure>).failure,
+      isA<KeyServerUnavailableFailure>().having(
+        (f) => f.cause,
+        'cause',
+        KeyServerUnreachableCause.onionUnreachable,
+      ),
+    );
+  });
+
   test('provided route is used without acquiring or closing it', () async {
-    when(() => repository.checkConnection(endpoint)).thenAnswer((_) async {});
+    when(
+      () => repository.checkConnection(endpoint),
+    ).thenAnswer((_) async => const Ok(null));
 
     final result = await usecase.execute(route: session);
 
@@ -130,7 +155,9 @@ void main() {
       () async => throw Exception('close failed'),
     );
     when(() => ensureSession.execute()).thenAnswer((_) async => Ok(session));
-    when(() => repository.checkConnection(endpoint)).thenAnswer((_) async {});
+    when(
+      () => repository.checkConnection(endpoint),
+    ).thenAnswer((_) async => const Ok(null));
 
     expect(await usecase.execute(), isA<Ok<bool, RecoverBullCoreFailure>>());
   });

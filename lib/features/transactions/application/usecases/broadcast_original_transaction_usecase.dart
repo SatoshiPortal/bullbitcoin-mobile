@@ -8,10 +8,25 @@ class BroadcastOriginalTransactionUsecase {
 
   const BroadcastOriginalTransactionUsecase(this._sender);
 
-  Future<bool> canExecute(PayjoinSession payjoin) async {
+  /// `Ok(false)` is a settled "not now"; an `Err` means the check itself
+  /// failed and is worth retrying.
+  @useResult
+  Future<Result<bool, TransactionFailure>> canExecute(
+    PayjoinSession payjoin,
+  ) async {
     return switch (await _sender.canBroadcastOriginal(payjoin.id)) {
-      Ok(:final value) => value,
-      Err() => false,
+      Ok(:final value) => Ok(value),
+      Err(failure: PayjoinFallbackUnavailableFailure()) => const Ok(false),
+      Err(failure: PayjoinUnavailableFailure()) => const Err(
+        TransactionPayjoinVerificationFailure(
+          'Could not verify competing transactions',
+        ),
+      ),
+      Err(:final failure) => Err(
+        TransactionPayjoinBroadcastFailure(
+          'canBroadcastOriginal failed: ${failure.runtimeType}',
+        ),
+      ),
     };
   }
 
@@ -23,6 +38,11 @@ class BroadcastOriginalTransactionUsecase {
       Ok(:final value) => Ok(value),
       Err(failure: PayjoinFallbackUnavailableFailure()) => const Err(
         TransactionPayjoinFallbackUnavailableFailure(),
+      ),
+      Err(failure: PayjoinUnavailableFailure()) => const Err(
+        TransactionPayjoinVerificationFailure(
+          'Could not verify competing transactions',
+        ),
       ),
       Err(:final failure) => Err(
         TransactionPayjoinBroadcastFailure(

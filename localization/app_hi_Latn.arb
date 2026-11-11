@@ -5451,7 +5451,7 @@
   "@sellBankTransfer": {
     "description": "Option for bank deposit"
   },
-  "sellInteracTransfer": "Interac e-Transfer",
+  "sellInteracTransfer": "Email Money Transfer",
   "@sellInteracTransfer": {
     "description": "Option for Interac payment (Canada)"
   },
@@ -5487,7 +5487,7 @@
   "@sellIBAN": {
     "description": "Label for International Bank Account Number"
   },
-  "sellInteracEmail": "Interac Email",
+  "sellInteracEmail": "Transfer email",
   "@sellInteracEmail": {
     "description": "Label for email to receive Interac payment"
   },
@@ -11096,94 +11096,6 @@
   "@errorReportingProgramDescriptionP5": {
     "description": "Bold paragraph: open source verification fact"
   },
-  "legacyStorageBadgeActionRequired": "ACTION REQUIRED",
-  "@legacyStorageBadgeActionRequired": {
-    "description": "Red pill badge above the legacy storage warning page title"
-  },
-  "legacyStorageBadgeConfirm": "CONFIRM",
-  "@legacyStorageBadgeConfirm": {
-    "description": "Red pill badge above the are-you-sure confirmation title"
-  },
-  "legacyStorageNoBackupPageTitle": "APNA WALLET BACKUP LEIN AUR RE-INSTALL KAREIN",
-  "@legacyStorageNoBackupPageTitle": {
-    "description": "Full-page warning title shown when the wallet has no backup"
-  },
-  "legacyStorageHasBackupPageTitle": "APNA WALLET RE-INSTALL KAREIN",
-  "@legacyStorageHasBackupPageTitle": {
-    "description": "Full-page warning title shown when the wallet already has a backup"
-  },
-  "legacyStorageIntroDescription": "Aapka wallet aise software par chal raha hai jo jald deprecate ho jaayega. Ise app ko uninstall aur re-install kiye bina update nahi kiya ja sakta.",
-  "@legacyStorageIntroDescription": {
-    "description": "Intro paragraph below the full-page warning title"
-  },
-  "legacyStorageStepBackupWallet": "Apna wallet backup lein",
-  "@legacyStorageStepBackupWallet": {
-    "description": "Step 1 in the legacy storage warning checklist"
-  },
-  "legacyStorageStepExportLabels": "Apne labels export karein (agar hain)",
-  "@legacyStorageStepExportLabels": {
-    "description": "Step 2 in the legacy storage warning checklist"
-  },
-  "legacyStorageStepEnsureSwapsCompleted": "Ensure karein ki sabhi swaps poore ho chuke hain",
-  "@legacyStorageStepEnsureSwapsCompleted": {
-    "description": "Step in the legacy storage warning checklist instructing the user to wait for in-flight swaps"
-  },
-  "legacyStorageStepUninstall": "Apne device se app ko uninstall karein",
-  "@legacyStorageStepUninstall": {
-    "description": "Uninstall step in the legacy storage warning checklist"
-  },
-  "legacyStorageStepReinstall": "Latest version download karein aur re-install karein",
-  "@legacyStorageStepReinstall": {
-    "description": "Reinstall step in the legacy storage warning checklist"
-  },
-  "legacyStorageStepRestoreBackup": "Apna backup restore karein",
-  "@legacyStorageStepRestoreBackup": {
-    "description": "Final step in the legacy storage warning checklist"
-  },
-  "legacyStorageImportantTitle": "Important",
-  "@legacyStorageImportantTitle": {
-    "description": "Title of the red callout box on the legacy storage warning page"
-  },
-  "legacyStorageImportantBody": "Kripya is process ko mat chhodein jab tak ki aap is samay bilkul backup nahi le sakte.",
-  "@legacyStorageImportantBody": {
-    "description": "Body of the red callout box on the legacy storage warning page"
-  },
-  "legacyStorageContinueFooterNoBackup": "Aap backup liye bina bhi app ka use jaari rakh sakte hain, lekin hum iski sakht salaah nahi dete.",
-  "@legacyStorageContinueFooterNoBackup": {
-    "description": "Footer text on the legacy storage warning page when the wallet has no backup"
-  },
-  "legacyStorageContinueFooterHasBackup": "Aap app ka use jaari rakh sakte hain, lekin hum iski sakht salaah nahi dete.",
-  "@legacyStorageContinueFooterHasBackup": {
-    "description": "Footer text on the legacy storage warning page when the wallet already has a backup"
-  },
-  "legacyStorageBackupNowButton": "Abhi backup lein",
-  "@legacyStorageBackupNowButton": {
-    "description": "Primary CTA on the legacy storage warning and confirmation pages"
-  },
-  "legacyStorageRiskAckButton": "Nahi, main risk samajhta hoon",
-  "@legacyStorageRiskAckButton": {
-    "description": "Secondary CTA on the legacy storage warning page that acknowledges the risk"
-  },
-  "legacyStorageAreYouSureTitle": "KYA AAP SURE HAIN?",
-  "@legacyStorageAreYouSureTitle": {
-    "description": "Title of the legacy storage are-you-sure confirmation page"
-  },
-  "legacyStorageAreYouSureParagraphOne": "Wallet ki Bitcoin private keys store karne wala software deprecate ho raha hai. Future mein kisi rukawat se bachne ke liye hum sakht salaah dete hain ki aap abhi backup lein.",
-  "@legacyStorageAreYouSureParagraphOne": {
-    "description": "First paragraph of the are-you-sure confirmation page"
-  },
-  "legacyStorageAreYouSureParagraphTwo": "Encrypted Vault backup option mein lagbhag 1 minute lagega, koi special tools nahi chahiye. Physical backup ke liye sirf pen aur paper chahiye.",
-  "@legacyStorageAreYouSureParagraphTwo": {
-    "description": "Second paragraph of the are-you-sure confirmation page"
-  },
-  "legacyStorageContinueWithoutBackupButton": "Backup ke bina jaari rakhein",
-  "@legacyStorageContinueWithoutBackupButton": {
-    "description": "Confirm button on the are-you-sure page that dismisses the warning"
-  },
-  "legacyStorageAcceptRisksCheckbox": "Main backup na lene ke risks accept karta hoon",
-  "@legacyStorageAcceptRisksCheckbox": {
-    "description": "Checkbox label that gates the continue-without-backup button"
-  },
   "backButton": "Wapas",
   "@backButton": {
     "description": "Generic back button label"
@@ -11339,14 +11251,6 @@
   "wizardJourneyTip8": "Apne hardware wallet ke liye air-gapped transactions banayein",
   "@wizardJourneyTip8": {
     "description": "Tip 8 on the wizard journey page"
-  },
-  "legacyStorageHasBackupImportantBody": "Kripya is process ko mat chhodein jab tak ki aapko wallet ka urgent use karne ki bahut zaroorat na ho ya aap kisi swap ke poora hone ka intezaar na kar rahe hon.",
-  "@legacyStorageHasBackupImportantBody": {
-    "description": "Important callout body shown only on the reinstall variant of the legacy storage warning (when the user already has a verified backup)."
-  },
-  "legacyStorageRiskAckButtonHasBackup": "Main risk samajhta hoon",
-  "@legacyStorageRiskAckButtonHasBackup": {
-    "description": "Risk-acknowledge button label on the reinstall variant of the legacy storage warning (no leading \"No,\" because there is no Backup Now alternative on this page)."
   },
   "walletSetupErrorTryAgain": "Aapka wallet setup karte samay kuch galat ho gaya. Kripya phir se try karein.",
   "@walletSetupErrorTryAgain": {
@@ -11827,7 +11731,7 @@
   "recipientsJurisdictionCostaRica": "🇨🇷 Costa Rica",
   "recipientsJurisdictionArgentina": "🇦🇷 Argentina",
   "recipientsJurisdictionColombia": "🇨🇴 Colombia",
-  "recipientsTypeInteracEmail": "Interac e-Transfer",
+  "recipientsTypeInteracEmail": "Email Money Transfer",
   "recipientsTypeBillPayment": "Bill Payment",
   "recipientsTypeBankTransfer": "Bank Transfer",
   "recipientsTypeSepa": "SEPA Transfer",
@@ -12098,7 +12002,7 @@
   "testBackupErrorSeedUnavailable": "Aapka recovery phrase padha nahin ja saka. Kripya phir se prayas karein.",
   "testBackupErrorSeedNotMnemonic": "Is wallet mein jaanchne ke liye koi recovery phrase nahin hai.",
   "testBackupErrorCompletionFailed": "Aapka recovery phrase sahi tha, lekin hum parinaam save nahin kar sake. Kripya phir se prayas karein.",
-  "withdrawInteracSecurityDetailsTitle": "Interac security details",
+  "withdrawInteracSecurityDetailsTitle": "Transfer security details",
   "withdrawInteracSaveAsDefault": "In details ko default ke roop mein save karein",
   "withdrawInteracSecurityQuestionLengthError": "Security question 3-40 characters ka hona chahiye",
   "withdrawInteracSecurityAnswerLengthError": "Security answer 3-40 characters ka hona chahiye",
@@ -12233,7 +12137,7 @@
   "recipientsVirtualIbanCopied": "Clipboard mein copy hua",
   "recipientsVirtualIbanDone": "Ho gaya",
   "recipientsVirtualIbanRecipientName": "Praaptakarta ka naam",
-  "recipientsVirtualIbanIbanLabel": "IBAN account number",
+  "recipientsVirtualIbanIbanLabel": "Virtual IBAN account number",
   "recipientsVirtualIbanCountry": "Bank account desh",
   "recipientsVirtualIbanBic": "BIC code",
   "fundExchangeMethodConfidentialSepa": "Confidential SEPA",
@@ -12244,5 +12148,11 @@
   "recipientsVirtualIbanBankAddress": "Bank ka pata",
   "recipientsVirtualIbanBankAddressHelp": "Bank ka official pata, agar aapka bank maange.",
   "recipientsConfidentialSepaNameMustMatchHint": "Aapke bank aur virtual IBAN accounts ke naam match hone chahiye, warna transfers apne-aap wapas kar diye jayenge.",
-  "copiedToClipboard": "Clipboard par copy kiya gaya"
+  "copiedToClipboard": "Clipboard par copy kiya gaya",
+  "recipientsFieldBankAccountIban": "Bank account number (IBAN)",
+  "recipientsTypeConfidentialSepaDescription": "Withdrawals aapke account ke naam se khud ko kiye gaye transfer ke roop mein dikhte hain",
+  "sellPayoutBalance": "Mere account balance mein jodein",
+  "sellPayoutSepaDescription": "Nikaasi Leonod dwara bheji gayi dikhai deti hai",
+  "sellPayoutTitle": "Recipient Select Karo",
+  "sellPayoutNewBadge": "NAYA"
 }
