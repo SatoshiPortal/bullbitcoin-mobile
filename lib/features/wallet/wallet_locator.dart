@@ -17,10 +17,9 @@ import 'package:bb_mobile/core/wallet/data/datasources/lwk_wallet_datasource.dar
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/features/wallet/data/foreground_wallet_sync.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_catalog_port_impl.dart';
-import 'package:transaction_sync/transaction_sync.dart';
-import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bull_tor/tor.dart';
 import 'package:bb_mobile/features/sp/public/sp_facade.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/check_sp_feature_gate_for_wallet_usecase.dart';
@@ -47,6 +46,7 @@ import 'package:bb_mobile/features/wallet/domain/usecases/delete_wallet_usecase.
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:get_it/get_it.dart';
+import 'package:transaction_sync/transaction_sync.dart';
 
 class WalletLocator {
   static void setup(GetIt locator) {
