@@ -1,5 +1,6 @@
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
+
 import 'transaction_sync_failure.dart';
 
 /// Valid only inside the policy callback, while its Tor route remains alive.
@@ -24,6 +25,8 @@ final class WalletConnection {
 /// The owner selects custom-or-default servers and manages scoped Tor routes.
 /// The caller may request fallback ONLY before any native mutation. It must
 /// await all work using the connection before returning from the callback.
+/// The operation must report recoverable failures through [Result], never throw.
+/// A thrown [Exception] ends the run without caller-requested fallback and becomes [TransactionSyncConnectionFailure]; [Error]s propagate to the caller.
 /// Exhausted fallback preserves the last failure returned by the caller.
 abstract interface class WalletConnectionPolicy {
   @useResult
