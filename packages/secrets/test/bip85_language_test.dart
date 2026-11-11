@@ -33,7 +33,7 @@ void main() {
     for (final language in bip39.Language.values) {
       final words = ok(
         await parent.derive.bip85.mnemonic(
-          wordCount: MnemonicWordCount.words12,
+          wordCount: MnemonicLength.words12,
           index: 11811,
           language: language,
         ),
@@ -52,14 +52,14 @@ void main() {
     }
     final ark = ok(
       await parent.derive.bip85.mnemonic(
-        wordCount: MnemonicWordCount.words12,
+        wordCount: MnemonicLength.words12,
         index: 11811,
         language: bip39.Language.english,
       ),
     );
     final defaultChild = ok(
       await parent.derive.bip85.mnemonic(
-        wordCount: MnemonicWordCount.words12,
+        wordCount: MnemonicLength.words12,
         index: 11811,
       ),
     );
