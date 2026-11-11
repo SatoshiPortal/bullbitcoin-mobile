@@ -12,6 +12,7 @@ import 'package:bull_ui/bull_ui.dart'
         BullBottomSheet,
         BullButton,
         BullFadingLinearProgress,
+        BullShapesX,
         BullText,
         BullTopBar,
         Gap;
@@ -100,7 +101,9 @@ class _DriveFileMetadataItem extends StatelessWidget {
         ),
         decoration: BoxDecoration(
           color: context.appColors.onSecondary,
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
+          borderRadius: BorderRadius.vertical(
+            top: Radius.circular(context.bullShapes.sheet),
+          ),
         ),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
@@ -149,7 +152,9 @@ class _DriveFileMetadataItem extends StatelessWidget {
         ),
         decoration: BoxDecoration(
           color: context.appColors.onSecondary,
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
+          borderRadius: BorderRadius.vertical(
+            top: Radius.circular(context.bullShapes.sheet),
+          ),
         ),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),

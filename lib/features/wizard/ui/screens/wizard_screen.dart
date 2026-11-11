@@ -15,7 +15,8 @@ import 'package:bb_mobile/features/wizard/ui/widgets/wizard_dots.dart';
 import 'package:bb_mobile/features/wizard/ui/widgets/wizard_header.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show BullButton, BullSnackBar;
+import 'package:bull_ui/bull_ui.dart'
+    show BullButton, BullShapesX, BullSnackBar;
 
 /// 4-page wizard body rendered inside [WizardApp] pre-init. Pure UI —
 /// reads choices from the surrounding [WizardBloc] and dispatches
@@ -196,7 +197,9 @@ class _WizardScreenState extends State<WizardScreen> {
                                   ),
                                   decoration: BoxDecoration(
                                     color: context.appColors.background,
-                                    borderRadius: BorderRadius.circular(20),
+                                    borderRadius: BorderRadius.circular(
+                                      context.bullShapes.dot,
+                                    ),
                                   ),
                                   child: WizardDots(
                                     count: WizardPage.total,

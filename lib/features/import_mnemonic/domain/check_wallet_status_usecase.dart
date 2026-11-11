@@ -128,7 +128,10 @@ class CheckWalletStatusUsecase {
     } catch (e) {
       final reason = switch (e) {
         TimeoutException() => 'timeout',
-        ElectrumFallbackException() => 'server_unavailable',
+        NoElectrumServersConfiguredException() => 'no_servers',
+        OnionServerWithoutTorException() => 'onion_without_tor',
+        ClearnetServerWithoutConfiguredTorException() => 'tor_unavailable',
+        AllElectrumServersFailedException() => 'all_servers_failed',
         UnsupportedNetworkException() => 'unsupported',
         _ => 'unexpected',
       };

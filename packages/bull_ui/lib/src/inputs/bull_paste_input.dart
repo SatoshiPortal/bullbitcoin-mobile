@@ -1,3 +1,4 @@
+import 'package:bull_ui/src/theme/bull_shapes.dart';
 import 'package:bull_ui/src/data_display/bull_text.dart';
 import 'package:bull_ui/src/theme/bull_theme.dart';
 import 'package:flutter/material.dart';
@@ -29,7 +30,7 @@ class BullPasteInput extends StatelessWidget {
       height: 48,
       decoration: BoxDecoration(
         color: colors.surface,
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(context.bullShapes.input),
         border: Border.all(color: colors.border),
       ),
       child: Row(

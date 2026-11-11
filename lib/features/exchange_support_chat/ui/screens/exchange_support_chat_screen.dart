@@ -19,7 +19,7 @@ import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show BullInputText, Gap;
+import 'package:bull_ui/bull_ui.dart' show BullInputText, BullShapesX, Gap;
 import 'package:intl/intl.dart';
 
 class ExchangeSupportChatScreen extends StatelessWidget {
@@ -226,7 +226,7 @@ class _MessageBubble extends StatelessWidget {
                           0.2,
                         ) ??
                         context.appColors.primary,
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(context.bullShapes.card),
             ),
             child: Column(
               crossAxisAlignment: isUserMessage
@@ -498,7 +498,7 @@ class _AttachmentWidget extends StatelessWidget {
               color: isUserMessage
                   ? context.appColors.secondary
                   : context.appColors.primary.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(context.bullShapes.card),
               border: Border.all(
                 color: isUserMessage
                     ? context.appColors.onSecondary
@@ -573,7 +573,7 @@ class _AttachmentWidget extends StatelessWidget {
             color: isUserMessage
                 ? context.appColors.secondaryFixedDim
                 : context.appColors.primary.withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: BorderRadius.circular(context.bullShapes.card),
             border: Border.all(
               color: isUserMessage
                   ? context.appColors.outline.withValues(alpha: 0.2)
@@ -668,14 +668,14 @@ class _AttachmentPreviewWidget extends StatelessWidget {
           height: 60,
           decoration: BoxDecoration(
             color: context.appColors.surfaceContainer,
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: BorderRadius.circular(context.bullShapes.card),
             border: Border.all(
               color: context.appColors.outline.withValues(alpha: 0.2),
             ),
           ),
           child: isImage && attachment.fileData != null
               ? ClipRRect(
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(context.bullShapes.card),
                   child: Image.memory(
                     attachment.fileData!,
                     width: 60,

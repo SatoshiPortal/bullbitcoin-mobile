@@ -15,6 +15,7 @@ import 'package:bull_ui/bull_ui.dart'
         BullInfoCard,
         BullLowerCaseTextFormatter,
         BullSettingsEntryItem,
+        BullShapesX,
         Gap;
 
 class CustomServerInput {
@@ -172,15 +173,21 @@ class _AddCustomServerBottomSheetState
                       fillColor: context.appColors.surface,
                       filled: true,
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8.0),
+                        borderRadius: BorderRadius.circular(
+                          context.bullShapes.input,
+                        ),
                         borderSide: BorderSide(color: context.appColors.border),
                       ),
                       enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8.0),
+                        borderRadius: BorderRadius.circular(
+                          context.bullShapes.input,
+                        ),
                         borderSide: BorderSide(color: context.appColors.border),
                       ),
                       disabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8.0),
+                        borderRadius: BorderRadius.circular(
+                          context.bullShapes.input,
+                        ),
                         borderSide: BorderSide(
                           color: context.appColors.border.withValues(
                             alpha: 0.5,

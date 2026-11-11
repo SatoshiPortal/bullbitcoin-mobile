@@ -228,7 +228,7 @@ Future<void> main({bool isInitialized = false}) async {
           final key = unwrap(await secret.derive.swapKey(network: network));
           final child = unwrap(
             await secret.derive.bip85.mnemonic(
-              wordCount: MnemonicWordCount.words12,
+              wordCount: MnemonicLength.words12,
               index: 26589,
             ),
           );

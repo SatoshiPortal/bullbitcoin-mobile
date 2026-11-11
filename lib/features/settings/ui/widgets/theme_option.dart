@@ -1,3 +1,4 @@
+import 'package:bull_ui/bull_ui.dart';
 import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
@@ -13,7 +14,9 @@ class ThemeOption extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(2)),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(context.bullShapes.card),
+      ),
       tileColor: context.appColors.transparent,
       selected:
           context.watch<SettingsCubit>().state.storedSettings?.themeMode ==

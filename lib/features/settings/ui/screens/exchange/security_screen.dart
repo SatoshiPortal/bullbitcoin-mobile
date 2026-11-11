@@ -1,3 +1,4 @@
+import 'package:bull_ui/bull_ui.dart';
 import 'dart:io';
 
 import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
@@ -57,7 +58,7 @@ class ExchangeSecurityScreen extends StatelessWidget {
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
                   color: context.appColors.surface,
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(context.bullShapes.card),
                   boxShadow: [
                     BoxShadow(
                       color: context.appColors.overlay.withValues(alpha: 0.05),

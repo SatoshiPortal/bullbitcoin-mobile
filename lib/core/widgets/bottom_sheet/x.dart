@@ -1,6 +1,6 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:flutter/material.dart';
-import 'package:bull_ui/bull_ui.dart' show BullRadius;
+import 'package:bull_ui/bull_ui.dart' show BullShapesX;
 
 /// A bottom sheet with a blurred background effect.
 ///
@@ -34,8 +34,8 @@ class BlurredBottomSheet extends StatelessWidget {
       // own decoration can never show a mismatched corner.
       clipBehavior: Clip.antiAlias,
       shape: RoundedRectangleBorder(
-        borderRadius: const BorderRadius.vertical(
-          top: Radius.circular(BullRadius.lg),
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(context.bullShapes.sheet),
         ),
         side: BorderSide(color: context.appColors.secondaryFixedDim),
       ),
