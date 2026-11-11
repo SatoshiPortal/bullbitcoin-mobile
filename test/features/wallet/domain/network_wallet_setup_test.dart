@@ -117,7 +117,7 @@ void main() {
   });
 
   test(
-    'setup excludes French and passphrase seeds before offering reuse',
+    'setup offers French seeds for reuse and excludes passphrase seeds',
     () async {
       final frenchWords = bip39.Mnemonic(
         List.filled(16, 0),
@@ -142,20 +142,20 @@ void main() {
         references,
         secrets,
       ).execute();
-      expect((result as Ok).value.reusable, [secret.id]);
+      expect((result as Ok).value.reusable, [secret.id, french.id]);
       final refusal = await CreateNetworkWalletUsecase(
         settings,
         references,
         secrets,
         create,
-      ).execute(network: NetworkEnv.regtest, reuse: french.id);
+      ).execute(network: NetworkEnv.regtest, reuse: passphrase.id);
       expect(refusal, isA<Err>());
       expect(
         (refusal as Err).failure,
         isA<NetworkWalletSetupSecretFailure>().having(
           (f) => f.reason,
           'reason',
-          DefaultWalletSecretRefusal.nonEnglish,
+          DefaultWalletSecretRefusal.passphrase,
         ),
       );
       verifyNever(

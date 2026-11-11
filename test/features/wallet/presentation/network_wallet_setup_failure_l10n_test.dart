@@ -6,11 +6,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  testWidgets('non-English reuse explains the supported recovery phrase', (
+  testWidgets('seed-only reuse explains the supported recovery phrase', (
     tester,
   ) async {
     const failure = NetworkWalletSetupSecretFailure(
-      DefaultWalletSecretRefusal.nonEnglish,
+      DefaultWalletSecretRefusal.nonMnemonic,
     );
     await tester.pumpWidget(
       MaterialApp(

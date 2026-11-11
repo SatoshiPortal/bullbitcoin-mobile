@@ -31,7 +31,7 @@ void main() {
     expect(opened.metadata, isEmpty);
   });
 
-  for (final language in bip39.Language.values) {
+  for (final language in Language.values) {
     for (final passphrase in ['', 'TREZOR']) {
       test(
         '${language.name} restores its own seed, passphrase: ${passphrase.isNotEmpty}',
@@ -136,7 +136,11 @@ void main() {
       for (final key in ['mnemonic', 'mnemonicLanguage']) {
         await expectLater(
           secret.backup.recoverbull(metadata: {key: 'override'}),
-          throwsArgumentError,
+          throwsA(
+            isA<ArgumentError>()
+                .having((error) => error.invalidValue, 'invalidValue', key)
+                .having((error) => error.name, 'name', 'metadata'),
+          ),
         );
       }
     },

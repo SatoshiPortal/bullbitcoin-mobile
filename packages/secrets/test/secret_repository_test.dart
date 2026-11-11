@@ -4,6 +4,7 @@ import 'package:bull_logger/bull_logger.dart';
 import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:secrets/secrets.dart' show Language;
 import 'package:primitives/primitives.dart';
 import 'package:secrets/src/data/data.dart';
 import 'package:secrets/src/data/models/secret_model.dart';
@@ -423,6 +424,7 @@ void main() {
       )..install();
       final source = FlutterSecureStorageDatasource();
       final candidate = MnemonicSecretModel(
+        language: Language.english,
         mnemonicWords: words,
         passphrase: 'b',
       );

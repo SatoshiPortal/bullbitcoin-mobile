@@ -1,4 +1,3 @@
-import 'package:bip39_mnemonic/bip39_mnemonic.dart' show Language;
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:secrets/secrets.dart';
 import 'package:bull_logger/bull_logger.dart';

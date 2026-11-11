@@ -60,7 +60,7 @@ class SilentPaymentsOpenFailed implements Exception {
   const SilentPaymentsOpenFailed();
 }
 
-/// A word-based capability cannot consume this mnemonic's wordlist.
+/// A word-based capability cannot consume this mnemonic's wordlist. Only Silent Payments remains: bwk builds an account from English words.
 final class LanguageUnsupported implements Exception {
   final String message;
   @internal
