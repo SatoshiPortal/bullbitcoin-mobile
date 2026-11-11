@@ -23,6 +23,11 @@ class PayjoinSenders extends Table {
   BoolColumn get isExpired => boolean()();
   BoolColumn get isCompleted => boolean()();
   BoolColumn get isAborted => boolean()();
+  // A payment of this session may be on the network without a recorded
+  // outcome: its proposal went to broadcast, or one of its transactions was
+  // observed. Such a session is never expired from a later negative lookup.
+  BoolColumn get hasNetworkEvidence =>
+      boolean().withDefault(const Constant(false))();
 
   @override
   Set<Column<Object>> get primaryKey => {uri};
@@ -93,7 +98,7 @@ class PayjoinMigrations extends Table {
   ],
 )
 final class PayjoinDatabase extends _$PayjoinDatabase {
-  static const schema = 2;
+  static const schema = 3;
 
   PayjoinDatabase._(super.executor);
 
@@ -140,6 +145,21 @@ final class PayjoinDatabase extends _$PayjoinDatabase {
         // it on keeps payjoin on both sides of a payment with another user.
         await customStatement(
           'UPDATE payjoin_policies SET send_enabled = enabled',
+        );
+      },
+      from2To3: (m, schema) async {
+        // Re-runnable: skip when an interrupted upgrade already added it.
+        final columns = await customSelect(
+          "PRAGMA table_info('payjoin_senders')",
+        ).get();
+        if (columns.any(
+          (column) => column.read<String>('name') == 'has_network_evidence',
+        )) {
+          return;
+        }
+        await m.addColumn(
+          schema.payjoinSenders,
+          schema.payjoinSenders.hasNetworkEvidence,
         );
       },
     ),
