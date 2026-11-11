@@ -1,5 +1,6 @@
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
+
 import 'transaction_sync_failure.dart';
 import 'wallet_key.dart';
 

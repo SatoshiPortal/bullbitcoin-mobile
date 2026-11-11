@@ -22,7 +22,7 @@ void main() {
   test(
     'legacy storage golden: origin, UTF-16 and root remain byte-identical',
     () {
-      // Literal output of the pre-K WalletModel.hexId and Bdk/LwkFacade paths.
+      // Literal output of the legacy WalletModel.hexId and Bdk/LwkFacade paths.
       const cases = {
         'wpkh([aabbccdd/84h/0h/0h])':
             '77706b68285b61616262636364642f3834682f30682f30685d29',

@@ -1,5 +1,6 @@
 import 'package:bb_mobile/features/electrum_settings/domain/electrum_network_unauthorized_exception.dart';
 import 'package:bull_logger/bull_logger.dart';
+import 'package:bb_mobile/core/electrum/domain/errors/electrum_fallback_exception.dart';
 import 'package:bb_mobile/core/electrum/domain/ports/electrum_servers_port.dart';
 import 'package:bb_mobile/features/electrum_settings/domain/electrum_server_network.dart';
 import 'package:primitives/primitives.dart';
@@ -62,10 +63,12 @@ final class WalletConnectionPolicyImpl implements WalletConnectionPolicy {
       return const Err(
         TransactionSyncUnsupportedNetworkFailure(authorization: true),
       );
+    } on AllElectrumServersFailedException {
+      // Exhaustion wraps retryable callback failures; preserve the last one.
+      return Err(lastFailure ?? const TransactionSyncConnectionFailure());
     } on Exception {
       // No URL, proxy, descriptor or foreign diagnostic escapes this boundary.
-      // Exhaustion may wrap callback errors; preserve the last typed failure.
-      return Err(lastFailure ?? const TransactionSyncConnectionFailure());
+      return const Err(TransactionSyncConnectionFailure());
     }
   }
 }
