@@ -21,6 +21,24 @@ class CreateLightningSendSwapUsecase {
     required bool fromLiquid,
   }) async {
     try {
+      final pending = await _swapRepository.pendingLightningSend(
+        invoice: invoice,
+        walletId: walletId,
+        fromLiquid: fromLiquid,
+      );
+      if (pending != null) {
+        _swapWatcher.ensureRunning();
+        await _swapRepository.reconcile([pending.id]);
+        final current = await _swapRepository.get(pending.id);
+        if (current is LnSendSwap &&
+            current.status == SwapStatus.pending &&
+            current.sendTxid == null) {
+          return Ok(current);
+        }
+        return const Err(
+          SwapsBoltzRejectedFailure('a swap for this invoice is in progress'),
+        );
+      }
       final limits = await _swapRepository.limits(
         fromLiquid ? SwapType.liquidToLightning : SwapType.bitcoinToLightning,
       );

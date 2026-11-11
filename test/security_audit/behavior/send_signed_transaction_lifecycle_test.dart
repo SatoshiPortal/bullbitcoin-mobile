@@ -11,6 +11,10 @@ import 'package:bb_mobile/features/send/domain/usecases/prepare_send_bitcoin_tra
 //    closed mid-broadcast throws instead of recording the send.
 import 'dart:async';
 
+import 'package:bb_mobile/features/send/domain/usecases/create_boltz_send_swap_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/get_send_swap_route_usecase.dart';
+import 'package:boltz_swaps/boltz_swaps.dart'
+    show RecordSwapLockupUsecase, WatchSwapUsecase;
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_liquid_transaction_usecase.dart';
 import 'package:bb_mobile/core/entities/signer_entity.dart';
@@ -195,6 +199,17 @@ class _MockSendSpPaymentForSendUsecase extends Mock
 class _MockRefreshSpWalletForSendUsecase extends Mock
     implements RefreshSpWalletForSendUsecase {}
 
+class _MockGetSendSwapRouteUsecase extends Mock
+    implements GetSendSwapRouteUsecase {}
+
+class _MockCreateBoltzSendSwapUsecase extends Mock
+    implements CreateBoltzSendSwapUsecase {}
+
+class _MockRecordSwapLockupUsecase extends Mock
+    implements RecordSwapLockupUsecase {}
+
+class _MockWatchSwapUsecase extends Mock implements WatchSwapUsecase {}
+
 class _TestSendCubit extends SendCubit {
   _TestSendCubit({
     required super.labelsFacade,
@@ -243,6 +258,10 @@ class _TestSendCubit extends SendCubit {
     required super.refreshSpWalletForSendUsecase,
     required super.resolveSelectedInputsUsecase,
     required super.validateCoinControlPaymentRequestUsecase,
+    required super.getSendSwapRouteUsecase,
+    required super.createBoltzSendSwapUsecase,
+    required super.recordSwapLockupUsecase,
+    required super.watchSwapUsecase,
   });
 
   void seed(SendState state) => emit(state);
@@ -353,6 +372,10 @@ void main() {
       ),
       validateCoinControlPaymentRequestUsecase:
           ValidateCoinControlPaymentRequestUsecase(),
+      getSendSwapRouteUsecase: _MockGetSendSwapRouteUsecase(),
+      createBoltzSendSwapUsecase: _MockCreateBoltzSendSwapUsecase(),
+      recordSwapLockupUsecase: _MockRecordSwapLockupUsecase(),
+      watchSwapUsecase: _MockWatchSwapUsecase(),
     );
   });
 

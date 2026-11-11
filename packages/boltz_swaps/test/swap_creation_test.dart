@@ -75,6 +75,13 @@ void main() {
     when(
       () => repository.limits(any()),
     ).thenAnswer((_) async => const SwapLimits(min: 25000, max: 1000000));
+    when(
+      () => repository.pendingLightningSend(
+        invoice: any(named: 'invoice'),
+        walletId: any(named: 'walletId'),
+        fromLiquid: any(named: 'fromLiquid'),
+      ),
+    ).thenAnswer((_) async => null);
   });
 
   group('CreateChainSwapUsecase', () {
@@ -155,6 +162,59 @@ void main() {
         swapWatcher: creationWatcher,
       ),
     );
+
+    void stubPending(_MockLnSendSwap pending, {required SwapStatus status}) {
+      when(() => pending.id).thenReturn('pending-1');
+      when(() => pending.status).thenReturn(status);
+      when(
+        () => pending.sendTxid,
+      ).thenReturn(status == SwapStatus.pending ? null : 'lockup-txid');
+      when(
+        () => repository.pendingLightningSend(
+          invoice: 'lnbc1',
+          walletId: 'w',
+          fromLiquid: false,
+        ),
+      ).thenAnswer((_) async => pending);
+      when(() => repository.reconcile(['pending-1'])).thenAnswer((_) async {});
+      when(() => repository.get('pending-1')).thenAnswer((_) async => pending);
+    }
+
+    test('never reuses a swap that turns out funded once reconciled', () async {
+      stubPending(_MockLnSendSwap(), status: SwapStatus.paid);
+
+      final result = await usecase.execute(
+        walletId: 'w',
+        invoice: 'lnbc1',
+        invoiceAmountSat: 50000,
+        fromLiquid: false,
+      );
+
+      expect((result as Err).failure, isA<SwapsBoltzRejectedFailure>());
+      verify(() => repository.reconcile(['pending-1'])).called(1);
+    });
+
+    test('reuses the pending swap for the same invoice', () async {
+      final pending = _MockLnSendSwap();
+      stubPending(pending, status: SwapStatus.pending);
+
+      final result = await usecase.execute(
+        walletId: 'w',
+        invoice: 'lnbc1',
+        invoiceAmountSat: 50000,
+        fromLiquid: false,
+      );
+
+      expect((result as Ok).value, same(pending));
+      verifyNever(() => repository.limits(any()));
+      verifyNever(
+        () => repository.createLightningSend(
+          walletId: any(named: 'walletId'),
+          invoice: any(named: 'invoice'),
+          fromLiquid: any(named: 'fromLiquid'),
+        ),
+      );
+    });
 
     test('checks the invoice amount against the submarine limits', () async {
       final result = await usecase.execute(

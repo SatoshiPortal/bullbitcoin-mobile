@@ -47,6 +47,14 @@ abstract class SwapRepository {
     String? description,
   });
 
+  /// A still-pending send swap already created for [invoice] from
+  /// [walletId], if any. Boltz refuses a second swap for the same invoice.
+  Future<LnSendSwap?> pendingLightningSend({
+    required String invoice,
+    required String walletId,
+    required bool fromLiquid,
+  });
+
   Future<LnSendSwap> createLightningSend({
     required String walletId,
     required String invoice,

@@ -1504,6 +1504,17 @@ class BoltzSwapRepository implements SwapRepository {
   }
 
   @override
+  Future<LnSendSwap?> pendingLightningSend({
+    required String invoice,
+    required String walletId,
+    required bool fromLiquid,
+  }) => getSendSwapByInvoice(
+    invoice: invoice,
+    walletId: walletId,
+    type: fromLiquid ? SwapType.liquidToLightning : SwapType.bitcoinToLightning,
+  );
+
+  @override
   Future<LnSendSwap> createLightningSend({
     required String walletId,
     required String invoice,

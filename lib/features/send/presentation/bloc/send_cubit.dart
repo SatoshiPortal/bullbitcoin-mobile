@@ -70,6 +70,16 @@ import 'package:bb_mobile/features/send/domain/usecases/validate_coin_control_pa
 import 'package:bb_mobile/features/send/domain/usecases/watch_send_swap_usecase.dart';
 import 'package:bb_mobile/features/send/domain/send_failure.dart';
 import 'package:bb_mobile/features/send/domain/bitcoin_recipient_list_policy.dart';
+import 'package:bb_mobile/features/send/domain/boltz_swap_failure_to_send_failure.dart';
+import 'package:bb_mobile/features/send/domain/usecases/create_boltz_send_swap_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/get_send_swap_route_usecase.dart';
+import 'package:boltz_swaps/boltz_swaps.dart'
+    show
+        LnSendSwap,
+        RecordSwapLockupUsecase,
+        Swap,
+        SwapStatus,
+        WatchSwapUsecase;
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 
@@ -132,6 +142,10 @@ class SendCubit extends Cubit<SendState>
     required this._refreshSpWalletForSendUsecase,
     required this._resolveSelectedInputsUsecase,
     required this._validateCoinControlPaymentRequestUsecase,
+    required this._getSendSwapRouteUsecase,
+    required this._createBoltzSendSwapUsecase,
+    required this._recordSwapLockupUsecase,
+    required this._watchSwapUsecase,
     Future<PaymentRequest> Function(String)? parsePaymentRequest,
   }) : _parsePaymentRequest = parsePaymentRequest ?? PaymentRequest.parse,
        super(
@@ -209,6 +223,10 @@ class SendCubit extends Cubit<SendState>
   final PrepareSpPaymentForSendUsecase _prepareSpPaymentForSendUsecase;
   final SendSpPaymentForSendUsecase _sendSpPaymentForSendUsecase;
   final RefreshSpWalletForSendUsecase _refreshSpWalletForSendUsecase;
+  final GetSendSwapRouteUsecase _getSendSwapRouteUsecase;
+  final CreateBoltzSendSwapUsecase _createBoltzSendSwapUsecase;
+  final RecordSwapLockupUsecase _recordSwapLockupUsecase;
+  final WatchSwapUsecase _watchSwapUsecase;
 
   SpRecipient? _spRecipient;
   SpTxDraft? _spDraft;
@@ -219,6 +237,7 @@ class SendCubit extends Cubit<SendState>
 
   StreamSubscription<Result<OrderSwapRecord, SendFailure>>?
   _orderSwapSubscription;
+  StreamSubscription<Swap>? _boltzSwapSubscription;
   StreamSubscription<Wallet>? _selectedWalletSyncingSubscription;
   StreamSubscription<WalletTransaction>? _txSubscription;
   StreamSubscription<PayjoinSession>? _payjoinSubscription;
@@ -245,6 +264,7 @@ class SendCubit extends Cubit<SendState>
     _recipientPreviewTimer?.cancel();
     await (
       _orderSwapSubscription?.cancel() ?? Future.value(),
+      _boltzSwapSubscription?.cancel() ?? Future.value(),
       _selectedWalletSyncingSubscription?.cancel() ?? Future.value(),
       _txSubscription?.cancel() ?? Future.value(),
       _payjoinSubscription?.cancel() ?? Future.value(),
@@ -1247,6 +1267,13 @@ class SendCubit extends Cubit<SendState>
           return;
         }
         emit(state.copyWith(creatingSwap: true));
+        if (await _sendLightningViaBoltz(
+          wallet: wallet,
+          invoice: invoice,
+        )) {
+          return;
+        }
+        if (isStale()) return;
         final quoteLoaded = await loadSendSwapQuote(
           wallet: wallet,
           amountSat: BigInt.from(invoice.amountSat),
@@ -1817,6 +1844,17 @@ class SendCubit extends Cubit<SendState>
               : state.label,
         ),
       );
+      final boltzWallet = state.selectedBitcoinWallet;
+      if (boltzWallet != null) {
+        emit(state.copyWith(creatingSwap: true));
+        if (await _sendLightningViaBoltz(
+          wallet: boltzWallet,
+          invoice: invoice,
+        )) {
+          return;
+        }
+        emit(state.copyWith(creatingSwap: false));
+      }
       if (!await loadSendSwapQuote(
         wallet: state.selectedBitcoinWallet!,
         amountSat: BigInt.from(state.inputAmountSat),
@@ -1922,9 +1960,11 @@ class SendCubit extends Cubit<SendState>
   }
 
   Future<void> _continueWithLightningOrder(OrderSwapRecord order) async {
+    await _stopWatchingBoltzSwap();
     final txId = order.localPayinTransactionId;
     emit(
       state.copyWith(
+        lightningSwap: null,
         lightningOrder: order,
         confirmedAmountSat: order.order?.payoutAmountSat.toInt(),
         txId: txId,
@@ -1949,6 +1989,128 @@ class SendCubit extends Cubit<SendState>
     if (order.localStatus == OrderSwapLocalStatus.awaitingUserConfirmation ||
         order.localStatus == OrderSwapLocalStatus.preparingPayin) {
       await createTransaction();
+    }
+  }
+
+  /// Tries to pay [invoice] through a Boltz submarine swap when the swap route
+  /// starts with Boltz. Returns true when Boltz handled the send — the swap
+  /// exists and its lockup is being built, or its failure was surfaced — and
+  /// false when the exchange path should run instead: the route is
+  /// exchange-only, or Boltz failed before creating anything and the user
+  /// opted into the exchange fallback.
+  Future<bool> _sendLightningViaBoltz({
+    required Wallet wallet,
+    required Bolt11PaymentRequest invoice,
+  }) async {
+    final inputGeneration = _paymentRequestInputGeneration;
+    final route = await _getSendSwapRouteUsecase.execute();
+    if (!route.startsWithBoltz) return false;
+    final created = await _createBoltzSendSwapUsecase.execute(
+      wallet: wallet,
+      invoice: invoice,
+    );
+    if (inputGeneration != _paymentRequestInputGeneration) return true;
+    switch (created) {
+      case Ok(:final value):
+        await _continueWithLightningSwap(value, invoice: invoice);
+        return true;
+      case Err(:final failure):
+        if (route.fallsBackToExchangeAfter(failure)) {
+          log.fine(
+            '[Send] Boltz unavailable, falling back to the exchange '
+            '(${failure.runtimeType})',
+          );
+          return false;
+        }
+        emit(
+          state.copyWith(
+            creatingSwap: false,
+            loadingBestWallet: false,
+            amountConfirmedClicked: false,
+            failure: failure.toSendFailure(amountSat: invoice.amountSat),
+          ),
+        );
+        return true;
+    }
+  }
+
+  Future<void> _continueWithLightningSwap(
+    LnSendSwap swap, {
+    required Bolt11PaymentRequest invoice,
+  }) async {
+    await _orderSwapSubscription?.cancel();
+    _orderSwapSubscription = null;
+    _watchBoltzSwap(swap.id);
+    if (state.spendableBalanceSat < swap.paymentAmount) {
+      emit(
+        state.copyWith(
+          lightningSwap: swap,
+          lightningOrder: null,
+          lightningQuote: null,
+          creatingSwap: false,
+          loadingBestWallet: false,
+          amountConfirmedClicked: false,
+          failure: const SendInsufficientBalanceFailure(
+            'Not enough funds to cover amount and fees',
+          ),
+        ),
+      );
+      return;
+    }
+    emit(
+      state.copyWith(
+        lightningSwap: swap,
+        lightningOrder: null,
+        lightningQuote: null,
+        confirmedAmountSat: invoice.amountSat,
+        creatingSwap: false,
+        loadingBestWallet: false,
+        amountConfirmedClicked: false,
+        step: SendStep.confirm,
+        failure: null,
+      ),
+    );
+    await createTransaction();
+  }
+
+  void _watchBoltzSwap(String swapId) {
+    _boltzSwapSubscription?.cancel();
+    _boltzSwapSubscription = _watchSwapUsecase
+        .execute(swapId)
+        .listen(_onBoltzSwapUpdated);
+  }
+
+  Future<void> _stopWatchingBoltzSwap() async {
+    await _boltzSwapSubscription?.cancel();
+    _boltzSwapSubscription = null;
+  }
+
+  void _onBoltzSwapUpdated(Swap updated) {
+    if (isClosed) return;
+    if (updated is! LnSendSwap || state.lightningSwap?.id != updated.id) {
+      return;
+    }
+    emit(
+      state.copyWith(
+        lightningSwap: updated,
+        step:
+            updated.status == SwapStatus.paid ||
+                updated.status == SwapStatus.canCoop ||
+                updated.status == SwapStatus.completed
+            ? SendStep.success
+            : state.step,
+      ),
+    );
+    if (updated.status == SwapStatus.completed ||
+        updated.status == SwapStatus.refunded) {
+      unawaited(
+        _getWalletUsecase.execute(updated.sendWalletId, sync: true).catchError((
+          Object e,
+        ) {
+          log.warning('Failed to sync wallet after the swap settled: $e');
+          return null;
+        }),
+      );
     }
   }
 
@@ -2412,7 +2574,9 @@ class SendCubit extends Cubit<SendState>
     if (state.lightningOrder?.order != null) {
       return state.lightningOrder!.order!.payinAddress;
     }
-    if (state.chainSwap != null) return state.chainSwap!.paymentAddress;
+    if (state.boltzLockupAddress case final lockupAddress?) {
+      return lockupAddress;
+    }
     final pr = state.paymentRequest;
     if (pr is Bip21PaymentRequest) return pr.address;
     if (state.paymentRequestAddress.isNotEmpty) {
@@ -2425,7 +2589,9 @@ class SendCubit extends Cubit<SendState>
     if (state.lightningOrder?.order != null) {
       return state.lightningOrder!.order!.payinAmountSat.toInt();
     }
-    if (state.chainSwap != null) return state.chainSwap!.paymentAmount;
+    if (state.boltzLockupAmountSat case final lockupAmountSat?) {
+      return lockupAmountSat;
+    }
     final input = state.inputAmountSat;
     if (input > 0) return input;
     // A BIP21 URI with an embedded amount sets confirmedAmountSat but leaves
@@ -2530,23 +2696,23 @@ class SendCubit extends Cubit<SendState>
         );
         return false;
       }
-      final address = state.lightningOrder?.order != null
-          ? state.lightningOrder!.order!.payinAddress
-          : (state.chainSwap != null)
-          ? state.chainSwap!.paymentAddress
-          : state.paymentRequest != null &&
-                state.paymentRequest is Bip21PaymentRequest
-          ? (state.paymentRequest! as Bip21PaymentRequest).address
-          : state.paymentRequestAddress;
-      final amount = state.lightningOrder?.order != null
-          ? state.lightningOrder!.order!.payinAmountSat.toInt()
-          : (state.chainSwap != null)
-          ? state.chainSwap!.paymentAmount
-          : state.confirmedAmountSat;
+      final paymentRequest = state.paymentRequest;
+      final address =
+          state.lightningOrder?.order?.payinAddress ??
+          state.boltzLockupAddress ??
+          (paymentRequest is Bip21PaymentRequest
+              ? paymentRequest.address
+              : state.paymentRequestAddress);
+      final amount =
+          state.lightningOrder?.order?.payinAmountSat.toInt() ??
+          state.boltzLockupAmountSat ??
+          state.confirmedAmountSat;
+      // A Lightning payment pays a fixed lockup: never drain into it.
+      final paysFixedLightningAmount =
+          state.lightningOrder != null || state.lightningSwap != null;
       // Fees can be selectedFee as it defaults to Fastest
       if (wallet.network.isLiquid) {
-        // ignore: avoid_bool_literals_in_conditional_expressions
-        final drain = state.lightningOrder != null ? false : state.isMaxSend;
+        final drain = !paysFixedLightningAmount && state.isMaxSend;
         final feeRateResult = await _resolveLiquidFeeRate(
           fee: selectedFee,
           walletId: wallet.id,
@@ -2615,7 +2781,7 @@ class SendCubit extends Cubit<SendState>
             return false;
           }
         }
-        if (state.chainSwap != null) {
+        if (state.boltzSendSwap case final boltzSwap?) {
           // [CHAIN SWAP LIFECYCLE — Step 3b: fail-safe verification]
           // Confirms the built pset pays swap.paymentAmount to
           // swap.paymentAddress. Guards against any future flow that
@@ -2625,7 +2791,7 @@ class SendCubit extends Cubit<SendState>
           // Step 2a.
           await _verifyChainSwapAmountSendUsecase.execute(
             psbtOrPset: pset,
-            swap: state.chainSwap!,
+            swap: boltzSwap,
             walletId: wallet.id,
           );
           if (isStale()) return false;
@@ -2672,11 +2838,10 @@ class SendCubit extends Cubit<SendState>
           );
         }
       } else {
-        // ignore: avoid_bool_literals_in_conditional_expressions
-        final drain = state.lightningOrder != null ? false : state.isMaxSend;
+        final drain = !paysFixedLightningAmount && state.isMaxSend;
         final List<BitcoinTransactionRecipient> recipients;
         if (state.usesRecipientList &&
-            state.lightningOrder == null &&
+            !paysFixedLightningAmount &&
             state.chainSwap == null) {
           recipients = state.bitcoinTransactionRecipients;
         } else if (drain) {
@@ -2735,6 +2900,7 @@ class SendCubit extends Cubit<SendState>
           'rbf=${state.replaceByFee} '
           'lightningOrder=${state.lightningOrder != null} '
           'chainSwap=${state.chainSwap != null} '
+          'lightningSwap=${state.lightningSwap != null} '
           'cacheHit=$canUseCache',
         );
         final preparationResult =
@@ -2837,12 +3003,12 @@ class SendCubit extends Cubit<SendState>
 
         if (isStale()) return false;
 
-        if (state.chainSwap != null) {
+        if (state.boltzSendSwap case final boltzSwap?) {
           // [CHAIN SWAP LIFECYCLE — Step 3b: fail-safe verification]
           // See note on the liquid branch above. Do not remove.
           await _verifyChainSwapAmountSendUsecase.execute(
             psbtOrPset: txPreparation.unsignedPsbt,
-            swap: state.chainSwap!,
+            swap: boltzSwap,
             walletId: wallet.id,
           );
           if (isStale()) return false;
@@ -3137,6 +3303,8 @@ class SendCubit extends Cubit<SendState>
       if (!await _validateSelectedInputsForBroadcast(wallet)) return;
       final label = state.label;
       final chainSwap = state.chainSwap;
+      final lightningSwap = state.lightningSwap;
+      final lockupFeeSat = state.absoluteFees;
 
       emit(state.copyWith(broadcastingTransaction: true));
       final lightningOrder = state.lightningOrder;
@@ -3227,6 +3395,17 @@ class SendCubit extends Cubit<SendState>
           txid: txId,
           swapId: chainSwap.id,
         );
+      }
+
+      if (lightningSwap != null) {
+        final recorded = await _recordSwapLockupUsecase.execute(
+          swapId: lightningSwap.id,
+          txid: txId,
+          lockupFeeSat: lockupFeeSat,
+        );
+        if (recorded case Ok(value: final LnSendSwap funded)) {
+          if (!isClosed) emit(state.copyWith(lightningSwap: funded));
+        }
       }
 
       if (lightningOrder == null && label.isNotEmpty) {
@@ -3645,6 +3824,7 @@ class SendCubit extends Cubit<SendState>
       switch (result) {
         case Ok(:final value):
           if (isClosed) return;
+          if (state.lightningOrder?.localId != value.localId) return;
           emit(
             state.copyWith(
               lightningOrder: value,

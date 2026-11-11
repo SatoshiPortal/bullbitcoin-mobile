@@ -802,4 +802,51 @@ void main() {
       },
     );
   });
+
+  group('pendingLightningSend', () {
+    SwapModel lnSend(String id, {String status = 'pending', String? type}) =>
+        SwapModel.lnSend(
+          id: id,
+          type: type ?? SwapType.bitcoinToLightning.name,
+          status: status,
+          keyIndex: 0,
+          creationTime: 1,
+          sendWalletId: 'w-btc',
+          paymentAddress: 'bc1plockup',
+          paymentAmount: 51000,
+          invoice: 'LNBC1INVOICE',
+        );
+
+    test('returns only the pending swap of the same direction', () async {
+      when(() => storage.fetchAll(walletId: 'w-btc')).thenAnswer(
+        (_) async => [
+          lnSend('paidSwap0001', status: 'paid'),
+          lnSend('liquidSwap01', type: SwapType.liquidToLightning.name),
+          lnSend('pendingSwap1'),
+        ],
+      );
+
+      final found = await repo().pendingLightningSend(
+        invoice: 'lnbc1invoice',
+        walletId: 'w-btc',
+        fromLiquid: false,
+      );
+
+      expect(found?.id, 'pendingSwap1');
+    });
+
+    test('finds nothing once the swap moved past pending', () async {
+      when(
+        () => storage.fetchAll(walletId: 'w-btc'),
+      ).thenAnswer((_) async => [lnSend('paidSwap0001', status: 'paid')]);
+
+      final found = await repo().pendingLightningSend(
+        invoice: 'lnbc1invoice',
+        walletId: 'w-btc',
+        fromLiquid: false,
+      );
+
+      expect(found, isNull);
+    });
+  });
 }
