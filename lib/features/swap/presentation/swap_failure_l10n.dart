@@ -1,11 +1,16 @@
 import 'package:bb_mobile/core/primitives/payment_network_l10n.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
+import 'package:bb_mobile/features/wallet/public/wallet_facade.dart'
+    show BitcoinSpendStatus;
 import 'package:flutter/widgets.dart';
 
 extension SwapFailureL10n on SwapFailure {
   String toTranslated(BuildContext context) => switch (this) {
-    SwapSpendBlockedFailure() => context.loc.walletSpendAwaitingObservation,
+    SwapSpendBlockedFailure(:final status) =>
+      status == BitcoinSpendStatus.busy
+          ? context.loc.walletSpendBusy
+          : context.loc.walletSpendAwaitingObservation,
     SwapUnsupportedNetworkFailure() => context.loc.networkFeatureUnavailable,
     SwapAmountOutOfBoundsFailure(
       limitAmountSat: final limit?,
