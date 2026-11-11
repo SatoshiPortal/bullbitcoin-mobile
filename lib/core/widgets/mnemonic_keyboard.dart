@@ -1,6 +1,6 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:flutter/material.dart';
-import 'package:bull_ui/bull_ui.dart' show BullText;
+import 'package:bull_ui/bull_ui.dart' show BullShapesX, BullText;
 
 /// Letters-only keyboard for mnemonic entry.
 ///
@@ -325,11 +325,11 @@ class _KeyCap extends StatelessWidget {
         color: enabled
             ? context.appColors.surface
             : context.appColors.surfaceContainerHighest,
-        borderRadius: BorderRadius.circular(6),
+        borderRadius: BorderRadius.circular(context.bullShapes.key),
         child: InkWell(
           // A key must never take focus from the word field being typed into.
           canRequestFocus: false,
-          borderRadius: BorderRadius.circular(6),
+          borderRadius: BorderRadius.circular(context.bullShapes.key),
           splashFactory: suppressAnimation ? NoSplash.splashFactory : null,
           highlightColor: suppressAnimation ? Colors.transparent : null,
           onTap: enabled ? onTap : null,

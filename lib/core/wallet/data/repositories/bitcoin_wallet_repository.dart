@@ -18,7 +18,6 @@ import 'package:primitives/primitives.dart'
 import 'package:secrets/secrets.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_connection.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bb_mobile/core/wallet/domain/bitcoin_send_port.dart';
 import 'package:bb_mobile/core/wallet/domain/manipulated_transaction_exception.dart';
@@ -318,16 +317,14 @@ class BitcoinWalletRepository implements BitcoinSendPort {
   }
 
   Future<({BigInt satoshis, int transactions})> dryScan({
-    required List<int> entropy,
-    required String passphrase,
-    required ScriptType scriptType,
+    required String externalDescriptor,
+    required String internalDescriptor,
     required bool isTestnet,
     required ElectrumConnection electrumServer,
   }) {
     return _bdkWallet.dryScan(
-      entropy: entropy,
-      passphrase: passphrase,
-      scriptType: scriptType,
+      externalDescriptor: externalDescriptor,
+      internalDescriptor: internalDescriptor,
       isTestnet: isTestnet,
       electrumServer: electrumServer,
     );

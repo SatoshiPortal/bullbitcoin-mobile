@@ -1,4 +1,5 @@
 import 'package:bull_ui/src/theme/bull_theme.dart';
+import 'package:bull_ui/src/theme/bull_shapes.dart';
 import 'package:flutter/widgets.dart';
 
 /// A horizontally paged row of full-width cards with a dot indicator —
@@ -169,7 +170,7 @@ class _Dots extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
           decoration: BoxDecoration(
             color: colors.surface.withValues(alpha: 0.7),
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: BorderRadius.circular(context.bullShapes.card),
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
@@ -184,7 +185,7 @@ class _Dots extends StatelessWidget {
                     color: i == active
                         ? colors.primary
                         : colors.onSurfaceVariant.withValues(alpha: 0.4),
-                    borderRadius: BorderRadius.circular(3),
+                    borderRadius: BorderRadius.circular(context.bullShapes.dot),
                   ),
                 ),
             ],

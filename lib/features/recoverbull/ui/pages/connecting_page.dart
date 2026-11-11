@@ -11,7 +11,8 @@ import 'package:bb_mobile/features/recoverbull/ui/widgets/tor_bull_mascot.dart';
 import 'package:bb_mobile/features/tor_settings/public/tor_settings_facade.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show BullButton, BullText, Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show BullButton, BullShapesX, BullText, Gap;
 import 'package:go_router/go_router.dart';
 import 'package:bull_tor/tor.dart' as tor;
 
@@ -412,7 +413,7 @@ class _Body extends StatelessWidget {
                   TorBullState.failed => context.appColors.errorContainer,
                   _ => context.appColors.surface,
                 },
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(context.bullShapes.card),
               ),
               child: Column(
                 children: [
@@ -563,7 +564,7 @@ class _PhaseCard extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
         color: context.appColors.surface,
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(context.bullShapes.card),
       ),
       child: Column(
         crossAxisAlignment: .start,

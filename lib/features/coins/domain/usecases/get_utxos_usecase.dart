@@ -22,17 +22,17 @@ class GetUtxosUsecase {
     } on GetUtxosUsecaseException catch (error, stackTrace) {
       log.warning(
         'Failed to load wallet coins',
-        error: error,
+        error: error.runtimeType,
         trace: stackTrace,
       );
-      return Err(CoinsLoadFailure(error.toString()));
+      return Err(CoinsLoadFailure(error.runtimeType.toString()));
     } on Exception catch (error, stackTrace) {
       log.warning(
         'Unexpected failure while loading wallet coins',
-        error: error,
+        error: error.runtimeType,
         trace: stackTrace,
       );
-      return Err(CoinsUnexpectedFailure(error.toString()));
+      return Err(CoinsUnexpectedFailure(error.runtimeType.toString()));
     }
   }
 }

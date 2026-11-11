@@ -32,6 +32,7 @@ import 'package:bull_ui/bull_ui.dart'
         BullInstructionsSheet,
         BullSelectableList,
         BullSelectableListItem,
+        BullShapesX,
         BullSnackBar,
         BullText,
         BullTopBar,
@@ -277,7 +278,7 @@ class _LedgerActionViewState extends State<_LedgerActionView> {
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
             color: context.appColors.surface,
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: BorderRadius.circular(context.bullShapes.card),
             border: Border.all(color: context.appColors.border, width: 1),
           ),
           child: SelectableText(
@@ -307,13 +308,13 @@ class _LedgerActionViewState extends State<_LedgerActionView> {
           width: double.infinity,
           decoration: BoxDecoration(
             color: context.appColors.surface,
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: BorderRadius.circular(context.bullShapes.input),
             border: Border.all(color: context.appColors.border, width: 1),
           ),
           child: Material(
             color: context.appColors.transparent,
             child: InkWell(
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(context.bullShapes.input),
               onTap: () => _showScriptTypeSelection(context),
               child: Padding(
                 padding: const EdgeInsets.symmetric(

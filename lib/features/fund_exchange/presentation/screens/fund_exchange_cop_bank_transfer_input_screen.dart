@@ -14,7 +14,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullFadingLinearProgress, BullScrollableColumn, Gap;
+    show BullFadingLinearProgress, BullScrollableColumn, BullShapesX, Gap;
 
 class FundExchangeCopBankTransferInputScreen extends StatefulWidget {
   const FundExchangeCopBankTransferInputScreen({super.key});
@@ -132,7 +132,9 @@ class _FundExchangeCopBankTransferInputScreenState
                         color: context.appColors.tertiary.withValues(
                           alpha: 0.15,
                         ),
-                        borderRadius: BorderRadius.circular(8.0),
+                        borderRadius: BorderRadius.circular(
+                          context.bullShapes.card,
+                        ),
                         border: Border(
                           left: BorderSide(
                             color: context.appColors.tertiary,
@@ -175,13 +177,17 @@ class _FundExchangeCopBankTransferInputScreenState
                         filled: true,
                         fillColor: context.appColors.onSecondary,
                         border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8.0),
+                          borderRadius: BorderRadius.circular(
+                            context.bullShapes.input,
+                          ),
                           borderSide: BorderSide(
                             color: context.appColors.secondaryFixedDim,
                           ),
                         ),
                         enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8.0),
+                          borderRadius: BorderRadius.circular(
+                            context.bullShapes.input,
+                          ),
                           borderSide: BorderSide(
                             color: context.appColors.secondaryFixedDim,
                           ),
@@ -214,13 +220,17 @@ class _FundExchangeCopBankTransferInputScreenState
                         filled: true,
                         fillColor: context.appColors.onSecondary,
                         border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8.0),
+                          borderRadius: BorderRadius.circular(
+                            context.bullShapes.input,
+                          ),
                           borderSide: BorderSide(
                             color: context.appColors.secondaryFixedDim,
                           ),
                         ),
                         enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8.0),
+                          borderRadius: BorderRadius.circular(
+                            context.bullShapes.input,
+                          ),
                           borderSide: BorderSide(
                             color: context.appColors.secondaryFixedDim,
                           ),
@@ -268,13 +278,17 @@ class _FundExchangeCopBankTransferInputScreenState
                         filled: true,
                         fillColor: context.appColors.onSecondary,
                         border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8.0),
+                          borderRadius: BorderRadius.circular(
+                            context.bullShapes.input,
+                          ),
                           borderSide: BorderSide(
                             color: context.appColors.secondaryFixedDim,
                           ),
                         ),
                         enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8.0),
+                          borderRadius: BorderRadius.circular(
+                            context.bullShapes.input,
+                          ),
                           borderSide: BorderSide(
                             color: context.appColors.secondaryFixedDim,
                           ),

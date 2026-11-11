@@ -1,3 +1,4 @@
+import 'package:bull_ui/bull_ui.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
@@ -21,8 +22,10 @@ class ErrorReportingConfirmationBottomSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: const BoxDecoration(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(context.bullShapes.sheet),
+        ),
       ),
       child: SafeArea(
         child: Padding(
@@ -36,7 +39,7 @@ class ErrorReportingConfirmationBottomSheet extends StatelessWidget {
                   height: 4,
                   decoration: BoxDecoration(
                     color: context.appColors.outline.withValues(alpha: 0.3),
-                    borderRadius: BorderRadius.circular(2),
+                    borderRadius: BorderRadius.circular(context.bullShapes.dot),
                   ),
                 ),
                 const SizedBox(height: 24),

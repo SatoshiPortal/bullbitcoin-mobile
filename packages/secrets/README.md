@@ -19,6 +19,8 @@ Secrets
 |-- trash(id) -> void
 |-- exists(id) -> bool
 |-- contains(words:, [passphrase:]) -> bool
+|-- preview
+|   `-- bitcoinDescriptors(words:, [language: Language.english], [passphrase:], network:, scriptTypes:) -> Map<ScriptType, ({String external, String internal})>
 |-- recoverbull
 |   |-- restore(vault:, key:, [passphrase:]) -> RestoredVault
 |   `-- fingerprint(vault:, key:) -> Fingerprint
@@ -103,7 +105,7 @@ Keep `secret.id`, a `primitives.Fingerprint`, to fetch a new handle later. Impor
 
 ## Lifecycle and listing
 
-`generate` and `import` return a `Secret`. Importing an existing secret returns a dedicated duplicate failure; it never overwrites the existing entry. `contains(words:, passphrase:)` and `exists(id)` are preliminary checks, not proof that a later import or read will succeed. `trash(id)` deletes the secret; checking whether a wallet still needs it belongs to the application.
+`generate` and `import` return a `Secret`. Importing an existing secret returns a dedicated duplicate failure; it never overwrites the existing entry. `contains(words:, passphrase:)` and `exists(id)` are preliminary checks, not proof that a later import or read will succeed. `preview.bitcoinDescriptors(words:, language:, passphrase:, network:, scriptTypes:)` derives the public account-0 descriptors of words that are not stored, one pair per requested script type from a single seed derivation, for a chain scan before import: it reads and writes nothing, keeps nothing, and only descriptor strings leave the isolate that derives and wipes the seed. For English words, these are the descriptors an import of the same words derives. The words are read in `language`, English by default, so a non-English mnemonic previews its own seed; `import` and `contains` still accept English only, so parity with an import in another language waits for the step that opens import to it. `trash(id)` deletes the secret; checking whether a wallet still needs it belongs to the application.
 
 `list()` returns `List<SecretEntry>`. The sealed family contains usable `Secret` handles and `UnreadableSecret` entries carrying their failure and, when recoverable, their fingerprint. A failure to read the store as a whole remains an `Err`; it must not be interpreted as an empty store or a lost seed. On Android, the platform's `readAll` may fail because of an entry in any namespace. Fetching an individual secret avoids that global read.
 
@@ -112,6 +114,7 @@ Keep `secret.id`, a `primitives.Fingerprint`, to fetch a new handle later. Impor
 | Operation | Output | Sensitivity |
 |---|---|---|
 | `derive.xpub` | account xpub | reveals addresses |
+| `preview.bitcoinDescriptors` (on `Secrets`) | receive/change public descriptors of unstored words | reveals addresses |
 | `derive.descriptors.bitcoin` | receive/change public descriptors | reveals addresses |
 | `derive.descriptors.liquid` | confidential descriptor with its SLIP-77 blinding key | reveals amounts and assets, without spend authority |
 | `sign.psbt`, `sign.pset` | signed serialized transaction data | authority for the signed transaction |
@@ -156,9 +159,9 @@ Every asynchronous operation returns `Result<T, SecretFailure>`. Handle failure 
 
 ## Boundary checks and remaining migration
 
-`make custody-ci-check` checks keystore access and the internal seal in CI. Local `make custody-check` resolves production Dart symbols to reject private-key derivation and vault decryption outside this package. Node-based custody and PR governance checks run only in CI; local `make checks` requires Dart/Flutter only. Pre-import scanning, swap-scoped credentials and the public-only xpub decoding adapter have explicit named exceptions. BIP85 child formatting and public-key operations remain allowed. This detects forbidden library operations; it is not a complete information-flow proof.
+`make custody-ci-check` checks keystore access and the internal seal in CI. Local `make custody-check` resolves production Dart symbols to reject private-key derivation and vault decryption outside this package. Node-based custody and PR governance checks run only in CI; local `make checks` requires Dart/Flutter only. Swap-scoped credentials and the public-only xpub decoding adapter have explicit named exceptions; pre-import scanning needs none, since it receives public descriptors from `secrets.preview`. BIP85 child formatting and public-key operations remain allowed. This detects forbidden library operations; it is not a complete information-flow proof.
 
-RecoverBull creation, restoration and backup inspection use the package. Decrypted vaults and their mnemonic no longer reach app presentation state. Pre-import scanning remains in the wallet code until the sync extraction; it is outside the stored-secret lifecycle. The app still receives the documented BIP85 children, swap credential, recovery key and database keys.
+RecoverBull creation, restoration and backup inspection use the package. Decrypted vaults and their mnemonic no longer reach app presentation state. The app still receives the documented BIP85 children, swap credential, recovery key and database keys.
 
 ## Read next
 

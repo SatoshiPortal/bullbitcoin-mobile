@@ -1,5 +1,5 @@
 import 'package:bull_ui/src/theme/bull_theme.dart';
-import 'package:bull_ui/src/theme/bull_tokens.dart';
+import 'package:bull_ui/src/theme/bull_shapes.dart';
 import 'package:flutter/material.dart';
 
 /// A settings-list row: leading icon, title, trailing chevron.
@@ -57,7 +57,7 @@ class BullSettingsEntryItem extends StatelessWidget {
 
     return ListTile(
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(BullRadius.xxs),
+        borderRadius: BorderRadius.circular(context.bullShapes.card),
       ),
       tileColor: colors.transparent,
       contentPadding: contentPadding,

@@ -1,5 +1,5 @@
 import 'package:bull_ui/src/theme/bull_theme.dart';
-import 'package:bull_ui/src/theme/bull_tokens.dart';
+import 'package:bull_ui/src/theme/bull_shapes.dart';
 import 'package:flutter/material.dart';
 import 'package:bull_ui/src/layout/gap.dart';
 
@@ -46,7 +46,7 @@ class BullInfoCard extends StatelessWidget {
         clipBehavior: Clip.hardEdge,
         decoration: BoxDecoration(
           color: bgColor,
-          borderRadius: BorderRadius.circular(BullRadius.xxs),
+          borderRadius: BorderRadius.circular(context.bullShapes.card),
         ),
         child: IntrinsicHeight(
           child: Row(

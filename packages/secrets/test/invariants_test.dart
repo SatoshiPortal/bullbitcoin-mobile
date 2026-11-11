@@ -235,7 +235,7 @@ void main() {
       'SecretExtension', 'SecretDerivation', 'SecretDescriptors', 'SecretBip85',
       'SecretSigning', 'SecretBackup', 'SecretVerification',
       'SecretSilentPayments', 'DatabaseKeys',
-      'Recoverbull',
+      'Recoverbull', 'SecretPreview',
       // sealed display: the only way words reach a screen, built via `secret.widgets`
       'MnemonicView', 'MnemonicChallenge', 'MnemonicTile', 'SecretWidgets',
       // what generate takes: a closed set, never an int
