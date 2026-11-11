@@ -1,8 +1,7 @@
 import 'dart:convert';
 import 'dart:math';
 
-import 'package:secrets/src/domain/domain.dart'
-    show decodeLanguage, encodeLanguage;
+import 'package:secrets/src/domain/domain.dart' show languageFromLabel;
 
 import 'package:bip85_entropy/bip85_entropy.dart';
 import 'package:convert/convert.dart' as convert;
@@ -82,7 +81,7 @@ final class RecoverBullBackup {
     final plaintext = json.encode({
       ...metadata,
       _kMnemonic: words,
-      _kLanguage: encodeLanguage(language),
+      _kLanguage: language.label,
     });
     final sealed = RecoverBull.createBackup(
       secret: utf8.encode(plaintext),
@@ -140,7 +139,7 @@ final class RecoverBullBackup {
     final Language language;
     try {
       language = plaintext.containsKey(_kLanguage)
-          ? decodeLanguage(plaintext.remove(_kLanguage))
+          ? languageFromLabel(plaintext.remove(_kLanguage))
           : Language.english;
     } on FormatException {
       throw const InvalidVault('vault carries an unknown mnemonic language');
