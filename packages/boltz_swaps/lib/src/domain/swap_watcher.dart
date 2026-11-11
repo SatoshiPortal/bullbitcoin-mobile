@@ -30,21 +30,29 @@ class SwapWatcher {
     this._heartbeat = const Duration(minutes: 3),
   });
 
+  /// Arms the heartbeat and the live-update listener if they are not
+  /// running yet. Called wherever a swap is created, funded or rescued, so a
+  /// session that never ran [start] (the app launched before a wallet
+  /// existed) still drives every swap it touches.
+  void ensureRunning() {
+    _heartbeatTimer ??= Timer.periodic(
+      _heartbeat,
+      (_) => unawaited(_onHeartbeat()),
+    );
+    _updates ??= _repo.updates.listen(
+      (swap) => unawaited(processSwap(swap)),
+      onError: (Object e) => swapsLog.warning('SWAPS: updates error: $e'),
+      cancelOnError: false,
+    );
+  }
+
   /// Never throws — the watcher must not break startup.
   Future<void> start() async {
     try {
       // Heartbeat and event subscription are armed FIRST: if anything in
       // the initial verify/sweep throws, the periodic driver must already
       // exist or the session would run with no recovery at all.
-      _heartbeatTimer ??= Timer.periodic(
-        _heartbeat,
-        (_) => unawaited(_onHeartbeat()),
-      );
-      _updates ??= _repo.updates.listen(
-        (swap) => unawaited(processSwap(swap)),
-        onError: (Object e) => swapsLog.warning('SWAPS: updates error: $e'),
-        cancelOnError: false,
-      );
+      ensureRunning();
       await _repo.verifyCompletions();
       await _sweep();
     } catch (e) {

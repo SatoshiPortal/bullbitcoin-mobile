@@ -1,13 +1,18 @@
 import 'package:boltz_swaps/src/domain/entities/swap.dart';
 import 'package:boltz_swaps/src/domain/entities/swap_failure.dart';
 import 'package:boltz_swaps/src/domain/swap_repository.dart';
+import 'package:boltz_swaps/src/domain/swap_watcher.dart';
 import 'package:boltz_swaps/src/log.dart';
 import 'package:primitives/primitives.dart';
 
 class CreateLightningSendSwapUsecase {
-  CreateLightningSendSwapUsecase({required this._swapRepository});
+  CreateLightningSendSwapUsecase({
+    required this._swapRepository,
+    required this._swapWatcher,
+  });
 
   final SwapRepository _swapRepository;
+  final SwapWatcher _swapWatcher;
 
   Future<Result<LnSendSwap, SwapsFailure>> execute({
     required String walletId,
@@ -24,6 +29,7 @@ class CreateLightningSendSwapUsecase {
           SwapsAmountOutOfLimitsFailure(minSat: limits.min, maxSat: limits.max),
         );
       }
+      _swapWatcher.ensureRunning();
       return Ok(
         await _swapRepository.createLightningSend(
           walletId: walletId,

@@ -62,6 +62,7 @@ void main() {
   });
 
   late _MockSwapRepository repository;
+  late _MockSwapWatcher creationWatcher;
 
   setUpAll(() {
     registerFallbackValue(SwapType.bitcoinToLiquid);
@@ -70,6 +71,7 @@ void main() {
 
   setUp(() {
     repository = _MockSwapRepository();
+    creationWatcher = _MockSwapWatcher();
     when(
       () => repository.limits(any()),
     ).thenAnswer((_) async => const SwapLimits(min: 25000, max: 1000000));
@@ -78,7 +80,12 @@ void main() {
   group('CreateChainSwapUsecase', () {
     late CreateChainSwapUsecase usecase;
 
-    setUp(() => usecase = CreateChainSwapUsecase(swapRepository: repository));
+    setUp(
+      () => usecase = CreateChainSwapUsecase(
+        swapRepository: repository,
+        swapWatcher: creationWatcher,
+      ),
+    );
 
     test('refuses an amount outside the limits without creating', () async {
       final result = await usecase.execute(
@@ -87,6 +94,7 @@ void main() {
         fromLiquid: false,
       );
 
+      verifyNever(() => creationWatcher.ensureRunning());
       final failure = (result as Err).failure as SwapsAmountOutOfLimitsFailure;
       expect(failure.minSat, 25000);
       expect(failure.isBelowMinimum(1000), isTrue);
@@ -120,6 +128,7 @@ void main() {
 
       expect((result as Ok).value, same(swap));
       verify(() => repository.limits(SwapType.liquidToBitcoin)).called(1);
+      verify(() => creationWatcher.ensureRunning()).called(1);
     });
 
     test('reports Boltz unavailable when the limits cannot load', () async {
@@ -141,8 +150,10 @@ void main() {
     late CreateLightningSendSwapUsecase usecase;
 
     setUp(
-      () =>
-          usecase = CreateLightningSendSwapUsecase(swapRepository: repository),
+      () => usecase = CreateLightningSendSwapUsecase(
+        swapRepository: repository,
+        swapWatcher: creationWatcher,
+      ),
     );
 
     test('checks the invoice amount against the submarine limits', () async {
@@ -204,6 +215,7 @@ void main() {
     setUp(
       () => usecase = CreateLightningReceiveSwapUsecase(
         swapRepository: repository,
+        swapWatcher: creationWatcher,
       ),
     );
 
@@ -294,6 +306,7 @@ void main() {
       );
 
       expect((result as Ok).value, same(swap));
+      verify(() => watcher.ensureRunning()).called(1);
       verify(() => watcher.processSwap(swap)).called(1);
     });
 

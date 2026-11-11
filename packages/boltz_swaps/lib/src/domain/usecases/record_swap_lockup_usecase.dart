@@ -31,6 +31,7 @@ class RecordSwapLockupUsecase {
         lockupFeeSat: lockupFeeSat,
       );
       final swap = await _swapRepository.get(swapId);
+      _swapWatcher.ensureRunning();
       unawaited(_swapWatcher.processSwap(swap));
       return Ok(swap);
     } catch (e) {

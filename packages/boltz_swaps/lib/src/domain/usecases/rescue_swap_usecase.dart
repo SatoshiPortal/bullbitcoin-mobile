@@ -27,6 +27,7 @@ class RescueSwapUsecase {
         restored,
         walletId: selectedWalletId,
       );
+      _swapWatcher.ensureRunning();
       await _swapWatcher.processSwap(swap);
       return Ok(await _swapRepository.get(swap.id));
     } catch (e) {

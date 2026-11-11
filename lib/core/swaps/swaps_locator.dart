@@ -172,16 +172,21 @@ class SwapsLocator {
       () => RetrySwapUsecase(swapRepository: locator<SwapRepository>()),
     );
     locator.registerFactory<CreateChainSwapUsecase>(
-      () => CreateChainSwapUsecase(swapRepository: locator<SwapRepository>()),
+      () => CreateChainSwapUsecase(
+        swapRepository: locator<SwapRepository>(),
+        swapWatcher: locator<SwapWatcher>(),
+      ),
     );
     locator.registerFactory<CreateLightningSendSwapUsecase>(
       () => CreateLightningSendSwapUsecase(
         swapRepository: locator<SwapRepository>(),
+        swapWatcher: locator<SwapWatcher>(),
       ),
     );
     locator.registerFactory<CreateLightningReceiveSwapUsecase>(
       () => CreateLightningReceiveSwapUsecase(
         swapRepository: locator<SwapRepository>(),
+        swapWatcher: locator<SwapWatcher>(),
       ),
     );
     locator.registerFactory<GetSwapLimitsAndFeesUsecase>(
