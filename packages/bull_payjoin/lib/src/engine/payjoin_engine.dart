@@ -47,6 +47,9 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
 
   final Map<String, _ProposalRetry> _proposalRetries = {};
   final Set<String> _manualProposalRetries = {};
+  // Unproposed senders whose original this engine already sent at expiry: one
+  // automatic send per session and per run, replays included.
+  final Set<String> _originalsSentAtExpiry = {};
   bool _disposed = false;
 
   @visibleForTesting
@@ -148,6 +151,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       await retry.subscription?.cancel();
     }
     _proposalRetries.clear();
+    _originalsSentAtExpiry.clear();
     for (final timer in _broadcastPollTimers.values) {
       timer.cancel();
     }
@@ -1471,10 +1475,20 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
   /// network: settles it if the original is visible, else keeps it unfinished,
   /// so its inputs stay reserved, under the read-only fallback observer.
   ///
-  /// ⚠️ Known limit: nothing sends this original again automatically. While
-  /// it is neither seen nor refuted the inputs stay frozen and every resume
-  /// repeats the lookup; broadcasting the original by hand is the way out.
-  Future<void> _holdUnresolvedOriginal(PayjoinSenderModel sender) async {
+  /// With [replay], an original that a clean lookup does not see is sent once
+  /// more, at most once per run. It is the very transaction the row recorded,
+  /// same bytes and txid, spending inputs that are still reserved: it can
+  /// only make that same payment happen, never a second one. This is what
+  /// lets a sender that was unfinished before schema 3, or whose first send
+  /// had an unknown outcome, still progress. Nothing else is ever sent here.
+  ///
+  /// ⚠️ Known limit: while the original is neither seen nor accepted the
+  /// inputs stay frozen and every resume repeats the lookup.
+  Future<void> _holdUnresolvedOriginal(
+    PayjoinSenderModel sender, {
+    required bool replay,
+  }) async {
+    var absent = false;
     try {
       if (await _transactions.isTransactionVisible(
         walletId: sender.walletId,
@@ -1485,6 +1499,8 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
           sender.id,
           sender.originalTxId,
         );
+      } else {
+        absent = true;
       }
     } catch (e, st) {
       _log.warning(
@@ -1495,8 +1511,27 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
         trace: st,
       );
     }
-    final current = await _localPayjoinDatasource.fetchSender(sender.id);
+    var current = await _localPayjoinDatasource.fetchSender(sender.id);
     if (current == null || current.isCompleted || current.isAborted) return;
+    // Never for a row already expired: its inputs were released.
+    if (replay &&
+        absent &&
+        !current.isExpired &&
+        current.proposalPsbt == null &&
+        _originalsSentAtExpiry.add(current.id)) {
+      try {
+        // Built from the persisted row: the recorded original, unchanged.
+        final result = await _broadcastOriginalTransaction(current.toEntity());
+        if (result != null) {
+          _payjoinStreamController.add(result);
+          return;
+        }
+      } on api.PayjoinSpendBlockedException {
+        // Refused locally: the earlier evidence and the reservation stay.
+      }
+      current = await _localPayjoinDatasource.fetchSender(sender.id);
+      if (current == null || current.isCompleted || current.isAborted) return;
+    }
     // Publishes the typed reserved state and arms the fallback observer.
     _pauseProposal(current, allowRetry: false);
   }
@@ -1655,53 +1690,65 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       //  proposalPsbt == null: once a proposal arrived, _processPayjoinProposal
       //  owns finalizing/broadcasting the payjoin transaction (same inputs).
       //
-      //  Emit only the terminal outcome: the aborted result on success (so
-      //  the send flow resolves to success), or the raw expired entity if the
-      //  fallback broadcast itself failed (so listeners see a terminal state
-      //  and don't hang on the "coordinating" screen). We deliberately do NOT
-      //  emit the interim expired entity before the fallback, which would race
-      //  the aborted one on the stream.
+      //  Three outcomes, and only the terminal ones are emitted as such: the
+      //  aborted result when the original went out (the send flow resolves to
+      //  success); the expired entity when the send is proven not to have
+      //  reached the network and the row holds no earlier evidence (listeners
+      //  see a terminal state and don't hang on "coordinating"); otherwise the
+      //  session stays unfinished and is published as paused, see
+      //  _holdUnresolvedOriginal. We deliberately do NOT emit an interim
+      //  expired entity before the fallback, which would race the aborted one
+      //  on the stream.
       //
       //  Same reasoning as the receiver branch above for not persisting the
       //  expired flag up front, and for NOT calling _stopWatching before
       //  attempting: the fallback watch armed at session creation must
       //  survive a failed attempt here.
+      if (freshModel is! PayjoinSenderModel) return;
       // A session already holding evidence may have paid through an earlier
-      // attempt whose outcome was never recorded: observe, never send again.
-      if (freshModel is PayjoinSenderModel && freshModel.hasNetworkEvidence) {
-        await _holdUnresolvedOriginal(freshModel);
+      // attempt whose outcome was never recorded: look first, and at most
+      // replay that same original while its inputs are still reserved.
+      if (freshModel.hasNetworkEvidence) {
+        // An expired row released its inputs: observed only, never sent.
+        if (freshModel.isExpired) return;
+        await _holdUnresolvedOriginal(freshModel, replay: true);
         return;
       }
+      _originalsSentAtExpiry.add(payjoin.id);
       final result = await _broadcastOriginalTransaction(payjoin);
       if (result != null) {
         _payjoinStreamController.add(result);
         return;
       }
-      // The automatic fallback failed, and unlike the receiver branch this
-      //  original is OUR payment: persist the expiry so the session becomes
-      //  terminal on our side. Two things follow, and they are inseparable.
-      //  It releases this session's inputs — the freeze reads
-      //  `onlyUnfinished`, so an unfinished row locks those coins out of every
-      //  send in the app, not just this order, for a payment we cannot even
-      //  broadcast. And because they are released the user can rebuild the
-      //  payment on other coins, which is exactly why we must also stop
-      //  re-broadcasting this original later (see the sender sweep in
-      //  _resumePayjoinsOnStartupUnguarded): the two would not conflict, so
-      //  both could confirm and pay the order twice.
+      // The automatic fallback returned nothing. Unlike the receiver branch
+      //  this original is OUR payment, so what happens next depends on what
+      //  the attempt left in the row.
+      //
+      //  Evidence recorded: the send may still pay (unknown outcome, or sent
+      //  but not recorded). The session stays unfinished and reserved, and is
+      //  not sent again in this run.
+      //
+      //  No evidence: the port proved nothing reached the network. Persist the
+      //  expiry so the session becomes terminal on our side. Two things
+      //  follow, and they are inseparable. It releases this session's inputs —
+      //  the freeze reads `onlyUnfinished`, so an unfinished row locks those
+      //  coins out of every send in the app, not just this order, for a
+      //  payment we could not even hand to the network. And because they are
+      //  released the user can rebuild the payment on other coins, which is
+      //  exactly why this original is never sent again once expired (see the
+      //  sender sweep in _resumePayjoinsOnStartupUnguarded): the two would not
+      //  conflict, so both could confirm and pay the order twice.
       //
       //  The fallback observer armed at session creation stays live and is
       //  re-armed by that sweep: it is read-only, so if the counterparty
       //  broadcasts this original anyway — BIP78 invites them to — the row
       //  still converges to aborted and the history tells the truth.
-      // Only a send proven not to have reached the network leaves no
-      // evidence. Any other failure may still pay: the session then stays
-      // unfinished and reserved, and is only observed from here on.
       final attempted = await _localPayjoinDatasource.fetchSender(payjoin.id);
       if (attempted == null || attempted.isCompleted || attempted.isAborted) {
         return;
       }
       if (attempted.hasNetworkEvidence) {
-        await _holdUnresolvedOriginal(attempted);
+        await _holdUnresolvedOriginal(attempted, replay: false);
         return;
       }
       final recorded = await _localPayjoinDatasource.markExpired(expiredModel);
@@ -2754,6 +2801,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     final retry = _proposalRetries.remove(payjoinId);
     retry?.stop();
     retry?.expiryTimer?.cancel();
+    _originalsSentAtExpiry.remove(payjoinId);
 
     _receiverFallbackAvailableAt.remove(payjoinId);
     // Both watcher kinds are keyed per (session, txid) — '$payjoinId|$txId' —
