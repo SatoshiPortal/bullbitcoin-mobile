@@ -42,6 +42,7 @@ void main() {
   setUp(() {
     dir = Directory.systemTemp.createTempSync('spend-gate-');
     revisions = RevisionStore(writerMetadataPath(dir.path));
+    revisions.openSpendGate().close();
     wallet = descriptor('one');
     other = descriptor('two');
     for (final descriptor in [wallet, other]) {
@@ -254,14 +255,20 @@ void main() {
     expect(File(emptyPath).existsSync(), isFalse);
     final gateFile = File(revisions.spendGatePath);
     gateFile.renameSync('${gateFile.path}.saved');
-    expect(
-      () => RevisionStore(writerMetadataPath(dir.path), existingOnly: true),
-      throwsA(isA<BitcoinSpendGateUnavailable>()),
-    );
-    expect(
-      () => RevisionStore(writerMetadataPath(dir.path)),
-      throwsA(isA<BitcoinSpendGateUnavailable>()),
-    );
+    // Metadata still opens for Liquid and reads; only the gate is refused,
+    // and a provisioned gate that went missing is never silently recreated.
+    for (final existingOnly in [true, false]) {
+      final reopened = RevisionStore(
+        writerMetadataPath(dir.path),
+        existingOnly: existingOnly,
+      );
+      expect(
+        reopened.openSpendGate,
+        throwsA(isA<BitcoinSpendGateUnavailable>()),
+      );
+      await reopened.close();
+    }
     expect(gateFile.existsSync(), isFalse);
+    expect(await gate.check(wallet.key), BitcoinSpendStatus.unavailable);
   });
 }
