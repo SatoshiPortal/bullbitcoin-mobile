@@ -273,12 +273,14 @@ final class Secret extends SecretEntry {
   /// Inside the boundary an `Error` is a bug and leaves with its type only.
   static void _requireNoReservedMetadata(Map<String, dynamic> metadata) {
     final reserved = Backup.recoverbull.reservedMetadataKeys;
-    if (metadata.keys.any(reserved.contains)) {
-      throw ArgumentError.value(
-        reserved,
-        'metadata',
-        'the mnemonic is written by the vault, not by the caller',
-      );
+    for (final key in metadata.keys) {
+      if (reserved.contains(key)) {
+        throw ArgumentError.value(
+          key,
+          'metadata',
+          'the mnemonic is written by the vault, not by the caller',
+        );
+      }
     }
   }
 
