@@ -1,4 +1,6 @@
-import 'package:bb_mobile/core/errors/bull_exception.dart';
+import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
+import 'package:meta/meta.dart';
+import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/wallet/domain/bitcoin_send_port.dart';
@@ -6,9 +8,14 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bb_mobile/core/wallet/domain/insufficient_funds_exception.dart';
 import 'package:bb_mobile/core/wallet/domain/no_spendable_utxo_exception.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_utxo_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/selected_inputs_unavailable_exception.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/validate_bitcoin_selection_usecase.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
+
+typedef PreparedBitcoinSend = ({
+  String unsignedPsbt,
+  int txSize,
+  bool isToSelf,
+});
 
 class PrepareBitcoinSendUsecase {
   final PayjoinSessions _payjoin;
@@ -27,7 +34,8 @@ class PrepareBitcoinSendUsecase {
     );
   }
 
-  Future<({String unsignedPsbt, int txSize, bool isToSelf})> execute({
+  @useResult
+  Future<Result<PreparedBitcoinSend, WalletFailure>> execute({
     required String walletId,
     required String address,
     required NetworkFee networkFee,
@@ -39,7 +47,7 @@ class PrepareBitcoinSendUsecase {
   }) async {
     try {
       if (amountSat == null && drain == false) {
-        throw Exception('Amount cannot be empty if drain is not true');
+        return const Err(WalletTransactionBuildFailure('Amount required'));
       }
 
       // D7: a frozen coin must never be spendable in any transaction. Always
@@ -50,10 +58,6 @@ class PrepareBitcoinSendUsecase {
       final unspendableUtxos = await _validateBitcoinSelectionUsecase.execute(
         walletId: walletId,
         selectedInputs: selectedInputs,
-      );
-
-      log.info(
-        'Bitcoin wallet id $walletId building psbt. Unspendable utxos: $unspendableUtxos',
       );
 
       // Belt-and-suspenders: defensively strip any selected input that falls in
@@ -68,13 +72,12 @@ class PrepareBitcoinSendUsecase {
       if (selectedOnly &&
           (selectedInputs == null ||
               selectedInputs.isEmpty ||
-              filteredSelectedInputs!.length != selectedInputs.length)) {
-        throw SelectedInputsUnavailableException(
-          'One or more selected inputs are unavailable',
-        );
+              filteredSelectedInputs == null ||
+              filteredSelectedInputs.length != selectedInputs.length)) {
+        return const Err(WalletSelectedInputsUnavailableFailure());
       }
 
-      final psbt = await _bitcoinWalletRepository.buildPsbt(
+      final built = await _bitcoinWalletRepository.buildPsbt(
         walletId: walletId,
         address: address,
         amountSat: amountSat,
@@ -85,27 +88,34 @@ class PrepareBitcoinSendUsecase {
         selectedOnly: selectedOnly,
         replaceByFee: replaceByFee,
       );
+      final String psbt;
+      switch (built) {
+        case Ok(:final value):
+          psbt = value;
+        case Err(:final failure):
+          return Err(failure);
+      }
       final size = await _bitcoinWalletRepository.getTxSize(psbt: psbt);
       final isToSelf = await _bitcoinWalletRepository.isAddressOfWallet(
         address,
         walletId: walletId,
       );
-      return (unsignedPsbt: psbt, txSize: size, isToSelf: isToSelf);
-    } on NoSpendableUtxoException catch (error) {
-      if (selectedOnly) {
-        throw SelectedInputsUnavailableException(error.message);
-      }
-      rethrow;
+      return Ok((unsignedPsbt: psbt, txSize: size, isToSelf: isToSelf));
+    } on NoSpendableUtxoException {
+      return Err(
+        selectedOnly || (selectedInputs?.isNotEmpty ?? false)
+            ? const WalletSelectedInputsUnavailableFailure()
+            : const WalletNoSpendableInputsFailure(),
+      );
     } on InsufficientFundsException {
-      rethrow;
-    } on SelectedInputsUnavailableException {
-      rethrow;
-    } catch (e) {
-      throw PrepareBitcoinSendException(e.toString());
+      return const Err(WalletInsufficientFundsFailure());
+    } on Exception catch (error, trace) {
+      log.warning(
+        'Bitcoin transaction preparation failed',
+        error: error.runtimeType,
+        trace: trace,
+      );
+      return const Err(WalletTransactionBuildFailure());
     }
   }
-}
-
-class PrepareBitcoinSendException extends BullException {
-  PrepareBitcoinSendException(super.message);
 }

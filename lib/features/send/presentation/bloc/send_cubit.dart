@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/send/domain/usecases/prepare_send_bitcoin_transaction_usecase.dart';
 import 'package:bull_pricer/bull_pricer.dart';
 import 'package:primitives/primitives.dart' show Sats;
 import 'dart:async';
@@ -24,7 +25,6 @@ import 'package:bb_mobile/core/wallet/domain/entities/outpoint.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
-import 'package:bb_mobile/core/wallet/domain/selected_inputs_unavailable_exception.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_utxos_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
@@ -162,7 +162,7 @@ class SendCubit extends Cubit<SendState>
   final GetWalletUtxosUsecase _getWalletUtxosUsecase;
   final GetWalletsUsecase _getWalletsUsecase;
   final GetWalletUsecase _getWalletUsecase;
-  final PrepareBitcoinSendUsecase _prepareBitcoinSendUsecase;
+  final PrepareSendBitcoinTransactionUsecase _prepareBitcoinSendUsecase;
   final ValidateBitcoinSelectionUsecase _validateBitcoinSelectionUsecase;
   final PrepareLiquidSendUsecase _prepareLiquidSendUsecase;
   final CalculateLiquidPsetSizeUsecase _calculateLiquidPsetSizeUsecase;
@@ -1864,6 +1864,8 @@ class SendCubit extends Cubit<SendState>
         );
         // Exact-input sweeps rebuild before signing so current frozen and
         // Payjoin-reserved exclusions are applied.
+        final cachedPsbt = cachedSlot.unsignedPsbt;
+        final cachedTxSize = cachedSlot.txSize;
         final canUseCache = !state.isSweep && cachedSlot.isCacheReady;
         if (canUseCache && state.selectedUtxos.isNotEmpty) {
           await _validateBitcoinSelectionUsecase.execute(
@@ -1881,16 +1883,17 @@ class SendCubit extends Cubit<SendState>
           'chainSwap=${state.chainSwap != null} '
           'cacheHit=$canUseCache',
         );
-        final txPreparation = canUseCache
-            ? (
-                unsignedPsbt: cachedSlot.unsignedPsbt!,
-                txSize: cachedSlot.txSize!,
+        final preparationResult =
+            canUseCache && cachedPsbt != null && cachedTxSize != null
+            ? Ok<PreparedBitcoinSend, SendFailure>((
+                unsignedPsbt: cachedPsbt,
+                txSize: cachedTxSize,
                 // The cached PSBT was built for the same address, so the
                 // to-self determination is invariant — preserve it rather
                 // than dropping it to false (which would flip the "to self"
                 // badge and mis-gate payjoin on a self-send).
                 isToSelf: state.isToSelf ?? false,
-              )
+              ))
             : await _prepareBitcoinSendUsecase.execute(
                 walletId: state.selectedWallet!.id,
                 address: address,
@@ -1900,7 +1903,17 @@ class SendCubit extends Cubit<SendState>
                 selectedInputs: state.selectedUtxos,
                 drain: drain,
                 selectedOnly: state.isSweep,
+                hasFrozenInputs: state.frozenBalanceSat > 0,
               );
+        if (generation != _transactionGeneration) return;
+        final PreparedBitcoinSend txPreparation;
+        switch (preparationResult) {
+          case Ok(:final value):
+            txPreparation = value;
+          case Err(:final failure):
+            emit(state.copyWith(failure: failure, buildingTransaction: false));
+            return;
+        }
         final builtFee = await _calculateBitcoinAbsoluteFeesUsecase.execute(
           psbt: txPreparation.unsignedPsbt,
         );
@@ -2048,15 +2061,6 @@ class SendCubit extends Cubit<SendState>
       if (generation != _transactionGeneration) return;
       _invalidateSignedTransaction();
       log.severe(error: e, trace: StackTrace.current);
-      if (e is SelectedInputsUnavailableException) {
-        emit(
-          state.copyWith(
-            failure: const SendSelectedCoinsUnavailableFailure(),
-            buildingTransaction: false,
-          ),
-        );
-        return;
-      }
       if (e is ConsolidationRequiredException) {
         emit(
           state.copyWith(
@@ -2090,15 +2094,6 @@ class SendCubit extends Cubit<SendState>
                 : state.selectedUtxos.isNotEmpty
                 ? SendSelectedCoinsInsufficientFailure(e.message)
                 : SendInsufficientBalanceFailure(e.message),
-            buildingTransaction: false,
-          ),
-        );
-        return;
-      }
-      if (e is PrepareBitcoinSendException) {
-        emit(
-          state.copyWith(
-            failure: SendTransactionBuildFailure(e.message),
             buildingTransaction: false,
           ),
         );

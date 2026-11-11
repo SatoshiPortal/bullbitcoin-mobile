@@ -37,7 +37,7 @@ class PrepareSellBitcoinPayinUsecase {
     bool replaceByFee = true,
   }) async {
     try {
-      final prepared = await _prepareBitcoinSendUsecase.execute(
+      final result = await _prepareBitcoinSendUsecase.execute(
         walletId: walletId,
         address: address,
         networkFee: networkFee,
@@ -46,6 +46,13 @@ class PrepareSellBitcoinPayinUsecase {
         selectedInputs: selectedInputs,
         replaceByFee: replaceByFee,
       );
+      final PreparedBitcoinSend prepared;
+      switch (result) {
+        case Ok(:final value):
+          prepared = value;
+        case Err(:final failure):
+          return Err(SellUnexpectedFailure(failure.logMessage));
+      }
       final absoluteFees = await _calculateBitcoinAbsoluteFeesUsecase.execute(
         psbt: prepared.unsignedPsbt,
       );
@@ -55,13 +62,13 @@ class PrepareSellBitcoinPayinUsecase {
         isToSelf: prepared.isToSelf,
         absoluteFees: absoluteFees,
       ));
-    } catch (e, st) {
+    } on Exception catch (e, st) {
       log.severe(
         message: 'Failed to build the Bitcoin sell payin',
-        error: e,
+        error: e.runtimeType,
         trace: st,
       );
-      return Err(SellUnexpectedFailure('$e'));
+      return const Err(SellUnexpectedFailure());
     }
   }
 }

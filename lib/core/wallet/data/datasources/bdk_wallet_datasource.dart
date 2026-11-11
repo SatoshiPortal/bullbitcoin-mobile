@@ -17,7 +17,6 @@ import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_connection
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/insufficient_funds_exception.dart';
 import 'package:bb_mobile/core/wallet/domain/no_spendable_utxo_exception.dart';
-import 'package:bb_mobile/core/wallet/domain/selected_inputs_unavailable_exception.dart';
 import 'package:bb_mobile/core/wallet/domain/transaction_signature_status.dart';
 import 'package:bull_sdk/bdk.dart' as bdk;
 import 'package:bull_sdk/bull_sdk.dart' as bull_sdk;
@@ -258,7 +257,7 @@ class BdkWalletDatasource {
     }
 
     if (selectedOnly && (selected == null || selected.isEmpty)) {
-      throw SelectedInputsUnavailableException(
+      throw NoSpendableUtxoException(
         'Selected-only transaction requires at least one input',
       );
     }

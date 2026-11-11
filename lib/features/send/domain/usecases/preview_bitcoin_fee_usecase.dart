@@ -1,3 +1,4 @@
+import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/core/fees/domain/fee_preview_cache.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bull_logger/bull_logger.dart';
@@ -36,7 +37,7 @@ class PreviewBitcoinFeeUsecase {
     bool selectedOnly = false,
   }) async {
     try {
-      final tx = await _prepare.execute(
+      final result = await _prepare.execute(
         walletId: walletId,
         address: address,
         networkFee: networkFee,
@@ -46,6 +47,13 @@ class PreviewBitcoinFeeUsecase {
         drain: drain,
         selectedOnly: selectedOnly,
       );
+      final PreparedBitcoinSend tx;
+      switch (result) {
+        case Ok(:final value):
+          tx = value;
+        case Err():
+          return const BitcoinFeePreviewSlot();
+      }
       final fee = await _calculateFees.execute(psbt: tx.unsignedPsbt);
       return BitcoinFeePreviewSlot(
         feeSat: fee,

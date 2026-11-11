@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/send/domain/usecases/prepare_send_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/features/send/public/send_facade.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
@@ -70,6 +71,11 @@ class SendLocator {
   }
 
   static void registerUsecases(GetIt locator) {
+    locator.registerFactory<PrepareSendBitcoinTransactionUsecase>(
+      () => PrepareSendBitcoinTransactionUsecase(
+        locator<PrepareBitcoinSendUsecase>(),
+      ),
+    );
     locator.registerFactory<VerifySignedTxUsecase>(VerifySignedTxUsecase.new);
     locator.registerLazySingleton<SendFacade>(
       () => SendFacade(locator<VerifySignedTxUsecase>()),
@@ -246,7 +252,8 @@ class SendLocator {
         getSendExchangeRateUsecase: locator<GetSendExchangeRateUsecase>(),
         getNetworkFeesUsecase: locator<GetNetworkFeesUsecase>(),
         getWalletUtxosUsecase: locator<GetWalletUtxosUsecase>(),
-        prepareBitcoinSendUsecase: locator<PrepareBitcoinSendUsecase>(),
+        prepareBitcoinSendUsecase:
+            locator<PrepareSendBitcoinTransactionUsecase>(),
         validateBitcoinSelectionUsecase:
             locator<ValidateBitcoinSelectionUsecase>(),
         prepareLiquidSendUsecase: locator<PrepareLiquidSendUsecase>(),
