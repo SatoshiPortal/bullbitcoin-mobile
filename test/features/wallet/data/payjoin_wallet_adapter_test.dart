@@ -52,7 +52,13 @@ void main() {
     final wallet = adapter((_) => BitcoinSpendStatus.busy);
     await expectLater(
       utxos(wallet),
-      throwsA(isA<PayjoinSpendBlockedException>()),
+      throwsA(
+        isA<PayjoinSpendBlockedException>().having(
+          (e) => e.busy,
+          'busy',
+          isTrue,
+        ),
+      ),
     );
     expect(checks, 5);
     verifyNever(() => metadata.fetch(any()));
@@ -62,7 +68,13 @@ void main() {
     final wallet = adapter((_) => BitcoinSpendStatus.pending);
     await expectLater(
       utxos(wallet),
-      throwsA(isA<PayjoinSpendBlockedException>()),
+      throwsA(
+        isA<PayjoinSpendBlockedException>().having(
+          (e) => e.busy,
+          'busy',
+          isFalse,
+        ),
+      ),
     );
     expect(checks, 1);
   });

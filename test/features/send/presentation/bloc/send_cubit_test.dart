@@ -1208,6 +1208,27 @@ void main() {
       ).called(1);
     });
 
+    test('a busy wallet is not reported as awaiting a payment', () async {
+      final cubit = buildCubit();
+      addTearDown(cubit.close);
+      when(
+        () => broadcastBitcoinTxUsecase.execute(
+          'signed-psbt',
+          walletId: 'w1',
+          isPsbt: true,
+          network: app.Network.bitcoinMainnet,
+        ),
+      ).thenThrow(const WalletSpendBlockedException(BitcoinSpendStatus.busy));
+      cubit.setStateForTest(plainSignedState());
+
+      await cubit.broadcastTransaction();
+
+      expect(
+        cubit.state.failure,
+        isA<SendSpendBlockedFailure>().having((f) => f.busy, 'busy', isTrue),
+      );
+    });
+
     void stubBroadcast() {
       when(
         () => broadcastBitcoinTxUsecase.execute(
