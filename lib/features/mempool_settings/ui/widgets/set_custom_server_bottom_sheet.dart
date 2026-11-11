@@ -7,7 +7,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullBottomSheet, BullButton, BullLowerCaseTextFormatter, Gap;
+    show
+        BullBottomSheet,
+        BullButton,
+        BullLowerCaseTextFormatter,
+        BullShapesX,
+        Gap;
 
 class SetCustomServerBottomSheet extends StatefulWidget {
   final String? initialUrl;
@@ -173,7 +178,9 @@ class _SetCustomServerBottomSheetState
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
                       color: context.appColors.surface,
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(
+                        context.bullShapes.card,
+                      ),
                       border: Border.all(color: context.appColors.border),
                     ),
                     child: Row(
@@ -213,15 +220,21 @@ class _SetCustomServerBottomSheetState
                       fillColor: context.appColors.surface,
                       filled: true,
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8.0),
+                        borderRadius: BorderRadius.circular(
+                          context.bullShapes.input,
+                        ),
                         borderSide: BorderSide(color: context.appColors.border),
                       ),
                       enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8.0),
+                        borderRadius: BorderRadius.circular(
+                          context.bullShapes.input,
+                        ),
                         borderSide: BorderSide(color: context.appColors.border),
                       ),
                       disabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8.0),
+                        borderRadius: BorderRadius.circular(
+                          context.bullShapes.input,
+                        ),
                         borderSide: BorderSide(
                           color: context.appColors.border.withValues(
                             alpha: 0.5,
@@ -301,7 +314,9 @@ class _SetCustomServerBottomSheetState
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
                         color: context.appColors.errorContainer,
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: BorderRadius.circular(
+                          context.bullShapes.card,
+                        ),
                       ),
                       child: Row(
                         children: [

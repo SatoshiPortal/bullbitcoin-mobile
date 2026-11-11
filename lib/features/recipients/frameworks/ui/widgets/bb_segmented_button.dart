@@ -1,3 +1,4 @@
+import 'package:bull_ui/bull_ui.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:custom_sliding_segmented_control/custom_sliding_segmented_control.dart';
 import 'package:flutter/material.dart';
@@ -27,7 +28,7 @@ class BBSegmentedButton extends StatelessWidget {
       height: 48,
       child: Center(
         child: ClipRRect(
-          borderRadius: BorderRadius.circular(2),
+          borderRadius: BorderRadius.circular(context.bullShapes.button),
           clipBehavior: .antiAliasWithSaveLayer,
           child: CustomSlidingSegmentedControl<String>(
             controller: CustomSegmentedController(value: selected),
@@ -46,11 +47,11 @@ class BBSegmentedButton extends StatelessWidget {
             isStretch: true,
             decoration: BoxDecoration(
               color: context.appColors.outline.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(2),
+              borderRadius: BorderRadius.circular(context.bullShapes.button),
             ),
             thumbDecoration: BoxDecoration(
               color: context.appColors.onPrimary,
-              borderRadius: BorderRadius.circular(2),
+              borderRadius: BorderRadius.circular(context.bullShapes.button),
             ),
             children: {
               for (final item in items)

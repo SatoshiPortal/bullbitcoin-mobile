@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullBottomSheet, BullDialog, BullSnackBar;
+    show BullBottomSheet, BullDialog, BullShapesX, BullSnackBar;
 
 class CustomServerCard extends StatelessWidget {
   final MempoolServerDto? customServer;
@@ -62,7 +62,9 @@ class CustomServerCard extends StatelessWidget {
                                   : context.appColors.warning.withValues(
                                       alpha: 0.15,
                                     ),
-                              borderRadius: BorderRadius.circular(4),
+                              borderRadius: BorderRadius.circular(
+                                context.bullShapes.badge,
+                              ),
                               border: Border.all(
                                 color: customServer!.enableSsl
                                     ? context.appColors.success.withValues(
@@ -179,6 +181,9 @@ class CustomServerCard extends StatelessWidget {
     BullDialog.show(
       context: context,
       builder: (dialogContext) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(dialogContext.bullShapes.sheet),
+        ),
         backgroundColor: context.appColors.surface,
         title: Text(
           context.loc.mempoolCustomServerDeleteTitle,

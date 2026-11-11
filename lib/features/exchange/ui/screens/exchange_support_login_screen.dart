@@ -5,7 +5,7 @@ import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:bb_mobile/features/exchange_support_chat/public/exchange_support_chat_facade.dart';
 import 'package:flutter/material.dart';
-import 'package:bull_ui/bull_ui.dart' show BullInputText, Gap;
+import 'package:bull_ui/bull_ui.dart' show BullInputText, BullShapesX, Gap;
 import 'package:go_router/go_router.dart';
 
 class ExchangeSupportLoginScreen extends StatelessWidget {
@@ -88,7 +88,9 @@ class ExchangeSupportLoginScreen extends StatelessWidget {
                         padding: const EdgeInsets.all(24),
                         decoration: BoxDecoration(
                           color: context.appColors.surfaceContainer,
-                          borderRadius: BorderRadius.circular(16),
+                          borderRadius: BorderRadius.circular(
+                            context.bullShapes.card,
+                          ),
                           border: Border.all(
                             color: context.appColors.outline.withValues(
                               alpha: 0.3,
@@ -169,7 +171,7 @@ class _FakeMessageBubble extends StatelessWidget {
           height: height,
           decoration: BoxDecoration(
             color: color,
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(context.bullShapes.card),
           ),
         ),
       ],

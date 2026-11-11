@@ -9,7 +9,14 @@ import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullDropdown, BullInfoCard, BullInputText, BullSwitch, BullText, Gap;
+    show
+        BullDropdown,
+        BullInfoCard,
+        BullInputText,
+        BullShapesX,
+        BullSwitch,
+        BullText,
+        Gap;
 
 class AutoSwapSettingsScreen extends StatefulWidget {
   const AutoSwapSettingsScreen({super.key});
@@ -185,7 +192,9 @@ class _AmountThresholdField extends StatelessWidget {
                     ),
                     decoration: BoxDecoration(
                       color: context.appColors.surface,
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(
+                        context.bullShapes.badge,
+                      ),
                       border: Border.all(color: context.appColors.border),
                     ),
                     child: BullText(
@@ -289,7 +298,9 @@ class _TriggerBalanceField extends StatelessWidget {
                     ),
                     decoration: BoxDecoration(
                       color: context.appColors.surface,
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(
+                        context.bullShapes.badge,
+                      ),
                       border: Border.all(color: context.appColors.border),
                     ),
                     child: BullText(
@@ -378,7 +389,9 @@ class _FeeThresholdField extends StatelessWidget {
                   ),
                   decoration: BoxDecoration(
                     color: context.appColors.surface,
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(
+                      context.bullShapes.badge,
+                    ),
                     border: Border.all(color: context.appColors.border),
                   ),
                   child: BullText('%', style: context.font.bodyMedium),

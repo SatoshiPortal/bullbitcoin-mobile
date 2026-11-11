@@ -9,7 +9,7 @@ import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullAmountInputFormatter, BullShimmerLine, BullText, Gap;
+    show BullAmountInputFormatter, BullShapesX, BullShimmerLine, BullText, Gap;
 
 /// Reusable "Custom Fee" tile used inside the fee-selection modal of both
 /// Send and Swap, and as the inline custom-rate tile in RBF. Owns the
@@ -417,7 +417,7 @@ class _CustomFeeListItemState extends State<CustomFeeListItem> {
       },
       child: Material(
         elevation: showAsSelected ? 4 : 1,
-        borderRadius: BorderRadius.circular(2),
+        borderRadius: BorderRadius.circular(context.bullShapes.card),
         clipBehavior: .hardEdge,
         color: widget.tileColor,
         shadowColor: widget.tileShadowColor,
@@ -510,15 +510,21 @@ class _CustomFeeListItemState extends State<CustomFeeListItem> {
                   fillColor: context.appColors.surfaceContainer,
                   filled: true,
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8.0),
+                    borderRadius: BorderRadius.circular(
+                      context.bullShapes.input,
+                    ),
                     borderSide: BorderSide(color: context.appColors.border),
                   ),
                   enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8.0),
+                    borderRadius: BorderRadius.circular(
+                      context.bullShapes.input,
+                    ),
                     borderSide: BorderSide(color: context.appColors.border),
                   ),
                   disabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8.0),
+                    borderRadius: BorderRadius.circular(
+                      context.bullShapes.input,
+                    ),
                     borderSide: BorderSide(
                       color: context.appColors.border.withValues(alpha: 0.5),
                     ),

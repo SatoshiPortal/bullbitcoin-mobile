@@ -119,8 +119,8 @@ class FetchAllBip85DerivationsWithEntropyUsecase {
       (Bip85Application.hex, [128169, final numBytes, final index]) =>
         await secret.derive.bip85.hex(numBytes: numBytes, index: index),
       (Bip85Application.bip39, [39, 0, final count, final index]) =>
-        switch (MnemonicWordCount.values
-            .where((value) => value.count == count)
+        switch (MnemonicLength.values
+            .where((value) => value.words == count)
             .firstOrNull) {
           final wordCount? => (await secret.derive.bip85.mnemonic(
             wordCount: wordCount,

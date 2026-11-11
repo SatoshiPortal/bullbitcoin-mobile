@@ -2,7 +2,6 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet_transaction.dart';
 import 'package:bb_mobile/core/widgets/inputs/bb_keyboard_actions.dart';
-import 'package:bb_mobile/features/exchange_support_chat/public/exchange_support_chat_facade.dart';
 import 'package:bb_mobile/features/replace_by_fee/domain/replace_by_fee_failure.dart';
 import 'package:bb_mobile/features/replace_by_fee/presentation/cubit.dart';
 import 'package:bb_mobile/features/replace_by_fee/presentation/replace_by_fee_failure_l10n.dart';
@@ -10,7 +9,8 @@ import 'package:bb_mobile/features/replace_by_fee/presentation/state.dart';
 import 'package:bb_mobile/features/replace_by_fee/ui/fee_selector_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show BullButton, BullText, Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show BullButton, BullShapesX, BullSupportButton, BullText, Gap;
 import 'package:go_router/go_router.dart';
 
 class ReplaceByFeeHomePage extends StatefulWidget {
@@ -74,16 +74,9 @@ class _ReplaceByFeeHomePageState extends State<ReplaceByFeeHomePage> {
                       if (failure
                           is ReplaceByFeeManipulatedTransactionFailure) ...[
                         const Gap(24),
-                        BullButton.big(
+                        BullSupportButton.big(
                           label: context.loc.replaceByFeeReportToSupport,
-                          onPressed: () => context.pushNamed(
-                            ExchangeSupportChatFacade.routeName,
-                            extra: ExchangeSupportChatDraft(
-                              initialMessage: _manipulatedTxSupportMessage(),
-                            ),
-                          ),
-                          bgColor: context.appColors.secondary,
-                          textColor: context.appColors.onSecondary,
+                          message: _manipulatedTxSupportMessage(),
                         ),
                       ],
                     ],
@@ -146,7 +139,7 @@ class _ReplaceByFeeHomePageState extends State<ReplaceByFeeHomePage> {
   ) {
     return Material(
       elevation: 1,
-      borderRadius: BorderRadius.circular(2),
+      borderRadius: BorderRadius.circular(context.bullShapes.card),
       clipBehavior: .hardEdge,
       color: context.appColors.onSecondary,
       shadowColor: context.appColors.secondary,

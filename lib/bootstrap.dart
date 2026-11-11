@@ -2,9 +2,11 @@ import 'dart:async';
 
 import 'package:bb_mobile/app.dart';
 import 'package:bb_mobile/core/screens/app_init_error_screen.dart';
+import 'package:bb_mobile/features/support/public/support_facade.dart';
 import 'package:bb_mobile/init.dart';
 import 'package:bb_mobile/features/wizard/public/wizard_facade.dart';
 import 'package:bull_logger/bull_logger.dart';
+import 'package:bull_ui/bull_ui.dart' show BullSupportScope;
 import 'package:flutter/material.dart';
 
 Future<void> startApp() async {
@@ -16,7 +18,12 @@ Future<void> startApp() async {
         await Bull.init();
       } catch (error, stackTrace) {
         log.severe(message: 'App Init Error', error: error, trace: stackTrace);
-        runApp(AppInitErrorScreen(error: error));
+        runApp(
+          BullSupportScope(
+            onContactSupport: SupportFacade.contactSupport,
+            child: AppInitErrorScreen(error: error),
+          ),
+        );
         _refreshDiagnosticContextAfterFirstFrame();
         return;
       } finally {
