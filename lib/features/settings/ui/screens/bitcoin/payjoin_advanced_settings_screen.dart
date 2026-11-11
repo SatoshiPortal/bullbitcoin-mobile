@@ -200,25 +200,10 @@ class _PayjoinAdvancedSettingsScreenState
                     style: context.font.bodyLarge,
                   ),
                   const Gap(8),
-                  BBText(
-                    context.loc.settingsPayjoinDirectoryLabel,
-                    style: context.font.labelSmall?.copyWith(
-                      color: context.appColors.onSurfaceVariant,
-                    ),
-                  ),
-                  BBText(
-                    PayjoinConstants.directoryUrl,
-                    style: context.font.bodyMedium,
-                  ),
-                  const Gap(12),
-                  BBText(
-                    context.loc.settingsPayjoinRelaysLabel,
-                    style: context.font.labelSmall?.copyWith(
-                      color: context.appColors.onSurfaceVariant,
-                    ),
-                  ),
-                  for (final relay in PayjoinConstants.ohttpRelayUrlsBase)
-                    BBText(relay, style: context.font.bodyMedium),
+                  // Every server is both a directory and a relay; a request
+                  // never uses the same domain for both.
+                  for (final server in PayjoinConstants.serverUrls)
+                    BBText(server.toString(), style: context.font.bodyMedium),
                 ],
               ),
             ),

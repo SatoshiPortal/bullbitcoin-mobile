@@ -4,6 +4,7 @@ import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/features/buy/domain/buy_failure.dart';
 import 'package:bb_mobile/features/buy/domain/create_buy_order_usecase.dart';
+import 'package:bull_logger/bull_logger.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -18,6 +19,8 @@ class _MockPayjoinReceiver extends Mock implements PayjoinReceiver {}
 class _MockPayjoinPolicyAccess extends Mock implements PayjoinPolicyAccess {}
 
 class _MockBuyOrder extends Mock implements BuyOrder {}
+
+class _MockLogger extends Mock implements Logger {}
 
 void main() {
   setUpAll(() {
@@ -115,4 +118,77 @@ void main() {
       expect(expiresAt.isAfter(after.add(const Duration(minutes: 6))), isFalse);
     },
   );
+  test('a payjoin fallback log never carries the foreign cause text', () async {
+    final previousLogger = log;
+    final logger = _MockLogger();
+    log = logger;
+    addTearDown(() => log = previousLogger);
+    final orders = _MockOrderRepository();
+    final settings = _MockSettingsRepository();
+    final receiver = _MockPayjoinReceiver();
+    final policy = _MockPayjoinPolicyAccess();
+
+    when(() => settings.fetch()).thenAnswer(
+      (_) async => const SettingsEntity(
+        environment: Environment.testnet,
+        bitcoinUnit: BitcoinUnit.sats,
+        currencyCode: 'CAD',
+      ),
+    );
+    when(() => policy.load()).thenAnswer(
+      (_) async => Ok(
+        PayjoinPolicy(
+          sendEnabled: false,
+          receiveEnabled: false,
+          buyEnabled: true,
+          sellEnabled: false,
+          minimumAmount: PayjoinPolicy.minimumAllowedAmount,
+          sessionLifetime: PayjoinPolicy.minimumSessionLifetime,
+        ),
+      ),
+    );
+    when(
+      () => orders.placeBuyOrder(
+        toAddress: 'tb1qexampleaddress',
+        orderAmount: const FiatAmount(100),
+        currency: FiatCurrency.cad,
+        network: OrderBitcoinNetwork.bitcoin,
+        isOwner: true,
+        payjoinBip21: null,
+      ),
+    ).thenAnswer((_) async => _MockBuyOrder());
+    // Foreign exception text can quote the payment request it failed on.
+    when(() => receiver.start(any())).thenThrow(
+      StateError('bitcoin:tb1qexampleaddress?pj=https://private-directory'),
+    );
+
+    final result =
+        await CreateBuyOrderUsecase(
+          mainnetExchangeOrderRepository: orders,
+          testnetExchangeOrderRepository: orders,
+          settingsRepository: settings,
+          payjoinReceiver: receiver,
+          payjoinPolicy: policy,
+        ).execute(
+          toAddress: 'tb1qexampleaddress',
+          orderAmount: const FiatAmount(100),
+          currency: FiatCurrency.cad,
+          isLiquid: false,
+          isOwner: true,
+          payjoinWalletId: 'wallet-1',
+          payjoinAmountSat: 10000,
+        );
+
+    expect(result, isA<Ok<BuyOrder, BuyFailure>>());
+    final logged = verify(
+      () => logger.warning(
+        captureAny(),
+        error: captureAny(named: 'error'),
+        trace: captureAny(named: 'trace'),
+      ),
+    ).captured.join(' ');
+    expect(logged, contains('StateError'));
+    expect(logged, isNot(contains('tb1qexampleaddress')));
+    expect(logged, isNot(contains('private-directory')));
+  });
 }

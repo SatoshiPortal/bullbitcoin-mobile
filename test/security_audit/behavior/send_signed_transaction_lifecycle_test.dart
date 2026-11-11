@@ -12,8 +12,6 @@ import 'dart:async';
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_liquid_transaction_usecase.dart';
 import 'package:bb_mobile/core/entities/signer_entity.dart';
-import 'package:bb_mobile/core/price/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
-import 'package:bb_mobile/core/price/domain/usecases/get_available_currencies_usecase.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bb_mobile/core/fees/domain/get_network_fees_usecase.dart';
@@ -36,6 +34,7 @@ import 'package:bb_mobile/features/send/domain/usecases/calculate_liquid_pset_si
 import 'package:bb_mobile/features/send/domain/usecases/create_send_cross_chain_swap_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/create_send_swap_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/detect_bitcoin_string_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/get_send_exchange_rate_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/get_send_payjoin_enabled_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/get_send_cross_chain_quote_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/get_send_swap_quote_usecase.dart';
@@ -80,14 +79,11 @@ class _MockDetectBitcoinStringUsecase extends Mock
 
 class _MockGetSettingsUsecase extends Mock implements GetSettingsUsecase {}
 
-class _MockConvertSatsToCurrencyAmountUsecase extends Mock
-    implements ConvertSatsToCurrencyAmountUsecase {}
+class _MockGetSendExchangeRateUsecase extends Mock
+    implements GetSendExchangeRateUsecase {}
 
 class _MockGetNetworkFeesUsecase extends Mock
     implements GetNetworkFeesUsecase {}
-
-class _MockGetAvailableCurrenciesUsecase extends Mock
-    implements GetAvailableCurrenciesUsecase {}
 
 class _MockGetWalletUtxosUsecase extends Mock
     implements GetWalletUtxosUsecase {}
@@ -204,9 +200,8 @@ class _TestSendCubit extends SendCubit {
     required super.bestWalletUsecase,
     required super.detectBitcoinStringUsecase,
     required super.getSettingsUsecase,
-    required super.convertSatsToCurrencyAmountUsecase,
+    required super.getSendExchangeRateUsecase,
     required super.getNetworkFeesUsecase,
-    required super.getAvailableCurrenciesUsecase,
     required super.getWalletUtxosUsecase,
     required super.prepareBitcoinSendUsecase,
     required super.validateBitcoinSelectionUsecase,
@@ -309,10 +304,8 @@ void main() {
       bestWalletUsecase: _MockSelectBestWalletUsecase(),
       detectBitcoinStringUsecase: _MockDetectBitcoinStringUsecase(),
       getSettingsUsecase: _MockGetSettingsUsecase(),
-      convertSatsToCurrencyAmountUsecase:
-          _MockConvertSatsToCurrencyAmountUsecase(),
+      getSendExchangeRateUsecase: _MockGetSendExchangeRateUsecase(),
       getNetworkFeesUsecase: _MockGetNetworkFeesUsecase(),
-      getAvailableCurrenciesUsecase: _MockGetAvailableCurrenciesUsecase(),
       getWalletUtxosUsecase: getWalletUtxosUsecase,
       prepareBitcoinSendUsecase: _MockPrepareBitcoinSendUsecase(),
       validateBitcoinSelectionUsecase: validateBitcoinSelectionUsecase,

@@ -256,6 +256,62 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
     }
   }
 
+  /// Temporary EUR Sell counterpart to [placePayOrder] while the broader exchange refactor is underway.
+  /// The duplicate entry point deliberately isolates Confidential SEPA processor selection from Pay's current contract; the refactor will consolidate these order-creation paths.
+  @override
+  Future<FiatPaymentOrder> placeSellToRecipientOrderV2({
+    required OrderAmount orderAmount,
+    required String recipientId,
+    required SepaPaymentProcessor paymentProcessor,
+    required OrderBitcoinNetwork network,
+    bool usePayjoin = false,
+  }) async {
+    try {
+      final apiKeyModel = await _bullbitcoinApiKeyDatasource.get(
+        isTestnet: _isTestnet,
+      );
+
+      if (apiKeyModel == null || !apiKeyModel.isActive) {
+        throw ApiKeyException(
+          'API key not found or inactive. '
+          'Please login to your Bull Bitcoin account.',
+        );
+      }
+
+      final orderModel = await _bullbitcoinApiDatasource.createSellOrder(
+        apiKey: apiKeyModel.key,
+        fiatCurrency: FiatCurrency.eur,
+        recipientId: recipientId,
+        paymentProcessor: paymentProcessor,
+        orderAmount: orderAmount,
+        network: network,
+        usePayjoin: usePayjoin,
+      );
+
+      // The API classifies bank payouts as Fiat Payment, including own-account Sell.
+      final order = orderModel.toEntity(isTestnet: _isTestnet);
+      if (order is! FiatPaymentOrder) {
+        throw const FormatException('Invalid EUR sell payout order type');
+      }
+      return order;
+    } on BullBitcoinApiMinAmountException {
+      rethrow;
+    } on BullBitcoinApiMaxAmountException {
+      rethrow;
+    } on BullBitcoinApiConfidentialSepaNotActivatedException {
+      rethrow;
+    } on BullBitcoinApiOrderException {
+      rethrow;
+    } on ApiKeyException {
+      rethrow;
+    } catch (e, st) {
+      Error.throwWithStackTrace(
+        Exception('Failed to place EUR sell payout order (${e.runtimeType})'),
+        st,
+      );
+    }
+  }
+
   @override
   Future<FiatPaymentOrder> placePayOrder({
     required OrderAmount orderAmount,

@@ -96,7 +96,7 @@ class SepaEurFormState extends State<SepaEurForm> {
         mainAxisSize: .min,
         children: [
           BBTextFormField(
-            labelText: context.loc.recipientsFieldIban,
+            labelText: context.loc.recipientsFieldBankAccountIban,
             hintText: context.loc.recipientsFieldIbanHint,
             focusNode: _ibanFocusNode,
             autofocus: true,

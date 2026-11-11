@@ -1,7 +1,8 @@
 import 'dart:async';
 
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/core/seed/domain/usecases/get_default_seed_usecase.dart';
+import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
+import 'package:secrets/secrets.dart' show Secrets;
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_coin.dart';
@@ -37,6 +38,8 @@ import 'sp_fakes.dart';
 // The sync tick is the one sanctioned automatic scan, so it is exercised here
 // too: it must scan only when SpScanPolicy allows it.
 
+class _MockWalletRepository extends Mock implements WalletRepository {}
+
 class _MockSettingsRepository extends Mock implements SettingsRepository {}
 
 void main() {
@@ -52,11 +55,12 @@ void main() {
     locator = GetIt.asNewInstance();
     locator.allowReassignment = true;
 
-    // External collaborators SpLocator's use cases resolve. The seed is never
+    // External collaborators SpLocator's use cases resolve. The secret is never
     // read on this path (the fake reports a live session, so EnsureSpSession
     // returns the snapshot without reconstructing), but the graph resolves it.
-    locator.registerSingleton<GetDefaultSeedUsecase>(
-      MockGetDefaultSeedUsecase(),
+    locator.registerSingleton<WalletRepository>(_MockWalletRepository());
+    locator.registerSingleton<Secrets>(
+      Secrets(scratchDirectory: () async => '/tmp'),
     );
     settingsRepo = _MockSettingsRepository();
     // The sync tick reads GetSpWalletUsecase, which checks the feature gate.

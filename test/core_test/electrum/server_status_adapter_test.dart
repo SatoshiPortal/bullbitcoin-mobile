@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_connection.dart';
 import 'package:bb_mobile/core/electrum/adapters/server_status_adapter.dart';
 import 'package:bb_mobile/core/electrum/data/electrum_socket_connector.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_network.dart';
@@ -112,7 +113,7 @@ void main() {
     expect(status, ElectrumServerStatus.online);
     expect(probedUrl, 'ssl://hidden.onion:50002');
     expect(probedSocks5, '127.0.0.1:41001');
-    expect(probedTimeout, 30);
+    expect(probedTimeout, ElectrumConnection.onionMinimumTimeout);
     expect(probedRetry, 3);
     expect(probedValidateDomain, isFalse);
     expect(probedIsMainnet, isTrue);

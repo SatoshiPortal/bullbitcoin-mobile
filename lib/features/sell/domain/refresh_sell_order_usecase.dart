@@ -3,6 +3,7 @@ import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/features/sell/domain/sell_failure.dart';
+import 'package:bb_mobile/features/sell/domain/sell_order_payin_x.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
@@ -19,9 +20,11 @@ class RefreshSellOrderUsecase {
   });
 
   @useResult
-  Future<Result<SellOrder, SellFailure>> execute({
+  Future<Result<Order, SellFailure>> execute({
     required String orderId,
     required String? expectedDepositAddress,
+    String? expectedLightningInvoice,
+    bool isRecipientPayout = false,
   }) async {
     try {
       final settings = await _settingsRepository.fetch();
@@ -29,13 +32,16 @@ class RefreshSellOrderUsecase {
       final repo = isTestnet
           ? _testnetExchangeOrderRepository
           : _mainnetExchangeOrderRepository;
-      final order = await repo.refreshSellOrder(orderId);
+      final Order order = isRecipientPayout
+          ? await repo.refreshPayOrder(orderId)
+          : await repo.refreshSellOrder(orderId);
 
       // Fail closed: a refreshed order that pays a different address must
       // never be handed back to the payment flow.
       final deposit = validateSellOrderDepositAddress(
         order: order,
         expectedDepositAddress: expectedDepositAddress,
+        expectedLightningInvoice: expectedLightningInvoice,
       );
       if (deposit case Err(:final failure)) return Err(failure);
 
@@ -55,12 +61,18 @@ class RefreshSellOrderUsecase {
 
 @useResult
 Result<void, SellFailure> validateSellOrderDepositAddress({
-  required SellOrder order,
+  required Order order,
   required String? expectedDepositAddress,
+  String? expectedLightningInvoice,
 }) {
-  if (expectedDepositAddress == null ||
-      expectedDepositAddress.isEmpty ||
-      order.toAddress != expectedDepositAddress) {
+  final lightning = order.payinMethod == OrderPaymentMethod.lnInvoice;
+  final expected = lightning
+      ? expectedLightningInvoice
+      : expectedDepositAddress;
+  final actual = lightning
+      ? order.sellLightningInvoice
+      : order.sellPayinAddress;
+  if (expected == null || expected.isEmpty || actual != expected) {
     return const Err(
       SellDepositAddressChangedFailure(
         'refreshed order deposit address does not match the confirmed one',

@@ -1,8 +1,7 @@
 import 'dart:async';
 
-import 'package:bb_mobile/core/price/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
-import 'package:bb_mobile/features/bitcoin_price/domain/bitcoin_price_failure.dart';
-import 'package:bb_mobile/core/price/domain/usecases/get_available_currencies_usecase.dart';
+import 'package:bull_pricer/bull_pricer.dart';
+import 'package:bb_mobile/features/bitcoin_price/domain/usecases/get_bitcoin_price_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/settings/domain/watch_currency_changes_usecase.dart';
@@ -12,6 +11,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:intl/intl.dart';
+import 'package:primitives/primitives.dart' show Err, Ok;
 
 part 'bitcoin_price_bloc.freezed.dart';
 part 'bitcoin_price_event.dart';
@@ -19,9 +19,8 @@ part 'bitcoin_price_state.dart';
 
 class BitcoinPriceBloc extends Bloc<BitcoinPriceEvent, BitcoinPriceState> {
   BitcoinPriceBloc({
-    required this._getAvailableCurrenciesUsecase,
     required this._getSettingsUsecase,
-    required this._convertSatsToCurrencyAmountUsecase,
+    required this._getBitcoinPriceUsecase,
     required this._watchCurrencyChangesUsecase,
   }) : super(const BitcoinPriceState()) {
     on<BitcoinPriceStarted>(_onStarted);
@@ -37,11 +36,20 @@ class BitcoinPriceBloc extends Bloc<BitcoinPriceEvent, BitcoinPriceState> {
     );
   }
 
-  final GetAvailableCurrenciesUsecase _getAvailableCurrenciesUsecase;
   final GetSettingsUsecase _getSettingsUsecase;
-  final ConvertSatsToCurrencyAmountUsecase _convertSatsToCurrencyAmountUsecase;
+  final GetBitcoinPriceUsecase _getBitcoinPriceUsecase;
   final WatchCurrencyChangesUsecase _watchCurrencyChangesUsecase;
   late final StreamSubscription<String> _currencyChangeSubscription;
+
+  /// The currency whose price is being fetched by a currency change, so a
+  /// burst of the same change waits for that one request instead of sending
+  /// its own.
+  String? _currencyInFlight;
+
+  /// Counts currency changes, so only the latest one may publish its price:
+  /// an answer for a currency the user has since left must not overwrite the
+  /// newer one.
+  int _currencyRequest = 0;
 
   @override
   Future<void> close() async {
@@ -64,12 +72,12 @@ class BitcoinPriceBloc extends Bloc<BitcoinPriceEvent, BitcoinPriceState> {
     try {
       final settings = await _getSettingsUsecase.execute();
       currency = event.currency ?? settings.currencyCode;
-      availableCurrencies = await _getAvailableCurrenciesUsecase.execute();
+      availableCurrencies = SupportedCurrency.codes;
     } catch (e) {
       log.warning('BitcoinPriceStarted failed', error: e);
       emit(
         state.copyWith(
-          failure: BitcoinPriceUnexpectedFailure(e.toString()),
+          failure: PricerUnexpectedFailure(e.toString()),
           startupFailed: true,
           loadingPrice: false,
         ),
@@ -87,45 +95,32 @@ class BitcoinPriceBloc extends Bloc<BitcoinPriceEvent, BitcoinPriceState> {
       ),
     );
 
-    try {
-      final price = await _convertSatsToCurrencyAmountUsecase.execute(
-        currencyCode: currency,
-      );
+    final price = await _getBitcoinPriceUsecase.execute(currencyCode: currency);
 
-      // The currency changed while this was in flight: the price is for the
-      // old one, and the change has fetched its own.
-      if (state.currency != currency) return;
+    // The currency changed while this was in flight: the price is for the
+    // old one, and the change has fetched its own.
+    if (state.currency != currency) return;
 
-      if (price <= 0) {
-        log.warning('Fiat rate invalid or zero for $currency');
+    switch (price) {
+      case Ok(:final value):
         emit(
           state.copyWith(
-            loadingPrice: false,
-            startupFailed: true,
+            bitcoinPrice: value,
+            startupFailed: false,
             failure: null,
+            loadingPrice: false,
           ),
         );
-        return;
-      }
-
-      emit(
-        state.copyWith(
-          bitcoinPrice: price,
-          startupFailed: false,
-          failure: null,
-          loadingPrice: false,
-        ),
-      );
-    } catch (e) {
-      log.warning('BitcoinPriceStarted failed', error: e);
-      if (state.currency != currency) return;
-      emit(
-        state.copyWith(
-          failure: BitcoinPriceUnexpectedFailure(e.toString()),
-          startupFailed: true,
-          loadingPrice: false,
-        ),
-      );
+      case Err(:final failure):
+        emit(
+          state.copyWith(
+            // Offline at start-up is shown by startupFailed alone; any other
+            // failure is shown as on a refresh.
+            failure: failure is PricerNetworkFailure ? null : failure,
+            startupFailed: true,
+            loadingPrice: false,
+          ),
+        );
     }
   }
 
@@ -145,39 +140,26 @@ class BitcoinPriceBloc extends Bloc<BitcoinPriceEvent, BitcoinPriceState> {
       return _onStarted(const BitcoinPriceStarted(), emit);
     }
 
-    try {
-      final price = await _convertSatsToCurrencyAmountUsecase.execute(
-        currencyCode: currency,
-      );
+    final price = await _getBitcoinPriceUsecase.execute(currencyCode: currency);
 
-      // The currency changed while this was in flight: the price is for the
-      // old one, and the change has fetched its own.
-      if (state.currency != currency) return;
+    // The currency changed while this was in flight: the price is for the
+    // old one, and the change has fetched its own.
+    if (state.currency != currency) return;
 
-      if (price <= 0) {
-        emit(state.copyWith(failure: const BitcoinPriceInvalidRateFailure()));
-        return;
-      }
-
-      emit(
-        state.copyWith(
-          bitcoinPrice: price,
-          failure: null,
-          startupFailed: false,
-        ),
-      );
-    } catch (e) {
-      // TODO: would it make sense to not emit a failure state here, but keep the
-      //  previous success state as to be able to show an exchange rate allthough
-      //  not the most recent one? If that makes sense, we can add the error directly
-      //  to the success state. So the UI can show the exchange rate, but also show
-      //  that it might not be the most recent one.
-      //  (Adding a fetch and rate timestamp to the success can also help)
-      log.warning('BitcoinPriceFetched failed', error: e);
-      if (state.currency != currency) return;
-      emit(
-        state.copyWith(failure: BitcoinPriceUnexpectedFailure(e.toString())),
-      );
+    switch (price) {
+      case Ok(:final value):
+        emit(
+          state.copyWith(
+            bitcoinPrice: value,
+            failure: null,
+            startupFailed: false,
+          ),
+        );
+      // A refresh only reaches the pricer once the cached price is over a
+      // minute old, so the price on screen is outdated: with no answer, show
+      // no price rather than that one.
+      case Err(:final failure):
+        emit(state.copyWith(bitcoinPrice: null, failure: failure));
     }
   }
 
@@ -185,52 +167,43 @@ class BitcoinPriceBloc extends Bloc<BitcoinPriceEvent, BitcoinPriceState> {
     BitcoinPriceCurrencyChanged event,
     Emitter<BitcoinPriceState> emit,
   ) async {
+    // A burst of the same change shares the request already out. The price
+    // repository bounds how often the pricer is actually asked.
+    if (event.currencyCode == _currencyInFlight) return;
+
     log.info('BitcoinPriceCurrencyChanged to ${event.currencyCode}');
+    _currencyInFlight = event.currencyCode;
+    final request = ++_currencyRequest;
+    bool isLatest() => request == _currencyRequest;
 
     try {
       emit(state.copyWith(loadingPrice: true));
 
       final currency = event.currencyCode;
-      final price = await _convertSatsToCurrencyAmountUsecase.execute(
+      final price = await _getBitcoinPriceUsecase.execute(
         currencyCode: currency,
       );
-
-      if (price <= 0) {
-        log.warning(
-          'Fiat rate invalid or zero after currency change to $currency',
-        );
-        emit(
-          state.copyWith(
-            bitcoinPrice: null,
-            currency: currency,
-            loadingPrice: false,
-            failure: const BitcoinPriceInvalidRateFailure(),
-            startupFailed: false,
-          ),
-        );
-        return;
-      }
+      if (!isLatest()) return;
 
       emit(
         state.copyWith(
           currency: currency,
-          bitcoinPrice: price,
+          bitcoinPrice: switch (price) {
+            Ok(:final value) => value,
+            Err() => null,
+          },
           loadingPrice: false,
-          failure: null,
+          failure: switch (price) {
+            Ok() => null,
+            Err(:final failure) => failure,
+          },
           startupFailed: false,
         ),
       );
-    } catch (e) {
-      log.warning('BitcoinPriceCurrencyChanged failed', error: e);
-      emit(
-        state.copyWith(
-          bitcoinPrice: null,
-          currency: event.currencyCode,
-          loadingPrice: false,
-          failure: BitcoinPriceUnexpectedFailure(e.toString()),
-          startupFailed: false,
-        ),
-      );
+    } finally {
+      // Only the latest request owns the marker: an earlier one finishing,
+      // even for the same currency, must not end the sharing of the latest.
+      if (isLatest()) _currencyInFlight = null;
     }
   }
 }

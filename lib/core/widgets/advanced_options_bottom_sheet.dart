@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_cubit.dart';
 import 'package:bb_mobile/features/send/ui/widgets/coin_selection_bottom_sheet.dart';
 import 'package:flutter/material.dart';
@@ -29,7 +30,7 @@ class AdvancedOptionsBottomSheet extends StatelessWidget {
             children: [
               Center(
                 child: BullText(
-                  "Advanced options",
+                  context.loc.advancedOptionsTitle,
                   style: context.font.headlineMedium,
                 ),
               ),
@@ -48,7 +49,7 @@ class AdvancedOptionsBottomSheet extends StatelessWidget {
             mainAxisAlignment: .spaceBetween,
             children: [
               BullText(
-                "Replace-by-fee activated",
+                context.loc.replaceByFeeActivatedLabel,
                 style: context.font.headlineMedium,
               ),
               Switch(
@@ -61,7 +62,7 @@ class AdvancedOptionsBottomSheet extends StatelessWidget {
           const Gap(24),
           ListTile(
             title: BullText(
-              "Select coins manually",
+              context.loc.selectCoinsManuallyLabel,
               style: context.font.bodyLarge?.copyWith(fontWeight: .w500),
             ),
             trailing: const Icon(Icons.arrow_forward),
@@ -77,7 +78,7 @@ class AdvancedOptionsBottomSheet extends StatelessWidget {
           ),
           const Gap(24),
           BullButton.big(
-            label: "Done",
+            label: context.loc.doneButton,
             onPressed: context.pop,
             bgColor: context.appColors.secondary,
             textColor: context.appColors.onSecondary,

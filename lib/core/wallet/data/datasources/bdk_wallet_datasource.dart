@@ -18,7 +18,9 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/insufficient_funds_exception.dart';
 import 'package:bb_mobile/core/wallet/domain/no_spendable_utxo_exception.dart';
 import 'package:bb_mobile/core/wallet/domain/selected_inputs_unavailable_exception.dart';
+import 'package:bb_mobile/core/wallet/domain/transaction_signature_status.dart';
 import 'package:bull_sdk/bdk.dart' as bdk;
+import 'package:bull_sdk/bull_sdk.dart' as bull_sdk;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:primitives/primitives.dart' show Outpoint;
@@ -176,37 +178,37 @@ class BdkWalletDatasource {
     return owned.contains;
   }
 
-  /// Returns a synchronous PSBT signer bound to a pre-loaded private bdk
-  /// wallet. Uses the same sign options as [signPsbt] — in particular
-  /// `allowAllSighashes: false`, since this signs the wallet's contribution
-  /// to an externally-supplied transaction (a payjoin proposal).
-  Future<String Function(String)> createPsbtSigner({
-    required PrivateBdkWalletModel wallet,
+  /// Returns [psbt] with this wallet's BIP32 derivations added to every input
+  /// and output it owns, from its local index. Signs nothing: the wallet is
+  /// built from the public descriptors.
+  ///
+  /// A signer only signs inputs it can derive, and learns the path either from
+  /// the PSBT or from its own view of the chain. The package's signing wallet
+  /// has no view of the chain, so a PSBT must carry the paths — and the input a
+  /// payjoin receiver contributes arrives with a witness UTXO and nothing
+  /// else. bdk's `sign` fills the paths in for every input whose outpoint the
+  /// wallet knows before it looks for keys; with no keys, that is all it does.
+  Future<String> addOwnDerivations({
+    required String psbt,
+    required WalletModel wallet,
   }) async {
-    final bdkWallet = await BdkFacade.createPrivateWallet(wallet);
-    return (String psbtBase64) {
-      final psbt = bdk.Psbt(psbtBase64: psbtBase64);
-      // Unlike signPsbt (the sender signing a complete transaction, where a
-      // non-finalized result is a genuine anomaly), this signs only the
-      // receiver's own contributed input into a multi-party payjoin
-      // proposal — the sender's inputs are still unsigned at this point by
-      // protocol design, so bdk's whole-PSBT finalization check is always
-      // false here. Don't log it: it isn't an error, and logging it on every
-      // successful payjoin would read like one.
-      bdkWallet.sign(
-        psbt: psbt,
-        signOptions: bdk.SignOptions(
-          trustWitnessUtxo: true,
-          assumeHeight: null,
-          allowAllSighashes: false,
-          tryFinalize: true,
-          signWithTapInternalKey: false,
-          allowGrinding: true,
-        ),
-      );
-      return psbt.serialize();
-    };
+    final bdkWallet = await BdkFacade.createWallet(wallet);
+    final parsed = bdk.Psbt(psbtBase64: psbt);
+    bdkWallet.sign(psbt: parsed, signOptions: _annotateOptions);
+    return parsed.serialize();
   }
+
+  /// Trusts the witness UTXO a payjoin input carries, and finalizes nothing:
+  /// annotation must leave the PSBT for the signer exactly as it found it,
+  /// paths aside.
+  static final _annotateOptions = bdk.SignOptions(
+    trustWitnessUtxo: true,
+    assumeHeight: null,
+    allowAllSighashes: false,
+    tryFinalize: false,
+    signWithTapInternalKey: false,
+    allowGrinding: true,
+  );
 
   Future<bool> isAddressMine(
     String address, {
@@ -383,33 +385,6 @@ class BdkWalletDatasource {
     return totalAmount;
   }
   // 25000 - 988
-
-  Future<String> signPsbt(
-    String unsignedPsbt, {
-    required PrivateBdkWalletModel wallet,
-  }) async {
-    final psbt = bdk.Psbt(psbtBase64: unsignedPsbt);
-    final bdkWallet = await BdkFacade.createPrivateWallet(wallet);
-
-    final isFinalized = bdkWallet.sign(
-      psbt: psbt,
-      signOptions: bdk.SignOptions(
-        trustWitnessUtxo: true,
-        assumeHeight: null,
-        allowAllSighashes: false,
-        tryFinalize: true,
-        signWithTapInternalKey: false,
-        allowGrinding: true,
-      ),
-    );
-    if (!isFinalized) {
-      log.info('Signed PSBT is not finalized');
-    } else {
-      log.info('Signed PSBT is finalized');
-    }
-
-    return psbt.serialize();
-  }
 
   Future<List<WalletUtxoModel>> getUtxos({required WalletModel wallet}) async {
     final bdkWallet = await BdkFacade.createWallet(wallet);
@@ -793,6 +768,72 @@ class BdkWalletDatasource {
     );
     final psbt = tx.finish(wallet: bdkWallet);
     return psbt.serialize();
+  }
+
+  /// Guard for GHSA-6jp4-8v48-cc5v: the Electrum server is trusted for
+  /// mempool transactions, so a malicious one can swallow a broadcast and
+  /// plant a conflicting copy with redirected outputs and forged signatures.
+  /// SIGHASH_ALL signatures commit to the outputs, so verifying the
+  /// wallet-owned inputs' signatures against the transaction as stored
+  /// authenticates the outputs before a replacement is built from them.
+  /// Inputs whose prevout is unknown to the wallet (e.g. a payjoin
+  /// counterparty's) cannot be judged and are skipped; at least one owned
+  /// input must verify. The SDK verifier requires every signature to be
+  /// ECDSA with SIGHASH_ALL — the only flag this wallet produces — so a
+  /// signature that doesn't commit to the outputs never passes. Sound for
+  /// legacy and segwit v0 only: taproot (BIP341) signatures commit to every
+  /// prevout, so the skip-unresolvable-inputs loop below must be revisited
+  /// before a bip86 script type ships.
+  ///
+  /// A transaction (or prevout) missing from the store is
+  /// [TransactionSignatureStatus.unverifiable], not proof of manipulation —
+  /// callers must still refuse to build on it. The SDK's Malformed variant
+  /// is never an attacker signal: it only covers caller-side errors
+  /// (undeserializable bytes, empty input list, out-of-bounds index), all
+  /// impossible here since the bytes and indexes come from the stored
+  /// transaction itself; a bad or misencoded signature reports as
+  /// InvalidSignatures.
+  Future<TransactionSignatureStatus> verifyTransactionInputSignatures({
+    required String txid,
+    required WalletModel wallet,
+  }) async {
+    final bdkWallet = await BdkFacade.createWallet(wallet);
+    final canonicalTx = bdkWallet.getTx(txid: bdk.Txid.fromString(hex: txid));
+    if (canonicalTx == null) return TransactionSignatureStatus.unverifiable;
+    final tx = canonicalTx.transaction;
+    final inputs = tx.input();
+    final inputsToVerify = <bull_sdk.TxInputToVerify>[];
+    for (var index = 0; index < inputs.length; index++) {
+      final outpoint = inputs[index].previousOutput;
+      final parentTx = bdkWallet.getTx(txid: outpoint.txid);
+      if (parentTx == null) continue;
+      final parentOutputs = parentTx.transaction.output();
+      if (outpoint.vout >= parentOutputs.length) {
+        return TransactionSignatureStatus.unverifiable;
+      }
+      final prevout = parentOutputs[outpoint.vout];
+      if (!bdkWallet.isMine(script: prevout.scriptPubkey)) continue;
+      inputsToVerify.add(
+        bull_sdk.TxInputToVerify(
+          inputIndex: index,
+          prevoutScriptPubkey: prevout.scriptPubkey.toBytes(),
+          prevoutValueSat: BigInt.from(prevout.value.toSat()),
+        ),
+      );
+    }
+    if (inputsToVerify.isEmpty) return TransactionSignatureStatus.unverifiable;
+    final verification = await bull_sdk.verifyTxInputSignatures(
+      txBytes: tx.serialize(),
+      inputs: inputsToVerify,
+    );
+    return switch (verification) {
+      bull_sdk.TxSignatureVerification_Valid() =>
+        TransactionSignatureStatus.valid,
+      bull_sdk.TxSignatureVerification_InvalidSignatures() =>
+        TransactionSignatureStatus.invalid,
+      bull_sdk.TxSignatureVerification_Malformed() =>
+        TransactionSignatureStatus.unverifiable,
+    };
   }
 
   Future<void> delete({required WalletModel wallet}) async {

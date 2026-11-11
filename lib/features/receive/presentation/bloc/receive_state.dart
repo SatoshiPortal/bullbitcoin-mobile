@@ -11,7 +11,7 @@ abstract class ReceiveState with _$ReceiveState {
     BitcoinUnit? bitcoinUnit,
     @Default([]) List<String> fiatCurrencyCodes,
     @Default('') String fiatCurrencyCode,
-    @Default(0) double exchangeRate,
+    double? exchangeRate,
     @Default('') String inputAmountCurrencyCode,
     @Default('') String inputAmount,
     int? confirmedAmountSat,
@@ -34,6 +34,10 @@ abstract class ReceiveState with _$ReceiveState {
     // itself happens in PayjoinRepositoryImpl before any negotiation.
     int? payjoinMinAmountSat,
     @Default(false) bool isBroadcastingOriginalTransaction,
+    // True for a short while after the proposal went out: the sender
+    // normally broadcasts the payjoin within seconds, so offering the
+    // plain-payment fallback right away only invites a race with it.
+    @Default(false) bool isWaitingForPayjoinSender,
     // Whether it is settled yet whether THIS address will carry a payjoin
     // endpoint. Recorded by ReceiveBloc, which knows it as a fact, rather than
     // re-derived by [isPayjoinLoading] from the reasons a session might never
@@ -55,7 +59,12 @@ abstract class ReceiveState with _$ReceiveState {
       failure is ReceiveAmountAboveProtocolLimitFailure;
 
   List<String> get inputAmountCurrencyCodes {
-    return [BitcoinUnit.btc.code, BitcoinUnit.sats.code, ...fiatCurrencyCodes];
+    // With no price, an amount cannot be requested in fiat: offer none.
+    return [
+      BitcoinUnit.btc.code,
+      BitcoinUnit.sats.code,
+      if (exchangeRate != null) ...fiatCurrencyCodes,
+    ];
   }
 
   bool get swapLimitsFetched => swapLimits != null;
@@ -69,8 +78,12 @@ abstract class ReceiveState with _$ReceiveState {
 
     if (inputAmount.isNotEmpty) {
       if (isInputAmountFiat) {
+        // A fiat amount with no price has no sats value.
+        final rate = exchangeRate;
         final amountFiat = double.tryParse(inputAmount) ?? 0;
-        amountSat = ConvertAmount.fiatToSats(amountFiat, exchangeRate);
+        amountSat = rate == null
+            ? 0
+            : ConvertAmount.fiatToSats(amountFiat, rate);
       } else if (inputAmountCurrencyCode == BitcoinUnit.sats.code) {
         amountSat = int.tryParse(inputAmount) ?? 0;
       } else {
@@ -84,8 +97,9 @@ abstract class ReceiveState with _$ReceiveState {
 
   double get inputAmountBtc => ConvertAmount.satsToBtc(inputAmountSat);
 
-  double get inputAmountFiat {
-    return ConvertAmount.btcToFiat(inputAmountBtc, exchangeRate);
+  double? get inputAmountFiat {
+    final rate = exchangeRate;
+    return rate == null ? null : ConvertAmount.btcToFiat(inputAmountBtc, rate);
   }
 
   // The QR code data should always show the full payment request when all parameters are available,
@@ -189,12 +203,17 @@ abstract class ReceiveState with _$ReceiveState {
   double get confirmedAmountBtc =>
       ConvertAmount.satsToBtc(confirmedAmountSat ?? 0);
 
-  double get confirmedAmountFiat {
-    return ConvertAmount.btcToFiat(confirmedAmountBtc, exchangeRate);
+  double? get confirmedAmountFiat {
+    final rate = exchangeRate;
+    return rate == null
+        ? null
+        : ConvertAmount.btcToFiat(confirmedAmountBtc, rate);
   }
 
   String get formattedConfirmedAmountFiat {
-    return FormatAmount.fiat(confirmedAmountFiat, fiatCurrencyCode);
+    // No price: no fiat equivalent rather than a misleading zero.
+    final fiat = confirmedAmountFiat;
+    return fiat == null ? '' : FormatAmount.fiat(fiat, fiatCurrencyCode);
   }
 
   String get formattedAmountInputEquivalent {
@@ -207,9 +226,9 @@ abstract class ReceiveState with _$ReceiveState {
       } else {
         return FormatAmount.btc(inputAmountBtc);
       }
-    } else {
-      return FormatAmount.fiat(inputAmountFiat, fiatCurrencyCode);
     }
+    final fiat = inputAmountFiat;
+    return fiat == null ? '' : FormatAmount.fiat(fiat, fiatCurrencyCode);
   }
 
   bool get isBitcoin {
@@ -283,6 +302,13 @@ abstract class ReceiveState with _$ReceiveState {
     return !(receiver.status == PayjoinStatus.expired &&
         !receiver.hasOriginalTransaction);
   }
+
+  /// Whether to offer receiving the payment without payjoin. Hidden while the
+  /// sender is expected to broadcast the payjoin, then offered again in case
+  /// the sender never does.
+  bool get canOfferPayjoinFallback =>
+      !isWaitingForPayjoinSender &&
+      (payjoin?.canManuallyBroadcastOriginalAt(clock.now()) ?? false);
 
   /// True when the payjoin session resolved via the plain-broadcast fallback
   /// specifically because the sender's amount fell below the configured
@@ -385,10 +411,12 @@ abstract class ReceiveState with _$ReceiveState {
   bool get isPayjoinSuppressedByAmount =>
       payjoin != null && hasUtxos && isRequestedAmountBelowPayjoinMinimum;
 
-  double get payjoinAmountFiat {
+  double? get payjoinAmountFiat {
+    final rate = exchangeRate;
+    if (rate == null) return null;
     final payjoinAmountSat = payjoin?.amountSat ?? 0;
     final payjoinAmountBtc = ConvertAmount.satsToBtc(payjoinAmountSat);
-    return ConvertAmount.btcToFiat(payjoinAmountBtc, exchangeRate);
+    return ConvertAmount.btcToFiat(payjoinAmountBtc, rate);
   }
 
   bool get isLightning => type == ReceiveType.lightning;

@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:bb_mobile/core/blockchain/data/datasources/bdk_bitcoin_blockchain_datasource.dart';
 import 'package:bb_mobile/core/electrum/domain/ports/electrum_servers_port.dart';
 import 'package:bb_mobile/core/fees/domain/repositories/fees_repository.dart';
-import 'package:bb_mobile/core/seed/data/datasources/seed_datasource.dart';
+import 'package:secrets/secrets.dart';
 import 'package:bb_mobile/core/storage/payjoin_legacy_data_adapter.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/bdk_wallet_datasource.dart';
@@ -16,27 +16,21 @@ import 'package:bb_mobile/payjoin_runtime_adapters.dart';
 import 'package:bb_mobile/recoverable_payjoin.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:get_it/get_it.dart';
-import 'package:path/path.dart' as p;
-import 'package:path_provider/path_provider.dart';
+
+const payjoinDatabaseFilename = 'payjoin.sqlite';
 
 abstract final class PayjoinSetup {
   static void setup(
     GetIt locator,
-    SqliteDatabase database, {
-    String? databasePath,
+    SqliteDatabase database,
+    String databasePath, {
     bool startRecovery = true,
   }) {
     final runtime = RecoverablePayjoin(() async {
-      final path =
-          databasePath ??
-          p.join(
-            (await getApplicationDocumentsDirectory()).path,
-            'payjoin.sqlite',
-          );
       return openPayjoin(
-        databasePath: path,
+        databasePath: databasePath,
         wallet: PayjoinWalletAdapter(
-          locator<SeedDatasource>(),
+          locator<Secrets>(),
           locator<BdkWalletDatasource>(),
           locator<WalletMetadataDatasource>(),
         ),
@@ -48,6 +42,8 @@ abstract final class PayjoinSetup {
         transactions: AppPayjoinTransactionAdapter(
           locator<WalletRepository>(),
           locator<WalletTransactionRepository>(),
+          locator<BdkBitcoinBlockchainDatasource>(),
+          locator<ElectrumServersPort>(),
         ),
         labels: AppPayjoinLabelsAdapter(locator<LabelsFacade>()),
         legacyData: PayjoinLegacyDataAdapter(database),

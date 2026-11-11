@@ -3,23 +3,19 @@ import 'dart:async';
 import 'package:bull_ui/src/theme/bull_theme.dart';
 import 'package:flutter/material.dart';
 
-/// A `m:ss` countdown to a [DateTime] that fires [onTimeout] when it elapses.
+/// A `m:ss` countdown to a [DateTime], stopping at `0:00`.
+///
+/// Display only: it reports nothing when the deadline passes. Whatever must
+/// happen at the deadline belongs to the state that owns it, not to a widget
+/// that can fire early, late, or again on every remount.
 ///
 /// Remaining time is recomputed against the wall clock each tick (not by
 /// subtracting a second), so it stays accurate across app pause/resume.
 class BullCountdown extends StatefulWidget {
-  const BullCountdown({
-    super.key,
-    required this.until,
-    required this.onTimeout,
-    this.textStyle,
-  });
+  const BullCountdown({super.key, required this.until, this.textStyle});
 
   /// The UTC deadline to count down to.
   final DateTime until;
-
-  /// Called once when the deadline is reached (or already passed on mount).
-  final VoidCallback onTimeout;
 
   /// Optional style override; defaults to the brand-red emphasis label.
   final TextStyle? textStyle;
@@ -31,54 +27,43 @@ class BullCountdown extends StatefulWidget {
 /// State for [BullCountdown]; public to mirror the original's API.
 class BullCountdownState extends State<BullCountdown> {
   late Duration remainingTime;
-  // Nullable (not `late`) so an early return on an already-passed deadline
-  // still leaves a safe value for `dispose()` to cancel.
+  // Null once the deadline is reached: there is nothing left to tick.
   Timer? timer;
 
   @override
   void initState() {
     super.initState();
-    remainingTime = _calculateRemainingTime();
-    if (remainingTime.isNegative) {
-      remainingTime = Duration.zero;
-      // Deadline already passed: fire the callback and skip the timer.
-      widget.onTimeout();
-      return;
-    }
-    timer = Timer.periodic(const Duration(seconds: 1), _updateTimer);
+    _start();
   }
 
   @override
   void didUpdateWidget(BullCountdown oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.until != widget.until) {
-      timer?.cancel();
-      remainingTime = _calculateRemainingTime();
+    if (oldWidget.until != widget.until) _start();
+  }
 
-      if (remainingTime.isNegative) {
-        remainingTime = Duration.zero;
-        widget.onTimeout();
-        return;
-      }
-
+  void _start() {
+    timer?.cancel();
+    timer = null;
+    remainingTime = _calculateRemainingTime();
+    if (remainingTime > Duration.zero) {
       timer = Timer.periodic(const Duration(seconds: 1), _updateTimer);
     }
   }
 
   Duration _calculateRemainingTime() {
-    return widget.until.difference(DateTime.now().toUtc());
+    final remaining = widget.until.difference(DateTime.now().toUtc());
+    return remaining.isNegative ? Duration.zero : remaining;
   }
 
   void _updateTimer(Timer timer) {
-    if (remainingTime.inSeconds <= 0) {
-      widget.onTimeout();
-      timer.cancel();
-      return;
-    }
-
     setState(() {
       remainingTime = _calculateRemainingTime();
     });
+    if (remainingTime == Duration.zero) {
+      timer.cancel();
+      this.timer = null;
+    }
   }
 
   @override

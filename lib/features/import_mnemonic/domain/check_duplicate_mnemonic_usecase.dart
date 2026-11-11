@@ -1,13 +1,13 @@
-import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
-import 'package:bull_logger/bull_logger.dart';
-import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/import_mnemonic/domain/import_mnemonic_failure.dart';
+import 'package:bull_logger/bull_logger.dart';
 import 'package:meta/meta.dart';
+import 'package:primitives/primitives.dart';
+import 'package:secrets/secrets.dart';
 
 class CheckDuplicateMnemonicUsecase {
-  final SeedRepository _seedRepository;
+  final Secrets _secrets;
 
-  CheckDuplicateMnemonicUsecase({required this._seedRepository});
+  CheckDuplicateMnemonicUsecase({required this._secrets});
 
   @useResult
   Future<Result<void, ImportMnemonicFailure>> execute({
@@ -15,14 +15,18 @@ class CheckDuplicateMnemonicUsecase {
     String passphrase = '',
   }) async {
     try {
-      final fingerprint = _seedRepository.fingerprintFor(
-        mnemonicWords: mnemonicWords,
+      // This preflight avoids an unnecessary wallet scan. The strict import
+      // remains responsible for rejecting a duplicate at the time of storage.
+      return switch (await _secrets.contains(
+        words: mnemonicWords,
         passphrase: passphrase,
-      );
-      if (await _seedRepository.exists(fingerprint)) {
-        return const Err(ImportMnemonicDuplicateFailure());
-      }
-      return const Ok(null);
+      )) {
+        Ok(value: true) => const Err(ImportMnemonicDuplicateFailure()),
+        Ok() => const Ok(null),
+        Err(:final failure) => Err(
+          ImportMnemonicUnexpectedFailure(failure.toString()),
+        ),
+      };
     } catch (e, st) {
       log.severe(
         message: 'Duplicate mnemonic check failed',

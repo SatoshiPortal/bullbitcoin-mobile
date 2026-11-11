@@ -182,7 +182,7 @@ class AppTheme {
         refreshBackgroundColor: colors.text,
         color: colors.primary,
         circularTrackColor: colors.primary,
-        linearTrackColor: colors.primary,
+        linearTrackColor: colors.surface,
       ),
     );
   }

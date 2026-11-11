@@ -41,6 +41,11 @@ final class TransactionPayjoinFallbackUnavailableFailure
   const TransactionPayjoinFallbackUnavailableFailure([super.logMessage]);
 }
 
+/// Checking for a competing transaction failed before any broadcast.
+final class TransactionPayjoinVerificationFailure extends TransactionFailure {
+  const TransactionPayjoinVerificationFailure([super.logMessage]);
+}
+
 /// Re-broadcasting the payjoin original transaction failed.
 final class TransactionPayjoinBroadcastFailure extends TransactionFailure {
   const TransactionPayjoinBroadcastFailure([super.logMessage]);
@@ -49,6 +54,11 @@ final class TransactionPayjoinBroadcastFailure extends TransactionFailure {
 /// More labels than the exchange accepts on one transaction.
 final class TransactionLabelLimitFailure extends TransactionFailure {
   const TransactionLabelLimitFailure([super.logMessage]);
+}
+
+/// A user-triggered script-path swap claim/refund retry could not complete.
+final class TransactionSwapRetryFailure extends TransactionFailure {
+  const TransactionSwapRetryFailure([super.logMessage]);
 }
 
 /// Catch-all. [logMessage] is for logs ONLY and MUST never reach the UI.

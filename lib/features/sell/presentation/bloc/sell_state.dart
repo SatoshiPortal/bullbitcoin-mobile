@@ -26,12 +26,17 @@ sealed class SellState with _$SellState {
     required OrderAmount orderAmount,
     required FiatCurrency fiatCurrency,
     Wallet? selectedWallet,
-    required SellOrder sellOrder,
+    required Order sellOrder,
+    RecipientSelection? payoutRecipient,
     @Default(false) bool isConfirmingPayment,
     @Default(false) bool isPolling,
     // Txid of the payin transaction once it is on the wire. Acts as a latch:
     // the send path must never run again for this order (#2522).
     String? payinBroadcastTxid,
+    // Set once the exchange reports, after the payin was broadcast, that the
+    // order's payment deadline expired before it saw the payment. The latch
+    // above stays: the order is paid as far as this device is concerned.
+    @Default(false) bool isPayinPastDeadline,
     SellFailure? error,
     int? absoluteFees,
     @Default([]) List<WalletUtxo> utxos,
@@ -63,7 +68,7 @@ sealed class SellState with _$SellState {
   }) = SellPaymentState;
   const factory SellState.success({
     required BitcoinUnit bitcoinUnit,
-    required SellOrder sellOrder,
+    required Order sellOrder,
   }) = SellSuccessState;
   const SellState._();
 
@@ -211,7 +216,8 @@ extension SellAmountInputStateX on SellAmountInputState {
 extension SellWalletSelectionStateX on SellWalletSelectionState {
   SellPaymentState toSendPaymentState({
     required Wallet selectedWallet,
-    required SellOrder createdSellOrder,
+    required Order createdSellOrder,
+    RecipientSelection? payoutRecipient,
     int? absoluteFees,
     List<WalletUtxo>? utxos,
     double? exchangeRateEstimate,
@@ -225,6 +231,7 @@ extension SellWalletSelectionStateX on SellWalletSelectionState {
       fiatCurrency: fiatCurrency,
       selectedWallet: selectedWallet,
       sellOrder: createdSellOrder,
+      payoutRecipient: payoutRecipient,
       absoluteFees: absoluteFees,
       exchangeRateEstimate: exchangeRateEstimate,
       utxos: utxos ?? [],
@@ -234,7 +241,8 @@ extension SellWalletSelectionStateX on SellWalletSelectionState {
   }
 
   SellPaymentState toReceivePaymentState({
-    required SellOrder createdSellOrder,
+    required Order createdSellOrder,
+    RecipientSelection? payoutRecipient,
     double? exchangeRateEstimate,
   }) {
     return SellPaymentState(
@@ -243,6 +251,7 @@ extension SellWalletSelectionStateX on SellWalletSelectionState {
       orderAmount: orderAmount,
       fiatCurrency: fiatCurrency,
       sellOrder: createdSellOrder,
+      payoutRecipient: payoutRecipient,
       exchangeRateEstimate: exchangeRateEstimate,
     );
   }
@@ -252,6 +261,13 @@ extension SellPaymentStateX on SellPaymentState {
   /// The payin transaction is already broadcast, so preparing, signing and
   /// broadcasting again would risk paying the order twice.
   bool get isPayinBroadcast => payinBroadcastTxid != null;
+
+  /// Leaving is safe before the confirmation starts, and after the broadcast
+  /// only once the exchange has reported the payin late: until then the screen
+  /// is what takes the order to success. The broadcast latch survives leaving
+  /// and still forbids paying this order again.
+  bool get canLeavePaymentScreen =>
+      !isConfirmingPayment && (!isPayinBroadcast || isPayinPastDeadline);
 
   /// Fee the payin must be built at, resolved from the committed selection.
   /// Null while the presets have not loaded (or a custom fee was selected
@@ -274,7 +290,7 @@ extension SellPaymentStateX on SellPaymentState {
       selectedWallet != null &&
       !selectedWallet!.isLiquid;
 
-  SellSuccessState toSuccessState({required SellOrder sellOrder}) {
+  SellSuccessState toSuccessState({required Order sellOrder}) {
     return SellSuccessState(bitcoinUnit: bitcoinUnit, sellOrder: sellOrder);
   }
 
@@ -284,9 +300,8 @@ extension SellPaymentStateX on SellPaymentState {
 
     switch (order.payinMethod) {
       case OrderPaymentMethod.bitcoin:
-        if (order.bitcoinAddress != null) {
+        if (order.sellPayinAddress case final address?) {
           final amountBtc = order.payinAmount;
-          final address = order.bitcoinAddress!;
 
           final bip21Uri = Bip21Uri(
             scheme: 'bitcoin',
@@ -296,9 +311,8 @@ extension SellPaymentStateX on SellPaymentState {
           invoiceString = bip21Uri.toString();
         }
       case OrderPaymentMethod.liquid:
-        if (order.liquidAddress != null) {
+        if (order.sellPayinAddress case final address?) {
           final amountBtc = order.payinAmount;
-          final address = order.liquidAddress!;
 
           final bip21Uri = Bip21Uri(
             scheme: 'liquidnetwork',
@@ -309,9 +323,7 @@ extension SellPaymentStateX on SellPaymentState {
           invoiceString = bip21Uri.toString();
         }
       case OrderPaymentMethod.lnInvoice:
-        if (order.lightningInvoice != null) {
-          invoiceString = order.lightningInvoice!;
-        }
+        invoiceString = order.sellLightningInvoice ?? '';
       default:
         break;
     }

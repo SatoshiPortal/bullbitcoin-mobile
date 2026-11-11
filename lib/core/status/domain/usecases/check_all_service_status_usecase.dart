@@ -1,6 +1,7 @@
 import 'dart:io';
 
-import 'package:bb_mobile/core/price/domain/repositories/bitcoin_price_repository.dart';
+import 'package:clock/clock.dart';
+
 import 'package:bb_mobile/core/fees/domain/repositories/fees_repository.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/check_server_connection_usecase.dart';
 import 'package:bb_mobile/core/status/domain/entity/service_status.dart';
@@ -10,8 +11,9 @@ import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
+import 'package:bull_pricer/bull_pricer.dart';
 import 'package:bull_tor/tor.dart';
-import 'package:primitives/primitives.dart' show Err, Ok;
+import 'package:primitives/primitives.dart' show BitcoinNetwork, Err, Ok;
 
 class CheckAllServiceStatusUsecase {
   /// Ceiling for the two Tor-backed rows, which can otherwise start a bootstrap
@@ -21,7 +23,7 @@ class CheckAllServiceStatusUsecase {
   static const _torStatusTimeout = Duration(seconds: 20);
 
   final ElectrumConnectivityPort _electrumConnectivityPort;
-  final BitcoinPriceRepository _bitcoinPriceRepository;
+  final IndexPriceReader _getIndexPrice;
   final PayjoinPolicyAccess _payjoinPolicy;
   final PayjoinDiagnostics _payjoinDiagnostics;
   final FeesRepository _feesRepository;
@@ -33,7 +35,7 @@ class CheckAllServiceStatusUsecase {
 
   CheckAllServiceStatusUsecase({
     required this._electrumConnectivityPort,
-    required this._bitcoinPriceRepository,
+    required this._getIndexPrice,
     required this._payjoinPolicy,
     required this._payjoinDiagnostics,
     required this._feesRepository,
@@ -203,16 +205,26 @@ class CheckAllServiceStatusUsecase {
   }
 
   Future<ServiceStatusInfo> _checkPricerService(Network network) async {
-    final price = await _bitcoinPriceRepository.getCurrencyValue(
-      amountSat: BigInt.from(100000000), // 1 BTC in sats
-      currency: 'USD',
+    final price = await _getIndexPrice(
+      network: BitcoinNetwork.mainnet,
+      currency: SupportedCurrency.usd,
     );
 
-    return ServiceStatusInfo(
-      status: price > 0 ? ServiceStatus.online : ServiceStatus.offline,
-      name: 'Pricer',
-      lastChecked: DateTime.now(),
-    );
+    // A price under a minute old is served without asking the pricer, so an
+    // online pricer is dated by its last real answer. A failure is never
+    // cached: that one is a fresh attempt.
+    return switch (price) {
+      Ok(:final value) => ServiceStatusInfo(
+        status: ServiceStatus.online,
+        name: 'Pricer',
+        lastChecked: value.fetchedAt.toLocal(),
+      ),
+      Err() => ServiceStatusInfo(
+        status: ServiceStatus.offline,
+        name: 'Pricer',
+        lastChecked: clock.now(),
+      ),
+    };
   }
 
   Future<ServiceStatusInfo> _checkMempoolService(Network network) async {

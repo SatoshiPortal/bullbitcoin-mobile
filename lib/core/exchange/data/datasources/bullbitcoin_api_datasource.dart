@@ -285,15 +285,22 @@ class BullbitcoinApiDatasource {
   /// makes it publish a `bip21URI` on the order. Only meaningful on
   /// [OrderBitcoinNetwork.bitcoin]. Omitted rather than sent as false so a
   /// backend without the flag is unaffected.
+  /// EUR bank payouts temporarily share this Sell entry point to keep Pay's existing request contract stable.
+  /// The broader exchange refactor is underway and will consolidate the overlap with [createPayOrder].
   Future<OrderModel> createSellOrder({
     required String apiKey,
     required FiatCurrency fiatCurrency,
     required OrderAmount orderAmount,
     required OrderBitcoinNetwork network,
     bool usePayjoin = false,
+    String? recipientId,
+    SepaPaymentProcessor? paymentProcessor,
   }) async {
     final params = <String, dynamic>{
-      'fiatCurrency': fiatCurrency.code,
+      if (recipientId == null) 'fiatCurrency': fiatCurrency.code,
+      'recipientId': ?recipientId,
+      if (recipientId != null && paymentProcessor != null)
+        'paymentProcessor': _sepaPaymentProcessorValue(paymentProcessor),
       'bitcoinNetwork': network.value,
       if (usePayjoin) 'usePayjoin': true,
     };
@@ -309,7 +316,7 @@ class BullbitcoinApiDatasource {
       data: {
         'jsonrpc': '2.0',
         'id': '0',
-        'method': 'sellToBalance',
+        'method': recipientId == null ? 'sellToBalance' : 'sellToRecipient',
         'params': params,
       },
       options: Options(headers: {'X-API-Key': apiKey}),
@@ -318,7 +325,11 @@ class BullbitcoinApiDatasource {
     final error = resp.data['error'];
     if (statusCode != 200) throw Exception('Failed to create sell order');
     if (error != null) {
-      _throwOrderApiError(error, 'Failed to create sell order');
+      _throwOrderApiError(
+        error,
+        'Failed to create sell order',
+        redactError: recipientId != null,
+      );
     }
     return OrderModel.fromJson(resp.data['result'] as Map<String, dynamic>);
   }
@@ -832,7 +843,11 @@ String _sepaPaymentProcessorValue(SepaPaymentProcessor processor) =>
 /// array has to reach the generic error rather than be treated as a bug. The
 /// aggregate also carries a legacy `data.details`, always an array of nulls;
 /// it is deliberately never read.
-Never _throwOrderApiError(dynamic error, String contextMessage) {
+Never _throwOrderApiError(
+  dynamic error,
+  String contextMessage, {
+  bool redactError = false,
+}) {
   final errorMap = error is Map ? error : const <dynamic, dynamic>{};
   final data = errorMap['data'];
   final dataMap = data is Map ? data : const <dynamic, dynamic>{};
@@ -879,6 +894,19 @@ Never _throwOrderApiError(dynamic error, String contextMessage) {
           currency: max.currency,
         );
     }
+  }
+
+  if (redactError) {
+    final apiCode = apiError is Map ? apiError['code'] : null;
+    final rpcCode = errorMap['code'];
+    throw BullBitcoinApiOrderException(
+      apiCode:
+          apiCode is String &&
+              RegExp(r'^ERR_[A-Z0-9_]{1,64}$').hasMatch(apiCode)
+          ? apiCode
+          : null,
+      rpcCode: rpcCode is int ? rpcCode : null,
+    );
   }
 
   final message = errorMap['message'];

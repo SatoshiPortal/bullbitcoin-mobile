@@ -29,8 +29,12 @@ void main() {
   late _MockWatchVirtualIbanUsecase watch;
   late int activated;
   late int usedRegularSepa;
+  late int returnedHome;
 
-  Future<AppLocalizations> pumpView(WidgetTester tester) async {
+  Future<AppLocalizations> pumpView(
+    WidgetTester tester, {
+    bool withReturnHome = false,
+  }) async {
     events = StreamController<_Event>.broadcast();
     watch = _MockWatchVirtualIbanUsecase();
     final ownerName = _MockGetAccountOwnerNameUsecase();
@@ -49,6 +53,7 @@ void main() {
     addTearDown(cubit.close);
     activated = 0;
     usedRegularSepa = 0;
+    returnedHome = 0;
 
     await tester.pumpWidget(
       MaterialApp(
@@ -60,6 +65,7 @@ void main() {
           child: VirtualIbanOnboardingView(
             onActivated: () => activated++,
             onUseRegularSepa: () => usedRegularSepa++,
+            onReturnHome: withReturnHome ? () => returnedHome++ : null,
           ),
         ),
       ),
@@ -109,6 +115,26 @@ void main() {
 
     await tester.tap(find.text(loc.recipientsConfidentialSepaUseRegularSepa));
     expect(usedRegularSepa, 1);
+  });
+
+  testWidgets('no Return Home button is shown when none is provided', (
+    tester,
+  ) async {
+    final loc = await pumpView(tester);
+    await emit(tester, const Ok(PendingVirtualIban()));
+    expect(find.text(loc.recipientsReturnHome), findsNothing);
+  });
+
+  testWidgets('while it is being created the user can return home', (
+    tester,
+  ) async {
+    final loc = await pumpView(tester, withReturnHome: true);
+    await emit(tester, const Ok(PendingVirtualIban()));
+
+    final returnHome = find.text(loc.recipientsReturnHome);
+    await tester.ensureVisible(returnHome);
+    await tester.tap(returnHome);
+    expect(returnedHome, 1);
   });
 
   testWidgets('an active virtual IBAN continues the flow', (tester) async {
