@@ -7,8 +7,9 @@ import 'package:boltz_swaps/boltz_swaps.dart' hide SwapDirection;
 /// [BoltzSwapsDatabase]. The copy and its completion marker commit in one
 /// transaction (nothing half-done survives a crash), rows are
 /// insert-if-absent (a retried import can never clobber state the engine
-/// wrote since), and per-row mapping failures abort the transaction so the
-/// import retries whole on the next launch. The source table is left
+/// wrote since). A row missing a field its swap kind requires is skipped and
+/// logged rather than blocking every other swap from importing. The source
+/// table is left
 /// untouched — app schema v14 is published and immutable; a later schema
 /// revision drops it.
 class BoltzSwapsDbMigration {
@@ -28,18 +29,29 @@ class BoltzSwapsDbMigration {
     try {
       if (await _swapsDb.dataMigrationDone(_migrationName)) return;
       final oldRows = await _appDb.managers.swaps.get();
+      var skipped = 0;
       await _swapsDb.runDataMigration(_migrationName, () async {
         for (final row in oldRows) {
-          await _rows.insertIfAbsent(_toModel(row));
+          final model = _toModel(row);
+          if (model == null) {
+            skipped++;
+            log.warning(
+              'boltz_swaps db migration: skipped incomplete '
+              '${row.direction.name} swap ${row.id}',
+            );
+            continue;
+          }
+          await _rows.insertIfAbsent(model);
         }
       });
-      log.info(
-        'boltz_swaps db migration: ${oldRows.length} swap row(s) imported',
+      log.fine(
+        'boltz_swaps db migration: ${oldRows.length - skipped} swap row(s) '
+        'imported, $skipped skipped',
       );
     } catch (e) {
       log.severe(
         message: 'boltz_swaps db migration failed — will retry next launch',
-        error: e,
+        error: e.runtimeType,
         trace: StackTrace.current,
       );
     }
@@ -54,9 +66,13 @@ class BoltzSwapsDbMigration {
     return swap.status;
   }
 
-  static SwapModel _toModel(SwapRow swap) {
-    switch (swap.direction) {
-      case SwapDirection.receive:
+  static SwapModel? _toModel(SwapRow swap) {
+    switch (swap) {
+      case SwapRow(
+        direction: SwapDirection.receive,
+        receiveWalletId: final receiveWalletId?,
+        invoice: final invoice?,
+      ):
         return SwapModel.lnReceive(
           id: swap.id,
           type: swap.type,
@@ -64,7 +80,7 @@ class BoltzSwapsDbMigration {
           isTestnet: swap.isTestnet,
           keyIndex: swap.keyIndex,
           creationTime: swap.creationTime,
-          receiveWalletId: swap.receiveWalletId!,
+          receiveWalletId: receiveWalletId,
           receiveAddress: swap.receiveAddress,
           receiveTxid: swap.receiveTxid,
           wasDirectPayment: swap.wasDirectPayment,
@@ -72,10 +88,16 @@ class BoltzSwapsDbMigration {
           boltzFees: swap.boltzFees,
           lockupFees: swap.lockupFees,
           claimFees: swap.claimFees,
-          invoice: swap.invoice!,
+          invoice: invoice,
           recovered: swap.recovered,
         );
-      case SwapDirection.send:
+      case SwapRow(
+        direction: SwapDirection.send,
+        sendWalletId: final sendWalletId?,
+        paymentAddress: final paymentAddress?,
+        paymentAmount: final paymentAmount?,
+        invoice: final invoice?,
+      ):
         return SwapModel.lnSend(
           id: swap.id,
           type: swap.type,
@@ -83,11 +105,11 @@ class BoltzSwapsDbMigration {
           isTestnet: swap.isTestnet,
           keyIndex: swap.keyIndex,
           creationTime: swap.creationTime,
-          sendWalletId: swap.sendWalletId!,
-          paymentAddress: swap.paymentAddress!,
-          paymentAmount: swap.paymentAmount!,
+          sendWalletId: sendWalletId,
+          paymentAddress: paymentAddress,
+          paymentAmount: paymentAmount,
           completionTime: swap.completionTime,
-          invoice: swap.invoice!,
+          invoice: invoice,
           sendTxid: swap.sendTxid,
           preimage: swap.preimage,
           refundAddress: swap.refundAddress,
@@ -98,7 +120,12 @@ class BoltzSwapsDbMigration {
           refundFees: swap.refundFees,
           recovered: swap.recovered,
         );
-      case SwapDirection.onchain:
+      case SwapRow(
+        direction: SwapDirection.onchain,
+        sendWalletId: final sendWalletId?,
+        paymentAddress: final paymentAddress?,
+        paymentAmount: final paymentAmount?,
+      ):
         return SwapModel.chain(
           id: swap.id,
           type: swap.type,
@@ -108,9 +135,9 @@ class BoltzSwapsDbMigration {
           creationTime: swap.creationTime,
           completionTime: swap.completionTime,
           receiveWalletId: swap.receiveWalletId,
-          sendWalletId: swap.sendWalletId!,
-          paymentAddress: swap.paymentAddress!,
-          paymentAmount: swap.paymentAmount!,
+          sendWalletId: sendWalletId,
+          paymentAddress: paymentAddress,
+          paymentAmount: paymentAmount,
           receiveAddress: swap.receiveAddress,
           receiveTxid: swap.receiveTxid,
           sendTxid: swap.sendTxid,
@@ -123,6 +150,8 @@ class BoltzSwapsDbMigration {
           serverNetworkFees: swap.serverNetworkFees,
           recovered: swap.recovered,
         );
+      default:
+        return null;
     }
   }
 }
