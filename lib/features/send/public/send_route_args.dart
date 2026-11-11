@@ -18,25 +18,26 @@ final class SendRouteArgs {
       isSweep = false;
 
   SendRouteArgs.selected({
-    required Wallet this.wallet,
+    required Wallet wallet,
     required Set<Outpoint> outpoints,
-  }) : isSpMode = false,
+  }) : wallet = wallet,
+       isSpMode = false,
        selectedOutpoints = Set.unmodifiable(outpoints),
        isSweep = false {
-    _validate();
+    _validate(wallet);
   }
 
   SendRouteArgs.sweep({
-    required Wallet this.wallet,
+    required Wallet wallet,
     required Set<Outpoint> outpoints,
-  }) : isSpMode = false,
+  }) : wallet = wallet,
+       isSpMode = false,
        selectedOutpoints = Set.unmodifiable(outpoints),
        isSweep = true {
-    _validate();
+    _validate(wallet);
   }
 
-  void _validate() {
-    final wallet = this.wallet!;
+  void _validate(Wallet wallet) {
     if (!wallet.isBitcoin) {
       throw ArgumentError.value(
         wallet.id,
