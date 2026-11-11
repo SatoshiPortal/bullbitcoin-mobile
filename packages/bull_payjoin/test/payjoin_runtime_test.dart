@@ -8,7 +8,7 @@ import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:primitives/primitives.dart';
 import 'package:test/test.dart';
 
-final class _WalletPort implements PayjoinWalletPort {
+base class _WalletPort implements PayjoinWalletPort {
   @override
   Future<bool Function(Uint8List script)> createOwnershipChecker({
     required String walletId,
@@ -103,6 +103,15 @@ final class _LegacyData implements PayjoinLegacyDataPort {
       );
 }
 
+final class _BusyWalletPort extends _WalletPort {
+  @override
+  Future<String> signPsbt({
+    required String walletId,
+    required BitcoinNetwork network,
+    required String psbt,
+  }) async => throw const PayjoinSpendBlockedException(busy: true);
+}
+
 final class _LogPort implements PayjoinLogPort {
   final List<PayjoinLogEvent> events = [];
 
@@ -122,10 +131,11 @@ void main() {
   Future<Result<PayjoinLifecycle, PayjoinFailure>> open({
     PayjoinLogPort? log,
     bool offline = false,
+    PayjoinWalletPort? wallet,
   }) {
     return openPayjoin(
       databasePath: '${directory.path}/payjoin.sqlite',
-      wallet: _WalletPort(),
+      wallet: wallet ?? _WalletPort(),
       blockchain: _BlockchainPort(),
       fees: _FeesPort(),
       transactions: _TransactionPort(offline: offline),
@@ -134,6 +144,34 @@ void main() {
       log: log ?? _LogPort(),
     );
   }
+
+  test('a sender refused by a busy wallet says so', () async {
+    final lifecycle = switch (await open(wallet: _BusyWalletPort())) {
+      Ok(:final value) => value,
+      Err(:final failure) => throw failure,
+    };
+    addTearDown(lifecycle.dispose);
+
+    final result = await lifecycle.payjoin.sender.start(
+      StartPayjoinSender(
+        walletId: 'wallet-1',
+        network: BitcoinNetwork.testnet,
+        bip21Uri: 'bitcoin:tb1qnopayjoinendpoint?amount=0.001',
+        unsignedOriginalPsbt: 'cHNidP8=',
+        amount: Sats.fromInt(100000),
+        feeRate: FeeRate(2),
+      ),
+    );
+
+    expect(
+      result,
+      isA<Err<PayjoinSenderSession, PayjoinFailure>>().having(
+        (result) => result.failure,
+        'failure',
+        isA<PayjoinSpendBlockedFailure>().having((f) => f.busy, 'busy', isTrue),
+      ),
+    );
+  });
 
   test('a sender that cannot start says why in the log', () async {
     final log = _LogPort();

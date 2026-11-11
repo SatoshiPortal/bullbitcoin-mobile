@@ -1,6 +1,6 @@
 import 'package:bb_mobile/features/send/domain/usecases/retry_payjoin_proposal_usecase.dart';
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart'
-    show WalletSpendBlockedException;
+    show BitcoinSpendStatus, WalletSpendBlockedException;
 import 'package:bb_mobile/features/send/domain/broadcast_failure.dart';
 import 'package:bb_mobile/features/wallet/domain/network_x.dart';
 import 'package:bb_mobile/features/send/domain/usecases/watch_wallet_revisions_usecase.dart';
@@ -2000,7 +2000,9 @@ class SendCubit extends Cubit<SendState>
       if (e is WalletSpendBlockedException) {
         emit(
           state.copyWith(
-            failure: const SendSpendBlockedFailure(),
+            failure: SendSpendBlockedFailure(
+              busy: e.status == BitcoinSpendStatus.busy,
+            ),
             buildingTransaction: false,
           ),
         );
@@ -2368,11 +2370,13 @@ class SendCubit extends Cubit<SendState>
           ),
         );
       }
-    } on WalletSpendBlockedException {
+    } on WalletSpendBlockedException catch (e) {
       if (!isClosed) {
         emit(
           state.copyWith(
-            failure: const SendSpendBlockedFailure(),
+            failure: SendSpendBlockedFailure(
+              busy: e.status == BitcoinSpendStatus.busy,
+            ),
             broadcastingTransaction: false,
           ),
         );
@@ -2758,19 +2762,34 @@ class SendCubit extends Cubit<SendState>
 
   Future<void> retryPayjoinProposal() async {
     final sender = state.payjoinSender;
-    if (sender == null || !sender.canRetryProposal) return;
-    final result = await _retryPayjoinProposalUsecase.execute(sender.id);
+    // Cubit calls have no event transformer: admit synchronously and drop
+    // duplicate taps until the pending retry settles.
     if (isClosed ||
-        state.payjoinSender?.isCompleted == true ||
-        state.payjoinSender?.isAborted == true) {
+        state.isRetryingPayjoinProposal ||
+        sender == null ||
+        !sender.canRetryProposal) {
       return;
     }
-    switch (result) {
-      case Err(:final failure):
-        emit(state.copyWith(failure: failure));
-      case Ok():
-        // Session updates remain owned by the existing subscription.
-        break;
+    emit(state.copyWith(isRetryingPayjoinProposal: true));
+    try {
+      final result = await _retryPayjoinProposalUsecase.execute(sender.id);
+      final latest = state.payjoinSender;
+      if (isClosed ||
+          latest == null ||
+          latest.id != sender.id ||
+          !latest.isOngoing) {
+        return;
+      }
+      switch (result) {
+        case Err(:final failure):
+          // The subscription owns session transitions. A late retry failure
+          // must not replace a newer observation, even for the same session.
+          if (identical(latest, sender)) emit(state.copyWith(failure: failure));
+        case Ok():
+          break;
+      }
+    } finally {
+      if (!isClosed) emit(state.copyWith(isRetryingPayjoinProposal: false));
     }
   }
 

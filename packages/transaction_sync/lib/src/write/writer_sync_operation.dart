@@ -36,7 +36,16 @@ abstract interface class WriterSyncChanges {
 /// Positive evidence from this pass, captured before native persistence and
 /// returned only after persistence succeeds. Cached unconfirmed presence is not
 /// evidence. Confirmed canonical membership reconciles native spend safety.
+///
+/// A tracked spend that is not seen is settled for this pass only when a
+/// confirmed transaction (or a tracked spend observed in this pass) spends one
+/// of its inputs. Absence and eviction prove nothing; nothing is ever forgotten.
 abstract interface class WriterSyncSpendObservation {
-  void trackSpendTransactions(List<String> txids);
+  /// Tracked txids with their recorded inputs (`txid:vout`), empty if unknown.
+  void trackSpendTransactions(Map<String, Set<String>> inputsByTxid);
   Set<String> get observedSpendTransactions;
+
+  /// Inputs of tracked transactions seen in the wallet during this pass.
+  Map<String, Set<String>> get spendTransactionInputs;
+  Set<String> get settledSpendTransactions;
 }

@@ -97,6 +97,24 @@ void main() {
     );
   });
 
+  for (final busy in [true, false]) {
+    test('a refused spend keeps its reason: busy=$busy', () async {
+      final sender = _MockPayjoinSender();
+      when(() => sender.start(any())).thenAnswer(
+        (_) async => Err<PayjoinSenderSession, PayjoinFailure>(
+          PayjoinSpendBlockedFailure(busy: busy),
+        ),
+      );
+
+      final result = await _start(sender);
+
+      expect(
+        (result as core.Err).failure,
+        isA<SendSpendBlockedFailure>().having((f) => f.busy, 'busy', busy),
+      );
+    });
+  }
+
   test('sanitizes a package failure into a confirmation failure', () async {
     final sender = _MockPayjoinSender();
     when(() => sender.start(any())).thenAnswer(

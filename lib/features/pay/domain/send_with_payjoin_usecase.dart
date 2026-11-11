@@ -39,8 +39,8 @@ class SendWithPayjoinUsecase {
     switch (result) {
       case Ok(:final value):
         return Ok(value);
-      case Err(failure: PayjoinSpendBlockedFailure()):
-        return const Err(PaySpendBlockedFailure());
+      case Err(failure: PayjoinSpendBlockedFailure(:final busy)):
+        return Err(PaySpendBlockedFailure(busy: busy));
       case Err(:final failure):
         // Not necessarily a failed payment: the engine persists the session,
         // signed original included, before posting to the directory. The caller

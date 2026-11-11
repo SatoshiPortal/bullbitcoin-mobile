@@ -474,11 +474,16 @@ final class _NativeSyncOperation
         WriterSyncMutation,
         WriterSyncChanges,
         WriterSyncSpendObservation {
-  List<String> _spendTxids = [];
+  Map<String, Set<String>> _trackedSpends = {};
   @override
   Set<String> observedSpendTransactions = {};
   @override
-  void trackSpendTransactions(List<String> txids) => _spendTxids = txids;
+  Map<String, Set<String>> spendTransactionInputs = {};
+  @override
+  Set<String> settledSpendTransactions = {};
+  @override
+  void trackSpendTransactions(Map<String, Set<String>> inputsByTxid) =>
+      _trackedSpends = inputsByTxid;
   @override
   bool mayHaveMutated = false;
   @override
@@ -496,8 +501,12 @@ final class _NativeSyncOperation
       issuedReceiveIndex,
       () => mayHaveMutated = true,
       (changed) => hasChanges = changed,
-      _spendTxids,
-      (observed) => observedSpendTransactions = observed,
+      _trackedSpends,
+      (evidence) {
+        observedSpendTransactions = evidence.observed;
+        spendTransactionInputs = evidence.inputs;
+        settledSpendTransactions = evidence.settled;
+      },
     );
     result = attempt.result;
     return switch (attempt.result) {
@@ -534,8 +543,8 @@ Future<_Attempt> _performNativeSync(
   int? issuedReceiveIndex,
   void Function() markMutation,
   void Function(bool) reportChanges,
-  List<String> spendTxids,
-  void Function(Set<String>) reportSpendObservation,
+  Map<String, Set<String>> trackedSpends,
+  void Function(_SpendEvidence) reportSpendEvidence,
 ) async {
   final watch = Stopwatch()..start();
   final descriptor = params.descriptor;
@@ -741,11 +750,11 @@ Future<_Attempt> _performNativeSync(
       before?.dispose();
       markMutation();
       wallet.applyUpdate(update: update);
-      final observed = cleanStage
-          ? _observedSpends(wallet, spendTxids)
-          : <String>{};
+      final evidence = cleanStage
+          ? _spendEvidence(wallet, trackedSpends)
+          : null;
       reportChanges(wallet.persist(persister: persister));
-      reportSpendObservation(observed);
+      if (evidence != null) reportSpendEvidence(evidence);
     } finally {
       update.dispose();
     }
@@ -907,10 +916,49 @@ Future<Result<void, TransactionSyncFailure>> _checkInitialScan(
 String electrumClientUrl(String url) =>
     url.contains('://') ? url : 'ssl://$url';
 
+typedef _SpendEvidence = ({
+  Set<String> observed,
+  Map<String, Set<String>> inputs,
+  Set<String> settled,
+});
+
+String _outpoint(bdk.OutPoint outpoint) => '${outpoint.txid}:${outpoint.vout}';
+
+/// Returns the outpoints [tx] spends and frees its native handles.
+Set<String> _takeInputs(bdk.CanonicalTx tx) {
+  final inputs = <String>{};
+  for (final input in tx.transaction.input()) {
+    inputs.add(_outpoint(input.previousOutput));
+    input.previousOutput.txid.dispose();
+    input.scriptSig.dispose();
+  }
+  tx.transaction.dispose();
+  if (tx.chainPosition case bdk.ConfirmedChainPosition(
+    :final confirmationBlockTime,
+    :final transitively,
+  )) {
+    confirmationBlockTime.blockId.hash.dispose();
+    transitively?.dispose();
+  }
+  return inputs;
+}
+
 /// No local insertion is performed. Only advancing server deltas can prove
 /// unconfirmed visibility; canonical confirmation is separate chain evidence.
-Set<String> _observedSpends(bdk.Wallet wallet, List<String> tracked) {
-  if (tracked.isEmpty) return {};
+/// A tracked spend that left the canonical set is settled, for this pass
+/// only, when a canonical transaction spends one of its recorded inputs and
+/// is confirmed, or is itself a tracked spend observed in this pass. An
+/// eviction is one endpoint's omission: like any absence, it settles nothing.
+_SpendEvidence _spendEvidence(
+  bdk.Wallet wallet,
+  Map<String, Set<String>> tracked,
+) {
+  final observed = <String>{};
+  final inputs = <String, Set<String>>{};
+  final settled = <String>{};
+  if (tracked.isEmpty) {
+    return (observed: observed, inputs: inputs, settled: settled);
+  }
   final staged = wallet.staged();
   final positive = <String>{};
   try {
@@ -938,30 +986,42 @@ Set<String> _observedSpends(bdk.Wallet wallet, List<String> tracked) {
         anchor.confirmationBlockTime.blockId.hash.dispose();
       }
     }
-    final observed = <String>{};
-    for (final id in tracked) {
+    final displaced = <String>{};
+    for (final id in tracked.keys) {
       final txid = bdk.Txid.fromString(hex: id);
       try {
         final tx = wallet.getTx(txid: txid);
-        if (tx != null) {
-          if (positive.contains(id) ||
-              tx.chainPosition is bdk.ConfirmedChainPosition) {
-            observed.add(id);
-          }
-          tx.transaction.dispose();
-          if (tx.chainPosition case bdk.ConfirmedChainPosition(
-            :final confirmationBlockTime,
-            :final transitively,
-          )) {
-            confirmationBlockTime.blockId.hash.dispose();
-            transitively?.dispose();
-          }
+        if (tx == null) {
+          if (tracked[id]?.isNotEmpty ?? false) displaced.add(id);
+          continue;
         }
+        if (positive.contains(id) ||
+            tx.chainPosition is bdk.ConfirmedChainPosition) {
+          observed.add(id);
+        }
+        final spent = _takeInputs(tx);
+        if (tracked[id]?.isEmpty ?? true) inputs[id] = spent;
       } finally {
         txid.dispose();
       }
     }
-    return observed;
+    if (displaced.isNotEmpty) {
+      // Outpoints spent by a confirmed transaction, or by a tracked
+      // replacement this pass observed.
+      final spent = <String>{};
+      for (final tx in wallet.transactions()) {
+        final id = tx.transaction.computeTxid();
+        final confirmed = tx.chainPosition is bdk.ConfirmedChainPosition;
+        final proof = confirmed || observed.contains(id.toString());
+        id.dispose();
+        final outpoints = _takeInputs(tx);
+        if (proof) spent.addAll(outpoints);
+      }
+      settled.addAll(
+        displaced.where((id) => tracked[id]?.any(spent.contains) ?? false),
+      );
+    }
+    return (observed: observed, inputs: inputs, settled: settled);
   } finally {
     staged?.dispose();
   }

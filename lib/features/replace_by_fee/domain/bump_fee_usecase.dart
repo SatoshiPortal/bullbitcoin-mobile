@@ -89,8 +89,8 @@ class BumpFeeUsecase {
     } on WalletSpendBlockedException catch (e) {
       return Err(
         ReplaceByFeeSpendBlockedFailure(
-          replacementUnsupported:
-              e.status == BitcoinSpendStatus.replacementUnsupported,
+          replacementPending: e.status == BitcoinSpendStatus.replacementPending,
+          busy: e.status == BitcoinSpendStatus.busy,
         ),
       );
     } on ManipulatedTransactionException catch (e, st) {

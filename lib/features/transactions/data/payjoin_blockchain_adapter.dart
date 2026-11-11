@@ -40,7 +40,7 @@ final class AppPayjoinBlockchainAdapter implements PayjoinBlockchainPort {
     // Set on entering the network callback, before any server is contacted:
     // a failure while it is still false provably sent nothing.
     var reachedNetwork = false;
-    final Object result;
+    final Result<BitcoinBroadcastReceipt, WalletSpendFailure> result;
     try {
       final txid = _transactionId(psbt);
       result = await _wallet.broadcastBitcoin(walletId, network, () async {
@@ -60,7 +60,11 @@ final class AppPayjoinBlockchainAdapter implements PayjoinBlockchainPort {
       if (reachedNetwork) rethrow;
       throw const PayjoinBroadcastNotAttemptedException();
     }
-    if (result is Err) throw const PayjoinSpendBlockedException();
+    if (result case Err(failure: WalletSpendBlockedFailure(:final status))) {
+      throw PayjoinSpendBlockedException(
+        busy: status == BitcoinSpendStatus.busy,
+      );
+    }
     // Accepted/local-record-pending remains accepted; the owner blocks further
     // spends. Never throw a post-accept local failure into the fallback catch.
   }

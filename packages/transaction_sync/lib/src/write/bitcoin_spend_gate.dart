@@ -6,7 +6,17 @@ import 'writer_lock.dart';
 import 'lease_diagnostics.dart';
 
 /// No timeout, absence or recovery operation grants spend permission.
-enum BitcoinSpendStatus { ready, pending, unavailable, replacementUnsupported }
+enum BitcoinSpendStatus {
+  ready,
+  pending,
+  unavailable,
+
+  /// Another operation, usually a sync, holds the wallet: retry shortly.
+  busy,
+
+  /// The tracked transaction to replace has not been observed by a sync yet.
+  replacementPending,
+}
 
 final class BitcoinBroadcastReceipt {
   final String txid;
@@ -55,8 +65,13 @@ final class BitcoinSpendGate {
         intent: LeaseIntent.sync,
       ),
     );
-    if (acquired case Err()) {
-      return const BitcoinSpendRefused(BitcoinSpendStatus.unavailable);
+    if (acquired case Err(:final failure)) {
+      // Contention says nothing about the wallet's payments.
+      return BitcoinSpendRefused(
+        failure is TransactionSyncBusyFailure
+            ? BitcoinSpendStatus.busy
+            : BitcoinSpendStatus.unavailable,
+      );
     }
     final lock = (acquired as Ok<WriterLock, TransactionSyncFailure>).value;
     BitcoinSpendGateStore? store;
@@ -75,7 +90,7 @@ final class BitcoinSpendGate {
       if (found case Err()) throw const BitcoinSpendGateUnavailable();
       final descriptor =
           (found as Ok<PublicWalletDescriptor, TransactionSyncFailure>).value;
-      store = BitcoinSpendGateStore(revisions.spendGatePath);
+      store = revisions.openSpendGate();
       final pendingKey = (revisions.spendGatePath, key);
       final pending = _pending[pendingKey];
       if (pending != null) {
@@ -86,12 +101,18 @@ final class BitcoinSpendGate {
       if (store.generationMismatch(key, record.state.stamp.generation)) {
         store.requireValidation(key);
       }
-      if (!handoff &&
-          (store.blocked(descriptor) ||
-              (replacing != null && tracked.contains(replacing)))) {
-        final status = replacing != null && tracked.contains(replacing)
-            ? BitcoinSpendStatus.replacementUnsupported
-            : BitcoinSpendStatus.pending;
+      // An observed tracked spend may be replaced. Broadcasting the
+      // replacement records it as a new obligation; a pass that sees the
+      // replacement settles the original by conflict, never by eviction.
+      final status =
+          replacing != null &&
+              tracked.contains(replacing) &&
+              !store.isObserved(key, replacing)
+          ? BitcoinSpendStatus.replacementPending
+          : store.blocked(descriptor)
+          ? BitcoinSpendStatus.pending
+          : null;
+      if (!handoff && status != null) {
         store.close();
         lock.release();
         return BitcoinSpendRefused(status);

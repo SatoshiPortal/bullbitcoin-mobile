@@ -57,5 +57,7 @@ final class PayjoinUnexpectedFailure extends PayjoinFailure {
 }
 
 final class PayjoinSpendBlockedFailure extends PayjoinFailure {
-  const PayjoinSpendBlockedFailure();
+  /// The wallet is only busy with another operation: retrying shortly works.
+  final bool busy;
+  const PayjoinSpendBlockedFailure({this.busy = false});
 }

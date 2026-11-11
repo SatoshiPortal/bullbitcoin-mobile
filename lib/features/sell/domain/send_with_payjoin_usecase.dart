@@ -39,8 +39,8 @@ class SendWithPayjoinUsecase {
     switch (result) {
       case Ok(:final value):
         return Ok(value);
-      case Err(failure: PayjoinSpendBlockedFailure()):
-        return const Err(SellSpendBlockedFailure());
+      case Err(failure: PayjoinSpendBlockedFailure(:final busy)):
+        return Err(SellSpendBlockedFailure(busy: busy));
       case Err(:final failure):
         // Both parts: Failure has no toString() override, so the value alone
         // would log "Instance of 'PayjoinX'" and the message alone drops the

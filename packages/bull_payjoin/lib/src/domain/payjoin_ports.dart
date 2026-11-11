@@ -334,7 +334,9 @@ final class PayjoinLogEvent {
 /// A local spend barrier is not a failed network broadcast and must never
 /// trigger the competing original-transaction fallback.
 final class PayjoinSpendBlockedException implements Exception {
-  const PayjoinSpendBlockedException();
+  /// The wallet is only busy with another operation: retrying shortly works.
+  final bool busy;
+  const PayjoinSpendBlockedException({this.busy = false});
 }
 
 /// A broadcast that failed before anything was handed to the network. Thrown

@@ -7,6 +7,7 @@ import 'package:transaction_sync/transaction_sync.dart';
 import 'package:transaction_sync/write.dart';
 import 'package:transaction_sync/src/write/bitcoin_spend_gate_store.dart';
 import 'package:transaction_sync/src/write/revision_store.dart';
+import 'package:transaction_sync/src/write/writer_lock.dart';
 
 final class _Catalog implements WalletCatalogPort {
   final List<PublicWalletDescriptor> wallets;
@@ -28,6 +29,8 @@ void main() {
   late BitcoinWalletDescriptor other;
   const txid =
       'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa';
+  const replacement =
+      'cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc';
   BitcoinWalletDescriptor descriptor(String id) => BitcoinWalletDescriptor(
     key: WalletKey(id: id, network: BitcoinNetwork.testnet),
     scriptType: ScriptType.bip84,
@@ -39,6 +42,7 @@ void main() {
   setUp(() {
     dir = Directory.systemTemp.createTempSync('spend-gate-');
     revisions = RevisionStore(writerMetadataPath(dir.path));
+    revisions.openSpendGate().close();
     wallet = descriptor('one');
     other = descriptor('two');
     for (final descriptor in [wallet, other]) {
@@ -88,16 +92,40 @@ void main() {
   );
 
   test(
-    'observed predecessor refuses RBF and revalidation cannot be cleared by revision recovery',
+    'observed predecessor admits RBF and revalidation cannot be cleared by revision recovery',
     () async {
       await accepted();
+      expect(
+        await gate.check(wallet.key, replacing: txid),
+        BitcoinSpendStatus.replacementPending,
+      );
       final store = BitcoinSpendGateStore(revisions.spendGatePath);
       try {
         store.observed(wallet, 1, {txid});
         expect(await gate.check(wallet.key), BitcoinSpendStatus.ready);
         expect(
           await gate.check(wallet.key, replacing: txid),
-          BitcoinSpendStatus.replacementUnsupported,
+          BitcoinSpendStatus.ready,
+        );
+        // The replacement is a new obligation, unobserved until a sync sees it.
+        final admission = await gate.acquire(wallet.key);
+        expect(
+          (admission as BitcoinSpendAdmission).accepted(replacement).durable,
+          isTrue,
+        );
+        admission.close();
+        expect(await gate.check(wallet.key), BitcoinSpendStatus.pending);
+        expect(
+          await gate.check(wallet.key, replacing: replacement),
+          BitcoinSpendStatus.replacementPending,
+        );
+        // The pass that sees the replacement settles the original it
+        // conflicts with; both stay recorded.
+        store.observed(wallet, 1, {replacement, txid});
+        expect(store.tracked(wallet), [txid, replacement]);
+        expect(
+          await gate.check(wallet.key, replacing: replacement),
+          BitcoinSpendStatus.ready,
         );
         // This marker precedes native persistence. Generic interrupted-write
         // reconciliation cannot erase it, even if native state was already saved.
@@ -105,6 +133,10 @@ void main() {
         revisions.begin(wallet.key, WriteIntent.sync);
         revisions.finish(wallet.key);
         expect(await gate.check(wallet.key), BitcoinSpendStatus.pending);
+        expect(
+          await gate.check(wallet.key, replacing: replacement),
+          BitcoinSpendStatus.replacementPending,
+        );
         store.observed(wallet, 1, {});
         expect(await gate.check(wallet.key), BitcoinSpendStatus.pending);
       } finally {
@@ -112,6 +144,36 @@ void main() {
       }
     },
   );
+
+  test('a settled spend is retained and blocks again after a reset', () async {
+    await accepted();
+    final store = BitcoinSpendGateStore(revisions.spendGatePath);
+    try {
+      final spent = {'${'b' * 64}:0', '${'b' * 64}:1'};
+      store.observed(wallet, 1, {txid}, inputs: {txid: spent});
+      expect(await gate.check(wallet.key), BitcoinSpendStatus.ready);
+      // The next pass starts from nothing: absence is not evidence, and a
+      // conflict that settled the spend must be proven again.
+      store.requireValidation(wallet.key);
+      store.observed(wallet, 1, {});
+      expect(await gate.check(wallet.key), BitcoinSpendStatus.pending);
+      expect(store.trackedInputs(wallet), {txid: spent});
+    } finally {
+      store.close();
+    }
+  });
+
+  test('writer contention is busy, not an unobserved payment', () async {
+    final held =
+        WriterLock.acquire(writerLockDirectory(dir.path), wallet.key)
+            as Ok<WriterLock, TransactionSyncFailure>;
+    try {
+      expect(await gate.check(wallet.key), BitcoinSpendStatus.busy);
+    } finally {
+      held.value.release();
+    }
+    expect(await gate.check(wallet.key), BitcoinSpendStatus.ready);
+  });
 
   test('revision quarantine marker keeps spend admission closed', () async {
     await accepted();
@@ -185,14 +247,20 @@ void main() {
     expect(File(emptyPath).existsSync(), isFalse);
     final gateFile = File(revisions.spendGatePath);
     gateFile.renameSync('${gateFile.path}.saved');
-    expect(
-      () => RevisionStore(writerMetadataPath(dir.path), existingOnly: true),
-      throwsA(isA<BitcoinSpendGateUnavailable>()),
-    );
-    expect(
-      () => RevisionStore(writerMetadataPath(dir.path)),
-      throwsA(isA<BitcoinSpendGateUnavailable>()),
-    );
+    // Metadata still opens for Liquid and reads; only the gate is refused,
+    // and a provisioned gate that went missing is never silently recreated.
+    for (final existingOnly in [true, false]) {
+      final reopened = RevisionStore(
+        writerMetadataPath(dir.path),
+        existingOnly: existingOnly,
+      );
+      expect(
+        reopened.openSpendGate,
+        throwsA(isA<BitcoinSpendGateUnavailable>()),
+      );
+      await reopened.close();
+    }
     expect(gateFile.existsSync(), isFalse);
+    expect(await gate.check(wallet.key), BitcoinSpendStatus.unavailable);
   });
 }

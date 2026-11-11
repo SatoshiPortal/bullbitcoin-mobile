@@ -6,6 +6,7 @@ import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/schedule_order_swap_refresh_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/verify_chain_swap_amount_send_usecase.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
+import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
 import 'package:bb_mobile/features/wallet/data/bitcoin_wallet_repository.dart';
 import 'package:bb_mobile/features/wallet/data/liquid_wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
@@ -33,6 +34,7 @@ import 'package:bb_mobile/features/swap/data/datasources/exchange_public_api_dat
 import 'package:bb_mobile/features/swap/data/datasources/order_swap_local_datasource.dart';
 import 'package:bb_mobile/features/swap/data/order_swap_repository_impl.dart';
 import 'package:bb_mobile/features/swap/domain/repositories/order_swap_repository.dart';
+import 'package:bb_mobile/features/swap/domain/usecases/check_swap_spend_admission_usecase.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/create_order_swap_usecase.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/apply_completed_order_swap_labels_usecase.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/get_order_swap_quote_usecase.dart';
@@ -209,6 +211,9 @@ class SwapLocator {
   }
 
   static void registerUsecases(GetIt locator) {
+    locator.registerFactory<CheckSwapSpendAdmissionUsecase>(
+      () => CheckSwapSpendAdmissionUsecase(locator<WalletFacade>()),
+    );
     locator.registerFactory<PrepareBitcoinSendUsecase>(
       () => PrepareBitcoinSendUsecase(
         payjoinSessions: locator<PayjoinSessions>(),
@@ -295,6 +300,8 @@ class SwapLocator {
         getOrderSwapQuoteUsecase: locator<GetOrderSwapQuoteUsecase>(),
         getPendingOrderSwapsUsecase: locator<GetPendingOrderSwapsUsecase>(),
         createOrderSwapUsecase: locator<CreateOrderSwapUsecase>(),
+        checkSwapSpendAdmissionUsecase:
+            locator<CheckSwapSpendAdmissionUsecase>(),
         savePreparedOrderSwapPayinUsecase:
             locator<SavePreparedOrderSwapPayinUsecase>(),
         replacePreparedOrderSwapPayinUsecase:

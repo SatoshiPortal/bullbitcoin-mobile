@@ -17,7 +17,9 @@ final class BitcoinSpendGateStore {
       db = sqlite3.open(path, mode: OpenMode.readWrite);
       db.execute('PRAGMA busy_timeout = 1000');
       db.execute('PRAGMA synchronous = FULL');
-      if (db.userVersion != 1) throw const BitcoinSpendGateUnavailable();
+      if (db.userVersion != 1 || !_hasInputs(db)) {
+        throw const BitcoinSpendGateUnavailable();
+      }
       return db;
     } on Exception {
       db?.dispose();
@@ -26,6 +28,10 @@ final class BitcoinSpendGateStore {
     }
   }
 
+  static bool _hasInputs(Database db) => db
+      .select('PRAGMA table_info(broadcasts)')
+      .any((row) => row['name'] == 'inputs');
+
   static void provision(String path) {
     final marker = File('$path.provisioned');
     if (marker.existsSync() && !File(path).existsSync()) {
@@ -33,14 +39,23 @@ final class BitcoinSpendGateStore {
     }
     final db = sqlite3.open(path);
     try {
-      if (db.userVersion == 0) {
+      // The first Bitcoin paths of two isolates may provision concurrently.
+      db.execute('PRAGMA busy_timeout = 1000');
+      if (db.userVersion == 0 || !_hasInputs(db)) {
         db.execute('BEGIN IMMEDIATE');
-        db.execute('''CREATE TABLE IF NOT EXISTS broadcasts (
+        if (db.userVersion == 0) {
+          db.execute('''CREATE TABLE IF NOT EXISTS broadcasts (
           wallet TEXT NOT NULL, network TEXT NOT NULL,
           descriptor TEXT NOT NULL, generation INTEGER NOT NULL,
           txid TEXT NOT NULL, observed INTEGER NOT NULL DEFAULT 0,
+          inputs TEXT,
           PRIMARY KEY(wallet, network, txid))''');
-        db.userVersion = 1;
+          db.userVersion = 1;
+        }
+        // Development stores created before release evidence lack the column.
+        if (db.userVersion == 1 && !_hasInputs(db)) {
+          db.execute('ALTER TABLE broadcasts ADD COLUMN inputs TEXT');
+        }
         db.execute('COMMIT');
       }
       if (db.userVersion != 1) throw const BitcoinSpendGateUnavailable();
@@ -71,9 +86,27 @@ final class BitcoinSpendGateStore {
     [key.id, key.network.env.name, generation],
   ).isNotEmpty;
 
-  bool blocked(PublicWalletDescriptor descriptor, {String? replacing}) {
-    final ids = tracked(descriptor);
-    if (replacing != null && ids.contains(replacing)) return true;
+  /// Spent outpoints (`txid:vout`) of each tracked transaction, empty until a
+  /// sync has seen it. They let a later sync recognize a conflicting spend.
+  Map<String, Set<String>> trackedInputs(PublicWalletDescriptor descriptor) {
+    tracked(descriptor);
+    final key = descriptor.key;
+    return {
+      for (final row in _db.select(
+        'SELECT txid, inputs FROM broadcasts WHERE wallet=? AND network=?',
+        [key.id, key.network.env.name],
+      ))
+        row['txid'] as String: {...?(row['inputs'] as String?)?.split(' ')},
+    };
+  }
+
+  bool isObserved(WalletKey key, String txid) => _db.select(
+    'SELECT 1 FROM broadcasts WHERE wallet=? AND network=? AND txid=? AND observed=1',
+    [key.id, key.network.env.name, txid],
+  ).isNotEmpty;
+
+  bool blocked(PublicWalletDescriptor descriptor) {
+    tracked(descriptor);
     return _db.select(
       'SELECT 1 FROM broadcasts WHERE wallet=? AND network=? AND observed=0 LIMIT 1',
       [descriptor.key.id, descriptor.key.network.env.name],
@@ -112,23 +145,28 @@ final class BitcoinSpendGateStore {
   void requireRecoveryValidation() =>
       _db.execute('UPDATE broadcasts SET observed=0');
 
+  /// [txids] stop blocking until the next pass resets them: seen in this
+  /// pass, or settled by a conflict proven in it. No row is ever deleted.
   void observed(
     PublicWalletDescriptor descriptor,
     int generation,
-    Set<String> txids,
-  ) {
+    Set<String> txids, {
+    Map<String, Set<String>> inputs = const {},
+  }) {
     tracked(descriptor);
+    final wallet = [descriptor.key.id, descriptor.key.network.env.name];
     _db.execute('BEGIN IMMEDIATE');
     try {
       for (final txid in txids) {
         _db.execute(
           'UPDATE broadcasts SET observed=1, generation=? WHERE wallet=? AND network=? AND txid=?',
-          [
-            generation,
-            descriptor.key.id,
-            descriptor.key.network.env.name,
-            txid,
-          ],
+          [generation, ...wallet, txid],
+        );
+      }
+      for (final MapEntry(key: txid, value: outpoints) in inputs.entries) {
+        _db.execute(
+          'UPDATE broadcasts SET inputs=? WHERE wallet=? AND network=? AND txid=? AND inputs IS NULL',
+          [outpoints.join(' '), ...wallet, txid],
         );
       }
       _db.execute('COMMIT');

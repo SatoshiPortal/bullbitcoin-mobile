@@ -87,11 +87,25 @@ void main() {
       isA<Err>().having(
         (result) => result.failure,
         'failure',
-        isA<PaySpendBlockedFailure>(),
+        isA<PaySpendBlockedFailure>().having((f) => f.busy, 'busy', isFalse),
       ),
     );
     verifyZeroInteractions(mainnet);
     verifyZeroInteractions(payjoinPolicy);
+  });
+
+  test('a busy wallet is not reported as awaiting a payment', () async {
+    spendStatus = BitcoinSpendStatus.busy;
+    final result = await place();
+    expect(
+      result,
+      isA<Err>().having(
+        (result) => result.failure,
+        'failure',
+        isA<PaySpendBlockedFailure>().having((f) => f.busy, 'busy', isTrue),
+      ),
+    );
+    verifyZeroInteractions(mainnet);
   });
 
   for (final refresh in [false, true]) {

@@ -98,7 +98,9 @@ final class PayUnsupportedNetworkFailure extends PayFailure {
 }
 
 final class PaySpendBlockedFailure extends PayFailure {
-  const PaySpendBlockedFailure();
+  /// The wallet is only busy with another operation: retrying shortly works.
+  final bool busy;
+  const PaySpendBlockedFailure({this.busy = false});
 }
 
 /// The existing proposal remains reserved until it can safely continue.

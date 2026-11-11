@@ -110,7 +110,9 @@ final class SellUnsupportedNetworkFailure extends SellFailure {
 }
 
 final class SellSpendBlockedFailure extends SellFailure {
-  const SellSpendBlockedFailure();
+  /// The wallet is only busy with another operation: retrying shortly works.
+  final bool busy;
+  const SellSpendBlockedFailure({this.busy = false});
 }
 
 /// The existing proposal remains reserved until it can safely continue.

@@ -30,6 +30,18 @@ class Catalog implements WalletCatalogPort {
   list() async => Ok([descriptor]);
 }
 
+class _Both implements WalletCatalogPort {
+  final PublicWalletDescriptor bitcoin;
+  _Both(this.bitcoin);
+  @override
+  Future<Result<PublicWalletDescriptor, TransactionSyncFailure>> find(
+    WalletKey wanted,
+  ) async => Ok(wanted == bitcoin.key ? bitcoin : descriptor);
+  @override
+  Future<Result<List<PublicWalletDescriptor>, TransactionSyncFailure>>
+  list() async => Ok([descriptor, bitcoin]);
+}
+
 class Reserved implements ReservedAddressPort {
   final indices = <int>{};
   bool fail = false;
@@ -817,6 +829,60 @@ void main() {
       expect(store.record(key)?.state.stamp.revision, before + 1);
     },
   );
+
+  test('a damaged spend gate fails closed for Bitcoin only', () async {
+    final bitcoin = BitcoinWalletDescriptor(
+      key: WalletKey(id: 'bitcoin', network: BitcoinNetwork.testnet),
+      scriptType: ScriptType.bip84,
+      origin: 'test',
+      externalDescriptor: 'wpkh(public/0)',
+      internalDescriptor: 'wpkh(public/1)',
+    );
+    final catalog = _Both(bitcoin);
+    NativeWalletWriter writing(RevisionStore revisions) =>
+        NativeWalletWriter.withSessions(
+          lockDirectory: '${dir.path}/locks',
+          revisions: revisions,
+          catalog: catalog,
+          reservedAddresses: reserved,
+          sessions: sessions,
+        );
+    BitcoinSpendGate gate(RevisionStore revisions) => BitcoinSpendGate(
+      revisions: revisions,
+      lockDirectory: '${dir.path}/locks',
+      catalog: catalog,
+    );
+    expect(
+      await writing(store).create(bitcoin.key, expectedGeneration: 0),
+      isA<Ok>(),
+    );
+    expect(await gate(store).check(bitcoin.key), BitcoinSpendStatus.ready);
+    File(store.spendGatePath).writeAsStringSync('damaged' * 1000, flush: true);
+
+    // Every sync pass reopens the metadata, for Liquid wallets too.
+    final reopened = RevisionStore('${dir.path}/metadata.sqlite');
+    addTearDown(reopened.close);
+    expect(
+      await writing(
+        reopened,
+      ).sync(key, expectedGeneration: 1, operation: Sync((_) {})),
+      isA<Ok>(),
+    );
+    expect(
+      await gate(reopened).check(bitcoin.key),
+      BitcoinSpendStatus.unavailable,
+    );
+    expect(
+      await writing(
+        reopened,
+      ).sync(bitcoin.key, expectedGeneration: 1, operation: Sync((_) {})),
+      isA<Err<WriterOutcome, TransactionSyncFailure>>().having(
+        (result) => result.failure,
+        'failure',
+        isA<TransactionSyncStorageFailure>(),
+      ),
+    );
+  });
 
   test('read publishes externally committed revision once', () async {
     expect(await store.read(key), isA<Ok>());
