@@ -1,3 +1,4 @@
+import 'package:transaction_sync/write.dart' show BitcoinSpendStatus;
 import 'package:bb_mobile/core/failures/failure.dart';
 import 'package:bb_mobile/core/primitives/payment_network.dart';
 
@@ -89,4 +90,11 @@ final class SwapUnexpectedFailure extends SwapFailure {
 
 final class SwapUnsupportedNetworkFailure extends SwapFailure {
   const SwapUnsupportedNetworkFailure();
+}
+
+/// Spending is invalid in the source wallet's current admission state.
+final class SwapSpendBlockedFailure extends SwapInvalidStateFailure {
+  final BitcoinSpendStatus status;
+
+  const SwapSpendBlockedFailure(this.status);
 }

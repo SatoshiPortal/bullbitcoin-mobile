@@ -1,3 +1,5 @@
+import 'package:bb_mobile/features/wallet/public/wallet_facade.dart'
+    show WalletSpendBlockedException;
 import 'dart:async';
 
 import 'package:bb_mobile/features/send/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
@@ -610,6 +612,15 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
           bitcoinTxSize: signedPsbtAndTxSize.txSize,
           receiveAddress: receiveAddress,
           amount: event.amount,
+        ),
+      );
+    } on WalletSpendBlockedException catch (e) {
+      if (generation != _transactionGeneration) return;
+      emit(
+        state.copyWith(
+          signedPsbt: '',
+          swapCreationException: null,
+          swapFailure: SwapSpendBlockedFailure(e.status),
         ),
       );
     } on ConsolidationRequiredException {
@@ -1416,7 +1427,13 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
     }
 
     final generation = ++_transactionGeneration;
-    emit(stateToUse.copyWith(signedPsbt: '', buildTransactionException: null));
+    emit(
+      stateToUse.copyWith(
+        signedPsbt: '',
+        buildTransactionException: null,
+        swapFailure: null,
+      ),
+    );
 
     try {
       final fromWallet = stateToUse.fromWallet!;
@@ -1607,6 +1624,15 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
           ),
         );
       }
+    } on WalletSpendBlockedException catch (e) {
+      if (generation != _transactionGeneration) return;
+      emit(
+        state.copyWith(
+          signedPsbt: '',
+          buildTransactionException: null,
+          swapFailure: SwapSpendBlockedFailure(e.status),
+        ),
+      );
     } catch (e) {
       if (generation != _transactionGeneration) return;
       log.severe(
@@ -1654,9 +1680,12 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
       if (signedPsbt.isEmpty) return;
 
       final fromWallet = state.fromWallet;
-      if (fromWallet != null &&
-          !fromWallet.isLiquid &&
-          state.selectedUtxos.isNotEmpty) {
+      if (fromWallet == null) {
+        emit(state.copyWith(swapFailure: const SwapInvalidStateFailure()));
+        return;
+      }
+      final toWallet = state.toWallet;
+      if (!fromWallet.isLiquid && state.selectedUtxos.isNotEmpty) {
         await _validateBitcoinSelectionUsecase.execute(
           walletId: fromWallet.id,
           selectedInputs: state.selectedUtxos,
@@ -1690,17 +1719,23 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
         }
         final broadcasting =
             (broadcastStartResult as Ok<OrderSwapRecord, SwapFailure>).value;
-        if (state.fromWallet?.isLiquid == true) {
-          txId = await _broadcastLiquidTxUsecase.execute(
-            broadcasting.signedPayinTransaction!,
-          );
+        // Persisted uncertainty remains conservative even if admission refuses:
+        // an earlier submission may still be awaiting observation.
+        emit(state.copyWith(orderSwap: broadcasting));
+        final signedPayin = broadcasting.signedPayinTransaction;
+        final payinIsPsbt = broadcasting.payinIsPsbt;
+        if (signedPayin == null || payinIsPsbt == null) {
+          emit(state.copyWith(swapFailure: const SwapInvalidStateFailure()));
+          return;
+        }
+        if (fromWallet.isLiquid) {
+          txId = await _broadcastLiquidTxUsecase.execute(signedPayin);
         } else {
           txId = await _broadcastBitcoinTxUsecase.execute(
-            broadcasting.signedPayinTransaction!,
-            isPsbt: broadcasting.payinIsPsbt!,
-            network:
-                state.fromWallet?.network ??
-                (throw const UnsupportedNetworkException()),
+            signedPayin,
+            isPsbt: payinIsPsbt,
+            network: fromWallet.network,
+            walletId: fromWallet.id,
           );
         }
         final broadcastResult = await _markOrderSwapPayinBroadcastUsecase
@@ -1719,26 +1754,32 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
             txId: txId,
           ),
         );
-        unawaited(_syncWalletAfterBroadcast(state.fromWallet!.id));
+        unawaited(_syncWalletAfterBroadcast(fromWallet.id));
         return;
       } else if (state.isSameChainTransfer) {
         txId = await _broadcastBitcoinTxUsecase.execute(
           signedPsbt,
           isPsbt: true,
-          network:
-              state.fromWallet?.network ??
-              (throw const UnsupportedNetworkException()),
+          network: fromWallet.network,
+          walletId: fromWallet.id,
         );
         unawaited(
           _syncWalletsAfterBroadcast([
-            if (state.fromWallet != null) state.fromWallet!.id,
-            if (state.toWallet != null) state.toWallet!.id,
+            fromWallet.id,
+            if (toWallet != null) toWallet.id,
           ]),
         );
       } else {
         return;
       }
       emit(state.copyWith(txId: txId));
+    } on WalletSpendBlockedException catch (e) {
+      emit(
+        state.copyWith(
+          confirmTransactionException: null,
+          swapFailure: SwapSpendBlockedFailure(e.status),
+        ),
+      );
     } on NoSpendableUtxoException {
       _emitSelectionUnavailable(emit);
     } on InsufficientFundsException {
