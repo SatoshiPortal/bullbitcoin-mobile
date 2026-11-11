@@ -373,7 +373,7 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
               focusNodes: [
                 _amountFocusNode,
                 for (final recipient in recipientDrafts)
-                  _recipientAmountFocusNodes[recipient.id]!,
+                  ?_recipientAmountFocusNodes[recipient.id],
               ],
               child: BlocListener<SendCubit, SendState>(
                 listenWhen: (previous, current) =>
@@ -562,8 +562,8 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                                                   currencyCode,
                                                 );
                                           },
-                                          error: balanceError
-                                              ? failure!.toTranslated(
+                                          error: balanceError && failure != null
+                                              ? failure.toTranslated(
                                                   context,
                                                   formattedFrozenBalance:
                                                       frozenBalanceHint,

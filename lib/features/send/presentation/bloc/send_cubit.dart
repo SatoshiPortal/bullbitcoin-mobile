@@ -607,13 +607,15 @@ class SendCubit extends Cubit<SendState>
     } else {
       try {
         final pendingInput = _pendingPaymentRequestInput;
-        paymentRequest = await (pendingInput?.generation == inputGeneration
-            ? pendingInput!.future
-            : Future<PaymentRequest>.sync(
-                () => _detectBitcoinStringUsecase.execute(
-                  data: rawPaymentRequest,
-                ),
-              ));
+        paymentRequest =
+            await (pendingInput != null &&
+                    pendingInput.generation == inputGeneration
+                ? pendingInput.future
+                : Future<PaymentRequest>.sync(
+                    () => _detectBitcoinStringUsecase.execute(
+                      data: rawPaymentRequest,
+                    ),
+                  ));
       } on Exception {
         if (inputGeneration != _paymentRequestInputGeneration ||
             state.copiedRawPaymentRequest != rawPaymentRequest) {
@@ -861,7 +863,8 @@ class SendCubit extends Cubit<SendState>
   void _scheduleRecipientPreview() {
     _recipientPreviewTimer?.cancel();
     if (!state.usesRecipientList || !state.hasRemainderRecipient) return;
-    if (state.selectedWallet == null || state.selectedWallet!.isLiquid) return;
+    final wallet = state.selectedWallet;
+    if (wallet == null || wallet.isLiquid) return;
     if (state.selectedFee == null || _previewBitcoinRecipients() == null) {
       return;
     }
@@ -1685,7 +1688,17 @@ class SendCubit extends Cubit<SendState>
         emit(state.copyWith(failure: const SendInvalidPaymentRequestFailure()));
         return;
       }
-      if (state.hasMultipleRecipients && state.selectedWallet!.isLiquid) {
+      final wallet = state.selectedWallet;
+      if (wallet == null) {
+        emit(
+          state.copyWith(
+            failure: const SendTransactionBuildFailure('No wallet selected'),
+            amountConfirmedClicked: false,
+          ),
+        );
+        return;
+      }
+      if (state.hasMultipleRecipients && wallet.isLiquid) {
         emit(
           state.copyWith(
             failure: const SendInvalidPaymentRequestFailure(),
