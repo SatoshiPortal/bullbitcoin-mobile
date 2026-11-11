@@ -1,5 +1,4 @@
 import 'package:bb_mobile/core/wallet/data/models/bitcoin_transaction_recipient_model.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/bitcoin_transaction_recipient.dart';
 import 'dart:typed_data';
 
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
@@ -14,7 +13,8 @@ import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasourc
 import 'package:bb_mobile/core/wallet/data/mappers/wallet_utxo_mapper.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/network_x.dart';
-import 'package:primitives/primitives.dart' show Err, Ok, Result, Sats;
+import 'package:primitives/primitives.dart'
+    show Err, Ok, Result, Sats, BitcoinTransactionRecipient;
 import 'package:secrets/secrets.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_connection.dart';

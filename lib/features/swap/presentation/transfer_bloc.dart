@@ -1,5 +1,5 @@
-import 'package:bb_mobile/core/wallet/domain/entities/bitcoin_transaction_recipient.dart';
-import 'package:primitives/primitives.dart' show Sats;
+import 'package:primitives/primitives.dart'
+    show Sats, BitcoinTransactionRecipient;
 import 'dart:async';
 
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';

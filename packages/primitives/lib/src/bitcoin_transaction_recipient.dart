@@ -1,4 +1,4 @@
-import 'package:primitives/primitives.dart' show Sats;
+import 'money.dart';
 
 final class BitcoinTransactionRecipient {
   final String address;
