@@ -59,22 +59,23 @@ const _allowedTargets = <String, String>{
   'recipients': 'exchange settings',
   'recoverbull': 'recoverbull_google_drive tor_settings wallet',
   'recoverbull_google_drive': 'recoverbull',
-  'replace_by_fee': 'exchange_support_chat fees send wallet',
+  'replace_by_fee': 'fees send wallet',
   'sell':
       'bitcoin_price exchange fees labels recipients send settings transactions wallet',
   'send':
       'bitbox consolidation electrum_settings fees labels ledger psbt_flow settings sp swap transactions wallet',
   'settings':
-      'address_view all_seed_view app_unlock autoswap backup_settings bip85_entropy bitcoin_price broadcast_signed_tx default_wallets electrum_settings exchange exchange_settings exchange_support_chat import_wallet labels logs mempool_settings pay pin_code recoverbull sp status_check swap test_wallet_backup tor_settings transactions wallet',
+      'address_view all_seed_view app_unlock autoswap backup_settings bip85_entropy bitcoin_price broadcast_signed_tx default_wallets electrum_settings exchange exchange_settings import_wallet labels logs mempool_settings pay pin_code recoverbull sp status_check swap test_wallet_backup tor_settings transactions wallet',
   'sp': 'wallet',
   'status_check': 'electrum_settings wallet',
+  'support': 'exchange_support_chat',
   'swap':
-      'autoswap consolidation exchange_support_chat fees labels send settings transactions wallet',
+      'autoswap consolidation fees labels send settings transactions wallet',
   'test_wallet_backup': 'onboarding wallet',
   'transactions':
       'buy electrum_settings exchange labels pay replace_by_fee settings swap wallet',
   'wallet':
-      'announcements backup_settings bitcoin_price coins consolidation electrum_settings exchange exchange_support_chat import_watch_only_wallet labels onboarding receive send settings sp swap tor_settings transactions',
+      'announcements backup_settings bitcoin_price coins consolidation electrum_settings exchange import_watch_only_wallet labels onboarding receive send settings sp swap tor_settings transactions',
   'withdraw': 'exchange recipients transactions',
   'wizard': 'settings',
 };
