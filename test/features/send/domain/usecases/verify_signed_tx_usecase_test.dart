@@ -1,6 +1,6 @@
 import 'package:bb_mobile/core/utils/result.dart';
-import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/verify_signed_tx_usecase.dart';
+import 'package:bb_mobile/features/send/domain/send_failure.dart';
+import 'package:bb_mobile/features/send/domain/usecases/verify_signed_tx_usecase.dart';
 import 'package:bull_sdk/bdk.dart' as bdk;
 import 'package:convert/convert.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -15,6 +15,11 @@ void main() {
       'MzMzMzMzMzMzMzMzMzMzMzMAAA==';
 
   final usecase = VerifySignedTxUsecase();
+  final verificationFailure = isA<Err<void, SendFailure>>().having(
+    (result) => result.failure,
+    'failure',
+    isA<SendTransactionConfirmationFailure>(),
+  );
 
   late final List<int> matchingTxBytes;
   setUpAll(() {
@@ -34,7 +39,7 @@ void main() {
 
       expect(
         result,
-        isA<Err<void, SignedTransactionVerificationFailure>>().having(
+        verificationFailure.having(
           (error) => error.failure.logMessage,
           'safe diagnostic reason',
           'Could not decode the signed transaction',
@@ -47,7 +52,7 @@ void main() {
         unsignedPsbt: unsignedPsbt,
         signedTransaction: hex.encode(matchingTxBytes),
       );
-      expect(result, isA<Ok<void, SignedTransactionVerificationFailure>>());
+      expect(result, isA<Ok<void, SendFailure>>());
     });
 
     test('accepts a signed PSBT with the same transaction skeleton', () async {
@@ -56,7 +61,7 @@ void main() {
         signedTransaction: unsignedPsbt,
         isPsbt: true,
       );
-      expect(result, isA<Ok<void, SignedTransactionVerificationFailure>>());
+      expect(result, isA<Ok<void, SendFailure>>());
     });
 
     test(
@@ -75,7 +80,7 @@ void main() {
         );
         expect(
           result,
-          isA<Err<void, SignedTransactionVerificationFailure>>(),
+          verificationFailure,
           reason: 'a device that inflates the payment amount must be refused',
         );
       },
@@ -96,7 +101,7 @@ void main() {
         );
         expect(
           result,
-          isA<Err<void, SignedTransactionVerificationFailure>>(),
+          verificationFailure,
           reason: 'a device that redirects the payment must be refused',
         );
       },
@@ -107,7 +112,7 @@ void main() {
         unsignedPsbt: unsignedPsbt,
         signedTransaction: '00ff00ff',
       );
-      expect(result, isA<Err<void, SignedTransactionVerificationFailure>>());
+      expect(result, verificationFailure);
     });
 
     test('rejects a signed transaction with a substituted input', () async {
@@ -121,7 +126,7 @@ void main() {
       );
       expect(
         result,
-        isA<Err<void, SignedTransactionVerificationFailure>>(),
+        verificationFailure,
         reason: 'substituting wallet inputs can turn their value into fees',
       );
     });
@@ -134,7 +139,7 @@ void main() {
         unsignedPsbt: unsignedPsbt,
         signedTransaction: hex.encode(tampered),
       );
-      expect(result, isA<Err<void, SignedTransactionVerificationFailure>>());
+      expect(result, verificationFailure);
     });
   });
 }
