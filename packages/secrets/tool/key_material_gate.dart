@@ -293,18 +293,6 @@ bool _isException(String path, AstNode node, String symbol) {
       member == 'Bip32Keys.fromBase58') {
     return true;
   }
-  // Pre-import discovery operates on user input before there is a stored Secret.
-  if (path == 'lib/core/wallet/data/datasources/bdk_wallet_datasource.dart' &&
-      function == '_performDryScan' &&
-      owner == null) {
-    return {
-      'Mnemonic.fromEntropy',
-      'DescriptorSecretKey.new',
-      'Descriptor.newBip44',
-      'Descriptor.newBip49',
-      'Descriptor.newBip84',
-    }.contains(member);
-  }
   // The exported swap master key is a documented, independent child secret.
   if (path == 'lib/core/swaps/data/models/swap_master_key_model.dart' &&
       owner == 'SwapMasterKeyModel') {

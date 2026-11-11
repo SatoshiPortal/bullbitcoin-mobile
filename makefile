@@ -59,7 +59,7 @@ bull-ui-check:
 	@if grep -rEl "package:flutter/(material|cupertino|widgets)\.dart" lib/features/coins/ui; then echo "lib/features/coins/ui must import only package:bull_ui/bull_ui.dart, not Flutter UI directly"; exit 1; fi
 
 # Resolved-symbol custody policy, available locally with the pinned Dart SDK.
-# Named exceptions cover pre-import scanning and exported swap child keys.
+# Named exceptions cover exported swap child keys and public-only xpub decoding.
 custody-check:
 	@echo "🔒 custody key material: resolved Dart symbols"
 	@fvm dart packages/secrets/tool/key_material_gate.dart
