@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/send/domain/usecases/prepare_send_bitcoin_transaction_usecase.dart';
 import 'dart:async';
 import 'dart:typed_data';
 
@@ -11,11 +12,9 @@ import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/verify_chain_swap_amount_send_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/outpoint.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bb_mobile/core/wallet/domain/insufficient_funds_exception.dart';
 import 'package:bb_mobile/core/wallet/domain/no_spendable_utxo_exception.dart';
-import 'package:bb_mobile/core/wallet/domain/selected_inputs_unavailable_exception.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/calculate_bitcoin_absolute_fees_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/check_liquid_consolidation_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
@@ -53,7 +52,6 @@ import 'package:bb_mobile/features/send/domain/usecases/verify_send_signed_tx_us
 import 'package:bb_mobile/features/send/domain/usecases/validate_sweep_payment_request_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/watch_send_swap_usecase.dart';
 import 'package:bb_mobile/core/utils/payment_request.dart';
-import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/send/domain/usecases/prepare_sp_payment_for_send_usecase.dart';
 import 'package:bb_mobile/features/send/domain/sp_send_wallet.dart';
 import 'package:bb_mobile/features/send/domain/usecases/refresh_sp_wallet_for_send_usecase.dart';
@@ -66,7 +64,7 @@ import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
-import 'package:primitives/primitives.dart' show BitcoinNetwork, Sats;
+import 'package:primitives/primitives.dart' hide Network, ScriptType;
 import 'package:bb_mobile/features/send/presentation/send_wallet_view.dart';
 import 'package:bb_mobile/features/send/presentation/send_mode.dart';
 
@@ -92,7 +90,7 @@ class _MockGetWalletUtxosUsecase extends Mock
     implements GetWalletUtxosUsecase {}
 
 class _MockPrepareBitcoinSendUsecase extends Mock
-    implements PrepareBitcoinSendUsecase {}
+    implements PrepareSendBitcoinTransactionUsecase {}
 
 class _MockValidateBitcoinSelectionUsecase extends Mock
     implements ValidateBitcoinSelectionUsecase {}
@@ -726,6 +724,7 @@ void main() {
           selectedInputs: any(named: 'selectedInputs'),
           drain: any(named: 'drain'),
           selectedOnly: any(named: 'selectedOnly'),
+          hasFrozenInputs: any(named: 'hasFrozenInputs'),
         ),
       );
 
@@ -816,6 +815,7 @@ void main() {
           selectedInputs: any(named: 'selectedInputs'),
           drain: any(named: 'drain'),
           selectedOnly: any(named: 'selectedOnly'),
+          hasFrozenInputs: any(named: 'hasFrozenInputs'),
         ),
       );
     });
@@ -838,9 +838,11 @@ void main() {
           selectedInputs: any(named: 'selectedInputs'),
           drain: true,
           selectedOnly: true,
+          hasFrozenInputs: any(named: 'hasFrozenInputs'),
         ),
       ).thenAnswer(
-        (_) async => (unsignedPsbt: 'unsigned', txSize: 110, isToSelf: false),
+        (_) async =>
+            Ok((unsignedPsbt: 'unsigned', txSize: 110, isToSelf: false)),
       );
       when(
         () =>
@@ -892,9 +894,10 @@ void main() {
             selectedInputs: any(named: 'selectedInputs'),
             drain: true,
             selectedOnly: true,
+            hasFrozenInputs: any(named: 'hasFrozenInputs'),
           ),
-        ).thenThrow(
-          SelectedInputsUnavailableException('selected input is reserved'),
+        ).thenAnswer(
+          (_) async => const Err(SendSelectedCoinsUnavailableFailure()),
         );
         final cubit = buildCubit(
           wallet: wallet,
@@ -945,6 +948,7 @@ void main() {
             selectedInputs: any(named: 'selectedInputs'),
             drain: true,
             selectedOnly: true,
+            hasFrozenInputs: any(named: 'hasFrozenInputs'),
           ),
         ).thenThrow(
           InsufficientFundsException('selected input cannot cover fee'),
@@ -989,7 +993,7 @@ void main() {
       stubSweepLoad(wallet: wallet, utxos: [selected]);
       final olderBuildStarted = Completer<void>();
       final olderBuildResult =
-          Completer<({String unsignedPsbt, int txSize, bool isToSelf})>();
+          Completer<Result<PreparedBitcoinSend, SendFailure>>();
       when(
         () => prepareBitcoinSendUsecase.execute(
           walletId: wallet.id,
@@ -1000,6 +1004,7 @@ void main() {
           selectedInputs: any(named: 'selectedInputs'),
           drain: true,
           selectedOnly: true,
+          hasFrozenInputs: any(named: 'hasFrozenInputs'),
         ),
       ).thenAnswer((_) {
         olderBuildStarted.complete();
@@ -1015,6 +1020,7 @@ void main() {
           selectedInputs: any(named: 'selectedInputs'),
           drain: true,
           selectedOnly: true,
+          hasFrozenInputs: any(named: 'hasFrozenInputs'),
         ),
       ).thenThrow(
         InsufficientFundsException('selected input cannot cover fee'),
@@ -1050,11 +1056,9 @@ void main() {
       final olderBuild = cubit.createTransaction();
       await olderBuildStarted.future;
       await cubit.replaceByFeeChanged(false);
-      olderBuildResult.complete((
-        unsignedPsbt: 'older-unsigned',
-        txSize: 110,
-        isToSelf: false,
-      ));
+      olderBuildResult.complete(
+        Ok((unsignedPsbt: 'older-unsigned', txSize: 110, isToSelf: false)),
+      );
       await olderBuild;
 
       expect(cubit.state.replaceByFee, isFalse);
@@ -1179,9 +1183,11 @@ void main() {
           selectedInputs: any(named: 'selectedInputs'),
           drain: true,
           selectedOnly: true,
+          hasFrozenInputs: any(named: 'hasFrozenInputs'),
         ),
       ).thenAnswer(
-        (_) async => (unsignedPsbt: 'unsigned', txSize: 110, isToSelf: false),
+        (_) async =>
+            Ok((unsignedPsbt: 'unsigned', txSize: 110, isToSelf: false)),
       );
       when(
         () =>
@@ -1218,6 +1224,7 @@ void main() {
                   selectedInputs: captureAny(named: 'selectedInputs'),
                   drain: true,
                   selectedOnly: true,
+                  hasFrozenInputs: any(named: 'hasFrozenInputs'),
                 ),
               ).captured.single
               as List<WalletUtxo>;
@@ -1249,9 +1256,11 @@ void main() {
           selectedInputs: any(named: 'selectedInputs'),
           drain: true,
           selectedOnly: true,
+          hasFrozenInputs: any(named: 'hasFrozenInputs'),
         ),
       ).thenAnswer(
-        (_) async => (unsignedPsbt: 'unsigned', txSize: 110, isToSelf: false),
+        (_) async =>
+            Ok((unsignedPsbt: 'unsigned', txSize: 110, isToSelf: false)),
       );
       when(
         () => calculateBitcoinAbsoluteFeesUsecase.execute(psbt: 'unsigned'),
@@ -2210,6 +2219,7 @@ void main() {
             drain: any(named: 'drain'),
             selectedInputs: any(named: 'selectedInputs'),
             replaceByFee: any(named: 'replaceByFee'),
+            hasFrozenInputs: any(named: 'hasFrozenInputs'),
           ),
         ).thenThrow(NoSpendableUtxoException('selected coin disappeared'));
         when(
@@ -2322,6 +2332,7 @@ void main() {
             drain: any(named: 'drain'),
             selectedInputs: any(named: 'selectedInputs'),
             replaceByFee: any(named: 'replaceByFee'),
+            hasFrozenInputs: any(named: 'hasFrozenInputs'),
           ),
         ).thenThrow(InsufficientFundsException('needed 5000, available 1000'));
         final selected = _utxo(amountSat: 1000);
@@ -2369,6 +2380,7 @@ void main() {
             drain: any(named: 'drain'),
             selectedInputs: captureAny(named: 'selectedInputs'),
             replaceByFee: any(named: 'replaceByFee'),
+            hasFrozenInputs: any(named: 'hasFrozenInputs'),
           ),
         ).captured;
         expect(captured[0], 5000);
@@ -2390,6 +2402,7 @@ void main() {
           drain: any(named: 'drain'),
           selectedInputs: any(named: 'selectedInputs'),
           replaceByFee: any(named: 'replaceByFee'),
+          hasFrozenInputs: any(named: 'hasFrozenInputs'),
         ),
       ).thenThrow(InsufficientFundsException('needed 10000, available 5000'));
       when(

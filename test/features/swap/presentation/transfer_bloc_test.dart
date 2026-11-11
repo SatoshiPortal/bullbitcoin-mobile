@@ -457,7 +457,7 @@ void main() {
         replaceByFee: true,
       ),
     ).thenAnswer(
-      (_) async => (unsignedPsbt: 'psbt', txSize: 100, isToSelf: false),
+      (_) async => Ok((unsignedPsbt: 'psbt', txSize: 100, isToSelf: false)),
     );
     when(
       () => calculateBitcoin.execute(psbt: 'psbt'),
@@ -516,7 +516,7 @@ void main() {
         replaceByFee: true,
       ),
     ).thenAnswer(
-      (_) async => (unsignedPsbt: 'psbt', txSize: 100, isToSelf: false),
+      (_) async => Ok((unsignedPsbt: 'psbt', txSize: 100, isToSelf: false)),
     );
     when(
       () => calculateBitcoin.execute(psbt: 'psbt'),
@@ -570,7 +570,7 @@ void main() {
           replaceByFee: true,
         ),
       ).thenAnswer(
-        (_) async => (unsignedPsbt: 'psbt', txSize: 100, isToSelf: false),
+        (_) async => Ok((unsignedPsbt: 'psbt', txSize: 100, isToSelf: false)),
       );
       when(
         () => calculateBitcoin.execute(psbt: 'psbt'),
@@ -771,7 +771,7 @@ void main() {
     () async {
       final prepareStarted = Completer<void>();
       final prepareCompleter =
-          Completer<({String unsignedPsbt, int txSize, bool isToSelf})>();
+          Completer<Result<PreparedBitcoinSend, WalletFailure>>();
       when(
         () => prepareBitcoin.execute(
           walletId: 'wallet-1',
@@ -800,11 +800,9 @@ void main() {
       bloc.add(const TransferEvent.feeOptionSelected(FeeSelection.economic));
       await prepareStarted.future;
       bloc.add(const TransferEvent.amountChanged('2000'));
-      prepareCompleter.complete((
-        unsignedPsbt: 'old-unsigned-psbt',
-        txSize: 100,
-        isToSelf: true,
-      ));
+      prepareCompleter.complete(
+        Ok((unsignedPsbt: 'old-unsigned-psbt', txSize: 100, isToSelf: true)),
+      );
       await pumpEventQueue();
 
       expect(bloc.state.amount, '2000');
@@ -823,7 +821,7 @@ void main() {
     () async {
       final prepareStarted = Completer<void>();
       final prepareCompleter =
-          Completer<({String unsignedPsbt, int txSize, bool isToSelf})>();
+          Completer<Result<PreparedBitcoinSend, WalletFailure>>();
       when(
         () => prepareBitcoin.execute(
           walletId: 'wallet-1',
@@ -860,11 +858,9 @@ void main() {
       bloc.add(const TransferEvent.swapCreated('1000'));
       await prepareStarted.future;
       bloc.add(const TransferEvent.amountChanged('2000'));
-      prepareCompleter.complete((
-        unsignedPsbt: 'old-unsigned-psbt',
-        txSize: 100,
-        isToSelf: true,
-      ));
+      prepareCompleter.complete(
+        Ok((unsignedPsbt: 'old-unsigned-psbt', txSize: 100, isToSelf: true)),
+      );
       await pumpEventQueue();
 
       expect(bloc.state.amount, '2000');
@@ -877,7 +873,7 @@ void main() {
     () async {
       final prepareStarted = Completer<void>();
       final prepareCompleter =
-          Completer<({String unsignedPsbt, int txSize, bool isToSelf})>();
+          Completer<Result<PreparedBitcoinSend, WalletFailure>>();
       final destination = _destinationWallet();
       final replacementDestination = _destinationWallet(id: 'wallet-3');
       when(
@@ -912,11 +908,9 @@ void main() {
           toWallet: replacementDestination,
         ),
       );
-      prepareCompleter.complete((
-        unsignedPsbt: 'old-unsigned-psbt',
-        txSize: 100,
-        isToSelf: true,
-      ));
+      prepareCompleter.complete(
+        Ok((unsignedPsbt: 'old-unsigned-psbt', txSize: 100, isToSelf: true)),
+      );
       await pumpEventQueue();
 
       expect(bloc.state.toWallet, replacementDestination);
@@ -938,7 +932,7 @@ void main() {
       final selected = _bitcoinUtxo('selected-tx');
       final prepareStarted = Completer<void>();
       final prepareCompleter =
-          Completer<({String unsignedPsbt, int txSize, bool isToSelf})>();
+          Completer<Result<PreparedBitcoinSend, WalletFailure>>();
       when(
         () => prepareBitcoin.execute(
           walletId: 'wallet-1',
@@ -973,11 +967,9 @@ void main() {
       bloc.add(const TransferEvent.swapCreated('1000'));
       await prepareStarted.future;
       bloc.add(TransferEvent.utxosSelected([selected]));
-      prepareCompleter.complete((
-        unsignedPsbt: 'unsigned-psbt',
-        txSize: 100,
-        isToSelf: true,
-      ));
+      prepareCompleter.complete(
+        Ok((unsignedPsbt: 'unsigned-psbt', txSize: 100, isToSelf: true)),
+      );
       await bloc.stream.firstWhere(
         (state) => state.signedPsbt == 'signed-psbt',
       );
@@ -1040,8 +1032,11 @@ void main() {
           replaceByFee: false,
         ),
       ).thenAnswer(
-        (_) async =>
-            (unsignedPsbt: 'new-unsigned-psbt', txSize: 100, isToSelf: false),
+        (_) async => Ok((
+          unsignedPsbt: 'new-unsigned-psbt',
+          txSize: 100,
+          isToSelf: false,
+        )),
       );
       when(
         () => verifyChain.execute(
@@ -1109,7 +1104,7 @@ void main() {
       ),
     ).thenAnswer(
       (_) async =>
-          (unsignedPsbt: 'new-unsigned-psbt', txSize: 100, isToSelf: false),
+          Ok((unsignedPsbt: 'new-unsigned-psbt', txSize: 100, isToSelf: false)),
     );
     when(
       () => verifyChain.execute(

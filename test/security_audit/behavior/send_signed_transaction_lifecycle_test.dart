@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/send/domain/usecases/prepare_send_bitcoin_transaction_usecase.dart';
 // Behavioral proof for two audit findings on SendCubit:
 //
 // 1. `_invalidateSignedTransaction()` (added by `fix(send)`) only clears
@@ -24,7 +25,6 @@ import 'package:bb_mobile/core/wallet/domain/usecases/check_liquid_consolidation
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_utxos_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/prepare_bitcoin_send_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/validate_bitcoin_selection_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_transaction_by_tx_id_usecase.dart';
@@ -89,7 +89,7 @@ class _MockGetWalletUtxosUsecase extends Mock
     implements GetWalletUtxosUsecase {}
 
 class _MockPrepareBitcoinSendUsecase extends Mock
-    implements PrepareBitcoinSendUsecase {}
+    implements PrepareSendBitcoinTransactionUsecase {}
 
 class _MockValidateBitcoinSelectionUsecase extends Mock
     implements ValidateBitcoinSelectionUsecase {}

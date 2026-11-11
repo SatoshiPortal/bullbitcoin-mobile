@@ -224,13 +224,19 @@ Future<void> main({bool isInitialized = false}) async {
           walletId: wallet.id,
         );
 
-        final prepared = await prepareBitcoinSendUsecase.execute(
+        final preparationResult = await prepareBitcoinSendUsecase.execute(
           walletId: wallet.id,
           address: receive.address,
           drain: true,
           selectedInputs: [selected],
           networkFee: NetworkFee.relativeFromSatPerVbyte(2),
         );
+        final prepared = switch (preparationResult) {
+          Ok(:final value) => value,
+          Err(:final failure) => fail(
+            'Bitcoin preparation failed: ${failure.runtimeType}',
+          ),
+        };
 
         final inputs = bdk.Psbt(
           psbtBase64: prepared.unsignedPsbt,

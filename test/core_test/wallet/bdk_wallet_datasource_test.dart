@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/wallet/domain/no_spendable_utxo_exception.dart';
 // Regression test for a bug where `BdkWalletDatasource.buildPsbt` silently
 // dropped manual UTXO selection and the RBF-off sequence flag.
 //
@@ -36,7 +37,6 @@ import 'package:bb_mobile/core/wallet/data/datasources/bdk_wallet_datasource.dar
 import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_utxo_model.dart';
 import 'package:bb_mobile/core/wallet/domain/insufficient_funds_exception.dart';
-import 'package:bb_mobile/core/wallet/domain/selected_inputs_unavailable_exception.dart';
 import 'package:bull_sdk/bdk.dart' as bdk;
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -480,7 +480,7 @@ void main() {
           selectedOnly: true,
           selected: const [],
         ),
-        throwsA(isA<SelectedInputsUnavailableException>()),
+        throwsA(isA<NoSpendableUtxoException>()),
       );
     },
   );
