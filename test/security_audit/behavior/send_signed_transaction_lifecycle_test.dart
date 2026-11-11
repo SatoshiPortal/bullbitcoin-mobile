@@ -448,6 +448,7 @@ void main() {
           feeRate: any(named: 'feeRate'),
           amountSat: any(named: 'amountSat'),
           drain: any(named: 'drain'),
+          hasFrozenInputs: true,
         ),
       ).thenAnswer((_) async => const Ok('pset-base64'));
       when(
