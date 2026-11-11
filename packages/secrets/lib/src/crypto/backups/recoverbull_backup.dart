@@ -67,7 +67,7 @@ final class RecoverBullBackup {
 
   String seal({
     required List<String> words,
-    Language language = Language.english,
+    required Language language,
     required Map<String, dynamic> metadata,
     required String backupKey,
     required String derivationPath,
