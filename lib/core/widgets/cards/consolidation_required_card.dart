@@ -1,6 +1,6 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:flutter/material.dart';
-import 'package:bull_ui/bull_ui.dart' show BullText, Gap;
+import 'package:bull_ui/bull_ui.dart' show BullShapesX, BullText, Gap;
 
 class ConsolidationRequiredCard extends StatelessWidget {
   const ConsolidationRequiredCard({
@@ -26,7 +26,7 @@ class ConsolidationRequiredCard extends StatelessWidget {
             color: context.appColors.surfaceContainerHighest,
             width: 1,
           ),
-          borderRadius: BorderRadius.circular(2),
+          borderRadius: BorderRadius.circular(context.bullShapes.card),
         ),
         child: Row(
           children: [

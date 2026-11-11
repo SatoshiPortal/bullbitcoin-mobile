@@ -1,7 +1,7 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/text/currency_text.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullShapesX, Gap;
 import 'package:flutter/material.dart';
 
 /// Everything [TxListItem] needs to render one row, already resolved.
@@ -53,7 +53,7 @@ class TxListItem extends StatelessWidget {
         padding: const EdgeInsets.all(16.0),
         decoration: BoxDecoration(
           color: context.appColors.surface,
-          borderRadius: BorderRadius.circular(2.0),
+          borderRadius: BorderRadius.circular(context.bullShapes.card),
           boxShadow: const [],
         ),
         child: Row(
@@ -63,7 +63,7 @@ class TxListItem extends StatelessWidget {
               decoration: BoxDecoration(
                 color: data.iconBackgroundColor,
                 border: Border.all(color: data.iconBorderColor),
-                borderRadius: BorderRadius.circular(2.0),
+                borderRadius: BorderRadius.circular(context.bullShapes.card),
               ),
               child: Icon(data.icon, color: context.appColors.onSurface),
             ),
@@ -93,7 +93,9 @@ class TxListItem extends StatelessWidget {
                   ),
                   decoration: BoxDecoration(
                     color: data.networkColor,
-                    borderRadius: BorderRadius.circular(2.0),
+                    borderRadius: BorderRadius.circular(
+                      context.bullShapes.badge,
+                    ),
                   ),
                   child: BBText(
                     data.networkLabel,
