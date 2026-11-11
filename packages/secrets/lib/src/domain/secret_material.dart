@@ -62,7 +62,7 @@ final class Mnemonic extends SecretMaterial {
   const Mnemonic({
     required this.id,
     required this.words,
-    this.language = Language.english,
+    required this.language,
     required this.passphrase,
     required this.seedBytes,
   });

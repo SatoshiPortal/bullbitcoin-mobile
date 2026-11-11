@@ -135,7 +135,7 @@ final class MnemonicSecretModel extends SecretModel {
   @internal
   factory MnemonicSecretModel({
     required List<String> mnemonicWords,
-    Language language = Language.english,
+    required Language language,
     String? passphrase,
   }) {
     if (!SecretModel._wordCounts.contains(mnemonicWords.length)) {
