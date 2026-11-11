@@ -316,12 +316,6 @@ final class NativeWalletWriter implements LiquidReadAdmission {
       } finally {
         observed.close();
       }
-      if (settledSpendTransactions.isNotEmpty) {
-        _diagnostics(
-          WriterLogLevel.fine,
-          'Bitcoin spend obligations settled by conflict count=${settledSpendTransactions.length}',
-        );
-      }
     }
     if (operation case WriterSyncChanges(
       hasChanges: false,
