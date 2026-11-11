@@ -10,7 +10,8 @@ import 'package:bb_mobile/features/fund_exchange/domain/fund_exchange_failure.da
 import 'package:bb_mobile/features/fund_exchange/presentation/widgets/fund_exchange_scam_warning_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show BullFadingLinearProgress, Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show BullFadingLinearProgress, BullShapesX, Gap;
 
 class FundExchangeWarningBottomSheet extends StatefulWidget {
   const FundExchangeWarningBottomSheet({super.key});
@@ -135,7 +136,7 @@ class _FundExchangeWarningBottomSheetState
                 tileColor: context.appColors.secondaryFixedDim,
                 contentPadding: const EdgeInsets.all(8.0),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8.0),
+                  borderRadius: BorderRadius.circular(context.bullShapes.card),
                 ),
                 value: _hasConfirmedNoCoercion,
                 onChanged: _isLoading

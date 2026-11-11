@@ -1,5 +1,5 @@
 import 'package:bull_ui/src/data_display/bull_text.dart';
-import 'package:bull_ui/src/theme/bull_tokens.dart';
+import 'package:bull_ui/src/theme/bull_shapes.dart';
 import 'package:flutter/material.dart';
 import 'package:bull_ui/src/layout/gap.dart';
 
@@ -97,7 +97,7 @@ class BullButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final radius = BorderRadius.circular(BullRadius.xxs);
+    final radius = BorderRadius.circular(context.bullShapes.button);
 
     final image = iconData != null
         ? Icon(iconData, size: 20, color: textColor)

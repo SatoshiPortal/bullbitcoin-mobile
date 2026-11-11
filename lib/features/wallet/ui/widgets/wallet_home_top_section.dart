@@ -12,7 +12,7 @@ import 'package:bb_mobile/core/widgets/cards/home_fiat_balance.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullShapesX, Gap;
 import 'package:go_router/go_router.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -196,7 +196,7 @@ class _WalletHomeBtcAmountSkeleton extends StatelessWidget {
         child: DecoratedBox(
           decoration: BoxDecoration(
             color: context.appColors.surface,
-            borderRadius: BorderRadius.circular(4),
+            borderRadius: BorderRadius.circular(context.bullShapes.card),
           ),
         ),
       ),
