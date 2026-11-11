@@ -21,6 +21,7 @@ workspace:
   - packages/screen_awake
   - packages/bull_logger
   - packages/bull_pricer
+  - packages/boltz_swaps
   - features/logs
 
 dependencies:
