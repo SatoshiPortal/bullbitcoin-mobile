@@ -1,5 +1,5 @@
 import 'package:bull_sdk/bdk.dart' as bdk;
-import 'package:secrets/src/domain/domain.dart' show MnemonicWordCount;
+import 'package:bip39_mnemonic/bip39_mnemonic.dart' show MnemonicLength;
 
 /// Produces fresh BIP39 words.
 ///
@@ -15,15 +15,15 @@ class Generator {
   const Generator._();
 
   static List<String> mnemonic({
-    MnemonicWordCount wordCount = MnemonicWordCount.words12,
+    MnemonicLength wordCount = MnemonicLength.words12,
   }) {
     // Exhaustive over a closed enum: there is no `_` arm and nothing to throw.
     final words = switch (wordCount) {
-      MnemonicWordCount.words12 => bdk.WordCount.words12,
-      MnemonicWordCount.words15 => bdk.WordCount.words15,
-      MnemonicWordCount.words18 => bdk.WordCount.words18,
-      MnemonicWordCount.words21 => bdk.WordCount.words21,
-      MnemonicWordCount.words24 => bdk.WordCount.words24,
+      MnemonicLength.words12 => bdk.WordCount.words12,
+      MnemonicLength.words15 => bdk.WordCount.words15,
+      MnemonicLength.words18 => bdk.WordCount.words18,
+      MnemonicLength.words21 => bdk.WordCount.words21,
+      MnemonicLength.words24 => bdk.WordCount.words24,
     };
     // Freed as soon as its words are read: a UniFFI handle holding the
     // fresh mnemonic, which would otherwise sit in native memory until
