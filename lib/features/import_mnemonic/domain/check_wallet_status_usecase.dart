@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:bb_mobile/core/electrum/domain/errors/electrum_fallback_exception.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/network_x.dart';
 import 'package:primitives/primitives.dart' as primitives;
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bull_logger/bull_logger.dart';
@@ -49,14 +50,7 @@ class CheckWalletStatusUsecase {
         network: isTestnet
             ? primitives.BitcoinNetwork.testnet
             : primitives.BitcoinNetwork.mainnet,
-        scriptTypes: {
-          for (final scriptType in scriptTypes)
-            switch (scriptType) {
-              ScriptType.bip84 => primitives.ScriptType.bip84,
-              ScriptType.bip49 => primitives.ScriptType.bip49,
-              ScriptType.bip44 => primitives.ScriptType.bip44,
-            },
-        },
+        scriptTypes: {for (final scriptType in scriptTypes) scriptType.shared},
       )) {
         primitives.Ok(:final value) => value,
         // Only the failure's type travels: its message may describe the words.
