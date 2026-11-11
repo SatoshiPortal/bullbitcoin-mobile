@@ -2758,19 +2758,34 @@ class SendCubit extends Cubit<SendState>
 
   Future<void> retryPayjoinProposal() async {
     final sender = state.payjoinSender;
-    if (sender == null || !sender.canRetryProposal) return;
-    final result = await _retryPayjoinProposalUsecase.execute(sender.id);
+    // Cubit calls have no event transformer: admit synchronously and drop
+    // duplicate taps until the pending retry settles.
     if (isClosed ||
-        state.payjoinSender?.isCompleted == true ||
-        state.payjoinSender?.isAborted == true) {
+        state.isRetryingPayjoinProposal ||
+        sender == null ||
+        !sender.canRetryProposal) {
       return;
     }
-    switch (result) {
-      case Err(:final failure):
-        emit(state.copyWith(failure: failure));
-      case Ok():
-        // Session updates remain owned by the existing subscription.
-        break;
+    emit(state.copyWith(isRetryingPayjoinProposal: true));
+    try {
+      final result = await _retryPayjoinProposalUsecase.execute(sender.id);
+      final latest = state.payjoinSender;
+      if (isClosed ||
+          latest == null ||
+          latest.id != sender.id ||
+          !latest.isOngoing) {
+        return;
+      }
+      switch (result) {
+        case Err(:final failure):
+          // The subscription owns session transitions. A late retry failure
+          // must not replace a newer observation, even for the same session.
+          if (identical(latest, sender)) emit(state.copyWith(failure: failure));
+        case Ok():
+          break;
+      }
+    } finally {
+      if (!isClosed) emit(state.copyWith(isRetryingPayjoinProposal: false));
     }
   }
 
