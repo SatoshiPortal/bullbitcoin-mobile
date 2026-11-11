@@ -18,20 +18,20 @@ void main() {
         confidentialAddress: '',
         blockHeight: height,
       );
-      final coins = [coin(100), coin(null), coin(200)];
+      final coins = [coin(100), coin(null), coin(0), coin(200)];
       expect(
         sortAndFilterUtxos(
           coins,
           const CoinsFilter(sort: CoinsSort.dateNewest),
         ).map((coin) => coin.txId),
-        ['null', '200', '100'],
+        ['0', 'null', '200', '100'],
       );
       expect(
         sortAndFilterUtxos(
           coins,
           const CoinsFilter(sort: CoinsSort.dateOldest),
         ).map((coin) => coin.txId),
-        ['100', '200', 'null'],
+        ['100', '200', '0', 'null'],
       );
     });
     test('amountDesc orders largest first', () {
