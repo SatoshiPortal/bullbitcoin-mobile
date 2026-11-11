@@ -41,7 +41,7 @@ void main() {
       expect(selected, isNull);
     });
 
-    // Regression: the copy rounded every corner to BullRadius.xs, doubling the
+    // Regression: the copy rounded every corner to 4px, doubling the
     // radius of the original and making the control visibly rounder than the
     // rest of the design system.
     testWidgets('clips to the design-system corner radius', (tester) async {
@@ -52,7 +52,10 @@ void main() {
       );
 
       final clip = tester.widget<ClipRRect>(find.byType(ClipRRect).first);
-      expect(clip.borderRadius, BorderRadius.circular(BullRadius.xxs));
+      expect(
+        clip.borderRadius,
+        BorderRadius.circular(BullShapes.standard.button),
+      );
     });
 
     // Regression: the copy greyed disabled labels with textMuted instead of

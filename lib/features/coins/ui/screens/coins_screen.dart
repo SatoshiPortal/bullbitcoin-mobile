@@ -273,7 +273,9 @@ class _SubHeader extends StatelessWidget {
                     color: filtered
                         ? colors.primary.withValues(alpha: 0.08)
                         : colors.surface,
-                    borderRadius: BorderRadius.circular(BullRadius.xxs),
+                    borderRadius: BorderRadius.circular(
+                      context.bullShapes.button,
+                    ),
                     border: Border.all(
                       color: filtered ? colors.primary : colors.outlineVariant,
                     ),
@@ -301,7 +303,7 @@ class _SubHeader extends StatelessWidget {
                           label: '${filter.activeFilterCount}',
                           background: colors.primary,
                           foreground: colors.onPrimary,
-                          radius: BullRadius.full,
+                          radius: context.bullShapes.dot,
                         ),
                       ],
                     ],

@@ -5,7 +5,7 @@ import 'package:bb_mobile/features/send/ui/widgets/coin_selection_bottom_sheet.d
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullBottomSheet, BullButton, BullText, Gap;
+    show BullBottomSheet, BullButton, BullShapesX, BullText, Gap;
 import 'package:go_router/go_router.dart';
 
 class AdvancedOptionsBottomSheet extends StatelessWidget {
@@ -17,14 +17,16 @@ class AdvancedOptionsBottomSheet extends StatelessWidget {
       (SendCubit cubit) => cubit.state.replaceByFee,
     );
     final isSweep = context.select((SendCubit cubit) => cubit.state.isSweep);
-    final isLiquid = context.select(
-      (SendCubit cubit) => cubit.state.selectedWallet!.isLiquid,
+    final wallet = context.select(
+      (SendCubit cubit) => cubit.state.selectedWallet,
     );
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
-      decoration: const BoxDecoration(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(context.bullShapes.sheet),
+        ),
       ),
       child: Column(
         mainAxisSize: .min,
@@ -50,7 +52,7 @@ class AdvancedOptionsBottomSheet extends StatelessWidget {
             ],
           ),
           const Gap(32),
-          if (!isLiquid) ...[
+          if (wallet != null && !wallet.isLiquid) ...[
             Row(
               mainAxisAlignment: .spaceBetween,
               children: [
@@ -68,7 +70,7 @@ class AdvancedOptionsBottomSheet extends StatelessWidget {
             ),
             const Gap(24),
           ],
-          if (!isSweep) ...[
+          if (wallet != null && !isSweep) ...[
             ListTile(
               title: BullText(
                 context.loc.sendSelectCoinsManually,

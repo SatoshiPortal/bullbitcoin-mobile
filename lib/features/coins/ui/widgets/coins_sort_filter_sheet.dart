@@ -48,7 +48,7 @@ class _CoinsSortFilterSheetState extends State<CoinsSortFilterSheet> {
               height: 4,
               decoration: BoxDecoration(
                 color: colors.outlineVariant,
-                borderRadius: BorderRadius.circular(BullRadius.full),
+                borderRadius: BorderRadius.circular(context.bullShapes.dot),
               ),
             ),
           ),
@@ -234,7 +234,7 @@ class _CoinsSortFilterSheetState extends State<CoinsSortFilterSheet> {
           color: active
               ? colors.primary.withValues(alpha: 0.08)
               : colors.transparent,
-          borderRadius: BorderRadius.circular(BullRadius.xs),
+          borderRadius: BorderRadius.circular(context.bullShapes.button),
           border: Border.all(
             color: active ? colors.primary : colors.outlineVariant,
             width: active ? 1.5 : 1,
@@ -260,7 +260,7 @@ class _CoinsSortFilterSheetState extends State<CoinsSortFilterSheet> {
       padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 7),
       decoration: BoxDecoration(
         color: active ? colors.primary.withValues(alpha: 0.08) : colors.surface,
-        borderRadius: BorderRadius.circular(BullRadius.xxs),
+        borderRadius: BorderRadius.circular(context.bullShapes.button),
         border: Border.all(
           color: active ? colors.primary : colors.outlineVariant,
           width: active ? 1.5 : 1,

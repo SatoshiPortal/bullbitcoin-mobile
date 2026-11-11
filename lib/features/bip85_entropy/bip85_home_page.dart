@@ -12,9 +12,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:screen_privacy/screen_privacy.dart';
 import 'package:bull_ui/bull_ui.dart'
     show
-        BullScreenPrivacyGate,
         BullButton,
         BullFadingLinearProgress,
+        BullScreenPrivacyGate,
+        BullShapesX,
         BullSnackBar,
         Gap;
 
@@ -54,7 +55,9 @@ class _Bip85HomePageView extends StatelessWidget {
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
                       color: context.appColors.warning.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(
+                        context.bullShapes.card,
+                      ),
                     ),
                     child: Row(
                       children: [

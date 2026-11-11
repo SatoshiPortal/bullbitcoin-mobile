@@ -173,10 +173,12 @@ int _primaryCompare(WalletUtxo a, WalletUtxo b, CoinsSort sort) {
 
 int _compareAge(WalletUtxo a, WalletUtxo b) {
   if (a is LiquidWalletUtxo && b is LiquidWalletUtxo) {
-    if (!a.isConfirmed || !b.isConfirmed) {
+    final aHeight = a.blockHeight;
+    final bHeight = b.blockHeight;
+    if (aHeight == null || aHeight <= 0 || bHeight == null || bHeight <= 0) {
       return (a.isConfirmed ? 0 : 1).compareTo(b.isConfirmed ? 0 : 1);
     }
-    return a.blockHeight!.compareTo(b.blockHeight!);
+    return aHeight.compareTo(bHeight);
   }
   return b.confirmations.compareTo(a.confirmations);
 }

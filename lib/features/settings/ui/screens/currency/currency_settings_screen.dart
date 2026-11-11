@@ -1,3 +1,4 @@
+import 'package:bull_ui/bull_ui.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
@@ -59,7 +60,9 @@ class CurrencySettingsScreen extends StatelessWidget {
               children: [
                 ListTile(
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(2),
+                    borderRadius: BorderRadius.circular(
+                      context.bullShapes.card,
+                    ),
                   ),
                   tileColor: context.appColors.transparent,
                   title: BBText(
@@ -72,7 +75,9 @@ class CurrencySettingsScreen extends StatelessWidget {
                 ),
                 ListTile(
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(2),
+                    borderRadius: BorderRadius.circular(
+                      context.bullShapes.card,
+                    ),
                   ),
                   tileColor: context.appColors.transparent,
                   title: BBText(

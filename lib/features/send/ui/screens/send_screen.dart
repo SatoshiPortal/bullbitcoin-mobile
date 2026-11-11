@@ -50,6 +50,7 @@ import 'package:bull_ui/bull_ui.dart'
         BullInfoCard,
         BullInputText,
         BullSegmented,
+        BullShapesX,
         BullSnackBar,
         BullText,
         BullTopBar,
@@ -146,9 +147,13 @@ class SendAddressScreen extends StatelessWidget {
                         child: Container(
                           decoration: BoxDecoration(
                             color: context.appColors.onSecondary,
-                            borderRadius: const BorderRadius.only(
-                              topLeft: Radius.circular(12),
-                              topRight: Radius.circular(12),
+                            borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(
+                                context.bullShapes.sheet,
+                              ),
+                              topRight: Radius.circular(
+                                context.bullShapes.sheet,
+                              ),
                             ),
                           ),
                           padding: const EdgeInsets.symmetric(horizontal: 16),

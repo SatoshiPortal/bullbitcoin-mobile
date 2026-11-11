@@ -1081,11 +1081,13 @@ class SendCubit extends Cubit<SendState>
         return;
       }
       confirmedRequest = paymentRequest;
+      final coinControlWallet = state.selectedBitcoinWallet;
       if (state.usesSelectedInputsOnly &&
           !state.isSweep &&
-          state.selectedWallet?.isLiquid == true) {
+          coinControlWallet != null &&
+          coinControlWallet.isLiquid) {
         final validation = _validateCoinControlPaymentRequestUsecase.execute(
-          wallet: state.selectedBitcoinWallet!,
+          wallet: coinControlWallet,
           paymentRequest: paymentRequest,
           isSweep: state.isSweep,
         );

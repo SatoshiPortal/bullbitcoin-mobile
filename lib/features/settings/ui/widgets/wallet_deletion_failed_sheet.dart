@@ -39,7 +39,7 @@ class WalletDeletionFailedSheet extends StatelessWidget {
               height: 4,
               decoration: BoxDecoration(
                 color: colors.outline.withValues(alpha: 0.3),
-                borderRadius: BorderRadius.circular(2),
+                borderRadius: BorderRadius.circular(context.bullShapes.dot),
               ),
             ),
             const Gap(24),

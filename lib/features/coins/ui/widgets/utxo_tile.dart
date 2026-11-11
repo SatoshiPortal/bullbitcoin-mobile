@@ -195,7 +195,6 @@ class UtxoTile extends StatelessWidget {
           ? context.loc.coinsKeychainReceive
           : context.loc.coinsKeychainChange,
       uppercase: true,
-      radius: BullRadius.xxs,
       background: accent.withValues(alpha: isReceive ? 0.14 : 0.16),
       foreground: accent,
     );

@@ -24,10 +24,10 @@ class FreezeUtxosUsecase {
     } on Exception catch (error, stackTrace) {
       log.warning(
         'Failed to freeze wallet coins',
-        error: error,
+        error: error.runtimeType,
         trace: stackTrace,
       );
-      return Err(CoinsFreezeFailure(error.toString()));
+      return Err(CoinsFreezeFailure(error.runtimeType.toString()));
     }
   }
 }

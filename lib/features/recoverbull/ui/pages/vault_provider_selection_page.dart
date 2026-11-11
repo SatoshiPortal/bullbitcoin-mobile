@@ -10,7 +10,13 @@ import 'package:bb_mobile/features/recoverbull/ui/widgets/key_server_status_widg
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullBottomSheet, BullFadingLinearProgress, BullSnackBar, BullText, Gap;
+    show
+        BullBottomSheet,
+        BullFadingLinearProgress,
+        BullShapesX,
+        BullSnackBar,
+        BullText,
+        Gap;
 import 'package:go_router/go_router.dart';
 
 class VaultProviderSelectionPage extends StatelessWidget {
@@ -149,7 +155,9 @@ class HowToDecideVaultLocation extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
           color: context.appColors.surface,
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
+          borderRadius: BorderRadius.vertical(
+            top: Radius.circular(context.bullShapes.sheet),
+          ),
         ),
         padding: const EdgeInsets.symmetric(vertical: 30),
         child: Column(

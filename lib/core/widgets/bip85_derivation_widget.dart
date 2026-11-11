@@ -4,7 +4,7 @@ import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:async';
-import 'package:bull_ui/bull_ui.dart' show BullSnackBar;
+import 'package:bull_ui/bull_ui.dart' show BullShapesX, BullSnackBar;
 
 class Bip85DerivationWidget extends StatefulWidget {
   final Bip85DerivationEntity derivation;
@@ -82,7 +82,7 @@ class _Bip85DerivationWidgetState extends State<Bip85DerivationWidget> {
       padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
         border: Border.all(color: context.appColors.border),
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(context.bullShapes.card),
         color: context.appColors.surface,
       ),
 

@@ -15,6 +15,7 @@ import 'package:bull_ui/bull_ui.dart'
         BullDropdown,
         BullInfoCard,
         BullInputText,
+        BullShapesX,
         BullSwitch,
         BullText,
         Gap;
@@ -82,8 +83,8 @@ class _AutoSwapSettingsContentState extends State<AutoSwapSettingsContent> {
             ),
             decoration: BoxDecoration(
               color: context.appColors.surface,
-              borderRadius: const BorderRadius.vertical(
-                top: Radius.circular(32),
+              borderRadius: BorderRadius.vertical(
+                top: Radius.circular(context.bullShapes.sheet),
               ),
             ),
             child: BBKeyboardActions(
@@ -282,7 +283,9 @@ class _AmountThresholdField extends StatelessWidget {
                     ),
                     decoration: BoxDecoration(
                       color: context.appColors.surface,
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(
+                        context.bullShapes.badge,
+                      ),
                       border: Border.all(color: context.appColors.border),
                     ),
                     child: BullText(
@@ -366,7 +369,9 @@ class _TriggerBalanceField extends StatelessWidget {
                     ),
                     decoration: BoxDecoration(
                       color: context.appColors.surface,
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(
+                        context.bullShapes.badge,
+                      ),
                       border: Border.all(color: context.appColors.border),
                     ),
                     child: BullText(
@@ -443,7 +448,9 @@ class _FeeThresholdField extends StatelessWidget {
                   ),
                   decoration: BoxDecoration(
                     color: context.appColors.surface,
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(
+                      context.bullShapes.badge,
+                    ),
                     border: Border.all(color: context.appColors.border),
                   ),
                   child: BullText('%', style: context.font.bodyMedium),
