@@ -1,5 +1,3 @@
-import 'package:bb_mobile/features/labels/data/reserved_address_port_impl.dart';
-import 'package:transaction_sync/transaction_sync.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/frozen_wallet_utxo_datasource.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_utxo_repository.dart';
 import 'package:bb_mobile/features/labels/adapters/labels_converter_apadater.dart';
@@ -17,12 +15,14 @@ import 'package:bb_mobile/features/labels/application/usecases/fetch_label_by_re
 import 'package:bb_mobile/features/labels/application/usecases/import_labels_from_file_usecase.dart';
 import 'package:bb_mobile/features/labels/application/usecases/import_labels_usecase.dart';
 import 'package:bb_mobile/features/labels/data/io_labels_file_datasource.dart';
+import 'package:bb_mobile/features/labels/data/reserved_address_port_impl.dart';
 import 'package:bb_mobile/features/labels/domain/labels_file_port.dart';
 import 'package:bb_mobile/features/labels/domain/label_format.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/core/storage/storage.dart';
 import 'package:bb_mobile/features/labels/frameworks/bip329_codec.dart';
 import 'package:get_it/get_it.dart';
+import 'package:transaction_sync/transaction_sync.dart';
 
 class LabelsLocator {
   static void registerPorts(GetIt locator) {
