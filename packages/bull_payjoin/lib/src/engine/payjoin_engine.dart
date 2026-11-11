@@ -1467,6 +1467,40 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     }
   }
 
+  /// Holds an expired sender without a proposal whose original may be on the
+  /// network: settles it if the original is visible, else keeps it unfinished,
+  /// so its inputs stay reserved, under the read-only fallback observer.
+  ///
+  /// ⚠️ Known limit: nothing sends this original again automatically. While
+  /// it is neither seen nor refuted the inputs stay frozen and every resume
+  /// repeats the lookup; broadcasting the original by hand is the way out.
+  Future<void> _holdUnresolvedOriginal(PayjoinSenderModel sender) async {
+    try {
+      if (await _transactions.isTransactionVisible(
+        walletId: sender.walletId,
+        transactionId: sender.originalTxId,
+        refresh: true,
+      )) {
+        await _completeOnOriginalTransactionSeen(
+          sender.id,
+          sender.originalTxId,
+        );
+      }
+    } catch (e, st) {
+      _log.warning(
+        code: api.PayjoinLogCode.watchFailure,
+        role: api.PayjoinLogRole.sender,
+        sessionRef: sender.toEntity().logRef,
+        error: e,
+        trace: st,
+      );
+    }
+    final current = await _localPayjoinDatasource.fetchSender(sender.id);
+    if (current == null || current.isCompleted || current.isAborted) return;
+    // Publishes the typed reserved state and arms the fallback observer.
+    _pauseProposal(current, allowRetry: false);
+  }
+
   Future<void> _processExpiredPayjoin(PayjoinModel payjoinModel) =>
       _withSessionLock(payjoinModel.id, () async {
         // Same hardening as _processPayjoinRequest/_processPayjoinProposal: a
@@ -1632,6 +1666,12 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       //  expired flag up front, and for NOT calling _stopWatching before
       //  attempting: the fallback watch armed at session creation must
       //  survive a failed attempt here.
+      // A session already holding evidence may have paid through an earlier
+      // attempt whose outcome was never recorded: observe, never send again.
+      if (freshModel is PayjoinSenderModel && freshModel.hasNetworkEvidence) {
+        await _holdUnresolvedOriginal(freshModel);
+        return;
+      }
       final result = await _broadcastOriginalTransaction(payjoin);
       if (result != null) {
         _payjoinStreamController.add(result);
@@ -1653,6 +1693,17 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       //  re-armed by that sweep: it is read-only, so if the counterparty
       //  broadcasts this original anyway — BIP78 invites them to — the row
       //  still converges to aborted and the history tells the truth.
+      // Only a send proven not to have reached the network leaves no
+      // evidence. Any other failure may still pay: the session then stays
+      // unfinished and reserved, and is only observed from here on.
+      final attempted = await _localPayjoinDatasource.fetchSender(payjoin.id);
+      if (attempted == null || attempted.isCompleted || attempted.isAborted) {
+        return;
+      }
+      if (attempted.hasNetworkEvidence) {
+        await _holdUnresolvedOriginal(attempted);
+        return;
+      }
       final recorded = await _localPayjoinDatasource.markExpired(expiredModel);
       if (recorded) _payjoinStreamController.add(payjoin);
     } else {
