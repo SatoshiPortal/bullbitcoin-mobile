@@ -24,6 +24,15 @@ class GetSecureFileUploadStatusUsecase {
           status: summary.kycDocumentStatus?.secureFileUpload,
         ),
       );
+    } on Error {
+      rethrow;
+    } on GetExchangeUserSummaryCredentialException catch (e) {
+      log.info('Exchange account credential refused: ${e.runtimeType}');
+      return const Err(
+        ExchangeSettingsUploadStatusUnavailableFailure(
+          'Exchange credential unavailable',
+        ),
+      );
     } catch (e, st) {
       log.severe(message: 'getExchangeUserSummary failed', error: e, trace: st);
       return Err(

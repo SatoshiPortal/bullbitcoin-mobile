@@ -24,14 +24,9 @@ class GetOrderUsecase {
           : _mainnetExchangeOrderRepository;
       final order = await repo.getOrder(orderId);
       return order;
-    } catch (_) {
-      const diagnostic = 'exchange_order_read_failed category=unexpected';
-      log.severe(
-        message: diagnostic,
-        error: Exception(diagnostic),
-        trace: StackTrace.current,
-      );
-      throw GetOrderException(diagnostic);
+    } on Exception catch (e) {
+      log.warning('Exchange order unavailable: ${e.runtimeType}');
+      throw GetOrderException('Exchange order unavailable: ${e.runtimeType}');
     }
   }
 }

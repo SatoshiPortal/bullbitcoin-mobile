@@ -4990,5 +4990,7 @@
   "broadcastSignedTxErrorRejected": "Le réseau a rejeté cette transaction. Elle est peut-être incomplètement signée, invalide ou en conflit avec un autre paiement.",
   "broadcastSignedTxErrorOutcomeUnknown": "Impossible de confirmer que votre transaction a été diffusée. Vérifiez dans un explorateur de blocs avant de réessayer.",
   "broadcastSignedTxErrorNetworkNotEnabled": "La diffusion sur ce réseau n'est pas activée dans les réglages actuels.",
-  "coreScreensOutputsExceedInputs": "Les sorties dépassent les entrées : cette transaction est invalide et le réseau la rejettera."
+  "coreScreensOutputsExceedInputs": "Les sorties dépassent les entrées : cette transaction est invalide et le réseau la rejettera.",
+  "passphraseShow": "Afficher la passphrase",
+  "passphraseHide": "Masquer la passphrase"
 }

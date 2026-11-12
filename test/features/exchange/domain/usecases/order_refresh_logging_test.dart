@@ -1,8 +1,6 @@
 import 'dart:io';
 
 import 'package:bb_mobile/core/exchange/data/datasources/bullbitcoin_api_datasource.dart';
-import 'package:bb_mobile/core/exchange/data/datasources/bullbitcoin_api_key_datasource.dart';
-import 'package:bb_mobile/core/exchange/data/models/api_key_model.dart';
 import 'package:bb_mobile/core/exchange/data/repository/exchange_order_repository_impl.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
@@ -20,8 +18,6 @@ import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';
 
 class _Api extends Mock implements BullbitcoinApiDatasource {}
-
-class _Keys extends Mock implements BullbitcoinApiKeyDatasource {}
 
 class _Settings extends Mock implements SettingsRepository {}
 
@@ -64,22 +60,8 @@ void main() {
           await directory.delete(recursive: true);
         });
         final api = _Api();
-        final keys = _Keys();
         final settings = _Settings();
-        when(() => keys.get(isTestnet: false)).thenAnswer(
-          (_) async => ExchangeApiKeyModel(
-            id: 'fixture',
-            key: 'fixture',
-            name: 'fixture',
-            userId: 'fixture',
-            isActive: true,
-            createdAt: 0,
-            updatedAt: 0,
-          ),
-        );
-        when(
-          () => api.getOrderSummary(apiKey: 'fixture', orderId: orderId),
-        ).thenThrow(cause);
+        when(() => api.getOrderSummary(orderId: orderId)).thenThrow(cause);
         when(settings.fetch).thenAnswer(
           (_) async => const SettingsEntity(
             environment: Environment.mainnet,
@@ -89,7 +71,6 @@ void main() {
         );
         final repository = ExchangeOrderRepositoryImpl(
           bullbitcoinApiDatasource: api,
-          bullbitcoinApiKeyDatasource: keys,
           isTestnet: false,
         );
         final getOrder = GetOrderUsecase(
@@ -118,9 +99,7 @@ void main() {
           (result as Err).failure.logMessage,
           '${feature}_order_read_failed category=unexpected',
         );
-        verify(
-          () => api.getOrderSummary(apiKey: 'fixture', orderId: orderId),
-        ).called(1);
+        verify(() => api.getOrderSummary(orderId: orderId)).called(1);
         await log.flush();
         final disk = await log.logsFile.readAsString();
         final reports = verify(
@@ -131,16 +110,15 @@ void main() {
             category: ReportCategory.error,
           ),
         ).captured;
-        expect(reports, hasLength(6)); // Two events, all three text arguments.
+        // The shared order reader now warns; only the feature reports the failure.
+        expect(reports, hasLength(3)); // One event, all three arguments.
         expect(reports.whereType<String>(), [
-          'exchange_order_read_failed category=unexpected',
           '${feature}_order_read_failed category=unexpected',
         ]);
         expect(reports.whereType<Exception>().map((e) => e.toString()), [
-          'Exception: exchange_order_read_failed category=unexpected',
           'Exception: ${feature}_order_read_failed category=unexpected',
         ]);
-        expect(reports.whereType<StackTrace>(), hasLength(2));
+        expect(reports.whereType<StackTrace>(), hasLength(1));
         final diagnostics = '$disk\n${reports.join('\n')}';
         for (final sentinel in [
           host,
@@ -151,10 +129,7 @@ void main() {
           expect(diagnostics, isNot(contains(sentinel)));
         }
         expect(disk, contains('SEVERE'));
-        expect(
-          disk,
-          contains('exchange_order_read_failed category=unexpected'),
-        );
+        expect(disk, contains('Exchange order unavailable:'));
         expect(
           disk,
           contains('${feature}_order_read_failed category=unexpected'),

@@ -10,12 +10,13 @@ class ApiKeyNotFoundException extends ApiKeyException {
     : super('API key not found. Please login to your Bull Bitcoin account.');
 }
 
-/// The stored exchange API key is no longer active.
-class ApiKeyInactiveException extends ApiKeyException {
-  ApiKeyInactiveException()
-    : super(
-        'API key is inactive. Please login again to your Bull Bitcoin account.',
-      );
+/// A stored exchange credential could not be read or validated. Retrying must
+/// not be presented as a logout or reported as an unexpected application bug.
+final class ExchangeCredentialUnavailableException implements Exception {
+  const ExchangeCredentialUnavailableException();
+
+  @override
+  String toString() => 'Exchange credential unavailable';
 }
 
 /// The API returned an order of a different type than the endpoint implies.

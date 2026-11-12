@@ -16,6 +16,7 @@ import 'package:bb_mobile/features/settings/ui/settings_router.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_failure_l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:primitives/primitives.dart' show Err, Ok;
 import 'package:go_router/go_router.dart';
 import 'package:bull_ui/bull_ui.dart' show BullSettingsEntryItem;
 
@@ -173,15 +174,24 @@ class ExchangeSettingsScreen extends StatelessWidget {
                       DeleteAccountConfirmationBottomSheet.show(
                         context,
                         onConfirm: () async {
-                          final failure = await cubit.deleteAccount();
+                          final result = await cubit.deleteAccount();
                           if (!context.mounted) return;
-                          if (failure == null) {
-                            await DeleteAccountSuccessBottomSheet.show(context);
-                          } else {
-                            SnackBarUtils.showSnackBar(
-                              context,
-                              failure.toTranslated(context),
-                            );
+                          switch (result) {
+                            case Ok(
+                              value: ExchangeAccountDeletionOutcome.completed,
+                            ):
+                              await DeleteAccountSuccessBottomSheet.show(
+                                context,
+                              );
+                            case Ok(
+                              value: ExchangeAccountDeletionOutcome.stale,
+                            ):
+                              break;
+                            case Err(:final failure):
+                              SnackBarUtils.showSnackBar(
+                                context,
+                                failure.toTranslated(context),
+                              );
                           }
                         },
                       );
