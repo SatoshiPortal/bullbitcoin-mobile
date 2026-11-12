@@ -5,6 +5,12 @@ import 'package:bb_mobile/core/utils/bitcoin_tx.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_utxo_repository.dart';
 import 'package:convert/convert.dart';
 
+/// Dated security exception (2026-11) to AGENTS.md rules #7 and #11: the
+/// frozen-input guard below adds logic to `lib/core` and throws
+/// [FrozenInputBroadcastException] instead of returning a `Failure`, because
+/// on develop this use case is the broadcast point its callers share. It is
+/// removed when the wallet sync stack moves this use case to
+/// `lib/features/send`, where the guard belongs. See ARCHITECTURE.md.
 class BroadcastBitcoinTransactionUsecase {
   final BitcoinBlockchainRepository _bitcoinBlockchain;
   final SettingsRepository _settingsRepository;
