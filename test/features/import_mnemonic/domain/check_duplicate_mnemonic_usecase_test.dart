@@ -1,9 +1,17 @@
 import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/features/import_mnemonic/domain/check_duplicate_mnemonic_usecase.dart';
 import 'package:bb_mobile/features/import_mnemonic/domain/import_mnemonic_failure.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:secrets/secrets.dart';
 import 'package:secrets/testing.dart';
+
+class _MockWalletRepository extends Mock implements WalletRepository {}
+
+class _MockWallet extends Mock implements Wallet {}
 
 /// These run the real package against an in-memory keystore installed at the plugin's own seam, so duplicate detection uses the production fingerprint derivation.
 void main() {
@@ -24,12 +32,32 @@ void main() {
 
   late FakeSecureStoragePlatform storage;
   late Secrets secrets;
+  late _MockWalletRepository wallets;
   late CheckDuplicateMnemonicUsecase usecase;
+
+  // The fingerprint of `words`, without a passphrase.
+  const fingerprint = '73c5da0a';
+
+  Wallet signingWallet(String masterFingerprint, {bool signsLocally = true}) {
+    final wallet = _MockWallet();
+    when(() => wallet.signsLocally).thenReturn(signsLocally);
+    when(() => wallet.masterFingerprint).thenReturn(masterFingerprint);
+    return wallet;
+  }
+
+  void walletsAre(List<Wallet> list) => when(
+    () => wallets.getWallets(),
+  ).thenAnswer((_) async => Ok<List<Wallet>, WalletFailure>(list));
 
   setUp(() {
     storage = FakeSecureStoragePlatform()..install();
     secrets = Secrets(scratchDirectory: () async => '/tmp');
-    usecase = CheckDuplicateMnemonicUsecase(secrets: secrets);
+    wallets = _MockWalletRepository();
+    walletsAre([]);
+    usecase = CheckDuplicateMnemonicUsecase(
+      secrets: secrets,
+      walletRepository: wallets,
+    );
   });
 
   group('CheckDuplicateMnemonicUsecase', () {
@@ -40,16 +68,20 @@ void main() {
       );
     });
 
-    test('returns Err(duplicate) once the same mnemonic is stored', () async {
-      expect(
-        await secrets.import(words: words),
-        isA<Ok<Secret, SecretFailure>>(),
-      );
+    test(
+      'returns Err(duplicate) once a wallet signs with the same mnemonic',
+      () async {
+        expect(
+          await secrets.import(words: words),
+          isA<Ok<Secret, SecretFailure>>(),
+        );
+        walletsAre([signingWallet(fingerprint)]);
 
-      final result = await usecase.execute(mnemonicWords: words);
+        final result = await usecase.execute(mnemonicWords: words);
 
-      expect((result as Err).failure, isA<ImportMnemonicDuplicateFailure>());
-    });
+        expect((result as Err).failure, isA<ImportMnemonicDuplicateFailure>());
+      },
+    );
 
     test('a passphrase makes a different secret, not a duplicate', () async {
       expect(

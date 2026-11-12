@@ -79,10 +79,22 @@ class ImportWalletUsecase {
         case Ok(:final value):
           secret = value;
           seedCreatedByThisImport = secret.id;
-        case Err(failure: SecretAlreadyExistsFailure()):
-          // The preflight check is indicative; another operation may have
-          // stored this secret since then. A duplicate owns no cleanup.
-          return const Err(ImportMnemonicDuplicateFailure());
+        case Err(failure: SecretAlreadyExistsFailure(:final id)):
+          // `secrets` refused only after comparing the whole secret, passphrase
+          // included, so the stored one is exactly what the user typed. If no
+          // wallet uses it — a reinstall that kept the keystore, or a reset of
+          // the local database — it is reused rather than refused. A seed some
+          // wallet uses is a duplicate, and so is one whose use cannot be
+          // checked. A reused seed owns no cleanup.
+          if (await _referencedByAWallet(id)) {
+            return const Err(ImportMnemonicDuplicateFailure());
+          }
+          switch (await _secrets.fetch(id)) {
+            case Ok(:final value):
+              secret = value;
+            case Err(:final failure):
+              return Err(ImportMnemonicUnexpectedFailure(failure.toString()));
+          }
         case Err(:final failure):
           return Err(ImportMnemonicUnexpectedFailure(failure.toString()));
       }

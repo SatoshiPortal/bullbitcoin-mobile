@@ -150,11 +150,18 @@ void main() {
       'strict import rejects a duplicate missed by preflight without cleanup',
       () async {
         // The mocked preflight says the words are new, as it can after a stale
-        // read or a concurrent storage operation. Import still rejects them.
+        // read or a concurrent storage operation. Import still rejects them,
+        // because a wallet signs with that seed.
         expect(
           await secrets.import(words: words),
           isA<Ok<Secret, SecretFailure>>(),
         );
+        final existing = _MockWallet();
+        when(() => existing.signsLocally).thenReturn(true);
+        when(() => existing.masterFingerprint).thenReturn('73c5da0a');
+        when(
+          () => walletRepository.getWallets(),
+        ).thenAnswer((_) async => Ok<List<Wallet>, WalletFailure>([existing]));
 
         final result = await usecase.execute(mnemonicWords: words);
 
@@ -169,7 +176,6 @@ void main() {
             label: any(named: 'label'),
           ),
         );
-        verifyNever(() => walletRepository.getWallets());
         expect(
           storage.entries.keys.where((k) => k.startsWith('seed_')),
           hasLength(1),
@@ -184,6 +190,12 @@ void main() {
         var creations = 0;
         stubCreateWallet(() async {
           creations++;
+          // From now on, the wallet store holds a wallet signing with that seed.
+          when(() => wallet.signsLocally).thenReturn(true);
+          when(() => wallet.masterFingerprint).thenReturn('73c5da0a');
+          when(
+            () => walletRepository.getWallets(),
+          ).thenAnswer((_) async => Ok<List<Wallet>, WalletFailure>([wallet]));
           return wallet;
         });
 

@@ -12,7 +12,10 @@ import 'package:get_it/get_it.dart';
 class ImportMnemonicLocator {
   static void setup(GetIt locator) {
     locator.registerFactory<CheckDuplicateMnemonicUsecase>(
-      () => CheckDuplicateMnemonicUsecase(secrets: locator<Secrets>()),
+      () => CheckDuplicateMnemonicUsecase(
+        secrets: locator<Secrets>(),
+        walletRepository: locator<WalletRepository>(),
+      ),
     );
     locator.registerFactory<ImportWalletUsecase>(
       () => ImportWalletUsecase(
