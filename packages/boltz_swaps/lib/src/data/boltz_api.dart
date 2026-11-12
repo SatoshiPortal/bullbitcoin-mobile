@@ -55,6 +55,7 @@ class BoltzDatasource {
 
   int _reconnectAttempt = 0;
   Timer? _reconnectTimer;
+  bool _disposed = false;
 
   final StreamController<SwapModel> _swapUpdatesController =
       StreamController<SwapModel>.broadcast();
@@ -1233,7 +1234,7 @@ class BoltzDatasource {
   }
 
   void _initializeBoltzWebSocket() {
-    if (_boltzWebSocket != null) return;
+    if (_disposed || _boltzWebSocket != null) return;
 
     final boltzWebSocket = webSocketFactory(
       _wsBaseUrl,
@@ -1459,8 +1460,23 @@ class BoltzDatasource {
       return;
     }
     _initializeBoltzWebSocket();
-    _boltzWebSocket!.subscribe(newSwapIds);
+    final webSocket = _boltzWebSocket;
+    if (webSocket == null) return;
+    webSocket.subscribe(newSwapIds);
     _subscribedSwapIds.addAll(newSwapIds);
+  }
+
+  /// Stops all live traffic to this backend: the websocket, its reconnect
+  /// timer and the HTTP client. Requests already in flight finish or fail on
+  /// their own; nothing reconnects afterwards.
+  void dispose() {
+    _disposed = true;
+    _reconnectTimer?.cancel();
+    final webSocket = _boltzWebSocket;
+    _boltzWebSocket = null;
+    webSocket?.dispose();
+    _subscribedSwapIds.clear();
+    _http.close();
   }
 
   void unsubscribeToSwaps(List<String> swapIds) {

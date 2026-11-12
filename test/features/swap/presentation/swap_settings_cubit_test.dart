@@ -1,9 +1,12 @@
+import 'package:bb_mobile/core/swaps/domain/entity/swap_server.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/swap/domain/entities/swap_route.dart';
 import 'package:bb_mobile/features/swap/domain/swap_failure.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/get_swap_route_settings_usecase.dart';
+import 'package:bb_mobile/features/swap/domain/usecases/get_swap_server_usecase.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/set_swap_exchange_fallback_usecase.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/set_swap_route_override_usecase.dart';
+import 'package:bb_mobile/features/swap/domain/usecases/set_swap_server_usecase.dart';
 import 'package:bb_mobile/features/swap/presentation/swap_settings_cubit.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -17,10 +20,16 @@ class _MockSetSwapExchangeFallbackUsecase extends Mock
 class _MockSetSwapRouteOverrideUsecase extends Mock
     implements SetSwapRouteOverrideUsecase {}
 
+class _MockGetSwapServerUsecase extends Mock implements GetSwapServerUsecase {}
+
+class _MockSetSwapServerUsecase extends Mock implements SetSwapServerUsecase {}
+
 void main() {
   late _MockGetSwapRouteSettingsUsecase getSettings;
   late _MockSetSwapExchangeFallbackUsecase setFallback;
   late _MockSetSwapRouteOverrideUsecase setOverride;
+  late _MockGetSwapServerUsecase getServer;
+  late _MockSetSwapServerUsecase setServer;
 
   setUpAll(() => registerFallbackValue(SwapRouteOverride.auto));
 
@@ -28,6 +37,11 @@ void main() {
     getSettings = _MockGetSwapRouteSettingsUsecase();
     setFallback = _MockSetSwapExchangeFallbackUsecase();
     setOverride = _MockSetSwapRouteOverrideUsecase();
+    getServer = _MockGetSwapServerUsecase();
+    setServer = _MockSetSwapServerUsecase();
+    when(() => getServer.execute()).thenAnswer(
+      (_) async => (server: SwapServer.mainnetDefault, isTestnet: false),
+    );
     when(() => getSettings.execute()).thenAnswer(
       (_) async => const Ok((
         exchangeFallbackEnabled: false,
@@ -47,6 +61,8 @@ void main() {
     getSwapRouteSettingsUsecase: getSettings,
     setSwapExchangeFallbackUsecase: setFallback,
     setSwapRouteOverrideUsecase: setOverride,
+    getSwapServerUsecase: getServer,
+    setSwapServerUsecase: setServer,
   );
 
   test('loads the stored choices', () async {
@@ -111,5 +127,48 @@ void main() {
 
     verify(() => setOverride.execute(SwapRouteOverride.exchangeOnly)).called(1);
     expect(cubit.state.routeOverride, SwapRouteOverride.exchangeOnly);
+  });
+
+  test('loads and stores the swap server', () async {
+    final custom = SwapServer.parse('boltz.example.com/v2', isTestnet: false);
+    when(
+      () => setServer.execute(any()),
+    ).thenAnswer((_) async => Ok(custom ?? SwapServer.mainnetDefault));
+    final cubit = build();
+    addTearDown(cubit.close);
+    await cubit.load();
+    expect(cubit.state.swapServer, SwapServer.mainnetDefault);
+
+    expect(await cubit.setSwapServer('boltz.example.com/v2'), isNull);
+
+    expect(cubit.state.swapServer, custom);
+    expect(cubit.state.isDefaultSwapServer, isFalse);
+  });
+
+  test('marks the testnet default as the default on testnet', () async {
+    when(() => getServer.execute()).thenAnswer(
+      (_) async => (server: SwapServer.testnetDefault, isTestnet: true),
+    );
+    final cubit = build();
+    addTearDown(cubit.close);
+
+    await cubit.load();
+
+    expect(cubit.state.isDefaultSwapServer, isTrue);
+  });
+
+  test('an invalid server is returned to the editor, not reported', () async {
+    when(() => setServer.execute(any())).thenAnswer(
+      (_) async => const Err(SwapValidationFailure(field: 'server')),
+    );
+    final cubit = build();
+    addTearDown(cubit.close);
+    await cubit.load();
+
+    final invalid = await cubit.setSwapServer('not a host');
+
+    expect(invalid, isA<SwapValidationFailure>());
+    expect(cubit.state.failure, isNull);
+    expect(cubit.state.swapServer, SwapServer.mainnetDefault);
   });
 }

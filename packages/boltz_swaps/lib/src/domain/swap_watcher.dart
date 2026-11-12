@@ -20,7 +20,8 @@ class SwapWatcher {
 
   StreamSubscription<Swap>? _updates;
   Timer? _heartbeatTimer;
-  final Set<String> _inFlight = {};
+  final Map<String, Future<void>> _inFlight = {};
+  bool _stopped = false;
   final Map<String, ({int attempts, DateTime nextAttemptAt})> _retrySchedule =
       {};
   static const _maxRetryDelay = Duration(minutes: 30);
@@ -35,6 +36,7 @@ class SwapWatcher {
   /// session that never ran [start] (the app launched before a wallet
   /// existed) still drives every swap it touches.
   void ensureRunning() {
+    _stopped = false;
     _heartbeatTimer ??= Timer.periodic(
       _heartbeat,
       (_) => unawaited(_onHeartbeat()),
@@ -60,11 +62,15 @@ class SwapWatcher {
     }
   }
 
+  /// Stops driving and waits for actions already running, so nothing acts
+  /// on a swap after this returns.
   Future<void> stop() async {
+    _stopped = true;
     await _updates?.cancel();
     _updates = null;
     _heartbeatTimer?.cancel();
     _heartbeatTimer = null;
+    await Future.wait(_inFlight.values.toList());
   }
 
   /// Explicit "look now": clears backoffs (a user-triggered sync is a retry
@@ -111,6 +117,7 @@ class SwapWatcher {
         swapsLog.warning('SWAPS: reconcile failed, driving stored state: $e');
       }
       for (final swap in ongoing) {
+        if (_stopped) break;
         await processSwap(swap);
       }
       await swapsLog.flush();
@@ -123,12 +130,21 @@ class SwapWatcher {
   /// resolve operations are idempotent on recorded txids, concurrent calls
   /// for the same swap coalesce, and failures back off exponentially.
   Future<void> processSwap(Swap swap) async {
-    if (!_shouldAttempt(swap.id)) return;
-    if (_inFlight.contains(swap.id)) {
+    if (_stopped || !_shouldAttempt(swap.id)) return;
+    if (_inFlight.containsKey(swap.id)) {
       swapsLog.fine('SWAPS: ${swap.id} action already in flight — coalesced');
       return;
     }
-    _inFlight.add(swap.id);
+    final action = _act(swap);
+    _inFlight[swap.id] = action;
+    try {
+      await action;
+    } finally {
+      _inFlight.remove(swap.id);
+    }
+  }
+
+  Future<void> _act(Swap swap) async {
     try {
       // Crash-window recovery: a chain swap funded but killed before its
       // lockup txid was persisted has sendTxid == null, which strands it —
@@ -195,8 +211,6 @@ class SwapWatcher {
       swapsLog.warning(
         'SWAPS: action failed for ${swap.id} (${swap.status.name}): $e',
       );
-    } finally {
-      _inFlight.remove(swap.id);
     }
   }
 

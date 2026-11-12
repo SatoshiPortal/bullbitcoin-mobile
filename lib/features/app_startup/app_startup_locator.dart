@@ -12,6 +12,7 @@ import 'package:bb_mobile/features/app_startup/presentation/bloc/app_startup_blo
 import 'package:bb_mobile/features/app_unlock/domain/usecases/check_pin_code_exists_usecase.dart';
 import 'package:bb_mobile/features/pin_code/data/repositories/pin_code_repository.dart';
 import 'package:boltz_swaps/boltz_swaps.dart';
+import 'package:bb_mobile/core/swaps/swap_engine_switcher.dart';
 import 'package:get_it/get_it.dart';
 import 'package:bull_tor/tor.dart';
 
@@ -51,6 +52,7 @@ class AppStartupLocator {
       () => StartSwapEngineUsecase(
         locator<LogSwapCensusUsecase>(),
         locator<SwapWatcher>(),
+        locator<SwapEngineSwitcher>(),
       ),
     );
 

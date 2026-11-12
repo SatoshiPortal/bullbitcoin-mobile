@@ -166,4 +166,31 @@ void main() {
     await Future<void>.delayed(const Duration(milliseconds: 20));
     verify(() => repo.refund(any())).called(1);
   });
+
+  test('stop waits for an action already running', () async {
+    final claim = Completer<String>();
+    when(() => repo.claim(any())).thenAnswer((_) => claim.future);
+    unawaited(watcher.processSwap(chainSwap(SwapStatus.claimable)));
+    await Future<void>.delayed(Duration.zero);
+
+    var stopped = false;
+    final stopping = watcher.stop().then((_) => stopped = true);
+    await Future<void>.delayed(Duration.zero);
+    expect(stopped, isFalse);
+
+    claim.complete('claim-txid');
+    await stopping;
+    expect(stopped, isTrue);
+  });
+
+  test('a stopped watcher acts on nothing until it runs again', () async {
+    await watcher.stop();
+
+    await watcher.processSwap(chainSwap(SwapStatus.claimable));
+    verifyNever(() => repo.claim(any()));
+
+    watcher.ensureRunning();
+    await watcher.processSwap(chainSwap(SwapStatus.claimable));
+    verify(() => repo.claim(any())).called(1);
+  });
 }

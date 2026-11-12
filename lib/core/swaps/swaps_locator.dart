@@ -5,13 +5,18 @@ import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_va
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/swaps/boltz_swaps_db_migration.dart';
 import 'package:bb_mobile/core/swaps/data/auto_swap_settings_repository_impl.dart';
+import 'package:bb_mobile/core/swaps/data/swap_server_setting_repository_impl.dart';
 import 'package:bb_mobile/core/swaps/domain/repositories/auto_swap_settings_repository.dart';
+import 'package:bb_mobile/core/swaps/domain/entity/swap_server.dart';
+import 'package:bb_mobile/core/swaps/domain/repositories/swap_server_setting_repository.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/disable_autoswap_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/disable_autoswap_warning_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/get_auto_swap_settings_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/save_auto_swap_settings_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/watch_auto_swap_settings_usecase.dart';
+import 'package:bb_mobile/core/swaps/swap_engine_switcher.dart';
 import 'package:bb_mobile/core/swaps/swaps_adapters.dart';
+import 'package:bb_mobile/core/swaps/switchable_swap_repository.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_address_repository.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
@@ -54,15 +59,8 @@ class SwapsLocator {
   static Future<void> registerRepositories(GetIt locator) async {
     final environment =
         (await locator<SettingsRepository>().fetch()).environment;
-    log.info(
-      '[Swaps] boltz datasource url="${ApiServiceConstants.boltzMainnetUrlPath}" '
-      'isTestnet=${environment.isTestnet}',
-    );
-    locator.registerLazySingleton<BoltzDatasource>(
-      () => BoltzDatasource(
-        url: ApiServiceConstants.boltzMainnetUrlPath,
-        boltzStore: locator<SwapStorage>(),
-      ),
+    locator.registerLazySingleton<SwapServerSettingRepository>(
+      SwapServerSettingRepositoryImpl.new,
     );
     locator.registerLazySingleton<SwapsAppGlue>(
       () => SwapsAppGlue(
@@ -71,75 +69,43 @@ class SwapsLocator {
         secrets: locator<Secrets>(),
       ),
     );
-    locator.registerLazySingleton<BoltzSwapRepository>(
-      () {
-        final glue = locator<SwapsAppGlue>();
-        final fees = locator<FeesRepository>();
-        final addresses = locator<WalletAddressRepository>();
-        final walletTxs = locator<WalletTransactionRepository>();
-        return BoltzSwapRepository(
-          boltz: locator<BoltzDatasource>(),
+    final initialServer = await locator<SwapServerSettingRepository>().fetch(
+      isTestnet: environment.isTestnet,
+    );
+    locator.registerLazySingleton<SwitchableSwapRepository>(
+      () => SwitchableSwapRepository(
+        _buildEngine(
+          locator,
           isTestnet: environment.isTestnet,
-          electrum: AppElectrumRunner(locator<ElectrumServersPort>()),
-          newAddressFor: (walletId) async =>
-              (await addresses.generateNewReceiveAddress(
-                walletId: walletId,
-              )).address,
-          walletTx: (txid, {required walletId}) async {
-            final tx = await walletTxs.getWalletTransaction(
-              txid,
-              walletId: walletId,
-            );
-            if (tx == null) return null;
-            return SwapWalletTx(
-              txId: tx.txId,
-              isIncoming: tx.isIncoming,
-              spendsTxIds: [for (final i in tx.inputs) i.previousTxId],
-            );
-          },
-          walletTxs: (walletId, {bool sync = false}) async {
-            final txs = await walletTxs.getWalletTransactions(
-              walletId: walletId,
-              sync: sync,
-            );
-            return [
-              for (final tx in txs)
-                SwapWalletTx(
-                  txId: tx.txId,
-                  isIncoming: tx.isIncoming,
-                  spendsTxIds: [for (final i in tx.inputs) i.previousTxId],
-                ),
-            ];
-          },
-          fastestFee:
-              ({
-                required int txSize,
-                required bool isLiquid,
-                required bool isTestnet,
-              }) async {
-                final options = await fees.getNetworkFees(
-                  network: wallet.Network.fromEnvironment(
-                    isTestnet: isTestnet,
-                    isLiquid: isLiquid,
-                  ),
-                );
-                return options.toAbsolute(txSize).fastest.value.toInt();
-              },
-          wallets: glue.wallets,
-          swapMasterKeySource: glue.swapMasterKey,
-        );
-      },
+          server: initialServer,
+        ),
+      ),
+    );
+    locator.registerFactory<BoltzSwapRepository>(
+      () => locator<SwitchableSwapRepository>().current,
       instanceName:
           LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
     );
     locator.registerLazySingleton<SwapRepository>(
-      () => locator<BoltzSwapRepository>(
-        instanceName:
-            LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
-      ),
+      () => locator<SwitchableSwapRepository>(),
     );
     locator.registerLazySingleton<SwapWatcher>(
       () => SwapWatcher(repo: locator<SwapRepository>()),
+    );
+    locator.registerLazySingleton<SwapEngineSwitcher>(
+      () => SwapEngineSwitcher(
+        settingsRepository: locator<SettingsRepository>(),
+        swapRepository: locator<SwitchableSwapRepository>(),
+        swapWatcher: locator<SwapWatcher>(),
+        build: ({required isTestnet}) async => _buildEngine(
+          locator,
+          isTestnet: isTestnet,
+          server: await locator<SwapServerSettingRepository>().fetch(
+            isTestnet: isTestnet,
+          ),
+        ),
+      ),
+      dispose: (switcher) => switcher.dispose(),
     );
     locator.registerLazySingleton<AutoSwapSettingsRepository>(
       () => AutoSwapSettingsRepositoryImpl(
@@ -147,6 +113,75 @@ class SwapsLocator {
         locator<SettingsRepository>(),
       ),
     );
+  }
+
+  static SwapEngineParts _buildEngine(
+    GetIt locator, {
+    required bool isTestnet,
+    required SwapServer server,
+  }) {
+    final url = server.forEnvironment(isTestnet: isTestnet).host;
+    log.info('[Swaps] boltz datasource url="$url" isTestnet=$isTestnet');
+    final datasource = BoltzDatasource(
+      url: url,
+      boltzStore: locator<SwapStorage>(),
+    );
+    final glue = locator<SwapsAppGlue>();
+    final fees = locator<FeesRepository>();
+    final addresses = locator<WalletAddressRepository>();
+    final walletTxs = locator<WalletTransactionRepository>();
+    final repository = BoltzSwapRepository(
+      boltz: datasource,
+      isTestnet: isTestnet,
+      electrum: AppElectrumRunner(locator<ElectrumServersPort>()),
+      newAddressFor: (walletId) async =>
+          (await addresses.generateNewReceiveAddress(
+            walletId: walletId,
+          )).address,
+      walletTx: (txid, {required walletId}) async {
+        final tx = await walletTxs.getWalletTransaction(
+          txid,
+          walletId: walletId,
+        );
+        if (tx == null) return null;
+        return SwapWalletTx(
+          txId: tx.txId,
+          isIncoming: tx.isIncoming,
+          spendsTxIds: [for (final i in tx.inputs) i.previousTxId],
+        );
+      },
+      walletTxs: (walletId, {bool sync = false}) async {
+        final txs = await walletTxs.getWalletTransactions(
+          walletId: walletId,
+          sync: sync,
+        );
+        return [
+          for (final tx in txs)
+            SwapWalletTx(
+              txId: tx.txId,
+              isIncoming: tx.isIncoming,
+              spendsTxIds: [for (final i in tx.inputs) i.previousTxId],
+            ),
+        ];
+      },
+      fastestFee:
+          ({
+            required int txSize,
+            required bool isLiquid,
+            required bool isTestnet,
+          }) async {
+            final options = await fees.getNetworkFees(
+              network: wallet.Network.fromEnvironment(
+                isTestnet: isTestnet,
+                isLiquid: isLiquid,
+              ),
+            );
+            return options.toAbsolute(txSize).fastest.value.toInt();
+          },
+      wallets: glue.wallets,
+      swapMasterKeySource: glue.swapMasterKey,
+    );
+    return (repository: repository, datasource: datasource);
   }
 
   static void registerUsecases(GetIt locator) {

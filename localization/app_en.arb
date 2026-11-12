@@ -15867,5 +15867,29 @@
   "settingsSearchSwapRestoreKeywords": "swap restore|recover swap|rescue swap|refund|stuck swap|boltz",
   "@settingsSearchSwapRestoreKeywords": {
     "description": "Pipe-separated search keywords for the swap restore row"
+  },
+  "swapServerTitle": "Swap server",
+  "@swapServerTitle": {
+    "description": "Row and editor title for the Boltz server used by swaps"
+  },
+  "swapServerSubtitle": "The Boltz server used for trustless swaps on this network. Leave empty for the default.",
+  "@swapServerSubtitle": {
+    "description": "Explains the swap server editor"
+  },
+  "swapServerDefault": "Default",
+  "@swapServerDefault": {
+    "description": "Shown as the swap server value when the default Boltz server is used"
+  },
+  "swapServerReset": "Reset to default",
+  "@swapServerReset": {
+    "description": "Button that restores the default swap server"
+  },
+  "swapServerInvalid": "Enter a valid server address (e.g. api.boltz.exchange/v2)",
+  "@swapServerInvalid": {
+    "description": "Error under the swap server input"
+  },
+  "swapServerChangedNotice": "Swaps now use this server.",
+  "@swapServerChangedNotice": {
+    "description": "Shown after the swap server changed"
   }
 }
