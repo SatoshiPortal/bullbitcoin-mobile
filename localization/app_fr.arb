@@ -4962,5 +4962,6 @@
   "importMnemonicScanServerUnavailable": "Impossible de joindre un serveur pour vérifier ce portefeuille. Vous pouvez quand même l'importer.",
   "importMnemonicScanTimeout": "Le serveur a mis trop de temps à vérifier ce portefeuille. Vous pouvez quand même l'importer.",
   "importMnemonicScanInvalidMnemonic": "Ces mots n'ont pas pu être vérifiés pour ce type de portefeuille.",
-  "importMnemonicScanUnavailable": "Vérification du solde indisponible. Vous pouvez quand même importer ce portefeuille."
+  "importMnemonicScanUnavailable": "Vérification du solde indisponible. Vous pouvez quand même importer ce portefeuille.",
+  "coreScreensOutputsExceedInputs": "Les sorties dépassent les entrées : cette transaction est invalide et le réseau la rejettera."
 }
