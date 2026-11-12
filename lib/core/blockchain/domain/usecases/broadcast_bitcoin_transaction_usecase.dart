@@ -19,9 +19,11 @@ class BroadcastBitcoinTransactionUsecase {
   Future<String> execute(String transaction, {required bool isPsbt}) async {
     try {
       // A frozen coin must never be spent, whoever built or signed the
-      // transaction: the last point every Bitcoin broadcast shares checks the
-      // outpoints this transaction actually spends against the frozen store,
-      // read now. A failure to read either refuses the broadcast.
+      // transaction: before broadcasting for its callers (send, broadcast
+      // signed tx, pay, sell, transfer, RBF), check the outpoints this
+      // transaction actually spends against the frozen store, read now. A
+      // failure to read either refuses the broadcast. Payjoin broadcasts
+      // through its own port (AppPayjoinBlockchainAdapter), not through here.
       await _requireNoFrozenInput(transaction, isPsbt: isPsbt);
 
       final settings = await _settingsRepository.fetch();
