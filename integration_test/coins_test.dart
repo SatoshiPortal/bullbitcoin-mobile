@@ -7,7 +7,6 @@ import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:secrets/secrets.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
-import 'package:bb_mobile/core/wallet/domain/no_spendable_utxo_exception.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/frozen_wallet_utxo_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
@@ -283,7 +282,13 @@ Future<void> main({bool isInitialized = false}) async {
             selectedInputs: selection,
             networkFee: NetworkFee.relativeFromSatPerVbyte(2),
           ),
-          throwsA(isA<NoSpendableUtxoException>()),
+          completion(
+            isA<Err<Object?, WalletFailure>>().having(
+              (result) => result.failure,
+              'failure',
+              isA<WalletSelectedInputsUnavailableFailure>(),
+            ),
+          ),
         );
       });
 
@@ -297,7 +302,7 @@ Future<void> main({bool isInitialized = false}) async {
         // Freeze EVERY coin. A decode-free way to prove D7 exclusion is real:
         // if frozen coins were still selectable, a drain would build fine; with
         // all coins in the unspendable set, BDK has nothing to pick and the
-        // build must fail with NoSpendableUtxoException. (Asserting a specific
+        // build must fail with WalletNoSpendableInputsFailure. (Asserting a specific
         // outpoint's absence would need PSBT-input decoding; this is the same
         // guarantee without that machinery.)
         final allOutpoints = utxos
@@ -319,7 +324,7 @@ Future<void> main({bool isInitialized = false}) async {
         );
 
         // Drain to self: selection would otherwise sweep every coin. With all
-        // frozen, the prepare must throw NoSpendableUtxoException.
+        // frozen, the prepare must return WalletNoSpendableInputsFailure.
         await expectLater(
           prepareBitcoinSendUsecase.execute(
             walletId: wallet.id,
@@ -328,7 +333,13 @@ Future<void> main({bool isInitialized = false}) async {
             ],
             networkFee: NetworkFee.relativeFromSatPerVbyte(2),
           ),
-          throwsA(isA<NoSpendableUtxoException>()),
+          completion(
+            isA<Err<Object?, WalletFailure>>().having(
+              (result) => result.failure,
+              'failure',
+              isA<WalletNoSpendableInputsFailure>(),
+            ),
+          ),
         );
       });
     },
