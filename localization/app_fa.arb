@@ -11844,5 +11844,6 @@
   "sellPayoutBalance": "افزودن به موجودی حساب من",
   "sellPayoutSepaDescription": "برداشت‌ها به‌صورت ارسال‌شده توسط Leonod نمایش داده می‌شوند",
   "sellPayoutTitle": "انتخاب گیرنده",
-  "sellPayoutNewBadge": "جدید"
+  "sellPayoutNewBadge": "جدید",
+  "coreScreensOutputsExceedInputs": "خروجی‌ها از ورودی‌ها بیشترند: این تراکنش نامعتبر است و شبکه آن را رد خواهد کرد."
 }
