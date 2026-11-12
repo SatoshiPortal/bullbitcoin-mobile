@@ -1,8 +1,6 @@
+import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/liquid_wallet_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/consolidation_required_exception.dart';
-import 'package:bb_mobile/core/wallet/domain/insufficient_funds_exception.dart';
-import 'package:bb_mobile/core/wallet/domain/no_spendable_utxo_exception.dart';
 import 'package:bb_mobile/features/sell/domain/prepare_sell_liquid_payin_usecase.dart';
 import 'package:bb_mobile/features/sell/domain/sell_failure.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -37,7 +35,7 @@ void main() {
         amountSat: amountSat,
       );
 
-  void stubThrow(Object error) {
+  void stubFailure(WalletFailure failure) {
     when(
       () => repository.buildPset(
         walletId: any(named: 'walletId'),
@@ -46,7 +44,7 @@ void main() {
         feeRate: any(named: 'feeRate'),
         drain: any(named: 'drain'),
       ),
-    ).thenThrow(error);
+    ).thenAnswer((_) async => Err(failure));
   }
 
   test('returns the built pset', () async {
@@ -58,7 +56,7 @@ void main() {
         feeRate: any(named: 'feeRate'),
         drain: any(named: 'drain'),
       ),
-    ).thenAnswer((_) async => 'cHNldP8=');
+    ).thenAnswer((_) async => const Ok('cHNldP8='));
 
     final result = await run();
 
@@ -69,7 +67,7 @@ void main() {
   test('a shortfall is named, not reported as an unexpected error', () async {
     // Before sell owned this boundary the exception reached the bloc's generic
     // catch and the user was told "Oops". A shortfall is actionable.
-    stubThrow(InsufficientFundsException(_rawReason));
+    stubFailure(const WalletInsufficientFundsFailure(_rawReason));
 
     final result = await run();
 
@@ -86,7 +84,7 @@ void main() {
   });
 
   test('no spendable utxo reads as a shortfall too', () async {
-    stubThrow(NoSpendableUtxoException(_rawReason));
+    stubFailure(const WalletNoSpendableInputsFailure(_rawReason));
 
     final result = await run();
 
@@ -97,7 +95,7 @@ void main() {
   });
 
   test('consolidation required is not a shortfall', () async {
-    stubThrow(ConsolidationRequiredException(_rawReason));
+    stubFailure(const WalletConsolidationRequiredFailure(_rawReason));
 
     final result = await run();
 
@@ -111,14 +109,14 @@ void main() {
   });
 
   test('any other LWK error is sanitized into the catch-all', () async {
-    stubThrow(Exception(_rawReason));
+    stubFailure(const WalletTransactionBuildFailure(_rawReason));
 
     final result = await run();
 
     final failure = (result as Err<String, SellFailure>).failure;
     expect(failure, isA<SellUnexpectedFailure>());
-    // The reason survives for the log only.
-    expect(failure.logMessage, contains('LwkError'));
+    // Raw SDK diagnostics do not cross into the feature failure.
+    expect(failure.logMessage, isNull);
   });
 
   test('refuses to build without an amount and without drain', () async {
