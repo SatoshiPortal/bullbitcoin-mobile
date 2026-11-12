@@ -23,6 +23,7 @@ import 'package:bb_mobile/features/psbt_flow/psbt_router.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_cubit.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';
 import 'package:bb_mobile/features/send/presentation/send_failure_l10n.dart';
+import 'package:bb_mobile/features/send/presentation/send_wallet_view.dart';
 import 'package:bb_mobile/features/send/ui/screens/open_the_camera_widget.dart';
 import 'package:bb_mobile/core/widgets/fees/fee_options_modal.dart';
 import 'package:bb_mobile/core/widgets/fees/fee_selection_label.dart';
@@ -2324,12 +2325,18 @@ class ShowPsbtButton extends StatelessWidget {
     return BullButton.big(
       label: context.loc.sendShowPsbt,
       onPressed: () {
+        // The PSBT route and the broadcast after signing take the wallet
+        // itself, not the send screen's view of it.
+        final wallet = switch (context.read<SendCubit>().state.selectedWallet) {
+          SendWalletBitcoin(:final wallet) => wallet,
+          _ => null,
+        };
         context.pushNamed(
           PsbtFlowRoutes.show.name,
           extra: (
             psbt: unsignedPsbt,
             signerDevice: signerDevice,
-            wallet: context.read<SendCubit>().state.selectedWallet,
+            wallet: wallet,
           ),
         );
       },
