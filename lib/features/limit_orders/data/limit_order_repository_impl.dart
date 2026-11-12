@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/exchange/data/exchange_authentication.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/limit_orders/data/datasources/limit_orders_api_datasource.dart';
@@ -89,6 +90,14 @@ final class LimitOrderRepositoryImpl implements LimitOrderRepository {
     } on Error {
       rethrow;
     } catch (e, st) {
+      final refusal = exchangeAuthenticationException(e);
+      if (refusal != null) {
+        return Err(
+          refusal.isUnauthenticated
+              ? const LimitOrdersAccountUnavailableFailure()
+              : fallback('Exchange credential unavailable'),
+        );
+      }
       log.severe(message: 'Failed to $operation', error: e, trace: st);
       return Err(_mapFailure(e, fallback));
     }

@@ -84,7 +84,7 @@ class _Harness {
     when(
       () => swaps.getAllSwaps(walletId: any(named: 'walletId')),
     ).thenAnswer((_) async => []);
-    when(() => orders.getOrders()).thenAnswer((_) async => []);
+    when(() => orders.getOrders()).thenAnswer((_) async => const Ok([]));
     when(
       () => labelOrders.execute(orders: any(named: 'orders')),
     ).thenAnswer((_) async {});
