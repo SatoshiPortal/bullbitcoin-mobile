@@ -35,7 +35,7 @@ final class UnreadableSecret extends SecretEntry {
 ///
 /// Nothing here catches: the repository is the boundary that turns an exception into a [SecretFailure].
 ///
-/// A passphrase is honoured by Bitcoin derivation and signing and by the swap key. Liquid descriptors and signatures use words alone. RecoverBull encrypts only the words, but derives the vault key with the passphrase. See doc/design.md, § Passphrase.
+/// A passphrase is honoured by Bitcoin and Liquid derivation and signing and by the swap key. RecoverBull encrypts only the words, but derives the vault key with the passphrase. See doc/design.md, § Passphrase.
 final class Secret extends SecretEntry {
   /// Fingerprint and shape. A plain value: safe to log, to compare, to hold in a bloc state.
   final SecretInfo info;
