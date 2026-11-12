@@ -143,6 +143,19 @@ void main() {
     });
   });
 
+  test('userVersion syncs the directory first, and stops when it cannot', () {
+    final missing =
+        '${File(path).parent.path}/absent-${DateTime.now().microsecondsSinceEpoch}/x.sqlite';
+    expect(
+      err(EncryptedSqlite.userVersion(missing, keyOf(1))),
+      isA<SqliteIoFailure>().having(
+        (f) => f.logMessage,
+        'logMessage',
+        startsWith('filesystem error'),
+      ),
+    );
+  });
+
   group('inspect', () {
     void touch(String suffix, {int bytes = 1}) =>
         File('$path$suffix').writeAsBytesSync(List.filled(bytes, 7));
