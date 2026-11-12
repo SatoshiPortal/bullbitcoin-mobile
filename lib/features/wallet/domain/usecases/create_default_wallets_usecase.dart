@@ -12,13 +12,13 @@ import 'package:bb_mobile/core/utils/result.dart';
 ///
 /// Default wallets never carry a BIP39 passphrase. Supplied handles are checked before any wallet or storage operation. Several paths are only correct because the default secret is passphrase-less, and each would regress if one were allowed here:
 ///
-/// - **Liquid.** Liquid derives from the passphrase-less seed, as lwk's word-based signer always did, so the Liquid default would belong to the passphrase-less sibling while the Bitcoin default belonged to the passphrase secret: two defaults on two different seeds, and a passphrase that protects no Liquid funds.
+/// - **Liquid.** Liquid now derives from the full seed, passphrase included, but every existing Liquid wallet was created from a passphrase-less default secret, and released builds derived Liquid from the words alone: a passphrase default restored on an older build would find another Liquid wallet.
 /// - **RecoverBull.** The vault carries the words only, so restoring it gives the passphrase-less wallet — a different Bitcoin wallet — while the vault key is derived from the seed *with* the passphrase.
 /// - **Swap key.** Derived from the default Bitcoin wallet; the package sends the passphrase to boltz, released builds up to v6.13.4 did not, so a passphrase default would re-derive a different swap key after a restore and lose sight of earlier swaps.
 /// - **BIP85 children.** Derived from the default wallet's seed, passphrase included, so every child would change with it.
 /// - **Physical backup check.** `verify.mnemonic` compares the words only; the passphrase would go unverified.
 ///
-/// Supporting a passphrase on the default wallets therefore starts with a decision for each path above, Liquid first. Until then a passphrase secret is an imported, non-default wallet (`ImportWalletUsecase`, `isDefault: false`).
+/// Supporting a passphrase on the default wallets therefore starts with a decision for each path above. Until then a passphrase secret is an imported, non-default wallet (`ImportWalletUsecase`, `isDefault: false`).
 class CreateDefaultWalletsUsecase {
   final Future<void> Function()? _resumeProvisioning;
   final Secrets _secrets;
