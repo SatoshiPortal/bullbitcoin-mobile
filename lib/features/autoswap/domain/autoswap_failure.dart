@@ -108,3 +108,8 @@ final class AutoswapTargetBalanceFailure extends AutoswapFailure {
 final class AutoswapAmountOutOfBoundsFailure extends AutoswapFailure {
   const AutoswapAmountOutOfBoundsFailure();
 }
+
+/// Boltz could not be reached, so no swap was created and no funds moved.
+final class AutoswapBoltzUnavailableFailure extends AutoswapFailure {
+  const AutoswapBoltzUnavailableFailure([super.logMessage]);
+}

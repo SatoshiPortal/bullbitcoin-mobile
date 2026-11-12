@@ -4,7 +4,6 @@ import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:boltz_swaps/boltz_swaps.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/auto_swap.dart';
-import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/liquid_wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
@@ -12,9 +11,13 @@ import 'package:bb_mobile/core/wallet/domain/usecases/get_receive_address_usecas
 import 'package:bb_mobile/features/autoswap/domain/autoswap_failure.dart';
 import 'package:bb_mobile/features/autoswap/domain/autoswap_provider_port.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
+import 'package:bull_logger/bull_logger.dart';
 
 class BoltzAutoswapProvider implements AutoswapProviderPort {
-  final BoltzSwapRepository _swapRepository;
+  final GetSwapsUsecase _getSwaps;
+  final GetSwapLimitsAndFeesUsecase _getSwapLimitsAndFees;
+  final CreateChainSwapUsecase _createChainSwap;
+  final RecordSwapLockupUsecase _recordSwapLockup;
   final WalletRepository _walletRepository;
   final SettingsRepository _settingsRepository;
   final LiquidWalletRepository _liquidWalletRepository;
@@ -23,7 +26,10 @@ class BoltzAutoswapProvider implements AutoswapProviderPort {
   final LabelsFacade _labelsFacade;
 
   const BoltzAutoswapProvider(
-    this._swapRepository,
+    this._getSwaps,
+    this._getSwapLimitsAndFees,
+    this._createChainSwap,
+    this._recordSwapLockup,
     this._walletRepository,
     this._settingsRepository,
     this._liquidWalletRepository,
@@ -60,15 +66,15 @@ class BoltzAutoswapProvider implements AutoswapProviderPort {
         return const Err(AutoswapUnsupportedWalletFailure());
       }
 
-      final existing =
-          (await _swapRepository.getOngoingSwaps(walletId: liquidWallet.id))
-              .whereType<ChainSwap>()
-              .where(
-                (swap) =>
-                    swap.type == SwapType.liquidToBitcoin &&
-                    swap.sendWalletId == liquidWallet.id,
-              )
-              .firstOrNull;
+      final existing = (await _getSwaps.execute(walletId: liquidWallet.id))
+          .whereType<ChainSwap>()
+          .where(
+            (swap) =>
+                swap.type == SwapType.liquidToBitcoin &&
+                swap.sendWalletId == liquidWallet.id &&
+                !swap.status.isTerminal,
+          )
+          .firstOrNull;
       if (existing != null) {
         return existing.sendTxid == null
             ? const Err(AutoswapPendingFailure())
@@ -105,10 +111,15 @@ class BoltzAutoswapProvider implements AutoswapProviderPort {
         return const Err(AutoswapInsufficientBalanceFailure());
       }
 
-      final (limits, providerFees) = await _swapRepository.getSwapLimitsAndFees(
-        SwapType.liquidToBitcoin,
-      );
-      if (amountSat < limits.min || amountSat > limits.max) {
+      final SwapLimits limits;
+      final SwapFees providerFees;
+      switch (await _getSwapLimitsAndFees.execute(SwapType.liquidToBitcoin)) {
+        case Ok(:final value):
+          (limits, providerFees) = value;
+        case Err(:final failure):
+          return Err(_creationFailure(failure));
+      }
+      if (!limits.accepts(amountSat)) {
         return const Err(AutoswapAmountOutOfBoundsFailure());
       }
       final totalFeePercent =
@@ -123,17 +134,18 @@ class BoltzAutoswapProvider implements AutoswapProviderPort {
         );
       }
 
-      final swap = await _swapRepository.createLiquidToBitcoinSwap(
+      final ChainSwap swap;
+      switch (await _createChainSwap.execute(
         sendWalletId: liquidWallet.id,
         amountSat: amountSat,
-        btcElectrumUrl: environment.isTestnet
-            ? ApiServiceConstants.publicElectrumTestUrl
-            : ApiServiceConstants.bbElectrumUrl,
-        lbtcElectrumUrl: environment.isTestnet
-            ? ApiServiceConstants.publicliquidElectrumTestUrlPath
-            : ApiServiceConstants.bbLiquidElectrumUrlPath,
+        fromLiquid: true,
         receiveWalletId: recipientWallet.id,
-      );
+      )) {
+        case Ok(:final value):
+          swap = value;
+        case Err(:final failure):
+          return Err(_creationFailure(failure));
+      }
       final preparation = await _liquidWalletRepository.buildPset(
         walletId: liquidWallet.id,
         address: swap.paymentAddress,
@@ -180,11 +192,17 @@ class BoltzAutoswapProvider implements AutoswapProviderPort {
         signed,
         isTestnet: environment.isTestnet,
       );
-      await _swapRepository.updatePaidSendSwap(
+      final recorded = await _recordSwapLockup.execute(
         swapId: swap.id,
         txid: txid,
-        absoluteFees: actualFeeSat,
+        lockupFeeSat: actualFeeSat,
       );
+      if (recorded case Err(:final failure)) {
+        log.warning(
+          '[Autoswap] lockup broadcast but not recorded '
+          '(${failure.runtimeType}); the swap status will backfill it',
+        );
+      }
       await _labelsFacade.store(
         NewLabel.tx(
           transactionId: txid,
@@ -197,6 +215,14 @@ class BoltzAutoswapProvider implements AutoswapProviderPort {
       return Err(AutoswapExecutionFailure(error.runtimeType.toString()));
     }
   }
+
+  AutoswapFailure _creationFailure(SwapsFailure failure) => switch (failure) {
+    SwapsBoltzUnavailableFailure() => AutoswapBoltzUnavailableFailure(
+      failure.logMessage,
+    ),
+    SwapsAmountOutOfLimitsFailure() => const AutoswapAmountOutOfBoundsFailure(),
+    _ => AutoswapProviderFailure(failure.runtimeType.toString()),
+  };
 
   Future<Result<int, AutoswapFailure>> _estimateNetworkFee({
     required String walletId,
