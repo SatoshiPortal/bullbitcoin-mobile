@@ -1,7 +1,8 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:flutter/material.dart';
-import 'package:bull_ui/bull_ui.dart' show BullButton, BullDialog, Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show BullButton, BullDialog, BullShapesX, Gap;
 
 class DeleteCustomServerDialog {
   static Future<bool?> show(
@@ -12,6 +13,9 @@ class DeleteCustomServerDialog {
     return BullDialog.show<bool>(
       context: context,
       builder: (dialogContext) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(dialogContext.bullShapes.sheet),
+        ),
         backgroundColor: context.appColors.surfaceContainer,
         title: Text(context.loc.electrumDeleteServerTitle),
         content: Column(

@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullButton, BullInputText, BullText, BullTopBar, Gap;
+    show BullButton, BullInputText, BullShapesX, BullText, BullTopBar, Gap;
 import 'package:go_router/go_router.dart';
 
 class RequestIdentifierScreen extends StatelessWidget {
@@ -58,9 +58,9 @@ class RequestIdentifierScreen extends StatelessWidget {
                   child: Container(
                     decoration: BoxDecoration(
                       color: context.appColors.onPrimary,
-                      borderRadius: const BorderRadius.only(
-                        topLeft: Radius.circular(12),
-                        topRight: Radius.circular(12),
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(context.bullShapes.sheet),
+                        topRight: Radius.circular(context.bullShapes.sheet),
                       ),
                     ),
                     padding: const EdgeInsets.symmetric(horizontal: 16),

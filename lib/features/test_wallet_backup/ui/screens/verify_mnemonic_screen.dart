@@ -9,7 +9,13 @@ import 'package:bb_mobile/features/test_wallet_backup/presentation/test_wallet_b
 import 'package:bb_mobile/features/test_wallet_backup/ui/app_bar_widget.dart';
 import 'package:bb_mobile/features/test_wallet_backup/ui/screens/backup_test_success.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullScreenPrivacyGate, BullButton, BullSnackBar, BullText, Gap;
+    show
+        BullButton,
+        BullScreenPrivacyGate,
+        BullShapesX,
+        BullSnackBar,
+        BullText,
+        Gap;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:screen_privacy/screen_privacy.dart';
@@ -322,7 +328,7 @@ class _Tile extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 4),
         decoration: BoxDecoration(
           color: context.appColors.surface,
-          borderRadius: BorderRadius.circular(2.76),
+          borderRadius: BorderRadius.circular(context.bullShapes.card),
           border: Border.all(color: context.appColors.border, width: 0.69),
           boxShadow: [
             BoxShadow(
@@ -355,7 +361,7 @@ class _Tile extends StatelessWidget {
                         : context.appColors.textMuted,
                     width: 0.82,
                   ),
-                  borderRadius: BorderRadius.circular(2.46),
+                  borderRadius: BorderRadius.circular(context.bullShapes.badge),
                 ),
                 child: Center(
                   child: BullText(

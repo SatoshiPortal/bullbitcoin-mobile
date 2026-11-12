@@ -2,7 +2,7 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/text/currency_text.dart';
 import 'package:flutter/material.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullFadingLinearProgress, BullText, Gap;
+    show BullFadingLinearProgress, BullShapesX, BullText, Gap;
 
 class WalletCard extends StatelessWidget {
   const WalletCard({
@@ -30,18 +30,18 @@ class WalletCard extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 4.0),
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(2),
+        borderRadius: BorderRadius.circular(context.bullShapes.card),
         child: Material(
           elevation: 2,
           shadowColor: context.appColors.onSurface.withValues(alpha: 0.5),
           color: context.appColors.background,
-          borderRadius: BorderRadius.circular(2),
+          borderRadius: BorderRadius.circular(context.bullShapes.card),
           child: Container(
             height: 90,
             decoration: BoxDecoration(
               color: context.appColors.background,
               border: Border(left: BorderSide(color: tagColor, width: 4)),
-              borderRadius: BorderRadius.circular(2),
+              borderRadius: BorderRadius.circular(context.bullShapes.card),
             ),
             child: Stack(
               children: [

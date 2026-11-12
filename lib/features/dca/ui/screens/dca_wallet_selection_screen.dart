@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullButton, BullScrollableColumn, Gap;
+    show BullButton, BullScrollableColumn, BullShapesX, Gap;
 
 class DcaWalletSelectionScreen extends StatefulWidget {
   const DcaWalletSelectionScreen({super.key});
@@ -95,19 +95,25 @@ class _DcaWalletSelectionScreenState extends State<DcaWalletSelectionScreen> {
                           : context.appColors.onPrimary,
                       filled: true,
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8.0),
+                        borderRadius: BorderRadius.circular(
+                          context.bullShapes.input,
+                        ),
                         borderSide: BorderSide(
                           color: context.appColors.secondaryFixedDim,
                         ),
                       ),
                       enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8.0),
+                        borderRadius: BorderRadius.circular(
+                          context.bullShapes.input,
+                        ),
                         borderSide: BorderSide(
                           color: context.appColors.secondaryFixedDim,
                         ),
                       ),
                       disabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8.0),
+                        borderRadius: BorderRadius.circular(
+                          context.bullShapes.input,
+                        ),
                         borderSide: BorderSide(
                           color: context.appColors.secondaryFixedDim.withValues(
                             alpha: 0.5,
@@ -169,7 +175,9 @@ class _DcaWalletSelectionScreenState extends State<DcaWalletSelectionScreen> {
                         alpha: 0.04,
                       ),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8.0),
+                        borderRadius: BorderRadius.circular(
+                          context.bullShapes.card,
+                        ),
                       ),
                     ),
                 ],

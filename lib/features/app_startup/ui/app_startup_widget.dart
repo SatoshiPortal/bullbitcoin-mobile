@@ -13,7 +13,7 @@ import 'package:bb_mobile/features/onboarding/ui/screens/onboarding_splash.dart'
 import 'package:bb_mobile/router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show BullSupportButton, Gap;
+import 'package:bull_ui/bull_ui.dart' show BullShapesX, BullSupportButton, Gap;
 
 class AppStartupWidget extends StatefulWidget {
   const AppStartupWidget({super.key, required this.app});
@@ -119,7 +119,7 @@ class _AppStartupFailureScreenState extends State<AppStartupFailureScreen> {
                   vertical: 8.0,
                 ),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(2.0),
+                  borderRadius: BorderRadius.circular(context.bullShapes.card),
                 ),
                 tileColor: context.appColors.error.withValues(alpha: 0.1),
                 title: Row(

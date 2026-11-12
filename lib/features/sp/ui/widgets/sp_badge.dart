@@ -1,7 +1,7 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_address_kind.dart';
-import 'package:bull_ui/bull_ui.dart' show BullBadge, BullRadius;
+import 'package:bull_ui/bull_ui.dart' show BullBadge;
 import 'package:flutter/material.dart';
 
 /// The outlined pill used across the SP screens: a [BullBadge] tinted by one
@@ -18,7 +18,6 @@ class SpBadge extends StatelessWidget {
     label: label,
     background: color.withValues(alpha: 0.15),
     foreground: color,
-    radius: BullRadius.xs,
     border: Border.all(color: color),
   );
 }

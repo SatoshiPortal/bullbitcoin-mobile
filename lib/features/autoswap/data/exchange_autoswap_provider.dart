@@ -103,11 +103,18 @@ class ExchangeAutoswapProvider implements AutoswapProviderPort {
       final fallback = await _getReceiveAddress.execute(
         walletId: liquidWallet.id,
       );
-      final networkFeeSat = await _estimateNetworkFee(
+      final feeResult = await _estimateNetworkFee(
         wallet: liquidWallet,
         address: fallback.address,
         targetBalanceSat: settings.balanceThresholdSats,
       );
+      final int networkFeeSat;
+      switch (feeResult) {
+        case Ok(:final value):
+          networkFeeSat = value;
+        case Err(:final failure):
+          return Err(failure);
+      }
       final amountSat =
           balanceSat - settings.balanceThresholdSats - networkFeeSat;
       if (amountSat <= 0) {
@@ -223,12 +230,19 @@ class ExchangeAutoswapProvider implements AutoswapProviderPort {
   ) async {
     final order = record.order;
     if (order == null) return const Err(AutoswapPendingFailure());
-    final pset = await _liquidWalletRepository.buildPset(
+    final preparation = await _liquidWalletRepository.buildPset(
       walletId: wallet.id,
       address: order.payinAddress,
       amountSat: order.payinAmountSat.toInt(),
       feeRate: const RelativeFee(25),
     );
+    final String pset;
+    switch (preparation) {
+      case Ok(:final value):
+        pset = value;
+      case Err(:final failure):
+        return Err(AutoswapExecutionFailure(failure.runtimeType.toString()));
+    }
     final actualAmount = await _liquidWalletRepository.getAmountSentToAddress(
       pset: pset,
       address: order.payinAddress,
@@ -310,20 +324,27 @@ class ExchangeAutoswapProvider implements AutoswapProviderPort {
     return Ok(record.localId);
   }
 
-  Future<int> _estimateNetworkFee({
+  Future<Result<int, AutoswapFailure>> _estimateNetworkFee({
     required Wallet wallet,
     required String address,
     required int targetBalanceSat,
   }) async {
     final provisionalAmount = wallet.balanceSat.toInt() - targetBalanceSat;
-    final pset = await _liquidWalletRepository.buildPset(
+    final preparation = await _liquidWalletRepository.buildPset(
       walletId: wallet.id,
       address: address,
       amountSat: provisionalAmount,
       feeRate: const RelativeFee(25),
     );
+    final String pset;
+    switch (preparation) {
+      case Ok(:final value):
+        pset = value;
+      case Err(:final failure):
+        return Err(AutoswapExecutionFailure(failure.runtimeType.toString()));
+    }
     final (_, feeSat) = await _liquidWalletRepository
         .getPsetSizeAndAbsoluteFees(pset: pset);
-    return feeSat;
+    return Ok(feeSat);
   }
 }
