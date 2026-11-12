@@ -4,10 +4,10 @@ import 'package:path/path.dart' as p;
 
 /// What the main file of a database family is, read from disk without opening it.
 enum SqliteFileState {
-  /// No main file, and no other member holding data.
+  /// No main file, and no other member.
   absent,
 
-  /// A zero-byte main file and no other member holding data: what SQLite leaves when a first open is interrupted before the first page.
+  /// A zero-byte main file and no other member: what SQLite leaves when a first open is interrupted before the first page.
   empty,
 
   /// The SQLite header in clear.
@@ -16,7 +16,7 @@ enum SqliteFileState {
   /// At least one page and another header. Encrypted, as far as a header can tell; only opening with the key proves it.
   possiblyEncrypted,
 
-  /// A state with no safe automatic decision: a main file of 1 to 15 bytes, an empty or missing main file next to a member that holds data, or a retirement left half done.
+  /// A state with no safe automatic decision: a main file of 1 to 15 bytes, an empty or missing main file next to any other member, or a retirement left half done.
   inconsistent,
 }
 
@@ -58,24 +58,23 @@ final class SqliteFamily {
   /// Reads lengths and the first 16 bytes. Opens nothing with SQLite and deletes nothing.
   SqliteFileState inspect() {
     if (retirement.existsSync()) return SqliteFileState.inconsistent;
-    // `-shm` is an index SQLite rebuilds; an empty `-wal` or journal holds nothing.
-    final othersHoldData = [
+    // Fail closed: next to a missing or empty main file, any other member — even an empty one, even `-shm` — is a state this package did not leave, and the owner decides with the user.
+    final othersExist = [
       wal,
+      shm,
       journal,
       candidate,
       candidateJournal,
-    ].any(_holdsData);
+    ].any((file) => file.existsSync());
 
     if (!database.existsSync()) {
-      return othersHoldData
+      return othersExist
           ? SqliteFileState.inconsistent
           : SqliteFileState.absent;
     }
     final length = database.lengthSync();
     if (length == 0) {
-      return othersHoldData
-          ? SqliteFileState.inconsistent
-          : SqliteFileState.empty;
+      return othersExist ? SqliteFileState.inconsistent : SqliteFileState.empty;
     }
     if (length < _headerLength) return SqliteFileState.inconsistent;
     return _readHeader() == _header
@@ -91,7 +90,4 @@ final class SqliteFamily {
       file.closeSync();
     }
   }
-
-  static bool _holdsData(File file) =>
-      file.existsSync() && file.lengthSync() > 0;
 }
