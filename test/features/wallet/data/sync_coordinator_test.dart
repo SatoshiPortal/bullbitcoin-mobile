@@ -1223,6 +1223,56 @@ void main() {
       },
     );
 
+    test(
+      'a pull during an in-flight routine pass queues discovery behind it',
+      () async {
+        await bitcoin();
+        clock = clock.add(const Duration(seconds: 3));
+        final gate = Completer<void>();
+        when(
+          () => syncWallet.execute(
+            wallet,
+            discover: false,
+            reason: any(named: 'reason'),
+          ),
+        ).thenAnswer((invocation) async {
+          calls.add((false, invocation.namedArguments[#reason] as SyncReason));
+          await gate.future;
+        });
+        final routine = bitcoin();
+        await pumpEventQueue();
+        var pulled = false;
+        final pull = bitcoin(
+          trigger: SyncTrigger.user,
+        ).then((_) => pulled = true);
+        await pumpEventQueue();
+        expect(pulled, isFalse);
+        gate.complete();
+        await Future.wait([routine, pull]);
+        expect(calls, [
+          (true, SyncReason.auto),
+          (false, SyncReason.auto),
+          (true, SyncReason.pull),
+        ]);
+      },
+    );
+
+    test('a throttled automatic call does not open the window', () async {
+      await bitcoin();
+      clock = clock.add(const Duration(minutes: 9, seconds: 59));
+      await bitcoin();
+      // Due for discovery but within the 2 s throttle of the last success.
+      clock = clock.add(const Duration(seconds: 1, milliseconds: 500));
+      await bitcoin();
+      clock = clock.add(const Duration(seconds: 3));
+      await bitcoin();
+      expect(calls, [
+        (true, SyncReason.auto),
+        (false, SyncReason.auto),
+        (true, SyncReason.auto),
+      ]);
+    });
+
     test('a pull always discovers', () async {
       await bitcoin(trigger: SyncTrigger.user);
       await bitcoin(trigger: SyncTrigger.user);

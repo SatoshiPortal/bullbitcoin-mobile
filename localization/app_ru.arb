@@ -4866,5 +4866,6 @@
   "broadcastSignedTxErrorAlreadyInChain": "Эта транзакция уже в блокчейне. Транслировать больше нечего.",
   "broadcastSignedTxErrorRejected": "Сеть отклонила эту транзакцию. Возможно, она подписана не полностью, недействительна или конфликтует с другим платежом.",
   "broadcastSignedTxErrorOutcomeUnknown": "Не удалось подтвердить, что транзакция была транслирована. Проверьте её в обозревателе блоков, прежде чем повторить попытку.",
-  "broadcastSignedTxErrorNetworkNotEnabled": "Трансляция в этой сети не включена в текущих настройках."
+  "broadcastSignedTxErrorNetworkNotEnabled": "Трансляция в этой сети не включена в текущих настройках.",
+  "coreScreensOutputsExceedInputs": "Выходы превышают входы: эта транзакция недействительна, и сеть её отклонит."
 }

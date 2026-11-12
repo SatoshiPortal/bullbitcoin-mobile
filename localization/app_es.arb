@@ -4853,5 +4853,6 @@
   "broadcastSignedTxErrorAlreadyInChain": "Esta transacción ya está en la blockchain. No queda nada por transmitir.",
   "broadcastSignedTxErrorRejected": "La red rechazó esta transacción. Puede que no esté completamente firmada, que no sea válida o que entre en conflicto con otro pago.",
   "broadcastSignedTxErrorOutcomeUnknown": "No pudimos confirmar que tu transacción se haya transmitido. Revisa un explorador de bloques antes de volver a intentarlo.",
-  "broadcastSignedTxErrorNetworkNotEnabled": "La transmisión en esta red no está habilitada en la configuración actual."
+  "broadcastSignedTxErrorNetworkNotEnabled": "La transmisión en esta red no está habilitada en la configuración actual.",
+  "coreScreensOutputsExceedInputs": "Las salidas superan las entradas: esta transacción no es válida y la red la rechazará."
 }

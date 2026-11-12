@@ -3776,5 +3776,6 @@
   "broadcastSignedTxErrorAlreadyInChain": "ეს ტრანზაქცია უკვე ბლოკჩეინშია. გასავრცელებელი აღარაფერი დარჩა.",
   "broadcastSignedTxErrorRejected": "ქსელმა ეს ტრანზაქცია უარყო. შესაძლოა ის ბოლომდე არ არის ხელმოწერილი, არასწორია ან სხვა გადახდასთან კონფლიქტშია.",
   "broadcastSignedTxErrorOutcomeUnknown": "ვერ დავადასტურეთ, რომ თქვენი ტრანზაქცია გავრცელდა. ხელახლა ცდამდე შეამოწმეთ ბლოკების მიმოხილველში.",
-  "broadcastSignedTxErrorNetworkNotEnabled": "ამ ქსელში გავრცელება მიმდინარე პარამეტრებში ჩართული არ არის."
+  "broadcastSignedTxErrorNetworkNotEnabled": "ამ ქსელში გავრცელება მიმდინარე პარამეტრებში ჩართული არ არის.",
+  "coreScreensOutputsExceedInputs": "გამავალი თანხა აღემატება შემავალს: ეს ტრანზაქცია არასწორია და ქსელი მას უარყოფს."
 }
