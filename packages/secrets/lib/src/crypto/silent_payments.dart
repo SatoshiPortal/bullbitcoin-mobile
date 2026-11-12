@@ -1,3 +1,4 @@
+import 'package:bip39_mnemonic/bip39_mnemonic.dart' show Language;
 import 'package:bull_sdk/bwk.dart';
 import 'package:secrets/src/crypto/exceptions.dart';
 import 'package:secrets/src/domain/domain.dart';
@@ -21,6 +22,11 @@ abstract final class SilentPayments {
     required int matchConcurrencyFactor,
     required SpHeaderCheckpoint? headerCheckpoint,
   }) async {
+    if (secret.language != Language.english) {
+      throw const LanguageUnsupported(
+        'Silent Payments requires an English mnemonic',
+      );
+    }
     // bwk derives from the words alone, so a passphrase would silently open
     // the passphrase-less sibling's wallet.
     if (secret.hasPassphrase) {

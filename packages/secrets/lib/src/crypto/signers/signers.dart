@@ -22,9 +22,8 @@
 ///
 ///  1. `<chain>_signer.dart` in this directory, exported from this file
 ///     with an explicit `show`.
-///  2. Take [Mnemonic]; turn it into a sentence with
-///     [mnemonicSentence] and nothing else, so the seed-only refusal is
-///     the same everywhere.
+///  2. Derive from seed bytes or a derived key. A legacy word-only adapter
+///     must reject unsupported languages before calling its library.
 ///  3. A `static const` on [Signer], and the operation itself on
 ///     `Secret` — flat, beside the others. If the library needs a host
 ///     resource, it is a parameter of the operation, never a field.
@@ -38,23 +37,6 @@ import 'package:secrets/src/domain/domain.dart';
 
 export 'bitcoin_signer.dart' show BitcoinSigner;
 export 'liquid_signer.dart' show LiquidSigner;
-
-/// The BIP39 sentence every signer signs from.
-///
-/// One place, so the rule cannot drift between chains: the libraries
-/// take the words as one space-joined string, and a seed-only secret —
-/// `Seed`, which exists only to read entries that predate the
-/// current format — has no words to give. Callers reach this only with
-/// [Mnemonic]; the switch is here for the day a signer is handed
-/// the base type by mistake.
-String mnemonicSentence(SecretMaterial secret) => switch (secret) {
-  Mnemonic(:final words) => words.join(' '),
-  Seed() => throw ArgumentError.value(
-    secret.info.kind,
-    'secret',
-    'signing derives from BIP39 words',
-  ),
-};
 
 /// The signers, by chain. Not instantiable; a namespace.
 abstract final class Signer {

@@ -9,6 +9,26 @@ import 'package:flutter_test/flutter_test.dart';
 /// Auditing this package should not mean reading it. These tests read `lib/` and check what a reviewer would otherwise have to establish by hand; the frozen on-disk format is pinned by `secret_model_golden_test.dart`.
 ///
 /// They are tripwires, not proofs: they read source text, so a sufficiently creative violation slips past. What they catch is the ordinary way these break — someone adding an operation, a failure or an export without noticing what it costs.
+List<ImportDirective> _forbiddenDomainBip39Imports(String source) {
+  final forbidden = <ImportDirective>[];
+  for (final directive in parseString(
+    content: source,
+  ).unit.directives.whereType<ImportDirective>()) {
+    final uri = directive.uri.stringValue;
+    if (uri == null || !uri.startsWith('package:bip39_mnemonic/')) continue;
+    final shown = directive.combinators.singleOrNull;
+    final languageOnly =
+        uri == 'package:bip39_mnemonic/bip39_mnemonic.dart' &&
+        directive.prefix == null &&
+        directive.configurations.isEmpty &&
+        shown is ShowCombinator &&
+        shown.shownNames.length == 1 &&
+        shown.shownNames.single.name == 'Language';
+    if (!languageOnly) forbidden.add(directive);
+  }
+  return forbidden;
+}
+
 void main() {
   final lib = Directory('lib');
   final sources = lib
@@ -129,6 +149,27 @@ void main() {
     expect(offenders, isEmpty);
   });
 
+  test(
+    'each bip39 import is checked even beside an allowed Language import',
+    () {
+      const mixed = """
+import 'package:bip39_mnemonic/bip39_mnemonic.dart' show Language;
+import 'package:bip39_mnemonic/bip39_mnemonic.dart';
+import 'package:bip39_mnemonic/bip39_mnemonic.dart' show Language, Mnemonic;
+import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
+""";
+      expect(_forbiddenDomainBip39Imports(mixed), hasLength(3));
+      expect(
+        _forbiddenDomainBip39Imports("""
+import 'package:bip39_mnemonic/bip39_mnemonic.dart'
+    show
+        Language;
+"""),
+        isEmpty,
+      );
+    },
+  );
+
   test('foreign dependencies are confined to the module that owns them', () {
     // Where the FFI is, is the first thing a reviewer of a custody
     // package asks. `crypto/` owns bdk, lwk, boltz and recoverbull;
@@ -145,11 +186,27 @@ void main() {
       // `crypto/` and `domain/` stay plain Dart.
       'flutter': {'widgets', 'data', 'testing'},
     };
-    const domainMayImport = {'primitives', 'meta', 'convert', 'secrets'};
+    // The language enum is the same pure-Dart vocabulary used by preview and BIP85.
+    const domainMayImport = {
+      'primitives',
+      'meta',
+      'convert',
+      'secrets',
+      'bip39_mnemonic',
+    };
 
     final offenders = <String>[];
     for (final file in sources) {
       final mine = moduleOf(file);
+      if (mine == 'domain') {
+        for (final directive in _forbiddenDomainBip39Imports(
+          file.readAsStringSync(),
+        )) {
+          offenders.add(
+            '${file.path}: domain may import only the Language enum: ${directive.toSource()}',
+          );
+        }
+      }
       final imports = RegExp(
         r"import 'package:([a-z_0-9]+)",
       ).allMatches(code(file.readAsStringSync())).map((m) => m.group(1)!);
@@ -240,6 +297,8 @@ void main() {
       'MnemonicView', 'MnemonicChallenge', 'MnemonicTile', 'SecretWidgets',
       // what generate takes: a closed set, never an int
       'MnemonicLength',
+      // the BIP39 wordlist a mnemonic is written in, so consumers need not import bip39
+      'Language',
       // what operations hand back
       'Descriptors',
       'SwapMasterKey',
@@ -257,7 +316,7 @@ void main() {
       'DatabaseKeyCorruptFailure', 'MnemonicRequiredFailure',
       'InvalidMnemonicFailure', 'InvalidVaultFailure',
       'UnsupportedNetworkFailure', 'FingerprintMismatchFailure',
-      'PassphraseUnsupportedFailure',
+      'PassphraseUnsupportedFailure', 'LanguageUnsupportedFailure',
       'UseSecretFailure',
     };
 
