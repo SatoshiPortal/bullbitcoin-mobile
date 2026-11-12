@@ -245,6 +245,9 @@ void main() {
 
   group('SIGKILL', () {
     /// The child's stdout, after checking that it was SIGKILLed — at [target] when one is given — rather than failing to start or finishing.
+    /// The last step the child reported before it died, for timed kills.
+    String? lastStep;
+
     Future<bool> runAndDie(
       String target, {
       int seed = 10,
@@ -286,6 +289,8 @@ void main() {
       }
       expect(lines, isNot(contains('completed')), reason: errors);
       expect(exitCode, -ProcessSignal.sigkill.signalNumber, reason: errors);
+      final steps = lines.where((l) => l.startsWith('at:'));
+      lastStep = steps.isEmpty ? null : steps.last.substring(3);
       if (killAfterStart == null) {
         expect(lines, contains('reached:$target'), reason: errors);
       }
@@ -342,17 +347,23 @@ void main() {
         rows += 60000;
 
         var killed = 0;
-        for (final ms in [1, 5, 15, 40, 100, 250]) {
+        var insideCopyOrRekey = 0;
+        for (final ms in [1, 5, 15, 40, 100, 200, 400, 800]) {
           if (SqliteFamily(path).inspect() != SqliteFileState.plaintext) break;
           if (await runAndDie(
             'never',
             killAfterStart: Duration(milliseconds: ms),
           )) {
             killed++;
+            // Killed after the source settled and before the copy was verified: inside VACUUM INTO or PRAGMA rekey.
+            if (const {'staleCandidateRemoved', 'copied'}.contains(lastStep)) {
+              insideCopyOrRekey++;
+            }
           }
         }
         // At least one kill landed inside the encryption, not after it.
         expect(killed, greaterThan(0));
+        expect(insideCopyOrRekey, greaterThan(0));
         await relaunch(keyOf(10));
         expectIntact(keyOf(10));
         expectNoLeftovers();

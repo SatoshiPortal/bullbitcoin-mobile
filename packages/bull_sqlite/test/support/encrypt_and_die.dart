@@ -1,6 +1,6 @@
 // Runs the encryption in a process of its own and SIGKILLs that process when it reaches a given step, as the OS kills an app: no unwinding, no `finally`.
 //
-// Prints `started` just before the encryption begins and `reached:<step>` just before killing itself, so the parent can prove which point was hit.
+// Prints `started` just before the encryption begins, `at:<step>` at every step, and `reached:<step>` just before killing itself, so the parent can prove which point was hit.
 //
 // Usage: dart run test/support/encrypt_and_die.dart <path> <keySeed> <step|never>
 import 'dart:io';
@@ -19,6 +19,8 @@ void main(List<String> args) {
     SqliteFamily(path),
     key,
     onStep: (step) {
+      // Every step reached, so a timed kill can tell where it landed.
+      stdout.writeln('at:${step.name}');
       if (step.name != target) return;
       stdout.writeln('reached:${step.name}');
       Process.killPid(pid, ProcessSignal.sigkill);
