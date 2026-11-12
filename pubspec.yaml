@@ -228,3 +228,7 @@ flutter_launcher_icons:
   min_sdk_android: 21 # android min sdk min:16, default 21
   adaptive_icon_background: "assets/logos/icon-black-red.png"
   adaptive_icon_foreground: "assets/logos/icon-black-red.png"
+
+# Preserve reads of historical iOS keychain accessibility and access-control items.
+dependency_overrides:
+  flutter_secure_storage_darwin: 0.4.3
