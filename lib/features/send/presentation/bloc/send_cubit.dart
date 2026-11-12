@@ -2479,6 +2479,16 @@ class SendCubit extends Cubit<SendState>
         }
       }
       if (isStale()) return false;
+      final wallet = state.selectedWallet;
+      if (wallet == null) {
+        emit(
+          state.copyWith(
+            failure: const SendTransactionBuildFailure('No wallet selected'),
+            buildingTransaction: false,
+          ),
+        );
+        return false;
+      }
       clearFailure();
       // Clear the previous build's derived confirmation values before
       // loadUtxos so the UI never pairs stale outputs or an absolute fee with
@@ -2508,16 +2518,6 @@ class SendCubit extends Cubit<SendState>
         if (generation == _transactionGeneration) {
           emit(state.copyWith(buildingTransaction: false));
         }
-        return false;
-      }
-      final wallet = state.selectedWallet;
-      if (wallet == null) {
-        emit(
-          state.copyWith(
-            failure: const SendTransactionBuildFailure('No wallet selected'),
-            buildingTransaction: false,
-          ),
-        );
         return false;
       }
       final selectedFee = state.selectedFee;
