@@ -48,7 +48,8 @@ public class LegacyKeystoreReaderTest {
 
     @Before
     public void setup() throws Exception {
-        directory = Files.createTempDirectory("legacy-keystore-test");
+        directory = Files.createTempDirectory("legacy-keystore-test").resolve("shared_prefs");
+        Files.createDirectory(directory);
         AeadConfig.register();
         DeterministicAeadConfig.register();
         master = KeysetHandle.generateNew(AeadKeyTemplates.AES256_GCM)
@@ -73,13 +74,28 @@ public class LegacyKeystoreReaderTest {
 
     @After
     public void cleanup() throws Exception {
-        try (var paths = Files.walk(directory)) {
+        try (var paths = Files.walk(directory.getParent())) {
             for (Path path : paths.sorted(Comparator.reverseOrder()).toList()) Files.delete(path);
         }
     }
 
     private LegacyKeystoreReader reader() {
         return new LegacyKeystoreReader(directory, keys);
+    }
+
+    @Test
+    public void emptyPreferenceFileIsNotAFreshInstall() throws Exception {
+        write(LegacyPreferencesSnapshot.DATA, Map.of());
+        assertEquals("unknown", reader().inspect().get("format"));
+    }
+
+    @Test
+    public void missingStoreWithPriorDatabaseIsNotAFreshInstall() throws Exception {
+        Path documents = directory.getParent().resolve("app_flutter");
+        Files.createDirectory(documents);
+        Files.write(documents.resolve("bullbitcoin_sqlite.sqlite"), new byte[] {1});
+        assertEquals(true, reader().inspect().get("priorStoreHint"));
+        assertEquals("empty", reader().inspect().get("format"));
     }
 
     @Test
@@ -185,8 +201,8 @@ public class LegacyKeystoreReaderTest {
         write(LegacyPreferencesSnapshot.NAMED_CONFIG, Map.of(
                 LegacyKeystoreReader.KEY_ALGORITHM, "RSA_ECB_OAEPwithSHA_256andMGF1Padding",
                 LegacyKeystoreReader.STORAGE_ALGORITHM, "AES_GCM_NoPadding"));
-        assertEquals("unknown", reader().inspect().get("format"));
-        fails("unsupported", () -> reader().read());
+        assertEquals("cbc", reader().inspect().get("format"));
+        assertEquals(Map.of("pin_code", "synthetic"), reader().read().get("entries"));
     }
 
     @Test
@@ -254,6 +270,26 @@ public class LegacyKeystoreReaderTest {
         Files.write(file(LegacyPreferencesSnapshot.DATA), cbcData);
         fails("unreadable", () -> reader().inspect());
         assertArrayEquals(cbcData, Files.readAllBytes(file(LegacyPreferencesSnapshot.DATA)));
+    }
+
+    @Test
+    public void developProbeMarkersStillPermitReadOnlyCbcBackup() throws Exception {
+        Map<String, String> expected = Map.of("pin_code", "synthetic");
+        writeCbc(expected);
+        byte[] data = Files.readAllBytes(file(LegacyPreferencesSnapshot.DATA));
+        Map<String, String> legacyKeys = strings(LegacyPreferencesSnapshot.KEYS);
+        writeGcm(Map.of("placeholder", "synthetic"));
+        Map<String, String> bothKeys = strings(LegacyPreferencesSnapshot.KEYS);
+        bothKeys.putAll(legacyKeys);
+        write(LegacyPreferencesSnapshot.KEYS, bothKeys);
+        Files.write(file(LegacyPreferencesSnapshot.DATA), data);
+        byte[] keysBefore = Files.readAllBytes(file(LegacyPreferencesSnapshot.KEYS));
+        byte[] configBefore = Files.readAllBytes(file(LegacyPreferencesSnapshot.CONFIG));
+        assertEquals("cbc", reader().inspect().get("format"));
+        assertEquals(expected, reader().read().get("entries"));
+        assertArrayEquals(data, Files.readAllBytes(file(LegacyPreferencesSnapshot.DATA)));
+        assertArrayEquals(keysBefore, Files.readAllBytes(file(LegacyPreferencesSnapshot.KEYS)));
+        assertArrayEquals(configBefore, Files.readAllBytes(file(LegacyPreferencesSnapshot.CONFIG)));
     }
 
     @Test
