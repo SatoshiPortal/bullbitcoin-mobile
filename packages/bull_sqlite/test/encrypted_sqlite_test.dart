@@ -151,10 +151,23 @@ void main() {
       expect(ok(EncryptedSqlite.inspect(path)), SqliteFileState.absent);
     });
 
-    test('absent with only an empty WAL and an index is still absent', () {
-      touch('-wal', bytes: 0);
-      touch('-shm', bytes: 64);
-      expect(ok(EncryptedSqlite.inspect(path)), SqliteFileState.absent);
+    for (final suffix in ['-wal', '-shm']) {
+      test(
+        'an absent main file next to even an empty $suffix is inconsistent',
+        () {
+          touch(suffix, bytes: 0);
+          expect(
+            ok(EncryptedSqlite.inspect(path)),
+            SqliteFileState.inconsistent,
+          );
+        },
+      );
+    }
+
+    test('an empty main file next to an empty -shm is inconsistent', () {
+      touch('', bytes: 0);
+      touch('-shm', bytes: 0);
+      expect(ok(EncryptedSqlite.inspect(path)), SqliteFileState.inconsistent);
     });
 
     for (final suffix in [
