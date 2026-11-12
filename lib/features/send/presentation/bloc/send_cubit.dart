@@ -3129,7 +3129,9 @@ class SendCubit extends Cubit<SendState>
     if (wallet == null || unsignedPsbt == null) {
       emit(
         state.copyWith(
-          failure: const SendTransactionConfirmationFailure(),
+          failure: SendTransactionConfirmationFailure(
+            logMessage: wallet == null ? 'No wallet selected' : null,
+          ),
           signingTransaction: false,
         ),
       );
