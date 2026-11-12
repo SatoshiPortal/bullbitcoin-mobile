@@ -4985,5 +4985,9 @@
   "walletSpendAwaitingObservation": "Les dépenses sont indisponibles tant que ce portefeuille n’est pas synchronisé et n’a pas vu ses paiements précédents sur le réseau. Actualisez le portefeuille ou recherchez les transactions manquantes, puis réessayez.",
   "walletSpendReplacementUnavailable": "Il est impossible de modifier les frais tant que ce portefeuille ne voit pas le paiement sur le réseau. Actualisez le portefeuille, puis réessayez.",
   "sendPayjoinSpendPaused": "Ce paiement Payjoin est en pause car le portefeuille ne peut pas continuer en toute sécurité. Ses entrées restent réservées. Actualisez le portefeuille ou utilisez Rechercher les transactions manquantes, puis réessayez cette proposition tant qu’elle est valide. Si elle a expiré, vérifiez le paiement dans Transactions avant toute autre action.",
-  "walletSpendBusy": "Le portefeuille est occupé. Réessayez dans un instant."
+  "walletSpendBusy": "Le portefeuille est occupé. Réessayez dans un instant.",
+  "broadcastSignedTxErrorAlreadyInChain": "Cette transaction est déjà dans la blockchain. Il n'y a plus rien à diffuser.",
+  "broadcastSignedTxErrorRejected": "Le réseau a rejeté cette transaction. Elle est peut-être incomplètement signée, invalide ou en conflit avec un autre paiement.",
+  "broadcastSignedTxErrorOutcomeUnknown": "Impossible de confirmer que votre transaction a été diffusée. Vérifiez dans un explorateur de blocs avant de réessayer.",
+  "broadcastSignedTxErrorNetworkNotEnabled": "La diffusion sur ce réseau n'est pas activée dans les réglages actuels."
 }

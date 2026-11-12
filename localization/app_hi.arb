@@ -12031,5 +12031,9 @@
   "sellPayoutBalance": "मेरे खाते की शेष राशि में जोड़ें",
   "sellPayoutSepaDescription": "निकासी Leonod द्वारा भेजी गई दिखाई देती है",
   "sellPayoutTitle": "प्राप्तकर्ता चुनें",
-  "sellPayoutNewBadge": "नया"
+  "sellPayoutNewBadge": "नया",
+  "broadcastSignedTxErrorAlreadyInChain": "यह लेनदेन पहले से ही ब्लॉकचेन में है। प्रसारित करने के लिए कुछ भी बाकी नहीं है।",
+  "broadcastSignedTxErrorRejected": "नेटवर्क ने इस लेनदेन को अस्वीकार कर दिया। यह अधूरा हस्ताक्षरित, अमान्य, या किसी अन्य भुगतान से टकराव में हो सकता है।",
+  "broadcastSignedTxErrorOutcomeUnknown": "हम पुष्टि नहीं कर सके कि आपका लेनदेन प्रसारित हुआ। दोबारा कोशिश करने से पहले किसी ब्लॉक एक्सप्लोरर में जाँच करें।",
+  "broadcastSignedTxErrorNetworkNotEnabled": "मौजूदा सेटिंग्स में इस नेटवर्क पर प्रसारण सक्षम नहीं है।"
 }

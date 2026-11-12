@@ -3661,5 +3661,9 @@
   "sellPayoutBalance": "Ongeza kwenye salio la akaunti yangu",
   "sellPayoutSepaDescription": "Utoaji wa fedha unaonekana kuwa umetumwa na Leonod",
   "sellPayoutTitle": "Chagua Mpokeaji",
-  "sellPayoutNewBadge": "MPYA"
+  "sellPayoutNewBadge": "MPYA",
+  "broadcastSignedTxErrorAlreadyInChain": "Muamala huu tayari uko kwenye blockchain. Hakuna kitu kingine cha kutangaza.",
+  "broadcastSignedTxErrorRejected": "Mtandao umekataa muamala huu. Huenda haujasainiwa kikamilifu, si halali, au unakinzana na malipo mengine.",
+  "broadcastSignedTxErrorOutcomeUnknown": "Hatukuweza kuthibitisha kwamba muamala wako ulitangazwa. Angalia kwenye kichunguzi cha bloku kabla ya kujaribu tena.",
+  "broadcastSignedTxErrorNetworkNotEnabled": "Kutangaza kwenye mtandao huu hakujawezeshwa katika mipangilio ya sasa."
 }

@@ -296,8 +296,22 @@ class LwkWalletDatasource {
           final sumOutputs = outputs
               .map((i) => i.value?.toInt() ?? 0)
               .fold(0, (int a, b) => a + b);
+          final toDestination = sumOutputs - changeAmountInToSelf;
+          // LWK lists only this wallet's outputs and cannot list change
+          // addresses, so a redeposit to an unlisted address of the wallet has
+          // no recognised destination. With a single L-BTC output, that output
+          // is the destination; any other ambiguous case stays unresolved.
+          final soleOutput = tx.outputs.length == 1 ? tx.outputs.first : null;
+          final soleRedepositSat =
+              tx.kind == 'redeposit' &&
+                  soleOutput != null &&
+                  soleOutput.unblinded.asset == lbtcAssetId
+              ? soleOutput.unblinded.value.toInt()
+              : null;
           final netAmountSat = isToSelf
-              ? sumOutputs - changeAmountInToSelf
+              ? toDestination == 0
+                    ? soleRedepositSat ?? 0
+                    : toDestination
               : isIncoming
               ? finalBalance
               : finalBalance.abs() - tx.fee.toInt();

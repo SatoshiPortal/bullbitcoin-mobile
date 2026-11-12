@@ -3,6 +3,9 @@ import 'package:bb_mobile/core/errors/send_errors.dart';
 /// Diagnostic categories only: never use them to decide whether to retry a payment.
 enum BroadcastFailureCategory {
   rejected,
+
+  /// The node already has this transaction in a block (bitcoind -27).
+  alreadyInChain,
   connection,
   unexpected,
   authorization;

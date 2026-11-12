@@ -9215,5 +9215,9 @@
   "sellPayoutBalance": "মোৰ একাউণ্টৰ বেলেঞ্চত যোগ কৰক",
   "sellPayoutSepaDescription": "উলিওৱা ধন Leonod-এ পঠোৱা হিচাপে দেখা যায়",
   "sellPayoutTitle": "প্ৰাপক বাছক",
-  "sellPayoutNewBadge": "নতুন"
+  "sellPayoutNewBadge": "নতুন",
+  "broadcastSignedTxErrorAlreadyInChain": "এই লেনদেনটো ইতিমধ্যে ব্লকচেইনত আছে। সম্প্ৰচাৰ কৰিবলৈ একো বাকী নাই।",
+  "broadcastSignedTxErrorRejected": "নেটৱৰ্কে এই লেনদেনটো নাকচ কৰিলে। ই হয়তো সম্পূৰ্ণভাৱে স্বাক্ষৰিত নহয়, অবৈধ, বা আন এটা পৰিশোধৰ সৈতে সংঘাতত আছে।",
+  "broadcastSignedTxErrorOutcomeUnknown": "আপোনাৰ লেনদেন সম্প্ৰচাৰ হৈছে নে নাই নিশ্চিত কৰিব পৰা নগ'ল। পুনৰ চেষ্টা কৰাৰ আগতে এটা ব্লক এক্সপ্ল'ৰাৰত পৰীক্ষা কৰক।",
+  "broadcastSignedTxErrorNetworkNotEnabled": "বৰ্তমানৰ ছেটিংছত এই নেটৱৰ্কত সম্প্ৰচাৰ সক্ৰিয় কৰা হোৱা নাই।"
 }

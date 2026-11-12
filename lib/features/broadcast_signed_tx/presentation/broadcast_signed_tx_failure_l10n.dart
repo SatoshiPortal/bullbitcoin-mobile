@@ -13,6 +13,13 @@ extension BroadcastSignedTxFailureL10n on BroadcastSignedTxFailure {
       context.loc.broadcastSignedTxErrorPsbtFinalization,
     InvalidPushTxFailure() => context.loc.broadcastSignedTxErrorInvalidPushTx,
     BroadcastFailedFailure() => context.loc.broadcastSignedTxBroadcastError,
+    TransactionAlreadyInChainFailure() =>
+      context.loc.broadcastSignedTxErrorAlreadyInChain,
+    TransactionRejectedFailure() => context.loc.broadcastSignedTxErrorRejected,
+    BroadcastOutcomeUnknownFailure() =>
+      context.loc.broadcastSignedTxErrorOutcomeUnknown,
+    BroadcastNetworkNotEnabledFailure() =>
+      context.loc.broadcastSignedTxErrorNetworkNotEnabled,
     BroadcastUnexpectedFailure() => context.loc.oopsSomethingWentWrong,
   };
 }

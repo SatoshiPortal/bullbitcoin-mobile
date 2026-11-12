@@ -114,6 +114,50 @@ void main() {
       expect(mapBroadcastFailure(error), expected);
     });
   }
+  group('confirmed transaction (-27)', () {
+    // The `error` value bdk-ffi stringifies from the Electrum reply captured on
+    // electrum.blockstream.info:60002 for a confirmed testnet transaction.
+    final alreadyInChain = bdk.ProtocolElectrumException(
+      '{"code":2,"message":"sendrawtransaction RPC error -27: Transaction outputs already in utxo set"}',
+    );
+    final unexpectedCases = <String, Object>{
+      'non-integer code': bdk.ProtocolElectrumException('{"code":-27.0}'),
+      'shifted prefix': bdk.ProtocolElectrumException(
+        '{"code":2,"message":"prefix sendrawtransaction RPC error -27: x"}',
+      ),
+      'connection then -27': fallback([connection, alreadyInChain]),
+      '-27 then connection': fallback([alreadyInChain, connection]),
+      '-27 then rejected': fallback([alreadyInChain, rejected]),
+    };
+
+    test('the observed Electrum envelope', () {
+      expect(
+        mapBroadcastFailure(alreadyInChain),
+        BroadcastFailureCategory.alreadyInChain,
+      );
+    });
+
+    test('a bare -27 code', () {
+      expect(
+        mapBroadcastFailure(bdk.ProtocolElectrumException('{"code":-27}')),
+        BroadcastFailureCategory.alreadyInChain,
+      );
+    });
+
+    test('every fallback server answering -27', () {
+      expect(
+        mapBroadcastFailure(fallback([alreadyInChain, alreadyInChain])),
+        BroadcastFailureCategory.alreadyInChain,
+      );
+    });
+
+    for (final MapEntry(:key, :value) in unexpectedCases.entries) {
+      test('stays unexpected: $key', () {
+        expect(mapBroadcastFailure(value), BroadcastFailureCategory.unexpected);
+      });
+    }
+  });
+
   test('deep or cyclic fallback data is bounded', () {
     Object error = rejected;
     for (var i = 0; i < 8; i++) {

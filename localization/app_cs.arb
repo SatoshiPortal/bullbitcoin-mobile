@@ -11844,5 +11844,9 @@
   "sellPayoutBalance": "Přidat k zůstatku mého účtu",
   "sellPayoutSepaDescription": "Výběry se zobrazují jako odeslané společností Leonod",
   "sellPayoutTitle": "Vybrat příjemce",
-  "sellPayoutNewBadge": "NOVÉ"
+  "sellPayoutNewBadge": "NOVÉ",
+  "broadcastSignedTxErrorAlreadyInChain": "Tato transakce už je v blockchainu. Není co dalšího vysílat.",
+  "broadcastSignedTxErrorRejected": "Síť tuto transakci odmítla. Možná není úplně podepsaná, je neplatná nebo je v konfliktu s jinou platbou.",
+  "broadcastSignedTxErrorOutcomeUnknown": "Nepodařilo se ověřit, že byla vaše transakce odvysílána. Než to zkusíte znovu, zkontrolujte ji v blokovém průzkumníku.",
+  "broadcastSignedTxErrorNetworkNotEnabled": "Vysílání v této síti není v aktuálním nastavení povoleno."
 }

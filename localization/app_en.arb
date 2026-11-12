@@ -16113,5 +16113,21 @@
   "sendSelectedCoinsLabel": "Selected coins",
   "@sendSelectedCoinsLabel": {
     "description": "Label for the amount available from manually selected transaction inputs"
+  },
+  "broadcastSignedTxErrorAlreadyInChain": "This transaction is already in the blockchain. There is nothing left to broadcast.",
+  "@broadcastSignedTxErrorAlreadyInChain": {
+    "description": "Broadcast Transaction error when the node reports the transaction is already confirmed (bitcoind -27)"
+  },
+  "broadcastSignedTxErrorRejected": "The network rejected this transaction. It may be incompletely signed, invalid, or in conflict with another payment.",
+  "@broadcastSignedTxErrorRejected": {
+    "description": "Broadcast Transaction error when the node rejects the transaction (bitcoind -26)"
+  },
+  "broadcastSignedTxErrorOutcomeUnknown": "We couldn't confirm that your transaction was broadcast. Check a block explorer before trying again.",
+  "@broadcastSignedTxErrorOutcomeUnknown": {
+    "description": "Broadcast Transaction error when the failure does not show whether the transaction reached the network"
+  },
+  "broadcastSignedTxErrorNetworkNotEnabled": "Broadcasting on this network is not enabled in the current settings.",
+  "@broadcastSignedTxErrorNetworkNotEnabled": {
+    "description": "Broadcast Transaction error when the app refuses locally to broadcast on a network the settings do not enable"
   }
 }
