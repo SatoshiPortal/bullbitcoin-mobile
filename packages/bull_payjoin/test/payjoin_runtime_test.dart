@@ -2,6 +2,8 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:bull_payjoin/bull_payjoin.dart';
+import 'package:bull_sqlite/bull_sqlite.dart' show SqliteCipher;
+import 'package:sqlite3/sqlite3.dart';
 import 'package:primitives/primitives.dart';
 import 'package:test/test.dart';
 
@@ -186,5 +188,74 @@ void main() {
       Err(:final failure) => failure,
     }, isA<PayjoinInvalidInputFailure>());
     await lifecycle.dispose();
+  });
+
+  group('storage', () {
+    Future<PayjoinLifecycle> opened() async => switch (await open()) {
+      Ok(:final value) => value,
+      Err(:final failure) => fail('did not open: $failure'),
+    };
+
+    List<String> files() =>
+        directory.listSync().map((e) => e.uri.pathSegments.last).toList()
+          ..sort();
+
+    test('is created encrypted', () async {
+      final lifecycle = await opened();
+      await lifecycle.dispose();
+      final header = String.fromCharCodes(
+        File(databasePath()).readAsBytesSync().take(15),
+      );
+      expect(header, isNot('SQLite format 3'));
+    });
+
+    test('a wrong key is refused and nothing is moved aside', () async {
+      await (await opened()).dispose();
+      final before = files();
+      final wrong = DatabaseKey(Uint8List.fromList(List<int>.filled(32, 9)));
+      final result = await open(databaseKey: wrong);
+      expect(result, isA<Err<PayjoinLifecycle, PayjoinFailure>>());
+      expect(files(), before);
+      expect(files().where((f) => f.contains('unreadable')), isEmpty);
+      // Still opens with its own key: nothing was lost.
+      await (await opened()).dispose();
+    });
+
+    test('a plaintext file is refused, never quarantined', () async {
+      File(
+        databasePath(),
+      ).writeAsStringSync('SQLite format 3\u0000${'x' * 200}');
+      final result = await open();
+      expect(result, isA<Err<PayjoinLifecycle, PayjoinFailure>>());
+      expect(files(), ['payjoin.sqlite']);
+    });
+
+    test(
+      'a file newer than this build is moved aside, whole, and a fresh one opens',
+      () async {
+        await (await opened()).dispose();
+        final raw = sqlite3.open(databasePath());
+        SqliteCipher.key(raw, key);
+        raw.execute('PRAGMA user_version = 99;');
+        raw.close();
+
+        final lifecycle = await opened();
+        await lifecycle.dispose();
+        final quarantined = files().where((f) => f.contains('.unreadable-'));
+        expect(quarantined, contains(startsWith('payjoin.sqlite.unreadable-')));
+        expect(files(), isNot(contains('payjoin.sqlite.retire-pending')));
+      },
+    );
+
+    test('an interrupted quarantine is finished before the open', () async {
+      await (await opened()).dispose();
+      File(
+        '${databasePath()}.retire-pending',
+      ).writeAsStringSync('quarantine:.unreadable-1');
+      final lifecycle = await opened();
+      await lifecycle.dispose();
+      expect(files(), contains('payjoin.sqlite.unreadable-1'));
+      expect(files(), isNot(contains('payjoin.sqlite.retire-pending')));
+    });
   });
 }
