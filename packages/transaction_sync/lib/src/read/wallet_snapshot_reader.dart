@@ -389,6 +389,7 @@ final class WalletSnapshotReader {
     final network = switch (descriptor.key.network) {
       LiquidNetwork.mainnet => lwk.LiquidNetwork.mainnet,
       LiquidNetwork.testnet => lwk.LiquidNetwork.testnet,
+      LiquidNetwork.regtest => lwk.LiquidNetwork.regtest,
       _ => throw const _ReadFailure(TransactionSyncUnsupportedNetworkFailure()),
     };
     final source = nativeWalletStoragePath(documentsDirectory, descriptor.key);

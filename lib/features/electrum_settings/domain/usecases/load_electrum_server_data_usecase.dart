@@ -48,10 +48,6 @@ class LoadElectrumServerDataUsecase {
         isLiquid: isLiquid,
       );
 
-      if (network == ElectrumServerNetwork.liquidRegtest) {
-        return const Err(ElectrumUnsupportedNetworkFailure());
-      }
-
       final (serversResult, settingsResult) = await (
         _electrumServerRepository.fetchAll(network: network),
         _electrumSettingsRepository.fetchByNetwork(network),

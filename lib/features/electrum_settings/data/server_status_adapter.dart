@@ -74,10 +74,6 @@ class ServerStatusAdapter implements ServerStatusPort {
     int? retry,
     TorProxyEndpoint? proxyEndpoint,
   }) async {
-    // TODO(SatoshiPortal/lwk-dart#96): no Liquid regtest probes before SDK support.
-    if (network == ElectrumServerNetwork.liquidRegtest) {
-      return ElectrumServerStatus.offline;
-    }
     try {
       if (url.isEmpty) return ElectrumServerStatus.unknown;
 

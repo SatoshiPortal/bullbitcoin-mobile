@@ -41,7 +41,7 @@ void main() {
         when(
           () => liquid.broadcastTransaction(
             signedPset: 'signed',
-            isTestnet: false,
+            network: Network.liquidMainnet,
           ),
         ).thenAnswer((_) async => throw error);
         final future = isLiquid
@@ -79,7 +79,7 @@ void main() {
       when(
         () => blockchain.broadcastTransaction(
           signedPset: 'signed-public-test',
-          isTestnet: true,
+          network: Network.liquidTestnet,
         ),
       ).thenAnswer((_) async => 'txid');
       final usecase = BroadcastLiquidTransactionUsecase(

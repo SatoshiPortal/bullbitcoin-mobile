@@ -49,6 +49,9 @@ void main() {
     lwkWallet = _MockLwkWallet();
     datasource = LwkWalletDatasource(readWallet: (_) async => lwkWallet);
     when(
+      () => lwkWallet.policyAsset(),
+    ).thenAnswer((_) async => AssetConstants.lbtcTestnet);
+    when(
       () => lwkWallet.buildCustomTx(
         utxos: any(named: 'utxos'),
         outputs: any(named: 'outputs'),

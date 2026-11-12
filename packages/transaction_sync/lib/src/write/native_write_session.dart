@@ -94,6 +94,7 @@ final class SdkWriteSessions implements NativeWriteSessions {
         final network = switch (descriptor.key.network) {
           LiquidNetwork.mainnet => lwk.LiquidNetwork.mainnet,
           LiquidNetwork.testnet => lwk.LiquidNetwork.testnet,
+          LiquidNetwork.regtest => lwk.LiquidNetwork.regtest,
           _ => throw const NativeNetworkUnsupported(),
         };
         final wallet = await lwk.Wallet.init(
@@ -105,10 +106,12 @@ final class SdkWriteSessions implements NativeWriteSessions {
         );
         try {
           final canonical = await wallet.descriptor();
-          final networkDirectory =
-              descriptor.key.network == LiquidNetwork.mainnet
-              ? 'liquid'
-              : 'liquid-testnet';
+          final networkDirectory = switch (descriptor.key.network) {
+            LiquidNetwork.mainnet => 'liquid',
+            LiquidNetwork.testnet => 'liquid-testnet',
+            LiquidNetwork.regtest => 'liquid-regtest',
+            _ => throw const NativeNetworkUnsupported(),
+          };
           final relative =
               '$networkDirectory/enc_cache/${liquidDirectoryHash(canonical)}';
           if (FileSystemEntity.typeSync(

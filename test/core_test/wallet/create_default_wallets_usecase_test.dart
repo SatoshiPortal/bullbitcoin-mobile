@@ -82,7 +82,7 @@ void main() {
     },
   );
 
-  test('regtest default provisioning creates Bitcoin only', () async {
+  test('regtest default provisioning creates Bitcoin and Liquid', () async {
     when(() => settings.fetch()).thenAnswer(
       (_) async => const SettingsEntity(
         environment: Environment.regtest,
@@ -106,19 +106,29 @@ void main() {
         birthday: null,
       ),
     ).thenAnswer((_) async => bitcoin);
-    expect(
-      await create.execute(secret: stored, expectedNetwork: NetworkEnv.regtest),
-      [bitcoin],
-    );
-    verifyNever(
+    final liquid = _Wallet();
+    when(
       () => wallets.createWallet(
-        secret: any(named: 'secret'),
+        secret: stored,
         network: Network.liquidRegtest,
         scriptType: ScriptType.bip84,
         isDefault: true,
         birthday: null,
       ),
+    ).thenAnswer((_) async => liquid);
+    expect(
+      await create.execute(secret: stored, expectedNetwork: NetworkEnv.regtest),
+      [bitcoin, liquid],
     );
+    verify(
+      () => wallets.createWallet(
+        secret: stored,
+        network: Network.liquidRegtest,
+        scriptType: ScriptType.bip84,
+        isDefault: true,
+        birthday: null,
+      ),
+    ).called(1);
   });
 
   void stubCreation(List<s.Secret> received) {

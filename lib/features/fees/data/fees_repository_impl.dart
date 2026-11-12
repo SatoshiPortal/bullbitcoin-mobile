@@ -39,9 +39,6 @@ class FeesRepositoryImpl implements FeesRepository {
         throw MempoolFeesException('Regtest fee estimates unavailable');
       }
     }
-    if (network == Network.liquidRegtest) {
-      throw MempoolFeesException('Fee estimates unavailable for this network');
-    }
     if (network.isBitcoin) {
       final fees = await _feesDatasource.fetchBitcoinNetworkFees(
         baseUrl: await _resolveBitcoinMempoolUrl(

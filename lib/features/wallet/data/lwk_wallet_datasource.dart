@@ -1,4 +1,3 @@
-import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:transaction_sync/diagnostics.dart';
 import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
@@ -30,8 +29,8 @@ class LwkWalletDatasource {
       );
       final balances = await lwkWallet.balances();
 
+      final assetId = await lwkWallet.policyAsset();
       final lBtcAssetBalance = balances.firstWhere((balance) {
-        final assetId = _lBtcAssetId(wallet.network);
         return balance.assetId == assetId;
       }).value;
 
@@ -62,7 +61,7 @@ class LwkWalletDatasource {
       );
       final utxos = await lwkWallet.utxos();
 
-      final assetId = _lBtcAssetId(wallet.network);
+      final assetId = await lwkWallet.policyAsset();
       final unspent = utxos
           .where((utxo) => utxo.unblinded.asset == assetId)
           .map((utxo) {
@@ -200,7 +199,7 @@ class LwkWalletDatasource {
       final addressBalances = <String, BigInt>{};
 
       for (final utxo in utxos) {
-        final assetId = _lBtcAssetId(wallet.network);
+        final assetId = await lwkWallet.policyAsset();
         if (utxo.unblinded.asset != assetId) {
           continue;
         }
@@ -219,13 +218,6 @@ class LwkWalletDatasource {
     }
   }
 
-  String _lBtcAssetId(Network network) => switch (network) {
-    Network.liquidMainnet => AssetConstants.lbtcMainnet,
-    Network.liquidTestnet => AssetConstants.lbtcTestnet,
-    // TODO(lwk-dart#96): no regtest asset policy until the pinned SDK supports it.
-    _ => throw const UnsupportedNetworkException(),
-  };
-
   Future<List<WalletTransactionModel>> getTransactions({
     required WalletModel wallet,
     String? toAddress,
@@ -237,8 +229,7 @@ class LwkWalletDatasource {
       );
       final transactions = await lwkWallet.txs();
       final usedAddressesMap = await _getUsedAddressesMap(wallet: wallet);
-      final network = wallet.network;
-      final lbtcAssetId = _lBtcAssetId(network);
+      final lbtcAssetId = await lwkWallet.policyAsset();
       final walletTxs = await Future.wait(
         transactions.map((tx) async {
           if (toAddress != null && toAddress.isNotEmpty) {
@@ -419,8 +410,7 @@ class LwkWalletDatasource {
     try {
       final lwkWallet = await _readWallet(wallet);
       final utxos = await lwkWallet.utxos();
-      final network = wallet.network;
-      final lbtcAssetId = _lBtcAssetId(network);
+      final lbtcAssetId = await lwkWallet.policyAsset();
       final lbtcCount = utxos
           .where((u) => u.unblinded.asset == lbtcAssetId)
           .length;
@@ -472,7 +462,7 @@ class LwkWalletDatasource {
         if (maximumInputs <= 0) {
           throw ArgumentError.value(maximumInputs, 'maximumInputs');
         }
-        final assetId = _lBtcAssetId(wallet.network);
+        final assetId = await lwkWallet.policyAsset();
         final coins = (await lwkWallet.utxos())
             .where(
               (coin) =>
@@ -571,8 +561,7 @@ class LwkWalletDatasource {
       final decoded = await lwkWallet.decodeTx(pset: pset);
 
       // Get the L-BTC asset ID for the network
-      final network = wallet.network;
-      final lbtcAssetId = _lBtcAssetId(network);
+      final lbtcAssetId = await lwkWallet.policyAsset();
 
       // Find the L-BTC balance in the decoded amounts
       final lbtcBalance = decoded.balances.firstWhere(
@@ -640,6 +629,8 @@ extension NetworkX on Network {
         return lwk.LiquidNetwork.mainnet;
       case Network.liquidTestnet:
         return lwk.LiquidNetwork.testnet;
+      case Network.liquidRegtest:
+        return lwk.LiquidNetwork.regtest;
       default:
         throw UnsupportedLwkNetworkException('$name is not supported by LWK');
     }

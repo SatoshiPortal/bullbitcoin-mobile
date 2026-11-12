@@ -34,11 +34,6 @@ class AddCustomServerUsecase {
   Future<Result<ElectrumServerStatus, ElectrumFailure>> execute(
     AddCustomServerRequest request,
   ) async {
-    // TODO(SatoshiPortal/lwk-dart#96): no Liquid regtest IO until SDK support.
-    if (request.network == ElectrumServerNetwork.liquidRegtest) {
-      log.warning('Capability refused feature=electrum_add reason=unsupported');
-      return const Err(ElectrumUnsupportedNetworkFailure());
-    }
     try {
       final server = ElectrumServer.createCustom(
         host: request.host,
