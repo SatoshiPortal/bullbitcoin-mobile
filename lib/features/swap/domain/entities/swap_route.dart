@@ -3,6 +3,13 @@ import 'package:boltz_swaps/boltz_swaps.dart';
 /// A developer's pin on the swap provider. Ignored outside dev mode.
 enum SwapRouteOverride { auto, boltzOnly, exchangeOnly }
 
+/// The stored swap route choices, as the swap settings page edits them.
+typedef SwapRouteSettings = ({
+  bool exchangeFallbackEnabled,
+  SwapRouteOverride override,
+  bool devModeEnabled,
+});
+
 /// Which provider creates a swap. Boltz is the default. The exchange takes
 /// over only when the user turned the fallback on, and only after Boltz
 /// failed before anything was created.

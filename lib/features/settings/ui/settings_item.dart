@@ -15,6 +15,7 @@ import 'package:bb_mobile/features/settings/ui/settings_route.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/exchange_testnet_basic_auth_dialog.dart';
 import 'package:bb_mobile/features/sp/public/sp_facade.dart';
 import 'package:bb_mobile/features/status_check/router.dart';
+import 'package:bb_mobile/features/swap/ui/swap_router.dart';
 import 'package:bb_mobile/features/tor_settings/public/tor_settings_facade.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
 import 'package:bb_mobile/generated/l10n/localization.dart';
@@ -41,6 +42,8 @@ enum SettingsItemId {
   broadcastTransaction,
   payjoin,
   autoswap,
+  swaps,
+  swapRestore,
   electrum,
   mempool,
   testnetMode,
@@ -69,6 +72,8 @@ const backupSettingsDataItemOrder = [
 const walletSettingsItemOrder = [
   SettingsItemId.payjoin,
   SettingsItemId.autoswap,
+  SettingsItemId.swaps,
+  SettingsItemId.swapRestore,
   SettingsItemId.importWallet,
   SettingsItemId.electrum,
   SettingsItemId.mempool,
@@ -438,6 +443,32 @@ List<SettingsItem> buildSettingsItems({
           english.bitcoinSettingsAutoTransferTitle,
           english.autoswapSettingsTitle,
         ],
+      ),
+    ),
+    SettingsItem(
+      id: SettingsItemId.swaps,
+      section: SettingsItemSection.wallet,
+      title: localization.swapSettingsTitle,
+      path: path(SettingsItemSection.wallet, localization.swapSettingsTitle),
+      icon: Icons.swap_horiz,
+      open: (context) => context.pushNamed(SwapRoute.swapSettings.name),
+      keywords: _keywords(
+        localization.settingsSearchSwapsKeywords,
+        english.settingsSearchSwapsKeywords,
+        [english.swapSettingsTitle],
+      ),
+    ),
+    SettingsItem(
+      id: SettingsItemId.swapRestore,
+      section: SettingsItemSection.wallet,
+      title: localization.swapRestoreTitle,
+      path: path(SettingsItemSection.wallet, localization.swapRestoreTitle),
+      icon: Icons.restore,
+      open: (context) => context.pushNamed(SettingsRoute.swapRestore.name),
+      keywords: _keywords(
+        localization.settingsSearchSwapRestoreKeywords,
+        english.settingsSearchSwapRestoreKeywords,
+        [english.swapRestoreTitle],
       ),
     ),
     SettingsItem(

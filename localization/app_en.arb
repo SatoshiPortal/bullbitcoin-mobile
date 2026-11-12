@@ -15831,5 +15831,41 @@
   "swapsFailureUnexpected": "Something went wrong with the swap. Please try again.",
   "@swapsFailureUnexpected": {
     "description": "Rescue failure: generic catch-all, never shows raw details"
+  },
+  "swapSettingsTitle": "Swaps",
+  "@swapSettingsTitle": {
+    "description": "Title of the swap settings page and its row in wallet settings"
+  },
+  "swapSettingsExchangeFallbackLabel": "Fall back to the Bull Bitcoin exchange",
+  "@swapSettingsExchangeFallbackLabel": {
+    "description": "Switch label: use an exchange order when Boltz cannot take the swap"
+  },
+  "swapSettingsExchangeFallbackDescription": "Swaps go through Boltz. When Boltz cannot be reached or does not accept the amount, a Bull Bitcoin exchange order is created instead. The exchange holds the funds until the order completes.",
+  "@swapSettingsExchangeFallbackDescription": {
+    "description": "Explains the exchange fallback switch on the swap settings page"
+  },
+  "swapSettingsRouteOverrideTitle": "Swap provider",
+  "@swapSettingsRouteOverrideTitle": {
+    "description": "Developer-only section title for pinning the swap provider"
+  },
+  "swapSettingsRouteOverrideAuto": "Auto",
+  "@swapSettingsRouteOverrideAuto": {
+    "description": "Swap provider option: Boltz first, exchange per the fallback setting"
+  },
+  "swapSettingsRouteOverrideBoltzOnly": "Boltz only",
+  "@swapSettingsRouteOverrideBoltzOnly": {
+    "description": "Swap provider option: always Boltz"
+  },
+  "swapSettingsRouteOverrideExchangeOnly": "Exchange only",
+  "@swapSettingsRouteOverrideExchangeOnly": {
+    "description": "Swap provider option: always the Bull Bitcoin exchange"
+  },
+  "settingsSearchSwapsKeywords": "swaps|boltz|exchange fallback|swap provider|lightning|liquid",
+  "@settingsSearchSwapsKeywords": {
+    "description": "Pipe-separated search keywords for the swap settings row"
+  },
+  "settingsSearchSwapRestoreKeywords": "swap restore|recover swap|rescue swap|refund|stuck swap|boltz",
+  "@settingsSearchSwapRestoreKeywords": {
+    "description": "Pipe-separated search keywords for the swap restore row"
   }
 }
