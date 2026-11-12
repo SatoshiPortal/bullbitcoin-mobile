@@ -3650,5 +3650,8 @@
   "sellPayoutSepaDescription": "Các khoản rút tiền hiển thị là được gửi bởi Leonod",
   "sellPayoutTitle": "Chọn người nhận",
   "sellPayoutNewBadge": "MỚI",
-  "broadcastSignedTxErrorAlreadyInChain": "Giao dịch này đã có trên blockchain. Không còn gì để phát sóng."
+  "broadcastSignedTxErrorAlreadyInChain": "Giao dịch này đã có trên blockchain. Không còn gì để phát sóng.",
+  "broadcastSignedTxErrorRejected": "Mạng đã từ chối giao dịch này. Giao dịch có thể chưa được ký đầy đủ, không hợp lệ hoặc xung đột với một khoản thanh toán khác.",
+  "broadcastSignedTxErrorOutcomeUnknown": "Không thể xác nhận giao dịch của bạn đã được phát sóng. Hãy kiểm tra trên trình khám phá khối trước khi thử lại.",
+  "broadcastSignedTxErrorNetworkNotEnabled": "Phát sóng trên mạng này chưa được bật trong cài đặt hiện tại."
 }

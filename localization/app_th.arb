@@ -11849,5 +11849,8 @@
   "sellPayoutSepaDescription": "รายการถอนจะแสดงว่าผู้ส่งคือ Leonod",
   "sellPayoutTitle": "เลือกผู้รับเงิน",
   "sellPayoutNewBadge": "ใหม่",
-  "broadcastSignedTxErrorAlreadyInChain": "ธุรกรรมนี้อยู่ในบล็อกเชนแล้ว ไม่มีอะไรต้องเผยแพร่อีก"
+  "broadcastSignedTxErrorAlreadyInChain": "ธุรกรรมนี้อยู่ในบล็อกเชนแล้ว ไม่มีอะไรต้องเผยแพร่อีก",
+  "broadcastSignedTxErrorRejected": "เครือข่ายปฏิเสธธุรกรรมนี้ ธุรกรรมอาจลงนามไม่ครบ ไม่ถูกต้อง หรือขัดแย้งกับการชำระเงินอื่น",
+  "broadcastSignedTxErrorOutcomeUnknown": "ไม่สามารถยืนยันได้ว่าธุรกรรมของคุณถูกเผยแพร่แล้ว โปรดตรวจสอบใน Block Explorer ก่อนลองอีกครั้ง",
+  "broadcastSignedTxErrorNetworkNotEnabled": "การเผยแพร่บนเครือข่ายนี้ไม่ได้เปิดใช้งานในการตั้งค่าปัจจุบัน"
 }

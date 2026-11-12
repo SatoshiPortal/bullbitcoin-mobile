@@ -11848,5 +11848,8 @@
   "sellPayoutSepaDescription": "تظهر عمليات السحب على أنها مرسلة من Leonod",
   "sellPayoutTitle": "اختر المستلم",
   "sellPayoutNewBadge": "جديد",
-  "broadcastSignedTxErrorAlreadyInChain": "هذه المعاملة موجودة بالفعل في سلسلة الكتل. لم يتبقَّ شيء لبثه."
+  "broadcastSignedTxErrorAlreadyInChain": "هذه المعاملة موجودة بالفعل في سلسلة الكتل. لم يتبقَّ شيء لبثه.",
+  "broadcastSignedTxErrorRejected": "رفضت الشبكة هذه المعاملة. قد تكون غير مكتملة التوقيع أو غير صالحة أو متعارضة مع دفعة أخرى.",
+  "broadcastSignedTxErrorOutcomeUnknown": "لم نتمكن من التأكد من بث معاملتك. تحقق من مستكشف الكتل قبل المحاولة مرة أخرى.",
+  "broadcastSignedTxErrorNetworkNotEnabled": "البث على هذه الشبكة غير مفعّل في الإعدادات الحالية."
 }

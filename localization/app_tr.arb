@@ -11845,5 +11845,8 @@
   "sellPayoutSepaDescription": "Çekimler Leonod tarafından gönderilmiş olarak görünür",
   "sellPayoutTitle": "Alıcı Seç",
   "sellPayoutNewBadge": "YENİ",
-  "broadcastSignedTxErrorAlreadyInChain": "Bu işlem zaten blokzincirde. Yayınlanacak başka bir şey yok."
+  "broadcastSignedTxErrorAlreadyInChain": "Bu işlem zaten blokzincirde. Yayınlanacak başka bir şey yok.",
+  "broadcastSignedTxErrorRejected": "Ağ bu işlemi reddetti. İşlem eksik imzalanmış, geçersiz veya başka bir ödemeyle çakışıyor olabilir.",
+  "broadcastSignedTxErrorOutcomeUnknown": "İşleminizin yayınlandığını doğrulayamadık. Tekrar denemeden önce bir blok gezgininde kontrol edin.",
+  "broadcastSignedTxErrorNetworkNotEnabled": "Bu ağda yayınlama mevcut ayarlarda etkin değil."
 }

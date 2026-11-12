@@ -6,6 +6,7 @@ import 'package:bb_mobile/features/send/domain/usecases/broadcast_bitcoin_transa
 import 'package:bb_mobile/features/send/public/broadcast_failure.dart';
 import 'package:bb_mobile/core/utils/bitcoin_tx.dart';
 import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/features/broadcast_signed_tx/domain/broadcast_failure_for_category.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/domain/broadcast_signed_tx_failure.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/domain/verify_broadcast_signed_tx_usecase.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/presentation/broadcast_signed_tx_state.dart';
@@ -247,10 +248,10 @@ class BroadcastSignedTxCubit extends Cubit<BroadcastSignedTxState> {
     } catch (e, st) {
       // Keep the raw infra detail (Electrum server / node rejection) in the
       // logs instead of leaking it to the UI; the screen shows a localized
-      // message, specific only when the node reports the transaction already
-      // in the chain. A rejected broadcast is an expected user-facing
-      // condition (already confirmed, fee too low, server down), so this is a
-      // warning, not a Sentry-reported severe.
+      // message chosen from the failure's diagnostic category. A rejected
+      // broadcast is an expected user-facing condition (already confirmed,
+      // fee too low, server down), so this is a warning, not a
+      // Sentry-reported severe.
       log.warning(
         'Failed to broadcast signed transaction',
         error: e,
@@ -258,11 +259,7 @@ class BroadcastSignedTxCubit extends Cubit<BroadcastSignedTxState> {
       );
       emit(
         state.copyWith(
-          failure:
-              BroadcastFailureCategory.of(e) ==
-                  BroadcastFailureCategory.alreadyInChain
-              ? const TransactionAlreadyInChainFailure()
-              : const BroadcastFailedFailure(),
+          failure: broadcastSignedTxFailureFor(BroadcastFailureCategory.of(e)),
           isBroadcasting: false,
         ),
       );

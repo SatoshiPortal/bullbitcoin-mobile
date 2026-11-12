@@ -5027,5 +5027,8 @@
   "bitcoinSettingsPayjoinTitle": "Payjoin",
   "bitcoinSettingsAutoTransferTitle": "Trasferimento automatico",
   "transactionListPending": "In attesa",
-  "broadcastSignedTxErrorAlreadyInChain": "Questa transazione è già nella blockchain. Non c'è altro da trasmettere."
+  "broadcastSignedTxErrorAlreadyInChain": "Questa transazione è già nella blockchain. Non c'è altro da trasmettere.",
+  "broadcastSignedTxErrorRejected": "La rete ha rifiutato questa transazione. Potrebbe non essere firmata completamente, non essere valida o essere in conflitto con un altro pagamento.",
+  "broadcastSignedTxErrorOutcomeUnknown": "Non è stato possibile confermare che la transazione sia stata trasmessa. Controlla un block explorer prima di riprovare.",
+  "broadcastSignedTxErrorNetworkNotEnabled": "La trasmissione su questa rete non è abilitata nelle impostazioni attuali."
 }
