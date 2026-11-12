@@ -21,6 +21,7 @@ import java.security.GeneralSecurityException;
 import java.security.Key;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
+import java.security.spec.MGF1ParameterSpec;
 import java.util.Base64;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
@@ -28,12 +29,18 @@ import java.util.Map;
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
 import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.OAEPParameterSpec;
+import javax.crypto.spec.PSource;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 /** Real ciphertexts, synthetic values, and no Android provider mocks that bypass decryption. */
 public class LegacyKeystoreReaderTest {
+    private static final String GCM_KEY = "AES" + LegacyKeystoreReader.CBC_KEY;
+    private static final OAEPParameterSpec OAEP =
+            new OAEPParameterSpec("SHA-256", "MGF1", MGF1ParameterSpec.SHA1, PSource.PSpecified.DEFAULT);
+
     private Path directory;
     private Aead master;
     private KeyPair rsa;
@@ -50,6 +57,11 @@ public class LegacyKeystoreReaderTest {
         generator.initialize(2048);
         rsa = generator.generateKeyPair();
         keys = new LegacyKeystoreReader.ExistingKeys() {
+            public Key unwrapGcm(byte[] wrapped) throws GeneralSecurityException {
+                Cipher cipher = Cipher.getInstance("RSA/ECB/OAEPPadding");
+                cipher.init(Cipher.UNWRAP_MODE, rsa.getPrivate(), OAEP);
+                return cipher.unwrap(wrapped, "AES", Cipher.SECRET_KEY);
+            }
             public Aead espMaster() { return master; }
             public Key unwrapCbc(byte[] wrapped) throws GeneralSecurityException {
                 Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
@@ -93,6 +105,7 @@ public class LegacyKeystoreReaderTest {
         keys = new LegacyKeystoreReader.ExistingKeys() {
             public Aead espMaster() throws GeneralSecurityException { throw new GeneralSecurityException(); }
             public Key unwrapCbc(byte[] wrapped) throws GeneralSecurityException { throw new GeneralSecurityException(); }
+            public Key unwrapGcm(byte[] wrapped) throws GeneralSecurityException { throw new GeneralSecurityException(); }
         };
         assertEquals(Map.of("pin_code", "synthetic"), reader().read().get("entries"));
     }
@@ -215,6 +228,77 @@ public class LegacyKeystoreReaderTest {
     }
 
     @Test
+    public void currentGcmIsAuthenticatedWithoutOpeningEspOrWritingSource() throws Exception {
+        writeGcm(Map.of("first", "synthetic-a", "second", "synthetic-b"));
+        Map<String, String> raw = strings(LegacyPreferencesSnapshot.DATA);
+        raw.put(LegacyKeystoreReader.KEYSET, "unused-keyset");
+        raw.put(LegacyKeystoreReader.VALUESET, "unused-keyset");
+        write(LegacyPreferencesSnapshot.DATA, raw);
+        byte[] data = Files.readAllBytes(file(LegacyPreferencesSnapshot.DATA));
+        byte[] wrapped = Files.readAllBytes(file(LegacyPreferencesSnapshot.KEYS));
+        byte[] config = Files.readAllBytes(file(LegacyPreferencesSnapshot.CONFIG));
+        // A valid current store does not need or initialize the ESP master key.
+        master = null;
+        assertEquals("gcm", reader().inspect().get("format"));
+        fails("unsupported", () -> reader().read());
+        assertArrayEquals(data, Files.readAllBytes(file(LegacyPreferencesSnapshot.DATA)));
+        assertArrayEquals(wrapped, Files.readAllBytes(file(LegacyPreferencesSnapshot.KEYS)));
+        assertArrayEquals(config, Files.readAllBytes(file(LegacyPreferencesSnapshot.CONFIG)));
+    }
+
+    @Test
+    public void rewrittenCbcMarkersAndNewGcmKeyDoNotAuthorizeStandard() throws Exception {
+        writeCbc(Map.of("pin_code", "synthetic"));
+        byte[] cbcData = Files.readAllBytes(file(LegacyPreferencesSnapshot.DATA));
+        writeGcm(Map.of("placeholder", "synthetic"));
+        Files.write(file(LegacyPreferencesSnapshot.DATA), cbcData);
+        fails("unreadable", () -> reader().inspect());
+        assertArrayEquals(cbcData, Files.readAllBytes(file(LegacyPreferencesSnapshot.DATA)));
+    }
+
+    @Test
+    public void oneUnauthenticatedGcmEntryRejectsTheWholeInventory() throws Exception {
+        writeGcm(Map.of("first", "synthetic-a", "second", "synthetic-b"));
+        Map<String, String> raw = strings(LegacyPreferencesSnapshot.DATA);
+        String name = LegacyKeystoreReader.PREFIX + "second";
+        byte[] ciphertext = Base64.getDecoder().decode(raw.get(name));
+        ciphertext[ciphertext.length - 1] ^= 1;
+        raw.put(name, Base64.getEncoder().encodeToString(ciphertext));
+        write(LegacyPreferencesSnapshot.DATA, raw);
+        fails("unreadable", () -> reader().inspect());
+    }
+
+    @Test
+    public void emptyCurrentStoreStillRequiresItsExistingOaepKey() throws Exception {
+        writeGcm(Map.of());
+        assertEquals("gcm", reader().inspect().get("format"));
+        KeyPairGenerator generator = KeyPairGenerator.getInstance("RSA");
+        generator.initialize(2048);
+        rsa = generator.generateKeyPair();
+        fails("unreadable", () -> reader().inspect());
+    }
+
+    @Test
+    public void missingCanonicalGcmKeyIsUnknownAndNotGenerated() throws Exception {
+        writeGcm(Map.of("pin_code", "synthetic"));
+        write(LegacyPreferencesSnapshot.KEYS, Map.of());
+        byte[] before = Files.readAllBytes(file(LegacyPreferencesSnapshot.KEYS));
+        assertEquals("unknown", reader().inspect().get("format"));
+        assertArrayEquals(before, Files.readAllBytes(file(LegacyPreferencesSnapshot.KEYS)));
+    }
+
+    @Test
+    public void wrongOaepPrivateKeyCannotAuthorizeCurrentGcm() throws Exception {
+        writeGcm(Map.of("pin_code", "synthetic"));
+        byte[] before = Files.readAllBytes(file(LegacyPreferencesSnapshot.KEYS));
+        KeyPairGenerator generator = KeyPairGenerator.getInstance("RSA");
+        generator.initialize(2048);
+        rsa = generator.generateKeyPair();
+        fails("unreadable", () -> reader().inspect());
+        assertArrayEquals(before, Files.readAllBytes(file(LegacyPreferencesSnapshot.KEYS)));
+    }
+
+    @Test
     public void xmlEntitiesAndTypedConfigurationAreParsedWithoutExternalResolution() throws Exception {
         String xml = "<map><string name=\"a\">x&amp;y&lt;z</string><boolean name=\"b\" value=\"false\"/>"
                 + "<long name=\"n\" value=\"123\"/><set name=\"s\"><string>one</string></set></map>";
@@ -265,6 +349,36 @@ public class LegacyKeystoreReaderTest {
                     ByteBuffer.allocate(16 + encrypted.length).put(cipher.getIV()).put(encrypted).array()));
         }
         write(LegacyPreferencesSnapshot.DATA, raw);
+    }
+
+    private void writeGcm(Map<String, String> values) throws Exception {
+        KeyGenerator generator = KeyGenerator.getInstance("AES");
+        generator.init(128);
+        Key aes = generator.generateKey();
+        Cipher wrapper = Cipher.getInstance("RSA/ECB/OAEPPadding");
+        wrapper.init(Cipher.WRAP_MODE, rsa.getPublic(), OAEP);
+        write(LegacyPreferencesSnapshot.KEYS,
+                Map.of(GCM_KEY, Base64.getEncoder().encodeToString(wrapper.wrap(aes))));
+        write(LegacyPreferencesSnapshot.CONFIG, Map.of(
+                LegacyKeystoreReader.KEY_ALGORITHM, "RSA_ECB_OAEPwithSHA_256andMGF1Padding",
+                LegacyKeystoreReader.STORAGE_ALGORITHM, "AES_GCM_NoPadding"));
+        Map<String, String> raw = new LinkedHashMap<>();
+        for (var entry : values.entrySet()) {
+            Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
+            cipher.init(Cipher.ENCRYPT_MODE, aes);
+            byte[] encrypted = cipher.doFinal(entry.getValue().getBytes(StandardCharsets.UTF_8));
+            raw.put(LegacyKeystoreReader.PREFIX + entry.getKey(), Base64.getEncoder().encodeToString(
+                    ByteBuffer.allocate(12 + encrypted.length).put(cipher.getIV()).put(encrypted).array()));
+        }
+        write(LegacyPreferencesSnapshot.DATA, raw);
+    }
+
+    private Map<String, String> strings(String name) throws Exception {
+        Map<String, String> result = new LinkedHashMap<>();
+        for (var entry : LegacyPreferencesSnapshot.parse(Files.readAllBytes(file(name))).entrySet()) {
+            result.put(entry.getKey(), (String) entry.getValue());
+        }
+        return result;
     }
 
     private static String readText(Path path) throws Exception {

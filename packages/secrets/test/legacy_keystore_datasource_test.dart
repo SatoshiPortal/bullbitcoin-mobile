@@ -64,6 +64,7 @@ void main() {
       for (final response in <Object?>[
         null,
         {'format': 'empty', 'entries': <String, String>{}},
+        {'format': 'gcm', 'entries': <String, String>{}},
         {
           'format': 'mixed',
           'entries': {'a': 'synthetic'},
@@ -89,6 +90,20 @@ void main() {
       }
     },
   );
+
+  test('authenticated GCM is inventory only', () async {
+    messenger.setMockMethodCallHandler(
+      channel,
+      (_) async => {
+        'format': 'gcm',
+        'sourcePresent': true,
+        'priorStoreHint': true,
+      },
+    );
+    final inventory = await datasource.inspect();
+    expect(inventory.format, LegacyKeystoreFormat.gcm);
+    expect(inventory.priorStoreHint, isTrue);
+  });
 
   test(
     'missing native support is unavailable, not a fresh installation',
