@@ -67,8 +67,9 @@ class GetTransactionsByTxIdUsecase {
       final order = switch (orderResult) {
         Ok(:final value) => value,
         Err(:final failure) => () {
-          // The repository records persistent failure/recovery transitions.
-          log.info('Exchange enrichment unavailable: ${failure.runtimeType}');
+          log.warning(
+            'Exchange enrichment unavailable: ${failure.runtimeType}',
+          );
           return null;
         }(),
       };
