@@ -140,7 +140,12 @@ void main() {
 
         final failure = (result as Err<FiatPaymentOrder, PayFailure>).failure;
         expect(failure, isA<PayUnauthenticatedFailure>());
-        expect(failure.logMessage, _rawReason);
+        expect(
+          failure.logMessage,
+          isNull,
+          reason:
+              'authentication failures must not retain credential-bearing exception messages',
+        );
       },
     );
 

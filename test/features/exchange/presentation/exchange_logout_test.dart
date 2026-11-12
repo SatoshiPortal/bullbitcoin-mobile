@@ -1,5 +1,18 @@
 import 'dart:async';
 
+import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/widgets/delete_account_confirmation_bottom_sheet.dart';
+import 'package:bb_mobile/core/widgets/delete_account_success_bottom_sheet.dart';
+import 'package:bb_mobile/features/exchange/ui/widgets/exchange_account_actions.dart';
+import 'package:bb_mobile/generated/l10n/localization.dart';
+import 'package:bull_ui/bull_ui.dart' show BullButton;
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:bb_mobile/core/exchange/domain/entity/exchange_api_key.dart';
+import 'package:bb_mobile/core/exchange/domain/exchange_api_key_failure.dart';
+import 'package:bb_mobile/core/exchange/domain/repositories/exchange_api_key_repository.dart';
+import 'package:bb_mobile/features/exchange/data/exchange_auth_repository_impl.dart';
+import 'package:bb_mobile/features/exchange/data/exchange_web_auth_datasource.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/announcement.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
 import 'package:bb_mobile/core/utils/result.dart';
@@ -9,7 +22,7 @@ import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_account
 import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_announcements_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/request_exchange_account_deletion_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/save_exchange_preferences_usecase.dart';
-import 'package:bb_mobile/features/exchange/domain/usecases/store_exchange_api_key_usecase.dart';
+import 'package:bb_mobile/features/exchange/domain/usecases/complete_exchange_authentication_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/watch_exchange_notifications_usecase.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -27,7 +40,8 @@ const _account = UserSummary(
 
 class _MockGetAccount extends Mock implements GetExchangeAccountUsecase {}
 
-class _MockStoreApiKey extends Mock implements StoreExchangeApiKeyUsecase {}
+class _MockCompleteAuthentication extends Mock
+    implements CompleteExchangeAuthenticationUsecase {}
 
 class _MockSavePreferences extends Mock
     implements SaveExchangePreferencesUsecase {}
@@ -43,6 +57,18 @@ class _MockRequestDeletion extends Mock
 class _MockWatchNotifications extends Mock
     implements WatchExchangeNotificationsUsecase {}
 
+class _StoredKeys extends Fake implements ExchangeApiKeyRepository {
+  var writes = 0;
+  @override
+  Future<Result<void, ExchangeApiKeyFailure>> saveApiKey(
+    ExchangeApiKey key, {
+    required bool isTestnet,
+  }) async {
+    writes++;
+    return const Ok(null);
+  }
+}
+
 void main() {
   late _MockClearSession clearSession;
   late _MockGetAccount getAccount;
@@ -53,7 +79,6 @@ void main() {
 
   ExchangeCubit build() => ExchangeCubit(
     getExchangeAccountUsecase: getAccount,
-    storeExchangeApiKeyUsecase: _MockStoreApiKey(),
     saveExchangePreferencesUsecase: savePreferences,
     clearExchangeSessionUsecase: clearSession,
     getExchangeAnnouncementsUsecase: announcements,
@@ -77,6 +102,255 @@ void main() {
     when(notifications.disconnect).thenReturn(null);
     when(getAccount.execute).thenAnswer((_) async => const Ok(_account));
   });
+
+  for (final clearPending in [false, true]) {
+    test(
+      clearPending
+          ? 'logout cancels generation while deletion is pending'
+          : 'logout cancels generation before a new credential is persisted',
+      () async {
+        final response = Completer<Object>();
+        final keys = _StoredKeys();
+        final operation = CompleteExchangeAuthenticationUsecase(
+          authRepository: ExchangeAuthRepositoryImpl(
+            datasource: ExchangeWebAuthDatasource(
+              isTestnet: true,
+              evaluateJavaScript: (_) => response.future,
+              isOpen: () => true,
+            ),
+          ),
+          apiKeyRepository: keys,
+          isTestnet: true,
+        );
+        final clearance = Completer<Result<void, ExchangeFailure>>();
+        when(clearSession.execute).thenAnswer((_) => clearance.future);
+        if (!clearPending) clearance.complete(const Ok(null));
+        final cubit = build();
+        addTearDown(cubit.close);
+        final pending = cubit.completeAuthentication(operation);
+        final signout = cubit.logout();
+        if (!clearPending) expect(await signout, isNull);
+        response.complete({
+          'id': 'synthetic-id',
+          'key': 'synthetic-key',
+          'name': 'synthetic',
+          'userId': 'synthetic-user',
+          'isActive': true,
+          'createdAt': 0,
+          'updatedAt': 0,
+        });
+        await pending;
+        expect(keys.writes, 0);
+        verifyNever(getAccount.execute);
+        expect(cubit.state.userSummary, isNull);
+        if (clearPending) clearance.complete(const Ok(null));
+        expect(await signout, isNull);
+      },
+    );
+  }
+
+  group('completeAuthentication', () {
+    test('returns a failure without refreshing the account', () async {
+      final operation = _MockCompleteAuthentication();
+      const failure = ExchangeAuthenticationFailure();
+      when(
+        () => operation.execute(isCurrent: any(named: 'isCurrent')),
+      ).thenAnswer((_) async => const Err(failure));
+      final cubit = build();
+      addTearDown(cubit.close);
+      expect(await cubit.completeAuthentication(operation), same(failure));
+      verifyNever(getAccount.execute);
+      expect(cubit.state.userSummary, isNull);
+    });
+    test('refreshes the account after persistence succeeds', () async {
+      final operation = _MockCompleteAuthentication();
+      when(
+        () => operation.execute(isCurrent: any(named: 'isCurrent')),
+      ).thenAnswer((_) async => const Ok(null));
+      final cubit = build();
+      addTearDown(cubit.close);
+      expect(await cubit.completeAuthentication(operation), isNull);
+      verify(getAccount.execute).called(1);
+      expect(cubit.state.userSummary, _account);
+    });
+  });
+
+  group('session changes during pending operations', () {
+    test(
+      'a late account response cannot sign the user back in after logout',
+      () async {
+        final response = Completer<Result<UserSummary, ExchangeFailure>>();
+        when(getAccount.execute).thenAnswer((_) => response.future);
+        when(clearSession.execute).thenAnswer((_) async => const Ok(null));
+        final cubit = build();
+        addTearDown(cubit.close);
+        final pending = cubit.fetchUserSummary();
+        expect(await cubit.logout(), isNull);
+        response.complete(const Ok(_account));
+        await pending;
+        expect(cubit.state.userSummary, isNull);
+        expect(cubit.state.getUserSummaryFailure, isNull);
+      },
+    );
+
+    test(
+      'authentication finishing after logout does not refresh the account',
+      () async {
+        final response = Completer<Result<void, ExchangeFailure>>();
+        final operation = _MockCompleteAuthentication();
+        when(
+          () => operation.execute(isCurrent: any(named: 'isCurrent')),
+        ).thenAnswer((_) => response.future);
+        when(clearSession.execute).thenAnswer((_) async => const Ok(null));
+        final cubit = build();
+        addTearDown(cubit.close);
+        final pending = cubit.completeAuthentication(operation);
+        expect(await cubit.logout(), isNull);
+        response.complete(const Ok(null));
+        await pending;
+        verifyNever(getAccount.execute);
+        expect(cubit.state.userSummary, isNull);
+      },
+    );
+
+    test(
+      'a superseded authentication completion does not refresh the account',
+      () async {
+        final response = Completer<Result<void, ExchangeFailure>>();
+        final first = _MockCompleteAuthentication();
+        final second = _MockCompleteAuthentication();
+        when(
+          () => first.execute(isCurrent: any(named: 'isCurrent')),
+        ).thenAnswer((_) => response.future);
+        when(
+          () => second.execute(isCurrent: any(named: 'isCurrent')),
+        ).thenAnswer((_) async => const Ok(null));
+        final cubit = build();
+        addTearDown(cubit.close);
+        final pending = cubit.completeAuthentication(first);
+        await cubit.completeAuthentication(second);
+        response.complete(const Ok(null));
+        await pending;
+        verify(getAccount.execute).called(1);
+      },
+    );
+
+    test(
+      'an older account response cannot replace the newly authenticated account',
+      () async {
+        final response = Completer<Result<UserSummary, ExchangeFailure>>();
+        var calls = 0;
+        final newerAccount = _account.copyWith(userNumber: 2);
+        when(getAccount.execute).thenAnswer(
+          (_) =>
+              ++calls == 1 ? response.future : Future.value(Ok(newerAccount)),
+        );
+        final operation = _MockCompleteAuthentication();
+        when(
+          () => operation.execute(isCurrent: any(named: 'isCurrent')),
+        ).thenAnswer((_) async => const Ok(null));
+        final cubit = build();
+        addTearDown(cubit.close);
+        final pending = cubit.fetchUserSummary();
+        await cubit.completeAuthentication(operation);
+        response.complete(const Ok(_account));
+        await pending;
+        expect(cubit.state.userSummary, newerAccount);
+      },
+    );
+  });
+
+  group('account actions finishing after a session change', () {
+    test('an older deletion request cannot log out the new session', () async {
+      final response = Completer<Result<void, ExchangeFailure>>();
+      when(requestDeletion.execute).thenAnswer((_) => response.future);
+      when(clearSession.execute).thenAnswer((_) async => const Ok(null));
+      final operation = _MockCompleteAuthentication();
+      when(
+        () => operation.execute(isCurrent: any(named: 'isCurrent')),
+      ).thenAnswer((_) async => const Ok(null));
+      final cubit = build();
+      addTearDown(cubit.close);
+      final pending = cubit.deleteAccount();
+      await cubit.logout();
+      await cubit.completeAuthentication(operation);
+      response.complete(const Ok(null));
+      expect(
+        (await pending).fold<Object>((value) => value, (failure) => failure),
+        ExchangeAccountDeletionOutcome.stale,
+      );
+      verify(clearSession.execute).called(1);
+      expect(cubit.state.userSummary, _account);
+    });
+
+    test(
+      'an old preference failure does not leak into the new session',
+      () async {
+        final response = Completer<Result<void, ExchangeFailure>>();
+        when(
+          () => savePreferences.execute(dcaEnabled: false),
+        ).thenAnswer((_) => response.future);
+        when(clearSession.execute).thenAnswer((_) async => const Ok(null));
+        final operation = _MockCompleteAuthentication();
+        when(
+          () => operation.execute(isCurrent: any(named: 'isCurrent')),
+        ).thenAnswer((_) async => const Ok(null));
+        final cubit = build();
+        addTearDown(cubit.close);
+        final pending = cubit.stopDca();
+        await cubit.logout();
+        final loadingReset = !cubit.state.isSaving;
+        await cubit.completeAuthentication(operation);
+        response.complete(const Err(ExchangePreferencesSaveFailure()));
+        await pending;
+        expect(loadingReset, isTrue);
+        expect(cubit.state.stopDcaFailure, isNull);
+        expect(cubit.state.userSummary, _account);
+      },
+    );
+  });
+
+  test('late announcements do not reappear after logout', () async {
+    final response = Completer<Result<List<Announcement>, ExchangeFailure>>();
+    when(announcements.execute).thenAnswer((_) => response.future);
+    when(clearSession.execute).thenAnswer((_) async => const Ok(null));
+    final cubit = build();
+    addTearDown(cubit.close);
+    final pending = cubit.loadAnnouncements();
+    await cubit.logout();
+    final loadingReset = !cubit.state.loadingAnnouncements;
+    response.complete(
+      Ok([
+        Announcement(
+          title: 'old session',
+          description: 'synthetic',
+          updatedAt: DateTime(2026),
+        ),
+      ]),
+    );
+    await pending;
+    expect(cubit.state.announcements, isEmpty);
+    expect(loadingReset, isTrue);
+  });
+
+  test(
+    'the latest account refresh wins when responses arrive out of order',
+    () async {
+      final response = Completer<Result<UserSummary, ExchangeFailure>>();
+      var calls = 0;
+      final newerAccount = _account.copyWith(userNumber: 2);
+      when(getAccount.execute).thenAnswer(
+        (_) => ++calls == 1 ? response.future : Future.value(Ok(newerAccount)),
+      );
+      final cubit = build();
+      addTearDown(cubit.close);
+      final pending = cubit.fetchUserSummary();
+      await cubit.fetchUserSummary();
+      response.complete(const Ok(_account));
+      await pending;
+      expect(cubit.state.userSummary, newerAccount);
+    },
+  );
 
   group('logout', () {
     test('a cleared session signs the user out', () async {
@@ -109,7 +383,6 @@ void main() {
 
       expect(cubit.state.stopDcaFailure, isNull);
       expect(cubit.state.getUserSummaryFailure, isNull);
-      expect(cubit.state.saveApiKeyFailure, isNull);
       expect(cubit.state.logoutFailure, isNull);
     });
 
@@ -180,6 +453,51 @@ void main() {
     });
   });
 
+  testWidgets('a failed deletion after logout shows no success sheet', (
+    tester,
+  ) async {
+    final response = Completer<Result<void, ExchangeFailure>>();
+    when(requestDeletion.execute).thenAnswer((_) => response.future);
+    when(clearSession.execute).thenAnswer((_) async => const Ok(null));
+    final cubit = build();
+    addTearDown(cubit.close);
+    await cubit.fetchUserSummary();
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.themeData(AppThemeType.light),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: BlocProvider.value(
+          value: cubit,
+          child: const Scaffold(
+            body: ExchangeAccountActions(showDeleteAccount: true),
+          ),
+        ),
+      ),
+    );
+    await tester.tap(find.byIcon(Icons.delete_forever));
+    await tester.pumpAndSettle();
+    await tester.tap(
+      find
+          .descendant(
+            of: find.byType(DeleteAccountConfirmationBottomSheet),
+            matching: find.byType(BullButton),
+          )
+          .last,
+    );
+    await tester.pumpAndSettle();
+    verify(requestDeletion.execute).called(1);
+    await cubit.logout();
+    await tester.pumpAndSettle();
+    expect(find.byType(ExchangeAccountActions), findsOneWidget);
+
+    response.complete(const Err(ExchangeAccountDeletionRequestFailure()));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(DeleteAccountSuccessBottomSheet), findsNothing);
+    verify(clearSession.execute).called(1);
+  });
+
   group('deleteAccount', () {
     test('a failed request is reported and nothing is cleared', () async {
       when(requestDeletion.execute).thenAnswer(
@@ -189,7 +507,10 @@ void main() {
       addTearDown(cubit.close);
 
       expect(
-        await cubit.deleteAccount(),
+        (await cubit.deleteAccount()).fold<Object>(
+          (value) => value,
+          (failure) => failure,
+        ),
         isA<ExchangeAccountDeletionRequestFailure>(),
       );
       verifyNever(clearSession.execute);
@@ -208,7 +529,13 @@ void main() {
         final cubit = build();
         addTearDown(cubit.close);
 
-        expect(await cubit.deleteAccount(), isA<ExchangeSessionClearFailure>());
+        expect(
+          (await cubit.deleteAccount()).fold<Object>(
+            (value) => value,
+            (failure) => failure,
+          ),
+          isA<ExchangeSessionClearFailure>(),
+        );
       },
     );
 
@@ -218,7 +545,13 @@ void main() {
       final cubit = build();
       addTearDown(cubit.close);
 
-      expect(await cubit.deleteAccount(), isNull);
+      expect(
+        (await cubit.deleteAccount()).fold<Object>(
+          (value) => value,
+          (failure) => failure,
+        ),
+        ExchangeAccountDeletionOutcome.completed,
+      );
       expect(cubit.state.userSummary, isNull);
     });
   });

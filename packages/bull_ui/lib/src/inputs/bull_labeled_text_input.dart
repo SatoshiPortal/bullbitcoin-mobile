@@ -1,7 +1,5 @@
-import 'package:bull_ui/src/theme/bull_shapes.dart';
-import 'package:bull_ui/src/data_display/bull_text.dart';
 import 'package:bull_ui/src/inputs/bull_input_text.dart';
-import 'package:bull_ui/src/layout/gap.dart';
+import 'package:bull_ui/src/inputs/labeled_input_frame.dart';
 import 'package:bull_ui/src/theme/bull_theme.dart';
 import 'package:flutter/material.dart';
 
@@ -56,54 +54,23 @@ class BullLabeledTextInput extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.bull;
-    final textTheme = Theme.of(context).textTheme;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        BullText(
-          label,
-          style: textTheme.labelMedium?.copyWith(
-            fontWeight: FontWeight.w700,
-            color: colors.text,
-            letterSpacing: 0,
-            fontSize: 14,
-          ),
-        ),
-        const Gap(8),
-        Container(
-          decoration: BoxDecoration(
-            color: colors.surface,
-            borderRadius: BorderRadius.circular(context.bullShapes.card),
-            border: Border.all(color: colors.border, width: 0.69),
-            boxShadow: [
-              BoxShadow(color: colors.border, offset: const Offset(0, 2)),
-            ],
-          ),
-          child: BullInputText(
-            controller: controller,
-            value: value,
-            onChanged: onChanged ?? (_) {},
-            disabled: onChanged == null,
-            style: textTheme.bodySmall?.copyWith(
-              fontWeight: FontWeight.w700,
-              fontSize: 14,
-              color: colors.text,
-            ),
-            hintStyle: textTheme.bodySmall?.copyWith(
-              fontWeight: FontWeight.w700,
-              fontSize: 14,
-              color: colors.textMuted,
-            ),
-            hint: hint,
-            hideBorder: true,
-            maxLines: maxLines,
-            enableSuggestions: enableSuggestions,
-            autocorrect: autocorrect,
-            smartQuotesType: smartQuotesType,
-            smartDashesType: smartDashesType,
-          ),
-        ),
-      ],
+    return LabeledInputFrame(
+      label: label,
+      child: BullInputText(
+        controller: controller,
+        value: value,
+        onChanged: onChanged ?? (_) {},
+        disabled: onChanged == null,
+        style: LabeledInputFrame.fieldStyle(context, colors.text),
+        hintStyle: LabeledInputFrame.fieldStyle(context, colors.textMuted),
+        hint: hint,
+        hideBorder: true,
+        maxLines: maxLines,
+        enableSuggestions: enableSuggestions,
+        autocorrect: autocorrect,
+        smartQuotesType: smartQuotesType,
+        smartDashesType: smartDashesType,
+      ),
     );
   }
 }

@@ -74,7 +74,7 @@ void main() {
 
       datasource.startListeningForRequest(model);
       clock.elapse(
-        const Duration(seconds: PayjoinConstants.directoryPollingInterval),
+        const Duration(seconds: PayjoinConstants.directoryMinPollSpacingSec),
       );
 
       expect(expired.map((payjoin) => payjoin.id), [model.id]);
