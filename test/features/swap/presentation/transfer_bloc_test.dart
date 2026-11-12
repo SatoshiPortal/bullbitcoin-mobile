@@ -1,3 +1,4 @@
+import '../../../frozen_outpoints_fixture.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart'
     show OrderSwapQuote;
 import 'package:bb_mobile/features/send/public/send_facade.dart';
@@ -296,6 +297,7 @@ void main() {
         bloc = buildBloc(
           bitcoinBroadcast: BroadcastBitcoinTransactionUsecase(
             bitcoinBlockchainRepository: blockchain,
+            walletUtxoRepository: EmptyFrozenOutpoints(),
             settingsRepository: settings,
             wallet: wallet,
           ),

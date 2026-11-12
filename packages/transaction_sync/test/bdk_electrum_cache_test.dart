@@ -292,6 +292,97 @@ void main() {
       },
     );
 
+    /// Provisions a store whose only wallet payment, T4, pays [keychain] index
+    /// 30, revealed beyond stop gap 20 before the checked pass. With
+    /// [scanFirst] the store is scanned before the reveal, so the checked pass
+    /// runs above height zero; otherwise it is the store's first scan.
+    Future<(SyncMode, Map<String, String>, FixturePhase)> payRevealedIndex30(
+      bdk.KeychainKind keychain, {
+      required bool scanFirst,
+      required bool discover,
+    }) async {
+      final probe = _Wallet.open(path);
+      final script = _hex(
+        probe.wallet
+            .peekAddress(keychain: keychain, index: 30)
+            .address
+            .scriptPubkey()
+            .toBytes(),
+      );
+      probe.close();
+      File(path).deleteSync();
+      final isolated = await ElectrumFixture.start({
+        for (final name in _walletScripts().keys) name: '0014${'cd' * 20}',
+        'ext5': script,
+      });
+      addTearDown(isolated.close);
+      sync = ElectrumSync(
+        connections: FixtureConnections([isolated.url]),
+        documentsDirectory: () async => dir.path,
+      );
+      final revisions = RevisionStore(writerMetadataPath(dir.path));
+      try {
+        final writer = NativeWalletWriter(
+          lockDirectory: writerLockDirectory(dir.path),
+          revisions: revisions,
+          documentsDirectory: dir.path,
+          catalog: SingleWalletCatalog(descriptor),
+          reservedAddresses: NoReservedAddresses(),
+        );
+        expect(
+          await writer.create(descriptor.key, expectedGeneration: 0),
+          isA<Ok>(),
+        );
+      } finally {
+        await revisions.close();
+      }
+      await isolated.load('S7-incoming-unrevealed-in-gap', 0);
+      if (scanFirst) completed(await sync.execute(descriptor));
+      final store = _Wallet.open(path);
+      store.wallet.revealAddressesTo(keychain: keychain, index: 30);
+      store.wallet.persist(persister: store.persister);
+      store.close();
+      final phase = await isolated.load('S7-incoming-unrevealed-in-gap', 1);
+      final mode = completed(
+        await sync.execute(descriptor, discover: discover),
+      ).mode;
+      final reopened = _Wallet.open(path);
+      try {
+        return (mode, _observe(reopened.wallet, phase.ids), phase);
+      } finally {
+        reopened.close();
+      }
+    }
+
+    for (final keychain in [
+      bdk.KeychainKind.external_,
+      bdk.KeychainKind.internal,
+    ]) {
+      test('discovery finds a payment to revealed ${keychain.name} index 30 '
+          'beyond stop gap 20', () async {
+        final (mode, seen, phase) = await payRevealedIndex30(
+          keychain,
+          scanFirst: true,
+          discover: true,
+        );
+        expect(mode, SyncMode.discovery);
+        expect(seen, {'T4': phase.truth['T4']});
+      });
+    }
+
+    test(
+      'the first scan finds a payment to an index revealed beyond the stop gap',
+      () async {
+        final (mode, seen, phase) = await payRevealedIndex30(
+          bdk.KeychainKind.external_,
+          scanFirst: false,
+          discover: false,
+        );
+        expect(mode, SyncMode.initialScan);
+        expect(seen, {'T4': phase.truth['T4']});
+      },
+    );
+
     // Pinned bdk_chain 0.23.3 discovery misses this payment; revealed scripts must cover it.
     test(
       'revealed scripts find a payment at index 30 beyond stop gap 20',
@@ -831,6 +922,172 @@ void main() {
         completed(await sync.execute(descriptor));
         expect(await gate.check(descriptor.key), BitcoinSpendStatus.pending);
         expect(settled(aId), isFalse);
+      });
+    }
+
+    // A discovery pass applies the revealed-script update, then a full scan;
+    // spend evidence is computed once from the final canonical state.
+    for (final scenario in [
+      'revealedOnly',
+      'scanOnly',
+      'neither',
+      'scanFails',
+    ]) {
+      test('discovery spend evidence: broadcast seen $scenario', () async {
+        await fixture.load('S10-no-change', 0);
+        completed(await sync.execute(descriptor));
+        final revisions = RevisionStore(writerMetadataPath(dir.path));
+        addTearDown(revisions.close);
+        final writer = NativeWalletWriter(
+          lockDirectory: writerLockDirectory(dir.path),
+          revisions: revisions,
+          documentsDirectory: dir.path,
+          catalog: SingleWalletCatalog(descriptor),
+          reservedAddresses: NoReservedAddresses(),
+        );
+        final reader = WalletSnapshotReader(
+          documentsDirectory: dir.path,
+          readiness: PersistedWalletReadiness(revisions),
+          requiredSchemaVersion: writerSchemaVersion,
+          revisions: revisions,
+          liquidAdmission: writer,
+        );
+        Future<WalletReadSnapshot<bdk.Wallet>> read() async =>
+            switch (await reader.bitcoin(descriptor)) {
+              Ok(:final value) => value,
+              Err(:final failure) => throw StateError('$failure'),
+            };
+        final mnemonic = bdk.Mnemonic.fromString(mnemonic: _testMnemonic);
+        final secret = bdk.DescriptorSecretKey(
+          networkKind: bdk.NetworkKind.test,
+          mnemonic: mnemonic,
+          password: null,
+        );
+        addTearDown(mnemonic.dispose);
+        addTearDown(secret.dispose);
+        final signers = [
+          for (final keychain in [
+            bdk.KeychainKind.external_,
+            bdk.KeychainKind.internal,
+          ])
+            bdk.SignersContainer.fromDescriptor(
+              descriptor: bdk.Descriptor.newBip84(
+                secretKey: secret,
+                keychainKind: keychain,
+                networkKind: bdk.NetworkKind.test,
+              ),
+            ),
+        ];
+        for (final signer in signers) {
+          addTearDown(signer.dispose);
+        }
+        final before = await read();
+        // The revealed-script step asks one history per revealed script.
+        var revealedScripts = 0;
+        for (final keychain in [
+          bdk.KeychainKind.external_,
+          bdk.KeychainKind.internal,
+        ]) {
+          final index = before.wallet.derivationIndex(keychain: keychain);
+          revealedScripts += index == null ? 0 : index + 1;
+        }
+        final recipient = bdk.Script(
+          rawOutputScript: Uint8List.fromList([
+            0,
+            20,
+            ...List.filled(20, 0xab),
+          ]),
+        );
+        addTearDown(recipient.dispose);
+        final psbt = bdk.TxBuilder()
+            .addRecipient(
+              script: recipient,
+              amount: bdk.Amount.fromSat(satoshi: 10000),
+            )
+            .feeAbsolute(feeAmount: bdk.Amount.fromSat(satoshi: 1000))
+            .finish(wallet: before.wallet);
+        addTearDown(psbt.dispose);
+        expect(
+          before.wallet.signWithSigners(
+            psbt: psbt,
+            signers: signers,
+            signOptions: null,
+          ),
+          isTrue,
+        );
+        final a = psbt.extractTx();
+        addTearDown(a.dispose);
+        final aId = a.computeTxid().toString();
+        await fixture.exposeBroadcasts(
+          scenario == 'revealedOnly' || scenario == 'scanFails',
+        );
+        final client = bdk.ElectrumClient(
+          url: fixture.url,
+          socks5: null,
+          timeout: 5,
+          retry: 0,
+          validateDomain: false,
+        );
+        final gate = BitcoinSpendGate(
+          revisions: revisions,
+          lockDirectory: writerLockDirectory(dir.path),
+          catalog: SingleWalletCatalog(descriptor),
+        );
+        final admission =
+            await gate.acquire(descriptor.key) as BitcoinSpendAdmission;
+        try {
+          expect(client.transactionBroadcast(tx: a).toString(), aId);
+          expect(admission.accepted(aId).durable, isTrue);
+        } finally {
+          admission.close();
+          client.dispose();
+        }
+        await fixture.advanceTip();
+        switch (scenario) {
+          case 'revealedOnly':
+            await fixture.exposeBroadcastsAfterHistories(
+              revealedScripts,
+              false,
+            );
+          case 'scanOnly':
+            await fixture.exposeBroadcastsAfterHistories(revealedScripts, true);
+          case 'scanFails':
+            await fixture.failHistoriesAfter(revealedScripts);
+        }
+        final result = await sync.execute(descriptor, discover: true);
+        if (scenario == 'scanFails') {
+          expect(result, isA<Err<SyncCompletion, TransactionSyncFailure>>());
+          // The failed pass publishes no success: the writer conservatively
+          // invalidates the revision, and nothing it fetched was persisted.
+          final after = await read();
+          expect(after.stale, isTrue);
+          expect(
+            after.wallet.getTx(txid: bdk.Txid.fromString(hex: aId)),
+            isNull,
+          );
+          // The gate stays closed after the failed pass.
+          expect(
+            await gate.check(descriptor.key),
+            BitcoinSpendStatus.unavailable,
+          );
+          // A later complete pass recovers.
+          await fixture.failHistoriesAfter(null);
+          completed(await sync.execute(descriptor, discover: true));
+          expect(await gate.check(descriptor.key), BitcoinSpendStatus.ready);
+          return;
+        }
+        completed(result);
+        final after = await read();
+        final canonical =
+            after.wallet.getTx(txid: bdk.Txid.fromString(hex: aId)) != null;
+        if (scenario == 'neither') expect(canonical, isFalse);
+        // Ready only when the final canonical state holds the payment.
+        expect(
+          await gate.check(descriptor.key),
+          canonical ? BitcoinSpendStatus.ready : BitcoinSpendStatus.pending,
+        );
+        // Only synthetic booleans: no production wallet data.
+        print('DISCOVERY-EVIDENCE seen=$scenario canonical=$canonical');
       });
     }
 

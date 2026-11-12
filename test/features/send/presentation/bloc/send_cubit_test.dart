@@ -148,6 +148,8 @@ class _MockOrderSwapQuote extends Mock implements OrderSwapQuote {}
 
 class _MockOrderSwapRecord extends Mock implements OrderSwapRecord {}
 
+class _MockOrderSwap extends Mock implements OrderSwap {}
+
 class _MockUpdatePaidSendSwapUsecase extends Mock
     implements UpdatePaidSendSwapUsecase {}
 
@@ -744,6 +746,234 @@ void main() {
     ).thenAnswer((_) async => _sweepFeeOptions);
   }
 
+  test('Liquid-funded Bitcoin confirmation preserves payout amount', () async {
+    final wallet = _liquidWallet(balanceSat: 1000000);
+    final quote = _MockOrderSwapQuote();
+    final record = _MockOrderSwapRecord();
+    final order = _MockOrderSwap();
+    when(() => quote.inAmountSat).thenReturn(BigInt.from(51000));
+    when(() => record.localId).thenReturn('cross-chain-swap');
+    when(() => record.order).thenReturn(order);
+    when(() => order.payinAddress).thenReturn('lq1exchange');
+    when(() => order.payinAmountSat).thenReturn(BigInt.from(51000));
+    when(() => order.payoutAmountSat).thenReturn(BigInt.from(50000));
+    when(
+      () => getSendCrossChainQuoteUsecase.execute(
+        wallet: wallet,
+        amountSat: BigInt.from(50000),
+        isInAmountFixed: false,
+      ),
+    ).thenAnswer((_) async => Ok(quote));
+    when(
+      () => createSendCrossChainSwapUsecase.execute(
+        walletId: wallet.id,
+        destinationAddress: 'bc1qrecipient',
+        destinationIsTestnet: false,
+        amountSat: 50000,
+        isInAmountFixed: false,
+        quotedCounterpartAmountSat: BigInt.from(51000),
+      ),
+    ).thenAnswer((_) async => Ok(record));
+    when(
+      () => watchSendSwapUsecase.execute('cross-chain-swap'),
+    ).thenAnswer((_) => const Stream.empty());
+    when(
+      () => getWalletUtxosUsecase.execute(walletId: wallet.id),
+    ).thenAnswer((_) async => []);
+    when(
+      () => checkLiquidConsolidationUsecase.execute(walletId: wallet.id),
+    ).thenAnswer((_) async => false);
+    when(
+      () => prepareLiquidSendUsecase.execute(
+        walletId: wallet.id,
+        address: 'lq1exchange',
+        feeRate: any(named: 'feeRate'),
+        amountSat: 51000,
+        drain: false,
+        selectedInputs: null,
+        hasFrozenInputs: false,
+      ),
+    ).thenAnswer((_) async => const Ok('swap-pset'));
+    when(
+      () => verifyExchangePayinUsecase.execute(
+        psbtOrPset: 'swap-pset',
+        record: record,
+        walletId: wallet.id,
+      ),
+    ).thenAnswer((_) async => const Ok<void, SendFailure>(null));
+    when(
+      () => calculateLiquidAbsoluteFeesUsecase.execute(pset: 'swap-pset'),
+    ).thenAnswer((_) async => 100);
+    final cubit = buildCubit();
+    addTearDown(cubit.close);
+    cubit.setStateForTest(
+      SendState(
+        step: SendStep.amount,
+        sendType: SendType.bitcoin,
+        selectedWallet: SendWalletBitcoin(wallet),
+        paymentRequest: const PaymentRequest.bitcoin(
+          address: 'bc1qrecipient',
+          isTestnet: false,
+        ),
+        amount: '50000',
+        bitcoinUnit: BitcoinUnit.sats,
+        inputAmountCurrencyCode: BitcoinUnit.sats.code,
+        bitcoinFeesList: _sweepFeeOptions,
+        liquidFeesList: _sweepFeeOptions,
+        recipientDrafts: const [
+          (
+            id: 0,
+            address: 'bc1qrecipient',
+            amount: '50000',
+            receivesRemainder: false,
+            isValid: true,
+          ),
+        ],
+      ),
+    );
+
+    await cubit.onAmountConfirmed();
+
+    expect(cubit.state.failure, isNull);
+    expect(cubit.state.unsignedPsbt, 'swap-pset');
+    expect(cubit.state.step, SendStep.confirm);
+    expect(cubit.state.confirmedAmountSat, 50000);
+
+    expect(await cubit.createTransaction(), isTrue);
+    expect(cubit.state.confirmedAmountSat, 50000);
+  });
+
+  test('back and recipient edit cancel pending sweep confirmation', () async {
+    final wallet = _bitcoinLocalWallet();
+    final selected = walletUtxoFixture(
+      walletId: wallet.id,
+      txId: 'selected',
+      sats: 75000,
+    );
+    stubSweepLoad(wallet: wallet, utxos: [selected]);
+
+    final preparedAddresses = <String>[];
+    final broadcastPayloads = <String>[];
+    when(
+      () => prepareBitcoinSendUsecase.execute(
+        walletId: wallet.id,
+        recipients: any(named: 'recipients'),
+        networkFee: any(named: 'networkFee'),
+        replaceByFee: true,
+        selectedInputs: any(named: 'selectedInputs'),
+        selectedOnly: true,
+        hasFrozenInputs: any(named: 'hasFrozenInputs'),
+      ),
+    ).thenAnswer((invocation) async {
+      final recipients =
+          invocation.namedArguments[#recipients]
+              as List<BitcoinTransactionRecipient>;
+      final address = recipients.single.address;
+      preparedAddresses.add(address);
+      return Ok((
+        unsignedPsbt: 'unsigned-$address',
+        txSize: 110,
+        isToSelf: false,
+        recipientAmountsSat: [Sats.fromInt(74000)],
+      ));
+    });
+    when(
+      () => signBitcoinTxUsecase.execute(
+        psbt: any(named: 'psbt'),
+        walletId: wallet.id,
+      ),
+    ).thenAnswer(
+      (invocation) async => (
+        signedPsbt: 'signed-${invocation.namedArguments[#psbt]}',
+        txSize: 110,
+      ),
+    );
+    when(
+      () =>
+          calculateBitcoinAbsoluteFeesUsecase.execute(psbt: any(named: 'psbt')),
+    ).thenAnswer((_) async => 1000);
+    when(
+      () => broadcastBitcoinTxUsecase.execute(
+        any(),
+        isPsbt: any(named: 'isPsbt'),
+        network: app.Network.bitcoinMainnet,
+      ),
+    ).thenAnswer((invocation) async {
+      broadcastPayloads.add(invocation.positionalArguments.single as String);
+      return 'broadcast-txid';
+    });
+    when(
+      () => watchWalletTransactionByTxIdUsecase.execute(
+        walletId: wallet.id,
+        txId: any(named: 'txId'),
+      ),
+    ).thenAnswer((_) => const Stream.empty());
+    when(
+      () => detectBitcoinStringUsecase.execute(data: 'bc1qeditedrecipient'),
+    ).thenAnswer(
+      (_) async => const PaymentRequest.bitcoin(
+        address: 'bc1qeditedrecipient',
+        isTestnet: false,
+      ),
+    );
+
+    final cubit = buildCubit(
+      wallet: wallet,
+      initialSweepOutpoints: const {(txId: 'selected', vout: 0)},
+    );
+    addTearDown(cubit.close);
+    await cubit.loadWalletWithRatesAndFees();
+    await cubit.onScannedPaymentRequest(
+      'bc1qapprovedrecipient',
+      const PaymentRequest.bitcoin(
+        address: 'bc1qapprovedrecipient',
+        isTestnet: false,
+      ),
+    );
+    expect(cubit.state.failure, isNull);
+    expect(cubit.state.step, SendStep.confirm);
+    expect(
+      cubit.state.signedBitcoinPsbt,
+      'signed-unsigned-bc1qapprovedrecipient',
+    );
+    expect(preparedAddresses, ['bc1qapprovedrecipient']);
+
+    // Only the first UTXO load after pressing final Confirm is held.
+    // Any rebuild and the final validation get the same available coin.
+    final refreshStarted = Completer<void>();
+    final pendingRefresh = Completer<List<WalletUtxo>>();
+    var holdNextLoad = true;
+    when(() => getWalletUtxosUsecase.execute(walletId: wallet.id)).thenAnswer((
+      _,
+    ) {
+      if (holdNextLoad) {
+        holdNextLoad = false;
+        refreshStarted.complete();
+        return pendingRefresh.future;
+      }
+      return Future.value([selected]);
+    });
+
+    final confirming = cubit.onConfirmTransactionClicked();
+    await refreshStarted.future.timeout(const Duration(seconds: 3));
+    cubit.backClicked();
+    expect(cubit.state.step, SendStep.address);
+    await cubit.onChangedText('bc1qeditedrecipient');
+    expect(cubit.state.paymentRequestAddress, 'bc1qeditedrecipient');
+    expect(cubit.state.signedBitcoinPsbt, isNull);
+    // No Continue or Confirm is pressed for the newly pasted destination.
+    pendingRefresh.complete([selected]);
+    await confirming.timeout(const Duration(seconds: 3));
+
+    expect(cubit.state.step, SendStep.address);
+    expect(cubit.state.signedBitcoinPsbt, isNull);
+    expect(
+      broadcastPayloads,
+      isEmpty,
+      reason: 'Editing the recipient requires a new confirmation',
+    );
+  });
+
   group('SendCubit Liquid coin control', () {
     const outpoint = (txId: 'liquid-selected', vout: 0);
     const request = PaymentRequest.liquid(
@@ -963,7 +1193,12 @@ void main() {
               walletId: any(named: 'walletId'),
             ),
           );
-          verifyNever(() => broadcastLiquidTxUsecase.execute(any()));
+          verifyNever(
+            () => broadcastLiquidTxUsecase.execute(
+              any(),
+              network: any(named: 'network'),
+            ),
+          );
         },
       );
     }
@@ -998,6 +1233,166 @@ void main() {
       );
     });
 
+    test('does not broadcast a signature after Liquid inputs change', () async {
+      final second = selected.copyWith(txId: 'liquid-second', vout: 1);
+      when(
+        () => getWalletUtxosUsecase.execute(walletId: wallet.id),
+      ).thenAnswer((_) async => [selected, second]);
+      when(
+        () => prepareLiquidSendUsecase.execute(
+          walletId: wallet.id,
+          address: any(named: 'address'),
+          feeRate: any(named: 'feeRate'),
+          amountSat: any(named: 'amountSat'),
+          drain: any(named: 'drain'),
+          selectedInputs: any(named: 'selectedInputs'),
+          hasFrozenInputs: any(named: 'hasFrozenInputs'),
+        ),
+      ).thenAnswer((invocation) async {
+        final inputs =
+            invocation.namedArguments[#selectedInputs] as Set<Outpoint>?;
+        final pset = inputs != null && inputs.length == 1
+            ? inputs.contains(outpoint)
+                  ? 'liquid-pset'
+                  : 'liquid-pset-b'
+            : 'liquid-pset-ab';
+        return Ok(pset);
+      });
+      when(
+        () => calculateLiquidAbsoluteFeesUsecase.execute(
+          pset: any(named: 'pset'),
+        ),
+      ).thenAnswer((_) async => 100);
+      final cubit = await start();
+      await cubit.amountChanged(amount: '20000');
+      await cubit.onAmountConfirmed();
+      expect(cubit.state.unsignedPsbt, 'liquid-pset');
+
+      final started = Completer<void>();
+      final signed = Completer<String>();
+      when(
+        () => signLiquidTxUsecase.execute(
+          pset: 'liquid-pset',
+          walletId: wallet.id,
+        ),
+      ).thenAnswer((_) {
+        started.complete();
+        return signed.future;
+      });
+      when(
+        () => broadcastLiquidTxUsecase.execute(
+          any(),
+          network: any(named: 'network'),
+        ),
+      ).thenThrow(Exception('broadcast reached'));
+
+      final confirming = cubit.onConfirmTransactionClicked();
+      await started.future;
+      expect(cubit.state.step, SendStep.confirm);
+      expect(cubit.state.signingTransaction, isTrue);
+      await cubit.utxoSelected(second);
+      expect(cubit.state.unsignedPsbt, 'liquid-pset-ab');
+      await cubit.utxoSelected(selected);
+      expect(cubit.state.requiredInputOutpoints, {second.outpoint});
+      expect(cubit.state.unsignedPsbt, 'liquid-pset-b');
+      signed.complete('signed-original-inputs');
+      await confirming;
+      expect(cubit.state.unsignedPsbt, 'liquid-pset-b');
+
+      verifyNever(
+        () => broadcastLiquidTxUsecase.execute(
+          'signed-original-inputs',
+          network: wallet.network,
+        ),
+      );
+      expect(cubit.state.signedLiquidTx, isNull);
+      expect(cubit.state.signingTransaction, isFalse);
+    });
+
+    for (final broadcastStarted in [false, true]) {
+      test(
+        broadcastStarted
+            ? 'finishes a broadcast when wallet coins change in flight'
+            : 'returns to confirmation when wallet coins change during validation',
+        () async {
+          final cubit = await start();
+          await cubit.amountChanged(amount: '20000');
+          await cubit.onAmountConfirmed();
+          final pendingStarted = Completer<void>();
+          final validation = Completer<List<WalletUtxo>>();
+          final broadcast = Completer<String>();
+          var available = [selected];
+          when(
+            () => getWalletUtxosUsecase.execute(walletId: wallet.id),
+          ).thenAnswer((_) async {
+            if (!broadcastStarted &&
+                cubit.state.step == SendStep.sending &&
+                !pendingStarted.isCompleted) {
+              pendingStarted.complete();
+              return validation.future;
+            }
+            return available;
+          });
+          when(
+            () => broadcastLiquidTxUsecase.execute(
+              'signed-liquid-pset',
+              network: wallet.network,
+            ),
+          ).thenAnswer((_) {
+            pendingStarted.complete();
+            return broadcast.future;
+          });
+
+          final confirming = cubit.onConfirmTransactionClicked();
+          await pendingStarted.future;
+          available = [
+            selected,
+            WalletUtxo.liquid(
+              walletId: wallet.id,
+              txId: 'new-liquid-coin',
+              vout: 0,
+              scriptPubkey: '',
+              amountSat: BigInt.from(10000),
+              standardAddress: 'ex1own',
+              confidentialAddress: 'lq1own',
+            ),
+          ];
+          await cubit.loadUtxos();
+          final stepAfterSync = cubit.state.step;
+          validation.complete([selected]);
+          broadcast.complete('broadcast-txid');
+          await confirming;
+
+          expect(
+            stepAfterSync,
+            broadcastStarted ? SendStep.sending : SendStep.confirm,
+          );
+          expect(
+            cubit.state.step,
+            broadcastStarted ? SendStep.success : SendStep.confirm,
+          );
+          expect(cubit.state.txId, broadcastStarted ? 'broadcast-txid' : null);
+          expect(cubit.state.broadcastingTransaction, isFalse);
+          expect(cubit.state.signedLiquidTx, isNull);
+          if (broadcastStarted) {
+            verify(
+              () => broadcastLiquidTxUsecase.execute(
+                'signed-liquid-pset',
+                network: wallet.network,
+              ),
+            ).called(1);
+          } else {
+            verifyNever(
+              () => broadcastLiquidTxUsecase.execute(
+                any(),
+                network: any(named: 'network'),
+              ),
+            );
+          }
+        },
+      );
+    }
+
     test('rejects a newly frozen Liquid coin before broadcasting', () async {
       final cubit = await start(sweep: true);
       await cubit.signTransaction();
@@ -1009,7 +1404,12 @@ void main() {
 
       expect(cubit.state.failure, isA<SendSelectedCoinsUnavailableFailure>());
       expect(cubit.state.signedLiquidTx, isNull);
-      verifyNever(() => broadcastLiquidTxUsecase.execute(any()));
+      verifyNever(
+        () => broadcastLiquidTxUsecase.execute(
+          any(),
+          network: any(named: 'network'),
+        ),
+      );
     });
 
     test(
@@ -2114,6 +2514,20 @@ void main() {
         expect(cubit.state.unsignedPsbt, isNull);
       },
     );
+
+    test('rejects a build when the wallet is unavailable', () async {
+      final cubit = buildCubit();
+      addTearDown(cubit.close);
+      cubit.setStateForTest(
+        readyState(_bitcoinLocalWallet()).copyWith(selectedWallet: null),
+      );
+
+      expect(await cubit.createTransaction(), isFalse);
+
+      expect(cubit.state.failure, isA<SendTransactionBuildFailure>());
+      expect(cubit.state.buildingTransaction, isFalse);
+      expect(cubit.state.unsignedPsbt, isNull);
+    });
 
     test('returns from multi-recipient sweep confirmation to amounts', () {
       final cubit = buildCubit();
@@ -4793,6 +5207,61 @@ void main() {
       },
     );
 
+    test(
+      'retries a failed broadcast with the same signed transaction',
+      () async {
+        final cubit = buildCubit();
+        addTearDown(cubit.close);
+        cubit.setStateForTest(
+          plainSignedState().copyWith(step: SendStep.confirm),
+        );
+        when(
+          () => broadcastBitcoinTxUsecase.execute(
+            'signed-psbt',
+            isPsbt: true,
+            network: app.Network.bitcoinMainnet,
+            walletId: 'w1',
+          ),
+        ).thenThrow(BroadcastTransactionException('connection closed'));
+
+        await cubit.onConfirmTransactionClicked();
+
+        expect(cubit.state.step, SendStep.confirm);
+        expect(cubit.state.broadcastingTransaction, isFalse);
+        expect(cubit.state.txId, isNull);
+        expect(cubit.state.signedBitcoinPsbt, 'signed-psbt');
+        expect(
+          cubit.state.failure,
+          isA<SendTransactionConfirmationFailure>().having(
+            (failure) => failure.isBroadcastFailure,
+            'broadcast failure',
+            isTrue,
+          ),
+        );
+        stubBroadcast();
+        when(
+          () => watchWalletTransactionByTxIdUsecase.execute(
+            walletId: 'w1',
+            txId: 'broadcast-txid',
+          ),
+        ).thenAnswer((_) => const Stream.empty());
+
+        await cubit.onConfirmTransactionClicked();
+
+        expect(cubit.state.step, SendStep.success);
+        expect(cubit.state.failure, isNull);
+        expect(cubit.state.txId, 'broadcast-txid');
+        verify(
+          () => broadcastBitcoinTxUsecase.execute(
+            'signed-psbt',
+            isPsbt: true,
+            network: app.Network.bitcoinMainnet,
+            walletId: 'w1',
+          ),
+        ).called(2);
+      },
+    );
+
     test('with a user label, stores the label on the broadcast txid', () async {
       final cubit = buildCubit();
       addTearDown(cubit.close);
@@ -4851,7 +5320,7 @@ void main() {
       ).thenThrow(NoSpendableUtxoException('selected coin disappeared'));
       cubit.setStateForTest(
         SendState(
-          step: SendStep.confirm,
+          step: SendStep.sending,
           selectedWallet: SendWalletBitcoin(_bitcoinWallet(balanceSat: 20000)),
           selectedUtxos: [selected],
           unsignedPsbt: 'unsigned-psbt',
@@ -4862,6 +5331,7 @@ void main() {
       await cubit.broadcastTransaction();
 
       expect(cubit.state.failure, isA<SendSelectedCoinsUnavailableFailure>());
+      expect(cubit.state.step, SendStep.confirm);
       expect(cubit.state.unsignedPsbt, isNull);
       expect(cubit.state.signedBitcoinPsbt, isNull);
       verifyNever(
