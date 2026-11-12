@@ -193,14 +193,44 @@ class BroadcastSignedTxCubit extends Cubit<BroadcastSignedTxState> {
       }
     }
 
-    if (!await _verifyAgainstOriginal(input, isPsbt: format == TxFormat.psbt)) {
+    // A signer such as Jade or SeedSigner returns a signed PSBT that is not
+    // finalized. Extracted as is, it has no witnesses: the review would show a
+    // wrong rate and the node would reject it. Finalize it as the QR path
+    // does; a PSBT that cannot be finalized (unsigned, or already final) is
+    // kept as it is.
+    var parsed = tx;
+    var parsedFormat = format;
+    var data = input;
+    if (format == TxFormat.psbt) {
+      final finalized = _tryFinalize(input);
+      if (finalized != null) {
+        parsed = await BitcoinTx.fromBytes(hex.decode(finalized));
+        parsedFormat = TxFormat.hex;
+        data = finalized;
+      }
+    }
+
+    if (!await _verifyAgainstOriginal(
+      data,
+      isPsbt: parsedFormat == TxFormat.psbt,
+    )) {
       return;
     }
     emit(
       state.copyWith(
-        transaction: ParsedTx(format: format, data: input, tx: tx),
+        transaction: ParsedTx(format: parsedFormat, data: data, tx: parsed),
       ),
     );
+  }
+
+  String? _tryFinalize(String psbtBase64) {
+    try {
+      return PsbtBuilder.fromPsbt(
+        Psbt.fromBase64(psbtBase64),
+      ).finalizeAll().toHex();
+    } on Exception {
+      return null;
+    }
   }
 
   Future<bool> _verifyAgainstOriginal(

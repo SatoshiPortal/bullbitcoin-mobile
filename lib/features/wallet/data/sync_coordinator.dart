@@ -57,8 +57,10 @@ class SyncCoordinator {
     this._refreshRevisions,
     this._readNetwork,
     this._readWalletUsecase,
+    DateTime Function()? now,
   }) : _getWallets = getWalletsUsecase,
-       _syncWallet = syncWalletUsecase {
+       _syncWallet = syncWalletUsecase,
+       _now = now ?? DateTime.now {
     final lifecycleState = WidgetsBinding.instance.lifecycleState;
     // Gate syncs to the foreground-resumed state only. Default to allowed for
     // the brief startup window before the first lifecycle event arrives
@@ -74,6 +76,19 @@ class SyncCoordinator {
   /// `sync()` call within this window is a no-op for that kind unless the
   /// caller passes [SyncTrigger.user].
   static const Duration _minSyncInterval = Duration(seconds: 2);
+
+  /// Minimum time between automatic Bitcoin discovery attempts in one
+  /// environment. Routine passes query revealed scripts only, so funds sent
+  /// to an address this device never revealed stay invisible until a
+  /// discovery pass. A pull always discovers; the first eligible automatic
+  /// pass of the process discovers too, then at most one per window. Every
+  /// discovery attempt opens the window when it is queued, failed ones and
+  /// pulls included; a throttled or gated call opens nothing. This is not a
+  /// timer: nothing runs without a sync call.
+  static const Duration _automaticDiscoveryInterval = Duration(minutes: 10);
+
+  final DateTime Function() _now;
+  final Map<network.NetworkEnv, DateTime> _automaticDiscoveryAttemptAt = {};
 
   final Set<(network.NetworkEnv, SyncKind)> _unsupportedLogged = {};
   final Future<network.NetworkEnv> Function()? _readNetwork;
@@ -145,7 +160,16 @@ class SyncCoordinator {
     final dropped = <String>[];
     final waits = <SyncKind, Future<Object?>>{};
     for (final kind in requested) {
-      final (pass, reason) = _enqueue(kind, trigger: trigger, discover: false);
+      final discover =
+          kind == SyncKind.bitcoin && _discoveryDue(trigger, environment);
+      final (pass, reason) = _enqueue(
+        kind,
+        trigger: trigger,
+        discover: discover,
+      );
+      if (discover && pass != null && pass.discover) {
+        _automaticDiscoveryAttemptAt[environment] = _now();
+      }
       if (pass != null) {
         final completer = Completer<Object?>();
         pass.waiters.add(completer);
@@ -167,6 +191,13 @@ class SyncCoordinator {
     };
     if (failures.isEmpty) return;
     throw SyncCoordinatorException(failures);
+  }
+
+  bool _discoveryDue(SyncTrigger trigger, network.NetworkEnv scope) {
+    if (trigger == SyncTrigger.user) return true;
+    final last = _automaticDiscoveryAttemptAt[scope];
+    return last == null ||
+        _now().difference(last) >= _automaticDiscoveryInterval;
   }
 
   /// Explicit recovery is wallet-scoped, bypasses throttling and shares the
@@ -354,7 +385,7 @@ class SyncCoordinator {
     }
     if (trigger == SyncTrigger.automatic) {
       final last = _lastSuccessAt[kind];
-      if (last != null && DateTime.now().difference(last) < _minSyncInterval) {
+      if (last != null && _now().difference(last) < _minSyncInterval) {
         return (null, 'throttled');
       }
     }
@@ -399,7 +430,7 @@ class SyncCoordinator {
             _settle(pass, failure);
             continue;
           }
-          if (pass.walletId == null) _lastSuccessAt[kind] = DateTime.now();
+          if (pass.walletId == null) _lastSuccessAt[kind] = _now();
           _settle(pass, null);
         } catch (e) {
           // The pass owns the summary, independently of its waiter count.

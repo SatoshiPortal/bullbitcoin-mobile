@@ -4981,5 +4981,6 @@
   "networkFeatureUnavailable": "Cette fonctionnalité est indisponible sur le réseau sélectionné.",
   "networkSelectorTitle": "Réseau",
   "networkWalletSetupTitle": "Aucun portefeuille sur ce réseau",
-  "networkWalletReuseSecret": "Réutiliser le secret d’un portefeuille existant"
+  "networkWalletReuseSecret": "Réutiliser le secret d’un portefeuille existant",
+  "coreScreensOutputsExceedInputs": "Les sorties dépassent les entrées : cette transaction est invalide et le réseau la rejettera."
 }
