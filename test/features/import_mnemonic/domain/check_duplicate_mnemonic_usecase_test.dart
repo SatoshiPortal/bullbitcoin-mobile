@@ -83,6 +83,42 @@ void main() {
       },
     );
 
+    test(
+      'a stored mnemonic no wallet signs with is not a duplicate: the import reuses it',
+      () async {
+        expect(
+          await secrets.import(words: words),
+          isA<Ok<Secret, SecretFailure>>(),
+        );
+        // A watch-only wallet with the same origin holds no seed.
+        walletsAre([signingWallet(fingerprint, signsLocally: false)]);
+
+        expect(
+          await usecase.execute(mnemonicWords: words),
+          isA<Ok<void, ImportMnemonicFailure>>(),
+        );
+      },
+    );
+
+    test(
+      'when the wallets cannot be listed, a stored mnemonic is a duplicate',
+      () async {
+        expect(
+          await secrets.import(words: words),
+          isA<Ok<Secret, SecretFailure>>(),
+        );
+        when(() => wallets.getWallets()).thenAnswer(
+          (_) async => const Err<List<Wallet>, WalletFailure>(
+            WalletStorageFailure('unavailable'),
+          ),
+        );
+
+        final result = await usecase.execute(mnemonicWords: words);
+
+        expect((result as Err).failure, isA<ImportMnemonicDuplicateFailure>());
+      },
+    );
+
     test('a passphrase makes a different secret, not a duplicate', () async {
       expect(
         await secrets.import(words: words),
