@@ -51,6 +51,44 @@ void main() {
     );
   });
 
+  test(
+    'a deletion also removes earlier quarantine copies, plaintext ones included',
+    () {
+      final copies = [
+        for (final suffix in ['', '-wal', '-shm'])
+          File('$path$suffix.unreadable-1700000000000')
+            ..writeAsStringSync('SQLite format 3'),
+      ];
+      final unrelated = File('${family.directory}/other.sqlite.unreadable-1')
+        ..writeAsStringSync('keep');
+      final lookalike = File('$path.unreadable-notanumber')
+        ..writeAsStringSync('keep');
+
+      expect(
+        EncryptedSqlite.retire(path, const Retirement.delete()),
+        isA<Ok<void, SqliteStorageFailure>>(),
+      );
+      for (final copy in copies) {
+        expect(copy.existsSync(), isFalse, reason: copy.path);
+      }
+      expect(unrelated.existsSync(), isTrue);
+      expect(lookalike.existsSync(), isTrue);
+    },
+  );
+
+  test('a quarantine leaves earlier quarantine copies where they are', () {
+    final earlier = File('$path.unreadable-1')..writeAsStringSync('earlier');
+    expect(
+      EncryptedSqlite.retire(
+        path,
+        const Retirement.quarantine('.unreadable-2'),
+      ),
+      isA<Ok<void, SqliteStorageFailure>>(),
+    );
+    expect(earlier.readAsStringSync(), 'earlier');
+    expect(File('$path.unreadable-2').existsSync(), isTrue);
+  });
+
   for (final step in RetirementStep.values.where(
     (s) => s != RetirementStep.published,
   )) {

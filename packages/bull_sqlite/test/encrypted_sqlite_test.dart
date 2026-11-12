@@ -170,6 +170,12 @@ void main() {
       expect(ok(EncryptedSqlite.inspect(path)), SqliteFileState.inconsistent);
     });
 
+    test('quarantined copies next to an absent main file decide nothing', () {
+      touch('.unreadable-1700000000000', bytes: 4096);
+      touch('-wal.unreadable-1700000000000', bytes: 64);
+      expect(ok(EncryptedSqlite.inspect(path)), SqliteFileState.absent);
+    });
+
     for (final suffix in [
       '-wal',
       '-journal',
