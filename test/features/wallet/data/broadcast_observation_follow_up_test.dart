@@ -119,6 +119,37 @@ void main() {
     });
   });
 
+  test('a status read finishing beyond the budget starts no sync', () {
+    fakeAsync((fake) {
+      final h = _Harness(fake);
+      h.status = () => Future<BitcoinSpendStatus>.delayed(
+        const Duration(seconds: 100),
+        () => BitcoinSpendStatus.pending,
+      );
+      h.followUp.start(_wallet);
+      fake.elapse(const Duration(minutes: 5));
+      expect(h.statuses, _seconds([3]));
+      expect(h.polls, isEmpty);
+    });
+  });
+
+  test('a slow read on the last deadline starts no sync after 90 s', () {
+    fakeAsync((fake) {
+      final h = _Harness(fake);
+      h.status = () => fake.elapsed >= const Duration(seconds: 90)
+          ? Future<BitcoinSpendStatus>.delayed(
+              const Duration(seconds: 1),
+              () => BitcoinSpendStatus.pending,
+            )
+          : Future.value(BitcoinSpendStatus.pending);
+      h.followUp.start(_wallet);
+      fake.elapse(const Duration(minutes: 5));
+      expect(h.statuses, _seconds([3, 10, 30, 90]));
+      // The last slot is skipped rather than asking at 91 s.
+      expect(h.polls, _seconds([3, 10, 30]));
+    });
+  });
+
   test('a new broadcast replaces the follow-up in progress', () {
     fakeAsync((fake) {
       final h = _Harness(fake);
@@ -189,8 +220,14 @@ void main() {
           ).then((value) => result = value),
         );
         fake.elapse(const Duration(minutes: 5));
-        expect(result, isA<Ok>());
-        expect((result! as Ok).value, same(receipt));
+        expect(
+          result,
+          isA<Ok<BitcoinBroadcastReceipt, WalletSpendFailure>>().having(
+            (ok) => ok.value,
+            'receipt',
+            same(receipt),
+          ),
+        );
         expect(broadcasts, 1);
         expect(h.polls, _seconds([3, 10, 30, 90]));
       });

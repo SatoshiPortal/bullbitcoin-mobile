@@ -83,17 +83,20 @@ final class BroadcastObservationFollowUp {
 
   Future<void> _follow(String walletId, _Run run) async {
     final elapsed = clock.stopwatch()..start();
+    // No new request after the last deadline, even when a late timer or a
+    // slow status read lands past it; a request already started may finish.
+    bool withinBudget() => elapsed.elapsed <= deadlines.last;
     try {
       for (final deadline in deadlines) {
         final wait = deadline - elapsed.elapsed;
         if (wait.isNegative) continue;
         await run.sleep(wait);
-        if (!_isCurrent(walletId, run)) return;
+        if (!_isCurrent(walletId, run) || !withinBudget()) return;
         try {
           // Busy, pending and unavailable all mean "not observed yet": only
           // ready ends the follow-up early.
           if (await _spendStatus(walletId) == BitcoinSpendStatus.ready) return;
-          if (!_isCurrent(walletId, run)) return;
+          if (!_isCurrent(walletId, run) || !withinBudget()) return;
           await _pollWallet(
             walletId,
             isActive: () => _isCurrent(walletId, run),
