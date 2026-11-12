@@ -4953,6 +4953,6 @@
   "appStartupMissingSecretMessage": "Cet appareil ne contient plus la phrase de récupération de votre portefeuille. Saisissez-la à nouveau pour le retrouver.",
   "appStartupRestoreSecretButton": "Saisir ma phrase de récupération",
   "appStartupRestoreMismatch": "Cette phrase de récupération appartient à un autre portefeuille. Saisissez celle du portefeuille de cet appareil.",
-  "passphraseShow": "Afficher la phrase secrète",
-  "passphraseHide": "Masquer la phrase secrète"
+  "passphraseShow": "Afficher la passphrase",
+  "passphraseHide": "Masquer la passphrase"
 }
