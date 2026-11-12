@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/errors/exchange_errors.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
@@ -27,11 +28,25 @@ class LoadLimitOrderCreationUsecase {
   @useResult
   Future<Result<LimitOrderCreationContext, LimitOrdersFailure>>
   execute() async {
-    final defaultWalletsFuture = _loadDefaultWallets();
-    final appWalletsFuture = _loadAppWallets();
+    late final Result<DefaultWallets, LimitOrdersFailure> defaultWalletsResult;
+    late final Result<UserSummary, LimitOrdersFailure> summaryResult;
+    late final List<Wallet> appWallets;
+    // Observe every parallel read before yielding.
+    // Future.wait returns programmer errors to the caller.
+    await Future.wait<void>([
+      _loadDefaultWallets().then<void>((value) {
+        defaultWalletsResult = value;
+      }),
+      _loadAppWallets().then<void>((value) {
+        appWallets = value;
+      }),
+      _loadSummary().then<void>((value) {
+        summaryResult = value;
+      }),
+    ]);
 
     final UserSummary summary;
-    switch (await _loadSummary()) {
+    switch (summaryResult) {
       case Ok(:final value):
         summary = value;
       case Err(:final failure):
@@ -59,11 +74,8 @@ class LoadLimitOrderCreationUsecase {
         )
         .currency;
 
-    // The rate needs the selected currency, so it starts after the summary.
-    final rateFuture = _repository.getRate(selectedCurrency.code);
-
     final DefaultWallets defaultWallets;
-    switch (await defaultWalletsFuture) {
+    switch (defaultWalletsResult) {
       case Ok(:final value):
         defaultWallets = value;
       case Err(:final failure):
@@ -88,9 +100,8 @@ class LoadLimitOrderCreationUsecase {
         ),
     ];
 
-    final appWallets = await appWalletsFuture;
-
-    final rateResult = await rateFuture;
+    // Do not start an unused rate request when a required input failed.
+    final rateResult = await _repository.getRate(selectedCurrency.code);
     return switch (rateResult) {
       Err(:final failure) => Err(failure),
       Ok(:final value) => Ok(
@@ -110,6 +121,9 @@ class LoadLimitOrderCreationUsecase {
       return Ok(await _getExchangeUserSummaryUsecase.execute());
     } on Error {
       rethrow;
+    } on GetExchangeUserSummaryCredentialException catch (e) {
+      log.info('Exchange account credential refused: ${e.runtimeType}');
+      return Err(LimitOrdersAccountUnavailableFailure('$e'));
     } on GetExchangeUserSummaryException catch (e, st) {
       log.severe(
         message: 'Failed to load the account before creating a limit order',
@@ -133,6 +147,12 @@ class LoadLimitOrderCreationUsecase {
       return Ok(await _defaultWalletsFacade.getDefaultWallets());
     } on Error {
       rethrow;
+    } on ApiKeyException catch (e) {
+      log.info('Exchange credential refused: ${e.runtimeType}');
+      return Err(LimitOrdersAccountUnavailableFailure('$e'));
+    } on ExchangeCredentialUnavailableException catch (e) {
+      log.info('Exchange credential refused: ${e.runtimeType}');
+      return Err(LimitOrdersAccountUnavailableFailure('$e'));
     } catch (e, st) {
       log.severe(
         message: 'Failed to read the default wallets for a limit order',
