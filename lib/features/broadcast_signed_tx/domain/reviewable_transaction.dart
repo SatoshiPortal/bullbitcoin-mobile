@@ -44,6 +44,12 @@ class ReviewableTransaction {
     return fee < 0 ? null : fee;
   }
 
+  /// Whether a Bitcoin transaction pays out more than its inputs hold. Such a
+  /// transaction is invalid and the network will reject it. Liquid carries an
+  /// explicit fee and is never flagged here.
+  bool get outputsExceedInputs =>
+      transaction is! LiquidTransaction && totalOutputsSat > totalInputsSat;
+
   /// Fee rate in sat/vbyte, or null if vsize is zero.
   double? get feeRate => transaction.vsize > 0 && feeSat != null
       ? feeSat! / transaction.vsize
