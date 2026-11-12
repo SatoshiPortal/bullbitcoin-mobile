@@ -62,7 +62,14 @@ function reviewFiles(files) {
     const path = file.filename;
     if (!relevant(path) || file.status === 'removed') continue;
     if (typeof file.patch !== 'string') {
-      uninspected.push(path); // GitHub omits the patch of large diffs
+      // A pure rename needs no line review only when its custody policy is unchanged.
+      // Moving out of secrets or an allowed importer can introduce a violation without additions.
+      const unchangedRename = file.status === 'renamed'
+        && typeof file.previous_filename === 'string' && file.previous_filename.length > 0
+        && file.changes === 0 && file.additions === 0 && file.deletions === 0
+        && RULES.every((rule) => rule.applies(file.previous_filename) === rule.applies(path));
+      if (unchangedRename) continue;
+      uninspected.push(path); // An absent patch does not establish why GitHub omitted it.
       continue;
     }
     let line = 0;
@@ -102,7 +109,9 @@ function commentBody({ findings, uninspected }, { hadComment = false } = {}) {
     MARKER,
     '### Custody review',
     '',
-    'This pull request touches the boundary around users\' seeds. Could you explain, in a reply, why each change below is needed? A maintainer reviews it before merge, and a safer route usually exists: `package:secrets/secrets.dart` is the only supported way to reach seed material, and the app\'s own secure store is `KeyValueStorageDatasource`.',
+    findings.length > 0
+      ? 'This pull request touches the boundary around users\' seeds. Could you explain, in a reply, why each change below is needed? A maintainer reviews it before merge, and a safer route usually exists: `package:secrets/secrets.dart` is the only supported way to reach seed material, and the app\'s own secure store is `KeyValueStorageDatasource`.'
+      : 'Custody inspection is incomplete. No custody finding was identified in the inspected changes.',
     '',
   ];
   if (findings.length > 0) {
@@ -111,7 +120,7 @@ function commentBody({ findings, uninspected }, { hadComment = false } = {}) {
     lines.push('');
   }
   if (uninspected.length > 0) {
-    lines.push('These files could not be inspected, because GitHub does not return a diff this large; please say whether they touch the keystore or the package seal:', '');
+    lines.push('GitHub did not provide a patch for these files, so they could not be inspected; please say whether they touch the keystore or the package seal:', '');
     for (const path of uninspected) lines.push(`- ${cell(path)}`);
     lines.push('');
   }
