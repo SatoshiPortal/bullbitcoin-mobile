@@ -11,6 +11,7 @@ import 'package:bb_mobile/features/app_startup/domain/app_startup_failure.dart';
 import 'package:bb_mobile/features/app_startup/domain/usecases/check_for_existing_default_wallets_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:primitives/primitives.dart' show Fingerprint;
 import 'package:secrets/secrets.dart';
 import 'package:secrets/testing.dart';
 
@@ -155,25 +156,70 @@ void main() {
     },
   );
 
+  void onRegtest(List<Wallet> defaults) {
+    when(settings.fetch).thenAnswer(
+      (_) async => const SettingsEntity(
+        environment: Environment.regtest,
+        bitcoinUnit: BitcoinUnit.sats,
+        currencyCode: 'CAD',
+      ),
+    );
+    when(
+      () => wallets.getWallets(
+        onlyDefaults: true,
+        environment: Environment.regtest,
+      ),
+    ).thenAnswer((_) async => Ok(defaults));
+  }
+
+  test('a complete regtest default set is not healed', () async {
+    onRegtest([wallet(Network.bitcoinRegtest), wallet(Network.liquidRegtest)]);
+    final result = await usecaseOn(
+      FakeSecureStoragePlatform(entries: {'seed_$fingerprint': entry}),
+    ).execute();
+    expect(
+      result,
+      isA<Ok<bool, AppStartupFailure>>().having(
+        (result) => result.value,
+        'has defaults',
+        true,
+      ),
+    );
+    // Only the scoped catalog read is needed; no healing/create call occurs.
+    verify(
+      () => wallets.getWallets(
+        onlyDefaults: true,
+        environment: Environment.regtest,
+      ),
+    ).called(1);
+    verifyNoMoreInteractions(wallets);
+  });
+
   test(
-    'bitcoin-only regtest is complete and never provisions Liquid',
+    'a bitcoin-only regtest set heals its Liquid default from the default seed',
     () async {
-      when(settings.fetch).thenAnswer(
-        (_) async => const SettingsEntity(
-          environment: Environment.regtest,
-          bitcoinUnit: BitcoinUnit.sats,
-          currencyCode: 'CAD',
-        ),
+      // `Secret` is final; mocktail's fallback for `any(named: 'secret')` is a
+      // real one, read from the same fake keystore.
+      final storage = FakeSecureStoragePlatform(
+        entries: {'seed_$fingerprint': entry},
       );
+      storage.install();
+      final fallback = await Secrets(
+        scratchDirectory: () async => '/tmp',
+      ).fetch(Fingerprint(fingerprint));
+      registerFallbackValue((fallback as Ok<Secret, SecretFailure>).value);
+      onRegtest([wallet(Network.bitcoinRegtest)]);
       when(
-        () => wallets.getWallets(
-          onlyDefaults: true,
-          environment: Environment.regtest,
+        () => wallets.createWallet(
+          secret: any(named: 'secret'),
+          network: Network.liquidRegtest,
+          scriptType: ScriptType.bip84,
+          isDefault: true,
         ),
-      ).thenAnswer((_) async => Ok([wallet(Network.bitcoinRegtest)]));
-      final result = await usecaseOn(
-        FakeSecureStoragePlatform(entries: {'seed_$fingerprint': entry}),
-      ).execute();
+      ).thenAnswer((_) async => wallet(Network.liquidRegtest));
+
+      final result = await usecaseOn(storage).execute();
+
       expect(
         result,
         isA<Ok<bool, AppStartupFailure>>().having(
@@ -182,13 +228,22 @@ void main() {
           true,
         ),
       );
-      // Only the scoped catalog read is needed; no healing/create call occurs.
+      final created = verify(
+        () => wallets.createWallet(
+          secret: captureAny(named: 'secret'),
+          network: Network.liquidRegtest,
+          scriptType: ScriptType.bip84,
+          isDefault: true,
+        ),
+      )..called(1);
+      expect((created.captured.single as Secret).id.hex, fingerprint);
+      // The catalog is read once, then re-read after the heal.
       verify(
         () => wallets.getWallets(
           onlyDefaults: true,
           environment: Environment.regtest,
         ),
-      ).called(1);
+      ).called(2);
       verifyNoMoreInteractions(wallets);
     },
   );

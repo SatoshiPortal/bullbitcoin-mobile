@@ -121,8 +121,9 @@ void main() {
         );
         expect(
           selection.items,
+          // Regtest has no swaps, so no Lightning; Home still offers Liquid.
           network == Network.bitcoinRegtest
-              ? {loc.receiveBitcoin}
+              ? {loc.receiveBitcoin, if (fromHome) loc.receiveLiquid}
               : {
                   loc.receiveBitcoin,
                   loc.receiveLightning,
