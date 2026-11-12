@@ -1,0 +1,264 @@
+import 'dart:io';
+import 'dart:math';
+import 'dart:typed_data';
+
+import 'package:bull_sqlite/bull_sqlite.dart';
+import 'package:bull_sqlite/src/encrypt_in_place.dart';
+import 'package:bull_sqlite/src/sqlite_family.dart';
+import 'package:primitives/primitives.dart';
+import 'package:sqlite3/sqlite3.dart';
+import 'package:test/test.dart';
+
+import 'support/fixtures.dart';
+
+void main() {
+  late String path;
+  late int rows;
+
+  setUp(() {
+    path = freshPath();
+    rows = seedPlaintextWithUncheckpointedWal(path);
+  });
+  tearDown(() => Directory(File(path).parent.path).deleteSync(recursive: true));
+
+  String directory() => File(path).parent.path;
+
+  /// The database as the app left it: every row (including those only in the WAL), the blob, the WITHOUT ROWID table, the index, the view, user_version.
+  void expectIntact(DatabaseKey key) {
+    final db = sqlite3.open(path, mode: OpenMode.readWrite);
+    addTearDown(db.close);
+    SqliteCipher.key(db, key);
+    expect(db.select('PRAGMA quick_check;').single.values.single, 'ok');
+    expect(db.userVersion, 16);
+    expect(db.select('SELECT count(*) AS n FROM labels;').single['n'], rows);
+    expect(
+      db.select('SELECT label FROM labels WHERE id = 251;').single['label'],
+      canary,
+    );
+    expect(
+      db.select('SELECT payload FROM labels WHERE id = 300;').single['payload'],
+      Uint8List.fromList([299 % 256, 1, 2, 3]),
+    );
+    expect(
+      db.select("SELECT v FROM kv WHERE k = 'secret';").single['v'],
+      canary,
+    );
+    final names = db
+        .select('SELECT name FROM sqlite_master ORDER BY name;')
+        .map((r) => r['name'])
+        .toList();
+    expect(names, containsAll(['labels', 'labels_label', 'labelled', 'kv']));
+  }
+
+  void expectNoLeftovers() {
+    final family = SqliteFamily(path);
+    for (final file in [
+      family.candidate,
+      family.candidateJournal,
+      family.journal,
+    ]) {
+      expect(file.existsSync(), isFalse, reason: file.path);
+    }
+    expect(canaryOnDisk(directory()), isFalse);
+  }
+
+  Future<void> encrypt(DatabaseKey key) async {
+    expect(
+      await EncryptedSqlite.encrypt(path, key),
+      isA<Ok<void, SqliteStorageFailure>>(),
+    );
+  }
+
+  test(
+    'encrypts every row, the WAL included, and leaves nothing in clear',
+    () async {
+      final key = keyOf(10);
+      await encrypt(key);
+
+      expect(headerOf(path), isNot('SQLite format 3'));
+      expect(SqliteFamily(path).inspect(), SqliteFileState.possiblyEncrypted);
+      expectIntact(key);
+      expectNoLeftovers();
+    },
+  );
+
+  test('refuses anything that is not a plaintext database', () async {
+    final key = keyOf(10);
+    await encrypt(key);
+    final again = await EncryptedSqlite.encrypt(path, key);
+    expect((again as Err).failure, isA<SqliteIoFailure>());
+    expectIntact(key);
+  });
+
+  test(
+    'a connection holding the database stops it before anything changes',
+    () async {
+      final holder = sqlite3.open(path, mode: OpenMode.readWrite);
+      addTearDown(holder.close);
+      holder.execute('BEGIN;');
+      holder.select('SELECT count(*) FROM labels;');
+
+      final result = await EncryptedSqlite.encrypt(path, keyOf(10));
+      expect(result, isA<Err<void, SqliteStorageFailure>>());
+      holder.execute('COMMIT;');
+      expect(SqliteFamily(path).inspect(), SqliteFileState.plaintext);
+      expect(SqliteFamily(path).candidate.existsSync(), isFalse);
+    },
+  );
+
+  group('an error at a step', () {
+    for (final step in EncryptionStep.values.where(
+      (s) => s.index < EncryptionStep.replaced.index,
+    )) {
+      test(
+        '${step.name} leaves the plaintext database untouched, and a retry encrypts it',
+        () async {
+          expect(
+            () => encryptInPlace(
+              SqliteFamily(path),
+              keyOf(10),
+              onStep: (s) {
+                if (s == step) throw const FileSystemException('injected');
+              },
+            ),
+            throwsA(isA<FileSystemException>()),
+          );
+          expect(SqliteFamily(path).inspect(), SqliteFileState.plaintext);
+          expect(SqliteFamily(path).candidate.existsSync(), isFalse);
+          final plain = sqlite3.open(path, mode: OpenMode.readOnly);
+          expect(
+            plain.select('SELECT count(*) AS n FROM labels;').single['n'],
+            rows,
+          );
+          plain.close();
+
+          await encrypt(keyOf(10));
+          expectIntact(keyOf(10));
+          expectNoLeftovers();
+        },
+      );
+    }
+
+    test('after the replace leaves the encrypted database, which opens', () {
+      expect(
+        () => encryptInPlace(
+          SqliteFamily(path),
+          keyOf(10),
+          onStep: (s) {
+            if (s == EncryptionStep.replaced) {
+              throw const FileSystemException('injected barrier failure');
+            }
+          },
+        ),
+        throwsA(isA<FileSystemException>()),
+      );
+      expect(SqliteFamily(path).inspect(), SqliteFileState.possiblyEncrypted);
+      expect(
+        EncryptedSqlite.probe(path, keyOf(10)),
+        isA<Ok<void, SqliteStorageFailure>>(),
+      );
+      expectIntact(keyOf(10));
+      expectNoLeftovers();
+    });
+  });
+
+  group('SIGKILL', () {
+    Future<String> runAndDie(
+      String target, {
+      int seed = 10,
+      Duration? killAfter,
+    }) async {
+      final process = await Process.start(Platform.resolvedExecutable, [
+        'run',
+        'test/support/encrypt_and_die.dart',
+        path,
+        '$seed',
+        target,
+      ], workingDirectory: Directory.current.path);
+      if (killAfter != null) {
+        await Future<void>.delayed(killAfter);
+        process.kill(ProcessSignal.sigkill);
+      }
+      final out = await process.stdout
+          .transform(const SystemEncoding().decoder)
+          .join();
+      await process.exitCode;
+      return out;
+    }
+
+    /// What the next launch does: finish the encryption if the database is still in clear, then open it.
+    Future<void> relaunch(DatabaseKey key) async {
+      switch (SqliteFamily(path).inspect()) {
+        case SqliteFileState.plaintext:
+          await encrypt(key);
+        case SqliteFileState.possiblyEncrypted:
+          break;
+        case final other:
+          fail('unexpected state after a kill: $other');
+      }
+      expect(
+        EncryptedSqlite.probe(path, key),
+        isA<Ok<void, SqliteStorageFailure>>(),
+      );
+    }
+
+    for (final step in EncryptionStep.values) {
+      test(
+        'at ${step.name}, the next launch converges with every row',
+        () async {
+          final out = await runAndDie(step.name);
+          expect(out, isNot(contains('completed')));
+          await relaunch(keyOf(10));
+          expectIntact(keyOf(10));
+          expectNoLeftovers();
+        },
+      );
+    }
+
+    test(
+      'mid-copy and mid-rekey on a larger database, at random points',
+      () async {
+        final db = sqlite3.open(path, mode: OpenMode.readWrite);
+        final insert = db.prepare(
+          'INSERT INTO labels (label, payload) VALUES (?, ?);',
+        );
+        final random = Random(7);
+        db.execute('BEGIN;');
+        for (var i = 0; i < 20000; i++) {
+          insert.execute([
+            'bulk $i',
+            Uint8List.fromList(List.generate(400, (_) => random.nextInt(256))),
+          ]);
+        }
+        db.execute('COMMIT;');
+        insert.close();
+        db.close();
+        rows += 20000;
+
+        for (final ms in [150, 400, 900, 1500]) {
+          if (SqliteFamily(path).inspect() != SqliteFileState.plaintext) break;
+          await runAndDie('never', killAfter: Duration(milliseconds: ms));
+        }
+        await relaunch(keyOf(10));
+        expectIntact(keyOf(10));
+        expectNoLeftovers();
+      },
+      timeout: const Timeout(Duration(minutes: 5)),
+    );
+
+    test(
+      'a candidate left under another key is discarded, and the new key wins',
+      () async {
+        await runAndDie(EncryptionStep.rekeyed.name, seed: 20);
+        expect(SqliteFamily(path).candidate.existsSync(), isTrue);
+        await relaunch(keyOf(30));
+        expectIntact(keyOf(30));
+        expect(
+          EncryptedSqlite.probe(path, keyOf(20)),
+          isA<Err<void, SqliteStorageFailure>>(),
+        );
+        expectNoLeftovers();
+      },
+    );
+  }, timeout: const Timeout(Duration(minutes: 3)));
+}
