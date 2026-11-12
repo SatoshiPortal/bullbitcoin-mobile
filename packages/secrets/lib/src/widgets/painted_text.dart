@@ -3,7 +3,6 @@ import 'dart:math' as math;
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' show Language;
 import 'package:flutter/widgets.dart';
 import 'package:meta/meta.dart';
-import 'package:unorm_dart/unorm_dart.dart' show nfkd;
 
 /// One mnemonic word painted without a string-bearing widget in the tree.
 final class PaintedWord extends _PaintedText {
@@ -13,7 +12,7 @@ final class PaintedWord extends _PaintedText {
     Language language = Language.english,
     super.style,
     super.key,
-  }) : super([nfkd(word)], _Cell.word, language: language, plain: nfkd(word));
+  }) : super([word], _Cell.word, language: language, plain: word);
 }
 
 /// A passphrase painted without exposing its text to the host.
@@ -38,10 +37,10 @@ final class PaintedMnemonic extends _PaintedText {
     super.style,
     super.key,
   }) : super(
-         words.map(nfkd).toList(),
+         List.of(words),
          _Cell.word,
          language: language,
-         plain: words.map(nfkd).join(language.separator),
+         plain: words.join(language.separator),
        );
 }
 

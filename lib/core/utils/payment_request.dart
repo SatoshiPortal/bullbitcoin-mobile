@@ -259,10 +259,15 @@ sealed class PaymentRequest with _$PaymentRequest {
   static Future<PaymentRequest?> _tryParseLiquidAddress(String data) async {
     try {
       final network = await lwk.Address.validate(addressString: data);
-      return PaymentRequest.liquid(
-        address: data,
-        isTestnet: network == lwk.LiquidNetwork.testnet,
-      );
+      // The app has no Liquid regtest environment: an Elements regtest
+      // address is not a destination, rather than a mainnet one.
+      final isTestnet = switch (network) {
+        lwk.LiquidNetwork.mainnet => false,
+        lwk.LiquidNetwork.testnet => true,
+        lwk.LiquidNetwork.regtest => null,
+      };
+      if (isTestnet == null) return null;
+      return PaymentRequest.liquid(address: data, isTestnet: isTestnet);
     } catch (e) {
       log.warning(e.toString());
     }
