@@ -14,9 +14,9 @@ final class BoltzDeriver {
 
   /// The dedicated swap key for [secret].
   ///
-  /// The wallet's own mnemonic never leaves this call — what comes back
-  /// is the swap-scoped credential the caller stores and uses from then
-  /// on.
+  /// Only the wallet's seed reaches boltz, never its words, and it stays
+  /// within this call — what comes back is the swap-scoped credential the
+  /// caller stores and uses from then on.
   ///
   /// The passphrase takes part, so two secrets that share words get
   /// different swap keys — the derivation the secret's fingerprint implies.
@@ -30,9 +30,11 @@ final class BoltzDeriver {
     Mnemonic secret, {
     required BitcoinNetwork network,
   }) async {
-    final derived = await boltz.SwapMasterKey.create(
-      walletMnemonic: secret.words.join(' '),
-      walletPassphrase: secret.passphrase.isEmpty ? null : secret.passphrase,
+    // The secret's BIP39 seed — its words in its own language, with its
+    // passphrase — is what boltz's word-based constructor derives first, so
+    // an English mnemonic gets the same swap key either way.
+    final derived = await boltz.SwapMasterKey.createFromSeed(
+      seed: secret.seedBytes,
       network: switch (network) {
         BitcoinNetwork.mainnet => boltz.Network.mainnet,
         // boltz has no signet variant; testnet shares its encoding.

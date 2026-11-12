@@ -80,10 +80,12 @@ final class Secrets {
   @useResult
   Future<Result<Secret, SecretFailure>> import({
     required List<String> words,
+    Language language = Language.english,
     String? passphrase,
     Set<Fingerprint>? acceptOnly,
   }) async => (await _repository.store(
     words: words,
+    language: language,
     passphrase: passphrase,
     rejectExisting: true,
     acceptOnly: acceptOnly,
@@ -134,9 +136,11 @@ final class Secrets {
   @useResult
   Future<Result<bool, SecretFailure>> contains({
     required List<String> words,
+    Language language = Language.english,
     String? passphrase,
   }) async => (await find(
     words: words,
+    language: language,
     passphrase: passphrase,
   )).map((secret) => secret != null);
 
@@ -145,9 +149,11 @@ final class Secrets {
   @useResult
   Future<Result<Secret?, SecretFailure>> find({
     required List<String> words,
+    Language language = Language.english,
     String? passphrase,
   }) async => (await _repository.find(
     words: words,
+    language: language,
     passphrase: passphrase,
   )).map((info) => info == null ? null : _handle(info));
 
