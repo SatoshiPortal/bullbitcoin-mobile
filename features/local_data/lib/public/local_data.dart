@@ -57,6 +57,8 @@ abstract final class LocalData {
     required LocalDatabasePaths paths,
     required Future<void> Function() onRetry,
   }) => BlocProvider(
+    // A fresh cubit for every failure shown: a retry that fails again, or moves on to the other database, must not inherit the previous screen's state.
+    key: ValueKey<Object>(Object()),
     create: (_) => LocalDataGateCubit(
       failure: failure,
       reset: ResetLocalDatabaseUsecase(
