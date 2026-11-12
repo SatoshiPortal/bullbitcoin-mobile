@@ -90,4 +90,18 @@ final class SqliteFamily {
       file.closeSync();
     }
   }
+
+  /// Copies a quarantine left next to the database, named `<member>.unreadable-<digits>` (what Payjoin's self-heal has always used). Not members: nothing reads them, and their presence decides nothing. A deletion removes them with the family, so that a reset leaves no copy behind, plaintext ones from older releases included.
+  List<File> get quarantined {
+    final directory = Directory(this.directory);
+    if (!directory.existsSync()) return const [];
+    final base = RegExp.escape(p.basename(path));
+    final pattern = RegExp(
+      '^$base(-wal|-shm|-journal|\\.encryption-tmp|\\.encryption-tmp-journal)?\\.unreadable-[0-9]+\$',
+    );
+    return [
+      for (final entity in directory.listSync(followLinks: false))
+        if (entity is File && pattern.hasMatch(p.basename(entity.path))) entity,
+    ];
+  }
 }

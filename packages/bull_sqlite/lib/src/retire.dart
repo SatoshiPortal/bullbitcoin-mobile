@@ -77,7 +77,12 @@ void retire(
   }
   onStep?.call(RetirementStep.marked);
 
-  for (final member in family.members) {
+  // A deletion also removes the copies earlier quarantines left; a quarantine moves the members only.
+  final files = switch (decided) {
+    DeleteRetirement() => [...family.quarantined, ...family.members],
+    QuarantineRetirement() => family.members,
+  };
+  for (final member in files) {
     switch (decided) {
       case DeleteRetirement():
         if (member.existsSync()) member.deleteSync();
