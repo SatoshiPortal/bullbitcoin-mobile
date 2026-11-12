@@ -35,12 +35,17 @@ abstract final class DirectoryBarrier {
           directoryPath,
         );
       }
-      try {
-        if (_fsync(fd) != 0) {
-          throw FileSystemException('cannot sync directory', directoryPath);
-        }
-      } finally {
-        _close(fd);
+      final synced = _fsync(fd) == 0;
+      // Closed whatever the sync said, and checked: a close that fails can be where a deferred write error surfaces. The sync failure, if any, is the one reported.
+      final closed = _close(fd) == 0;
+      if (!synced) {
+        throw FileSystemException('cannot sync directory', directoryPath);
+      }
+      if (!closed) {
+        throw FileSystemException(
+          'cannot close synced directory',
+          directoryPath,
+        );
       }
     } finally {
       malloc.free(path);
