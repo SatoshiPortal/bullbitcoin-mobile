@@ -172,6 +172,9 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
+      - name: PR governance and custody imports (CI only)
+        run: make pr-governance-ci-test custody-ci-check
+
       # Kept deliberately: a local .dart_tool can reach 16GB and a stock x64
       # runner has ~21GB free, so dropping this risks turning every PR red on
       # "No space left on device". The setup action logs `df -h` — only drop
@@ -195,12 +198,12 @@ jobs:
         id: setup
         uses: ./.github/actions/flutter-setup
 
-      # The four static checks are gated on `!cancelled()` + setup success
+      # Static checks are gated on `!cancelled()` + setup success
       # instead of the implicit success(): one CI run surfaces ALL static
       # failures instead of stopping at the first (they're independent and
       # cheap, ~1.5min combined). `!cancelled()` (not `always()`) so a
       # superseded run cancelled by the concurrency group stops immediately.
-      # Each gate is a makefile target so the definition lives in one place; `make checks` runs this whole job locally.
+      # `make checks` runs the Dart/Flutter gates locally; the Node gates above run only in CI.
       - name: Linter shouldn't raise errors, warnings or infos
         if: ${{ !cancelled() && steps.setup.outcome == 'success' }}
         run: make analyze
@@ -208,6 +211,14 @@ jobs:
       - name: bull_ui import boundary (coins/ui imports only package:bull_ui)
         if: ${{ !cancelled() && steps.setup.outcome == 'success' }}
         run: make bull-ui-check
+
+      - name: Custody key material (resolved derivation and vault decryption)
+        if: ${{ !cancelled() && steps.setup.outcome == 'success' }}
+        run: make custody-check
+
+      - name: Secrets public API trees should be current
+        if: ${{ !cancelled() && steps.setup.outcome == 'success' }}
+        run: make secrets-api-docs-check
 
       - name: dart fix should have nothing to suggest
         if: ${{ !cancelled() && steps.setup.outcome == 'success' }}

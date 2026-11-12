@@ -8,6 +8,7 @@ import 'package:bb_mobile/core/utils/generic_extensions.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/bdk_facade.dart';
 import 'package:bb_mobile/core/wallet/data/models/balance_model.dart';
+import 'package:bb_mobile/core/wallet/data/models/bitcoin_transaction_recipient_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/transaction_input_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/transaction_output_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
@@ -177,84 +178,95 @@ class BdkWalletDatasource {
     return owned.contains;
   }
 
-  /// Returns a synchronous PSBT signer bound to a pre-loaded private bdk
-  /// wallet. Uses the same sign options as [signPsbt] — in particular
-  /// `allowAllSighashes: false`, since this signs the wallet's contribution
-  /// to an externally-supplied transaction (a payjoin proposal).
-  Future<String Function(String)> createPsbtSigner({
-    required PrivateBdkWalletModel wallet,
+  /// Returns [psbt] with this wallet's BIP32 derivations added to every input
+  /// and output it owns, from its local index. Signs nothing: the wallet is
+  /// built from the public descriptors.
+  ///
+  /// A signer only signs inputs it can derive, and learns the path either from
+  /// the PSBT or from its own view of the chain. The package's signing wallet
+  /// has no view of the chain, so a PSBT must carry the paths — and the input a
+  /// payjoin receiver contributes arrives with a witness UTXO and nothing
+  /// else. bdk's `sign` fills the paths in for every input whose outpoint the
+  /// wallet knows before it looks for keys; with no keys, that is all it does.
+  Future<String> addOwnDerivations({
+    required String psbt,
+    required WalletModel wallet,
   }) async {
-    final bdkWallet = await BdkFacade.createPrivateWallet(wallet);
-    return (String psbtBase64) {
-      final psbt = bdk.Psbt(psbtBase64: psbtBase64);
-      // Unlike signPsbt (the sender signing a complete transaction, where a
-      // non-finalized result is a genuine anomaly), this signs only the
-      // receiver's own contributed input into a multi-party payjoin
-      // proposal — the sender's inputs are still unsigned at this point by
-      // protocol design, so bdk's whole-PSBT finalization check is always
-      // false here. Don't log it: it isn't an error, and logging it on every
-      // successful payjoin would read like one.
-      bdkWallet.sign(
-        psbt: psbt,
-        signOptions: bdk.SignOptions(
-          trustWitnessUtxo: true,
-          assumeHeight: null,
-          allowAllSighashes: false,
-          tryFinalize: true,
-          signWithTapInternalKey: false,
-          allowGrinding: true,
-        ),
-      );
-      return psbt.serialize();
-    };
+    final bdkWallet = await BdkFacade.createWallet(wallet);
+    final parsed = bdk.Psbt(psbtBase64: psbt);
+    bdkWallet.sign(psbt: parsed, signOptions: _annotateOptions);
+    return parsed.serialize();
   }
 
-  Future<bool> isAddressMine(
-    String address, {
+  /// Trusts the witness UTXO a payjoin input carries, and finalizes nothing:
+  /// annotation must leave the PSBT for the signer exactly as it found it,
+  /// paths aside.
+  static final _annotateOptions = bdk.SignOptions(
+    trustWitnessUtxo: true,
+    assumeHeight: null,
+    allowAllSighashes: false,
+    tryFinalize: false,
+    signWithTapInternalKey: false,
+    allowGrinding: true,
+  );
+
+  Future<bool> areAddressesMine(
+    List<String> addresses, {
     required WalletModel wallet,
-    bdk.Wallet? bdkWallet,
   }) async {
-    final w = bdkWallet ?? await BdkFacade.createWallet(wallet);
-    final bdkAddress = bdk.Address(
-      address: address,
-      network: wallet.isTestnet ? bdk.Network.testnet : bdk.Network.bitcoin,
-    );
-    return w.isMine(script: bdkAddress.scriptPubkey());
+    final bdkWallet = await BdkFacade.createWallet(wallet);
+    final network = wallet.isTestnet
+        ? bdk.Network.testnet
+        : bdk.Network.bitcoin;
+    for (final address in addresses) {
+      final bdkAddress = bdk.Address(address: address, network: network);
+      if (!bdkWallet.isMine(script: bdkAddress.scriptPubkey())) return false;
+    }
+    return true;
   }
 
   Future<String> buildPsbt({
-    required String address,
+    required List<BitcoinTransactionRecipientModel> recipients,
     required NetworkFee networkFee,
-    int? amountSat,
     List<({String txId, int vout})>? unspendable,
-    bool? drain,
     List<WalletUtxoModel>? selected,
+    bool selectedOnly = false,
     bool replaceByFee = true,
     required WalletModel wallet,
   }) async {
     final bdkWallet = await BdkFacade.createWallet(wallet);
-    bdk.TxBuilder txBuilder;
 
-    // Get the scriptPubkey from the address
-    final bdkAddress = bdk.Address(
-      address: address,
-      network: wallet.isTestnet ? bdk.Network.testnet : bdk.Network.bitcoin,
-    );
-    final script = bdkAddress.scriptPubkey();
+    final network = wallet.isTestnet
+        ? bdk.Network.testnet
+        : bdk.Network.bitcoin;
+    final recipientScripts = [
+      for (final recipient in recipients)
+        bdk.Address(
+          address: recipient.address,
+          network: network,
+        ).scriptPubkey(),
+    ];
 
-    // Check if the transaction is a drain transaction
-    if (drain == true) {
-      txBuilder = bdk.TxBuilder().drainWallet().drainTo(script: script);
-    } else {
+    var txBuilder = bdk.TxBuilder();
+    for (var index = 0; index < recipients.length; index++) {
+      final recipient = recipients[index];
+      final script = recipientScripts[index];
+      final amountSat = recipient.amountSat;
       if (amountSat == null) {
-        throw ArgumentError('amountSat is required');
+        txBuilder = txBuilder.drainWallet().drainTo(script: script);
+      } else {
+        txBuilder = txBuilder.addRecipient(
+          script: script,
+          amount: bdk.Amount.fromSat(satoshi: amountSat),
+        );
       }
-      txBuilder = bdk.TxBuilder().addRecipient(
-        script: script,
-        amount: bdk.Amount.fromSat(satoshi: amountSat),
-      );
     }
 
+    if (selectedOnly && (selected == null || selected.isEmpty)) {
+      throw NoSpendableUtxoException(
+        'Selected-only transaction requires at least one input',
+      );
+    }
     if (selected != null && selected.isNotEmpty) {
       final selectableOutPoints = selected
           .map(
@@ -264,10 +276,8 @@ class BdkWalletDatasource {
             ),
           )
           .toList();
-      // bdk_dart's TxBuilder is immutable — every method returns a NEW
-      // builder instance rather than mutating in place. Discarding the
-      // return value (as this call did before) silently drops the manual
-      // UTXO selection and leaves BDK to pick inputs automatically.
+      // TxBuilder is immutable; retain the returned builder so the selected
+      // inputs are applied.
       txBuilder = txBuilder.addUtxos(outpoints: selectableOutPoints);
       txBuilder = txBuilder.manuallySelectedOnly();
     }
@@ -341,6 +351,28 @@ class BdkWalletDatasource {
       // this one when the selection can't cover the outputs plus the fee,
       // which is what hand-picked coins hit.
       throw InsufficientFundsException(e.errorMessage);
+    } on bdk.OutputBelowDustLimitCreateTxException catch (e) {
+      throw InsufficientFundsException(e.toString());
+    }
+
+    final remainder = recipients
+        .where((recipient) => recipient.amountSat == null)
+        .firstOrNull;
+    if (remainder != null) {
+      final remainderIndex = recipients.indexOf(remainder);
+      final transaction = psbt.extractTx();
+      final remainderAmount = _remainderAmountForRecipient(
+        remainderIndex: remainderIndex,
+        recipients: recipients,
+        recipientScripts: recipientScripts,
+        outputs: transaction.output(),
+      );
+      transaction.dispose();
+      if (remainderAmount <= 0) {
+        throw InsufficientFundsException(
+          'Remaining balance is below the destination dust limit',
+        );
+      }
     }
 
     return psbt.serialize();
@@ -365,48 +397,83 @@ class BdkWalletDatasource {
   }) async {
     final psbt = bdk.Psbt(psbtBase64: psbtString);
     final tx = psbt.extractTx();
+    final targetScript = bdk.Address(
+      address: address,
+      network: isTestnet ? bdk.Network.testnet : bdk.Network.bitcoin,
+    ).scriptPubkey();
     final outputs = tx.output();
     int totalAmount = 0;
     for (final output in outputs) {
-      final scriptPubkey = output.scriptPubkey;
-      final outputAddress = bdk.Address.fromScript(
-        script: bdk.Script(rawOutputScript: scriptPubkey.toBytes()),
-        network: isTestnet ? bdk.Network.testnet : bdk.Network.bitcoin,
-      );
-      if (outputAddress.toString() == address) {
+      if (listEquals(output.scriptPubkey.toBytes(), targetScript.toBytes())) {
         totalAmount += output.value.toSat();
       }
     }
+    tx.dispose();
     return totalAmount;
   }
-  // 25000 - 988
 
-  Future<String> signPsbt(
-    String unsignedPsbt, {
-    required PrivateBdkWalletModel wallet,
+  Future<List<int>> getRecipientAmounts(
+    String psbtString,
+    List<BitcoinTransactionRecipientModel> recipients, {
+    required bool isTestnet,
   }) async {
-    final psbt = bdk.Psbt(psbtBase64: unsignedPsbt);
-    final bdkWallet = await BdkFacade.createPrivateWallet(wallet);
+    final network = isTestnet ? bdk.Network.testnet : bdk.Network.bitcoin;
+    final recipientScripts = [
+      for (final recipient in recipients)
+        bdk.Address(
+          address: recipient.address,
+          network: network,
+        ).scriptPubkey(),
+    ];
+    final psbt = bdk.Psbt(psbtBase64: psbtString);
+    final tx = psbt.extractTx();
+    final outputs = tx.output();
+    final amounts = <int>[];
+    for (var index = 0; index < recipients.length; index++) {
+      final fixedAmount = recipients[index].amountSat;
+      if (fixedAmount != null) {
+        amounts.add(fixedAmount);
+        continue;
+      }
 
-    final isFinalized = bdkWallet.sign(
-      psbt: psbt,
-      signOptions: bdk.SignOptions(
-        trustWitnessUtxo: true,
-        assumeHeight: null,
-        allowAllSighashes: false,
-        tryFinalize: true,
-        signWithTapInternalKey: false,
-        allowGrinding: true,
-      ),
-    );
-    if (!isFinalized) {
-      log.info('Signed PSBT is not finalized');
-    } else {
-      log.info('Signed PSBT is finalized');
+      amounts.add(
+        _remainderAmountForRecipient(
+          remainderIndex: index,
+          recipients: recipients,
+          recipientScripts: recipientScripts,
+          outputs: outputs,
+        ),
+      );
     }
-
-    return psbt.serialize();
+    tx.dispose();
+    return amounts;
   }
+
+  int _remainderAmountForRecipient({
+    required int remainderIndex,
+    required List<BitcoinTransactionRecipientModel> recipients,
+    required List<bdk.Script> recipientScripts,
+    required List<bdk.TxOut> outputs,
+  }) {
+    final targetScript = recipientScripts[remainderIndex].toBytes();
+    final totalSentToScript = outputs.fold(
+      0,
+      (sum, output) => listEquals(output.scriptPubkey.toBytes(), targetScript)
+          ? sum + output.value.toSat()
+          : sum,
+    );
+    var fixedToSameScript = 0;
+    for (var index = 0; index < recipients.length; index++) {
+      final fixedAmount = recipients[index].amountSat;
+      if (fixedAmount != null &&
+          listEquals(recipientScripts[index].toBytes(), targetScript)) {
+        fixedToSameScript += fixedAmount;
+      }
+    }
+    return totalSentToScript - fixedToSameScript;
+  }
+
+  // 25000 - 988
 
   Future<List<WalletUtxoModel>> getUtxos({required WalletModel wallet}) async {
     final bdkWallet = await BdkFacade.createWallet(wallet);
@@ -864,18 +931,20 @@ class BdkWalletDatasource {
   }
 
   Future<({BigInt satoshis, int transactions})> dryScan({
-    required List<int> entropy,
-    required String passphrase,
-    required ScriptType scriptType,
+    required String externalDescriptor,
+    required String internalDescriptor,
     required bool isTestnet,
     required ElectrumConnection electrumServer,
   }) {
+    final rootIsolateToken = ServicesBinding.rootIsolateToken;
+    if (rootIsolateToken == null) {
+      throw StateError('A dry scan must start from the root isolate');
+    }
     return compute(
       _performDryScan,
       _DryScanParams(
-        entropy: entropy,
-        passphrase: passphrase,
-        scriptType: scriptType,
+        externalDescriptor: externalDescriptor,
+        internalDescriptor: internalDescriptor,
         isTestnet: isTestnet,
         electrumUrl: electrumServer.url,
         electrumSocks5: electrumServer.socks5,
@@ -883,7 +952,7 @@ class BdkWalletDatasource {
         electrumTimeout: electrumServer.effectiveTimeout,
         electrumRetry: electrumServer.retry,
         electrumValidateDomain: electrumServer.validateDomain,
-        rootIsolateToken: ServicesBinding.rootIsolateToken!,
+        rootIsolateToken: rootIsolateToken,
       ),
     );
   }
@@ -979,9 +1048,8 @@ int confirmationsFromTip({required int tip, required int? height}) {
 }
 
 class _DryScanParams {
-  final List<int> entropy;
-  final String passphrase;
-  final ScriptType scriptType;
+  final String externalDescriptor;
+  final String internalDescriptor;
   final bool isTestnet;
   final String electrumUrl;
   final String? electrumSocks5;
@@ -992,9 +1060,8 @@ class _DryScanParams {
   final RootIsolateToken rootIsolateToken;
 
   _DryScanParams({
-    required this.entropy,
-    required this.passphrase,
-    required this.scriptType,
+    required this.externalDescriptor,
+    required this.internalDescriptor,
     required this.isTestnet,
     required this.electrumUrl,
     required this.electrumSocks5,
@@ -1018,92 +1085,74 @@ Future<({BigInt satoshis, int transactions})> _performDryScan(
       ? bdk.NetworkKind.test
       : bdk.NetworkKind.main;
 
-  final bdkMnemonic = bdk.Mnemonic.fromEntropy(
-    entropy: Uint8List.fromList(params.entropy),
-  );
-
-  final descriptorSecretKey = bdk.DescriptorSecretKey(
-    networkKind: bdkNetworkKind,
-    mnemonic: bdkMnemonic,
-    password: params.passphrase,
-  );
-
-  final (external, internal) = switch (params.scriptType) {
-    ScriptType.bip84 => (
-      bdk.Descriptor.newBip84(
-        secretKey: descriptorSecretKey,
-        keychainKind: bdk.KeychainKind.external_,
-        networkKind: bdkNetworkKind,
-      ),
-      bdk.Descriptor.newBip84(
-        secretKey: descriptorSecretKey,
-        keychainKind: bdk.KeychainKind.internal,
-        networkKind: bdkNetworkKind,
-      ),
-    ),
-    ScriptType.bip49 => (
-      bdk.Descriptor.newBip49(
-        secretKey: descriptorSecretKey,
-        keychainKind: bdk.KeychainKind.external_,
-        networkKind: bdkNetworkKind,
-      ),
-      bdk.Descriptor.newBip49(
-        secretKey: descriptorSecretKey,
-        keychainKind: bdk.KeychainKind.internal,
-        networkKind: bdkNetworkKind,
-      ),
-    ),
-    ScriptType.bip44 => (
-      bdk.Descriptor.newBip44(
-        secretKey: descriptorSecretKey,
-        keychainKind: bdk.KeychainKind.external_,
-        networkKind: bdkNetworkKind,
-      ),
-      bdk.Descriptor.newBip44(
-        secretKey: descriptorSecretKey,
-        keychainKind: bdk.KeychainKind.internal,
-        networkKind: bdkNetworkKind,
-      ),
-    ),
-  };
-
-  final wallet = bdk.Wallet(
-    descriptor: external,
-    changeDescriptor: internal,
-    network: bdkNetwork,
-    persister: bdk.Persister.newInMemory(),
-    lookahead: 0,
-  );
-
-  final blockchain = _createElectrumClient(
-    url: params.electrumUrl,
-    socks5: params.electrumSocks5,
-    timeout: params.electrumTimeout,
-    retry: params.electrumRetry,
-    validateDomain: params.electrumValidateDomain,
-  );
-
+  bdk.Descriptor? external;
+  bdk.Descriptor? internal;
   try {
-    final scanRequest = wallet.startFullScan().build();
-    final update = blockchain.fullScan(
-      request: scanRequest,
-      stopGap: params.electrumStopGap,
-      batchSize: _batchSizeFor(params.electrumStopGap),
-      fetchPrevTxouts: false,
+    external = bdk.Descriptor(
+      descriptor: params.externalDescriptor,
+      networkKind: bdkNetworkKind,
     );
-    wallet.applyUpdate(update: update);
-  } catch (e, st) {
-    log.warning('probe_scan failed', error: e, trace: st);
-    rethrow;
+    internal = bdk.Descriptor(
+      descriptor: params.internalDescriptor,
+      networkKind: bdkNetworkKind,
+    );
+    final persister = bdk.Persister.newInMemory();
+    try {
+      final wallet = bdk.Wallet(
+        descriptor: external,
+        changeDescriptor: internal,
+        network: bdkNetwork,
+        persister: persister,
+        lookahead: 0,
+      );
+      try {
+        final blockchain = _createElectrumClient(
+          url: params.electrumUrl,
+          socks5: params.electrumSocks5,
+          timeout: params.electrumTimeout,
+          retry: params.electrumRetry,
+          validateDomain: params.electrumValidateDomain,
+        );
+        try {
+          final requestBuilder = wallet.startFullScan();
+          try {
+            final request = requestBuilder.build();
+            try {
+              final update = blockchain.fullScan(
+                request: request,
+                stopGap: params.electrumStopGap,
+                batchSize: _batchSizeFor(params.electrumStopGap),
+                fetchPrevTxouts: false,
+              );
+              try {
+                wallet.applyUpdate(update: update);
+                final balance = wallet.balance();
+                return (
+                  satoshis: BigInt.from(balance.confirmed.toSat()),
+                  transactions: wallet.transactions().length,
+                );
+              } finally {
+                update.dispose();
+              }
+            } finally {
+              request.dispose();
+            }
+          } finally {
+            requestBuilder.dispose();
+          }
+        } finally {
+          blockchain.dispose();
+        }
+      } finally {
+        wallet.dispose();
+      }
+    } finally {
+      persister.dispose();
+    }
+  } finally {
+    internal?.dispose();
+    external?.dispose();
   }
-
-  final balance = wallet.balance();
-  final transactions = wallet.transactions();
-
-  return (
-    satoshis: BigInt.from(balance.confirmed.toSat()),
-    transactions: transactions.length,
-  );
 }
 
 int _batchSizeFor(int stopGap) => (stopGap ~/ 4).clamp(50, 1000);

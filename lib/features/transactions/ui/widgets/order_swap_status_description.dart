@@ -2,7 +2,8 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:flutter/material.dart';
-import 'package:bull_ui/bull_ui.dart' show BullInfoCard, BullText, Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show BullInfoCard, BullShapesX, BullText, Gap;
 
 class OrderSwapStatusDescription extends StatelessWidget {
   final OrderSwapRecord orderSwap;
@@ -30,7 +31,7 @@ class OrderSwapStatusDescription extends StatelessWidget {
                 : context.appColors.surfaceContainerHighest.withValues(
                     alpha: 0.5,
                   ),
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: BorderRadius.circular(context.bullShapes.card),
             border: Border.all(
               color: failedOrExpired
                   ? context.appColors.error.withValues(alpha: 0.5)

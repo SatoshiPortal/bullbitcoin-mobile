@@ -63,8 +63,8 @@ class _Storage implements KeyValueStorageDatasource<String> {
     return values;
   }
 
-  @override
-  Future<void> deleteAll() async {
+  /// Removes only this test's namespaced probe keys.
+  Future<void> clearProbeKeys() async {
     for (final key in keys) {
       await deleteValue(key);
     }
@@ -94,11 +94,11 @@ void main() {
 
     setUp(() async {
       storage.refuseReads = false;
-      await storage.deleteAll();
+      await storage.clearProbeKeys();
     });
     tearDown(() async {
       storage.refuseReads = false;
-      await storage.deleteAll();
+      await storage.clearProbeKeys();
       completedProbes++;
     });
     tearDownAll(() async {

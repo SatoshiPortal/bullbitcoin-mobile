@@ -1,7 +1,7 @@
 import 'package:bull_ui/src/data_display/bull_options_tag.dart';
 import 'package:bull_ui/src/data_display/bull_text.dart';
 import 'package:bull_ui/src/theme/bull_theme.dart';
-import 'package:bull_ui/src/theme/bull_tokens.dart';
+import 'package:bull_ui/src/theme/bull_shapes.dart';
 import 'package:flutter/material.dart';
 import 'package:bull_ui/src/layout/gap.dart';
 
@@ -44,7 +44,7 @@ class BullBackupOptionCard extends StatelessWidget {
           boxShadow: [
             BoxShadow(color: colors.border, offset: const Offset(0, 2)),
           ],
-          borderRadius: BorderRadius.circular(BullRadius.xxs),
+          borderRadius: BorderRadius.circular(context.bullShapes.card),
         ),
         child: Row(
           children: [

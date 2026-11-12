@@ -1,4 +1,5 @@
 import 'package:bull_ui/src/theme/bull_theme.dart';
+import 'package:bull_ui/src/theme/bull_shapes.dart';
 import 'package:flutter/material.dart';
 
 /// A circular badge that indicates a transaction's direction.
@@ -27,7 +28,7 @@ class BullTransactionDirectionBadge extends StatelessWidget {
       decoration: BoxDecoration(
         border: Border.all(color: colors.surface),
         color: colors.onSecondary,
-        borderRadius: BorderRadius.circular(60),
+        borderRadius: BorderRadius.circular(context.bullShapes.dot),
         boxShadow: [
           BoxShadow(
             color: colors.scrim,

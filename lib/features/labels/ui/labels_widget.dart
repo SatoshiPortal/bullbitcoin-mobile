@@ -5,7 +5,7 @@ import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
-import 'package:bull_ui/bull_ui.dart' show BullSnackBar;
+import 'package:bull_ui/bull_ui.dart' show BullShapesX, BullSnackBar;
 
 class LabelsWidget extends StatefulWidget {
   const LabelsWidget({super.key, required this.labels, this.onDelete});
@@ -98,7 +98,7 @@ class LabelChip extends StatelessWidget {
   Widget build(BuildContext context) {
     final maxWidth = MediaQuery.of(context).size.width * 0.8;
     final isSystemLabel = LabelSystem.isSystemLabel(label);
-    final radius = BorderRadius.circular(8);
+    final radius = BorderRadius.circular(context.bullShapes.chip);
 
     final body = Container(
       padding: EdgeInsets.symmetric(

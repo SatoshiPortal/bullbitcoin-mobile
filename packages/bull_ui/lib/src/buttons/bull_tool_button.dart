@@ -1,11 +1,12 @@
 import 'package:bull_ui/src/theme/bull_icon.dart';
 import 'package:bull_ui/src/theme/bull_theme.dart';
 import 'package:bull_ui/src/theme/bull_tokens.dart';
+import 'package:bull_ui/src/theme/bull_shapes.dart';
 import 'package:flutter/material.dart';
 
 /// Compact icon-over-label button (the design's `ToolBtn`). **New.**
 ///
-/// 56px tall, 4px radius, icon (21) over label (11.5/w600). The [primary]
+/// 56px tall, button radius, icon (21) over label (11.5/w600). The [primary]
 /// variant uses a red fill; [disabled] dims to 40% and ignores taps.
 class BullToolButton extends StatelessWidget {
   const BullToolButton({
@@ -56,7 +57,7 @@ class BullToolButton extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: BullSpacing.sm),
               decoration: BoxDecoration(
                 color: bg,
-                borderRadius: BorderRadius.circular(BullRadius.xs),
+                borderRadius: BorderRadius.circular(context.bullShapes.button),
               ),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,

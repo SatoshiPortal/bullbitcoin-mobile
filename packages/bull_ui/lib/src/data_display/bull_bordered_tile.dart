@@ -1,11 +1,11 @@
 import 'package:bull_ui/src/theme/bull_theme.dart';
-import 'package:bull_ui/src/theme/bull_tokens.dart';
+import 'package:bull_ui/src/theme/bull_shapes.dart';
 import 'package:flutter/material.dart';
 
 /// Bordered surface used across receive / send / labels flows.
 ///
 /// Rounded rectangle with an [BullTheme.onSecondary] background, a
-/// [BullRadius.xxs] radius and a [BullTheme.secondaryFixedDim] border. When
+/// [BullShapes.card] radius and a [BullTheme.secondaryFixedDim] border. When
 /// [onTap]/[onLongPress] is set the whole surface shows an ink ripple;
 /// otherwise it is purely visual and nested interactive children keep gesture
 /// ownership.
@@ -39,7 +39,7 @@ class BullBorderedTile extends StatelessWidget {
     final colors = context.bull;
     final decoration = BoxDecoration(
       color: backgroundColor ?? colors.onSecondary,
-      borderRadius: BorderRadius.circular(BullRadius.xxs),
+      borderRadius: BorderRadius.circular(context.bullShapes.card),
       border: Border.all(color: colors.secondaryFixedDim),
     );
     final body = Padding(padding: padding, child: child);
@@ -52,7 +52,7 @@ class BullBorderedTile extends StatelessWidget {
       child: InkWell(
         onTap: onTap,
         onLongPress: onLongPress,
-        borderRadius: BorderRadius.circular(BullRadius.xxs),
+        borderRadius: BorderRadius.circular(context.bullShapes.card),
         child: Ink(decoration: decoration, child: body),
       ),
     );

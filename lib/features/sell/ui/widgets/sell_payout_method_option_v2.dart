@@ -27,7 +27,7 @@ class SellPayoutMethodOptionV2<T> extends StatelessWidget {
       color: selected ? colors.primary.withValues(alpha: 0.08) : colors.surface,
       shape: RoundedRectangleBorder(
         side: BorderSide(color: selected ? colors.primary : colors.border),
-        borderRadius: BorderRadius.circular(BullRadius.xxs),
+        borderRadius: BorderRadius.circular(context.bullShapes.card),
       ),
       child: RadioListTile<T>(
         value: value,

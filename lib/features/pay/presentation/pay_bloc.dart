@@ -38,7 +38,7 @@ import 'package:bull_payjoin/bull_payjoin.dart'
     show PayjoinSenderSession, PayjoinSession, PayjoinSessionWindow;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:primitives/primitives.dart';
+import 'package:primitives/primitives.dart' hide Network;
 
 part 'pay_bloc.freezed.dart';
 part 'pay_event.dart';
@@ -1475,12 +1475,17 @@ class PayBloc extends Bloc<PayEvent, PayState>
     }
     final slot = await _previewBitcoinFeeUsecase.execute(
       walletId: wallet.id,
-      address: address,
+      recipients: [
+        BitcoinTransactionRecipient.fixed(
+          address: address,
+          amountSat: Sats.fromInt(
+            ConvertAmount.btcToSats(current.payOrder.payinAmount),
+          ),
+        ),
+      ],
       networkFee: event.fee,
-      amountSat: ConvertAmount.btcToSats(current.payOrder.payinAmount),
       replaceByFee: current.replaceByFee,
       selectedInputs: current.selectedUtxos,
-      drain: false,
     );
     // The payin's shape changed while this build ran, so the slot describes a
     // transaction we are no longer offering.
@@ -1531,11 +1536,16 @@ class PayBloc extends Bloc<PayEvent, PayState>
     final slots = await _previewBitcoinFeePresetsUsecase.execute(
       presets: presets,
       walletId: wallet.id,
-      address: address,
-      amountSat: ConvertAmount.btcToSats(current.payOrder.payinAmount),
+      recipients: [
+        BitcoinTransactionRecipient.fixed(
+          address: address,
+          amountSat: Sats.fromInt(
+            ConvertAmount.btcToSats(current.payOrder.payinAmount),
+          ),
+        ),
+      ],
       replaceByFee: current.replaceByFee,
       selectedInputs: current.selectedUtxos,
-      drain: false,
     );
     if (epoch != _bitcoinPreviewEpoch) return;
     final live = _currentPaymentState;
