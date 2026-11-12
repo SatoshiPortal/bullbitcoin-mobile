@@ -12031,5 +12031,6 @@
   "sellPayoutBalance": "मेरे खाते की शेष राशि में जोड़ें",
   "sellPayoutSepaDescription": "निकासी Leonod द्वारा भेजी गई दिखाई देती है",
   "sellPayoutTitle": "प्राप्तकर्ता चुनें",
-  "sellPayoutNewBadge": "नया"
+  "sellPayoutNewBadge": "नया",
+  "coreScreensOutputsExceedInputs": "आउटपुट इनपुट से अधिक हैं: यह लेनदेन अमान्य है और नेटवर्क इसे अस्वीकार कर देगा।"
 }
