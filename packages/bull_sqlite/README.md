@@ -13,7 +13,7 @@ Only databases opened through this package are encrypted: today the app's `bullb
 | Silent Payments account | bwk (SQLite) | `Documents/sp/account.sqlite`, `Documents/sp/sp-sub-0/account.sqlite` | transactions, outputs with their tweak and label scalars |
 | Silent Payments headers | bwk | `Documents/sp/headers.bin` | public block headers |
 
-None of them holds a spending key, a mnemonic, a seed or an xprv (audited 2026-11-12 against bull_sdk `1b01dc5e`). The BDK and LWK file names contain the wallet's master fingerprint. The price cache `pricer.sqlite` holds public data and is not encrypted either.
+None of them holds a spending key, a mnemonic, a seed or an xprv (audited 2026-11-12 against bull_sdk `1b01dc5e`, rechecked after merging develop against `571ab40a`: BDK and bwk pins unchanged; lwk-dart `3ce987b` / LWK 0.20 keeps its persisted updates encrypted with the confidential descriptor-derived key). The BDK and LWK file names contain the wallet's master fingerprint. The price cache `pricer.sqlite` holds public data and is not encrypted either.
 
 ## What it does
 
