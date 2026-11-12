@@ -174,6 +174,19 @@ Future<void> main({bool isInitialized = false}) async {
       }
     });
 
+    test('Liquid regtest is derived, not refused', () async {
+      // lwk-dart expresses Liquid regtest since #99. A confidential
+      // descriptor carries no network (testnet and regtest share coin type 1'
+      // and the tpub encoding); the chain shows in the addresses the wallet
+      // derives, which lwk builds for the network it is given.
+      final secret = await importWords();
+      final regtest = unwrap(
+        await secret.derive.descriptors.liquid(network: LiquidNetwork.regtest),
+      );
+      expect(regtest, contains('ct('));
+      expect(regtest, contains(secret.id.hex));
+    });
+
     test('the Liquid descriptor honours the passphrase', () async {
       // Liquid derives from the secret's full BIP39 seed, as Bitcoin does. An
       // empty passphrase keeps every existing (passphrase-less) wallet's
