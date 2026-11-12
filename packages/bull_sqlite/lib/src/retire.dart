@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:bull_sqlite/src/directory_barrier.dart';
@@ -65,6 +66,8 @@ void retire(
       _writeMarker(family, decided);
     case _Decided(retirement: final pending):
       decided = pending;
+      // An earlier attempt may have crashed between writing the marker and making it durable. Nothing is touched until it is.
+      _makeDurable(family);
     case _Unreadable():
       if (retirement is! DeleteRetirement) {
         throw const InconsistentFamilyException('unreadable retirement marker');
@@ -113,6 +116,16 @@ bool resumeRetirement(SqliteFamily family) {
   }
 }
 
+void _makeDurable(SqliteFamily family) {
+  final marker = family.retirement.openSync(mode: FileMode.append);
+  try {
+    marker.flushSync();
+  } finally {
+    marker.closeSync();
+  }
+  DirectoryBarrier.sync(family.directory);
+}
+
 void _writeMarker(SqliteFamily family, Retirement retirement) {
   final marker = family.retirement.openSync(mode: FileMode.writeOnly);
   try {
@@ -145,7 +158,13 @@ final class _Unreadable extends _Marker {
 
 _Marker _readMarker(SqliteFamily family) {
   if (!family.retirement.existsSync()) return const _NoMarker();
-  final text = family.retirement.readAsStringSync();
+  final String text;
+  try {
+    text = utf8.decode(family.retirement.readAsBytesSync());
+  } on FormatException {
+    // Bytes this package never writes: a damaged marker, as unreadable as garbage text.
+    return const _Unreadable();
+  }
   // Written and flushed before any member is touched: empty means the crash came first.
   if (text.isEmpty) return const _NoMarker();
   final decided = Retirement._parse(text);
