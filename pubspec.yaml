@@ -21,6 +21,7 @@ workspace:
   - packages/screen_awake
   - packages/bull_logger
   - packages/bull_pricer
+  - packages/bull_sqlite
   - features/logs
 
 # Build hook options, read from the workspace root for every member.
