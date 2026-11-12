@@ -137,7 +137,7 @@ class WalletMetadataService {
     } else {
       // The confidential descriptor covers both keychains, and a
       // seed-only secret is refused before anything is loaded.
-      // Liquid descriptors ignore the passphrase, consistently with signing.
+      // Liquid descriptors derive from the full seed, as signing does.
       descriptor = _unwrap(
         await secret.derive.descriptors.liquid(network: network.liquid),
       );

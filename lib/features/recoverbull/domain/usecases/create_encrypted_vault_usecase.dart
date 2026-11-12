@@ -2,7 +2,7 @@ import 'package:secrets/secrets.dart' as secrets;
 import 'package:primitives/primitives.dart' show Fingerprint;
 
 import 'package:bb_mobile/core/recoverbull/domain/entity/encrypted_vault.dart';
-import 'package:bb_mobile/core/recoverbull/domain/recoverbull_failure.dart';
+import 'package:bb_mobile/features/recoverbull/domain/recoverbull_failure.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/utils/result.dart';
@@ -21,9 +21,7 @@ class CreateEncryptedVaultUsecase {
   });
 
   // Coordinates wallet metadata with the package's sealed backup operation.
-  Future<
-    Result<({EncryptedVault vault, String vaultKey}), RecoverBullCoreFailure>
-  >
+  Future<Result<({EncryptedVault vault, String vaultKey}), RecoverBullFailure>>
   execute() async {
     try {
       // Default wallets are created per environment, each from its own secret:
@@ -46,7 +44,7 @@ class CreateEncryptedVaultUsecase {
         case Err(:final failure):
           log.warning('create vault: ${failure.logMessage}');
           return Err(
-            RecoverBullUnexpectedCoreFailure(
+            VaultCreationFailure(
               'Could not read the wallets: ${failure.runtimeType}',
             ),
           );
@@ -54,7 +52,7 @@ class CreateEncryptedVaultUsecase {
 
       if (defaultBitcoinWallets.isEmpty) {
         return const Err(
-          RecoverBullUnexpectedCoreFailure('No default Bitcoin wallet found'),
+          VaultCreationFailure('No default Bitcoin wallet found'),
         );
       }
 
@@ -70,9 +68,7 @@ class CreateEncryptedVaultUsecase {
       };
       if (!secret.info.isMnemonic) {
         return const Err(
-          RecoverBullUnexpectedCoreFailure(
-            'Default seed is not a mnemonic seed',
-          ),
+          VaultCreationFailure('Default seed is not a mnemonic seed'),
         );
       }
       // Preserve the historical metadata keys and ISO date encoding. The package adds the mnemonic inside its custody boundary.
@@ -97,7 +93,7 @@ class CreateEncryptedVaultUsecase {
       ));
     } catch (e, st) {
       log.severe(message: 'createEncryptedVault failed', error: e, trace: st);
-      return Err(RecoverBullUnexpectedCoreFailure(e.toString()));
+      return Err(VaultCreationFailure(e.toString()));
     }
   }
 }
