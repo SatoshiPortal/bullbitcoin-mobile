@@ -128,10 +128,10 @@ class BoltzAutoswapProvider implements AutoswapProviderPort {
         sendWalletId: liquidWallet.id,
         amountSat: amountSat,
         btcElectrumUrl: environment.isTestnet
-            ? ApiServiceConstants.publicElectrumTestUrl
+            ? ApiServiceConstants.blockstreamElectrumTestUrl
             : ApiServiceConstants.bbElectrumUrl,
         lbtcElectrumUrl: environment.isTestnet
-            ? ApiServiceConstants.publicliquidElectrumTestUrlPath
+            ? ApiServiceConstants.blockstreamLiquidElectrumTestUrlPath
             : ApiServiceConstants.bbLiquidElectrumUrlPath,
         receiveWalletId: recipientWallet.id,
       );

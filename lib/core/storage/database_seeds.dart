@@ -36,8 +36,8 @@ class DatabaseSeeds {
       (ApiServiceConstants.bbLiquidElectrumUrlPath, false, true, 0),
       (ApiServiceConstants.publicElectrumUrl, false, false, 2),
       (ApiServiceConstants.publicLiquidElectrumUrlPath, false, true, 1),
-      (ApiServiceConstants.publicElectrumTestUrl, true, false, 0),
-      (ApiServiceConstants.publicliquidElectrumTestUrlPath, true, true, 0),
+      (ApiServiceConstants.blockstreamElectrumTestUrl, true, false, 0),
+      (ApiServiceConstants.blockstreamLiquidElectrumTestUrlPath, true, true, 0),
     ];
 
     for (final (url, isTestnet, isLiquid, priority) in serversData) {

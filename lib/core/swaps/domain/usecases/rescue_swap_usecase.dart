@@ -32,10 +32,10 @@ class RescueSwapUsecase {
       final isTestnet = settings.environment.isTestnet;
 
       final btcElectrumUrl = isTestnet
-          ? ApiServiceConstants.publicElectrumTestUrl
+          ? ApiServiceConstants.blockstreamElectrumTestUrl
           : ApiServiceConstants.bbElectrumUrl;
       final lbtcElectrumUrl = isTestnet
-          ? ApiServiceConstants.publicliquidElectrumTestUrlPath
+          ? ApiServiceConstants.blockstreamLiquidElectrumTestUrlPath
           : ApiServiceConstants.bbLiquidElectrumUrlPath;
 
       // Map the user-selected wallet (on the acting chain) to the swap's

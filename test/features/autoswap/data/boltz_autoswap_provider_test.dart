@@ -142,8 +142,9 @@ void main() {
       () => swapRepository.createLiquidToBitcoinSwap(
         sendWalletId: 'liquid-wallet',
         amountSat: 2_499_500,
-        btcElectrumUrl: ApiServiceConstants.publicElectrumTestUrl,
-        lbtcElectrumUrl: ApiServiceConstants.publicliquidElectrumTestUrlPath,
+        btcElectrumUrl: ApiServiceConstants.blockstreamElectrumTestUrl,
+        lbtcElectrumUrl:
+            ApiServiceConstants.blockstreamLiquidElectrumTestUrlPath,
         receiveWalletId: 'bitcoin-wallet',
       ),
     ).thenAnswer(
@@ -254,8 +255,9 @@ void main() {
       () => swapRepository.createLiquidToBitcoinSwap(
         sendWalletId: 'liquid-wallet',
         amountSat: 2_499_500,
-        btcElectrumUrl: ApiServiceConstants.publicElectrumTestUrl,
-        lbtcElectrumUrl: ApiServiceConstants.publicliquidElectrumTestUrlPath,
+        btcElectrumUrl: ApiServiceConstants.blockstreamElectrumTestUrl,
+        lbtcElectrumUrl:
+            ApiServiceConstants.blockstreamLiquidElectrumTestUrlPath,
         receiveWalletId: 'bitcoin-wallet',
       ),
     ).called(1);

@@ -71,12 +71,22 @@ class ApiServiceConstants {
   // BB test currently not operational
   static const bbElectrumTestUrl = 'ssl://wes.bullbitcoin.com:60002';
   static const publicElectrumTestUrl = 'ssl://blockstream.info:993';
+  // Blockstream's current default (gdk, Green): blockstream.info:993 sits on
+  // the IMAPS port, which many networks filter. Earlier migrations keep
+  // reading [publicElectrumTestUrl].
+  static const blockstreamElectrumTestUrl =
+      'ssl://bitcoin-testnet.blockstream.info:50002';
 
   // Liquid Electrum servers - lwk does not accept ssl:// prefix
   static const bbLiquidElectrumUrlPath = 'les.bullbitcoin.com:995';
   static const bbLiquidElectrumTestUrlPath = 'les.bullbitcoin.com:465';
   static const publicLiquidElectrumUrlPath = 'blockstream.info:995';
   static const publicliquidElectrumTestUrlPath = 'blockstream.info:465';
+  // Blockstream's current default (lwk, gdk, Green): blockstream.info:465 sits
+  // on the SMTPS port, which many networks filter. Earlier migrations keep
+  // reading [publicliquidElectrumTestUrlPath].
+  static const blockstreamLiquidElectrumTestUrlPath =
+      'elements-testnet.blockstream.info:50002';
 
   // Boltz API
   static const boltzMainnetUrlPath = 'api.boltz.exchange/v2';
