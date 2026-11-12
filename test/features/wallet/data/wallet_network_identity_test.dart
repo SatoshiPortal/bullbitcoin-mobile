@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_catalog_port_impl.dart';
@@ -23,6 +24,36 @@ WalletMetadataModel _row(String id, String code) => WalletMetadataModel(
 );
 
 void main() {
+  for (final network in app.Network.values) {
+    test('wallet entity preserves the stored identity on ${network.name}', () {
+      final origin = WalletMetadataService.encodeOrigin(
+        fingerprint: 'aabbccdd',
+        network: network,
+        scriptType: app.ScriptType.bip84,
+      );
+      final wallet = app.Wallet(
+        origin: origin,
+        network: network,
+        xpubFingerprint: 'aabbccdd',
+        scriptType: app.ScriptType.bip84,
+        xpub: 'public',
+        externalPublicDescriptor: 'public-receive',
+        internalPublicDescriptor: 'public-change',
+        signer: SignerEntity.none,
+        signerDevice: null,
+        balanceSat: null,
+      );
+      expect(wallet.origin, origin);
+      expect(
+        wallet.id,
+        WalletMetadataService.encodeId(
+          fingerprint: 'aabbccdd',
+          network: network,
+          scriptType: app.ScriptType.bip84,
+        ),
+      );
+    });
+  }
   test('BIP329 origin projection does not select a concrete network', () {
     expect(
       WalletMetadataService.canonicalBip329Origin('[abcd1234/84h/1h/0h]'),
