@@ -474,3 +474,13 @@ read. PSETs lwk builds for the app leave the field absent. Beyond the
 sighash, the package applies no policy on outputs, fees or inputs: it
 signs the inputs its keys own, and deciding what is acceptable to sign is
 the caller's.
+
+## Read-only Android legacy reader
+
+The private Android channel in this package can inventory historical preferences and read a pure ESP store or a markerless/explicitly CBC store using its existing keys. It is not connected to normal keystore resolution: adding the reader alone does not restore the legacy cohort or activate a new store. It has no write, reset, key generation or migration operation.
+
+Source preferences are parsed directly as XML. Opening Android SharedPreferences itself can restore a backup file, so it is not a read-only source API. A backup, corrupt XML, duplicate key, unsupported format, missing key or changed snapshot is a fixed-code failure, never an empty result. The reader verifies the source snapshot again before returning. Its caller must still prevent other engines from initializing the source and validate secret envelopes and fingerprints before any transfer. The raw values remain inside the package's data layer.
+
+ESP keysets use Tink 1.21.0, matching the pinned lockfile's FSS Android dependency. Existing encrypted and historical cleartext keysets are supported without replacing either. CBC reads the historical wrapped AES key and RSA alias for the actual applicationId; CBC padding alone does not authenticate application values. Mixed formats and conflicting/rewritten algorithm markers remain unsupported. The advisory prior-install flag is read under its historical `flutter.seed_store_type` spelling and is not evidence of absence.
+
+The Java unit tests generate synthetic ciphertexts using the real algorithms and compare source bytes after success and failure. Run the Android module's `:secrets:testDebugUnitTest` task with the Gradle version pinned in `android/gradle/wrapper/gradle-wrapper.properties`; the Dart channel tests also exercise malformed responses and fixed-code error redaction. Neither substitutes for an Android upgrade test using real Keystore aliases. Activation, persistence barriers, background gating, and iOS accessibility are separate from this reader.
