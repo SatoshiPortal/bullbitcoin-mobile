@@ -21,6 +21,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.GCMParameterSpec;
 
 /** No writer or initializer is reachable from this reader. Returned values stay inside secrets. */
 final class LegacyKeystoreReader {
@@ -28,12 +29,14 @@ final class LegacyKeystoreReader {
     static final String KEYSET = "__androidx_security_crypto_encrypted_prefs_key_keyset__";
     static final String VALUESET = "__androidx_security_crypto_encrypted_prefs_value_keyset__";
     static final String CBC_KEY = "VGhpcyBpcyB0aGUga2V5IGZvciBhIHNlY3VyZSBzdG9yYWdlIEFFUyBLZXkK";
+    static final String GCM_KEY = "AES" + CBC_KEY;
     static final String KEY_ALGORITHM = "FlutterSecureSAlgorithmKey";
     static final String STORAGE_ALGORITHM = "FlutterSecureSAlgorithmStorage";
 
     interface ExistingKeys {
         Aead espMaster() throws GeneralSecurityException;
         Key unwrapCbc(byte[] wrapped) throws GeneralSecurityException;
+        Key unwrapGcm(byte[] wrapped) throws GeneralSecurityException;
     }
 
     private final Path directory;
@@ -47,6 +50,15 @@ final class LegacyKeystoreReader {
     Map<String, Object> inspect() throws LegacyReadException {
         LegacyPreferencesSnapshot snapshot = new LegacyPreferencesSnapshot(directory);
         String format = classify(snapshot);
+        // Metadata is not proof: develop can have written GCM markers over CBC data.
+        // No plaintext leaves this check, and no default plugin instance is opened.
+        if ("gcm".equals(format)) {
+            try {
+                authenticateGcm(snapshot);
+            } catch (Exception e) {
+                throw failure(e);
+            }
+        }
         snapshot.verifyUnchanged();
         Map<String, Object> result = new LinkedHashMap<>();
         result.put("format", format);
@@ -70,19 +82,20 @@ final class LegacyKeystoreReader {
             result.put("format", format);
             result.put("entries", entries);
             return result;
-        } catch (LegacyReadException e) {
-            throw e;
-        } catch (GeneralSecurityException e) {
-            // Android's locked-keystore exception must not collapse into absence.
-            for (Throwable cause = e; cause != null; cause = cause.getCause()) {
-                if (cause.getClass().getName().equals("android.security.keystore.UserNotAuthenticatedException")) {
-                    throw new LegacyReadException("locked");
-                }
-            }
-            throw new LegacyReadException("unreadable");
         } catch (Exception e) {
-            throw new LegacyReadException("unreadable");
+            throw failure(e);
         }
+    }
+
+    private static LegacyReadException failure(Exception error) {
+        if (error instanceof LegacyReadException) return (LegacyReadException) error;
+        // A temporarily locked existing key is never evidence of absence.
+        for (Throwable cause = error; cause != null; cause = cause.getCause()) {
+            if (cause.getClass().getName().equals("android.security.keystore.UserNotAuthenticatedException")) {
+                return new LegacyReadException("locked");
+            }
+        }
+        return new LegacyReadException("unreadable");
     }
 
     private static String classify(LegacyPreferencesSnapshot snapshot) throws LegacyReadException {
@@ -101,14 +114,20 @@ final class LegacyKeystoreReader {
         if (keyset != valueset) return "unknown";
         if (raw > 0 && encrypted > 0) return "mixed";
         if (encrypted > 0) return keyset ? "esp" : "unknown";
+        Object keyAlgorithm = marker(snapshot, KEY_ALGORITHM);
+        Object storageAlgorithm = marker(snapshot, STORAGE_ALGORITHM);
+        boolean currentMarkers = "RSA_ECB_OAEPwithSHA_256andMGF1Padding".equals(keyAlgorithm)
+                && "AES_GCM_NoPadding".equals(storageAlgorithm);
+        if (currentMarkers && snapshot.get(LegacyPreferencesSnapshot.KEYS).containsKey(GCM_KEY)) {
+            // Only inspect(), after authenticating every entry, may publish this format.
+            return "gcm";
+        }
         if (raw == 0) {
             // Existing keysets/config/keys are evidence, not proof of a fresh installation.
             return data.isEmpty() && snapshot.get(LegacyPreferencesSnapshot.KEYS).isEmpty()
                     && snapshot.get(LegacyPreferencesSnapshot.CONFIG).isEmpty()
                     && snapshot.get(LegacyPreferencesSnapshot.NAMED_CONFIG).isEmpty() ? "empty" : "unknown";
         }
-        Object keyAlgorithm = marker(snapshot, KEY_ALGORITHM);
-        Object storageAlgorithm = marker(snapshot, STORAGE_ALGORITHM);
         boolean legacyMarkers = (keyAlgorithm == null && storageAlgorithm == null)
                 || ("RSA_ECB_PKCS1Padding".equals(keyAlgorithm) && "AES_CBC_PKCS7Padding".equals(storageAlgorithm));
         if (legacyMarkers && snapshot.get(LegacyPreferencesSnapshot.KEYS).containsKey(CBC_KEY)) return "cbc";
@@ -213,6 +232,31 @@ final class LegacyKeystoreReader {
             }
         }
         return result;
+    }
+
+    private void authenticateGcm(LegacyPreferencesSnapshot snapshot) throws Exception {
+        Key aes = keys.unwrapGcm(base64(stringValue(snapshot.get(LegacyPreferencesSnapshot.KEYS), GCM_KEY)));
+        // Even an empty current store must have a usable existing wrapped key.
+        Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
+        cipher.init(Cipher.DECRYPT_MODE, aes, new GCMParameterSpec(128, new byte[12]));
+        for (Map.Entry<String, Object> entry : snapshot.get(LegacyPreferencesSnapshot.DATA).entrySet()) {
+            String name = entry.getKey();
+            if (name.equals(KEYSET) || name.equals(VALUESET)
+                    || name.equals(KEY_ALGORITHM) || name.equals(STORAGE_ALGORITHM)) continue;
+            if (!name.startsWith(PREFIX) || name.length() == PREFIX.length()) {
+                throw new LegacyReadException("unsupported");
+            }
+            byte[] ciphertext = base64(stringValue(snapshot.get(LegacyPreferencesSnapshot.DATA), name));
+            if (ciphertext.length < 28) throw new LegacyReadException("unreadable");
+            cipher.init(Cipher.DECRYPT_MODE, aes, new GCMParameterSpec(128, ciphertext, 0, 12));
+            byte[] clear = cipher.doFinal(ciphertext, 12, ciphertext.length - 12);
+            try {
+                // FSS writes UTF-8 strings. An authenticated non-string is not current FSS data.
+                utf8(clear);
+            } finally {
+                Arrays.fill(clear, (byte) 0);
+            }
+        }
     }
 
     private static void add(Map<String, String> entries, String prefixed, String value) throws LegacyReadException {

@@ -2,7 +2,16 @@ import 'package:flutter/services.dart';
 import 'package:meta/meta.dart';
 
 /// Physical format evidence only; no value here authorizes an empty wallet store.
-enum LegacyKeystoreFormat { empty, esp, cbc, mixed, unknown }
+enum LegacyKeystoreFormat {
+  empty,
+  esp,
+  cbc,
+
+  /// Existing OAEP key and every raw GCM value were verified without FSS init.
+  gcm,
+  mixed,
+  unknown,
+}
 
 enum LegacyKeystoreProblem {
   locked,
@@ -111,6 +120,7 @@ final class LegacyKeystoreDatasource {
     'empty' => LegacyKeystoreFormat.empty,
     'esp' => LegacyKeystoreFormat.esp,
     'cbc' => LegacyKeystoreFormat.cbc,
+    'gcm' => LegacyKeystoreFormat.gcm,
     'mixed' => LegacyKeystoreFormat.mixed,
     'unknown' => LegacyKeystoreFormat.unknown,
     _ => throw const LegacyKeystoreReadException(

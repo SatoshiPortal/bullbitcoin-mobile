@@ -7,9 +7,13 @@ import java.security.GeneralSecurityException;
 import java.security.Key;
 import java.security.KeyStore;
 import java.security.PrivateKey;
+import java.security.spec.AlgorithmParameterSpec;
+import java.security.spec.MGF1ParameterSpec;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import javax.crypto.Cipher;
+import javax.crypto.spec.OAEPParameterSpec;
+import javax.crypto.spec.PSource;
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
@@ -76,13 +80,24 @@ public final class SecretsPlugin implements FlutterPlugin, MethodChannel.MethodC
 
         @Override
         public Key unwrapCbc(byte[] wrapped) throws GeneralSecurityException {
+            return unwrap(wrapped, ".FlutterSecureStoragePluginKey", "RSA/ECB/PKCS1Padding", null);
+        }
+
+        @Override
+        public Key unwrapGcm(byte[] wrapped) throws GeneralSecurityException {
+            return unwrap(wrapped, ".FlutterSecureStoragePluginKeyOAEP", "RSA/ECB/OAEPPadding",
+                    new OAEPParameterSpec("SHA-256", "MGF1", MGF1ParameterSpec.SHA1, PSource.PSpecified.DEFAULT));
+        }
+
+        private Key unwrap(byte[] wrapped, String aliasSuffix, String transformation,
+                AlgorithmParameterSpec parameters) throws GeneralSecurityException {
             try {
                 KeyStore store = KeyStore.getInstance("AndroidKeyStore");
                 store.load(null);
-                Key key = store.getKey(packageName + ".FlutterSecureStoragePluginKey", null);
+                Key key = store.getKey(packageName + aliasSuffix, null);
                 if (!(key instanceof PrivateKey)) throw new GeneralSecurityException("Existing key unavailable");
-                Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding", "AndroidKeyStoreBCWorkaround");
-                cipher.init(Cipher.UNWRAP_MODE, (PrivateKey) key);
+                Cipher cipher = Cipher.getInstance(transformation, "AndroidKeyStoreBCWorkaround");
+                cipher.init(Cipher.UNWRAP_MODE, (PrivateKey) key, parameters);
                 return cipher.unwrap(wrapped, "AES", Cipher.SECRET_KEY);
             } catch (GeneralSecurityException e) {
                 throw e;
