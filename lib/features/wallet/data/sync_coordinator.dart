@@ -77,7 +77,8 @@ class SyncCoordinator {
   /// to an address this device never revealed stay invisible until a
   /// discovery pass. A pull always discovers; the first eligible automatic
   /// pass of the process discovers too, then at most one per window. Every
-  /// discovery attempt opens the window, failed ones included. This is not a
+  /// discovery attempt opens the window when it is queued, failed ones and
+  /// pulls included; a throttled or gated call opens nothing. This is not a
   /// timer: nothing runs without a sync call.
   static const Duration _automaticDiscoveryInterval = Duration(minutes: 10);
 
