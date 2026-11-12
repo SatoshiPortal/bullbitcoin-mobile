@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/exchange/domain/exchange_order_failure.dart';
 import 'dart:collection';
 import 'dart:typed_data';
 
@@ -133,7 +134,7 @@ void main() {
     ).thenAnswer((_) async => []);
     when(
       () => mainnetOrderRepository.getOrders(),
-    ).thenAnswer((_) async => orders);
+    ).thenAnswer((_) async => Ok(orders));
     when(
       () => labelExchangeOrdersUsecase.execute(orders: orders),
     ).thenAnswer((_) async {});
@@ -154,6 +155,36 @@ void main() {
       getTransactionOrderSwapsUsecase: getOrderSwaps,
     );
   });
+
+  test(
+    'credential failure removes exchange enrichment, not wallet history',
+    () async {
+      final tx = _walletTransaction(
+        txId: 'wallet-tx',
+        walletId: 'w1',
+        isIncoming: true,
+      );
+      when(
+        () => mainnetOrderRepository.getOrders(),
+      ).thenAnswer((_) async => const Err(ExchangeOrderCredentialFailure()));
+      when(
+        () => walletTransactionRepository.getWalletTransactions(
+          walletId: any(named: 'walletId'),
+          sync: any(named: 'sync'),
+          environment: any(named: 'environment'),
+        ),
+      ).thenAnswer((_) async => [tx]);
+      when(
+        () => payjoinSessions.list(any()),
+      ).thenAnswer((_) async => const Ok([]));
+      when(
+        () => labelExchangeOrdersUsecase.execute(orders: any(named: 'orders')),
+      ).thenAnswer((_) async {});
+      final transactions = unwrap(await usecase.execute());
+      expect(transactions, hasLength(1));
+      expect(transactions.single.walletTransaction?.txId, 'wallet-tx');
+    },
+  );
 
   test(
     'hides an aborted Payjoin until its original wallet tx is synced',
