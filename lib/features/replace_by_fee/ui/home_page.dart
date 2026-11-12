@@ -10,7 +10,7 @@ import 'package:bb_mobile/features/replace_by_fee/ui/fee_selector_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullButton, BullSupportButton, BullText, Gap;
+    show BullButton, BullShapesX, BullSupportButton, BullText, Gap;
 import 'package:go_router/go_router.dart';
 
 class ReplaceByFeeHomePage extends StatefulWidget {
@@ -139,7 +139,7 @@ class _ReplaceByFeeHomePageState extends State<ReplaceByFeeHomePage> {
   ) {
     return Material(
       elevation: 1,
-      borderRadius: BorderRadius.circular(2),
+      borderRadius: BorderRadius.circular(context.bullShapes.card),
       clipBehavior: .hardEdge,
       color: context.appColors.onSecondary,
       shadowColor: context.appColors.secondary,

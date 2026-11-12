@@ -238,7 +238,9 @@ class _WalletAddressField extends StatelessWidget {
                         height: 52,
                         decoration: BoxDecoration(
                           color: context.appColors.onSurface,
-                          borderRadius: BorderRadius.circular(2),
+                          borderRadius: BorderRadius.circular(
+                            context.bullShapes.button,
+                          ),
                         ),
                         child: Center(
                           child: SizedBox(
@@ -268,7 +270,7 @@ class _WalletAddressField extends StatelessWidget {
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
                 color: context.appColors.surface,
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(context.bullShapes.card),
                 boxShadow: [
                   BoxShadow(
                     color: context.appColors.overlay.withValues(alpha: 0.05),

@@ -69,12 +69,19 @@ Future<void> main({bool isInitialized = false}) async {
     final address = await addressRepository.generateNewReceiveAddress(
       walletId: walletId,
     );
-    final prepared = await prepareBitcoinSend.execute(
+    final preparationResult = await prepareBitcoinSend.execute(
       walletId: walletId,
-      address: address.address,
-      drain: true,
+      recipients: [
+        BitcoinTransactionRecipient.remainder(address: address.address),
+      ],
       networkFee: NetworkFee.relativeFromSatPerVbyte(testnetFeeRate),
     );
+    final prepared = switch (preparationResult) {
+      Ok(:final value) => value,
+      Err(:final failure) => fail(
+        'Bitcoin preparation failed: ${failure.runtimeType}',
+      ),
+    };
     final signed = await signBitcoinTx.execute(
       psbt: prepared.unsignedPsbt,
       walletId: walletId,
@@ -269,12 +276,22 @@ Future<void> main({bool isInitialized = false}) async {
         expect(uri.queryParameters, contains('pj'));
 
         const feeRate = testnetFeeRate;
-        final prepared = await prepareBitcoinSend.execute(
+        final preparationResult = await prepareBitcoinSend.execute(
           walletId: senderWallet.id,
-          address: address.address,
-          amountSat: 10000,
+          recipients: [
+            BitcoinTransactionRecipient.fixed(
+              address: address.address,
+              amountSat: Sats.fromInt(10000),
+            ),
+          ],
           networkFee: NetworkFee.relativeFromSatPerVbyte(feeRate),
         );
+        final prepared = switch (preparationResult) {
+          Ok(:final value) => value,
+          Err(:final failure) => fail(
+            'Bitcoin preparation failed: ${failure.runtimeType}',
+          ),
+        };
         final senderResult = await senderRole.start(
           StartPayjoinSender(
             walletId: senderWallet.id,

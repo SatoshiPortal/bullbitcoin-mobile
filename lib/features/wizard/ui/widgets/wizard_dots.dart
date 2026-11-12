@@ -1,3 +1,4 @@
+import 'package:bull_ui/bull_ui.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:flutter/material.dart';
 
@@ -37,7 +38,7 @@ class WizardDots extends StatelessWidget {
           decoration: BoxDecoration(
             color: isActive ? active : Colors.transparent,
             border: isActive ? null : Border.all(color: inactiveBorder),
-            borderRadius: BorderRadius.circular(4),
+            borderRadius: BorderRadius.circular(context.bullShapes.dot),
           ),
         );
       }),
