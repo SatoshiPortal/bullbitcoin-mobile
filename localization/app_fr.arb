@@ -4959,5 +4959,7 @@
   "mnemonicDefaultEnglishOnly": "Les portefeuilles par défaut nécessitent actuellement une phrase de récupération en anglais. Après la configuration, vous pouvez importer une autre langue dans un portefeuille Bitcoin séparé.",
   "mnemonicLanguageName": "{language, select, english{Anglais} french{Français} spanish{Espagnol} italian{Italien} portuguese{Portugais} czech{Tchèque} korean{Coréen} simplifiedChinese{Chinois (simplifié)} traditionalChinese{Chinois (traditionnel)} japanese{Japonais} other{Langue inconnue}}",
   "mnemonicOtherLanguageWordsError": "Ces mots figurent dans la liste de mots « {language} », pas « {selected} », et ne forment pas non plus une phrase de récupération valide dans cette langue. Vérifiez chaque mot et sa position.",
-  "coreScreensOutputsExceedInputs": "Les sorties dépassent les entrées : cette transaction est invalide et le réseau la rejettera."
+  "coreScreensOutputsExceedInputs": "Les sorties dépassent les entrées : cette transaction est invalide et le réseau la rejettera.",
+  "passphraseShow": "Afficher la passphrase",
+  "passphraseHide": "Masquer la passphrase"
 }

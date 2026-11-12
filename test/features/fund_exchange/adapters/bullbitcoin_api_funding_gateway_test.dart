@@ -198,29 +198,40 @@ void main() {
       }
     });
 
-    test(
-      'a thrown transport error becomes the catch-all, not an exception',
-      () async {
-        final dio = Dio();
-        dio.httpClientAdapter = _ThrowingAdapter();
-        final gateway = BullBitcoinApiFundingGateway(
-          authenticatedApiClient: dio,
-        );
+    test('a transport exception becomes the catch-all failure', () async {
+      final dio = Dio();
+      dio.httpClientAdapter = _ThrowingAdapter();
+      final gateway = BullBitcoinApiFundingGateway(authenticatedApiClient: dio);
 
-        final result = await gateway.getFundingDetails(
-          fundingMethod: RegularSepa(),
-        );
-        final failure = failureOf(result);
+      final result = await gateway.getFundingDetails(
+        fundingMethod: RegularSepa(),
+      );
+      final failure = failureOf(result);
 
-        // Like every converted feature, the catch-all keeps the stringified
-        // exception for diagnosis. That is safe because it lands in
-        // `logMessage`, which the l10n extension never reads — asserted in
-        // fund_exchange_failure_l10n_test.dart.
-        expect(failure, isA<FundExchangeUnexpectedFailure>());
-        expect(failure.logMessage, contains(_backendSentence));
-      },
-    );
+      // Like every converted feature, the catch-all keeps the stringified
+      // exception for diagnosis. That is safe because it lands in
+      // `logMessage`, which the l10n extension never reads — asserted in
+      // fund_exchange_failure_l10n_test.dart.
+      expect(failure, isA<FundExchangeUnexpectedFailure>());
+      expect(failure.logMessage, contains(_backendSentence));
+    });
   });
+
+  test(
+    'programmer errors are not converted into recoverable funding failures',
+    () async {
+      final dio = Dio()
+        ..httpClientAdapter = _ThrowingAdapter(
+          StateError('programming defect'),
+        );
+      addTearDown(dio.close);
+      final gateway = BullBitcoinApiFundingGateway(authenticatedApiClient: dio);
+      await expectLater(
+        gateway.getFundingDetails(fundingMethod: RegularSepa()),
+        throwsStateError,
+      );
+    },
+  );
 
   group('BullBitcoinApiFundingGateway.listInstitutions', () {
     test('an empty element list becomes NoInstitutionsFailure', () async {
@@ -455,6 +466,11 @@ class _ConnectionErrorAdapter implements HttpClientAdapter {
 }
 
 class _ThrowingAdapter implements HttpClientAdapter {
+  final Object _error;
+
+  _ThrowingAdapter([Object? error])
+    : _error = error ?? Exception(_backendSentence);
+
   @override
   void close({bool force = false}) {}
 
@@ -463,7 +479,7 @@ class _ThrowingAdapter implements HttpClientAdapter {
     RequestOptions options,
     Stream<Uint8List>? requestStream,
     Future<void>? cancelFuture,
-  ) async => throw StateError(_backendSentence);
+  ) async => throw _error;
 }
 
 class _BadCertificateAdapter implements HttpClientAdapter {
