@@ -350,5 +350,25 @@ void main() {
       expect(cubit.state.transaction, isNull);
       expect(cubit.state.failure, isNotNull);
     });
+
+    test('an unsigned PSBT stays a PSBT and is broadcast as one', () async {
+      final broadcast = _MockBroadcastBitcoinTransactionUsecase();
+      when(
+        () => broadcast.execute(any(), isPsbt: any(named: 'isPsbt')),
+      ).thenAnswer((_) async => 'txid');
+      final cubit = BroadcastSignedTxCubit(
+        broadcastBitcoinTransactionUsecase: broadcast,
+        verifySignedTxUsecase: _MockVerifySignedTxUsecase(),
+      );
+      addTearDown(cubit.close);
+
+      await cubit.tryParseTransaction(exportedPsbt);
+
+      expect(cubit.state.failure, isNull);
+      expect(cubit.state.transaction?.format, TxFormat.psbt);
+      expect(cubit.state.transaction?.data, exportedPsbt);
+      await cubit.broadcastTransaction();
+      verify(() => broadcast.execute(exportedPsbt, isPsbt: true)).called(1);
+    });
   });
 }
