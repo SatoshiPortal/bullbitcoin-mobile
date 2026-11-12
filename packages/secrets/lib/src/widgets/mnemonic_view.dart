@@ -1,4 +1,5 @@
 import 'package:flutter/widgets.dart';
+import 'package:bip39_mnemonic/bip39_mnemonic.dart' show Language;
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
 import 'package:secrets/src/domain/domain.dart';
@@ -93,20 +94,20 @@ final class _MnemonicViewState extends State<MnemonicView> {
   }
 
   /// The host's layout, or a grid of equal cells when it supplied none.
-  Widget _words(BuildContext context, List<String> words) {
+  Widget _words(BuildContext context, List<String> words, Language language) {
     final builder = widget.wordBuilder;
     final layout = widget.layoutBuilder;
     if (builder == null && layout == null) {
-      return PaintedMnemonic(words, style: widget.style);
+      return PaintedMnemonic(words, language: language, style: widget.style);
     }
     final cells = [
       for (var i = 0; i < words.length; i++)
         builder?.call(
               context,
               i + 1,
-              PaintedWord(words[i], style: widget.style),
+              PaintedWord(words[i], language: language, style: widget.style),
             ) ??
-            PaintedWord(words[i], style: widget.style),
+            PaintedWord(words[i], language: language, style: widget.style),
     ];
     return layout?.call(context, cells) ?? Wrap(children: cells);
   }
@@ -131,7 +132,7 @@ final class _MnemonicViewState extends State<MnemonicView> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  _words(context, value.words),
+                  _words(context, value.words, value.language),
                   if (value.hasPassphrase) ...[
                     if (widget.passphraseLabel case final label?)
                       Padding(
