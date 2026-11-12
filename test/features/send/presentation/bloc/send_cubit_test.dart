@@ -1181,7 +1181,12 @@ void main() {
               walletId: any(named: 'walletId'),
             ),
           );
-          verifyNever(() => broadcastLiquidTxUsecase.execute(any()));
+          verifyNever(
+            () => broadcastLiquidTxUsecase.execute(
+              any(),
+              network: any(named: 'network'),
+            ),
+          );
         },
       );
     }
@@ -1263,7 +1268,10 @@ void main() {
         return signed.future;
       });
       when(
-        () => broadcastLiquidTxUsecase.execute(any()),
+        () => broadcastLiquidTxUsecase.execute(
+          any(),
+          network: any(named: 'network'),
+        ),
       ).thenThrow(Exception('broadcast reached'));
 
       final confirming = cubit.onConfirmTransactionClicked();
@@ -1280,7 +1288,10 @@ void main() {
       expect(cubit.state.unsignedPsbt, 'liquid-pset-b');
 
       verifyNever(
-        () => broadcastLiquidTxUsecase.execute('signed-original-inputs'),
+        () => broadcastLiquidTxUsecase.execute(
+          'signed-original-inputs',
+          network: wallet.network,
+        ),
       );
       expect(cubit.state.signedLiquidTx, isNull);
       expect(cubit.state.signingTransaction, isFalse);
@@ -1311,7 +1322,10 @@ void main() {
             return available;
           });
           when(
-            () => broadcastLiquidTxUsecase.execute('signed-liquid-pset'),
+            () => broadcastLiquidTxUsecase.execute(
+              'signed-liquid-pset',
+              network: wallet.network,
+            ),
           ).thenAnswer((_) {
             pendingStarted.complete();
             return broadcast.future;
@@ -1350,10 +1364,18 @@ void main() {
           expect(cubit.state.signedLiquidTx, isNull);
           if (broadcastStarted) {
             verify(
-              () => broadcastLiquidTxUsecase.execute('signed-liquid-pset'),
+              () => broadcastLiquidTxUsecase.execute(
+                'signed-liquid-pset',
+                network: wallet.network,
+              ),
             ).called(1);
           } else {
-            verifyNever(() => broadcastLiquidTxUsecase.execute(any()));
+            verifyNever(
+              () => broadcastLiquidTxUsecase.execute(
+                any(),
+                network: any(named: 'network'),
+              ),
+            );
           }
         },
       );
@@ -1370,7 +1392,12 @@ void main() {
 
       expect(cubit.state.failure, isA<SendSelectedCoinsUnavailableFailure>());
       expect(cubit.state.signedLiquidTx, isNull);
-      verifyNever(() => broadcastLiquidTxUsecase.execute(any()));
+      verifyNever(
+        () => broadcastLiquidTxUsecase.execute(
+          any(),
+          network: any(named: 'network'),
+        ),
+      );
     });
 
     test(
