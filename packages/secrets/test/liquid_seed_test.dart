@@ -9,7 +9,7 @@ import 'package:secrets/src/domain/domain.dart' show Mnemonic;
 import 'fake_secure_storage_platform.dart';
 import 'result_helpers.dart';
 
-/// The seed lwk receives for Liquid: the words in their own language, never the passphrase.
+/// The seed lwk receives for Liquid: the secret's full BIP39 seed, the words in their own language with the passphrase.
 ///
 /// lwk itself needs the FFI; integration_test/secrets_derivation_vectors_test.dart checks what it builds from this seed. Here the seed alone is pinned against the published BIP39 vectors (entropy 00…00) and a stdlib PBKDF2 for French.
 void main() {
@@ -53,13 +53,35 @@ void main() {
     );
   });
 
-  test('the passphrase takes no part', () async {
+  test(
+    'without a passphrase it is the seed lwk derived from the words',
+    () async {
+      // lwk's word-based signer used to_seed(""): every existing Liquid
+      // wallet is a passphrase-less default, so its keys do not move.
+      expect(
+        convert.hex.encode(liquidSeed(await stored(bip39.Language.english))),
+        englishSeed,
+      );
+    },
+  );
+
+  test('a passphrase takes part', () async {
     final protected = await stored(
       bip39.Language.english,
       passphrase: 'TREZOR',
     );
-    expect(convert.hex.encode(protected.seedBytes), isNot(englishSeed));
-    expect(convert.hex.encode(liquidSeed(protected)), englishSeed);
+    // The published BIP39 vector for entropy 00…00 with "TREZOR".
+    expect(
+      convert.hex.encode(liquidSeed(protected)),
+      'c55257c360c07c72029aebc1b53c05ed0362ada38ead3e3e9efa3708e5349553'
+      '1f09a6987599d18264c1e1c92f2cf141630c7a3c4ab7c81b2f001698e7463b04',
+    );
+  });
+
+  test('wiping the returned seed leaves the secret intact', () async {
+    final secret = await stored(bip39.Language.english);
+    liquidSeed(secret).fillRange(0, 64, 0);
+    expect(convert.hex.encode(secret.seedBytes), englishSeed);
   });
 
   test('each call returns a buffer of its own', () async {

@@ -31,8 +31,7 @@ final class SecretInfo {
   /// 12 or 24 in practice; `null` for a seed secret.
   final int? wordCount;
 
-  /// ⚠️ Liquid descriptors/signatures ignore it in the pinned SDK. A vault
-  /// omits it from plaintext, so restoration needs it separately. See
+  /// A vault omits it from plaintext, so restoration needs it separately. See
   /// doc/design.md, § Passphrase.
   final bool hasPassphrase;
 

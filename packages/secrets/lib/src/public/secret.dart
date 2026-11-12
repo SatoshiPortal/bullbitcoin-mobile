@@ -97,9 +97,7 @@ final class Secret extends SecretEntry {
     );
   }
 
-  /// The confidential descriptor, covering both Liquid keychains. lwk derives it from the words, so a seed-only secret is refused from [info] alone.
-  ///
-  /// ⚠️ **The passphrase is ignored.** lwk derives from the words alone, so the descriptor belongs to the passphrase-less wallet. See doc/design.md, § Passphrase.
+  /// The confidential descriptor, covering both Liquid keychains, from the secret's full BIP39 seed (passphrase included). A seed-only secret is refused from [info] alone.
   @internal
   Future<Result<String, SecretFailure>> liquidDescriptor({
     required LiquidNetwork network,
