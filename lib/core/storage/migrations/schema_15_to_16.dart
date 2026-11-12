@@ -5,8 +5,10 @@ import 'package:bb_mobile/features/wallet/data/wallet_network_codec.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:drift/drift.dart';
 
-/// The single pending revision: concrete wallet/Electrum networks and removal
-/// of the price cache now owned by bull_pricer.
+/// The single pending revision: concrete wallet/Electrum networks, removal
+/// of the price cache now owned by bull_pricer, and the move of the default
+/// Blockstream Electrum servers off ports 700, 993, 995 and 465 (filtered by
+/// many networks) to Blockstream's current hosts on 50002.
 class Schema15To16 {
   static Future<void> migrate(Migrator m, Schema16 schema16) =>
       m.database.transaction(() => _migrate(m, schema16));
@@ -72,6 +74,29 @@ class Schema15To16 {
       );
       await m.database.customStatement(
         "INSERT OR IGNORE INTO electrum_settings (network, validate_domain, stop_gap, timeout, retry) VALUES ('bitcoinRegtest', 1, 20, 5, 5)",
+      );
+    }
+    // Only default rows change: a custom server is never touched, and once a
+    // row holds the new URL the update matches nothing, so a rerun is a
+    // no-op. Runs after the network rebuild, which keeps url and is_custom.
+    // The URLs are literals, not constants, so this step never changes with
+    // them.
+    for (final (from, to) in [
+      (
+        'ssl://blockstream.info:700',
+        'ssl://bitcoin-mainnet.blockstream.info:50002',
+      ),
+      ('blockstream.info:995', 'elements-mainnet.blockstream.info:50002'),
+      (
+        'ssl://blockstream.info:993',
+        'ssl://bitcoin-testnet.blockstream.info:50002',
+      ),
+      ('blockstream.info:465', 'elements-testnet.blockstream.info:50002'),
+    ]) {
+      await m.database.customUpdate(
+        'UPDATE OR IGNORE electrum_servers SET url = ? WHERE url = ? AND is_custom = 0',
+        variables: [Variable<String>(to), Variable<String>(from)],
+        updates: {schema16.electrumServers},
       );
     }
     // The cache is now owned by bull_pricer. Safe on every rerun.
