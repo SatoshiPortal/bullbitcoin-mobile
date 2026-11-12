@@ -47,6 +47,7 @@ extension SendFailureL10n on SendFailure {
       context.loc.swapErrorRouteUnavailableGeneric,
     SendRateLimitedFailure(:final retryAfter) =>
       context.loc.swapErrorRateLimited(retryAfter?.inSeconds ?? 30),
+    SendConsolidationRequiredFailure() ||
     SendTransactionBuildFailure() => context.loc.sendErrorBuildFailed,
     SendFeeBelowRelayFloorFailure() => context.loc.sendErrorFeeBelowRelayFloor,
     SendFeesUnavailableFailure() => context.loc.sendErrorFeesUnavailable,

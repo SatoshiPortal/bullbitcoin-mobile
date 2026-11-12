@@ -47,6 +47,11 @@ class CoinSelectTile extends StatelessWidget {
         ? context.loc.sendReceive
         : context.loc.sendChange;
     final label = utxo.labels.join(', ');
+    final confirmations = !utxo.isConfirmed
+        ? context.loc.sendUnconfirmed
+        : utxo is LiquidWalletUtxo
+        ? context.loc.coreWalletTransactionStatusConfirmed
+        : context.loc.sendCoinConfirmations(utxo.confirmations);
 
     return GestureDetector(
       onTap: onTap,
@@ -105,6 +110,13 @@ class CoinSelectTile extends StatelessWidget {
                         color: context.appColors.onSurfaceVariant,
                       ),
                     ),
+                  const SizedBox(height: 4),
+                  BullText(
+                    confirmations,
+                    style: context.font.labelSmall?.copyWith(
+                      color: context.appColors.onSurfaceVariant,
+                    ),
+                  ),
                   const SizedBox(height: 12),
 
                   Divider(color: context.appColors.secondaryFixedDim),
@@ -124,18 +136,20 @@ class CoinSelectTile extends StatelessWidget {
                           color: context.appColors.onSurface,
                         ),
                       ),
-                      BullText(
-                        context.loc.sendType,
-                        style: context.font.labelMedium?.copyWith(
-                          color: context.appColors.onSurfaceVariant,
+                      if (utxo is BitcoinWalletUtxo) ...[
+                        BullText(
+                          context.loc.sendType,
+                          style: context.font.labelMedium?.copyWith(
+                            color: context.appColors.onSurfaceVariant,
+                          ),
                         ),
-                      ),
-                      BullText(
-                        addressType,
-                        style: context.font.labelLarge?.copyWith(
-                          color: context.appColors.onSurface,
+                        BullText(
+                          addressType,
+                          style: context.font.labelLarge?.copyWith(
+                            color: context.appColors.onSurface,
+                          ),
                         ),
-                      ),
+                      ],
                     ],
                   ),
                   const SizedBox(height: 8),

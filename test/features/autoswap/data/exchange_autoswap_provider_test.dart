@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_liquid_transaction_usecase.dart';
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
@@ -174,6 +175,69 @@ void main() {
     });
   });
 
+  test('stops before signing when Liquid build 1 returns Err', () async {
+    var builds = 0;
+    when(
+      () => liquidWalletRepository.buildPset(
+        walletId: 'liquid-wallet',
+        address: any(named: 'address'),
+        amountSat: any(named: 'amountSat'),
+        feeRate: any(named: 'feeRate'),
+      ),
+    ).thenAnswer(
+      (_) async => builds++ == 0
+          ? const Err(WalletNoSpendableInputsFailure())
+          : const Ok('pset'),
+    );
+    final result = await provider.execute(settings);
+    expect(result, isA<Err<String, AutoswapFailure>>());
+    expect(builds, 1);
+    verifyNever(
+      () => liquidWalletRepository.signPset(
+        walletId: any(named: 'walletId'),
+        pset: any(named: 'pset'),
+      ),
+    );
+    verifyZeroInteractions(broadcastLiquid);
+  });
+
+  test(
+    'does not sign or broadcast a resumed order whose build returns Err',
+    () async {
+      when(
+        () => swapFacade.getPendingOrders(),
+      ).thenAnswer((_) async => Ok([_record()]));
+      when(
+        () => liquidWalletRepository.buildPset(
+          walletId: 'liquid-wallet',
+          address: any(named: 'address'),
+          amountSat: any(named: 'amountSat'),
+          feeRate: any(named: 'feeRate'),
+        ),
+      ).thenAnswer((_) async => const Err(WalletTransactionBuildFailure()));
+      final result = await provider.execute(settings);
+      expect(
+        (result as Err<String, AutoswapFailure>).failure,
+        isA<AutoswapExecutionFailure>(),
+      );
+      verify(
+        () => liquidWalletRepository.buildPset(
+          walletId: 'liquid-wallet',
+          address: any(named: 'address'),
+          amountSat: any(named: 'amountSat'),
+          feeRate: any(named: 'feeRate'),
+        ),
+      ).called(1);
+      verifyNever(
+        () => liquidWalletRepository.signPset(
+          walletId: any(named: 'walletId'),
+          pset: any(named: 'pset'),
+        ),
+      );
+      verifyZeroInteractions(broadcastLiquid);
+    },
+  );
+
   test('persists the signed payin before broadcasting it', () async {
     final record = _record();
     final prepared = _record(
@@ -191,7 +255,7 @@ void main() {
         amountSat: any(named: 'amountSat'),
         feeRate: any(named: 'feeRate'),
       ),
-    ).thenAnswer((_) async => 'pset');
+    ).thenAnswer((_) async => const Ok('pset'));
     when(
       () => liquidWalletRepository.getPsetSizeAndAbsoluteFees(pset: 'pset'),
     ).thenAnswer((_) async => (200, 500));
@@ -515,7 +579,7 @@ void main() {
           amountSat: any(named: 'amountSat'),
           feeRate: any(named: 'feeRate'),
         ),
-      ).thenAnswer((_) async => 'pset');
+      ).thenAnswer((_) async => const Ok('pset'));
       when(
         () => liquidWalletRepository.getPsetSizeAndAbsoluteFees(pset: 'pset'),
       ).thenAnswer((_) async => (200, 500));

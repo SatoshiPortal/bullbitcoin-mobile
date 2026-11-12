@@ -68,6 +68,7 @@ class WalletLocator {
         walletMetadataDatasource: locator<WalletMetadataDatasource>(),
         secrets: locator<Secrets>(),
         lwkWalletDatasource: locator<LwkWalletDatasource>(),
+        frozenWalletUtxoDatasource: locator<FrozenWalletUtxoDatasource>(),
       ),
     );
 
