@@ -1,3 +1,4 @@
+import 'package:bull_local_data/bull_local_data.dart' show LocalData;
 import 'package:bull_local_data/generated/l10n/local_data_localizations.dart';
 import 'package:bull_local_data/src/domain/local_data_failure.dart';
 import 'package:bull_local_data/src/domain/local_database.dart';
@@ -11,6 +12,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
+import 'package:secrets/secrets.dart';
+import 'package:secrets/testing.dart';
 
 final class _FakeRepository implements LocalDatabaseRepository {
   final List<LocalDatabase> resets = [];
@@ -126,5 +129,45 @@ void main() {
       findsOneWidget,
     );
     expect(retries, 0);
+  });
+
+  testWidgets('every failure shown gets a fresh screen state', (tester) async {
+    FakeSecureStoragePlatform().install();
+    final secrets = Secrets(scratchDirectory: () async => '/tmp');
+    const paths = LocalDatabasePaths(
+      main: '/tmp/m.sqlite',
+      payjoin: '/tmp/p.sqlite',
+    );
+    Widget app(LocalDataFailure failure) => MaterialApp(
+      theme: ThemeData(extensions: testBullExtensions),
+      localizationsDelegates: LocalDataLocalizations.localizationsDelegates,
+      supportedLocales: LocalDataLocalizations.supportedLocales,
+      home: BullSupportScope(
+        onContactSupport: (context, {message}) {},
+        child: LocalData.screen(
+          failure: failure,
+          secrets: secrets,
+          paths: paths,
+          onRetry: () async => retries++,
+        ),
+      ),
+    );
+
+    await tester.pumpWidget(app(const LocalDataKeystoreLockedFailure()));
+    await tester.pumpAndSettle();
+    await tapKey(tester, 'local-data-retry');
+    expect(retries, 1);
+
+    // What the shell does when the retry fails again: a new screen, for a new failure.
+    await tester.pumpWidget(
+      app(const LocalDataKeyMissingFailure(LocalDatabase.payjoin)),
+    );
+    await tester.pumpAndSettle();
+    expect(
+      find.textContaining('Your wallets are not affected'),
+      findsOneWidget,
+    );
+    await tapKey(tester, 'local-data-retry');
+    expect(retries, 2);
   });
 }

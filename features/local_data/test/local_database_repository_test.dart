@@ -226,6 +226,52 @@ void main() {
     },
   );
 
+  group('a corrupt database', () {
+    void corrupt(String path) {
+      seedPlaintext(path);
+      final db = sqlite3.open(path);
+      db.execute('CREATE TABLE padding (v BLOB);');
+      for (var i = 0; i < 64; i++) {
+        db.execute('INSERT INTO padding VALUES (randomblob(1024));');
+      }
+      db.execute('PRAGMA wal_checkpoint(TRUNCATE);');
+      db.execute('PRAGMA journal_mode = DELETE;');
+      db.close();
+      final file = File(path).openSync(mode: FileMode.append);
+      final length = file.lengthSync();
+      file.setPositionSync(4096);
+      file.writeFromSync(List<int>.filled(length - 4096, 0x5a));
+      file.closeSync();
+    }
+
+    test(
+      'Payjoin is moved aside and opens fresh, as Payjoin itself would',
+      () async {
+        corrupt(paths.payjoin);
+
+        final payjoin = await unlocked(LocalDatabase.payjoin);
+
+        expect(File(paths.payjoin).existsSync(), isFalse);
+        expect(
+          directory.listSync().map((e) => e.uri.pathSegments.last),
+          contains(startsWith('payjoin.sqlite.unreadable-')),
+        );
+        expect(payjoin.key, isA<DatabaseKey>());
+      },
+    );
+
+    test('the main database is never moved aside: it asks the user', () async {
+      corrupt(paths.main);
+      final bytes = File(paths.main).readAsBytesSync();
+
+      expect(
+        await failed(LocalDatabase.main),
+        isA<LocalDataUnreadableFailure>(),
+      );
+      expect(File(paths.main).readAsBytesSync(), bytes);
+    });
+  });
+
   group('reset', () {
     test(
       'erases the database and its key, and the next start begins afresh',
