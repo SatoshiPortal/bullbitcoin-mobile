@@ -28,7 +28,7 @@ void main() {
       final semantics = tester.ensureSemantics();
       await tester.pumpWidget(
         MaterialApp(
-          theme: ThemeData(extensions: const [testBullTheme]),
+          theme: ThemeData(extensions: testBullExtensions),
           localizationsDelegates:
               RecoverBullLocalizations.localizationsDelegates,
           supportedLocales: RecoverBullLocalizations.supportedLocales,

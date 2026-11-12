@@ -13,7 +13,7 @@ import 'package:secrets/secrets.dart';
 const _channel = MethodChannel('com.flutterplaza.no_screenshot_methods');
 
 Widget _app(Widget child) => MaterialApp(
-  theme: ThemeData(extensions: const [testBullTheme]),
+  theme: ThemeData(extensions: testBullExtensions),
   localizationsDelegates: RecoverBullLocalizations.localizationsDelegates,
   supportedLocales: RecoverBullLocalizations.supportedLocales,
   home: child,
