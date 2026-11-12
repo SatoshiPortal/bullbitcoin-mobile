@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/exchange/data/exchange_authentication.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/recipients/data/bullbitcoin_api_virtual_iban_datasource.dart';
 import 'package:bb_mobile/features/recipients/domain/entities/virtual_iban.dart';
@@ -52,6 +53,14 @@ final class VirtualIbanRepositoryImpl implements VirtualIbanRepository {
       isTestnet ? _testnetDatasource : _mainnetDatasource;
 
   RecipientsFailure _failureFrom(Object e, StackTrace st, String operation) {
+    final refusal = exchangeAuthenticationException(e);
+    if (refusal != null) {
+      return refusal.isUnauthenticated
+          ? const RecipientsNotAuthenticatedFailure()
+          : const RecipientsUnexpectedFailure(
+              'Exchange credential unavailable',
+            );
+    }
     if (e is VirtualIbanApiException) {
       log.warning('API refused to $operation — $e');
       return switch (e.code) {
