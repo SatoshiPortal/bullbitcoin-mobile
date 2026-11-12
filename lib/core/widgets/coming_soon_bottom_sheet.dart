@@ -1,7 +1,8 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:flutter/material.dart';
-import 'package:bull_ui/bull_ui.dart' show BullBottomSheet, BullButton;
+import 'package:bull_ui/bull_ui.dart'
+    show BullBottomSheet, BullButton, BullShapesX;
 
 class ComingSoonBottomSheet extends StatelessWidget {
   final String description;
@@ -39,8 +40,10 @@ class ComingSoonBottomSheet extends StatelessWidget {
     final theme = Theme.of(context);
 
     return Container(
-      decoration: const BoxDecoration(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(context.bullShapes.sheet),
+        ),
       ),
       child: SafeArea(
         child: Padding(
@@ -53,7 +56,7 @@ class ComingSoonBottomSheet extends StatelessWidget {
                 height: 4,
                 decoration: BoxDecoration(
                   color: context.appColors.outline.withValues(alpha: 0.3),
-                  borderRadius: BorderRadius.circular(2),
+                  borderRadius: BorderRadius.circular(context.bullShapes.dot),
                 ),
               ),
               const SizedBox(height: 24),

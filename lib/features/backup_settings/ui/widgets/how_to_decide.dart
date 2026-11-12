@@ -1,7 +1,7 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:flutter/material.dart';
-import 'package:bull_ui/bull_ui.dart' show BullText, Gap;
+import 'package:bull_ui/bull_ui.dart' show BullShapesX, BullText, Gap;
 
 class HowToDecideBackupOption extends StatelessWidget {
   const HowToDecideBackupOption({super.key});
@@ -13,7 +13,9 @@ class HowToDecideBackupOption extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
           color: context.appColors.surface,
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
+          borderRadius: BorderRadius.vertical(
+            top: Radius.circular(context.bullShapes.sheet),
+          ),
         ),
         padding: const EdgeInsets.symmetric(vertical: 30),
         child: Column(

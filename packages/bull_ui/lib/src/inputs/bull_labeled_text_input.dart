@@ -1,3 +1,4 @@
+import 'package:bull_ui/src/theme/bull_shapes.dart';
 import 'package:bull_ui/src/data_display/bull_text.dart';
 import 'package:bull_ui/src/inputs/bull_input_text.dart';
 import 'package:bull_ui/src/layout/gap.dart';
@@ -72,7 +73,7 @@ class BullLabeledTextInput extends StatelessWidget {
         Container(
           decoration: BoxDecoration(
             color: colors.surface,
-            borderRadius: BorderRadius.circular(2.76),
+            borderRadius: BorderRadius.circular(context.bullShapes.card),
             border: Border.all(color: colors.border, width: 0.69),
             boxShadow: [
               BoxShadow(color: colors.border, offset: const Offset(0, 2)),

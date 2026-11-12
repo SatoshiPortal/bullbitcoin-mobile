@@ -48,10 +48,17 @@ const testBullTheme = BullTheme(
   shimmerHighlight: Color(0xFFF5F5F5),
 );
 
-/// Wraps [child] in a `MaterialApp` carrying [testBullTheme].
+/// Every theme extension `bull_ui` components read, for tests that build their
+/// own `ThemeData`: `ThemeData(extensions: testBullExtensions)`.
+const testBullExtensions = <ThemeExtension<dynamic>>[
+  testBullTheme,
+  BullShapes.standard,
+];
+
+/// Wraps [child] in a `MaterialApp` carrying [testBullExtensions].
 Widget wrapWithTheme(Widget child) {
   return MaterialApp(
-    theme: ThemeData(extensions: const [testBullTheme]),
+    theme: ThemeData(extensions: testBullExtensions),
     home: Scaffold(body: child),
   );
 }

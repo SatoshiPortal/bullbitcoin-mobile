@@ -4,7 +4,7 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:flutter/material.dart';
-import 'package:bull_ui/bull_ui.dart' show BullShimmerLine, Gap;
+import 'package:bull_ui/bull_ui.dart' show BullShapesX, BullShimmerLine, Gap;
 
 class ExchangeAmountCurrencyDropdown extends StatelessWidget {
   const ExchangeAmountCurrencyDropdown({
@@ -40,7 +40,7 @@ class ExchangeAmountCurrencyDropdown extends StatelessWidget {
             elevation: 4,
             shadowColor: context.appColors.onSurface.withValues(alpha: 0.7),
             color: context.appColors.surface,
-            borderRadius: BorderRadius.circular(4.0),
+            borderRadius: BorderRadius.circular(context.bullShapes.input),
             child: Center(
               child: isLoading
                   ? const BullShimmerLine()

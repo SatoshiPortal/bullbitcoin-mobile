@@ -22,6 +22,7 @@ import 'package:bb_mobile/features/ledger/presentation/cubit/ledger_operation_cu
 import 'package:bb_mobile/features/ledger/presentation/cubit/ledger_operation_state.dart';
 import 'package:bb_mobile/features/ledger/presentation/ledger_failure_l10n.dart';
 import 'package:bb_mobile/locator.dart';
+import 'package:screen_awake/screen_awake.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
@@ -31,6 +32,7 @@ import 'package:bull_ui/bull_ui.dart'
         BullInstructionsSheet,
         BullSelectableList,
         BullSelectableListItem,
+        BullShapesX,
         BullSnackBar,
         BullText,
         BullTopBar,
@@ -121,18 +123,21 @@ class _LedgerActionViewState extends State<_LedgerActionView> {
           }
         },
         builder: (context, state) {
-          return Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: SingleChildScrollView(
-              physics: const ClampingScrollPhysics(),
-              child: Center(
-                child: Column(
-                  children: [
-                    const Gap(32),
-                    _buildMainContent(context, state),
-                    const Gap(32),
-                    _buildActionButtons(context, state),
-                  ],
+          return ScreenAwakeScope(
+            enabled: !state.isInitial && !state.isSuccess && !state.isError,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: SingleChildScrollView(
+                physics: const ClampingScrollPhysics(),
+                child: Center(
+                  child: Column(
+                    children: [
+                      const Gap(32),
+                      _buildMainContent(context, state),
+                      const Gap(32),
+                      _buildActionButtons(context, state),
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -273,7 +278,7 @@ class _LedgerActionViewState extends State<_LedgerActionView> {
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
             color: context.appColors.surface,
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: BorderRadius.circular(context.bullShapes.card),
             border: Border.all(color: context.appColors.border, width: 1),
           ),
           child: SelectableText(
@@ -303,13 +308,13 @@ class _LedgerActionViewState extends State<_LedgerActionView> {
           width: double.infinity,
           decoration: BoxDecoration(
             color: context.appColors.surface,
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: BorderRadius.circular(context.bullShapes.input),
             border: Border.all(color: context.appColors.border, width: 1),
           ),
           child: Material(
             color: context.appColors.transparent,
             child: InkWell(
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(context.bullShapes.input),
               onTap: () => _showScriptTypeSelection(context),
               child: Padding(
                 padding: const EdgeInsets.symmetric(

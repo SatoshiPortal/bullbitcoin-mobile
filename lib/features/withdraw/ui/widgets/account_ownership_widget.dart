@@ -2,7 +2,7 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart' show BBText;
 import 'package:flutter/material.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullShapesX, Gap;
 
 class AccountOwnershipWidget extends StatelessWidget {
   const AccountOwnershipWidget({
@@ -54,13 +54,13 @@ class AccountOwnershipWidget extends StatelessWidget {
 
     return InkWell(
       onTap: () => onFormDataChanged(key, value.toString()),
-      borderRadius: BorderRadius.circular(4),
+      borderRadius: BorderRadius.circular(context.bullShapes.card),
       child: SizedBox(
         height: 56,
         child: Material(
           elevation: 4,
           color: context.appColors.onPrimary,
-          borderRadius: BorderRadius.circular(4),
+          borderRadius: BorderRadius.circular(context.bullShapes.card),
           child: Container(
             decoration: BoxDecoration(
               border: Border.all(

@@ -63,7 +63,7 @@ class _ErrorMessage extends StatelessWidget {
       padding: const EdgeInsets.all(BullSpacing.sm),
       decoration: BoxDecoration(
         color: context.bull.error.withAlpha(26),
-        borderRadius: BorderRadius.circular(BullRadius.sm),
+        borderRadius: BorderRadius.circular(context.bullShapes.card),
         border: Border.all(color: context.bull.error),
       ),
       child: Row(
@@ -122,7 +122,7 @@ class _UploadOptionCard extends StatelessWidget {
             border: Border.all(
               color: context.bull.outline.withValues(alpha: 0.3),
             ),
-            borderRadius: BorderRadius.circular(BullRadius.sm),
+            borderRadius: BorderRadius.circular(context.bullShapes.card),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -210,14 +210,14 @@ class _UploadStatusButton extends StatelessWidget {
       case SecureUploadStatus.upload:
         return InkWell(
           onTap: isUploading ? null : onPressed,
-          borderRadius: BorderRadius.circular(BullRadius.sm),
+          borderRadius: BorderRadius.circular(context.bullShapes.button),
           child: Container(
             padding: const EdgeInsets.symmetric(
               horizontal: BullSpacing.sm,
               vertical: BullSpacing.xs,
             ),
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(BullRadius.sm),
+              borderRadius: BorderRadius.circular(context.bullShapes.button),
               color: context.bull.surfaceContainerHighest,
             ),
             child: isUploading
@@ -258,7 +258,7 @@ class _UploadStatusButton extends StatelessWidget {
             vertical: BullSpacing.xs,
           ),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(BullRadius.sm),
+            borderRadius: BorderRadius.circular(context.bullShapes.badge),
             border: Border.all(
               color: context.bull.warning.withValues(alpha: 0.6),
               width: 1.5,
@@ -281,7 +281,7 @@ class _UploadStatusButton extends StatelessWidget {
           ),
           decoration: BoxDecoration(
             color: context.bull.success.withValues(alpha: 0.15),
-            borderRadius: BorderRadius.circular(BullRadius.sm),
+            borderRadius: BorderRadius.circular(context.bullShapes.badge),
           ),
           child: BullText(
             context.loc.exchangeFileUploadStatusAccepted,
@@ -319,7 +319,7 @@ class _RejectedStatusWithReupload extends StatelessWidget {
           ),
           decoration: BoxDecoration(
             color: context.bull.error.withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(BullRadius.xs),
+            borderRadius: BorderRadius.circular(context.bullShapes.badge),
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
@@ -343,14 +343,14 @@ class _RejectedStatusWithReupload extends StatelessWidget {
         const Gap(BullSpacing.sm),
         InkWell(
           onTap: isUploading ? null : onPressed,
-          borderRadius: BorderRadius.circular(BullRadius.sm),
+          borderRadius: BorderRadius.circular(context.bullShapes.button),
           child: Container(
             padding: const EdgeInsets.symmetric(
               horizontal: BullSpacing.md,
               vertical: 10,
             ),
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(BullRadius.sm),
+              borderRadius: BorderRadius.circular(context.bullShapes.button),
               color: context.bull.surfaceContainerHighest,
             ),
             child: isUploading

@@ -1,7 +1,7 @@
+import 'package:bull_ui/src/theme/bull_shapes.dart';
 import 'package:bull_ui/src/feedback/bull_snack_bar.dart';
 import 'package:bull_ui/src/layout/gap.dart';
 import 'package:bull_ui/src/theme/bull_theme.dart';
-import 'package:bull_ui/src/theme/bull_tokens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -45,7 +45,7 @@ class BullCopyField extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: colors.onSecondary,
-        borderRadius: BorderRadius.circular(BullRadius.sm),
+        borderRadius: BorderRadius.circular(context.bullShapes.input),
         border: Border.all(color: colors.secondaryFixedDim),
       ),
       child: Row(
