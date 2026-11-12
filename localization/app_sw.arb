@@ -3661,5 +3661,6 @@
   "sellPayoutBalance": "Ongeza kwenye salio la akaunti yangu",
   "sellPayoutSepaDescription": "Utoaji wa fedha unaonekana kuwa umetumwa na Leonod",
   "sellPayoutTitle": "Chagua Mpokeaji",
-  "sellPayoutNewBadge": "MPYA"
+  "sellPayoutNewBadge": "MPYA",
+  "coreScreensOutputsExceedInputs": "Matokeo yanazidi maingizo: muamala huu si halali na mtandao utaukataa."
 }
