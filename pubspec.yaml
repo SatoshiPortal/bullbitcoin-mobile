@@ -23,6 +23,7 @@ workspace:
   - packages/bull_pricer
   - packages/bull_sqlite
   - features/logs
+  - features/local_data
 
 # Build hook options, read from the workspace root for every member.
 # `sqlite3` loads SQLite3MultipleCiphers instead of plain SQLite, so local
@@ -40,6 +41,7 @@ dependencies:
   secrets:
   bull_payjoin:
   bull_pricer:
+  bull_local_data:
   bull_ui:
   primitives:
   bull_tor:

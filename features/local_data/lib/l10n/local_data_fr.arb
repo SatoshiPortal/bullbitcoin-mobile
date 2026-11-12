@@ -1,0 +1,20 @@
+{
+  "localDataLockedTitle": "Déverrouillez votre appareil",
+  "localDataLockedMessage": "Les données de votre portefeuille restent scellées tant que cet appareil n'a pas été déverrouillé une fois depuis son démarrage. Déverrouillez-le, puis réessayez.",
+  "localDataRetryButton": "Réessayer",
+  "localDataRecoveryTitle": "Impossible d'ouvrir les données locales",
+  "localDataRecoveryMainMessage": "Les données que cette app conserve sur cet appareil (liste des portefeuilles, libellés, historique des transactions, swaps et réglages) sont chiffrées, et la clé qui les ouvre n'est plus disponible sur cet appareil.",
+  "localDataRecoveryPayjoinMessage": "Les sessions Payjoin que cette app conserve sur cet appareil sont chiffrées, et la clé qui les ouvre n'est plus disponible sur cet appareil. Vos portefeuilles ne sont pas concernés.",
+  "localDataRecoveryInconsistentMessage": "Une partie des données que cette app conserve sur cet appareil est dans un état qu'elle ne peut pas ouvrir sans risque.",
+  "localDataRecoveryRestoreHint": "La réinitialisation les efface. Votre phrase de récupération ou votre sauvegarde chiffrée restaure ensuite vos portefeuilles ; les libellés, les swaps et les sessions Payjoin ne reviennent pas.",
+  "localDataResetButton": "Réinitialiser les données locales",
+  "localDataResetConfirmTitle": "Effacer les données locales ?",
+  "localDataResetConfirmMessage": "Cette action est irréversible.",
+  "localDataResetConfirmCheckbox": "J'ai ma phrase de récupération ou ma sauvegarde chiffrée",
+  "localDataResetConfirmButton": "Effacer",
+  "localDataCancelButton": "Annuler",
+  "localDataContactSupportButton": "Contacter le support",
+  "localDataShareLogsButton": "Partager les journaux",
+  "localDataShareLogsFailedMessage": "Échec du partage des journaux",
+  "localDataResetFailedMessage": "La réinitialisation n'a pas abouti. Réessayez."
+}

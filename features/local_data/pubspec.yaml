@@ -1,0 +1,36 @@
+name: bull_local_data
+description: Opens the app's local databases encrypted, and recovers when they cannot be opened.
+publish_to: "none"
+version: 0.0.1
+resolution: workspace
+
+environment:
+  sdk: "3.12.2"
+  flutter: "3.44.9"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_bloc: ^9.1.1
+  flutter_localizations:
+    sdk: flutter
+  bull_logger:
+  bull_sqlite:
+  bull_ui:
+  drift: 2.34.0
+  drift_flutter: ^0.3.1
+  intl: any
+  meta: ^1.17.0
+  path: ^1.9.0
+  primitives:
+  secrets:
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+  sqlite3: ^3.5.2
+
+flutter:
+  uses-material-design: true
+  generate: true
