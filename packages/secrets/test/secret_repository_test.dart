@@ -5,7 +5,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 import 'package:secrets/src/data/data.dart';
 import 'package:secrets/src/data/models/secret_model.dart';
-import 'package:secrets/src/domain/database_key.dart';
 import 'package:secrets/src/domain/failures.dart';
 import 'package:secrets/src/domain/secret_material.dart';
 
