@@ -4,7 +4,6 @@ import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
 import 'package:secrets/src/crypto/derivers/bitcoin_deriver.dart';
 import 'package:secrets/src/crypto/exceptions.dart';
-import 'package:secrets/src/crypto/signers/signers.dart';
 import 'package:secrets/src/domain/domain.dart';
 
 /// Bitcoin signing through bdk. Reached as `Signer.bitcoin`.
@@ -82,10 +81,10 @@ final class BitcoinSigner {
 
   /// A signing-only bdk wallet, persisted nowhere.
   ///
-  /// Built from the BIP39 words and passphrase, as before. The account path
+  /// Built from the language-aware BIP39 seed via the Dart master xprv. The account path
   /// matches the public descriptors and xpub derivation.
   ///
-  /// The mnemonic, the secret key and the two descriptors are freed here:
+  /// The secret key and the two descriptors are freed here:
   /// the wallet holds its own references, and these would otherwise keep
   /// an xprv in native memory for as long as the wallet.
   bdk.Wallet _wallet(
@@ -94,10 +93,6 @@ final class BitcoinSigner {
     required BitcoinNetwork network,
     required int accountIndex,
   }) {
-    final networkKind = network.isMainnet
-        ? bdk.NetworkKind.main
-        : bdk.NetworkKind.test;
-
     // Every handle is declared before the try and freed in the finally, so a
     // throw from any allocation still releases the ones already made. The
     // previous shape opened the try around the Wallet call alone, with five
@@ -106,7 +101,6 @@ final class BitcoinSigner {
     // xprv-bearing secretKey and both private descriptors until the garbage
     // collector happened to run their finalizers. That is precisely the
     // "eventually" this class's dispose discipline exists to avoid.
-    bdk.Mnemonic? mnemonic;
     bdk.DescriptorSecretKey? secretKey;
     bdk.Descriptor? external;
     bdk.Descriptor? internal;
@@ -114,13 +108,8 @@ final class BitcoinSigner {
     bdk.Wallet? wallet;
     Object? bodyFailure;
     try {
-      mnemonic = bdk.Mnemonic.fromString(mnemonic: mnemonicSentence(secret));
-      final key = secretKey = bdk.DescriptorSecretKey(
-        networkKind: networkKind,
-        mnemonic: mnemonic,
-        // Empty and absent are the same passphrase to BIP39, but the app
-        // has always passed `null` for absent. Keep it.
-        password: secret.passphrase.isNotEmpty ? secret.passphrase : null,
+      final key = secretKey = bdk.DescriptorSecretKey.fromString(
+        privateKey: const BitcoinDeriver().masterXprv(secret, network),
       );
 
       bdk.Descriptor keychain(bdk.KeychainKind kind) =>
@@ -167,7 +156,6 @@ final class BitcoinSigner {
       final failure = disposeAll(
         [
           secretKey?.dispose,
-          mnemonic?.dispose,
           external?.dispose,
           internal?.dispose,
           persister?.dispose,

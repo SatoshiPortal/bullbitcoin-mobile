@@ -35,7 +35,7 @@ final class UnreadableSecret extends SecretEntry {
 ///
 /// Nothing here catches: the repository is the boundary that turns an exception into a [SecretFailure].
 ///
-/// A passphrase is honoured by Bitcoin derivation and signing and by the swap key. Liquid descriptors and signatures use words alone. RecoverBull encrypts only the words, but derives the vault key with the passphrase. See doc/design.md, § Passphrase.
+/// A passphrase is honoured by Bitcoin and Liquid derivation and signing and by the swap key. RecoverBull encrypts only the words, but derives the vault key with the passphrase. See doc/design.md, § Passphrase.
 final class Secret extends SecretEntry {
   /// Fingerprint and shape. A plain value: safe to log, to compare, to hold in a bloc state.
   final SecretInfo info;
@@ -97,9 +97,7 @@ final class Secret extends SecretEntry {
     );
   }
 
-  /// The confidential descriptor, covering both Liquid keychains. lwk derives it from the words, so a seed-only secret is refused from [info] alone.
-  ///
-  /// ⚠️ **The passphrase is ignored.** lwk derives from the words alone, so the descriptor belongs to the passphrase-less wallet. See doc/design.md, § Passphrase.
+  /// The confidential descriptor, covering both Liquid keychains, from the secret's full BIP39 seed (passphrase included). A seed-only secret is refused from [info] alone.
   @internal
   Future<Result<String, SecretFailure>> liquidDescriptor({
     required LiquidNetwork network,
@@ -200,7 +198,7 @@ final class Secret extends SecretEntry {
 
   /// Opens this secret's Silent Payments account (BIP352, account 0) in bwk, which scans and signs for it while the returned account lives. The caller owns it and disposes it when the session ends.
   ///
-  /// ⚠️ **The words reach bwk.** bwk-dart opens an account from a mnemonic only, so this is the one operation that hands the stored words to a library outside the package; they never reach the app, and the account holds the keys until it is disposed.
+  /// ⚠️ **The words reach bwk.** bwk-dart opens an account from a mnemonic only, and its returned account retains keys after this call; they never reach the app, and the account holds the keys until it is disposed.
   ///
   /// ⚠️ **A passphrase cannot be honoured** — bwk derives from the words alone — so a secret that has one is refused with `PassphraseUnsupportedFailure` rather than opening the passphrase-less sibling's wallet.
   @internal
@@ -234,13 +232,16 @@ final class Secret extends SecretEntry {
 
   /// Seals this secret into a RecoverBull vault and returns its key separately. Store the two apart: together they recover the mnemonic.
   ///
-  /// [metadata] is returned by `secrets.recoverbull.restore`; it must not contain a `mnemonic` entry. Each backup derives its key at a fresh random BIP85 index. No network.
+  /// [metadata] is returned by `secrets.recoverbull.restore`; it must not contain `mnemonic` or `mnemonicLanguage` entries; `language` stays free for the caller. Each backup derives its key at a fresh random BIP85 index. No network.
   ///
-  /// The vault contains only the words, without the passphrase. Its encryption key derives from the original seed, including the passphrase. Restoring a passphrase-protected Bitcoin wallet also requires its passphrase; the app's default wallets never have one.
+  /// The vault contains the words and their language, without the passphrase. Its encryption key derives from the original seed, including the passphrase. Restoring a passphrase-protected Bitcoin wallet also requires its passphrase; the app's default wallets never have one.
   @internal
   Future<Result<({EncryptedVault vault, VaultKey key}), SecretFailure>>
   backupRecoverbull({Map<String, dynamic> metadata = const {}}) async {
-    _requireNoReservedMetadata(metadata);
+    // The repository awaits the keystore. Freeze the validated top-level
+    // fields so the caller cannot inject a reserved key before sealing ends.
+    final snapshot = Map<String, dynamic>.unmodifiable(metadata);
+    _requireNoReservedMetadata(snapshot);
     return _repository.useMnemonic(info, (m) {
       final path = Backup.recoverbull.newDerivationPath();
       final key = VaultKey(
@@ -254,7 +255,8 @@ final class Secret extends SecretEntry {
         vault: EncryptedVault(
           json: Backup.recoverbull.seal(
             words: m.words,
-            metadata: metadata,
+            language: m.language,
+            metadata: snapshot,
             backupKey: key.hex,
             derivationPath: path,
           ),
@@ -268,13 +270,15 @@ final class Secret extends SecretEntry {
   /// caller then reads this package's own message, not a redacted type name.
   /// Inside the boundary an `Error` is a bug and leaves with its type only.
   static void _requireNoReservedMetadata(Map<String, dynamic> metadata) {
-    final reserved = Backup.recoverbull.reservedMetadataKey;
-    if (metadata.containsKey(reserved)) {
-      throw ArgumentError.value(
-        reserved,
-        'metadata',
-        'the mnemonic is written by the vault, not by the caller',
-      );
+    final reserved = Backup.recoverbull.reservedMetadataKeys;
+    for (final key in metadata.keys) {
+      if (reserved.contains(key)) {
+        throw ArgumentError.value(
+          key,
+          'metadata',
+          'the mnemonic is written by the vault, not by the caller',
+        );
+      }
     }
   }
 
@@ -293,7 +297,11 @@ final class Secret extends SecretEntry {
     required RevealReason reason,
   }) => _repository.useMnemonic(info, (m) {
     log.info('SECRET_REVEAL: mnemonic for ${info.id} (${reason.name})');
-    return RevealedMnemonic(words: m.words, passphrase: m.passphrase);
+    return RevealedMnemonic(
+      words: m.words,
+      language: m.language,
+      passphrase: m.passphrase,
+    );
   });
 
   /// Compares user-typed words against the stored ones without exposing either.
@@ -301,13 +309,14 @@ final class Secret extends SecretEntry {
   Future<Result<bool, SecretFailure>> verifyWords(List<String> words) {
     // Copied now: the comparison runs after the secret has loaded, and a
     // caller that reuses its list in between must not change the verdict.
-    final candidate = List<String>.of(words);
+    final candidate = Deriver.fingerprint.normalizeWords(words);
     return _repository.useMnemonic(info, (m) {
       if (m.words.length != candidate.length) return false;
+      final stored = Deriver.fingerprint.normalizeWords(m.words);
       var match = true;
       // No early exit: the loop's duration must not depend on where the first wrong word is.
       for (var i = 0; i < candidate.length; i++) {
-        if (m.words[i] != candidate[i]) match = false;
+        if (stored[i] != candidate[i]) match = false;
       }
       return match;
     });

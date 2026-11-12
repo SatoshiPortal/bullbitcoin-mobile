@@ -2,6 +2,7 @@ import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:convert/convert.dart' as convert;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:secrets/src/crypto/crypto.dart';
+import 'package:unorm_dart/unorm_dart.dart';
 
 /// The package derives seeds with its own PBKDF2; bip39's is the reference.
 void main() {
@@ -27,5 +28,28 @@ void main() {
         );
       });
     }
+  }
+
+  // The sentence is hashed without normalizing it again: bip39 rebuilds the
+  // words from its wordlists, so every list must already be NFKD.
+  for (final language in bip39.Language.values) {
+    test('${language.name}: wordlist is NFKD and the seed matches bip39', () {
+      expect(language.list.where((word) => nfkd(word) != word), isEmpty);
+      final words = bip39.Mnemonic(List.filled(16, 0x5a), language).words;
+      for (final passphrase in ['', 'Ａｂｃ ½']) {
+        expect(
+          Deriver.fingerprint.seed(
+            words,
+            passphrase: passphrase,
+            language: language,
+          ),
+          bip39.Mnemonic.fromWords(
+            words: words,
+            passphrase: passphrase,
+            language: language,
+          ).seed,
+        );
+      }
+    });
   }
 }

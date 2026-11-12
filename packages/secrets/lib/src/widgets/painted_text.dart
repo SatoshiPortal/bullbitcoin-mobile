@@ -7,8 +7,12 @@ import 'package:meta/meta.dart';
 /// One mnemonic word painted without a string-bearing widget in the tree.
 final class PaintedWord extends _PaintedText {
   @internal
-  PaintedWord(String word, {super.style, super.key})
-    : super([word], _Cell.word, plain: word);
+  PaintedWord(
+    String word, {
+    Language language = Language.english,
+    super.style,
+    super.key,
+  }) : super([word], _Cell.word, language: language, plain: word);
 }
 
 /// A passphrase painted without exposing its text to the host.
@@ -27,16 +31,26 @@ final class PaintedPassphrase extends _PaintedText {
 /// A complete mnemonic painted as a grid of words, without exposing its words to the host.
 final class PaintedMnemonic extends _PaintedText {
   @internal
-  PaintedMnemonic(List<String> words, {super.style, super.key})
-    : super(List.of(words), _Cell.word, plain: words.join(' '));
+  PaintedMnemonic(
+    List<String> words, {
+    Language language = Language.english,
+    super.style,
+    super.key,
+  }) : super(
+         List.of(words),
+         _Cell.word,
+         language: language,
+         plain: words.join(language.separator),
+       );
 }
 
 /// Secret text shares one private renderer. The host can place its widget but cannot read its text; screenshot protection belongs to the host screen.
 ///
-/// Layout and intrinsic sizes use public cell metrics and a cell count only. Mnemonic words occupy fixed cells; passphrases are shaped privately within the same length-based box.
+/// Layout and intrinsic sizes use public cell metrics and a cell count only. Mnemonic words occupy fixed cells sized from the widest NFKD word in their BIP39 wordlist; passphrases are shaped privately within the same length-based box.
 abstract class _PaintedText extends LeafRenderObjectWidget {
   final List<String> _cells;
   final _Cell _kind;
+  final Language _language;
   final String _plain;
   final TextStyle? _style;
 
@@ -44,6 +58,7 @@ abstract class _PaintedText extends LeafRenderObjectWidget {
     this._cells,
     this._kind, {
     required this._plain,
+    this._language = Language.english,
     this._style,
     super.key,
   });
@@ -55,6 +70,7 @@ abstract class _PaintedText extends LeafRenderObjectWidget {
   RenderObject createRenderObject(BuildContext context) => _RenderPaintedText(
     _cells,
     _kind,
+    _language,
     _plain,
     _effectiveStyle(context),
     Directionality.maybeOf(context) ?? TextDirection.ltr,
@@ -66,6 +82,7 @@ abstract class _PaintedText extends LeafRenderObjectWidget {
     (renderObject as _RenderPaintedText).update(
       _cells,
       _kind,
+      _language,
       _plain,
       _effectiveStyle(context),
       Directionality.maybeOf(context) ?? TextDirection.ltr,
@@ -79,8 +96,9 @@ enum _Cell {
   character;
 
   /// The public text a cell must hold, whatever the secret puts in it.
-  Iterable<String> get templates => switch (this) {
-    _Cell.word => Language.english.list,
+  Iterable<String> templates(Language language) => switch (this) {
+    // bip39's wordlists are NFKD already (pinned by seed_pbkdf2_test.dart).
+    _Cell.word => language.list,
     _Cell.character => [
       for (var code = 0x21; code <= 0x7e; code++) String.fromCharCode(code),
     ],
@@ -91,19 +109,20 @@ enum _Cell {
 typedef _Metrics = ({double width, double height, double gap});
 
 final _metricsCache =
-    <(_Cell, TextStyle, TextDirection, TextScaler), _Metrics>{};
+    <(_Cell, Language, TextStyle, TextDirection, TextScaler), _Metrics>{};
 
 _Metrics _metricsOf(
   _Cell kind,
+  Language language,
   TextStyle style,
   TextDirection direction,
   TextScaler scaler,
-) => _metricsCache.putIfAbsent((kind, style, direction, scaler), () {
+) => _metricsCache.putIfAbsent((kind, language, style, direction, scaler), () {
   final painter = TextPainter(textDirection: direction, textScaler: scaler);
   try {
     var width = 0.0;
     var height = 0.0;
-    for (final text in kind.templates) {
+    for (final text in kind.templates(language)) {
       painter
         ..text = TextSpan(text: text, style: style)
         ..layout();
@@ -113,7 +132,7 @@ _Metrics _metricsOf(
     var gap = 0.0;
     if (kind == _Cell.word) {
       painter
-        ..text = TextSpan(text: ' ', style: style)
+        ..text = TextSpan(text: language.separator, style: style)
         ..layout();
       gap = painter.width;
     }
@@ -127,6 +146,7 @@ _Metrics _metricsOf(
 final class _RenderPaintedText extends RenderBox {
   List<TextPainter> _painters = const [];
   late _Cell _kind;
+  late Language _language;
   late int _cellCount;
   late String _plain;
   late TextStyle _style;
@@ -136,17 +156,19 @@ final class _RenderPaintedText extends RenderBox {
   _RenderPaintedText(
     List<String> cells,
     _Cell kind,
+    Language language,
     String plain,
     TextStyle style,
     TextDirection direction,
     TextScaler scaler,
   ) {
-    _set(cells, kind, plain, style, direction, scaler);
+    _set(cells, kind, language, plain, style, direction, scaler);
   }
 
   void _set(
     List<String> cells,
     _Cell kind,
+    Language language,
     String plain,
     TextStyle style,
     TextDirection direction,
@@ -156,6 +178,7 @@ final class _RenderPaintedText extends RenderBox {
       painter.dispose();
     }
     _kind = kind;
+    _language = language;
     _cellCount = cells.length;
     _plain = plain;
     _style = style;
@@ -174,6 +197,7 @@ final class _RenderPaintedText extends RenderBox {
   void update(
     List<String> cells,
     _Cell kind,
+    Language language,
     String plain,
     TextStyle style,
     TextDirection direction,
@@ -181,17 +205,19 @@ final class _RenderPaintedText extends RenderBox {
   ) {
     if (_plain == plain &&
         _kind == kind &&
+        _language == language &&
         _style == style &&
         _direction == direction &&
         _scaler == scaler &&
         _cellCount == cells.length) {
       return;
     }
-    _set(cells, kind, plain, style, direction, scaler);
+    _set(cells, kind, language, plain, style, direction, scaler);
     markNeedsLayout();
   }
 
-  _Metrics get _metrics => _metricsOf(_kind, _style, _direction, _scaler);
+  _Metrics get _metrics =>
+      _metricsOf(_kind, _language, _style, _direction, _scaler);
 
   int get _count => _cellCount;
 
