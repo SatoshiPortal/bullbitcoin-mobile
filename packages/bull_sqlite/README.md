@@ -19,6 +19,7 @@ None of them holds a spending key, a mnemonic, a seed or an xprv (audited 2026-1
 
 - `SqliteCipher.key` / `configure`: keys a connection before anything else runs on it, with a raw 32-byte key (`DatabaseKey` from `primitives`, generated and kept by `secrets`) and an explicitly named cipher (`chacha20`). A library without a cipher is refused rather than used in clear. `PRAGMA key` accepts any key, so a read proves it.
 - `EncryptedSqlite.inspect`: classifies a database's whole family of files (`-wal`, `-shm`, `-journal`, encryption candidate, retirement marker) from lengths and headers, without opening or deleting anything.
+- `EncryptedSqlite.encrypt`: encrypts a plaintext database in place, by one atomic replace (below).
 - `EncryptedSqlite.open` / `probe` / `userVersion`: open an encrypted database, always after a durability barrier on its directory.
 - `EncryptedSqlite.retire`: deletes or quarantines a whole family, resumably.
 
@@ -26,6 +27,15 @@ It decides nothing about keys: whether a missing key may be created is the owner
 
 ## Crash model
 
-Retirement writes a marker before touching any member and removes it last, each step followed by a directory barrier; an interrupted retirement is finished as decided before anything opens. Dart cannot sync a directory, so this package calls `open`/`fsync`/`close` through FFI, and every open repeats that barrier. Deleting a file does not erase its old pages from flash storage.
+Encryption of a plaintext database:
 
-Only the foreground app may retire a database. Background work must not open these databases while that can happen.
+1. The source is opened, recovered by SQLite, checked, and moved to `journal_mode=DELETE` with `synchronous=FULL`: no WAL or hot journal remains, and the file is synced.
+2. `VACUUM INTO` writes a copy (the candidate), which `PRAGMA rekey` encrypts.
+3. The candidate is reopened with the key and compared with the source: integrity, `user_version`, schema and every row.
+4. The candidate is flushed, renamed over the source, and the directory is synced.
+
+The rename is the commit point. Before it, the plaintext database is untouched and the candidate is only a copy, discarded by the next attempt once the source is proven intact. After it, the database is encrypted. Dart cannot sync a directory, so this package calls `open`/`fsync`/`close` through FFI; every open repeats that barrier, so nothing writes to a database whose publication is not yet durable. A power loss before the barrier may bring back the plaintext database and its candidate, and the next start encrypts again.
+
+Retirement writes a marker before touching any member and removes it last, each step followed by a barrier; an interrupted retirement is finished as decided before anything opens. Deleting a file does not erase its old pages from flash storage.
+
+Only one process side may encrypt or retire: the foreground app. Background work must not open these databases while that can happen.

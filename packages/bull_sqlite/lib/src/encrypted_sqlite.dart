@@ -1,6 +1,8 @@
 import 'dart:io';
+import 'dart:isolate';
 
 import 'package:bull_sqlite/src/directory_barrier.dart';
+import 'package:bull_sqlite/src/encrypt_in_place.dart';
 import 'package:bull_sqlite/src/exceptions.dart';
 import 'package:bull_sqlite/src/retire.dart' as retirement;
 import 'package:bull_sqlite/src/retire.dart' show Retirement;
@@ -23,6 +25,20 @@ abstract final class EncryptedSqlite {
   @useResult
   static Result<SqliteFileState, SqliteStorageFailure> inspect(String path) =>
       _guard(() => SqliteFamily(path).inspect());
+
+  /// Encrypts the plaintext database at [path] with [key], off this isolate. See [encryptInPlace] for the protocol and its crash guarantees.
+  @useResult
+  static Future<Result<void, SqliteStorageFailure>> encrypt(
+    String path,
+    DatabaseKey key,
+  ) async {
+    try {
+      await Isolate.run(() => encryptInPlace(SqliteFamily(path), key));
+      return const Ok(null);
+    } on Exception catch (error) {
+      return Err(failureOf(error));
+    }
+  }
 
   /// Opens the possibly encrypted database at [path] with [key], lets SQLite recover a hot journal or WAL, and checks its integrity. Removes an encryption candidate left next to it only after that succeeds.
   ///
