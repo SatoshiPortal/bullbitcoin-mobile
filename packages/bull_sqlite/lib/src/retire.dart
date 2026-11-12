@@ -16,6 +16,11 @@ sealed class Retirement {
   /// Renames every member to `<member><suffix>`, keeping it for diagnosis.
   const factory Retirement.quarantine(String suffix) = QuarantineRetirement;
 
+  /// The quarantine of a database that SQLite reports unrecoverable: `<member>.unreadable-<milliseconds>`, the one name a later deletion recognises as a copy of the family (`SqliteFamily.quarantined`).
+  factory Retirement.unreadable([DateTime? at]) => QuarantineRetirement(
+    '.unreadable-${(at ?? DateTime.now()).toUtc().millisecondsSinceEpoch}',
+  );
+
   String get _marker;
 
   static Retirement? _parse(String marker) {

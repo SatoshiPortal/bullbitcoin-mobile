@@ -123,7 +123,7 @@ final class LocalDatabaseRepositoryImpl implements LocalDatabaseRepository {
     Err(:final failure) => _healedOr(database, path, key, failure),
   };
 
-  /// Payjoin's own policy for storage SQLite reports corrupt: move it aside, whole, and start a fresh database (the runtime re-imports the legacy rows). Without it, a corrupt Payjoin file would keep the whole app on a recovery screen, while Payjoin itself would have healed. Every other failure, and any failure of the main database, is the caller's.
+  /// Payjoin's own policy for storage SQLite reports corrupt (`openPayjoin` applies the same rule when it opens): move it aside, whole, and start a fresh database (the runtime re-imports the legacy rows). Without it, a corrupt Payjoin file would keep the whole app on a recovery screen, while Payjoin itself would have healed. Every other failure, and any failure of the main database, is the caller's.
   Result<UnlockedDatabase, LocalDataFailure> _healedOr(
     LocalDatabase database,
     String path,
@@ -134,12 +134,7 @@ final class LocalDatabaseRepositoryImpl implements LocalDatabaseRepository {
       return Err(_fromStorage(database, failure));
     }
     log.warning('Local database ${database.name}: corrupt, moved aside');
-    final suffix =
-        '.unreadable-${DateTime.now().toUtc().millisecondsSinceEpoch}';
-    return switch (EncryptedSqlite.retire(
-      path,
-      Retirement.quarantine(suffix),
-    )) {
+    return switch (EncryptedSqlite.retire(path, Retirement.unreadable())) {
       Ok() => Ok(UnlockedDatabase(database: database, path: path, key: key)),
       Err(failure: final retirement) => Err(_fromStorage(database, retirement)),
     };

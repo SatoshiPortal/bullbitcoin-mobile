@@ -202,10 +202,10 @@ Future<PayjoinDatabase?> _quarantineAndReopenDatabase(
   DatabaseKey key,
   logger.PayjoinLogger payjoinLog,
 ) async {
-  final suffix = '.unreadable-${DateTime.now().toUtc().millisecondsSinceEpoch}';
   // The whole family, journals and WAL included, through a marker that a crash cannot leave half done: a sidecar left behind would be replayed into the fresh database.
-  if (EncryptedSqlite.retire(databasePath, Retirement.quarantine(suffix))
-      case Err(:final failure)) {
+  if (EncryptedSqlite.retire(databasePath, Retirement.unreadable()) case Err(
+    :final failure,
+  )) {
     _logOpenFailure(payjoinLog, '$failure');
     return null;
   }
