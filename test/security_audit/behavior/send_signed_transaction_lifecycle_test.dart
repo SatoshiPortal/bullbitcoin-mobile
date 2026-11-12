@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/send/domain/usecases/prepare_send_bitcoin_transaction_usecase.dart';
 // Behavioral proof for two audit findings on SendCubit:
 //
 // 1. `_invalidateSignedTransaction()` (added by `fix(send)`) only clears
@@ -24,7 +25,6 @@ import 'package:bb_mobile/core/wallet/domain/usecases/check_liquid_consolidation
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_utxos_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/prepare_bitcoin_send_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/validate_bitcoin_selection_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_transaction_by_tx_id_usecase.dart';
@@ -42,14 +42,16 @@ import 'package:bb_mobile/features/send/domain/usecases/prepare_liquid_send_usec
 import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_presets_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/resolve_lightning_address_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/resolve_sweep_inputs_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/select_best_wallet_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/send_with_payjoin_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/sign_bitcoin_tx_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/sign_liquid_tx_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/update_paid_send_swap_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/update_send_swap_payin_usecase.dart';
-import 'package:bb_mobile/features/send/domain/usecases/verify_signed_tx_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/validate_sweep_payment_request_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/verify_exchange_payin_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/verify_send_signed_tx_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/watch_payjoin_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/watch_send_swap_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/prepare_sp_payment_for_send_usecase.dart';
@@ -60,11 +62,14 @@ import 'package:bb_mobile/features/send/domain/usecases/validate_sp_amount_for_s
 import 'package:bb_mobile/features/send/domain/usecases/validate_sp_recipient_for_send_usecase.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_cubit.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';
+import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:bb_mobile/features/send/presentation/send_wallet_view.dart';
 
 class _MockLabelsFacade extends Mock implements LabelsFacade {}
+
+class _MockPayjoinSessions extends Mock implements PayjoinSessions {}
 
 class _MockSelectBestWalletUsecase extends Mock
     implements SelectBestWalletUsecase {}
@@ -84,7 +89,7 @@ class _MockGetWalletUtxosUsecase extends Mock
     implements GetWalletUtxosUsecase {}
 
 class _MockPrepareBitcoinSendUsecase extends Mock
-    implements PrepareBitcoinSendUsecase {}
+    implements PrepareSendBitcoinTransactionUsecase {}
 
 class _MockValidateBitcoinSelectionUsecase extends Mock
     implements ValidateBitcoinSelectionUsecase {}
@@ -168,7 +173,7 @@ class _MockGetSendPayjoinEnabledUsecase extends Mock
     implements GetSendPayjoinEnabledUsecase {}
 
 class _MockVerifySignedTxUsecase extends Mock
-    implements VerifySignedTxUsecase {}
+    implements VerifySendSignedTxUsecase {}
 
 /// Exposes `emit` so a test can start from a realistic mid-flow state.
 class _MockValidateSpRecipientForSendUsecase extends Mock
@@ -235,6 +240,8 @@ class _TestSendCubit extends SendCubit {
     required super.prepareSpPaymentForSendUsecase,
     required super.sendSpPaymentForSendUsecase,
     required super.refreshSpWalletForSendUsecase,
+    required super.resolveSweepInputsUsecase,
+    required super.validateSweepPaymentRequestUsecase,
   });
 
   void seed(SendState state) => emit(state);
@@ -340,6 +347,10 @@ void main() {
       prepareSpPaymentForSendUsecase: _MockPrepareSpPaymentForSendUsecase(),
       sendSpPaymentForSendUsecase: _MockSendSpPaymentForSendUsecase(),
       refreshSpWalletForSendUsecase: _MockRefreshSpWalletForSendUsecase(),
+      resolveSweepInputsUsecase: ResolveSweepInputsUsecase(
+        _MockPayjoinSessions(),
+      ),
+      validateSweepPaymentRequestUsecase: ValidateSweepPaymentRequestUsecase(),
     );
   });
 

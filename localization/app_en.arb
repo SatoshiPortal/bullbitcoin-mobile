@@ -15564,6 +15564,14 @@
   "@settingsPayjoinMinutesUnit": {
     "description": "Unit shown inside the payjoin session expiry field"
   },
+  "coinsSweep": "Sweep",
+  "@coinsSweep": {
+    "description": "Action label for spending every satoshi from the selected coins to one recipient."
+  },
+  "coinsSweepTitle": "Sweep coins",
+  "@coinsSweepTitle": {
+    "description": "Title shown throughout the selected-coins sweep flow."
+  },
   "sellQuoteExpiredError": "This price has expired. A new one is being loaded; check it before confirming.",
   "@sellQuoteExpiredError": {
     "description": "Shown on the sell confirmation when the price lock expired before the payment was sent; nothing was paid."

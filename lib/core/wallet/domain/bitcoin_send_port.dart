@@ -1,8 +1,12 @@
+import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
+import 'package:meta/meta.dart';
+import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 
 abstract interface class BitcoinSendPort {
-  Future<String> buildPsbt({
+  @useResult
+  Future<Result<String, WalletFailure>> buildPsbt({
     required String walletId,
     required String address,
     int? amountSat,
@@ -10,6 +14,7 @@ abstract interface class BitcoinSendPort {
     bool? drain,
     List<({String txId, int vout})>? unspendable,
     List<WalletUtxo>? selected,
+    bool selectedOnly = false,
     bool? replaceByFee,
   });
 

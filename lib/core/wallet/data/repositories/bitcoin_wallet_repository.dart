@@ -1,5 +1,10 @@
 import 'dart:typed_data';
 
+import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
+import 'package:bb_mobile/core/wallet/domain/insufficient_funds_exception.dart';
+import 'package:bull_logger/bull_logger.dart';
+import 'package:meta/meta.dart';
+
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/bdk_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/frozen_wallet_utxo_datasource.dart';
@@ -7,7 +12,7 @@ import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasourc
 import 'package:bb_mobile/core/wallet/data/mappers/wallet_utxo_mapper.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/network_x.dart';
-import 'package:primitives/primitives.dart' show Err, Ok;
+import 'package:primitives/primitives.dart' show Err, Ok, Result;
 import 'package:secrets/secrets.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_connection.dart';
@@ -33,7 +38,8 @@ class BitcoinWalletRepository implements BitcoinSendPort {
        _frozenUtxos = frozenWalletUtxoDatasource;
 
   @override
-  Future<String> buildPsbt({
+  @useResult
+  Future<Result<String, WalletFailure>> buildPsbt({
     required String walletId,
     required String address,
     int? amountSat,
@@ -41,90 +47,111 @@ class BitcoinWalletRepository implements BitcoinSendPort {
     bool? drain,
     List<({String txId, int vout})>? unspendable,
     List<WalletUtxo>? selected,
+    bool selectedOnly = false,
     bool? replaceByFee,
   }) async {
-    final metadata = await _walletMetadataDatasource.fetch(walletId);
+    try {
+      final metadata = await _walletMetadataDatasource.fetch(walletId);
 
-    if (metadata == null) {
-      throw Exception('Wallet metadata not found for walletId: $walletId');
-    }
+      if (metadata == null) {
+        return const Err(WalletNotFoundFailure());
+      }
 
-    if (!metadata.isBitcoin) {
-      throw Exception('Wallet $walletId is not a Bitcoin wallet');
-    }
+      if (!metadata.isBitcoin) {
+        return const Err(WalletTransactionBuildFailure('Not a Bitcoin wallet'));
+      }
 
-    final wallet =
-        WalletModel.publicBdk(
-              externalDescriptor: metadata.externalPublicDescriptor,
-              internalDescriptor: metadata.internalPublicDescriptor,
-              isTestnet: metadata.isTestnet,
-              id: metadata.id,
-            )
-            as PublicBdkWalletModel;
+      final wallet =
+          WalletModel.publicBdk(
+                externalDescriptor: metadata.externalPublicDescriptor,
+                internalDescriptor: metadata.internalPublicDescriptor,
+                isTestnet: metadata.isTestnet,
+                id: metadata.id,
+              )
+              as PublicBdkWalletModel;
 
-    // D7 defense in depth: a frozen coin must never be spendable. BDK's
-    // documented semantics are the opposite — a manually added utxo
-    // (TxBuilder.addUtxos) overrides the unspendable filter — and the
-    // datasource deliberately preserves those raw semantics. Enforce the
-    // app-level invariant here at the repository boundary, reading the
-    // frozen store LIVE at build time, so it holds for ANY caller and
-    // any staleness of the caller's earlier utxo fetch — not only for
-    // callers going through PrepareBitcoinSendUsecase (which reads the
-    // same store plus the payjoin-derived set; payjoin exclusion stays
-    // at the usecase because it comes from another repository).
-    //
-    // The frozen set read here is:
-    //  * merged into `unspendable`, so BDK's automatic selection can
-    //    never pick a frozen coin even when the caller passed no
-    //    exclusion list at all;
-    //  * used to strip `selected`, so a frozen coin can't be forced in
-    //    as a mandatory input either (the addUtxos override above).
-    final frozenRows = await _frozenUtxos.getAllFrozen();
-    final unspendableKeys = {
-      for (final row in frozenRows) '${row.txId}:${row.vout}',
-      for (final outpoint in unspendable ?? const <({String txId, int vout})>[])
-        '${outpoint.txId}:${outpoint.vout}',
-    };
-    final mergedUnspendable = [
-      for (final outpoint in {
-        for (final row in frozenRows) (txId: row.txId, vout: row.vout),
-        ...?unspendable,
-      })
-        outpoint,
-    ];
-    final spendableSelected = selected
-        ?.where(
-          (utxo) => !unspendableKeys.contains('${utxo.txId}:${utxo.vout}'),
-        )
-        .toList();
-    if (selected != null &&
-        selected.isNotEmpty &&
-        spendableSelected!.length != selected.length) {
-      throw NoSpendableUtxoException(
-        'At least one selected UTXO is unspendable',
+      // D7 defense in depth: a frozen coin must never be spendable. BDK's
+      // documented semantics are the opposite — a manually added utxo
+      // (TxBuilder.addUtxos) overrides the unspendable filter — and the
+      // datasource deliberately preserves those raw semantics. Enforce the
+      // app-level invariant here at the repository boundary, reading the
+      // frozen store LIVE at build time, so it holds for ANY caller and
+      // any staleness of the caller's earlier utxo fetch — not only for
+      // callers going through PrepareBitcoinSendUsecase (which reads the
+      // same store plus the payjoin-derived set; payjoin exclusion stays
+      // at the usecase because it comes from another repository).
+      //
+      // The frozen set read here is:
+      //  * merged into `unspendable`, so BDK's automatic selection can
+      //    never pick a frozen coin even when the caller passed no
+      //    exclusion list at all;
+      //  * used to strip `selected`, so a frozen coin can't be forced in
+      //    as a mandatory input either (the addUtxos override above).
+      final frozenRows = await _frozenUtxos.getAllFrozen();
+      final unspendableKeys = {
+        for (final row in frozenRows) '${row.txId}:${row.vout}',
+        for (final outpoint
+            in unspendable ?? const <({String txId, int vout})>[])
+          '${outpoint.txId}:${outpoint.vout}',
+      };
+      final mergedUnspendable = [
+        for (final outpoint in {
+          for (final row in frozenRows) (txId: row.txId, vout: row.vout),
+          ...?unspendable,
+        })
+          outpoint,
+      ];
+      final spendableSelected = selected
+          ?.where(
+            (utxo) => !unspendableKeys.contains('${utxo.txId}:${utxo.vout}'),
+          )
+          .toList();
+      if (selectedOnly && (selected == null || selected.isEmpty)) {
+        return const Err(WalletSelectedInputsUnavailableFailure());
+      }
+      if (selected != null &&
+          (spendableSelected == null ||
+              spendableSelected.length != selected.length)) {
+        return const Err(WalletSelectedInputsUnavailableFailure());
+      }
+
+      final psbt = await _bdkWallet.buildPsbt(
+        wallet: wallet,
+        address: address,
+        amountSat: amountSat,
+        networkFee: networkFee,
+        drain: drain,
+        // An empty merged list is equivalent to null for the datasource
+        // (it gates on isNotEmpty), so always pass the merge.
+        unspendable: mergedUnspendable,
+        selected: spendableSelected
+            ?.map((utxo) => WalletUtxoMapper.fromEntity(utxo))
+            .toList(),
+        selectedOnly: selectedOnly,
+        // Default to RBF-enabled, matching both the datasource default and
+        // BDK's own default sequence (0xFFFFFFFD). `?? false` would disable
+        // RBF for any caller omitting the flag — harmless while
+        // setExactSequence's result was discarded, wrong now that it works.
+        replaceByFee: replaceByFee ?? true,
       );
+
+      return Ok(psbt);
+    } on InsufficientFundsException {
+      return const Err(WalletInsufficientFundsFailure());
+    } on NoSpendableUtxoException {
+      return Err(
+        selectedOnly
+            ? const WalletSelectedInputsUnavailableFailure()
+            : const WalletNoSpendableInputsFailure(),
+      );
+    } on Exception catch (error, trace) {
+      log.warning(
+        'Bitcoin transaction construction failed',
+        error: error.runtimeType,
+        trace: trace,
+      );
+      return const Err(WalletTransactionBuildFailure());
     }
-
-    final psbt = await _bdkWallet.buildPsbt(
-      wallet: wallet,
-      address: address,
-      amountSat: amountSat,
-      networkFee: networkFee,
-      drain: drain,
-      // An empty merged list is equivalent to null for the datasource
-      // (it gates on isNotEmpty), so always pass the merge.
-      unspendable: mergedUnspendable,
-      selected: spendableSelected
-          ?.map((utxo) => WalletUtxoMapper.fromEntity(utxo))
-          .toList(),
-      // Default to RBF-enabled, matching both the datasource default and
-      // BDK's own default sequence (0xFFFFFFFD). `?? false` would disable
-      // RBF for any caller omitting the flag — harmless while
-      // setExactSequence's result was discarded, wrong now that it works.
-      replaceByFee: replaceByFee ?? true,
-    );
-
-    return psbt;
   }
 
   /// Signs with the wallet's own key, which never leaves `secrets`.

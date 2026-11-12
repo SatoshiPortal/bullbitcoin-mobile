@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:primitives/primitives.dart' show Outpoint;
+
 import 'package:bb_mobile/core/screens/route_error_screen.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
@@ -33,6 +35,7 @@ import 'package:bb_mobile/features/recoverbull/router.dart';
 import 'package:bb_mobile/features/recoverbull_google_drive/router.dart';
 import 'package:bb_mobile/features/replace_by_fee/router.dart';
 import 'package:bb_mobile/features/sell/ui/sell_router.dart';
+import 'package:bb_mobile/features/send/public/send_facade.dart';
 import 'package:bb_mobile/features/send/ui/send_router.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
@@ -179,7 +182,21 @@ class AppRouter {
       ExchangeRouter.supportChatRoute(_exchangeConfig),
       OnboardingRouter.route,
       AppUnlockRouter.route,
-      WalletRouter.walletDetailRoute,
+      WalletRouter.walletDetailRoute(
+        onOpenCoins: (context, wallet) async {
+          final outpoints = await context.pushNamed<Set<Outpoint>>(
+            CoinsRoute.coins.name,
+            extra: wallet,
+          );
+          if (!context.mounted) return;
+          if (outpoints != null && outpoints.isNotEmpty) {
+            await context.pushNamed(
+              SendRoute.send.name,
+              extra: SendRouteArgs.sweep(wallet: wallet, outpoints: outpoints),
+            );
+          }
+        },
+      ),
       ConsolidationRouter.route,
       SettingsRouter.route,
       TransactionsRouter.transactionsRoute,
@@ -187,7 +204,7 @@ class AppRouter {
       ...TransactionsRouter.transactionDetailsRoutes,
       ReceiveRouter.route,
       SendRouter.route,
-      CoinsRouter.route,
+      CoinsRouter.route(missingWalletRedirect: WalletRoute.walletHome.path),
       SwapRouter.route,
       ...BuyRouter.routes,
       ...FundExchangeRouter.routes,

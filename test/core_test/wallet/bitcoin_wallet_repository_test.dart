@@ -1,3 +1,5 @@
+import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
+import 'package:primitives/primitives.dart';
 // Unit tests for the repository-boundary guarantees of
 // `BitcoinWalletRepository.buildPsbt`:
 //
@@ -36,7 +38,6 @@ import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_utxo_model.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/bitcoin_wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
-import 'package:bb_mobile/core/wallet/domain/no_spendable_utxo_exception.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -120,6 +121,7 @@ void main() {
         drain: any(named: 'drain'),
         unspendable: any(named: 'unspendable'),
         selected: any(named: 'selected'),
+        selectedOnly: any(named: 'selectedOnly'),
         replaceByFee: any(named: 'replaceByFee'),
       ),
     ).thenAnswer((_) async => 'psbt');
@@ -135,6 +137,7 @@ void main() {
               drain: any(named: 'drain'),
               unspendable: any(named: 'unspendable'),
               selected: captureAny(named: 'selected'),
+              selectedOnly: any(named: 'selectedOnly'),
               replaceByFee: any(named: 'replaceByFee'),
             ),
           ).captured.single
@@ -150,6 +153,7 @@ void main() {
               drain: any(named: 'drain'),
               unspendable: captureAny(named: 'unspendable'),
               selected: any(named: 'selected'),
+              selectedOnly: any(named: 'selectedOnly'),
               replaceByFee: any(named: 'replaceByFee'),
             ),
           ).captured.single
@@ -165,14 +169,16 @@ void main() {
               drain: any(named: 'drain'),
               unspendable: any(named: 'unspendable'),
               selected: any(named: 'selected'),
+              selectedOnly: any(named: 'selectedOnly'),
               replaceByFee: captureAny(named: 'replaceByFee'),
             ),
           ).captured.single
           as bool;
 
-  Future<void> buildPsbt({
+  Future<Result<String, WalletFailure>> buildPsbt({
     List<({String txId, int vout})>? unspendable,
     List<WalletUtxo>? selected,
+    bool selectedOnly = false,
     bool? replaceByFee,
   }) => repository.buildPsbt(
     walletId: _walletId,
@@ -181,6 +187,7 @@ void main() {
     networkFee: const NetworkFee.relativeSatPerKwu(1000),
     unspendable: unspendable,
     selected: selected,
+    selectedOnly: selectedOnly,
     replaceByFee: replaceByFee,
   );
 
@@ -198,7 +205,13 @@ void main() {
             _utxo(txId: 'tx-free', vout: 1),
           ],
         ),
-        throwsA(isA<NoSpendableUtxoException>()),
+        completion(
+          isA<Err<String, WalletFailure>>().having(
+            (error) => error.failure,
+            'failure',
+            isA<WalletSelectedInputsUnavailableFailure>(),
+          ),
+        ),
       );
       verifyNever(
         () => bdkDatasource.buildPsbt(
@@ -259,7 +272,13 @@ void main() {
               _utxo(txId: 'tx-free', vout: 1),
             ],
           ),
-          throwsA(isA<NoSpendableUtxoException>()),
+          completion(
+            isA<Err<String, WalletFailure>>().having(
+              (error) => error.failure,
+              'failure',
+              isA<WalletSelectedInputsUnavailableFailure>(),
+            ),
+          ),
         );
         verifyNever(
           () => bdkDatasource.buildPsbt(
@@ -285,6 +304,39 @@ void main() {
       final selected = capturedSelected();
       expect(selected, hasLength(1));
       expect(selected!.single.vout, 1);
+    });
+
+    test('selected-only build rejects a live-frozen selected coin', () async {
+      when(() => frozenDatasource.getAllFrozen()).thenAnswer(
+        (_) async => [(walletId: _walletId, txId: 'tx-frozen', vout: 0)],
+      );
+
+      await expectLater(
+        buildPsbt(
+          selected: [_utxo(txId: 'tx-frozen', vout: 0)],
+          selectedOnly: true,
+        ),
+        completion(
+          isA<Err<String, WalletFailure>>().having(
+            (error) => error.failure,
+            'failure',
+            isA<WalletSelectedInputsUnavailableFailure>(),
+          ),
+        ),
+      );
+      verifyNever(
+        () => bdkDatasource.buildPsbt(
+          wallet: any(named: 'wallet'),
+          address: any(named: 'address'),
+          amountSat: any(named: 'amountSat'),
+          networkFee: any(named: 'networkFee'),
+          drain: any(named: 'drain'),
+          unspendable: any(named: 'unspendable'),
+          selected: any(named: 'selected'),
+          selectedOnly: any(named: 'selectedOnly'),
+          replaceByFee: any(named: 'replaceByFee'),
+        ),
+      );
     });
 
     test(
