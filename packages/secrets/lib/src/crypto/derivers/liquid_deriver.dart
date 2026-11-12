@@ -2,26 +2,22 @@ import 'dart:typed_data';
 
 import 'package:bull_sdk/lwk.dart' as lwk;
 import 'package:primitives/primitives.dart';
-import 'package:secrets/src/crypto/derivers/derivers.dart';
 import 'package:secrets/src/crypto/exceptions.dart';
 import 'package:secrets/src/domain/domain.dart';
 import 'package:meta/meta.dart';
 
 /// Liquid derivations through lwk. Reached as `Deriver.liquid`.
 ///
-/// Takes [Mnemonic], never a bare `SecretMaterial`: the Liquid wallet is
-/// the passphrase-less seed of the words (see [liquidSeed]), which a
-/// seed-only secret cannot give, so the type refuses it before anything is
-/// computed.
+/// Takes [Mnemonic], never a bare `SecretMaterial`: a seed-only secret
+/// is a historical entry Liquid never derived from, so the type refuses it
+/// before anything is computed.
 final class LiquidDeriver {
   @internal
   const LiquidDeriver();
 
   /// The confidential descriptor, which covers both keychains.
   ///
-  /// ⚠️ **A passphrase takes no part**: see [liquidSeed]. A passphrase
-  /// secret gets its passphrase-less sibling's descriptor — same addresses,
-  /// same funds. See doc/design.md, § Passphrase.
+  /// The passphrase takes part: see [liquidSeed].
   ///
   /// Regtest is refused rather than folded into testnet: Elements
   /// regtest is a different chain, and a confidential descriptor built
@@ -52,17 +48,15 @@ final class LiquidDeriver {
   }
 }
 
-/// The seed every Liquid wallet of [secret] derives from: the BIP39 seed of
-/// its words in its own language, **without** its passphrase.
+/// The seed every Liquid wallet of [secret] derives from: its BIP39 seed,
+/// the words in their own language with its passphrase, as for Bitcoin and
+/// the swap key.
 ///
-/// The words' language takes part, so a mnemonic in any BIP39 language gets
-/// its own wallet; an English one gets exactly the descriptor lwk derived
-/// from its words. The passphrase does not, on purpose: lwk's word-based
-/// signer always used `to_seed("")`, so every Liquid wallet of a passphrase
-/// secret, and the funds on it, lives on the passphrase-less seed. Honouring
-/// the passphrase would move those wallets. See doc/design.md, § Passphrase.
+/// Every existing Liquid wallet is a default wallet, and default wallets
+/// have never carried a passphrase, so this is the seed lwk's word-based
+/// signer derived for them (`to_seed("")`): the same keys.
 ///
-/// A fresh buffer each call: the caller wipes it once lwk has it.
+/// A copy, so the caller can wipe it once lwk has it without touching the
+/// secret's own bytes.
 @internal
-Uint8List liquidSeed(Mnemonic secret) =>
-    Deriver.fingerprint.seed(secret.words, language: secret.language);
+Uint8List liquidSeed(Mnemonic secret) => Uint8List.fromList(secret.seedBytes);
