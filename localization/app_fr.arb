@@ -4952,5 +4952,6 @@
   "screenPrivacyUnavailable": "La protection de l’écran n’a pas pu être activée : ce secret reste masqué.",
   "appStartupMissingSecretMessage": "Cet appareil ne contient plus la phrase de récupération de votre portefeuille. Saisissez-la à nouveau pour le retrouver.",
   "appStartupRestoreSecretButton": "Saisir ma phrase de récupération",
-  "appStartupRestoreMismatch": "Cette phrase de récupération appartient à un autre portefeuille. Saisissez celle du portefeuille de cet appareil."
+  "appStartupRestoreMismatch": "Cette phrase de récupération appartient à un autre portefeuille. Saisissez celle du portefeuille de cet appareil.",
+  "coreScreensOutputsExceedInputs": "Les sorties dépassent les entrées : cette transaction est invalide et le réseau la rejettera."
 }
