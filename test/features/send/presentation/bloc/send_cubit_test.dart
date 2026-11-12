@@ -139,6 +139,8 @@ class _MockOrderSwapQuote extends Mock implements OrderSwapQuote {}
 
 class _MockOrderSwapRecord extends Mock implements OrderSwapRecord {}
 
+class _MockOrderSwap extends Mock implements OrderSwap {}
+
 class _MockUpdatePaidSendSwapUsecase extends Mock
     implements UpdatePaidSendSwapUsecase {}
 
@@ -708,6 +710,103 @@ void main() {
       () => getNetworkFeesUsecase.execute(isLiquid: any(named: 'isLiquid')),
     ).thenAnswer((_) async => _sweepFeeOptions);
   }
+
+  test('Liquid-funded Bitcoin confirmation preserves payout amount', () async {
+    final wallet = _liquidWallet(balanceSat: 1000000);
+    final quote = _MockOrderSwapQuote();
+    final record = _MockOrderSwapRecord();
+    final order = _MockOrderSwap();
+    when(() => quote.inAmountSat).thenReturn(BigInt.from(51000));
+    when(() => record.localId).thenReturn('cross-chain-swap');
+    when(() => record.order).thenReturn(order);
+    when(() => order.payinAddress).thenReturn('lq1exchange');
+    when(() => order.payinAmountSat).thenReturn(BigInt.from(51000));
+    when(() => order.payoutAmountSat).thenReturn(BigInt.from(50000));
+    when(
+      () => getSendCrossChainQuoteUsecase.execute(
+        wallet: wallet,
+        amountSat: BigInt.from(50000),
+        isInAmountFixed: false,
+      ),
+    ).thenAnswer((_) async => Ok(quote));
+    when(
+      () => createSendCrossChainSwapUsecase.execute(
+        walletId: wallet.id,
+        destinationAddress: 'bc1qrecipient',
+        destinationIsTestnet: false,
+        amountSat: 50000,
+        isInAmountFixed: false,
+        quotedCounterpartAmountSat: BigInt.from(51000),
+      ),
+    ).thenAnswer((_) async => Ok(record));
+    when(
+      () => watchSendSwapUsecase.execute('cross-chain-swap'),
+    ).thenAnswer((_) => const Stream.empty());
+    when(
+      () => getWalletUtxosUsecase.execute(walletId: wallet.id),
+    ).thenAnswer((_) async => []);
+    when(
+      () => checkLiquidConsolidationUsecase.execute(walletId: wallet.id),
+    ).thenAnswer((_) async => false);
+    when(
+      () => prepareLiquidSendUsecase.execute(
+        walletId: wallet.id,
+        address: 'lq1exchange',
+        feeRate: any(named: 'feeRate'),
+        amountSat: 51000,
+        drain: false,
+        selectedInputs: null,
+        hasFrozenInputs: false,
+      ),
+    ).thenAnswer((_) async => const Ok('swap-pset'));
+    when(
+      () => verifyExchangePayinUsecase.execute(
+        psbtOrPset: 'swap-pset',
+        record: record,
+        walletId: wallet.id,
+      ),
+    ).thenAnswer((_) async => const Ok<void, SendFailure>(null));
+    when(
+      () => calculateLiquidAbsoluteFeesUsecase.execute(pset: 'swap-pset'),
+    ).thenAnswer((_) async => 100);
+    final cubit = buildCubit();
+    addTearDown(cubit.close);
+    cubit.setStateForTest(
+      SendState(
+        step: SendStep.amount,
+        sendType: SendType.bitcoin,
+        selectedWallet: SendWalletBitcoin(wallet),
+        paymentRequest: const PaymentRequest.bitcoin(
+          address: 'bc1qrecipient',
+          isTestnet: false,
+        ),
+        amount: '50000',
+        bitcoinUnit: BitcoinUnit.sats,
+        inputAmountCurrencyCode: BitcoinUnit.sats.code,
+        bitcoinFeesList: _sweepFeeOptions,
+        liquidFeesList: _sweepFeeOptions,
+        recipientDrafts: const [
+          (
+            id: 0,
+            address: 'bc1qrecipient',
+            amount: '50000',
+            receivesRemainder: false,
+            isValid: true,
+          ),
+        ],
+      ),
+    );
+
+    await cubit.onAmountConfirmed();
+
+    expect(cubit.state.failure, isNull);
+    expect(cubit.state.unsignedPsbt, 'swap-pset');
+    expect(cubit.state.step, SendStep.confirm);
+    expect(cubit.state.confirmedAmountSat, 50000);
+
+    expect(await cubit.createTransaction(), isTrue);
+    expect(cubit.state.confirmedAmountSat, 50000);
+  });
 
   group('SendCubit Liquid coin control', () {
     const outpoint = (txId: 'liquid-selected', vout: 0);

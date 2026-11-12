@@ -1907,7 +1907,7 @@ class SendCubit extends Cubit<SendState>
       emit(
         state.copyWith(
           step: SendStep.confirm,
-          confirmedAmountSat: state.usesRecipientList
+          confirmedAmountSat: state.usesRecipientList && !state.isChainSwap
               ? state.recipientAmountsSat.fold<int>(
                   0,
                   (sum, amount) => sum + amount,
@@ -2491,7 +2491,7 @@ class SendCubit extends Cubit<SendState>
           recipientAmountsSat: state.usesRecipientList
               ? const []
               : state.recipientAmountsSat,
-          confirmedAmountSat: state.usesRecipientList
+          confirmedAmountSat: state.usesRecipientList && !state.isChainSwap
               ? null
               : state.confirmedAmountSat,
         ),
