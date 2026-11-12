@@ -7,7 +7,7 @@ import 'package:bb_mobile/generated/l10n/localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullButton, BullSnackBar, BullSupportButton, Gap;
+    show BullButton, BullShapesX, BullSnackBar, BullSupportButton, Gap;
 
 class AppInitErrorScreen extends StatefulWidget {
   const AppInitErrorScreen({super.key, required this.error});
@@ -250,7 +250,7 @@ class _ErrorDetailsState extends State<_ErrorDetails> {
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
               color: context.appColors.surfaceContainer,
-              borderRadius: BorderRadius.circular(4),
+              borderRadius: BorderRadius.circular(context.bullShapes.card),
               border: Border.all(color: context.appColors.border),
             ),
             child: SelectableText(

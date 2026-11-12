@@ -13,10 +13,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
     show
-        BullScreenPrivacyGate,
         BullButton,
         BullDialog,
         BullFadingLinearProgress,
+        BullScreenPrivacyGate,
+        BullShapesX,
         BullSnackBar,
         BullText,
         Gap;
@@ -250,6 +251,9 @@ class _AllSeedViewScreenState extends State<AllSeedViewScreen>
       context: context,
       isDismissible: false,
       builder: (dialogContext) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(dialogContext.bullShapes.sheet),
+        ),
         backgroundColor: context.appColors.surface,
         title: Text(
           context.loc.allSeedViewSecurityWarningTitle,
@@ -298,6 +302,9 @@ class _AllSeedViewScreenState extends State<AllSeedViewScreen>
       context: context,
       isDismissible: false,
       builder: (dialogContext) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(dialogContext.bullShapes.sheet),
+        ),
         backgroundColor: context.appColors.surface,
         title: Text(
           context.loc.allSeedViewDeleteWarningTitle,
@@ -347,6 +354,9 @@ class _AllSeedViewScreenState extends State<AllSeedViewScreen>
       context: context,
       isDismissible: false,
       builder: (dialogContext) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(dialogContext.bullShapes.sheet),
+        ),
         backgroundColor: context.appColors.surface,
         title: Text(
           context.loc.allSeedViewDeleteSwapMnemonicTitle,
@@ -398,7 +408,7 @@ class _AllSeedViewScreenState extends State<AllSeedViewScreen>
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: context.appColors.surface,
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(context.bullShapes.card),
           border: Border.all(color: context.appColors.outline, width: 1),
         ),
         child: Column(
@@ -456,7 +466,7 @@ class _AllSeedViewScreenState extends State<AllSeedViewScreen>
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
               color: context.appColors.surface,
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(context.bullShapes.card),
               border: Border.all(color: context.appColors.outline, width: 1),
             ),
             child: Row(

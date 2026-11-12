@@ -10,7 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_nfc_kit/flutter_nfc_kit.dart';
 import 'package:ndef/ndef.dart' as ndef;
 import 'package:bull_ui/bull_ui.dart'
-    show BullBottomSheet, BullSnackBar, BullText;
+    show BullBottomSheet, BullShapesX, BullSnackBar, BullText;
 
 enum _NfcOperation { read, write }
 
@@ -116,8 +116,8 @@ class NfcBottomSheet {
             padding: const EdgeInsets.all(24),
             decoration: BoxDecoration(
               color: sheetContext.appColors.surface,
-              borderRadius: const BorderRadius.vertical(
-                top: Radius.circular(8),
+              borderRadius: BorderRadius.vertical(
+                top: Radius.circular(sheetContext.bullShapes.sheet),
               ),
             ),
             child: Column(

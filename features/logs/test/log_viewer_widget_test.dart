@@ -82,7 +82,7 @@ void main() {
     await cubit.load();
     await tester.pumpWidget(
       MaterialApp(
-        theme: ThemeData(extensions: const [testBullTheme]),
+        theme: ThemeData(extensions: testBullExtensions),
         localizationsDelegates: [LogsLocalizations.delegate],
         supportedLocales: [const Locale('en')],
         home: Scaffold(
@@ -130,7 +130,7 @@ void main() {
     await cubit.load();
     await tester.pumpWidget(
       MaterialApp(
-        theme: ThemeData(extensions: const [testBullTheme]),
+        theme: ThemeData(extensions: testBullExtensions),
         localizationsDelegates: [LogsLocalizations.delegate],
         supportedLocales: [const Locale('en')],
         home: Scaffold(
@@ -189,7 +189,7 @@ void main() {
       await cubit.load();
       await tester.pumpWidget(
         MaterialApp(
-          theme: ThemeData(extensions: const [testBullTheme]),
+          theme: ThemeData(extensions: testBullExtensions),
           localizationsDelegates: [LogsLocalizations.delegate],
           supportedLocales: [const Locale('en')],
           home: Scaffold(
@@ -254,7 +254,7 @@ void main() {
 
     await tester.pumpWidget(
       MaterialApp(
-        theme: ThemeData(extensions: const [testBullTheme]),
+        theme: ThemeData(extensions: testBullExtensions),
         localizationsDelegates: [LogsLocalizations.delegate],
         supportedLocales: [const Locale('en')],
         home: BlocProvider.value(
@@ -311,7 +311,7 @@ void main() {
 
     await tester.pumpWidget(
       MaterialApp(
-        theme: ThemeData(extensions: const [testBullTheme]),
+        theme: ThemeData(extensions: testBullExtensions),
         localizationsDelegates: [LogsLocalizations.delegate],
         supportedLocales: [const Locale('en')],
         home: BlocProvider.value(
