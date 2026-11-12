@@ -12,6 +12,7 @@ const _rawReason =
     'Please activate virtual payment for recipient DE89370400440532013000';
 
 final _everyFailure = <FundExchangeFailure>[
+  const FundExchangeNotAuthenticatedFailure(),
   const FundExchangePaymentOptionUnavailableFailure(_rawReason),
   const FundExchangeOptionNotPermittedFailure(_rawReason),
   const FundExchangeSinpeNotRegisteredFailure(_rawReason),

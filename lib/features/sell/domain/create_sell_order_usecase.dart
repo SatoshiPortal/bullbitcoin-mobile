@@ -107,10 +107,13 @@ class CreateSellOrderUsecase {
         'bip21Present=${order.payjoinBip21 != null}',
       );
       return Ok(order);
+    } on ExchangeCredentialUnavailableException {
+      log.warning('Exchange order unavailable: credential read refused');
+      return const Err(SellUnexpectedFailure());
     } on BullBitcoinApiConfidentialSepaNotActivatedException {
       return const Err(SellConfidentialSepaNotActivatedFailure());
-    } on ApiKeyException catch (e) {
-      return Err(SellUnauthenticatedFailure(e.message));
+    } on ApiKeyException {
+      return const Err(SellUnauthenticatedFailure());
     } on BullBitcoinApiMinAmountException catch (e) {
       return Err(
         SellBelowMinAmountFailure(

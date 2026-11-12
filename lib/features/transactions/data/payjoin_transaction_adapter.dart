@@ -117,13 +117,19 @@ final class AppPayjoinTransactionAdapter implements PayjoinTransactionPort {
           transactionId,
           walletId: walletId,
         );
-        if (transaction != null) return;
-      } catch (e) {
-        // Nobody awaits this: a throw here would be an unhandled error.
-        log.warning('Payjoin wallet refresh failed: ${e.runtimeType}');
+        if (transaction != null) {
+          if (attempt > 1) {
+            log.fine('Payjoin wallet reconcile recovered attempts=$attempt');
+          }
+          return;
+        }
+      } on Exception {
+        // The final outcome below owns this bounded reconciliation.
       }
     }
-    log.warning('Payjoin wallet did not catch up with a settled transaction');
+    log.warning(
+      'Payjoin wallet reconcile failed attempts=$_reconcileAttempts reason=unavailable',
+    );
   }
 
   @override

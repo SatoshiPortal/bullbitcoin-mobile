@@ -9,7 +9,13 @@ import 'package:bb_mobile/features/import_mnemonic/ui/widgets/mnemonic_keyboard.
 import 'package:bb_mobile/features/import_mnemonic/presentation/mnemonic_entry_failure_l10n.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:bull_ui/bull_ui.dart'
-    show BullButton, BullLabeledTextInput, BullShapesX, BullText, Gap;
+    show
+        BullButton,
+        BullLabeledTextInput,
+        BullSecretTextInput,
+        BullShapesX,
+        BullText,
+        Gap;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
@@ -424,22 +430,13 @@ class _MnemonicWidgetState extends State<MnemonicWidget> {
 
                   if (widget.allowPassphrase) ...[
                     const Gap(16),
-                    BullLabeledTextInput(
+                    // Key material typed on the system keyboard: request IME privacy, disable copying and omit the value from the Flutter semantics tree.
+                    BullSecretTextInput(
                       label: context.loc.passphraseLabel,
                       hint: context.loc.optionalPassphraseHint,
-                      value: passphrase,
                       onChanged: updatePassphrase,
-                      maxLines: 1,
-                      // A passphrase is key material too: keep it out of the
-                      // IME's suggestion and autocorrect caches.
-                      enableSuggestions: false,
-                      autocorrect: false,
-                      // iOS Smart Punctuation turns `'` into `’`, which
-                      // would derive a different wallet. Disable it here
-                      // rather than cleaning up the submitted value: `’`
-                      // can be a real passphrase character.
-                      smartQuotesType: SmartQuotesType.disabled,
-                      smartDashesType: SmartDashesType.disabled,
+                      showLabel: context.loc.passphraseShow,
+                      hideLabel: context.loc.passphraseHide,
                     ),
                   ],
 

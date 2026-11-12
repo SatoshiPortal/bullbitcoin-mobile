@@ -12,6 +12,7 @@ extension RecipientsFailureL10n on RecipientsFailure {
   String toTranslated(BuildContext context) => switch (this) {
     RecipientsUnsupportedNetworkFailure() =>
       context.loc.networkFeatureUnavailable,
+    RecipientsNotAuthenticatedFailure() => context.loc.exchangeAuthErrorMessage,
     RecipientsLoadFailure() => context.loc.recipientsErrorLoadFailed,
     RecipientsSaveFailure() => context.loc.recipientsErrorSaveFailed,
     RecipientsSinpeLookupFailure() =>

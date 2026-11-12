@@ -5,6 +5,7 @@ import 'package:bb_mobile/generated/l10n/localization.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/semantics.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 /// A valid 12 word sentence, used so submitting exercises the real checksum.
@@ -67,6 +68,30 @@ TextField fieldByHint(WidgetTester tester, String hint) =>
         (widget) => widget is TextField && widget.decoration?.hintText == hint,
       ),
     );
+
+const secretPassphrase = 'correct horse';
+
+Finder passphraseField() => find.byWidgetPredicate(
+  (widget) =>
+      widget is TextField &&
+      widget.decoration?.hintText == 'Optional Passphrase',
+);
+
+/// Every label, value, hint and tooltip published in the semantics tree.
+List<String> semanticsStrings(WidgetTester tester) {
+  final strings = <String>[];
+  bool visit(SemanticsNode node) {
+    final data = node.getSemanticsData();
+    strings.addAll([data.label, data.value, data.hint, data.tooltip]);
+    node.visitChildren(visit);
+    return true;
+  }
+
+  final owner = tester.getSemantics(find.byType(Scaffold)).owner;
+  final root = owner?.rootSemanticsNode;
+  if (root != null) visit(root);
+  return strings;
+}
 
 /// A key on the in-app keyboard, scoped so the letter is matched on the
 /// keyboard and not in a field or a suggestion chip.
@@ -533,6 +558,49 @@ void main() {
       // autocorrect and prediction caches must never see the value.
       expect(field.autocorrect, isFalse);
       expect(field.enableSuggestions, isFalse);
+      expect(field.enableIMEPersonalizedLearning, isFalse);
+      expect(field.keyboardType, TextInputType.visiblePassword);
+    });
+
+    testWidgets('the passphrase is obscured until revealed', (tester) async {
+      await pumpWidget(tester, allowPassphrase: true, onSubmit: (_) {});
+
+      expect(fieldByHint(tester, 'Optional Passphrase').obscureText, isTrue);
+
+      await tester.ensureVisible(find.byTooltip('Show passphrase'));
+      await tester.tap(find.byTooltip('Show passphrase'));
+      await tester.pump();
+
+      expect(fieldByHint(tester, 'Optional Passphrase').obscureText, isFalse);
+    });
+
+    testWidgets('the passphrase never reaches the semantics tree', (
+      tester,
+    ) async {
+      final handle = tester.ensureSemantics();
+      await pumpWidget(tester, allowPassphrase: true, onSubmit: (_) {});
+      await tester.enterText(passphraseField(), secretPassphrase);
+      await tester.pump();
+
+      // Screen readers and accessibility services read the semantics tree: a
+      // field publishing its text there hands the passphrase to them.
+      expect(semanticsStrings(tester), isNot(contains(contains('horse'))));
+      // The field stays reachable by its name.
+      expect(find.bySemanticsLabel('Passphrase'), findsWidgets);
+      handle.dispose();
+    });
+
+    testWidgets('the passphrase cannot be selected or copied', (tester) async {
+      await pumpWidget(tester, allowPassphrase: true, onSubmit: (_) {});
+      await tester.enterText(passphraseField(), secretPassphrase);
+      await tester.ensureVisible(passphraseField());
+      await tester.pumpAndSettle();
+
+      await tester.longPress(passphraseField());
+      await tester.pumpAndSettle();
+
+      expect(find.text('Copy'), findsNothing);
+      expect(find.text('Select all'), findsNothing);
     });
 
     testWidgets('a non-secret labelled input keeps the platform defaults', (
