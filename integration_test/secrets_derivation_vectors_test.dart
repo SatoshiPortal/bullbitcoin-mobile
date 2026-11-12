@@ -174,16 +174,14 @@ Future<void> main({bool isInitialized = false}) async {
       }
     });
 
-    test('the Liquid descriptor ignores the passphrase', () async {
-      // The claim the README makes about lwk, asserted against lwk itself —
-      // the unit suite cannot, since this call needs the FFI.
+    test('the Liquid descriptor honours the passphrase', () async {
+      // Liquid derives from the secret's full BIP39 seed, as Bitcoin does. An
+      // empty passphrase keeps every existing (passphrase-less) wallet's
+      // descriptor; a passphrase gives another wallet. Checkable only here,
+      // since lwk needs the FFI.
       final plain = await importWords();
       final withPassphrase = await importWords(passphrase: 'TREZOR');
-      expect(
-        withPassphrase.id.hex,
-        isNot(plain.id.hex),
-        reason: 'two different secrets, so two different Bitcoin wallets',
-      );
+      expect(withPassphrase.id.hex, isNot(plain.id.hex));
 
       final a = unwrap(
         await plain.derive.descriptors.liquid(network: LiquidNetwork.testnet),
@@ -194,8 +192,10 @@ Future<void> main({bool isInitialized = false}) async {
         ),
       );
 
-      expect(b, a, reason: 'same descriptor: same addresses, same funds');
       expect(a, contains('ct('));
+      expect(a, contains(plain.id.hex));
+      expect(b, isNot(a), reason: 'the passphrase selects another wallet');
+      expect(b, contains(withPassphrase.id.hex));
     });
 
     test('a BIP85 child is the pinned value', () async {
