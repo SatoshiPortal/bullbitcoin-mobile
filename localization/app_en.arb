@@ -16129,5 +16129,9 @@
   "broadcastSignedTxErrorNetworkNotEnabled": "Broadcasting on this network is not enabled in the current settings.",
   "@broadcastSignedTxErrorNetworkNotEnabled": {
     "description": "Broadcast Transaction error when the app refuses locally to broadcast on a network the settings do not enable"
+  },
+  "coreScreensOutputsExceedInputs": "Outputs exceed inputs: this transaction is invalid and the network will reject it.",
+  "@coreScreensOutputsExceedInputs": {
+    "description": "Transaction review alert when a Bitcoin transaction's outputs exceed its inputs"
   }
 }

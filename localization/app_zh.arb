@@ -4860,5 +4860,6 @@
   "broadcastSignedTxErrorAlreadyInChain": "此交易已在区块链中，无需再次广播。",
   "broadcastSignedTxErrorRejected": "网络拒绝了此交易。它可能未完全签名、无效，或与另一笔付款冲突。",
   "broadcastSignedTxErrorOutcomeUnknown": "无法确认您的交易是否已广播。请在区块浏览器中查看后再重试。",
-  "broadcastSignedTxErrorNetworkNotEnabled": "当前设置未启用在此网络上广播。"
+  "broadcastSignedTxErrorNetworkNotEnabled": "当前设置未启用在此网络上广播。",
+  "coreScreensOutputsExceedInputs": "输出超过输入：此交易无效，网络将拒绝它。"
 }

@@ -1080,7 +1080,8 @@ void main() {
         final after = await read();
         final canonical =
             after.wallet.getTx(txid: bdk.Txid.fromString(hex: aId)) != null;
-        if (scenario == 'neither') expect(canonical, isFalse);
+        // An observation by either step alone must survive the other's omission.
+        expect(canonical, scenario != 'neither');
         // Ready only when the final canonical state holds the payment.
         expect(
           await gate.check(descriptor.key),
