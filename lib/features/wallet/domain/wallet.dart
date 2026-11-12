@@ -130,8 +130,10 @@ abstract class Wallet with _$Wallet {
   /// Native state could not be read; null is unknown, never a zero balance.
   bool get unavailable => balanceSat == null;
 
-  String get id =>
-      network == Network.bitcoinRegtest ? '$origin:regtest' : origin;
+  String get id => switch (network) {
+    Network.bitcoinRegtest || Network.liquidRegtest => '$origin:regtest',
+    _ => origin,
+  };
   String get addressType {
     if (isLiquid) {
       return 'Confidential Segwit';
