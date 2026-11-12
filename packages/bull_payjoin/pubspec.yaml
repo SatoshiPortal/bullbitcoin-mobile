@@ -11,7 +11,7 @@ resolution: workspace
 dependencies:
   bull_sdk:
     git:
-      url: https://github.com/ethicnology-agent/bull_sdk
+      url: https://github.com/SatoshiPortal/bull_sdk
       ref: e538cbc6fe51a9a6ce425d2513e0c1422ca89132
       path: packages/bull_sdk
   crypto: ^3.0.7
