@@ -36,7 +36,7 @@ void main() {
       when(
         () => blockchain.broadcastTransaction(
           signedPset: 'signed-public-test',
-          isTestnet: true,
+          network: Network.liquidTestnet,
         ),
       ).thenAnswer((_) async => 'txid');
       final usecase = BroadcastLiquidTransactionUsecase(

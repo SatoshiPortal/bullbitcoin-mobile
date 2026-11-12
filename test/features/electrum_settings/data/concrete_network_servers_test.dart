@@ -2,7 +2,6 @@ import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/features/electrum_settings/data/drift_electrum_server_repository.dart';
 import 'package:bb_mobile/features/electrum_settings/data/electrum_server_storage_datasource.dart';
 import 'package:bb_mobile/features/electrum_settings/data/models/electrum_server_model.dart';
-import 'package:bb_mobile/features/electrum_settings/domain/electrum_failure.dart';
 import 'package:bb_mobile/features/electrum_settings/domain/electrum_server_network.dart';
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -73,20 +72,21 @@ void main() {
     },
   );
 
-  test('Liquid regtest refuses even a manually persisted endpoint', () async {
+  test('Liquid regtest uses only its own persisted endpoint', () async {
     await datasource.store(
       ElectrumServerModel(
-        url: '127.0.0.1:50001',
+        url: 'tcp://local.example:50001',
         network: ElectrumServerNetwork.liquidRegtest,
+        isCustom: true,
       ),
     );
     final result = await repository.fetchActiveServers(
       network: ElectrumServerNetwork.liquidRegtest,
     );
-    result.fold(
-      (_) => fail('Unsupported network admitted'),
-      (failure) => expect(failure, isA<ElectrumUnsupportedNetworkFailure>()),
-    );
+    result.fold((servers) {
+      expect(servers.single.url, 'tcp://local.example:50001');
+      expect(servers.single.network, ElectrumServerNetwork.liquidRegtest);
+    }, (failure) => fail('Unexpected ${failure.runtimeType}'));
   });
 
   test('primitive mapping never aliases regtest or signet to testnet', () {
