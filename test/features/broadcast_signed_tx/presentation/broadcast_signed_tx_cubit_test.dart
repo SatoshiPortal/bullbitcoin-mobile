@@ -1,5 +1,7 @@
 import 'package:bb_mobile/features/wallet/domain/wallet.dart' as app;
 import 'package:bb_mobile/core/bbqr/bbqr.dart';
+import 'package:bb_mobile/core/settings/data/settings_repository.dart';
+import 'package:bb_mobile/features/send/data/bitcoin_blockchain_repository.dart';
 import 'package:bb_mobile/features/send/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/send/domain/usecases/verify_signed_tx_usecase.dart';
@@ -17,6 +19,11 @@ class _MockBroadcastBitcoinTransactionUsecase extends Mock
 
 class _MockVerifySignedTxUsecase extends Mock
     implements VerifyBroadcastSignedTxUsecase {}
+
+class _MockBitcoinBlockchainRepository extends Mock
+    implements BitcoinBlockchainRepository {}
+
+class _MockSettingsRepository extends Mock implements SettingsRepository {}
 
 void main() {
   const psbt =
@@ -139,6 +146,54 @@ void main() {
       );
     },
   );
+
+  group('broadcast rejected by the node', () {
+    Future<BroadcastSignedTxCubit> rebroadcast(Object nodeError) async {
+      final blockchain = _MockBitcoinBlockchainRepository();
+      when(
+        () => blockchain.broadcastPsbt(any(), network: any(named: 'network')),
+      ).thenThrow(nodeError);
+      // The real use case, called without a wallet as Broadcast Transaction
+      // does, so the category travels from the mapper to the cubit.
+      final cubit = BroadcastSignedTxCubit(
+        network: app.Network.bitcoinMainnet,
+        broadcastBitcoinTransactionUsecase: BroadcastBitcoinTransactionUsecase(
+          bitcoinBlockchainRepository: blockchain,
+          settingsRepository: _MockSettingsRepository(),
+        ),
+        verifySignedTxUsecase: _MockVerifySignedTxUsecase(),
+      );
+      addTearDown(cubit.close);
+      await cubit.tryParseTransaction(psbt);
+      await cubit.broadcastTransaction();
+      return cubit;
+    }
+
+    setUpAll(() => registerFallbackValue(app.Network.bitcoinMainnet));
+
+    // Regression (Pixel 6a): rebroadcasting a confirmed transaction said
+    // "Check your internet connection" instead of reporting it confirmed.
+    test('reports a transaction already in the chain', () async {
+      final cubit = await rebroadcast(
+        bdk.ProtocolElectrumException(
+          '{"code":2,"message":"sendrawtransaction RPC error -27: Transaction outputs already in utxo set"}',
+        ),
+      );
+
+      expect(cubit.state.failure, isA<TransactionAlreadyInChainFailure>());
+      expect(cubit.state.isBroadcasted, isFalse);
+      expect(cubit.state.isBroadcasting, isFalse);
+    });
+
+    test('keeps the generic failure for other rejections', () async {
+      final cubit = await rebroadcast(
+        bdk.ProtocolElectrumException('{"code":-26}'),
+      );
+
+      expect(cubit.state.failure, isA<BroadcastFailedFailure>());
+      expect(cubit.state.isBroadcasted, isFalse);
+    });
+  });
 
   const unsignedPsbt =
       'cHNidP8BAKQCAAAAA6DLc9RAdKwWQb/7Nrq1FyAtDQ3e0w5E4LkLpcrwBL0aAAAAAAD9////78NG2vqjywKaa0QHfo6C44o1+odXeWZ43FfHy4bLdxABAAAAAP3///8rhueJha90HzgJ6alnJ1uvi0Zbq0JQoXnwDb0Cjn79DwAAAAAA/f///wHWCBAAAAAAABYAFDraKFKubXzlSvRQy8V4X+TwKhLXAAAAAE8BBDWHzwQJeplqgAAAAqmHnnoRR+XJd7gJt/PhLazKeWAfCBLJ4/OF/s0PqqF1AzK8fcttOUsU2k9a6Valj6kLb/Bh2gB7YuxenNz7LY5PFJkKc60wAACAAQAAgAAAAIACAACATwEENYfPBEgFouKAAAACOeERUyCmIJuSdQNDB1mxkahw4tc2UCtjxJQoQGnRCtQCZUSXwQF+nA8dl/RG6U1b9ViWJxkzNrDCCagYEWch72cUrnhJ4jAAAIABAACAAAAAgAIAAIAAAQErckUPAAAAAAAiACDwHjagvyTvVDVn+RqxW0xaMLODBm2IVCwDBQm5uK8rDQEFR1IhAi/hk/Tz0aHcNwsVyv86bqQj30sUexPlc738CqJg+flLIQKmgeTdVjPh9P+MPnsTPbFRcGGLPAO3iTyYBR7eYQC4VlKuIgYCL+GT9PPRodw3CxXK/zpupCPfSxR7E+VzvfwKomD5+UscrnhJ4jAAAIABAACAAAAAgAIAAIABAAAACgAAACIGAqaB5N1WM+H0/4w+exM9sVFwYYs8A7eJPJgFHt5hALhWHJkKc60wAACAAQAAgAAAAIACAACAAQAAAAoAAAAAAQErMHUAAAAAAAAiACAUS+ztgOw4wxEOYDdQEZp42Ii3sA39MdXZMWolM3s9VgEFR1IhAmdcnz6cgLhxNS0Lv3mz7OVOGunGsAlEsekZiQRDLDXHIQLfPg77+MKPe073vgkXRfWAZMxohe3ysPahJ0jIFl3GU1KuIgYCZ1yfPpyAuHE1LQu/ebPs5U4a6cawCUSx6RmJBEMsNcccrnhJ4jAAAIABAACAAAAAgAIAAIAAAAAAQgAAACIGAt8+Dvv4wo97Tve+CRdF9YBkzGiF7fKw9qEnSMgWXcZTHJkKc60wAACAAQAAgAAAAIACAACAAAAAAEIAAAAAAQEr8FUAAAAAAAAiACCcheUwIAj6XLtEe5QO+fTi25/ZvJGX9MuZkpghbW3VMgEFR1IhAkhWBpUeAB+UbbJc8f1fkEMEZgIChQVpMdJnD05uBtU4IQMUAdnwr2UVz6AhNBI5j6an4wHRGVX3uhSLaWy2qS70xlKuIgYCSFYGlR4AH5Rtslzx/V+QQwRmAgKFBWkx0mcPTm4G1TgcmQpzrTAAAIABAACAAAAAgAIAAIAAAAAARAAAACIGAxQB2fCvZRXPoCE0EjmPpqfjAdEZVfe6FItpbLapLvTGHK54SeIwAACAAQAAgAAAAIACAACAAAAAAEQAAAAAAA==';

@@ -26,4 +26,28 @@ void main() {
     expect(message, l10n.broadcastSignedTxErrorPsbtFinalization);
     expect(message, isNot(l10n.broadcastSignedTxErrorInvalidTransaction));
   });
+
+  testWidgets('already-in-chain failure has its own localized message', (
+    tester,
+  ) async {
+    late String message;
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: Builder(
+          builder: (context) {
+            message = const TransactionAlreadyInChainFailure().toTranslated(
+              context,
+            );
+            return const SizedBox.shrink();
+          },
+        ),
+      ),
+    );
+    final l10n = await AppLocalizations.delegate.load(const Locale('en'));
+
+    expect(message, l10n.broadcastSignedTxErrorAlreadyInChain);
+    expect(message, isNot(l10n.broadcastSignedTxBroadcastError));
+  });
 }
