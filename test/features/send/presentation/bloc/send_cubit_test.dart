@@ -52,7 +52,7 @@ import 'package:bb_mobile/features/send/domain/usecases/update_paid_send_swap_us
 import 'package:bb_mobile/features/send/domain/usecases/verify_exchange_payin_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/update_send_swap_payin_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/verify_send_signed_tx_usecase.dart';
-import 'package:bb_mobile/features/send/domain/usecases/validate_sweep_payment_request_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/validate_coin_control_payment_request_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/watch_send_swap_usecase.dart';
 import 'package:bb_mobile/core/utils/payment_request.dart';
 import 'package:bb_mobile/features/send/domain/usecases/prepare_sp_payment_for_send_usecase.dart';
@@ -273,7 +273,7 @@ class _TestableSendCubit extends SendCubit {
     required super.sendSpPaymentForSendUsecase,
     required super.refreshSpWalletForSendUsecase,
     required super.resolveSelectedInputsUsecase,
-    required super.validateSweepPaymentRequestUsecase,
+    required super.validateCoinControlPaymentRequestUsecase,
     super.parsePaymentRequest,
   });
 
@@ -516,7 +516,8 @@ void main() {
     refreshSpWalletForSendUsecase:
         refreshSpWalletForSendUsecase ?? _MockRefreshSpWalletForSendUsecase(),
     resolveSelectedInputsUsecase: ResolveSelectedInputsUsecase(payjoinSessions),
-    validateSweepPaymentRequestUsecase: ValidateSweepPaymentRequestUsecase(),
+    validateCoinControlPaymentRequestUsecase:
+        ValidateCoinControlPaymentRequestUsecase(),
     parsePaymentRequest: parsePaymentRequest,
   );
 
@@ -707,6 +708,292 @@ void main() {
       () => getNetworkFeesUsecase.execute(isLiquid: any(named: 'isLiquid')),
     ).thenAnswer((_) async => _sweepFeeOptions);
   }
+
+  group('SendCubit Liquid coin control', () {
+    const outpoint = (txId: 'liquid-selected', vout: 0);
+    const request = PaymentRequest.liquid(
+      address: 'lq1recipient',
+      isTestnet: false,
+    );
+    late Wallet wallet;
+    late WalletUtxo selected;
+
+    setUp(() {
+      wallet = _liquidWallet(balanceSat: 300000);
+      selected = WalletUtxo.liquid(
+        walletId: wallet.id,
+        txId: outpoint.txId,
+        vout: outpoint.vout,
+        scriptPubkey: '',
+        amountSat: BigInt.from(75000),
+        standardAddress: 'ex1own',
+        confidentialAddress: 'lq1own',
+      );
+      stubSweepLoad(wallet: wallet, utxos: [selected]);
+      when(
+        () => checkLiquidConsolidationUsecase.execute(walletId: wallet.id),
+      ).thenAnswer((_) async => false);
+      when(
+        () => prepareLiquidSendUsecase.execute(
+          walletId: wallet.id,
+          address: any(named: 'address'),
+          feeRate: any(named: 'feeRate'),
+          amountSat: any(named: 'amountSat'),
+          drain: any(named: 'drain'),
+          selectedInputs: {outpoint},
+          hasFrozenInputs: any(named: 'hasFrozenInputs'),
+        ),
+      ).thenAnswer((_) async => const Ok('liquid-pset'));
+      when(
+        () => calculateLiquidAbsoluteFeesUsecase.execute(pset: 'liquid-pset'),
+      ).thenAnswer((_) async => 100);
+      when(
+        () => signLiquidTxUsecase.execute(
+          pset: 'liquid-pset',
+          walletId: wallet.id,
+        ),
+      ).thenAnswer((_) async => 'signed-liquid-pset');
+    });
+
+    Future<_TestableSendCubit> start({bool sweep = false}) async {
+      final cubit = buildCubit(
+        wallet: wallet,
+        initialSweepOutpoints: sweep ? {outpoint} : {},
+        initialSelectedOutpoints: sweep ? {} : {outpoint},
+      );
+      addTearDown(cubit.close);
+      await cubit.loadWalletWithRatesAndFees();
+      await cubit.onScannedPaymentRequest('lq1recipient', request);
+      return cubit;
+    }
+
+    test(
+      'opens selected Send at amount entry and preserves the fixed output',
+      () async {
+        final cubit = await start();
+        expect(cubit.state.step, SendStep.amount);
+        expect(cubit.state.sendType, SendType.liquid);
+        expect(cubit.state.maxAvailableBalanceSat, 75000);
+        expect(cubit.state.canAddRecipient, isFalse);
+        await cubit.amountChanged(amount: '20000');
+        await cubit.onAmountConfirmed();
+        expect(cubit.state.failure, isNull);
+        expect(cubit.state.confirmedAmountSat, 20000);
+        expect(cubit.state.unsignedPsbt, 'liquid-pset');
+        verify(
+          () => prepareLiquidSendUsecase.execute(
+            walletId: wallet.id,
+            address: 'lq1recipient',
+            amountSat: 20000,
+            feeRate: any(named: 'feeRate'),
+            drain: false,
+            selectedInputs: {outpoint},
+            hasFrozenInputs: any(named: 'hasFrozenInputs'),
+          ),
+        ).called(1);
+      },
+    );
+
+    test(
+      'sweeps selected balance minus the built fee and signs the PSET',
+      () async {
+        final cubit = await start(sweep: true);
+        expect(cubit.state.failure, isNull);
+        expect(cubit.state.step, SendStep.confirm);
+        expect(cubit.state.confirmedAmountSat, 74900);
+        expect(cubit.state.isPayjoinAvailable, isFalse);
+        await cubit.signTransaction();
+        expect(cubit.state.signedLiquidTx, 'signed-liquid-pset');
+        verify(
+          () => prepareLiquidSendUsecase.execute(
+            walletId: wallet.id,
+            address: 'lq1recipient',
+            amountSat: any(named: 'amountSat'),
+            feeRate: any(named: 'feeRate'),
+            drain: true,
+            selectedInputs: {outpoint},
+            hasFrozenInputs: any(named: 'hasFrozenInputs'),
+          ),
+        ).called(1);
+      },
+    );
+
+    test(
+      'keeps selected inputs in the absolute-fee estimate and final build',
+      () async {
+        final cubit = await start(sweep: true);
+        when(
+          () => calculateLiquidPsetSizeUsecase.execute(pset: 'liquid-pset'),
+        ).thenAnswer((_) async => const Ok(1000));
+        when(
+          () => calculateLiquidAbsoluteFeesUsecase.execute(pset: 'liquid-pset'),
+        ).thenAnswer((_) async => 200);
+        cubit.setStateForTest(
+          cubit.state.copyWith(
+            selectedFeeOption: FeeSelection.custom,
+            customFee: const AbsoluteFee(200),
+          ),
+        );
+
+        await cubit.createTransaction();
+
+        expect(cubit.state.failure, isNull);
+        expect(cubit.state.confirmedAmountSat, 74800);
+        expect(cubit.state.requiredInputOutpoints, {outpoint});
+        verify(
+          () => prepareLiquidSendUsecase.execute(
+            walletId: wallet.id,
+            address: 'lq1recipient',
+            amountSat: any(named: 'amountSat'),
+            feeRate: const RelativeFee(25),
+            drain: true,
+            selectedInputs: {outpoint},
+            hasFrozenInputs: any(named: 'hasFrozenInputs'),
+          ),
+        ).called(1);
+        verify(
+          () => prepareLiquidSendUsecase.execute(
+            walletId: wallet.id,
+            address: 'lq1recipient',
+            amountSat: any(named: 'amountSat'),
+            feeRate: const RelativeFee(50),
+            drain: true,
+            selectedInputs: {outpoint},
+            hasFrozenInputs: any(named: 'hasFrozenInputs'),
+          ),
+        ).called(1);
+      },
+    );
+
+    test(
+      'clears the previous fee when selected funds cannot cover a rebuild',
+      () async {
+        final cubit = await start(sweep: true);
+        when(
+          () => prepareLiquidSendUsecase.execute(
+            walletId: wallet.id,
+            address: any(named: 'address'),
+            amountSat: any(named: 'amountSat'),
+            feeRate: any(named: 'feeRate'),
+            drain: true,
+            selectedInputs: {outpoint},
+            hasFrozenInputs: any(named: 'hasFrozenInputs'),
+          ),
+        ).thenAnswer(
+          (_) async => const Err(SendSelectedCoinsInsufficientFailure()),
+        );
+
+        expect(await cubit.createTransaction(), isFalse);
+        expect(
+          cubit.state.failure,
+          isA<SendSelectedCoinsInsufficientFailure>(),
+        );
+        expect(cubit.state.absoluteFees, isNull);
+        expect(cubit.state.unsignedPsbt, isNull);
+        expect(cubit.state.disableConfirmSend, isTrue);
+      },
+    );
+
+    for (final failure in <SendFailure>[
+      const SendConsolidationRequiredFailure(),
+      const SendTransactionBuildFailure(),
+    ]) {
+      test(
+        'stops signing and broadcast after ${failure.runtimeType}',
+        () async {
+          final cubit = await start(sweep: true);
+          when(
+            () => prepareLiquidSendUsecase.execute(
+              walletId: wallet.id,
+              address: any(named: 'address'),
+              amountSat: any(named: 'amountSat'),
+              feeRate: any(named: 'feeRate'),
+              drain: true,
+              selectedInputs: {outpoint},
+              hasFrozenInputs: any(named: 'hasFrozenInputs'),
+            ),
+          ).thenAnswer((_) async => Err(failure));
+          expect(await cubit.createTransaction(), isFalse);
+          expect(
+            cubit.state.consolidationRequired,
+            failure is SendConsolidationRequiredFailure,
+          );
+          expect(cubit.state.buildingTransaction, isFalse);
+          expect(cubit.state.unsignedPsbt, isNull);
+          await cubit.signTransaction();
+          await cubit.broadcastTransaction();
+          verifyNever(
+            () => signLiquidTxUsecase.execute(
+              pset: any(named: 'pset'),
+              walletId: any(named: 'walletId'),
+            ),
+          );
+          verifyNever(() => broadcastLiquidTxUsecase.execute(any()));
+        },
+      );
+    }
+
+    test('ignores a Liquid build completing after Back', () async {
+      final cubit = await start(sweep: true);
+      final started = Completer<void>();
+      final pending = Completer<Result<String, SendFailure>>();
+      when(
+        () => prepareLiquidSendUsecase.execute(
+          walletId: wallet.id,
+          address: any(named: 'address'),
+          amountSat: any(named: 'amountSat'),
+          feeRate: any(named: 'feeRate'),
+          drain: true,
+          selectedInputs: {outpoint},
+          hasFrozenInputs: any(named: 'hasFrozenInputs'),
+        ),
+      ).thenAnswer((_) {
+        started.complete();
+        return pending.future;
+      });
+      final rebuilding = cubit.createTransaction();
+      await started.future;
+      cubit.backClicked();
+      pending.complete(const Ok('stale-pset'));
+      expect(await rebuilding, isFalse);
+      expect(cubit.state.unsignedPsbt, isNull);
+      expect(cubit.state.signedLiquidTx, isNull);
+      verifyNever(
+        () => calculateLiquidAbsoluteFeesUsecase.execute(pset: 'stale-pset'),
+      );
+    });
+
+    test('rejects a newly frozen Liquid coin before broadcasting', () async {
+      final cubit = await start(sweep: true);
+      await cubit.signTransaction();
+      when(
+        () => getWalletUtxosUsecase.execute(walletId: wallet.id),
+      ).thenAnswer((_) async => [selected.copyWith(isFrozen: true)]);
+
+      await cubit.broadcastTransaction();
+
+      expect(cubit.state.failure, isA<SendSelectedCoinsUnavailableFailure>());
+      expect(cubit.state.signedLiquidTx, isNull);
+      verifyNever(() => broadcastLiquidTxUsecase.execute(any()));
+    });
+
+    test(
+      'rejects cross-chain destinations while Liquid coins are selected',
+      () async {
+        final cubit = await start();
+        await cubit.onScannedPaymentRequest(
+          'bc1qrecipient',
+          const PaymentRequest.bitcoin(
+            address: 'bc1qrecipient',
+            isTestnet: false,
+          ),
+        );
+        expect(cubit.state.failure, isA<SendInvalidPaymentRequestFailure>());
+        expect(cubit.state.selectedBitcoinWallet, wallet);
+        expect(await cubit.addRecipient(), isFalse);
+      },
+    );
+  });
 
   group('SendCubit initial selected coins', () {
     for (final isSweep in [false, true]) {
@@ -3552,6 +3839,7 @@ void main() {
           feeRate: any(named: 'feeRate'),
           amountSat: any(named: 'amountSat'),
           drain: any(named: 'drain'),
+          hasFrozenInputs: any(named: 'hasFrozenInputs'),
         ),
       );
     });
@@ -4880,11 +5168,10 @@ void main() {
             feeRate: any(named: 'feeRate'),
             amountSat: any(named: 'amountSat'),
             drain: any(named: 'drain'),
+            hasFrozenInputs: any(named: 'hasFrozenInputs'),
           ),
-        ).thenThrow(
-          InsufficientFundsException(
-            'InsufficientFunds { missing_sats: 2, is_token: false }',
-          ),
+        ).thenAnswer(
+          (_) async => const Err(SendInsufficientFundsForFeesFailure()),
         );
         when(
           () => getWalletUtxosUsecase.execute(walletId: any(named: 'walletId')),

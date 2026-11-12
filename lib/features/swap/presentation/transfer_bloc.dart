@@ -1,3 +1,8 @@
+import 'package:bb_mobile/features/send/public/send_facade.dart'
+    show
+        SendConsolidationRequiredFailure,
+        SendInsufficientBalanceFailure,
+        SendInsufficientFundsForFeesFailure;
 import 'package:primitives/primitives.dart'
     show Sats, BitcoinTransactionRecipient;
 import 'dart:async';
@@ -781,7 +786,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
     int? bitcoinTxSize;
     if (fromWallet.isLiquid) {
       final selectedFee = state.selectedFee ?? state.liquidNetworkFees!.fastest;
-      final unsignedPset = await _prepareLiquidSendUsecase.execute(
+      final preparation = await _prepareLiquidSendUsecase.execute(
         walletId: fromWallet.id,
         address: order.payinAddress,
         amountSat: isMaxSend ? null : order.payinAmountSat.toInt(),
@@ -789,6 +794,25 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
         drain: isMaxSend,
       );
       if (generation != _transactionGeneration) return;
+      final String unsignedPset;
+      switch (preparation) {
+        case Ok(:final value):
+          unsignedPset = value;
+        case Err(:final failure):
+          emit(
+            state.copyWith(
+              signedPsbt: '',
+              consolidationRequired:
+                  failure is SendConsolidationRequiredFailure,
+              swapCreationException:
+                  failure is SendInsufficientBalanceFailure ||
+                      failure is SendInsufficientFundsForFeesFailure
+                  ? InsufficientFundsSwapException()
+                  : SwapCreationException('liquid_transaction_build_failed'),
+            ),
+          );
+          return;
+      }
       await _verifyChainSwapAmountSendUsecase.execute(
         psbtOrPset: unsignedPset,
         swap: displaySwap,
@@ -1961,7 +1985,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
 
         log.info("Absolute fees: $absoluteFees");
       } else {
-        final dummyPset = await _prepareLiquidSendUsecase.execute(
+        final dummyResult = await _prepareLiquidSendUsecase.execute(
           walletId: fromWallet.id,
           address: receiveAddress.address,
           // networkFee was selected from the Liquid FeeOptions, always RelativeFee.
@@ -1969,6 +1993,13 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
           drain: true,
         );
 
+        final String dummyPset;
+        switch (dummyResult) {
+          case Ok(:final value):
+            dummyPset = value;
+          case Err():
+            return null;
+        }
         absoluteFees = await _calculateLiquidAbsoluteFeesUsecase.execute(
           pset: dummyPset,
         );

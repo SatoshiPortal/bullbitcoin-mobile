@@ -1,3 +1,4 @@
+import 'package:primitives/primitives.dart' show Ok;
 import 'package:bb_mobile/features/send/domain/usecases/prepare_send_bitcoin_transaction_usecase.dart';
 // Behavioral proof for two audit findings on SendCubit:
 //
@@ -49,7 +50,7 @@ import 'package:bb_mobile/features/send/domain/usecases/sign_bitcoin_tx_usecase.
 import 'package:bb_mobile/features/send/domain/usecases/sign_liquid_tx_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/update_paid_send_swap_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/update_send_swap_payin_usecase.dart';
-import 'package:bb_mobile/features/send/domain/usecases/validate_sweep_payment_request_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/validate_coin_control_payment_request_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/verify_exchange_payin_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/verify_send_signed_tx_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/watch_payjoin_usecase.dart';
@@ -241,7 +242,7 @@ class _TestSendCubit extends SendCubit {
     required super.sendSpPaymentForSendUsecase,
     required super.refreshSpWalletForSendUsecase,
     required super.resolveSelectedInputsUsecase,
-    required super.validateSweepPaymentRequestUsecase,
+    required super.validateCoinControlPaymentRequestUsecase,
   });
 
   void seed(SendState state) => emit(state);
@@ -350,7 +351,8 @@ void main() {
       resolveSelectedInputsUsecase: ResolveSelectedInputsUsecase(
         _MockPayjoinSessions(),
       ),
-      validateSweepPaymentRequestUsecase: ValidateSweepPaymentRequestUsecase(),
+      validateCoinControlPaymentRequestUsecase:
+          ValidateCoinControlPaymentRequestUsecase(),
     );
   });
 
@@ -446,8 +448,9 @@ void main() {
           feeRate: any(named: 'feeRate'),
           amountSat: any(named: 'amountSat'),
           drain: any(named: 'drain'),
+          hasFrozenInputs: true,
         ),
-      ).thenAnswer((_) async => 'pset-base64');
+      ).thenAnswer((_) async => const Ok('pset-base64'));
       when(
         () => calculateLiquidAbsoluteFeesUsecase.execute(
           pset: any(named: 'pset'),

@@ -44,6 +44,7 @@ class PrepareSendBitcoinTransactionUsecase {
               : hasFrozenInputs
               ? SendInsufficientBalanceFailure(failure.logMessage)
               : SendInsufficientFundsForFeesFailure(failure.logMessage),
+        WalletConsolidationRequiredFailure() ||
         WalletTransactionBuildFailure() => SendTransactionBuildFailure(
           failure.logMessage,
         ),

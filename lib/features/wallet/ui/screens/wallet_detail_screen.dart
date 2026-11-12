@@ -113,15 +113,13 @@ class WalletDetailScreen extends StatelessWidget {
                       SliverToBoxAdapter(
                         child: ConsolidationBanner(wallet: wallet),
                       ),
-                    if (wallet.isBitcoin) ...[
-                      const SliverToBoxAdapter(child: Gap(8)),
-                      SliverToBoxAdapter(
-                        child: _CoinsEntryTile(
-                          wallet: wallet,
-                          onOpenCoins: onOpenCoins,
-                        ),
+                    const SliverToBoxAdapter(child: Gap(8)),
+                    SliverToBoxAdapter(
+                      child: _CoinsEntryTile(
+                        wallet: wallet,
+                        onOpenCoins: onOpenCoins,
                       ),
-                    ],
+                    ),
                     if (wallet.isLiquid)
                       SliverToBoxAdapter(
                         child: Padding(

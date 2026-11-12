@@ -1023,6 +1023,10 @@ class _BottomButtons extends StatelessWidget {
     final isBitcoinWallet = context.select(
       (SendCubit cubit) => !cubit.state.selectedWallet!.isLiquid,
     );
+    final isOnchainSend = context.select(
+      (SendCubit cubit) => !cubit.state.isLightning && !cubit.state.isChainSwap,
+    );
+    final isSweep = context.select((SendCubit cubit) => cubit.state.isSweep);
     final wallet = context.select(
       (SendCubit cubit) => cubit.state.selectedWallet,
     );
@@ -1036,7 +1040,9 @@ class _BottomButtons extends StatelessWidget {
       child: Column(
         crossAxisAlignment: .stretch,
         children: [
-          if (isBitcoinWallet && !hasFinalizedTx && !isSpMode) ...[
+          if ((isBitcoinWallet || (isOnchainSend && !isSweep)) &&
+              !hasFinalizedTx &&
+              !isSpMode) ...[
             BullButton.big(
               label: context.loc.sendAdvancedSettings,
               onPressed: () {
@@ -1310,20 +1316,42 @@ class _LiquidOnchainSendInfoSection extends StatelessWidget {
     final formattedAbsoluteFees = context.select(
       (SendCubit cubit) => cubit.state.formattedAbsoluteFees,
     );
+    final selectedCoins = context.select(
+      (SendCubit cubit) => (
+        count: cubit.state.selectedUtxos.length,
+        totalSat: cubit.state.selectedSpendableBalanceSat,
+      ),
+    );
 
     final label = context.select((SendCubit cubit) => cubit.state.label);
-    return CommonOnchainSendInfoSection(
-      sendWalletLabel: selectedWallet?.displayLabel(context) ?? '',
-      receiveWalletLabel: paymentRequestAddress,
-      formattedBitcoinAmount: formattedBitcoinAmount,
-      formattedFiatEquivalent: formattedFiatEquivalent.isEmpty
-          ? ''
-          : '~$formattedFiatEquivalent',
-      absoluteFees: formattedAbsoluteFees,
-      selectedFeeOptionTitle: '',
-      note: label,
-      // Liquid has fixed fees — no fee priority selector
-      onFeePriorityTap: null,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        CommonOnchainSendInfoSection(
+          sendWalletLabel: selectedWallet?.displayLabel(context) ?? '',
+          receiveWalletLabel: paymentRequestAddress,
+          formattedBitcoinAmount: formattedBitcoinAmount,
+          formattedFiatEquivalent: formattedFiatEquivalent.isEmpty
+              ? ''
+              : '~$formattedFiatEquivalent',
+          absoluteFees: formattedAbsoluteFees,
+          selectedFeeOptionTitle: '',
+          note: label,
+          // Liquid has fixed fees — no fee priority selector
+          onFeePriorityTap: null,
+        ),
+        if (selectedCoins.count > 0)
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: SendInfoRow(
+              title: context.loc.sendCoinControl,
+              details: _SelectedCoinsDetails(
+                count: selectedCoins.count,
+                totalSat: selectedCoins.totalSat,
+              ),
+            ),
+          ),
+      ],
     );
   }
 }

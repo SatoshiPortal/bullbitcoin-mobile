@@ -79,3 +79,7 @@ final class WalletInsufficientFundsFailure extends WalletFailure {
 final class WalletTransactionBuildFailure extends WalletFailure {
   const WalletTransactionBuildFailure([super.logMessage]);
 }
+
+final class WalletConsolidationRequiredFailure extends WalletFailure {
+  const WalletConsolidationRequiredFailure([super.logMessage]);
+}

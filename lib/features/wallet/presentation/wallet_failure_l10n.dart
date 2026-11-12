@@ -30,6 +30,7 @@ extension WalletFailureL10n on WalletFailure {
     WalletSelectedInputsUnavailableFailure() ||
     WalletNoSpendableInputsFailure() ||
     WalletInsufficientFundsFailure() ||
+    WalletConsolidationRequiredFailure() ||
     WalletTransactionBuildFailure() ||
     WalletUnexpectedFailure() => context.loc.oopsSomethingWentWrong,
   };
