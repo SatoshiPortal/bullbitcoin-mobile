@@ -5026,5 +5026,6 @@
   "bitcoinSettingsMempoolServerTitle": "Server mempool",
   "bitcoinSettingsPayjoinTitle": "Payjoin",
   "bitcoinSettingsAutoTransferTitle": "Trasferimento automatico",
-  "transactionListPending": "In attesa"
+  "transactionListPending": "In attesa",
+  "coreScreensOutputsExceedInputs": "Le uscite superano gli ingressi: questa transazione non è valida e la rete la rifiuterà."
 }
