@@ -12048,5 +12048,6 @@
   "sellPayoutBalance": "আমার অ্যাকাউন্ট ব্যালেন্সে যোগ করুন",
   "sellPayoutSepaDescription": "উত্তোলনগুলি Leonod থেকে পাঠানো হিসেবে দেখায়",
   "sellPayoutTitle": "প্রাপক নির্বাচন করুন",
-  "sellPayoutNewBadge": "নতুন"
+  "sellPayoutNewBadge": "নতুন",
+  "broadcastSignedTxErrorAlreadyInChain": "এই লেনদেনটি ইতিমধ্যেই ব্লকচেইনে আছে। সম্প্রচার করার মতো আর কিছু নেই।"
 }

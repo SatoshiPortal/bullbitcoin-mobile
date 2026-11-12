@@ -3649,5 +3649,6 @@
   "sellPayoutBalance": "Thêm vào số dư tài khoản của tôi",
   "sellPayoutSepaDescription": "Các khoản rút tiền hiển thị là được gửi bởi Leonod",
   "sellPayoutTitle": "Chọn người nhận",
-  "sellPayoutNewBadge": "MỚI"
+  "sellPayoutNewBadge": "MỚI",
+  "broadcastSignedTxErrorAlreadyInChain": "Giao dịch này đã có trên blockchain. Không còn gì để phát sóng."
 }

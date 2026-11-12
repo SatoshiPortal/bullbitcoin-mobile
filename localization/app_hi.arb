@@ -12031,5 +12031,6 @@
   "sellPayoutBalance": "मेरे खाते की शेष राशि में जोड़ें",
   "sellPayoutSepaDescription": "निकासी Leonod द्वारा भेजी गई दिखाई देती है",
   "sellPayoutTitle": "प्राप्तकर्ता चुनें",
-  "sellPayoutNewBadge": "नया"
+  "sellPayoutNewBadge": "नया",
+  "broadcastSignedTxErrorAlreadyInChain": "यह लेनदेन पहले से ही ब्लॉकचेन में है। प्रसारित करने के लिए कुछ भी बाकी नहीं है।"
 }

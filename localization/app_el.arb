@@ -11844,5 +11844,6 @@
   "sellPayoutBalance": "Προσθήκη στο υπόλοιπο του λογαριασμού μου",
   "sellPayoutSepaDescription": "Οι αναλήψεις εμφανίζονται ως αποστολές από τη Leonod",
   "sellPayoutTitle": "Επιλογή παραλήπτη",
-  "sellPayoutNewBadge": "ΝΕΟ"
+  "sellPayoutNewBadge": "ΝΕΟ",
+  "broadcastSignedTxErrorAlreadyInChain": "Αυτή η συναλλαγή βρίσκεται ήδη στο blockchain. Δεν υπάρχει τίποτα άλλο προς μετάδοση."
 }

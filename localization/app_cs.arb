@@ -11844,5 +11844,6 @@
   "sellPayoutBalance": "Přidat k zůstatku mého účtu",
   "sellPayoutSepaDescription": "Výběry se zobrazují jako odeslané společností Leonod",
   "sellPayoutTitle": "Vybrat příjemce",
-  "sellPayoutNewBadge": "NOVÉ"
+  "sellPayoutNewBadge": "NOVÉ",
+  "broadcastSignedTxErrorAlreadyInChain": "Tato transakce už je v blockchainu. Není co dalšího vysílat."
 }

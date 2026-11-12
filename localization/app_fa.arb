@@ -11844,5 +11844,6 @@
   "sellPayoutBalance": "افزودن به موجودی حساب من",
   "sellPayoutSepaDescription": "برداشت‌ها به‌صورت ارسال‌شده توسط Leonod نمایش داده می‌شوند",
   "sellPayoutTitle": "انتخاب گیرنده",
-  "sellPayoutNewBadge": "جدید"
+  "sellPayoutNewBadge": "جدید",
+  "broadcastSignedTxErrorAlreadyInChain": "این تراکنش از قبل در بلاک‌چین ثبت شده است. چیزی برای انتشار باقی نمانده است."
 }

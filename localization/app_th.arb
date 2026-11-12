@@ -11848,5 +11848,6 @@
   "sellPayoutBalance": "เพิ่มไปยังยอดคงเหลือในบัญชีของฉัน",
   "sellPayoutSepaDescription": "รายการถอนจะแสดงว่าผู้ส่งคือ Leonod",
   "sellPayoutTitle": "เลือกผู้รับเงิน",
-  "sellPayoutNewBadge": "ใหม่"
+  "sellPayoutNewBadge": "ใหม่",
+  "broadcastSignedTxErrorAlreadyInChain": "ธุรกรรมนี้อยู่ในบล็อกเชนแล้ว ไม่มีอะไรต้องเผยแพร่อีก"
 }

@@ -23,6 +23,12 @@ final class BroadcastFailedFailure extends BroadcastSignedTxFailure {
   const BroadcastFailedFailure();
 }
 
+/// The node already has this transaction in a block: there is nothing left to
+/// broadcast.
+final class TransactionAlreadyInChainFailure extends BroadcastSignedTxFailure {
+  const TransactionAlreadyInChainFailure();
+}
+
 final class PsbtFinalizationFailure extends BroadcastSignedTxFailure {
   const PsbtFinalizationFailure();
 }

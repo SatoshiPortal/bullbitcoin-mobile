@@ -16113,5 +16113,9 @@
   "sendSelectedCoinsLabel": "Selected coins",
   "@sendSelectedCoinsLabel": {
     "description": "Label for the amount available from manually selected transaction inputs"
+  },
+  "broadcastSignedTxErrorAlreadyInChain": "This transaction is already in the blockchain. There is nothing left to broadcast.",
+  "@broadcastSignedTxErrorAlreadyInChain": {
+    "description": "Broadcast Transaction error when the node reports the transaction is already confirmed (bitcoind -27)"
   }
 }

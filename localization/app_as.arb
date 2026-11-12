@@ -9215,5 +9215,6 @@
   "sellPayoutBalance": "মোৰ একাউণ্টৰ বেলেঞ্চত যোগ কৰক",
   "sellPayoutSepaDescription": "উলিওৱা ধন Leonod-এ পঠোৱা হিচাপে দেখা যায়",
   "sellPayoutTitle": "প্ৰাপক বাছক",
-  "sellPayoutNewBadge": "নতুন"
+  "sellPayoutNewBadge": "নতুন",
+  "broadcastSignedTxErrorAlreadyInChain": "এই লেনদেনটো ইতিমধ্যে ব্লকচেইনত আছে। সম্প্ৰচাৰ কৰিবলৈ একো বাকী নাই।"
 }

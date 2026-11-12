@@ -4862,5 +4862,6 @@
   "sellPayoutBalance": "Добавить к балансу моего счёта",
   "sellPayoutSepaDescription": "Выводы отображаются как переводы от Leonod",
   "sellPayoutTitle": "Выбрать получателя",
-  "sellPayoutNewBadge": "НОВОЕ"
+  "sellPayoutNewBadge": "НОВОЕ",
+  "broadcastSignedTxErrorAlreadyInChain": "Эта транзакция уже в блокчейне. Транслировать больше нечего."
 }

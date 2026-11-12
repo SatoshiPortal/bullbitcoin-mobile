@@ -11844,5 +11844,6 @@
   "sellPayoutBalance": "Hesap bakiyeme ekle",
   "sellPayoutSepaDescription": "Çekimler Leonod tarafından gönderilmiş olarak görünür",
   "sellPayoutTitle": "Alıcı Seç",
-  "sellPayoutNewBadge": "YENİ"
+  "sellPayoutNewBadge": "YENİ",
+  "broadcastSignedTxErrorAlreadyInChain": "Bu işlem zaten blokzincirde. Yayınlanacak başka bir şey yok."
 }

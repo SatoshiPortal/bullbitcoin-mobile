@@ -67,6 +67,15 @@ BroadcastFailureCategory _bitcoinReply(String reply) {
                   message.startsWith('sendrawtransaction RPC error -26: ')))) {
         return BroadcastFailureCategory.rejected;
       }
+      // Rebroadcasting a confirmed transaction relays bitcoind -27 in the same envelope (observed 2026-11-12):
+      // {"code":2,"message":"sendrawtransaction RPC error -27: Transaction outputs already in utxo set"}.
+      if (code is int &&
+          (code == -27 ||
+              (code == 2 &&
+                  message is String &&
+                  message.startsWith('sendrawtransaction RPC error -27: ')))) {
+        return BroadcastFailureCategory.alreadyInChain;
+      }
     }
   } on FormatException {
     // Unrecognized protocol payload; the original text must not escape.

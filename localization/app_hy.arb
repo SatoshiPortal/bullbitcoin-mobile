@@ -3649,5 +3649,6 @@
   "sellPayoutBalance": "Ավելացնել իմ հաշվի մնացորդին",
   "sellPayoutSepaDescription": "Կանխիկացումները ցուցադրվում են որպես Leonod-ի կողմից ուղարկված",
   "sellPayoutTitle": "Ընտրեք ստացողին",
-  "sellPayoutNewBadge": "ՆՈՐ"
+  "sellPayoutNewBadge": "ՆՈՐ",
+  "broadcastSignedTxErrorAlreadyInChain": "Այս գործարքն արդեն բլոկչեյնում է։ Հեռարձակելու այլևս ոչինչ չկա։"
 }

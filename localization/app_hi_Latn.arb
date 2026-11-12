@@ -12154,5 +12154,6 @@
   "sellPayoutBalance": "Mere account balance mein jodein",
   "sellPayoutSepaDescription": "Nikaasi Leonod dwara bheji gayi dikhai deti hai",
   "sellPayoutTitle": "Recipient Select Karo",
-  "sellPayoutNewBadge": "NAYA"
+  "sellPayoutNewBadge": "NAYA",
+  "broadcastSignedTxErrorAlreadyInChain": "Yeh transaction pehle se hi blockchain mein hai. Broadcast karne ke liye kuch bhi baaki nahin hai."
 }
