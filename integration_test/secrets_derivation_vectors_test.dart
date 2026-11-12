@@ -187,6 +187,58 @@ Future<void> main({bool isInitialized = false}) async {
       expect(regtest, contains(secret.id.hex));
     });
 
+    test('the Liquid descriptor equals lwk-dart\'s golden vectors', () async {
+      // Copied from lwk-dart's `keys_and_addresses_derive_as_before` (pinned
+      // through bull_sdk; produced with lwk 0.18.1 and LWK master alike) for
+      // the published BIP39 vector "abandon … about", plus its independent
+      // passphrase and Japanese vectors. Unit tests cannot load lwk, so this
+      // is where the app pins its own Liquid keys.
+      const abandon = [
+        'abandon', 'abandon', 'abandon', 'abandon', 'abandon', 'abandon', //
+        'abandon', 'abandon', 'abandon', 'abandon', 'abandon', 'about',
+      ];
+      const japanese = [
+        'あいこくしん', 'あいこくしん', 'あいこくしん', 'あいこくしん', //
+        'あいこくしん', 'あいこくしん', 'あいこくしん', 'あいこくしん', //
+        'あいこくしん', 'あいこくしん', 'あいこくしん', 'あおぞら',
+      ];
+      Future<String> liquid(Secret secret, LiquidNetwork network) async =>
+          unwrap(await secret.derive.descriptors.liquid(network: network));
+
+      final plain = await importFixture(abandon);
+      expect(plain.id.hex, '73c5da0a');
+      expect(
+        await liquid(plain, LiquidNetwork.mainnet),
+        'ct(slip77(9c8e4f05c7711a98c838be228bcb84924d4570ca53f35fa1c793e58841d47023),elwpkh([73c5da0a/84h/1776h/0h]xpub6CRFzUgHFDaiDAQFNX7VeV9JNPDRabq6NYSpzVZ8zW8ANUCiDdenkb1gBoEZuXNZb3wPc1SVcDXgD2ww5UBtTb8s8ArAbTkoRQ8qn34KgcY/<0;1>/*))#y8jljyxl',
+      );
+      expect(
+        await liquid(plain, LiquidNetwork.testnet),
+        'ct(slip77(9c8e4f05c7711a98c838be228bcb84924d4570ca53f35fa1c793e58841d47023),elwpkh([73c5da0a/84h/1h/0h]tpubDC8msFGeGuwnKG9Upg7DM2b4DaRqg3CUZa5g8v2SRQ6K4NSkxUgd7HsL2XVWbVm39yBA4LAxysQAm397zwQSQoQgewGiYZqrA9DsP4zbQ1M/<0;1>/*))#xte2lx9x',
+      );
+      expect(
+        await liquid(
+          await importFixture(abandon, passphrase: 'TREZOR'),
+          LiquidNetwork.mainnet,
+        ),
+        'ct(slip77(e974a8dfcbd463d5d7f934fa35916ab1edd15ad5b4d1a9dde4bd89eec0bcc872),elwpkh([b4e3f5ed/84h/1776h/0h]xpub6CzUJ282mBSqDR69LkEEFWr11oY6gcy47Mt6Hfoeb2Tgzq8AN6asRYv9LjwC6f9a6pDqswqHdtnJmuniNqDP7ZgBoPqy55az9tGUHk4KPoc/<0;1>/*))#xvqkzrvl',
+      );
+      final fromJapanese = switch (await secrets.import(
+        words: japanese,
+        language: Language.japanese,
+        passphrase: '㍍ガバヴァぱばぐゞちぢ十人十色',
+      )) {
+        Ok(:final value) => value,
+        Err(failure: SecretAlreadyExistsFailure(:final id)) => unwrap(
+          await secrets.fetch(id),
+        ),
+        Err(:final failure) => fail('import: ${failure.runtimeType}'),
+      };
+      expect(
+        await liquid(fromJapanese, LiquidNetwork.mainnet),
+        'ct(slip77(45ca5d9811bccd804a5b51aaf262a6b5be46f0fee838fcc5d1451b3c23944f54),elwpkh([d9a4c6ac/84h/1776h/0h]xpub6CxzR79MsXkn6uYBAQXiFxPxHLCTkLSgjfi2GrYkAo2NgUY3KCh3a6tgMnJMNV7ZdUvpLV2Dsp4nB5t3rFhNbGExFBb5euGVcqhKZkPx9PF/<0;1>/*))#2q0d70qc',
+      );
+    });
+
     test('the Liquid descriptor honours the passphrase', () async {
       // Liquid derives from the secret's full BIP39 seed, as Bitcoin does. An
       // empty passphrase keeps every existing (passphrase-less) wallet's
