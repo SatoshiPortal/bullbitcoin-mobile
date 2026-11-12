@@ -34,7 +34,7 @@ These methods return their values directly. There is no passphrase wrapper: the 
 
 **Default wallets never have a passphrase.** The app generates or imports their words without one. A restored `Secret` handle is also rejected by `CreateDefaultWalletsUsecase` if it carries a passphrase, before any wallet is created. Liquid, RecoverBull recovery, BIP85, swaps, Silent Payments and the physical backup check rely on this invariant. Passphrase-protected Bitcoin wallets are imported non-default wallets.
 
-The bound lwk API accepts `network` and `mnemonic`, with no passphrase parameter. Its `lwk_signer` 0.18.0 implementation uses `mnemonic.to_seed("")` (verified 2026-09-14). The application refuses passphrases for default wallets, so it has no existing Liquid passphrase wallets to migrate. This step preserves the bound word-based behavior until the SDK exposes seed-based APIs. Device vectors compare the descriptors produced from identical words with and without a passphrase.
+The bound lwk and Boltz APIs accept the full BIP39 seed, including the passphrase (`SwSigner::from_seed_with_network` for Liquid). An empty passphrase produces the same seed as the previous word-based signer's `mnemonic.to_seed("")`, preserving its keys for identical input. A non-empty passphrase deliberately derives a different wallet. Device vectors compare exact Liquid descriptors as well as the passphrase-separated results.
 
 ## BIP39 language
 
