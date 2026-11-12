@@ -1,3 +1,4 @@
+import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/features/wallet/data/bdk_wallet_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/lwk_wallet_datasource.dart';
@@ -157,11 +158,14 @@ class WalletTransactionRepositoryImpl implements WalletTransactionRepository {
       walletsMetadata = [metadata];
     }
 
-    final filteredWalletsMetadata = walletsMetadata.where(
-      (metadata) =>
-          environment == null ||
-          environment.networkEnv == metadata.network.environment,
-    );
+    final filteredWalletsMetadata =
+        _readableNetworks(walletsMetadata, isRequested: walletId != null)
+            .where(
+              (metadata) =>
+                  environment == null ||
+                  environment.networkEnv == metadata.network.environment,
+            )
+            .toList();
     final walletModels = filteredWalletsMetadata
         .map(
           (metadata) => metadata.isBitcoin
@@ -184,5 +188,29 @@ class WalletTransactionRepositoryImpl implements WalletTransactionRepository {
     }
 
     return walletModels;
+  }
+
+  /// A row whose stored network cannot be decoded (left `unresolved` by the
+  /// schema 16 backfill, or written by another build) is skipped when listing
+  /// every wallet, so it cannot hide the others' transactions. A wallet asked
+  /// for by id still fails: its transactions cannot be read.
+  static List<WalletMetadataModel> _readableNetworks(
+    List<WalletMetadataModel> rows, {
+    required bool isRequested,
+  }) {
+    final readable = <WalletMetadataModel>[];
+    for (final row in rows) {
+      try {
+        row.network;
+        readable.add(row);
+      } on FormatException {
+        if (isRequested) rethrow;
+        log.warning(
+          'Wallet transactions skip a wallet with an unreadable network '
+          'network_code=${row.networkCode}',
+        );
+      }
+    }
+    return readable;
   }
 }

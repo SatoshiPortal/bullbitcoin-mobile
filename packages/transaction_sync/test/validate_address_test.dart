@@ -75,18 +75,12 @@ void main() {
     },
   );
 
-  test('malformed, unsupported and Liquid regtest HRPs fail closed', () async {
+  // Liquid validation calls LWK through bull_sdk's native library, which
+  // ordinary unit tests do not load: those cases are in
+  // native_test/validate_liquid_address_test.dart.
+  test('malformed Bitcoin addresses fail closed', () async {
     for (final network in BitcoinNetwork.values) {
       expect(await validateAddress('not an address', network), isA<Err>());
     }
-    for (final network in [LiquidNetwork.mainnet, LiquidNetwork.testnet]) {
-      for (final address in ['ert1regtest', 'el1regtest']) {
-        expect(await validateAddress(address, network), isA<Err>());
-      }
-    }
-    expect(
-      await validateAddress('ignored', LiquidNetwork.regtest),
-      isA<Err<void, TransactionSyncFailure>>(),
-    );
   });
 }
