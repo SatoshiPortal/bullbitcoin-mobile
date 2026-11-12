@@ -23,7 +23,7 @@ const _allowedTargets = <String, String>{
   'bip85_entropy': 'wallet',
   'bitbox': 'import_watch_only_wallet',
   'bitcoin_price': 'settings',
-  'broadcast_signed_tx': 'settings wallet',
+  'broadcast_signed_tx': 'send settings wallet',
   'buy': 'exchange fund_exchange labels settings transactions wallet',
   'coins': 'bitcoin_price labels settings wallet',
   'consolidation': 'wallet',
@@ -62,7 +62,7 @@ const _allowedTargets = <String, String>{
   'test_wallet_backup': 'onboarding wallet',
   'transactions': 'buy exchange labels pay replace_by_fee settings swap wallet',
   'wallet':
-      'announcements backup_settings bitcoin_price coins consolidation electrum_settings exchange import_watch_only_wallet labels onboarding receive send settings sp swap tor_settings transactions',
+      'announcements backup_settings bitcoin_price consolidation electrum_settings exchange import_watch_only_wallet labels onboarding receive send settings sp swap tor_settings transactions',
   'withdraw': 'exchange recipients transactions',
 };
 

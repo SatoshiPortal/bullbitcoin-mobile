@@ -1,3 +1,5 @@
+import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
+import 'package:primitives/primitives.dart';
 // Unit tests for the repository-boundary guarantees of
 // `BitcoinWalletRepository.buildPsbt`:
 //
@@ -31,12 +33,12 @@ import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/bdk_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/frozen_wallet_utxo_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasource.dart';
+import 'package:bb_mobile/core/wallet/data/models/bitcoin_transaction_recipient_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_utxo_model.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/bitcoin_wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
-import 'package:bb_mobile/core/wallet/domain/no_spendable_utxo_exception.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -91,6 +93,8 @@ void main() {
       ),
     );
     registerFallbackValue(const NetworkFee.relativeSatPerKwu(1000));
+    registerFallbackValue(<BitcoinTransactionRecipientModel>[]);
+    registerFallbackValue(<String>[]);
   });
 
   setUp(() {
@@ -114,12 +118,11 @@ void main() {
     when(
       () => bdkDatasource.buildPsbt(
         wallet: any(named: 'wallet'),
-        address: any(named: 'address'),
-        amountSat: any(named: 'amountSat'),
+        recipients: any(named: 'recipients'),
         networkFee: any(named: 'networkFee'),
-        drain: any(named: 'drain'),
         unspendable: any(named: 'unspendable'),
         selected: any(named: 'selected'),
+        selectedOnly: any(named: 'selectedOnly'),
         replaceByFee: any(named: 'replaceByFee'),
       ),
     ).thenAnswer((_) async => 'psbt');
@@ -129,12 +132,11 @@ void main() {
       verify(
             () => bdkDatasource.buildPsbt(
               wallet: any(named: 'wallet'),
-              address: any(named: 'address'),
-              amountSat: any(named: 'amountSat'),
+              recipients: any(named: 'recipients'),
               networkFee: any(named: 'networkFee'),
-              drain: any(named: 'drain'),
               unspendable: any(named: 'unspendable'),
               selected: captureAny(named: 'selected'),
+              selectedOnly: any(named: 'selectedOnly'),
               replaceByFee: any(named: 'replaceByFee'),
             ),
           ).captured.single
@@ -144,12 +146,11 @@ void main() {
       verify(
             () => bdkDatasource.buildPsbt(
               wallet: any(named: 'wallet'),
-              address: any(named: 'address'),
-              amountSat: any(named: 'amountSat'),
+              recipients: any(named: 'recipients'),
               networkFee: any(named: 'networkFee'),
-              drain: any(named: 'drain'),
               unspendable: captureAny(named: 'unspendable'),
               selected: any(named: 'selected'),
+              selectedOnly: any(named: 'selectedOnly'),
               replaceByFee: any(named: 'replaceByFee'),
             ),
           ).captured.single
@@ -159,28 +160,33 @@ void main() {
       verify(
             () => bdkDatasource.buildPsbt(
               wallet: any(named: 'wallet'),
-              address: any(named: 'address'),
-              amountSat: any(named: 'amountSat'),
+              recipients: any(named: 'recipients'),
               networkFee: any(named: 'networkFee'),
-              drain: any(named: 'drain'),
               unspendable: any(named: 'unspendable'),
               selected: any(named: 'selected'),
+              selectedOnly: any(named: 'selectedOnly'),
               replaceByFee: captureAny(named: 'replaceByFee'),
             ),
           ).captured.single
           as bool;
 
-  Future<void> buildPsbt({
+  Future<Result<String, WalletFailure>> buildPsbt({
     List<({String txId, int vout})>? unspendable,
     List<WalletUtxo>? selected,
+    bool selectedOnly = false,
     bool? replaceByFee,
   }) => repository.buildPsbt(
     walletId: _walletId,
-    address: 'tb1-destination',
-    amountSat: 25000,
+    recipients: [
+      BitcoinTransactionRecipient.fixed(
+        address: 'tb1-destination',
+        amountSat: Sats.fromInt(25000),
+      ),
+    ],
     networkFee: const NetworkFee.relativeSatPerKwu(1000),
     unspendable: unspendable,
     selected: selected,
+    selectedOnly: selectedOnly,
     replaceByFee: replaceByFee,
   );
 
@@ -198,15 +204,19 @@ void main() {
             _utxo(txId: 'tx-free', vout: 1),
           ],
         ),
-        throwsA(isA<NoSpendableUtxoException>()),
+        completion(
+          isA<Err<String, WalletFailure>>().having(
+            (error) => error.failure,
+            'failure',
+            isA<WalletSelectedInputsUnavailableFailure>(),
+          ),
+        ),
       );
       verifyNever(
         () => bdkDatasource.buildPsbt(
           wallet: any(named: 'wallet'),
-          address: any(named: 'address'),
-          amountSat: any(named: 'amountSat'),
+          recipients: any(named: 'recipients'),
           networkFee: any(named: 'networkFee'),
-          drain: any(named: 'drain'),
           unspendable: any(named: 'unspendable'),
           selected: any(named: 'selected'),
           replaceByFee: any(named: 'replaceByFee'),
@@ -259,15 +269,19 @@ void main() {
               _utxo(txId: 'tx-free', vout: 1),
             ],
           ),
-          throwsA(isA<NoSpendableUtxoException>()),
+          completion(
+            isA<Err<String, WalletFailure>>().having(
+              (error) => error.failure,
+              'failure',
+              isA<WalletSelectedInputsUnavailableFailure>(),
+            ),
+          ),
         );
         verifyNever(
           () => bdkDatasource.buildPsbt(
             wallet: any(named: 'wallet'),
-            address: any(named: 'address'),
-            amountSat: any(named: 'amountSat'),
+            recipients: any(named: 'recipients'),
             networkFee: any(named: 'networkFee'),
-            drain: any(named: 'drain'),
             unspendable: any(named: 'unspendable'),
             selected: any(named: 'selected'),
             replaceByFee: any(named: 'replaceByFee'),
@@ -285,6 +299,37 @@ void main() {
       final selected = capturedSelected();
       expect(selected, hasLength(1));
       expect(selected!.single.vout, 1);
+    });
+
+    test('selected-only build rejects a live-frozen selected coin', () async {
+      when(() => frozenDatasource.getAllFrozen()).thenAnswer(
+        (_) async => [(walletId: _walletId, txId: 'tx-frozen', vout: 0)],
+      );
+
+      await expectLater(
+        buildPsbt(
+          selected: [_utxo(txId: 'tx-frozen', vout: 0)],
+          selectedOnly: true,
+        ),
+        completion(
+          isA<Err<String, WalletFailure>>().having(
+            (error) => error.failure,
+            'failure',
+            isA<WalletSelectedInputsUnavailableFailure>(),
+          ),
+        ),
+      );
+      verifyNever(
+        () => bdkDatasource.buildPsbt(
+          wallet: any(named: 'wallet'),
+          recipients: any(named: 'recipients'),
+          networkFee: any(named: 'networkFee'),
+          unspendable: any(named: 'unspendable'),
+          selected: any(named: 'selected'),
+          selectedOnly: any(named: 'selectedOnly'),
+          replaceByFee: any(named: 'replaceByFee'),
+        ),
+      );
     });
 
     test(
@@ -314,5 +359,94 @@ void main() {
 
       expect(capturedReplaceByFee(), isFalse);
     });
+  });
+
+  test('checks all recipient addresses in one datasource call', () async {
+    when(
+      () => bdkDatasource.areAddressesMine(any(), wallet: any(named: 'wallet')),
+    ).thenAnswer((_) async => true);
+
+    expect(
+      await repository.areAddressesOfWallet(const [
+        'tb1qfirst',
+        'tb1qsecond',
+      ], walletId: _walletId),
+      isTrue,
+    );
+
+    verify(() => metadataDatasource.fetch(_walletId)).called(1);
+    verify(
+      () => bdkDatasource.areAddressesMine(const [
+        'tb1qfirst',
+        'tb1qsecond',
+      ], wallet: any(named: 'wallet')),
+    ).called(1);
+  });
+
+  test('maps fixed and remainder recipients into datasource models', () async {
+    expect(
+      await repository.buildPsbt(
+        walletId: _walletId,
+        recipients: [
+          BitcoinTransactionRecipient.fixed(
+            address: 'tb1qfixed',
+            amountSat: Sats.fromInt(25000),
+          ),
+          BitcoinTransactionRecipient.remainder(address: 'tb1qremaining'),
+        ],
+        networkFee: const NetworkFee.relativeSatPerKwu(1000),
+      ),
+      isA<Ok<String, WalletFailure>>(),
+    );
+
+    final recipients =
+        verify(
+              () => bdkDatasource.buildPsbt(
+                wallet: any(named: 'wallet'),
+                recipients: captureAny(named: 'recipients'),
+                networkFee: any(named: 'networkFee'),
+                unspendable: any(named: 'unspendable'),
+                selected: any(named: 'selected'),
+                selectedOnly: any(named: 'selectedOnly'),
+                replaceByFee: any(named: 'replaceByFee'),
+              ),
+            ).captured.single
+            as List<BitcoinTransactionRecipientModel>;
+    expect(recipients, hasLength(2));
+    expect(recipients[0].address, 'tb1qfixed');
+    expect(recipients[0].amountSat, 25000);
+    expect(recipients[1].address, 'tb1qremaining');
+    expect(recipients[1].amountSat, isNull);
+  });
+
+  test('maps final datasource amounts back into Sats', () async {
+    when(
+      () => bdkDatasource.getRecipientAmounts('psbt', any(), isTestnet: true),
+    ).thenAnswer((_) async => [25000, 74000]);
+    final recipients = [
+      BitcoinTransactionRecipient.fixed(
+        address: 'tb1qfixed',
+        amountSat: Sats.fromInt(25000),
+      ),
+      BitcoinTransactionRecipient.remainder(address: 'tb1qremaining'),
+    ];
+
+    final amounts = await repository.getRecipientAmounts(
+      psbt: 'psbt',
+      recipients: recipients,
+      walletId: _walletId,
+    );
+
+    expect(amounts, [Sats.fromInt(25000), Sats.fromInt(74000)]);
+    final models =
+        verify(
+              () => bdkDatasource.getRecipientAmounts(
+                'psbt',
+                captureAny(),
+                isTestnet: true,
+              ),
+            ).captured.single
+            as List<BitcoinTransactionRecipientModel>;
+    expect(models.map((recipient) => recipient.amountSat), [25000, null]);
   });
 }

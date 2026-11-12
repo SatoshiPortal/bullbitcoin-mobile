@@ -12,5 +12,10 @@ extension WalletFailureLogCode on WalletFailure {
     WalletSyncBusyFailure() => 'busy',
     WalletLwkStatusConflictFailure() => 'status_conflict',
     WalletUnexpectedFailure() => 'unexpected',
+    WalletSelectedInputsUnavailableFailure() => 'selected_inputs_unavailable',
+    WalletNoSpendableInputsFailure() => 'no_spendable_inputs',
+    WalletInsufficientFundsFailure() => 'insufficient_funds',
+    WalletTransactionBuildFailure() => 'transaction_build',
+    WalletConsolidationRequiredFailure() => 'consolidation_required',
   };
 }

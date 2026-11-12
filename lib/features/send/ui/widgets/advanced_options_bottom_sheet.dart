@@ -16,6 +16,10 @@ class AdvancedOptionsBottomSheet extends StatelessWidget {
     final isRBFEnabled = context.select(
       (SendCubit cubit) => cubit.state.replaceByFee,
     );
+    final isSweep = context.select((SendCubit cubit) => cubit.state.isSweep);
+    final wallet = context.select(
+      (SendCubit cubit) => cubit.state.selectedWallet,
+    );
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
@@ -48,43 +52,47 @@ class AdvancedOptionsBottomSheet extends StatelessWidget {
             ],
           ),
           const Gap(32),
-          Row(
-            mainAxisAlignment: .spaceBetween,
-            children: [
-              BullText(
-                context.loc.sendReplaceByFeeActivated,
-                style: context.font.headlineMedium,
+          if (wallet != null && !wallet.isLiquid) ...[
+            Row(
+              mainAxisAlignment: .spaceBetween,
+              children: [
+                BullText(
+                  context.loc.sendReplaceByFeeActivated,
+                  style: context.font.headlineMedium,
+                  color: context.appColors.secondary,
+                ),
+                Switch(
+                  value: isRBFEnabled,
+                  onChanged: (val) async =>
+                      await context.read<SendCubit>().replaceByFeeChanged(val),
+                ),
+              ],
+            ),
+            const Gap(24),
+          ],
+          if (wallet != null && !isSweep) ...[
+            ListTile(
+              title: BullText(
+                context.loc.sendSelectCoinsManually,
+                style: context.font.bodyLarge?.copyWith(fontWeight: .w500),
                 color: context.appColors.secondary,
               ),
-              Switch(
-                value: isRBFEnabled,
-                onChanged: (val) async =>
-                    await context.read<SendCubit>().replaceByFeeChanged(val),
+              trailing: Icon(
+                Icons.arrow_forward,
+                color: context.appColors.secondary,
               ),
-            ],
-          ),
-          const Gap(24),
-          ListTile(
-            title: BullText(
-              context.loc.sendSelectCoinsManually,
-              style: context.font.bodyLarge?.copyWith(fontWeight: .w500),
-              color: context.appColors.secondary,
+              onTap: () {
+                BullBottomSheet.show(
+                  context: context,
+                  child: BlocProvider.value(
+                    value: context.read<SendCubit>(),
+                    child: const CoinSelectionBottomSheet(),
+                  ),
+                );
+              },
             ),
-            trailing: Icon(
-              Icons.arrow_forward,
-              color: context.appColors.secondary,
-            ),
-            onTap: () {
-              BullBottomSheet.show(
-                context: context,
-                child: BlocProvider.value(
-                  value: context.read<SendCubit>(),
-                  child: const CoinSelectionBottomSheet(),
-                ),
-              );
-            },
-          ),
-          const Gap(24),
+            const Gap(24),
+          ],
           BullButton.big(
             label: context.loc.sendDone,
             onPressed: context.pop,
