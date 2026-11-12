@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bull_sdk/lwk.dart' as lwk;
 import 'package:primitives/primitives.dart';
+import 'package:secrets/src/crypto/derivers/liquid_deriver.dart'
+    show liquidSeed, lwkLiquidNetwork;
 import 'package:secrets/src/crypto/exceptions.dart';
 import 'package:secrets/src/crypto/signers/pset_sighash.dart';
 import 'package:secrets/src/crypto/signers/signers.dart';
@@ -12,7 +14,7 @@ import 'package:meta/meta.dart';
 /// Liquid signing through lwk. Reached as `Signer.liquid`.
 ///
 /// One-shot, unlike [BitcoinSigner]: lwk gives no reason to hold a
-/// wallet open — `signTx` takes the mnemonic again at call time, so the
+/// wallet open — `signTxWithSeed` takes the seed again at call time, so the
 /// wallet built by `Wallet.init` holds no key worth reusing.
 ///
 /// The lwk wallet is `dispose()`d before the call returns: it is a
@@ -20,8 +22,8 @@ import 'package:meta/meta.dart';
 /// whenever the GC got to it. The scratch directory goes the same way —
 /// see [signPset].
 ///
-/// ⚠️ A passphrase is ignored. lwk's signer hard-codes `to_seed("")`
-/// and no layer of the binding takes one. See doc/design.md, § Passphrase.
+/// Signs with [liquidSeed], the secret's full BIP39 seed, passphrase
+/// included.
 final class LiquidSigner {
   @internal
   const LiquidSigner();
@@ -42,8 +44,7 @@ final class LiquidSigner {
     required LiquidNetwork network,
     required Future<String> Function() scratchDirectory,
   }) async {
-    final mnemonic = mnemonicSentence(secret);
-    final lwkNetwork = _network(network);
+    final lwkNetwork = lwkLiquidNetwork(network);
     // Before any file or FFI call: lwk honours whatever sighash the PSET
     // asks for, so the refusal has to be ours. See [PsetSighash].
     PsetSighash.requireAll(pset);
@@ -65,25 +66,27 @@ final class LiquidSigner {
     await sweepStale(parent);
     final scratch = await parent.createTemp('lwk_sign_');
 
+    final seed = liquidSeed(secret);
     lwk.Wallet? wallet;
     try {
       wallet = await lwk.Wallet.init(
         network: lwkNetwork,
         dbpath: scratch.path,
-        descriptor: await lwk.Descriptor.newConfidential(
+        descriptor: await lwk.Descriptor.newConfidentialFromSeed(
           network: lwkNetwork,
-          mnemonic: mnemonic,
+          seed: seed,
         ),
       );
-      return await wallet.signTx(
+      return await wallet.signTxWithSeed(
         network: lwkNetwork,
         pset: pset,
-        mnemonic: mnemonic,
+        seed: seed,
       );
     } on lwk.LwkError {
-      // `e.msg` is lwk's text and is not logged: the input is a PSET and a mnemonic, and no rule keeps a foreign message from quoting either. The boundary reports the type.
+      // `e.msg` is lwk's text and is not logged: the input is a PSET and a seed, and no rule keeps a foreign message from quoting either. The boundary reports the type.
       throw const LiquidSigningFailed();
     } finally {
+      seed.fillRange(0, seed.length, 0);
       // An FRB opaque holding the wallet's `Arc`; `Descriptor` is a plain
       // value and has no handle to release.
       wallet?.dispose();
@@ -103,17 +106,6 @@ final class LiquidSigner {
       }
     }
   }
-
-  static lwk.LiquidNetwork _network(LiquidNetwork network) => switch (network) {
-    LiquidNetwork.mainnet => lwk.LiquidNetwork.mainnet,
-    LiquidNetwork.testnet => lwk.LiquidNetwork.testnet,
-    // Elements regtest is a different chain; lwk has no variant for
-    // it, and signing on testnet's would produce a signature for the
-    // wrong chain. See `SecretDeriver.liquidDescriptor`.
-    LiquidNetwork.regtest => throw const UnsupportedLiquidNetwork(
-      'lwk cannot express Liquid regtest',
-    ),
-  };
 
   static const _stalePrefix = 'lwk_sign_';
 

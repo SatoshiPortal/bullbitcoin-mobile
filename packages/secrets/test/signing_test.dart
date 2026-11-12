@@ -1,4 +1,8 @@
 import 'dart:convert';
+import 'dart:typed_data';
+
+import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
+import 'package:convert/convert.dart' as convert;
 
 import 'package:bip32_keys/bip32_keys.dart';
 import 'package:bull_sdk/bdk.dart' as bdk;
@@ -33,6 +37,43 @@ void main() {
     secret = ok(
       await Secrets(scratchDirectory: () async => '/tmp').import(words: words),
     );
+  });
+
+  test('signs the published Japanese seed with its passphrase', () async {
+    final japanese = ok(
+      await Secrets(scratchDirectory: () async => '/tmp').import(
+        words: [...List.filled(11, 'あいこくしん'), 'あおぞら'],
+        language: bip39.Language.japanese,
+        passphrase: 'メートルガバヴァぱばぐゞちぢ十人十色',
+      ),
+    );
+    final fixture = _witnessPsbt(
+      seed: Uint8List.fromList(
+        convert.hex.decode(
+          'a262d6fb6122ecf45be09c50492b31f92e9beb7d9a845987a02cefda57a15f9c'
+          '467a17872029a9e92299b5cbdf306e3a0ee620245cbd508959b6cb7ca637bd55',
+        ),
+      ),
+    );
+    final signed = ok(
+      await japanese.sign.psbt(
+        fixture.psbt,
+        network: BitcoinNetwork.mainnet,
+        scriptType: ScriptType.bip84,
+      ),
+    );
+    final parsed = bdk.Psbt(psbtBase64: signed);
+    final tx = parsed.extractTx();
+    final input = tx.input().single;
+    try {
+      expect(input.witness, hasLength(2));
+      expect(input.witness.first.last, 1);
+      expect(input.witness.last, fixture.publicKey);
+    } finally {
+      input.scriptSig.dispose();
+      tx.dispose();
+      parsed.dispose();
+    }
   });
 
   group('sign.psbt', () {
@@ -159,12 +200,17 @@ void main() {
 }
 
 /// A PSBT v0 with one synthetic P2WPKH UTXO belonging to the public BIP39 fixture. Its witness UTXO and BIP32 origin carry everything an offline signer needs (BIP174: https://github.com/bitcoin/bips/blob/master/bip-0174.mediawiki).
-({String psbt, List<int> publicKey}) _witnessPsbt({int accountIndex = 0}) {
+({String psbt, List<int> publicKey}) _witnessPsbt({
+  int accountIndex = 0,
+  Uint8List? seed,
+}) {
   // The same published abandon…about master key pinned in derivation_vectors_test.dart.
-  final root = Bip32Keys.fromBase58(
-    'xprv9s21ZrQH143K3GJpoapnV8SFfukcVBSfeCficPSGfubmSFDxo1kuHnLisriDv'
-    'SnRRuL2Qrg5ggqHKNVpxR86QEC8w35uxmGoggxtQTPvfUu',
-  );
+  final root = seed != null
+      ? Bip32Keys.fromSeed(seed)
+      : Bip32Keys.fromBase58(
+          'xprv9s21ZrQH143K3GJpoapnV8SFfukcVBSfeCficPSGfubmSFDxo1kuHnLisriDv'
+          'SnRRuL2Qrg5ggqHKNVpxR86QEC8w35uxmGoggxtQTPvfUu',
+        );
   final child = root.derivePath("m/84'/0'/$accountIndex'/0/0");
   final script = [0x00, 0x14, ...child.identifier];
   final unsignedTransaction = [

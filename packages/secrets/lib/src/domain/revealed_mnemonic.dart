@@ -1,4 +1,5 @@
 import 'package:meta/meta.dart';
+import 'package:bip39_mnemonic/bip39_mnemonic.dart' show Language;
 
 /// Why key material is being exposed.
 ///
@@ -20,11 +21,18 @@ enum RevealReason {
 final class RevealedMnemonic {
   final List<String> words;
 
+  /// The wordlist read with these words, not a handle metadata snapshot.
+  final Language language;
+
   /// Empty when there is none.
   final String passphrase;
 
   @internal
-  const RevealedMnemonic({required this.words, required this.passphrase});
+  const RevealedMnemonic({
+    required this.words,
+    required this.language,
+    required this.passphrase,
+  });
 
   bool get hasPassphrase => passphrase.isNotEmpty;
 
