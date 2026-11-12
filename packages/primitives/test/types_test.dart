@@ -35,5 +35,21 @@ void main() {
   test('script types choose network-specific xpub formats', () {
     expect(ScriptType.bip84.getXpubType(BitcoinNetwork.mainnet), XpubType.zpub);
     expect(ScriptType.bip84.getXpubType(BitcoinNetwork.signet), XpubType.vpub);
+    expect(ScriptType.bip84.getXpubType(LiquidNetwork.mainnet), XpubType.zpub);
+    expect(ScriptType.bip84.getXpubType(LiquidNetwork.regtest), XpubType.vpub);
+  });
+
+  test('the shared network preserves each chain coin type', () {
+    final networks = <Network>[
+      ...BitcoinNetwork.values,
+      ...LiquidNetwork.values,
+    ];
+    for (final network in networks) {
+      final mainnetCoinType = switch (network) {
+        BitcoinNetwork() => 0,
+        LiquidNetwork() => 1776,
+      };
+      expect(network.coinType, network.isMainnet ? mainnetCoinType : 1);
+    }
   });
 }

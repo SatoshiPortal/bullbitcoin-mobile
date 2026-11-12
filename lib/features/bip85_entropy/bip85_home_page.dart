@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
@@ -9,7 +11,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:screen_privacy/screen_privacy.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullButton, BullFadingLinearProgress, BullSnackBar, Gap;
+    show
+        BullButton,
+        BullFadingLinearProgress,
+        BullScreenPrivacyGate,
+        BullShapesX,
+        BullSnackBar,
+        Gap;
 
 class Bip85HomePage extends StatefulWidget {
   const Bip85HomePage({super.key});
@@ -47,7 +55,9 @@ class _Bip85HomePageView extends StatelessWidget {
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
                       color: context.appColors.warning.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(
+                        context.bullShapes.card,
+                      ),
                     ),
                     child: Row(
                       children: [
@@ -119,18 +129,24 @@ class _Bip85HomePageView extends StatelessWidget {
 }
 
 class _Bip85HomePageState extends State<Bip85HomePage> with PrivacyScreen {
-  @override
-  void initState() {
-    super.initState();
-    enableScreenPrivacy();
-  }
+  // The page shows BIP85 children: nothing draws before capture blocking is
+  // confirmed, and they stay hidden if the platform refused it.
+  late Future<bool> _privacyFuture = enableScreenPrivacy();
 
   @override
-  Widget build(BuildContext context) => const _Bip85HomePageView();
+  Widget build(BuildContext context) => BullScreenPrivacyGate(
+    unavailableMessage: context.loc.screenPrivacyUnavailable,
+    retryLabel: context.loc.retry,
+    protection: _privacyFuture,
+    onRetry: () => setState(() {
+      _privacyFuture = enableScreenPrivacy();
+    }),
+    builder: (context) => const _Bip85HomePageView(),
+  );
 
   @override
   void dispose() {
-    disableScreenPrivacy();
+    unawaited(disableScreenPrivacy());
     super.dispose();
   }
 }

@@ -21,13 +21,6 @@ final class _WalletPort implements PayjoinWalletPort {
       (Outpoint _) => false;
 
   @override
-  Future<String Function(String psbt)> createPsbtProcessor({
-    required String walletId,
-    required BitcoinNetwork network,
-  }) async =>
-      (String psbt) => psbt;
-
-  @override
   Future<String> signPsbt({
     required String walletId,
     required BitcoinNetwork network,

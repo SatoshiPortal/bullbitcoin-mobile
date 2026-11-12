@@ -7,7 +7,8 @@ import 'package:bb_mobile/core/widgets/address_viewer.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:flutter/material.dart';
-import 'package:bull_ui/bull_ui.dart' show BullButton, BullText, Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show BullButton, BullShapesX, BullText, Gap;
 import 'package:go_router/go_router.dart';
 
 class CommonCoinSelectionBottomSheet extends StatefulWidget {
@@ -237,7 +238,7 @@ class CommonCoinSelectTile extends StatelessWidget {
         margin: const EdgeInsets.symmetric(vertical: 8),
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(4),
+          borderRadius: BorderRadius.circular(context.bullShapes.card),
           border: Border.all(color: context.appColors.outlineVariant),
         ),
         child: Row(
@@ -249,7 +250,9 @@ class CommonCoinSelectTile extends StatelessWidget {
                 children: [
                   ListTile(
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(2),
+                      borderRadius: BorderRadius.circular(
+                        context.bullShapes.card,
+                      ),
                     ),
                     tileColor: context.appColors.transparent,
                     contentPadding: EdgeInsets.zero,

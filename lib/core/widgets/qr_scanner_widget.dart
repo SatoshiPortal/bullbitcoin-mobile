@@ -1,6 +1,7 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/urqr/urqr.dart';
 import 'package:bull_logger/bull_logger.dart';
+import 'package:bull_ui/bull_ui.dart' show BullShapesX;
 import 'package:flutter/material.dart';
 import 'package:flutter_zxing/flutter_zxing.dart';
 
@@ -61,7 +62,7 @@ class _ScannerState extends State<QrScannerWidget> {
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
                 color: context.appColors.secondary,
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(context.bullShapes.card),
               ),
               child: Text(
                 _progressText,

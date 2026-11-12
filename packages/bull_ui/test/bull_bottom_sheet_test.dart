@@ -32,7 +32,7 @@ void main() {
     final shape = sheet.shape! as RoundedRectangleBorder;
     expect(
       shape.borderRadius,
-      const BorderRadius.vertical(top: Radius.circular(BullRadius.sm)),
+      BorderRadius.vertical(top: Radius.circular(BullShapes.standard.sheet)),
     );
     expect(shape.side.color, testBullTheme.secondaryFixedDim);
   });

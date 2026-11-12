@@ -177,8 +177,10 @@ class UtxoTile extends StatelessWidget {
             ),
           ),
         ),
-        const SizedBox(width: 8),
-        _keychainBadge(context),
+        if (utxo is BitcoinWalletUtxo) ...[
+          const SizedBox(width: 8),
+          _keychainBadge(context),
+        ],
       ],
     );
   }
@@ -193,7 +195,6 @@ class UtxoTile extends StatelessWidget {
           ? context.loc.coinsKeychainReceive
           : context.loc.coinsKeychainChange,
       uppercase: true,
-      radius: BullRadius.xxs,
       background: accent.withValues(alpha: isReceive ? 0.14 : 0.16),
       foreground: accent,
     );
@@ -213,7 +214,7 @@ class UtxoTile extends StatelessWidget {
 
   Widget _confPill(BuildContext context) {
     final colors = context.bull;
-    final pending = utxo.confirmations == 0;
+    final pending = !utxo.isConfirmed;
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -226,6 +227,8 @@ class UtxoTile extends StatelessWidget {
         Text(
           pending
               ? context.loc.coinsPending
+              : utxo is LiquidWalletUtxo
+              ? context.loc.coreWalletTransactionStatusConfirmed
               : context.loc.coinsConfsCount(utxo.confirmations),
           style: context.bullText.labelLarge?.copyWith(
             fontSize: 11,

@@ -12,7 +12,7 @@ import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_rep
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:dio/dio.dart';
-import 'package:primitives/primitives.dart';
+import 'package:primitives/primitives.dart' hide Network;
 
 final class AppPayjoinBlockchainAdapter implements PayjoinBlockchainPort {
   final BdkBitcoinBlockchainDatasource _blockchain;

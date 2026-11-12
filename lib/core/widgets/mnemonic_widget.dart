@@ -8,7 +8,13 @@ import 'package:bb_mobile/core/widgets/mnemonic_keyboard.dart';
 import 'package:bb_mobile/core/widgets/mnemonic_entry_failure_l10n.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:bull_ui/bull_ui.dart'
-    show BullButton, BullLabeledTextInput, BullSecretTextInput, BullText, Gap;
+    show
+        BullButton,
+        BullLabeledTextInput,
+        BullSecretTextInput,
+        BullShapesX,
+        BullText,
+        Gap;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
@@ -301,7 +307,7 @@ class MnemonicWord extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(3),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(4),
+        borderRadius: BorderRadius.circular(context.bullShapes.input),
         border: Border.all(color: context.appColors.border),
         color: context.appColors.surface,
       ),
@@ -330,7 +336,7 @@ class MnemonicWord extends StatelessWidget {
                       : isValid
                       ? context.appColors.success
                       : context.appColors.error,
-                  borderRadius: BorderRadius.circular(4),
+                  borderRadius: BorderRadius.circular(context.bullShapes.badge),
                 ),
                 child: BullText(
                   displayIndex,
@@ -989,7 +995,7 @@ class MnemonicLengthDropdown extends StatelessWidget {
         color: context.appColors.text,
       ),
       dropdownColor: context.appColors.surface,
-      borderRadius: BorderRadius.circular(4),
+      borderRadius: BorderRadius.circular(context.bullShapes.input),
       items: bip39.MnemonicLength.values
           .map(
             (length) => DropdownMenuItem(
@@ -1025,7 +1031,7 @@ class _HintChip extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         height: 38,
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(4),
+          borderRadius: BorderRadius.circular(context.bullShapes.button),
           color: context.appColors.surface,
           border: Border.all(color: context.appColors.border),
         ),

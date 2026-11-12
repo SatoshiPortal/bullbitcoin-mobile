@@ -6,7 +6,7 @@ import 'package:bb_mobile/features/swap/presentation/transfer_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullAmountInputFormatter, BullShimmerLine, Gap;
+    show BullAmountInputFormatter, BullShapesX, BullShimmerLine, Gap;
 
 class SwapAmountInput extends StatelessWidget {
   const SwapAmountInput({
@@ -49,7 +49,7 @@ class SwapAmountInput extends StatelessWidget {
         Card(
           elevation: 1,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(4.0),
+            borderRadius: BorderRadius.circular(context.bullShapes.input),
           ),
           child: Padding(
             padding: const EdgeInsets.symmetric(
