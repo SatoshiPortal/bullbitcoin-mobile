@@ -1,9 +1,12 @@
+import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:bull_sqlite/bull_sqlite.dart';
 import 'package:bull_sqlite/src/encrypt_in_place.dart';
+import 'package:bull_sqlite/src/retire.dart';
 import 'package:bull_sqlite/src/sqlite_family.dart';
 import 'package:primitives/primitives.dart';
 import 'package:sqlite3/sqlite3.dart';
@@ -184,11 +187,68 @@ void main() {
     });
   });
 
+  group('a real filesystem failure', () {
+    void readOnly(bool on) =>
+        Process.runSync('chmod', [on ? '0555' : '0755', directory()]);
+
+    tearDown(() => readOnly(false));
+
+    test(
+      'a rename refused by the filesystem leaves the plaintext database, and a retry encrypts it',
+      () async {
+        expect(
+          () => encryptInPlace(
+            SqliteFamily(path),
+            keyOf(10),
+            onStep: (s) {
+              if (s == EncryptionStep.flushed) readOnly(true);
+            },
+          ),
+          throwsA(isA<FileSystemException>()),
+        );
+        readOnly(false);
+        expect(SqliteFamily(path).inspect(), SqliteFileState.plaintext);
+
+        await encrypt(keyOf(10));
+        expectIntact(keyOf(10));
+        expectNoLeftovers();
+      },
+    );
+
+    test(
+      'a deletion refused by the filesystem keeps the marker, and a resume finishes it',
+      () {
+        final family = SqliteFamily(path);
+        expect(
+          () => retire(
+            family,
+            const Retirement.delete(),
+            onStep: (s) {
+              if (s == RetirementStep.marked) readOnly(true);
+            },
+          ),
+          throwsA(isA<FileSystemException>()),
+        );
+        readOnly(false);
+        expect(family.retirement.existsSync(), isTrue);
+        expect(family.database.existsSync(), isTrue);
+
+        expect(
+          EncryptedSqlite.resumeRetirement(path),
+          isA<Ok<bool, SqliteStorageFailure>>(),
+        );
+        expect(family.database.existsSync(), isFalse);
+        expect(family.retirement.existsSync(), isFalse);
+      },
+    );
+  });
+
   group('SIGKILL', () {
-    Future<String> runAndDie(
+    /// The child's stdout, after checking that it was SIGKILLed — at [target] when one is given — rather than failing to start or finishing.
+    Future<bool> runAndDie(
       String target, {
       int seed = 10,
-      Duration? killAfter,
+      Duration? killAfterStart,
     }) async {
       final process = await Process.start(Platform.resolvedExecutable, [
         'run',
@@ -197,15 +257,39 @@ void main() {
         '$seed',
         target,
       ], workingDirectory: Directory.current.path);
-      if (killAfter != null) {
-        await Future<void>.delayed(killAfter);
-        process.kill(ProcessSignal.sigkill);
-      }
-      final out = await process.stdout
+      final lines = <String>[];
+      final started = Completer<void>();
+      final stdoutDone = process.stdout
+          .transform(const SystemEncoding().decoder)
+          .transform(const LineSplitter())
+          .forEach((line) {
+            lines.add(line);
+            if (line == 'started' && !started.isCompleted) started.complete();
+          });
+      final stderr = process.stderr
           .transform(const SystemEncoding().decoder)
           .join();
-      await process.exitCode;
-      return out;
+      if (killAfterStart != null) {
+        // Timed from the encryption's own start, not the process's: compiling the script takes longer than any delay here.
+        await started.future;
+        await Future<void>.delayed(killAfterStart);
+        process.kill(ProcessSignal.sigkill);
+      }
+      final exitCode = await process.exitCode;
+      await stdoutDone;
+      final errors = await stderr;
+      expect(lines, contains('started'), reason: errors);
+      if (killAfterStart != null && lines.contains('completed')) {
+        // The encryption beat the timer: no kill happened, and the caller knows it.
+        expect(exitCode, 0, reason: errors);
+        return false;
+      }
+      expect(lines, isNot(contains('completed')), reason: errors);
+      expect(exitCode, -ProcessSignal.sigkill.signalNumber, reason: errors);
+      if (killAfterStart == null) {
+        expect(lines, contains('reached:$target'), reason: errors);
+      }
+      return true;
     }
 
     /// What the next launch does: finish the encryption if the database is still in clear, then open it.
@@ -246,7 +330,7 @@ void main() {
         );
         final random = Random(7);
         db.execute('BEGIN;');
-        for (var i = 0; i < 20000; i++) {
+        for (var i = 0; i < 60000; i++) {
           insert.execute([
             'bulk $i',
             Uint8List.fromList(List.generate(400, (_) => random.nextInt(256))),
@@ -255,12 +339,20 @@ void main() {
         db.execute('COMMIT;');
         insert.close();
         db.close();
-        rows += 20000;
+        rows += 60000;
 
-        for (final ms in [150, 400, 900, 1500]) {
+        var killed = 0;
+        for (final ms in [1, 5, 15, 40, 100, 250]) {
           if (SqliteFamily(path).inspect() != SqliteFileState.plaintext) break;
-          await runAndDie('never', killAfter: Duration(milliseconds: ms));
+          if (await runAndDie(
+            'never',
+            killAfterStart: Duration(milliseconds: ms),
+          )) {
+            killed++;
+          }
         }
+        // At least one kill landed inside the encryption, not after it.
+        expect(killed, greaterThan(0));
         await relaunch(keyOf(10));
         expectIntact(keyOf(10));
         expectNoLeftovers();
