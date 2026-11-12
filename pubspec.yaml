@@ -23,6 +23,16 @@ workspace:
   - packages/bull_pricer
   - features/logs
 
+# Build hook options, read from the workspace root for every member.
+# `sqlite3` loads SQLite3MultipleCiphers instead of plain SQLite, so local
+# databases can be encrypted at rest (packages/bull_sqlite). Opened without a
+# key it behaves as plain SQLite. Prebuilt binaries from the package's GitHub
+# releases, checked against sha256 sums shipped in the pub.dev package.
+hooks:
+  user_defines:
+    sqlite3:
+      source: sqlite3mc
+
 dependencies:
   flutter:
     sdk: flutter
