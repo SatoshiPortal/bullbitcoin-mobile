@@ -13,18 +13,32 @@ class BroadcastLiquidTransactionUsecase {
     required this._settingsRepository,
   }) : _liquidBlockchain = liquidBlockchainRepository;
 
-  Future<String> execute(String signedPset, {bool? isTestnet}) async {
+  Future<String> execute(
+    String signedPset, {
+    Network? network,
+    bool? isTestnet,
+  }) async {
     try {
       final settings = await _settingsRepository.fetch();
-      isTestnet ??= settings.environment.requireHistoricalTestnet();
-      if (isTestnet &&
+      if (network != null && isTestnet != null) {
+        throw ArgumentError('Specify one network context');
+      }
+      network ??= isTestnet == null
+          ? Network.fromEnvironment(
+              environment: settings.environment.networkEnv,
+              isLiquid: true,
+            )
+          : isTestnet
+          ? Network.liquidTestnet
+          : Network.liquidMainnet;
+      if (!network.isMainnet &&
           (settings.isSuperuser != true || settings.isDevModeEnabled != true)) {
         log.warning('Liquid broadcast refused category=authorization');
         throw const UnsupportedNetworkException();
       }
       return await _liquidBlockchain.broadcastTransaction(
         signedPset: signedPset,
-        isTestnet: isTestnet,
+        network: network,
       );
     } catch (e) {
       throw BroadcastTransactionException(e.toString());

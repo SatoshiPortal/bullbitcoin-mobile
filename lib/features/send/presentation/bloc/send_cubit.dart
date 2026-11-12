@@ -3287,6 +3287,7 @@ class SendCubit extends Cubit<SendState>
       if (wallet.network.isLiquid) {
         txId = await _broadcastLiquidTxUsecase.execute(
           persistedPayin ?? state.signedLiquidTx!,
+          network: wallet.network,
         );
       } else {
         // Payjoin sends are already broadcast asynchronously by the repository

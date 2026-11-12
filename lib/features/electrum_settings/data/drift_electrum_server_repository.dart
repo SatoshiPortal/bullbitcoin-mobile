@@ -103,11 +103,6 @@ class DriftElectrumServerRepository implements ElectrumServerRepository {
   Future<Result<List<ElectrumServer>, ElectrumFailure>> fetchActiveServers({
     required ElectrumServerNetwork network,
   }) async {
-    // TODO(SatoshiPortal/lwk-dart#96): keep Liquid regtest unavailable until
-    // the pinned SDK supports the concrete chain.
-    if (network == ElectrumServerNetwork.liquidRegtest) {
-      return const Err(ElectrumUnsupportedNetworkFailure());
-    }
     final result = await fetchAll(network: network);
     return result.map((servers) {
       final customServers = servers.where((s) => s.isCustom).toList();

@@ -12,8 +12,7 @@ Future<Result<void, TransactionSyncFailure>> validateAddress(
   Network network,
 ) async {
   switch (network) {
-    case BitcoinNetwork.signet || LiquidNetwork.regtest:
-      // TODO(lwk-dart#96): Liquid regtest needs support in the pinned bull_sdk.
+    case BitcoinNetwork.signet:
       return const Err(TransactionSyncUnsupportedNetworkFailure());
     case BitcoinNetwork():
       if (network == BitcoinNetwork.regtest &&
@@ -39,16 +38,10 @@ Future<Result<void, TransactionSyncFailure>> validateAddress(
         return const Err(TransactionSyncInvalidAddressFailure());
       }
     case LiquidNetwork():
-      // The legacy SDK enum cannot represent regtest. Refuse its distinct HRPs
-      // before entering that adapter, including unconfidential addresses.
-      final normalized = address.toLowerCase();
-      if (normalized.startsWith('ert1') || normalized.startsWith('el1')) {
-        return const Err(TransactionSyncInvalidAddressFailure());
-      }
       final expected = switch (network) {
         LiquidNetwork.mainnet => lwk.LiquidNetwork.mainnet,
         LiquidNetwork.testnet => lwk.LiquidNetwork.testnet,
-        LiquidNetwork.regtest => throw StateError('Regtest was refused'),
+        LiquidNetwork.regtest => lwk.LiquidNetwork.regtest,
       };
       try {
         return await lwk.Address.validate(addressString: address) == expected
