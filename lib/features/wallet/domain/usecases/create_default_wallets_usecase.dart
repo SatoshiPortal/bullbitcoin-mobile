@@ -125,7 +125,9 @@ class CreateDefaultWalletsUsecase {
             ),
           };
 
+      // Imports can resolve to an equivalent stored entry; validate it before writes.
       _requireDefaultCapable(defaultSecret.info);
+
       final created = <Wallet>[];
       // Keep successful members and their custody if a later member fails.
       if (!hasBitcoin) {
