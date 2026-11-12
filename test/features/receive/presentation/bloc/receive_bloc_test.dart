@@ -369,10 +369,8 @@ void main() {
     await payjoinMinAmountChangeController.close();
   });
 
-  for (final mode in [
-    ReceiveNetworkType.lightning,
-    ReceiveNetworkType.liquid,
-  ]) {
+  // Regtest has no swaps: Lightning is refused before any Liquid lookup.
+  for (final mode in [ReceiveNetworkType.lightning]) {
     for (final preset in [false, true]) {
       for (final warm in [false, true]) {
         test(
@@ -442,6 +440,41 @@ void main() {
       }
     }
   }
+
+  test(
+    'Liquid regtest is admitted and reaches the Liquid wallet lookup',
+    () async {
+      final inner = _MockSettings();
+      when(() => inner.execute()).thenAnswer(
+        (_) async => const SettingsEntity(
+          environment: Environment.regtest,
+          bitcoinUnit: BitcoinUnit.sats,
+          currencyCode: 'USD',
+        ),
+      );
+      final selected = _testWallet(network: Network.bitcoinRegtest);
+      when(
+        () => getWallets.execute(onlyLiquid: true, onlyDefaults: true),
+      ).thenAnswer((_) async => const Ok([]));
+      final bloc = buildBloc(
+        wallet: selected,
+        settings: GetReceiveSettingsUsecase(inner),
+      );
+      addTearDown(bloc.close);
+      final settled = bloc.stream.firstWhere((s) => s.failure != null);
+
+      bloc.add(const ReceiveLiquidStarted());
+      await settled;
+
+      expect(bloc.state.type, ReceiveType.liquid);
+      expect(bloc.state.admissionFailure, isNull);
+      // No default Liquid wallet in this catalog: the lookup ran and found none.
+      expect(bloc.state.failure, isA<ReceiveAddressUnavailableFailure>());
+      verify(
+        () => getWallets.execute(onlyLiquid: true, onlyDefaults: true),
+      ).called(1);
+    },
+  );
 
   group('ReceivePayjoinOriginalTxBroadcasted guard', () {
     test(
