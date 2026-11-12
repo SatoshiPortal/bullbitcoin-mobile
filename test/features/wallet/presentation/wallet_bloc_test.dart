@@ -421,7 +421,7 @@ void main() {
         when(
           () => single.execute(
             _syncedWallet,
-            discover: false,
+            discover: any(named: 'discover'),
             reason: any(named: 'reason'),
           ),
         ).thenThrow(
@@ -531,7 +531,7 @@ void main() {
       when(
         () => single.execute(
           _syncedWallet,
-          discover: false,
+          discover: any(named: 'discover'),
           reason: any(named: 'reason'),
         ),
       ).thenAnswer((_) async {

@@ -185,7 +185,7 @@ void main() {
     expect(activity, [true, false]);
   });
 
-  test('pull refresh and automatic sync both use revealed scripts', () async {
+  test('the first automatic sync and a pull both discover', () async {
     final wallet = _Wallet();
     when(
       () => getWallets.execute(onlyBitcoin: true),
@@ -199,63 +199,52 @@ void main() {
     ).thenAnswer((_) async {});
     await coordinator.sync(only: {SyncKind.bitcoin});
     verify(
-      () => syncWallet.execute(
-        wallet,
-        discover: false,
-        reason: any(named: 'reason'),
-      ),
+      () => syncWallet.execute(wallet, discover: true, reason: SyncReason.auto),
     ).called(1);
     await coordinator.sync(only: {SyncKind.bitcoin}, trigger: SyncTrigger.user);
     verify(
+      () => syncWallet.execute(wallet, discover: true, reason: SyncReason.pull),
+    ).called(1);
+  });
+
+  test('a pull joins an in-flight automatic discovery pass', () async {
+    final wallet = _Wallet();
+    final gate = Completer<void>();
+    when(
+      () => getWallets.execute(onlyBitcoin: true),
+    ).thenAnswer((_) async => Ok([wallet]));
+    when(
+      () => syncWallet.execute(
+        wallet,
+        discover: true,
+        reason: any(named: 'reason'),
+      ),
+    ).thenAnswer((_) => gate.future);
+    final routine = coordinator.sync(only: {SyncKind.bitcoin});
+    await pumpEventQueue();
+    var done = false;
+    final pull = coordinator
+        .sync(only: {SyncKind.bitcoin}, trigger: SyncTrigger.user)
+        .then((_) => done = true);
+    await pumpEventQueue();
+    expect(done, isFalse);
+    gate.complete();
+    await Future.wait([routine, pull]);
+    verify(
+      () => syncWallet.execute(
+        wallet,
+        discover: true,
+        reason: any(named: 'reason'),
+      ),
+    ).called(1);
+    verifyNever(
       () => syncWallet.execute(
         wallet,
         discover: false,
         reason: any(named: 'reason'),
       ),
-    ).called(1);
+    );
   });
-
-  test(
-    'pull joins an in-flight routine pass without adding discovery',
-    () async {
-      final wallet = _Wallet();
-      final gate = Completer<void>();
-      when(
-        () => getWallets.execute(onlyBitcoin: true),
-      ).thenAnswer((_) async => Ok([wallet]));
-      when(
-        () => syncWallet.execute(
-          wallet,
-          discover: false,
-          reason: any(named: 'reason'),
-        ),
-      ).thenAnswer((_) => gate.future);
-      final routine = coordinator.sync(only: {SyncKind.bitcoin});
-      await pumpEventQueue();
-      var done = false;
-      final pull = coordinator
-          .sync(only: {SyncKind.bitcoin}, trigger: SyncTrigger.user)
-          .then((_) => done = true);
-      await pumpEventQueue();
-      expect(done, isFalse);
-      gate.complete();
-      await Future.wait([routine, pull]);
-      verify(
-        () => syncWallet.execute(
-          wallet,
-          discover: false,
-          reason: any(named: 'reason'),
-        ),
-      ).called(1);
-      verifyNever(
-        () => syncWallet.execute(
-          wallet,
-          discover: true,
-          reason: any(named: 'reason'),
-        ),
-      );
-    },
-  );
 
   _Wallet manualWallet(String id, {bool liquid = false}) {
     final wallet = _Wallet();
@@ -295,19 +284,28 @@ void main() {
           reason: SyncReason.auto,
         ),
       ).thenAnswer((_) async {});
+      when(
+        () => syncWallet.execute(
+          a,
+          discover: true,
+          allowInitialScan: true,
+          reason: SyncReason.auto,
+        ),
+      ).thenAnswer((_) async {});
       // A just-completed global pass must not swallow the next periodic tick.
       await coordinator.sync(only: {SyncKind.bitcoin});
       await coordinator.pollWallet('a', isActive: () => true);
       await coordinator.pollWallet('a', isActive: () => true);
+      // The first global pass discovers and keeps bootstrap.
       verify(
         () => syncWallet.execute(
           a,
-          discover: false,
+          discover: true,
           allowInitialScan: true,
           reason: SyncReason.auto,
         ),
       ).called(1);
-      // Global sync keeps bootstrap; both Receive ticks explicitly reject it.
+      // Both Receive ticks stay on revealed scripts and reject bootstrap.
       verify(
         () => syncWallet.execute(
           a,
@@ -365,7 +363,7 @@ void main() {
       when(
         () => syncWallet.execute(
           a,
-          discover: false,
+          discover: true,
           allowInitialScan: any(named: 'allowInitialScan'),
           reason: SyncReason.auto,
         ),
@@ -411,7 +409,7 @@ void main() {
       verify(
         () => syncWallet.execute(
           a,
-          discover: false,
+          discover: true,
           allowInitialScan: any(named: 'allowInitialScan'),
           reason: SyncReason.auto,
         ),
@@ -596,11 +594,7 @@ void main() {
           () => getWallets.execute(onlyBitcoin: true),
         ).thenAnswer((_) async => Ok([a]));
         when(
-          () => syncWallet.execute(
-            a,
-            discover: false,
-            reason: any(named: 'reason'),
-          ),
+          () => syncWallet.execute(a, discover: true, reason: SyncReason.auto),
         ).thenAnswer((_) => routineGate.future);
         when(
           () =>
@@ -619,11 +613,8 @@ void main() {
         final duplicate = coordinator.discoverWallet('a');
         await pumpEventQueue();
         verifyNever(
-          () => syncWallet.execute(
-            a,
-            discover: true,
-            reason: any(named: 'reason'),
-          ),
+          () =>
+              syncWallet.execute(a, discover: true, reason: SyncReason.manual),
         );
         if (failRoutine) {
           routineGate.completeError(Exception('routine'));
@@ -1098,7 +1089,7 @@ void main() {
         when(
           () => syncWallet.execute(
             bitcoin,
-            discover: false,
+            discover: true,
             reason: SyncReason.auto,
           ),
         ).thenAnswer((_) => gate.future);
@@ -1123,7 +1114,7 @@ void main() {
         verify(
           () => syncWallet.execute(
             bitcoin,
-            discover: false,
+            discover: true,
             reason: SyncReason.auto,
           ),
         ).called(1);
@@ -1172,6 +1163,128 @@ void main() {
         throwsA(isA<SyncCoordinatorException>()),
       );
       expect(reporter.errors, isEmpty);
+    });
+  });
+
+  group('automatic Bitcoin discovery', () {
+    late DateTime clock;
+    late _Wallet wallet;
+    late List<(bool, SyncReason)> calls;
+    var failDiscovery = false;
+
+    setUp(() {
+      coordinator.dispose();
+      clock = DateTime.utc(2026, 11, 12, 14);
+      calls = [];
+      failDiscovery = false;
+      coordinator = SyncCoordinator(
+        readWalletUsecase: readWallet,
+        readNetwork: () async => network,
+        getWalletsUsecase: getWallets,
+        syncWalletUsecase: syncWallet,
+        now: () => clock,
+      );
+      wallet = _Wallet();
+      when(
+        () => getWallets.execute(onlyBitcoin: true),
+      ).thenAnswer((_) async => Ok([wallet]));
+      when(
+        () => syncWallet.execute(
+          wallet,
+          discover: any(named: 'discover'),
+          reason: any(named: 'reason'),
+        ),
+      ).thenAnswer((invocation) async {
+        final discover = invocation.namedArguments[#discover] as bool;
+        calls.add((discover, invocation.namedArguments[#reason] as SyncReason));
+        if (discover && failDiscovery) throw Exception('discovery failed');
+      });
+    });
+
+    Future<void> bitcoin({SyncTrigger trigger = SyncTrigger.automatic}) =>
+        coordinator.sync(only: {SyncKind.bitcoin}, trigger: trigger);
+
+    test(
+      'the first automatic pass discovers, then at most one per ten minutes',
+      () async {
+        await bitcoin();
+        clock = clock.add(const Duration(seconds: 3));
+        await bitcoin();
+        clock = clock.add(const Duration(minutes: 9));
+        await bitcoin();
+        clock = clock.add(const Duration(minutes: 1));
+        await bitcoin();
+        expect(calls, [
+          (true, SyncReason.auto),
+          (false, SyncReason.auto),
+          (false, SyncReason.auto),
+          (true, SyncReason.auto),
+        ]);
+      },
+    );
+
+    test('a pull always discovers', () async {
+      await bitcoin(trigger: SyncTrigger.user);
+      await bitcoin(trigger: SyncTrigger.user);
+      expect(calls, [(true, SyncReason.pull), (true, SyncReason.pull)]);
+    });
+
+    test(
+      'a failed automatic discovery still holds the window; a pull retries',
+      () async {
+        failDiscovery = true;
+        await expectLater(bitcoin(), throwsA(isA<SyncCoordinatorException>()));
+        clock = clock.add(const Duration(seconds: 3));
+        await bitcoin();
+        clock = clock.add(const Duration(seconds: 3));
+        await expectLater(
+          bitcoin(trigger: SyncTrigger.user),
+          throwsA(isA<SyncCoordinatorException>()),
+        );
+        failDiscovery = false;
+        clock = clock.add(const Duration(seconds: 3));
+        await bitcoin(trigger: SyncTrigger.user);
+        expect(calls, [
+          (true, SyncReason.auto),
+          (false, SyncReason.auto),
+          (true, SyncReason.pull),
+          (true, SyncReason.pull),
+        ]);
+      },
+    );
+
+    test('each environment keeps its own discovery window', () async {
+      network = NetworkEnv.testnet;
+      await bitcoin();
+      network = NetworkEnv.mainnet;
+      clock = clock.add(const Duration(seconds: 3));
+      await bitcoin();
+      network = NetworkEnv.testnet;
+      clock = clock.add(const Duration(seconds: 3));
+      await bitcoin();
+      expect(calls.map((call) => call.$1), [true, true, false]);
+    });
+
+    test('Liquid passes never discover', () async {
+      final liquid = _Wallet();
+      when(
+        () => getWallets.execute(onlyLiquid: true),
+      ).thenAnswer((_) async => Ok([liquid]));
+      when(
+        () => syncWallet.execute(
+          liquid,
+          discover: any(named: 'discover'),
+          reason: any(named: 'reason'),
+        ),
+      ).thenAnswer((_) async {});
+      await coordinator.sync(only: {SyncKind.liquid});
+      verify(
+        () => syncWallet.execute(
+          liquid,
+          discover: false,
+          reason: SyncReason.auto,
+        ),
+      ).called(1);
     });
   });
 }
