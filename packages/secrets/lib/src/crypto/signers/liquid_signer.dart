@@ -4,7 +4,7 @@ import 'package:bull_logger/bull_logger.dart';
 import 'package:bull_sdk/lwk.dart' as lwk;
 import 'package:primitives/primitives.dart';
 import 'package:secrets/src/crypto/derivers/liquid_deriver.dart'
-    show liquidSeed;
+    show liquidSeed, lwkLiquidNetwork;
 import 'package:secrets/src/crypto/exceptions.dart';
 import 'package:secrets/src/crypto/signers/pset_sighash.dart';
 import 'package:secrets/src/crypto/signers/signers.dart';
@@ -44,7 +44,7 @@ final class LiquidSigner {
     required LiquidNetwork network,
     required Future<String> Function() scratchDirectory,
   }) async {
-    final lwkNetwork = _network(network);
+    final lwkNetwork = lwkLiquidNetwork(network);
     // Before any file or FFI call: lwk honours whatever sighash the PSET
     // asks for, so the refusal has to be ours. See [PsetSighash].
     PsetSighash.requireAll(pset);
@@ -106,17 +106,6 @@ final class LiquidSigner {
       }
     }
   }
-
-  static lwk.LiquidNetwork _network(LiquidNetwork network) => switch (network) {
-    LiquidNetwork.mainnet => lwk.LiquidNetwork.mainnet,
-    LiquidNetwork.testnet => lwk.LiquidNetwork.testnet,
-    // Elements regtest is a different chain; lwk has no variant for
-    // it, and signing on testnet's would produce a signature for the
-    // wrong chain. See `SecretDeriver.liquidDescriptor`.
-    LiquidNetwork.regtest => throw const UnsupportedLiquidNetwork(
-      'lwk cannot express Liquid regtest',
-    ),
-  };
 
   static const _stalePrefix = 'lwk_sign_';
 

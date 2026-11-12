@@ -2,7 +2,6 @@ import 'dart:typed_data';
 
 import 'package:bull_sdk/lwk.dart' as lwk;
 import 'package:primitives/primitives.dart';
-import 'package:secrets/src/crypto/exceptions.dart';
 import 'package:secrets/src/domain/domain.dart';
 import 'package:meta/meta.dart';
 
@@ -19,20 +18,13 @@ final class LiquidDeriver {
   ///
   /// The passphrase takes part: see [liquidSeed].
   ///
-  /// Regtest is refused rather than folded into testnet: Elements
-  /// regtest is a different chain, and a confidential descriptor built
-  /// for testnet would hand back addresses that do not belong to it.
+  /// Each network maps to lwk's own, regtest included: Elements regtest is
+  /// a chain of its own, never folded into testnet.
   Future<String> descriptor(
     Mnemonic secret, {
     required LiquidNetwork network,
   }) async {
-    final lwkNetwork = switch (network) {
-      LiquidNetwork.mainnet => lwk.LiquidNetwork.mainnet,
-      LiquidNetwork.testnet => lwk.LiquidNetwork.testnet,
-      LiquidNetwork.regtest => throw const UnsupportedLiquidNetwork(
-        'lwk cannot express Liquid regtest',
-      ),
-    };
+    final lwkNetwork = lwkLiquidNetwork(network);
     final seed = liquidSeed(secret);
     try {
       final descriptor = await lwk.Descriptor.newConfidentialFromSeed(
@@ -60,3 +52,12 @@ final class LiquidDeriver {
 /// secret's own bytes.
 @internal
 Uint8List liquidSeed(Mnemonic secret) => Uint8List.fromList(secret.seedBytes);
+
+/// lwk's network for [network], one to one. lwk-dart expresses Liquid regtest
+/// since SatoshiPortal/lwk-dart#99, so no network is refused or substituted.
+@internal
+lwk.LiquidNetwork lwkLiquidNetwork(LiquidNetwork network) => switch (network) {
+  LiquidNetwork.mainnet => lwk.LiquidNetwork.mainnet,
+  LiquidNetwork.testnet => lwk.LiquidNetwork.testnet,
+  LiquidNetwork.regtest => lwk.LiquidNetwork.regtest,
+};
