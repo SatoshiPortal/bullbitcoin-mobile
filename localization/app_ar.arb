@@ -11282,5 +11282,6 @@
   "sellPayoutBalance": "إضافة إلى رصيد حسابي",
   "sellPayoutSepaDescription": "تظهر عمليات السحب على أنها مرسلة من Leonod",
   "sellPayoutTitle": "اختر المستلم",
-  "sellPayoutNewBadge": "جديد"
+  "sellPayoutNewBadge": "جديد",
+  "coreScreensOutputsExceedInputs": "المخرجات تتجاوز المدخلات: هذه المعاملة غير صالحة وسترفضها الشبكة."
 }

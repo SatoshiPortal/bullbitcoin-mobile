@@ -11283,5 +11283,6 @@
   "sellPayoutBalance": "เพิ่มไปยังยอดคงเหลือในบัญชีของฉัน",
   "sellPayoutSepaDescription": "รายการถอนจะแสดงว่าผู้ส่งคือ Leonod",
   "sellPayoutTitle": "เลือกผู้รับเงิน",
-  "sellPayoutNewBadge": "ใหม่"
+  "sellPayoutNewBadge": "ใหม่",
+  "coreScreensOutputsExceedInputs": "เอาต์พุตมากกว่าอินพุต: ธุรกรรมนี้ไม่ถูกต้องและเครือข่ายจะปฏิเสธ"
 }

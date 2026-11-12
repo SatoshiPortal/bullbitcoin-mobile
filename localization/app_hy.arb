@@ -3508,5 +3508,6 @@
   "sellPayoutBalance": "Ավելացնել իմ հաշվի մնացորդին",
   "sellPayoutSepaDescription": "Կանխիկացումները ցուցադրվում են որպես Leonod-ի կողմից ուղարկված",
   "sellPayoutTitle": "Ընտրեք ստացողին",
-  "sellPayoutNewBadge": "ՆՈՐ"
+  "sellPayoutNewBadge": "ՆՈՐ",
+  "coreScreensOutputsExceedInputs": "Ելքերը գերազանցում են մուտքերին․ այս գործարքն անվավեր է, և ցանցը կմերժի այն։"
 }

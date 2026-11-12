@@ -3631,5 +3631,6 @@
   "sellPayoutBalance": "ჩემი ანგარიშის ბალანსზე დამატება",
   "sellPayoutSepaDescription": "გატანილი თანხა ჩანს, როგორც Leonod-ის მიერ გამოგზავნილი",
   "sellPayoutTitle": "აირჩიეთ მიმღები",
-  "sellPayoutNewBadge": "ახალი"
+  "sellPayoutNewBadge": "ახალი",
+  "coreScreensOutputsExceedInputs": "გამავალი თანხა აღემატება შემავალს: ეს ტრანზაქცია არასწორია და ქსელი მას უარყოფს."
 }

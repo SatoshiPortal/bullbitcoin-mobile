@@ -4614,5 +4614,6 @@
   "sellPayoutBalance": "Додати до балансу мого рахунку",
   "sellPayoutSepaDescription": "Виведення відображаються як перекази від Leonod",
   "sellPayoutTitle": "Вибрати одержувача",
-  "sellPayoutNewBadge": "НОВЕ"
+  "sellPayoutNewBadge": "НОВЕ",
+  "coreScreensOutputsExceedInputs": "Виходи перевищують входи: ця транзакція недійсна, і мережа її відхилить."
 }

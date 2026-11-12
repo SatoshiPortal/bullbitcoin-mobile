@@ -11279,5 +11279,6 @@
   "sellPayoutBalance": "내 계정 잔액에 추가",
   "sellPayoutSepaDescription": "출금 내역의 송금인이 Leonod로 표시됩니다",
   "sellPayoutTitle": "수신자 선택",
-  "sellPayoutNewBadge": "신규"
+  "sellPayoutNewBadge": "신규",
+  "coreScreensOutputsExceedInputs": "출력이 입력을 초과합니다. 이 거래는 유효하지 않으며 네트워크에서 거부됩니다."
 }

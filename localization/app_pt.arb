@@ -4653,5 +4653,6 @@
   "sellPayoutBalance": "Adicionar ao saldo da minha conta",
   "sellPayoutSepaDescription": "Os levantamentos aparecem como enviados pela Leonod",
   "sellPayoutTitle": "Selecionar destinatário",
-  "sellPayoutNewBadge": "NOVO"
+  "sellPayoutNewBadge": "NOVO",
+  "coreScreensOutputsExceedInputs": "As saídas excedem as entradas: esta transação é inválida e a rede irá rejeitá-la."
 }

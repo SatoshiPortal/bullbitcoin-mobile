@@ -8655,5 +8655,6 @@
   "sellPayoutBalance": "মোৰ একাউণ্টৰ বেলেঞ্চত যোগ কৰক",
   "sellPayoutSepaDescription": "উলিওৱা ধন Leonod-এ পঠোৱা হিচাপে দেখা যায়",
   "sellPayoutTitle": "প্ৰাপক বাছক",
-  "sellPayoutNewBadge": "নতুন"
+  "sellPayoutNewBadge": "নতুন",
+  "coreScreensOutputsExceedInputs": "আউটপুট ইনপুটতকৈ বেছি: এই লেনদেনটো অবৈধ আৰু নেটৱৰ্কে ইয়াক নাকচ কৰিব।"
 }

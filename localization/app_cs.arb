@@ -11279,5 +11279,6 @@
   "sellPayoutBalance": "Přidat k zůstatku mého účtu",
   "sellPayoutSepaDescription": "Výběry se zobrazují jako odeslané společností Leonod",
   "sellPayoutTitle": "Vybrat příjemce",
-  "sellPayoutNewBadge": "NOVÉ"
+  "sellPayoutNewBadge": "NOVÉ",
+  "coreScreensOutputsExceedInputs": "Výstupy převyšují vstupy: tato transakce je neplatná a síť ji odmítne."
 }

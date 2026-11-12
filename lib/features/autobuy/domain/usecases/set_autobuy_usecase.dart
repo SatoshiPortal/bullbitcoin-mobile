@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/errors/exchange_errors.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/default_wallet.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_default_wallets_usecase.dart';
@@ -32,6 +33,12 @@ class SetAutoBuyUsecase {
         wallets = await _getDefaultWalletsUsecase.execute();
       } on Error {
         rethrow;
+      } on ApiKeyException catch (e) {
+        log.info('Exchange credential refused: ${e.runtimeType}');
+        return Err(AutoBuyAccountUnavailableFailure('$e'));
+      } on ExchangeCredentialUnavailableException catch (e) {
+        log.info('Exchange credential refused: ${e.runtimeType}');
+        return Err(AutoBuyAccountUnavailableFailure('$e'));
       } catch (e, st) {
         log.severe(
           message: 'Failed to read the default wallets before enabling AutoBuy',
@@ -51,6 +58,9 @@ class SetAutoBuyUsecase {
       summary = await _getExchangeUserSummaryUsecase.execute();
     } on Error {
       rethrow;
+    } on GetExchangeUserSummaryCredentialException catch (e) {
+      log.info('Exchange account credential refused: ${e.runtimeType}');
+      return Err(AutoBuyAccountUnavailableFailure('$e'));
     } on GetExchangeUserSummaryException catch (e, st) {
       log.severe(
         message: 'Failed to load account before updating AutoBuy',

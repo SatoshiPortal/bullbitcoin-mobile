@@ -11589,5 +11589,6 @@
   "sellPayoutBalance": "Mere account balance mein jodein",
   "sellPayoutSepaDescription": "Nikaasi Leonod dwara bheji gayi dikhai deti hai",
   "sellPayoutTitle": "Recipient Select Karo",
-  "sellPayoutNewBadge": "NAYA"
+  "sellPayoutNewBadge": "NAYA",
+  "coreScreensOutputsExceedInputs": "Outputs inputs se zyada hain: yeh transaction invalid hai aur network ise reject kar dega."
 }

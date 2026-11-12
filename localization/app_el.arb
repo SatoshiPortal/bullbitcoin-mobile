@@ -11279,5 +11279,6 @@
   "sellPayoutBalance": "Προσθήκη στο υπόλοιπο του λογαριασμού μου",
   "sellPayoutSepaDescription": "Οι αναλήψεις εμφανίζονται ως αποστολές από τη Leonod",
   "sellPayoutTitle": "Επιλογή παραλήπτη",
-  "sellPayoutNewBadge": "ΝΕΟ"
+  "sellPayoutNewBadge": "ΝΕΟ",
+  "coreScreensOutputsExceedInputs": "Οι έξοδοι υπερβαίνουν τις εισόδους: αυτή η συναλλαγή είναι άκυρη και το δίκτυο θα την απορρίψει."
 }

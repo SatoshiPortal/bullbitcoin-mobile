@@ -3508,5 +3508,6 @@
   "sellPayoutBalance": "Thêm vào số dư tài khoản của tôi",
   "sellPayoutSepaDescription": "Các khoản rút tiền hiển thị là được gửi bởi Leonod",
   "sellPayoutTitle": "Chọn người nhận",
-  "sellPayoutNewBadge": "MỚI"
+  "sellPayoutNewBadge": "MỚI",
+  "coreScreensOutputsExceedInputs": "Đầu ra vượt quá đầu vào: giao dịch này không hợp lệ và mạng sẽ từ chối nó."
 }

@@ -1,124 +1,279 @@
-import 'package:bb_mobile/core/exchange/data/datasources/bullbitcoin_api_key_datasource.dart';
-import 'package:bb_mobile/core/exchange/data/models/api_key_model.dart';
-import 'package:bb_mobile/core/exchange/data/repository/exchange_api_key_repository_impl.dart';
+import 'dart:convert';
+import 'package:bb_mobile/core/exchange/domain/entity/exchange_api_key.dart';
+
+import 'package:bb_mobile/core/exchange/data/exchange_api_key_repository_impl.dart';
 import 'package:bb_mobile/core/exchange/domain/exchange_api_key_failure.dart';
+import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_value_storage_datasource.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mocktail/mocktail.dart';
-import 'package:bb_mobile/core/failures/failure.dart';
 
-/// A realistic auth-app envelope. The key inside is the thing that must never
-/// reach a log line or a failure.
-const _key = 'bbk_live_7f3a9c2e';
+class _Storage extends Fake implements KeyValueStorageDatasource<String> {
+  final values = <String, String>{};
+  final reads = <String>[];
+  Exception? readFailure;
+  Exception? writeFailure;
+  Exception? deleteFailure;
 
-/// The failure an [Err] carries, typed by the [Result]; an [Ok] fails the test.
-F _failureOf<T, F extends Failure>(Result<T, F> result) => switch (result) {
-  Ok() => fail('expected an Err, got Ok'),
-  Err(:final failure) => failure,
-};
+  @override
+  Future<String?> getValue(String key) async {
+    reads.add(key);
+    final failure = readFailure;
+    if (failure != null) throw failure;
+    return values[key];
+  }
 
-const _apiKeyFields = {
+  @override
+  Future<void> saveValue({required String key, required String value}) async {
+    final failure = writeFailure;
+    if (failure != null) throw failure;
+    values[key] = value;
+  }
+
+  @override
+  Future<void> deleteValue(String key) async {
+    final failure = deleteFailure;
+    if (failure != null) throw failure;
+    values.remove(key);
+  }
+}
+
+const _key = 'synthetic-credential';
+const _fields = {
   'id': 'key-1',
   'key': _key,
   'name': 'mobile',
-  'userId': 'u-42',
+  'userId': 'user',
   'isActive': true,
-  'createdAt': 1767225600,
-  'updatedAt': 1767225600,
+  'createdAt': 0,
+  'updatedAt': 0,
 };
 
-class _MockApiKeyDatasource extends Mock
-    implements BullbitcoinApiKeyDatasource {}
-
-class _FakeApiKeyModel extends Fake implements ExchangeApiKeyModel {}
+ExchangeApiKey _credential() => switch (ExchangeApiKey.create(
+  id: 'key-1',
+  key: _key,
+  name: 'mobile',
+  userId: 'user',
+  isActive: true,
+  createdAt: 0,
+  updatedAt: 0,
+)) {
+  Ok(:final value) => value,
+  Err() => throw StateError('Invalid synthetic fixture'),
+};
 
 void main() {
-  late _MockApiKeyDatasource datasource;
-
-  ExchangeApiKeyRepositoryImpl build() =>
-      ExchangeApiKeyRepositoryImpl(bullbitcoinApiKeyDatasource: datasource);
-
-  setUpAll(() => registerFallbackValue(_FakeApiKeyModel()));
+  late _Storage storage;
+  late ExchangeApiKeyRepositoryImpl repository;
 
   setUp(() {
-    datasource = _MockApiKeyDatasource();
-    when(
-      () => datasource.store(any(), isTestnet: any(named: 'isTestnet')),
-    ).thenAnswer((_) async {});
+    storage = _Storage();
+    repository = ExchangeApiKeyRepositoryImpl(secureStorage: storage);
   });
 
-  group('saveApiKey envelope handling', () {
-    // The auth app has shipped several shapes; all must land the same key.
-    for (final entry in <String, Map<String, dynamic>>{
-      'bare': _apiKeyFields,
-      'apiKey-wrapped': {'apiKey': _apiKeyFields},
-      'result-wrapped': {
-        'result': {'apiKey': _apiKeyFields},
-      },
-      'data-wrapped': {
-        'data': {'apiKey': _apiKeyFields},
-      },
-    }.entries) {
-      test('${entry.key} envelope is accepted', () async {
-        expect(
-          await build().saveApiKey(entry.value, isTestnet: false),
-          isA<Ok<void, ExchangeApiKeyFailure>>(),
-          reason: 'the ${entry.key} shape must not be rejected',
-        );
-      });
+  test('reads selected environment at point of use without caching', () async {
+    storage.values['exchange_api_key'] = jsonEncode(_fields);
+    storage.values['exchange_api_key_testnet'] = jsonEncode({
+      ..._fields,
+      'key': 'test-only',
+    });
+    expect(
+      await repository.readActiveApiKey(isTestnet: false),
+      isA<Ok<String?, ExchangeApiKeyFailure>>().having(
+        (r) => r.value,
+        'key',
+        _key,
+      ),
+    );
+    expect(
+      await repository.readActiveApiKey(isTestnet: true),
+      isA<Ok<String?, ExchangeApiKeyFailure>>().having(
+        (r) => r.value,
+        'key',
+        'test-only',
+      ),
+    );
+    storage.values['exchange_api_key'] = jsonEncode({
+      ..._fields,
+      'key': 'replacement',
+    });
+    expect(
+      await repository.readActiveApiKey(isTestnet: false),
+      isA<Ok<String?, ExchangeApiKeyFailure>>().having(
+        (r) => r.value,
+        'key',
+        'replacement',
+      ),
+    );
+    storage.values.remove('exchange_api_key');
+    expect(
+      await repository.readActiveApiKey(isTestnet: false),
+      isA<Ok<String?, ExchangeApiKeyFailure>>().having(
+        (r) => r.value,
+        'key',
+        isNull,
+      ),
+    );
+    expect(storage.reads, [
+      'exchange_api_key',
+      'exchange_api_key_testnet',
+      'exchange_api_key',
+      'exchange_api_key',
+    ]);
+  });
+
+  test('missing, empty and inactive records are signed out', () async {
+    for (final stored in [
+      null,
+      '',
+      jsonEncode({..._fields, 'isActive': false}),
+    ]) {
+      if (stored == null) {
+        storage.values.clear();
+      } else {
+        storage.values['exchange_api_key'] = stored;
+      }
+      expect(
+        await repository.readActiveApiKey(isTestnet: false),
+        isA<Ok<String?, ExchangeApiKeyFailure>>().having(
+          (r) => r.value,
+          'key',
+          isNull,
+        ),
+      );
     }
   });
 
-  group('saveApiKey failures', () {
-    test('a throwing store is sanitized and never echoes the key', () async {
-      when(
-        () => datasource.store(any(), isTestnet: any(named: 'isTestnet')),
-      ).thenThrow(Exception('keychain locked while writing $_key'));
+  test(
+    'authentication ignores metadata and does not add expiry policy',
+    () async {
+      storage.values['exchange_api_key'] = jsonEncode({
+        'key': _key,
+        'isActive': true,
+        'createdAt': 'invalid',
+        'expiresAt': 0,
+      });
+      expect(
+        await repository.readActiveApiKey(isTestnet: false),
+        isA<Ok<String?, ExchangeApiKeyFailure>>().having(
+          (r) => r.value,
+          'key',
+          _key,
+        ),
+      );
+    },
+  );
 
-      final result = await build().saveApiKey({
-        'apiKey': _apiKeyFields,
-      }, isTestnet: false);
-      final failure = _failureOf(result);
+  test(
+    'invalid records are a failure without erasing the credential',
+    () async {
+      for (final record in [
+        '{"key":"$_key", broken',
+        '[]',
+        jsonEncode({'key': '', 'isActive': true}),
+        jsonEncode({'key': 4, 'isActive': true}),
+        jsonEncode({'key': _key, 'isActive': 'true'}),
+      ]) {
+        storage.values['exchange_api_key'] = record;
+        final result = await repository.readActiveApiKey(isTestnet: false);
+        expect(
+          result,
+          isA<Err<String?, ExchangeApiKeyFailure>>().having(
+            (r) => r.failure,
+            'failure',
+            isA<ExchangeApiKeyInvalidFailure>(),
+          ),
+        );
+        expect(storage.values['exchange_api_key'], record);
+      }
+    },
+  );
 
-      expect(failure, isA<ExchangeApiKeySaveFailure>());
-      expect(failure.logMessage, isNot(contains(_key)));
-    });
+  test(
+    'storage refusal stays distinct from logout and never echoes its message',
+    () async {
+      storage.values['exchange_api_key'] = jsonEncode(_fields);
+      storage.readFailure = Exception('keychain refused $_key');
+      final result = await repository.readActiveApiKey(isTestnet: false);
+      expect(
+        result,
+        isA<Err<String?, ExchangeApiKeyFailure>>().having(
+          (r) => r.failure,
+          'failure',
+          isA<ExchangeApiKeyReadFailure>(),
+        ),
+      );
+      if (result case Err(:final failure)) {
+        expect(failure.logMessage, isNot(contains(_key)));
+      }
+      expect(storage.values, contains('exchange_api_key'));
+    },
+  );
 
-    // A malformed envelope used to throw out of the repository; it must be a
-    // Result like anything else.
-    test('an unparseable payload is a failure, not a throw', () async {
-      final result = await build().saveApiKey(const {
-        'apiKey': 'not-an-object',
-      }, isTestnet: false);
+  test('rejects credentials that cannot safely enter an HTTP header', () async {
+    for (final key in [
+      ' ',
+      'synthetic\r\nheader',
+      'synthetic\u0000',
+      'synthetic\u{1f600}',
+    ]) {
+      storage.values['exchange_api_key_testnet'] = jsonEncode({
+        'key': key,
+        'isActive': true,
+      });
+      final result = await repository.readActiveApiKey(isTestnet: true);
+      expect(
+        result is Err<String?, ExchangeApiKeyFailure>,
+        isTrue,
+        reason: 'invalid stored credentials must fail before reaching HTTP',
+      );
+    }
+  });
 
-      final failure = _failureOf(result);
-      expect(failure, isA<ExchangeApiKeySaveFailure>());
-      expect(failure.logMessage, isNot(contains(_key)));
+  test('saves a domain credential in the existing JSON format', () async {
+    expect(
+      await repository.saveApiKey(_credential(), isTestnet: true),
+      isA<Ok<void, ExchangeApiKeyFailure>>(),
+    );
+    expect(storage.values.keys, ['exchange_api_key_testnet']);
+    expect(jsonDecode(storage.values['exchange_api_key_testnet'] ?? ''), {
+      ..._fields,
+      'lastUsedAt': null,
+      'expiresAt': null,
     });
   });
 
-  group('deleteApiKey', () {
-    test('a throwing delete is sanitized', () async {
-      when(
-        () => datasource.delete(isTestnet: any(named: 'isTestnet')),
-      ).thenThrow(Exception('keychain locked while deleting $_key'));
-
-      final result = await build().deleteApiKey(isTestnet: false);
-      final failure = _failureOf(result);
-
-      expect(failure, isA<ExchangeApiKeyDeleteFailure>());
+  test('save and delete failures are sanitized', () async {
+    storage.writeFailure = Exception(_key);
+    final saved = await repository.saveApiKey(_credential(), isTestnet: false);
+    expect(
+      saved,
+      isA<Err<void, ExchangeApiKeyFailure>>().having(
+        (r) => r.failure,
+        'failure',
+        isA<ExchangeApiKeySaveFailure>(),
+      ),
+    );
+    if (saved case Err(:final failure)) {
       expect(failure.logMessage, isNot(contains(_key)));
-    });
+    }
+    storage.deleteFailure = Exception(_key);
+    expect(
+      await repository.deleteApiKey(isTestnet: false),
+      isA<Err<void, ExchangeApiKeyFailure>>().having(
+        (r) => r.failure,
+        'failure',
+        isA<ExchangeApiKeyDeleteFailure>(),
+      ),
+    );
+  });
 
-    test('a clean delete is Ok', () async {
-      when(
-        () => datasource.delete(isTestnet: any(named: 'isTestnet')),
-      ).thenAnswer((_) async {});
-
-      expect(
-        await build().deleteApiKey(isTestnet: false),
-        isA<Ok<void, ExchangeApiKeyFailure>>(),
-      );
-    });
+  test('delete affects only the selected environment', () async {
+    storage.values['exchange_api_key'] = jsonEncode(_fields);
+    storage.values['exchange_api_key_testnet'] = jsonEncode(_fields);
+    expect(
+      await repository.deleteApiKey(isTestnet: true),
+      isA<Ok<void, ExchangeApiKeyFailure>>(),
+    );
+    expect(storage.values.keys, ['exchange_api_key']);
   });
 }
