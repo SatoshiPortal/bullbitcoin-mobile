@@ -24,11 +24,13 @@ abstract final class PayjoinSetup {
     GetIt locator,
     SqliteDatabase database,
     String databasePath, {
+    required DatabaseKey databaseKey,
     bool startRecovery = true,
   }) {
     final runtime = RecoverablePayjoin(() async {
       return openPayjoin(
         databasePath: databasePath,
+        databaseKey: databaseKey,
         wallet: PayjoinWalletAdapter(
           locator<Secrets>(),
           locator<BdkWalletDatasource>(),

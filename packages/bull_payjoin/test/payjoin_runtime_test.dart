@@ -105,9 +105,16 @@ void main() {
 
   tearDown(() => directory.delete(recursive: true));
 
-  Future<Result<PayjoinLifecycle, PayjoinFailure>> open({PayjoinLogPort? log}) {
+  String databasePath() => '${directory.path}/payjoin.sqlite';
+  final key = DatabaseKey(Uint8List.fromList(List<int>.generate(32, (i) => i)));
+
+  Future<Result<PayjoinLifecycle, PayjoinFailure>> open({
+    PayjoinLogPort? log,
+    DatabaseKey? databaseKey,
+  }) {
     return openPayjoin(
-      databasePath: '${directory.path}/payjoin.sqlite',
+      databasePath: databasePath(),
+      databaseKey: databaseKey ?? key,
       wallet: _WalletPort(),
       blockchain: _BlockchainPort(),
       fees: _FeesPort(),

@@ -12,20 +12,27 @@ import 'package:bb_mobile/native_libraries.dart';
 import 'package:bb_mobile/payjoin_setup.dart' show payjoinDatabaseFilename;
 import 'package:bb_mobile/report_logger_adapter.dart';
 import 'package:bb_mobile/startup_wizard.dart';
+import 'package:bull_local_data/bull_local_data.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bull_pricer/bull_pricer.dart';
 import 'package:bull_tor/tor.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
+import 'package:primitives/primitives.dart' show Result;
+import 'package:secrets/secrets.dart';
 
 class Bull {
+  /// One per foreground run: the local databases' keys are read through it before the locator exists, and the locator then registers this same instance.
+  ///
+  /// Liquid signing removes its temporary children after use. Stale caches contain blinding material, so keep them in the OS's non-backed-up cache.
+  static final secrets = Secrets(
+    scratchDirectory: () async => (await getTemporaryDirectory()).path,
+  );
+
+  /// Logging, error reporting and native libraries: everything that runs before the local databases are opened.
   static Future<void> init() async {
     final bullDirectory = await getApplicationDocumentsDirectory();
-    final payjoinDatabasePath = p.join(
-      bullDirectory.path,
-      payjoinDatabaseFilename,
-    );
 
     await initializeLogging(
       directory: bullDirectory,
@@ -42,6 +49,28 @@ class Bull {
     await Report.init(wizardConsent: await readStartupReportingConsent());
 
     await initFlutterRustBridgeDependencies();
+  }
+
+  /// Where the local databases live: each owner's file in the Documents directory, which iOS excludes from backups (AppDelegate).
+  static Future<LocalDatabasePaths> localDatabasePaths() async {
+    final bullDirectory = await getApplicationDocumentsDirectory();
+    return LocalDatabasePaths(
+      main: p.join(bullDirectory.path, '${SqliteDatabase.name}.sqlite'),
+      payjoin: p.join(bullDirectory.path, payjoinDatabaseFilename),
+    );
+  }
+
+  /// Opens the local databases encrypted, encrypting them first if an earlier release left them in clear. Foreground only.
+  static Future<Result<LocalDataSession, LocalDataFailure>> openLocalData(
+    LocalDatabasePaths paths,
+  ) => LocalData.unlock(secrets: secrets, paths: paths);
+
+  /// Everything that needs the local databases open.
+  static Future<void> start(
+    LocalDataSession session,
+    LocalDatabasePaths paths,
+  ) async {
+    final bullDirectory = await getApplicationDocumentsDirectory();
 
     // Foreground only: background tasks never read a price, and must not open
     // the pricer's database while the app may be upgrading it.
@@ -53,8 +82,10 @@ class Bull {
     //  so it's important to call it after the initialization
     await AppLocator.setup(
       locator,
-      SqliteDatabase(),
-      payjoinDatabasePath: payjoinDatabasePath,
+      SqliteDatabase(session.mainDatabase),
+      secrets: secrets,
+      payjoinDatabasePath: paths.payjoin,
+      payjoinDatabaseKey: session.payjoinKey,
     );
     Bloc.observer = AppBlocObserver();
 

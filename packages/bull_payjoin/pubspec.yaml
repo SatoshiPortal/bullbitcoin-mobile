@@ -16,6 +16,7 @@ dependencies:
       path: packages/bull_sdk
   crypto: ^3.0.7
   dio: ^5.9.0
+  bull_sqlite:
   drift: 2.34.0
   freezed_annotation: ^3.1.0
   meta: ^1.17.0
