@@ -1263,6 +1263,79 @@ void main() {
       expect(cubit.state.signingTransaction, isFalse);
     });
 
+    for (final broadcastStarted in [false, true]) {
+      test(
+        broadcastStarted
+            ? 'finishes a broadcast when wallet coins change in flight'
+            : 'returns to confirmation when wallet coins change during validation',
+        () async {
+          final cubit = await start();
+          await cubit.amountChanged(amount: '20000');
+          await cubit.onAmountConfirmed();
+          final pendingStarted = Completer<void>();
+          final validation = Completer<List<WalletUtxo>>();
+          final broadcast = Completer<String>();
+          var available = [selected];
+          when(
+            () => getWalletUtxosUsecase.execute(walletId: wallet.id),
+          ).thenAnswer((_) async {
+            if (!broadcastStarted &&
+                cubit.state.step == SendStep.sending &&
+                !pendingStarted.isCompleted) {
+              pendingStarted.complete();
+              return validation.future;
+            }
+            return available;
+          });
+          when(
+            () => broadcastLiquidTxUsecase.execute('signed-liquid-pset'),
+          ).thenAnswer((_) {
+            pendingStarted.complete();
+            return broadcast.future;
+          });
+
+          final confirming = cubit.onConfirmTransactionClicked();
+          await pendingStarted.future;
+          available = [
+            selected,
+            WalletUtxo.liquid(
+              walletId: wallet.id,
+              txId: 'new-liquid-coin',
+              vout: 0,
+              scriptPubkey: '',
+              amountSat: BigInt.from(10000),
+              standardAddress: 'ex1own',
+              confidentialAddress: 'lq1own',
+            ),
+          ];
+          await cubit.loadUtxos();
+          final stepAfterSync = cubit.state.step;
+          validation.complete([selected]);
+          broadcast.complete('broadcast-txid');
+          await confirming;
+
+          expect(
+            stepAfterSync,
+            broadcastStarted ? SendStep.sending : SendStep.confirm,
+          );
+          expect(
+            cubit.state.step,
+            broadcastStarted ? SendStep.success : SendStep.confirm,
+          );
+          expect(cubit.state.txId, broadcastStarted ? 'broadcast-txid' : null);
+          expect(cubit.state.broadcastingTransaction, isFalse);
+          expect(cubit.state.signedLiquidTx, isNull);
+          if (broadcastStarted) {
+            verify(
+              () => broadcastLiquidTxUsecase.execute('signed-liquid-pset'),
+            ).called(1);
+          } else {
+            verifyNever(() => broadcastLiquidTxUsecase.execute(any()));
+          }
+        },
+      );
+    }
+
     test('rejects a newly frozen Liquid coin before broadcasting', () async {
       final cubit = await start(sweep: true);
       await cubit.signTransaction();

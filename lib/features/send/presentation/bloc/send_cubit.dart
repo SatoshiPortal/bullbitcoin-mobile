@@ -4007,6 +4007,13 @@ class SendCubit extends Cubit<SendState>
     }
     emit(
       state.copyWith(
+        // Validation can be cancelled; a broadcast already in flight must finish.
+        step:
+            state.step == SendStep.sending &&
+                !state.broadcastingTransaction &&
+                state.txId == null
+            ? SendStep.confirm
+            : state.step,
         signedBitcoinTx: null,
         signedBitcoinPsbt: null,
         signedLiquidTx: null,
