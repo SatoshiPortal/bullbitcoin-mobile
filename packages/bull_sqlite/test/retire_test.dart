@@ -159,6 +159,42 @@ void main() {
     },
   );
 
+  test(
+    'a marker that is not even text is unreadable: it blocks a resume, but not a consented deletion',
+    () {
+      family.retirement.writeAsBytesSync([0xff, 0xfe, 0x00, 0xc3]);
+      expect(
+        () => resumeRetirement(family),
+        throwsA(isA<InconsistentFamilyException>()),
+      );
+      expect(family.database.existsSync(), isTrue);
+      expect(
+        EncryptedSqlite.retire(path, const Retirement.delete()),
+        isA<Ok<void, SqliteStorageFailure>>(),
+      );
+      expect(names(), isEmpty);
+    },
+  );
+
+  test('a pending marker is made durable before any member is touched', () {
+    family.retirement.writeAsStringSync('delete');
+    final steps = <RetirementStep>[];
+    retire(
+      family,
+      const Retirement.delete(),
+      onStep: (step) {
+        steps.add(step);
+        if (step == RetirementStep.marked) {
+          // The marker survived and nothing was deleted before this point.
+          expect(family.retirement.existsSync(), isTrue);
+          expect(family.database.existsSync(), isTrue);
+        }
+      },
+    );
+    expect(steps.first, RetirementStep.marked);
+    expect(names(), isEmpty);
+  });
+
   test('no marker, nothing to resume', () {
     expect(
       EncryptedSqlite.resumeRetirement(path),
