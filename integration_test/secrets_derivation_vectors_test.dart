@@ -174,16 +174,79 @@ Future<void> main({bool isInitialized = false}) async {
       }
     });
 
-    test('the Liquid descriptor ignores the passphrase', () async {
-      // The claim the README makes about lwk, asserted against lwk itself —
-      // the unit suite cannot, since this call needs the FFI.
+    test('Liquid regtest is derived, not refused', () async {
+      // lwk-dart expresses Liquid regtest since #99. A confidential
+      // descriptor carries no network (testnet and regtest share coin type 1'
+      // and the tpub encoding); the chain shows in the addresses the wallet
+      // derives, which lwk builds for the network it is given.
+      final secret = await importWords();
+      final regtest = unwrap(
+        await secret.derive.descriptors.liquid(network: LiquidNetwork.regtest),
+      );
+      expect(regtest, contains('ct('));
+      expect(regtest, contains(secret.id.hex));
+    });
+
+    test('the Liquid descriptor equals lwk-dart\'s golden vectors', () async {
+      // Copied from lwk-dart's `keys_and_addresses_derive_as_before` (pinned
+      // through bull_sdk; produced with lwk 0.18.1 and LWK master alike) for
+      // the published BIP39 vector "abandon … about", plus its independent
+      // passphrase and Japanese vectors. Unit tests cannot load lwk, so this
+      // is where the app pins its own Liquid keys.
+      const abandon = [
+        'abandon', 'abandon', 'abandon', 'abandon', 'abandon', 'abandon', //
+        'abandon', 'abandon', 'abandon', 'abandon', 'abandon', 'about',
+      ];
+      const japanese = [
+        'あいこくしん', 'あいこくしん', 'あいこくしん', 'あいこくしん', //
+        'あいこくしん', 'あいこくしん', 'あいこくしん', 'あいこくしん', //
+        'あいこくしん', 'あいこくしん', 'あいこくしん', 'あおぞら',
+      ];
+      Future<String> liquid(Secret secret, LiquidNetwork network) async =>
+          unwrap(await secret.derive.descriptors.liquid(network: network));
+
+      final plain = await importFixture(abandon);
+      expect(plain.id.hex, '73c5da0a');
+      expect(
+        await liquid(plain, LiquidNetwork.mainnet),
+        'ct(slip77(9c8e4f05c7711a98c838be228bcb84924d4570ca53f35fa1c793e58841d47023),elwpkh([73c5da0a/84h/1776h/0h]xpub6CRFzUgHFDaiDAQFNX7VeV9JNPDRabq6NYSpzVZ8zW8ANUCiDdenkb1gBoEZuXNZb3wPc1SVcDXgD2ww5UBtTb8s8ArAbTkoRQ8qn34KgcY/<0;1>/*))#y8jljyxl',
+      );
+      expect(
+        await liquid(plain, LiquidNetwork.testnet),
+        'ct(slip77(9c8e4f05c7711a98c838be228bcb84924d4570ca53f35fa1c793e58841d47023),elwpkh([73c5da0a/84h/1h/0h]tpubDC8msFGeGuwnKG9Upg7DM2b4DaRqg3CUZa5g8v2SRQ6K4NSkxUgd7HsL2XVWbVm39yBA4LAxysQAm397zwQSQoQgewGiYZqrA9DsP4zbQ1M/<0;1>/*))#xte2lx9x',
+      );
+      expect(
+        await liquid(
+          await importFixture(abandon, passphrase: 'TREZOR'),
+          LiquidNetwork.mainnet,
+        ),
+        'ct(slip77(e974a8dfcbd463d5d7f934fa35916ab1edd15ad5b4d1a9dde4bd89eec0bcc872),elwpkh([b4e3f5ed/84h/1776h/0h]xpub6CzUJ282mBSqDR69LkEEFWr11oY6gcy47Mt6Hfoeb2Tgzq8AN6asRYv9LjwC6f9a6pDqswqHdtnJmuniNqDP7ZgBoPqy55az9tGUHk4KPoc/<0;1>/*))#xvqkzrvl',
+      );
+      final fromJapanese = switch (await secrets.import(
+        words: japanese,
+        language: Language.japanese,
+        passphrase: '㍍ガバヴァぱばぐゞちぢ十人十色',
+      )) {
+        Ok(:final value) => value,
+        Err(failure: SecretAlreadyExistsFailure(:final id)) => unwrap(
+          await secrets.fetch(id),
+        ),
+        Err(:final failure) => fail('import: ${failure.runtimeType}'),
+      };
+      expect(
+        await liquid(fromJapanese, LiquidNetwork.mainnet),
+        'ct(slip77(45ca5d9811bccd804a5b51aaf262a6b5be46f0fee838fcc5d1451b3c23944f54),elwpkh([d9a4c6ac/84h/1776h/0h]xpub6CxzR79MsXkn6uYBAQXiFxPxHLCTkLSgjfi2GrYkAo2NgUY3KCh3a6tgMnJMNV7ZdUvpLV2Dsp4nB5t3rFhNbGExFBb5euGVcqhKZkPx9PF/<0;1>/*))#2q0d70qc',
+      );
+    });
+
+    test('the Liquid descriptor honours the passphrase', () async {
+      // Liquid derives from the secret's full BIP39 seed, as Bitcoin does. An
+      // empty passphrase keeps every existing (passphrase-less) wallet's
+      // descriptor; a passphrase gives another wallet. Checkable only here,
+      // since lwk needs the FFI.
       final plain = await importWords();
       final withPassphrase = await importWords(passphrase: 'TREZOR');
-      expect(
-        withPassphrase.id.hex,
-        isNot(plain.id.hex),
-        reason: 'two different secrets, so two different Bitcoin wallets',
-      );
+      expect(withPassphrase.id.hex, isNot(plain.id.hex));
 
       final a = unwrap(
         await plain.derive.descriptors.liquid(network: LiquidNetwork.testnet),
@@ -194,8 +257,10 @@ Future<void> main({bool isInitialized = false}) async {
         ),
       );
 
-      expect(b, a, reason: 'same descriptor: same addresses, same funds');
       expect(a, contains('ct('));
+      expect(a, contains(plain.id.hex));
+      expect(b, isNot(a), reason: 'the passphrase selects another wallet');
+      expect(b, contains(withPassphrase.id.hex));
     });
 
     test('a BIP85 child is the pinned value', () async {
@@ -268,6 +333,62 @@ Future<void> main({bool isInitialized = false}) async {
       expect(b.fingerprint, isNot(a.fingerprint));
       expect(b.xprv, isNot(a.xprv));
     });
+
+    test(
+      'the same entropy in French gets its own Liquid wallet and swap key',
+      () async {
+        // Entropy 00…00 in both wordlists: one entropy, two BIP39 seeds,
+        // since the seed is PBKDF2 over the sentence. Liquid and Boltz derive
+        // from that seed, so the French secret must get wallets of its own,
+        // not the English sibling's and not a refusal.
+        Future<Secret> importIn(List<String> words, Language language) async =>
+            switch (await secrets.import(words: words, language: language)) {
+              Ok(:final value) => value,
+              Err(failure: SecretAlreadyExistsFailure(:final id)) => unwrap(
+                await secrets.fetch(id),
+              ),
+              Err(:final failure) => fail('import: ${failure.runtimeType}'),
+            };
+        final english = await importIn([
+          ...List.filled(11, 'abandon'),
+          'about',
+        ], Language.english);
+        final french = await importIn([
+          ...List.filled(11, 'abaisser'),
+          'abeille',
+        ], Language.french);
+        expect(french.id.hex, isNot(english.id.hex));
+
+        final englishLiquid = unwrap(
+          await english.derive.descriptors.liquid(
+            network: LiquidNetwork.mainnet,
+          ),
+        );
+        final frenchLiquid = unwrap(
+          await french.derive.descriptors.liquid(
+            network: LiquidNetwork.mainnet,
+          ),
+        );
+        expect(frenchLiquid, isNot(englishLiquid));
+        // The key origin is the master fingerprint of the seed it came from,
+        // which Dart computes independently of lwk.
+        expect(frenchLiquid, contains(french.id.hex));
+        expect(englishLiquid, contains(english.id.hex));
+
+        for (final secret in [english, french]) {
+          final key = unwrap(
+            await secret.derive.swapKey(network: BitcoinNetwork.mainnet),
+          );
+          final child = unwrap(
+            await secret.derive.bip85.mnemonic(
+              wordCount: MnemonicLength.words12,
+              index: 26589,
+            ),
+          );
+          expect(key.mnemonic, child.join(' '));
+        }
+      },
+    );
 
     test(
       'a vault restores its words with a separately supplied passphrase',

@@ -7,18 +7,6 @@ library;
 
 import 'package:meta/meta.dart';
 
-/// Thrown when `LiquidNetwork.regtest` reaches lwk, which has no such
-/// variant — here and in `LiquidSigner`. Translated to
-/// `UnsupportedNetworkFailure` by the error boundary.
-class UnsupportedLiquidNetwork implements Exception {
-  final String message;
-  @internal
-  const UnsupportedLiquidNetwork(this.message);
-
-  @override
-  String toString() => 'UnsupportedLiquidNetwork: $message';
-}
-
 /// Thrown by `RecoverBullBackup.open` for anything that is not a vault this
 /// key opens. Translated to `InvalidVaultFailure` by the façade. The
 /// message is always one of `RecoverBullBackup`'s own fixed strings, so it
@@ -58,4 +46,11 @@ class PassphraseUnsupported implements Exception {
 class SilentPaymentsOpenFailed implements Exception {
   @internal
   const SilentPaymentsOpenFailed();
+}
+
+/// A word-based capability cannot consume this mnemonic's wordlist. Only Silent Payments remains: bwk builds an account from English words.
+final class LanguageUnsupported implements Exception {
+  final String message;
+  @internal
+  const LanguageUnsupported(this.message);
 }

@@ -6,7 +6,7 @@ import 'package:bb_mobile/core/recoverbull/domain/recoverbull_tor_route.dart';
 import 'package:bb_mobile/core/recoverbull/domain/recoverbull_failure.dart'
     as core;
 import 'package:bb_mobile/core/recoverbull/domain/usecases/check_server_connection_usecase.dart';
-import 'package:bb_mobile/core/recoverbull/domain/usecases/create_encrypted_vault_usecase.dart';
+import 'package:bb_mobile/features/recoverbull/domain/usecases/create_encrypted_vault_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/fetch_vault_key_from_server_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/connect_google_drive_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/fetch_latest_google_drive_backup_usecase.dart';
@@ -528,8 +528,8 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
         case Ok(:final value):
           vault = value.vault;
           vaultKey = value.vaultKey;
-        case Err():
-          emit(state.copyWith(failure: const VaultCreationFailure()));
+        case Err(:final failure):
+          emit(state.copyWith(failure: failure));
           return;
       }
 

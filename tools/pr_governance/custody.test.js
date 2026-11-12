@@ -79,3 +79,49 @@ test('no finding: no comment, unless one must be updated to say so', () => {
   assert.equal(commentBody({ findings: [], uninspected: [] }), null);
   assert.match(commentBody({ findings: [], uninspected: [] }, { hadComment: true }), /No change to the custody boundary remains/);
 });
+
+const unchangedRename = {
+  filename: 'lib/core/exchange/data/http/bullbitcoin_api_dio_factory.dart',
+  previous_filename: 'lib/core/exchange/data/datasources/http/bullbitcoin_api_dio_factory.dart',
+  status: 'renamed',
+  changes: 0,
+  additions: 0,
+  deletions: 0,
+};
+
+test('the unchanged Dio factory rename from PR #3028 needs no custody comment', () => {
+  const result = reviewFiles([unchangedRename]);
+  assert.deepEqual(result, { findings: [], uninspected: [] });
+  assert.equal(commentBody(result), null);
+});
+
+test('an unchanged rename across a custody policy boundary stays uninspected', () => {
+  for (const previous_filename of ['packages/secrets/lib/store.dart', 'lib/core/storage/storage_locator.dart']) {
+    const renamed = { ...unchangedRename, previous_filename };
+    assert.deepEqual(reviewFiles([renamed]), { findings: [], uninspected: [renamed.filename] });
+  }
+});
+
+test('missing rename evidence or nonzero changes cannot bypass inspection', () => {
+  for (const extra of [
+    { status: 'modified' }, { previous_filename: undefined }, { previous_filename: '' },
+    { changes: undefined }, { additions: undefined }, { deletions: undefined },
+    { changes: 1 }, { additions: 1 }, { deletions: 1 }, { changes: '0' },
+  ]) {
+    const renamed = { ...unchangedRename, ...extra };
+    assert.deepEqual(reviewFiles([renamed]).uninspected, [renamed.filename]);
+  }
+});
+
+test('a supplied rename patch is inspected even with unchanged counters', () => {
+  const result = reviewFiles([{ ...unchangedRename, patch: patch(1, ["+import 'package:flutter_secure_storage/flutter_secure_storage.dart';"]) }]);
+  assert.deepEqual(rules(result), ['fss-import']);
+});
+
+test('missing patches alone report incomplete inspection without claiming a custody change or large diff', () => {
+  const body = commentBody(reviewFiles([{ filename: 'lib/a.dart', status: 'modified' }]));
+  assert.match(body, /inspection is incomplete/);
+  assert.match(body, /GitHub did not provide a patch/);
+  assert.match(body, /`lib\/a.dart`/);
+  assert.doesNotMatch(body, /touches the boundary|diff this large|why each change/);
+});

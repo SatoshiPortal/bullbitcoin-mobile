@@ -259,6 +259,31 @@ class _SummarySection extends StatelessWidget {
           ),
         ),
 
+        // --- Invalid amounts alert — outputs exceed inputs ---
+        if (transaction.outputsExceedInputs)
+          Padding(
+            padding: const EdgeInsets.only(bottom: 8),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Icon(
+                  Icons.error_outline,
+                  size: 14,
+                  color: context.appColors.error,
+                ),
+                const Gap(4),
+                Expanded(
+                  child: BullText(
+                    context.loc.coreScreensOutputsExceedInputs,
+                    style: context.font.bodySmall?.copyWith(
+                      color: context.appColors.error,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+
         // --- Fee rate row (optional) ---
         if (transaction.feeRate != null) ...[
           _divider(context),

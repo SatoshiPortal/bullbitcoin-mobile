@@ -56,10 +56,9 @@ final class PassphraseUnsupportedFailure extends SecretFailure {
 }
 
 /// The requested network exists in `primitives` but the underlying
-/// library cannot express it. Currently only Liquid regtest: lwk's
-/// `LiquidNetwork` has mainnet and testnet only, and substituting
-/// testnet would return a descriptor whose addresses do not belong to
-/// the chain the caller named.
+/// library cannot express it. No network is in that case since lwk-dart
+/// expresses Liquid regtest; kept so a library that cannot express a
+/// network refuses it rather than substituting another chain.
 final class UnsupportedNetworkFailure extends SecretFailure {
   const UnsupportedNetworkFailure([super.logMessage]);
 }
@@ -119,4 +118,9 @@ String describeSafely(Object error) {
   // Raised by this package, with messages this package wrote.
   if (error is FormatException) return 'FormatException';
   return error.runtimeType.toString();
+}
+
+/// The operation cannot use the mnemonic's language.
+final class LanguageUnsupportedFailure extends SecretFailure {
+  const LanguageUnsupportedFailure([super.logMessage]);
 }
