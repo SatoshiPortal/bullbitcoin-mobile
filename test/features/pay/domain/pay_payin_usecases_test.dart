@@ -173,6 +173,20 @@ void main() {
       );
     });
 
+    test('does not turn programmer errors into payment failures', () async {
+      when(
+        () => liquidWallet.buildPset(
+          walletId: any(named: 'walletId'),
+          address: any(named: 'address'),
+          feeRate: any(named: 'feeRate'),
+          amountSat: any(named: 'amountSat'),
+          drain: any(named: 'drain'),
+        ),
+      ).thenThrow(StateError('invalid fixture state'));
+
+      await expectLater(run(), throwsA(isA<StateError>()));
+    });
+
     test('consolidation is sanitized rather than explained raw', () async {
       stubFailure(const WalletConsolidationRequiredFailure(_rawReason));
 

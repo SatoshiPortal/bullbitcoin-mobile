@@ -1037,6 +1037,12 @@ class _BottomButtons extends StatelessWidget {
       (SendCubit cubit) => cubit.state.signedBitcoinTx != null,
     );
     final isSpMode = context.read<SendCubit>().isSpMode;
+    final transactionBusy = context.select(
+      (SendCubit cubit) =>
+          cubit.state.buildingTransaction ||
+          cubit.state.signingTransaction ||
+          cubit.state.broadcastingTransaction,
+    );
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -1048,6 +1054,7 @@ class _BottomButtons extends StatelessWidget {
               !isSpMode) ...[
             BullButton.big(
               label: context.loc.sendAdvancedSettings,
+              disabled: transactionBusy,
               onPressed: () {
                 BullBottomSheet.show(
                   context: context,

@@ -1,3 +1,4 @@
+import '../../../../frozen_outpoints_fixture.dart';
 import 'package:bb_mobile/features/send/public/send_facade.dart';
 import 'package:primitives/primitives.dart' hide Network;
 import 'dart:io';
@@ -26,6 +27,11 @@ class _Settings extends Mock implements SettingsRepository {}
 
 class _Reporter extends Mock implements LoggerReporter {}
 
+const _signedPublicTest =
+    'cHNidP8BAFICAAAAAQECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8gAAAAAAD9////'
+    'AaCGAQAAAAAAFgAUIiIiIiIiIiIiIiIiIiIiIiIiIiIAAAAAAAEBH2iHAQAAAAAAFgAUMzMz'
+    'MzMzMzMzMzMzMzMzMzMzMzMAAA==';
+
 void main() {
   test(
     'final admission refuses a prebuilt local spend before network IO',
@@ -34,6 +40,7 @@ void main() {
       final settings = _Settings();
       final usecase = BroadcastBitcoinTransactionUsecase(
         bitcoinBlockchainRepository: bitcoin,
+        walletUtxoRepository: EmptyFrozenOutpoints(),
         settingsRepository: settings,
         wallet: WalletFacade(
           const Stream.empty(),
@@ -58,6 +65,7 @@ void main() {
   test('accepted local-record failure remains a successful payment', () async {
     final usecase = BroadcastBitcoinTransactionUsecase(
       bitcoinBlockchainRepository: _Bitcoin(),
+      walletUtxoRepository: EmptyFrozenOutpoints(),
       settingsRepository: _Settings(),
       wallet: WalletFacade(
         const Stream.empty(),
@@ -67,7 +75,7 @@ void main() {
     );
     expect(
       await usecase.execute(
-        'signed',
+        _signedPublicTest,
         isPsbt: true,
         network: Network.bitcoinMainnet,
         walletId: 'source',
@@ -121,7 +129,7 @@ void main() {
           ]);
           when(
             () => bitcoin.broadcastPsbt(
-              'signed',
+              _signedPublicTest,
               network: Network.bitcoinMainnet,
             ),
           ).thenAnswer(
@@ -129,7 +137,7 @@ void main() {
           );
           when(
             () => liquid.broadcastTransaction(
-              signedPset: 'signed',
+              signedPset: _signedPublicTest,
               network: Network.liquidMainnet,
             ),
           ).thenAnswer(
@@ -142,6 +150,7 @@ void main() {
                   Ok(BitcoinBroadcastReceipt(await broadcast(), durable: true)),
             ),
             bitcoinBlockchainRepository: bitcoin,
+            walletUtxoRepository: EmptyFrozenOutpoints(),
             settingsRepository: settings,
           );
           final lbtc = BroadcastLiquidTransactionUsecase(
@@ -157,7 +166,7 @@ void main() {
             if (chain == 'bitcoin') {
               expect(
                 await usecase.bitcoin(
-                  'signed',
+                  _signedPublicTest,
                   walletId: 'source',
                   isPsbt: true,
                   network: Network.bitcoinMainnet,
@@ -166,7 +175,7 @@ void main() {
               );
             } else {
               expect(
-                await usecase.liquid('signed', walletId: 'source'),
+                await usecase.liquid(_signedPublicTest, walletId: 'source'),
                 isA<Err>(),
               );
             }
@@ -178,7 +187,7 @@ void main() {
             if (chain == 'bitcoin') {
               expect(
                 await usecase.bitcoin(
-                  'signed',
+                  _signedPublicTest,
                   walletId: 'source',
                   isPsbt: true,
                   network: Network.bitcoinMainnet,
@@ -187,7 +196,7 @@ void main() {
               );
             } else {
               expect(
-                await usecase.liquid('signed', walletId: 'source'),
+                await usecase.liquid(_signedPublicTest, walletId: 'source'),
                 isA<Err>(),
               );
             }

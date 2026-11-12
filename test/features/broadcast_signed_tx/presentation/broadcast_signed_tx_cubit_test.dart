@@ -1,3 +1,4 @@
+import '../../../frozen_outpoints_fixture.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart' as app;
 import 'package:bb_mobile/core/bbqr/bbqr.dart';
 import 'dart:io';
@@ -169,6 +170,7 @@ void main() {
         network: network,
         broadcastBitcoinTransactionUsecase: BroadcastBitcoinTransactionUsecase(
           bitcoinBlockchainRepository: blockchain,
+          walletUtxoRepository: EmptyFrozenOutpoints(),
           settingsRepository: settings,
         ),
         verifySignedTxUsecase: _MockVerifySignedTxUsecase(),
