@@ -1,7 +1,5 @@
 import 'dart:io';
 
-import 'package:primitives/primitives.dart' show Outpoint;
-
 import 'package:bb_mobile/core/screens/route_error_screen.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
@@ -13,7 +11,7 @@ import 'package:bb_mobile/features/bip85_entropy/router.dart';
 import 'package:bb_mobile/features/bitbox/ui/bitbox_router.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/router.dart';
 import 'package:bb_mobile/features/buy/ui/buy_router.dart';
-import 'package:bb_mobile/features/coins/ui/coins_router.dart';
+import 'package:bb_mobile/features/coins/public/coins_facade.dart';
 import 'package:bb_mobile/features/consolidation/ui/consolidation_router.dart';
 import 'package:bb_mobile/features/dca/ui/dca_router.dart';
 import 'package:bb_mobile/features/limit_orders/public/limit_orders_facade.dart';
@@ -183,19 +181,8 @@ class AppRouter {
       OnboardingRouter.route,
       AppUnlockRouter.route,
       WalletRouter.walletDetailRoute(
-        onOpenCoins: (context, wallet) async {
-          final outpoints = await context.pushNamed<Set<Outpoint>>(
-            CoinsRoute.coins.name,
-            extra: wallet,
-          );
-          if (!context.mounted) return;
-          if (outpoints != null && outpoints.isNotEmpty) {
-            await context.pushNamed(
-              SendRoute.send.name,
-              extra: SendRouteArgs.sweep(wallet: wallet, outpoints: outpoints),
-            );
-          }
-        },
+        onOpenCoins: (context, wallet) =>
+            context.pushNamed<void>(CoinsRoute.coins.name, extra: wallet),
       ),
       ConsolidationRouter.route,
       SettingsRouter.route,
@@ -204,7 +191,17 @@ class AppRouter {
       ...TransactionsRouter.transactionDetailsRoutes,
       ReceiveRouter.route,
       SendRouter.route,
-      CoinsRouter.route(missingWalletRedirect: WalletRoute.walletHome.path),
+      CoinsRouter.route(
+        missingWalletRedirect: WalletRoute.walletHome.path,
+        onSend: (context, wallet, outpoints) => context.pushNamed<void>(
+          SendRoute.send.name,
+          extra: SendRouteArgs.selected(wallet: wallet, outpoints: outpoints),
+        ),
+        onSweep: (context, wallet, outpoints) => context.pushNamed<void>(
+          SendRoute.send.name,
+          extra: SendRouteArgs.sweep(wallet: wallet, outpoints: outpoints),
+        ),
+      ),
       SwapRouter.route,
       ...BuyRouter.routes,
       ...FundExchangeRouter.routes,

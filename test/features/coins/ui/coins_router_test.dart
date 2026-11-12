@@ -10,7 +10,11 @@ void main() {
     final router = GoRouter(
       initialLocation: '/coins',
       routes: [
-        CoinsRouter.route(missingWalletRedirect: '/fallback'),
+        CoinsRouter.route(
+          missingWalletRedirect: '/fallback',
+          onSend: (_, _, _) async => fail('unexpected Send navigation'),
+          onSweep: (_, _, _) async => fail('unexpected Sweep navigation'),
+        ),
         GoRoute(
           path: '/fallback',
           builder: (_, _) => const Text('wallet fallback'),

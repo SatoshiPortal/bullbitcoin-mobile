@@ -12,7 +12,6 @@ import 'package:bb_mobile/core/wallet/data/repositories/bitcoin_wallet_repositor
 import 'package:bb_mobile/core/wallet/data/repositories/liquid_wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/outpoint.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_utxo_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/check_liquid_consolidation_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
@@ -39,7 +38,7 @@ import 'package:bb_mobile/features/send/domain/usecases/prepare_liquid_send_usec
 import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_presets_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/resolve_lightning_address_usecase.dart';
-import 'package:bb_mobile/features/send/domain/usecases/resolve_sweep_inputs_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/resolve_selected_inputs_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/select_best_wallet_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/send_with_payjoin_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/sign_bitcoin_tx_usecase.dart';
@@ -219,8 +218,8 @@ class SendLocator {
     locator.registerFactory<VerifySendSignedTxUsecase>(
       () => VerifySendSignedTxUsecase(locator<VerifySignedTxUsecase>()),
     );
-    locator.registerFactory<ResolveSweepInputsUsecase>(
-      () => ResolveSweepInputsUsecase(locator<PayjoinSessions>()),
+    locator.registerFactory<ResolveSelectedInputsUsecase>(
+      () => ResolveSelectedInputsUsecase(locator<PayjoinSessions>()),
     );
     locator.registerFactory<ValidateSweepPaymentRequestUsecase>(
       ValidateSweepPaymentRequestUsecase.new,
@@ -237,7 +236,7 @@ class SendLocator {
     locator.registerFactoryParam<
       SendCubit,
       Wallet?,
-      ({Set<Outpoint> sweepOutpoints, String? spWalletLabel})?
+      ({SendRouteArgs? args, String? spWalletLabel})?
     >(
       (wallet, options) => SendCubit(
         wallet: wallet,
@@ -245,7 +244,14 @@ class SendLocator {
           final label? => SendModeSp(walletLabel: label),
           null => const SendModeBitcoin(),
         },
-        initialSweepOutpoints: options?.sweepOutpoints ?? const {},
+        initialSweepOutpoints: switch (options?.args) {
+          final args? when args.isSweep => args.selectedOutpoints,
+          _ => const {},
+        },
+        initialSelectedOutpoints: switch (options?.args) {
+          final args? when !args.isSweep => args.selectedOutpoints,
+          _ => const {},
+        },
         labelsFacade: locator<LabelsFacade>(),
         bestWalletUsecase: locator<SelectBestWalletUsecase>(),
         detectBitcoinStringUsecase: locator<DetectBitcoinStringUsecase>(),
@@ -306,7 +312,7 @@ class SendLocator {
             locator<PrepareSpPaymentForSendUsecase>(),
         sendSpPaymentForSendUsecase: locator<SendSpPaymentForSendUsecase>(),
         refreshSpWalletForSendUsecase: locator<RefreshSpWalletForSendUsecase>(),
-        resolveSweepInputsUsecase: locator<ResolveSweepInputsUsecase>(),
+        resolveSelectedInputsUsecase: locator<ResolveSelectedInputsUsecase>(),
         validateSweepPaymentRequestUsecase:
             locator<ValidateSweepPaymentRequestUsecase>(),
       ),
