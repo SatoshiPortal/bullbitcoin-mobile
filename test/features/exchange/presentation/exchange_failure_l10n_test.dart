@@ -14,6 +14,7 @@ const _rawReason =
 const _everyFailure = <ExchangeFailure>[
   ExchangeAccountUnavailableFailure(_rawReason),
   ExchangeNotAuthenticatedFailure(_rawReason),
+  ExchangeAuthenticationFailure(_rawReason),
   ExchangeApiKeyStorageFailure(_rawReason),
   ExchangeSessionClearFailure(_rawReason),
   ExchangePreferencesSaveFailure(_rawReason),
