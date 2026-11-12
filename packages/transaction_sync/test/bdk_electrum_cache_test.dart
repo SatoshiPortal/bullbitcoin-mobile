@@ -289,6 +289,97 @@ void main() {
       },
     );
 
+    /// Provisions a store whose only wallet payment, T4, pays [keychain] index
+    /// 30, revealed beyond stop gap 20 before the checked pass. With
+    /// [scanFirst] the store is scanned before the reveal, so the checked pass
+    /// runs above height zero; otherwise it is the store's first scan.
+    Future<(SyncMode, Map<String, String>, FixturePhase)> payRevealedIndex30(
+      bdk.KeychainKind keychain, {
+      required bool scanFirst,
+      required bool discover,
+    }) async {
+      final probe = _Wallet.open(path);
+      final script = _hex(
+        probe.wallet
+            .peekAddress(keychain: keychain, index: 30)
+            .address
+            .scriptPubkey()
+            .toBytes(),
+      );
+      probe.close();
+      File(path).deleteSync();
+      final isolated = await ElectrumFixture.start({
+        for (final name in _walletScripts().keys) name: '0014${'cd' * 20}',
+        'ext5': script,
+      });
+      addTearDown(isolated.close);
+      sync = ElectrumSync(
+        connections: FixtureConnections([isolated.url]),
+        documentsDirectory: () async => dir.path,
+      );
+      final revisions = RevisionStore(writerMetadataPath(dir.path));
+      try {
+        final writer = NativeWalletWriter(
+          lockDirectory: writerLockDirectory(dir.path),
+          revisions: revisions,
+          documentsDirectory: dir.path,
+          catalog: _SingleWalletCatalog(descriptor),
+          reservedAddresses: _NoReservedAddresses(),
+        );
+        expect(
+          await writer.create(descriptor.key, expectedGeneration: 0),
+          isA<Ok>(),
+        );
+      } finally {
+        await revisions.close();
+      }
+      await isolated.load('S7-incoming-unrevealed-in-gap', 0);
+      if (scanFirst) completed(await sync.execute(descriptor));
+      final store = _Wallet.open(path);
+      store.wallet.revealAddressesTo(keychain: keychain, index: 30);
+      store.wallet.persist(persister: store.persister);
+      store.close();
+      final phase = await isolated.load('S7-incoming-unrevealed-in-gap', 1);
+      final mode = completed(
+        await sync.execute(descriptor, discover: discover),
+      ).mode;
+      final reopened = _Wallet.open(path);
+      try {
+        return (mode, _observe(reopened.wallet, phase.ids), phase);
+      } finally {
+        reopened.close();
+      }
+    }
+
+    for (final keychain in [
+      bdk.KeychainKind.external_,
+      bdk.KeychainKind.internal,
+    ]) {
+      test('discovery finds a payment to revealed ${keychain.name} index 30 '
+          'beyond stop gap 20', () async {
+        final (mode, seen, phase) = await payRevealedIndex30(
+          keychain,
+          scanFirst: true,
+          discover: true,
+        );
+        expect(mode, SyncMode.discovery);
+        expect(seen, {'T4': phase.truth['T4']});
+      });
+    }
+
+    test(
+      'the first scan finds a payment to an index revealed beyond the stop gap',
+      () async {
+        final (mode, seen, phase) = await payRevealedIndex30(
+          bdk.KeychainKind.external_,
+          scanFirst: false,
+          discover: false,
+        );
+        expect(mode, SyncMode.initialScan);
+        expect(seen, {'T4': phase.truth['T4']});
+      },
+    );
+
     // Pinned bdk_chain 0.23.3 discovery misses this payment; revealed scripts must cover it.
     test(
       'revealed scripts find a payment at index 30 beyond stop gap 20',

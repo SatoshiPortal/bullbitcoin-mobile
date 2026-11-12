@@ -674,47 +674,35 @@ Future<_Attempt> _performNativeSync(
         : SyncMode.revealedScripts;
     cache = BdkElectrumCache.open(path);
     final prefill = cache?.prefill(client, wallet);
-    failure = const TransactionSyncConnectionFailure();
     final batchSize = (connection.stopGap ~/ 4).clamp(50, 1000);
-    final bdk.Update update;
-    if (mode == SyncMode.revealedScripts) {
-      final builder = wallet.startSyncWithRevealedSpks();
-      bdk.SyncRequest? request;
-      try {
-        request = builder.build();
-        update = client.sync_(
-          request: request,
-          batchSize: batchSize,
-          fetchPrevTxouts: true,
-        );
-      } finally {
-        request?.dispose();
-        builder.dispose();
-      }
-    } else {
-      final builder = wallet.startFullScan();
-      bdk.FullScanRequest? request;
-      try {
-        request = builder.build();
-        update = client.fullScan(
-          request: request,
-          stopGap: connection.stopGap,
-          batchSize: batchSize,
-          fetchPrevTxouts: true,
-        );
-      } finally {
-        request?.dispose();
-        builder.dispose();
-      }
-    }
+    // Every pass covers the revealed scripts: the pinned bdk_chain full scan
+    // counts the stop gap from index 0 and can miss a revealed script beyond
+    // last-used + stop gap. Scan passes then add the unrevealed gap window.
+    failure = const TransactionSyncConnectionFailure();
+    final revealed = _syncRevealedScripts(client, wallet, batchSize);
     failure = const TransactionSyncStorageFailure();
     try {
       markMutation();
-      wallet.applyUpdate(update: update);
-      reportChanges(wallet.persist(persister: persister));
+      wallet.applyUpdate(update: revealed);
     } finally {
-      update.dispose();
+      revealed.dispose();
     }
+    if (mode != SyncMode.revealedScripts) {
+      failure = const TransactionSyncConnectionFailure();
+      final scanned = _fullScan(
+        client,
+        wallet,
+        stopGap: connection.stopGap,
+        batchSize: batchSize,
+      );
+      failure = const TransactionSyncStorageFailure();
+      try {
+        wallet.applyUpdate(update: scanned);
+      } finally {
+        scanned.dispose();
+      }
+    }
+    reportChanges(wallet.persist(persister: persister));
     final parents = cache?.rememberParents(client, wallet);
     final syncedWallet = wallet;
     final incoming = params.observePayments
@@ -751,6 +739,48 @@ Future<_Attempt> _performNativeSync(
     internal?.dispose();
     external?.dispose();
     client?.dispose();
+  }
+}
+
+bdk.Update _syncRevealedScripts(
+  bdk.ElectrumClient client,
+  bdk.Wallet wallet,
+  int batchSize,
+) {
+  final builder = wallet.startSyncWithRevealedSpks();
+  bdk.SyncRequest? request;
+  try {
+    request = builder.build();
+    return client.sync_(
+      request: request,
+      batchSize: batchSize,
+      fetchPrevTxouts: true,
+    );
+  } finally {
+    request?.dispose();
+    builder.dispose();
+  }
+}
+
+bdk.Update _fullScan(
+  bdk.ElectrumClient client,
+  bdk.Wallet wallet, {
+  required int stopGap,
+  required int batchSize,
+}) {
+  final builder = wallet.startFullScan();
+  bdk.FullScanRequest? request;
+  try {
+    request = builder.build();
+    return client.fullScan(
+      request: request,
+      stopGap: stopGap,
+      batchSize: batchSize,
+      fetchPrevTxouts: true,
+    );
+  } finally {
+    request?.dispose();
+    builder.dispose();
   }
 }
 

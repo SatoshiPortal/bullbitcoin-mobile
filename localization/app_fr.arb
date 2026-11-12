@@ -4966,5 +4966,6 @@
   "backgroundNotificationsDenied": "Non autorisées dans les réglages système",
   "backgroundNotificationsRequest": "Autoriser les notifications",
   "backgroundNotificationsSettings": "Ouvrir les réglages de notification",
-  "backgroundPaymentCount": "{count, plural, =1{Vous avez reçu un paiement} other{Vous avez reçu {count} paiements}}"
+  "backgroundPaymentCount": "{count, plural, =1{Vous avez reçu un paiement} other{Vous avez reçu {count} paiements}}",
+  "coreScreensOutputsExceedInputs": "Les sorties dépassent les entrées : cette transaction est invalide et le réseau la rejettera."
 }
