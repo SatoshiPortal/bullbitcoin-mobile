@@ -27,19 +27,26 @@ void main() {
     expect(message, isNot(l10n.broadcastSignedTxErrorInvalidTransaction));
   });
 
-  testWidgets('already-in-chain failure has its own localized message', (
+  testWidgets('each broadcast failure has its own localized message', (
     tester,
   ) async {
-    late String message;
+    const failures = <BroadcastSignedTxFailure>[
+      BroadcastFailedFailure(),
+      TransactionAlreadyInChainFailure(),
+      TransactionRejectedFailure(),
+      BroadcastOutcomeUnknownFailure(),
+      BroadcastNetworkNotEnabledFailure(),
+    ];
+    late List<String> messages;
     await tester.pumpWidget(
       MaterialApp(
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
         home: Builder(
           builder: (context) {
-            message = const TransactionAlreadyInChainFailure().toTranslated(
-              context,
-            );
+            messages = [
+              for (final failure in failures) failure.toTranslated(context),
+            ];
             return const SizedBox.shrink();
           },
         ),
@@ -47,7 +54,13 @@ void main() {
     );
     final l10n = await AppLocalizations.delegate.load(const Locale('en'));
 
-    expect(message, l10n.broadcastSignedTxErrorAlreadyInChain);
-    expect(message, isNot(l10n.broadcastSignedTxBroadcastError));
+    expect(messages, [
+      l10n.broadcastSignedTxBroadcastError,
+      l10n.broadcastSignedTxErrorAlreadyInChain,
+      l10n.broadcastSignedTxErrorRejected,
+      l10n.broadcastSignedTxErrorOutcomeUnknown,
+      l10n.broadcastSignedTxErrorNetworkNotEnabled,
+    ]);
+    expect(messages.toSet(), hasLength(failures.length));
   });
 }

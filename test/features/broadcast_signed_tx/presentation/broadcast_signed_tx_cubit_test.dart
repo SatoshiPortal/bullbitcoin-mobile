@@ -1,6 +1,9 @@
 import 'package:bb_mobile/features/wallet/domain/wallet.dart' as app;
 import 'package:bb_mobile/core/bbqr/bbqr.dart';
+import 'dart:io';
+
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
+import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/features/send/data/bitcoin_blockchain_repository.dart';
 import 'package:bb_mobile/features/send/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/core/utils/result.dart';
@@ -147,51 +150,103 @@ void main() {
     },
   );
 
-  group('broadcast rejected by the node', () {
-    Future<BroadcastSignedTxCubit> rebroadcast(Object nodeError) async {
-      final blockchain = _MockBitcoinBlockchainRepository();
-      when(
-        () => blockchain.broadcastPsbt(any(), network: any(named: 'network')),
-      ).thenThrow(nodeError);
+  group('broadcast failure categories reach the screen', () {
+    late _MockBitcoinBlockchainRepository blockchain;
+    late _MockSettingsRepository settings;
+
+    Future<BroadcastSignedTxCubit> broadcastThrough(
+      Object? nodeError, {
+      app.Network network = app.Network.bitcoinMainnet,
+    }) async {
+      if (nodeError != null) {
+        when(
+          () => blockchain.broadcastPsbt(any(), network: any(named: 'network')),
+        ).thenThrow(nodeError);
+      }
       // The real use case, called without a wallet as Broadcast Transaction
       // does, so the category travels from the mapper to the cubit.
       final cubit = BroadcastSignedTxCubit(
-        network: app.Network.bitcoinMainnet,
+        network: network,
         broadcastBitcoinTransactionUsecase: BroadcastBitcoinTransactionUsecase(
           bitcoinBlockchainRepository: blockchain,
-          settingsRepository: _MockSettingsRepository(),
+          settingsRepository: settings,
         ),
         verifySignedTxUsecase: _MockVerifySignedTxUsecase(),
       );
       addTearDown(cubit.close);
       await cubit.tryParseTransaction(psbt);
       await cubit.broadcastTransaction();
+      expect(cubit.state.isBroadcasted, isFalse);
+      expect(cubit.state.isBroadcasting, isFalse);
       return cubit;
     }
 
     setUpAll(() => registerFallbackValue(app.Network.bitcoinMainnet));
 
+    setUp(() {
+      blockchain = _MockBitcoinBlockchainRepository();
+      settings = _MockSettingsRepository();
+    });
+
     // Regression (Pixel 6a): rebroadcasting a confirmed transaction said
     // "Check your internet connection" instead of reporting it confirmed.
-    test('reports a transaction already in the chain', () async {
-      final cubit = await rebroadcast(
+    test('-27 reports a transaction already in the chain', () async {
+      final cubit = await broadcastThrough(
         bdk.ProtocolElectrumException(
           '{"code":2,"message":"sendrawtransaction RPC error -27: Transaction outputs already in utxo set"}',
         ),
       );
 
       expect(cubit.state.failure, isA<TransactionAlreadyInChainFailure>());
-      expect(cubit.state.isBroadcasted, isFalse);
-      expect(cubit.state.isBroadcasting, isFalse);
     });
 
-    test('keeps the generic failure for other rejections', () async {
-      final cubit = await rebroadcast(
-        bdk.ProtocolElectrumException('{"code":-26}'),
+    // Propagation of the rejected category, as for the modified signed
+    // transaction refused on the Pixel 6a; not a proof of its cause.
+    test('-26 reports a rejected transaction', () async {
+      final cubit = await broadcastThrough(
+        bdk.ProtocolElectrumException(
+          '{"code":2,"message":"sendrawtransaction RPC error -26: mandatory-script-verify-flag-failed (Signature must be zero for failed CHECK(MULTI)SIG operation)"}',
+        ),
+      );
+
+      expect(cubit.state.failure, isA<TransactionRejectedFailure>());
+    });
+
+    // Propagation of the unexpected category, as for the PSBT pasted again
+    // on the Pixel 6a; not a proof of a mempool cause.
+    test('an unclassified failure leaves the outcome unknown', () async {
+      final cubit = await broadcastThrough(
+        bdk.AllAttemptsErroredElectrumException(),
+      );
+
+      expect(cubit.state.failure, isA<BroadcastOutcomeUnknownFailure>());
+    });
+
+    test('only a connection failure blames the connection', () async {
+      final cubit = await broadcastThrough(
+        const SocketException('electrum.invalid'),
       );
 
       expect(cubit.state.failure, isA<BroadcastFailedFailure>());
-      expect(cubit.state.isBroadcasted, isFalse);
+    });
+
+    test('a network the settings do not enable is refused before any '
+        'network call', () async {
+      when(settings.fetch).thenAnswer(
+        (_) async => const SettingsEntity(
+          environment: Environment.testnet,
+          bitcoinUnit: BitcoinUnit.sats,
+          currencyCode: 'USD',
+        ),
+      );
+
+      final cubit = await broadcastThrough(
+        null,
+        network: app.Network.bitcoinTestnet,
+      );
+
+      expect(cubit.state.failure, isA<BroadcastNetworkNotEnabledFailure>());
+      verifyZeroInteractions(blockchain);
     });
   });
 
