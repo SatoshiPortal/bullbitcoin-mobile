@@ -176,7 +176,7 @@ packages:
       path: "packages/bitbox-transport"
       ref: "571ab40a3dd2c458c7c212a95a2f192e0d0cef4b"
       resolved-ref: "571ab40a3dd2c458c7c212a95a2f192e0d0cef4b"
-      url: "https://github.com/ethicnology-agent/bull_sdk"
+      url: "https://github.com/SatoshiPortal/bull_sdk"
     source: git
     version: "0.1.0"
   bitcoin_base:
@@ -242,7 +242,7 @@ packages:
       path: "packages/boltz-stream"
       ref: "571ab40a3dd2c458c7c212a95a2f192e0d0cef4b"
       resolved-ref: "571ab40a3dd2c458c7c212a95a2f192e0d0cef4b"
-      url: "https://github.com/ethicnology-agent/bull_sdk"
+      url: "https://github.com/SatoshiPortal/bull_sdk"
     source: git
     version: "0.1.0"
   boolean_selector:
@@ -331,7 +331,7 @@ packages:
       path: "packages/bull_sdk"
       ref: "571ab40a3dd2c458c7c212a95a2f192e0d0cef4b"
       resolved-ref: "571ab40a3dd2c458c7c212a95a2f192e0d0cef4b"
-      url: "https://github.com/ethicnology-agent/bull_sdk"
+      url: "https://github.com/SatoshiPortal/bull_sdk"
     source: git
     version: "1.0.0+1"
   camera:
@@ -1464,7 +1464,7 @@ packages:
       path: "packages/onion"
       ref: "571ab40a3dd2c458c7c212a95a2f192e0d0cef4b"
       resolved-ref: "571ab40a3dd2c458c7c212a95a2f192e0d0cef4b"
-      url: "https://github.com/ethicnology-agent/bull_sdk"
+      url: "https://github.com/SatoshiPortal/bull_sdk"
     source: git
     version: "0.1.0"
   package_config:
@@ -1770,7 +1770,7 @@ packages:
       path: "packages/bull_sdk/rust_builder"
       ref: "571ab40a3dd2c458c7c212a95a2f192e0d0cef4b"
       resolved-ref: "571ab40a3dd2c458c7c212a95a2f192e0d0cef4b"
-      url: "https://github.com/ethicnology-agent/bull_sdk"
+      url: "https://github.com/SatoshiPortal/bull_sdk"
     source: git
     version: "0.0.1"
   rxdart:
@@ -1787,7 +1787,7 @@ packages:
       path: "packages/satoshifier"
       ref: "571ab40a3dd2c458c7c212a95a2f192e0d0cef4b"
       resolved-ref: "571ab40a3dd2c458c7c212a95a2f192e0d0cef4b"
-      url: "https://github.com/ethicnology-agent/bull_sdk"
+      url: "https://github.com/SatoshiPortal/bull_sdk"
     source: git
     version: "0.0.1"
   sentry:
