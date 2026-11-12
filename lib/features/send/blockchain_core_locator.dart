@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/send/domain/usecases/verify_signed_tx_usecase.dart';
 import 'public/send_facade.dart';
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
 import 'package:bb_mobile/core/blockchain/data/datasources/bdk_bitcoin_blockchain_datasource.dart';
@@ -43,6 +44,7 @@ class BlockchainLocator {
       () => SendFacade(
         bitcoin: locator<BroadcastBitcoinTransactionUsecase>().execute,
         liquid: locator<BroadcastLiquidTransactionUsecase>().execute,
+        verifySignedTxUsecase: locator<VerifySignedTxUsecase>(),
       ),
     );
     locator.registerFactory<BroadcastBitcoinTransactionUsecase>(

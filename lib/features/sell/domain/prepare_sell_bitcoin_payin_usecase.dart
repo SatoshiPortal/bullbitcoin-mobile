@@ -31,23 +31,26 @@ class PrepareSellBitcoinPayinUsecase {
   @useResult
   Future<Result<PreparedSellBitcoinPayin, SellFailure>> execute({
     required String walletId,
-    required String address,
+    required List<BitcoinTransactionRecipient> recipients,
     required NetworkFee networkFee,
-    int? amountSat,
-    bool drain = false,
     List<WalletUtxo>? selectedInputs,
     bool replaceByFee = true,
   }) async {
     try {
-      final prepared = await _prepareBitcoinSendUsecase.execute(
+      final result = await _prepareBitcoinSendUsecase.execute(
         walletId: walletId,
-        address: address,
+        recipients: recipients,
         networkFee: networkFee,
-        amountSat: amountSat,
-        drain: drain,
         selectedInputs: selectedInputs,
         replaceByFee: replaceByFee,
       );
+      final PreparedBitcoinSend prepared;
+      switch (result) {
+        case Ok(:final value):
+          prepared = value;
+        case Err(:final failure):
+          return Err(SellUnexpectedFailure(failure.logMessage));
+      }
       final absoluteFees = await _calculateBitcoinAbsoluteFeesUsecase.execute(
         psbt: prepared.unsignedPsbt,
       );
@@ -61,13 +64,13 @@ class PrepareSellBitcoinPayinUsecase {
       return Err(
         SellSpendBlockedFailure(busy: e.status == BitcoinSpendStatus.busy),
       );
-    } catch (e, st) {
+    } on Exception catch (e, st) {
       log.severe(
         message: 'Failed to build the Bitcoin sell payin',
-        error: e,
+        error: e.runtimeType,
         trace: st,
       );
-      return Err(SellUnexpectedFailure('$e'));
+      return const Err(SellUnexpectedFailure());
     }
   }
 }

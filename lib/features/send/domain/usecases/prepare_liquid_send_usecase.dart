@@ -1,47 +1,56 @@
-import 'package:bb_mobile/core/errors/bull_exception.dart';
+import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
+import 'package:primitives/primitives.dart';
+import 'package:meta/meta.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
-import 'package:bb_mobile/core/wallet/domain/no_spendable_utxo_exception.dart';
-import 'package:bb_mobile/features/wallet/data/liquid_wallet_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/consolidation_required_exception.dart';
-import 'package:bb_mobile/core/wallet/domain/insufficient_funds_exception.dart';
+import 'package:bb_mobile/core/wallet/domain/liquid_send_port.dart';
+import 'package:bb_mobile/features/send/domain/send_failure.dart';
 
 class PrepareLiquidSendUsecase {
-  final LiquidWalletRepository _liquidWalletRepository;
+  final LiquidSendPort _liquidWalletRepository;
 
   PrepareLiquidSendUsecase({required this._liquidWalletRepository});
 
-  Future<String> execute({
+  @useResult
+  Future<Result<String, SendFailure>> execute({
     required String walletId,
     required String address,
     required RelativeFee feeRate,
     int? amountSat,
     bool drain = false,
+    Set<Outpoint>? selectedInputs,
+    bool hasFrozenInputs = false,
   }) async {
-    try {
-      if (amountSat == null && drain == false) {
-        throw Exception('Amount cannot be empty if drain is not true');
-      }
-
-      final psbt = await _liquidWalletRepository.buildPset(
-        walletId: walletId,
-        address: address,
-        amountSat: drain ? null : amountSat,
-        feeRate: feeRate,
-        drain: drain,
-      );
-      return psbt;
-    } on NoSpendableUtxoException {
-      rethrow;
-    } on ConsolidationRequiredException {
-      rethrow;
-    } on InsufficientFundsException {
-      rethrow;
-    } catch (e) {
-      throw PrepareLiquidSendException(e.toString());
+    if (amountSat == null && !drain) {
+      return const Err(SendTransactionBuildFailure('Amount required'));
     }
+    final result = await _liquidWalletRepository.buildPset(
+      walletId: walletId,
+      address: address,
+      amountSat: drain ? null : amountSat,
+      feeRate: feeRate,
+      drain: drain,
+      selectedInputs: selectedInputs,
+    );
+    return result.mapErr(
+      (failure) => switch (failure) {
+        WalletSelectedInputsUnavailableFailure() =>
+          const SendSelectedCoinsUnavailableFailure(),
+        WalletNoSpendableInputsFailure() =>
+          selectedInputs != null
+              ? const SendSelectedCoinsUnavailableFailure()
+              : const SendInsufficientBalanceFailure(),
+        WalletInsufficientFundsFailure() =>
+          selectedInputs != null
+              ? const SendSelectedCoinsInsufficientFailure()
+              : hasFrozenInputs
+              ? const SendInsufficientBalanceFailure()
+              : const SendInsufficientFundsForFeesFailure(),
+        WalletConsolidationRequiredFailure() =>
+          const SendConsolidationRequiredFailure(),
+        WalletAddressNetworkMismatchFailure() =>
+          const SendAddressNetworkMismatchFailure(),
+        _ => const SendTransactionBuildFailure(),
+      },
+    );
   }
-}
-
-class PrepareLiquidSendException extends BullException {
-  PrepareLiquidSendException(super.message);
 }

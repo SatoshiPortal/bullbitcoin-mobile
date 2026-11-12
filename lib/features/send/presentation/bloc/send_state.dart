@@ -14,12 +14,24 @@ import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/send/presentation/send_wallet_view.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet_transaction.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/outpoint.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:bb_mobile/features/send/domain/send_failure.dart';
+import 'package:bb_mobile/features/send/domain/bitcoin_recipient_list_policy.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:primitives/primitives.dart'
+    show Sats, BitcoinTransactionRecipient;
 
 part 'send_state.freezed.dart';
+
+typedef SendRecipientDraft = ({
+  int id,
+  String address,
+  String amount,
+  bool receivesRemainder,
+  bool isValid,
+});
 
 enum SendType {
   bitcoin,
@@ -102,15 +114,16 @@ abstract class SendState with _$SendState {
     SendWalletView? selectedWallet,
     @Default(false) bool isWalletManuallySelected,
     bool? isToSelf,
-    // Fail-closed default: until getCurrencies()/onCurrencyChanged() have
-    // fetched settings at least once, no payjoin is attempted. Mirrors
-    // SettingsEntity.isPayjoinEnabled.
+    // Payjoin remains disabled until send settings/onCurrencyChanged() have
+    // fetched settings at least once. Mirrors SettingsEntity.isPayjoinEnabled.
     @Default(false) bool payjoinGloballyEnabled,
     // The sender's per-send opt-out: payjoin can be available for this send
     // (see [isPayjoinAvailable]) and still deliberately not attempted. Reset
     // is not needed — the cubit lives per send flow.
     @Default(false) bool payjoinOptedOut,
     @Default('') String amount,
+    @Default([]) List<SendRecipientDraft> recipientDrafts,
+    @Default([]) List<int> recipientAmountsSat,
     int? confirmedAmountSat,
     BitcoinUnit? bitcoinUnit,
     @Default([]) List<String> fiatCurrencyCodes,
@@ -120,6 +133,8 @@ abstract class SendState with _$SendState {
     @Default('') String label,
     @Default([]) List<WalletUtxo> utxos,
     @Default([]) List<WalletUtxo> selectedUtxos,
+    @Default({}) Set<Outpoint> selectedInputOutpoints,
+    @Default({}) Set<Outpoint> sweepOutpoints,
     @Default(true) bool replaceByFee,
     FeeOptions? bitcoinFeesList,
     FeeOptions? liquidFeesList,
@@ -199,6 +214,92 @@ abstract class SendState with _$SendState {
   /// Whether we have a valid payment request
   bool get hasValidPaymentRequest => paymentRequest != null;
 
+  bool get isSweep => sweepOutpoints.isNotEmpty;
+
+  Set<Outpoint> get requiredInputOutpoints {
+    if (isSweep) return sweepOutpoints;
+    if (selectedInputOutpoints.isNotEmpty) return selectedInputOutpoints;
+    return {for (final utxo in selectedUtxos) utxo.outpoint};
+  }
+
+  bool get usesSelectedInputsOnly => requiredInputOutpoints.isNotEmpty;
+
+  bool get selectedInputsUnavailable {
+    if (!usesSelectedInputsOnly) return false;
+    final resolved = {for (final utxo in selectedUtxos) utxo.outpoint};
+    return resolved.length != requiredInputOutpoints.length ||
+        !resolved.containsAll(requiredInputOutpoints);
+  }
+
+  bool get hasMultipleRecipients => recipientDrafts.length > 1;
+
+  List<Wallet> get bitcoinRecipientWallets {
+    final isTestnet = const BitcoinRecipientListPolicy().networkIsTestnet(
+      paymentRequest,
+    );
+    if (isTestnet == null) return const [];
+    final matchingWallets = wallets
+        .where(
+          (wallet) =>
+              wallet.isBitcoin && !wallet.network.isMainnet == isTestnet,
+        )
+        .toList();
+    final currentWallet = selectedBitcoinWallet;
+    if (currentWallet != null &&
+        currentWallet.isBitcoin &&
+        !currentWallet.network.isMainnet == isTestnet &&
+        matchingWallets.every((wallet) => wallet.id != currentWallet.id)) {
+      matchingWallets.add(currentWallet);
+    }
+    return matchingWallets;
+  }
+
+  List<Wallet> get selectableWallets {
+    if (usesSelectedInputsOnly) {
+      return [?selectedBitcoinWallet];
+    }
+    return hasMultipleRecipients ? bitcoinRecipientWallets : wallets;
+  }
+
+  bool get supportsRecipientList =>
+      const BitcoinRecipientListPolicy().supports(paymentRequest);
+
+  bool get usesRecipientList =>
+      selectedWallet is! SendWalletSp &&
+      supportsRecipientList &&
+      recipientDrafts.isNotEmpty;
+
+  bool get showsRecipientAmountList =>
+      usesRecipientList && hasMultipleRecipients;
+
+  bool get hasRemainderRecipient =>
+      recipientDrafts.any((recipient) => recipient.receivesRemainder);
+
+  bool get isMaxSend =>
+      recipientDrafts.isNotEmpty ? hasRemainderRecipient : sendMax;
+
+  bool get hasValidRecipientDrafts =>
+      const BitcoinRecipientListPolicy().hasValidRecipients(
+        recipients: recipientDrafts.map(
+          (recipient) => (
+            isValid: recipient.isValid,
+            receivesRemainder: recipient.receivesRemainder,
+            amountSat: recipientAmountSat(recipient),
+          ),
+        ),
+        isSweep: isSweep,
+      );
+
+  bool get hasInvalidAdditionalRecipient =>
+      recipientDrafts.skip(1).any((recipient) => !recipient.isValid);
+
+  bool get canAddRecipient =>
+      !selectedInputsUnavailable &&
+      !(usesSelectedInputsOnly && selectedWallet?.isLiquid == true) &&
+      (supportsRecipientList ||
+          (paymentRequest == null &&
+              copiedRawPaymentRequest.trim().isNotEmpty));
+
   /// Whether a payjoin is structurally possible for this send: the setting
   /// is on, the wallet signs locally, and the recipient's BIP21 advertises a
   /// pj= endpoint. Drives whether the confirm screen offers the payjoin
@@ -212,7 +313,10 @@ abstract class SendState with _$SendState {
   bool get isPayjoinAvailable {
     final wallet = selectedWallet;
     final request = paymentRequest;
-    return payjoinGloballyEnabled &&
+    return !isSweep &&
+        !hasMultipleRecipients &&
+        !usesSelectedInputsOnly &&
+        payjoinGloballyEnabled &&
         wallet != null &&
         NetworkCapabilities.supports(
           wallet.network.shared,
@@ -287,26 +391,49 @@ abstract class SendState with _$SendState {
       exchangeRate != null;
 
   int get inputAmountSat {
+    return _amountSat(amount);
+  }
+
+  int recipientAmountSat(SendRecipientDraft recipient) {
+    return _amountSat(recipient.amount);
+  }
+
+  int _amountSat(String value) {
     int amountSat = 0;
     final rate = exchangeRate;
-    if (amount.isNotEmpty) {
+    if (value.isNotEmpty) {
       if (isInputAmountFiat && rate != null) {
-        final amountFiat = double.tryParse(amount) ?? 0;
+        final amountFiat = double.tryParse(value) ?? 0;
         amountSat = ConvertAmount.fiatToSats(amountFiat, rate);
       } else if (!_isBitcoinUnit(inputAmountCurrencyCode)) {
         // A fiat amount with no price has no sats value. Reading it as BTC
         // would turn 0.01 typed in a USD field into 0.01 BTC.
         amountSat = 0;
       } else if (inputAmountCurrencyCode == BitcoinUnit.sats.code) {
-        amountSat = int.tryParse(amount) ?? 0;
+        amountSat = int.tryParse(value) ?? 0;
       } else {
-        final amountBtc = double.tryParse(amount) ?? 0;
+        final amountBtc = double.tryParse(value) ?? 0;
         amountSat = ConvertAmount.btcToSats(amountBtc);
       }
     }
 
     return amountSat;
   }
+
+  List<BitcoinTransactionRecipient> get bitcoinTransactionRecipients => [
+    for (final recipient in recipientDrafts)
+      if (recipient.receivesRemainder)
+        BitcoinTransactionRecipient.remainder(address: recipient.address)
+      else
+        BitcoinTransactionRecipient.fixed(
+          address: recipient.address,
+          amountSat: Sats.fromInt(recipientAmountSat(recipient)),
+        ),
+  ];
+
+  int get totalFixedRecipientAmountSat => recipientDrafts
+      .where((recipient) => !recipient.receivesRemainder)
+      .fold(0, (sum, recipient) => sum + recipientAmountSat(recipient));
 
   int get effectiveAmountSat {
     final embedded = paymentRequest?.amountSat ?? 0;
@@ -385,19 +512,19 @@ abstract class SendState with _$SendState {
       code == BitcoinUnit.btc.code || code == BitcoinUnit.sats.code;
 
   String formattedWalletBalance() {
-    final balance = selectedWallet?.balanceSat;
-    if (balance == null) return '—';
+    if (selectedWallet?.balanceSat == null) return '—';
+    final balanceSat = maxAvailableBalanceSat;
 
     if (inputAmountCurrencyCode == BitcoinUnit.btc.code) {
-      return FormatAmount.btc(ConvertAmount.satsToBtc(balance.toInt()));
+      return FormatAmount.btc(ConvertAmount.satsToBtc(balanceSat));
     } else if (inputAmountCurrencyCode == BitcoinUnit.sats.code) {
-      return FormatAmount.sats(balance.toInt());
+      return FormatAmount.sats(balanceSat);
     }
     // A fiat input always has a price: without one, none is offered.
     final rate = exchangeRate;
     if (rate == null) return '';
     return FormatAmount.fiat(
-      ConvertAmount.satsToFiat(balance.toInt(), rate),
+      ConvertAmount.satsToFiat(balanceSat, rate),
       inputAmountCurrencyCode,
     );
   }
@@ -406,7 +533,7 @@ abstract class SendState with _$SendState {
     final balance = selectedWallet?.balanceSat;
     if (balance == null) return '—';
 
-    final satsBalance = balance.toInt();
+    final satsBalance = maxAvailableBalanceSat;
 
     if (inputAmountCurrencyCode == BitcoinUnit.btc.code ||
         inputAmountCurrencyCode == BitcoinUnit.sats.code) {
@@ -438,17 +565,17 @@ abstract class SendState with _$SendState {
   }
 
   /// Amount (sats) locked in user-frozen coins ([WalletUtxo.isFrozen], which is
-  /// scoped to `origin = 'user'`). Zero until [utxos] are loaded, and zero in
-  /// practice for Liquid because freeze isn't surfaced there (the Coins entry is
-  /// Bitcoin-only) — not because the network is intrinsically exempt.
+  /// scoped to `origin = 'user'`). Zero until [utxos] are loaded.
   ///
-  /// Note: this intentionally excludes payjoin-derived locks, which the spend
-  /// path also treats as unspendable. So with an active payjoin the real drain
-  /// may produce slightly less than [spendableBalanceSat] reports — it never
-  /// over-spends (the build re-excludes both sets), only fails closed.
+  /// Payjoin reservations are also excluded when building, so the final drain
+  /// amount can be lower than [spendableBalanceSat].
   int get frozenBalanceSat => utxos
       .where((u) => u.isFrozen)
       .fold(0, (sum, u) => sum + u.amountSat.toInt());
+
+  int get selectedSpendableBalanceSat => selectedUtxos
+      .where((utxo) => !utxo.isFrozen)
+      .fold(0, (sum, utxo) => sum + utxo.amountSat.toInt());
 
   /// Frozen balance ([frozenBalanceSat]) formatted in the active [bitcoinUnit],
   /// for the "you have frozen coins" hint shown when a payment can't be covered
@@ -461,27 +588,32 @@ abstract class SendState with _$SendState {
   /// frozen coins (D7). Frozen coins are never spendable, so the amount screen
   /// must validate against this, not the raw wallet balance. Falls back to the
   /// full balance before [utxos] have loaded so it never under-reports.
-  int get spendableBalanceSat =>
-      (selectedWallet?.balanceSat?.toInt() ?? 0) - frozenBalanceSat;
+  int get spendableBalanceSat => isSweep
+      ? selectedSpendableBalanceSat
+      : (selectedWallet?.balanceSat?.toInt() ?? 0) - frozenBalanceSat;
 
-  int get maxAvailableBalanceSat {
-    final selectedBalance = selectedUtxos.fold(
-      0,
-      (sum, utxo) => sum + utxo.amountSat.toInt(),
-    );
-    return selectedUtxos.isEmpty ? spendableBalanceSat : selectedBalance;
-  }
+  int get maxAvailableBalanceSat => usesSelectedInputsOnly
+      ? selectedSpendableBalanceSat
+      : spendableBalanceSat;
 
   int get maxSpendableBalanceSat {
     final maxAmount = maxAvailableBalanceSat - (absoluteFees ?? 0);
     return maxAmount < 0 ? 0 : maxAmount;
   }
 
-  bool get walletHasBalance =>
-      // ignore: avoid_bool_literals_in_conditional_expressions
-      selectedWallet == null
-      ? false
-      : (inputAmountSat > 0 && inputAmountSat <= spendableBalanceSat);
+  bool get walletHasBalance {
+    if (selectedWallet == null) return false;
+    if (!usesRecipientList) {
+      return inputAmountSat > 0 && inputAmountSat <= maxAvailableBalanceSat;
+    }
+    final fixedAmountSat = totalFixedRecipientAmountSat;
+    if (hasRemainderRecipient) {
+      final fixedAmountsAreValid =
+          recipientDrafts.length == 1 || fixedAmountSat > 0;
+      return fixedAmountsAreValid && fixedAmountSat < maxAvailableBalanceSat;
+    }
+    return fixedAmountSat > 0 && fixedAmountSat <= maxAvailableBalanceSat;
+  }
 
   /// Specifically "the wallet could not construct the transaction".
   ///
@@ -543,7 +675,14 @@ abstract class SendState with _$SendState {
   }
 
   bool get disableConfirmSend =>
-      buildingTransaction || signingTransaction || broadcastingTransaction;
+      buildingTransaction ||
+      signingTransaction ||
+      broadcastingTransaction ||
+      failure is SendTransactionBuildFailure ||
+      failure is SendInsufficientBalanceFailure ||
+      failure is SendInsufficientFundsForFeesFailure ||
+      failure is SendSelectedCoinsInsufficientFailure ||
+      failure is SendSelectedCoinsUnavailableFailure;
 
   bool get blocksSwapDueToHardwareWallet {
     final wallet = selectedWallet;

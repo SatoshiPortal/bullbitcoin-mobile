@@ -136,3 +136,7 @@ final class SendSpendBlockedFailure extends SendFailure {
 final class SendPayjoinPausedFailure extends SendFailure {
   const SendPayjoinPausedFailure();
 }
+
+final class SendConsolidationRequiredFailure extends SendFailure {
+  const SendConsolidationRequiredFailure([super.logMessage]);
+}
