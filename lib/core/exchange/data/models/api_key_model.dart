@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 class ExchangeApiKeyModel {
   final String id;
   final String key;
@@ -21,36 +23,85 @@ class ExchangeApiKeyModel {
     this.expiresAt,
   });
 
-  factory ExchangeApiKeyModel.fromJson(Map<String, dynamic> json) {
-    return ExchangeApiKeyModel(
-      id: json['id'] as String,
-      key: json['key'] as String,
-      name: json['name'] as String,
-      userId: json['userId'] as String,
-      isActive: json['isActive'] as bool,
-      // Convert ISO8601 string dates to millisecond timestamps
-      lastUsedAt: json['lastUsedAt'] != null
-          ? (json['lastUsedAt'] is String
-                ? DateTime.parse(
-                    json['lastUsedAt'] as String,
-                  ).millisecondsSinceEpoch
-                : json['lastUsedAt'] as int)
-          : null,
-      createdAt: json['createdAt'] is String
-          ? DateTime.parse(json['createdAt'] as String).millisecondsSinceEpoch
-          : json['createdAt'] as int,
-      updatedAt: json['updatedAt'] is String
-          ? DateTime.parse(json['updatedAt'] as String).millisecondsSinceEpoch
-          : json['updatedAt'] as int,
-      expiresAt: json['expiresAt'] != null
-          ? (json['expiresAt'] is String
-                ? DateTime.parse(
-                    json['expiresAt'] as String,
-                  ).millisecondsSinceEpoch
-                : json['expiresAt'] as int)
-          : null,
-    );
+  /// Accepts the existing auth envelopes and the WebView's JSON string layers.
+  /// Malformed input is data, not a TypeError or an exception containing secrets.
+  static ExchangeApiKeyModel? tryFromAuthResponse(Object? response) {
+    response = _decodeAuthResponse(response);
+    if (response is! Map<String, dynamic> || response['error'] != null) {
+      return null;
+    }
+    final Map<String, dynamic> payload;
+    if (response['apiKey'] case final Map<String, dynamic> value) {
+      payload = value;
+    } else if (response['result'] case {
+      'apiKey': final Map<String, dynamic> value,
+    }) {
+      payload = value;
+    } else if (response['data'] case {
+      'apiKey': final Map<String, dynamic> value,
+    }) {
+      payload = value;
+    } else {
+      payload = response;
+    }
+    if (payload case {
+      'id': final String id,
+      'key': final String key,
+      'name': final String name,
+      'userId': final String userId,
+      'isActive': final bool isActive,
+      'createdAt': final Object created,
+      'updatedAt': final Object updated,
+    }) {
+      final createdAt = _timestamp(created);
+      final updatedAt = _timestamp(updated);
+      final lastUsedAt = _timestamp(payload['lastUsedAt']);
+      final expiresAt = _timestamp(payload['expiresAt']);
+      if (createdAt == null ||
+          updatedAt == null ||
+          (payload['lastUsedAt'] != null && lastUsedAt == null) ||
+          (payload['expiresAt'] != null && expiresAt == null)) {
+        return null;
+      }
+      return ExchangeApiKeyModel(
+        id: id,
+        key: key,
+        name: name,
+        userId: userId,
+        isActive: isActive,
+        createdAt: createdAt,
+        updatedAt: updatedAt,
+        lastUsedAt: lastUsedAt,
+        expiresAt: expiresAt,
+      );
+    }
+    return null;
   }
+
+  /// An unfinished/rejected web request keeps the existing WebView flow open.
+  static bool isAuthenticationDeferred(Object? response) {
+    final decoded = _decodeAuthResponse(response);
+    return decoded is Map<String, dynamic> && decoded['error'] != null;
+  }
+
+  static Object? _decodeAuthResponse(Object? response) {
+    try {
+      for (var layer = 0; layer < 2 && response is String; layer++) {
+        response = jsonDecode(response);
+      }
+    } on FormatException {
+      return null;
+    }
+    return response;
+  }
+
+  static int? _timestamp(Object? value) => switch (value) {
+    final int timestamp => timestamp,
+    final String timestamp => DateTime.tryParse(
+      timestamp,
+    )?.millisecondsSinceEpoch,
+    _ => null,
+  };
 
   Map<String, dynamic> toJson() {
     return {
@@ -64,23 +115,5 @@ class ExchangeApiKeyModel {
       'updatedAt': updatedAt,
       'expiresAt': expiresAt,
     };
-  }
-}
-
-class ExchangeApiKeyModelResponse {
-  final ExchangeApiKeyModel apiKey;
-
-  ExchangeApiKeyModelResponse({required this.apiKey});
-
-  factory ExchangeApiKeyModelResponse.fromJson(Map<String, dynamic> json) {
-    return ExchangeApiKeyModelResponse(
-      apiKey: ExchangeApiKeyModel.fromJson(
-        json['apiKey'] as Map<String, dynamic>,
-      ),
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {'apiKey': apiKey.toJson()};
   }
 }
