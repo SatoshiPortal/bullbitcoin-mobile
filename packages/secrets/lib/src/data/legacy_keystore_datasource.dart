@@ -59,7 +59,7 @@ final class LegacyKeystoreEntries {
   }) : entries = Map.unmodifiable(entries);
 }
 
-/// Read-only and deliberately not connected to normal storage resolution yet.
+/// Read-only source for the terminal legacy backup path.
 /// Tests replace the channel below this concrete datasource, not its custody API.
 final class LegacyKeystoreDatasource {
   static const _channel = MethodChannel(

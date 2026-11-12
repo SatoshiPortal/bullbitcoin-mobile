@@ -4953,5 +4953,13 @@
   "appStartupMissingSecretMessage": "Cet appareil ne contient plus la phrase de récupération de votre portefeuille. Saisissez-la à nouveau pour le retrouver.",
   "appStartupRestoreSecretButton": "Saisir ma phrase de récupération",
   "appStartupRestoreMismatch": "Cette phrase de récupération appartient à un autre portefeuille. Saisissez celle du portefeuille de cet appareil.",
-  "coreScreensOutputsExceedInputs": "Les sorties dépassent les entrées : cette transaction est invalide et le réseau la rejettera."
+  "coreScreensOutputsExceedInputs": "Les sorties dépassent les entrées : cette transaction est invalide et le réseau la rejettera.",
+  "legacyBackupTitle": "Sauvegarde requise",
+  "legacyBackupMessage": "Cette installation utilise un ancien format de stockage sécurisé. Gardez l’application installée tant que vous n’avez pas noté en lieu sûr toutes les phrases de récupération et passphrases ci-dessous.",
+  "legacyBackupWalletLabel": "Portefeuille",
+  "legacyBackupPassphraseLabel": "Passphrase",
+  "legacyBackupConfirm": "J'ai noté toutes les phrases de récupération et passphrases ci-dessus",
+  "legacyBackupReinstallMessage": "Supprimez cette application et réinstallez-la depuis le store. Lors de la configuration, choisissez de récupérer un portefeuille existant et saisissez votre phrase de récupération.",
+  "legacyBackupReinstallTitle": "Prochaines étapes",
+  "legacyBackupNoSeedsMessage": "Aucune phrase de récupération n'a pu être lue sur cette installation. Ne supprimez PAS l'application — contactez d'abord le support."
 }

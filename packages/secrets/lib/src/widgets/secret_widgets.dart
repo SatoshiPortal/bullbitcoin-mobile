@@ -18,6 +18,7 @@ extension type const SecretWidgets._(Secret _secret) {
 
   /// Shows the words, and the passphrase when there is one. See [MnemonicView].
   MnemonicView mnemonicView({
+    VoidCallback? onRevealed,
     Key? key,
     required Widget Function(BuildContext, SecretFailure, VoidCallback retry)
     failureBuilder,
@@ -30,6 +31,7 @@ extension type const SecretWidgets._(Secret _secret) {
   }) => MnemonicView(
     key: key,
     secret: _secret,
+    onRevealed: onRevealed,
     failureBuilder: failureBuilder,
     style: style,
     passphraseLabel: passphraseLabel,

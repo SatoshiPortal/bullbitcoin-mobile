@@ -4846,5 +4846,13 @@
   "sellPayoutSepaDescription": "Los retiros aparecen como enviados por Leonod",
   "sellPayoutTitle": "Seleccionar destinatario",
   "sellPayoutNewBadge": "NUEVO",
-  "coreScreensOutputsExceedInputs": "Las salidas superan las entradas: esta transacción no es válida y la red la rechazará."
+  "coreScreensOutputsExceedInputs": "Las salidas superan las entradas: esta transacción no es válida y la red la rechazará.",
+  "legacyBackupTitle": "Copia de seguridad necesaria",
+  "legacyBackupMessage": "Esta instalación utiliza un formato antiguo de almacenamiento seguro. Mantén la aplicación instalada hasta haber anotado de forma segura todas las frases de recuperación y contraseñas adicionales que aparecen a continuación.",
+  "legacyBackupWalletLabel": "Monedero",
+  "legacyBackupPassphraseLabel": "Passphrase",
+  "legacyBackupConfirm": "He anotado todas las frases de recuperación y passphrases anteriores",
+  "legacyBackupReinstallMessage": "Elimina esta aplicación y reinstálala desde la tienda. Durante la configuración, elige recuperar un monedero existente e introduce tu frase de recuperación.",
+  "legacyBackupReinstallTitle": "Próximos pasos",
+  "legacyBackupNoSeedsMessage": "No se pudo leer ninguna frase de recuperación de esta instalación. NO elimines la aplicación — contacta primero con soporte."
 }

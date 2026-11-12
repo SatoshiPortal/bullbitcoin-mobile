@@ -13,6 +13,10 @@ import java.nio.ByteBuffer;
 import java.nio.charset.CodingErrorAction;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
+import java.nio.file.Files;
+import java.nio.file.LinkOption;
+import java.nio.file.DirectoryStream;
+import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.security.Key;
 import java.util.Arrays;
@@ -49,27 +53,18 @@ final class LegacyKeystoreReader {
 
     Map<String, Object> inspect() throws LegacyReadException {
         LegacyPreferencesSnapshot snapshot = new LegacyPreferencesSnapshot(directory);
-        String format = classify(snapshot);
-        // Metadata is not proof: develop can have written GCM markers over CBC data.
-        // No plaintext leaves this check, and no default plugin instance is opened.
-        if ("gcm".equals(format)) {
-            try {
-                authenticateGcm(snapshot);
-            } catch (Exception e) {
-                throw failure(e);
-            }
-        }
+        String format = resolveFormat(snapshot);
         snapshot.verifyUnchanged();
         Map<String, Object> result = new LinkedHashMap<>();
         result.put("format", format);
         result.put("sourcePresent", snapshot.hasFile(LegacyPreferencesSnapshot.DATA));
-        result.put("priorStoreHint", snapshot.get(LegacyPreferencesSnapshot.HINT).containsKey("flutter.seed_store_type"));
+        result.put("priorStoreHint", snapshot.get(LegacyPreferencesSnapshot.HINT).containsKey("flutter.seed_store_type") || hasPriorInstallData());
         return result;
     }
 
     Map<String, Object> read() throws LegacyReadException {
         LegacyPreferencesSnapshot snapshot = new LegacyPreferencesSnapshot(directory);
-        String format = classify(snapshot);
+        String format = resolveFormat(snapshot);
         Map<String, String> entries;
         try {
             switch (format) {
@@ -85,6 +80,41 @@ final class LegacyKeystoreReader {
         } catch (Exception e) {
             throw failure(e);
         }
+    }
+
+    private boolean hasPriorInstallData() throws LegacyReadException {
+        Path documents = directory.getParent().resolve("app_flutter");
+        if (Files.notExists(documents, LinkOption.NOFOLLOW_LINKS)) return false;
+        if (Files.isSymbolicLink(documents)) throw new LegacyReadException("inconsistent");
+        try (DirectoryStream<Path> files = Files.newDirectoryStream(documents)) {
+            for (Path file : files) {
+                String name = file.getFileName().toString();
+                if (name.equals("bullbitcoin_sqlite.sqlite") || name.endsWith(".hive")) return true;
+            }
+            return false;
+        } catch (IOException | SecurityException e) {
+            throw new LegacyReadException("unreadable");
+        }
+    }
+
+    private String resolveFormat(LegacyPreferencesSnapshot snapshot) throws LegacyReadException {
+        String format = classify(snapshot);
+        if ("gcm".equals(format)) {
+            try {
+                authenticateGcm(snapshot);
+            } catch (Exception e) {
+                // develop's markerless probe can create a GCM key and markers
+                // before refusing CBC. Never permit normal storage on that evidence.
+                if (!snapshot.get(LegacyPreferencesSnapshot.KEYS).containsKey(CBC_KEY)) throw failure(e);
+                try {
+                    readCbc(snapshot);
+                    return "cbc";
+                } catch (Exception cbcFailure) {
+                    throw failure(cbcFailure);
+                }
+            }
+        }
+        return format;
     }
 
     private static LegacyReadException failure(Exception error) {
@@ -124,13 +154,14 @@ final class LegacyKeystoreReader {
         }
         if (raw == 0) {
             // Existing keysets/config/keys are evidence, not proof of a fresh installation.
-            return data.isEmpty() && snapshot.get(LegacyPreferencesSnapshot.KEYS).isEmpty()
-                    && snapshot.get(LegacyPreferencesSnapshot.CONFIG).isEmpty()
-                    && snapshot.get(LegacyPreferencesSnapshot.NAMED_CONFIG).isEmpty() ? "empty" : "unknown";
+            return !snapshot.hasFile(LegacyPreferencesSnapshot.DATA)
+                    && !snapshot.hasFile(LegacyPreferencesSnapshot.KEYS)
+                    && !snapshot.hasFile(LegacyPreferencesSnapshot.CONFIG)
+                    && !snapshot.hasFile(LegacyPreferencesSnapshot.NAMED_CONFIG) ? "empty" : "unknown";
         }
         boolean legacyMarkers = (keyAlgorithm == null && storageAlgorithm == null)
                 || ("RSA_ECB_PKCS1Padding".equals(keyAlgorithm) && "AES_CBC_PKCS7Padding".equals(storageAlgorithm));
-        if (legacyMarkers && snapshot.get(LegacyPreferencesSnapshot.KEYS).containsKey(CBC_KEY)) return "cbc";
+        if ((legacyMarkers || currentMarkers) && snapshot.get(LegacyPreferencesSnapshot.KEYS).containsKey(CBC_KEY)) return "cbc";
         // Rewritten markers and mixed historical cipher states require a separate recovery decision.
         return "unknown";
     }

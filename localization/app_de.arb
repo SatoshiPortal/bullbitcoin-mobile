@@ -5079,5 +5079,13 @@
   "appStartupMissingSecretMessage": "Dieses Gerät enthält die Wiederherstellungsphrase Ihrer Wallet nicht mehr. Geben Sie sie erneut ein, um Ihre Wallet zurückzuerhalten.",
   "appStartupRestoreSecretButton": "Meine Wiederherstellungsphrase eingeben",
   "appStartupRestoreMismatch": "Diese Wiederherstellungsphrase gehört zu einer anderen Wallet. Geben Sie die Phrase der Wallet auf diesem Gerät ein.",
-  "coreScreensOutputsExceedInputs": "Die Ausgaben übersteigen die Eingaben: Diese Transaktion ist ungültig und wird vom Netzwerk abgelehnt."
+  "coreScreensOutputsExceedInputs": "Die Ausgaben übersteigen die Eingaben: Diese Transaktion ist ungültig und wird vom Netzwerk abgelehnt.",
+  "legacyBackupTitle": "Backup erforderlich",
+  "legacyBackupMessage": "Diese Installation verwendet ein älteres sicheres Speicherformat. Lass die App installiert, bis du alle unten angezeigten Wiederherstellungsphrasen und Passphrasen sicher aufgeschrieben hast.",
+  "legacyBackupWalletLabel": "Wallet",
+  "legacyBackupPassphraseLabel": "Passphrase",
+  "legacyBackupConfirm": "Ich habe alle oben aufgeführten Wiederherstellungsphrasen und Passphrasen notiert.",
+  "legacyBackupReinstallMessage": "Löschen Sie diese App und installieren Sie sie erneut aus dem App-Store. Wählen Sie bei der Einrichtung die Wiederherstellung einer vorhandenen Wallet aus und geben Sie Ihre Wiederherstellungsphrase ein.",
+  "legacyBackupReinstallTitle": "Nächste Schritte",
+  "legacyBackupNoSeedsMessage": "Aus dieser Installation konnte keine Wiederherstellungsphrase ausgelesen werden. Löschen Sie die App NICHT – wenden Sie sich zuerst an den Support."
 }

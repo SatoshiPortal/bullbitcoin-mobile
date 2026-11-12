@@ -2,18 +2,35 @@ import 'dart:async';
 
 import 'package:bb_mobile/app.dart';
 import 'package:bb_mobile/core/screens/app_init_error_screen.dart';
+import 'package:bb_mobile/features/app_startup/ui/screens/legacy_backup_app.dart';
 import 'package:bb_mobile/features/support/public/support_facade.dart';
 import 'package:bb_mobile/init.dart';
 import 'package:bb_mobile/startup_wizard.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bull_ui/bull_ui.dart' show BullSupportScope;
 import 'package:flutter/material.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:primitives/primitives.dart' show Ok, Err;
+import 'package:secrets/secrets.dart';
 
 Future<void> startApp() async {
   await runZonedGuarded(
     () async {
       try {
         WidgetsFlutterBinding.ensureInitialized();
+        final legacy = await Secrets.legacyBackup(
+          scratchDirectory: () async => (await getTemporaryDirectory()).path,
+        );
+        switch (legacy) {
+          case Ok(value: null):
+            break;
+          case Ok(:final value):
+            runApp(LegacyBackupApp(secrets: value));
+            return;
+          case Err():
+            runApp(const LegacyBackupApp(secrets: null));
+            return;
+        }
         await runStartupWizard();
         await Bull.init();
       } catch (error, stackTrace) {
