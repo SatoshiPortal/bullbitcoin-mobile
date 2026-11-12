@@ -103,12 +103,12 @@ class FlutterSecureStorageDatasource {
 
   // ------------------------------------------------------------------ secrets
 
-  /// Writes a secret under its fingerprint, refusing to replace a different one.
+  /// Writes a secret under its fingerprint, refusing to replace a different one, and returns the entry the key now holds: [secret] when written, the existing entry when it is the same secret.
   ///
   /// A BIP32 fingerprint is 32 bits, so two secrets can claim the same key. Writing blind would destroy the first without a trace. Restoration may reuse an identical entry; import passes rejectExisting to report a duplicate atomically. Existing bytes are never rewritten.
   ///
   /// Read, compare and write under [_lock]: the second composed operation of this class, and the reason the lock is not named for the first.
-  Future<void> storeSecret({
+  Future<SecretModel> storeSecret({
     required Fingerprint id,
     required SecretModel secret,
     required Future<Uint8List> Function(SecretModel model) seedOf,
@@ -130,24 +130,26 @@ class FlutterSecureStorageDatasource {
         _Absent() => null,
       };
       if (existing != null) {
-        if (!await _holdsSameSecret(existing, secret, seedOf)) {
+        final kept = await _sameSecretAs(existing, secret, seedOf);
+        if (kept == null) {
           throw FingerprintConflictException(
             'a different secret is already stored under $id',
           );
         }
-        // The same secret, perhaps in an older encoding. Left byte for byte:
-        // the format is frozen, and there is nothing to gain by rewriting.
+        // The same secret, perhaps in an older encoding or another wordlist.
+        // Left byte for byte: the format is frozen, and there is nothing to
+        // gain by rewriting. Its own words and language are what operations
+        // read from now on, so they are what the caller is told.
         if (rejectExisting) throw SecretAlreadyExistsException(id);
-        return;
+        return kept;
       }
       await _writeRaw(key, json);
+      return secret;
     });
   }
 
-  /// Whether [existing] holds the same secret as [candidate] — parsed, not compared as text.
-  ///
-  /// An absent passphrase and an empty one are one secret, and a historical envelope may order its keys differently; comparing JSON would refuse both as "another secret". Same words with passphrases that differ *as strings* may still be one secret — `é` and `e` + combining accent are one passphrase to BIP39's NFKD (2026-09-17) — so that case is settled by deriving **both full seeds** and comparing all 64 bytes: two PBKDF2s, on the rare path only. Never by fingerprint — 32 bits is exactly the collision this check exists to refuse. Different words are never the same secret — which holds because `FingerprintDeriver` derives against the English wordlist, whose words are all ASCII, so no two spellings normalise to one mnemonic. A second wordlist would break that and this comparison would have to reach the seeds for differing words too. A value that does not parse is *not* the same secret, so it is kept: the fss9 cohort's bytes stay where they are.
-  static Future<bool> _holdsSameSecret(
+  /// The parsed [existing] entry when it holds the same secret as [candidate], else null. A value that does not parse is never the same secret.
+  static Future<SecretModel?> _sameSecretAs(
     String existing,
     SecretModel candidate,
     Future<Uint8List> Function(SecretModel model) seedOf,
@@ -156,13 +158,32 @@ class FlutterSecureStorageDatasource {
     try {
       stored = SecretModel.fromJson(decodeJson(existing));
     } on Exception {
-      return false;
+      return null;
     }
+    return await _holdsSameSecret(stored, candidate, seedOf) ? stored : null;
+  }
+
+  /// Whether [stored] holds the same secret as [candidate] — parsed, not compared as text.
+  ///
+  /// An absent passphrase and an empty one are one secret, and a historical envelope may order its keys differently; comparing JSON would refuse both as "another secret". Same words with passphrases that differ *as strings* may still be one secret — `é` and `e` + combining accent are one passphrase to BIP39's NFKD (2026-09-17) — so that case is settled by deriving **both full seeds** and comparing all 64 bytes: two PBKDF2s, on the rare path only. Never by fingerprint — 32 bits is exactly the collision this check exists to refuse. Different words or wordlists can normalize to the same seed, so those cases also compare every seed byte. A value that does not parse is *not* the same secret, so it is kept: the fss9 cohort's bytes stay where they are.
+  static Future<bool> _holdsSameSecret(
+    SecretModel stored,
+    SecretModel candidate,
+    Future<Uint8List> Function(SecretModel model) seedOf,
+  ) async {
     switch ((stored, candidate)) {
       case (MnemonicSecretModel a, MnemonicSecretModel b):
-        if (!_sameList(a.mnemonicWords, b.mnemonicWords)) return false;
-        if ((a.passphrase ?? '') == (b.passphrase ?? '')) return true;
-        return _sameList(await seedOf(a), await seedOf(b));
+        if (a.language == b.language &&
+            _sameList(a.mnemonicWords, b.mnemonicWords) &&
+            (a.passphrase ?? '') == (b.passphrase ?? '')) {
+          return true;
+        }
+        try {
+          return _sameList(await seedOf(a), await seedOf(b));
+        } on Exception {
+          // Unreadable stored words remain occupied, never an invalid import.
+          return false;
+        }
       case (BytesSecretModel a, BytesSecretModel b):
         return _sameList(a.bytes, b.bytes);
       default:

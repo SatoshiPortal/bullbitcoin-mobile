@@ -1,6 +1,8 @@
+import 'package:bb_mobile/features/recoverbull/domain/recoverbull_failure.dart'
+    show RecoverBullFailure;
 import 'package:bb_mobile/core/recoverbull/domain/entity/encrypted_vault.dart';
 import 'package:bb_mobile/core/recoverbull/domain/recoverbull_failure.dart';
-import 'package:bb_mobile/core/recoverbull/domain/usecases/create_encrypted_vault_usecase.dart';
+import 'package:bb_mobile/features/recoverbull/domain/usecases/create_encrypted_vault_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/restore_vault_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/update_latest_encrypted_backup_usecase.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
@@ -159,9 +161,7 @@ void main() {
 
     expect(
       result,
-      isA<
-        Ok<({EncryptedVault vault, String vaultKey}), RecoverBullCoreFailure>
-      >(),
+      isA<Ok<({EncryptedVault vault, String vaultKey}), RecoverBullFailure>>(),
     );
     verifyNever(
       () => wallets.updateEncryptedBackupTime(
@@ -173,7 +173,7 @@ void main() {
         (result
                 as Ok<
                   ({EncryptedVault vault, String vaultKey}),
-                  RecoverBullCoreFailure
+                  RecoverBullFailure
                 >)
             .value;
     final restored = _value(
@@ -253,7 +253,7 @@ void main() {
           (result
                   as Ok<
                     ({EncryptedVault vault, String vaultKey}),
-                    RecoverBullCoreFailure
+                    RecoverBullFailure
                   >)
               .value;
       final restored = _value(
