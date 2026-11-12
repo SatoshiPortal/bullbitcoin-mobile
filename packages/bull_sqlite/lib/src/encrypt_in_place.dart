@@ -40,9 +40,12 @@ void encryptInPlace(
   }
   void reached(EncryptionStep step) => onStep?.call(step);
 
+  // A candidate is removed only by an attempt that has proven the source intact: until then it may be the better of two copies.
+  var settled = false;
   var replaced = false;
   try {
     final userVersion = _settleSource(family);
+    settled = true;
     reached(EncryptionStep.sourceSettled);
 
     for (final stale in [family.candidate, family.candidateJournal]) {
@@ -74,7 +77,7 @@ void encryptInPlace(
     DirectoryBarrier.sync(family.directory);
     reached(EncryptionStep.published);
   } catch (_) {
-    if (!replaced) _discardCandidate(family);
+    if (settled && !replaced) _discardCandidate(family);
     rethrow;
   }
 }
@@ -87,7 +90,11 @@ int _settleSource(SqliteFamily family) {
       source.execute('PRAGMA busy_timeout = 2000;');
       source.execute('PRAGMA synchronous = FULL;');
     });
-    _requireIntact(source, 'source failed its integrity check');
+    final check = _run(() => source.select('PRAGMA quick_check;'));
+    if (check.length != 1 || check.first.values.first != 'ok') {
+      // Reported as SQLite reports corruption, so an owner can apply its own policy (Payjoin quarantines; the main database asks the user).
+      throw const SqliteFailedException(sqliteCorrupt);
+    }
     final mode = _run(() => source.select('PRAGMA journal_mode = DELETE;'));
     // SQLite answers with the mode in force: still `wal` when another connection holds the database.
     if (mode.isEmpty ||

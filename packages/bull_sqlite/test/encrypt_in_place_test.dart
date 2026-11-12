@@ -106,6 +106,28 @@ void main() {
     },
   );
 
+  test(
+    'a corrupt source is reported as corrupt, and a candidate next to it is kept',
+    () async {
+      corruptPlaintext(path);
+      final candidate = SqliteFamily(path).candidate
+        ..writeAsStringSync('an earlier copy');
+
+      final result = await EncryptedSqlite.encrypt(path, keyOf(10));
+
+      expect(
+        result,
+        isA<Err<void, SqliteStorageFailure>>().having(
+          (e) => e.failure,
+          'failure',
+          isA<SqliteCorruptFailure>(),
+        ),
+      );
+      expect(candidate.readAsStringSync(), 'an earlier copy');
+      expect(headerOf(path), 'SQLite format 3');
+    },
+  );
+
   group('an error at a step', () {
     for (final step in EncryptionStep.values.where(
       (s) => s.index < EncryptionStep.replaced.index,

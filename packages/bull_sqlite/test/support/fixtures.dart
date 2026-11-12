@@ -70,3 +70,19 @@ bool canaryOnDisk(String directory) {
 
 String headerOf(String path) =>
     String.fromCharCodes(File(path).readAsBytesSync().take(15));
+
+/// Checkpoints the plaintext database at [path] into its main file, then overwrites every page after the first with garbage: SQLite reports it corrupt, and the header still says `SQLite format 3`.
+void corruptPlaintext(String path) {
+  final db = sqlite3.open(path);
+  db.execute('PRAGMA wal_checkpoint(TRUNCATE);');
+  db.execute('PRAGMA journal_mode = DELETE;');
+  db.close();
+  final file = File(path).openSync(mode: FileMode.append);
+  try {
+    final length = file.lengthSync();
+    file.setPositionSync(4096);
+    file.writeFromSync(List<int>.filled(length - 4096, 0x5a));
+  } finally {
+    file.closeSync();
+  }
+}
