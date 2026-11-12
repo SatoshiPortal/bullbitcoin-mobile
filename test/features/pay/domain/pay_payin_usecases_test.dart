@@ -47,6 +47,7 @@ void main() {
     registerFallbackValue(const RelativeFee(25));
     registerFallbackValue(const NetworkFee.absolute(200));
     registerFallbackValue(<WalletUtxo>[]);
+    registerFallbackValue(<BitcoinTransactionRecipient>[]);
   });
 
   group('PreparePayBitcoinPayinUsecase', () {
@@ -58,10 +59,16 @@ void main() {
       when(
         () => prepare.execute(
           walletId: any(named: 'walletId'),
-          address: any(named: 'address'),
+          recipients: any(
+            named: 'recipients',
+            that: predicate<List<BitcoinTransactionRecipient>>(
+              (recipients) =>
+                  recipients.length == 1 &&
+                  recipients.single.address == 'bc1qpayin' &&
+                  recipients.single.amountSat == Sats.fromInt(100000),
+            ),
+          ),
           networkFee: any(named: 'networkFee'),
-          amountSat: any(named: 'amountSat'),
-          drain: any(named: 'drain'),
           selectedInputs: any(named: 'selectedInputs'),
           replaceByFee: any(named: 'replaceByFee'),
         ),

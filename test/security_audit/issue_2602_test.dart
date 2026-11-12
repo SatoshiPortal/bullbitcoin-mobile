@@ -32,7 +32,7 @@ void main() {
       final end = source.indexOf("if (paymentRequest.isBip21) {", start);
       final path = source.substring(start, end);
 
-      expect(path, contains('if (!await loadSendSwapQuote('));
+      expect(path, contains('if (!quoteLoaded)'));
       expect(path, contains('creatingSwap: false'));
       expect(path, contains('return;'));
     });

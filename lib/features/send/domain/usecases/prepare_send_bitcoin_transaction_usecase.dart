@@ -14,10 +14,8 @@ class PrepareSendBitcoinTransactionUsecase {
   @useResult
   Future<Result<PreparedBitcoinSend, SendFailure>> execute({
     required String walletId,
-    required String address,
+    required List<BitcoinTransactionRecipient> recipients,
     required NetworkFee networkFee,
-    int? amountSat,
-    bool drain = false,
     List<WalletUtxo>? selectedInputs,
     bool selectedOnly = false,
     bool replaceByFee = true,
@@ -25,10 +23,8 @@ class PrepareSendBitcoinTransactionUsecase {
   }) async {
     final result = await _prepare.execute(
       walletId: walletId,
-      address: address,
+      recipients: recipients,
       networkFee: networkFee,
-      amountSat: amountSat,
-      drain: drain,
       selectedInputs: selectedInputs,
       selectedOnly: selectedOnly,
       replaceByFee: replaceByFee,

@@ -37,24 +37,31 @@ void main() {
   Future<Result<PreparedSellBitcoinPayin, SellFailure>> run() =>
       usecase.execute(
         walletId: 'wallet-1',
-        address: 'bc1qdestination',
+        recipients: [
+          BitcoinTransactionRecipient.fixed(
+            address: 'bc1qdestination',
+            amountSat: Sats.fromInt(100000),
+          ),
+        ],
         networkFee: const NetworkFee.relativeSatPerKwu(2),
-        amountSat: 100000,
       );
 
   void stubPrepare() {
     when(
       () => prepare.execute(
         walletId: any(named: 'walletId'),
-        address: any(named: 'address'),
+        recipients: any(named: 'recipients'),
         networkFee: any(named: 'networkFee'),
-        amountSat: any(named: 'amountSat'),
-        drain: any(named: 'drain'),
         selectedInputs: any(named: 'selectedInputs'),
         replaceByFee: any(named: 'replaceByFee'),
       ),
     ).thenAnswer(
-      (_) async => Ok((unsignedPsbt: 'psbt', txSize: 110, isToSelf: false)),
+      (_) async => Ok((
+        unsignedPsbt: 'psbt',
+        txSize: 110,
+        isToSelf: false,
+        recipientAmountsSat: [Sats.fromInt(100000)],
+      )),
     );
   }
 
@@ -77,10 +84,8 @@ void main() {
     when(
       () => prepare.execute(
         walletId: any(named: 'walletId'),
-        address: any(named: 'address'),
+        recipients: any(named: 'recipients'),
         networkFee: any(named: 'networkFee'),
-        amountSat: any(named: 'amountSat'),
-        drain: any(named: 'drain'),
         selectedInputs: any(named: 'selectedInputs'),
         replaceByFee: any(named: 'replaceByFee'),
       ),

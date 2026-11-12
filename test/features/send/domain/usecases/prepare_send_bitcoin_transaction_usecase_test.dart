@@ -13,6 +13,12 @@ class _MockPrepare extends Mock implements PrepareBitcoinSendUsecase {}
 
 void main() {
   const fee = NetworkFee.absolute(200);
+  final recipients = [
+    BitcoinTransactionRecipient.fixed(
+      address: 'recipient',
+      amountSat: Sats.fromInt(10000),
+    ),
+  ];
   final cases = <(String, WalletFailure, bool, bool, Matcher)>[
     (
       'unavailable selection',
@@ -72,9 +78,8 @@ void main() {
       when(
         () => prepare.execute(
           walletId: 'wallet-1',
-          address: 'recipient',
+          recipients: recipients,
           networkFee: fee,
-          amountSat: 10000,
           selectedInputs: inputs,
         ),
       ).thenAnswer((_) async => Err(failure));
@@ -82,9 +87,8 @@ void main() {
       final result = await PrepareSendBitcoinTransactionUsecase(prepare)
           .execute(
             walletId: 'wallet-1',
-            address: 'recipient',
+            recipients: recipients,
             networkFee: fee,
-            amountSat: 10000,
             selectedInputs: inputs,
             hasFrozenInputs: frozen,
           );
@@ -102,22 +106,23 @@ void main() {
 
   test('preserves the prepared transaction on success', () async {
     final prepare = _MockPrepare();
-    const transaction = (unsignedPsbt: 'psbt', txSize: 110, isToSelf: false);
+    final transaction = (
+      unsignedPsbt: 'psbt',
+      txSize: 110,
+      isToSelf: false,
+      recipientAmountsSat: [Sats.fromInt(10000)],
+    );
     when(
       () => prepare.execute(
         walletId: 'wallet-1',
-        address: 'recipient',
+        recipients: recipients,
         networkFee: fee,
-        amountSat: 10000,
       ),
-    ).thenAnswer((_) async => const Ok(transaction));
+    ).thenAnswer((_) async => Ok(transaction));
 
-    final result = await PrepareSendBitcoinTransactionUsecase(prepare).execute(
-      walletId: 'wallet-1',
-      address: 'recipient',
-      networkFee: fee,
-      amountSat: 10000,
-    );
+    final result = await PrepareSendBitcoinTransactionUsecase(
+      prepare,
+    ).execute(walletId: 'wallet-1', recipients: recipients, networkFee: fee);
 
     expect(
       result,

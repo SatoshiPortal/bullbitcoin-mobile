@@ -1,3 +1,4 @@
+import 'package:primitives/primitives.dart' show BitcoinTransactionRecipient;
 import 'dart:io';
 
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
@@ -226,8 +227,9 @@ Future<void> main({bool isInitialized = false}) async {
 
         final preparationResult = await prepareBitcoinSendUsecase.execute(
           walletId: wallet.id,
-          address: receive.address,
-          drain: true,
+          recipients: [
+            BitcoinTransactionRecipient.remainder(address: receive.address),
+          ],
           selectedInputs: [selected],
           networkFee: NetworkFee.relativeFromSatPerVbyte(2),
         );
@@ -275,8 +277,9 @@ Future<void> main({bool isInitialized = false}) async {
         await expectLater(
           prepareBitcoinSendUsecase.execute(
             walletId: wallet.id,
-            address: receive.address,
-            drain: true,
+            recipients: [
+              BitcoinTransactionRecipient.remainder(address: receive.address),
+            ],
             selectedInputs: selection,
             networkFee: NetworkFee.relativeFromSatPerVbyte(2),
           ),
@@ -320,8 +323,9 @@ Future<void> main({bool isInitialized = false}) async {
         await expectLater(
           prepareBitcoinSendUsecase.execute(
             walletId: wallet.id,
-            address: receive.address,
-            drain: true,
+            recipients: [
+              BitcoinTransactionRecipient.remainder(address: receive.address),
+            ],
             networkFee: NetworkFee.relativeFromSatPerVbyte(2),
           ),
           throwsA(isA<NoSpendableUtxoException>()),

@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/wallet/data/models/bitcoin_transaction_recipient_model.dart';
 import 'dart:typed_data';
 
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
@@ -12,7 +13,8 @@ import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasourc
 import 'package:bb_mobile/core/wallet/data/mappers/wallet_utxo_mapper.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/network_x.dart';
-import 'package:primitives/primitives.dart' show Err, Ok, Result;
+import 'package:primitives/primitives.dart'
+    show Err, Ok, Result, Sats, BitcoinTransactionRecipient;
 import 'package:secrets/secrets.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_connection.dart';
@@ -41,10 +43,8 @@ class BitcoinWalletRepository implements BitcoinSendPort {
   @useResult
   Future<Result<String, WalletFailure>> buildPsbt({
     required String walletId,
-    required String address,
-    int? amountSat,
+    required List<BitcoinTransactionRecipient> recipients,
     required NetworkFee networkFee,
-    bool? drain,
     List<({String txId, int vout})>? unspendable,
     List<WalletUtxo>? selected,
     bool selectedOnly = false,
@@ -117,10 +117,8 @@ class BitcoinWalletRepository implements BitcoinSendPort {
 
       final psbt = await _bdkWallet.buildPsbt(
         wallet: wallet,
-        address: address,
-        amountSat: amountSat,
+        recipients: recipients.map(_recipientModelFromEntity).toList(),
         networkFee: networkFee,
-        drain: drain,
         // An empty merged list is equivalent to null for the datasource
         // (it gates on isNotEmpty), so always pass the merge.
         unspendable: mergedUnspendable,
@@ -224,8 +222,8 @@ class BitcoinWalletRepository implements BitcoinSendPort {
   }
 
   @override
-  Future<bool> isAddressOfWallet(
-    String address, {
+  Future<bool> areAddressesOfWallet(
+    List<String> addresses, {
     required String walletId,
   }) async {
     final metadata = await _walletMetadataDatasource.fetch(walletId);
@@ -247,8 +245,8 @@ class BitcoinWalletRepository implements BitcoinSendPort {
             )
             as PublicBdkWalletModel;
 
-    final isFromWallet = await _bdkWallet.isAddressMine(
-      address,
+    final isFromWallet = await _bdkWallet.areAddressesMine(
+      addresses,
       wallet: wallet,
     );
 
@@ -265,6 +263,39 @@ class BitcoinWalletRepository implements BitcoinSendPort {
     final feeAbsolute = await _bdkWallet.getFeeAmount(psbt);
     return feeAbsolute;
   }
+
+  @override
+  Future<List<Sats>> getRecipientAmounts({
+    required String psbt,
+    required List<BitcoinTransactionRecipient> recipients,
+    required String walletId,
+  }) async {
+    final metadata = await _walletMetadataDatasource.fetch(walletId);
+    if (metadata == null) {
+      throw Exception('Wallet metadata not found for walletId: $walletId');
+    }
+    if (!metadata.isBitcoin) {
+      throw Exception('Wallet $walletId is not a Bitcoin wallet');
+    }
+    final amounts = await _bdkWallet.getRecipientAmounts(
+      psbt,
+      recipients.map(_recipientModelFromEntity).toList(),
+      isTestnet: metadata.isTestnet,
+    );
+    return amounts.map(Sats.fromInt).toList();
+  }
+
+  BitcoinTransactionRecipientModel _recipientModelFromEntity(
+    BitcoinTransactionRecipient recipient,
+  ) => switch (recipient.amountSat) {
+    final amount? => BitcoinTransactionRecipientModel.fixed(
+      address: recipient.address,
+      fixedAmountSat: amount.value.toInt(),
+    ),
+    null => BitcoinTransactionRecipientModel.remainder(
+      address: recipient.address,
+    ),
+  };
 
   Future<int> getAmountSentToAddress({
     required String psbt,

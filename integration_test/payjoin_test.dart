@@ -71,8 +71,9 @@ Future<void> main({bool isInitialized = false}) async {
     );
     final preparationResult = await prepareBitcoinSend.execute(
       walletId: walletId,
-      address: address.address,
-      drain: true,
+      recipients: [
+        BitcoinTransactionRecipient.remainder(address: address.address),
+      ],
       networkFee: NetworkFee.relativeFromSatPerVbyte(testnetFeeRate),
     );
     final prepared = switch (preparationResult) {
@@ -277,8 +278,12 @@ Future<void> main({bool isInitialized = false}) async {
         const feeRate = testnetFeeRate;
         final preparationResult = await prepareBitcoinSend.execute(
           walletId: senderWallet.id,
-          address: address.address,
-          amountSat: 10000,
+          recipients: [
+            BitcoinTransactionRecipient.fixed(
+              address: address.address,
+              amountSat: Sats.fromInt(10000),
+            ),
+          ],
           networkFee: NetworkFee.relativeFromSatPerVbyte(feeRate),
         );
         final prepared = switch (preparationResult) {

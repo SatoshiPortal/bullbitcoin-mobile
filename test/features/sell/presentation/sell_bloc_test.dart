@@ -35,7 +35,7 @@ import 'package:mocktail/mocktail.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:primitives/primitives.dart'
-    show BitcoinNetwork, Err, Ok, Result, Sats;
+    show BitcoinNetwork, Err, Ok, Result, Sats, BitcoinTransactionRecipient;
 
 class _MockCreateSellOrder extends Mock implements CreateSellOrderUsecase {}
 
@@ -180,8 +180,7 @@ void main() {
   List<NetworkFee> capturedBuildFees() => verify(
     () => prepareSellBitcoinPayin.execute(
       walletId: any(named: 'walletId'),
-      address: any(named: 'address'),
-      amountSat: any(named: 'amountSat'),
+      recipients: any(named: 'recipients'),
       networkFee: captureAny(named: 'networkFee'),
       selectedInputs: any(named: 'selectedInputs'),
       replaceByFee: any(named: 'replaceByFee'),
@@ -193,8 +192,7 @@ void main() {
   void verifyNoBuilds() => verifyNever(
     () => prepareSellBitcoinPayin.execute(
       walletId: any(named: 'walletId'),
-      address: any(named: 'address'),
-      amountSat: any(named: 'amountSat'),
+      recipients: any(named: 'recipients'),
       networkFee: any(named: 'networkFee'),
       selectedInputs: any(named: 'selectedInputs'),
       replaceByFee: any(named: 'replaceByFee'),
@@ -205,6 +203,7 @@ void main() {
     registerFallbackValue(_FakeNewLabel());
     registerFallbackValue(const NetworkFee.absolute(200));
     registerFallbackValue(<WalletUtxo>[]);
+    registerFallbackValue(<BitcoinTransactionRecipient>[]);
     registerFallbackValue(
       Order.buy(
         orderId: 'fallback',
@@ -287,8 +286,7 @@ void main() {
     when(
       () => prepareSellBitcoinPayin.execute(
         walletId: any(named: 'walletId'),
-        address: any(named: 'address'),
-        amountSat: any(named: 'amountSat'),
+        recipients: any(named: 'recipients'),
         networkFee: any(named: 'networkFee'),
         selectedInputs: any(named: 'selectedInputs'),
         replaceByFee: any(named: 'replaceByFee'),
@@ -793,8 +791,7 @@ void main() {
       when(
         () => prepareSellBitcoinPayin.execute(
           walletId: any(named: 'walletId'),
-          address: any(named: 'address'),
-          amountSat: any(named: 'amountSat'),
+          recipients: any(named: 'recipients'),
           networkFee: any(named: 'networkFee'),
           selectedInputs: any(named: 'selectedInputs'),
           replaceByFee: any(named: 'replaceByFee'),
@@ -946,8 +943,7 @@ void main() {
         verify(
           () => prepareSellBitcoinPayin.execute(
             walletId: any(named: 'walletId'),
-            address: any(named: 'address'),
-            amountSat: any(named: 'amountSat'),
+            recipients: any(named: 'recipients'),
             networkFee: any(named: 'networkFee'),
             selectedInputs: any(named: 'selectedInputs'),
             replaceByFee: any(named: 'replaceByFee'),
@@ -1065,8 +1061,7 @@ void main() {
     when(
       () => prepareSellBitcoinPayin.execute(
         walletId: any(named: 'walletId'),
-        address: any(named: 'address'),
-        amountSat: any(named: 'amountSat'),
+        recipients: any(named: 'recipients'),
         networkFee: any(named: 'networkFee'),
         selectedInputs: any(named: 'selectedInputs'),
         replaceByFee: any(named: 'replaceByFee'),
@@ -1673,18 +1668,19 @@ void main() {
       bloc.add(const SellEvent.sendPaymentConfirmed());
       await Future<void>.delayed(const Duration(milliseconds: 200));
 
-      final builtAddresses = verify(
+      final builtRecipients = verify(
         () => prepareSellBitcoinPayin.execute(
           walletId: any(named: 'walletId'),
-          address: captureAny(named: 'address'),
-          amountSat: any(named: 'amountSat'),
+          recipients: captureAny(named: 'recipients'),
           networkFee: any(named: 'networkFee'),
           selectedInputs: any(named: 'selectedInputs'),
           replaceByFee: any(named: 'replaceByFee'),
         ),
-      ).captured;
+      ).captured.cast<List<BitcoinTransactionRecipient>>();
       expect(
-        builtAddresses,
+        builtRecipients.expand(
+          (recipients) => recipients.map((r) => r.address),
+        ),
         everyElement('bc1q0000000000000000000000000000000000000'),
         reason:
             'the payin must only ever pay the address the order was created '
@@ -1890,11 +1886,9 @@ void main() {
           () => previewBitcoinFeePresets.execute(
             presets: any(named: 'presets'),
             walletId: any(named: 'walletId'),
-            address: any(named: 'address'),
-            amountSat: any(named: 'amountSat'),
+            recipients: any(named: 'recipients'),
             replaceByFee: any(named: 'replaceByFee'),
             selectedInputs: any(named: 'selectedInputs'),
-            drain: any(named: 'drain'),
           ),
         );
         // Only the one build that produced the broadcast transaction.
@@ -1910,11 +1904,9 @@ void main() {
         () => previewBitcoinFeePresets.execute(
           presets: any(named: 'presets'),
           walletId: any(named: 'walletId'),
-          address: any(named: 'address'),
-          amountSat: any(named: 'amountSat'),
+          recipients: any(named: 'recipients'),
           replaceByFee: any(named: 'replaceByFee'),
           selectedInputs: any(named: 'selectedInputs'),
-          drain: any(named: 'drain'),
         ),
       ).thenAnswer(
         (_) async => const {
@@ -1983,11 +1975,18 @@ void main() {
         () => previewBitcoinFeePresets.execute(
           presets: feeOptions,
           walletId: 'wallet-1',
-          address: 'bc1q0000000000000000000000000000000000000',
-          amountSat: 100000,
+          recipients: any(
+            named: 'recipients',
+            that: predicate<List<BitcoinTransactionRecipient>>(
+              (recipients) =>
+                  recipients.length == 1 &&
+                  recipients.single.address ==
+                      'bc1q0000000000000000000000000000000000000' &&
+                  recipients.single.amountSat == Sats.fromInt(100000),
+            ),
+          ),
           replaceByFee: any(named: 'replaceByFee'),
           selectedInputs: any(named: 'selectedInputs'),
-          drain: false,
         ),
       ).called(1);
     });

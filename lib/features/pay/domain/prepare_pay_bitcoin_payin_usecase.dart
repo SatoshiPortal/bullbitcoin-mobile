@@ -31,26 +31,43 @@ class PreparePayBitcoinPayinUsecase {
     List<WalletUtxo>? selectedInputs,
     bool replaceByFee = true,
   }) async {
+    final BitcoinTransactionRecipient recipient;
+    if (drain) {
+      recipient = BitcoinTransactionRecipient.remainder(address: address);
+    } else if (amountSat != null) {
+      recipient = BitcoinTransactionRecipient.fixed(
+        address: address,
+        amountSat: Sats.fromInt(amountSat),
+      );
+    } else {
+      return const Err(PayUnexpectedFailure('Amount required'));
+    }
     final result = await _prepareBitcoinSendUsecase.execute(
       walletId: walletId,
-      address: address,
+      recipients: [recipient],
       networkFee: networkFee,
-      amountSat: amountSat,
-      drain: drain,
       selectedInputs: selectedInputs,
       replaceByFee: replaceByFee,
     );
-    return result.mapErr(
-      (failure) => switch (failure) {
-        WalletInsufficientFundsFailure() ||
-        WalletNoSpendableInputsFailure() ||
-        WalletSelectedInputsUnavailableFailure() =>
-          PayInsufficientBalanceFailure(
-            requiredAmountSat: amountSat ?? 0,
-            logMessage: failure.logMessage,
+    return result
+        .map(
+          (prepared) => (
+            unsignedPsbt: prepared.unsignedPsbt,
+            txSize: prepared.txSize,
+            isToSelf: prepared.isToSelf,
           ),
-        _ => PayUnexpectedFailure(failure.logMessage),
-      },
-    );
+        )
+        .mapErr(
+          (failure) => switch (failure) {
+            WalletInsufficientFundsFailure() ||
+            WalletNoSpendableInputsFailure() ||
+            WalletSelectedInputsUnavailableFailure() =>
+              PayInsufficientBalanceFailure(
+                requiredAmountSat: amountSat ?? 0,
+                logMessage: failure.logMessage,
+              ),
+            _ => PayUnexpectedFailure(failure.logMessage),
+          },
+        );
   }
 }

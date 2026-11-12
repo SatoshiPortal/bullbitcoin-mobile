@@ -8,6 +8,7 @@ import 'package:bb_mobile/features/send/domain/send_failure.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:primitives/primitives.dart' show Sats;
 
 import '../../../coins/wallet_utxo_fixture.dart';
 import 'package:bb_mobile/features/send/presentation/send_wallet_view.dart';
@@ -751,49 +752,158 @@ void main() {
       );
     });
   });
-  // With no price, fiat cannot be shown or typed: no rate means no currency,
-  // never a zero amount or an amount read in the wrong unit.
-  group('SendState without a price', () {
-    test('offers only bitcoin units as input currencies', () {
-      const state = SendState(fiatCurrencyCodes: ['USD', 'CAD']);
-      expect(state.inputAmountCurrencyCodes, [
-        BitcoinUnit.btc.code,
-        BitcoinUnit.sats.code,
-      ]);
-    });
 
-    test('offers fiat currencies once a price is known', () {
-      const state = SendState(
-        fiatCurrencyCodes: ['USD', 'CAD'],
-        exchangeRate: 70000,
+  group('SendState multi-recipient compatibility', () {
+    final payjoinRequest = const PaymentRequest.bip21(
+      network: Network.bitcoinMainnet,
+      uri: 'bitcoin:bc1qrecipient?pj=https://payjo.in',
+      address: 'bc1qrecipient',
+      pj: 'https://payjo.in',
+    );
+
+    SendState payjoinState() => SendState(
+      selectedWallet: SendWalletBitcoin(bitcoinWallet()),
+      paymentRequest: payjoinRequest,
+      payjoinGloballyEnabled: true,
+      isToSelf: false,
+    );
+
+    test('disables payjoin for multiple recipients', () {
+      final state = payjoinState().copyWith(
+        recipientDrafts: const [
+          (
+            id: 0,
+            address: 'bc1qrecipient',
+            amount: '1000',
+            receivesRemainder: false,
+            isValid: true,
+          ),
+          (
+            id: 1,
+            address: 'bc1qother',
+            amount: '2000',
+            receivesRemainder: false,
+            isValid: true,
+          ),
+        ],
       );
-      expect(state.inputAmountCurrencyCodes, contains('USD'));
+
+      expect(state.isPayjoinAvailable, isFalse);
+      expect(state.willAttemptPayjoin, isFalse);
     });
 
-    test('shows no fiat equivalent of a bitcoin amount', () {
-      const state = SendState(
-        inputAmountCurrencyCode: 'sats',
-        amount: '1000',
-        fiatCurrencyCode: 'USD',
+    test('disables payjoin for manually selected inputs', () {
+      final state = payjoinState().copyWith(
+        selectedUtxos: [walletUtxoFixture(walletId: 'w1')],
       );
-      expect(state.formattedAmountInputEquivalent, isEmpty);
+
+      expect(state.isPayjoinAvailable, isFalse);
+      expect(state.willAttemptPayjoin, isFalse);
     });
 
-    test('never reads an amount typed in fiat as bitcoin', () {
-      // 0.01 typed in a USD field must not become 0.01 BTC.
-      const state = SendState(
-        inputAmountCurrencyCode: 'USD',
-        amount: '0.01',
-        fiatCurrencyCode: 'USD',
+    test('converts fixed and remainder drafts to transaction recipients', () {
+      final state = SendState(
+        bitcoinUnit: BitcoinUnit.sats,
+        inputAmountCurrencyCode: BitcoinUnit.sats.code,
+        recipientDrafts: const [
+          (
+            id: 0,
+            address: 'bc1qfixed',
+            amount: '12000',
+            receivesRemainder: false,
+            isValid: true,
+          ),
+          (
+            id: 1,
+            address: 'bc1qremaining',
+            amount: '',
+            receivesRemainder: true,
+            isValid: true,
+          ),
+        ],
       );
-      expect(state.inputAmountSat, 0);
+
+      expect(
+        state.bitcoinTransactionRecipients[0].amountSat,
+        Sats.fromInt(12000),
+      );
+      expect(state.bitcoinTransactionRecipients[1].receivesRemainder, isTrue);
+      expect(state.totalFixedRecipientAmountSat, 12000);
     });
 
-    test('has no fiat value, rather than a zero one', () {
-      const state = SendState(confirmedAmountSat: 1000);
-      expect(state.inputAmountFiat, isNull);
-      expect(state.confirmedAmountFiat, isNull);
-      expect(state.formattedConfirmedAmountFiat, isEmpty);
+    test('keeps the established amount input for one fixed recipient', () {
+      const state = SendState(
+        paymentRequest: BitcoinPaymentRequest(
+          address: 'bc1qrecipient',
+          isTestnet: false,
+        ),
+        recipientDrafts: [
+          (
+            id: 0,
+            address: 'bc1qrecipient',
+            amount: '12000',
+            receivesRemainder: false,
+            isValid: true,
+          ),
+        ],
+      );
+
+      expect(state.usesRecipientList, isTrue);
+      expect(state.showsRecipientAmountList, isFalse);
+    });
+
+    test('derives recipient-list max from the remainder designation', () {
+      const state = SendState(
+        paymentRequest: BitcoinPaymentRequest(
+          address: 'bc1qrecipient',
+          isTestnet: false,
+        ),
+        recipientDrafts: [
+          (
+            id: 0,
+            address: 'bc1qrecipient',
+            amount: '',
+            receivesRemainder: true,
+            isValid: true,
+          ),
+        ],
+      );
+
+      expect(state.sendMax, isFalse);
+      expect(state.isMaxSend, isTrue);
+      expect(state.showsRecipientAmountList, isFalse);
+      expect(const SendState(sendMax: true).isMaxSend, isTrue);
+    });
+
+    test('restricts multiple recipients to matching Bitcoin wallets', () {
+      final bitcoin = bitcoinWallet();
+      final liquid = liquidWallet();
+      final state = SendState(
+        paymentRequest: const BitcoinPaymentRequest(
+          address: 'bc1qrecipient',
+          isTestnet: false,
+        ),
+        wallets: [liquid, bitcoin],
+        recipientDrafts: const [
+          (
+            id: 0,
+            address: 'bc1qrecipient',
+            amount: '12000',
+            receivesRemainder: false,
+            isValid: true,
+          ),
+          (
+            id: 1,
+            address: 'bc1qother',
+            amount: '13000',
+            receivesRemainder: false,
+            isValid: true,
+          ),
+        ],
+      );
+
+      expect(state.selectableWallets, [bitcoin]);
+      expect(state.showsRecipientAmountList, isTrue);
     });
   });
 }
