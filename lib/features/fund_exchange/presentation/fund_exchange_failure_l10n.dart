@@ -15,6 +15,8 @@ extension FundExchangeFailureL10n on FundExchangeFailure {
   String toTranslated(BuildContext context) => switch (this) {
     FundExchangeUnsupportedNetworkFailure() =>
       context.loc.networkFeatureUnavailable,
+    FundExchangeNotAuthenticatedFailure() =>
+      context.loc.exchangeAuthErrorMessage,
     FundExchangePaymentOptionUnavailableFailure() =>
       context.loc.fundExchangeErrorOrdPo404,
     FundExchangeOptionNotPermittedFailure() =>
@@ -60,6 +62,7 @@ extension FundExchangeFailureL10n on FundExchangeFailure {
     FundExchangeRequestInvalidFailure() =>
       context.loc.fundExchangeErrorTitleRcp400,
     FundExchangeUnsupportedNetworkFailure() ||
+    FundExchangeNotAuthenticatedFailure() ||
     FundExchangeNoInstitutionsFailure() ||
     FundExchangeConsentRegistrationFailure() ||
     FundExchangePaymentLinkUnavailableFailure() ||

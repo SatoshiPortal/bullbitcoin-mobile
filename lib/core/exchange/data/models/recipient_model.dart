@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/exchange/data/exchange_json_decoder.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/default_wallet.dart';
 
 /// Model for API recipient response
@@ -24,20 +25,20 @@ class RecipientModel {
 
   factory RecipientModel.fromJson(Map<String, dynamic> json) {
     // Address can be in different fields based on recipient type
-    String? address = json['address'] as String?;
-    address ??= json['bitcoinAddress'] as String?;
-    address ??= json['lightningAddress'] as String?;
-    address ??= json['liquidAddress'] as String?;
+    String? address = decodeExchangeJson<String?>(json['address']);
+    address ??= decodeExchangeJson<String?>(json['bitcoinAddress']);
+    address ??= decodeExchangeJson<String?>(json['lightningAddress']);
+    address ??= decodeExchangeJson<String?>(json['liquidAddress']);
 
     return RecipientModel(
-      recipientId: json['recipientId'] as String,
-      userId: json['userId'] as String?,
-      recipientType: json['recipientType'] as String,
+      recipientId: decodeExchangeJson<String>(json['recipientId']),
+      userId: decodeExchangeJson<String?>(json['userId']),
+      recipientType: decodeExchangeJson<String>(json['recipientType']),
       address: address,
-      isOwner: json['isOwner'] as bool? ?? false,
-      isDefault: json['isDefault'] as bool? ?? false,
-      createdAt: json['createdAt'] as String?,
-      updatedAt: json['updatedAt'] as String?,
+      isOwner: decodeExchangeJson<bool?>(json['isOwner']) ?? false,
+      isDefault: decodeExchangeJson<bool?>(json['isDefault']) ?? false,
+      createdAt: decodeExchangeJson<String?>(json['createdAt']),
+      updatedAt: decodeExchangeJson<String?>(json['updatedAt']),
     );
   }
 

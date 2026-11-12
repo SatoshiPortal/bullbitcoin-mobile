@@ -74,6 +74,40 @@ void main() {
   late _MockWallet wallet;
   late AppPayjoinTransactionAdapter adapter;
 
+  test('poll state codes survive the persisted host adapter', () async {
+    final directory = await Directory.systemTemp.createTemp(
+      'payjoin-poll-log-',
+    );
+    log = Logger.replace(directory: directory);
+    addTearDown(() async {
+      await log.flush();
+      await directory.delete(recursive: true);
+    });
+    const adapter = AppPayjoinLogAdapter();
+    for (final code in [
+      PayjoinLogCode.pollReplayFailed,
+      PayjoinLogCode.pollRequestFailed,
+      PayjoinLogCode.pollParseFailed,
+      PayjoinLogCode.pollRecovered,
+    ]) {
+      adapter.write(
+        PayjoinLogEvent(
+          level: code == PayjoinLogCode.pollRecovered
+              ? PayjoinLogLevel.fine
+              : PayjoinLogLevel.warning,
+          code: code,
+          role: PayjoinLogRole.receiver,
+        ),
+      );
+    }
+    expect((await log.readLogs()).map((row) => row.split('\t')[2]), [
+      'Payjoin receiver pollReplayFailed: Poll failed stage=replay',
+      'Payjoin receiver pollRequestFailed: Poll failed stage=request',
+      'Payjoin receiver pollParseFailed: Poll failed stage=parse',
+      'Payjoin receiver pollRecovered: Poll state recovered',
+    ]);
+  });
+
   setUpAll(() {
     registerFallbackValue(_connection);
     registerFallbackValue(StackTrace.empty);
@@ -182,15 +216,15 @@ void main() {
       [
         'WARNING',
         'Payjoin sender 0123456 relayFailure: Payjoin directory request failed '
-            'through every OHTTP relay cause=DioException.badResponse(403)',
+            'through every OHTTP relay cause=transport_badResponse(403)',
         '',
         '',
       ],
       [
         'SEVERE',
         'Payjoin receiver 0123456 storageFailure: Payjoin storage failed '
-            'cause=_Exception',
-        'Exception: Payjoin storageFailure _Exception',
+            'cause=operation',
+        'storageFailure',
         'payjoin-trace',
       ],
     ]);
@@ -318,11 +352,11 @@ void main() {
     );
 
     final warning = verify(() => logger.warning(captureAny())).captured.single;
-    expect(warning, contains('cause=DioException.connectionError'));
+    expect(warning, contains('cause=transport_connectionError'));
     expect(warning, isNot(contains('private-relay')));
   });
 
-  test('a server failure names the server and its transport kind', () {
+  test('a server failure retains its transport kind without its host', () {
     final previousLogger = log;
     final logger = _MockLogger();
     log = logger;
@@ -342,7 +376,7 @@ void main() {
 
     expect(
       verify(() => logger.warning(captureAny())).captured.single,
-      'Payjoin pj.bullbitcoin.com relayUnreachable: OHTTP relay did not answer, trying another cause=DioException.connectionError',
+      'Payjoin relayUnreachable: OHTTP relay did not answer, trying another cause=transport_connectionError',
     );
   });
 
@@ -366,7 +400,7 @@ void main() {
     );
 
     final warning = verify(() => logger.warning(captureAny())).captured.single;
-    expect(warning, contains('cause=DioException.badResponse(403)'));
+    expect(warning, contains('cause=transport_badResponse(403)'));
     expect(warning, isNot(contains('unreachable')));
     expect(warning, isNot(contains('private-relay')));
   });
@@ -395,7 +429,7 @@ void main() {
     final warning = verify(() => logger.warning(captureAny())).captured.single;
     expect(
       warning,
-      'Payjoin 0123456 watchFailure: Transaction watch failed cause=_Exception',
+      'Payjoin 0123456 watchFailure: Transaction watch failed cause=operation',
     );
     final errors = verify(
       () => logger.severe(
@@ -404,8 +438,10 @@ void main() {
         trace: any(named: 'trace'),
       ),
     ).captured;
-    expect(errors.whereType<String>().single, warning);
-    final reportedError = errors.whereType<Exception>().single.toString();
+    expect(errors, unorderedEquals([warning, 'watchFailure']));
+    final reportedError = errors
+        .firstWhere((value) => value == 'watchFailure')
+        .toString();
     expect(reportedError, isNot(contains('private-address')));
     expect(reportedError, isNot(contains('private-server')));
     expect(reportedError, isNot(contains('raw-transaction-id')));

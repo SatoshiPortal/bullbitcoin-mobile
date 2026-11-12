@@ -5083,5 +5083,7 @@
   "appStartupMissingSecretMessage": "Dieses Gerät enthält die Wiederherstellungsphrase Ihrer Wallet nicht mehr. Geben Sie sie erneut ein, um Ihre Wallet zurückzuerhalten.",
   "appStartupRestoreSecretButton": "Meine Wiederherstellungsphrase eingeben",
   "appStartupRestoreMismatch": "Diese Wiederherstellungsphrase gehört zu einer anderen Wallet. Geben Sie die Phrase der Wallet auf diesem Gerät ein.",
+  "passphraseShow": "Passphrase anzeigen",
+  "passphraseHide": "Passphrase verbergen",
   "coreScreensOutputsExceedInputs": "Die Ausgaben übersteigen die Eingaben: Diese Transaktion ist ungültig und wird vom Netzwerk abgelehnt."
 }

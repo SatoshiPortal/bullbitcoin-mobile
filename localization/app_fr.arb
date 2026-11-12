@@ -4982,5 +4982,7 @@
   "networkSelectorTitle": "Réseau",
   "networkWalletSetupTitle": "Aucun portefeuille sur ce réseau",
   "networkWalletReuseSecret": "Réutiliser le secret d’un portefeuille existant",
-  "coreScreensOutputsExceedInputs": "Les sorties dépassent les entrées : cette transaction est invalide et le réseau la rejettera."
+  "coreScreensOutputsExceedInputs": "Les sorties dépassent les entrées : cette transaction est invalide et le réseau la rejettera.",
+  "passphraseShow": "Afficher la passphrase",
+  "passphraseHide": "Masquer la passphrase"
 }
