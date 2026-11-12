@@ -71,6 +71,8 @@ abstract final class EncryptedSqlite {
     String path,
     DatabaseKey key,
   ) => _guard(() {
+    // A read can replay a hot journal: like every open, it waits for a durable directory.
+    DirectoryBarrier.sync(SqliteFamily(path).directory);
     final database = _run(() => sqlite3.open(path, mode: OpenMode.readWrite));
     try {
       _run(() => database.execute('PRAGMA busy_timeout = 2000;'));
