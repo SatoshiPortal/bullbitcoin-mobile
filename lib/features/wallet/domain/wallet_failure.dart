@@ -64,3 +64,29 @@ final class WalletUnexpectedFailure extends WalletFailure {
 final class WalletSyncBusyFailure extends WalletFailure {
   const WalletSyncBusyFailure();
 }
+
+/// An explicit selection is empty or a selected coin is no longer spendable.
+final class WalletSelectedInputsUnavailableFailure extends WalletFailure {
+  const WalletSelectedInputsUnavailableFailure([super.logMessage]);
+}
+
+final class WalletNoSpendableInputsFailure extends WalletFailure {
+  const WalletNoSpendableInputsFailure([super.logMessage]);
+}
+
+final class WalletInsufficientFundsFailure extends WalletFailure {
+  const WalletInsufficientFundsFailure([super.logMessage]);
+}
+
+final class WalletTransactionBuildFailure extends WalletFailure {
+  const WalletTransactionBuildFailure([super.logMessage]);
+}
+
+final class WalletConsolidationRequiredFailure extends WalletFailure {
+  const WalletConsolidationRequiredFailure([super.logMessage]);
+}
+
+/// A recipient address does not belong to the wallet's network.
+final class WalletAddressNetworkMismatchFailure extends WalletFailure {
+  const WalletAddressNetworkMismatchFailure([super.logMessage]);
+}

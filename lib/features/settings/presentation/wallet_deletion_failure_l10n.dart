@@ -29,6 +29,12 @@ extension WalletDeletionFailureL10n on WalletFailure {
     WalletSyncFailure() ||
     NoWalletsFoundFailure() ||
     // Never `logMessage`: the reason is for the log, not the screen.
+    WalletSelectedInputsUnavailableFailure() ||
+    WalletNoSpendableInputsFailure() ||
+    WalletInsufficientFundsFailure() ||
+    WalletConsolidationRequiredFailure() ||
+    WalletTransactionBuildFailure() ||
+    WalletAddressNetworkMismatchFailure() ||
     WalletUnexpectedFailure() => context.loc.walletDeletionErrorGeneric,
   };
 }

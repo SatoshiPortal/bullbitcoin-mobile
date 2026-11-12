@@ -26,11 +26,13 @@ void main() {
       final source = File(
         'lib/features/send/presentation/bloc/send_cubit.dart',
       ).readAsStringSync();
-      final start = source.indexOf('if (state.paymentRequest!.isBolt11) {');
-      final end = source.indexOf("if (state.paymentRequest!.isBip21) {", start);
+      final start = source.indexOf(
+        'if (paymentRequest is Bolt11PaymentRequest) {',
+      );
+      final end = source.indexOf("if (paymentRequest.isBip21) {", start);
       final path = source.substring(start, end);
 
-      expect(path, contains('if (!await loadSendSwapQuote('));
+      expect(path, contains('if (!quoteLoaded)'));
       expect(path, contains('creatingSwap: false'));
       expect(path, contains('return;'));
     });

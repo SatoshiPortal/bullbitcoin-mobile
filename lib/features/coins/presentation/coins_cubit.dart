@@ -1,12 +1,13 @@
 import 'package:bb_mobile/features/coins/domain/usecases/watch_wallet_revisions_usecase.dart';
 import 'dart:async';
 
+import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/outpoint.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_started_wallet_syncs_usecase.dart';
-import 'package:bb_mobile/features/coins/domain/coins_error.dart';
 import 'package:bb_mobile/features/coins/domain/usecases/freeze_utxos_usecase.dart';
 import 'package:bb_mobile/features/coins/domain/usecases/get_utxos_usecase.dart';
+import 'package:bb_mobile/features/coins/domain/usecases/refresh_coins_usecase.dart';
 import 'package:bb_mobile/features/coins/domain/usecases/unfreeze_utxos_usecase.dart';
 import 'package:bb_mobile/features/coins/domain/utxo_sort_filter.dart';
 import 'package:bb_mobile/features/coins/presentation/coins_state.dart';
@@ -27,6 +28,7 @@ class CoinsCubit extends Cubit<CoinsState> {
     required this._getUtxosUsecase,
     required this._freezeUtxosUsecase,
     required this._unfreezeUtxosUsecase,
+    required this._refreshCoinsUsecase,
     required this._labelsFacade,
     required WatchStartedWalletSyncsUsecase watchStartedWalletSyncsUsecase,
     required WatchFinishedWalletSyncsUsecase watchFinishedWalletSyncsUsecase,
@@ -47,6 +49,7 @@ class CoinsCubit extends Cubit<CoinsState> {
   final GetUtxosUsecase _getUtxosUsecase;
   final FreezeUtxosUsecase _freezeUtxosUsecase;
   final UnfreezeUtxosUsecase _unfreezeUtxosUsecase;
+  final RefreshCoinsUsecase _refreshCoinsUsecase;
   final LabelsFacade _labelsFacade;
 
   StreamSubscription? _startedSub;
@@ -66,49 +69,47 @@ class CoinsCubit extends Cubit<CoinsState> {
   // ── Loading ───────────────────────────────────────────────────────────────
 
   Future<void> load() async {
-    try {
-      if (state.status == CoinsStatus.error) {
-        emit(state.copyWith(status: CoinsStatus.loading, error: null));
-      }
-      final utxos = await _getUtxosUsecase.execute(walletId: state.walletId);
-      final labels = await _labelsFacade.fetchDistinctLabels();
-      if (isClosed) return;
+    if (state.status == CoinsStatus.error) {
+      emit(state.copyWith(status: CoinsStatus.loading, failure: null));
+    }
+    final result = await _getUtxosUsecase.execute(walletId: state.walletId);
+    switch (result) {
+      case Err(:final failure):
+        if (!isClosed) {
+          emit(
+            state.copyWith(
+              status: CoinsStatus.error,
+              failure: failure,
+              syncing: false,
+            ),
+          );
+        }
+      case Ok(:final value):
+        final labels = await _labelsFacade.fetchDistinctLabels();
+        if (isClosed) return;
 
-      final stillPresent = utxos.map(utxoOutpointKey).toSet();
-      final prunedSelection = state.selectedOutpoints
-          .where(stillPresent.contains)
-          .toSet();
+        final stillPresent = value.map(utxoOutpointKey).toSet();
+        final prunedSelection = state.selectedOutpoints
+            .where(stillPresent.contains)
+            .toSet();
 
-      emit(
-        state.copyWith(
-          utxos: utxos,
-          allLabels: labels,
-          selectedOutpoints: prunedSelection,
-          status: utxos.isEmpty ? CoinsStatus.empty : CoinsStatus.ready,
-          syncing: false,
-          error: null,
-        ),
-      );
-    } on CoinsError catch (e) {
-      if (!isClosed) {
-        emit(
-          state.copyWith(status: CoinsStatus.error, error: e, syncing: false),
-        );
-      }
-    } catch (e) {
-      if (!isClosed) {
         emit(
           state.copyWith(
-            status: CoinsStatus.error,
-            error: CoinsError.unexpected(message: e.toString()),
+            utxos: value,
+            allLabels: labels,
+            selectedOutpoints: prunedSelection,
+            status: value.isEmpty ? CoinsStatus.empty : CoinsStatus.ready,
             syncing: false,
+            failure: null,
           ),
         );
-      }
     }
   }
 
-  Future<void> refresh() => load();
+  Future<void> refresh() async {
+    await _refreshCoinsUsecase.execute(walletId: state.walletId);
+    await load();
+  }
 
   Future<void> _scheduleReload() async {
     _debounceTimer?.cancel();
@@ -157,46 +158,47 @@ class CoinsCubit extends Cubit<CoinsState> {
 
   // ── Freeze / Unfreeze ─────────────────────────────────────────────────────
 
-  /// Returns `true` on success, `false` if the freeze failed (error emitted).
+  /// Returns `true` on success, `false` if the freeze failed.
   /// Callers must gate any success UI on the return value rather than
-  /// re-reading [state] — the error listener clears [CoinsState.error]
+  /// re-reading [state] — the UI listener clears [CoinsState.failure]
   /// before an awaiting caller's continuation runs.
   Future<bool> freeze(List<String> outpointKeys) async {
-    try {
-      await _freezeUtxosUsecase.execute(
-        walletId: state.walletId,
-        outpoints: _toOutpoints(outpointKeys),
-      );
-      await load();
-      if (!isClosed) exitSelect();
-      return true;
-    } on CoinsError catch (e) {
-      // Preserve selection; surface the error.
-      if (!isClosed) emit(state.copyWith(error: e));
-      return false;
+    final result = await _freezeUtxosUsecase.execute(
+      walletId: state.walletId,
+      outpoints: _toOutpoints(outpointKeys),
+    );
+    switch (result) {
+      case Err(:final failure):
+        if (!isClosed) emit(state.copyWith(failure: failure));
+        return false;
+      case Ok():
+        await load();
+        if (!isClosed) exitSelect();
+        return true;
     }
   }
 
   /// Returns `true` on success, `false` if the unfreeze failed (error emitted).
   /// See [freeze] for why callers must use the return value, not [state].
   Future<bool> unfreeze(List<String> outpointKeys) async {
-    try {
-      await _unfreezeUtxosUsecase.execute(
-        walletId: state.walletId,
-        outpoints: _toOutpoints(outpointKeys),
-      );
-      await load();
-      if (!isClosed) exitSelect();
-      return true;
-    } on CoinsError catch (e) {
-      if (!isClosed) emit(state.copyWith(error: e));
-      return false;
+    final result = await _unfreezeUtxosUsecase.execute(
+      walletId: state.walletId,
+      outpoints: _toOutpoints(outpointKeys),
+    );
+    switch (result) {
+      case Err(:final failure):
+        if (!isClosed) emit(state.copyWith(failure: failure));
+        return false;
+      case Ok():
+        await load();
+        if (!isClosed) exitSelect();
+        return true;
     }
   }
 
-  /// Clears a transient error after the UI has shown it.
-  void clearError() {
-    if (state.error != null) emit(state.copyWith(error: null));
+  /// Clears a transient failure after the UI has shown it.
+  void clearFailure() {
+    if (state.failure != null) emit(state.copyWith(failure: null));
   }
 
   List<Outpoint> _toOutpoints(List<String> keys) {

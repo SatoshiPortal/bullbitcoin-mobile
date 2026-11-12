@@ -1,4 +1,6 @@
 import 'package:bb_mobile/features/send/domain/usecases/broadcast_liquid_transaction_usecase.dart';
+import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
+import 'package:primitives/primitives.dart' show Ok, Err;
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
@@ -124,7 +126,7 @@ void main() {
         amountSat: any(named: 'amountSat'),
         feeRate: any(named: 'feeRate'),
       ),
-    ).thenAnswer((_) async => 'pset');
+    ).thenAnswer((_) async => const Ok('pset'));
     when(
       () => liquidWalletRepository.getPsetSizeAndAbsoluteFees(pset: 'pset'),
     ).thenAnswer((_) async => (100, 500));
@@ -186,6 +188,58 @@ void main() {
     when(
       () => labelsFacade.store(any()),
     ).thenAnswer((_) async => const Err(LabelUnexpectedFailure()));
+  });
+
+  test('stops before signing when Liquid build 1 returns Err', () async {
+    var builds = 0;
+    when(
+      () => liquidWalletRepository.buildPset(
+        walletId: 'liquid-wallet',
+        address: any(named: 'address'),
+        amountSat: any(named: 'amountSat'),
+        feeRate: any(named: 'feeRate'),
+      ),
+    ).thenAnswer(
+      (_) async => builds++ == 0
+          ? const Err(WalletNoSpendableInputsFailure())
+          : const Ok('pset'),
+    );
+    final result = await provider.execute(settings);
+    expect(result, isA<Err<String, AutoswapFailure>>());
+    expect(builds, 1);
+    verifyNever(
+      () => liquidWalletRepository.signPset(
+        walletId: any(named: 'walletId'),
+        pset: any(named: 'pset'),
+      ),
+    );
+    verifyZeroInteractions(broadcastLiquid);
+  });
+
+  test('stops before signing when Liquid build 2 returns Err', () async {
+    var builds = 0;
+    when(
+      () => liquidWalletRepository.buildPset(
+        walletId: 'liquid-wallet',
+        address: any(named: 'address'),
+        amountSat: any(named: 'amountSat'),
+        feeRate: any(named: 'feeRate'),
+      ),
+    ).thenAnswer(
+      (_) async => builds++ == 1
+          ? const Err(WalletNoSpendableInputsFailure())
+          : const Ok('pset'),
+    );
+    final result = await provider.execute(settings);
+    expect(result, isA<Err<String, AutoswapFailure>>());
+    expect(builds, 2);
+    verifyNever(
+      () => liquidWalletRepository.signPset(
+        walletId: any(named: 'walletId'),
+        pset: any(named: 'pset'),
+      ),
+    );
+    verifyZeroInteractions(broadcastLiquid);
   });
 
   test('uses testnet services and broadcasts the payin on testnet', () async {

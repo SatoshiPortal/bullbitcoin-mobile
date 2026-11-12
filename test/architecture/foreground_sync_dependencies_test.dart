@@ -75,7 +75,7 @@ const _allowedTargets = <String, String>{
   'transactions':
       'buy electrum_settings exchange labels pay replace_by_fee settings swap wallet',
   'wallet':
-      'announcements backup_settings bitcoin_price coins consolidation electrum_settings exchange import_watch_only_wallet labels onboarding receive send settings sp swap tor_settings transactions',
+      'announcements backup_settings bitcoin_price consolidation electrum_settings exchange import_watch_only_wallet labels onboarding receive send settings sp swap tor_settings transactions',
   'withdraw': 'exchange recipients transactions',
   'wizard': 'settings',
 };

@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:transaction_sync/diagnostics.dart';
 import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
@@ -10,7 +11,9 @@ import 'package:bb_mobile/features/wallet/data/models/wallet_transaction_model.d
 import 'package:bb_mobile/core/wallet/data/models/wallet_utxo_model.dart';
 import 'package:bb_mobile/core/wallet/domain/consolidation_required_exception.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/outpoint.dart';
 import 'package:bb_mobile/core/wallet/domain/insufficient_funds_exception.dart';
+import 'package:bb_mobile/core/wallet/domain/no_spendable_utxo_exception.dart';
 import 'package:flutter/material.dart';
 import 'package:bull_sdk/lwk.dart' as lwk;
 
@@ -59,21 +62,25 @@ class LwkWalletDatasource {
       );
       final utxos = await lwkWallet.utxos();
 
-      final unspent = utxos.map((utxo) {
-        return WalletUtxoModel.liquid(
-          txId: utxo.outpoint.txid,
-          vout: utxo.outpoint.vout,
-          amountSat: utxo.unblinded.value,
-          scriptPubkey: utxo.scriptPubkey,
-          standardAddress: utxo.address.standard,
-          confidentialAddress: utxo.address.confidential,
-        );
-      });
+      final assetId = _lBtcAssetId(wallet.network);
+      final unspent = utxos
+          .where((utxo) => utxo.unblinded.asset == assetId)
+          .map((utxo) {
+            return WalletUtxoModel.liquid(
+              txId: utxo.outpoint.txid,
+              vout: utxo.outpoint.vout,
+              amountSat: utxo.unblinded.value,
+              scriptPubkey: utxo.scriptPubkey,
+              standardAddress: utxo.address.standard,
+              confidentialAddress: utxo.address.confidential,
+              blockHeight: utxo.height,
+            );
+          });
 
       return unspent.toList();
     } catch (e) {
       if (e is lwk.LwkError) {
-        throw e.msg;
+        rethrow;
       } else {
         rethrow;
       }
@@ -213,8 +220,8 @@ class LwkWalletDatasource {
   }
 
   String _lBtcAssetId(Network network) => switch (network) {
-    Network.liquidMainnet => lwk.getLbtcAssetId(),
-    Network.liquidTestnet => lwk.getLtestAssetId(),
+    Network.liquidMainnet => AssetConstants.lbtcMainnet,
+    Network.liquidTestnet => AssetConstants.lbtcTestnet,
     // TODO(lwk-dart#96): no regtest asset policy until the pinned SDK supports it.
     _ => throw const UnsupportedNetworkException(),
   };
@@ -336,8 +343,12 @@ class LwkWalletDatasource {
     int? amountSat,
     bool drain = false,
     required WalletModel wallet,
+    Set<Outpoint>? selectedInputs,
   }) async {
     try {
+      if (!drain && amountSat == null) {
+        throw Exception('Amount required unless draining');
+      }
       final lwkWallet = await LeaseDiagnostics.from(
         LeaseSource.sendBuild,
         () => _readWallet(wallet),
@@ -345,12 +356,30 @@ class LwkWalletDatasource {
       // LWK accepts sat/kvByte as a double. Our RelativeFee stores sat/kwu,
       // and 1 sat/kwu = 4 sat/kvByte, so the conversion is exact integer
       // arithmetic promoted to double — no precision loss at the SDK boundary.
-      final pset = await lwkWallet.buildLbtcTx(
-        sats: BigInt.from(amountSat ?? 0),
-        outAddress: address,
-        feeRate: feeRate.satPerKvbyte,
-        drain: drain,
-      );
+      final pset = selectedInputs == null
+          ? await lwkWallet.buildLbtcTx(
+              sats: BigInt.from(amountSat ?? 0),
+              outAddress: address,
+              feeRate: feeRate.satPerKvbyte,
+              drain: drain,
+            )
+          : await lwkWallet.buildCustomTx(
+              utxos: [
+                for (final input in selectedInputs)
+                  lwk.OutPoint(txid: input.txId, vout: input.vout),
+              ],
+              outputs: [
+                if (!drain)
+                  lwk.TxOutputSpec(
+                    address: address,
+                    satoshi: BigInt.from(
+                      amountSat ?? (throw Exception('Missing amount')),
+                    ),
+                  ),
+              ],
+              drainTo: drain ? address : null,
+              feeRate: feeRate.satPerKvbyte,
+            );
       final decoded = await lwkWallet.decodeTx(pset: pset);
       log.info(decoded.absoluteFees.toString());
       return pset;
@@ -362,10 +391,12 @@ class LwkWalletDatasource {
         // A build failure on a wallet whose confirmed L-BTC UTXO count exceeds
         // the Liquid confidential-tx input limit is almost certainly the
         // ">256 inputs" case.
-        if (await _exceedsLiquidInputLimit(wallet)) {
+        if (selectedInputs != null
+            ? selectedInputs.length > maxLiquidTxInputs
+            : await _exceedsLiquidInputLimit(wallet)) {
           throw ConsolidationRequiredException(e.msg);
         }
-        throw e.msg;
+        rethrow;
       } else {
         rethrow;
       }
@@ -431,9 +462,65 @@ class LwkWalletDatasource {
     required RelativeFee feeRate,
     required int highUtxoThreshold,
     required int maximumInputs,
+    Set<Outpoint> unspendable = const {},
   }) async {
     try {
       final lwkWallet = await _readWallet(wallet);
+      // LWK's consolidation helper cannot exclude frozen coins. Build the
+      // same balanced batches with explicit inputs when exclusions exist.
+      if (unspendable.isNotEmpty) {
+        if (maximumInputs <= 0) {
+          throw ArgumentError.value(maximumInputs, 'maximumInputs');
+        }
+        final assetId = _lBtcAssetId(wallet.network);
+        final coins = (await lwkWallet.utxos())
+            .where(
+              (coin) =>
+                  coin.unblinded.asset == assetId &&
+                  coin.height != null &&
+                  !unspendable.contains((
+                    txId: coin.outpoint.txid,
+                    vout: coin.outpoint.vout,
+                  )),
+            )
+            .toList();
+        if (coins.length <= highUtxoThreshold) return [];
+        final limit = maximumInputs.clamp(1, 250);
+        final batches = (coins.length / limit).ceil();
+        final batchSize = (coins.length / batches).ceil();
+        final start = (await lwkWallet.addressLastUnused()).index;
+        if (start == null) {
+          throw Exception('Missing consolidation address index');
+        }
+        final psets = <String>[];
+        for (var offset = 0; offset < coins.length; offset += batchSize) {
+          final address = await lwkWallet.address(
+            index: start + offset ~/ batchSize,
+          );
+          try {
+            psets.add(
+              await lwkWallet.buildCustomTx(
+                utxos: coins
+                    .skip(offset)
+                    .take(batchSize)
+                    .map((coin) => coin.outpoint)
+                    .toList(),
+                outputs: [],
+                drainTo: address.confidential,
+                feeRate: feeRate.satPerKvbyte,
+              ),
+            );
+          } on lwk.LwkError catch (error) {
+            if (!error.msg.contains(_lwkInsufficientFundsMarker)) rethrow;
+          }
+        }
+        if (psets.isEmpty) {
+          throw NoSpendableUtxoException(
+            'Consolidation inputs cannot cover the fee',
+          );
+        }
+        return psets;
+      }
       final psets = await lwkWallet.consolidate(
         feeRate: feeRate.satPerKvbyte,
         highUtxoThreshold: highUtxoThreshold,
@@ -442,12 +529,19 @@ class LwkWalletDatasource {
       return psets;
     } catch (e) {
       if (e is lwk.LwkError) {
-        throw e.msg;
+        rethrow;
       } else {
         rethrow;
       }
     }
   }
+
+  Set<Outpoint> getPsetInputs(String pset) => {
+    for (final input in lwk.PartiallySignedElementsTransaction.fromString(
+      psetString: pset,
+    ).extractTx().getInputs())
+      (txId: input.txid, vout: input.vout),
+  };
 
   Future<(int, int)> decodeAbsoluteFeesFromPset(String pset) async {
     try {

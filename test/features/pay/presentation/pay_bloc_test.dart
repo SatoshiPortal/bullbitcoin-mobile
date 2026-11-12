@@ -222,6 +222,7 @@ void main() {
     registerFallbackValue(BitcoinNetwork.mainnet);
     registerFallbackValue(const NetworkFee.absolute(200));
     registerFallbackValue(<WalletUtxo>[]);
+    registerFallbackValue(<BitcoinTransactionRecipient>[]);
     // The fee estimate takes the wallet itself, so `any(named: 'wallet')`
     // needs something to stand in for it.
     registerFallbackValue(_MockWallet());
@@ -1432,11 +1433,9 @@ void main() {
         () => previewBitcoinFeePresets.execute(
           presets: any(named: 'presets'),
           walletId: any(named: 'walletId'),
-          address: any(named: 'address'),
-          amountSat: any(named: 'amountSat'),
+          recipients: any(named: 'recipients'),
           replaceByFee: any(named: 'replaceByFee'),
           selectedInputs: any(named: 'selectedInputs'),
-          drain: any(named: 'drain'),
         ),
       ).thenAnswer(
         (_) async => const {
@@ -1588,11 +1587,9 @@ void main() {
           () => previewBitcoinFeePresets.execute(
             presets: any(named: 'presets'),
             walletId: any(named: 'walletId'),
-            address: any(named: 'address'),
-            amountSat: any(named: 'amountSat'),
+            recipients: any(named: 'recipients'),
             replaceByFee: any(named: 'replaceByFee'),
             selectedInputs: any(named: 'selectedInputs'),
-            drain: any(named: 'drain'),
           ),
         );
       },
@@ -1612,11 +1609,17 @@ void main() {
         () => previewBitcoinFeePresets.execute(
           presets: feeOptions,
           walletId: 'wallet-1',
-          address: payinAddress,
-          amountSat: 100000,
+          recipients: any(
+            named: 'recipients',
+            that: predicate<List<BitcoinTransactionRecipient>>(
+              (recipients) =>
+                  recipients.length == 1 &&
+                  recipients.single.address == payinAddress &&
+                  recipients.single.amountSat == Sats.fromInt(100000),
+            ),
+          ),
           replaceByFee: any(named: 'replaceByFee'),
           selectedInputs: any(named: 'selectedInputs'),
-          drain: false,
         ),
       ).called(1);
     });
