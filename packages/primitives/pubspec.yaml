@@ -11,6 +11,7 @@ environment:
 resolution: workspace
 
 dependencies:
+  bs58check: ^1.0.2
   meta: ^1.17.0
 
 dev_dependencies:

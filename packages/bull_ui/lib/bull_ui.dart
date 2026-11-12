@@ -98,6 +98,7 @@ export 'src/layout/gap.dart' show Gap;
 
 // Theme.
 export 'src/theme/bull_icon.dart';
+export 'src/theme/bull_shapes.dart';
 export 'src/theme/bull_theme.dart';
 export 'src/theme/bull_tokens.dart';
 
@@ -133,6 +134,7 @@ export 'src/controls/bull_swipe_action.dart';
 export 'src/controls/bull_switch.dart';
 
 // Feedback.
+export 'src/feedback/bull_screen_privacy_gate.dart';
 export 'src/feedback/bull_countdown.dart';
 export 'src/feedback/bull_async_status.dart';
 export 'src/feedback/bull_fading_linear_progress.dart';
@@ -162,6 +164,10 @@ export 'src/data_display/bull_settings_entry_item.dart';
 export 'src/data_display/bull_stat_tile.dart';
 export 'src/data_display/bull_text.dart';
 export 'src/data_display/bull_transaction_direction_badge.dart';
+
+// Support.
+export 'src/support/bull_support_button.dart';
+export 'src/support/bull_support_scope.dart';
 
 // Overlays.
 export 'src/overlays/bull_bottom_sheet.dart';

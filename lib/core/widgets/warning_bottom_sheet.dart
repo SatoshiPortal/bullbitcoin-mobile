@@ -1,7 +1,7 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullBottomSheet, BullButton, BullText, Gap;
+    show BullBottomSheet, BullButton, BullShapesX, BullText, Gap;
 import 'package:go_router/go_router.dart';
 
 class WarningBottomSheet extends StatelessWidget {
@@ -41,7 +41,9 @@ class WarningBottomSheet extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: context.appColors.surface,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(context.bullShapes.sheet),
+        ),
       ),
       child: SafeArea(
         child: Padding(

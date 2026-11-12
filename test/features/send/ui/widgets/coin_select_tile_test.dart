@@ -37,6 +37,7 @@ void main() {
     WidgetTester tester, {
     required bool selected,
     required VoidCallback onTap,
+    WalletUtxo? coin,
   }) async {
     await tester.pumpWidget(
       MaterialApp(
@@ -45,7 +46,7 @@ void main() {
         supportedLocales: AppLocalizations.supportedLocales,
         home: Scaffold(
           body: CoinSelectTile(
-            utxo: utxo,
+            utxo: coin ?? utxo,
             selected: selected,
             onTap: onTap,
             bitcoinUnit: BitcoinUnit.sats,
@@ -94,5 +95,41 @@ void main() {
     await tester.pump();
 
     expect(taps, 1);
+  });
+
+  testWidgets('shows the coin confirmation count', (tester) async {
+    await pumpTile(
+      tester,
+      selected: false,
+      onTap: () {},
+      coin: utxo.copyWith(confirmations: 6),
+    );
+
+    expect(find.text('6 confirmations'), findsOneWidget);
+  });
+
+  testWidgets('shows Liquid confirmation status without a keychain label', (
+    tester,
+  ) async {
+    final liquid = LiquidWalletUtxo(
+      walletId: 'liquid',
+      txId: 'tx',
+      vout: 0,
+      scriptPubkey: '',
+      amountSat: BigInt.from(10000),
+      standardAddress: 'tex1own',
+      confidentialAddress: 'tlq1own',
+      blockHeight: 100,
+    );
+    await pumpTile(tester, selected: true, onTap: () {}, coin: liquid);
+    expect(find.text('Confirmed'), findsOneWidget);
+    expect(find.text('Receive'), findsNothing);
+    await pumpTile(
+      tester,
+      selected: true,
+      onTap: () {},
+      coin: liquid.copyWith(blockHeight: null),
+    );
+    expect(find.text('Unconfirmed'), findsOneWidget);
   });
 }

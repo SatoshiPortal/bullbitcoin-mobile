@@ -1,8 +1,14 @@
+import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/core/sync/sync_coordinator.dart';
+import 'package:bb_mobile/core/sync/sync_kind.dart';
+import 'package:bb_mobile/core/sync/sync_trigger.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_utxo_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_utxos_usecase.dart';
-import 'package:bb_mobile/features/coins/domain/coins_error.dart';
+import 'package:bb_mobile/features/coins/domain/coins_failure.dart';
 import 'package:bb_mobile/features/coins/domain/usecases/freeze_utxos_usecase.dart';
 import 'package:bb_mobile/features/coins/domain/usecases/get_utxos_usecase.dart';
+import 'package:bb_mobile/features/coins/domain/usecases/refresh_coins_usecase.dart';
 import 'package:bb_mobile/features/coins/domain/usecases/unfreeze_utxos_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -14,7 +20,37 @@ class _MockGetWalletUtxosUsecase extends Mock
 
 class _MockWalletUtxoRepository extends Mock implements WalletUtxoRepository {}
 
+class _MockSyncCoordinator extends Mock implements SyncCoordinator {}
+
 void main() {
+  group('RefreshCoinsUsecase', () {
+    late _MockSyncCoordinator coordinator;
+    late RefreshCoinsUsecase usecase;
+
+    setUp(() {
+      coordinator = _MockSyncCoordinator();
+      usecase = RefreshCoinsUsecase(coordinator);
+    });
+
+    test('requests a user-triggered wallet sync', () async {
+      when(
+        () => coordinator.sync(trigger: SyncTrigger.user),
+      ).thenAnswer((_) async {});
+
+      await usecase.execute();
+
+      verify(() => coordinator.sync(trigger: SyncTrigger.user)).called(1);
+    });
+
+    test('settles after a recorded sync failure', () async {
+      when(() => coordinator.sync(trigger: SyncTrigger.user)).thenThrow(
+        SyncCoordinatorException({SyncKind.bitcoin: Exception('offline')}),
+      );
+
+      await expectLater(usecase.execute(), completes);
+    });
+  });
+
   group('GetUtxosUsecase', () {
     late _MockGetWalletUtxosUsecase core;
     late GetUtxosUsecase usecase;
@@ -32,28 +68,40 @@ void main() {
 
       final result = await usecase.execute(walletId: 'w1');
 
-      expect(result, utxos);
+      expect(result, isA<Ok<List<WalletUtxo>, CoinsFailure>>());
+      expect((result as Ok).value, utxos);
     });
 
-    test('maps GetUtxosUsecaseException to CoinsError.loadFailed', () async {
+    test('maps GetUtxosUsecaseException to CoinsLoadFailure', () async {
       when(
         () => core.execute(walletId: any(named: 'walletId')),
       ).thenThrow(GetUtxosUsecaseException('boom'));
 
-      expect(
-        () => usecase.execute(walletId: 'w1'),
-        throwsA(isA<LoadFailedCoinsError>()),
-      );
+      final result = await usecase.execute(walletId: 'w1');
+
+      expect(result, isA<Err<List<WalletUtxo>, CoinsFailure>>());
+      expect((result as Err).failure, isA<CoinsLoadFailure>());
     });
 
-    test('maps any other error to CoinsError.unexpected', () async {
+    test('maps another exception to CoinsUnexpectedFailure', () async {
       when(
         () => core.execute(walletId: any(named: 'walletId')),
       ).thenThrow(Exception('weird'));
 
-      expect(
-        () => usecase.execute(walletId: 'w1'),
-        throwsA(isA<UnexpectedCoinsError>()),
+      final result = await usecase.execute(walletId: 'w1');
+
+      expect(result, isA<Err<List<WalletUtxo>, CoinsFailure>>());
+      expect((result as Err).failure, isA<CoinsUnexpectedFailure>());
+    });
+
+    test('allows programmer errors to propagate', () async {
+      when(
+        () => core.execute(walletId: any(named: 'walletId')),
+      ).thenThrow(StateError('programmer defect'));
+
+      await expectLater(
+        usecase.execute(walletId: 'w1'),
+        throwsA(isA<StateError>()),
       );
     });
   });
@@ -75,15 +123,19 @@ void main() {
         ),
       ).thenAnswer((_) async {});
 
-      await usecase.execute(walletId: 'w1', outpoints: [(txId: 'a', vout: 0)]);
+      final result = await usecase.execute(
+        walletId: 'w1',
+        outpoints: [(txId: 'a', vout: 0)],
+      );
 
+      expect(result, isA<Ok<void, CoinsFailure>>());
       verify(
         () =>
             repo.freezeUtxos(walletId: 'w1', outpoints: [(txId: 'a', vout: 0)]),
       ).called(1);
     });
 
-    test('maps failure to CoinsError.freezeFailed', () async {
+    test('maps failure to CoinsFreezeFailure', () async {
       when(
         () => repo.freezeUtxos(
           walletId: any(named: 'walletId'),
@@ -91,10 +143,26 @@ void main() {
         ),
       ).thenThrow(Exception('db down'));
 
-      expect(
-        () =>
-            usecase.execute(walletId: 'w1', outpoints: [(txId: 'a', vout: 0)]),
-        throwsA(isA<FreezeFailedCoinsError>()),
+      final result = await usecase.execute(
+        walletId: 'w1',
+        outpoints: [(txId: 'a', vout: 0)],
+      );
+
+      expect(result, isA<Err<void, CoinsFailure>>());
+      expect((result as Err).failure, isA<CoinsFreezeFailure>());
+    });
+
+    test('allows programmer errors to propagate', () async {
+      when(
+        () => repo.freezeUtxos(
+          walletId: any(named: 'walletId'),
+          outpoints: any(named: 'outpoints'),
+        ),
+      ).thenThrow(StateError('programmer defect'));
+
+      await expectLater(
+        usecase.execute(walletId: 'w1', outpoints: [(txId: 'a', vout: 0)]),
+        throwsA(isA<StateError>()),
       );
     });
   });
@@ -116,8 +184,12 @@ void main() {
         ),
       ).thenAnswer((_) async {});
 
-      await usecase.execute(walletId: 'w1', outpoints: [(txId: 'a', vout: 0)]);
+      final result = await usecase.execute(
+        walletId: 'w1',
+        outpoints: [(txId: 'a', vout: 0)],
+      );
 
+      expect(result, isA<Ok<void, CoinsFailure>>());
       verify(
         () => repo.unfreezeUtxos(
           walletId: 'w1',
@@ -126,7 +198,7 @@ void main() {
       ).called(1);
     });
 
-    test('maps failure to CoinsError.unfreezeFailed', () async {
+    test('maps failure to CoinsUnfreezeFailure', () async {
       when(
         () => repo.unfreezeUtxos(
           walletId: any(named: 'walletId'),
@@ -134,10 +206,26 @@ void main() {
         ),
       ).thenThrow(Exception('db down'));
 
-      expect(
-        () =>
-            usecase.execute(walletId: 'w1', outpoints: [(txId: 'a', vout: 0)]),
-        throwsA(isA<UnfreezeFailedCoinsError>()),
+      final result = await usecase.execute(
+        walletId: 'w1',
+        outpoints: [(txId: 'a', vout: 0)],
+      );
+
+      expect(result, isA<Err<void, CoinsFailure>>());
+      expect((result as Err).failure, isA<CoinsUnfreezeFailure>());
+    });
+
+    test('allows programmer errors to propagate', () async {
+      when(
+        () => repo.unfreezeUtxos(
+          walletId: any(named: 'walletId'),
+          outpoints: any(named: 'outpoints'),
+        ),
+      ).thenThrow(StateError('programmer defect'));
+
+      await expectLater(
+        usecase.execute(walletId: 'w1', outpoints: [(txId: 'a', vout: 0)]),
+        throwsA(isA<StateError>()),
       );
     });
   });

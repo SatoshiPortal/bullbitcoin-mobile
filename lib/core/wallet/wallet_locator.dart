@@ -1,7 +1,5 @@
 import 'package:bb_mobile/core/electrum/domain/ports/electrum_servers_port.dart';
-import 'package:bb_mobile/core/seed/data/datasources/seed_datasource.dart';
-import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
-import 'package:bb_mobile/core/seed/data/services/mnemonic_generator.dart';
+import 'package:secrets/secrets.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
@@ -19,7 +17,6 @@ import 'package:bb_mobile/core/wallet/data/repositories/wallet_utxo_repository_i
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_utxo_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/check_backup_needed_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/check_wallet_status_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/check_wallet_syncing_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/create_default_wallets_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/delete_wallet_usecase.dart';
@@ -63,7 +60,7 @@ class WalletLocator {
       () => BitcoinWalletRepository(
         walletMetadataDatasource: locator<WalletMetadataDatasource>(),
         bdkWalletDatasource: locator<BdkWalletDatasource>(),
-        seedDatasource: locator<SeedDatasource>(),
+        secrets: locator<Secrets>(),
         frozenWalletUtxoDatasource: locator<FrozenWalletUtxoDatasource>(),
       ),
     );
@@ -71,8 +68,9 @@ class WalletLocator {
     locator.registerLazySingleton<LiquidWalletRepository>(
       () => LiquidWalletRepository(
         walletMetadataDatasource: locator<WalletMetadataDatasource>(),
-        seedDatasource: locator<SeedDatasource>(),
+        secrets: locator<Secrets>(),
         lwkWalletDatasource: locator<LwkWalletDatasource>(),
+        frozenWalletUtxoDatasource: locator<FrozenWalletUtxoDatasource>(),
       ),
     );
 
@@ -118,9 +116,8 @@ class WalletLocator {
   static void registerUsecases(GetIt locator) {
     locator.registerFactory<CreateDefaultWalletsUsecase>(
       () => CreateDefaultWalletsUsecase(
-        seedRepository: locator<SeedRepository>(),
+        secrets: locator<Secrets>(),
         settingsRepository: locator<SettingsRepository>(),
-        mnemonicGenerator: locator<MnemonicGenerator>(),
         walletRepository: locator<WalletRepository>(),
       ),
     );
@@ -167,7 +164,7 @@ class WalletLocator {
           instanceName:
               LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
         ),
-        seedRepository: locator<SeedRepository>(),
+        secrets: locator<Secrets>(),
       ),
     );
     locator.registerFactory<GetAddressAtIndexUsecase>(
@@ -211,13 +208,6 @@ class WalletLocator {
       () => WatchWalletTransactionByTxIdUsecase(
         walletTransactionRepository: locator<WalletTransactionRepository>(),
         walletRepository: locator<WalletRepository>(),
-      ),
-    );
-    locator.registerFactory<CheckWalletStatusUsecase>(
-      () => CheckWalletStatusUsecase(
-        locator<SettingsRepository>(),
-        locator<ElectrumServersPort>(),
-        locator<BitcoinWalletRepository>(),
       ),
     );
     locator.registerFactory<SyncWalletUsecase>(

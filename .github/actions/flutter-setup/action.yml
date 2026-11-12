@@ -105,9 +105,15 @@ runs:
         key: buildrunner-${{ hashFiles('.github/actions/flutter-setup/action.yml', '.github/workflows/cache-warmer.yml') }}-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('pubspec.lock') }}-${{ github.sha }}
         restore-keys: buildrunner-${{ hashFiles('.github/actions/flutter-setup/action.yml', '.github/workflows/cache-warmer.yml') }}-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('pubspec.lock') }}-
 
+    # A restored snapshot can reference outputs of files deleted since it was saved (e.g. a source removed from a workspace package): build_runner then aborts with InvalidOutputException instead of rebuilding. Retry once from scratch so a stale snapshot never breaks the job.
     - name: Generate code (build_runner)
       shell: bash
-      run: make build-runner
+      run: |
+        if ! make build-runner; then
+          echo "::warning::build_runner failed on the restored cache; rebuilding from scratch"
+          rm -rf .dart_tool/build
+          make build-runner
+        fi
 
     - name: Generate translations
       shell: bash

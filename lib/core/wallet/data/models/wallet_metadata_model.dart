@@ -5,6 +5,7 @@ import 'package:bb_mobile/core/wallet/wallet_metadata_service.dart';
 import 'package:drift/drift.dart' show Value;
 
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:primitives/primitives.dart' show Fingerprint;
 
 part 'wallet_metadata_model.freezed.dart';
 
@@ -39,6 +40,12 @@ extension WalletMetadataModelExtension on WalletMetadataModel {
 
   String get account => decodeOrigin.account;
   String get fingerprint => decodeOrigin.fingerprint;
+
+  /// The stored master fingerprint as a [Fingerprint], or null when it is
+  /// not one — a watch-only wallet imported from a descriptor keeps the key
+  /// origin verbatim, which may be uppercase or absent. Parsed rather than
+  /// constructed so a signing path reports "no secret" instead of raising.
+  Fingerprint? get seedFingerprint => Fingerprint.tryParse(masterFingerprint);
   Network get network => decodeOrigin.network;
   ScriptType get scriptType => decodeOrigin.script;
   bool get isBitcoin => decodeOrigin.network.isBitcoin;

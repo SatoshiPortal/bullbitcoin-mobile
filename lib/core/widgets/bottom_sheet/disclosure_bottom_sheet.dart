@@ -1,7 +1,8 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:flutter/material.dart';
-import 'package:bull_ui/bull_ui.dart' show BullBottomSheet, BullText, Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show BullBottomSheet, BullShapesX, BullText, Gap;
 
 class DisclosureLink extends StatelessWidget {
   const DisclosureLink({
@@ -29,7 +30,7 @@ class DisclosureLink extends StatelessWidget {
         child: InkWell(
           onTap: () =>
               DisclosureBottomSheet.show(context, title: title, body: body),
-          borderRadius: BorderRadius.circular(2),
+          borderRadius: BorderRadius.circular(context.bullShapes.card),
           child: ConstrainedBox(
             constraints: const BoxConstraints(minHeight: 44),
             child: Row(
@@ -82,7 +83,9 @@ class DisclosureBottomSheet extends StatelessWidget {
       ),
       decoration: BoxDecoration(
         color: context.appColors.surface,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(8)),
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(context.bullShapes.sheet),
+        ),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -202,7 +205,7 @@ class _DisclosureBody extends StatelessWidget {
       decoration: BoxDecoration(
         color: context.appColors.warningContainer,
         border: Border.all(color: context.appColors.warning),
-        borderRadius: BorderRadius.circular(2),
+        borderRadius: BorderRadius.circular(context.bullShapes.card),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,

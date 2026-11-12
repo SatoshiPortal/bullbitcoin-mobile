@@ -5,7 +5,7 @@ import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullShapesX, Gap;
 
 class AnnouncementBanner extends StatelessWidget {
   const AnnouncementBanner({super.key});
@@ -48,7 +48,7 @@ class _AnnouncementItem extends StatelessWidget {
           color: isDarkMode
               ? context.appColors.surface
               : context.appColors.secondary,
-          borderRadius: BorderRadius.circular(2),
+          borderRadius: BorderRadius.circular(context.bullShapes.card),
           border: isDarkMode
               ? Border.all(
                   color: context.appColors.outline.withValues(alpha: 0.3),
@@ -120,7 +120,9 @@ class _AnnouncementBottomSheet extends StatelessWidget {
       ),
       decoration: BoxDecoration(
         color: context.appColors.surface,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(context.bullShapes.sheet),
+        ),
       ),
       child: SafeArea(
         child: Column(
@@ -135,7 +137,7 @@ class _AnnouncementBottomSheet extends StatelessWidget {
                   height: 4,
                   decoration: BoxDecoration(
                     color: context.appColors.outline.withValues(alpha: 0.3),
-                    borderRadius: BorderRadius.circular(2),
+                    borderRadius: BorderRadius.circular(context.bullShapes.dot),
                   ),
                 ),
               ),

@@ -1,6 +1,6 @@
 import 'package:bull_ui/src/theme/bull_icon.dart';
 import 'package:bull_ui/src/theme/bull_theme.dart';
-import 'package:bull_ui/src/theme/bull_tokens.dart';
+import 'package:bull_ui/src/theme/bull_shapes.dart';
 import 'package:flutter/material.dart';
 
 /// A generic label chip. **Re-implemented** in `bull_ui` (not imported from
@@ -38,7 +38,7 @@ class BullLabelChip extends StatelessWidget {
         padding: const EdgeInsets.fromLTRB(6, 2, 7, 2),
         decoration: BoxDecoration(
           color: colors.surfaceContainerHighest,
-          borderRadius: BorderRadius.circular(BullRadius.xxs),
+          borderRadius: BorderRadius.circular(context.bullShapes.chip),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
