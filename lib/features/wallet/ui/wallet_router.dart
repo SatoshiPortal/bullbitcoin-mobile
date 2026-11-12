@@ -1,3 +1,5 @@
+import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:flutter/widgets.dart';
 import 'package:bb_mobile/features/onboarding/ui/onboarding_router.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/features/wallet/ui/screens/wallet_detail_screen.dart';
@@ -35,12 +37,18 @@ class WalletRouter {
     },
   );
 
-  static final walletDetailRoute = GoRoute(
+  static GoRoute walletDetailRoute({
+    required Future<void> Function(BuildContext context, Wallet wallet)
+    onOpenCoins,
+  }) => GoRoute(
     name: WalletRoute.walletDetail.name,
     path: WalletRoute.walletDetail.path,
     builder: (context, state) {
-      final walletId = state.pathParameters['walletId']!;
-      return WalletDetailScreen(walletId: walletId);
+      final walletId = state.pathParameters['walletId'];
+      if (walletId == null) {
+        return const SizedBox.shrink();
+      }
+      return WalletDetailScreen(walletId: walletId, onOpenCoins: onOpenCoins);
     },
   );
 }
