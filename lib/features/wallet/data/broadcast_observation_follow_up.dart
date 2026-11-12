@@ -97,6 +97,10 @@ final class BroadcastObservationFollowUp {
           // ready ends the follow-up early.
           if (await _spendStatus(walletId) == BitcoinSpendStatus.ready) return;
           if (!_isCurrent(walletId, run) || !withinBudget()) return;
+          log.fine(
+            'Broadcast observation follow-up sync requested '
+            'deadline_s=${deadline.inSeconds}',
+          );
           await _pollWallet(
             walletId,
             isActive: () => _isCurrent(walletId, run),
