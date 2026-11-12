@@ -40,6 +40,7 @@ sealed class WalletUtxo with _$WalletUtxo {
     @Default([]) List<Label> addressLabels,
     @Default(false) bool isFrozen,
     @Default(0) int confirmations,
+    int? blockHeight,
   }) = LiquidWalletUtxo;
 
   const WalletUtxo._();
@@ -54,5 +55,9 @@ sealed class WalletUtxo with _$WalletUtxo {
   };
 
   /// Whether the UTXO has at least one confirmation (threshold 1).
-  bool get isConfirmed => confirmations > 0;
+  bool get isConfirmed => switch (this) {
+    LiquidWalletUtxo(:final blockHeight) =>
+      blockHeight != null && blockHeight > 0,
+    BitcoinWalletUtxo(:final confirmations) => confirmations > 0,
+  };
 }
