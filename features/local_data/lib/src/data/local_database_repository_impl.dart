@@ -77,7 +77,7 @@ final class LocalDatabaseRepositoryImpl implements LocalDatabaseRepository {
         }
         log.fine('Local database ${database.name}: encrypting');
         if (await EncryptedSqlite.encrypt(path, key) case Err(:final failure)) {
-          return Err(_fromStorage(database, failure));
+          return _healedOr(database, path, key, failure);
         }
         log.fine('Local database ${database.name}: encrypted');
         return _probed(database, path, key);
@@ -120,8 +120,30 @@ final class LocalDatabaseRepositoryImpl implements LocalDatabaseRepository {
     DatabaseKey key,
   ) => switch (EncryptedSqlite.probe(path, key)) {
     Ok() => Ok(UnlockedDatabase(database: database, path: path, key: key)),
-    Err(:final failure) => Err(_fromStorage(database, failure)),
+    Err(:final failure) => _healedOr(database, path, key, failure),
   };
+
+  /// Payjoin's own policy for storage SQLite reports corrupt: move it aside, whole, and start a fresh database (the runtime re-imports the legacy rows). Without it, a corrupt Payjoin file would keep the whole app on a recovery screen, while Payjoin itself would have healed. Every other failure, and any failure of the main database, is the caller's.
+  Result<UnlockedDatabase, LocalDataFailure> _healedOr(
+    LocalDatabase database,
+    String path,
+    DatabaseKey key,
+    SqliteStorageFailure failure,
+  ) {
+    if (database != LocalDatabase.payjoin || failure is! SqliteCorruptFailure) {
+      return Err(_fromStorage(database, failure));
+    }
+    log.warning('Local database ${database.name}: corrupt, moved aside');
+    final suffix =
+        '.unreadable-${DateTime.now().toUtc().millisecondsSinceEpoch}';
+    return switch (EncryptedSqlite.retire(
+      path,
+      Retirement.quarantine(suffix),
+    )) {
+      Ok() => Ok(UnlockedDatabase(database: database, path: path, key: key)),
+      Err(failure: final retirement) => Err(_fromStorage(database, retirement)),
+    };
+  }
 
   @override
   Future<Result<void, LocalDataFailure>> reset(LocalDatabase database) async {
