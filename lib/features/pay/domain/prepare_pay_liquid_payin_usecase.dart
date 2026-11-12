@@ -28,19 +28,26 @@ class PreparePayLiquidPayinUsecase {
       return const Err(PayUnexpectedFailure('amount required unless draining'));
     }
 
-    final result = await _liquidWalletRepository.buildPset(
-      walletId: walletId,
-      address: address,
-      amountSat: drain ? null : amountSat,
-      feeRate: feeRate,
-      drain: drain,
-    );
-    return result.mapErr(
-      (failure) => switch (failure) {
-        WalletInsufficientFundsFailure() || WalletNoSpendableInputsFailure() =>
-          PayInsufficientBalanceFailure(requiredAmountSat: amountSat ?? 0),
-        _ => const PayUnexpectedFailure(),
-      },
-    );
+    try {
+      final result = await _liquidWalletRepository.buildPset(
+        walletId: walletId,
+        address: address,
+        amountSat: drain ? null : amountSat,
+        feeRate: feeRate,
+        drain: drain,
+      );
+      return result.mapErr(
+        (failure) => switch (failure) {
+          WalletInsufficientFundsFailure() ||
+          WalletNoSpendableInputsFailure() => PayInsufficientBalanceFailure(
+            requiredAmountSat: amountSat ?? 0,
+          ),
+          _ => const PayUnexpectedFailure(),
+        },
+      );
+    } on String {
+      // LWK wallet initialization can throw its native error message.
+      return const Err(PayUnexpectedFailure());
+    }
   }
 }
