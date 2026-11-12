@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
+import 'package:bb_mobile/core/widgets/address_viewer.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/features/send/ui/widgets/coin_select_tile.dart';
 import 'package:bb_mobile/generated/l10n/localization.dart';
@@ -106,6 +107,19 @@ void main() {
     );
 
     expect(find.text('6 confirmations'), findsOneWidget);
+  });
+
+  // Regression: the address filled its Expanded right up to the "Type:"
+  // label, so a long address rendered glued to it on device.
+  testWidgets('keeps a gap between the address and its type label', (
+    tester,
+  ) async {
+    await pumpTile(tester, selected: false, onTap: () {});
+
+    final addressEnd = tester.getTopRight(find.byType(AddressViewer)).dx;
+    final typeStart = tester.getTopLeft(find.text('Type: ')).dx;
+
+    expect(typeStart - addressEnd, greaterThanOrEqualTo(8));
   });
 
   testWidgets('shows Liquid confirmation status without a keychain label', (
