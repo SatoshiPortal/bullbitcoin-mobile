@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/wallet/domain/repositories/wallet_utxo_repository.dart';
 import 'package:bb_mobile/core/blockchain/domain/repositories/liquid_blockchain_repository.dart';
 import 'package:bb_mobile/features/send/domain/usecases/broadcast_liquid_transaction_usecase.dart';
 import 'dart:async';
@@ -18,6 +19,19 @@ class _Settings extends Mock implements SettingsRepository {}
 
 class _SettingsValue extends Mock implements SettingsEntity {}
 
+class _Frozen extends Mock implements WalletUtxoRepository {}
+
+WalletUtxoRepository _emptyFrozenStore() {
+  final store = _Frozen();
+  when(store.getAllFrozenOutpoints).thenAnswer((_) async => []);
+  return store;
+}
+
+const _signedPublicTest =
+    'cHNidP8BAFICAAAAAQECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8gAAAAAAD9////'
+    'AaCGAQAAAAAAFgAUIiIiIiIiIiIiIiIiIiIiIiIiIiIAAAAAAAEBH2iHAQAAAAAAFgAUMzMz'
+    'MzMzMzMzMzMzMzMzMzMzMzMAAA==';
+
 void main() {
   test(
     'explicit Liquid testnet broadcast still checks current authorization',
@@ -35,7 +49,7 @@ void main() {
       );
       when(
         () => blockchain.broadcastTransaction(
-          signedPset: 'signed-public-test',
+          signedPset: _signedPublicTest,
           network: Network.liquidTestnet,
         ),
       ).thenAnswer((_) async => 'txid');
@@ -44,7 +58,7 @@ void main() {
         settingsRepository: settings,
       );
       try {
-        await usecase.execute('signed-public-test', isTestnet: true);
+        await usecase.execute(_signedPublicTest, isTestnet: true);
       } on Exception {
         /* Refused before backend access. */
       }
@@ -65,18 +79,19 @@ void main() {
       final usecase = BroadcastBitcoinTransactionUsecase(
         bitcoinBlockchainRepository: blockchain,
         settingsRepository: settings,
+        walletUtxoRepository: _emptyFrozenStore(),
       );
       final captured = await usecase.captureNetwork();
       when(() => value.environment).thenReturn(Environment.mainnet);
       when(
         () => blockchain.broadcastPsbt(
-          'signed-public-test',
+          _signedPublicTest,
           network: Network.bitcoinRegtest,
         ),
       ).thenAnswer((_) async => 'txid');
       expect(
         await usecase.execute(
-          'signed-public-test',
+          _signedPublicTest,
           isPsbt: true,
           network: captured,
         ),
@@ -84,7 +99,7 @@ void main() {
       );
       verify(
         () => blockchain.broadcastPsbt(
-          'signed-public-test',
+          _signedPublicTest,
           network: Network.bitcoinRegtest,
         ),
       ).called(1);
@@ -106,15 +121,16 @@ void main() {
         ),
       );
       when(
-        () => blockchain.broadcastPsbt('signed-public-test', network: network),
+        () => blockchain.broadcastPsbt(_signedPublicTest, network: network),
       ).thenAnswer((_) async => 'txid');
       final usecase = BroadcastBitcoinTransactionUsecase(
         bitcoinBlockchainRepository: blockchain,
         settingsRepository: settings,
+        walletUtxoRepository: _emptyFrozenStore(),
       );
       try {
         await usecase.execute(
-          'signed-public-test',
+          _signedPublicTest,
           isPsbt: true,
           network: network,
         );
@@ -144,7 +160,7 @@ void main() {
       final completed = Completer<String>();
       when(
         () => blockchain.broadcastPsbt(
-          'signed-public-test',
+          _signedPublicTest,
           network: Network.bitcoinRegtest,
         ),
       ).thenAnswer((_) {
@@ -154,9 +170,10 @@ void main() {
       final usecase = BroadcastBitcoinTransactionUsecase(
         bitcoinBlockchainRepository: blockchain,
         settingsRepository: settings,
+        walletUtxoRepository: _emptyFrozenStore(),
       );
       final running = usecase.execute(
-        'signed-public-test',
+        _signedPublicTest,
         isPsbt: true,
         network: Network.bitcoinRegtest,
       );
@@ -166,14 +183,14 @@ void main() {
       expect(await running, 'txid');
       verify(
         () => blockchain.broadcastPsbt(
-          'signed-public-test',
+          _signedPublicTest,
           network: Network.bitcoinRegtest,
         ),
       ).called(1);
       clearInteractions(blockchain);
       try {
         await usecase.execute(
-          'signed-public-test',
+          _signedPublicTest,
           isPsbt: true,
           network: Network.bitcoinRegtest,
         );

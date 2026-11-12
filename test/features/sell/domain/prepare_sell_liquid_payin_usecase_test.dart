@@ -119,6 +119,37 @@ void main() {
     expect(failure.logMessage, isNull);
   });
 
+  for (final error in <Object>[
+    _rawReason,
+    StateError('invalid wallet state'),
+  ]) {
+    test(
+      error is String
+          ? 'maps native initialization failures without exposing their message'
+          : 'does not mask programmer errors as recoverable failures',
+      () async {
+        when(
+          () => repository.buildPset(
+            walletId: any(named: 'walletId'),
+            address: any(named: 'address'),
+            amountSat: any(named: 'amountSat'),
+            feeRate: any(named: 'feeRate'),
+            drain: any(named: 'drain'),
+          ),
+        ).thenAnswer((_) async => throw error);
+
+        if (error is String) {
+          final result = await run();
+          final failure = (result as Err<String, SellFailure>).failure;
+          expect(failure, isA<SellUnexpectedFailure>());
+          expect(failure.logMessage, isNull);
+        } else {
+          await expectLater(run(), throwsA(same(error)));
+        }
+      },
+    );
+  }
+
   test('refuses to build without an amount and without drain', () async {
     final result = await run(amountSat: null);
 

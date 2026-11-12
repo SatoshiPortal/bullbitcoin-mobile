@@ -1994,7 +1994,7 @@ class SendCubit extends Cubit<SendState>
       emit(
         state.copyWith(
           step: SendStep.confirm,
-          confirmedAmountSat: state.usesRecipientList
+          confirmedAmountSat: state.usesRecipientList && !state.isChainSwap
               ? state.recipientAmountsSat.fold<int>(
                   0,
                   (sum, amount) => sum + amount,
@@ -2589,6 +2589,17 @@ class SendCubit extends Cubit<SendState>
         if (isStale()) return false;
         if (!hasSelectedFee()) return false;
       }
+      if (isStale()) return false;
+      final wallet = state.selectedWallet;
+      if (wallet == null) {
+        emit(
+          state.copyWith(
+            failure: const SendTransactionBuildFailure('No wallet selected'),
+            buildingTransaction: false,
+          ),
+        );
+        return false;
+      }
       clearFailure();
       // Clear the previous build's derived confirmation values before
       // loadUtxos so the UI never pairs stale outputs or an absolute fee with
@@ -2601,7 +2612,7 @@ class SendCubit extends Cubit<SendState>
           recipientAmountsSat: state.usesRecipientList
               ? const []
               : state.recipientAmountsSat,
-          confirmedAmountSat: state.usesRecipientList
+          confirmedAmountSat: state.usesRecipientList && !state.isChainSwap
               ? null
               : state.confirmedAmountSat,
         ),
@@ -2618,16 +2629,6 @@ class SendCubit extends Cubit<SendState>
         if (generation == _transactionGeneration) {
           emit(state.copyWith(buildingTransaction: false));
         }
-        return false;
-      }
-      final wallet = state.selectedWallet;
-      if (wallet == null) {
-        emit(
-          state.copyWith(
-            failure: const SendTransactionBuildFailure('No wallet selected'),
-            buildingTransaction: false,
-          ),
-        );
         return false;
       }
       final selectedFee = state.selectedFee;
@@ -3100,14 +3101,17 @@ class SendCubit extends Cubit<SendState>
   }) async {
     final order = state.lightningOrder;
     if (order == null) return true;
-    switch (await _updateSendSwapPayinUsecase.execute(
+    final generation = _transactionGeneration;
+    final result = await _updateSendSwapPayinUsecase.execute(
       localId: order.localId,
       update: order.localStatus == OrderSwapLocalStatus.readyToBroadcast
           ? SendSwapPayinUpdate.replaced
           : SendSwapPayinUpdate.prepared,
       signedTransaction: signedTransaction,
       isPsbt: isPsbt,
-    )) {
+    );
+    if (isClosed || generation != _transactionGeneration) return false;
+    switch (result) {
       case Ok(:final value):
         emit(state.copyWith(lightningOrder: value));
         return true;
@@ -3118,15 +3122,15 @@ class SendCubit extends Cubit<SendState>
   }
 
   Future<void> signTransaction() async {
+    final generation = _transactionGeneration;
+    bool isStale() => isClosed || generation != _transactionGeneration;
     final wallet = state.selectedWallet;
-    if (wallet == null) {
-      log.warning('Signing refused category=missing-wallet');
+    final unsignedPsbt = state.unsignedPsbt;
+    if (wallet == null || unsignedPsbt == null) {
       emit(
         state.copyWith(
+          failure: const SendTransactionConfirmationFailure(),
           signingTransaction: false,
-          failure: const SendTransactionConfirmationFailure(
-            logMessage: 'No wallet selected',
-          ),
         ),
       );
       return;
@@ -3136,13 +3140,16 @@ class SendCubit extends Cubit<SendState>
 
       if (wallet.network.isLiquid) {
         final signedPset = await _signLiquidTxUsecase.execute(
-          pset: state.unsignedPsbt!,
+          pset: unsignedPsbt,
           walletId: wallet.id,
         );
-        if (!await _persistPreparedOrderPayin(
+        if (isStale()) return;
+        final persisted = await _persistPreparedOrderPayin(
           signedTransaction: signedPset,
           isPsbt: false,
-        )) {
+        );
+        if (isStale()) return;
+        if (!persisted) {
           emit(state.copyWith(signingTransaction: false));
           return;
         }
@@ -3157,7 +3164,7 @@ class SendCubit extends Cubit<SendState>
             walletId: wallet.id,
             network: wallet.network.bitcoin,
             bip21: paymentRequest.uri,
-            unsignedOriginalPsbt: state.unsignedPsbt!,
+            unsignedOriginalPsbt: unsignedPsbt,
             amountSat: state.confirmedAmountSat!,
             networkFeesSatPerVb: state.selectedFee!.isRelative
                 ? state.selectedFee!.value as double
@@ -3186,17 +3193,21 @@ class SendCubit extends Cubit<SendState>
           _watchPayjoin(payjoinSender.id);
         } else {
           final signedPsbtAndTxSize = await _signBitcoinTxUsecase.execute(
-            psbt: state.unsignedPsbt!,
+            psbt: unsignedPsbt,
             walletId: wallet.id,
           );
+          if (isStale()) return;
           final bitcoinAbsoluteFeesSat =
               await _calculateBitcoinAbsoluteFeesUsecase.execute(
                 psbt: signedPsbtAndTxSize.signedPsbt,
               );
-          if (!await _persistPreparedOrderPayin(
+          if (isStale()) return;
+          final persisted = await _persistPreparedOrderPayin(
             signedTransaction: signedPsbtAndTxSize.signedPsbt,
             isPsbt: true,
-          )) {
+          );
+          if (isStale()) return;
+          if (!persisted) {
             emit(state.copyWith(signingTransaction: false));
             return;
           }
@@ -3212,6 +3223,7 @@ class SendCubit extends Cubit<SendState>
         }
       }
     } catch (e, st) {
+      if (isStale()) return;
       log.severe(
         message: 'Failed to sign the transaction',
         error: e,
@@ -3238,10 +3250,23 @@ class SendCubit extends Cubit<SendState>
       // are skipped, but reading `state.txId` back would be null and the
       // label, swap update and wallet sync would be lost to a null-check
       // crash instead.
-      // SP diverts in onConfirmTransactionClicked, so this path is bitcoin
-      // and liquid only and the entity is always there.
-      final wallet = state.selectedBitcoinWallet!;
-      if (!await _validateSelectedInputsForBroadcast(wallet)) return;
+      // SP diverts in onConfirmTransactionClicked; this path uses a
+      // Bitcoin or Liquid wallet.
+      final wallet = state.selectedBitcoinWallet;
+      if (wallet == null) {
+        emit(
+          state.copyWith(
+            failure: const SendTransactionConfirmationFailure(),
+            step: SendStep.confirm,
+          ),
+        );
+        return;
+      }
+      final generation = _transactionGeneration;
+      final selectionValid = await _validateSelectedInputsForBroadcast(wallet);
+      if (!selectionValid || isClosed || generation != _transactionGeneration) {
+        return;
+      }
       final label = state.label;
       final chainSwap = state.chainSwap;
 
@@ -3402,6 +3427,9 @@ class SendCubit extends Cubit<SendState>
 
   Future<bool> _validateSelectedInputsForBroadcast(Wallet wallet) async {
     if (!state.usesSelectedInputsOnly) return true;
+    final generation = _transactionGeneration;
+    bool isStale() => isClosed || generation != _transactionGeneration;
+    final requiredOutpoints = state.requiredInputOutpoints;
     if (state.selectedInputsUnavailable) {
       emit(
         state.copyWith(
@@ -3409,6 +3437,7 @@ class SendCubit extends Cubit<SendState>
             'selected_coins_unavailable',
           ),
           broadcastingTransaction: false,
+          step: SendStep.confirm,
         ),
       );
       return false;
@@ -3418,16 +3447,19 @@ class SendCubit extends Cubit<SendState>
         final availableUtxos = await _getWalletUtxosUsecase.execute(
           walletId: wallet.id,
         );
+        if (isStale()) return false;
         final result = await _resolveSelectedInputsUsecase.execute(
-          outpoints: state.requiredInputOutpoints,
+          outpoints: requiredOutpoints,
           availableUtxos: availableUtxos,
         );
+        if (isStale()) return false;
         if (result is Ok) return true;
         _invalidateSignedTransaction();
         emit(
           state.copyWith(
             failure: const SendSelectedCoinsUnavailableFailure(),
             broadcastingTransaction: false,
+            step: SendStep.confirm,
           ),
         );
         return false;
@@ -3436,12 +3468,15 @@ class SendCubit extends Cubit<SendState>
         walletId: wallet.id,
         selectedInputs: state.selectedUtxos,
       );
-      return true;
+      return !isStale();
     } on NoSpendableUtxoException {
+      if (isStale()) return false;
       _invalidateSignedTransaction();
     } on InsufficientFundsException {
+      if (isStale()) return false;
       _invalidateSignedTransaction();
     } on ValidateBitcoinSelectionException {
+      if (isStale()) return false;
       _invalidateSignedTransaction();
     }
     emit(
@@ -3450,6 +3485,7 @@ class SendCubit extends Cubit<SendState>
           'selected_coins_unavailable',
         ),
         broadcastingTransaction: false,
+        step: SendStep.confirm,
       ),
     );
     return false;
@@ -3609,11 +3645,14 @@ class SendCubit extends Cubit<SendState>
   }
 
   Future<void> onConfirmTransactionClicked() async {
+    var generation = _transactionGeneration;
+    bool isStale() => isClosed || generation != _transactionGeneration;
     // Needed even though createTransaction() also clears: the payjoin-only
     // path below skips it, and a leftover failure blocks every retry.
     clearFailure();
     if (state.isSweep) {
-      await loadUtxos();
+      await loadUtxos(transactionGeneration: generation);
+      if (isStale()) return;
       if (state.failure != null) {
         emit(state.copyWith(step: SendStep.confirm));
         return;
@@ -3624,10 +3663,20 @@ class SendCubit extends Cubit<SendState>
         await _sendSpTransaction();
         return;
       }
+      final wallet = state.selectedWallet;
+      if (wallet == null) {
+        emit(
+          state.copyWith(
+            failure: const SendTransactionConfirmationFailure(),
+            step: SendStep.confirm,
+          ),
+        );
+        return;
+      }
       final orderNeedsPayin =
           state.lightningOrder != null &&
           state.lightningOrder?.hasPreparedPayin != true;
-      final sendNeedsSignature = state.selectedWallet!.network.isLiquid
+      final sendNeedsSignature = wallet.network.isLiquid
           ? state.signedLiquidTx == null
           : state.signedBitcoinTx == null && state.signedBitcoinPsbt == null;
       final sendNeedsPayjoinStart =
@@ -3643,7 +3692,14 @@ class SendCubit extends Cubit<SendState>
         // coins again. Reuse the existing unsigned PSBT when Payjoin startup is
         // the only remaining work.
         if (orderNeedsPayin || sendNeedsSignature) {
-          await createTransaction();
+          final building = createTransaction();
+          generation = _transactionGeneration;
+          final created = await building;
+          if (isStale()) return;
+          if (!created) {
+            emit(state.copyWith(step: SendStep.confirm));
+            return;
+          }
         }
         // Stop on any failure, not just a build one — otherwise an
         // insufficient-balance failure would sign whatever PSBT is left over.
@@ -3652,6 +3708,7 @@ class SendCubit extends Cubit<SendState>
           return;
         }
         await signTransaction();
+        if (isStale()) return;
         if (state.failure is! SendTransactionConfirmationFailure &&
             (!orderNeedsPayin ||
                 state.lightningOrder?.hasPreparedPayin == true)) {
@@ -3670,8 +3727,8 @@ class SendCubit extends Cubit<SendState>
           return;
         }
       }
-      // }
       await broadcastTransaction(isPsbt: state.signedBitcoinTx == null);
+      if (isStale()) return;
       if (state.failure is SendTransactionConfirmationFailure) {
         final nextStep = sendStepAfterBroadcastPersistenceFailure(
           current: state.step,
@@ -3686,12 +3743,15 @@ class SendCubit extends Cubit<SendState>
       // (both emit) and briefly surface the original txid. For all other
       // sends, watch the broadcast tx for its latest status.
       if (state.payjoinSender == null) {
-        _watchWalletTransactionByTxId(
-          walletId: state.selectedWallet!.id,
-          txId: state.txId!,
-        );
+        final txId = state.txId;
+        if (txId == null) {
+          emit(state.copyWith(step: SendStep.confirm));
+          return;
+        }
+        _watchWalletTransactionByTxId(walletId: wallet.id, txId: txId);
       }
     } catch (e) {
+      if (isStale()) return;
       emit(state.copyWith(step: SendStep.confirm));
       log.severe(error: e, trace: StackTrace.current);
     }
@@ -4038,15 +4098,24 @@ class SendCubit extends Cubit<SendState>
         state.signedBitcoinPsbt == null &&
         state.signedLiquidTx == null &&
         state.unsignedPsbt == null &&
-        !state.buildingTransaction) {
+        !state.buildingTransaction &&
+        !state.signingTransaction) {
       return;
     }
     emit(
       state.copyWith(
+        // Validation can be cancelled; a broadcast already in flight must finish.
+        step:
+            state.step == SendStep.sending &&
+                !state.broadcastingTransaction &&
+                state.txId == null
+            ? SendStep.confirm
+            : state.step,
         signedBitcoinTx: null,
         signedBitcoinPsbt: null,
         signedLiquidTx: null,
         unsignedPsbt: null,
+        signingTransaction: false,
         buildingTransaction: cancelInFlightBuild
             ? false
             : state.buildingTransaction,
