@@ -8,7 +8,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
-import '../domain/reviewable_transaction_test.dart' show bitcoinReview;
+import '../reviewable_transaction_fixture.dart';
 
 class _MockReviewCubit extends Mock implements TransactionReviewCubit {}
 
