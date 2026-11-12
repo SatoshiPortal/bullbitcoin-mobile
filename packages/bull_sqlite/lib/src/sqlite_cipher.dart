@@ -1,6 +1,6 @@
 import 'package:bull_sqlite/src/exceptions.dart';
 import 'package:primitives/primitives.dart' show DatabaseKey;
-import 'package:sqlite3/sqlite3.dart';
+import 'package:sqlite3/common.dart';
 
 /// Keys one SQLite connection, before anything else runs on it.
 ///
@@ -14,7 +14,7 @@ abstract final class SqliteCipher {
   /// `PRAGMA key` answers `ok` whatever the key: the only proof is a read. A rejected key or a file that is not a database throws [KeyRejectedException]; a library without a cipher throws [CipherUnavailableException] before the key is ever written into a statement.
   ///
   /// Never lets a [SqliteException] out: its `causingStatement` would carry the key.
-  static void key(Database database, DatabaseKey key) {
+  static void key(CommonDatabase database, DatabaseKey key) {
     try {
       // A plain SQLite build ignores the pragma and returns no row.
       if (database.select('PRAGMA cipher;').isEmpty) {
@@ -29,7 +29,7 @@ abstract final class SqliteCipher {
   }
 
   /// Encrypts a plaintext database with [key]. The connection must not be in WAL mode (a SQLite3MultipleCiphers rule for encrypting a plain database).
-  static void rekey(Database database, DatabaseKey key) {
+  static void rekey(CommonDatabase database, DatabaseKey key) {
     try {
       if (database.select('PRAGMA cipher;').isEmpty) {
         throw const CipherUnavailableException();
@@ -45,7 +45,7 @@ abstract final class SqliteCipher {
   ///
   /// The setup callback for drift executors, foreground or background.
   static void configure(
-    Database database,
+    CommonDatabase database,
     DatabaseKey key, {
     required bool fullSync,
   }) {
