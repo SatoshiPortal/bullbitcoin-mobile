@@ -76,6 +76,9 @@ List<String> productionDartFiles(String root) {
     }
   }
   return [
+    // Audit signing too: it must use the language-aware seed, never BDK words.
+    if (File('$root/$_bitcoinSignerPath').existsSync())
+      '$root/$_bitcoinSignerPath',
     for (final directory in roots)
       if (directory.existsSync())
         for (final file in directory.listSync(
@@ -200,8 +203,12 @@ const _unresolvedSensitiveMembers = {
   'deriveHardened',
   'secretBytes',
   'newConfidential',
+  'newConfidentialFromSeed',
   'restoreBackup',
   'signedPsetWithExtraDetails',
+  'signedPsetWithExtraDetailsWithSeed',
+  'signTxWithSeed',
+  'createFromSeed',
 };
 
 const _bridgeLibrary = 'package:bull_sdk/src/rust/frb_generated.dart';
@@ -252,15 +259,23 @@ String? materialSymbol(Element element) {
                 'newBip84',
                 'newBip86',
               }.contains(member)),
-    _ when uri.startsWith('package:bull_sdk/src/rust/third_party/lwk/') =>
-      symbol == 'Descriptor.newConfidential' ||
-          {
-            'Wallet.signTx',
-            'Wallet.signedPsetWithExtraDetails',
-          }.contains(symbol),
+    _ when uri.startsWith('package:bull_sdk/src/rust/third_party/lwk/') => {
+      'Descriptor.newConfidential',
+      'Descriptor.newConfidentialFromSeed',
+      'Wallet.signTx',
+      'Wallet.signTxWithSeed',
+      'Wallet.signedPsetWithExtraDetails',
+      'Wallet.signedPsetWithExtraDetailsWithSeed',
+    }.contains(symbol),
     _ when uri.startsWith('package:bull_sdk/src/rust/third_party/boltz/') =>
       owner == 'SwapMasterKey' &&
-          {'new', 'create', 'xprv', 'mnemonic'}.contains(member),
+          {
+            'new',
+            'create',
+            'createFromSeed',
+            'xprv',
+            'mnemonic',
+          }.contains(member),
     _ when uri.startsWith('package:bull_sdk/src/rust/third_party/dart_bwk/') =>
       owner == 'SpAccount' &&
           (member?.startsWith('createFromMnemonic') ?? false),
@@ -272,6 +287,9 @@ String? materialSymbol(Element element) {
   };
   return forbidden ? '$uri#$symbol' : null;
 }
+
+const _bitcoinSignerPath =
+    'packages/secrets/lib/src/crypto/signers/bitcoin_signer.dart';
 
 bool _isException(String path, AstNode node, String symbol) {
   String? function;
@@ -285,6 +303,15 @@ bool _isException(String path, AstNode node, String symbol) {
     if (current is ClassDeclaration) owner = current.namePart.typeName.lexeme;
   }
   final member = symbol.split('#').last;
+  if (path == _bitcoinSignerPath &&
+      owner == 'BitcoinSigner' &&
+      function == '_wallet' &&
+      {
+        'DescriptorSecretKey.fromString',
+        'DescriptorSecretKey.dispose',
+      }.contains(member)) {
+    return true;
+  }
   // This adapter replaces version bytes with the public xpub version before
   // decoding. Elsewhere this mixed decoder could import private extended keys.
   if (path == 'lib/core/utils/bip32_derivation.dart' &&

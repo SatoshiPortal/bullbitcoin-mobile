@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:convert/convert.dart' as convert;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 import 'package:recoverbull/recoverbull.dart';
@@ -473,7 +474,19 @@ void main() {
       );
 
       test('$label — the file opens and restores its words', () async {
-        final secrets = secretsWith(FakeSecureStoragePlatform());
+        final storage = FakeSecureStoragePlatform();
+        final secrets = secretsWith(storage);
+        final plaintext =
+            jsonDecode(
+                  utf8.decode(
+                    RecoverBull.restoreBackup(
+                      backup: BullBackup.fromJson(vector['file'] as String),
+                      backupKey: convert.hex.decode(vector['key'] as String),
+                    ),
+                  ),
+                )
+                as Map<String, dynamic>;
+        expect(plaintext.containsKey('mnemonicLanguage'), isFalse);
 
         final restored = ok(
           await secrets.recoverbull.restore(
@@ -484,6 +497,15 @@ void main() {
 
         // Compared inside the package: the restored words are never read back out to be asserted on.
         expect(ok(await restored.secret.verify.mnemonic(vaultWords)), isTrue);
+        expect(restored.secret.info.language, Language.english);
+        expect(
+          storage.entries['seed_3f635a63'],
+          jsonEncode({
+            'mnemonicWords': vaultWords,
+            'passphrase': null,
+            'runtimeType': 'mnemonic',
+          }),
+        );
         expect(restored.metadata.containsKey('mnemonic'), isFalse);
       });
     }

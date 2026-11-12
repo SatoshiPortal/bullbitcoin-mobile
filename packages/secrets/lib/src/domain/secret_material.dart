@@ -1,3 +1,4 @@
+import 'package:bip39_mnemonic/bip39_mnemonic.dart' show Language;
 import 'dart:typed_data';
 
 import 'package:primitives/primitives.dart';
@@ -47,6 +48,7 @@ final class Mnemonic extends SecretMaterial {
   final Fingerprint id;
 
   final List<String> words;
+  final Language language;
 
   /// Empty means "no passphrase". The on-disk model still writes `null`
   /// for absent, see `SecretModel` — the two are equivalent and only the
@@ -60,6 +62,7 @@ final class Mnemonic extends SecretMaterial {
   const Mnemonic({
     required this.id,
     required this.words,
+    required this.language,
     required this.passphrase,
     required this.seedBytes,
   });
@@ -70,6 +73,7 @@ final class Mnemonic extends SecretMaterial {
   SecretInfo get info => SecretInfo.mnemonic(
     id: id,
     wordCount: words.length,
+    language: language,
     hasPassphrase: hasPassphrase,
   );
 }

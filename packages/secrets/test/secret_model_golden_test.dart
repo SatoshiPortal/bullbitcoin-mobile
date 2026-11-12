@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:secrets/secrets.dart' show Language;
 import 'package:secrets/src/data/models/secret_model.dart';
 
 /// The on-disk format is a **frozen contract**.
@@ -70,7 +71,10 @@ void main() {
       );
       expect(model.toJson()['passphrase'], isNull);
       expect(
-        MnemonicSecretModel(mnemonicWords: words).toJson()['passphrase'],
+        MnemonicSecretModel(
+          language: Language.english,
+          mnemonicWords: words,
+        ).toJson()['passphrase'],
         isNull,
       );
     });
@@ -143,11 +147,13 @@ void main() {
 
   group('key order is part of the contract', () {
     test('mnemonic keys keep their written order', () {
-      expect(MnemonicSecretModel(mnemonicWords: words).toJson().keys.toList(), [
-        'mnemonicWords',
-        'passphrase',
-        'runtimeType',
-      ]);
+      expect(
+        MnemonicSecretModel(
+          language: Language.english,
+          mnemonicWords: words,
+        ).toJson().keys.toList(),
+        ['mnemonicWords', 'passphrase', 'runtimeType'],
+      );
     });
 
     test('bytes keys keep their written order', () {
@@ -235,7 +241,10 @@ void main() {
       // Built directly, not parsed: the check must still fire, or the
       // guarantee would hold on one code path only.
       expect(
-        () => MnemonicSecretModel(mnemonicWords: const ['abandon']),
+        () => MnemonicSecretModel(
+          language: Language.english,
+          mnemonicWords: const ['abandon'],
+        ),
         throwsFormatException,
       );
       expect(
