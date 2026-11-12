@@ -11,12 +11,12 @@ resolution: workspace
 dependencies:
   clock: ^1.1.2
   dio: ^5.9.0
-  drift: ^2.29.0
+  drift: 2.34.0
   meta: ^1.17.0
   primitives:
 
 dev_dependencies:
   build_runner: ^2.7.1
-  drift_dev: ^2.29.0
+  drift_dev: 2.34.0
   lints: ^6.0.0
   test: ^1.26.3
