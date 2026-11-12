@@ -115,22 +115,15 @@ void main() {
     expect(servers.selected, ElectrumServerNetwork.bitcoinRegtest);
   });
 
-  test('Liquid regtest is refused before endpoint resolution', () async {
+  test('Liquid regtest resolves its own servers', () async {
+    // Supported since lwk-dart#99 expresses Liquid regtest.
     final servers = _Servers();
     final result = await WalletConnectionPolicyImpl(servers).run<int>(
       network: LiquidNetwork.regtest,
       mayRetry: (_) => false,
       operation: (_) async => const Ok(1),
     );
-    expect(
-      result,
-      isA<Err<int, TransactionSyncFailure>>().having(
-        (result) => result.failure,
-        'failure',
-        isA<TransactionSyncUnsupportedNetworkFailure>(),
-      ),
-    );
-    expect(servers.attempts, 0);
+    expect(result, isA<Ok<int, TransactionSyncFailure>>());
   });
 
   test('unsupported networks never enter the legacy policy', () async {

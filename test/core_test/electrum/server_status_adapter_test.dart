@@ -145,13 +145,16 @@ void main() {
       ElectrumServerStatus.online,
     );
     expect(probes, 1);
+    final server = await ServerSocket.bind('127.0.0.1', 0);
+    addTearDown(server.close);
+    serveElectrumStub(server);
     expect(
       await adapter.checkElectrum(
-        url: 'tcp://127.0.0.1:50001',
+        url: 'tcp://127.0.0.1:${server.port}',
         network: ElectrumServerNetwork.liquidRegtest,
         validateDomain: true,
       ),
-      ElectrumServerStatus.offline,
+      ElectrumServerStatus.online,
     );
     expect(probes, 1);
   });

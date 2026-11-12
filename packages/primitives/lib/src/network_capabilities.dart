@@ -51,8 +51,7 @@ abstract final class NetworkCapabilities {
           NetworkCapability.publicExplorer ||
           NetworkCapability.publicFeeEstimates => false,
         },
-        // TODO(lwk-dart#96): enable Liquid regtest only after a merged release
-        // reaches the pinned bull_sdk and native/payment tests cover it.
-        LiquidNetwork.regtest || BitcoinNetwork.signet => false,
+        LiquidNetwork.regtest => capability == NetworkCapability.softwareWallet,
+        BitcoinNetwork.signet => false,
       };
 }

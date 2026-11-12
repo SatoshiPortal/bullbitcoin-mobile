@@ -98,7 +98,7 @@ void main() {
   tearDown(() => coordinator.dispose());
 
   test(
-    'regtest skips unsupported kinds and logs their configuration once',
+    'regtest syncs Liquid, skips SP and swaps, and logs their configuration once',
     () async {
       final directory = await Directory.systemTemp.createTemp(
         'network-sync-logs-',
@@ -115,7 +115,7 @@ void main() {
       ).thenAnswer((_) async => const Ok(<Wallet>[]));
       when(
         () => getWallets.execute(onlyLiquid: true),
-      ).thenAnswer((_) async => const Err(NoWalletsFoundFailure()));
+      ).thenAnswer((_) async => const Ok(<Wallet>[]));
       var spRuns = 0;
       spCallback = () async {
         spRuns++;
@@ -125,11 +125,11 @@ void main() {
       await coordinator.sync(
         only: {SyncKind.liquid, SyncKind.sp, SyncKind.swaps},
       );
-      verifyNever(() => getWallets.execute(onlyLiquid: true));
+      // Liquid regtest is supported since lwk-dart#99; SP and swaps are not.
+      verify(() => getWallets.execute(onlyLiquid: true)).called(greaterThan(0));
       verifyNever(syncSwaps.call);
       expect(spRuns, 0);
       final lines = await log.readLogs();
-      expect(lines.where((line) => line.contains('kind=liquid')), hasLength(1));
       expect(lines.where((line) => line.contains('kind=sp')), hasLength(1));
       expect(lines.join(), isNot(contains('WARNING')));
       expect(reporter.errors, isEmpty);
@@ -138,7 +138,6 @@ void main() {
         () => getWallets.execute(onlyLiquid: true),
       ).thenAnswer((_) async => const Ok(<Wallet>[]));
       await coordinator.sync();
-      verify(() => getWallets.execute(onlyLiquid: true)).called(1);
       expect(spRuns, 1);
     },
   );

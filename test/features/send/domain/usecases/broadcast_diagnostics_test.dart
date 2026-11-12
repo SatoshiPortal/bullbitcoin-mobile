@@ -130,7 +130,7 @@ void main() {
           when(
             () => liquid.broadcastTransaction(
               signedPset: 'signed',
-              isTestnet: false,
+              network: Network.liquidMainnet,
             ),
           ).thenAnswer(
             (_) => Future.error(error, StackTrace.fromString(foreign)),

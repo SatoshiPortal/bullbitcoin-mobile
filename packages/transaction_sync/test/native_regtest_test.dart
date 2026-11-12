@@ -14,15 +14,24 @@ void main() {
   test(
     'native admission refuses unsupported chains and unscoped regtest ids',
     () {
-      for (final network in <Network>[
-        BitcoinNetwork.signet,
-        LiquidNetwork.regtest,
-      ]) {
+      for (final network in <Network>[BitcoinNetwork.signet]) {
         expect(
           nativeKeyFailure(WalletKey(id: 'wallet:regtest', network: network)),
           isA<TransactionSyncUnsupportedNetworkFailure>(),
         );
       }
+      expect(
+        nativeKeyFailure(
+          WalletKey(id: 'wallet:regtest', network: LiquidNetwork.regtest),
+        ),
+        isNull,
+      );
+      expect(
+        nativeKeyFailure(
+          WalletKey(id: 'origin', network: LiquidNetwork.regtest),
+        ),
+        isA<TransactionSyncInvalidCatalogFailure>(),
+      );
       expect(
         nativeKeyFailure(
           WalletKey(id: 'origin', network: BitcoinNetwork.regtest),

@@ -131,11 +131,6 @@ class WalletRepository implements SeedReferencePort, WalletReaderRepository {
     Network network,
     ScriptType scriptType,
   ) {
-    if (network == Network.liquidRegtest) {
-      // TODO(lwk-dart#96): enable only after LiquidNetwork.regtest ships in
-      // the pinned SDK; no Liquid regtest metadata or native store yet.
-      throw const UnsupportedNetworkException();
-    }
     if (network == Network.bitcoinRegtest && scriptType != ScriptType.bip84) {
       throw const UnsupportedWalletScriptException();
     }

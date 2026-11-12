@@ -562,6 +562,7 @@ Future<_Attempt> _performNativeSync(
     final network = switch (descriptor.key.network) {
       LiquidNetwork.mainnet => lwk.LiquidNetwork.mainnet,
       LiquidNetwork.testnet => lwk.LiquidNetwork.testnet,
+      LiquidNetwork.regtest => lwk.LiquidNetwork.regtest,
       _ => null,
     };
     if (network == null) {

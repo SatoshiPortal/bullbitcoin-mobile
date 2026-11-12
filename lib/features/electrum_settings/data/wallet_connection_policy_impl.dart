@@ -27,10 +27,8 @@ final class WalletConnectionPolicyImpl implements WalletConnectionPolicy {
       BitcoinNetwork.regtest => ElectrumServerNetwork.bitcoinRegtest,
       LiquidNetwork.mainnet => ElectrumServerNetwork.liquidMainnet,
       LiquidNetwork.testnet => ElectrumServerNetwork.liquidTestnet,
-      BitcoinNetwork.signet ||
-      // TODO(SatoshiPortal/lwk-dart#96): enable only after the pinned SDK
-      // exposes LiquidNetwork.regtest and its native lifecycle is verified.
-      LiquidNetwork.regtest => null,
+      LiquidNetwork.regtest => ElectrumServerNetwork.liquidRegtest,
+      BitcoinNetwork.signet => null,
     };
     if (serverNetwork == null) {
       log.config('Wallet connection unavailable network=$network');

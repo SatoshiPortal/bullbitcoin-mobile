@@ -26,7 +26,7 @@ final class WalletKey {
 /// id is encoded, so existing paths remain byte-identical.
 /// Pass getApplicationDocumentsDirectory().path verbatim as documentsDirectory.
 String nativeWalletStoragePath(String documentsDirectory, WalletKey key) {
-  if (key.network == BitcoinNetwork.regtest &&
+  if (key.network.env == NetworkEnv.regtest &&
       (!key.id.endsWith(':regtest') || key.id.length == ':regtest'.length)) {
     throw ArgumentError('Regtest storage requires a distinct wallet id');
   }
@@ -37,9 +37,10 @@ String nativeWalletStoragePath(String documentsDirectory, WalletKey key) {
     BitcoinNetwork.mainnet ||
     BitcoinNetwork.testnet ||
     BitcoinNetwork.regtest => '_bdk_dart',
-    LiquidNetwork.mainnet || LiquidNetwork.testnet => '',
-    BitcoinNetwork.signet ||
-    LiquidNetwork.regtest => throw ArgumentError('Unsupported storage network'),
+    LiquidNetwork.mainnet ||
+    LiquidNetwork.testnet ||
+    LiquidNetwork.regtest => '',
+    BitcoinNetwork.signet => throw ArgumentError('Unsupported storage network'),
   };
   return '$documentsDirectory/$hexId$suffix';
 }

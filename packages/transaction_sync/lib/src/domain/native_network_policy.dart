@@ -12,15 +12,11 @@ TransactionSyncFailure? nativeKeyFailure(WalletKey key) {
         LiquidNetwork.mainnet ||
         LiquidNetwork.testnet:
       return null;
-    case BitcoinNetwork.regtest:
+    case BitcoinNetwork.regtest || LiquidNetwork.regtest:
       return key.id.endsWith(':regtest') && key.id.length > ':regtest'.length
           ? null
           : const TransactionSyncInvalidCatalogFailure();
     case BitcoinNetwork.signet:
-      return const TransactionSyncUnsupportedNetworkFailure();
-    case LiquidNetwork.regtest:
-      // TODO(lwk-dart#96): enable only after LiquidNetwork.regtest ships in the
-      // pinned bull_sdk, with its native lifecycle and path isolation tested.
       return const TransactionSyncUnsupportedNetworkFailure();
   }
 }

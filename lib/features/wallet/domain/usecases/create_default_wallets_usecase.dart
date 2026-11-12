@@ -59,7 +59,6 @@ class CreateDefaultWalletsUsecase {
         environment: settings.environment.networkEnv,
         isLiquid: true,
       );
-      final supportsLiquid = liquidNetwork != Network.liquidRegtest;
 
       final existing = switch (await _wallet.getWallets(
         onlyDefaults: true,
@@ -74,7 +73,7 @@ class CreateDefaultWalletsUsecase {
       final hasBitcoin = existing.any((w) => w.network.isBitcoin);
       final hasLiquid = existing.any((w) => w.network.isLiquid);
       Secret? resumedSecret;
-      if (hasBitcoin && (!supportsLiquid || hasLiquid)) {
+      if (hasBitcoin && hasLiquid) {
         if (secret != null || mnemonicWords != null) {
           throw CreateDefaultWalletsException('Default wallets already exist');
         }
@@ -140,7 +139,7 @@ class CreateDefaultWalletsUsecase {
           ),
         );
       }
-      if (supportsLiquid && !hasLiquid) {
+      if (!hasLiquid) {
         created.add(
           await _wallet.createWallet(
             secret: defaultSecret,
