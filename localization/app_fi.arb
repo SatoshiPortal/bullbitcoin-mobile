@@ -4844,5 +4844,6 @@
   "sellPayoutBalance": "Lisää tilini saldoon",
   "sellPayoutSepaDescription": "Nostot näkyvät Leonodin lähettäminä",
   "sellPayoutTitle": "Valitse vastaanottaja",
-  "sellPayoutNewBadge": "UUSI"
+  "sellPayoutNewBadge": "UUSI",
+  "coreScreensOutputsExceedInputs": "Tulosteet ylittävät syötteet: tämä transaktio on virheellinen, ja verkko hylkää sen."
 }

@@ -11844,5 +11844,6 @@
   "sellPayoutBalance": "Hesap bakiyeme ekle",
   "sellPayoutSepaDescription": "Çekimler Leonod tarafından gönderilmiş olarak görünür",
   "sellPayoutTitle": "Alıcı Seç",
-  "sellPayoutNewBadge": "YENİ"
+  "sellPayoutNewBadge": "YENİ",
+  "coreScreensOutputsExceedInputs": "Çıktılar girdileri aşıyor: bu işlem geçersiz ve ağ tarafından reddedilecek."
 }
