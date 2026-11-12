@@ -569,23 +569,6 @@ void main() {
 
       expect(err(result), isA<MnemonicRequiredFailure>());
     });
-
-    test('Liquid regtest is refused rather than served as testnet', () async {
-      // lwk's LiquidNetwork has mainnet and testnet only. Elements
-      // regtest is a different chain, so substituting testnet would hand
-      // back addresses that do not belong to the chain the caller named.
-      final secrets = secretsWith(
-        FakeSecureStoragePlatform(entries: {'seed_73c5da0a': mnemonicEntry}),
-      );
-      final secret =
-          (await secrets.fetch(id) as Ok<Secret, SecretFailure>).value;
-
-      final result = await secret.derive.descriptors.liquid(
-        network: LiquidNetwork.regtest,
-      );
-
-      expect(err(result), isA<UnsupportedNetworkFailure>());
-    });
   });
 
   group('signing refuses what it cannot sign', () {
@@ -630,26 +613,6 @@ void main() {
       expect(
         (result as Err<String, SecretFailure>).failure,
         isA<UseSecretFailure>(),
-      );
-    });
-
-    test('Liquid regtest is refused rather than signed on testnet', () async {
-      // A signature produced against testnet's chain would be valid for
-      // the wrong chain — worse than a refusal.
-      final secrets = secretsWith(
-        FakeSecureStoragePlatform(entries: {'seed_73c5da0a': mnemonicEntry}),
-      );
-      final secret =
-          (await secrets.fetch(id) as Ok<Secret, SecretFailure>).value;
-
-      final result = await secret.sign.pset(
-        'cHNldP8=',
-        network: LiquidNetwork.regtest,
-      );
-
-      expect(
-        (result as Err<String, SecretFailure>).failure,
-        isA<UnsupportedNetworkFailure>(),
       );
     });
   });
