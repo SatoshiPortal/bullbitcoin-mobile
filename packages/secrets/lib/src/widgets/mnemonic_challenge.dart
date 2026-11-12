@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/widgets.dart';
+import 'package:bip39_mnemonic/bip39_mnemonic.dart' show Language;
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
 import 'package:secrets/src/domain/domain.dart';
@@ -104,6 +105,7 @@ final class _MnemonicChallengeState extends State<MnemonicChallenge> {
   SecretFailure? _failure;
   int _generation = 0;
   bool _verifying = false;
+  Language _language = Language.english;
 
   /// The words in the order the user sees them. Rebuilt on every mistake.
   List<String> _shuffled = const [];
@@ -164,6 +166,7 @@ final class _MnemonicChallengeState extends State<MnemonicChallenge> {
     setState(() {
       switch (result) {
         case Ok(:final value):
+          _language = value.language;
           _answer = value.words;
           _shuffled = [...value.words]..shuffle();
         case Err(:final failure):
@@ -257,7 +260,11 @@ final class _MnemonicChallengeState extends State<MnemonicChallenge> {
                 widget.tileBuilder(
                   context,
                   MnemonicTile(
-                    word: PaintedWord(_shuffled[i], style: widget.style),
+                    word: PaintedWord(
+                      _shuffled[i],
+                      language: _language,
+                      style: widget.style,
+                    ),
                     isPlaced: _placed.contains(i),
                     position: _placed.contains(i)
                         ? _placed.indexOf(i) + 1
