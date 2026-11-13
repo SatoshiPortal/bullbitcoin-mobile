@@ -31,6 +31,14 @@ void main() {
   ]..sort();
   final rootEn = _arb('$_rootArbDir/app_en.arb');
 
+  test('the main Latin-script languages have their own blacklist', () {
+    final apple = (manifest['stores'] as YamlMap)['apple'] as YamlMap;
+    final blacklist = apple['blacklist'] as YamlMap;
+    for (final language in ['fr', 'es', 'de', 'pt', 'it']) {
+      expect(blacklist[language], isNotEmpty, reason: language);
+    }
+  });
+
   test('covers the 27 supported languages', () {
     expect(locales, hasLength(27));
     for (final locale in locales) {
@@ -90,12 +98,16 @@ void main() {
       });
 
       test('never carries a word its store forbids', () {
+        final language = locale.split('_').first;
         for (final e in entries) {
           final blacklist =
-              ((stores[e['store']] as YamlMap)['blacklist'] as YamlList)
-                  .cast<String>();
+              (stores[e['store']] as YamlMap)['blacklist'] as YamlMap;
+          final words = [
+            ...List<String>.from((blacklist['all'] ?? const []) as List),
+            ...List<String>.from((blacklist[language] ?? const []) as List),
+          ];
           final value = (arb[_overrideKey(e)] as String).toLowerCase();
-          for (final word in blacklist) {
+          for (final word in words) {
             expect(
               value.contains(word),
               isFalse,
