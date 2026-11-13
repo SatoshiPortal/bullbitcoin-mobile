@@ -12,14 +12,25 @@ version: 1
 stores:
   apple:
     source: App Store vocabulary decided by the product owner (2026-11-13)
-    blacklist: [swap, exchange]
+    # Lowercase substrings an override must never contain: `all` applies to
+    # every language, the other keys to one language (and its regional
+    # variants). Latin-script languages list their own words for swap and
+    # exchange; the others are covered by `all` (a Latin loanword).
+    blacklist:
+      all: [swap, exchange]
+      fr: [échang]
+      es: [intercambi, cambio]
+      de: [tausch, börse]
+      pt: [troca, câmbio]
+      it: [scambi, cambio]
     replacements:
       swap: transfer
       exchange: account
       exchange rate: rate
   google:
     source: Play policy does not restrict wording for non-custodial wallets
-    blacklist: []
+    blacklist:
+      all: []
     replacements: {}
 catalogues:
   app: the root catalogue (localization/app_<lang>.arb)

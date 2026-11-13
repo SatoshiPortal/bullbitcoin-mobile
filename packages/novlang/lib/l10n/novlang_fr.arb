@@ -129,7 +129,7 @@
   "app__autoswapActiveCardTitle_apple": "Le transfert automatique est actif",
   "app__autoswapWarningDescription_apple": "Le transfert automatique vous empêche de garder trop d'argent dans le portefeuille de paiement instantané, ce qui n'est pas sûr pour le stockage à long terme.",
   "app__autoswapWarningTitle_apple": "Le transfert automatique est activé avec les paramètres suivants :",
-  "app__autoswapWarningExplanation_apple": "Lorsque votre solde dépasse le solde maximal, un transfert sera déclenché. Le solde cible sera conservé dans votre portefeuille de paiement instantané et le montant restant sera échangé dans votre portefeuille Bitcoin sécurisé.",
+  "app__autoswapWarningExplanation_apple": "Lorsque votre solde dépasse le solde maximal, un transfert sera déclenché. Le solde cible sera conservé dans votre portefeuille de paiement instantané et le montant restant sera transféré dans votre portefeuille Bitcoin sécurisé.",
   "app__autoswapWarningSettingsLink_apple": "Me conduire aux paramètres de transfert automatique",
   "app__autoswapInfoTitle_apple": "Le transfert automatique est recommandé",
   "app__autoswapInfoRemindLater_apple": "Configurer les paramètres de transfert automatique",
