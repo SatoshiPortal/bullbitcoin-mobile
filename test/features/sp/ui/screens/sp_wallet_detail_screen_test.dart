@@ -3,9 +3,10 @@ import 'dart:async';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/features/sp/domain/sp_failure.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/features/bitcoin_price/presentation/bloc/bitcoin_price_bloc.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
+import 'package:bb_mobile/features/settings/public/settings_facade.dart';
+import 'package:bull_ui/bull_ui.dart' show bullUiLocalizationsDelegate;
 import 'package:bb_mobile/features/sp/presentation/sp_cubit.dart';
 import 'package:bb_mobile/features/sp/ui/screens/sp_wallet_detail_screen.dart';
 import 'package:bb_mobile/core/widgets/cards/wallet_detail_balance_card.dart';
@@ -56,19 +57,29 @@ Widget _buildPage({
   required SpCubit cubit,
   required SettingsCubit settingsCubit,
   required BitcoinPriceBloc bitcoinPriceBloc,
-}) => MaterialApp(
-  theme: AppTheme.themeData(AppThemeType.light),
-  localizationsDelegates: AppLocalizations.localizationsDelegates,
-  supportedLocales: AppLocalizations.supportedLocales,
-  home: MultiBlocProvider(
-    providers: [
-      BlocProvider<SpCubit>.value(value: cubit),
-      BlocProvider<SettingsCubit>.value(value: settingsCubit),
-      BlocProvider<BitcoinPriceBloc>.value(value: bitcoinPriceBloc),
+}) {
+  final navigatorKey = GlobalKey<NavigatorState>();
+  return MaterialApp(
+    navigatorKey: navigatorKey,
+    theme: AppTheme.themeData(AppThemeType.light),
+    localizationsDelegates: const [
+      bullUiLocalizationsDelegate,
+      ...AppLocalizations.localizationsDelegates,
     ],
-    child: const SpWalletDetailScreen(exitRedirectPath: '/exit-target'),
-  ),
-);
+    supportedLocales: AppLocalizations.supportedLocales,
+    home: MultiBlocProvider(
+      providers: [
+        BlocProvider<SpCubit>.value(value: cubit),
+        BlocProvider<SettingsCubit>.value(value: settingsCubit),
+        BlocProvider<BitcoinPriceBloc>.value(value: bitcoinPriceBloc),
+      ],
+      child: SettingsFacade.amountScope(
+        navigatorKey: navigatorKey,
+        child: const SpWalletDetailScreen(exitRedirectPath: '/exit-target'),
+      ),
+    ),
+  );
+}
 
 void main() {
   late SpCubitHarness harness;
