@@ -4,8 +4,12 @@ import 'package:bb_mobile/core/core_locator.dart';
 import 'package:bb_mobile/core/electrum/frameworks/di/electrum_locator.dart';
 import 'package:bb_mobile/core/settings/settings_locator.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
+import 'package:bb_mobile/core/wallet/domain/ports/wallet_retention_port.dart';
+import 'package:bb_mobile/core/wallet/domain/wallet_mutation_guard.dart';
 import 'package:bb_mobile/core/wallet/wallet_locator.dart';
+import 'package:bb_mobile/features/sp/public/sp_facade.dart';
 import 'package:bb_mobile/locator.dart';
+import 'package:bb_mobile/sp_wallet_retention_adapter.dart';
 import 'package:bull_recoverbull/bull_recoverbull.dart';
 // Substitute only the native Tor backend; keep its repository and owner wiring.
 // ignore: implementation_imports
@@ -42,6 +46,15 @@ void main() {
         await database.close();
         await directory.delete(recursive: true);
       });
+      services.registerLazySingleton<WalletMutationGuard>(
+        WalletMutationGuard.new,
+      );
+      services.registerLazySingleton<WalletRetentionPort>(
+        () => SpWalletRetentionAdapter(
+          facade: () => services<SpFacade>(),
+          allowDestructiveOperations: true,
+        ),
+      );
       CoreLocator.register(services, database);
       services.registerLazySingleton<Secrets>(
         () => Secrets(scratchDirectory: () async => directory.path),
@@ -82,6 +95,10 @@ void main() {
         same(services<RecoverBullEnvironmentPort>()),
       );
       expect(services<RecoverBullWalletPort>(), isNotNull);
+      await expectLater(
+        services<WalletRetentionPort>().retainsWallet('unavailable-owner'),
+        throwsA(isA<WalletRetentionCheckFailed>()),
+      );
     },
   );
 }
