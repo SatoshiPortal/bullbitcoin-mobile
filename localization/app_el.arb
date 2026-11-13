@@ -177,7 +177,7 @@
       }
     }
   },
-  "autoswapAlwaysBlockEnabledInfo": "Όταν ενεργοποιηθεί, οι μεταφορές αυτοκινήτων με τέλη πάνω από το όριο set θα μπλοκάρονται πάντα",
+  "autoswapAlwaysBlockEnabledInfo": "Όταν είναι ενεργοποιημένο, οι αυτόματες ανταλλαγές με τέλη πάνω από το καθορισμένο όριο θα αποκλείονται πάντα",
   "@autoswapAlwaysBlockEnabledInfo": {
     "description": "Info text when always block is enabled"
   },
@@ -194,7 +194,7 @@
   "@transactionNoteHint": {
     "description": "Hint text for note input field"
   },
-  "coreSwapsChainCanCoop": "Η μεταφορά θα ολοκληρωθεί στιγμιαία.",
+  "coreSwapsChainCanCoop": "Η ανταλλαγή θα ολοκληρωθεί σε λίγο.",
   "@coreSwapsChainCanCoop": {
     "description": "Status message for chain swap that can complete cooperatively"
   },
@@ -255,7 +255,7 @@
   "@replaceByFeeErrorNoFeeRateSelected": {
     "description": "Error message when no fee rate is selected"
   },
-  "coreScreensTransferFeeLabel": "Μεταφορά",
+  "coreScreensTransferFeeLabel": "Τέλος ανταλλαγής",
   "@coreScreensTransferFeeLabel": {
     "description": "Label for transfer fee field"
   },
@@ -283,7 +283,7 @@
   "@autoswapUpdateSettingsError": {
     "description": "Error message when updating settings fails"
   },
-  "transactionStatusTransferFailed": "Μεταφορά",
+  "transactionStatusTransferFailed": "Η ανταλλαγή απέτυχε",
   "@transactionStatusTransferFailed": {
     "description": "Status label for failed transfers"
   },
@@ -343,7 +343,7 @@
   "@hwKrux": {
     "description": "Name of Krux hardware wallet"
   },
-  "transactionFilterTransfer": "Μεταφορά",
+  "transactionFilterTransfer": "Ανταλλαγή",
   "@transactionFilterTransfer": {
     "description": "Filter option to show only transfer/swap transactions"
   },
@@ -578,7 +578,7 @@
   "@payPayoutAmount": {
     "description": "Label for amount user receives"
   },
-  "autoswapMaxBalanceInfo": "Όταν η ισορροπία πορτοφολιού υπερβαίνει το διπλάσιο αυτού του ποσού, η αυτόματη μεταφορά θα προκαλέσει τη μείωση της ισορροπίας σε αυτό το επίπεδο",
+  "autoswapMaxBalanceInfo": "Όταν το υπόλοιπο του πορτοφολιού υπερβεί το διπλάσιο αυτού του ποσού, η αυτόματη ανταλλαγή θα ενεργοποιηθεί για να μειώσει το υπόλοιπο σε αυτό το επίπεδο",
   "@autoswapMaxBalanceInfo": {
     "description": "Info tooltip for max balance field"
   },
@@ -586,7 +586,7 @@
   "@payPhone": {
     "description": "Label for phone details"
   },
-  "transactionDetailLabelTransferStatus": "Κατάσταση μεταφοράς",
+  "transactionDetailLabelTransferStatus": "Κατάσταση ανταλλαγής",
   "@transactionDetailLabelTransferStatus": {
     "description": "Label for transfer status"
   },
@@ -760,7 +760,7 @@
   "@allSeedViewIUnderstandButton": {
     "description": "Button label to acknowledge security warning"
   },
-  "coreScreensExternalTransfer": "Εξωτερική μεταφορά",
+  "coreScreensExternalTransfer": "Εξωτερική ανταλλαγή",
   "@coreScreensExternalTransfer": {
     "description": "Title for external transfer action"
   },
@@ -772,7 +772,7 @@
   "@ledgerHelpStep3": {
     "description": "Third troubleshooting step for Ledger connection issues"
   },
-  "coreSwapsChainFailedRefunding": "Η μεταφορά θα επιστραφεί σύντομα.",
+  "coreSwapsChainFailedRefunding": "Η ανταλλαγή θα επιστραφεί σύντομα.",
   "@coreSwapsChainFailedRefunding": {
     "description": "Status message for failed chain swap that will be refunded"
   },
@@ -1040,7 +1040,7 @@
   "@sendChange": {
     "description": "Label for change output in a transaction"
   },
-  "coreScreensInternalTransfer": "Εσωτερική μεταφορά",
+  "coreScreensInternalTransfer": "Εσωτερική ανταλλαγή",
   "@coreScreensInternalTransfer": {
     "description": "Title for internal transfer action"
   },
@@ -1213,7 +1213,7 @@
   "@autoswapWarningOkButton": {
     "description": "OK button label in the autoswap warning bottom sheet"
   },
-  "swapTitle": "Εσωτερική μεταφορά",
+  "swapTitle": "Εσωτερική ανταλλαγή",
   "@swapTitle": {
     "description": "AppBar title for swap/internal transfer screen"
   },
@@ -1273,7 +1273,7 @@
   "@dcaSetupInsufficientBalance": {
     "description": "Insufficient balance error title"
   },
-  "swapTransferRefundedMessage": "Η μεταφορά έχει επιστραφεί με επιτυχία.",
+  "swapTransferRefundedMessage": "Η ανταλλαγή επιστράφηκε με επιτυχία.",
   "@swapTransferRefundedMessage": {
     "description": "Refund completion message"
   },
@@ -1313,7 +1313,7 @@
   "@exchangeReferralsMissionLink": {
     "description": "Link to the Bull Bitcoin mission page"
   },
-  "swapTransferPendingMessage": "Η μεταφορά βρίσκεται σε εξέλιξη. Οι συναλλαγές Bitcoin μπορούν να πάρουν λίγο χρόνο για να επιβεβαιώσουν. Μπορείτε να επιστρέψετε στο σπίτι και να περιμένετε.",
+  "swapTransferPendingMessage": "Η ανταλλαγή βρίσκεται σε εξέλιξη. Οι συναλλαγές Bitcoin μπορεί να χρειαστούν λίγο χρόνο για να επιβεβαιωθούν. Μπορείτε να επιστρέψετε στην αρχική οθόνη και να περιμένετε.",
   "@swapTransferPendingMessage": {
     "description": "Message shown during pending swap"
   },
@@ -1369,7 +1369,7 @@
   "@buyContinue": {
     "description": "Button to continue to next step"
   },
-  "swapTransferTitle": "Μεταφορά",
+  "swapTransferTitle": "Ανταλλαγή",
   "@swapTransferTitle": {
     "description": "AppBar title on the main swap page"
   },
@@ -1442,7 +1442,7 @@
   "@payCalculating": {
     "description": "Text shown while calculating fees"
   },
-  "transactionDetailLabelTransferId": "Transfer ID",
+  "transactionDetailLabelTransferId": "ID ανταλλαγής",
   "@transactionDetailLabelTransferId": {
     "description": "Label for transfer ID"
   },
@@ -1694,7 +1694,7 @@
   "@featureComingSoonTitle": {
     "description": "Title for coming soon bottom sheet"
   },
-  "swapProgressRefundInProgress": "Μεταβίβαση Μεταφοράς σε Πρόοδος",
+  "swapProgressRefundInProgress": "Επιστροφή ανταλλαγής σε εξέλιξη",
   "@swapProgressRefundInProgress": {
     "description": "Refund in progress status"
   },
@@ -1793,7 +1793,7 @@
   "@broadcastSignedTxScanQR": {
     "description": "Instruction to scan signed PSBT QR code"
   },
-  "transactionStatusTransferInProgress": "Μεταφορά σε Πρόοδος",
+  "transactionStatusTransferInProgress": "Ανταλλαγή σε εξέλιξη",
   "@transactionStatusTransferInProgress": {
     "description": "Status label for transfers in progress"
   },
@@ -1887,7 +1887,7 @@
   "@ledgerWalletTypeLegacy": {
     "description": "Display name for Legacy wallet type (BIP44)"
   },
-  "transactionDetailTransferProgress": "Μεταφορά πρόοδος",
+  "transactionDetailTransferProgress": "Πρόοδος ανταλλαγής",
   "@transactionDetailTransferProgress": {
     "description": "Title for ongoing transfer details"
   },
@@ -1915,7 +1915,7 @@
   "@sendEstimatedDelivery10Minutes": {
     "description": "Estimated delivery time of approximately 10 minutes"
   },
-  "swapTransferFrom": "Μεταφορά",
+  "swapTransferFrom": "Ανταλλαγή από",
   "@swapTransferFrom": {
     "description": "Label for source wallet dropdown"
   },
@@ -2009,7 +2009,7 @@
   "@coldcardStep12": {
     "description": "Coldcard instruction to return to app"
   },
-  "autoswapAlwaysBlockDisabledInfo": "Όταν απενεργοποιηθεί, θα σας δοθεί η επιλογή να επιτρέψετε μια αυτόματη μεταφορά που μπλοκάρεται λόγω υψηλών τελών",
+  "autoswapAlwaysBlockDisabledInfo": "Όταν είναι απενεργοποιημένο, θα σας δοθεί η επιλογή να επιτρέψετε μια αυτόματη ανταλλαγή που αποκλείστηκε λόγω υψηλών τελών",
   "@autoswapAlwaysBlockDisabledInfo": {
     "description": "Info text when always block is disabled"
   },
@@ -2214,7 +2214,7 @@
   "@transactionDetailLabelRefunded": {
     "description": "Label for refunded status"
   },
-  "swapValidationSelectFromWallet": "Επιλέξτε ένα πορτοφόλι για μεταφορά από",
+  "swapValidationSelectFromWallet": "Επιλέξτε ένα πορτοφόλι για ανταλλαγή από",
   "@swapValidationSelectFromWallet": {
     "description": "Validation error when no source wallet selected"
   },
@@ -2342,7 +2342,7 @@
   "@exchangeBitcoinWalletsDescription": {
     "description": "Description text on the default bitcoin wallets screen"
   },
-  "swapTransferRefundInProgressTitle": "Μεταβίβαση Μεταφοράς σε Πρόοδος",
+  "swapTransferRefundInProgressTitle": "Επιστροφή ανταλλαγής σε εξέλιξη",
   "@swapTransferRefundInProgressTitle": {
     "description": "Title when swap is being refunded"
   },
@@ -2826,7 +2826,7 @@
   "@sendErrorAmountAboveSwapLimits": {
     "description": "Error when amount exceeds maximum swap limit"
   },
-  "coreSwapsChainCompletedRefunded": "Η μεταφορά έχει επιστραφεί.",
+  "coreSwapsChainCompletedRefunded": "Η ανταλλαγή έχει επιστραφεί.",
   "@coreSwapsChainCompletedRefunded": {
     "description": "Status message for chain swap completed via refund"
   },
@@ -2882,7 +2882,7 @@
   "@exchangeFileUploadSelectFilesHint": {
     "description": "Hint text for selecting files"
   },
-  "swapTransferRefundedTitle": "Μεταφορά",
+  "swapTransferRefundedTitle": "Η ανταλλαγή επιστράφηκε",
   "@swapTransferRefundedTitle": {
     "description": "Title when swap has been refunded"
   },
@@ -2942,7 +2942,7 @@
   "@fundExchangeMethodOnlineBillPayment": {
     "description": "Payment method: Online Bill Payment (Canada)"
   },
-  "coreScreensTransferIdLabel": "Transfer ID",
+  "coreScreensTransferIdLabel": "ID ανταλλαγής",
   "@coreScreensTransferIdLabel": {
     "description": "Label for transfer ID field"
   },
@@ -3032,7 +3032,7 @@
   "@exchangeLandingFeature1": {
     "description": "First feature bullet point"
   },
-  "swapTransferTo": "Μεταφορά",
+  "swapTransferTo": "Ανταλλαγή προς",
   "@swapTransferTo": {
     "description": "Label for destination wallet dropdown"
   },
@@ -3189,7 +3189,7 @@
   "@bitboxActionImportWalletProcessing": {
     "description": "Processing text for import wallet"
   },
-  "swapConfirmTransferTitle": "Επιβεβαίωση Μεταφορά",
+  "swapConfirmTransferTitle": "Επιβεβαίωση ανταλλαγής",
   "@swapConfirmTransferTitle": {
     "description": "AppBar title on the confirmation page"
   },
@@ -3217,7 +3217,7 @@
   "@electrumServerOffline": {
     "description": "Status text for offline servers"
   },
-  "sendTransferFee": "Μεταφορά",
+  "sendTransferFee": "Τέλος ανταλλαγής",
   "@sendTransferFee": {
     "description": "Label for total swap transfer fee"
   },
@@ -3237,7 +3237,7 @@
   "@importColdcardInstructionsStep6": {
     "description": "ImportColdcardQ: Sixth instruction step"
   },
-  "swapValidationSelectToWallet": "Επιλέξτε ένα πορτοφόλι για μεταφορά",
+  "swapValidationSelectToWallet": "Επιλέξτε ένα πορτοφόλι για ανταλλαγή προς",
   "@swapValidationSelectToWallet": {
     "description": "Validation error when no destination wallet selected"
   },
@@ -3397,7 +3397,7 @@
   "@exchangeAccountTitle": {
     "description": "Title for the exchange account section"
   },
-  "swapProgressCompleted": "Μεταφορά",
+  "swapProgressCompleted": "Η ανταλλαγή ολοκληρώθηκε",
   "@swapProgressCompleted": {
     "description": "Completed transfer status"
   },
@@ -3418,7 +3418,7 @@
   "@sendErrorHardwareWalletCannotSwap": {
     "description": "Error when user tries to continue a swap send with a Bitcoin hardware wallet"
   },
-  "coreSwapsChainCompletedSuccess": "Η μεταφορά ολοκληρώνεται με επιτυχία.",
+  "coreSwapsChainCompletedSuccess": "Η ανταλλαγή ολοκληρώθηκε με επιτυχία.",
   "@coreSwapsChainCompletedSuccess": {
     "description": "Status message for successfully completed chain swap"
   },
@@ -3720,7 +3720,7 @@
   "@replaceByFeeBroadcastButton": {
     "description": "Button to broadcast the replacement transaction"
   },
-  "swapExternalTransferLabel": "Εξωτερική μεταφορά",
+  "swapExternalTransferLabel": "Εξωτερική ανταλλαγή",
   "@swapExternalTransferLabel": {
     "description": "Label for external transfer toggle"
   },
@@ -3888,7 +3888,7 @@
   "@tryAgainButton": {
     "description": "Default button text for error state"
   },
-  "swapConfirmTitle": "Επιβεβαίωση Μεταφορά",
+  "swapConfirmTitle": "Επιβεβαίωση ανταλλαγής",
   "@swapConfirmTitle": {
     "description": "AppBar title for swap confirmation screen"
   },
@@ -4435,7 +4435,7 @@
   "@importQrDeviceSpecterStep4": {
     "description": "Specter instruction step 4"
   },
-  "coreSwapsChainPending": "Η μεταφορά δεν έχει ακόμη οριστικοποιηθεί.",
+  "coreSwapsChainPending": "Η ανταλλαγή δεν έχει ακόμη αρχικοποιηθεί.",
   "@coreSwapsChainPending": {
     "description": "Status message for pending chain swap"
   },
@@ -4562,7 +4562,7 @@
   "@connectHardwareWalletJade": {
     "description": "Blockstream Jade hardware wallet option"
   },
-  "coreSwapsChainRefundable": "Η μεταφορά είναι έτοιμη να επιστραφεί.",
+  "coreSwapsChainRefundable": "Η ανταλλαγή είναι έτοιμη για επιστροφή.",
   "@coreSwapsChainRefundable": {
     "description": "Status message for refundable chain swap"
   },
@@ -4570,7 +4570,7 @@
   "@buyInputCompleteKyc": {
     "description": "Button to complete KYC"
   },
-  "autoswapMaxFee": "Max Transfer Fee",
+  "autoswapMaxFee": "Μέγιστο τέλος ανταλλαγής",
   "@autoswapMaxFee": {
     "description": "Field label for max fee threshold"
   },
@@ -4747,7 +4747,7 @@
   "@receiveBoltzSwapFee": {
     "description": "Label for the Boltz swap service fee in a receive transaction"
   },
-  "swapInfoBanner": "Μεταφορά Bitcoin απρόσκοπτα μεταξύ των πορτοφολών σας. Διατηρήστε χρήματα μόνο στο Instant Payment Wallet για καθημερινές δαπάνες.",
+  "swapInfoBanner": "Ανταλλάξτε Bitcoin απρόσκοπτα μεταξύ των πορτοφολιών σας. Διατηρήστε χρήματα μόνο στο Instant Payment Wallet για καθημερινές δαπάνες.",
   "@swapInfoBanner": {
     "description": "Info banner on swap amount screen"
   },
@@ -4835,7 +4835,7 @@
   "@dcaWalletLightningSubtitle": {
     "description": "Subtitle/description for Lightning wallet option"
   },
-  "swapTransferRefundInProgressMessage": "Υπήρχε ένα λάθος με τη μεταφορά. Η επιστροφή σας βρίσκεται σε εξέλιξη.",
+  "swapTransferRefundInProgressMessage": "Παρουσιάστηκε σφάλμα με τη ανταλλαγή. Η επιστροφή χρημάτων σας βρίσκεται σε εξέλιξη.",
   "@swapTransferRefundInProgressMessage": {
     "description": "Message during refund process"
   },
@@ -5057,7 +5057,7 @@
   "@confirmButtonLabel": {
     "description": "Button label to confirm and execute the transaction"
   },
-  "autoswapMaxFeeInfo": "Εάν η συνολική χρέωση μεταφοράς είναι πάνω από το καθορισμένο ποσοστό, η αυτόματη μεταφορά θα μπλοκαριστεί",
+  "autoswapMaxFeeInfo": "Εάν το συνολικό τέλος ανταλλαγής είναι πάνω από το καθορισμένο ποσοστό, η αυτόματη ανταλλαγή θα αποκλειστεί",
   "@autoswapMaxFeeInfo": {
     "description": "Info tooltip for max fee field"
   },
@@ -5065,7 +5065,7 @@
   "@importQrDevicePassportStep9": {
     "description": "Passport instruction step 9"
   },
-  "swapProgressRefundedMessage": "Η μεταφορά έχει επιστραφεί αδιάκοπα.",
+  "swapProgressRefundedMessage": "Η ανταλλαγή επιστράφηκε με επιτυχία.",
   "@swapProgressRefundedMessage": {
     "description": "Refunded transfer message"
   },
@@ -5073,7 +5073,7 @@
   "@sendEconomyFee": {
     "description": "Lowest fee tier"
   },
-  "coreSwapsChainFailed": "Μεταφορά Απέτυχε.",
+  "coreSwapsChainFailed": "Η ανταλλαγή απέτυχε.",
   "@coreSwapsChainFailed": {
     "description": "Status message for failed chain swap"
   },
@@ -5163,7 +5163,7 @@
   "@sellCopBalance": {
     "description": "Display text for COP balance payout method"
   },
-  "receiveTransferFee": "Μεταφορά",
+  "receiveTransferFee": "Τέλος ανταλλαγής",
   "@receiveTransferFee": {
     "description": "Label for the transfer fee in a receive transaction"
   },
@@ -5183,11 +5183,11 @@
   "@importQrDeviceSuccess": {
     "description": "Success message after import"
   },
-  "autoswapEnable": "Αποτελεσματικότητα αυτόματη μεταφορά",
+  "autoswapEnable": "Ενεργοποίηση αυτόματης ανταλλαγής",
   "@autoswapEnable": {
     "description": "Toggle label to enable auto transfer"
   },
-  "transactionStatusTransferCompleted": "Μεταφορά Πλήρης",
+  "transactionStatusTransferCompleted": "Η ανταλλαγή ολοκληρώθηκε",
   "@transactionStatusTransferCompleted": {
     "description": "Status label for completed transfers"
   },
@@ -5301,7 +5301,7 @@
   "@exportVaultButton": {
     "description": "Button label to export vault"
   },
-  "coreSwapsChainPaid": "Περιμένοντας την πληρωμή του παρόχου μεταφοράς για να λάβετε επιβεβαίωση. Αυτό μπορεί να πάρει λίγο χρόνο για να ολοκληρωθεί.",
+  "coreSwapsChainPaid": "Περιμένοντας την πληρωμή του παρόχου ανταλλαγής για να λάβετε επιβεβαίωση. Αυτό μπορεί να πάρει λίγο χρόνο για να ολοκληρωθεί.",
   "@coreSwapsChainPaid": {
     "description": "Status message for paid chain swap"
   },
@@ -5349,7 +5349,7 @@
   "@onboardingBullBitcoin": {
     "description": "Brand name displayed in onboarding"
   },
-  "coreSwapsChainClaimable": "Η μεταφορά είναι έτοιμη να διεκδικηθεί.",
+  "coreSwapsChainClaimable": "Η ανταλλαγή είναι έτοιμη για διεκδίκηση.",
   "@coreSwapsChainClaimable": {
     "description": "Status message for claimable chain swap"
   },
@@ -5482,7 +5482,7 @@
   "@sendSwapCancelled": {
     "description": "Message when user cancels swap"
   },
-  "swapTransferCompletedTitle": "Μεταφορά",
+  "swapTransferCompletedTitle": "Η ανταλλαγή ολοκληρώθηκε",
   "@swapTransferCompletedTitle": {
     "description": "Title when swap completes successfully"
   },
@@ -5648,7 +5648,7 @@
   "@buyUpgradeKYC": {
     "description": "Button to increase verification tier"
   },
-  "autoswapEnableToggleLabel": "Αποτελεσματικότητα αυτόματη μεταφορά",
+  "autoswapEnableToggleLabel": "Ενεργοποίηση αυτόματης ανταλλαγής",
   "@autoswapEnableToggleLabel": {
     "description": "Label for the main toggle switch to enable/disable auto transfer feature"
   },
@@ -5854,7 +5854,7 @@
   "@buyInsufficientBalanceTitle": {
     "description": "Title for insufficient balance error"
   },
-  "swapProgressPending": "Μεταφορά",
+  "swapProgressPending": "Ανταλλαγή σε εκκρεμότητα",
   "@swapProgressPending": {
     "description": "Pending transfer status"
   },
@@ -5979,7 +5979,7 @@
   "@keystoneStep7": {
     "description": "Keystone troubleshooting tip 3"
   },
-  "coreSwapsChainExpired": "Μεταφορά Επέκτευξη",
+  "coreSwapsChainExpired": "Η ανταλλαγή έληξε",
   "@coreSwapsChainExpired": {
     "description": "Status message for expired chain swap"
   },
@@ -6292,7 +6292,7 @@
   "@psbtInstructions": {
     "description": "Button text to show device-specific signing instructions"
   },
-  "swapProgressCompletedMessage": "Πω, περίμενες! Η μεταφορά έχει ολοκληρώσει αδιάκοπα.",
+  "swapProgressCompletedMessage": "Ουάου, περιμένατε! Η ανταλλαγή ολοκληρώθηκε με επιτυχία.",
   "@swapProgressCompletedMessage": {
     "description": "Completed transfer message"
   },
@@ -6300,7 +6300,7 @@
   "@sellCalculating": {
     "description": "Text shown while calculating fees"
   },
-  "swapInternalTransferTitle": "Εσωτερική μεταφορά",
+  "swapInternalTransferTitle": "Εσωτερική ανταλλαγή",
   "@swapInternalTransferTitle": {
     "description": "AppBar title on the amount entry page"
   },
@@ -6546,7 +6546,7 @@
   "@electrumAddFailedError": {
     "description": "Error message when adding custom server fails"
   },
-  "transactionDetailLabelTransferFees": "Τέλη μεταφοράς",
+  "transactionDetailLabelTransferFees": "Τέλη ανταλλαγής",
   "@transactionDetailLabelTransferFees": {
     "description": "Label for transfer fees"
   },
@@ -6743,7 +6743,7 @@
   "@swapMaxButton": {
     "description": "Button to use maximum available balance"
   },
-  "transactionSwapStatusTransferStatus": "Κατάσταση μεταφοράς",
+  "transactionSwapStatusTransferStatus": "Κατάσταση ανταλλαγής",
   "@transactionSwapStatusTransferStatus": {
     "description": "Header for transfer status section"
   },
@@ -6839,7 +6839,7 @@
   "@ledgerWalletTypeSelectTitle": {
     "description": "Title for wallet type selection modal"
   },
-  "swapTransferCompletedMessage": "Πω, περίμενες! Η μεταφορά έχει ολοκληρώσει με επιτυχία.",
+  "swapTransferCompletedMessage": "Ουάου, περιμένατε! Η ανταλλαγή ολοκληρώθηκε με επιτυχία.",
   "@swapTransferCompletedMessage": {
     "description": "Success message after transfer completion"
   },
@@ -7235,7 +7235,7 @@
   "@systemLabelSelfSpend": {
     "description": "System label for self-spend transactions"
   },
-  "swapProgressRefundMessage": "Υπήρχε ένα λάθος με τη μεταφορά. Η επιστροφή σας βρίσκεται σε εξέλιξη.",
+  "swapProgressRefundMessage": "Παρουσιάστηκε σφάλμα με τη ανταλλαγή. Η επιστροφή χρημάτων σας βρίσκεται σε εξέλιξη.",
   "@swapProgressRefundMessage": {
     "description": "Refund in progress message"
   },
@@ -7339,7 +7339,7 @@
   "@fundExchangeLabelIban": {
     "description": "Label for IBAN account number field"
   },
-  "swapDoNotUninstallWarning": "Μην απεγκαταστήσετε την εφαρμογή μέχρι να ολοκληρωθεί η μεταφορά!",
+  "swapDoNotUninstallWarning": "Μην απεγκαταστήσετε την εφαρμογή μέχρι να ολοκληρωθεί η ανταλλαγή!",
   "@swapDoNotUninstallWarning": {
     "description": "Warning message during pending transfer"
   },
@@ -7583,7 +7583,7 @@
   "@bitboxActionSignTransactionSuccessSubtext": {
     "description": "Success subtext for sign transaction"
   },
-  "transactionStatusTransferExpired": "Μεταφορά Επέκτευξη",
+  "transactionStatusTransferExpired": "Η ανταλλαγή έληξε",
   "@transactionStatusTransferExpired": {
     "description": "Status label for expired transfers"
   },
@@ -7633,7 +7633,7 @@
   "@settingsScreenTitle": {
     "description": "The title of the settings screen"
   },
-  "transactionDetailLabelTransferFee": "Μεταφορά",
+  "transactionDetailLabelTransferFee": "Τέλος ανταλλαγής",
   "@transactionDetailLabelTransferFee": {
     "description": "Label for transfer fee (Boltz fee)"
   },
@@ -7718,7 +7718,7 @@
   "@fundExchangeCrIbanUsdDescriptionEnd": {
     "description": "End of description for CR IBAN USD transfer"
   },
-  "swapProgressTitle": "Εσωτερική μεταφορά",
+  "swapProgressTitle": "Εσωτερική ανταλλαγή",
   "@swapProgressTitle": {
     "description": "AppBar title for swap progress screen"
   },
@@ -7857,7 +7857,7 @@
   "@fundExchangeCrIbanCrcLabelRecipientName": {
     "description": "Label for recipient name in CR IBAN CRC transfer"
   },
-  "swapTransferPendingTitle": "Μεταφορά",
+  "swapTransferPendingTitle": "Ανταλλαγή σε εκκρεμότητα",
   "@swapTransferPendingTitle": {
     "description": "Title during pending swap status"
   },
@@ -7962,7 +7962,7 @@
   "@sellSendPaymentPayoutRecipient": {
     "description": "Field label for payout recipient"
   },
-  "swapInfoDescription": "Μεταφορά Bitcoin απρόσκοπτα μεταξύ των πορτοφολών σας. Διατηρήστε χρήματα μόνο στο Instant Payment Wallet για καθημερινές δαπάνες.",
+  "swapInfoDescription": "Ανταλλάξτε Bitcoin απρόσκοπτα μεταξύ των πορτοφολιών σας. Διατηρήστε χρήματα μόνο στο Instant Payment Wallet για καθημερινές δαπάνες.",
   "@swapInfoDescription": {
     "description": "Information banner text on amount page"
   },
@@ -8116,7 +8116,7 @@
   "@transactionDetailTitle": {
     "description": "Title for transaction details screen"
   },
-  "coreScreensConfirmTransfer": "Επιβεβαίωση Μεταφορά",
+  "coreScreensConfirmTransfer": "Επιβεβαίωση ανταλλαγής",
   "@coreScreensConfirmTransfer": {
     "description": "Title for confirm transfer action"
   },
@@ -8169,7 +8169,7 @@
   "@bitcoinSettingsBip85EntropiesTitle": {
     "description": "Title for the BIP85 deterministic entropies section in Bitcoin settings"
   },
-  "swapTransferAmount": "Ποσό μεταφοράς",
+  "swapTransferAmount": "Ποσό ανταλλαγής",
   "@swapTransferAmount": {
     "description": "Label for amount input field"
   },
@@ -8319,7 +8319,7 @@
   "@sendSwapAmount": {
     "description": "Label for amount being swapped"
   },
-  "autoswapTitle": "Ρυθμίσεις αυτόματης μεταφοράς",
+  "autoswapTitle": "Ρυθμίσεις αυτόματης ανταλλαγής",
   "@autoswapTitle": {
     "description": "Header title for auto transfer settings bottom sheet"
   },
@@ -8348,7 +8348,7 @@
   "@receiveLiquidNetwork": {
     "description": "Liquid Network option"
   },
-  "autoswapSettingsTitle": "Ρυθμίσεις αυτόματης μεταφοράς",
+  "autoswapSettingsTitle": "Ρυθμίσεις αυτόματης ανταλλαγής",
   "@autoswapSettingsTitle": {
     "description": "Main header/title of the auto swap settings bottom sheet"
   },
@@ -8551,7 +8551,7 @@
   "@seedsignerStep13": {
     "description": "SeedSigner instruction about import completion"
   },
-  "swapProgressPendingMessage": "Η μεταφορά βρίσκεται σε εξέλιξη. Οι συναλλαγές Bitcoin μπορούν να πάρουν λίγο χρόνο για να επιβεβαιώσουν. Μπορείτε να επιστρέψετε στο σπίτι και να περιμένετε.",
+  "swapProgressPendingMessage": "Η ανταλλαγή βρίσκεται σε εξέλιξη. Οι συναλλαγές Bitcoin μπορεί να χρειαστούν λίγο χρόνο για να επιβεβαιωθούν. Μπορείτε να επιστρέψετε στην αρχική οθόνη και να περιμένετε.",
   "@swapProgressPendingMessage": {
     "description": "Pending transfer message"
   },
@@ -8808,7 +8808,7 @@
       }
     }
   },
-  "swapProgressRefunded": "Μεταφορά",
+  "swapProgressRefunded": "Η ανταλλαγή επιστράφηκε",
   "@swapProgressRefunded": {
     "description": "Refunded transfer status"
   },
@@ -8884,7 +8884,7 @@
   "@backupWalletErrorSaveBackup": {
     "description": "Error when backup save operation fails"
   },
-  "transactionSwapDescChainPending": "Η μεταφορά σας έχει δημιουργηθεί αλλά δεν έχει ξεκινήσει ακόμα.",
+  "transactionSwapDescChainPending": "Η ανταλλαγή σας έχει δημιουργηθεί αλλά δεν έχει ξεκινήσει ακόμα.",
   "@transactionSwapDescChainPending": {
     "description": "Description for pending chain swap"
   },
@@ -8914,7 +8914,7 @@
   "@sharedWithBullBitcoin": {
     "description": "End part of privacy assurance message"
   },
-  "transactionSwapDescChainFailed": "Υπήρχε ένα θέμα με τη μεταφορά σας. Παρακαλούμε επικοινωνήστε με την υποστήριξη εάν τα κεφάλαια δεν έχουν επιστραφεί εντός 24 ωρών.",
+  "transactionSwapDescChainFailed": "Παρουσιάστηκε πρόβλημα με τη ανταλλαγή σας. Επικοινωνήστε με την υποστήριξη εάν τα κεφάλαια δεν έχουν επιστραφεί εντός 24 ωρών.",
   "@transactionSwapDescChainFailed": {
     "description": "Description for failed chain swap"
   },
@@ -9143,7 +9143,7 @@
   "@fundExchangeETransferLabelSecretQuestion": {
     "description": "Label for E-transfer security question"
   },
-  "transactionSwapInfoClaimableTransfer": "Η μεταφορά θα ολοκληρωθεί αυτόματα μέσα σε λίγα δευτερόλεπτα. Εάν όχι, μπορείτε να επιχειρήσετε μια χειρωνακτική αξίωση κάνοντας κλικ στο κουμπί \"Retry Transfer Claim\".",
+  "transactionSwapInfoClaimableTransfer": "Η ανταλλαγή θα ολοκληρωθεί αυτόματα μέσα σε λίγα δευτερόλεπτα. Εάν όχι, μπορείτε να επιχειρήσετε χειροκίνητη διεκδίκηση πατώντας το κουμπί «Επανάληψη διεκδίκησης ανταλλαγής».",
   "@transactionSwapInfoClaimableTransfer": {
     "description": "Additional info for claimable transfers"
   },
@@ -9199,7 +9199,7 @@
   "@transactionLabelReceiveNetworkFee": {
     "description": "Label for receive network fee in swap details"
   },
-  "transactionSwapDescChainExpired": "Αυτή η μεταφορά έχει λήξει. Τα χρήματά σας θα επιστραφούν αυτόματα στο πορτοφόλι σας.",
+  "transactionSwapDescChainExpired": "Αυτή η ανταλλαγή έληξε. Τα κεφάλαιά σας θα επιστραφούν αυτόματα στο πορτοφόλι σας.",
   "@transactionSwapDescChainExpired": {
     "description": "Description for expired chain swap"
   },
@@ -9329,11 +9329,11 @@
   "@exchangeHomeWithdrawButton": {
     "description": "Button label for withdrawing funds from the exchange"
   },
-  "transactionListOngoingTransfersTitle": "Συνεχές Μεταφορές",
+  "transactionListOngoingTransfersTitle": "Ανταλλαγές σε εξέλιξη",
   "@transactionListOngoingTransfersTitle": {
     "description": "Title for ongoing transfers section"
   },
-  "transactionSwapDescChainClaimable": "Η συναλλαγή κλειδώματος έχει επιβεβαιωθεί. Υποστηρίζετε τώρα τα κεφάλαια για να ολοκληρώσετε τη μεταφορά σας.",
+  "transactionSwapDescChainClaimable": "Η συναλλαγή κλειδώματος επιβεβαιώθηκε. Διεκδικείτε τώρα τα κεφάλαια για να ολοκληρώσετε τη ανταλλαγή σας.",
   "@transactionSwapDescChainClaimable": {
     "description": "Description for claimable chain swap"
   },
@@ -9346,7 +9346,7 @@
       }
     }
   },
-  "transactionSwapDescChainRefundable": "Η μεταφορά θα επιστραφεί. Τα χρήματά σας θα επιστραφούν αυτόματα στο πορτοφόλι σας.",
+  "transactionSwapDescChainRefundable": "Η ανταλλαγή θα επιστραφεί. Τα κεφάλαιά σας θα επιστραφούν αυτόματα στο πορτοφόλι σας.",
   "@transactionSwapDescChainRefundable": {
     "description": "Description for refundable chain swap"
   },
@@ -9401,7 +9401,7 @@
   "@customLocationProvider": {
     "description": "Name of custom location provider"
   },
-  "transactionSwapDescChainCompleted": "Η μεταφορά σας έχει ολοκληρωθεί με επιτυχία! Τα κεφάλαια θα πρέπει τώρα να είναι διαθέσιμα στο πορτοφόλι σας.",
+  "transactionSwapDescChainCompleted": "Η ανταλλαγή σας ολοκληρώθηκε με επιτυχία! Τα κεφάλαια θα πρέπει να είναι πλέον διαθέσιμα στο πορτοφόλι σας.",
   "@transactionSwapDescChainCompleted": {
     "description": "Description for completed chain swap"
   },
@@ -9417,7 +9417,7 @@
   "@gotItButton": {
     "description": "Button label to acknowledge successful test"
   },
-  "autoswapAlwaysBlockInfoEnabled": "Όταν ενεργοποιηθεί, οι μεταφορές αυτοκινήτων με τέλη πάνω από το όριο set θα μπλοκάρονται πάντα",
+  "autoswapAlwaysBlockInfoEnabled": "Όταν είναι ενεργοποιημένο, οι αυτόματες ανταλλαγές με τέλη πάνω από το καθορισμένο όριο θα αποκλείονται πάντα",
   "@autoswapAlwaysBlockInfoEnabled": {
     "description": "Help text when always block is enabled"
   },
@@ -9457,7 +9457,7 @@
   "@backupWalletHowToDecideBackupEncryptedRecommendation": {
     "description": "Bold label for encrypted vault recommendation"
   },
-  "autoswapMaxBalanceInfoText": "Όταν η ισορροπία πορτοφολιού υπερβαίνει το διπλάσιο αυτού του ποσού, η αυτόματη μεταφορά θα προκαλέσει τη μείωση της ισορροπίας σε αυτό το επίπεδο",
+  "autoswapMaxBalanceInfoText": "Όταν το υπόλοιπο του πορτοφολιού υπερβεί το διπλάσιο αυτού του ποσού, η αυτόματη ανταλλαγή θα ενεργοποιηθεί για να μειώσει το υπόλοιπο σε αυτό το επίπεδο",
   "@autoswapMaxBalanceInfoText": {
     "description": "Help text explaining how the max balance threshold works"
   },
@@ -9499,7 +9499,7 @@
   "@customLocationRecommendationText": {
     "description": "Text explaining when to use custom location"
   },
-  "transactionSwapInfoRefundableTransfer": "Αυτή η μεταφορά θα επιστραφεί αυτόματα μέσα σε λίγα δευτερόλεπτα. Εάν όχι, μπορείτε να επιχειρήσετε μια χειρωνακτική επιστροφή κάνοντας κλικ στο κουμπί \"Retry Transfer Refund\".",
+  "transactionSwapInfoRefundableTransfer": "Αυτή η ανταλλαγή θα επιστραφεί αυτόματα μέσα σε λίγα δευτερόλεπτα. Εάν όχι, μπορείτε να επιχειρήσετε χειροκίνητη επιστροφή πατώντας το κουμπί «Επανάληψη επιστροφής ανταλλαγής».",
   "@transactionSwapInfoRefundableTransfer": {
     "description": "Additional info for refundable transfers"
   },
@@ -9610,7 +9610,7 @@
   "@transactionSwapDescLnSendPaid": {
     "description": "Description for paid Lightning send swap"
   },
-  "transactionSwapDescChainDefault": "Η μεταφορά σας βρίσκεται σε εξέλιξη. Αυτή η διαδικασία είναι αυτοματοποιημένη και μπορεί να πάρει κάποιο χρόνο για να ολοκληρωθεί.",
+  "transactionSwapDescChainDefault": "Η ανταλλαγή σας βρίσκεται σε εξέλιξη. Αυτή η διαδικασία είναι αυτοματοποιημένη και μπορεί να πάρει κάποιο χρόνο για να ολοκληρωθεί.",
   "@transactionSwapDescChainDefault": {
     "description": "Default description for chain swap"
   },
@@ -9740,7 +9740,7 @@
   "@backupKeyHint": {
     "description": "Hint text for backup key input"
   },
-  "transactionSwapInfoChainDelay": "Οι μεταφορές On-chain μπορεί να χρειαστούν κάποιο χρόνο για να ολοκληρωθούν λόγω των περιόδων επιβεβαίωσης blockchain.",
+  "transactionSwapInfoChainDelay": "Οι ανταλλαγές on-chain μπορεί να χρειαστούν λίγο χρόνο για να ολοκληρωθούν λόγω των χρόνων επιβεβαίωσης του blockchain.",
   "@transactionSwapInfoChainDelay": {
     "description": "Additional info about chain transfer delays"
   },
@@ -10021,7 +10021,7 @@
   "@backupWalletVaultProviderCustomLocation": {
     "description": "Name of custom location vault provider option"
   },
-  "transactionListOngoingTransfersDescription": "Οι μεταφορές αυτές βρίσκονται σε εξέλιξη. Τα χρήματά σας είναι ασφαλή και θα είναι διαθέσιμα όταν ολοκληρωθεί η μεταφορά.",
+  "transactionListOngoingTransfersDescription": "Αυτές οι ανταλλαγές βρίσκονται σε εξέλιξη. Τα κεφάλαιά σας είναι ασφαλή και θα είναι διαθέσιμα όταν ολοκληρωθεί η ανταλλαγή.",
   "@transactionListOngoingTransfersDescription": {
     "description": "Description for ongoing transfers section"
   },
@@ -10029,7 +10029,7 @@
   "@transactionOrderLabelOriginCedula": {
     "description": "Label for origin cedula in fiat payment order"
   },
-  "autoswapMaxFeeLabel": "Max Transfer Fee",
+  "autoswapMaxFeeLabel": "Μέγιστο τέλος ανταλλαγής",
   "@autoswapMaxFeeLabel": {
     "description": "Label for fee threshold percentage input field"
   },
@@ -10069,7 +10069,7 @@
   "@backupWalletHowToDecideBackupEncryptedRecommendationText": {
     "description": "Recommendation text for when to use encrypted vault"
   },
-  "autoswapMaxFeeInfoText": "Εάν η συνολική χρέωση μεταφοράς είναι πάνω από το καθορισμένο ποσοστό, η αυτόματη μεταφορά θα μπλοκαριστεί",
+  "autoswapMaxFeeInfoText": "Εάν το συνολικό τέλος ανταλλαγής είναι πάνω από το καθορισμένο ποσοστό, η αυτόματη ανταλλαγή θα αποκλειστεί",
   "@autoswapMaxFeeInfoText": {
     "description": "Help text explaining how the max fee threshold works"
   },
@@ -10167,7 +10167,7 @@
   "@testBackupEncryptedVaultTitle": {
     "description": "Title for encrypted vault backup option card"
   },
-  "autoswapAlwaysBlockInfoDisabled": "Όταν απενεργοποιηθεί, θα σας δοθεί η επιλογή να επιτρέψετε μια αυτόματη μεταφορά που μπλοκάρεται λόγω υψηλών τελών",
+  "autoswapAlwaysBlockInfoDisabled": "Όταν είναι απενεργοποιημένο, θα σας δοθεί η επιλογή να επιτρέψετε μια αυτόματη ανταλλαγή που αποκλείστηκε λόγω υψηλών τελών",
   "@autoswapAlwaysBlockInfoDisabled": {
     "description": "Help text when always block is disabled"
   },
@@ -10327,7 +10327,7 @@
   "wizardJourneyTip2": "Δοκιμάστε το κρυπτογραφημένο αντίγραφο ασφαλείας θησαυροφυλακίου",
   "wizardJourneyTip3": "Συνδεθείτε στον δικό σας κόμβο Bitcoin",
   "wizardJourneyTip4": "Συνδεθείτε στον δικό σας εξερευνητή Mempool",
-  "wizardJourneyTip5": "Μεταφέρετε μεταξύ Bitcoin και Liquid χωρίς KYC",
+  "wizardJourneyTip5": "Ανταλλάξτε μεταξύ Bitcoin και Liquid χωρίς KYC",
   "wizardJourneyTip6": "Προσαρμόστε τις ρυθμίσεις autoswap",
   "wizardJourneyTip7": "Εναλλάξτε μεταξύ Bitcoin (BTC) και Satoshis (sats)",
   "wizardJourneyTip8": "Δημιουργήστε air-gap συναλλαγές για το hardware wallet σας",
@@ -10491,7 +10491,7 @@
   "homeActionBuy": "Αγορά",
   "homeActionSell": "Πώληση",
   "homeActionPay": "Πληρωμή",
-  "homeActionTransfer": "Μεταφορά",
+  "homeActionTransfer": "Ανταλλαγή",
   "backupCardTitle": "Προστατέψτε τα bitcoin σας.",
   "backupCardSubtitle": "Δημιουργήστε αντίγραφο ασφαλείας του πορτοφολιού σας τώρα.",
   "mempoolCustomServerNoSsl": "Χωρίς SSL",
@@ -11280,5 +11280,9 @@
   "sellPayoutSepaDescription": "Οι αναλήψεις εμφανίζονται ως αποστολές από τη Leonod",
   "sellPayoutTitle": "Επιλογή παραλήπτη",
   "sellPayoutNewBadge": "ΝΕΟ",
-  "coreScreensOutputsExceedInputs": "Οι έξοδοι υπερβαίνουν τις εισόδους: αυτή η συναλλαγή είναι άκυρη και το δίκτυο θα την απορρίψει."
+  "coreScreensOutputsExceedInputs": "Οι έξοδοι υπερβαίνουν τις εισόδους: αυτή η συναλλαγή είναι άκυρη και το δίκτυο θα την απορρίψει.",
+  "swapUnderReviewTitle": "Ανταλλαγή υπό έλεγχο",
+  "swapUnderReviewDescription": "Αυτή η ανταλλαγή απαιτεί χειροκίνητο έλεγχο. Επικοινωνήστε με την υποστήριξη για βοήθεια. Εάν δεν έχετε λογαριασμό υποστήριξης, χρειάζεται μόνο να δημιουργήσετε έναν· δεν απαιτείται KYC.",
+  "swapUnderReviewSupportMessage": "Ανταλλαγή υπό έλεγχο\nOrder ID: {orderId}\nRequest ID: {requestId}\nOrder number: {orderNumber}",
+  "bitcoinSettingsAutoTransferTitle": "Αυτόματη ανταλλαγή"
 }

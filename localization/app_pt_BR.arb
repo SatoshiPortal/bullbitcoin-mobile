@@ -199,7 +199,7 @@
   "@fundExchangeInstantSepaInfo": {
     "description": "Info message for Instant SEPA transaction limits"
   },
-  "coreScreensTransferFeeLabel": "Taxa de transferência",
+  "coreScreensTransferFeeLabel": "Taxa de swap",
   "@coreScreensTransferFeeLabel": {
     "description": "Label for transfer fee field"
   },
@@ -239,7 +239,7 @@
   "@sellSendPaymentAboveMax": {
     "description": "Above max amount error"
   },
-  "coreSwapsChainCanCoop": "Transferência completará momentaneamente.",
+  "coreSwapsChainCanCoop": "O swap será concluído em instantes.",
   "@coreSwapsChainCanCoop": {
     "description": "Status message for chain swap that can complete cooperatively"
   },
@@ -291,11 +291,11 @@
   "@transactionSwapDescLnSendPending": {
     "description": "Description for pending Lightning send swap"
   },
-  "transactionStatusTransferFailed": "Transferência Falhada",
+  "transactionStatusTransferFailed": "Falha no swap",
   "@transactionStatusTransferFailed": {
     "description": "Status label for failed transfers"
   },
-  "transactionSwapDescChainPending": "Sua transferência foi criada, mas ainda não iniciada.",
+  "transactionSwapDescChainPending": "Seu swap foi criado, mas ainda não foi iniciado.",
   "@transactionSwapDescChainPending": {
     "description": "Description for pending chain swap"
   },
@@ -307,7 +307,7 @@
   "@fundExchangeLabelRecipientAddress": {
     "description": "Label for recipient address field"
   },
-  "autoswapAlwaysBlockEnabledInfo": "Quando ativado, as transferências automáticas com taxas acima do limite do conjunto serão sempre bloqueadas",
+  "autoswapAlwaysBlockEnabledInfo": "Quando ativado, os auto swaps com taxas acima do limite definido serão sempre bloqueados",
   "@autoswapAlwaysBlockEnabledInfo": {
     "description": "Info text when always block is enabled"
   },
@@ -323,7 +323,7 @@
   "@buyConfirmExternalWallet": {
     "description": "External wallet payout method"
   },
-  "transactionFilterTransfer": "Transferência",
+  "transactionFilterTransfer": "Swap",
   "@transactionFilterTransfer": {
     "description": "Filter option to show only transfer/swap transactions"
   },
@@ -597,7 +597,7 @@
   "@exchangeTransactionsTitle": {
     "description": "Title for the transactions section in exchange"
   },
-  "transactionDetailLabelTransferStatus": "Status de transferência",
+  "transactionDetailLabelTransferStatus": "Status do swap",
   "@transactionDetailLabelTransferStatus": {
     "description": "Label for transfer status"
   },
@@ -675,7 +675,7 @@
   "@connectHardwareWalletKrux": {
     "description": "Krux hardware wallet option"
   },
-  "autoswapMaxBalanceInfo": "Quando o saldo da carteira exceder o dobro desta quantidade, o auto-transfer irá desencadear para reduzir o equilíbrio a este nível",
+  "autoswapMaxBalanceInfo": "Quando o saldo da carteira exceder o dobro deste valor, o auto swap será acionado para reduzir o saldo a este nível",
   "@autoswapMaxBalanceInfo": {
     "description": "Info tooltip for max balance field"
   },
@@ -765,7 +765,7 @@
   "@sendCouldNotBuildTransaction": {
     "description": "Error message when a transaction cannot be built"
   },
-  "coreScreensExternalTransfer": "Transferência Externa",
+  "coreScreensExternalTransfer": "Swap externo",
   "@coreScreensExternalTransfer": {
     "description": "Title for external transfer action"
   },
@@ -909,7 +909,7 @@
   "@buyConfirmPayoutMethod": {
     "description": "Field label for payout method"
   },
-  "coreSwapsChainFailedRefunding": "A transferência será reembolsada em breve.",
+  "coreSwapsChainFailedRefunding": "O swap será reembolsado em breve.",
   "@coreSwapsChainFailedRefunding": {
     "description": "Status message for failed chain swap that will be refunded"
   },
@@ -1094,7 +1094,7 @@
   "@okButton": {
     "description": "Button to dismiss coming soon message"
   },
-  "transactionSwapDescChainFailed": "Houve um problema com a sua transferência. Por favor, contacte o suporte se os fundos não tiverem sido devolvidos dentro de 24 horas.",
+  "transactionSwapDescChainFailed": "Ocorreu um problema com seu swap. Entre em contato com o suporte se os fundos não forem devolvidos em até 24 horas.",
   "@transactionSwapDescChainFailed": {
     "description": "Description for failed chain swap"
   },
@@ -1106,7 +1106,7 @@
   "@sellServiceFee": {
     "description": "Label for Bull Bitcoin service fee"
   },
-  "coreScreensInternalTransfer": "Transferência interna",
+  "coreScreensInternalTransfer": "Swap interno",
   "@coreScreensInternalTransfer": {
     "description": "Title for internal transfer action"
   },
@@ -1308,7 +1308,7 @@
   "@bitboxScreenEnterPasswordSubtext": {
     "description": "Subtext when waiting for password"
   },
-  "swapTitle": "Transferência interna",
+  "swapTitle": "Swap interno",
   "@swapTitle": {
     "description": "AppBar title for swap/internal transfer screen"
   },
@@ -1344,11 +1344,11 @@
   "@buyAwaitingConfirmation": {
     "description": "Text shown while waiting for order confirmation"
   },
-  "swapTransferTitle": "Transferência",
+  "swapTransferTitle": "Swap",
   "@swapTransferTitle": {
     "description": "AppBar title on the main swap page"
   },
-  "swapTransferRefundedMessage": "A transferência foi reembolsada com sucesso.",
+  "swapTransferRefundedMessage": "O swap foi reembolsado com sucesso.",
   "@swapTransferRefundedMessage": {
     "description": "Refund completion message"
   },
@@ -1612,7 +1612,7 @@
   "@payCalculating": {
     "description": "Text shown while calculating fees"
   },
-  "swapTransferPendingMessage": "A transferência está em andamento. As transações Bitcoin podem demorar um pouco para confirmar. Podes voltar para casa e esperar.",
+  "swapTransferPendingMessage": "O swap está em andamento. As transações Bitcoin podem demorar um pouco para confirmar. Você pode voltar para a tela inicial e aguardar.",
   "@swapTransferPendingMessage": {
     "description": "Message shown during pending swap"
   },
@@ -1649,7 +1649,7 @@
   "@currencySettingsDefaultFiatCurrencyLabel": {
     "description": "Label for the default fiat currency setting"
   },
-  "transactionDetailLabelTransferId": "ID de transferência",
+  "transactionDetailLabelTransferId": "ID do swap",
   "@transactionDetailLabelTransferId": {
     "description": "Label for transfer ID"
   },
@@ -1869,7 +1869,7 @@
   "@featureComingSoonTitle": {
     "description": "Title for coming soon bottom sheet"
   },
-  "transactionStatusTransferInProgress": "Transferência em Progresso",
+  "transactionStatusTransferInProgress": "Swap em andamento",
   "@transactionStatusTransferInProgress": {
     "description": "Status label for transfers in progress"
   },
@@ -1935,7 +1935,7 @@
   "@encryptedVaultTitle": {
     "description": "Title for encrypted vault backup option"
   },
-  "swapTransferFrom": "Transferência",
+  "swapTransferFrom": "Swap de",
   "@swapTransferFrom": {
     "description": "Label for source wallet dropdown"
   },
@@ -1963,7 +1963,7 @@
   "@electrumPrivacyNoticeCancel": {
     "description": "Cancel button in privacy notice dialog"
   },
-  "swapProgressRefundInProgress": "Transferência de reembolso em progresso",
+  "swapProgressRefundInProgress": "Reembolso do swap em andamento",
   "@swapProgressRefundInProgress": {
     "description": "Refund in progress status"
   },
@@ -1979,7 +1979,7 @@
   "@buyConfirmBitcoinPrice": {
     "description": "Field label for Bitcoin price"
   },
-  "transactionDetailTransferProgress": "Transferência de Progresso",
+  "transactionDetailTransferProgress": "Progresso do swap",
   "@transactionDetailTransferProgress": {
     "description": "Title for ongoing transfer details"
   },
@@ -2248,7 +2248,7 @@
   "@payLightningInvoice": {
     "description": "Label indicating invoice type is Lightning Network"
   },
-  "autoswapAlwaysBlockDisabledInfo": "Quando desativado, você terá a opção de permitir uma transferência automática bloqueada devido a altas taxas",
+  "autoswapAlwaysBlockDisabledInfo": "Quando desativado, você terá a opção de permitir um auto swap bloqueado devido a taxas altas",
   "@autoswapAlwaysBlockDisabledInfo": {
     "description": "Info text when always block is disabled"
   },
@@ -2300,7 +2300,7 @@
   "@exchangeFileUploadDocumentsTitle": {
     "description": "Title for the upload documents section"
   },
-  "swapValidationSelectFromWallet": "Por favor, selecione uma carteira para transferir de",
+  "swapValidationSelectFromWallet": "Selecione uma carteira de origem para o swap",
   "@swapValidationSelectFromWallet": {
     "description": "Validation error when no source wallet selected"
   },
@@ -2481,7 +2481,7 @@
   "@coreScreensAmountLabel": {
     "description": "Label for amount field"
   },
-  "transactionSwapInfoClaimableTransfer": "A transferência será concluída automaticamente dentro de alguns segundos. Se não, você pode tentar uma reivindicação manual clicando no botão \"Restaurar a confirmação de transferência\".",
+  "transactionSwapInfoClaimableTransfer": "O swap será concluído automaticamente em alguns segundos. Se não for, você pode tentar uma reivindicação manual clicando no botão \"Retry Swap Claim\".",
   "@transactionSwapInfoClaimableTransfer": {
     "description": "Additional info for claimable transfers"
   },
@@ -2533,7 +2533,7 @@
   "@paySecurityAnswerHint": {
     "description": "Hint for security answer input"
   },
-  "swapTransferRefundInProgressTitle": "Transferência de reembolso em progresso",
+  "swapTransferRefundInProgressTitle": "Reembolso do swap em andamento",
   "@swapTransferRefundInProgressTitle": {
     "description": "Title when swap is being refunded"
   },
@@ -2812,7 +2812,7 @@
   "@payMediumPriority": {
     "description": "Medium fee priority option"
   },
-  "coreSwapsChainCompletedRefunded": "A transferência foi reembolsada.",
+  "coreSwapsChainCompletedRefunded": "O swap foi reembolsado.",
   "@coreSwapsChainCompletedRefunded": {
     "description": "Status message for chain swap completed via refund"
   },
@@ -3012,7 +3012,7 @@
   "@payWhichWalletQuestion": {
     "description": "Question prompting user to select wallet"
   },
-  "coreScreensTransferIdLabel": "ID de transferência",
+  "coreScreensTransferIdLabel": "ID do swap",
   "@coreScreensTransferIdLabel": {
     "description": "Label for transfer ID field"
   },
@@ -3073,7 +3073,7 @@
   "@pinCodeContinue": {
     "description": "Button label to continue with PIN entry"
   },
-  "swapTransferTo": "Transferência para",
+  "swapTransferTo": "Swap para",
   "@swapTransferTo": {
     "description": "Label for destination wallet dropdown"
   },
@@ -3197,7 +3197,7 @@
   "@fundExchangeLabelCvu": {
     "description": "Label for CVU (Clave Virtual Uniforme) number in Argentina"
   },
-  "swapTransferRefundedTitle": "Transferência reembolsada",
+  "swapTransferRefundedTitle": "Swap reembolsado",
   "@swapTransferRefundedTitle": {
     "description": "Title when swap has been refunded"
   },
@@ -3213,7 +3213,7 @@
   "@importColdcardInvalidQR": {
     "description": "Error for invalid QR format"
   },
-  "transactionSwapDescChainExpired": "Esta transferência expirou. Os seus fundos serão automaticamente devolvidos à sua carteira.",
+  "transactionSwapDescChainExpired": "Este swap expirou. Seus fundos serão devolvidos automaticamente à sua carteira.",
   "@transactionSwapDescChainExpired": {
     "description": "Description for expired chain swap"
   },
@@ -3221,7 +3221,7 @@
   "@fiatCurrencySettingsLabel": {
     "description": "The label for the button to access the fiat currency settings"
   },
-  "sendTransferFee": "Taxa de transferência",
+  "sendTransferFee": "Taxa de swap",
   "@sendTransferFee": {
     "description": "Label for total swap transfer fee"
   },
@@ -3359,7 +3359,7 @@
   "@sellDone": {
     "description": "Button to close bottom sheet"
   },
-  "swapValidationSelectToWallet": "Selecione uma carteira para transferir para",
+  "swapValidationSelectToWallet": "Selecione uma carteira de destino para o swap",
   "@swapValidationSelectToWallet": {
     "description": "Validation error when no destination wallet selected"
   },
@@ -3466,7 +3466,7 @@
   "@backupWalletEncryptedVaultTitle": {
     "description": "Title for encrypted vault backup option"
   },
-  "swapConfirmTransferTitle": "Confirmar transferência",
+  "swapConfirmTransferTitle": "Confirmar swap",
   "@swapConfirmTransferTitle": {
     "description": "AppBar title on the confirmation page"
   },
@@ -3577,7 +3577,7 @@
   "@addressViewAddress": {
     "description": "Label for address field"
   },
-  "transactionListOngoingTransfersTitle": "Transferências em curso",
+  "transactionListOngoingTransfersTitle": "Swaps em andamento",
   "@transactionListOngoingTransfersTitle": {
     "description": "Title for ongoing transfers section"
   },
@@ -3699,7 +3699,7 @@
   "@testnetModeSettingsLabel": {
     "description": "The label for the testnet mode settings"
   },
-  "swapProgressCompleted": "Transferência concluída",
+  "swapProgressCompleted": "Swap concluído",
   "@swapProgressCompleted": {
     "description": "Completed transfer status"
   },
@@ -3767,7 +3767,7 @@
   "@sendCustomFeeRate": {
     "description": "Option to manually set fee"
   },
-  "transactionSwapDescChainRefundable": "A transferência será reembolsada. Os seus fundos serão devolvidos automaticamente à sua carteira.",
+  "transactionSwapDescChainRefundable": "O swap será reembolsado. Seus fundos serão devolvidos automaticamente à sua carteira.",
   "@transactionSwapDescChainRefundable": {
     "description": "Description for refundable chain swap"
   },
@@ -3787,7 +3787,7 @@
   "@sellHowToPayInvoice": {
     "description": "Question for payment method selection"
   },
-  "coreSwapsChainCompletedSuccess": "A transferência é concluída com sucesso.",
+  "coreSwapsChainCompletedSuccess": "O swap foi concluído com sucesso.",
   "@coreSwapsChainCompletedSuccess": {
     "description": "Status message for successfully completed chain swap"
   },
@@ -3799,7 +3799,7 @@
   "@buyKYCLevel3": {
     "description": "Full verification tier"
   },
-  "transactionSwapDescChainClaimable": "A transação foi confirmada. Está a reivindicar os fundos para completar a sua transferência.",
+  "transactionSwapDescChainClaimable": "A transação de bloqueio foi confirmada. Agora você está reivindicando os fundos para concluir seu swap.",
   "@transactionSwapDescChainClaimable": {
     "description": "Description for claimable chain swap"
   },
@@ -3968,7 +3968,7 @@
   "@autoswapWarningCardTitle": {
     "description": "Title text shown on the autoswap warning card on home screen"
   },
-  "swapConfirmTitle": "Confirmar transferência",
+  "swapConfirmTitle": "Confirmar swap",
   "@swapConfirmTitle": {
     "description": "AppBar title for swap confirmation screen"
   },
@@ -4042,7 +4042,7 @@
   "@exchangeStatisticsBillerStats": {
     "description": "Title for biller statistics section"
   },
-  "swapExternalTransferLabel": "Transferência Externa",
+  "swapExternalTransferLabel": "Swap externo",
   "@swapExternalTransferLabel": {
     "description": "Label for external transfer toggle"
   },
@@ -4205,7 +4205,7 @@
   "@payIbanHint": {
     "description": "Hint for IBAN input"
   },
-  "transactionSwapDescChainCompleted": "Sua transferência foi concluída com sucesso! Os fundos devem agora estar disponíveis na sua carteira.",
+  "transactionSwapDescChainCompleted": "Seu swap foi concluído com sucesso! Os fundos já devem estar disponíveis na sua carteira.",
   "@transactionSwapDescChainCompleted": {
     "description": "Description for completed chain swap"
   },
@@ -4242,7 +4242,7 @@
   "@swapToLabel": {
     "description": "Label for destination wallet dropdown or address input"
   },
-  "autoswapAlwaysBlockInfoEnabled": "Quando ativado, as transferências automáticas com taxas acima do limite do conjunto serão sempre bloqueadas",
+  "autoswapAlwaysBlockInfoEnabled": "Quando ativado, os auto swaps com taxas acima do limite definido serão sempre bloqueados",
   "@autoswapAlwaysBlockInfoEnabled": {
     "description": "Help text when always block is enabled"
   },
@@ -4504,7 +4504,7 @@
   "@payAddMemo": {
     "description": "Placeholder for memo input field"
   },
-  "autoswapMaxBalanceInfoText": "Quando o saldo da carteira exceder o dobro desta quantidade, o auto-transfer irá desencadear para reduzir o equilíbrio a este nível",
+  "autoswapMaxBalanceInfoText": "Quando o saldo da carteira exceder o dobro deste valor, o auto swap será acionado para reduzir o saldo a este nível",
   "@autoswapMaxBalanceInfoText": {
     "description": "Help text explaining how the max balance threshold works"
   },
@@ -4971,7 +4971,7 @@
   "@keystoneStep13": {
     "description": "Keystone instruction about import completion"
   },
-  "swapInfoBanner": "Transferir Bitcoin perfeitamente entre suas carteiras. Apenas mantenha fundos na Carteira de Pagamento Instantânea para gastos diários.",
+  "swapInfoBanner": "Faça swap de Bitcoin entre suas carteiras com facilidade. Mantenha fundos na Carteira de Pagamento Instantâneo apenas para gastos do dia a dia.",
   "@swapInfoBanner": {
     "description": "Info banner on swap amount screen"
   },
@@ -4988,7 +4988,7 @@
       }
     }
   },
-  "coreSwapsChainPending": "Transferência ainda não é inicializada.",
+  "coreSwapsChainPending": "O swap ainda não foi inicializado.",
   "@coreSwapsChainPending": {
     "description": "Status message for pending chain swap"
   },
@@ -5022,7 +5022,7 @@
   "@buyConfirmationTimeValue": {
     "description": "Value for estimated confirmation time"
   },
-  "autoswapMaxFee": "Taxa de transferência máxima",
+  "autoswapMaxFee": "Taxa máxima de swap",
   "@autoswapMaxFee": {
     "description": "Field label for max fee threshold"
   },
@@ -5056,7 +5056,7 @@
   "@buyConfirmAwaitingConfirmation": {
     "description": "Awaiting confirmation label"
   },
-  "coreSwapsChainRefundable": "A transferência está pronta para ser reembolsada.",
+  "coreSwapsChainRefundable": "O swap está pronto para ser reembolsado.",
   "@coreSwapsChainRefundable": {
     "description": "Status message for refundable chain swap"
   },
@@ -5117,7 +5117,7 @@
   "@payInvoiceExpired": {
     "description": "Error message when Lightning invoice has expired"
   },
-  "coreSwapsChainFailed": "Transferência Falhada.",
+  "coreSwapsChainFailed": "Falha no swap.",
   "@coreSwapsChainFailed": {
     "description": "Status message for failed chain swap"
   },
@@ -5233,7 +5233,7 @@
   "@sendEstimatedDelivery10to30Minutes": {
     "description": "Estimated delivery time of 10 to 30 minutes"
   },
-  "autoswapEnable": "Habilitar a transferência automática",
+  "autoswapEnable": "Ativar Auto Swap",
   "@autoswapEnable": {
     "description": "Toggle label to enable auto transfer"
   },
@@ -5290,7 +5290,7 @@
   "@payFromAnotherWallet": {
     "description": "Subtitle for external wallet option"
   },
-  "autoswapMaxFeeInfo": "Se a taxa de transferência total estiver acima da porcentagem definida, a transferência automática será bloqueada",
+  "autoswapMaxFeeInfo": "Se a taxa total do swap ficar acima da porcentagem definida, o auto swap será bloqueado",
   "@autoswapMaxFeeInfo": {
     "description": "Info tooltip for max fee field"
   },
@@ -5359,7 +5359,7 @@
       }
     }
   },
-  "transactionStatusTransferCompleted": "Transferência Completa",
+  "transactionStatusTransferCompleted": "Swap concluído",
   "@transactionStatusTransferCompleted": {
     "description": "Status label for completed transfers"
   },
@@ -5443,7 +5443,7 @@
   "@receiveUnableToVerifyAddress": {
     "description": "Error message when address verification is not possible"
   },
-  "swapTransferRefundInProgressMessage": "Houve um erro com a transferência. O seu reembolso está em andamento.",
+  "swapTransferRefundInProgressMessage": "Ocorreu um erro com o swap. Seu reembolso está em andamento.",
   "@swapTransferRefundInProgressMessage": {
     "description": "Message during refund process"
   },
@@ -5487,7 +5487,7 @@
   "@backupWalletTitle": {
     "description": "AppBar title for main backup options screen"
   },
-  "swapTransferCompletedTitle": "Transferência concluída",
+  "swapTransferCompletedTitle": "Swap concluído",
   "@swapTransferCompletedTitle": {
     "description": "Title when swap completes successfully"
   },
@@ -5566,7 +5566,7 @@
   "@confirmButtonLabel": {
     "description": "Button label to confirm and execute the transaction"
   },
-  "transactionSwapInfoRefundableTransfer": "Esta transferência será reembolsada automaticamente dentro de alguns segundos. Se não, você pode tentar um reembolso manual clicando no botão \"Restaurar reembolso\".",
+  "transactionSwapInfoRefundableTransfer": "Este swap será reembolsado automaticamente em alguns segundos. Se não for, você pode tentar um reembolso manual clicando no botão \"Retry Swap Refund\".",
   "@transactionSwapInfoRefundableTransfer": {
     "description": "Additional info for refundable transfers"
   },
@@ -5650,7 +5650,7 @@
   "@sellCurrentRate": {
     "description": "Label for BTC/fiat exchange rate"
   },
-  "swapProgressRefundedMessage": "A transferência foi sucessivamente reembolsada.",
+  "swapProgressRefundedMessage": "O swap foi reembolsado com sucesso.",
   "@swapProgressRefundedMessage": {
     "description": "Refunded transfer message"
   },
@@ -5662,7 +5662,7 @@
   "@psbtFlowTransactionImported": {
     "description": "Confirmation that transaction was imported successfully"
   },
-  "autoswapEnableToggleLabel": "Habilitar a transferência automática",
+  "autoswapEnableToggleLabel": "Ativar Auto Swap",
   "@autoswapEnableToggleLabel": {
     "description": "Label for the main toggle switch to enable/disable auto transfer feature"
   },
@@ -5700,7 +5700,7 @@
   "@coreScreensServerNetworkFeesLabel": {
     "description": "Label for server network fees field"
   },
-  "coreSwapsChainPaid": "Aguardando o pagamento do provedor de transferência para receber confirmação. Isto pode demorar um pouco a terminar.",
+  "coreSwapsChainPaid": "Aguardando a confirmação do pagamento do provedor de swap. Isso pode levar algum tempo.",
   "@coreSwapsChainPaid": {
     "description": "Status message for paid chain swap"
   },
@@ -5813,7 +5813,7 @@
   "@testBackupBackupId": {
     "description": "Label for backup ID field"
   },
-  "receiveTransferFee": "Taxa de transferência",
+  "receiveTransferFee": "Taxa de swap",
   "@receiveTransferFee": {
     "description": "Label for the transfer fee in a receive transaction"
   },
@@ -5988,7 +5988,7 @@
   "@cancel": {
     "description": "Generic cancel button label"
   },
-  "swapProgressPending": "Pendente de Transferência",
+  "swapProgressPending": "Swap pendente",
   "@swapProgressPending": {
     "description": "Pending transfer status"
   },
@@ -6065,7 +6065,7 @@
   "@importWalletKeystone": {
     "description": "Button label for Keystone hardware wallet"
   },
-  "coreSwapsChainClaimable": "A transferência está pronta para ser reivindicada.",
+  "coreSwapsChainClaimable": "O swap está pronto para ser reivindicado.",
   "@coreSwapsChainClaimable": {
     "description": "Status message for claimable chain swap"
   },
@@ -6089,7 +6089,7 @@
   "@bitboxActionVerifyAddressSuccessSubtext": {
     "description": "Success subtext for verify address"
   },
-  "coreSwapsChainExpired": "Transferência Expirou",
+  "coreSwapsChainExpired": "Swap expirado",
   "@coreSwapsChainExpired": {
     "description": "Status message for expired chain swap"
   },
@@ -6240,7 +6240,7 @@
   "@dcaBackToHomeButton": {
     "description": "Button label to return to exchange home screen"
   },
-  "transactionSwapDescChainDefault": "Sua transferência está em andamento. Este processo é automatizado e pode levar algum tempo para ser concluído.",
+  "transactionSwapDescChainDefault": "Seu swap está em andamento. Este processo é automatizado e pode levar algum tempo para ser concluído.",
   "@transactionSwapDescChainDefault": {
     "description": "Default description for chain swap"
   },
@@ -6448,7 +6448,7 @@
   "@backupSettingsSecurityWarning": {
     "description": "Title for backup key security warning modal"
   },
-  "swapInternalTransferTitle": "Transferência interna",
+  "swapInternalTransferTitle": "Swap interno",
   "@swapInternalTransferTitle": {
     "description": "AppBar title on the amount entry page"
   },
@@ -6551,11 +6551,11 @@
   "@receiveNoteLabel": {
     "description": "Label for the note field in receive"
   },
-  "transactionSwapInfoChainDelay": "As transferências on-chain podem levar algum tempo para completar devido aos tempos de confirmação do blockchain.",
+  "transactionSwapInfoChainDelay": "Swaps on-chain podem levar algum tempo para serem concluídos devido aos tempos de confirmação da blockchain.",
   "@transactionSwapInfoChainDelay": {
     "description": "Additional info about chain transfer delays"
   },
-  "swapProgressCompletedMessage": "Esperaste! A transferência terminou sucessivamente.",
+  "swapProgressCompletedMessage": "Uau, você esperou! O swap foi concluído com sucesso.",
   "@swapProgressCompletedMessage": {
     "description": "Completed transfer message"
   },
@@ -6734,7 +6734,7 @@
   "@payDefaultCommentOptional": {
     "description": "Label for default comment field"
   },
-  "transactionDetailLabelTransferFees": "Taxas de transferência",
+  "transactionDetailLabelTransferFees": "Taxas do swap",
   "@transactionDetailLabelTransferFees": {
     "description": "Label for transfer fees"
   },
@@ -7370,7 +7370,7 @@
   "@backupWalletEncryptedVaultDescription": {
     "description": "Description of encrypted vault backup method"
   },
-  "swapProgressTitle": "Transferência interna",
+  "swapProgressTitle": "Swap interno",
   "@swapProgressTitle": {
     "description": "AppBar title for swap progress screen"
   },
@@ -7390,7 +7390,7 @@
   "@replaceByFeeErrorFeeRateTooLow": {
     "description": "Error message when new fee rate is not high enough"
   },
-  "transactionStatusTransferExpired": "Transferência Expirou",
+  "transactionStatusTransferExpired": "Swap expirado",
   "@transactionStatusTransferExpired": {
     "description": "Status label for expired transfers"
   },
@@ -7748,7 +7748,7 @@
   "@scanningCompletedMessage": {
     "description": "Success message when UR scanning completes"
   },
-  "autoswapMaxFeeInfoText": "Se a taxa de transferência total estiver acima da porcentagem definida, a transferência automática será bloqueada",
+  "autoswapMaxFeeInfoText": "Se a taxa total do swap ficar acima da porcentagem definida, o auto swap será bloqueado",
   "@autoswapMaxFeeInfoText": {
     "description": "Help text explaining how the max fee threshold works"
   },
@@ -7872,7 +7872,7 @@
   "@paySendMax": {
     "description": "Button to set amount to maximum available"
   },
-  "coreScreensConfirmTransfer": "Confirmar transferência",
+  "coreScreensConfirmTransfer": "Confirmar swap",
   "@coreScreensConfirmTransfer": {
     "description": "Title for confirm transfer action"
   },
@@ -7948,7 +7948,7 @@
   "@coreSwapsActionClaim": {
     "description": "Action label for claiming a swap"
   },
-  "swapInfoDescription": "Transferir Bitcoin perfeitamente entre suas carteiras. Apenas mantenha fundos na Carteira de Pagamento Instantânea para gastos diários.",
+  "swapInfoDescription": "Faça swap de Bitcoin entre suas carteiras com facilidade. Mantenha fundos na Carteira de Pagamento Instantâneo apenas para gastos do dia a dia.",
   "@swapInfoDescription": {
     "description": "Information banner text on amount page"
   },
@@ -8062,7 +8062,7 @@
   "@fundExchangeLabelSwiftCode": {
     "description": "Label for SWIFT code field"
   },
-  "swapTransferCompletedMessage": "Esperaste! A transferência foi concluída com sucesso.",
+  "swapTransferCompletedMessage": "Uau, você esperou! O swap foi concluído com sucesso.",
   "@swapTransferCompletedMessage": {
     "description": "Success message after transfer completion"
   },
@@ -8582,7 +8582,7 @@
   "@fundExchangeSpeiDescription": {
     "description": "Description for SPEI transfer method"
   },
-  "swapProgressPendingMessage": "A transferência está em andamento. As transações Bitcoin podem demorar um pouco para confirmar. Podes voltar para casa e esperar.",
+  "swapProgressPendingMessage": "O swap está em andamento. As transações Bitcoin podem demorar um pouco para confirmar. Você pode voltar para a tela inicial e aguardar.",
   "@swapProgressPendingMessage": {
     "description": "Pending transfer message"
   },
@@ -8710,7 +8710,7 @@
   "@comingSoonDefaultMessage": {
     "description": "Default message for features under development"
   },
-  "swapProgressRefundMessage": "Houve um erro com a transferência. O seu reembolso está em andamento.",
+  "swapProgressRefundMessage": "Ocorreu um erro com o swap. Seu reembolso está em andamento.",
   "@swapProgressRefundMessage": {
     "description": "Refund in progress message"
   },
@@ -8746,7 +8746,7 @@
   "@payViewDetails": {
     "description": "Button to view order details"
   },
-  "swapProgressRefunded": "Transferência reembolsada",
+  "swapProgressRefunded": "Swap reembolsado",
   "@swapProgressRefunded": {
     "description": "Refunded transfer status"
   },
@@ -8791,7 +8791,7 @@
   "@backupWalletVaultProviderCustomLocation": {
     "description": "Name of custom location vault provider option"
   },
-  "autoswapAlwaysBlockInfoDisabled": "Quando desativado, você terá a opção de permitir uma transferência automática bloqueada devido a altas taxas",
+  "autoswapAlwaysBlockInfoDisabled": "Quando desativado, você terá a opção de permitir um auto swap bloqueado devido a taxas altas",
   "@autoswapAlwaysBlockInfoDisabled": {
     "description": "Help text when always block is disabled"
   },
@@ -8811,7 +8811,7 @@
   "@transactionOrderLabelOriginCedula": {
     "description": "Label for origin cedula in fiat payment order"
   },
-  "autoswapMaxFeeLabel": "Taxa de transferência máxima",
+  "autoswapMaxFeeLabel": "Taxa máxima de swap",
   "@autoswapMaxFeeLabel": {
     "description": "Label for fee threshold percentage input field"
   },
@@ -8868,7 +8868,7 @@
   "@settingsSuperuserModeUnlockedMessage": {
     "description": "Message shown when superuser mode is enabled"
   },
-  "swapDoNotUninstallWarning": "Não desinstale o aplicativo até que a transferência seja concluída!",
+  "swapDoNotUninstallWarning": "Não desinstale o aplicativo até que o swap seja concluído!",
   "@swapDoNotUninstallWarning": {
     "description": "Warning message during pending transfer"
   },
@@ -8932,7 +8932,7 @@
   "@importQrDeviceKeystoneStep2": {
     "description": "Keystone instruction step 2"
   },
-  "transactionDetailLabelTransferFee": "Taxa de transferência",
+  "transactionDetailLabelTransferFee": "Taxa de swap",
   "@transactionDetailLabelTransferFee": {
     "description": "Label for transfer fee (Boltz fee)"
   },
@@ -9073,7 +9073,7 @@
   "@fundExchangeCrIbanCrcLabelRecipientName": {
     "description": "Label for recipient name in CR IBAN CRC transfer"
   },
-  "swapTransferPendingTitle": "Pendente de Transferência",
+  "swapTransferPendingTitle": "Swap pendente",
   "@swapTransferPendingTitle": {
     "description": "Title during pending swap status"
   },
@@ -9109,7 +9109,7 @@
   "@fundExchangeBankTransfer": {
     "description": "Bank transfer method title"
   },
-  "transactionListOngoingTransfersDescription": "Estas transferências estão em andamento. Seus fundos estão seguros e estarão disponíveis quando a transferência terminar.",
+  "transactionListOngoingTransfersDescription": "Estes swaps estão em andamento. Seus fundos estão seguros e estarão disponíveis quando o swap for concluído.",
   "@transactionListOngoingTransfersDescription": {
     "description": "Description for ongoing transfers section"
   },
@@ -9145,7 +9145,7 @@
   "@sendEnterAbsoluteFee": {
     "description": "Placeholder for absolute fee input field"
   },
-  "swapTransferAmount": "Valor de transferência",
+  "swapTransferAmount": "Valor do swap",
   "@swapTransferAmount": {
     "description": "Label for amount input field"
   },
@@ -9193,7 +9193,7 @@
   "@sellInteracTransfer": {
     "description": "Option for Interac payment (Canada)"
   },
-  "autoswapSettingsTitle": "Configurações de transferência automática",
+  "autoswapSettingsTitle": "Configurações do Auto Swap",
   "@autoswapSettingsTitle": {
     "description": "Main header/title of the auto swap settings bottom sheet"
   },
@@ -9306,7 +9306,7 @@
   "@transactionSwapDescChainPaid": {
     "description": "Description for paid chain swap"
   },
-  "autoswapTitle": "Configurações de transferência automática",
+  "autoswapTitle": "Configurações do Auto Swap",
   "@autoswapTitle": {
     "description": "Header title for auto transfer settings bottom sheet"
   },
@@ -9987,7 +9987,7 @@
   "@backupKeyWarningMessage": {
     "description": "Warning message about backup key storage"
   },
-  "transactionSwapStatusTransferStatus": "Status de transferência",
+  "transactionSwapStatusTransferStatus": "Status do swap",
   "@transactionSwapStatusTransferStatus": {
     "description": "Header for transfer status section"
   },
@@ -10339,7 +10339,7 @@
   "wizardJourneyTip2": "Experimente o backup criptografado do cofre",
   "wizardJourneyTip3": "Conecte-se ao seu próprio node Bitcoin",
   "wizardJourneyTip4": "Conecte-se ao seu próprio explorador Mempool",
-  "wizardJourneyTip5": "Transfira entre Bitcoin e Liquid sem KYC",
+  "wizardJourneyTip5": "Faça swap entre Bitcoin e Liquid sem KYC",
   "wizardJourneyTip6": "Personalize suas configurações de autoswap",
   "wizardJourneyTip7": "Alterne entre Bitcoin (BTC) e Satoshis (sats)",
   "wizardJourneyTip8": "Crie transações air-gap para sua carteira de hardware",
@@ -10503,7 +10503,7 @@
   "homeActionBuy": "Comprar",
   "homeActionSell": "Vender",
   "homeActionPay": "Pagar",
-  "homeActionTransfer": "Transferir",
+  "homeActionTransfer": "Swap",
   "backupCardTitle": "Proteja seus bitcoins.",
   "backupCardSubtitle": "Faça o backup da sua carteira agora.",
   "mempoolCustomServerNoSsl": "Sem SSL",
@@ -11292,5 +11292,9 @@
   "sellPayoutSepaDescription": "Os saques aparecem como enviados pela Leonod",
   "sellPayoutTitle": "Selecionar destinatário",
   "sellPayoutNewBadge": "NOVO",
-  "coreScreensOutputsExceedInputs": "As saídas excedem as entradas: esta transação é inválida e a rede vai rejeitá-la."
+  "coreScreensOutputsExceedInputs": "As saídas excedem as entradas: esta transação é inválida e a rede vai rejeitá-la.",
+  "swapUnderReviewTitle": "Swap em análise",
+  "swapUnderReviewDescription": "Este swap requer uma análise manual. Entre em contato com o suporte para obter ajuda. Se você não tiver uma conta de suporte, basta criar uma; o KYC não é necessário.",
+  "swapUnderReviewSupportMessage": "Swap em análise\nID do pedido: {orderId}\nID da solicitação: {requestId}\nNúmero do pedido: {orderNumber}",
+  "bitcoinSettingsAutoTransferTitle": "Auto Swap"
 }
