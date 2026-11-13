@@ -36,13 +36,7 @@ class QuickActionsLocalizationsEn extends QuickActionsLocalizations {
   String get title => 'Quick actions';
 
   @override
-  String get save => 'Save changes';
-
-  @override
   String get reset => 'Restore defaults';
-
-  @override
-  String get unavailable => 'Currently unavailable';
 
   @override
   String get moveUp => 'Move up';
@@ -69,11 +63,6 @@ class QuickActionsLocalizationsEn extends QuickActionsLocalizations {
   String get quickActionTrade => 'Trade';
 
   @override
-  String selectedCount(int count) {
-    return 'Selected: $count';
-  }
-
-  @override
   String get onHome => 'On Home';
 
   @override
@@ -83,20 +72,16 @@ class QuickActionsLocalizationsEn extends QuickActionsLocalizations {
   String get preview => 'Preview';
 
   @override
-  String get maximumHint =>
-      'Up to 4 cells on Home. When More is needed, your first 3 available favorites appear beside it.';
-
-  @override
-  String get overflowHint => 'These favorites appear in More';
+  String get maximumHint => 'Choose up to 3 actions for Home.';
 
   @override
   String addAction(String name) {
-    return 'Add $name to favorites';
+    return 'Add $name to Home';
   }
 
   @override
   String removeAction(String name) {
-    return 'Remove $name from favorites';
+    return 'Move $name to More';
   }
 
   @override
@@ -117,8 +102,17 @@ class QuickActionsLocalizationsEn extends QuickActionsLocalizations {
   String get saving => 'Saving…';
 
   @override
-  String get emptyHint => 'No favorites selected. Settings remains on Home.';
+  String get emptyHint => 'No actions selected. Settings stays on Home.';
 
   @override
   String get supportFull => 'Support';
+
+  @override
+  String get homeFullHint => 'Home holds 3 actions. Remove one to add another.';
+
+  @override
+  String get defaultsRestored => 'Default actions restored.';
+
+  @override
+  String get undo => 'Undo';
 }

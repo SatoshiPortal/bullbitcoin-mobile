@@ -155,23 +155,11 @@ abstract class QuickActionsLocalizations {
   /// **'Quick actions'**
   String get title;
 
-  /// No description provided for @save.
-  ///
-  /// In en, this message translates to:
-  /// **'Save changes'**
-  String get save;
-
   /// No description provided for @reset.
   ///
   /// In en, this message translates to:
   /// **'Restore defaults'**
   String get reset;
-
-  /// No description provided for @unavailable.
-  ///
-  /// In en, this message translates to:
-  /// **'Currently unavailable'**
-  String get unavailable;
 
   /// No description provided for @moveUp.
   ///
@@ -221,12 +209,6 @@ abstract class QuickActionsLocalizations {
   /// **'Trade'**
   String get quickActionTrade;
 
-  /// No description provided for @selectedCount.
-  ///
-  /// In en, this message translates to:
-  /// **'Selected: {count}'**
-  String selectedCount(int count);
-
   /// Wallet quick action customization.
   ///
   /// In en, this message translates to:
@@ -248,25 +230,19 @@ abstract class QuickActionsLocalizations {
   /// Wallet quick action customization.
   ///
   /// In en, this message translates to:
-  /// **'Up to 4 cells on Home. When More is needed, your first 3 available favorites appear beside it.'**
+  /// **'Choose up to 3 actions for Home.'**
   String get maximumHint;
 
   /// Wallet quick action customization.
   ///
   /// In en, this message translates to:
-  /// **'These favorites appear in More'**
-  String get overflowHint;
-
-  /// Wallet quick action customization.
-  ///
-  /// In en, this message translates to:
-  /// **'Add {name} to favorites'**
+  /// **'Add {name} to Home'**
   String addAction(String name);
 
   /// Wallet quick action customization.
   ///
   /// In en, this message translates to:
-  /// **'Remove {name} from favorites'**
+  /// **'Move {name} to More'**
   String removeAction(String name);
 
   /// Wallet quick action customization.
@@ -302,7 +278,7 @@ abstract class QuickActionsLocalizations {
   /// Wallet quick action customization.
   ///
   /// In en, this message translates to:
-  /// **'No favorites selected. Settings remains on Home.'**
+  /// **'No actions selected. Settings stays on Home.'**
   String get emptyHint;
 
   /// Full accessible quick action name.
@@ -310,6 +286,24 @@ abstract class QuickActionsLocalizations {
   /// In en, this message translates to:
   /// **'Support'**
   String get supportFull;
+
+  /// Explains why adding another Home action is disabled at capacity.
+  ///
+  /// In en, this message translates to:
+  /// **'Home holds 3 actions. Remove one to add another.'**
+  String get homeFullHint;
+
+  /// Confirmation after restoring the default Home actions.
+  ///
+  /// In en, this message translates to:
+  /// **'Default actions restored.'**
+  String get defaultsRestored;
+
+  /// Restore the complete preference from before Restore defaults.
+  ///
+  /// In en, this message translates to:
+  /// **'Undo'**
+  String get undo;
 }
 
 class _QuickActionsLocalizationsDelegate

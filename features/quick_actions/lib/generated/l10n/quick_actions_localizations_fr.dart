@@ -36,13 +36,7 @@ class QuickActionsLocalizationsFr extends QuickActionsLocalizations {
   String get title => 'Actions rapides';
 
   @override
-  String get save => 'Enregistrer';
-
-  @override
   String get reset => 'Rétablir par défaut';
-
-  @override
-  String get unavailable => 'Actuellement indisponible';
 
   @override
   String get moveUp => 'Monter';
@@ -69,11 +63,6 @@ class QuickActionsLocalizationsFr extends QuickActionsLocalizations {
   String get quickActionTrade => 'Trade';
 
   @override
-  String selectedCount(int count) {
-    return 'Sélection : $count';
-  }
-
-  @override
   String get onHome => 'Sur l’accueil';
 
   @override
@@ -83,20 +72,16 @@ class QuickActionsLocalizationsFr extends QuickActionsLocalizations {
   String get preview => 'Aperçu';
 
   @override
-  String get maximumHint =>
-      'Jusqu’à 4 cellules sur l’accueil. Si Plus est nécessaire, vos 3 premiers favoris disponibles apparaissent à côté.';
-
-  @override
-  String get overflowHint => 'Ces favoris apparaissent dans Plus';
+  String get maximumHint => 'Choisissez jusqu’à 3 actions pour l’accueil.';
 
   @override
   String addAction(String name) {
-    return 'Ajouter $name aux favoris';
+    return 'Ajouter $name à l’accueil';
   }
 
   @override
   String removeAction(String name) {
-    return 'Retirer $name des favoris';
+    return 'Déplacer $name dans Plus';
   }
 
   @override
@@ -118,8 +103,18 @@ class QuickActionsLocalizationsFr extends QuickActionsLocalizations {
 
   @override
   String get emptyHint =>
-      'Aucun favori sélectionné. Réglages reste sur l’accueil.';
+      'Aucune action sélectionnée. Réglages reste sur l’accueil.';
 
   @override
   String get supportFull => 'Assistance';
+
+  @override
+  String get homeFullHint =>
+      'L’accueil contient 3 actions. Retirez-en une pour en ajouter une autre.';
+
+  @override
+  String get defaultsRestored => 'Actions par défaut rétablies.';
+
+  @override
+  String get undo => 'Annuler';
 }
