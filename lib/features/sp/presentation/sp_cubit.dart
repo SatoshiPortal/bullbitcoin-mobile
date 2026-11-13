@@ -1,4 +1,3 @@
-import 'package:bb_mobile/features/sp/domain/usecases/resume_sp_setup_usecase.dart';
 import 'dart:async';
 import 'dart:math';
 
@@ -34,7 +33,6 @@ class SpCubit extends Cubit<SpState> {
   final ClearSpScanStateUsecase _clearSpScanStateUsecase;
   final RevokeSpWalletUsecase _revokeSpWalletUsecase;
   final GenerateTaprootAddressUsecase _generateTaprootAddressUsecase;
-  final ResumeSpSetupUsecase _resumeSpSetupUsecase;
   final SetSpAutoScanUsecase _setSpAutoScanUsecase;
   final GetSpAutoScanUsecase _getSpAutoScanUsecase;
 
@@ -53,7 +51,6 @@ class SpCubit extends Cubit<SpState> {
 
   SpCubit({
     required this._loadSpWalletDataUsecase,
-    required this._resumeSpSetupUsecase,
     required this._restampSpPaymentTimesUsecase,
     required this._spNotificationsWatcher,
     required this._scanSpWalletUsecase,
@@ -96,33 +93,9 @@ class SpCubit extends Cubit<SpState> {
         emit(state.copyWith(isLoading: false, error: failure));
         if (failure is! SpNotSetUp &&
             failure is! SpRequiresSuperuser &&
-            failure is! SpRequiresDevMode &&
-            failure is! SpRecoveryRequired &&
-            failure is! SpLegacySourceUnverified &&
-            failure is! SpSourceMismatch) {
+            failure is! SpRequiresDevMode) {
           _subscribeToNotifications();
         }
-    }
-  }
-
-  /// Explicit user retry for a pending setup; never runs from self-heal.
-  Future<void> retryPendingSetup() async {
-    if (isClosed || state.isLoading) return;
-    emit(state.copyWith(isLoading: true, error: null));
-    final result = await _resumeSpSetupUsecase.execute();
-    if (isClosed) return;
-    switch (result) {
-      case Ok():
-        await load();
-      case Err(:final failure):
-        emit(
-          state.copyWith(
-            isLoading: false,
-            error: failure is SpSessionBusy
-                ? const SpRecoveryRequired()
-                : failure,
-          ),
-        );
     }
   }
 

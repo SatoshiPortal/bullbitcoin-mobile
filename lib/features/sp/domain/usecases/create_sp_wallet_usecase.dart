@@ -1,4 +1,3 @@
-import 'package:bb_mobile/core/wallet/domain/wallet_mutation_guard.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/features/sp/domain/ports/sp_account_files_port.dart';
 import 'package:bb_mobile/features/sp/domain/repositories/sp_account_repository.dart';
@@ -6,7 +5,6 @@ import 'package:bb_mobile/features/sp/domain/repositories/sp_backend_config_repo
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_backend_config.dart';
 import 'package:bb_mobile/features/sp/domain/sp_failure.dart';
-import 'package:bb_mobile/features/sp/domain/sp_session_guard.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/get_sp_secret_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/scan_sp_wallet_usecase.dart';
 import 'package:bull_logger/bull_logger.dart';
@@ -20,8 +18,6 @@ class CreateSpWalletUsecase {
   final GetSpSecretUsecase _getSpSecretUsecase;
   final SettingsRepository _settingsRepository;
   final SpAccountRepository _repository;
-  final WalletMutationGuard _walletMutationGuard;
-  final SpSessionGuard _guard;
   final SpAccountFilesPort _files;
   final SpBackendConfigRepository _configRepository;
   final ScanSpWalletUsecase _scanSpWalletUsecase;
@@ -30,8 +26,6 @@ class CreateSpWalletUsecase {
     required this._getSpSecretUsecase,
     required this._settingsRepository,
     required this._repository,
-    required this._walletMutationGuard,
-    required this._guard,
     required this._files,
     required this._configRepository,
     required this._scanSpWalletUsecase,
@@ -42,25 +36,6 @@ class CreateSpWalletUsecase {
   @useResult
   Future<Result<void, SpFailure>> execute({
     required BitcoinNetwork network,
-    required String walletId,
-    required String blindbitUrl,
-    required String electrumUrl,
-    required bool scanFromNow,
-  }) => _guard.exclusive(
-    () => _walletMutationGuard.exclusive(
-      () => _execute(
-        network: network,
-        walletId: walletId,
-        blindbitUrl: blindbitUrl,
-        electrumUrl: electrumUrl,
-        scanFromNow: scanFromNow,
-      ),
-    ),
-  );
-
-  Future<Result<void, SpFailure>> _execute({
-    required BitcoinNetwork network,
-    required String walletId,
     required String blindbitUrl,
     required String electrumUrl,
     required bool scanFromNow,
@@ -77,11 +52,9 @@ class CreateSpWalletUsecase {
       }
 
       final Secret secret;
-      final SpSourceBinding source;
-      switch (await _getSpSecretUsecase.resolve(network, walletId: walletId)) {
+      switch (await _getSpSecretUsecase.execute(network)) {
         case Ok(:final value):
-          secret = value.secret;
-          source = value.binding;
+          secret = value;
         case Err(:final failure):
           return Err(failure);
       }
@@ -98,7 +71,7 @@ class CreateSpWalletUsecase {
       // up; refuse a second setup. A failed read is Err, like the sentinel read
       // above: reading it as "no wallet" would run this create over a live one.
       final SpBackendConfig? storedConfig;
-      switch (await _configRepository.fetch()) {
+      switch (await _configRepository.fetchOrNull()) {
         case Err(:final failure):
           return Err(failure);
         case Ok(:final value):
@@ -108,42 +81,19 @@ class CreateSpWalletUsecase {
         return const Err(SpAlreadySetUp('SP wallet already set up'));
       }
 
-      switch (await _files.hasLegacyData()) {
-        case Err(:final failure):
-          return Err(failure);
-        case Ok(value: true):
-          return const Err(SpLegacySourceUnverified());
-        case Ok():
-          break;
-      }
-
-      // A leftover backup must never be adopted under a different new source,
-      // including after a partially completed revoke.
-      switch (await _files.hasOrphanBackups()) {
-        case Err(:final failure):
-          return Err(failure);
-        case Ok(value: true):
-          return const Err(SpRecoveryRequired());
-        case Ok():
-          break;
-      }
-
-      // A directory without a config may hold an older or interrupted account.
-      // Never open it with a newly selected secret or overwrite its history.
-      if (!hasSentinel && storedConfig == null) {
-        switch (await _files.accountDirExists()) {
-          case Err(:final failure):
-            return Err(failure);
-          case Ok(value: true):
-            return const Err(SpRecoveryRequired());
-          case Ok():
-            break;
+      // Clear stale revoked state left by a failed revoke delete: the dir may
+      // still hold an account.sqlite + sentinel. Leaving it would make setup
+      // "succeed" yet be unreachable, since loads are blocked while the
+      // sentinel exists.
+      if (hasSentinel) {
+        if (await _files.deleteAccountDir() case Err(:final failure)) {
+          return Err(
+            SpSetupCleanupFailed(
+              'Failed to clear stale SP wallet state: ${failure.logMessage}',
+            ),
+          );
         }
       }
-
-      // A revoked but incompletely removed account must be cleared by retrying
-      // revoke, never by starting a new setup over the old source.
-      if (hasSentinel) return const Err(SpRecoveryRequired());
 
       // Validated here, before the FFI create, so the same checked config is
       // used to create and then saved. `parse` reports a broken invariant as
@@ -152,7 +102,6 @@ class CreateSpWalletUsecase {
       final SpBackendConfig config;
       switch (SpBackendConfig.parse(
         network: network,
-        source: source,
         blindbitUrl: blindbitUrl,
         electrumUrl: electrumUrl,
       )) {
@@ -167,26 +116,30 @@ class CreateSpWalletUsecase {
       if (await _configRepository.save(config) case Err(:final failure)) {
         return Err(failure);
       }
-      if (await _files.createAccountDir(config) case Err(:final failure)) {
-        return Err(failure);
-      }
-      final created = await _walletMutationGuard.withoutReentrance(
-        () => _repository.createFromSecret(
-          network: config.network,
-          expectedConfig: config,
-          secret: secret,
-          blindbitUrl: config.blindbitUrl,
-          electrumUrl: config.electrumUrl,
-          fetchConcurrencyFactor: config.fetchConcurrencyFactor,
-          matchConcurrencyFactor: config.matchConcurrencyFactor,
-        ),
+      final created = await _repository.createFromSecret(
+        network: config.network,
+        secret: secret,
+        blindbitUrl: config.blindbitUrl,
+        electrumUrl: config.electrumUrl,
+        fetchConcurrencyFactor: config.fetchConcurrencyFactor,
+        matchConcurrencyFactor: config.matchConcurrencyFactor,
       );
       if (created case Err(:final failure)) {
-        // Keep the pending marker and config: a native failure may have left
-        // an undisclosed handle or partially written account files.
-        return failure is SpSourceMismatch
-            ? Err(failure)
-            : const Err(SpRecoveryRequired());
+        // Roll the config back so a failed first-time setup leaves no persisted
+        // config. Create is always a fresh setup with no prior config, so
+        // delete reverts to not-set-up. Without it, the guard (no sentinel +
+        // stored config) would wedge the next attempt behind SpAlreadySetUp.
+        // Best effort: the create failure is what the caller reports.
+        if (await _configRepository.delete() case Err(
+          failure: final deleteFailure,
+        )) {
+          log.warning(
+            'CreateSpWalletUsecase: config rollback delete failed: '
+            '${deleteFailure.logMessage}',
+          );
+        }
+        // Forwarded as-is: no SP failure text is derived from the secret.
+        return Err(failure);
       }
       // Set before returning so a redirect in the same turn as the navigation
       // that follows already sees the wallet as set up.

@@ -1,5 +1,4 @@
-import 'package:bb_mobile/features/sp/domain/entities/sp_backend_config.dart';
-import 'package:primitives/primitives.dart' show Result;
+import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/sp/domain/sp_failure.dart';
 import 'package:meta/meta.dart';
 
@@ -14,30 +13,6 @@ abstract interface class SpAccountFilesPort {
   /// True when the account dir is present on disk.
   @useResult
   Future<Result<bool, SpFailure>> accountDirExists();
-
-  /// Whether any historical account or backup exists outside the V2 namespace.
-  @useResult
-  Future<Result<bool, SpFailure>> hasLegacyData();
-
-  /// Whether any account backup exists beside the account directory.
-  @useResult
-  Future<Result<bool, SpFailure>> hasOrphanBackups();
-
-  /// Require no staging and at most one verified backup matching the binding.
-  @useResult
-  Future<Result<void, SpFailure>> verifyResumeBackups(SpBackendConfig config);
-
-  /// Create a new V2 directory and its immutable expected-identity marker.
-  @useResult
-  Future<Result<void, SpFailure>> createAccountDir(SpBackendConfig config);
-
-  /// Verify the existing directory marker before opening it.
-  @useResult
-  Future<Result<void, SpFailure>> verifyAccountIdentity(SpBackendConfig config);
-
-  /// Verify an existing pending marker without creating or changing it.
-  @useResult
-  Future<Result<void, SpFailure>> verifyPendingIdentity(SpBackendConfig config);
 
   /// Write the `.revoked` sentinel into the account dir, so no wallet is ever
   /// loaded from it again. With [skipIfPresent] an existing sentinel is left
@@ -55,28 +30,30 @@ abstract interface class SpAccountFilesPort {
   /// Move the account dir aside to a fresh backup so a failed recreate can roll
   /// back. No-op when the dir is absent. Returns whether a backup was taken.
   @useResult
-  Future<Result<bool, SpFailure>> backupAccountDir(SpBackendConfig config);
+  Future<Result<bool, SpFailure>> backupAccountDir();
 
   /// Roll back a recreate: delete the (partial) account dir, then restore the
   /// backup taken by [backupAccountDir] in its place. Returns whether a backup
   /// was restored.
   @useResult
-  Future<Result<bool, SpFailure>> restoreAccountDir(SpBackendConfig config);
+  Future<Result<bool, SpFailure>> restoreAccountDir();
 
   /// Drop the backup taken by [backupAccountDir] after a recreate succeeded.
   /// `Err` when the delete failed; the caller decides what a leftover backup is
   /// worth (the recreated wallet is already live).
   @useResult
-  Future<Result<void, SpFailure>> discardBackup(SpBackendConfig config);
+  Future<Result<void, SpFailure>> discardBackup();
 
-  /// Adopt a single verified matching backup when the account dir is absent.
-  /// Ambiguous or mismatched backups must remain untouched.
+  /// Self-heal a crashed recreate: when the account dir is gone but a backup
+  /// taken by [backupAccountDir] is still on disk, move the newest one back
+  /// into place and drop the rest. Returns whether one was adopted.
   @useResult
-  Future<Result<bool, SpFailure>> adoptNewestBackup(SpBackendConfig config);
+  Future<Result<bool, SpFailure>> adoptNewestBackup();
 
-  /// Delete a single verified matching backup during an explicit revoke.
+  /// Delete every leftover backup dir. Called on revoke so a wallet the user
+  /// destroyed leaves no copy behind.
   @useResult
-  Future<Result<void, SpFailure>> deleteOrphanBackups(SpBackendConfig? config);
+  Future<Result<void, SpFailure>> deleteOrphanBackups();
 
   /// True when a `.revoked` sentinel sits in the account dir (a prior revoke
   /// deleted or tried to delete the wallet). Callers treat this as not set up.

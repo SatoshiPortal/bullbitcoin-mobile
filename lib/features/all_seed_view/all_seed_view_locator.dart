@@ -1,5 +1,3 @@
-import 'package:bb_mobile/core/wallet/domain/wallet_mutation_guard.dart';
-import 'package:bb_mobile/core/wallet/domain/ports/wallet_retention_port.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/features/all_seed_view/domain/usecases/delete_secret_usecase.dart';
 import 'package:bb_mobile/features/all_seed_view/domain/usecases/get_all_secrets_usecase.dart';
@@ -19,8 +17,6 @@ class AllSeedViewLocator {
         getAllSecretsUsecase: GetAllSecretsUsecase(secrets: locator<Secrets>()),
         getWalletsUsecase: locator<GetWalletsUsecase>(),
         deleteSecretUsecase: DeleteSecretUsecase(
-          retention: locator<WalletRetentionPort>(),
-          mutationGuard: locator<WalletMutationGuard>(),
           secrets: locator<Secrets>(),
           walletRepository: locator<WalletRepository>(),
         ),

@@ -1,7 +1,6 @@
 import 'package:bb_mobile/features/sp/presentation/sp_backend_form.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_backend_form_state.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_connection_status.dart';
-import 'package:bb_mobile/features/sp/domain/sp_failure.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'sp_setup_state.freezed.dart';
@@ -15,12 +14,9 @@ sealed class SpSetupState
     with _$SpSetupState, SpBackendFormState<SpSetupState> {
   const factory SpSetupState({
     @Default(SpBackendForm()) SpBackendForm form,
-    @Default(true) bool isInspecting,
-    SpFailure? entryFailure,
     @Default(SpScanStart.fromNow) SpScanStart scanStart,
     @Default(false) bool isCreating,
     @Default(false) bool created,
-    @Default(false) bool existingVerified,
   }) = _SpSetupState;
 
   const SpSetupState._();
@@ -30,9 +26,7 @@ sealed class SpSetupState
   bool get canCreate =>
       form.blindbitStatus == SpConnectionStatus.ok &&
       form.electrumStatus == SpConnectionStatus.ok &&
-      !isCreating &&
-      !isInspecting &&
-      entryFailure == null;
+      !isCreating;
 
   @override
   SpSetupState withForm(SpBackendForm form) => copyWith(form: form);

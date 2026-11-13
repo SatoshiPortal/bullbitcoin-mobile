@@ -9,23 +9,8 @@ export 'package:bull_sdk/bwk.dart'
 
 /// Opens the bwk Silent Payments account (BIP352) of a mnemonic.
 ///
-/// The BIP39 seed crosses into bwk inside this package. The returned native account retains signing capability until disposed; copies inside Dart and the bridge cannot all be guaranteed erased.
+/// The BIP39 seed crosses into bwk inside this package. The returned native account retains signing capability until disposed and released; copies inside Dart and the bridge cannot all be guaranteed erased.
 abstract final class SilentPayments {
-  /// Derives the public BIP352 address without opening an account or files.
-  static Future<String> address(
-    Mnemonic secret, {
-    required SpNetwork network,
-  }) async {
-    final seed = Uint8List.fromList(secret.seedBytes);
-    try {
-      return await deriveSpAddressFromSeed(seed: seed, network: network);
-    } catch (_) {
-      throw const SilentPaymentsAddressFailed();
-    } finally {
-      seed.fillRange(0, seed.length, 0);
-    }
-  }
-
   static Future<SpAccount> open(
     Mnemonic secret, {
     required String name,

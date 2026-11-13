@@ -11,7 +11,6 @@ import 'package:bull_sdk/bwk.dart';
 /// repository maps both to domain types and typed failures.
 class BwkSpAccountDatasource {
   SpAccount? _account;
-  bool _published = false;
 
   // Confirmed FFI simulations pinned for the live session, keyed by draft id.
   // The simulation must round-trip UNCHANGED from preparePsbt into finalize, so
@@ -20,24 +19,17 @@ class BwkSpAccountDatasource {
   final Map<String, TxSimulation> _simulations = {};
   int _nextDraftId = 0;
 
-  bool get hasSession => _account != null && _published;
-  bool get hasRetainedHandle => _account != null;
-
-  void publish() {
-    if (_account == null) throw StateError('No SP account to publish');
-    _published = true;
-  }
+  bool get hasSession => _account != null;
 
   /// Async because the bwk-dart constructor is not `#[frb(sync)]`: FRB runs it
   /// on a worker isolate so the key derivation, the sqlite open and the header
   /// store open do not freeze the UI isolate.
   ///
-  /// The account is opened by `package:secrets`, which hands the seed to bwk
+  /// The account is opened by `package:secrets`, which hands the BIP39 seed to bwk
   /// itself: this layer never holds them. Throws the package's failure type as
   /// a [SpAccountOpenException], fixed text only.
   Future<void> createFromSecret({
     required SpNetwork network,
-    required String expectedAddress,
     required Secret secret,
     required String blindbitUrl,
     required String electrumUrl,
@@ -58,25 +50,7 @@ class BwkSpAccountDatasource {
       headerCheckpoint: headerCheckpoint,
     )) {
       case Ok(:final value):
-        bool matches;
-        try {
-          matches = value.spAddress() == expectedAddress;
-        } catch (_) {
-          matches = false;
-        }
-        if (!matches) {
-          try {
-            await value.dispose();
-            await value.release();
-          } catch (_) {
-            // Retain only for a future teardown; never publish this handle.
-            _account = value;
-            _published = false;
-          }
-          throw const SpAccountAddressMismatch();
-        }
         _account = value;
-        _published = false;
       case Err(:final failure):
         throw SpAccountOpenException(failure.runtimeType.toString());
     }
@@ -89,7 +63,6 @@ class BwkSpAccountDatasource {
     await account.dispose();
     await account.release();
     _account = null;
-    _published = false;
     _simulations.clear();
   }
 
@@ -166,7 +139,7 @@ class BwkSpAccountDatasource {
 
   SpAccount get _live {
     final account = _account;
-    if (account == null || !_published) {
+    if (account == null) {
       throw StateError('SpAccountDatasource: no live SP session');
     }
     return account;
@@ -181,9 +154,4 @@ class SpAccountOpenException implements Exception {
 
   @override
   String toString() => 'SpAccountOpenException: $failureType';
-}
-
-/// The native account did not prove the expected public identity.
-class SpAccountAddressMismatch implements Exception {
-  const SpAccountAddressMismatch();
 }

@@ -1,9 +1,7 @@
-import 'dart:convert';
-
-import 'package:bb_mobile/features/sp/domain/entities/sp_backend_config.dart';
 import 'dart:io';
 
 import 'package:bb_mobile/features/sp/data/sp_storage_names.dart';
+import 'package:bull_logger/bull_logger.dart';
 import 'package:path_provider/path_provider.dart';
 
 /// The Silent Payments account directory on disk.
@@ -26,176 +24,16 @@ class SpAccountFilesDatasource {
     return appDocsDir.path;
   }
 
-  Future<bool> _directoryExists(Directory directory) async {
-    final type = await FileSystemEntity.type(
-      directory.path,
-      followLinks: false,
-    );
-    if (type == FileSystemEntityType.notFound) return false;
-    if (type != FileSystemEntityType.directory) {
-      throw const FormatException('SP account path is not a directory');
-    }
-    return true;
-  }
+  Future<bool> accountDirExists() async => (await _accountDir()).exists();
 
-  Future<bool> accountDirExists() async =>
-      _directoryExists(await _accountDir());
-
-  Future<bool> hasRevokedSentinel() async {
-    final dir = await _accountDir();
-    if (!await _directoryExists(dir)) return false;
-    final type = await FileSystemEntity.type(
-      _sentinelFile(dir).path,
-      followLinks: false,
-    );
-    if (type == FileSystemEntityType.notFound) return false;
-    if (type != FileSystemEntityType.file) {
-      throw const FormatException('SP sentinel is not a file');
-    }
-    return true;
-  }
-
-  Future<bool> hasLegacyData() async {
-    final root = Directory(await dataDir());
-    if (!await root.exists()) return false;
-    await for (final entry in root.list(followLinks: false)) {
-      final name = entry.path.split(Platform.pathSeparator).last;
-      if (name == SpStorageNames.legacyAccountName ||
-          name.startsWith(
-            '${SpStorageNames.legacyAccountName}$_backupSuffix',
-          )) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  Map<String, Object> _identity(SpBackendConfig config) {
-    final source = config.source;
-    if (source == null) throw const FormatException('SP identity unavailable');
-    return {
-      'version': 1,
-      'network': config.network.name,
-      'walletId': source.walletId,
-      'secretId': source.secretId,
-      'externalDescriptor': source.externalDescriptor,
-      'internalDescriptor': source.internalDescriptor,
-      'spAddress': source.spAddress,
-    };
-  }
-
-  Future<bool> _matches(
-    Directory directory,
-    SpBackendConfig config, {
-    bool requireVerified = true,
-  }) async {
-    if (await FileSystemEntity.type(directory.path, followLinks: false) !=
-        FileSystemEntityType.directory) {
-      return false;
-    }
-    final marker = File('${directory.path}/${SpStorageNames.identityMarker}');
-    if (await FileSystemEntity.type(marker.path, followLinks: false) !=
-        FileSystemEntityType.file) {
-      return false;
-    }
-    try {
-      final decoded = jsonDecode(await marker.readAsString());
-      if (decoded is! Map<String, dynamic>) return false;
-      final expected = _identity(config);
-      final status = decoded['status'];
-      return decoded.length == expected.length + 1 &&
-          (status == 'verified' || (!requireVerified && status == 'pending')) &&
-          expected.entries.every((entry) => decoded[entry.key] == entry.value);
-    } catch (_) {
-      return false;
-    }
-  }
-
-  Future<void> verifyOpenIdentity(SpBackendConfig config) async {
-    if (!await _matches(await _accountDir(), config, requireVerified: false)) {
-      throw const FormatException('SP account identity mismatch');
-    }
-  }
-
-  Future<void> verifyPendingIdentity(SpBackendConfig config) async {
-    final directory = await _accountDir();
-    if (!await _matches(directory, config, requireVerified: false) ||
-        await _matches(directory, config)) {
-      throw const FormatException('SP pending identity mismatch');
-    }
-  }
-
-  Future<void> verifyAccountIdentity(SpBackendConfig config) async {
-    if (!await _matches(await _accountDir(), config)) {
-      throw const FormatException('SP account identity mismatch');
-    }
-  }
-
-  Future<void> createAccountDir(SpBackendConfig config) async {
-    final target = await _accountDir();
-    if (await FileSystemEntity.type(target.path, followLinks: false) !=
-        FileSystemEntityType.notFound) {
-      throw const FileSystemException('SP account already exists');
-    }
-    final root = Directory(await dataDir());
-    final staged = await root.createTemp('sp_v2.new-');
-    try {
-      final marker = File('${staged.path}/${SpStorageNames.identityMarker}');
-      await marker.writeAsString(
-        jsonEncode({..._identity(config), 'status': 'pending'}),
-        flush: true,
-      );
-      if (await FileSystemEntity.type(target.path, followLinks: false) !=
-          FileSystemEntityType.notFound) {
-        throw const FileSystemException('SP account already exists');
-      }
-      await staged.rename(target.path);
-    } catch (_) {
-      if (await staged.exists()) await staged.delete(recursive: true);
-      rethrow;
-    }
-  }
-
-  Future<void> commitAccountIdentity(SpBackendConfig config) async {
-    final directory = await _accountDir();
-    if (!await _matches(directory, config, requireVerified: false)) {
-      throw const FormatException('SP account identity mismatch');
-    }
-    if (await _matches(directory, config)) return;
-    final temporary = File(
-      '${directory.path}/${SpStorageNames.identityMarker}.tmp',
-    );
-    final expected = jsonEncode({..._identity(config), 'status': 'verified'});
-    final tempType = await FileSystemEntity.type(
-      temporary.path,
-      followLinks: false,
-    );
-    if (tempType == FileSystemEntityType.notFound) {
-      await temporary.create(exclusive: true);
-      await temporary.writeAsString(expected, flush: true);
-    } else if (tempType != FileSystemEntityType.file ||
-        await temporary.readAsString() != expected) {
-      throw const FormatException('SP identity staging mismatch');
-    }
-    await temporary.rename(
-      '${directory.path}/${SpStorageNames.identityMarker}',
-    );
-  }
+  Future<bool> hasRevokedSentinel() async =>
+      _sentinelFile(await _accountDir()).exists();
 
   /// Write the `.revoked` sentinel into the account dir. With [skipIfPresent]
   /// it leaves an existing sentinel untouched (the partial-delete recovery).
   Future<void> writeRevokedSentinel({bool skipIfPresent = false}) async {
-    final directory = await _accountDir();
-    if (!await _directoryExists(directory)) {
-      throw const FormatException('SP account directory missing');
-    }
-    final sentinel = _sentinelFile(directory);
-    final type = await FileSystemEntity.type(sentinel.path, followLinks: false);
-    if (type != FileSystemEntityType.notFound &&
-        type != FileSystemEntityType.file) {
-      throw const FormatException('SP sentinel is not a file');
-    }
-    if (skipIfPresent && type == FileSystemEntityType.file) return;
+    final sentinel = _sentinelFile(await _accountDir());
+    if (skipIfPresent && await sentinel.exists()) return;
     final timestamp = DateTime.now().toUtc().toIso8601String();
     await sentinel.writeAsString('revoked-at: $timestamp\n', flush: true);
   }
@@ -203,21 +41,18 @@ class SpAccountFilesDatasource {
   /// Recursively delete the account dir. No-op when it is already gone.
   Future<void> deleteAccountDir() async {
     final accountDir = await _accountDir();
-    if (await _directoryExists(accountDir)) {
+    if (await accountDir.exists()) {
       await accountDir.delete(recursive: true);
     }
   }
 
   /// Move the account dir aside to a fresh backup. Returns whether one was
   /// taken; false when there is no account dir.
-  Future<bool> backupAccountDir(SpBackendConfig config) async {
+  Future<bool> backupAccountDir() async {
     final accountDir = await _accountDir();
-    if (!await _directoryExists(accountDir)) {
+    if (!await accountDir.exists()) {
       _recreateBackupDir = null;
       return false;
-    }
-    if (!await _matches(accountDir, config)) {
-      throw const FormatException('SP account identity mismatch');
     }
     final backupDir = Directory(
       '${accountDir.path}$_backupSuffix${DateTime.now().microsecondsSinceEpoch}',
@@ -227,18 +62,15 @@ class SpAccountFilesDatasource {
     return true;
   }
 
-  /// Restore a verified backup only when no account directory exists.
-  Future<bool> restoreAccountDir(SpBackendConfig config) async {
+  /// Delete the (partial) account dir, then put the backup back in its place.
+  /// Returns whether a backup was restored.
+  Future<bool> restoreAccountDir() async {
     final accountDir = await _accountDir();
+    if (await accountDir.exists()) {
+      await accountDir.delete(recursive: true);
+    }
     final backupDir = _recreateBackupDir;
-    if (backupDir == null || !await _directoryExists(backupDir)) return false;
-    if (!await _matches(backupDir, config)) {
-      throw const FormatException('SP backup identity mismatch');
-    }
-    if (await _directoryExists(accountDir)) {
-      // Even the same identity may contain newer account data.
-      throw const FormatException('SP account recovery required');
-    }
+    if (backupDir == null || !await backupDir.exists()) return false;
     await backupDir.rename(accountDir.path);
     _recreateBackupDir = null;
     return true;
@@ -246,39 +78,16 @@ class SpAccountFilesDatasource {
 
   /// Drop the backup after a recreate succeeded. Returns whether the backup is
   /// gone; false when the delete failed, so the caller can report it.
-  Future<bool> discardBackup(SpBackendConfig config) async {
+  Future<bool> discardBackup() async {
     final backupDir = _recreateBackupDir;
-    if (backupDir == null || !await _directoryExists(backupDir)) return true;
-    if (!await _matches(backupDir, config)) {
-      throw const FormatException('SP backup identity mismatch');
-    }
+    _recreateBackupDir = null;
+    if (backupDir == null || !await backupDir.exists()) return true;
     try {
       await backupDir.delete(recursive: true);
-      _recreateBackupDir = null;
       return true;
-    } on FileSystemException catch (_) {
+    } on FileSystemException catch (e) {
+      log.warning('SpAccountFiles: backup discard failed: $e');
       return false;
-    }
-  }
-
-  Future<bool> hasIncompleteStaging() async {
-    final root = Directory(await dataDir());
-    if (!await root.exists()) return false;
-    await for (final entry in root.list(followLinks: false)) {
-      final name = entry.path.split(Platform.pathSeparator).last;
-      if (name.startsWith('sp_v2.new-')) return true;
-    }
-    return false;
-  }
-
-  Future<void> verifyResumeBackups(SpBackendConfig config) async {
-    if (await hasIncompleteStaging()) {
-      throw const FormatException('SP incomplete staging');
-    }
-    final backups = await findOrphanBackups();
-    if (backups.length > 1 ||
-        (backups.length == 1 && !await _matches(backups.single, config))) {
-      throw const FormatException('SP backup identity mismatch');
     }
   }
 
@@ -289,51 +98,54 @@ class SpAccountFilesDatasource {
     final prefix = '${SpStorageNames.accountName}$_backupSuffix';
     final found = <(int, Directory)>[];
     await for (final entry in root.list(followLinks: false)) {
+      if (entry is! Directory) continue;
       final name = entry.path.split(Platform.pathSeparator).last;
       if (!name.startsWith(prefix)) continue;
       final stamp = int.tryParse(name.substring(prefix.length));
-      if (stamp == null || entry is! Directory) {
-        throw const FormatException('SP backup entry is invalid');
-      }
+      if (stamp == null) continue;
       found.add((stamp, entry));
     }
     found.sort((a, b) => b.$1.compareTo(a.$1));
     return [for (final (_, dir) in found) dir];
   }
 
-  /// Adopt a single matching verified backup when the account dir is absent.
-  /// Ambiguous backups and incomplete staging remain untouched.
-  Future<bool> adoptNewestBackup(SpBackendConfig config) async {
+  /// Self-heal a recreate that died between the backup and the create: with no
+  /// account dir but a backup on disk, move the newest one back into place and
+  /// delete the rest. Returns whether one was adopted.
+  Future<bool> adoptNewestBackup() async {
     final accountDir = await _accountDir();
-    if (await hasIncompleteStaging()) {
-      throw const FormatException('SP incomplete staging');
-    }
+    if (await accountDir.exists()) return false;
     final backups = await findOrphanBackups();
-    if (backups.length > 1) {
-      throw const FormatException('SP backup recovery required');
-    }
-    if (await _directoryExists(accountDir) || backups.isEmpty) return false;
-    if (!await _matches(backups.single, config)) {
-      throw const FormatException('SP backup identity mismatch');
-    }
-    await backups.single.rename(accountDir.path);
+    if (backups.isEmpty) return false;
+    await backups.first.rename(accountDir.path);
     _recreateBackupDir = null;
+    for (final stale in backups.skip(1)) {
+      await stale.delete(recursive: true);
+    }
     return true;
   }
 
   /// Delete every leftover backup dir.
-  Future<void> deleteOrphanBackups(SpBackendConfig? config) async {
-    final backups = await findOrphanBackups();
-    if (backups.length > 1 || await hasIncompleteStaging()) {
-      throw const FormatException('SP backup recovery required');
-    }
-    for (final backup in backups) {
-      if (config == null || !await _matches(backup, config)) {
-        throw const FormatException('SP backup identity mismatch');
-      }
+  Future<void> deleteOrphanBackups() async {
+    _recreateBackupDir = null;
+    for (final backup in await findOrphanBackups()) {
       await backup.delete(recursive: true);
     }
-    _recreateBackupDir = null;
+  }
+
+  /// Delete every advisory lock left in the account dir. A lock that cannot be
+  /// deleted is logged, not fatal: the create reports the real failure.
+  Future<void> clearStaleLocks() async {
+    final accountDir = await _accountDir();
+    for (final name in SpStorageNames.lockFiles) {
+      final lock = File('${accountDir.path}/$name');
+      if (!await lock.exists()) continue;
+      try {
+        await lock.delete();
+      } catch (e) {
+        log.warning('SpAccountFiles: stale lock delete failed ($name): $e');
+      }
+    }
   }
 
   Future<Directory> _accountDir() async =>

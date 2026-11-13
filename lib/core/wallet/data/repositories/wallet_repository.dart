@@ -1,5 +1,3 @@
-import 'package:bb_mobile/core/wallet/domain/wallet_mutation_guard.dart';
-import 'package:bb_mobile/core/wallet/domain/ports/wallet_retention_port.dart';
 import 'dart:async';
 
 import 'package:async/async.dart' hide Result;
@@ -32,8 +30,6 @@ class WalletRepository {
   final BdkWalletDatasource _bdkWallet;
   final LwkWalletDatasource _lwkWallet;
   final ElectrumServersPort _serversPort;
-  final WalletMutationGuard _mutationGuard;
-  final WalletRetentionPort _retention;
 
   final _electrumSyncResultController =
       StreamController<ElectrumSyncResult>.broadcast();
@@ -43,8 +39,6 @@ class WalletRepository {
     required BdkWalletDatasource bdkWalletDatasource,
     required LwkWalletDatasource lwkWalletDatasource,
     required this._serversPort,
-    required this._mutationGuard,
-    required this._retention,
   }) : _bdkWallet = bdkWalletDatasource,
        _lwkWallet = lwkWalletDatasource {
     // Keep track of the last sync time in the wallet metadata
@@ -462,16 +456,7 @@ class WalletRepository {
   @useResult
   Future<Result<void, WalletFailure>> deleteWallet({
     required String walletId,
-  }) => _mutationGuard.exclusive(() async {
-    try {
-      if (await _retention.retainsWallet(walletId)) {
-        return const Err(WalletUnexpectedFailure('wallet is retained'));
-      }
-    } catch (_) {
-      return const Err(
-        WalletUnexpectedFailure('could not verify wallet retention'),
-      );
-    }
+  }) async {
     try {
       final metadata = await _walletMetadataDatasource.fetch(walletId);
       if (metadata == null) {
@@ -500,7 +485,7 @@ class WalletRepository {
       log.severe(message: 'deleteWallet failed', error: e, trace: st);
       return Err(_classify(e, 'deleteWallet'));
     }
-  });
+  }
 
   // used only to delete lwk db - required for UpdateOnDifferentStatusError
   Future<void> deleteLwkDb() async {

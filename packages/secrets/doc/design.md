@@ -30,7 +30,7 @@ Run `make secrets-api-docs` after changing the public API and include the README
 
 Account xpub derivation, Bitcoin signing, Liquid descriptors and signatures, BIP85 and the swap key honour a BIP39 passphrase. Every existing Liquid wallet is a passphrase-less default, so its keys are those lwk's word-based signer derived. A RecoverBull vault contains the words and a `mnemonicLanguage` field (including English), without the passphrase; its encryption key derives from the original secret, including its passphrase.
 
-These methods return their values directly. Silent Payments derives from the full BIP39 seed and honours the language and passphrase. `silentPayments.address(network:)` returns its public address without opening an account or writing account files. `secrets.recoverbull.restore(vault:, key:, passphrase:)` accepts the passphrase separately; the vault cannot verify whether the supplied passphrase is correct. Without one, it restores the passphrase-less wallet.
+These methods return their values directly. Silent Payments derives from the full BIP39 seed and honours the language and passphrase. The application continues to use its default Bitcoin wallet; allowing a passphrase on that default remains a separate recovery change. `secrets.recoverbull.restore(vault:, key:, passphrase:)` accepts the passphrase separately; the vault cannot verify whether the supplied passphrase is correct. Without one, it restores the passphrase-less wallet.
 
 **Default wallets never have a passphrase.** The app generates or imports their words without one. A restored `Secret` handle is also rejected by `CreateDefaultWalletsUsecase` if it carries a passphrase, before any wallet is created. Liquid, RecoverBull recovery, BIP85, swaps and the physical backup check rely on this invariant. Passphrase-protected Bitcoin wallets are imported non-default wallets.
 
@@ -79,7 +79,7 @@ The README's operation table is the full inventory — every output, whether it 
 | `secret.derive.bip85.mnemonic(…)` | the same child as words |
 | `secret.derive.swapKey(network:)` | the swap-scoped credential boltz takes on every call |
 
-⚠️ **BWK retains signing capability after the call.** `secret.silentPayments.account(…)` passes the full BIP39 seed to bwk inside the package; neither words nor seed are exposed to the app. The native account retains signing capability until disposed. The temporary Dart copy is wiped after the call, but erasure of every Dart, bridge and native copy cannot be guaranteed.
+⚠️ **BWK retains signing capability after the call.** `secret.silentPayments.account(…)` passes the full BIP39 seed to bwk inside the package; neither words nor seed are exposed to the app. The native account retains signing capability until disposed and released. The temporary Dart copy is wiped after the call, but erasure of every Dart, bridge and native copy cannot be guaranteed.
 
 **The stored mnemonic has no exit.** `Secret.revealMnemonic` is `@internal`:
 the only callers are this package's own sealed widgets, `MnemonicView`

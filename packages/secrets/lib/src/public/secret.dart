@@ -179,7 +179,7 @@ final class Secret extends SecretEntry {
 
   /// Signs a PSET.
   ///
-  /// The stored passphrase is included, as in [liquidDescriptor]. See doc/design.md, § Passphrase.
+  /// ⚠️ **A passphrase is ignored here**, as in [liquidDescriptor] — consistently, which keeps the signature matching the descriptor. See doc/design.md, § Passphrase.
   @internal
   Future<Result<String, SecretFailure>> signPset(
     String pset, {
@@ -196,18 +196,9 @@ final class Secret extends SecretEntry {
 
   // ------------------------------------------------------- silent payments
 
-  /// Derives the public BIP352 address without opening an account or writing files. The full BIP39 seed reaches bwk inside this package; the temporary Dart copy is wiped after the call, but erasure of every bridge copy cannot be guaranteed.
-  @internal
-  Future<Result<String, SecretFailure>> silentPaymentsAddress({
-    required SpNetwork network,
-  }) => _repository.useMnemonic(
-    info,
-    (m) => SilentPayments.address(m, network: network),
-  );
-
-  /// Opens this secret's Silent Payments account (BIP352, account 0) in bwk, which scans and signs for it while the returned account lives. The caller owns it and disposes it when the session ends.
+  /// Opens this secret's Silent Payments account (BIP352, account 0) in bwk, which scans and signs for it while the returned account lives. The caller owns it and calls `dispose()` then `release()` when the session ends.
   ///
-  /// The full BIP39 seed, including the stored language and passphrase, reaches bwk inside this package. The returned native account retains signing capability until disposed. The temporary Dart copy is wiped after the call; erasure of all bridge and native copies cannot be guaranteed.
+  /// The full BIP39 seed, including the stored language and passphrase, reaches bwk inside this package. The returned native account retains signing capability until disposed and released. The temporary Dart copy is wiped after the call; erasure of all bridge and native copies cannot be guaranteed.
   @internal
   Future<Result<SpAccount, SecretFailure>> silentPaymentsAccount({
     required String name,

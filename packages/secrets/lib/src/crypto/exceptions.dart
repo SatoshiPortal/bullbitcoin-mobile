@@ -37,9 +37,3 @@ class SilentPaymentsOpenFailed implements Exception {
   @internal
   const SilentPaymentsOpenFailed();
 }
-
-/// bwk refused to derive the Silent Payments address. Native messages may contain input and are discarded.
-class SilentPaymentsAddressFailed implements Exception {
-  @internal
-  const SilentPaymentsAddressFailed();
-}

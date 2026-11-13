@@ -93,21 +93,6 @@ final class SpBroadcastUncertain extends SpFailure {
   const SpBroadcastUncertain([super.logMessage]);
 }
 
-/// A legacy account needs independent source identity verification.
-final class SpLegacySourceUnverified extends SpFailure {
-  const SpLegacySourceUnverified();
-}
-
-/// The account does not match the verified source identity.
-final class SpSourceMismatch extends SpFailure {
-  const SpSourceMismatch();
-}
-
-/// Incomplete or ambiguous account data needs recovery without mutation.
-final class SpRecoveryRequired extends SpFailure {
-  const SpRecoveryRequired();
-}
-
 /// Catch-all. [Failure.logMessage] is for logs ONLY and MUST never reach the
 /// UI; the presentation extension returns the shared generic string.
 final class SpUnexpected extends SpFailure {

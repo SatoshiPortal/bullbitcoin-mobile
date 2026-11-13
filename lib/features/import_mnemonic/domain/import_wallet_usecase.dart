@@ -7,24 +7,23 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/import_mnemonic/domain/check_duplicate_mnemonic_usecase.dart';
 import 'package:bb_mobile/features/import_mnemonic/domain/import_mnemonic_failure.dart';
 import 'package:meta/meta.dart';
-import 'package:bb_mobile/core/wallet/domain/wallet_mutation_guard.dart';
-import 'package:bb_mobile/core/wallet/domain/ports/wallet_retention_port.dart';
+import 'package:synchronized/synchronized.dart';
 
 class ImportWalletUsecase {
+  /// Imports are serialised process-wide so wallet creation and any cleanup
+  /// complete before another wallet import uses the same secret.
+  static final _imports = Lock();
+
   final CheckDuplicateMnemonicUsecase _checkDuplicateMnemonicUsecase;
   final Secrets _secrets;
   final SettingsRepository _settingsRepository;
   final WalletRepository _wallet;
-  final WalletMutationGuard _mutationGuard;
-  final WalletRetentionPort _retention;
 
   ImportWalletUsecase({
     required this._checkDuplicateMnemonicUsecase,
     required this._secrets,
     required this._settingsRepository,
     required WalletRepository walletRepository,
-    required this._mutationGuard,
-    required this._retention,
   }) : _wallet = walletRepository;
 
   @useResult
@@ -34,7 +33,7 @@ class ImportWalletUsecase {
     ScriptType scriptType = ScriptType.bip84,
     String passphrase = '',
     String? label,
-  }) => _mutationGuard.exclusive(
+  }) => _imports.synchronized(
     () => _execute(
       mnemonicWords: mnemonicWords,
       language: language,
@@ -117,8 +116,7 @@ class ImportWalletUsecase {
       // lookup that fails keeps the seed, because an orphan in the keystore
       // is recoverable and a stranded wallet is not.
       if (seedCreatedByThisImport != null &&
-          !await _referencedByAWallet(seedCreatedByThisImport) &&
-          !await _isRetained(seedCreatedByThisImport)) {
+          !await _referencedByAWallet(seedCreatedByThisImport)) {
         final deletion = await _secrets.trash(seedCreatedByThisImport);
         if (deletion case Err(:final failure)) {
           log.warning(
@@ -129,15 +127,6 @@ class ImportWalletUsecase {
       }
       log.severe(message: 'Import wallet failed', error: e, trace: st);
       return Err(ImportMnemonicUnexpectedFailure(e.toString()));
-    }
-  }
-
-  Future<bool> _isRetained(Fingerprint fingerprint) async {
-    try {
-      return await _retention.retainsSecret(fingerprint);
-    } catch (_) {
-      log.warning('Could not check secret retention during import cleanup');
-      return true;
     }
   }
 

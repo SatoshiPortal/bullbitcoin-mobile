@@ -95,7 +95,7 @@ extension type const SecretDescriptors._(Secret _secret) {
 
   /// The confidential descriptor.
   ///
-  /// The stored passphrase is honoured. See [Secret.liquidDescriptor].
+  /// The passphrase is ignored. See [Secret.liquidDescriptor].
   @useResult
   Future<Result<String, SecretFailure>> liquid({
     required LiquidNetwork network,
@@ -176,11 +176,6 @@ extension type const SecretBackup._(Secret _secret) {
 
 /// The Silent Payments account, opened inside the package.
 extension type const SecretSilentPayments._(Secret _secret) {
-  /// Derives the public address without opening an account. See [Secret.silentPaymentsAddress].
-  @useResult
-  Future<Result<String, SecretFailure>> address({required SpNetwork network}) =>
-      _secret.silentPaymentsAddress(network: network);
-
   /// Opens the bwk account, which scans and signs while it lives. See [Secret.silentPaymentsAccount].
   @useResult
   Future<Result<SpAccount, SecretFailure>> account({

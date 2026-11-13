@@ -6,7 +6,6 @@ abstract final class SpBackendConfigMapper {
   static SpBackendConfig toEntity(SpBackendConfigModel model) =>
       SpBackendConfig(
         network: model.network,
-        source: model.source,
         blindbitUrl: model.blindbitUrl,
         electrumUrl: model.electrumUrl,
         fetchConcurrencyFactor: model.fetchConcurrencyFactor,
@@ -16,7 +15,6 @@ abstract final class SpBackendConfigMapper {
   static SpBackendConfigModel toModel(SpBackendConfig config) =>
       SpBackendConfigModel(
         network: config.network,
-        source: config.source,
         blindbitUrl: config.blindbitUrl,
         electrumUrl: config.electrumUrl,
         fetchConcurrencyFactor: config.fetchConcurrencyFactor,

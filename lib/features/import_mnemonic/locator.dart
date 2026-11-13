@@ -1,5 +1,3 @@
-import 'package:bb_mobile/core/wallet/domain/wallet_mutation_guard.dart';
-import 'package:bb_mobile/core/wallet/domain/ports/wallet_retention_port.dart';
 import 'package:bb_mobile/core/electrum/domain/ports/electrum_servers_port.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/bitcoin_wallet_repository.dart';
 import 'package:secrets/secrets.dart';
@@ -19,8 +17,6 @@ class ImportMnemonicLocator {
     );
     locator.registerFactory<ImportWalletUsecase>(
       () => ImportWalletUsecase(
-        retention: locator<WalletRetentionPort>(),
-        mutationGuard: locator<WalletMutationGuard>(),
         checkDuplicateMnemonicUsecase: locator<CheckDuplicateMnemonicUsecase>(),
         secrets: locator<Secrets>(),
         settingsRepository: locator<SettingsRepository>(),

@@ -57,7 +57,6 @@ class Bull {
       locator,
       SqliteDatabase(),
       payjoinDatabasePath: payjoinDatabasePath,
-      allowDestructiveWalletOperations: true,
     );
     Bloc.observer = AppBlocObserver();
 

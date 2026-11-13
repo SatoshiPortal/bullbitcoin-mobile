@@ -33,10 +33,6 @@ abstract interface class SpBackendConfigRepository {
   @useResult
   Future<Result<SpBackendConfig?, SpFailure>> fetch();
 
-  /// Whether the historical configuration key exists, without exposing its contents.
-  @useResult
-  Future<Result<bool, SpFailure>> hasLegacyConfig();
-
   /// Drop the stored config. This is a try/catch boundary; a storage delete
   /// failure is `Err`, never a throw.
   @useResult
@@ -44,7 +40,18 @@ abstract interface class SpBackendConfigRepository {
 }
 
 extension SpBackendConfigRepositoryX on SpBackendConfigRepository {
-  /// Read the stored config without treating a corrupt identity as absent.
+  /// The stored config, treating a corrupt or unknown-network config as absent:
+  /// `Ok(null)` for both "nothing stored" and [SpConfigInvalid], since setup
+  /// overwrites a corrupt config anyway.
+  ///
+  /// A storage read failure stays `Err`. A keystore that cannot be read is not
+  /// the same as "no wallet", and folding it to null lets a second setup run
+  /// over a live one.
   @useResult
-  Future<Result<SpBackendConfig?, SpFailure>> fetchOrNull() => fetch();
+  Future<Result<SpBackendConfig?, SpFailure>> fetchOrNull() async =>
+      switch (await fetch()) {
+        Ok(:final value) => Ok(value),
+        Err(failure: SpConfigInvalid()) => const Ok(null),
+        Err(:final failure) => Err(failure),
+      };
 }

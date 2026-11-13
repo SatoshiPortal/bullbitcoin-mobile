@@ -1,5 +1,3 @@
-import 'package:bb_mobile/core/wallet/domain/wallet_mutation_guard.dart';
-import 'package:bb_mobile/core/wallet/domain/ports/wallet_retention_port.dart';
 import 'package:bb_mobile/core/electrum/domain/ports/electrum_servers_port.dart';
 import 'package:secrets/secrets.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
@@ -77,8 +75,6 @@ class WalletLocator {
 
     locator.registerLazySingleton<WalletRepository>(
       () => WalletRepository(
-        retention: locator<WalletRetentionPort>(),
-        mutationGuard: locator<WalletMutationGuard>(),
         walletMetadataDatasource: locator<WalletMetadataDatasource>(),
         bdkWalletDatasource: locator<BdkWalletDatasource>(),
         lwkWalletDatasource: locator<LwkWalletDatasource>(),
@@ -156,8 +152,6 @@ class WalletLocator {
 
     locator.registerFactory<DeleteWalletUsecase>(
       () => DeleteWalletUsecase(
-        retention: locator<WalletRetentionPort>(),
-        mutationGuard: locator<WalletMutationGuard>(),
         walletRepository: locator<WalletRepository>(),
         swapRepository: locator<BoltzSwapRepository>(
           instanceName:

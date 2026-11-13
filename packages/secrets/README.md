@@ -52,7 +52,6 @@ Secret
 |   |-- mnemonic(words) -> bool
 |   `-- seed(hex) -> bool
 |-- silentPayments
-|   |-- address(network:) -> String
 |   `-- account(name:, network:, blindbitUrl:, electrumUrl:, dataDir:, dustLimit:, fetchConcurrencyFactor:, matchConcurrencyFactor:, [headerCheckpoint:]) -> SpAccount
 `-- widgets
     |-- mnemonicView([key:], failureBuilder:, [style:], [passphraseLabel:], [passphraseLabelStyle:], [placeholder: const SizedBox.shrink()], [wordBuilder:], [layoutBuilder:]) -> MnemonicView
@@ -124,7 +123,7 @@ Keep `secret.id`, a `primitives.Fingerprint`, to fetch a new handle later. Impor
 | `derive.bip85.hex`, `derive.bip85.mnemonic` | child entropy or words | spending authority over what the child controls |
 | `derive.swapKey` | `SwapMasterKey`, an independent swap credential | spending authority over swaps |
 | `backup.recoverbull` | encrypted vault and its separate key | together recover the words; store them apart |
-| `silentPayments.account` | a live bwk Silent Payments account that scans and signs | ⚠️ bwk receives the BIP39 seed; its native account retains signing capability until disposed |
+| `silentPayments.account` | a live bwk Silent Payments account that scans and signs | ⚠️ bwk receives the BIP39 seed; its native account retains signing capability until disposed and released |
 | `databaseKeys(module:).getOrCreate` | module database key | opens the encrypted database |
 | `widgets.mnemonicView`, `widgets.mnemonicChallenge` | sealed widgets and events | words rendered on the protected screen |
 
@@ -134,7 +133,7 @@ The stored words, passphrase, seed and master xprv have no public getter. The gr
 
 Account xpub derivation accepts the shared `Network`, either `BitcoinNetwork` or `LiquidNetwork`. Descriptors and signatures remain chain-specific. `accountIndex` defaults to zero and selects the same Bitcoin account for xpub derivation, descriptors and signing. Mnemonic generation and BIP85 mnemonic derivation both use `MnemonicLength` through `wordCount`. BIP85 is independent of the network; the application allocates child indices.
 
-Account xpub derivation, Bitcoin signing, Liquid descriptors and signatures, BIP85 and swap credentials honor the stored passphrase. Existing Liquid wallets are passphrase-less defaults, for which this is the seed lwk's word-based signer derived. A Liquid-network xpub does not necessarily describe the keys in the Liquid descriptor, for example with a different script type. Stored mnemonics support all ten BIP39 languages. Import and word verification normalize words with NFKD; seed derivation normalizes the sentence and passphrase with NFKD. Bitcoin signing constructs its BDK key from the master xprv derived in Dart from that seed. BIP85 takes the child language independently of the parent; the default remains English. Silent Payments derives from the full BIP39 seed and honours the stored language and passphrase. `silentPayments.address(network:)` returns the public address without opening an account or writing account files.
+Account xpub derivation, Bitcoin signing, Liquid descriptors and signatures, BIP85 and swap credentials honor the stored passphrase. Existing Liquid wallets are passphrase-less defaults, for which this is the seed lwk's word-based signer derived. A Liquid-network xpub does not necessarily describe the keys in the Liquid descriptor, for example with a different script type. Stored mnemonics support all ten BIP39 languages. Import and word verification normalize words with NFKD; seed derivation normalizes the sentence and passphrase with NFKD. Bitcoin signing constructs its BDK key from the master xprv derived in Dart from that seed. BIP85 takes the child language independently of the parent; the default remains English. Silent Payments derives from the full BIP39 seed and honours the stored language and passphrase. The application still selects the default Bitcoin wallet. Passphrases on default wallets remain unsupported by its recovery workflow and are a separate product change.
 
 Signing takes and returns base64 PSBT/PSET strings. Both chains refuse inputs asking for anything other than `SIGHASH_ALL`. A successful Bitcoin signing call may return a partially signed PSBT, as required by payjoin; success does not imply finalization or readiness to broadcast. The caller supplies required key-origin information and decides whether outputs, fees and inputs are acceptable.
 

@@ -1,5 +1,3 @@
-import 'package:bb_mobile/core/wallet/domain/wallet_mutation_guard.dart';
-import 'package:bb_mobile/core/wallet/domain/ports/wallet_retention_port.dart';
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
@@ -13,22 +11,15 @@ class DeleteWalletUsecase {
   final WalletRepository _walletRepository;
   final BoltzSwapRepository _swapRepository;
   final Secrets _secrets;
-  final WalletMutationGuard _mutationGuard;
-  final WalletRetentionPort _retention;
 
   DeleteWalletUsecase({
     required this._walletRepository,
     required this._swapRepository,
     required this._secrets,
-    required this._mutationGuard,
-    required this._retention,
   });
 
   @useResult
-  Future<Result<void, WalletFailure>> execute({required String walletId}) =>
-      _mutationGuard.exclusive(() => _execute(walletId: walletId));
-
-  Future<Result<void, WalletFailure>> _execute({
+  Future<Result<void, WalletFailure>> execute({
     required String walletId,
   }) async {
     final Wallet wallet;
@@ -111,12 +102,6 @@ class DeleteWalletUsecase {
           Fingerprint.tryParse(w.masterFingerprint) == fingerprint,
     );
     if (stillUsed) return;
-    try {
-      if (await _retention.retainsSecret(fingerprint)) return;
-    } catch (_) {
-      log.warning('DeleteWalletUsecase: could not verify secret retention');
-      return;
-    }
 
     // Unconditional on the package side; the "still used by a wallet" guard
     // is this usecase's, and was applied above.

@@ -1,4 +1,3 @@
-import 'package:bb_mobile/features/sp/domain/usecases/check_sp_source_retention_usecase.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_recipient.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_tx_draft.dart';
@@ -53,9 +52,6 @@ export 'package:bb_mobile/features/sp/domain/sp_failure.dart'
         SpSimulationDrifted,
         SpBackendUnreachable,
         SpConfigInvalid,
-        SpLegacySourceUnverified,
-        SpSourceMismatch,
-        SpRecoveryRequired,
         SpSetupCleanupFailed,
         SpAmountBelowMinimum,
         SpAmountExceedsBalance,
@@ -79,7 +75,6 @@ export 'package:bb_mobile/features/sp/ui/sp_router.dart'
 /// Consumers must wrap this in their own feature's use case (per AGENTS.md
 /// rule #4) and never call it directly from a BLoC.
 class SpFacade {
-  final CheckSpSourceRetentionUsecase _checkSpSourceRetentionUsecase;
   final GetSpWalletUsecase _getSpWalletUsecase;
   final IsSpScanningUsecase _isSpScanningUsecase;
   final CheckSpWalletSetupUsecase _checkSpWalletSetupUsecase;
@@ -95,7 +90,6 @@ class SpFacade {
   final SendSpPaymentUsecase _sendSpPaymentUsecase;
 
   SpFacade({
-    required this._checkSpSourceRetentionUsecase,
     required this._getSpWalletUsecase,
     required this._isSpScanningUsecase,
     required this._checkSpWalletSetupUsecase,
@@ -110,17 +104,6 @@ class SpFacade {
     required this._prepareSpPaymentUsecase,
     required this._sendSpPaymentUsecase,
   });
-
-  /// Whether an SP configuration retains this wallet or secret. A legacy
-  /// unbound configuration conservatively retains every source; failed reads
-  /// stay failures. Callers must hold the shared wallet mutation guard.
-  Future<Result<bool, SpFailure>> retainsSource({
-    String? walletId,
-    Fingerprint? secretId,
-  }) => _checkSpSourceRetentionUsecase.execute(
-    walletId: walletId,
-    secretId: secretId,
-  );
 
   /// Whether the SP feature is enabled (superuser + dev mode gate). Cross-feature
   /// consumers (the wallet) read the gate through here instead of the settings.

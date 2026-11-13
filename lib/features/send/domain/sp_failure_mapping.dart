@@ -25,9 +25,6 @@ extension SpFailureToSendFailure on SpFailure {
     SpSimulationDrifted() ||
     SpBackendUnreachable() ||
     SpConfigInvalid() ||
-    SpLegacySourceUnverified() ||
-    SpSourceMismatch() ||
-    SpRecoveryRequired() ||
     SpSetupCleanupFailed() ||
     SpBroadcastUncertain() ||
     SpUnexpected() => null,
