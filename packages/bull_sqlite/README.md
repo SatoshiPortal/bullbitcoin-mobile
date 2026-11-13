@@ -4,7 +4,7 @@ Local SQLite databases encrypted at rest with [SQLite3MultipleCiphers](https://u
 
 ## ⚠️ What is not covered
 
-Only databases opened through this package are encrypted: today the app's `bullbitcoin_sqlite.sqlite` and `payjoin.sqlite`. The stores that wallet libraries keep next to them are written by native code this package does not reach, and stay as their library writes them:
+Only databases opened through this package are encrypted: today the app's `bullbitcoin_sqlite.sqlite`, `payjoin.sqlite` and `recoverbull.sqlite` (created encrypted from its first page, without a plaintext migration). The stores that wallet libraries keep next to them are written by native code this package does not reach, and stay as their library writes them:
 
 | Store | Library | Path | Contents in clear |
 |---|---|---|---|
