@@ -7,7 +7,7 @@ import 'package:bb_mobile/core/bip85/domain/fetch_all_bip85_derivations_with_ent
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
-import 'package:primitives/primitives.dart' show Err, Ok;
+import 'package:primitives/primitives.dart' show BitcoinUnit, Err, Ok;
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
@@ -267,6 +267,29 @@ void main() {
         settingsRepository: settingsRepository,
         secrets: secrets,
       );
+    });
+
+    test('looks up the default wallet in the active environment', () async {
+      when(() => settingsRepository.fetch()).thenAnswer(
+        (_) async => const SettingsEntity(
+          environment: Environment.testnet,
+          bitcoinUnit: BitcoinUnit.sats,
+          currencyCode: 'CAD',
+        ),
+      );
+      stubWallets([defaultWallet.copyWith(network: Network.bitcoinTestnet)]);
+      when(
+        () => bip85Repository.fetchAll(),
+      ).thenAnswer((_) async => const Ok([]));
+
+      expect(await usecase.execute(), isA<Ok>());
+      verify(
+        () => walletRepository.getWallets(
+          onlyDefaults: true,
+          onlyBitcoin: true,
+          environment: Environment.testnet,
+        ),
+      ).called(1);
     });
 
     test('no default wallet is its own failure', () async {
