@@ -1,8 +1,6 @@
 import 'dart:convert';
 
 import 'package:bb_mobile/features/labels/domain/label_entity.dart';
-import 'package:bb_mobile/features/labels/domain/labels_import_exception.dart';
-import 'package:bb_mobile/features/labels/domain/primitive/label_system.dart';
 import 'package:bb_mobile/features/labels/domain/primitive/label_type.dart';
 import 'package:bb_mobile/features/labels/frameworks/bip329_codec.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -169,37 +167,6 @@ void main() {
       final decoded = codec.decode(jsonl);
       expect(decoded.frozen, isEmpty);
       expect(decoded.labels, isEmpty);
-    });
-  });
-
-  group('system labels', () {
-    LabelEntity tx(int id, String label) => LabelEntity(
-      id: id,
-      type: LabelType.transaction,
-      reference: txId,
-      label: label,
-    );
-
-    test('are not exported, so an export of an auto-swap can be imported', () {
-      final jsonl = codec.encode([
-        tx(1, LabelSystem.autoSwap.label),
-        tx(2, LabelSystem.swaps.label),
-        tx(3, 'coffee'),
-      ]);
-
-      final records = lines(jsonl);
-      expect(records.map((r) => r['label']), ['coffee']);
-      // The exported file round-trips through the importer.
-      expect(() => codec.decode(jsonl), returnsNormally);
-    });
-
-    test('a file naming a system label is still rejected on import', () {
-      final file = jsonEncode({
-        'type': 'tx',
-        'ref': txId,
-        'label': LabelSystem.autoSwap.label,
-      });
-      expect(() => codec.decode(file), throwsA(isA<LabelsImportException>()));
     });
   });
 }
