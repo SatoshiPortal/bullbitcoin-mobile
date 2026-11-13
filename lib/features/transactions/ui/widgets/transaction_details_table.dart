@@ -1,16 +1,13 @@
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
-import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/string_formatting.dart';
 import 'package:bb_mobile/core/widgets/address_viewer.dart';
 import 'package:bb_mobile/core/widgets/transaction_viewer.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/core/widgets/text/currency_text.dart';
-import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transaction_details/transaction_details_cubit.dart';
 import 'package:bb_mobile/features/transactions/presentation/order_payment_method_l10n.dart';
 import 'package:bb_mobile/features/transactions/presentation/order_swap_status_l10n.dart';
@@ -50,9 +47,6 @@ class TransactionDetailsTable extends StatelessWidget {
     final addressLabels = transaction?.walletTransaction?.toAddressLabels ?? [];
     final isOrder = transaction?.isOrder ?? false;
     final walletTransaction = transaction?.walletTransaction;
-    final bitcoinUnit = context.select(
-      (SettingsCubit cubit) => cubit.state.bitcoinUnit,
-    );
 
     final swap = transaction?.swap;
     final orderSwap = transaction?.orderSwap;
@@ -159,46 +153,50 @@ class TransactionDetailsTable extends StatelessWidget {
             title: context.loc.transactionDetailLabelAddressNotes,
             labels: addressLabels,
           ),
-        // TODO(kumulynja): Make the value of the BullDetailsTableItem be a widget instead of a string
-        // to be able to use the CurrencyText widget instead of having to format the amount here.
         if (!isOrder &&
             (transaction?.isIncoming == true || displayAmountSent != null))
           BullDetailsTableItem(
             label: transaction?.isIncoming == true
                 ? context.loc.transactionDetailLabelAmountReceived
                 : context.loc.transactionDetailLabelAmountSent,
-            displayValue: bitcoinUnit == BitcoinUnit.sats
-                ? FormatAmount.sats(
-                    transaction?.isIncoming == true
-                        ? amountReceived
-                        : (displayAmountSent ?? amountSent),
-                  ).toUpperCase()
-                : FormatAmount.btc(
-                    ConvertAmount.satsToBtc(
-                      transaction?.isIncoming == true
-                          ? amountReceived
-                          : (displayAmountSent ?? amountSent),
-                    ),
-                  ).toUpperCase(),
+            displayWidget: CurrencyText(
+              transaction?.isIncoming == true
+                  ? amountReceived
+                  : (displayAmountSent ?? amountSent),
+              showFiat: false,
+              interactive: true,
+              overrideHideAmounts: true,
+              style: context.font.bodyLarge,
+              color: context.appColors.onSurface,
+              textAlign: TextAlign.end,
+            ),
           ),
         if (walletTransaction != null) ...[
           if (walletTransaction.isToSelf == true)
             BullDetailsTableItem(
               label: context.loc.transactionDetailLabelAmountReceived,
-              displayValue: bitcoinUnit == BitcoinUnit.sats
-                  ? FormatAmount.sats(amountReceived).toUpperCase()
-                  : FormatAmount.btc(
-                      ConvertAmount.satsToBtc(amountReceived),
-                    ).toUpperCase(),
+              displayWidget: CurrencyText(
+                amountReceived,
+                showFiat: false,
+                interactive: true,
+                overrideHideAmounts: true,
+                style: context.font.bodyLarge,
+                color: context.appColors.onSurface,
+                textAlign: TextAlign.end,
+              ),
             ),
           if (transaction?.isOutgoing == true && transaction?.isSwap != true)
             BullDetailsTableItem(
               label: context.loc.transactionDetailLabelTransactionFee,
-              displayValue: bitcoinUnit == BitcoinUnit.sats
-                  ? FormatAmount.sats(txFee ?? 0).toUpperCase()
-                  : FormatAmount.btc(
-                      ConvertAmount.satsToBtc(txFee ?? 0),
-                    ).toUpperCase(),
+              displayWidget: CurrencyText(
+                txFee ?? 0,
+                showFiat: false,
+                interactive: true,
+                overrideHideAmounts: true,
+                style: context.font.bodyLarge,
+                color: context.appColors.onSurface,
+                textAlign: TextAlign.end,
+              ),
             ),
           BullDetailsTableItem(
             label: context.loc.transactionDetailLabelStatus,
@@ -222,22 +220,42 @@ class TransactionDetailsTable extends StatelessWidget {
             ),
           BullDetailsTableItem(
             label: context.loc.transactionDetailLabelPayinAmount,
-            displayValue: FormatAmount.sats(
+            displayWidget: CurrencyText(
               orderSwap.order?.payinAmountSat.toInt() ??
                   orderSwap.requestedAmountSat.toInt(),
-            ).toUpperCase(),
+              showFiat: false,
+              interactive: true,
+              overrideHideAmounts: true,
+              style: context.font.bodyLarge,
+              color: context.appColors.onSurface,
+              textAlign: TextAlign.end,
+            ),
           ),
-          if (orderSwap.order != null)
+          if (orderSwap.order case final swapOrder?)
             BullDetailsTableItem(
               label: context.loc.transactionDetailLabelPayoutAmount,
-              displayValue: FormatAmount.sats(
-                orderSwap.order!.payoutAmountSat.toInt(),
-              ).toUpperCase(),
+              displayWidget: CurrencyText(
+                swapOrder.payoutAmountSat.toInt(),
+                showFiat: false,
+                interactive: true,
+                overrideHideAmounts: true,
+                style: context.font.bodyLarge,
+                color: context.appColors.onSurface,
+                textAlign: TextAlign.end,
+              ),
             ),
           if (txFee != null)
             BullDetailsTableItem(
               label: context.loc.transactionDetailLabelTransactionFee,
-              displayValue: FormatAmount.sats(txFee).toUpperCase(),
+              displayWidget: CurrencyText(
+                txFee,
+                showFiat: false,
+                interactive: true,
+                overrideHideAmounts: true,
+                style: context.font.bodyLarge,
+                color: context.appColors.onSurface,
+                textAlign: TextAlign.end,
+              ),
             ),
           if (orderSwap.order != null) ...[
             BullDetailsTableItem(
@@ -277,24 +295,42 @@ class TransactionDetailsTable extends StatelessWidget {
                   displayValue:
                       order.payinCurrency == 'LBTC' ||
                           order.payinCurrency == 'BTC'
-                      ? bitcoinUnit == BitcoinUnit.sats
-                            ? FormatAmount.sats(
-                                ConvertAmount.btcToSats(order.payinAmount),
-                              )
-                            : FormatAmount.btc(order.payinAmount)
+                      ? null
                       : '${order.payinAmount.toStringAsFixed(2)} ${order.payinCurrency}',
+                  displayWidget:
+                      order.payinCurrency == 'LBTC' ||
+                          order.payinCurrency == 'BTC'
+                      ? CurrencyText(
+                          ConvertAmount.btcToSats(order.payinAmount),
+                          showFiat: false,
+                          interactive: true,
+                          overrideHideAmounts: true,
+                          style: context.font.bodyLarge,
+                          color: context.appColors.onSurface,
+                          textAlign: TextAlign.end,
+                        )
+                      : null,
                 ),
                 BullDetailsTableItem(
                   label: context.loc.transactionDetailLabelPayoutAmount,
                   displayValue:
                       order.payoutCurrency == 'LBTC' ||
                           order.payoutCurrency == 'BTC'
-                      ? bitcoinUnit == BitcoinUnit.sats
-                            ? FormatAmount.sats(
-                                ConvertAmount.btcToSats(order.payoutAmount),
-                              )
-                            : FormatAmount.btc(order.payoutAmount)
+                      ? null
                       : '${order.payoutAmount} ${order.payoutCurrency}',
+                  displayWidget:
+                      order.payoutCurrency == 'LBTC' ||
+                          order.payoutCurrency == 'BTC'
+                      ? CurrencyText(
+                          ConvertAmount.btcToSats(order.payoutAmount),
+                          showFiat: false,
+                          interactive: true,
+                          overrideHideAmounts: true,
+                          style: context.font.bodyLarge,
+                          color: context.appColors.onSurface,
+                          textAlign: TextAlign.end,
+                        )
+                      : null,
                 ),
                 if (order.exchangeRateAmount != null &&
                     order.exchangeRateCurrency != null)
@@ -353,11 +389,15 @@ class TransactionDetailsTable extends StatelessWidget {
                 ),
                 BullDetailsTableItem(
                   label: context.loc.transactionDetailLabelPayinAmount,
-                  displayValue: bitcoinUnit == BitcoinUnit.sats
-                      ? FormatAmount.sats(payinAmountSat).toUpperCase()
-                      : FormatAmount.btc(
-                          ConvertAmount.satsToBtc(payinAmountSat),
-                        ).toUpperCase(),
+                  displayWidget: CurrencyText(
+                    payinAmountSat,
+                    showFiat: false,
+                    interactive: true,
+                    overrideHideAmounts: true,
+                    style: context.font.bodyLarge,
+                    color: context.appColors.onSurface,
+                    textAlign: TextAlign.end,
+                  ),
                 ),
                 BullDetailsTableItem(
                   label: context.loc.transactionDetailLabelPayoutAmount,
@@ -623,24 +663,42 @@ class TransactionDetailsTable extends StatelessWidget {
                   displayValue:
                       order.payinCurrency == 'LBTC' ||
                           order.payinCurrency == 'BTC'
-                      ? bitcoinUnit == BitcoinUnit.sats
-                            ? FormatAmount.sats(
-                                ConvertAmount.btcToSats(order.payinAmount),
-                              )
-                            : FormatAmount.btc(order.payinAmount)
+                      ? null
                       : '${order.payinAmount.toStringAsFixed(2)} ${order.payinCurrency}',
+                  displayWidget:
+                      order.payinCurrency == 'LBTC' ||
+                          order.payinCurrency == 'BTC'
+                      ? CurrencyText(
+                          ConvertAmount.btcToSats(order.payinAmount),
+                          showFiat: false,
+                          interactive: true,
+                          overrideHideAmounts: true,
+                          style: context.font.bodyLarge,
+                          color: context.appColors.onSurface,
+                          textAlign: TextAlign.end,
+                        )
+                      : null,
                 ),
                 BullDetailsTableItem(
                   label: context.loc.transactionDetailLabelPayoutAmount,
                   displayValue:
                       order.payoutCurrency == 'LBTC' ||
                           order.payoutCurrency == 'BTC'
-                      ? bitcoinUnit == BitcoinUnit.sats
-                            ? FormatAmount.sats(
-                                ConvertAmount.btcToSats(order.payoutAmount),
-                              )
-                            : FormatAmount.btc(order.payoutAmount)
+                      ? null
                       : '${order.payoutAmount} ${order.payoutCurrency}',
+                  displayWidget:
+                      order.payoutCurrency == 'LBTC' ||
+                          order.payoutCurrency == 'BTC'
+                      ? CurrencyText(
+                          ConvertAmount.btcToSats(order.payoutAmount),
+                          showFiat: false,
+                          interactive: true,
+                          overrideHideAmounts: true,
+                          style: context.font.bodyLarge,
+                          color: context.appColors.onSurface,
+                          textAlign: TextAlign.end,
+                        )
+                      : null,
                 ),
                 if (order.exchangeRateAmount != null &&
                     order.exchangeRateCurrency != null)
@@ -700,24 +758,42 @@ class TransactionDetailsTable extends StatelessWidget {
                   displayValue:
                       order.payinCurrency == 'LBTC' ||
                           order.payinCurrency == 'BTC'
-                      ? bitcoinUnit == BitcoinUnit.sats
-                            ? FormatAmount.sats(
-                                ConvertAmount.btcToSats(order.payinAmount),
-                              )
-                            : FormatAmount.btc(order.payinAmount)
+                      ? null
                       : '${order.payinAmount.toStringAsFixed(2)} ${order.payinCurrency}',
+                  displayWidget:
+                      order.payinCurrency == 'LBTC' ||
+                          order.payinCurrency == 'BTC'
+                      ? CurrencyText(
+                          ConvertAmount.btcToSats(order.payinAmount),
+                          showFiat: false,
+                          interactive: true,
+                          overrideHideAmounts: true,
+                          style: context.font.bodyLarge,
+                          color: context.appColors.onSurface,
+                          textAlign: TextAlign.end,
+                        )
+                      : null,
                 ),
                 BullDetailsTableItem(
                   label: context.loc.transactionDetailLabelPayoutAmount,
                   displayValue:
                       order.payoutCurrency == 'LBTC' ||
                           order.payoutCurrency == 'BTC'
-                      ? bitcoinUnit == BitcoinUnit.sats
-                            ? FormatAmount.sats(
-                                ConvertAmount.btcToSats(order.payoutAmount),
-                              )
-                            : FormatAmount.btc(order.payoutAmount)
+                      ? null
                       : '${order.payoutAmount} ${order.payoutCurrency}',
+                  displayWidget:
+                      order.payoutCurrency == 'LBTC' ||
+                          order.payoutCurrency == 'BTC'
+                      ? CurrencyText(
+                          ConvertAmount.btcToSats(order.payoutAmount),
+                          showFiat: false,
+                          interactive: true,
+                          overrideHideAmounts: true,
+                          style: context.font.bodyLarge,
+                          color: context.appColors.onSurface,
+                          textAlign: TextAlign.end,
+                        )
+                      : null,
                 ),
                 if (order.exchangeRateAmount != null &&
                     order.exchangeRateCurrency != null)
@@ -890,142 +966,180 @@ class TransactionDetailsTable extends StatelessWidget {
             if (amountSent > 0)
               BullDetailsTableItem(
                 label: context.loc.transactionLabelSendAmount,
-                displayValue: bitcoinUnit == BitcoinUnit.sats
-                    ? FormatAmount.sats(amountSent).toUpperCase()
-                    : FormatAmount.btc(
-                        ConvertAmount.satsToBtc(amountSent),
-                      ).toUpperCase(),
+                displayWidget: CurrencyText(
+                  amountSent,
+                  showFiat: false,
+                  interactive: true,
+                  overrideHideAmounts: true,
+                  style: context.font.bodyLarge,
+                  color: context.appColors.onSurface,
+                  textAlign: TextAlign.end,
+                ),
               ),
             if (amountReceived > 0)
               BullDetailsTableItem(
                 label: context.loc.transactionLabelReceiveAmount,
-                displayValue: bitcoinUnit == BitcoinUnit.sats
-                    ? FormatAmount.sats(amountReceived).toUpperCase()
-                    : FormatAmount.btc(
-                        ConvertAmount.satsToBtc(amountReceived),
-                      ).toUpperCase(),
+                displayWidget: CurrencyText(
+                  amountReceived,
+                  showFiat: false,
+                  interactive: true,
+                  overrideHideAmounts: true,
+                  style: context.font.bodyLarge,
+                  color: context.appColors.onSurface,
+                  textAlign: TextAlign.end,
+                ),
               ),
             if (recoveredBoltzFee > 0)
               BullDetailsTableItem(
                 label: context.loc.transactionDetailLabelTransferFee,
-                displayValue: bitcoinUnit == BitcoinUnit.sats
-                    ? FormatAmount.sats(recoveredBoltzFee).toUpperCase()
-                    : FormatAmount.btc(
-                        ConvertAmount.satsToBtc(recoveredBoltzFee),
-                      ).toUpperCase(),
+                displayWidget: CurrencyText(
+                  recoveredBoltzFee,
+                  showFiat: false,
+                  interactive: true,
+                  overrideHideAmounts: true,
+                  style: context.font.bodyLarge,
+                  color: context.appColors.onSurface,
+                  textAlign: TextAlign.end,
+                ),
               ),
             if (amountReceived > 0 && recoveredNetworkFee > 0)
               BullDetailsTableItem(
                 label: context.loc.transactionLabelNetworkFees,
-                displayValue: bitcoinUnit == BitcoinUnit.sats
-                    ? FormatAmount.sats(recoveredNetworkFee).toUpperCase()
-                    : FormatAmount.btc(
-                        ConvertAmount.satsToBtc(recoveredNetworkFee),
-                      ).toUpperCase(),
+                displayWidget: CurrencyText(
+                  recoveredNetworkFee,
+                  showFiat: false,
+                  interactive: true,
+                  overrideHideAmounts: true,
+                  style: context.font.bodyLarge,
+                  color: context.appColors.onSurface,
+                  textAlign: TextAlign.end,
+                ),
               ),
           ],
           if (!recovered && swap.fees != null) ...[
             if (swap.isChainSwap) ...[
               BullDetailsTableItem(
                 label: context.loc.transactionLabelSendAmount,
-                displayValue: bitcoinUnit == BitcoinUnit.sats
-                    ? FormatAmount.sats(
-                        (swap as ChainSwap).paymentAmount,
-                      ).toUpperCase()
-                    : FormatAmount.btc(
-                        ConvertAmount.satsToBtc(
-                          (swap as ChainSwap).paymentAmount,
-                        ),
-                      ).toUpperCase(),
+                displayWidget: CurrencyText(
+                  (swap as ChainSwap).paymentAmount,
+                  showFiat: false,
+                  interactive: true,
+                  overrideHideAmounts: true,
+                  style: context.font.bodyLarge,
+                  color: context.appColors.onSurface,
+                  textAlign: TextAlign.end,
+                ),
               ),
-              if (swap.receieveAmount != null)
+              if (swap.receieveAmount case final receiveAmount?)
                 BullDetailsTableItem(
                   label: context.loc.transactionLabelReceiveAmount,
-                  displayValue: bitcoinUnit == BitcoinUnit.sats
-                      ? FormatAmount.sats(swap.receieveAmount!).toUpperCase()
-                      : FormatAmount.btc(
-                          ConvertAmount.satsToBtc(swap.receieveAmount!),
-                        ).toUpperCase(),
+                  displayWidget: CurrencyText(
+                    receiveAmount,
+                    showFiat: false,
+                    interactive: true,
+                    overrideHideAmounts: true,
+                    style: context.font.bodyLarge,
+                    color: context.appColors.onSurface,
+                    textAlign: TextAlign.end,
+                  ),
                 ),
               if (swapSendNetworkFee != null)
                 BullDetailsTableItem(
                   label: context.loc.transactionLabelSendNetworkFees,
-                  displayValue: bitcoinUnit == BitcoinUnit.sats
-                      ? FormatAmount.sats(swapSendNetworkFee).toUpperCase()
-                      : FormatAmount.btc(
-                          ConvertAmount.satsToBtc(swapSendNetworkFee),
-                        ).toUpperCase(),
+                  displayWidget: CurrencyText(
+                    swapSendNetworkFee,
+                    showFiat: false,
+                    interactive: true,
+                    overrideHideAmounts: true,
+                    style: context.font.bodyLarge,
+                    color: context.appColors.onSurface,
+                    textAlign: TextAlign.end,
+                  ),
                 ),
             ] else if (swap.isLnSendSwap) ...[
               BullDetailsTableItem(
                 label: context.loc.transactionLabelSendAmount,
-                displayValue: bitcoinUnit == BitcoinUnit.sats
-                    ? FormatAmount.sats(
-                        (swap as LnSendSwap).paymentAmount,
-                      ).toUpperCase()
-                    : FormatAmount.btc(
-                        ConvertAmount.satsToBtc(
-                          (swap as LnSendSwap).paymentAmount,
-                        ),
-                      ).toUpperCase(),
+                displayWidget: CurrencyText(
+                  (swap as LnSendSwap).paymentAmount,
+                  showFiat: false,
+                  interactive: true,
+                  overrideHideAmounts: true,
+                  style: context.font.bodyLarge,
+                  color: context.appColors.onSurface,
+                  textAlign: TextAlign.end,
+                ),
               ),
-              if (swap.receieveAmount != null)
+              if (swap.receieveAmount case final receiveAmount?)
                 BullDetailsTableItem(
                   label: context.loc.transactionLabelReceiveAmount,
-                  displayValue: bitcoinUnit == BitcoinUnit.sats
-                      ? FormatAmount.sats(swap.receieveAmount!).toUpperCase()
-                      : FormatAmount.btc(
-                          ConvertAmount.satsToBtc(swap.receieveAmount!),
-                        ).toUpperCase(),
+                  displayWidget: CurrencyText(
+                    receiveAmount,
+                    showFiat: false,
+                    interactive: true,
+                    overrideHideAmounts: true,
+                    style: context.font.bodyLarge,
+                    color: context.appColors.onSurface,
+                    textAlign: TextAlign.end,
+                  ),
                 ),
               if (swapSendNetworkFee != null)
                 BullDetailsTableItem(
                   label: context.loc.transactionLabelSendNetworkFees,
-                  displayValue: bitcoinUnit == BitcoinUnit.sats
-                      ? FormatAmount.sats(swapSendNetworkFee).toUpperCase()
-                      : FormatAmount.btc(
-                          ConvertAmount.satsToBtc(swapSendNetworkFee),
-                        ).toUpperCase(),
+                  displayWidget: CurrencyText(
+                    swapSendNetworkFee,
+                    showFiat: false,
+                    interactive: true,
+                    overrideHideAmounts: true,
+                    style: context.font.bodyLarge,
+                    color: context.appColors.onSurface,
+                    textAlign: TextAlign.end,
+                  ),
                 ),
             ] else if (swap.isLnReceiveSwap) ...[
-              if (swap.sendAmount != null)
+              if (swap.sendAmount case final sendAmount?)
                 BullDetailsTableItem(
                   label: context.loc.transactionLabelSendAmount,
-                  displayValue: bitcoinUnit == BitcoinUnit.sats
-                      ? FormatAmount.sats(swap.sendAmount!).toUpperCase()
-                      : FormatAmount.btc(
-                          ConvertAmount.satsToBtc(swap.sendAmount!),
-                        ).toUpperCase(),
+                  displayWidget: CurrencyText(
+                    sendAmount,
+                    showFiat: false,
+                    interactive: true,
+                    overrideHideAmounts: true,
+                    style: context.font.bodyLarge,
+                    color: context.appColors.onSurface,
+                    textAlign: TextAlign.end,
+                  ),
                 ),
-              if (swap.receieveAmount != null)
+              if (swap.receieveAmount case final receiveAmount?)
                 BullDetailsTableItem(
                   label: context.loc.transactionLabelReceiveAmount,
-                  displayValue: bitcoinUnit == BitcoinUnit.sats
-                      ? FormatAmount.sats(swap.receieveAmount!).toUpperCase()
-                      : FormatAmount.btc(
-                          ConvertAmount.satsToBtc(swap.receieveAmount!),
-                        ).toUpperCase(),
+                  displayWidget: CurrencyText(
+                    receiveAmount,
+                    showFiat: false,
+                    interactive: true,
+                    overrideHideAmounts: true,
+                    style: context.font.bodyLarge,
+                    color: context.appColors.onSurface,
+                    textAlign: TextAlign.end,
+                  ),
                 ),
             ],
           ],
-          if (!recovered && swap.fees != null)
+          if (swap.fees case final fees? when !recovered)
             BullDetailsTableItem(
               label: swap.type.isChain
                   ? context.loc.transactionDetailLabelTransferFees
                   : context.loc.transactionDetailLabelSwapFees,
-              displayValue: bitcoinUnit == BitcoinUnit.sats
-                  ? FormatAmount.sats(
-                      swap.isLnReceiveSwap
-                          ? swap.fees!.totalFees(swap.amountSat)
-                          : swap.fees!.totalFeesMinusLockup(swap.amountSat),
-                    ).toUpperCase()
-                  : FormatAmount.btc(
-                      ConvertAmount.satsToBtc(
-                        swap.isLnReceiveSwap
-                            ? swap.fees!.totalFees(swap.amountSat)
-                            : swap.fees!.totalFeesMinusLockup(swap.amountSat),
-                      ),
-                    ).toUpperCase(),
+              displayWidget: CurrencyText(
+                swap.isLnReceiveSwap
+                    ? fees.totalFees(swap.amountSat)
+                    : fees.totalFeesMinusLockup(swap.amountSat),
+                showFiat: false,
+                interactive: true,
+                overrideHideAmounts: true,
+                style: context.font.bodyLarge,
+                color: context.appColors.onSurface,
+                textAlign: TextAlign.end,
+              ),
               expandableChild: Column(
                 children: [
                   const Gap(4),
@@ -1039,28 +1153,29 @@ class TransactionDetailsTable extends StatelessWidget {
                       color: context.appColors.secondary,
                     ),
                   ),
-                  if (swap.isLnReceiveSwap && swap.fees!.lockupFee != null)
+                  if (fees.lockupFee case final lockupFee?
+                      when swap.isLnReceiveSwap)
                     _feeRow(
                       context,
                       context.loc.transactionDetailLabelSendNetworkFee,
-                      swap.fees!.lockupFee!,
+                      lockupFee,
                     ),
-                  if (swap.fees!.claimFee != null)
+                  if (fees.claimFee case final claimFee?)
                     _feeRow(
                       context,
                       context.loc.transactionLabelReceiveNetworkFee,
-                      swap.fees!.claimFee!,
+                      claimFee,
                     ),
-                  if (swap.fees!.serverNetworkFees != null)
+                  if (fees.serverNetworkFees case final serverNetworkFees?)
                     _feeRow(
                       context,
                       context.loc.transactionLabelServerNetworkFees,
-                      swap.fees!.serverNetworkFees!,
+                      serverNetworkFees,
                     ),
                   _feeRow(
                     context,
                     context.loc.transactionDetailLabelTransferFee,
-                    swap.fees?.boltzFee ?? 0,
+                    fees.boltzFee ?? 0,
                   ),
                   const Gap(4),
                 ],
@@ -1107,18 +1222,18 @@ class TransactionDetailsTable extends StatelessWidget {
               'MMM d, y, h:mm a',
             ).format(payjoin.createdAt),
           ),
-          if (transaction.payjoinFeeContributionSat != null)
+          if (transaction.payjoinFeeContributionSat case final feeContribution?)
             BullDetailsTableItem(
               label: context.loc.transactionDetailLabelPayjoinFeeContribution,
-              displayValue: bitcoinUnit == BitcoinUnit.sats
-                  ? FormatAmount.sats(
-                      transaction.payjoinFeeContributionSat!,
-                    ).toUpperCase()
-                  : FormatAmount.btc(
-                      ConvertAmount.satsToBtc(
-                        transaction.payjoinFeeContributionSat!,
-                      ),
-                    ).toUpperCase(),
+              displayWidget: CurrencyText(
+                feeContribution,
+                showFiat: false,
+                interactive: true,
+                overrideHideAmounts: true,
+                style: context.font.bodyLarge,
+                color: context.appColors.onSurface,
+                textAlign: TextAlign.end,
+              ),
               expandableChild: BullText(
                 context.loc.transactionPayjoinFeeContributionExplanation,
                 style: context.font.bodySmall?.copyWith(
@@ -1147,6 +1262,7 @@ Widget _feeRow(BuildContext context, String label, int amt) {
         CurrencyText(
           amt,
           showFiat: false,
+          interactive: true,
           style: context.font.bodySmall,
           color: context.appColors.secondary,
         ),
