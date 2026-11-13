@@ -17,12 +17,8 @@
   "@customize": {},
   "title": "Quick actions",
   "@title": {},
-  "save": "Save changes",
-  "@save": {},
   "reset": "Restore defaults",
   "@reset": {},
-  "unavailable": "Currently unavailable",
-  "@unavailable": {},
   "moveUp": "Move up",
   "@moveUp": {},
   "moveDown": "Move down",
@@ -39,14 +35,6 @@
   "@priceHistory": {},
   "quickActionTrade": "Trade",
   "@quickActionTrade": {},
-  "selectedCount": "Selected: {count}",
-  "@selectedCount": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
   "onHome": "On Home",
   "@onHome": {
     "description": "Wallet quick action customization."
@@ -59,15 +47,11 @@
   "@preview": {
     "description": "Wallet quick action customization."
   },
-  "maximumHint": "Up to 4 cells on Home. When More is needed, your first 3 available favorites appear beside it.",
+  "maximumHint": "Choose up to 3 actions for Home.",
   "@maximumHint": {
     "description": "Wallet quick action customization."
   },
-  "overflowHint": "These favorites appear in More",
-  "@overflowHint": {
-    "description": "Wallet quick action customization."
-  },
-  "addAction": "Add {name} to favorites",
+  "addAction": "Add {name} to Home",
   "@addAction": {
     "description": "Wallet quick action customization.",
     "placeholders": {
@@ -76,7 +60,7 @@
       }
     }
   },
-  "removeAction": "Remove {name} from favorites",
+  "removeAction": "Move {name} to More",
   "@removeAction": {
     "description": "Wallet quick action customization.",
     "placeholders": {
@@ -110,12 +94,24 @@
   "@saving": {
     "description": "Wallet quick action customization."
   },
-  "emptyHint": "No favorites selected. Settings remains on Home.",
+  "emptyHint": "No actions selected. Settings stays on Home.",
   "@emptyHint": {
     "description": "Wallet quick action customization."
   },
   "supportFull": "Support",
   "@supportFull": {
     "description": "Full accessible quick action name."
+  },
+  "homeFullHint": "Home holds 3 actions. Remove one to add another.",
+  "@homeFullHint": {
+    "description": "Explains why adding another Home action is disabled at capacity."
+  },
+  "defaultsRestored": "Default actions restored.",
+  "@defaultsRestored": {
+    "description": "Confirmation after restoring the default Home actions."
+  },
+  "undo": "Undo",
+  "@undo": {
+    "description": "Restore the complete preference from before Restore defaults."
   }
 }

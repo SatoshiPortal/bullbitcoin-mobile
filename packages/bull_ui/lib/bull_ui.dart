@@ -64,6 +64,8 @@ export 'package:flutter/widgets.dart'
         Navigator,
         NeverScrollableScrollPhysics,
         Opacity,
+        Overlay,
+        OverlayState,
         Padding,
         PageController,
         PageScrollPhysics,

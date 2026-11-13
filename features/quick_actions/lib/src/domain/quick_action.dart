@@ -25,6 +25,32 @@ final class QuickActionSelection {
   }
 
   final List<QuickAction> actions;
+
+  /// Replaces available favorites while retaining unavailable preferences.
+  QuickActionSelection withHomeActions({
+    required Set<QuickAction> available,
+    required Iterable<QuickAction> home,
+  }) {
+    final replacement = home.toList();
+    if (replacement.length > QuickActionsLayout.maximumHomeActions ||
+        replacement.toSet().length != replacement.length ||
+        replacement.any((action) => !available.contains(action))) {
+      throw ArgumentError(
+        'Home actions must be distinct, available, and at most three',
+      );
+    }
+    final result = <QuickAction>[];
+    var index = 0;
+    for (final action in actions) {
+      if (!available.contains(action)) {
+        result.add(action);
+      } else if (index < replacement.length) {
+        result.add(replacement[index++]);
+      }
+    }
+    result.addAll(replacement.skip(index));
+    return QuickActionSelection(result);
+  }
 }
 
 /// The visible selection and its canonical complement.
@@ -32,6 +58,7 @@ final class QuickActionsLayout {
   QuickActionsLayout._(this.primary, this.more);
 
   static const int maximumCells = 4;
+  static const int maximumHomeActions = 3;
 
   static const moreOrder = [
     QuickAction.buy,
@@ -66,13 +93,7 @@ final class QuickActionsLayout {
     if (selected.isEmpty && available.contains(QuickAction.settings)) {
       selected.add(QuickAction.settings);
     }
-    final candidate = selected.take(maximumCells).toList();
-    final needsMore = available.any(
-      (action) => candidate.contains(action) == false,
-    );
-    final primary = selected
-        .take(needsMore ? maximumCells - 1 : maximumCells)
-        .toList();
+    final primary = selected.take(maximumHomeActions).toList();
     return QuickActionsLayout._(
       List.unmodifiable(primary),
       List.unmodifiable(

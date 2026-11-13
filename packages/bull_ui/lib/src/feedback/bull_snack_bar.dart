@@ -26,9 +26,25 @@ class BullSnackBar {
     IconData? leadingIcon,
     String? actionLabel,
     VoidCallback? onAction,
+  }) => showOnOverlay(
+    Overlay.of(context, rootOverlay: true),
+    message: message,
+    leadingIcon: leadingIcon,
+    actionLabel: actionLabel,
+    onAction: onAction,
+  );
+
+  /// Show a toast on a captured overlay, including after its route closes.
+  /// Does nothing if the overlay has already been unmounted.
+  static void showOnOverlay(
+    OverlayState overlay, {
+    required String message,
+    IconData? leadingIcon,
+    String? actionLabel,
+    VoidCallback? onAction,
   }) {
     _show(
-      context,
+      overlay,
       _BullSnackBarContent(
         message: message,
         leadingIcon: leadingIcon,
@@ -45,12 +61,13 @@ class BullSnackBar {
 
   /// Show a toast with custom [content] instead of a plain message.
   static void showContent(BuildContext context, Widget content) {
-    _show(context, content);
+    _show(Overlay.of(context, rootOverlay: true), content);
   }
 
-  static void _show(BuildContext context, Widget content) {
+  static void _show(OverlayState overlay, Widget content) {
+    if (!overlay.mounted) return;
     _disposeEntryImmediate();
-    _entry = OverlayEntry(
+    final entry = OverlayEntry(
       builder: (_) => Positioned(
         top: 0,
         left: 16,
@@ -68,7 +85,8 @@ class BullSnackBar {
         ),
       ),
     );
-    Overlay.of(context, rootOverlay: true).insert(_entry!);
+    _entry = entry;
+    overlay.insert(entry);
     _scheduleAutoDismiss();
   }
 

@@ -41,10 +41,14 @@ final class QuickActionsFacade extends ChangeNotifier {
   QuickActionSelection? _selection;
   bool _initialized = false;
   int _generation = 0;
+  Future<void> _pendingWrite = Future.value();
 
   /// The host can await [load] before mounting the row to avoid a loading gap.
   bool get initialized => _initialized;
   QuickActionSelection? get selection => _selection;
+
+  /// Revision of the last confirmed preference, for expiring Undo actions.
+  int get revision => _generation;
 
   Future<QuickActionSelection?> load() async {
     if (_initialized) return _selection;
@@ -65,7 +69,7 @@ final class QuickActionsFacade extends ChangeNotifier {
 
   Future<Result<void, QuickActionsFailure>> save(
     QuickActionSelection selection,
-  ) async {
+  ) => _enqueue(() async {
     final result = await _save.execute(selection);
     if (result is Ok<void, QuickActionsFailure>) {
       _generation++;
@@ -74,9 +78,9 @@ final class QuickActionsFacade extends ChangeNotifier {
       notifyListeners();
     }
     return result;
-  }
+  });
 
-  Future<Result<void, QuickActionsFailure>> reset() async {
+  Future<Result<void, QuickActionsFailure>> reset() => _enqueue(() async {
     final result = await _reset.execute();
     if (result is Ok<void, QuickActionsFailure>) {
       _generation++;
@@ -84,6 +88,17 @@ final class QuickActionsFacade extends ChangeNotifier {
       _initialized = true;
       notifyListeners();
     }
+    return result;
+  });
+
+  Future<Result<void, QuickActionsFailure>> _enqueue(
+    Future<Result<void, QuickActionsFailure>> Function() operation,
+  ) {
+    final result = _pendingWrite.then((_) => operation());
+    _pendingWrite = result.then<void>(
+      (_) {},
+      onError: (Object _, StackTrace _) {},
+    );
     return result;
   }
 }

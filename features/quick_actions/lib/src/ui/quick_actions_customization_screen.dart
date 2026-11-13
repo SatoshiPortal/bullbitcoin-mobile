@@ -22,9 +22,9 @@ class QuickActionsCustomizationScreen extends StatefulWidget {
 
 class _QuickActionsCustomizationScreenState
     extends State<QuickActionsCustomizationScreen> {
-  List<QuickAction>? draft;
+  QuickActionSelection? draft;
   bool saving = false;
-  bool failed = false;
+  int undoVersion = 0;
 
   @override
   void initState() {
@@ -35,35 +35,91 @@ class _QuickActionsCustomizationScreenState
   Future<void> _load() async {
     final saved = await widget.facade.load();
     if (mounted) {
-      setState(() {
-        draft = List.of(
-          saved?.actions ?? widget.defaults.where(widget.available.contains),
-        );
-      });
+      setState(() => draft = saved ?? QuickActionSelection(widget.defaults));
     }
   }
 
-  Future<void> _apply({required bool reset}) async {
-    final current = draft;
-    if (current == null || saving) return;
+  /// Optimistic local presentation; the facade publishes only confirmed writes.
+  Future<bool> _write(QuickActionSelection? preference) async {
+    final previous = draft;
+    if (previous == null || saving) return false;
+    final feedback = Overlay.of(context, rootOverlay: true);
+    final failureMessage = QuickActionsLocalizations.of(context).saveFailed;
+    undoVersion++;
+    BullSnackBar.dismiss();
     setState(() {
+      draft = preference ?? QuickActionSelection(widget.defaults);
       saving = true;
-      failed = false;
     });
-    final result = reset
+    final result = preference == null
         ? await widget.facade.reset()
-        : await widget.facade.save(QuickActionSelection(current));
-    if (mounted == false) return;
+        : await widget.facade.save(preference);
     switch (result) {
       case Ok():
-        Navigator.pop(context);
-      case Err():
-        setState(() {
+        if (mounted) {
+          setState(() => saving = false);
+        } else {
           saving = false;
-          failed = true;
-        });
+        }
+        return true;
+      case Err():
+        if (mounted) {
+          setState(() {
+            draft = previous;
+            saving = false;
+          });
+        } else {
+          saving = false;
+        }
+        BullSnackBar.showOnOverlay(feedback, message: failureMessage);
+        return false;
     }
   }
+
+  Future<void> _editHome(List<QuickAction> home) async {
+    final current = draft;
+    if (current == null || saving) return;
+    final _ = await _write(
+      current.withHomeActions(available: widget.available, home: home),
+    );
+  }
+
+  Future<void> _restoreDefaults() async {
+    if (draft == null || saving) return;
+    final facade = widget.facade;
+    final previous = facade.selection;
+    final feedback = Overlay.of(context, rootOverlay: true);
+    final l10n = QuickActionsLocalizations.of(context);
+    final restored = await _write(null);
+    if (restored == false || feedback.mounted == false) return;
+    final version = undoVersion;
+    final revision = facade.revision;
+    BullSnackBar.showOnOverlay(
+      feedback,
+      message: l10n.defaultsRestored,
+      actionLabel: l10n.undo,
+      onAction: () async {
+        if (version != undoVersion || saving || revision != facade.revision) {
+          return;
+        }
+        if (mounted) {
+          await _write(previous);
+        } else {
+          final result = previous == null
+              ? await facade.reset()
+              : await facade.save(previous);
+          if (result is Err<void, QuickActionsFailure>) {
+            BullSnackBar.showOnOverlay(feedback, message: l10n.saveFailed);
+          }
+        }
+      },
+    );
+  }
+
+  List<QuickAction> _home(QuickActionSelection current) => current.actions
+      .where(widget.available.contains)
+      .take(QuickActionsLayout.maximumHomeActions)
+      .toList();
 
   @override
   Widget build(BuildContext context) {
@@ -91,16 +147,22 @@ class _QuickActionsCustomizationScreenState
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    if (failed) ...[
-                      BullText(l10n.saveFailed, style: null),
-                      const SizedBox(height: 8),
-                    ],
+                    SizedBox(
+                      height: 24,
+                      child: saving
+                          ? Semantics(
+                              liveRegion: true,
+                              child: BullText(l10n.saving, style: null),
+                            )
+                          : const SizedBox.shrink(),
+                    ),
                     BullButton.big(
-                      label: saving ? l10n.saving : l10n.save,
-                      onPressed: () => _apply(reset: false),
+                      label: l10n.reset,
+                      onPressed: _restoreDefaults,
                       disabled: saving,
-                      bgColor: context.bull.primary,
-                      textColor: context.bull.onPrimary,
+                      bgColor: context.bull.surface,
+                      textColor: context.bull.text,
+                      outlined: true,
                     ),
                   ],
                 ),
@@ -111,22 +173,17 @@ class _QuickActionsCustomizationScreenState
     );
   }
 
-  Widget _editor(BuildContext context, List<QuickAction> current) {
+  Widget _editor(BuildContext context, QuickActionSelection current) {
     final l10n = QuickActionsLocalizations.of(context);
+    final home = _home(current);
     final layout = QuickActionsLayout.resolve(
       available: widget.available,
       defaults: widget.defaults,
-      selection: QuickActionSelection(current),
+      selection: current,
     );
-    final firstOverflow = current.indexWhere(
+    final remainder = QuickActionsLayout.moreOrder.where(
       (action) =>
-          widget.available.contains(action) &&
-          layout.primary.contains(action) == false,
-    );
-    final remainder = QuickAction.values.where(
-      (action) =>
-          widget.available.contains(action) &&
-          current.contains(action) == false,
+          widget.available.contains(action) && home.contains(action) == false,
     );
     final preview = <Widget>[
       for (final action in layout.primary)
@@ -158,7 +215,7 @@ class _QuickActionsCustomizationScreenState
             ],
           ),
         ),
-        if (current.isEmpty) BullText(l10n.emptyHint, style: null),
+        if (home.isEmpty) BullText(l10n.emptyHint, style: null),
         const SizedBox(height: 16),
         BullText(l10n.maximumHint, style: null),
         const SizedBox(height: 16),
@@ -167,64 +224,47 @@ class _QuickActionsCustomizationScreenState
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           buildDefaultDragHandles: false,
-          itemCount: current.length,
+          itemCount: home.length,
           onReorderItem: (oldIndex, newIndex) {
-            if (saving) return;
-            _move(current, oldIndex, newIndex);
+            if (saving == false) _move(home, oldIndex, newIndex);
           },
           itemBuilder: (context, index) {
-            final action = current[index];
+            final action = home[index];
             final name = action.fullLabel(l10n);
-            return Column(
+            return Row(
               key: ValueKey(action.id),
-              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                if (index == firstOverflow)
-                  BullText(l10n.overflowHint, style: null),
-                Row(
-                  children: [
-                    _iconControl(
-                      tooltip: l10n.removeAction(name),
-                      onPressed: saving
-                          ? null
-                          : () => setState(() => current.removeAt(index)),
-                      icon: const BullIcon(BullIcons.removeCircleOutline),
+                _iconControl(
+                  tooltip: l10n.removeAction(name),
+                  onPressed: saving
+                      ? null
+                      : () => _editHome(List.of(home)..removeAt(index)),
+                  icon: const BullIcon(BullIcons.removeCircleOutline),
+                ),
+                Expanded(child: BullText(name, style: null)),
+                ReorderableDragStartListener(
+                  index: index,
+                  enabled: saving == false,
+                  child: Semantics(
+                    label: l10n.reorderAction(name),
+                    customSemanticsActions: {
+                      if (!saving && index > 0)
+                        CustomSemanticsAction(
+                          label: '${l10n.moveUp}: $name',
+                        ): () =>
+                            _move(home, index, index - 1),
+                      if (!saving && index < home.length - 1)
+                        CustomSemanticsAction(
+                          label: '${l10n.moveDown}: $name',
+                        ): () =>
+                            _move(home, index, index + 1),
+                    },
+                    child: const SizedBox(
+                      width: 48,
+                      height: 48,
+                      child: Center(child: BullIcon(BullIcons.dragHandle)),
                     ),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          BullText(name, style: null),
-                          if (widget.available.contains(action) == false)
-                            BullText(l10n.unavailable, style: null),
-                        ],
-                      ),
-                    ),
-                    ReorderableDragStartListener(
-                      index: index,
-                      enabled: saving == false,
-                      child: Semantics(
-                        label: l10n.reorderAction(name),
-                        customSemanticsActions: {
-                          if (!saving && index > 0)
-                            CustomSemanticsAction(
-                              label: '${l10n.moveUp}: $name',
-                            ): () =>
-                                _move(current, index, index - 1),
-                          if (!saving && index < current.length - 1)
-                            CustomSemanticsAction(
-                              label: '${l10n.moveDown}: $name',
-                            ): () =>
-                                _move(current, index, index + 1),
-                        },
-                        child: const SizedBox(
-                          width: 48,
-                          height: 48,
-                          child: Center(child: BullIcon(BullIcons.dragHandle)),
-                        ),
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
               ],
             );
@@ -232,28 +272,23 @@ class _QuickActionsCustomizationScreenState
         ),
         const SizedBox(height: 16),
         BullText(l10n.inMore, style: null),
+        if (home.length == QuickActionsLayout.maximumHomeActions)
+          BullText(l10n.homeFullHint, style: null),
         for (final action in remainder)
           Row(
             children: [
               _iconControl(
                 tooltip: l10n.addAction(action.fullLabel(l10n)),
-                onPressed: saving
+                onPressed:
+                    saving ||
+                        home.length == QuickActionsLayout.maximumHomeActions
                     ? null
-                    : () => setState(() => current.add(action)),
+                    : () => _editHome([...home, action]),
                 icon: const BullIcon(BullIcons.addCircleOutline),
               ),
               Expanded(child: BullText(action.fullLabel(l10n), style: null)),
             ],
           ),
-        const SizedBox(height: 16),
-        BullButton.big(
-          label: l10n.reset,
-          onPressed: () => _apply(reset: true),
-          disabled: saving,
-          bgColor: context.bull.surface,
-          textColor: context.bull.text,
-          outlined: true,
-        ),
       ],
     );
   }
@@ -268,11 +303,11 @@ class _QuickActionsCustomizationScreenState
     child: IconButton(tooltip: tooltip, onPressed: onPressed, icon: icon),
   );
 
-  void _move(List<QuickAction> actions, int from, int to) {
-    if (to < 0 || to >= actions.length) return;
-    setState(() {
-      final action = actions.removeAt(from);
-      actions.insert(to, action);
-    });
+  Future<void> _move(List<QuickAction> home, int from, int to) async {
+    if (saving || to < 0 || to >= home.length || from == to) return;
+    final next = List.of(home);
+    final action = next.removeAt(from);
+    next.insert(to, action);
+    await _editHome(next);
   }
 }
