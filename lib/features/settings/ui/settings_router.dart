@@ -76,17 +76,18 @@ class SettingsRouter {
       GoRoute(
         name: SettingsRoute.exchangeAccess.name,
         path: SettingsRoute.exchangeAccess.path,
-        builder: (context, state) => ExchangeAccessSettingsScreen(
-          cubit: locator<ExchangeAccessSettingsCubit>(),
-          onBack: () => context.pop(),
-          onAuthenticate: () => context.pushNamed<void>(
-            ExchangeRoute.exchangeAuth.name,
-            queryParameters: {'from': 'settings'},
+        builder: (context, state) => BlocProvider(
+          create: (_) => locator<ExchangeAccessSettingsCubit>(),
+          child: ExchangeAccessSettingsScreen(
+            onBack: () => context.pop(),
+            onAuthenticate: () => context.pushNamed<void>(
+              ExchangeRoute.exchangeAuth.name,
+              queryParameters: {'from': 'settings'},
+            ),
+            onOpenAccount: () =>
+                context.pushNamed(SettingsRoute.exchangeSettings.name),
+            onDisabled: () => context.goNamed(WalletRoute.walletHome.name),
           ),
-          onOpenAccount: () =>
-              context.pushNamed(SettingsRoute.exchangeSettings.name),
-          onDisabled: () => context.goNamed(WalletRoute.walletHome.name),
-          onAuthenticated: () => context.goNamed(WalletRoute.walletHome.name),
         ),
       ),
       GoRoute(

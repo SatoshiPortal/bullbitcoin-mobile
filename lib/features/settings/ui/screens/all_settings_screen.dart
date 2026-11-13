@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
@@ -51,15 +49,7 @@ class _AllSettingsScreenState extends State<AllSettingsScreen> {
       (ServiceStatusCubit cubit) => cubit.state.serviceStatus,
     );
 
-    final isSuperuser = context.select(
-      (SettingsCubit cubit) => cubit.state.isSuperuser ?? false,
-    );
-    final ready =
-        ExchangeAvailability.resolve(
-          platformAllowed: !Platform.isIOS || isSuperuser,
-          access: access,
-        ) ==
-        ExchangeAvailability.ready;
+    final ready = ExchangeAvailability.canManageAccount(access);
     final items = settingsItemsOf(context, accountReady: ready);
 
     return Scaffold(
