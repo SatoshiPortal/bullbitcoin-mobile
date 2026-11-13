@@ -22,6 +22,7 @@ import 'package:bb_mobile/features/bitbox/bitbox_locator.dart';
 import 'package:bb_mobile/features/bitcoin_price/bitcoin_price_locator.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/locator.dart';
 import 'package:bb_mobile/features/buy/buy_locator.dart';
+import 'package:bb_mobile/features/bullvault/bullvault_locator.dart';
 import 'package:bb_mobile/features/coins/coins_locator.dart';
 import 'package:bb_mobile/features/consolidation/consolidation_locator.dart';
 import 'package:bb_mobile/features/dca/dca_locator.dart';
@@ -40,6 +41,7 @@ import 'package:bb_mobile/features/onboarding/onboarding_locator.dart';
 import 'package:bb_mobile/features/pay/pay_locator.dart';
 import 'package:bb_mobile/features/pin_code/pin_code_locator.dart';
 import 'package:bb_mobile/features/psbt_flow/psbt_flow_locator.dart';
+import 'package:bb_mobile/features/psbt_signing/psbt_signing_locator.dart';
 import 'package:bb_mobile/features/receive/receive_locator.dart';
 import 'package:bb_mobile/features/recipients/recipients_locator.dart';
 import 'package:bb_mobile/features/replace_by_fee/locator.dart';
@@ -175,6 +177,7 @@ class AppLocator {
     MempoolSettingsLocator.setup(locator);
     TorSettingsLocator.setup(locator);
     PinCodeLocator.setup(locator);
+    PsbtSigningLocator.setup(locator);
     WizardLocator.setup(locator);
     AppStartupLocator.setup(locator);
     AppUnlockLocator.setup(locator);
@@ -234,6 +237,7 @@ class AppLocator {
     LedgerLocator.setup(locator);
     RecipientsLocator.setup(locator);
     BitBoxLocator.setup(locator);
+    BullVaultLocator.setup(locator);
   }
 }
 

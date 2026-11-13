@@ -31,3 +31,15 @@ final class SettingsExchangeSyncFailure extends SettingsFailure {
 final class SettingsUnexpectedFailure extends SettingsFailure {
   const SettingsUnexpectedFailure([super.logMessage]);
 }
+
+final class SettingsSigningKeyExportFailure extends SettingsFailure {
+  const SettingsSigningKeyExportFailure([super.logMessage]);
+}
+
+final class SettingsWalletPolicyFailure extends SettingsFailure {
+  const SettingsWalletPolicyFailure([super.logMessage]);
+}
+
+final class SettingsWalletRegistrationFailure extends SettingsFailure {
+  const SettingsWalletRegistrationFailure([super.logMessage]);
+}

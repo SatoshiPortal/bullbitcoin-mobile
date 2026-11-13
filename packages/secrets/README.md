@@ -13,14 +13,17 @@ Each asynchronous `Future<Result<T, SecretFailure>>` is shown as `T`. Other retu
 ```text
 Secrets
 |-- generate([wordCount: MnemonicLength.words12]) -> Secret
+|-- generateEphemeral([wordCount: MnemonicLength.words24]) -> EphemeralMnemonic
 |-- import(words:, [language: Language.english], [passphrase:], [acceptOnly:]) -> Secret
+|-- retainCanonical(id) -> Secret
 |-- fetch(id) -> Secret
 |-- list() -> List<SecretEntry>
 |-- trash(id) -> void
 |-- exists(id) -> bool
 |-- contains(words:, [language: Language.english], [passphrase:]) -> bool
 |-- preview
-|   `-- bitcoinDescriptors(words:, [language: Language.english], [passphrase:], network:, scriptTypes:) -> Map<ScriptType, ({String external, String internal})>
+|   |-- bitcoinDescriptors(words:, [language: Language.english], [passphrase:], network:, scriptTypes:) -> Map<ScriptType, ({String external, String internal})>
+|   `-- account(words:, [language: Language.english], derivationPath:, network:, [passphrase: '']) -> PublicAccountKey
 |-- recoverbull
 |   |-- restore(vault:, key:, [passphrase:]) -> RestoredVault
 |   `-- fingerprint(vault:, key:) -> Fingerprint
@@ -41,10 +44,12 @@ Secret
 |   |-- bip85
 |   |   |-- hex(numBytes:, index:) -> String
 |   |   `-- mnemonic(wordCount:, index:, [language: Language.english]) -> List<String>
+|   |-- account(derivationPath:, network:, [passphrase:]) -> PublicAccountKey
 |   |-- xpub(network:, scriptType:, [accountIndex: 0]) -> String
 |   `-- swapKey(network:) -> SwapMasterKey
 |-- sign
 |   |-- psbt(psbt, network:, scriptType:, [accountIndex: 0]) -> String
+|   |-- descriptorPsbt(psbt, descriptor:, network:, keys:, [passphrase:], [signWithTapInternalKey: false]) -> String
 |   `-- pset(pset, network:) -> String
 |-- backup
 |   `-- recoverbull([metadata: const {}]) -> ({VaultKey key, EncryptedVault vault})
@@ -61,6 +66,12 @@ Secret
 <!-- secrets-api:end -->
 
 These trees describe the implemented API, not a future specification. The generator follows the exports of `lib/secrets.dart`, including exported extensions and extension types, so a renamed operation or changed default appears without a second method list to maintain. `make secrets-api-docs-check` detects stale trees in `make checks` and CI. Behavioral documentation below remains maintained by the author of the change.
+
+Explicit account derivation returns the actual master fingerprint and the canonical network xpub at the requested path. Its optional passphrase, and the one on descriptor signing, apply only to that operation: omit it to use the stored passphrase, or pass an empty string to use the mnemonic alone. Neither changes the stored secret. Raw seeds accept an empty override but cannot take a BIP39 passphrase.
+
+Descriptor signing verifies each selected account xpub before deriving its private key. It adds partial signatures only; the wallet owns public policy checks, signing-path selection and finalization. Private descriptors and native signing handles are released within the call.
+
+`preview.account` derives public account information from user-supplied words without importing them. `generateEphemeral` creates an independent mnemonic for a bounded setup flow, accessible only through the same sealed display and challenge widgets as stored secrets. The caller must dispose that handle when setup ends. `retainCanonical` retains a words-only sibling of a verified stored mnemonic without replacing its original passphrase entry; callers use it only after establishing ownership of the corresponding public key.
 
 ## Getting started
 
@@ -115,9 +126,10 @@ Keep `secret.id`, a `primitives.Fingerprint`, to fetch a new handle later. Impor
 |---|---|---|
 | `derive.xpub` | account xpub | reveals addresses |
 | `preview.bitcoinDescriptors` (on `Secrets`) | receive/change public descriptors of unstored words | reveals addresses |
+| `derive.account`, `preview.account`, `EphemeralMnemonic.account` | public account key and origin | reveals addresses; no private material returned |
 | `derive.descriptors.bitcoin` | receive/change public descriptors | reveals addresses |
 | `derive.descriptors.liquid` | confidential descriptor with its SLIP-77 blinding key | reveals amounts and assets, without spend authority |
-| `sign.psbt`, `sign.pset` | signed serialized transaction data | authority for the signed transaction |
+| `sign.psbt`, `sign.descriptorPsbt`, `sign.pset` | signed serialized transaction data | authority for the signed transaction |
 | `verify.mnemonic`, `verify.seed` | match or mismatch | no stored material returned |
 | `info`, `id` | fingerprint and shape | no key material |
 | `derive.bip85.hex`, `derive.bip85.mnemonic` | child entropy or words | spending authority over what the child controls |
@@ -126,6 +138,8 @@ Keep `secret.id`, a `primitives.Fingerprint`, to fetch a new handle later. Impor
 | `silentPayments.account` | a live bwk Silent Payments account that scans and signs | ⚠️ bwk receives the stored words and holds them while the account lives; the app gets the account only |
 | `databaseKeys(module:).getOrCreate` | module database key | opens the encrypted database |
 | `widgets.mnemonicView`, `widgets.mnemonicChallenge` | sealed widgets and events | words rendered on the protected screen |
+| `generateEphemeral` | disposable mnemonic handle | independent words stay inside the package and are never stored |
+| `retainCanonical` | stored words-only `Secret` handle | retains a backing secret without exposing its words |
 
 The stored words, passphrase, seed and master xprv have no public getter. The grouped interface is the only public spelling. Flat implementation methods and widget constructors are internal; applications cannot call them without an analyzer diagnostic. The three derivation operations returning key material are BIP85 hex, BIP85 mnemonic and the swap master key. `silentPayments.account` returns no material to the app, but its returned account retains keys after the call: bwk-dart opens it from a mnemonic only. The Liquid and Boltz adapters also use English words transiently in the pinned SDK. Backup keys and database keys are listed separately above.
 
@@ -135,11 +149,11 @@ Account xpub derivation accepts the shared `Network`, either `BitcoinNetwork` or
 
 Account xpub derivation, Bitcoin signing, Liquid descriptors and signatures, BIP85 and swap credentials honor the stored passphrase. Existing Liquid wallets are passphrase-less defaults, for which this is the seed lwk's word-based signer derived. A Liquid-network xpub does not necessarily describe the keys in the Liquid descriptor, for example with a different script type. Stored mnemonics support all ten BIP39 languages. Import and word verification normalize words with NFKD; seed derivation normalizes the sentence and passphrase with NFKD. Bitcoin signing constructs its BDK key from the master xprv derived in Dart from that seed. BIP85 takes the child language independently of the parent; the default remains English. Silent Payments cannot honour a passphrase — bwk derives from the words alone — so `silentPayments.account` refuses a secret that has one with `PassphraseUnsupportedFailure`.
 
-Signing takes and returns base64 PSBT/PSET strings. Both chains refuse inputs asking for anything other than `SIGHASH_ALL`. A successful Bitcoin signing call may return a partially signed PSBT, as required by payjoin; success does not imply finalization or readiness to broadcast. The caller supplies required key-origin information and decides whether outputs, fees and inputs are acceptable.
+Signing takes and returns base64 PSBT/PSET strings. Standard Bitcoin and Liquid signing accept `SIGHASH_ALL`; descriptor signing also accepts Taproot `SIGHASH_DEFAULT`. A successful Bitcoin signing call may return a partially signed PSBT, as required by payjoin; success does not imply finalization or readiness to broadcast. The caller supplies required key-origin information and decides whether outputs, fees and inputs are acceptable.
 
 `verify.mnemonic(words)` compares words only. `verify.seed(hex)` compares seed bytes, including the stored passphrase in the derivation for a mnemonic secret. A seed-only secret supports seed verification; mnemonic verification returns `MnemonicRequiredFailure`. A match is `Ok(true)`; a different seed or malformed candidate hex is `Ok(false)`; inability to read or check stored material is an `Err`.
 
-Historical seed-only entries support xpub, Bitcoin descriptor and BIP85 derivation. Operations requiring mnemonic words — the current signers, Liquid descriptors, swap credentials, vault backup and word widgets — return `MnemonicRequiredFailure` for those entries. This is an adapter capability, not a claim that raw seeds cannot sign cryptographically.
+Historical seed-only entries support public-account, xpub, Bitcoin descriptor and BIP85 derivation, plus `sign.descriptorPsbt`. Operations requiring mnemonic words, including `sign.psbt`, `sign.pset`, Liquid descriptors, swap credentials, vault backup and word widgets, return `MnemonicRequiredFailure` for those entries.
 
 ## Language persistence and native capabilities
 

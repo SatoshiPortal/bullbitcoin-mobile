@@ -3,6 +3,7 @@ import 'package:bb_mobile/features/broadcast_signed_tx/presentation/broadcast_si
 import 'package:bb_mobile/features/broadcast_signed_tx/presentation/pages/broadcast_signed_tx_page.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/presentation/pages/scan_nfc_page.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/presentation/pages/scan_qr_page.dart';
+import 'package:bb_mobile/features/broadcast_signed_tx/type.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -20,12 +21,13 @@ enum BroadcastSignedTxRoute {
 class BroadcastSignedTxRouter {
   static final route = ShellRoute(
     builder: (context, state, child) {
-      final unsignedPsbt = state.extra is String
-          ? state.extra! as String
-          : null;
+      final extra = state.extra;
+      final request = extra is BroadcastSignedTxRequest
+          ? extra
+          : const BroadcastSignedTxRequest();
 
       return BlocProvider(
-        create: (_) => locator<BroadcastSignedTxCubit>(param1: unsignedPsbt),
+        create: (_) => locator<BroadcastSignedTxCubit>(param1: request),
         child: child,
       );
     },
@@ -41,8 +43,12 @@ class BroadcastSignedTxRouter {
             builder: (context, state) =>
                 BlocListener<BroadcastSignedTxCubit, BroadcastSignedTxState>(
                   listenWhen: (previous, state) =>
-                      previous.transaction == null && state.transaction != null,
-                  listener: (context, state) => context.pop(),
+                      (previous.transaction == null &&
+                          state.transaction != null) ||
+                      (previous.collectedSignerResult == null &&
+                          state.collectedSignerResult != null),
+                  listener: (context, state) =>
+                      context.pop(state.collectedSignerResult),
                   child: const ScanQrPage(),
                 ),
           ),

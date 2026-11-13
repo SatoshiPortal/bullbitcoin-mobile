@@ -5,8 +5,9 @@ import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 import 'package:bb_mobile/core/ledger/data/models/ledger_device_model.dart';
 import 'package:bb_mobile/core/ledger/domain/entities/ledger_device_entity.dart';
 import 'package:bb_mobile/core/ledger/data/ledger_exception.dart';
-import 'package:bull_logger/bull_logger.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/bitcoin_policy.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bull_logger/bull_logger.dart';
 import 'package:bull_sdk/bdk.dart' as bdk;
 import 'package:convert/convert.dart' as convert;
 import 'package:flutter/foundation.dart';
@@ -32,9 +33,9 @@ class LedgerDeviceDatasource {
     final ledgerDeviceType = deviceType != null
         ? convertToLedgerDeviceType(deviceType)
         : null;
-    final needsBluetooth =
-        ledgerDeviceType == null || !ledgerDeviceType.usbOnly;
-    if (needsBluetooth) {
+    var scanBluetooth = ledgerDeviceType == null || !ledgerDeviceType.usbOnly;
+    final canUseUsbFallback = Platform.isAndroid && ledgerDeviceType == null;
+    if (scanBluetooth) {
       if (Platform.isAndroid) {
         final bluetoothConnectStatus = await Permission.bluetoothConnect
             .request();
@@ -42,19 +43,27 @@ class LedgerDeviceDatasource {
 
         if (!bluetoothConnectStatus.isGranted ||
             !bluetoothScanStatus.isGranted) {
-          throw const PermissionDeniedLedgerException();
+          if (!canUseUsbFallback) {
+            throw const PermissionDeniedLedgerException();
+          }
+          scanBluetooth = false;
         }
       }
 
-      final bleState = await UniversalBle.getBluetoothAvailabilityState();
-      final bleIsEnabled = bleState == AvailabilityState.poweredOn;
+      if (scanBluetooth) {
+        final bleState = await UniversalBle.getBluetoothAvailabilityState();
+        final bleIsEnabled = bleState == AvailabilityState.poweredOn;
 
-      if (!bleIsEnabled) {
-        throw const PermissionDeniedLedgerException();
+        if (!bleIsEnabled) {
+          if (!canUseUsbFallback) {
+            throw const PermissionDeniedLedgerException();
+          }
+          scanBluetooth = false;
+        }
       }
     }
 
-    if (needsBluetooth) {
+    if (scanBluetooth) {
       _ledgerBle = LedgerInterface.ble(
         onPermissionRequest: (_) async {
           final Map<Permission, PermissionStatus> statuses = await [
@@ -76,7 +85,7 @@ class LedgerDeviceDatasource {
     final completer = Completer<void>();
     StreamSubscription<LedgerDevice>? bleScanSubscription;
 
-    if (needsBluetooth && _ledgerBle != null) {
+    if (scanBluetooth && _ledgerBle != null) {
       bleScanSubscription = _ledgerBle!.scan().listen(
         (device) {
           if (ledgerDeviceType != null &&
@@ -238,6 +247,71 @@ class LedgerDeviceDatasource {
     final bitcoinApp = BitcoinLedgerApp(sdkConnection);
     final fingerprint = await bitcoinApp.getMasterFingerprint();
     return fingerprint.map((b) => b.toRadixString(16).padLeft(2, '0')).join('');
+  }
+
+  Future<String> getWalletPolicyXpub(
+    LedgerDeviceModel device, {
+    required String derivationPath,
+  }) {
+    final connection = _getSdkConnection(device);
+    return BitcoinLedgerApp(
+      connection,
+    ).getXPubKey(derivationPath: derivationPath, displayPublicKey: false);
+  }
+
+  Future<String> getBitcoinAppVersion(LedgerDeviceModel device) async {
+    final connection = _getSdkConnection(device);
+    final ledgerDevice = _cachedDevice;
+    if (ledgerDevice == null) throw const DeviceNotFoundLedgerException();
+    final appVersion = await BitcoinLedgerApp(
+      connection,
+    ).getVersion(ledgerDevice);
+    return appVersion.version;
+  }
+
+  Future<Uint8List> registerWalletPolicy(
+    LedgerDeviceModel device, {
+    required WalletPolicy walletPolicy,
+  }) async {
+    final connection = _getSdkConnection(device);
+    final registration = await BitcoinLedgerApp(
+      connection,
+    ).registerWallet(walletPolicy: walletPolicy);
+    return registration.walletHMAC;
+  }
+
+  Future<String> signWalletPsbt(
+    LedgerDeviceModel device, {
+    required WalletPolicy walletPolicy,
+    required Uint8List walletHmac,
+    required String psbt,
+  }) async {
+    final connection = _getSdkConnection(device);
+    final signedPsbt = await BitcoinLedgerApp(connection)
+        .signPsbtWithWalletPolicy(
+          psbt: base64.decode(psbt),
+          walletPolicy: walletPolicy,
+          walletHMAC: walletHmac,
+        );
+    return base64.encode(signedPsbt);
+  }
+
+  Future<String> verifyWalletAddress(
+    LedgerDeviceModel device, {
+    required WalletPolicy walletPolicy,
+    required Uint8List walletHmac,
+    required BitcoinPolicyKeychain keychain,
+    required int index,
+  }) async {
+    final connection = _getSdkConnection(device);
+    final address = await BitcoinLedgerApp(connection)
+        .getWalletAddressWithPolicy(
+          walletPolicy: walletPolicy,
+          walletHMAC: walletHmac,
+          change: keychain == BitcoinPolicyKeychain.external ? 0 : 1,
+          addressIndex: index,
+        );
+    return utf8.decode(address);
   }
 
   Future<String> signPsbt(

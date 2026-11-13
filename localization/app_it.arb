@@ -1029,7 +1029,6 @@
   "exchangeDcaFrequencyDay": "giorno",
   "payBumpFee": "Aumenta commissione",
   "bitboxActionImportWalletProcessingSubtext": "Configurazione del portafoglio watch-only in corso…",
-  "psbtFlowDone": "Ho finito",
   "exchangeHomeDepositButton": "Deposito",
   "testBackupRecoverWallet": "Recupera portafoglio",
   "sendEstimatedDelivery": "Consegna prevista ~ ",

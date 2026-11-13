@@ -24,6 +24,7 @@ class VaultFlowPage extends StatefulWidget {
   final Future<VaultFlowPresentation> Function() presentation;
   final VoidCallback? onRecovered;
   final String copiedMessage;
+  final bool returnCompletion;
 
   const VaultFlowPage({
     super.key,
@@ -31,6 +32,7 @@ class VaultFlowPage extends StatefulWidget {
     required this.presentation,
     required this.copiedMessage,
     this.onRecovered,
+    this.returnCompletion = false,
   });
 
   @override
@@ -271,7 +273,9 @@ class _VaultFlowPageState extends State<VaultFlowPage> with PrivacyScreen {
                 widget.onRecovered != null) {
               widget.onRecovered?.call();
             } else {
-              Navigator.of(context).pop(true);
+              Navigator.of(
+                context,
+              ).pop(widget.returnCompletion ? completion : true);
             }
           }),
         ] else ...[

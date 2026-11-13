@@ -1,6 +1,7 @@
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/core/fees/domain/fee_preview_cache.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/bitcoin_policy.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/calculate_bitcoin_absolute_fees_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/prepare_bitcoin_send_usecase.dart';
@@ -33,6 +34,7 @@ class PreviewBitcoinFeeUsecase {
     required bool replaceByFee,
     required List<WalletUtxo> selectedInputs,
     bool selectedOnly = false,
+    BitcoinPolicyPath? policyPath,
   }) async {
     try {
       final result = await _prepare.execute(
@@ -42,6 +44,7 @@ class PreviewBitcoinFeeUsecase {
         replaceByFee: replaceByFee,
         selectedInputs: selectedInputs,
         selectedOnly: selectedOnly,
+        policyPath: policyPath,
       );
       final PreparedBitcoinSend tx;
       switch (result) {

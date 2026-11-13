@@ -2,6 +2,8 @@ import 'package:flutter/widgets.dart';
 import 'package:meta/meta.dart';
 import 'package:secrets/src/domain/domain.dart';
 import 'package:secrets/src/public/secret.dart';
+import 'package:secrets/src/public/ephemeral_mnemonic.dart';
+import 'package:secrets/src/widgets/mnemonic_source.dart';
 import 'package:secrets/src/widgets/mnemonic_challenge.dart';
 import 'package:secrets/src/widgets/mnemonic_view.dart';
 
@@ -12,9 +14,13 @@ import 'package:secrets/src/widgets/mnemonic_view.dart';
 /// [Secret] it holds — the same door as every other operation. Each member
 /// is a single forwarding expression to a constructor; there is no
 /// behaviour here.
-extension type const SecretWidgets._(Secret _secret) {
+extension type const SecretWidgets._(MnemonicSource _source) {
   @internal
-  const SecretWidgets(Secret secret) : this._(secret);
+  SecretWidgets(Secret secret) : this._(StoredMnemonicSource(secret));
+
+  @internal
+  SecretWidgets.ephemeral(EphemeralMnemonic mnemonic)
+    : this._(EphemeralMnemonicSource(mnemonic));
 
   /// Shows the words, and the passphrase when there is one. See [MnemonicView].
   MnemonicView mnemonicView({
@@ -29,7 +35,7 @@ extension type const SecretWidgets._(Secret _secret) {
     Widget Function(BuildContext context, List<Widget> words)? layoutBuilder,
   }) => MnemonicView(
     key: key,
-    secret: _secret,
+    source: _source,
     failureBuilder: failureBuilder,
     style: style,
     passphraseLabel: passphraseLabel,
@@ -55,7 +61,7 @@ extension type const SecretWidgets._(Secret _secret) {
     Widget placeholder = const SizedBox.shrink(),
   }) => MnemonicChallenge(
     key: key,
-    secret: _secret,
+    source: _source,
     tileBuilder: tileBuilder,
     layoutBuilder: layoutBuilder,
     onSolved: onSolved,

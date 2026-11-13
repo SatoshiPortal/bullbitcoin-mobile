@@ -43,8 +43,9 @@ void main() {
 
   _MockWallet walletUsing(Fingerprint fingerprint, {bool local = true}) {
     final wallet = _MockWallet();
-    when(() => wallet.signsLocally).thenReturn(local);
-    when(() => wallet.masterFingerprint).thenReturn(fingerprint.hex);
+    when(
+      () => wallet.localSeedFingerprints,
+    ).thenReturn(local ? [fingerprint.hex] : []);
     return wallet;
   }
 

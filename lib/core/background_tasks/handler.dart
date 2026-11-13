@@ -85,7 +85,10 @@ Future<bool> tasksHandler(String task) async {
 
     switch (backgroundTask) {
       case BackgroundTask.bitcoinSync:
-        switch (await getWalletsUsecase.execute(onlyBitcoin: true)) {
+        switch (await getWalletsUsecase.execute(
+          onlyBitcoin: true,
+          includeHidden: true,
+        )) {
           case Ok(:final value):
             for (final wallet in value) {
               await syncWalletUsecase.execute(wallet);
@@ -102,7 +105,10 @@ Future<bool> tasksHandler(String task) async {
             return false;
         }
       case BackgroundTask.liquidSync:
-        switch (await getWalletsUsecase.execute(onlyLiquid: true)) {
+        switch (await getWalletsUsecase.execute(
+          onlyLiquid: true,
+          includeHidden: true,
+        )) {
           case Ok(:final value):
             for (final wallet in value) {
               await syncWalletUsecase.execute(wallet);

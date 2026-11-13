@@ -57,6 +57,18 @@ extension type const SecretDerivation._(Secret _secret) {
   /// BIP85 children of this secret.
   SecretBip85 get bip85 => SecretBip85._(_secret);
 
+  /// Public account key at an explicit path. See [Secret.account].
+  @useResult
+  Future<Result<PublicAccountKey, SecretFailure>> account({
+    required String derivationPath,
+    required BitcoinNetwork network,
+    String? passphrase,
+  }) => _secret.account(
+    derivationPath: derivationPath,
+    network: network,
+    passphrase: passphrase,
+  );
+
   /// Account-level extended public key. See [Secret.xpub].
   @useResult
   Future<Result<String, SecretFailure>> xpub({
@@ -139,6 +151,24 @@ extension type const SecretSigning._(Secret _secret) {
     network: network,
     scriptType: scriptType,
     accountIndex: accountIndex,
+  );
+
+  /// Partially signs selected descriptor key occurrences. See [Secret.signDescriptorPsbt].
+  @useResult
+  Future<Result<String, SecretFailure>> descriptorPsbt(
+    String psbt, {
+    required String descriptor,
+    required BitcoinNetwork network,
+    required List<DescriptorSigningKey> keys,
+    String? passphrase,
+    bool signWithTapInternalKey = false,
+  }) => _secret.signDescriptorPsbt(
+    psbt,
+    descriptor: descriptor,
+    network: network,
+    keys: keys,
+    passphrase: passphrase,
+    signWithTapInternalKey: signWithTapInternalKey,
   );
 
   /// Signs a PSET.

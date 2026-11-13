@@ -1,14 +1,17 @@
 import 'dart:typed_data';
 
-import 'package:secrets/secrets.dart';
+import 'package:bb_mobile/core/storage/tables/wallet_signer_table.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/bdk_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasource.dart';
+import 'package:bb_mobile/core/wallet/data/mappers/wallet_metadata_mapper.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_utxo_model.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/network_x.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:primitives/primitives.dart';
+import 'package:secrets/secrets.dart';
 
 final class PayjoinWalletAdapter implements PayjoinWalletPort {
   final Secrets _secrets;
@@ -23,21 +26,31 @@ final class PayjoinWalletAdapter implements PayjoinWalletPort {
     required BitcoinNetwork network,
     required String psbt,
   }) async {
-    final (secret, metadata) = await _loadSecret(walletId, network);
-    // The receiver's own input in a payjoin proposal carries no derivation
-    // path, and the package signs only what it can derive: the watch-only
-    // view adds the paths first.
+    final (secret, metadata, account) = await _loadSecret(walletId, network);
+    final wallet = WalletModel.fromMetadata(metadata) as PublicBdkWalletModel;
     final annotated = await _wallet.addOwnDerivations(
       psbt: psbt,
-      wallet: WalletModel.fromMetadata(metadata),
+      wallet: wallet,
     );
-    return _unwrap(
+    final prepared = await _wallet.preparePsbtForSigning(
+      annotated,
+      foreignInputWallet: wallet,
+    );
+    final scriptType = metadata.inferredScriptType;
+    if (scriptType == null) {
+      throw StateError('Payjoin requires a standard local wallet');
+    }
+    final signed = _unwrap(
       await secret.sign.psbt(
-        annotated,
+        prepared.psbt,
         network: network,
-        scriptType: metadata.scriptType.shared,
+        scriptType: scriptType.shared,
+        accountIndex: account,
       ),
     );
+    return _wallet
+        .completePsbtSigning(originalPsbt: prepared.psbt, signedPsbt: signed)
+        .psbt;
   }
 
   @override
@@ -95,20 +108,33 @@ final class PayjoinWalletAdapter implements PayjoinWalletPort {
     return metadata;
   }
 
-  Future<(Secret, WalletMetadataModel)> _loadSecret(
+  Future<(Secret, WalletMetadataModel, int)> _loadSecret(
     String walletId,
     BitcoinNetwork network,
   ) async {
     final metadata = await _loadMetadata(walletId, network);
-    final fingerprint = metadata.seedFingerprint;
-    if (fingerprint == null) {
-      throw Exception('No secret for wallet: not a seed-derived wallet');
+    final scriptType = metadata.inferredScriptType;
+    if (metadata.signers.length != 1 || scriptType == null) {
+      throw StateError('Payjoin requires a standard local wallet');
     }
-    final secret = _unwrap(await _secrets.fetch(fingerprint));
-    if (!secret.info.isMnemonic) {
-      throw StateError('Payjoin requires a local mnemonic wallet');
+    final signer = metadata.signers.single;
+    if (signer.descriptorKeys.length != 1) {
+      throw StateError('Payjoin requires a standard local wallet');
     }
-    return (secret, metadata);
+    final key = signer.descriptorKeys.single;
+    final account = scriptType.standardAccount(
+      key.derivationPath,
+      metadata.network,
+    );
+    if (signer.signer != Signer.local ||
+        account == null ||
+        key.descriptorPath != standardSingleSignatureDescriptorPath) {
+      throw StateError('Payjoin requires a standard local wallet');
+    }
+    final secret = _unwrap(
+      await _secrets.fetch(Fingerprint(key.masterFingerprint)),
+    );
+    return (secret, metadata, account);
   }
 
   /// This adapter already reports every problem by throwing — the port has no failure type — so a package failure becomes a `StateError` naming its kind, never its message.

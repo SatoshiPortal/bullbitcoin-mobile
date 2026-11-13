@@ -4,7 +4,7 @@ import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
 import 'package:secrets/src/domain/domain.dart';
 import 'package:secrets/src/widgets/painted_text.dart';
-import 'package:secrets/src/public/secret.dart';
+import 'package:secrets/src/widgets/mnemonic_source.dart';
 
 /// Shows a secret's words to the user without handing them to the caller.
 ///
@@ -14,7 +14,7 @@ import 'package:secrets/src/public/secret.dart';
 ///
 /// Reads initially and on explicit retry with [RevealReason.userDisplay]; the read is logged by the package like any reveal. Rebuilding with the same secret does not trigger a new read.
 final class MnemonicView extends StatefulWidget {
-  final Secret secret;
+  final MnemonicSource _source;
 
   /// Text style for the words and the passphrase.
   final TextStyle? style;
@@ -42,7 +42,7 @@ final class MnemonicView extends StatefulWidget {
   @internal
   const MnemonicView({
     super.key,
-    required this.secret,
+    required this._source,
     required this.failureBuilder,
     this.style,
     this.passphraseLabel,
@@ -71,7 +71,7 @@ final class _MnemonicViewState extends State<MnemonicView> {
   @override
   void didUpdateWidget(MnemonicView oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (widget.secret.id != oldWidget.secret.id) {
+    if (widget._source.id != oldWidget._source.id) {
       setState(_read);
     }
   }
@@ -80,9 +80,7 @@ final class _MnemonicViewState extends State<MnemonicView> {
   void _read() {
     _result = null;
     final generation = ++_generation;
-    widget.secret.revealMnemonic(reason: RevealReason.userDisplay).then((
-      result,
-    ) {
+    widget._source.reveal(RevealReason.userDisplay).then((result) {
       if (!mounted || generation != _generation) return;
       setState(() => _result = result);
     });
@@ -116,7 +114,7 @@ final class _MnemonicViewState extends State<MnemonicView> {
   Widget build(BuildContext context) {
     // Keyed by fingerprint and read generation, so host widgets under it start fresh when changing secrets or retrying.
     return KeyedSubtree(
-      key: ValueKey((widget.secret.id.hex, _generation)),
+      key: ValueKey((widget._source.id.hex, _generation)),
       child: Builder(
         builder: (context) {
           final result = _result;

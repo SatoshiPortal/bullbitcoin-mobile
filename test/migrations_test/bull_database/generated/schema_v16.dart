@@ -609,17 +609,8 @@ class WalletMetadatas extends Table
     requiredDuringInsert: true,
     $customConstraints: 'NOT NULL',
   );
-  late final GeneratedColumn<String> masterFingerprint =
-      GeneratedColumn<String>(
-        'master_fingerprint',
-        aliasedName,
-        false,
-        type: DriftSqlType.string,
-        requiredDuringInsert: true,
-        $customConstraints: 'NOT NULL',
-      );
-  late final GeneratedColumn<String> xpubFingerprint = GeneratedColumn<String>(
-    'xpub_fingerprint',
+  late final GeneratedColumn<String> network = GeneratedColumn<String>(
+    'network',
     aliasedName,
     false,
     type: DriftSqlType.string,
@@ -658,47 +649,13 @@ class WalletMetadatas extends Table
     requiredDuringInsert: false,
     $customConstraints: 'NULL',
   );
-  late final GeneratedColumn<String> xpub = GeneratedColumn<String>(
-    'xpub',
+  late final GeneratedColumn<String> publicDescriptor = GeneratedColumn<String>(
+    'public_descriptor',
     aliasedName,
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
     $customConstraints: 'NOT NULL',
-  );
-  late final GeneratedColumn<String> externalPublicDescriptor =
-      GeneratedColumn<String>(
-        'external_public_descriptor',
-        aliasedName,
-        false,
-        type: DriftSqlType.string,
-        requiredDuringInsert: true,
-        $customConstraints: 'NOT NULL',
-      );
-  late final GeneratedColumn<String> internalPublicDescriptor =
-      GeneratedColumn<String>(
-        'internal_public_descriptor',
-        aliasedName,
-        false,
-        type: DriftSqlType.string,
-        requiredDuringInsert: true,
-        $customConstraints: 'NOT NULL',
-      );
-  late final GeneratedColumn<String> signer = GeneratedColumn<String>(
-    'signer',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-    $customConstraints: 'NOT NULL',
-  );
-  late final GeneratedColumn<String> signerDevice = GeneratedColumn<String>(
-    'signer_device',
-    aliasedName,
-    true,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-    $customConstraints: 'NULL',
   );
   late final GeneratedColumn<int> isDefault = GeneratedColumn<int>(
     'is_default',
@@ -707,6 +664,15 @@ class WalletMetadatas extends Table
     type: DriftSqlType.int,
     requiredDuringInsert: true,
     $customConstraints: 'NOT NULL CHECK (is_default IN (0, 1))',
+  );
+  late final GeneratedColumn<int> isHidden = GeneratedColumn<int>(
+    'is_hidden',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    $customConstraints: 'NOT NULL DEFAULT 0 CHECK (is_hidden IN (0, 1))',
+    defaultValue: const CustomExpression('0'),
   );
   late final GeneratedColumn<String> label = GeneratedColumn<String>(
     'label',
@@ -735,18 +701,14 @@ class WalletMetadatas extends Table
   @override
   List<GeneratedColumn> get $columns => [
     id,
-    masterFingerprint,
-    xpubFingerprint,
+    network,
     isEncryptedVaultTested,
     isPhysicalBackupTested,
     latestEncryptedBackup,
     latestPhysicalBackup,
-    xpub,
-    externalPublicDescriptor,
-    internalPublicDescriptor,
-    signer,
-    signerDevice,
+    publicDescriptor,
     isDefault,
+    isHidden,
     label,
     syncedAt,
     birthday,
@@ -766,13 +728,9 @@ class WalletMetadatas extends Table
         DriftSqlType.string,
         data['${effectivePrefix}id'],
       )!,
-      masterFingerprint: attachedDatabase.typeMapping.read(
+      network: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
-        data['${effectivePrefix}master_fingerprint'],
-      )!,
-      xpubFingerprint: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}xpub_fingerprint'],
+        data['${effectivePrefix}network'],
       )!,
       isEncryptedVaultTested: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
@@ -790,29 +748,17 @@ class WalletMetadatas extends Table
         DriftSqlType.int,
         data['${effectivePrefix}latest_physical_backup'],
       ),
-      xpub: attachedDatabase.typeMapping.read(
+      publicDescriptor: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
-        data['${effectivePrefix}xpub'],
+        data['${effectivePrefix}public_descriptor'],
       )!,
-      externalPublicDescriptor: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}external_public_descriptor'],
-      )!,
-      internalPublicDescriptor: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}internal_public_descriptor'],
-      )!,
-      signer: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}signer'],
-      )!,
-      signerDevice: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}signer_device'],
-      ),
       isDefault: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}is_default'],
+      )!,
+      isHidden: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}is_hidden'],
       )!,
       label: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
@@ -843,35 +789,27 @@ class WalletMetadatas extends Table
 class WalletMetadatasData extends DataClass
     implements Insertable<WalletMetadatasData> {
   final String id;
-  final String masterFingerprint;
-  final String xpubFingerprint;
+  final String network;
   final int isEncryptedVaultTested;
   final int isPhysicalBackupTested;
   final int? latestEncryptedBackup;
   final int? latestPhysicalBackup;
-  final String xpub;
-  final String externalPublicDescriptor;
-  final String internalPublicDescriptor;
-  final String signer;
-  final String? signerDevice;
+  final String publicDescriptor;
   final int isDefault;
+  final int isHidden;
   final String? label;
   final String? syncedAt;
   final String? birthday;
   const WalletMetadatasData({
     required this.id,
-    required this.masterFingerprint,
-    required this.xpubFingerprint,
+    required this.network,
     required this.isEncryptedVaultTested,
     required this.isPhysicalBackupTested,
     this.latestEncryptedBackup,
     this.latestPhysicalBackup,
-    required this.xpub,
-    required this.externalPublicDescriptor,
-    required this.internalPublicDescriptor,
-    required this.signer,
-    this.signerDevice,
+    required this.publicDescriptor,
     required this.isDefault,
+    required this.isHidden,
     this.label,
     this.syncedAt,
     this.birthday,
@@ -880,8 +818,7 @@ class WalletMetadatasData extends DataClass
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<String>(id);
-    map['master_fingerprint'] = Variable<String>(masterFingerprint);
-    map['xpub_fingerprint'] = Variable<String>(xpubFingerprint);
+    map['network'] = Variable<String>(network);
     map['is_encrypted_vault_tested'] = Variable<int>(isEncryptedVaultTested);
     map['is_physical_backup_tested'] = Variable<int>(isPhysicalBackupTested);
     if (!nullToAbsent || latestEncryptedBackup != null) {
@@ -890,18 +827,9 @@ class WalletMetadatasData extends DataClass
     if (!nullToAbsent || latestPhysicalBackup != null) {
       map['latest_physical_backup'] = Variable<int>(latestPhysicalBackup);
     }
-    map['xpub'] = Variable<String>(xpub);
-    map['external_public_descriptor'] = Variable<String>(
-      externalPublicDescriptor,
-    );
-    map['internal_public_descriptor'] = Variable<String>(
-      internalPublicDescriptor,
-    );
-    map['signer'] = Variable<String>(signer);
-    if (!nullToAbsent || signerDevice != null) {
-      map['signer_device'] = Variable<String>(signerDevice);
-    }
+    map['public_descriptor'] = Variable<String>(publicDescriptor);
     map['is_default'] = Variable<int>(isDefault);
+    map['is_hidden'] = Variable<int>(isHidden);
     if (!nullToAbsent || label != null) {
       map['label'] = Variable<String>(label);
     }
@@ -917,8 +845,7 @@ class WalletMetadatasData extends DataClass
   WalletMetadatasCompanion toCompanion(bool nullToAbsent) {
     return WalletMetadatasCompanion(
       id: Value(id),
-      masterFingerprint: Value(masterFingerprint),
-      xpubFingerprint: Value(xpubFingerprint),
+      network: Value(network),
       isEncryptedVaultTested: Value(isEncryptedVaultTested),
       isPhysicalBackupTested: Value(isPhysicalBackupTested),
       latestEncryptedBackup: latestEncryptedBackup == null && nullToAbsent
@@ -927,14 +854,9 @@ class WalletMetadatasData extends DataClass
       latestPhysicalBackup: latestPhysicalBackup == null && nullToAbsent
           ? const Value.absent()
           : Value(latestPhysicalBackup),
-      xpub: Value(xpub),
-      externalPublicDescriptor: Value(externalPublicDescriptor),
-      internalPublicDescriptor: Value(internalPublicDescriptor),
-      signer: Value(signer),
-      signerDevice: signerDevice == null && nullToAbsent
-          ? const Value.absent()
-          : Value(signerDevice),
+      publicDescriptor: Value(publicDescriptor),
       isDefault: Value(isDefault),
+      isHidden: Value(isHidden),
       label: label == null && nullToAbsent
           ? const Value.absent()
           : Value(label),
@@ -954,8 +876,7 @@ class WalletMetadatasData extends DataClass
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return WalletMetadatasData(
       id: serializer.fromJson<String>(json['id']),
-      masterFingerprint: serializer.fromJson<String>(json['masterFingerprint']),
-      xpubFingerprint: serializer.fromJson<String>(json['xpubFingerprint']),
+      network: serializer.fromJson<String>(json['network']),
       isEncryptedVaultTested: serializer.fromJson<int>(
         json['isEncryptedVaultTested'],
       ),
@@ -968,16 +889,9 @@ class WalletMetadatasData extends DataClass
       latestPhysicalBackup: serializer.fromJson<int?>(
         json['latestPhysicalBackup'],
       ),
-      xpub: serializer.fromJson<String>(json['xpub']),
-      externalPublicDescriptor: serializer.fromJson<String>(
-        json['externalPublicDescriptor'],
-      ),
-      internalPublicDescriptor: serializer.fromJson<String>(
-        json['internalPublicDescriptor'],
-      ),
-      signer: serializer.fromJson<String>(json['signer']),
-      signerDevice: serializer.fromJson<String?>(json['signerDevice']),
+      publicDescriptor: serializer.fromJson<String>(json['publicDescriptor']),
       isDefault: serializer.fromJson<int>(json['isDefault']),
+      isHidden: serializer.fromJson<int>(json['isHidden']),
       label: serializer.fromJson<String?>(json['label']),
       syncedAt: serializer.fromJson<String?>(json['syncedAt']),
       birthday: serializer.fromJson<String?>(json['birthday']),
@@ -988,22 +902,14 @@ class WalletMetadatasData extends DataClass
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'id': serializer.toJson<String>(id),
-      'masterFingerprint': serializer.toJson<String>(masterFingerprint),
-      'xpubFingerprint': serializer.toJson<String>(xpubFingerprint),
+      'network': serializer.toJson<String>(network),
       'isEncryptedVaultTested': serializer.toJson<int>(isEncryptedVaultTested),
       'isPhysicalBackupTested': serializer.toJson<int>(isPhysicalBackupTested),
       'latestEncryptedBackup': serializer.toJson<int?>(latestEncryptedBackup),
       'latestPhysicalBackup': serializer.toJson<int?>(latestPhysicalBackup),
-      'xpub': serializer.toJson<String>(xpub),
-      'externalPublicDescriptor': serializer.toJson<String>(
-        externalPublicDescriptor,
-      ),
-      'internalPublicDescriptor': serializer.toJson<String>(
-        internalPublicDescriptor,
-      ),
-      'signer': serializer.toJson<String>(signer),
-      'signerDevice': serializer.toJson<String?>(signerDevice),
+      'publicDescriptor': serializer.toJson<String>(publicDescriptor),
       'isDefault': serializer.toJson<int>(isDefault),
+      'isHidden': serializer.toJson<int>(isHidden),
       'label': serializer.toJson<String?>(label),
       'syncedAt': serializer.toJson<String?>(syncedAt),
       'birthday': serializer.toJson<String?>(birthday),
@@ -1012,25 +918,20 @@ class WalletMetadatasData extends DataClass
 
   WalletMetadatasData copyWith({
     String? id,
-    String? masterFingerprint,
-    String? xpubFingerprint,
+    String? network,
     int? isEncryptedVaultTested,
     int? isPhysicalBackupTested,
     Value<int?> latestEncryptedBackup = const Value.absent(),
     Value<int?> latestPhysicalBackup = const Value.absent(),
-    String? xpub,
-    String? externalPublicDescriptor,
-    String? internalPublicDescriptor,
-    String? signer,
-    Value<String?> signerDevice = const Value.absent(),
+    String? publicDescriptor,
     int? isDefault,
+    int? isHidden,
     Value<String?> label = const Value.absent(),
     Value<String?> syncedAt = const Value.absent(),
     Value<String?> birthday = const Value.absent(),
   }) => WalletMetadatasData(
     id: id ?? this.id,
-    masterFingerprint: masterFingerprint ?? this.masterFingerprint,
-    xpubFingerprint: xpubFingerprint ?? this.xpubFingerprint,
+    network: network ?? this.network,
     isEncryptedVaultTested:
         isEncryptedVaultTested ?? this.isEncryptedVaultTested,
     isPhysicalBackupTested:
@@ -1041,14 +942,9 @@ class WalletMetadatasData extends DataClass
     latestPhysicalBackup: latestPhysicalBackup.present
         ? latestPhysicalBackup.value
         : this.latestPhysicalBackup,
-    xpub: xpub ?? this.xpub,
-    externalPublicDescriptor:
-        externalPublicDescriptor ?? this.externalPublicDescriptor,
-    internalPublicDescriptor:
-        internalPublicDescriptor ?? this.internalPublicDescriptor,
-    signer: signer ?? this.signer,
-    signerDevice: signerDevice.present ? signerDevice.value : this.signerDevice,
+    publicDescriptor: publicDescriptor ?? this.publicDescriptor,
     isDefault: isDefault ?? this.isDefault,
+    isHidden: isHidden ?? this.isHidden,
     label: label.present ? label.value : this.label,
     syncedAt: syncedAt.present ? syncedAt.value : this.syncedAt,
     birthday: birthday.present ? birthday.value : this.birthday,
@@ -1056,12 +952,7 @@ class WalletMetadatasData extends DataClass
   WalletMetadatasData copyWithCompanion(WalletMetadatasCompanion data) {
     return WalletMetadatasData(
       id: data.id.present ? data.id.value : this.id,
-      masterFingerprint: data.masterFingerprint.present
-          ? data.masterFingerprint.value
-          : this.masterFingerprint,
-      xpubFingerprint: data.xpubFingerprint.present
-          ? data.xpubFingerprint.value
-          : this.xpubFingerprint,
+      network: data.network.present ? data.network.value : this.network,
       isEncryptedVaultTested: data.isEncryptedVaultTested.present
           ? data.isEncryptedVaultTested.value
           : this.isEncryptedVaultTested,
@@ -1074,18 +965,11 @@ class WalletMetadatasData extends DataClass
       latestPhysicalBackup: data.latestPhysicalBackup.present
           ? data.latestPhysicalBackup.value
           : this.latestPhysicalBackup,
-      xpub: data.xpub.present ? data.xpub.value : this.xpub,
-      externalPublicDescriptor: data.externalPublicDescriptor.present
-          ? data.externalPublicDescriptor.value
-          : this.externalPublicDescriptor,
-      internalPublicDescriptor: data.internalPublicDescriptor.present
-          ? data.internalPublicDescriptor.value
-          : this.internalPublicDescriptor,
-      signer: data.signer.present ? data.signer.value : this.signer,
-      signerDevice: data.signerDevice.present
-          ? data.signerDevice.value
-          : this.signerDevice,
+      publicDescriptor: data.publicDescriptor.present
+          ? data.publicDescriptor.value
+          : this.publicDescriptor,
       isDefault: data.isDefault.present ? data.isDefault.value : this.isDefault,
+      isHidden: data.isHidden.present ? data.isHidden.value : this.isHidden,
       label: data.label.present ? data.label.value : this.label,
       syncedAt: data.syncedAt.present ? data.syncedAt.value : this.syncedAt,
       birthday: data.birthday.present ? data.birthday.value : this.birthday,
@@ -1096,18 +980,14 @@ class WalletMetadatasData extends DataClass
   String toString() {
     return (StringBuffer('WalletMetadatasData(')
           ..write('id: $id, ')
-          ..write('masterFingerprint: $masterFingerprint, ')
-          ..write('xpubFingerprint: $xpubFingerprint, ')
+          ..write('network: $network, ')
           ..write('isEncryptedVaultTested: $isEncryptedVaultTested, ')
           ..write('isPhysicalBackupTested: $isPhysicalBackupTested, ')
           ..write('latestEncryptedBackup: $latestEncryptedBackup, ')
           ..write('latestPhysicalBackup: $latestPhysicalBackup, ')
-          ..write('xpub: $xpub, ')
-          ..write('externalPublicDescriptor: $externalPublicDescriptor, ')
-          ..write('internalPublicDescriptor: $internalPublicDescriptor, ')
-          ..write('signer: $signer, ')
-          ..write('signerDevice: $signerDevice, ')
+          ..write('publicDescriptor: $publicDescriptor, ')
           ..write('isDefault: $isDefault, ')
+          ..write('isHidden: $isHidden, ')
           ..write('label: $label, ')
           ..write('syncedAt: $syncedAt, ')
           ..write('birthday: $birthday')
@@ -1118,18 +998,14 @@ class WalletMetadatasData extends DataClass
   @override
   int get hashCode => Object.hash(
     id,
-    masterFingerprint,
-    xpubFingerprint,
+    network,
     isEncryptedVaultTested,
     isPhysicalBackupTested,
     latestEncryptedBackup,
     latestPhysicalBackup,
-    xpub,
-    externalPublicDescriptor,
-    internalPublicDescriptor,
-    signer,
-    signerDevice,
+    publicDescriptor,
     isDefault,
+    isHidden,
     label,
     syncedAt,
     birthday,
@@ -1139,18 +1015,14 @@ class WalletMetadatasData extends DataClass
       identical(this, other) ||
       (other is WalletMetadatasData &&
           other.id == this.id &&
-          other.masterFingerprint == this.masterFingerprint &&
-          other.xpubFingerprint == this.xpubFingerprint &&
+          other.network == this.network &&
           other.isEncryptedVaultTested == this.isEncryptedVaultTested &&
           other.isPhysicalBackupTested == this.isPhysicalBackupTested &&
           other.latestEncryptedBackup == this.latestEncryptedBackup &&
           other.latestPhysicalBackup == this.latestPhysicalBackup &&
-          other.xpub == this.xpub &&
-          other.externalPublicDescriptor == this.externalPublicDescriptor &&
-          other.internalPublicDescriptor == this.internalPublicDescriptor &&
-          other.signer == this.signer &&
-          other.signerDevice == this.signerDevice &&
+          other.publicDescriptor == this.publicDescriptor &&
           other.isDefault == this.isDefault &&
+          other.isHidden == this.isHidden &&
           other.label == this.label &&
           other.syncedAt == this.syncedAt &&
           other.birthday == this.birthday);
@@ -1158,36 +1030,28 @@ class WalletMetadatasData extends DataClass
 
 class WalletMetadatasCompanion extends UpdateCompanion<WalletMetadatasData> {
   final Value<String> id;
-  final Value<String> masterFingerprint;
-  final Value<String> xpubFingerprint;
+  final Value<String> network;
   final Value<int> isEncryptedVaultTested;
   final Value<int> isPhysicalBackupTested;
   final Value<int?> latestEncryptedBackup;
   final Value<int?> latestPhysicalBackup;
-  final Value<String> xpub;
-  final Value<String> externalPublicDescriptor;
-  final Value<String> internalPublicDescriptor;
-  final Value<String> signer;
-  final Value<String?> signerDevice;
+  final Value<String> publicDescriptor;
   final Value<int> isDefault;
+  final Value<int> isHidden;
   final Value<String?> label;
   final Value<String?> syncedAt;
   final Value<String?> birthday;
   final Value<int> rowid;
   const WalletMetadatasCompanion({
     this.id = const Value.absent(),
-    this.masterFingerprint = const Value.absent(),
-    this.xpubFingerprint = const Value.absent(),
+    this.network = const Value.absent(),
     this.isEncryptedVaultTested = const Value.absent(),
     this.isPhysicalBackupTested = const Value.absent(),
     this.latestEncryptedBackup = const Value.absent(),
     this.latestPhysicalBackup = const Value.absent(),
-    this.xpub = const Value.absent(),
-    this.externalPublicDescriptor = const Value.absent(),
-    this.internalPublicDescriptor = const Value.absent(),
-    this.signer = const Value.absent(),
-    this.signerDevice = const Value.absent(),
+    this.publicDescriptor = const Value.absent(),
     this.isDefault = const Value.absent(),
+    this.isHidden = const Value.absent(),
     this.label = const Value.absent(),
     this.syncedAt = const Value.absent(),
     this.birthday = const Value.absent(),
@@ -1195,46 +1059,34 @@ class WalletMetadatasCompanion extends UpdateCompanion<WalletMetadatasData> {
   });
   WalletMetadatasCompanion.insert({
     required String id,
-    required String masterFingerprint,
-    required String xpubFingerprint,
+    required String network,
     required int isEncryptedVaultTested,
     required int isPhysicalBackupTested,
     this.latestEncryptedBackup = const Value.absent(),
     this.latestPhysicalBackup = const Value.absent(),
-    required String xpub,
-    required String externalPublicDescriptor,
-    required String internalPublicDescriptor,
-    required String signer,
-    this.signerDevice = const Value.absent(),
+    required String publicDescriptor,
     required int isDefault,
+    this.isHidden = const Value.absent(),
     this.label = const Value.absent(),
     this.syncedAt = const Value.absent(),
     this.birthday = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
-       masterFingerprint = Value(masterFingerprint),
-       xpubFingerprint = Value(xpubFingerprint),
+       network = Value(network),
        isEncryptedVaultTested = Value(isEncryptedVaultTested),
        isPhysicalBackupTested = Value(isPhysicalBackupTested),
-       xpub = Value(xpub),
-       externalPublicDescriptor = Value(externalPublicDescriptor),
-       internalPublicDescriptor = Value(internalPublicDescriptor),
-       signer = Value(signer),
+       publicDescriptor = Value(publicDescriptor),
        isDefault = Value(isDefault);
   static Insertable<WalletMetadatasData> custom({
     Expression<String>? id,
-    Expression<String>? masterFingerprint,
-    Expression<String>? xpubFingerprint,
+    Expression<String>? network,
     Expression<int>? isEncryptedVaultTested,
     Expression<int>? isPhysicalBackupTested,
     Expression<int>? latestEncryptedBackup,
     Expression<int>? latestPhysicalBackup,
-    Expression<String>? xpub,
-    Expression<String>? externalPublicDescriptor,
-    Expression<String>? internalPublicDescriptor,
-    Expression<String>? signer,
-    Expression<String>? signerDevice,
+    Expression<String>? publicDescriptor,
     Expression<int>? isDefault,
+    Expression<int>? isHidden,
     Expression<String>? label,
     Expression<String>? syncedAt,
     Expression<String>? birthday,
@@ -1242,8 +1094,7 @@ class WalletMetadatasCompanion extends UpdateCompanion<WalletMetadatasData> {
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
-      if (masterFingerprint != null) 'master_fingerprint': masterFingerprint,
-      if (xpubFingerprint != null) 'xpub_fingerprint': xpubFingerprint,
+      if (network != null) 'network': network,
       if (isEncryptedVaultTested != null)
         'is_encrypted_vault_tested': isEncryptedVaultTested,
       if (isPhysicalBackupTested != null)
@@ -1252,14 +1103,9 @@ class WalletMetadatasCompanion extends UpdateCompanion<WalletMetadatasData> {
         'latest_encrypted_backup': latestEncryptedBackup,
       if (latestPhysicalBackup != null)
         'latest_physical_backup': latestPhysicalBackup,
-      if (xpub != null) 'xpub': xpub,
-      if (externalPublicDescriptor != null)
-        'external_public_descriptor': externalPublicDescriptor,
-      if (internalPublicDescriptor != null)
-        'internal_public_descriptor': internalPublicDescriptor,
-      if (signer != null) 'signer': signer,
-      if (signerDevice != null) 'signer_device': signerDevice,
+      if (publicDescriptor != null) 'public_descriptor': publicDescriptor,
       if (isDefault != null) 'is_default': isDefault,
+      if (isHidden != null) 'is_hidden': isHidden,
       if (label != null) 'label': label,
       if (syncedAt != null) 'synced_at': syncedAt,
       if (birthday != null) 'birthday': birthday,
@@ -1269,18 +1115,14 @@ class WalletMetadatasCompanion extends UpdateCompanion<WalletMetadatasData> {
 
   WalletMetadatasCompanion copyWith({
     Value<String>? id,
-    Value<String>? masterFingerprint,
-    Value<String>? xpubFingerprint,
+    Value<String>? network,
     Value<int>? isEncryptedVaultTested,
     Value<int>? isPhysicalBackupTested,
     Value<int?>? latestEncryptedBackup,
     Value<int?>? latestPhysicalBackup,
-    Value<String>? xpub,
-    Value<String>? externalPublicDescriptor,
-    Value<String>? internalPublicDescriptor,
-    Value<String>? signer,
-    Value<String?>? signerDevice,
+    Value<String>? publicDescriptor,
     Value<int>? isDefault,
+    Value<int>? isHidden,
     Value<String?>? label,
     Value<String?>? syncedAt,
     Value<String?>? birthday,
@@ -1288,8 +1130,7 @@ class WalletMetadatasCompanion extends UpdateCompanion<WalletMetadatasData> {
   }) {
     return WalletMetadatasCompanion(
       id: id ?? this.id,
-      masterFingerprint: masterFingerprint ?? this.masterFingerprint,
-      xpubFingerprint: xpubFingerprint ?? this.xpubFingerprint,
+      network: network ?? this.network,
       isEncryptedVaultTested:
           isEncryptedVaultTested ?? this.isEncryptedVaultTested,
       isPhysicalBackupTested:
@@ -1297,14 +1138,9 @@ class WalletMetadatasCompanion extends UpdateCompanion<WalletMetadatasData> {
       latestEncryptedBackup:
           latestEncryptedBackup ?? this.latestEncryptedBackup,
       latestPhysicalBackup: latestPhysicalBackup ?? this.latestPhysicalBackup,
-      xpub: xpub ?? this.xpub,
-      externalPublicDescriptor:
-          externalPublicDescriptor ?? this.externalPublicDescriptor,
-      internalPublicDescriptor:
-          internalPublicDescriptor ?? this.internalPublicDescriptor,
-      signer: signer ?? this.signer,
-      signerDevice: signerDevice ?? this.signerDevice,
+      publicDescriptor: publicDescriptor ?? this.publicDescriptor,
       isDefault: isDefault ?? this.isDefault,
+      isHidden: isHidden ?? this.isHidden,
       label: label ?? this.label,
       syncedAt: syncedAt ?? this.syncedAt,
       birthday: birthday ?? this.birthday,
@@ -1318,11 +1154,8 @@ class WalletMetadatasCompanion extends UpdateCompanion<WalletMetadatasData> {
     if (id.present) {
       map['id'] = Variable<String>(id.value);
     }
-    if (masterFingerprint.present) {
-      map['master_fingerprint'] = Variable<String>(masterFingerprint.value);
-    }
-    if (xpubFingerprint.present) {
-      map['xpub_fingerprint'] = Variable<String>(xpubFingerprint.value);
+    if (network.present) {
+      map['network'] = Variable<String>(network.value);
     }
     if (isEncryptedVaultTested.present) {
       map['is_encrypted_vault_tested'] = Variable<int>(
@@ -1342,27 +1175,14 @@ class WalletMetadatasCompanion extends UpdateCompanion<WalletMetadatasData> {
     if (latestPhysicalBackup.present) {
       map['latest_physical_backup'] = Variable<int>(latestPhysicalBackup.value);
     }
-    if (xpub.present) {
-      map['xpub'] = Variable<String>(xpub.value);
-    }
-    if (externalPublicDescriptor.present) {
-      map['external_public_descriptor'] = Variable<String>(
-        externalPublicDescriptor.value,
-      );
-    }
-    if (internalPublicDescriptor.present) {
-      map['internal_public_descriptor'] = Variable<String>(
-        internalPublicDescriptor.value,
-      );
-    }
-    if (signer.present) {
-      map['signer'] = Variable<String>(signer.value);
-    }
-    if (signerDevice.present) {
-      map['signer_device'] = Variable<String>(signerDevice.value);
+    if (publicDescriptor.present) {
+      map['public_descriptor'] = Variable<String>(publicDescriptor.value);
     }
     if (isDefault.present) {
       map['is_default'] = Variable<int>(isDefault.value);
+    }
+    if (isHidden.present) {
+      map['is_hidden'] = Variable<int>(isHidden.value);
     }
     if (label.present) {
       map['label'] = Variable<String>(label.value);
@@ -1383,21 +1203,969 @@ class WalletMetadatasCompanion extends UpdateCompanion<WalletMetadatasData> {
   String toString() {
     return (StringBuffer('WalletMetadatasCompanion(')
           ..write('id: $id, ')
-          ..write('masterFingerprint: $masterFingerprint, ')
-          ..write('xpubFingerprint: $xpubFingerprint, ')
+          ..write('network: $network, ')
           ..write('isEncryptedVaultTested: $isEncryptedVaultTested, ')
           ..write('isPhysicalBackupTested: $isPhysicalBackupTested, ')
           ..write('latestEncryptedBackup: $latestEncryptedBackup, ')
           ..write('latestPhysicalBackup: $latestPhysicalBackup, ')
-          ..write('xpub: $xpub, ')
-          ..write('externalPublicDescriptor: $externalPublicDescriptor, ')
-          ..write('internalPublicDescriptor: $internalPublicDescriptor, ')
-          ..write('signer: $signer, ')
-          ..write('signerDevice: $signerDevice, ')
+          ..write('publicDescriptor: $publicDescriptor, ')
           ..write('isDefault: $isDefault, ')
+          ..write('isHidden: $isHidden, ')
           ..write('label: $label, ')
           ..write('syncedAt: $syncedAt, ')
           ..write('birthday: $birthday, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class WalletSigners extends Table
+    with TableInfo<WalletSigners, WalletSignersData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  WalletSigners(this.attachedDatabase, [this._alias]);
+  late final GeneratedColumn<String> walletId = GeneratedColumn<String>(
+    'wallet_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  late final GeneratedColumn<int> position = GeneratedColumn<int>(
+    'position',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  late final GeneratedColumn<String> signer = GeneratedColumn<String>(
+    'signer',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  late final GeneratedColumn<String> signerDevice = GeneratedColumn<String>(
+    'signer_device',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    $customConstraints: 'NULL',
+  );
+  late final GeneratedColumn<String> registrationName = GeneratedColumn<String>(
+    'registration_name',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    $customConstraints: 'NULL',
+  );
+  late final GeneratedColumn<String> localSeedFingerprint =
+      GeneratedColumn<String>(
+        'local_seed_fingerprint',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+        $customConstraints: 'NULL',
+      );
+  @override
+  List<GeneratedColumn> get $columns => [
+    walletId,
+    id,
+    position,
+    signer,
+    signerDevice,
+    registrationName,
+    localSeedFingerprint,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'wallet_signers';
+  @override
+  Set<GeneratedColumn> get $primaryKey => {walletId, id};
+  @override
+  List<Set<GeneratedColumn>> get uniqueKeys => [
+    {walletId, position},
+  ];
+  @override
+  WalletSignersData map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return WalletSignersData(
+      walletId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}wallet_id'],
+      )!,
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      position: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}position'],
+      )!,
+      signer: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}signer'],
+      )!,
+      signerDevice: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}signer_device'],
+      ),
+      registrationName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}registration_name'],
+      ),
+      localSeedFingerprint: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}local_seed_fingerprint'],
+      ),
+    );
+  }
+
+  @override
+  WalletSigners createAlias(String alias) {
+    return WalletSigners(attachedDatabase, alias);
+  }
+
+  @override
+  List<String> get customConstraints => const [
+    'PRIMARY KEY(wallet_id, id)',
+    'FOREIGN KEY(wallet_id)REFERENCES wallet_metadatas(id)ON DELETE CASCADE',
+    'UNIQUE(wallet_id, position)',
+  ];
+  @override
+  bool get dontWriteConstraints => true;
+}
+
+class WalletSignersData extends DataClass
+    implements Insertable<WalletSignersData> {
+  final String walletId;
+  final String id;
+  final int position;
+  final String signer;
+  final String? signerDevice;
+  final String? registrationName;
+  final String? localSeedFingerprint;
+  const WalletSignersData({
+    required this.walletId,
+    required this.id,
+    required this.position,
+    required this.signer,
+    this.signerDevice,
+    this.registrationName,
+    this.localSeedFingerprint,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['wallet_id'] = Variable<String>(walletId);
+    map['id'] = Variable<String>(id);
+    map['position'] = Variable<int>(position);
+    map['signer'] = Variable<String>(signer);
+    if (!nullToAbsent || signerDevice != null) {
+      map['signer_device'] = Variable<String>(signerDevice);
+    }
+    if (!nullToAbsent || registrationName != null) {
+      map['registration_name'] = Variable<String>(registrationName);
+    }
+    if (!nullToAbsent || localSeedFingerprint != null) {
+      map['local_seed_fingerprint'] = Variable<String>(localSeedFingerprint);
+    }
+    return map;
+  }
+
+  WalletSignersCompanion toCompanion(bool nullToAbsent) {
+    return WalletSignersCompanion(
+      walletId: Value(walletId),
+      id: Value(id),
+      position: Value(position),
+      signer: Value(signer),
+      signerDevice: signerDevice == null && nullToAbsent
+          ? const Value.absent()
+          : Value(signerDevice),
+      registrationName: registrationName == null && nullToAbsent
+          ? const Value.absent()
+          : Value(registrationName),
+      localSeedFingerprint: localSeedFingerprint == null && nullToAbsent
+          ? const Value.absent()
+          : Value(localSeedFingerprint),
+    );
+  }
+
+  factory WalletSignersData.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return WalletSignersData(
+      walletId: serializer.fromJson<String>(json['walletId']),
+      id: serializer.fromJson<String>(json['id']),
+      position: serializer.fromJson<int>(json['position']),
+      signer: serializer.fromJson<String>(json['signer']),
+      signerDevice: serializer.fromJson<String?>(json['signerDevice']),
+      registrationName: serializer.fromJson<String?>(json['registrationName']),
+      localSeedFingerprint: serializer.fromJson<String?>(
+        json['localSeedFingerprint'],
+      ),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'walletId': serializer.toJson<String>(walletId),
+      'id': serializer.toJson<String>(id),
+      'position': serializer.toJson<int>(position),
+      'signer': serializer.toJson<String>(signer),
+      'signerDevice': serializer.toJson<String?>(signerDevice),
+      'registrationName': serializer.toJson<String?>(registrationName),
+      'localSeedFingerprint': serializer.toJson<String?>(localSeedFingerprint),
+    };
+  }
+
+  WalletSignersData copyWith({
+    String? walletId,
+    String? id,
+    int? position,
+    String? signer,
+    Value<String?> signerDevice = const Value.absent(),
+    Value<String?> registrationName = const Value.absent(),
+    Value<String?> localSeedFingerprint = const Value.absent(),
+  }) => WalletSignersData(
+    walletId: walletId ?? this.walletId,
+    id: id ?? this.id,
+    position: position ?? this.position,
+    signer: signer ?? this.signer,
+    signerDevice: signerDevice.present ? signerDevice.value : this.signerDevice,
+    registrationName: registrationName.present
+        ? registrationName.value
+        : this.registrationName,
+    localSeedFingerprint: localSeedFingerprint.present
+        ? localSeedFingerprint.value
+        : this.localSeedFingerprint,
+  );
+  WalletSignersData copyWithCompanion(WalletSignersCompanion data) {
+    return WalletSignersData(
+      walletId: data.walletId.present ? data.walletId.value : this.walletId,
+      id: data.id.present ? data.id.value : this.id,
+      position: data.position.present ? data.position.value : this.position,
+      signer: data.signer.present ? data.signer.value : this.signer,
+      signerDevice: data.signerDevice.present
+          ? data.signerDevice.value
+          : this.signerDevice,
+      registrationName: data.registrationName.present
+          ? data.registrationName.value
+          : this.registrationName,
+      localSeedFingerprint: data.localSeedFingerprint.present
+          ? data.localSeedFingerprint.value
+          : this.localSeedFingerprint,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('WalletSignersData(')
+          ..write('walletId: $walletId, ')
+          ..write('id: $id, ')
+          ..write('position: $position, ')
+          ..write('signer: $signer, ')
+          ..write('signerDevice: $signerDevice, ')
+          ..write('registrationName: $registrationName, ')
+          ..write('localSeedFingerprint: $localSeedFingerprint')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    walletId,
+    id,
+    position,
+    signer,
+    signerDevice,
+    registrationName,
+    localSeedFingerprint,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is WalletSignersData &&
+          other.walletId == this.walletId &&
+          other.id == this.id &&
+          other.position == this.position &&
+          other.signer == this.signer &&
+          other.signerDevice == this.signerDevice &&
+          other.registrationName == this.registrationName &&
+          other.localSeedFingerprint == this.localSeedFingerprint);
+}
+
+class WalletSignersCompanion extends UpdateCompanion<WalletSignersData> {
+  final Value<String> walletId;
+  final Value<String> id;
+  final Value<int> position;
+  final Value<String> signer;
+  final Value<String?> signerDevice;
+  final Value<String?> registrationName;
+  final Value<String?> localSeedFingerprint;
+  final Value<int> rowid;
+  const WalletSignersCompanion({
+    this.walletId = const Value.absent(),
+    this.id = const Value.absent(),
+    this.position = const Value.absent(),
+    this.signer = const Value.absent(),
+    this.signerDevice = const Value.absent(),
+    this.registrationName = const Value.absent(),
+    this.localSeedFingerprint = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  WalletSignersCompanion.insert({
+    required String walletId,
+    required String id,
+    required int position,
+    required String signer,
+    this.signerDevice = const Value.absent(),
+    this.registrationName = const Value.absent(),
+    this.localSeedFingerprint = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : walletId = Value(walletId),
+       id = Value(id),
+       position = Value(position),
+       signer = Value(signer);
+  static Insertable<WalletSignersData> custom({
+    Expression<String>? walletId,
+    Expression<String>? id,
+    Expression<int>? position,
+    Expression<String>? signer,
+    Expression<String>? signerDevice,
+    Expression<String>? registrationName,
+    Expression<String>? localSeedFingerprint,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (walletId != null) 'wallet_id': walletId,
+      if (id != null) 'id': id,
+      if (position != null) 'position': position,
+      if (signer != null) 'signer': signer,
+      if (signerDevice != null) 'signer_device': signerDevice,
+      if (registrationName != null) 'registration_name': registrationName,
+      if (localSeedFingerprint != null)
+        'local_seed_fingerprint': localSeedFingerprint,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  WalletSignersCompanion copyWith({
+    Value<String>? walletId,
+    Value<String>? id,
+    Value<int>? position,
+    Value<String>? signer,
+    Value<String?>? signerDevice,
+    Value<String?>? registrationName,
+    Value<String?>? localSeedFingerprint,
+    Value<int>? rowid,
+  }) {
+    return WalletSignersCompanion(
+      walletId: walletId ?? this.walletId,
+      id: id ?? this.id,
+      position: position ?? this.position,
+      signer: signer ?? this.signer,
+      signerDevice: signerDevice ?? this.signerDevice,
+      registrationName: registrationName ?? this.registrationName,
+      localSeedFingerprint: localSeedFingerprint ?? this.localSeedFingerprint,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (walletId.present) {
+      map['wallet_id'] = Variable<String>(walletId.value);
+    }
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (position.present) {
+      map['position'] = Variable<int>(position.value);
+    }
+    if (signer.present) {
+      map['signer'] = Variable<String>(signer.value);
+    }
+    if (signerDevice.present) {
+      map['signer_device'] = Variable<String>(signerDevice.value);
+    }
+    if (registrationName.present) {
+      map['registration_name'] = Variable<String>(registrationName.value);
+    }
+    if (localSeedFingerprint.present) {
+      map['local_seed_fingerprint'] = Variable<String>(
+        localSeedFingerprint.value,
+      );
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('WalletSignersCompanion(')
+          ..write('walletId: $walletId, ')
+          ..write('id: $id, ')
+          ..write('position: $position, ')
+          ..write('signer: $signer, ')
+          ..write('signerDevice: $signerDevice, ')
+          ..write('registrationName: $registrationName, ')
+          ..write('localSeedFingerprint: $localSeedFingerprint, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class WalletDescriptorKeys extends Table
+    with TableInfo<WalletDescriptorKeys, WalletDescriptorKeysData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  WalletDescriptorKeys(this.attachedDatabase, [this._alias]);
+  late final GeneratedColumn<String> walletId = GeneratedColumn<String>(
+    'wallet_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  late final GeneratedColumn<int> position = GeneratedColumn<int>(
+    'position',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  late final GeneratedColumn<String> signerId = GeneratedColumn<String>(
+    'signer_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  late final GeneratedColumn<String> masterFingerprint =
+      GeneratedColumn<String>(
+        'master_fingerprint',
+        aliasedName,
+        false,
+        type: DriftSqlType.string,
+        requiredDuringInsert: true,
+        $customConstraints: 'NOT NULL',
+      );
+  late final GeneratedColumn<String> xpubFingerprint = GeneratedColumn<String>(
+    'xpub_fingerprint',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  late final GeneratedColumn<String> xpub = GeneratedColumn<String>(
+    'xpub',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  late final GeneratedColumn<String> derivationPath = GeneratedColumn<String>(
+    'derivation_path',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    $customConstraints: 'NULL',
+  );
+  late final GeneratedColumn<String> descriptorPath = GeneratedColumn<String>(
+    'descriptor_path',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    $customConstraints: 'NOT NULL DEFAULT \'\'',
+    defaultValue: const CustomExpression('\'\''),
+  );
+  late final GeneratedColumn<int> requiresPassphrase = GeneratedColumn<int>(
+    'requires_passphrase',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    $customConstraints:
+        'NOT NULL DEFAULT 0 CHECK (requires_passphrase IN (0, 1))',
+    defaultValue: const CustomExpression('0'),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    walletId,
+    id,
+    position,
+    signerId,
+    masterFingerprint,
+    xpubFingerprint,
+    xpub,
+    derivationPath,
+    descriptorPath,
+    requiresPassphrase,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'wallet_descriptor_keys';
+  @override
+  Set<GeneratedColumn> get $primaryKey => {walletId, id};
+  @override
+  List<Set<GeneratedColumn>> get uniqueKeys => [
+    {walletId, position},
+  ];
+  @override
+  WalletDescriptorKeysData map(
+    Map<String, dynamic> data, {
+    String? tablePrefix,
+  }) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return WalletDescriptorKeysData(
+      walletId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}wallet_id'],
+      )!,
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      position: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}position'],
+      )!,
+      signerId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}signer_id'],
+      )!,
+      masterFingerprint: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}master_fingerprint'],
+      )!,
+      xpubFingerprint: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}xpub_fingerprint'],
+      )!,
+      xpub: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}xpub'],
+      )!,
+      derivationPath: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}derivation_path'],
+      ),
+      descriptorPath: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}descriptor_path'],
+      )!,
+      requiresPassphrase: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}requires_passphrase'],
+      )!,
+    );
+  }
+
+  @override
+  WalletDescriptorKeys createAlias(String alias) {
+    return WalletDescriptorKeys(attachedDatabase, alias);
+  }
+
+  @override
+  List<String> get customConstraints => const [
+    'PRIMARY KEY(wallet_id, id)',
+    'FOREIGN KEY(wallet_id)REFERENCES wallet_metadatas(id)ON DELETE CASCADE',
+    'FOREIGN KEY(wallet_id, signer_id)REFERENCES wallet_signers(wallet_id, id)ON DELETE CASCADE',
+    'UNIQUE(wallet_id, position)',
+  ];
+  @override
+  bool get dontWriteConstraints => true;
+}
+
+class WalletDescriptorKeysData extends DataClass
+    implements Insertable<WalletDescriptorKeysData> {
+  final String walletId;
+  final String id;
+  final int position;
+  final String signerId;
+  final String masterFingerprint;
+  final String xpubFingerprint;
+  final String xpub;
+  final String? derivationPath;
+  final String descriptorPath;
+  final int requiresPassphrase;
+  const WalletDescriptorKeysData({
+    required this.walletId,
+    required this.id,
+    required this.position,
+    required this.signerId,
+    required this.masterFingerprint,
+    required this.xpubFingerprint,
+    required this.xpub,
+    this.derivationPath,
+    required this.descriptorPath,
+    required this.requiresPassphrase,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['wallet_id'] = Variable<String>(walletId);
+    map['id'] = Variable<String>(id);
+    map['position'] = Variable<int>(position);
+    map['signer_id'] = Variable<String>(signerId);
+    map['master_fingerprint'] = Variable<String>(masterFingerprint);
+    map['xpub_fingerprint'] = Variable<String>(xpubFingerprint);
+    map['xpub'] = Variable<String>(xpub);
+    if (!nullToAbsent || derivationPath != null) {
+      map['derivation_path'] = Variable<String>(derivationPath);
+    }
+    map['descriptor_path'] = Variable<String>(descriptorPath);
+    map['requires_passphrase'] = Variable<int>(requiresPassphrase);
+    return map;
+  }
+
+  WalletDescriptorKeysCompanion toCompanion(bool nullToAbsent) {
+    return WalletDescriptorKeysCompanion(
+      walletId: Value(walletId),
+      id: Value(id),
+      position: Value(position),
+      signerId: Value(signerId),
+      masterFingerprint: Value(masterFingerprint),
+      xpubFingerprint: Value(xpubFingerprint),
+      xpub: Value(xpub),
+      derivationPath: derivationPath == null && nullToAbsent
+          ? const Value.absent()
+          : Value(derivationPath),
+      descriptorPath: Value(descriptorPath),
+      requiresPassphrase: Value(requiresPassphrase),
+    );
+  }
+
+  factory WalletDescriptorKeysData.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return WalletDescriptorKeysData(
+      walletId: serializer.fromJson<String>(json['walletId']),
+      id: serializer.fromJson<String>(json['id']),
+      position: serializer.fromJson<int>(json['position']),
+      signerId: serializer.fromJson<String>(json['signerId']),
+      masterFingerprint: serializer.fromJson<String>(json['masterFingerprint']),
+      xpubFingerprint: serializer.fromJson<String>(json['xpubFingerprint']),
+      xpub: serializer.fromJson<String>(json['xpub']),
+      derivationPath: serializer.fromJson<String?>(json['derivationPath']),
+      descriptorPath: serializer.fromJson<String>(json['descriptorPath']),
+      requiresPassphrase: serializer.fromJson<int>(json['requiresPassphrase']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'walletId': serializer.toJson<String>(walletId),
+      'id': serializer.toJson<String>(id),
+      'position': serializer.toJson<int>(position),
+      'signerId': serializer.toJson<String>(signerId),
+      'masterFingerprint': serializer.toJson<String>(masterFingerprint),
+      'xpubFingerprint': serializer.toJson<String>(xpubFingerprint),
+      'xpub': serializer.toJson<String>(xpub),
+      'derivationPath': serializer.toJson<String?>(derivationPath),
+      'descriptorPath': serializer.toJson<String>(descriptorPath),
+      'requiresPassphrase': serializer.toJson<int>(requiresPassphrase),
+    };
+  }
+
+  WalletDescriptorKeysData copyWith({
+    String? walletId,
+    String? id,
+    int? position,
+    String? signerId,
+    String? masterFingerprint,
+    String? xpubFingerprint,
+    String? xpub,
+    Value<String?> derivationPath = const Value.absent(),
+    String? descriptorPath,
+    int? requiresPassphrase,
+  }) => WalletDescriptorKeysData(
+    walletId: walletId ?? this.walletId,
+    id: id ?? this.id,
+    position: position ?? this.position,
+    signerId: signerId ?? this.signerId,
+    masterFingerprint: masterFingerprint ?? this.masterFingerprint,
+    xpubFingerprint: xpubFingerprint ?? this.xpubFingerprint,
+    xpub: xpub ?? this.xpub,
+    derivationPath: derivationPath.present
+        ? derivationPath.value
+        : this.derivationPath,
+    descriptorPath: descriptorPath ?? this.descriptorPath,
+    requiresPassphrase: requiresPassphrase ?? this.requiresPassphrase,
+  );
+  WalletDescriptorKeysData copyWithCompanion(
+    WalletDescriptorKeysCompanion data,
+  ) {
+    return WalletDescriptorKeysData(
+      walletId: data.walletId.present ? data.walletId.value : this.walletId,
+      id: data.id.present ? data.id.value : this.id,
+      position: data.position.present ? data.position.value : this.position,
+      signerId: data.signerId.present ? data.signerId.value : this.signerId,
+      masterFingerprint: data.masterFingerprint.present
+          ? data.masterFingerprint.value
+          : this.masterFingerprint,
+      xpubFingerprint: data.xpubFingerprint.present
+          ? data.xpubFingerprint.value
+          : this.xpubFingerprint,
+      xpub: data.xpub.present ? data.xpub.value : this.xpub,
+      derivationPath: data.derivationPath.present
+          ? data.derivationPath.value
+          : this.derivationPath,
+      descriptorPath: data.descriptorPath.present
+          ? data.descriptorPath.value
+          : this.descriptorPath,
+      requiresPassphrase: data.requiresPassphrase.present
+          ? data.requiresPassphrase.value
+          : this.requiresPassphrase,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('WalletDescriptorKeysData(')
+          ..write('walletId: $walletId, ')
+          ..write('id: $id, ')
+          ..write('position: $position, ')
+          ..write('signerId: $signerId, ')
+          ..write('masterFingerprint: $masterFingerprint, ')
+          ..write('xpubFingerprint: $xpubFingerprint, ')
+          ..write('xpub: $xpub, ')
+          ..write('derivationPath: $derivationPath, ')
+          ..write('descriptorPath: $descriptorPath, ')
+          ..write('requiresPassphrase: $requiresPassphrase')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    walletId,
+    id,
+    position,
+    signerId,
+    masterFingerprint,
+    xpubFingerprint,
+    xpub,
+    derivationPath,
+    descriptorPath,
+    requiresPassphrase,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is WalletDescriptorKeysData &&
+          other.walletId == this.walletId &&
+          other.id == this.id &&
+          other.position == this.position &&
+          other.signerId == this.signerId &&
+          other.masterFingerprint == this.masterFingerprint &&
+          other.xpubFingerprint == this.xpubFingerprint &&
+          other.xpub == this.xpub &&
+          other.derivationPath == this.derivationPath &&
+          other.descriptorPath == this.descriptorPath &&
+          other.requiresPassphrase == this.requiresPassphrase);
+}
+
+class WalletDescriptorKeysCompanion
+    extends UpdateCompanion<WalletDescriptorKeysData> {
+  final Value<String> walletId;
+  final Value<String> id;
+  final Value<int> position;
+  final Value<String> signerId;
+  final Value<String> masterFingerprint;
+  final Value<String> xpubFingerprint;
+  final Value<String> xpub;
+  final Value<String?> derivationPath;
+  final Value<String> descriptorPath;
+  final Value<int> requiresPassphrase;
+  final Value<int> rowid;
+  const WalletDescriptorKeysCompanion({
+    this.walletId = const Value.absent(),
+    this.id = const Value.absent(),
+    this.position = const Value.absent(),
+    this.signerId = const Value.absent(),
+    this.masterFingerprint = const Value.absent(),
+    this.xpubFingerprint = const Value.absent(),
+    this.xpub = const Value.absent(),
+    this.derivationPath = const Value.absent(),
+    this.descriptorPath = const Value.absent(),
+    this.requiresPassphrase = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  WalletDescriptorKeysCompanion.insert({
+    required String walletId,
+    required String id,
+    required int position,
+    required String signerId,
+    required String masterFingerprint,
+    required String xpubFingerprint,
+    required String xpub,
+    this.derivationPath = const Value.absent(),
+    this.descriptorPath = const Value.absent(),
+    this.requiresPassphrase = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : walletId = Value(walletId),
+       id = Value(id),
+       position = Value(position),
+       signerId = Value(signerId),
+       masterFingerprint = Value(masterFingerprint),
+       xpubFingerprint = Value(xpubFingerprint),
+       xpub = Value(xpub);
+  static Insertable<WalletDescriptorKeysData> custom({
+    Expression<String>? walletId,
+    Expression<String>? id,
+    Expression<int>? position,
+    Expression<String>? signerId,
+    Expression<String>? masterFingerprint,
+    Expression<String>? xpubFingerprint,
+    Expression<String>? xpub,
+    Expression<String>? derivationPath,
+    Expression<String>? descriptorPath,
+    Expression<int>? requiresPassphrase,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (walletId != null) 'wallet_id': walletId,
+      if (id != null) 'id': id,
+      if (position != null) 'position': position,
+      if (signerId != null) 'signer_id': signerId,
+      if (masterFingerprint != null) 'master_fingerprint': masterFingerprint,
+      if (xpubFingerprint != null) 'xpub_fingerprint': xpubFingerprint,
+      if (xpub != null) 'xpub': xpub,
+      if (derivationPath != null) 'derivation_path': derivationPath,
+      if (descriptorPath != null) 'descriptor_path': descriptorPath,
+      if (requiresPassphrase != null) 'requires_passphrase': requiresPassphrase,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  WalletDescriptorKeysCompanion copyWith({
+    Value<String>? walletId,
+    Value<String>? id,
+    Value<int>? position,
+    Value<String>? signerId,
+    Value<String>? masterFingerprint,
+    Value<String>? xpubFingerprint,
+    Value<String>? xpub,
+    Value<String?>? derivationPath,
+    Value<String>? descriptorPath,
+    Value<int>? requiresPassphrase,
+    Value<int>? rowid,
+  }) {
+    return WalletDescriptorKeysCompanion(
+      walletId: walletId ?? this.walletId,
+      id: id ?? this.id,
+      position: position ?? this.position,
+      signerId: signerId ?? this.signerId,
+      masterFingerprint: masterFingerprint ?? this.masterFingerprint,
+      xpubFingerprint: xpubFingerprint ?? this.xpubFingerprint,
+      xpub: xpub ?? this.xpub,
+      derivationPath: derivationPath ?? this.derivationPath,
+      descriptorPath: descriptorPath ?? this.descriptorPath,
+      requiresPassphrase: requiresPassphrase ?? this.requiresPassphrase,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (walletId.present) {
+      map['wallet_id'] = Variable<String>(walletId.value);
+    }
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (position.present) {
+      map['position'] = Variable<int>(position.value);
+    }
+    if (signerId.present) {
+      map['signer_id'] = Variable<String>(signerId.value);
+    }
+    if (masterFingerprint.present) {
+      map['master_fingerprint'] = Variable<String>(masterFingerprint.value);
+    }
+    if (xpubFingerprint.present) {
+      map['xpub_fingerprint'] = Variable<String>(xpubFingerprint.value);
+    }
+    if (xpub.present) {
+      map['xpub'] = Variable<String>(xpub.value);
+    }
+    if (derivationPath.present) {
+      map['derivation_path'] = Variable<String>(derivationPath.value);
+    }
+    if (descriptorPath.present) {
+      map['descriptor_path'] = Variable<String>(descriptorPath.value);
+    }
+    if (requiresPassphrase.present) {
+      map['requires_passphrase'] = Variable<int>(requiresPassphrase.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('WalletDescriptorKeysCompanion(')
+          ..write('walletId: $walletId, ')
+          ..write('id: $id, ')
+          ..write('position: $position, ')
+          ..write('signerId: $signerId, ')
+          ..write('masterFingerprint: $masterFingerprint, ')
+          ..write('xpubFingerprint: $xpubFingerprint, ')
+          ..write('xpub: $xpub, ')
+          ..write('derivationPath: $derivationPath, ')
+          ..write('descriptorPath: $descriptorPath, ')
+          ..write('requiresPassphrase: $requiresPassphrase, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -9721,10 +10489,2691 @@ class OrderSwapsCompanion extends UpdateCompanion<OrderSwapsData> {
   }
 }
 
+class SendTransactions extends Table
+    with TableInfo<SendTransactions, SendTransactionsData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  SendTransactions(this.attachedDatabase, [this._alias]);
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  late final GeneratedColumn<String> walletId = GeneratedColumn<String>(
+    'wallet_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  late final GeneratedColumn<String> stage = GeneratedColumn<String>(
+    'stage',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  late final GeneratedColumn<String> label = GeneratedColumn<String>(
+    'label',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    $customConstraints: 'NULL',
+  );
+  late final GeneratedColumn<String> amountCurrencyCode =
+      GeneratedColumn<String>(
+        'amount_currency_code',
+        aliasedName,
+        false,
+        type: DriftSqlType.string,
+        requiredDuringInsert: true,
+        $customConstraints: 'NOT NULL',
+      );
+  late final GeneratedColumn<int> isSweep = GeneratedColumn<int>(
+    'is_sweep',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    $customConstraints: 'NOT NULL DEFAULT 0 CHECK (is_sweep IN (0, 1))',
+    defaultValue: const CustomExpression('0'),
+  );
+  late final GeneratedColumn<String> feeSelection = GeneratedColumn<String>(
+    'fee_selection',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  late final GeneratedColumn<String> customFeeKind = GeneratedColumn<String>(
+    'custom_fee_kind',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    $customConstraints: 'NULL',
+  );
+  late final GeneratedColumn<int> customFeeValue = GeneratedColumn<int>(
+    'custom_fee_value',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    $customConstraints: 'NULL',
+  );
+  late final GeneratedColumn<int> replaceByFee = GeneratedColumn<int>(
+    'replace_by_fee',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL CHECK (replace_by_fee IN (0, 1))',
+  );
+  late final GeneratedColumn<int> payjoinOptedOut = GeneratedColumn<int>(
+    'payjoin_opted_out',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    $customConstraints:
+        'NOT NULL DEFAULT 0 CHECK (payjoin_opted_out IN (0, 1))',
+    defaultValue: const CustomExpression('0'),
+  );
+  late final GeneratedColumn<String> psbt = GeneratedColumn<String>(
+    'psbt',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    $customConstraints: 'NULL',
+  );
+  late final GeneratedColumn<String> finalTransaction = GeneratedColumn<String>(
+    'final_transaction',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    $customConstraints: 'NULL',
+  );
+  late final GeneratedColumn<String> createdAt = GeneratedColumn<String>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  late final GeneratedColumn<String> updatedAt = GeneratedColumn<String>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  late final GeneratedColumn<int> revision = GeneratedColumn<int>(
+    'revision',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    $customConstraints: 'NOT NULL DEFAULT 0',
+    defaultValue: const CustomExpression('0'),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    walletId,
+    stage,
+    label,
+    amountCurrencyCode,
+    isSweep,
+    feeSelection,
+    customFeeKind,
+    customFeeValue,
+    replaceByFee,
+    payjoinOptedOut,
+    psbt,
+    finalTransaction,
+    createdAt,
+    updatedAt,
+    revision,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'send_transactions';
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  SendTransactionsData map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return SendTransactionsData(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      walletId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}wallet_id'],
+      )!,
+      stage: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}stage'],
+      )!,
+      label: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}label'],
+      ),
+      amountCurrencyCode: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}amount_currency_code'],
+      )!,
+      isSweep: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}is_sweep'],
+      )!,
+      feeSelection: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}fee_selection'],
+      )!,
+      customFeeKind: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}custom_fee_kind'],
+      ),
+      customFeeValue: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}custom_fee_value'],
+      ),
+      replaceByFee: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}replace_by_fee'],
+      )!,
+      payjoinOptedOut: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}payjoin_opted_out'],
+      )!,
+      psbt: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}psbt'],
+      ),
+      finalTransaction: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}final_transaction'],
+      ),
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}created_at'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}updated_at'],
+      )!,
+      revision: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}revision'],
+      )!,
+    );
+  }
+
+  @override
+  SendTransactions createAlias(String alias) {
+    return SendTransactions(attachedDatabase, alias);
+  }
+
+  @override
+  List<String> get customConstraints => const [
+    'PRIMARY KEY(id)',
+    'FOREIGN KEY(wallet_id)REFERENCES wallet_metadatas(id)ON DELETE CASCADE',
+    'CHECK(stage IN (\'draft\', \'needsSignatures\', \'readyToBroadcast\', \'broadcastPending\', \'payjoinPending\'))',
+    'CHECK(custom_fee_kind IS NULL OR custom_fee_kind IN (\'absolute\', \'relative\'))',
+    'CHECK((custom_fee_kind IS NULL)=(custom_fee_value IS NULL))',
+    'CHECK(stage = \'draft\' OR psbt IS NOT NULL)',
+  ];
+  @override
+  bool get dontWriteConstraints => true;
+}
+
+class SendTransactionsData extends DataClass
+    implements Insertable<SendTransactionsData> {
+  final String id;
+  final String walletId;
+  final String stage;
+  final String? label;
+  final String amountCurrencyCode;
+  final int isSweep;
+  final String feeSelection;
+  final String? customFeeKind;
+  final int? customFeeValue;
+  final int replaceByFee;
+  final int payjoinOptedOut;
+  final String? psbt;
+  final String? finalTransaction;
+  final String createdAt;
+  final String updatedAt;
+  final int revision;
+  const SendTransactionsData({
+    required this.id,
+    required this.walletId,
+    required this.stage,
+    this.label,
+    required this.amountCurrencyCode,
+    required this.isSweep,
+    required this.feeSelection,
+    this.customFeeKind,
+    this.customFeeValue,
+    required this.replaceByFee,
+    required this.payjoinOptedOut,
+    this.psbt,
+    this.finalTransaction,
+    required this.createdAt,
+    required this.updatedAt,
+    required this.revision,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['wallet_id'] = Variable<String>(walletId);
+    map['stage'] = Variable<String>(stage);
+    if (!nullToAbsent || label != null) {
+      map['label'] = Variable<String>(label);
+    }
+    map['amount_currency_code'] = Variable<String>(amountCurrencyCode);
+    map['is_sweep'] = Variable<int>(isSweep);
+    map['fee_selection'] = Variable<String>(feeSelection);
+    if (!nullToAbsent || customFeeKind != null) {
+      map['custom_fee_kind'] = Variable<String>(customFeeKind);
+    }
+    if (!nullToAbsent || customFeeValue != null) {
+      map['custom_fee_value'] = Variable<int>(customFeeValue);
+    }
+    map['replace_by_fee'] = Variable<int>(replaceByFee);
+    map['payjoin_opted_out'] = Variable<int>(payjoinOptedOut);
+    if (!nullToAbsent || psbt != null) {
+      map['psbt'] = Variable<String>(psbt);
+    }
+    if (!nullToAbsent || finalTransaction != null) {
+      map['final_transaction'] = Variable<String>(finalTransaction);
+    }
+    map['created_at'] = Variable<String>(createdAt);
+    map['updated_at'] = Variable<String>(updatedAt);
+    map['revision'] = Variable<int>(revision);
+    return map;
+  }
+
+  SendTransactionsCompanion toCompanion(bool nullToAbsent) {
+    return SendTransactionsCompanion(
+      id: Value(id),
+      walletId: Value(walletId),
+      stage: Value(stage),
+      label: label == null && nullToAbsent
+          ? const Value.absent()
+          : Value(label),
+      amountCurrencyCode: Value(amountCurrencyCode),
+      isSweep: Value(isSweep),
+      feeSelection: Value(feeSelection),
+      customFeeKind: customFeeKind == null && nullToAbsent
+          ? const Value.absent()
+          : Value(customFeeKind),
+      customFeeValue: customFeeValue == null && nullToAbsent
+          ? const Value.absent()
+          : Value(customFeeValue),
+      replaceByFee: Value(replaceByFee),
+      payjoinOptedOut: Value(payjoinOptedOut),
+      psbt: psbt == null && nullToAbsent ? const Value.absent() : Value(psbt),
+      finalTransaction: finalTransaction == null && nullToAbsent
+          ? const Value.absent()
+          : Value(finalTransaction),
+      createdAt: Value(createdAt),
+      updatedAt: Value(updatedAt),
+      revision: Value(revision),
+    );
+  }
+
+  factory SendTransactionsData.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return SendTransactionsData(
+      id: serializer.fromJson<String>(json['id']),
+      walletId: serializer.fromJson<String>(json['walletId']),
+      stage: serializer.fromJson<String>(json['stage']),
+      label: serializer.fromJson<String?>(json['label']),
+      amountCurrencyCode: serializer.fromJson<String>(
+        json['amountCurrencyCode'],
+      ),
+      isSweep: serializer.fromJson<int>(json['isSweep']),
+      feeSelection: serializer.fromJson<String>(json['feeSelection']),
+      customFeeKind: serializer.fromJson<String?>(json['customFeeKind']),
+      customFeeValue: serializer.fromJson<int?>(json['customFeeValue']),
+      replaceByFee: serializer.fromJson<int>(json['replaceByFee']),
+      payjoinOptedOut: serializer.fromJson<int>(json['payjoinOptedOut']),
+      psbt: serializer.fromJson<String?>(json['psbt']),
+      finalTransaction: serializer.fromJson<String?>(json['finalTransaction']),
+      createdAt: serializer.fromJson<String>(json['createdAt']),
+      updatedAt: serializer.fromJson<String>(json['updatedAt']),
+      revision: serializer.fromJson<int>(json['revision']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'walletId': serializer.toJson<String>(walletId),
+      'stage': serializer.toJson<String>(stage),
+      'label': serializer.toJson<String?>(label),
+      'amountCurrencyCode': serializer.toJson<String>(amountCurrencyCode),
+      'isSweep': serializer.toJson<int>(isSweep),
+      'feeSelection': serializer.toJson<String>(feeSelection),
+      'customFeeKind': serializer.toJson<String?>(customFeeKind),
+      'customFeeValue': serializer.toJson<int?>(customFeeValue),
+      'replaceByFee': serializer.toJson<int>(replaceByFee),
+      'payjoinOptedOut': serializer.toJson<int>(payjoinOptedOut),
+      'psbt': serializer.toJson<String?>(psbt),
+      'finalTransaction': serializer.toJson<String?>(finalTransaction),
+      'createdAt': serializer.toJson<String>(createdAt),
+      'updatedAt': serializer.toJson<String>(updatedAt),
+      'revision': serializer.toJson<int>(revision),
+    };
+  }
+
+  SendTransactionsData copyWith({
+    String? id,
+    String? walletId,
+    String? stage,
+    Value<String?> label = const Value.absent(),
+    String? amountCurrencyCode,
+    int? isSweep,
+    String? feeSelection,
+    Value<String?> customFeeKind = const Value.absent(),
+    Value<int?> customFeeValue = const Value.absent(),
+    int? replaceByFee,
+    int? payjoinOptedOut,
+    Value<String?> psbt = const Value.absent(),
+    Value<String?> finalTransaction = const Value.absent(),
+    String? createdAt,
+    String? updatedAt,
+    int? revision,
+  }) => SendTransactionsData(
+    id: id ?? this.id,
+    walletId: walletId ?? this.walletId,
+    stage: stage ?? this.stage,
+    label: label.present ? label.value : this.label,
+    amountCurrencyCode: amountCurrencyCode ?? this.amountCurrencyCode,
+    isSweep: isSweep ?? this.isSweep,
+    feeSelection: feeSelection ?? this.feeSelection,
+    customFeeKind: customFeeKind.present
+        ? customFeeKind.value
+        : this.customFeeKind,
+    customFeeValue: customFeeValue.present
+        ? customFeeValue.value
+        : this.customFeeValue,
+    replaceByFee: replaceByFee ?? this.replaceByFee,
+    payjoinOptedOut: payjoinOptedOut ?? this.payjoinOptedOut,
+    psbt: psbt.present ? psbt.value : this.psbt,
+    finalTransaction: finalTransaction.present
+        ? finalTransaction.value
+        : this.finalTransaction,
+    createdAt: createdAt ?? this.createdAt,
+    updatedAt: updatedAt ?? this.updatedAt,
+    revision: revision ?? this.revision,
+  );
+  SendTransactionsData copyWithCompanion(SendTransactionsCompanion data) {
+    return SendTransactionsData(
+      id: data.id.present ? data.id.value : this.id,
+      walletId: data.walletId.present ? data.walletId.value : this.walletId,
+      stage: data.stage.present ? data.stage.value : this.stage,
+      label: data.label.present ? data.label.value : this.label,
+      amountCurrencyCode: data.amountCurrencyCode.present
+          ? data.amountCurrencyCode.value
+          : this.amountCurrencyCode,
+      isSweep: data.isSweep.present ? data.isSweep.value : this.isSweep,
+      feeSelection: data.feeSelection.present
+          ? data.feeSelection.value
+          : this.feeSelection,
+      customFeeKind: data.customFeeKind.present
+          ? data.customFeeKind.value
+          : this.customFeeKind,
+      customFeeValue: data.customFeeValue.present
+          ? data.customFeeValue.value
+          : this.customFeeValue,
+      replaceByFee: data.replaceByFee.present
+          ? data.replaceByFee.value
+          : this.replaceByFee,
+      payjoinOptedOut: data.payjoinOptedOut.present
+          ? data.payjoinOptedOut.value
+          : this.payjoinOptedOut,
+      psbt: data.psbt.present ? data.psbt.value : this.psbt,
+      finalTransaction: data.finalTransaction.present
+          ? data.finalTransaction.value
+          : this.finalTransaction,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+      revision: data.revision.present ? data.revision.value : this.revision,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SendTransactionsData(')
+          ..write('id: $id, ')
+          ..write('walletId: $walletId, ')
+          ..write('stage: $stage, ')
+          ..write('label: $label, ')
+          ..write('amountCurrencyCode: $amountCurrencyCode, ')
+          ..write('isSweep: $isSweep, ')
+          ..write('feeSelection: $feeSelection, ')
+          ..write('customFeeKind: $customFeeKind, ')
+          ..write('customFeeValue: $customFeeValue, ')
+          ..write('replaceByFee: $replaceByFee, ')
+          ..write('payjoinOptedOut: $payjoinOptedOut, ')
+          ..write('psbt: $psbt, ')
+          ..write('finalTransaction: $finalTransaction, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('revision: $revision')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    walletId,
+    stage,
+    label,
+    amountCurrencyCode,
+    isSweep,
+    feeSelection,
+    customFeeKind,
+    customFeeValue,
+    replaceByFee,
+    payjoinOptedOut,
+    psbt,
+    finalTransaction,
+    createdAt,
+    updatedAt,
+    revision,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is SendTransactionsData &&
+          other.id == this.id &&
+          other.walletId == this.walletId &&
+          other.stage == this.stage &&
+          other.label == this.label &&
+          other.amountCurrencyCode == this.amountCurrencyCode &&
+          other.isSweep == this.isSweep &&
+          other.feeSelection == this.feeSelection &&
+          other.customFeeKind == this.customFeeKind &&
+          other.customFeeValue == this.customFeeValue &&
+          other.replaceByFee == this.replaceByFee &&
+          other.payjoinOptedOut == this.payjoinOptedOut &&
+          other.psbt == this.psbt &&
+          other.finalTransaction == this.finalTransaction &&
+          other.createdAt == this.createdAt &&
+          other.updatedAt == this.updatedAt &&
+          other.revision == this.revision);
+}
+
+class SendTransactionsCompanion extends UpdateCompanion<SendTransactionsData> {
+  final Value<String> id;
+  final Value<String> walletId;
+  final Value<String> stage;
+  final Value<String?> label;
+  final Value<String> amountCurrencyCode;
+  final Value<int> isSweep;
+  final Value<String> feeSelection;
+  final Value<String?> customFeeKind;
+  final Value<int?> customFeeValue;
+  final Value<int> replaceByFee;
+  final Value<int> payjoinOptedOut;
+  final Value<String?> psbt;
+  final Value<String?> finalTransaction;
+  final Value<String> createdAt;
+  final Value<String> updatedAt;
+  final Value<int> revision;
+  final Value<int> rowid;
+  const SendTransactionsCompanion({
+    this.id = const Value.absent(),
+    this.walletId = const Value.absent(),
+    this.stage = const Value.absent(),
+    this.label = const Value.absent(),
+    this.amountCurrencyCode = const Value.absent(),
+    this.isSweep = const Value.absent(),
+    this.feeSelection = const Value.absent(),
+    this.customFeeKind = const Value.absent(),
+    this.customFeeValue = const Value.absent(),
+    this.replaceByFee = const Value.absent(),
+    this.payjoinOptedOut = const Value.absent(),
+    this.psbt = const Value.absent(),
+    this.finalTransaction = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.revision = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  SendTransactionsCompanion.insert({
+    required String id,
+    required String walletId,
+    required String stage,
+    this.label = const Value.absent(),
+    required String amountCurrencyCode,
+    this.isSweep = const Value.absent(),
+    required String feeSelection,
+    this.customFeeKind = const Value.absent(),
+    this.customFeeValue = const Value.absent(),
+    required int replaceByFee,
+    this.payjoinOptedOut = const Value.absent(),
+    this.psbt = const Value.absent(),
+    this.finalTransaction = const Value.absent(),
+    required String createdAt,
+    required String updatedAt,
+    this.revision = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       walletId = Value(walletId),
+       stage = Value(stage),
+       amountCurrencyCode = Value(amountCurrencyCode),
+       feeSelection = Value(feeSelection),
+       replaceByFee = Value(replaceByFee),
+       createdAt = Value(createdAt),
+       updatedAt = Value(updatedAt);
+  static Insertable<SendTransactionsData> custom({
+    Expression<String>? id,
+    Expression<String>? walletId,
+    Expression<String>? stage,
+    Expression<String>? label,
+    Expression<String>? amountCurrencyCode,
+    Expression<int>? isSweep,
+    Expression<String>? feeSelection,
+    Expression<String>? customFeeKind,
+    Expression<int>? customFeeValue,
+    Expression<int>? replaceByFee,
+    Expression<int>? payjoinOptedOut,
+    Expression<String>? psbt,
+    Expression<String>? finalTransaction,
+    Expression<String>? createdAt,
+    Expression<String>? updatedAt,
+    Expression<int>? revision,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (walletId != null) 'wallet_id': walletId,
+      if (stage != null) 'stage': stage,
+      if (label != null) 'label': label,
+      if (amountCurrencyCode != null)
+        'amount_currency_code': amountCurrencyCode,
+      if (isSweep != null) 'is_sweep': isSweep,
+      if (feeSelection != null) 'fee_selection': feeSelection,
+      if (customFeeKind != null) 'custom_fee_kind': customFeeKind,
+      if (customFeeValue != null) 'custom_fee_value': customFeeValue,
+      if (replaceByFee != null) 'replace_by_fee': replaceByFee,
+      if (payjoinOptedOut != null) 'payjoin_opted_out': payjoinOptedOut,
+      if (psbt != null) 'psbt': psbt,
+      if (finalTransaction != null) 'final_transaction': finalTransaction,
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (revision != null) 'revision': revision,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  SendTransactionsCompanion copyWith({
+    Value<String>? id,
+    Value<String>? walletId,
+    Value<String>? stage,
+    Value<String?>? label,
+    Value<String>? amountCurrencyCode,
+    Value<int>? isSweep,
+    Value<String>? feeSelection,
+    Value<String?>? customFeeKind,
+    Value<int?>? customFeeValue,
+    Value<int>? replaceByFee,
+    Value<int>? payjoinOptedOut,
+    Value<String?>? psbt,
+    Value<String?>? finalTransaction,
+    Value<String>? createdAt,
+    Value<String>? updatedAt,
+    Value<int>? revision,
+    Value<int>? rowid,
+  }) {
+    return SendTransactionsCompanion(
+      id: id ?? this.id,
+      walletId: walletId ?? this.walletId,
+      stage: stage ?? this.stage,
+      label: label ?? this.label,
+      amountCurrencyCode: amountCurrencyCode ?? this.amountCurrencyCode,
+      isSweep: isSweep ?? this.isSweep,
+      feeSelection: feeSelection ?? this.feeSelection,
+      customFeeKind: customFeeKind ?? this.customFeeKind,
+      customFeeValue: customFeeValue ?? this.customFeeValue,
+      replaceByFee: replaceByFee ?? this.replaceByFee,
+      payjoinOptedOut: payjoinOptedOut ?? this.payjoinOptedOut,
+      psbt: psbt ?? this.psbt,
+      finalTransaction: finalTransaction ?? this.finalTransaction,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      revision: revision ?? this.revision,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (walletId.present) {
+      map['wallet_id'] = Variable<String>(walletId.value);
+    }
+    if (stage.present) {
+      map['stage'] = Variable<String>(stage.value);
+    }
+    if (label.present) {
+      map['label'] = Variable<String>(label.value);
+    }
+    if (amountCurrencyCode.present) {
+      map['amount_currency_code'] = Variable<String>(amountCurrencyCode.value);
+    }
+    if (isSweep.present) {
+      map['is_sweep'] = Variable<int>(isSweep.value);
+    }
+    if (feeSelection.present) {
+      map['fee_selection'] = Variable<String>(feeSelection.value);
+    }
+    if (customFeeKind.present) {
+      map['custom_fee_kind'] = Variable<String>(customFeeKind.value);
+    }
+    if (customFeeValue.present) {
+      map['custom_fee_value'] = Variable<int>(customFeeValue.value);
+    }
+    if (replaceByFee.present) {
+      map['replace_by_fee'] = Variable<int>(replaceByFee.value);
+    }
+    if (payjoinOptedOut.present) {
+      map['payjoin_opted_out'] = Variable<int>(payjoinOptedOut.value);
+    }
+    if (psbt.present) {
+      map['psbt'] = Variable<String>(psbt.value);
+    }
+    if (finalTransaction.present) {
+      map['final_transaction'] = Variable<String>(finalTransaction.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<String>(createdAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<String>(updatedAt.value);
+    }
+    if (revision.present) {
+      map['revision'] = Variable<int>(revision.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SendTransactionsCompanion(')
+          ..write('id: $id, ')
+          ..write('walletId: $walletId, ')
+          ..write('stage: $stage, ')
+          ..write('label: $label, ')
+          ..write('amountCurrencyCode: $amountCurrencyCode, ')
+          ..write('isSweep: $isSweep, ')
+          ..write('feeSelection: $feeSelection, ')
+          ..write('customFeeKind: $customFeeKind, ')
+          ..write('customFeeValue: $customFeeValue, ')
+          ..write('replaceByFee: $replaceByFee, ')
+          ..write('payjoinOptedOut: $payjoinOptedOut, ')
+          ..write('psbt: $psbt, ')
+          ..write('finalTransaction: $finalTransaction, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('revision: $revision, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class SendTransactionRecipients extends Table
+    with TableInfo<SendTransactionRecipients, SendTransactionRecipientsData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  SendTransactionRecipients(this.attachedDatabase, [this._alias]);
+  late final GeneratedColumn<String> transactionId = GeneratedColumn<String>(
+    'transaction_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  late final GeneratedColumn<int> position = GeneratedColumn<int>(
+    'position',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  late final GeneratedColumn<String> recipient = GeneratedColumn<String>(
+    'recipient',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  late final GeneratedColumn<String> amount = GeneratedColumn<String>(
+    'amount',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  late final GeneratedColumn<int> receivesRemainder = GeneratedColumn<int>(
+    'receives_remainder',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL CHECK (receives_remainder IN (0, 1))',
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    transactionId,
+    position,
+    recipient,
+    amount,
+    receivesRemainder,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'send_transaction_recipients';
+  @override
+  Set<GeneratedColumn> get $primaryKey => {transactionId, position};
+  @override
+  SendTransactionRecipientsData map(
+    Map<String, dynamic> data, {
+    String? tablePrefix,
+  }) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return SendTransactionRecipientsData(
+      transactionId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}transaction_id'],
+      )!,
+      position: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}position'],
+      )!,
+      recipient: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}recipient'],
+      )!,
+      amount: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}amount'],
+      )!,
+      receivesRemainder: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}receives_remainder'],
+      )!,
+    );
+  }
+
+  @override
+  SendTransactionRecipients createAlias(String alias) {
+    return SendTransactionRecipients(attachedDatabase, alias);
+  }
+
+  @override
+  List<String> get customConstraints => const [
+    'PRIMARY KEY(transaction_id, position)',
+    'FOREIGN KEY(transaction_id)REFERENCES send_transactions(id)ON DELETE CASCADE',
+  ];
+  @override
+  bool get dontWriteConstraints => true;
+}
+
+class SendTransactionRecipientsData extends DataClass
+    implements Insertable<SendTransactionRecipientsData> {
+  final String transactionId;
+  final int position;
+  final String recipient;
+  final String amount;
+  final int receivesRemainder;
+  const SendTransactionRecipientsData({
+    required this.transactionId,
+    required this.position,
+    required this.recipient,
+    required this.amount,
+    required this.receivesRemainder,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['transaction_id'] = Variable<String>(transactionId);
+    map['position'] = Variable<int>(position);
+    map['recipient'] = Variable<String>(recipient);
+    map['amount'] = Variable<String>(amount);
+    map['receives_remainder'] = Variable<int>(receivesRemainder);
+    return map;
+  }
+
+  SendTransactionRecipientsCompanion toCompanion(bool nullToAbsent) {
+    return SendTransactionRecipientsCompanion(
+      transactionId: Value(transactionId),
+      position: Value(position),
+      recipient: Value(recipient),
+      amount: Value(amount),
+      receivesRemainder: Value(receivesRemainder),
+    );
+  }
+
+  factory SendTransactionRecipientsData.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return SendTransactionRecipientsData(
+      transactionId: serializer.fromJson<String>(json['transactionId']),
+      position: serializer.fromJson<int>(json['position']),
+      recipient: serializer.fromJson<String>(json['recipient']),
+      amount: serializer.fromJson<String>(json['amount']),
+      receivesRemainder: serializer.fromJson<int>(json['receivesRemainder']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'transactionId': serializer.toJson<String>(transactionId),
+      'position': serializer.toJson<int>(position),
+      'recipient': serializer.toJson<String>(recipient),
+      'amount': serializer.toJson<String>(amount),
+      'receivesRemainder': serializer.toJson<int>(receivesRemainder),
+    };
+  }
+
+  SendTransactionRecipientsData copyWith({
+    String? transactionId,
+    int? position,
+    String? recipient,
+    String? amount,
+    int? receivesRemainder,
+  }) => SendTransactionRecipientsData(
+    transactionId: transactionId ?? this.transactionId,
+    position: position ?? this.position,
+    recipient: recipient ?? this.recipient,
+    amount: amount ?? this.amount,
+    receivesRemainder: receivesRemainder ?? this.receivesRemainder,
+  );
+  SendTransactionRecipientsData copyWithCompanion(
+    SendTransactionRecipientsCompanion data,
+  ) {
+    return SendTransactionRecipientsData(
+      transactionId: data.transactionId.present
+          ? data.transactionId.value
+          : this.transactionId,
+      position: data.position.present ? data.position.value : this.position,
+      recipient: data.recipient.present ? data.recipient.value : this.recipient,
+      amount: data.amount.present ? data.amount.value : this.amount,
+      receivesRemainder: data.receivesRemainder.present
+          ? data.receivesRemainder.value
+          : this.receivesRemainder,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SendTransactionRecipientsData(')
+          ..write('transactionId: $transactionId, ')
+          ..write('position: $position, ')
+          ..write('recipient: $recipient, ')
+          ..write('amount: $amount, ')
+          ..write('receivesRemainder: $receivesRemainder')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    transactionId,
+    position,
+    recipient,
+    amount,
+    receivesRemainder,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is SendTransactionRecipientsData &&
+          other.transactionId == this.transactionId &&
+          other.position == this.position &&
+          other.recipient == this.recipient &&
+          other.amount == this.amount &&
+          other.receivesRemainder == this.receivesRemainder);
+}
+
+class SendTransactionRecipientsCompanion
+    extends UpdateCompanion<SendTransactionRecipientsData> {
+  final Value<String> transactionId;
+  final Value<int> position;
+  final Value<String> recipient;
+  final Value<String> amount;
+  final Value<int> receivesRemainder;
+  final Value<int> rowid;
+  const SendTransactionRecipientsCompanion({
+    this.transactionId = const Value.absent(),
+    this.position = const Value.absent(),
+    this.recipient = const Value.absent(),
+    this.amount = const Value.absent(),
+    this.receivesRemainder = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  SendTransactionRecipientsCompanion.insert({
+    required String transactionId,
+    required int position,
+    required String recipient,
+    required String amount,
+    required int receivesRemainder,
+    this.rowid = const Value.absent(),
+  }) : transactionId = Value(transactionId),
+       position = Value(position),
+       recipient = Value(recipient),
+       amount = Value(amount),
+       receivesRemainder = Value(receivesRemainder);
+  static Insertable<SendTransactionRecipientsData> custom({
+    Expression<String>? transactionId,
+    Expression<int>? position,
+    Expression<String>? recipient,
+    Expression<String>? amount,
+    Expression<int>? receivesRemainder,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (transactionId != null) 'transaction_id': transactionId,
+      if (position != null) 'position': position,
+      if (recipient != null) 'recipient': recipient,
+      if (amount != null) 'amount': amount,
+      if (receivesRemainder != null) 'receives_remainder': receivesRemainder,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  SendTransactionRecipientsCompanion copyWith({
+    Value<String>? transactionId,
+    Value<int>? position,
+    Value<String>? recipient,
+    Value<String>? amount,
+    Value<int>? receivesRemainder,
+    Value<int>? rowid,
+  }) {
+    return SendTransactionRecipientsCompanion(
+      transactionId: transactionId ?? this.transactionId,
+      position: position ?? this.position,
+      recipient: recipient ?? this.recipient,
+      amount: amount ?? this.amount,
+      receivesRemainder: receivesRemainder ?? this.receivesRemainder,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (transactionId.present) {
+      map['transaction_id'] = Variable<String>(transactionId.value);
+    }
+    if (position.present) {
+      map['position'] = Variable<int>(position.value);
+    }
+    if (recipient.present) {
+      map['recipient'] = Variable<String>(recipient.value);
+    }
+    if (amount.present) {
+      map['amount'] = Variable<String>(amount.value);
+    }
+    if (receivesRemainder.present) {
+      map['receives_remainder'] = Variable<int>(receivesRemainder.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SendTransactionRecipientsCompanion(')
+          ..write('transactionId: $transactionId, ')
+          ..write('position: $position, ')
+          ..write('recipient: $recipient, ')
+          ..write('amount: $amount, ')
+          ..write('receivesRemainder: $receivesRemainder, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class SendTransactionInputs extends Table
+    with TableInfo<SendTransactionInputs, SendTransactionInputsData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  SendTransactionInputs(this.attachedDatabase, [this._alias]);
+  late final GeneratedColumn<String> transactionId = GeneratedColumn<String>(
+    'transaction_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  late final GeneratedColumn<String> txId = GeneratedColumn<String>(
+    'tx_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  late final GeneratedColumn<int> vout = GeneratedColumn<int>(
+    'vout',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  @override
+  List<GeneratedColumn> get $columns => [transactionId, txId, vout];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'send_transaction_inputs';
+  @override
+  Set<GeneratedColumn> get $primaryKey => {transactionId, txId, vout};
+  @override
+  SendTransactionInputsData map(
+    Map<String, dynamic> data, {
+    String? tablePrefix,
+  }) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return SendTransactionInputsData(
+      transactionId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}transaction_id'],
+      )!,
+      txId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}tx_id'],
+      )!,
+      vout: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}vout'],
+      )!,
+    );
+  }
+
+  @override
+  SendTransactionInputs createAlias(String alias) {
+    return SendTransactionInputs(attachedDatabase, alias);
+  }
+
+  @override
+  List<String> get customConstraints => const [
+    'PRIMARY KEY(transaction_id, tx_id, vout)',
+    'FOREIGN KEY(transaction_id)REFERENCES send_transactions(id)ON DELETE CASCADE',
+  ];
+  @override
+  bool get dontWriteConstraints => true;
+}
+
+class SendTransactionInputsData extends DataClass
+    implements Insertable<SendTransactionInputsData> {
+  final String transactionId;
+  final String txId;
+  final int vout;
+  const SendTransactionInputsData({
+    required this.transactionId,
+    required this.txId,
+    required this.vout,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['transaction_id'] = Variable<String>(transactionId);
+    map['tx_id'] = Variable<String>(txId);
+    map['vout'] = Variable<int>(vout);
+    return map;
+  }
+
+  SendTransactionInputsCompanion toCompanion(bool nullToAbsent) {
+    return SendTransactionInputsCompanion(
+      transactionId: Value(transactionId),
+      txId: Value(txId),
+      vout: Value(vout),
+    );
+  }
+
+  factory SendTransactionInputsData.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return SendTransactionInputsData(
+      transactionId: serializer.fromJson<String>(json['transactionId']),
+      txId: serializer.fromJson<String>(json['txId']),
+      vout: serializer.fromJson<int>(json['vout']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'transactionId': serializer.toJson<String>(transactionId),
+      'txId': serializer.toJson<String>(txId),
+      'vout': serializer.toJson<int>(vout),
+    };
+  }
+
+  SendTransactionInputsData copyWith({
+    String? transactionId,
+    String? txId,
+    int? vout,
+  }) => SendTransactionInputsData(
+    transactionId: transactionId ?? this.transactionId,
+    txId: txId ?? this.txId,
+    vout: vout ?? this.vout,
+  );
+  SendTransactionInputsData copyWithCompanion(
+    SendTransactionInputsCompanion data,
+  ) {
+    return SendTransactionInputsData(
+      transactionId: data.transactionId.present
+          ? data.transactionId.value
+          : this.transactionId,
+      txId: data.txId.present ? data.txId.value : this.txId,
+      vout: data.vout.present ? data.vout.value : this.vout,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SendTransactionInputsData(')
+          ..write('transactionId: $transactionId, ')
+          ..write('txId: $txId, ')
+          ..write('vout: $vout')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(transactionId, txId, vout);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is SendTransactionInputsData &&
+          other.transactionId == this.transactionId &&
+          other.txId == this.txId &&
+          other.vout == this.vout);
+}
+
+class SendTransactionInputsCompanion
+    extends UpdateCompanion<SendTransactionInputsData> {
+  final Value<String> transactionId;
+  final Value<String> txId;
+  final Value<int> vout;
+  final Value<int> rowid;
+  const SendTransactionInputsCompanion({
+    this.transactionId = const Value.absent(),
+    this.txId = const Value.absent(),
+    this.vout = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  SendTransactionInputsCompanion.insert({
+    required String transactionId,
+    required String txId,
+    required int vout,
+    this.rowid = const Value.absent(),
+  }) : transactionId = Value(transactionId),
+       txId = Value(txId),
+       vout = Value(vout);
+  static Insertable<SendTransactionInputsData> custom({
+    Expression<String>? transactionId,
+    Expression<String>? txId,
+    Expression<int>? vout,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (transactionId != null) 'transaction_id': transactionId,
+      if (txId != null) 'tx_id': txId,
+      if (vout != null) 'vout': vout,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  SendTransactionInputsCompanion copyWith({
+    Value<String>? transactionId,
+    Value<String>? txId,
+    Value<int>? vout,
+    Value<int>? rowid,
+  }) {
+    return SendTransactionInputsCompanion(
+      transactionId: transactionId ?? this.transactionId,
+      txId: txId ?? this.txId,
+      vout: vout ?? this.vout,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (transactionId.present) {
+      map['transaction_id'] = Variable<String>(transactionId.value);
+    }
+    if (txId.present) {
+      map['tx_id'] = Variable<String>(txId.value);
+    }
+    if (vout.present) {
+      map['vout'] = Variable<int>(vout.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SendTransactionInputsCompanion(')
+          ..write('transactionId: $transactionId, ')
+          ..write('txId: $txId, ')
+          ..write('vout: $vout, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class SendTransactionPolicyChoices extends Table
+    with
+        TableInfo<
+          SendTransactionPolicyChoices,
+          SendTransactionPolicyChoicesData
+        > {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  SendTransactionPolicyChoices(this.attachedDatabase, [this._alias]);
+  late final GeneratedColumn<String> transactionId = GeneratedColumn<String>(
+    'transaction_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  late final GeneratedColumn<String> node = GeneratedColumn<String>(
+    'node',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  late final GeneratedColumn<int> optionIndex = GeneratedColumn<int>(
+    'option_index',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  @override
+  List<GeneratedColumn> get $columns => [transactionId, node, optionIndex];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'send_transaction_policy_choices';
+  @override
+  Set<GeneratedColumn> get $primaryKey => {transactionId, node, optionIndex};
+  @override
+  SendTransactionPolicyChoicesData map(
+    Map<String, dynamic> data, {
+    String? tablePrefix,
+  }) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return SendTransactionPolicyChoicesData(
+      transactionId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}transaction_id'],
+      )!,
+      node: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}node'],
+      )!,
+      optionIndex: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}option_index'],
+      )!,
+    );
+  }
+
+  @override
+  SendTransactionPolicyChoices createAlias(String alias) {
+    return SendTransactionPolicyChoices(attachedDatabase, alias);
+  }
+
+  @override
+  List<String> get customConstraints => const [
+    'PRIMARY KEY(transaction_id, node, option_index)',
+    'FOREIGN KEY(transaction_id)REFERENCES send_transactions(id)ON DELETE CASCADE',
+  ];
+  @override
+  bool get dontWriteConstraints => true;
+}
+
+class SendTransactionPolicyChoicesData extends DataClass
+    implements Insertable<SendTransactionPolicyChoicesData> {
+  final String transactionId;
+  final String node;
+  final int optionIndex;
+  const SendTransactionPolicyChoicesData({
+    required this.transactionId,
+    required this.node,
+    required this.optionIndex,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['transaction_id'] = Variable<String>(transactionId);
+    map['node'] = Variable<String>(node);
+    map['option_index'] = Variable<int>(optionIndex);
+    return map;
+  }
+
+  SendTransactionPolicyChoicesCompanion toCompanion(bool nullToAbsent) {
+    return SendTransactionPolicyChoicesCompanion(
+      transactionId: Value(transactionId),
+      node: Value(node),
+      optionIndex: Value(optionIndex),
+    );
+  }
+
+  factory SendTransactionPolicyChoicesData.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return SendTransactionPolicyChoicesData(
+      transactionId: serializer.fromJson<String>(json['transactionId']),
+      node: serializer.fromJson<String>(json['node']),
+      optionIndex: serializer.fromJson<int>(json['optionIndex']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'transactionId': serializer.toJson<String>(transactionId),
+      'node': serializer.toJson<String>(node),
+      'optionIndex': serializer.toJson<int>(optionIndex),
+    };
+  }
+
+  SendTransactionPolicyChoicesData copyWith({
+    String? transactionId,
+    String? node,
+    int? optionIndex,
+  }) => SendTransactionPolicyChoicesData(
+    transactionId: transactionId ?? this.transactionId,
+    node: node ?? this.node,
+    optionIndex: optionIndex ?? this.optionIndex,
+  );
+  SendTransactionPolicyChoicesData copyWithCompanion(
+    SendTransactionPolicyChoicesCompanion data,
+  ) {
+    return SendTransactionPolicyChoicesData(
+      transactionId: data.transactionId.present
+          ? data.transactionId.value
+          : this.transactionId,
+      node: data.node.present ? data.node.value : this.node,
+      optionIndex: data.optionIndex.present
+          ? data.optionIndex.value
+          : this.optionIndex,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SendTransactionPolicyChoicesData(')
+          ..write('transactionId: $transactionId, ')
+          ..write('node: $node, ')
+          ..write('optionIndex: $optionIndex')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(transactionId, node, optionIndex);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is SendTransactionPolicyChoicesData &&
+          other.transactionId == this.transactionId &&
+          other.node == this.node &&
+          other.optionIndex == this.optionIndex);
+}
+
+class SendTransactionPolicyChoicesCompanion
+    extends UpdateCompanion<SendTransactionPolicyChoicesData> {
+  final Value<String> transactionId;
+  final Value<String> node;
+  final Value<int> optionIndex;
+  final Value<int> rowid;
+  const SendTransactionPolicyChoicesCompanion({
+    this.transactionId = const Value.absent(),
+    this.node = const Value.absent(),
+    this.optionIndex = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  SendTransactionPolicyChoicesCompanion.insert({
+    required String transactionId,
+    required String node,
+    required int optionIndex,
+    this.rowid = const Value.absent(),
+  }) : transactionId = Value(transactionId),
+       node = Value(node),
+       optionIndex = Value(optionIndex);
+  static Insertable<SendTransactionPolicyChoicesData> custom({
+    Expression<String>? transactionId,
+    Expression<String>? node,
+    Expression<int>? optionIndex,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (transactionId != null) 'transaction_id': transactionId,
+      if (node != null) 'node': node,
+      if (optionIndex != null) 'option_index': optionIndex,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  SendTransactionPolicyChoicesCompanion copyWith({
+    Value<String>? transactionId,
+    Value<String>? node,
+    Value<int>? optionIndex,
+    Value<int>? rowid,
+  }) {
+    return SendTransactionPolicyChoicesCompanion(
+      transactionId: transactionId ?? this.transactionId,
+      node: node ?? this.node,
+      optionIndex: optionIndex ?? this.optionIndex,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (transactionId.present) {
+      map['transaction_id'] = Variable<String>(transactionId.value);
+    }
+    if (node.present) {
+      map['node'] = Variable<String>(node.value);
+    }
+    if (optionIndex.present) {
+      map['option_index'] = Variable<int>(optionIndex.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SendTransactionPolicyChoicesCompanion(')
+          ..write('transactionId: $transactionId, ')
+          ..write('node: $node, ')
+          ..write('optionIndex: $optionIndex, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class BullVaultRecords extends Table
+    with TableInfo<BullVaultRecords, BullVaultRecordsData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  BullVaultRecords(this.attachedDatabase, [this._alias]);
+  late final GeneratedColumn<String> walletId = GeneratedColumn<String>(
+    'wallet_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  late final GeneratedColumn<String> lineageId = GeneratedColumn<String>(
+    'lineage_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  late final GeneratedColumn<int> vaultGeneration = GeneratedColumn<int>(
+    'vault_generation',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  late final GeneratedColumn<int> mobileAccount = GeneratedColumn<int>(
+    'mobile_account',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    $customConstraints: 'NULL',
+  );
+  late final GeneratedColumn<String> mobileSeedFingerprint =
+      GeneratedColumn<String>(
+        'mobile_seed_fingerprint',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+        $customConstraints: 'NULL',
+      );
+  late final GeneratedColumn<int> mobilePassphraseRequired =
+      GeneratedColumn<int>(
+        'mobile_passphrase_required',
+        aliasedName,
+        false,
+        type: DriftSqlType.int,
+        requiredDuringInsert: false,
+        $customConstraints:
+            'NOT NULL DEFAULT 0 CHECK (mobile_passphrase_required IN (0, 1))',
+        defaultValue: const CustomExpression('0'),
+      );
+  late final GeneratedColumn<int> birthHeight = GeneratedColumn<int>(
+    'birth_height',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    $customConstraints: 'NULL',
+  );
+  late final GeneratedColumn<String> recoveryPackage = GeneratedColumn<String>(
+    'recovery_package',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  late final GeneratedColumn<String> previousVaultId = GeneratedColumn<String>(
+    'previous_vault_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    $customConstraints: 'NULL',
+  );
+  late final GeneratedColumn<String> successorWalletId =
+      GeneratedColumn<String>(
+        'successor_wallet_id',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+        $customConstraints: 'NULL',
+      );
+  late final GeneratedColumn<String> status = GeneratedColumn<String>(
+    'status',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  late final GeneratedColumn<int> hardwareSetupComplete = GeneratedColumn<int>(
+    'hardware_setup_complete',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL CHECK (hardware_setup_complete IN (0, 1))',
+  );
+  late final GeneratedColumn<int> hardwareSetupDeferred = GeneratedColumn<int>(
+    'hardware_setup_deferred',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL CHECK (hardware_setup_deferred IN (0, 1))',
+  );
+  late final GeneratedColumn<String> completedHardwareSignerIdsJson =
+      GeneratedColumn<String>(
+        'completed_hardware_signer_ids_json',
+        aliasedName,
+        false,
+        type: DriftSqlType.string,
+        requiredDuringInsert: true,
+        $customConstraints: 'NOT NULL',
+      );
+  late final GeneratedColumn<int> recoveryPackageConfirmed =
+      GeneratedColumn<int>(
+        'recovery_package_confirmed',
+        aliasedName,
+        false,
+        type: DriftSqlType.int,
+        requiredDuringInsert: true,
+        $customConstraints:
+            'NOT NULL CHECK (recovery_package_confirmed IN (0, 1))',
+      );
+  late final GeneratedColumn<int> mobileBackupDeferred = GeneratedColumn<int>(
+    'mobile_backup_deferred',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL CHECK (mobile_backup_deferred IN (0, 1))',
+  );
+  late final GeneratedColumn<String> createdAt = GeneratedColumn<String>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    walletId,
+    lineageId,
+    vaultGeneration,
+    mobileAccount,
+    mobileSeedFingerprint,
+    mobilePassphraseRequired,
+    birthHeight,
+    recoveryPackage,
+    previousVaultId,
+    successorWalletId,
+    status,
+    hardwareSetupComplete,
+    hardwareSetupDeferred,
+    completedHardwareSignerIdsJson,
+    recoveryPackageConfirmed,
+    mobileBackupDeferred,
+    createdAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'bull_vault_records';
+  @override
+  Set<GeneratedColumn> get $primaryKey => {walletId};
+  @override
+  List<Set<GeneratedColumn>> get uniqueKeys => [
+    {lineageId, vaultGeneration},
+  ];
+  @override
+  BullVaultRecordsData map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return BullVaultRecordsData(
+      walletId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}wallet_id'],
+      )!,
+      lineageId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}lineage_id'],
+      )!,
+      vaultGeneration: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}vault_generation'],
+      )!,
+      mobileAccount: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}mobile_account'],
+      ),
+      mobileSeedFingerprint: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}mobile_seed_fingerprint'],
+      ),
+      mobilePassphraseRequired: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}mobile_passphrase_required'],
+      )!,
+      birthHeight: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}birth_height'],
+      ),
+      recoveryPackage: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}recovery_package'],
+      )!,
+      previousVaultId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}previous_vault_id'],
+      ),
+      successorWalletId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}successor_wallet_id'],
+      ),
+      status: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}status'],
+      )!,
+      hardwareSetupComplete: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}hardware_setup_complete'],
+      )!,
+      hardwareSetupDeferred: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}hardware_setup_deferred'],
+      )!,
+      completedHardwareSignerIdsJson: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}completed_hardware_signer_ids_json'],
+      )!,
+      recoveryPackageConfirmed: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}recovery_package_confirmed'],
+      )!,
+      mobileBackupDeferred: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}mobile_backup_deferred'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}created_at'],
+      )!,
+    );
+  }
+
+  @override
+  BullVaultRecords createAlias(String alias) {
+    return BullVaultRecords(attachedDatabase, alias);
+  }
+
+  @override
+  List<String> get customConstraints => const [
+    'PRIMARY KEY(wallet_id)',
+    'UNIQUE(lineage_id, vault_generation)',
+  ];
+  @override
+  bool get dontWriteConstraints => true;
+}
+
+class BullVaultRecordsData extends DataClass
+    implements Insertable<BullVaultRecordsData> {
+  final String walletId;
+  final String lineageId;
+  final int vaultGeneration;
+  final int? mobileAccount;
+  final String? mobileSeedFingerprint;
+  final int mobilePassphraseRequired;
+  final int? birthHeight;
+  final String recoveryPackage;
+  final String? previousVaultId;
+  final String? successorWalletId;
+  final String status;
+  final int hardwareSetupComplete;
+  final int hardwareSetupDeferred;
+  final String completedHardwareSignerIdsJson;
+  final int recoveryPackageConfirmed;
+  final int mobileBackupDeferred;
+  final String createdAt;
+  const BullVaultRecordsData({
+    required this.walletId,
+    required this.lineageId,
+    required this.vaultGeneration,
+    this.mobileAccount,
+    this.mobileSeedFingerprint,
+    required this.mobilePassphraseRequired,
+    this.birthHeight,
+    required this.recoveryPackage,
+    this.previousVaultId,
+    this.successorWalletId,
+    required this.status,
+    required this.hardwareSetupComplete,
+    required this.hardwareSetupDeferred,
+    required this.completedHardwareSignerIdsJson,
+    required this.recoveryPackageConfirmed,
+    required this.mobileBackupDeferred,
+    required this.createdAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['wallet_id'] = Variable<String>(walletId);
+    map['lineage_id'] = Variable<String>(lineageId);
+    map['vault_generation'] = Variable<int>(vaultGeneration);
+    if (!nullToAbsent || mobileAccount != null) {
+      map['mobile_account'] = Variable<int>(mobileAccount);
+    }
+    if (!nullToAbsent || mobileSeedFingerprint != null) {
+      map['mobile_seed_fingerprint'] = Variable<String>(mobileSeedFingerprint);
+    }
+    map['mobile_passphrase_required'] = Variable<int>(mobilePassphraseRequired);
+    if (!nullToAbsent || birthHeight != null) {
+      map['birth_height'] = Variable<int>(birthHeight);
+    }
+    map['recovery_package'] = Variable<String>(recoveryPackage);
+    if (!nullToAbsent || previousVaultId != null) {
+      map['previous_vault_id'] = Variable<String>(previousVaultId);
+    }
+    if (!nullToAbsent || successorWalletId != null) {
+      map['successor_wallet_id'] = Variable<String>(successorWalletId);
+    }
+    map['status'] = Variable<String>(status);
+    map['hardware_setup_complete'] = Variable<int>(hardwareSetupComplete);
+    map['hardware_setup_deferred'] = Variable<int>(hardwareSetupDeferred);
+    map['completed_hardware_signer_ids_json'] = Variable<String>(
+      completedHardwareSignerIdsJson,
+    );
+    map['recovery_package_confirmed'] = Variable<int>(recoveryPackageConfirmed);
+    map['mobile_backup_deferred'] = Variable<int>(mobileBackupDeferred);
+    map['created_at'] = Variable<String>(createdAt);
+    return map;
+  }
+
+  BullVaultRecordsCompanion toCompanion(bool nullToAbsent) {
+    return BullVaultRecordsCompanion(
+      walletId: Value(walletId),
+      lineageId: Value(lineageId),
+      vaultGeneration: Value(vaultGeneration),
+      mobileAccount: mobileAccount == null && nullToAbsent
+          ? const Value.absent()
+          : Value(mobileAccount),
+      mobileSeedFingerprint: mobileSeedFingerprint == null && nullToAbsent
+          ? const Value.absent()
+          : Value(mobileSeedFingerprint),
+      mobilePassphraseRequired: Value(mobilePassphraseRequired),
+      birthHeight: birthHeight == null && nullToAbsent
+          ? const Value.absent()
+          : Value(birthHeight),
+      recoveryPackage: Value(recoveryPackage),
+      previousVaultId: previousVaultId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(previousVaultId),
+      successorWalletId: successorWalletId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(successorWalletId),
+      status: Value(status),
+      hardwareSetupComplete: Value(hardwareSetupComplete),
+      hardwareSetupDeferred: Value(hardwareSetupDeferred),
+      completedHardwareSignerIdsJson: Value(completedHardwareSignerIdsJson),
+      recoveryPackageConfirmed: Value(recoveryPackageConfirmed),
+      mobileBackupDeferred: Value(mobileBackupDeferred),
+      createdAt: Value(createdAt),
+    );
+  }
+
+  factory BullVaultRecordsData.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return BullVaultRecordsData(
+      walletId: serializer.fromJson<String>(json['walletId']),
+      lineageId: serializer.fromJson<String>(json['lineageId']),
+      vaultGeneration: serializer.fromJson<int>(json['vaultGeneration']),
+      mobileAccount: serializer.fromJson<int?>(json['mobileAccount']),
+      mobileSeedFingerprint: serializer.fromJson<String?>(
+        json['mobileSeedFingerprint'],
+      ),
+      mobilePassphraseRequired: serializer.fromJson<int>(
+        json['mobilePassphraseRequired'],
+      ),
+      birthHeight: serializer.fromJson<int?>(json['birthHeight']),
+      recoveryPackage: serializer.fromJson<String>(json['recoveryPackage']),
+      previousVaultId: serializer.fromJson<String?>(json['previousVaultId']),
+      successorWalletId: serializer.fromJson<String?>(
+        json['successorWalletId'],
+      ),
+      status: serializer.fromJson<String>(json['status']),
+      hardwareSetupComplete: serializer.fromJson<int>(
+        json['hardwareSetupComplete'],
+      ),
+      hardwareSetupDeferred: serializer.fromJson<int>(
+        json['hardwareSetupDeferred'],
+      ),
+      completedHardwareSignerIdsJson: serializer.fromJson<String>(
+        json['completedHardwareSignerIdsJson'],
+      ),
+      recoveryPackageConfirmed: serializer.fromJson<int>(
+        json['recoveryPackageConfirmed'],
+      ),
+      mobileBackupDeferred: serializer.fromJson<int>(
+        json['mobileBackupDeferred'],
+      ),
+      createdAt: serializer.fromJson<String>(json['createdAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'walletId': serializer.toJson<String>(walletId),
+      'lineageId': serializer.toJson<String>(lineageId),
+      'vaultGeneration': serializer.toJson<int>(vaultGeneration),
+      'mobileAccount': serializer.toJson<int?>(mobileAccount),
+      'mobileSeedFingerprint': serializer.toJson<String?>(
+        mobileSeedFingerprint,
+      ),
+      'mobilePassphraseRequired': serializer.toJson<int>(
+        mobilePassphraseRequired,
+      ),
+      'birthHeight': serializer.toJson<int?>(birthHeight),
+      'recoveryPackage': serializer.toJson<String>(recoveryPackage),
+      'previousVaultId': serializer.toJson<String?>(previousVaultId),
+      'successorWalletId': serializer.toJson<String?>(successorWalletId),
+      'status': serializer.toJson<String>(status),
+      'hardwareSetupComplete': serializer.toJson<int>(hardwareSetupComplete),
+      'hardwareSetupDeferred': serializer.toJson<int>(hardwareSetupDeferred),
+      'completedHardwareSignerIdsJson': serializer.toJson<String>(
+        completedHardwareSignerIdsJson,
+      ),
+      'recoveryPackageConfirmed': serializer.toJson<int>(
+        recoveryPackageConfirmed,
+      ),
+      'mobileBackupDeferred': serializer.toJson<int>(mobileBackupDeferred),
+      'createdAt': serializer.toJson<String>(createdAt),
+    };
+  }
+
+  BullVaultRecordsData copyWith({
+    String? walletId,
+    String? lineageId,
+    int? vaultGeneration,
+    Value<int?> mobileAccount = const Value.absent(),
+    Value<String?> mobileSeedFingerprint = const Value.absent(),
+    int? mobilePassphraseRequired,
+    Value<int?> birthHeight = const Value.absent(),
+    String? recoveryPackage,
+    Value<String?> previousVaultId = const Value.absent(),
+    Value<String?> successorWalletId = const Value.absent(),
+    String? status,
+    int? hardwareSetupComplete,
+    int? hardwareSetupDeferred,
+    String? completedHardwareSignerIdsJson,
+    int? recoveryPackageConfirmed,
+    int? mobileBackupDeferred,
+    String? createdAt,
+  }) => BullVaultRecordsData(
+    walletId: walletId ?? this.walletId,
+    lineageId: lineageId ?? this.lineageId,
+    vaultGeneration: vaultGeneration ?? this.vaultGeneration,
+    mobileAccount: mobileAccount.present
+        ? mobileAccount.value
+        : this.mobileAccount,
+    mobileSeedFingerprint: mobileSeedFingerprint.present
+        ? mobileSeedFingerprint.value
+        : this.mobileSeedFingerprint,
+    mobilePassphraseRequired:
+        mobilePassphraseRequired ?? this.mobilePassphraseRequired,
+    birthHeight: birthHeight.present ? birthHeight.value : this.birthHeight,
+    recoveryPackage: recoveryPackage ?? this.recoveryPackage,
+    previousVaultId: previousVaultId.present
+        ? previousVaultId.value
+        : this.previousVaultId,
+    successorWalletId: successorWalletId.present
+        ? successorWalletId.value
+        : this.successorWalletId,
+    status: status ?? this.status,
+    hardwareSetupComplete: hardwareSetupComplete ?? this.hardwareSetupComplete,
+    hardwareSetupDeferred: hardwareSetupDeferred ?? this.hardwareSetupDeferred,
+    completedHardwareSignerIdsJson:
+        completedHardwareSignerIdsJson ?? this.completedHardwareSignerIdsJson,
+    recoveryPackageConfirmed:
+        recoveryPackageConfirmed ?? this.recoveryPackageConfirmed,
+    mobileBackupDeferred: mobileBackupDeferred ?? this.mobileBackupDeferred,
+    createdAt: createdAt ?? this.createdAt,
+  );
+  BullVaultRecordsData copyWithCompanion(BullVaultRecordsCompanion data) {
+    return BullVaultRecordsData(
+      walletId: data.walletId.present ? data.walletId.value : this.walletId,
+      lineageId: data.lineageId.present ? data.lineageId.value : this.lineageId,
+      vaultGeneration: data.vaultGeneration.present
+          ? data.vaultGeneration.value
+          : this.vaultGeneration,
+      mobileAccount: data.mobileAccount.present
+          ? data.mobileAccount.value
+          : this.mobileAccount,
+      mobileSeedFingerprint: data.mobileSeedFingerprint.present
+          ? data.mobileSeedFingerprint.value
+          : this.mobileSeedFingerprint,
+      mobilePassphraseRequired: data.mobilePassphraseRequired.present
+          ? data.mobilePassphraseRequired.value
+          : this.mobilePassphraseRequired,
+      birthHeight: data.birthHeight.present
+          ? data.birthHeight.value
+          : this.birthHeight,
+      recoveryPackage: data.recoveryPackage.present
+          ? data.recoveryPackage.value
+          : this.recoveryPackage,
+      previousVaultId: data.previousVaultId.present
+          ? data.previousVaultId.value
+          : this.previousVaultId,
+      successorWalletId: data.successorWalletId.present
+          ? data.successorWalletId.value
+          : this.successorWalletId,
+      status: data.status.present ? data.status.value : this.status,
+      hardwareSetupComplete: data.hardwareSetupComplete.present
+          ? data.hardwareSetupComplete.value
+          : this.hardwareSetupComplete,
+      hardwareSetupDeferred: data.hardwareSetupDeferred.present
+          ? data.hardwareSetupDeferred.value
+          : this.hardwareSetupDeferred,
+      completedHardwareSignerIdsJson:
+          data.completedHardwareSignerIdsJson.present
+          ? data.completedHardwareSignerIdsJson.value
+          : this.completedHardwareSignerIdsJson,
+      recoveryPackageConfirmed: data.recoveryPackageConfirmed.present
+          ? data.recoveryPackageConfirmed.value
+          : this.recoveryPackageConfirmed,
+      mobileBackupDeferred: data.mobileBackupDeferred.present
+          ? data.mobileBackupDeferred.value
+          : this.mobileBackupDeferred,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('BullVaultRecordsData(')
+          ..write('walletId: $walletId, ')
+          ..write('lineageId: $lineageId, ')
+          ..write('vaultGeneration: $vaultGeneration, ')
+          ..write('mobileAccount: $mobileAccount, ')
+          ..write('mobileSeedFingerprint: $mobileSeedFingerprint, ')
+          ..write('mobilePassphraseRequired: $mobilePassphraseRequired, ')
+          ..write('birthHeight: $birthHeight, ')
+          ..write('recoveryPackage: $recoveryPackage, ')
+          ..write('previousVaultId: $previousVaultId, ')
+          ..write('successorWalletId: $successorWalletId, ')
+          ..write('status: $status, ')
+          ..write('hardwareSetupComplete: $hardwareSetupComplete, ')
+          ..write('hardwareSetupDeferred: $hardwareSetupDeferred, ')
+          ..write(
+            'completedHardwareSignerIdsJson: $completedHardwareSignerIdsJson, ',
+          )
+          ..write('recoveryPackageConfirmed: $recoveryPackageConfirmed, ')
+          ..write('mobileBackupDeferred: $mobileBackupDeferred, ')
+          ..write('createdAt: $createdAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    walletId,
+    lineageId,
+    vaultGeneration,
+    mobileAccount,
+    mobileSeedFingerprint,
+    mobilePassphraseRequired,
+    birthHeight,
+    recoveryPackage,
+    previousVaultId,
+    successorWalletId,
+    status,
+    hardwareSetupComplete,
+    hardwareSetupDeferred,
+    completedHardwareSignerIdsJson,
+    recoveryPackageConfirmed,
+    mobileBackupDeferred,
+    createdAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is BullVaultRecordsData &&
+          other.walletId == this.walletId &&
+          other.lineageId == this.lineageId &&
+          other.vaultGeneration == this.vaultGeneration &&
+          other.mobileAccount == this.mobileAccount &&
+          other.mobileSeedFingerprint == this.mobileSeedFingerprint &&
+          other.mobilePassphraseRequired == this.mobilePassphraseRequired &&
+          other.birthHeight == this.birthHeight &&
+          other.recoveryPackage == this.recoveryPackage &&
+          other.previousVaultId == this.previousVaultId &&
+          other.successorWalletId == this.successorWalletId &&
+          other.status == this.status &&
+          other.hardwareSetupComplete == this.hardwareSetupComplete &&
+          other.hardwareSetupDeferred == this.hardwareSetupDeferred &&
+          other.completedHardwareSignerIdsJson ==
+              this.completedHardwareSignerIdsJson &&
+          other.recoveryPackageConfirmed == this.recoveryPackageConfirmed &&
+          other.mobileBackupDeferred == this.mobileBackupDeferred &&
+          other.createdAt == this.createdAt);
+}
+
+class BullVaultRecordsCompanion extends UpdateCompanion<BullVaultRecordsData> {
+  final Value<String> walletId;
+  final Value<String> lineageId;
+  final Value<int> vaultGeneration;
+  final Value<int?> mobileAccount;
+  final Value<String?> mobileSeedFingerprint;
+  final Value<int> mobilePassphraseRequired;
+  final Value<int?> birthHeight;
+  final Value<String> recoveryPackage;
+  final Value<String?> previousVaultId;
+  final Value<String?> successorWalletId;
+  final Value<String> status;
+  final Value<int> hardwareSetupComplete;
+  final Value<int> hardwareSetupDeferred;
+  final Value<String> completedHardwareSignerIdsJson;
+  final Value<int> recoveryPackageConfirmed;
+  final Value<int> mobileBackupDeferred;
+  final Value<String> createdAt;
+  final Value<int> rowid;
+  const BullVaultRecordsCompanion({
+    this.walletId = const Value.absent(),
+    this.lineageId = const Value.absent(),
+    this.vaultGeneration = const Value.absent(),
+    this.mobileAccount = const Value.absent(),
+    this.mobileSeedFingerprint = const Value.absent(),
+    this.mobilePassphraseRequired = const Value.absent(),
+    this.birthHeight = const Value.absent(),
+    this.recoveryPackage = const Value.absent(),
+    this.previousVaultId = const Value.absent(),
+    this.successorWalletId = const Value.absent(),
+    this.status = const Value.absent(),
+    this.hardwareSetupComplete = const Value.absent(),
+    this.hardwareSetupDeferred = const Value.absent(),
+    this.completedHardwareSignerIdsJson = const Value.absent(),
+    this.recoveryPackageConfirmed = const Value.absent(),
+    this.mobileBackupDeferred = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  BullVaultRecordsCompanion.insert({
+    required String walletId,
+    required String lineageId,
+    required int vaultGeneration,
+    this.mobileAccount = const Value.absent(),
+    this.mobileSeedFingerprint = const Value.absent(),
+    this.mobilePassphraseRequired = const Value.absent(),
+    this.birthHeight = const Value.absent(),
+    required String recoveryPackage,
+    this.previousVaultId = const Value.absent(),
+    this.successorWalletId = const Value.absent(),
+    required String status,
+    required int hardwareSetupComplete,
+    required int hardwareSetupDeferred,
+    required String completedHardwareSignerIdsJson,
+    required int recoveryPackageConfirmed,
+    required int mobileBackupDeferred,
+    required String createdAt,
+    this.rowid = const Value.absent(),
+  }) : walletId = Value(walletId),
+       lineageId = Value(lineageId),
+       vaultGeneration = Value(vaultGeneration),
+       recoveryPackage = Value(recoveryPackage),
+       status = Value(status),
+       hardwareSetupComplete = Value(hardwareSetupComplete),
+       hardwareSetupDeferred = Value(hardwareSetupDeferred),
+       completedHardwareSignerIdsJson = Value(completedHardwareSignerIdsJson),
+       recoveryPackageConfirmed = Value(recoveryPackageConfirmed),
+       mobileBackupDeferred = Value(mobileBackupDeferred),
+       createdAt = Value(createdAt);
+  static Insertable<BullVaultRecordsData> custom({
+    Expression<String>? walletId,
+    Expression<String>? lineageId,
+    Expression<int>? vaultGeneration,
+    Expression<int>? mobileAccount,
+    Expression<String>? mobileSeedFingerprint,
+    Expression<int>? mobilePassphraseRequired,
+    Expression<int>? birthHeight,
+    Expression<String>? recoveryPackage,
+    Expression<String>? previousVaultId,
+    Expression<String>? successorWalletId,
+    Expression<String>? status,
+    Expression<int>? hardwareSetupComplete,
+    Expression<int>? hardwareSetupDeferred,
+    Expression<String>? completedHardwareSignerIdsJson,
+    Expression<int>? recoveryPackageConfirmed,
+    Expression<int>? mobileBackupDeferred,
+    Expression<String>? createdAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (walletId != null) 'wallet_id': walletId,
+      if (lineageId != null) 'lineage_id': lineageId,
+      if (vaultGeneration != null) 'vault_generation': vaultGeneration,
+      if (mobileAccount != null) 'mobile_account': mobileAccount,
+      if (mobileSeedFingerprint != null)
+        'mobile_seed_fingerprint': mobileSeedFingerprint,
+      if (mobilePassphraseRequired != null)
+        'mobile_passphrase_required': mobilePassphraseRequired,
+      if (birthHeight != null) 'birth_height': birthHeight,
+      if (recoveryPackage != null) 'recovery_package': recoveryPackage,
+      if (previousVaultId != null) 'previous_vault_id': previousVaultId,
+      if (successorWalletId != null) 'successor_wallet_id': successorWalletId,
+      if (status != null) 'status': status,
+      if (hardwareSetupComplete != null)
+        'hardware_setup_complete': hardwareSetupComplete,
+      if (hardwareSetupDeferred != null)
+        'hardware_setup_deferred': hardwareSetupDeferred,
+      if (completedHardwareSignerIdsJson != null)
+        'completed_hardware_signer_ids_json': completedHardwareSignerIdsJson,
+      if (recoveryPackageConfirmed != null)
+        'recovery_package_confirmed': recoveryPackageConfirmed,
+      if (mobileBackupDeferred != null)
+        'mobile_backup_deferred': mobileBackupDeferred,
+      if (createdAt != null) 'created_at': createdAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  BullVaultRecordsCompanion copyWith({
+    Value<String>? walletId,
+    Value<String>? lineageId,
+    Value<int>? vaultGeneration,
+    Value<int?>? mobileAccount,
+    Value<String?>? mobileSeedFingerprint,
+    Value<int>? mobilePassphraseRequired,
+    Value<int?>? birthHeight,
+    Value<String>? recoveryPackage,
+    Value<String?>? previousVaultId,
+    Value<String?>? successorWalletId,
+    Value<String>? status,
+    Value<int>? hardwareSetupComplete,
+    Value<int>? hardwareSetupDeferred,
+    Value<String>? completedHardwareSignerIdsJson,
+    Value<int>? recoveryPackageConfirmed,
+    Value<int>? mobileBackupDeferred,
+    Value<String>? createdAt,
+    Value<int>? rowid,
+  }) {
+    return BullVaultRecordsCompanion(
+      walletId: walletId ?? this.walletId,
+      lineageId: lineageId ?? this.lineageId,
+      vaultGeneration: vaultGeneration ?? this.vaultGeneration,
+      mobileAccount: mobileAccount ?? this.mobileAccount,
+      mobileSeedFingerprint:
+          mobileSeedFingerprint ?? this.mobileSeedFingerprint,
+      mobilePassphraseRequired:
+          mobilePassphraseRequired ?? this.mobilePassphraseRequired,
+      birthHeight: birthHeight ?? this.birthHeight,
+      recoveryPackage: recoveryPackage ?? this.recoveryPackage,
+      previousVaultId: previousVaultId ?? this.previousVaultId,
+      successorWalletId: successorWalletId ?? this.successorWalletId,
+      status: status ?? this.status,
+      hardwareSetupComplete:
+          hardwareSetupComplete ?? this.hardwareSetupComplete,
+      hardwareSetupDeferred:
+          hardwareSetupDeferred ?? this.hardwareSetupDeferred,
+      completedHardwareSignerIdsJson:
+          completedHardwareSignerIdsJson ?? this.completedHardwareSignerIdsJson,
+      recoveryPackageConfirmed:
+          recoveryPackageConfirmed ?? this.recoveryPackageConfirmed,
+      mobileBackupDeferred: mobileBackupDeferred ?? this.mobileBackupDeferred,
+      createdAt: createdAt ?? this.createdAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (walletId.present) {
+      map['wallet_id'] = Variable<String>(walletId.value);
+    }
+    if (lineageId.present) {
+      map['lineage_id'] = Variable<String>(lineageId.value);
+    }
+    if (vaultGeneration.present) {
+      map['vault_generation'] = Variable<int>(vaultGeneration.value);
+    }
+    if (mobileAccount.present) {
+      map['mobile_account'] = Variable<int>(mobileAccount.value);
+    }
+    if (mobileSeedFingerprint.present) {
+      map['mobile_seed_fingerprint'] = Variable<String>(
+        mobileSeedFingerprint.value,
+      );
+    }
+    if (mobilePassphraseRequired.present) {
+      map['mobile_passphrase_required'] = Variable<int>(
+        mobilePassphraseRequired.value,
+      );
+    }
+    if (birthHeight.present) {
+      map['birth_height'] = Variable<int>(birthHeight.value);
+    }
+    if (recoveryPackage.present) {
+      map['recovery_package'] = Variable<String>(recoveryPackage.value);
+    }
+    if (previousVaultId.present) {
+      map['previous_vault_id'] = Variable<String>(previousVaultId.value);
+    }
+    if (successorWalletId.present) {
+      map['successor_wallet_id'] = Variable<String>(successorWalletId.value);
+    }
+    if (status.present) {
+      map['status'] = Variable<String>(status.value);
+    }
+    if (hardwareSetupComplete.present) {
+      map['hardware_setup_complete'] = Variable<int>(
+        hardwareSetupComplete.value,
+      );
+    }
+    if (hardwareSetupDeferred.present) {
+      map['hardware_setup_deferred'] = Variable<int>(
+        hardwareSetupDeferred.value,
+      );
+    }
+    if (completedHardwareSignerIdsJson.present) {
+      map['completed_hardware_signer_ids_json'] = Variable<String>(
+        completedHardwareSignerIdsJson.value,
+      );
+    }
+    if (recoveryPackageConfirmed.present) {
+      map['recovery_package_confirmed'] = Variable<int>(
+        recoveryPackageConfirmed.value,
+      );
+    }
+    if (mobileBackupDeferred.present) {
+      map['mobile_backup_deferred'] = Variable<int>(mobileBackupDeferred.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<String>(createdAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('BullVaultRecordsCompanion(')
+          ..write('walletId: $walletId, ')
+          ..write('lineageId: $lineageId, ')
+          ..write('vaultGeneration: $vaultGeneration, ')
+          ..write('mobileAccount: $mobileAccount, ')
+          ..write('mobileSeedFingerprint: $mobileSeedFingerprint, ')
+          ..write('mobilePassphraseRequired: $mobilePassphraseRequired, ')
+          ..write('birthHeight: $birthHeight, ')
+          ..write('recoveryPackage: $recoveryPackage, ')
+          ..write('previousVaultId: $previousVaultId, ')
+          ..write('successorWalletId: $successorWalletId, ')
+          ..write('status: $status, ')
+          ..write('hardwareSetupComplete: $hardwareSetupComplete, ')
+          ..write('hardwareSetupDeferred: $hardwareSetupDeferred, ')
+          ..write(
+            'completedHardwareSignerIdsJson: $completedHardwareSignerIdsJson, ',
+          )
+          ..write('recoveryPackageConfirmed: $recoveryPackageConfirmed, ')
+          ..write('mobileBackupDeferred: $mobileBackupDeferred, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class BullVaultGenerationReservations extends Table
+    with
+        TableInfo<
+          BullVaultGenerationReservations,
+          BullVaultGenerationReservationsData
+        > {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  BullVaultGenerationReservations(this.attachedDatabase, [this._alias]);
+  late final GeneratedColumn<String> lineageId = GeneratedColumn<String>(
+    'lineage_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  late final GeneratedColumn<int> generation = GeneratedColumn<int>(
+    'generation',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  @override
+  List<GeneratedColumn> get $columns => [lineageId, generation];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'bull_vault_generation_reservations';
+  @override
+  Set<GeneratedColumn> get $primaryKey => {lineageId, generation};
+  @override
+  BullVaultGenerationReservationsData map(
+    Map<String, dynamic> data, {
+    String? tablePrefix,
+  }) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return BullVaultGenerationReservationsData(
+      lineageId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}lineage_id'],
+      )!,
+      generation: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}generation'],
+      )!,
+    );
+  }
+
+  @override
+  BullVaultGenerationReservations createAlias(String alias) {
+    return BullVaultGenerationReservations(attachedDatabase, alias);
+  }
+
+  @override
+  List<String> get customConstraints => const [
+    'PRIMARY KEY(lineage_id, generation)',
+  ];
+  @override
+  bool get dontWriteConstraints => true;
+}
+
+class BullVaultGenerationReservationsData extends DataClass
+    implements Insertable<BullVaultGenerationReservationsData> {
+  final String lineageId;
+  final int generation;
+  const BullVaultGenerationReservationsData({
+    required this.lineageId,
+    required this.generation,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['lineage_id'] = Variable<String>(lineageId);
+    map['generation'] = Variable<int>(generation);
+    return map;
+  }
+
+  BullVaultGenerationReservationsCompanion toCompanion(bool nullToAbsent) {
+    return BullVaultGenerationReservationsCompanion(
+      lineageId: Value(lineageId),
+      generation: Value(generation),
+    );
+  }
+
+  factory BullVaultGenerationReservationsData.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return BullVaultGenerationReservationsData(
+      lineageId: serializer.fromJson<String>(json['lineageId']),
+      generation: serializer.fromJson<int>(json['generation']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'lineageId': serializer.toJson<String>(lineageId),
+      'generation': serializer.toJson<int>(generation),
+    };
+  }
+
+  BullVaultGenerationReservationsData copyWith({
+    String? lineageId,
+    int? generation,
+  }) => BullVaultGenerationReservationsData(
+    lineageId: lineageId ?? this.lineageId,
+    generation: generation ?? this.generation,
+  );
+  BullVaultGenerationReservationsData copyWithCompanion(
+    BullVaultGenerationReservationsCompanion data,
+  ) {
+    return BullVaultGenerationReservationsData(
+      lineageId: data.lineageId.present ? data.lineageId.value : this.lineageId,
+      generation: data.generation.present
+          ? data.generation.value
+          : this.generation,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('BullVaultGenerationReservationsData(')
+          ..write('lineageId: $lineageId, ')
+          ..write('generation: $generation')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(lineageId, generation);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is BullVaultGenerationReservationsData &&
+          other.lineageId == this.lineageId &&
+          other.generation == this.generation);
+}
+
+class BullVaultGenerationReservationsCompanion
+    extends UpdateCompanion<BullVaultGenerationReservationsData> {
+  final Value<String> lineageId;
+  final Value<int> generation;
+  final Value<int> rowid;
+  const BullVaultGenerationReservationsCompanion({
+    this.lineageId = const Value.absent(),
+    this.generation = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  BullVaultGenerationReservationsCompanion.insert({
+    required String lineageId,
+    required int generation,
+    this.rowid = const Value.absent(),
+  }) : lineageId = Value(lineageId),
+       generation = Value(generation);
+  static Insertable<BullVaultGenerationReservationsData> custom({
+    Expression<String>? lineageId,
+    Expression<int>? generation,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (lineageId != null) 'lineage_id': lineageId,
+      if (generation != null) 'generation': generation,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  BullVaultGenerationReservationsCompanion copyWith({
+    Value<String>? lineageId,
+    Value<int>? generation,
+    Value<int>? rowid,
+  }) {
+    return BullVaultGenerationReservationsCompanion(
+      lineageId: lineageId ?? this.lineageId,
+      generation: generation ?? this.generation,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (lineageId.present) {
+      map['lineage_id'] = Variable<String>(lineageId.value);
+    }
+    if (generation.present) {
+      map['generation'] = Variable<int>(generation.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('BullVaultGenerationReservationsCompanion(')
+          ..write('lineageId: $lineageId, ')
+          ..write('generation: $generation, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class DatabaseAtV16 extends GeneratedDatabase {
   DatabaseAtV16(QueryExecutor e) : super(e);
   late final Transactions transactions = Transactions(this);
   late final WalletMetadatas walletMetadatas = WalletMetadatas(this);
+  late final WalletSigners walletSigners = WalletSigners(this);
+  late final WalletDescriptorKeys walletDescriptorKeys = WalletDescriptorKeys(
+    this,
+  );
   late final Labels labels = Labels(this);
   late final Settings settings = Settings(this);
   late final PayjoinSenders payjoinSenders = PayjoinSenders(this);
@@ -9741,6 +13190,16 @@ class DatabaseAtV16 extends GeneratedDatabase {
   late final DismissedAnnouncements dismissedAnnouncements =
       DismissedAnnouncements(this);
   late final OrderSwaps orderSwaps = OrderSwaps(this);
+  late final SendTransactions sendTransactions = SendTransactions(this);
+  late final SendTransactionRecipients sendTransactionRecipients =
+      SendTransactionRecipients(this);
+  late final SendTransactionInputs sendTransactionInputs =
+      SendTransactionInputs(this);
+  late final SendTransactionPolicyChoices sendTransactionPolicyChoices =
+      SendTransactionPolicyChoices(this);
+  late final BullVaultRecords bullVaultRecords = BullVaultRecords(this);
+  late final BullVaultGenerationReservations bullVaultGenerationReservations =
+      BullVaultGenerationReservations(this);
   late final Index orderSwapsRequestId = Index(
     'order_swaps_request_id',
     'CREATE UNIQUE INDEX order_swaps_request_id ON order_swaps (request_id)',
@@ -9769,6 +13228,14 @@ class DatabaseAtV16 extends GeneratedDatabase {
     'order_swaps_local_payin_txid',
     'CREATE INDEX order_swaps_local_payin_txid ON order_swaps (local_payin_transaction_id)',
   );
+  late final Index sendTransactionsWallet = Index(
+    'send_transactions_wallet',
+    'CREATE INDEX send_transactions_wallet ON send_transactions (wallet_id)',
+  );
+  late final Index sendTransactionsUpdatedAt = Index(
+    'send_transactions_updated_at',
+    'CREATE INDEX send_transactions_updated_at ON send_transactions (updated_at)',
+  );
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -9776,6 +13243,8 @@ class DatabaseAtV16 extends GeneratedDatabase {
   List<DatabaseSchemaEntity> get allSchemaEntities => [
     transactions,
     walletMetadatas,
+    walletSigners,
+    walletDescriptorKeys,
     labels,
     settings,
     payjoinSenders,
@@ -9791,6 +13260,12 @@ class DatabaseAtV16 extends GeneratedDatabase {
     frozenUtxos,
     dismissedAnnouncements,
     orderSwaps,
+    sendTransactions,
+    sendTransactionRecipients,
+    sendTransactionInputs,
+    sendTransactionPolicyChoices,
+    bullVaultRecords,
+    bullVaultGenerationReservations,
     orderSwapsRequestId,
     orderSwapsLocalStatus,
     orderSwapsSourceWallet,
@@ -9798,7 +13273,65 @@ class DatabaseAtV16 extends GeneratedDatabase {
     orderSwapsBitcoinTxid,
     orderSwapsLiquidTxid,
     orderSwapsLocalPayinTxid,
+    sendTransactionsWallet,
+    sendTransactionsUpdatedAt,
   ];
+  @override
+  StreamQueryUpdateRules get streamUpdateRules => const StreamQueryUpdateRules([
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'wallet_metadatas',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('wallet_signers', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'wallet_metadatas',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('wallet_descriptor_keys', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'wallet_signers',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('wallet_descriptor_keys', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'wallet_metadatas',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('send_transactions', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'send_transactions',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [
+        TableUpdate('send_transaction_recipients', kind: UpdateKind.delete),
+      ],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'send_transactions',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('send_transaction_inputs', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'send_transactions',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [
+        TableUpdate('send_transaction_policy_choices', kind: UpdateKind.delete),
+      ],
+    ),
+  ]);
   @override
   int get schemaVersion => 16;
   @override

@@ -9,5 +9,8 @@ extension SettingsFailureL10n on SettingsFailure {
     SettingsLogsFailure() => context.loc.settingsErrorLoadingLogs,
     SettingsExchangeSyncFailure() => context.loc.settingsErrorSavingSetting,
     SettingsUnexpectedFailure() => context.loc.oopsSomethingWentWrong,
+    SettingsSigningKeyExportFailure() => context.loc.oopsSomethingWentWrong,
+    SettingsWalletPolicyFailure() => context.loc.oopsSomethingWentWrong,
+    SettingsWalletRegistrationFailure() => context.loc.oopsSomethingWentWrong,
   };
 }

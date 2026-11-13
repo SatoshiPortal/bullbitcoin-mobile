@@ -2,6 +2,8 @@ import 'package:bip32_keys/bip32_keys.dart' as bip32;
 import 'package:bull_sdk/bdk.dart' as bdk;
 import 'package:primitives/primitives.dart';
 import 'package:secrets/src/domain/domain.dart';
+import 'package:secrets/src/crypto/derivers/fingerprint_deriver.dart';
+import 'package:secrets/src/crypto/exceptions.dart';
 import 'package:meta/meta.dart';
 
 /// Public descriptors for both keychains of a wallet.
@@ -36,6 +38,65 @@ final class BitcoinDeriver {
       secret.seedBytes,
       network: networkType,
     ).toBase58();
+  }
+
+  /// A public account key at the exact supplied origin path.
+  PublicAccountKey account(
+    SecretMaterial secret, {
+    required String derivationPath,
+    required BitcoinNetwork network,
+    String? passphrase,
+  }) {
+    final path = normalizePath(derivationPath);
+    final material = withPassphrase(secret, passphrase);
+    final root = bip32.Bip32Keys.fromSeed(material.seedBytes);
+    final xpub = root.derivePath(path).neutered.toBase58();
+    return PublicAccountKey(
+      fingerprint: const FingerprintDeriver().fingerprint(material.seedBytes),
+      xpub: (network.isMainnet ? XpubType.xpub : XpubType.tpub).reencode(xpub),
+      derivationPath: path,
+    );
+  }
+
+  /// Applies an operation-only override after the stored secret was verified.
+  SecretMaterial withPassphrase(SecretMaterial secret, String? passphrase) {
+    if (passphrase == null) return secret;
+    if (secret case Mnemonic(:final words, :final language)) {
+      if (secret.passphrase == passphrase) return secret;
+      final bytes = const FingerprintDeriver().seed(
+        words,
+        language: language,
+        passphrase: passphrase,
+      );
+      return Mnemonic(
+        id: const FingerprintDeriver().fingerprint(bytes),
+        words: words,
+        language: language,
+        passphrase: passphrase,
+        seedBytes: bytes,
+      );
+    }
+    if (passphrase.isEmpty) return secret;
+    throw const PassphraseUnsupported('A raw seed cannot use a passphrase');
+  }
+
+  /// Canonical BIP32 path, with hardened components written using apostrophes.
+  String normalizePath(String path) {
+    if (!RegExp(r"^m(?:/[0-9]+['h]?)*$").hasMatch(path)) {
+      throw const FormatException('Invalid account derivation path');
+    }
+    final parts = <String>['m'];
+    for (final component in path.split('/').skip(1)) {
+      final hardened = component.endsWith("'") || component.endsWith('h');
+      final index = int.tryParse(
+        hardened ? component.substring(0, component.length - 1) : component,
+      );
+      if (index == null || index > 0x7fffffff) {
+        throw const FormatException('Invalid account derivation index');
+      }
+      parts.add("$index${hardened ? "'" : ''}");
+    }
+    return parts.join('/');
   }
 
   /// Account-level extended public key, re-encoded to [xpubType].

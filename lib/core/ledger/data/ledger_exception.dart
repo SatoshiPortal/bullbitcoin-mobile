@@ -34,3 +34,19 @@ final class DeviceMismatchLedgerException extends LedgerException {
 final class InvalidMagicBytesLedgerException extends LedgerException {
   const InvalidMagicBytesLedgerException();
 }
+
+final class UnsupportedWalletPolicyLedgerException extends LedgerException {
+  const UnsupportedWalletPolicyLedgerException();
+}
+
+final class WalletPolicyNotRegisteredLedgerException extends LedgerException {
+  const WalletPolicyNotRegisteredLedgerException();
+}
+
+final class WalletAddressMismatchLedgerException extends LedgerException {
+  const WalletAddressMismatchLedgerException();
+}
+
+final class BitcoinAppUpdateRequiredLedgerException extends LedgerException {
+  const BitcoinAppUpdateRequiredLedgerException();
+}

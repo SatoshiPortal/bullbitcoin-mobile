@@ -13,6 +13,7 @@ import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_bitcoin_tran
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_liquid_transaction_usecase.dart';
 import 'package:bb_mobile/core/errors/send_errors.dart';
 import 'package:bb_mobile/core/wallet/domain/insufficient_funds_exception.dart';
+import 'package:bb_mobile/core/wallet/domain/bitcoin_coin_selection_exception.dart';
 import 'package:bb_mobile/core/wallet/domain/no_spendable_utxo_exception.dart';
 import 'package:bb_mobile/core/wallet/domain/consolidation_required_exception.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/check_liquid_consolidation_usecase.dart';
@@ -226,11 +227,16 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
       final liquidWallets = wallets
           .where(
             (wallet) =>
-                wallet.isLiquid && (wallet.isDefault || wallet.signsLocally),
+                wallet.isLiquid &&
+                (wallet.isDefault ||
+                    wallet.isStandardLocalSingleSignatureWallet),
           )
           .toList();
       final bitcoinWallets = wallets
-          .where((wallet) => !wallet.isLiquid && wallet.signsLocally)
+          .where(
+            (wallet) =>
+                !wallet.isLiquid && wallet.isStandardLocalSingleSignatureWallet,
+          )
           .toList();
 
       var fromWallet = liquidWallets.isNotEmpty
@@ -384,7 +390,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
       return;
     }
 
-    if (!newFromWallet.signsLocally) {
+    if (!newFromWallet.isStandardLocalSingleSignatureWallet) {
       return;
     }
 
@@ -407,7 +413,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
               (w) =>
                   w.isLiquid != newToWallet.isLiquid &&
                   w.isDefault &&
-                  w.signsLocally,
+                  w.isStandardLocalSingleSignatureWallet,
             )
             .firstOrNull;
         if (opposite != null) {
@@ -431,7 +437,12 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
         }
       } else {
         final btcWallet = state.wallets
-            .where((w) => !w.isLiquid && w.isDefault && w.signsLocally)
+            .where(
+              (w) =>
+                  !w.isLiquid &&
+                  w.isDefault &&
+                  w.isStandardLocalSingleSignatureWallet,
+            )
             .firstOrNull;
         if (btcWallet != null) {
           newFromWallet = btcWallet;
@@ -624,7 +635,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
           return;
       }
 
-      final signedPsbtAndTxSize = await _signBitcoinTxUsecase.execute(
+      final signedPsbtAndTxSize = await _signBitcoinTransaction(
         walletId: bitcoinWalletId,
         psbt: unsignedPsbtAndTxSize.unsignedPsbt,
       );
@@ -873,7 +884,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
         walletId: fromWallet.id,
       );
       if (generation != _transactionGeneration) return;
-      final signed = await _signBitcoinTxUsecase.execute(
+      final signed = await _signBitcoinTransaction(
         walletId: fromWallet.id,
         psbt: unsigned.unsignedPsbt,
       );
@@ -1592,7 +1603,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
             return;
         }
 
-        final signedPsbtAndTxSize = await _signBitcoinTxUsecase.execute(
+        final signedPsbtAndTxSize = await _signBitcoinTransaction(
           walletId: fromWallet.id,
           psbt: unsignedPsbtAndTxSize.unsignedPsbt,
         );
@@ -1703,7 +1714,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
         );
         if (generation != _transactionGeneration) return;
 
-        final signedPsbtAndTxSize = await _signBitcoinTxUsecase.execute(
+        final signedPsbtAndTxSize = await _signBitcoinTransaction(
           walletId: fromWallet.id,
           psbt: unsignedPsbtAndTxSize.unsignedPsbt,
         );
@@ -1928,6 +1939,19 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
     }
   }
 
+  Future<SignedBitcoinTransaction> _signBitcoinTransaction({
+    required String walletId,
+    required String psbt,
+  }) async {
+    return switch (await _signBitcoinTxUsecase.execute(
+      walletId: walletId,
+      psbt: psbt,
+    )) {
+      Ok(:final value) => value,
+      Err() => throw BuildTransactionException('bitcoin_signing_failed'),
+    };
+  }
+
   Future<void> _syncWalletsAfterBroadcast(List<String> walletIds) async {
     for (final walletId in walletIds) {
       await _syncWalletAfterBroadcast(walletId);
@@ -2026,7 +2050,8 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
 
   bool _isInsufficientFundsException(Object e) {
     return e is InsufficientFundsSwapException ||
-        e is InsufficientFundsException;
+        e is InsufficientFundsException ||
+        e is BitcoinCoinSelectionException;
   }
 
   Future<void> _onOrderSwapUpdated(

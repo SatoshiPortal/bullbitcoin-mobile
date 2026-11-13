@@ -12,6 +12,7 @@ import 'package:bb_mobile/features/labels/router.dart';
 import 'package:bb_mobile/features/mempool_settings/router.dart';
 import 'package:bull_recoverbull/bull_recoverbull.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
+import 'package:bb_mobile/features/settings/public/settings_entry_registry.dart';
 import 'package:bb_mobile/features/settings/ui/settings_route.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/exchange_testnet_basic_auth_dialog.dart';
 import 'package:bb_mobile/features/sp/public/sp_facade.dart';
@@ -22,6 +23,7 @@ import 'package:bb_mobile/generated/l10n/localization.dart';
 import 'package:bb_mobile/generated/l10n/localization_en.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:bull_ui/bull_ui.dart' show BullSettingsEntryItem;
@@ -39,6 +41,7 @@ enum SettingsItemId {
   termsOfService,
   servicesStatus,
   importWallet,
+  signingKeyExport,
   broadcastTransaction,
   payjoin,
   autoswap,
@@ -58,6 +61,7 @@ enum SettingsItemId {
   devMode,
   testnetCredentials,
   errorReporting,
+  extension,
 }
 
 enum SettingsItemSection { root, backup, wallet, app }
@@ -155,6 +159,9 @@ List<SettingsItem> settingsItemsOf(BuildContext context) {
     isSuperuser: isSuperuser,
     isDevModeEnabled: isDevModeEnabled,
     isSpWalletSetup: isSpWalletSetup,
+    contributions: GetIt.I.isRegistered<SettingsEntryRegistry>()
+        ? GetIt.I<SettingsEntryRegistry>().entries
+        : const [],
   );
 }
 
@@ -163,6 +170,7 @@ List<SettingsItem> buildSettingsItems({
   bool isSuperuser = false,
   bool isDevModeEnabled = false,
   bool isSpWalletSetup = false,
+  List<SettingsEntryContribution> contributions = const [],
 }) {
   final english = AppLocalizationsEn();
   final rootSection = localization.settingsScreenTitle;
@@ -179,7 +187,7 @@ List<SettingsItem> buildSettingsItems({
         SettingsItemSection.app => [rootSection, appSection, title],
       };
 
-  return [
+  final items = [
     SettingsItem(
       id: SettingsItemId.appSettings,
       section: SettingsItemSection.root,
@@ -388,6 +396,22 @@ List<SettingsItem> buildSettingsItems({
         localization.settingsSearchImportWalletKeywords,
         english.settingsSearchImportWalletKeywords,
         [english.walletSettingsImportWalletTitle],
+      ),
+    ),
+    SettingsItem(
+      id: SettingsItemId.signingKeyExport,
+      section: SettingsItemSection.wallet,
+      title: localization.signingKeyExportTitle,
+      path: path(
+        SettingsItemSection.wallet,
+        localization.signingKeyExportTitle,
+      ),
+      icon: Icons.key,
+      open: (context) => context.pushNamed(SettingsRoute.signingKeyExport.name),
+      keywords: _keywords(
+        localization.settingsSearchSigningKeyExportKeywords,
+        english.settingsSearchSigningKeyExportKeywords,
+        [english.signingKeyExportTitle],
       ),
     ),
     SettingsItem(
@@ -689,6 +713,26 @@ List<SettingsItem> buildSettingsItems({
         ),
       ),
   ];
+
+  for (final contribution in contributions) {
+    final section = switch (contribution.section) {
+      SettingsEntrySection.wallet => SettingsItemSection.wallet,
+    };
+    final title = contribution.title(localization);
+    items.add(
+      SettingsItem(
+        id: SettingsItemId.extension,
+        section: section,
+        title: title,
+        path: path(section, title),
+        icon: contribution.icon,
+        open: contribution.open,
+        keywords: [contribution.title(english)],
+      ),
+    );
+  }
+
+  return items;
 }
 
 List<String> _keywords(

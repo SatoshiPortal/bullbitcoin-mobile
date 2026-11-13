@@ -5,6 +5,7 @@ import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:primitives/primitives.dart' show BitcoinUnit, Err, Ok;
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/wallet_error.dart';
 import 'package:bb_mobile/features/import_mnemonic/domain/check_duplicate_mnemonic_usecase.dart';
 import 'package:bb_mobile/features/import_mnemonic/domain/import_mnemonic_failure.dart';
 import 'package:bb_mobile/features/import_mnemonic/domain/import_wallet_usecase.dart';
@@ -203,6 +204,38 @@ void main() {
       },
     );
 
+    for (final referenced in [false, true]) {
+      test(
+        'duplicate cleanup preserves referenced secrets: $referenced',
+        () async {
+          final existingWallet = _MockWallet();
+          stubCreateWallet(() async {
+            final fingerprint = storage.entries.keys
+                .singleWhere((key) => key.startsWith('seed_'))
+                .substring(5);
+            when(
+              () => existingWallet.localSeedFingerprints,
+            ).thenReturn(referenced ? [fingerprint] : []);
+            when(
+              () => walletRepository.getWallets(),
+            ).thenAnswer((_) async => Ok([existingWallet]));
+            throw const WalletAlreadyExistsException('descriptor-wallet');
+          });
+
+          final result = await usecase.execute(mnemonicWords: words);
+
+          expect(
+            (result as Err).failure,
+            isA<ImportMnemonicDuplicateFailure>(),
+          );
+          expect(
+            storage.entries.keys.where((key) => key.startsWith('seed_')),
+            hasLength(referenced ? 1 : 0),
+          );
+        },
+      );
+    }
+
     test(
       'strict import rejects a duplicate missed by preflight without cleanup',
       () async {
@@ -267,12 +300,11 @@ void main() {
       () async {
         final wallet = _MockWallet();
         stubCreateWallet(() async {
-          when(() => wallet.signsLocally).thenReturn(true);
-          when(() => wallet.masterFingerprint).thenReturn(
+          when(() => wallet.localSeedFingerprints).thenReturn([
             storage.entries.keys
                 .singleWhere((key) => key.startsWith('seed_'))
                 .substring(5),
-          );
+          ]);
           when(
             () => walletRepository.getWallets(),
           ).thenAnswer((_) async => Ok<List<Wallet>, WalletFailure>([wallet]));

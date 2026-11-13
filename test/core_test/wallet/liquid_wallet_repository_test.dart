@@ -4,9 +4,9 @@ import 'package:bb_mobile/core/wallet/domain/consolidation_required_exception.da
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:secrets/secrets.dart';
 import 'package:secrets/testing.dart';
-import 'package:primitives/primitives.dart';
+import 'package:primitives/primitives.dart' hide Network;
+import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart' show Network;
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
-import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/frozen_wallet_utxo_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/lwk_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasource.dart';
@@ -63,14 +63,11 @@ void main() {
     when(() => metadata.fetch(walletId)).thenAnswer(
       (_) async => const WalletMetadataModel(
         id: walletId,
-        masterFingerprint: '73c5da0a',
-        xpubFingerprint: 'deadbeef',
+        network: Network.liquidMainnet,
+        signers: [],
         isEncryptedVaultTested: false,
         isPhysicalBackupTested: false,
-        xpub: '',
-        externalPublicDescriptor: 'descriptor',
-        internalPublicDescriptor: '',
-        signer: Signer.local,
+        publicDescriptor: 'descriptor',
         isDefault: false,
       ),
     );

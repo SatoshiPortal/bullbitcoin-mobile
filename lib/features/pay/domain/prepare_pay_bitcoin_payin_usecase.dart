@@ -59,13 +59,16 @@ class PreparePayBitcoinPayinUsecase {
         )
         .mapErr(
           (failure) => switch (failure) {
-            WalletInsufficientFundsFailure() ||
-            WalletNoSpendableInputsFailure() ||
             WalletSelectedInputsUnavailableFailure() =>
-              PayInsufficientBalanceFailure(
-                requiredAmountSat: amountSat ?? 0,
-                logMessage: failure.logMessage,
-              ),
+              const PaySelectedCoinsUnavailableFailure(),
+            WalletInsufficientFundsFailure()
+                when selectedInputs?.isNotEmpty ?? false =>
+              const PaySelectedCoinsInsufficientFailure(),
+            WalletInsufficientFundsFailure() ||
+            WalletNoSpendableInputsFailure() => PayInsufficientBalanceFailure(
+              requiredAmountSat: amountSat ?? 0,
+              logMessage: failure.logMessage,
+            ),
             _ => PayUnexpectedFailure(failure.logMessage),
           },
         );

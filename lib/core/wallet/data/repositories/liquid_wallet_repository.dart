@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/frozen_wallet_utxo_datasource.dart';
+import 'package:bb_mobile/core/storage/tables/wallet_signer_table.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/lwk_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_model.dart';
@@ -47,7 +48,7 @@ class LiquidWalletRepository implements LiquidSendPort {
         return const Err(WalletTransactionBuildFailure('Not a Liquid wallet'));
       }
       final wallet = WalletModel.publicLwk(
-        combinedCtDescriptor: metadata.externalPublicDescriptor,
+        combinedCtDescriptor: metadata.publicDescriptor,
         isTestnet: metadata.isTestnet,
         id: metadata.id,
       );
@@ -102,7 +103,7 @@ class LiquidWalletRepository implements LiquidSendPort {
       throw Exception('Wallet $walletId is not a Liquid wallet');
     }
     final wallet = WalletModel.publicLwk(
-      combinedCtDescriptor: metadata.externalPublicDescriptor,
+      combinedCtDescriptor: metadata.publicDescriptor,
       isTestnet: metadata.isTestnet,
       id: metadata.id,
     );
@@ -123,7 +124,7 @@ class LiquidWalletRepository implements LiquidSendPort {
       throw Exception('Wallet $walletId is not a Liquid wallet');
     }
     final wallet = WalletModel.publicLwk(
-      combinedCtDescriptor: metadata.externalPublicDescriptor,
+      combinedCtDescriptor: metadata.publicDescriptor,
       isTestnet: metadata.isTestnet,
       id: metadata.id,
     );
@@ -157,16 +158,19 @@ class LiquidWalletRepository implements LiquidSendPort {
       throw Exception('Wallet $walletId is not a Liquid wallet');
     }
 
-    // The mnemonic stays inside `secrets`: it builds the lwk wallet in a
-    // scratch directory it removes afterwards, signs, and returns only
-    // the signed PSET.
-    final fingerprint = metadata.seedFingerprint;
-    if (fingerprint == null) {
-      throw Exception('No secret for wallet: not a seed-derived wallet');
+    if (metadata.signers.length != 1 ||
+        metadata.signers.single.signer != Signer.local ||
+        metadata.signers.single.descriptorKeys.length != 1) {
+      throw StateError('Standard local single-signature wallet required');
     }
-    final secret = switch (await _secrets.fetch(fingerprint)) {
+    final descriptorKey = metadata.signers.single.descriptorKeys.single;
+    final secret = switch (await _secrets.fetch(
+      Fingerprint(descriptorKey.masterFingerprint),
+    )) {
       Ok(:final value) => value,
-      Err(:final failure) => throw Exception('No secret for wallet: $failure'),
+      Err(:final failure) => throw StateError(
+        'secrets: ${failure.runtimeType}',
+      ),
     };
 
     return switch (await secret.sign.pset(
@@ -196,7 +200,7 @@ class LiquidWalletRepository implements LiquidSendPort {
       throw Exception('Wallet $walletId is not a Liquid wallet');
     }
     final wallet = WalletModel.publicLwk(
-      combinedCtDescriptor: metadata.externalPublicDescriptor,
+      combinedCtDescriptor: metadata.publicDescriptor,
       isTestnet: metadata.isTestnet,
       id: metadata.id,
     );

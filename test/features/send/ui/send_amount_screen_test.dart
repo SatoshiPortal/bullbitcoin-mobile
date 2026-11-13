@@ -1,4 +1,5 @@
 import 'package:primitives/primitives.dart' show BitcoinUnit;
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_signer.dart';
 import 'package:bb_mobile/features/send/presentation/send_wallet_view.dart';
 import 'dart:async';
 
@@ -25,20 +26,29 @@ import 'package:mocktail/mocktail.dart';
 
 import '../../coins/wallet_utxo_fixture.dart';
 
-class _MockSendCubit extends Mock implements SendCubit {}
+class _MockSendCubit extends Mock implements SendCubit {
+  @override
+  bool get isRestrictedSend => false;
+}
 
 class _MockSettingsCubit extends Mock implements SettingsCubit {}
 
 Wallet _wallet() => Wallet(
   origin: 'wallet',
   network: Network.bitcoinMainnet,
-  xpubFingerprint: '00000000',
   scriptType: ScriptType.bip84,
-  xpub: '',
-  externalPublicDescriptor: '',
-  internalPublicDescriptor: '',
-  signer: SignerEntity.local,
-  signerDevice: null,
+  publicDescriptor: 'wpkh(xpub/<0;1>/*)',
+  signers: [
+    WalletSigner.single(
+      masterFingerprint: '',
+      xpubFingerprint: '00000000',
+      xpub: '',
+      derivationPath: "m/84'/0'/0'",
+      descriptorPath: standardSingleSignatureDescriptorPath,
+      signer: SignerEntity.local,
+      signerDevice: null,
+    ),
+  ],
   balanceSat: BigInt.from(1000000),
 );
 

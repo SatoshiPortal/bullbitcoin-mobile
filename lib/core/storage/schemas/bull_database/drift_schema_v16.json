@@ -163,24 +163,18 @@
             "dsl_features": []
           },
           {
-            "name": "master_fingerprint",
-            "getter_name": "masterFingerprint",
+            "name": "network",
+            "getter_name": "network",
             "moor_type": "string",
             "nullable": false,
             "customConstraints": null,
             "default_dart": null,
             "default_client_dart": null,
-            "dsl_features": []
-          },
-          {
-            "name": "xpub_fingerprint",
-            "getter_name": "xpubFingerprint",
-            "moor_type": "string",
-            "nullable": false,
-            "customConstraints": null,
-            "default_dart": null,
-            "default_client_dart": null,
-            "dsl_features": []
+            "dsl_features": [],
+            "type_converter": {
+              "dart_expr": "const EnumNameConverter<Network>(Network.values)",
+              "dart_type_name": "Network"
+            }
           },
           {
             "name": "is_encrypted_vault_tested",
@@ -231,58 +225,14 @@
             "dsl_features": []
           },
           {
-            "name": "xpub",
-            "getter_name": "xpub",
+            "name": "public_descriptor",
+            "getter_name": "publicDescriptor",
             "moor_type": "string",
             "nullable": false,
             "customConstraints": null,
             "default_dart": null,
             "default_client_dart": null,
             "dsl_features": []
-          },
-          {
-            "name": "external_public_descriptor",
-            "getter_name": "externalPublicDescriptor",
-            "moor_type": "string",
-            "nullable": false,
-            "customConstraints": null,
-            "default_dart": null,
-            "default_client_dart": null,
-            "dsl_features": []
-          },
-          {
-            "name": "internal_public_descriptor",
-            "getter_name": "internalPublicDescriptor",
-            "moor_type": "string",
-            "nullable": false,
-            "customConstraints": null,
-            "default_dart": null,
-            "default_client_dart": null,
-            "dsl_features": []
-          },
-          {
-            "name": "signer",
-            "getter_name": "signer",
-            "moor_type": "string",
-            "nullable": false,
-            "customConstraints": null,
-            "default_dart": null,
-            "default_client_dart": null,
-            "dsl_features": []
-          },
-          {
-            "name": "signer_device",
-            "getter_name": "signerDevice",
-            "moor_type": "string",
-            "nullable": true,
-            "customConstraints": null,
-            "default_dart": null,
-            "default_client_dart": null,
-            "dsl_features": [],
-            "type_converter": {
-              "dart_expr": "const EnumNameConverter<SignerDevice>(SignerDevice.values)",
-              "dart_type_name": "SignerDevice"
-            }
           },
           {
             "name": "is_default",
@@ -295,6 +245,20 @@
               "sqlite": "CHECK (\"is_default\" IN (0, 1))"
             },
             "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "is_hidden",
+            "getter_name": "isHidden",
+            "moor_type": "bool",
+            "nullable": false,
+            "customConstraints": null,
+            "defaultConstraints": "CHECK (\"is_hidden\" IN (0, 1))",
+            "dialectAwareDefaultConstraints": {
+              "sqlite": "CHECK (\"is_hidden\" IN (0, 1))"
+            },
+            "default_dart": "const CustomExpression('0')",
             "default_client_dart": null,
             "dsl_features": []
           },
@@ -339,6 +303,236 @@
     },
     {
       "id": 2,
+      "references": [
+        1
+      ],
+      "type": "table",
+      "data": {
+        "name": "wallet_signers",
+        "was_declared_in_moor": false,
+        "columns": [
+          {
+            "name": "wallet_id",
+            "getter_name": "walletId",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "id",
+            "getter_name": "id",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "position",
+            "getter_name": "position",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "signer",
+            "getter_name": "signer",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [],
+            "type_converter": {
+              "dart_expr": "const EnumNameConverter<Signer>(Signer.values)",
+              "dart_type_name": "Signer"
+            }
+          },
+          {
+            "name": "signer_device",
+            "getter_name": "signerDevice",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [],
+            "type_converter": {
+              "dart_expr": "const EnumNameConverter<SignerDevice>(SignerDevice.values)",
+              "dart_type_name": "SignerDevice"
+            }
+          },
+          {
+            "name": "registration_name",
+            "getter_name": "registrationName",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "local_seed_fingerprint",
+            "getter_name": "localSeedFingerprint",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": [
+          "FOREIGN KEY(wallet_id) REFERENCES wallet_metadatas(id) ON DELETE CASCADE",
+          "UNIQUE(wallet_id, position)"
+        ],
+        "explicit_pk": [
+          "wallet_id",
+          "id"
+        ]
+      }
+    },
+    {
+      "id": 3,
+      "references": [
+        1,
+        2
+      ],
+      "type": "table",
+      "data": {
+        "name": "wallet_descriptor_keys",
+        "was_declared_in_moor": false,
+        "columns": [
+          {
+            "name": "wallet_id",
+            "getter_name": "walletId",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "id",
+            "getter_name": "id",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "position",
+            "getter_name": "position",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "signer_id",
+            "getter_name": "signerId",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "master_fingerprint",
+            "getter_name": "masterFingerprint",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "xpub_fingerprint",
+            "getter_name": "xpubFingerprint",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "xpub",
+            "getter_name": "xpub",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "derivation_path",
+            "getter_name": "derivationPath",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "descriptor_path",
+            "getter_name": "descriptorPath",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": "const CustomExpression('\\'\\'')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "requires_passphrase",
+            "getter_name": "requiresPassphrase",
+            "moor_type": "bool",
+            "nullable": false,
+            "customConstraints": null,
+            "defaultConstraints": "CHECK (\"requires_passphrase\" IN (0, 1))",
+            "dialectAwareDefaultConstraints": {
+              "sqlite": "CHECK (\"requires_passphrase\" IN (0, 1))"
+            },
+            "default_dart": "const CustomExpression('0')",
+            "default_client_dart": null,
+            "dsl_features": []
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": [
+          "FOREIGN KEY(wallet_id) REFERENCES wallet_metadatas(id) ON DELETE CASCADE",
+          "FOREIGN KEY(wallet_id, signer_id) REFERENCES wallet_signers(wallet_id, id) ON DELETE CASCADE",
+          "UNIQUE(wallet_id, position)"
+        ],
+        "explicit_pk": [
+          "wallet_id",
+          "id"
+        ]
+      }
+    },
+    {
+      "id": 4,
       "references": [],
       "type": "table",
       "data": {
@@ -418,7 +612,7 @@
       }
     },
     {
-      "id": 3,
+      "id": 5,
       "references": [],
       "type": "table",
       "data": {
@@ -632,7 +826,7 @@
       }
     },
     {
-      "id": 4,
+      "id": 6,
       "references": [],
       "type": "table",
       "data": {
@@ -791,7 +985,7 @@
       }
     },
     {
-      "id": 5,
+      "id": 7,
       "references": [],
       "type": "table",
       "data": {
@@ -980,7 +1174,7 @@
       }
     },
     {
-      "id": 6,
+      "id": 8,
       "references": [],
       "type": "table",
       "data": {
@@ -1059,7 +1253,7 @@
       }
     },
     {
-      "id": 7,
+      "id": 9,
       "references": [],
       "type": "table",
       "data": {
@@ -1144,7 +1338,7 @@
       }
     },
     {
-      "id": 8,
+      "id": 10,
       "references": [],
       "type": "table",
       "data": {
@@ -1229,7 +1423,7 @@
       }
     },
     {
-      "id": 9,
+      "id": 11,
       "references": [],
       "type": "table",
       "data": {
@@ -1270,7 +1464,7 @@
       }
     },
     {
-      "id": 10,
+      "id": 12,
       "references": [],
       "type": "table",
       "data": {
@@ -1570,7 +1764,7 @@
       }
     },
     {
-      "id": 11,
+      "id": 13,
       "references": [],
       "type": "table",
       "data": {
@@ -1696,7 +1890,7 @@
       }
     },
     {
-      "id": 12,
+      "id": 14,
       "references": [],
       "type": "table",
       "data": {
@@ -1771,7 +1965,7 @@
       }
     },
     {
-      "id": 13,
+      "id": 15,
       "references": [],
       "type": "table",
       "data": {
@@ -1825,7 +2019,7 @@
       }
     },
     {
-      "id": 14,
+      "id": 16,
       "references": [],
       "type": "table",
       "data": {
@@ -1874,7 +2068,7 @@
       }
     },
     {
-      "id": 15,
+      "id": 17,
       "references": [],
       "type": "table",
       "data": {
@@ -1911,7 +2105,7 @@
       }
     },
     {
-      "id": 16,
+      "id": 18,
       "references": [],
       "type": "table",
       "data": {
@@ -2372,13 +2566,643 @@
       }
     },
     {
-      "id": 17,
+      "id": 19,
       "references": [
-        16
+        1
+      ],
+      "type": "table",
+      "data": {
+        "name": "send_transactions",
+        "was_declared_in_moor": false,
+        "columns": [
+          {
+            "name": "id",
+            "getter_name": "id",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "wallet_id",
+            "getter_name": "walletId",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "stage",
+            "getter_name": "stage",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "label",
+            "getter_name": "label",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "amount_currency_code",
+            "getter_name": "amountCurrencyCode",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "is_sweep",
+            "getter_name": "isSweep",
+            "moor_type": "bool",
+            "nullable": false,
+            "customConstraints": null,
+            "defaultConstraints": "CHECK (\"is_sweep\" IN (0, 1))",
+            "dialectAwareDefaultConstraints": {
+              "sqlite": "CHECK (\"is_sweep\" IN (0, 1))"
+            },
+            "default_dart": "const CustomExpression('0')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "fee_selection",
+            "getter_name": "feeSelection",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "custom_fee_kind",
+            "getter_name": "customFeeKind",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "custom_fee_value",
+            "getter_name": "customFeeValue",
+            "moor_type": "int",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "replace_by_fee",
+            "getter_name": "replaceByFee",
+            "moor_type": "bool",
+            "nullable": false,
+            "customConstraints": null,
+            "defaultConstraints": "CHECK (\"replace_by_fee\" IN (0, 1))",
+            "dialectAwareDefaultConstraints": {
+              "sqlite": "CHECK (\"replace_by_fee\" IN (0, 1))"
+            },
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "payjoin_opted_out",
+            "getter_name": "payjoinOptedOut",
+            "moor_type": "bool",
+            "nullable": false,
+            "customConstraints": null,
+            "defaultConstraints": "CHECK (\"payjoin_opted_out\" IN (0, 1))",
+            "dialectAwareDefaultConstraints": {
+              "sqlite": "CHECK (\"payjoin_opted_out\" IN (0, 1))"
+            },
+            "default_dart": "const CustomExpression('0')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "psbt",
+            "getter_name": "psbt",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "final_transaction",
+            "getter_name": "finalTransaction",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "created_at",
+            "getter_name": "createdAt",
+            "moor_type": "dateTime",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "updated_at",
+            "getter_name": "updatedAt",
+            "moor_type": "dateTime",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "revision",
+            "getter_name": "revision",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": "const CustomExpression('0')",
+            "default_client_dart": null,
+            "dsl_features": []
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": [
+          "FOREIGN KEY(wallet_id) REFERENCES wallet_metadatas(id) ON DELETE CASCADE",
+          "CHECK(stage IN ('draft', 'needsSignatures', 'readyToBroadcast', 'broadcastPending', 'payjoinPending'))",
+          "CHECK(custom_fee_kind IS NULL OR custom_fee_kind IN ('absolute', 'relative'))",
+          "CHECK((custom_fee_kind IS NULL) = (custom_fee_value IS NULL))",
+          "CHECK(stage = 'draft' OR psbt IS NOT NULL)"
+        ],
+        "explicit_pk": [
+          "id"
+        ]
+      }
+    },
+    {
+      "id": 20,
+      "references": [
+        19
+      ],
+      "type": "table",
+      "data": {
+        "name": "send_transaction_recipients",
+        "was_declared_in_moor": false,
+        "columns": [
+          {
+            "name": "transaction_id",
+            "getter_name": "transactionId",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "position",
+            "getter_name": "position",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "recipient",
+            "getter_name": "recipient",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "amount",
+            "getter_name": "amount",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "receives_remainder",
+            "getter_name": "receivesRemainder",
+            "moor_type": "bool",
+            "nullable": false,
+            "customConstraints": null,
+            "defaultConstraints": "CHECK (\"receives_remainder\" IN (0, 1))",
+            "dialectAwareDefaultConstraints": {
+              "sqlite": "CHECK (\"receives_remainder\" IN (0, 1))"
+            },
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": [
+          "FOREIGN KEY(transaction_id) REFERENCES send_transactions(id) ON DELETE CASCADE"
+        ],
+        "explicit_pk": [
+          "transaction_id",
+          "position"
+        ]
+      }
+    },
+    {
+      "id": 21,
+      "references": [
+        19
+      ],
+      "type": "table",
+      "data": {
+        "name": "send_transaction_inputs",
+        "was_declared_in_moor": false,
+        "columns": [
+          {
+            "name": "transaction_id",
+            "getter_name": "transactionId",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "tx_id",
+            "getter_name": "txId",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "vout",
+            "getter_name": "vout",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": [
+          "FOREIGN KEY(transaction_id) REFERENCES send_transactions(id) ON DELETE CASCADE"
+        ],
+        "explicit_pk": [
+          "transaction_id",
+          "tx_id",
+          "vout"
+        ]
+      }
+    },
+    {
+      "id": 22,
+      "references": [
+        19
+      ],
+      "type": "table",
+      "data": {
+        "name": "send_transaction_policy_choices",
+        "was_declared_in_moor": false,
+        "columns": [
+          {
+            "name": "transaction_id",
+            "getter_name": "transactionId",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "node",
+            "getter_name": "node",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "option_index",
+            "getter_name": "optionIndex",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": [
+          "FOREIGN KEY(transaction_id) REFERENCES send_transactions(id) ON DELETE CASCADE"
+        ],
+        "explicit_pk": [
+          "transaction_id",
+          "node",
+          "option_index"
+        ]
+      }
+    },
+    {
+      "id": 23,
+      "references": [],
+      "type": "table",
+      "data": {
+        "name": "bull_vault_records",
+        "was_declared_in_moor": false,
+        "columns": [
+          {
+            "name": "wallet_id",
+            "getter_name": "walletId",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "lineage_id",
+            "getter_name": "lineageId",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "vault_generation",
+            "getter_name": "vaultGeneration",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "mobile_account",
+            "getter_name": "mobileAccount",
+            "moor_type": "int",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "mobile_seed_fingerprint",
+            "getter_name": "mobileSeedFingerprint",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "mobile_passphrase_required",
+            "getter_name": "mobilePassphraseRequired",
+            "moor_type": "bool",
+            "nullable": false,
+            "customConstraints": null,
+            "defaultConstraints": "CHECK (\"mobile_passphrase_required\" IN (0, 1))",
+            "dialectAwareDefaultConstraints": {
+              "sqlite": "CHECK (\"mobile_passphrase_required\" IN (0, 1))"
+            },
+            "default_dart": "const CustomExpression('0')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "birth_height",
+            "getter_name": "birthHeight",
+            "moor_type": "int",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "recovery_package",
+            "getter_name": "recoveryPackage",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "previous_vault_id",
+            "getter_name": "previousVaultId",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "successor_wallet_id",
+            "getter_name": "successorWalletId",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "status",
+            "getter_name": "status",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "hardware_setup_complete",
+            "getter_name": "hardwareSetupComplete",
+            "moor_type": "bool",
+            "nullable": false,
+            "customConstraints": null,
+            "defaultConstraints": "CHECK (\"hardware_setup_complete\" IN (0, 1))",
+            "dialectAwareDefaultConstraints": {
+              "sqlite": "CHECK (\"hardware_setup_complete\" IN (0, 1))"
+            },
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "hardware_setup_deferred",
+            "getter_name": "hardwareSetupDeferred",
+            "moor_type": "bool",
+            "nullable": false,
+            "customConstraints": null,
+            "defaultConstraints": "CHECK (\"hardware_setup_deferred\" IN (0, 1))",
+            "dialectAwareDefaultConstraints": {
+              "sqlite": "CHECK (\"hardware_setup_deferred\" IN (0, 1))"
+            },
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "completed_hardware_signer_ids_json",
+            "getter_name": "completedHardwareSignerIdsJson",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "recovery_package_confirmed",
+            "getter_name": "recoveryPackageConfirmed",
+            "moor_type": "bool",
+            "nullable": false,
+            "customConstraints": null,
+            "defaultConstraints": "CHECK (\"recovery_package_confirmed\" IN (0, 1))",
+            "dialectAwareDefaultConstraints": {
+              "sqlite": "CHECK (\"recovery_package_confirmed\" IN (0, 1))"
+            },
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "mobile_backup_deferred",
+            "getter_name": "mobileBackupDeferred",
+            "moor_type": "bool",
+            "nullable": false,
+            "customConstraints": null,
+            "defaultConstraints": "CHECK (\"mobile_backup_deferred\" IN (0, 1))",
+            "dialectAwareDefaultConstraints": {
+              "sqlite": "CHECK (\"mobile_backup_deferred\" IN (0, 1))"
+            },
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "created_at",
+            "getter_name": "createdAt",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": [],
+        "explicit_pk": [
+          "wallet_id"
+        ],
+        "unique_keys": [
+          [
+            "lineage_id",
+            "vault_generation"
+          ]
+        ]
+      }
+    },
+    {
+      "id": 24,
+      "references": [],
+      "type": "table",
+      "data": {
+        "name": "bull_vault_generation_reservations",
+        "was_declared_in_moor": false,
+        "columns": [
+          {
+            "name": "lineage_id",
+            "getter_name": "lineageId",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "generation",
+            "getter_name": "generation",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": [],
+        "explicit_pk": [
+          "lineage_id",
+          "generation"
+        ]
+      }
+    },
+    {
+      "id": 25,
+      "references": [
+        18
       ],
       "type": "index",
       "data": {
-        "on": 16,
+        "on": 18,
         "name": "order_swaps_request_id",
         "sql": null,
         "unique": true,
@@ -2391,13 +3215,13 @@
       }
     },
     {
-      "id": 18,
+      "id": 26,
       "references": [
-        16
+        18
       ],
       "type": "index",
       "data": {
-        "on": 16,
+        "on": 18,
         "name": "order_swaps_local_status",
         "sql": null,
         "unique": false,
@@ -2410,13 +3234,13 @@
       }
     },
     {
-      "id": 19,
+      "id": 27,
       "references": [
-        16
+        18
       ],
       "type": "index",
       "data": {
-        "on": 16,
+        "on": 18,
         "name": "order_swaps_source_wallet",
         "sql": null,
         "unique": false,
@@ -2429,13 +3253,13 @@
       }
     },
     {
-      "id": 20,
+      "id": 28,
       "references": [
-        16
+        18
       ],
       "type": "index",
       "data": {
-        "on": 16,
+        "on": 18,
         "name": "order_swaps_destination_wallet",
         "sql": null,
         "unique": false,
@@ -2448,13 +3272,13 @@
       }
     },
     {
-      "id": 21,
+      "id": 29,
       "references": [
-        16
+        18
       ],
       "type": "index",
       "data": {
-        "on": 16,
+        "on": 18,
         "name": "order_swaps_bitcoin_txid",
         "sql": null,
         "unique": false,
@@ -2467,13 +3291,13 @@
       }
     },
     {
-      "id": 22,
+      "id": 30,
       "references": [
-        16
+        18
       ],
       "type": "index",
       "data": {
-        "on": 16,
+        "on": 18,
         "name": "order_swaps_liquid_txid",
         "sql": null,
         "unique": false,
@@ -2486,19 +3310,57 @@
       }
     },
     {
-      "id": 23,
+      "id": 31,
       "references": [
-        16
+        18
       ],
       "type": "index",
       "data": {
-        "on": 16,
+        "on": 18,
         "name": "order_swaps_local_payin_txid",
         "sql": null,
         "unique": false,
         "columns": [
           {
             "column": "local_payin_transaction_id",
+            "order_by": null
+          }
+        ]
+      }
+    },
+    {
+      "id": 32,
+      "references": [
+        19
+      ],
+      "type": "index",
+      "data": {
+        "on": 19,
+        "name": "send_transactions_wallet",
+        "sql": null,
+        "unique": false,
+        "columns": [
+          {
+            "column": "wallet_id",
+            "order_by": null
+          }
+        ]
+      }
+    },
+    {
+      "id": 33,
+      "references": [
+        19
+      ],
+      "type": "index",
+      "data": {
+        "on": 19,
+        "name": "send_transactions_updated_at",
+        "sql": null,
+        "unique": false,
+        "columns": [
+          {
+            "column": "updated_at",
             "order_by": null
           }
         ]
@@ -2520,7 +3382,25 @@
       "sql": [
         {
           "dialect": "sqlite",
-          "sql": "CREATE TABLE IF NOT EXISTS \"wallet_metadatas\" (\"id\" TEXT NOT NULL, \"master_fingerprint\" TEXT NOT NULL, \"xpub_fingerprint\" TEXT NOT NULL, \"is_encrypted_vault_tested\" INTEGER NOT NULL CHECK (\"is_encrypted_vault_tested\" IN (0, 1)), \"is_physical_backup_tested\" INTEGER NOT NULL CHECK (\"is_physical_backup_tested\" IN (0, 1)), \"latest_encrypted_backup\" INTEGER NULL, \"latest_physical_backup\" INTEGER NULL, \"xpub\" TEXT NOT NULL, \"external_public_descriptor\" TEXT NOT NULL, \"internal_public_descriptor\" TEXT NOT NULL, \"signer\" TEXT NOT NULL, \"signer_device\" TEXT NULL, \"is_default\" INTEGER NOT NULL CHECK (\"is_default\" IN (0, 1)), \"label\" TEXT NULL, \"synced_at\" TEXT NULL, \"birthday\" TEXT NULL, PRIMARY KEY (\"id\"));"
+          "sql": "CREATE TABLE IF NOT EXISTS \"wallet_metadatas\" (\"id\" TEXT NOT NULL, \"network\" TEXT NOT NULL, \"is_encrypted_vault_tested\" INTEGER NOT NULL CHECK (\"is_encrypted_vault_tested\" IN (0, 1)), \"is_physical_backup_tested\" INTEGER NOT NULL CHECK (\"is_physical_backup_tested\" IN (0, 1)), \"latest_encrypted_backup\" INTEGER NULL, \"latest_physical_backup\" INTEGER NULL, \"public_descriptor\" TEXT NOT NULL, \"is_default\" INTEGER NOT NULL CHECK (\"is_default\" IN (0, 1)), \"is_hidden\" INTEGER NOT NULL DEFAULT 0 CHECK (\"is_hidden\" IN (0, 1)), \"label\" TEXT NULL, \"synced_at\" TEXT NULL, \"birthday\" TEXT NULL, PRIMARY KEY (\"id\"));"
+        }
+      ]
+    },
+    {
+      "name": "wallet_signers",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"wallet_signers\" (\"wallet_id\" TEXT NOT NULL, \"id\" TEXT NOT NULL, \"position\" INTEGER NOT NULL, \"signer\" TEXT NOT NULL, \"signer_device\" TEXT NULL, \"registration_name\" TEXT NULL, \"local_seed_fingerprint\" TEXT NULL, PRIMARY KEY (\"wallet_id\", \"id\"), FOREIGN KEY(wallet_id) REFERENCES wallet_metadatas(id) ON DELETE CASCADE, UNIQUE(wallet_id, position));"
+        }
+      ]
+    },
+    {
+      "name": "wallet_descriptor_keys",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"wallet_descriptor_keys\" (\"wallet_id\" TEXT NOT NULL, \"id\" TEXT NOT NULL, \"position\" INTEGER NOT NULL, \"signer_id\" TEXT NOT NULL, \"master_fingerprint\" TEXT NOT NULL, \"xpub_fingerprint\" TEXT NOT NULL, \"xpub\" TEXT NOT NULL, \"derivation_path\" TEXT NULL, \"descriptor_path\" TEXT NOT NULL DEFAULT '', \"requires_passphrase\" INTEGER NOT NULL DEFAULT 0 CHECK (\"requires_passphrase\" IN (0, 1)), PRIMARY KEY (\"wallet_id\", \"id\"), FOREIGN KEY(wallet_id) REFERENCES wallet_metadatas(id) ON DELETE CASCADE, FOREIGN KEY(wallet_id, signer_id) REFERENCES wallet_signers(wallet_id, id) ON DELETE CASCADE, UNIQUE(wallet_id, position));"
         }
       ]
     },
@@ -2660,6 +3540,60 @@
       ]
     },
     {
+      "name": "send_transactions",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"send_transactions\" (\"id\" TEXT NOT NULL, \"wallet_id\" TEXT NOT NULL, \"stage\" TEXT NOT NULL, \"label\" TEXT NULL, \"amount_currency_code\" TEXT NOT NULL, \"is_sweep\" INTEGER NOT NULL DEFAULT 0 CHECK (\"is_sweep\" IN (0, 1)), \"fee_selection\" TEXT NOT NULL, \"custom_fee_kind\" TEXT NULL, \"custom_fee_value\" INTEGER NULL, \"replace_by_fee\" INTEGER NOT NULL CHECK (\"replace_by_fee\" IN (0, 1)), \"payjoin_opted_out\" INTEGER NOT NULL DEFAULT 0 CHECK (\"payjoin_opted_out\" IN (0, 1)), \"psbt\" TEXT NULL, \"final_transaction\" TEXT NULL, \"created_at\" TEXT NOT NULL, \"updated_at\" TEXT NOT NULL, \"revision\" INTEGER NOT NULL DEFAULT 0, PRIMARY KEY (\"id\"), FOREIGN KEY(wallet_id) REFERENCES wallet_metadatas(id) ON DELETE CASCADE, CHECK(stage IN ('draft', 'needsSignatures', 'readyToBroadcast', 'broadcastPending', 'payjoinPending')), CHECK(custom_fee_kind IS NULL OR custom_fee_kind IN ('absolute', 'relative')), CHECK((custom_fee_kind IS NULL) = (custom_fee_value IS NULL)), CHECK(stage = 'draft' OR psbt IS NOT NULL));"
+        }
+      ]
+    },
+    {
+      "name": "send_transaction_recipients",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"send_transaction_recipients\" (\"transaction_id\" TEXT NOT NULL, \"position\" INTEGER NOT NULL, \"recipient\" TEXT NOT NULL, \"amount\" TEXT NOT NULL, \"receives_remainder\" INTEGER NOT NULL CHECK (\"receives_remainder\" IN (0, 1)), PRIMARY KEY (\"transaction_id\", \"position\"), FOREIGN KEY(transaction_id) REFERENCES send_transactions(id) ON DELETE CASCADE);"
+        }
+      ]
+    },
+    {
+      "name": "send_transaction_inputs",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"send_transaction_inputs\" (\"transaction_id\" TEXT NOT NULL, \"tx_id\" TEXT NOT NULL, \"vout\" INTEGER NOT NULL, PRIMARY KEY (\"transaction_id\", \"tx_id\", \"vout\"), FOREIGN KEY(transaction_id) REFERENCES send_transactions(id) ON DELETE CASCADE);"
+        }
+      ]
+    },
+    {
+      "name": "send_transaction_policy_choices",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"send_transaction_policy_choices\" (\"transaction_id\" TEXT NOT NULL, \"node\" TEXT NOT NULL, \"option_index\" INTEGER NOT NULL, PRIMARY KEY (\"transaction_id\", \"node\", \"option_index\"), FOREIGN KEY(transaction_id) REFERENCES send_transactions(id) ON DELETE CASCADE);"
+        }
+      ]
+    },
+    {
+      "name": "bull_vault_records",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"bull_vault_records\" (\"wallet_id\" TEXT NOT NULL, \"lineage_id\" TEXT NOT NULL, \"vault_generation\" INTEGER NOT NULL, \"mobile_account\" INTEGER NULL, \"mobile_seed_fingerprint\" TEXT NULL, \"mobile_passphrase_required\" INTEGER NOT NULL DEFAULT 0 CHECK (\"mobile_passphrase_required\" IN (0, 1)), \"birth_height\" INTEGER NULL, \"recovery_package\" TEXT NOT NULL, \"previous_vault_id\" TEXT NULL, \"successor_wallet_id\" TEXT NULL, \"status\" TEXT NOT NULL, \"hardware_setup_complete\" INTEGER NOT NULL CHECK (\"hardware_setup_complete\" IN (0, 1)), \"hardware_setup_deferred\" INTEGER NOT NULL CHECK (\"hardware_setup_deferred\" IN (0, 1)), \"completed_hardware_signer_ids_json\" TEXT NOT NULL, \"recovery_package_confirmed\" INTEGER NOT NULL CHECK (\"recovery_package_confirmed\" IN (0, 1)), \"mobile_backup_deferred\" INTEGER NOT NULL CHECK (\"mobile_backup_deferred\" IN (0, 1)), \"created_at\" TEXT NOT NULL, PRIMARY KEY (\"wallet_id\"), UNIQUE (\"lineage_id\", \"vault_generation\"));"
+        }
+      ]
+    },
+    {
+      "name": "bull_vault_generation_reservations",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"bull_vault_generation_reservations\" (\"lineage_id\" TEXT NOT NULL, \"generation\" INTEGER NOT NULL, PRIMARY KEY (\"lineage_id\", \"generation\"));"
+        }
+      ]
+    },
+    {
       "name": "order_swaps_request_id",
       "sql": [
         {
@@ -2719,6 +3653,24 @@
         {
           "dialect": "sqlite",
           "sql": "CREATE INDEX order_swaps_local_payin_txid ON order_swaps (local_payin_transaction_id)"
+        }
+      ]
+    },
+    {
+      "name": "send_transactions_wallet",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE INDEX send_transactions_wallet ON send_transactions (wallet_id)"
+        }
+      ]
+    },
+    {
+      "name": "send_transactions_updated_at",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE INDEX send_transactions_updated_at ON send_transactions (updated_at)"
         }
       ]
     }

@@ -312,6 +312,17 @@ bool _isException(String path, AstNode node, String symbol) {
       }.contains(member)) {
     return true;
   }
+  if (path == _bitcoinSignerPath &&
+      owner == 'BitcoinSigner' &&
+      function == 'signDescriptorPsbt' &&
+      {
+        'DescriptorSecretKey.fromString',
+        'DescriptorSecretKey.derive',
+        'DescriptorSecretKey.toString',
+        'DescriptorSecretKey.dispose',
+      }.contains(member)) {
+    return true;
+  }
   // This adapter replaces version bytes with the public xpub version before
   // decoding. Elsewhere this mixed decoder could import private extended keys.
   if (path == 'lib/core/utils/bip32_derivation.dart' &&

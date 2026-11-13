@@ -1,0 +1,464 @@
+import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'dart:typed_data';
+
+import 'package:bb_mobile/core/entities/signer_entity.dart';
+import 'package:bb_mobile/core/wallet/data/datasources/bdk_wallet_datasource.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/bitcoin_policy.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_signer.dart';
+import 'package:bull_sdk/bdk.dart' as bdk;
+
+typedef SignerDescriptorKeys = ({
+  String externalPrivate,
+  String externalPublic,
+  String fingerprint,
+  String internalPrivate,
+  String internalPublic,
+  String xpub,
+});
+
+const testMnemonics = [
+  'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about',
+  'legal winner thank year wave sausage worth useful legal winner thank yellow',
+  'letter advice cage absurd amount doctor acoustic avoid letter advice cage above',
+  'zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo wrong',
+];
+
+SignerDescriptorKeys deriveSignerKeys(
+  String words, {
+  bool isTestnet = true,
+  String? password,
+}) => deriveSignerKeysAtAccount(
+  words,
+  account: 0,
+  isTestnet: isTestnet,
+  password: password,
+);
+
+SignerDescriptorKeys deriveSignerKeysAtAccount(
+  String words, {
+  required int account,
+  bool isTestnet = true,
+  String? password,
+}) {
+  final root = bdk.DescriptorSecretKey(
+    networkKind: isTestnet ? bdk.NetworkKind.test : bdk.NetworkKind.main,
+    mnemonic: bdk.Mnemonic.fromString(mnemonic: words),
+    password: password,
+  );
+  final accountKey = root.derive(
+    path: bdk.DerivationPath(path: "m/48'/${isTestnet ? 1 : 0}'/$account'/2'"),
+  );
+  return (
+    externalPrivate: '$accountKey/0/*',
+    externalPublic: '${accountKey.asPublic()}/0/*',
+    fingerprint: accountKey.asPublic().masterFingerprint(),
+    internalPrivate: '$accountKey/1/*',
+    internalPublic: '${accountKey.asPublic()}/1/*',
+    xpub: accountKey.asPublic().toString(),
+  );
+}
+
+({String external, String fingerprint, String internal, String xpub})
+singleSignatureDescriptors(String words) {
+  final root = bdk.DescriptorSecretKey(
+    networkKind: bdk.NetworkKind.test,
+    mnemonic: bdk.Mnemonic.fromString(mnemonic: words),
+    password: null,
+  );
+  final account = root.derive(path: bdk.DerivationPath(path: "m/84'/1'/0'"));
+  return (
+    external: bdk.Descriptor.newBip84(
+      secretKey: root,
+      keychainKind: bdk.KeychainKind.external_,
+      networkKind: bdk.NetworkKind.test,
+    ).toString(),
+    fingerprint: account.asPublic().masterFingerprint(),
+    internal: bdk.Descriptor.newBip84(
+      secretKey: root,
+      keychainKind: bdk.KeychainKind.internal,
+      networkKind: bdk.NetworkKind.test,
+    ).toString(),
+    xpub: account.asPublic().toString(),
+  );
+}
+
+({String external, String fingerprint, String internal, String xpub})
+nestedSegwitSingleSignatureDescriptors(String words) {
+  final root = bdk.DescriptorSecretKey(
+    networkKind: bdk.NetworkKind.test,
+    mnemonic: bdk.Mnemonic.fromString(mnemonic: words),
+    password: null,
+  );
+  final account = root.derive(path: bdk.DerivationPath(path: "m/49'/1'/0'"));
+  return (
+    external: bdk.Descriptor.newBip49(
+      secretKey: root,
+      keychainKind: bdk.KeychainKind.external_,
+      networkKind: bdk.NetworkKind.test,
+    ).toString(),
+    fingerprint: account.asPublic().masterFingerprint(),
+    internal: bdk.Descriptor.newBip49(
+      secretKey: root,
+      keychainKind: bdk.KeychainKind.internal,
+      networkKind: bdk.NetworkKind.test,
+    ).toString(),
+    xpub: account.asPublic().toString(),
+  );
+}
+
+({String external, String fingerprint, String internal, String xpub})
+singleSignatureDescriptorsAtAccount(String words, {required int account}) {
+  final root = bdk.DescriptorSecretKey(
+    networkKind: bdk.NetworkKind.test,
+    mnemonic: bdk.Mnemonic.fromString(mnemonic: words),
+    password: null,
+  );
+  final accountKey = root.derive(
+    path: bdk.DerivationPath(path: "m/84'/1'/$account'"),
+  );
+  final publicKey = accountKey.asPublic();
+  return (
+    external: bdk.Descriptor(
+      descriptor: 'wpkh($publicKey/0/*)',
+      networkKind: bdk.NetworkKind.test,
+    ).toString(),
+    fingerprint: publicKey.masterFingerprint(),
+    internal: bdk.Descriptor(
+      descriptor: 'wpkh($publicKey/1/*)',
+      networkKind: bdk.NetworkKind.test,
+    ).toString(),
+    xpub: publicKey.toString(),
+  );
+}
+
+WalletSigner walletSigner({
+  required String fingerprint,
+  required String xpub,
+  required SignerEntity signer,
+}) => WalletSigner.single(
+  id: 'signer-$fingerprint',
+  descriptorKeyId: 'key-$fingerprint',
+  masterFingerprint: fingerprint,
+  xpubFingerprint: fingerprint,
+  xpub: xpub,
+  derivationPath: "m/48'/1'/0'/2'",
+  signer: signer,
+  signerDevice: null,
+);
+
+bool containsPolicyNode<T extends BitcoinPolicyNode>(BitcoinPolicyNode node) {
+  if (node is T) return true;
+  return node is BitcoinThresholdPolicyNode &&
+      node.children.any(containsPolicyNode<T>);
+}
+
+T? findPolicyNode<T extends BitcoinPolicyNode>(BitcoinPolicyNode node) {
+  if (node is T) return node;
+  if (node is! BitcoinThresholdPolicyNode) return null;
+  for (final child in node.children) {
+    final match = findPolicyNode<T>(child);
+    if (match != null) return match;
+  }
+  return null;
+}
+
+Future<({String psbt, bool isFinalized})> signPsbt(
+  BdkWalletDatasource datasource,
+  String psbt, {
+  required List<SignerDescriptorKeys> signers,
+  required int signerIndex,
+}) {
+  final externalKeys = [
+    for (var i = 0; i < signers.length; i++)
+      i == signerIndex ? signers[i].externalPrivate : signers[i].externalPublic,
+  ];
+  final internalKeys = [
+    for (var i = 0; i < signers.length; i++)
+      i == signerIndex ? signers[i].internalPrivate : signers[i].internalPublic,
+  ];
+
+  return datasource.signPsbtWithDescriptor(
+    psbt,
+    descriptor: twoPathDescriptor(
+      sortedMultisigDescriptor(externalKeys),
+      sortedMultisigDescriptor(internalKeys),
+    ),
+    isTestnet: true,
+  );
+}
+
+Set<String> signedFingerprints(String psbtBase64) {
+  final psbt = bdk.Psbt(psbtBase64: psbtBase64);
+  try {
+    Set<String>? fingerprints;
+    for (final input in psbt.input()) {
+      final inputFingerprints = input.partialSigs.keys
+          .map((publicKey) => input.bip32Derivation[publicKey]?.fingerprint)
+          .whereType<String>()
+          .map((fingerprint) => fingerprint.toLowerCase())
+          .toSet();
+      fingerprints = fingerprints == null
+          ? inputFingerprints
+          : fingerprints.intersection(inputFingerprints);
+    }
+    return Set.unmodifiable(fingerprints ?? const {});
+  } finally {
+    psbt.dispose();
+  }
+}
+
+String sortedMultisigDescriptor(List<String> descriptorKeys) =>
+    'wsh(sortedmulti(2,${descriptorKeys.join(',')}))';
+
+String twoPathDescriptor(String externalDescriptor, String internalDescriptor) {
+  final external = externalDescriptor.split('#').first;
+  final internal = internalDescriptor.split('#').first;
+  final expectedInternal = external.replaceAll('/0/*', '/1/*');
+  if (expectedInternal == external || expectedInternal != internal) {
+    throw ArgumentError('Descriptors do not form /0/* and /1/* paths');
+  }
+  return external.replaceAll('/0/*', '/<0;1>/*');
+}
+
+String buildUnsignedPsbt({
+  required String descriptor,
+  int amountSat = 50000,
+  int inputCount = 1,
+  int inputIndex = 0,
+  bdk.Script? recipientScript,
+  BitcoinPolicyPath? policyPath,
+}) {
+  final wallet = createFixtureDescriptorWallet(
+    descriptor: descriptor,
+    isTestnet: true,
+  );
+  for (var index = 0; index <= inputIndex; index++) {
+    wallet.revealNextAddress(keychain: bdk.KeychainKind.external_);
+  }
+  final ownedAddress = wallet.peekAddress(
+    keychain: bdk.KeychainKind.external_,
+    index: inputIndex,
+  );
+  wallet.applyUnconfirmedTxs(
+    unconfirmedTxs: [
+      for (var index = 0; index < inputCount; index++)
+        bdk.UnconfirmedTx(
+          tx: fundingTransaction(
+            ownedAddress.address.scriptPubkey(),
+            previousTxByte: 0x22 + index,
+          ),
+          lastSeen: index + 1,
+        ),
+    ],
+  );
+  final recipient = wallet.peekAddress(
+    keychain: bdk.KeychainKind.external_,
+    index: 1,
+  );
+
+  var builder = bdk.TxBuilder()
+      .addRecipient(
+        script: recipientScript ?? recipient.address.scriptPubkey(),
+        amount: bdk.Amount.fromSat(satoshi: amountSat),
+      )
+      .feeAbsolute(feeAmount: bdk.Amount.fromSat(satoshi: 1000));
+  if (policyPath != null) {
+    builder = builder
+        .policyPath(
+          policyPath: policyPath.external,
+          keychain: bdk.KeychainKind.external_,
+        )
+        .policyPath(
+          policyPath: policyPath.internal,
+          keychain: bdk.KeychainKind.internal,
+        );
+  }
+  return builder.finish(wallet: wallet).serialize();
+}
+
+bdk.Transaction fundingTransaction(
+  bdk.Script scriptPubkey, {
+  int previousTxByte = 0x22,
+}) {
+  final script = scriptPubkey.toBytes();
+  return bdk.Transaction(
+    transactionBytes: Uint8List.fromList([
+      2,
+      0,
+      0,
+      0,
+      1,
+      ...List<int>.filled(32, previousTxByte),
+      0,
+      0,
+      0,
+      0,
+      0,
+      0xff,
+      0xff,
+      0xff,
+      0xff,
+      1,
+      0xa0,
+      0x86,
+      0x01,
+      0,
+      0,
+      0,
+      0,
+      0,
+      script.length,
+      ...script,
+      0,
+      0,
+      0,
+      0,
+    ]),
+  );
+}
+
+/// A fixture-only signing wallet. Production owns private descriptor construction
+/// and signing inside Secrets; these tests isolate the public PSBT boundaries.
+({String descriptor, PublicBdkWalletModel publicWallet}) fixtureSigningWallet({
+  required String id,
+  required ScriptType scriptType,
+  required String mnemonic,
+  required int account,
+  required bool isTestnet,
+}) {
+  final network = isTestnet ? bdk.NetworkKind.test : bdk.NetworkKind.main;
+  final words = bdk.Mnemonic.fromString(mnemonic: mnemonic);
+  final root = bdk.DescriptorSecretKey(
+    networkKind: network,
+    mnemonic: words,
+    password: null,
+  );
+  final path = bdk.DerivationPath(
+    path: "m/${scriptType.purpose}'/${isTestnet ? 1 : 0}'/$account'",
+  );
+  try {
+    final key = root.derive(path: path);
+    try {
+      final publicKey = key.asPublic();
+      try {
+        String descriptor(String key) => switch (scriptType) {
+          ScriptType.bip44 => 'pkh($key/<0;1>/*)',
+          ScriptType.bip49 => 'sh(wpkh($key/<0;1>/*))',
+          ScriptType.bip84 => 'wpkh($key/<0;1>/*)',
+        };
+        return (
+          descriptor: descriptor(key.toString()),
+          publicWallet: PublicBdkWalletModel(
+            id: id,
+            descriptor: descriptor(publicKey.toString()),
+            isTestnet: isTestnet,
+          ),
+        );
+      } finally {
+        publicKey.dispose();
+      }
+    } finally {
+      key.dispose();
+    }
+  } finally {
+    root.dispose();
+    path.dispose();
+    words.dispose();
+  }
+}
+
+extension FixturePsbtSigning on BdkWalletDatasource {
+  Future<({String psbt, bool isFinalized})> signPsbt(
+    String psbt, {
+    required ({String descriptor, PublicBdkWalletModel publicWallet}) wallet,
+    bool allowFinalizedForeignInputs = false,
+  }) => signPsbtWithDescriptor(
+    psbt,
+    descriptor: wallet.descriptor,
+    isTestnet: wallet.publicWallet.isTestnet,
+    foreignInputWallet: allowFinalizedForeignInputs
+        ? wallet.publicWallet
+        : null,
+  );
+
+  Future<({String psbt, bool isFinalized})> signPsbtWithDescriptor(
+    String psbtBase64, {
+    required String descriptor,
+    required bool isTestnet,
+    bool tryFinalize = true,
+    PublicBdkWalletModel? foreignInputWallet,
+  }) async {
+    final prepared = await preparePsbtForSigning(
+      psbtBase64,
+      foreignInputWallet: foreignInputWallet,
+    );
+    final psbt = bdk.Psbt(psbtBase64: prepared.psbt);
+    final wallet = createFixtureDescriptorWallet(
+      descriptor: descriptor,
+      isTestnet: isTestnet,
+    );
+    try {
+      wallet.sign(
+        psbt: psbt,
+        signOptions: bdk.SignOptions(
+          trustWitnessUtxo: true,
+          assumeHeight: null,
+          allowAllSighashes: false,
+          tryFinalize: false,
+          signWithTapInternalKey: prepared.signWithTapInternalKey,
+          allowGrinding: true,
+        ),
+      );
+      return completePsbtSigning(
+        originalPsbt: prepared.psbt,
+        signedPsbt: psbt.serialize(),
+        tryFinalize: tryFinalize,
+      );
+    } finally {
+      wallet.dispose();
+      psbt.dispose();
+    }
+  }
+}
+
+/// Expands private fixture descriptors without crossing the public app facade.
+bdk.Wallet createFixtureDescriptorWallet({
+  required String descriptor,
+  required bool isTestnet,
+}) {
+  final tuples = RegExp(r'<([0-9]+);([0-9]+)>');
+  final withoutChecksum = descriptor.split('#').first;
+  String expand(int branch) => withoutChecksum.replaceAllMapped(
+    tuples,
+    (match) =>
+        match.group(branch) ??
+        (throw const FormatException('Missing fixture branch')),
+  );
+  final network = isTestnet ? bdk.NetworkKind.test : bdk.NetworkKind.main;
+  final external = bdk.Descriptor(descriptor: expand(1), networkKind: network);
+  try {
+    final internal = bdk.Descriptor(
+      descriptor: expand(2),
+      networkKind: network,
+    );
+    try {
+      final persister = bdk.Persister.newInMemory();
+      try {
+        return bdk.Wallet(
+          descriptor: external,
+          changeDescriptor: internal,
+          network: isTestnet ? bdk.Network.testnet : bdk.Network.bitcoin,
+          persister: persister,
+          lookahead: 25,
+        );
+      } finally {
+        persister.dispose();
+      }
+    } finally {
+      internal.dispose();
+    }
+  } finally {
+    external.dispose();
+  }
+}

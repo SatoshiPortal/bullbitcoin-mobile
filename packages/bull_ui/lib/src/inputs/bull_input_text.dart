@@ -236,14 +236,16 @@ class _BullInputTextState extends State<BullInputText> {
               )
             : null,
         suffixIcon: widget.rightIcon != null
-            ? IconButton(
-                padding: const EdgeInsets.all(4),
-                icon: widget.rightIcon!,
-                onPressed: () => widget.onRightTap?.call(),
-                // Claim long presses so they never reach the TextField: there
-                // they start a selection whose iOS magnifier can get stuck in
-                // the root overlay.
+            ? GestureDetector(
+                // Keep suffix long presses out of the text selection gesture.
                 onLongPress: () {},
+                child: widget.onRightTap == null
+                    ? widget.rightIcon!
+                    : IconButton(
+                        padding: const EdgeInsets.all(4),
+                        icon: widget.rightIcon!,
+                        onPressed: () => widget.onRightTap?.call(),
+                      ),
               )
             : null,
         border: _getBorder(context),

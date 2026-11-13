@@ -62,7 +62,8 @@ class RestoreMissingDefaultSecretUsecase {
       case Ok(:final value):
         return {
           for (final w in value)
-            if (w.signsLocally) ?Fingerprint.tryParse(w.masterFingerprint),
+            for (final fingerprint in w.localSeedFingerprints)
+              ?Fingerprint.tryParse(fingerprint),
         };
       case Err(:final failure):
         log.warning('Restore default secret check: ${failure.runtimeType}');

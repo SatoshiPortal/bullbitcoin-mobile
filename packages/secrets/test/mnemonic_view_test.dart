@@ -70,8 +70,7 @@ void main() {
 
   Widget hosted(Secret secret) => Directionality(
     textDirection: TextDirection.ltr,
-    child: MnemonicView(
-      secret: secret,
+    child: secret.widgets.mnemonicView(
       failureBuilder: (_, failure, retry) => Column(
         children: [
           Text('failed: ${failure.runtimeType}'),

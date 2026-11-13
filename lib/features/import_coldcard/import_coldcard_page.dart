@@ -2,15 +2,12 @@ import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
-import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/widgets/nfc_bottom_sheet.dart';
 import 'package:bb_mobile/features/import_coldcard/instructions_bottom_sheet.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_router.dart';
-import 'package:bb_mobile/features/import_watch_only_wallet/watch_only_wallet_entity.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:flutter/material.dart';
-import 'package:bull_ui/bull_ui.dart'
-    show BullButton, BullSnackBar, BullText, Gap;
+import 'package:bull_ui/bull_ui.dart' show BullButton, BullText, Gap;
 import 'package:go_router/go_router.dart';
 
 class ImportColdcardPage extends StatelessWidget {
@@ -38,29 +35,12 @@ class ImportColdcardPage extends StatelessWidget {
 
   const ImportColdcardPage._({super.key, required this.signerDevice});
 
-  Future<void> _handleNfcData(BuildContext context, String payload) async {
-    try {
-      final watchOnlyWallet = await WatchOnlyWalletEntity.parse(
-        payload,
-        signerDevice: signerDevice,
-      );
-
-      if (!context.mounted) return;
-      context.replaceNamed(
-        ImportWatchOnlyWalletRoutes.import.name,
-        extra: watchOnlyWallet,
-      );
-    } catch (e) {
-      log.warning(
-        'Failed to parse Coldcard wallet data received via NFC',
-        error: e,
-      );
-      if (!context.mounted) return;
-      BullSnackBar.show(
-        context,
-        message: context.loc.importColdcardInvalidWalletData,
-      );
-    }
+  void _handleNfcData(BuildContext context, String payload) {
+    if (!context.mounted) return;
+    context.replaceNamed(
+      ImportWatchOnlyWalletRoutes.import.name,
+      extra: (input: payload, signerDevice: signerDevice),
+    );
   }
 
   @override
@@ -81,7 +61,7 @@ class ImportColdcardPage extends StatelessWidget {
               context.loc.importColdcardConnectDescription(deviceName),
               style: context.font.bodyLarge,
               textAlign: .center,
-              maxLines: 2,
+              maxLines: 4,
             ),
 
             Gap(Device.screen.height * 0.05),
@@ -96,10 +76,7 @@ class ImportColdcardPage extends StatelessWidget {
                 if (signerDevice == SignerDeviceEntity.coldcardQ) ...[
                   BullButton.small(
                     label: context.loc.importColdcardButtonOpenCamera,
-                    onPressed: () => context.pushNamed(
-                      ImportWatchOnlyWalletRoutes.scan.name,
-                      extra: signerDevice,
-                    ),
+                    onPressed: () => _scanWallet(context),
                     bgColor: context.appColors.surface,
                     textColor: context.appColors.text,
                     outlined: true,
@@ -139,6 +116,18 @@ class ImportColdcardPage extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+
+  Future<void> _scanWallet(BuildContext context) async {
+    final input = await context.pushNamed<String>(
+      ImportWatchOnlyWalletRoutes.scan.name,
+      extra: signerDevice,
+    );
+    if (input == null || !context.mounted) return;
+    await context.pushNamed(
+      ImportWatchOnlyWalletRoutes.import.name,
+      extra: (input: input, signerDevice: signerDevice),
     );
   }
 }

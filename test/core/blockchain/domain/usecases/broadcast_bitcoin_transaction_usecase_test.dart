@@ -1,4 +1,6 @@
 import 'package:primitives/primitives.dart' show BitcoinUnit;
+import 'package:bb_mobile/features/send/domain/usecases/watch_pending_bitcoin_transactions_usecase.dart';
+import 'package:bb_mobile/features/broadcast_signed_tx/type.dart';
 import 'package:bb_mobile/core/blockchain/data/repository/bitcoin_blockchain_repository.dart';
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/core/errors/send_errors.dart';
@@ -34,6 +36,9 @@ class _MockLabelsFacade extends Mock implements LabelsFacade {}
 class _MockBdkWalletDatasource extends Mock implements BdkWalletDatasource {}
 
 class _MockLwkWalletDatasource extends Mock implements LwkWalletDatasource {}
+
+class _MockPendingWatcher extends Mock
+    implements WatchPendingBitcoinTransactionsUsecase {}
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -178,9 +183,9 @@ void main() {
       final cubit = BroadcastSignedTxCubit(
         broadcastBitcoinTransactionUsecase: usecase(),
         verifySignedTxUsecase: VerifyBroadcastSignedTxUsecase(
-          SendFacade(VerifySignedTxUsecase()),
+          SendFacade(VerifySignedTxUsecase(), _MockPendingWatcher()),
         ),
-        unsignedPsbt: psbt,
+        request: const BroadcastSignedTxRequest(unsignedPsbt: psbt),
       );
       addTearDown(cubit.close);
 

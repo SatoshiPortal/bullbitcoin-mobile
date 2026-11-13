@@ -6,8 +6,7 @@ import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
 import 'package:secrets/src/domain/domain.dart';
 import 'package:secrets/src/widgets/painted_text.dart';
-import 'package:secrets/src/public/extensions.dart';
-import 'package:secrets/src/public/secret.dart';
+import 'package:secrets/src/widgets/mnemonic_source.dart';
 
 /// One tile in a [MnemonicChallenge]: a word to tap, and where it stands.
 ///
@@ -54,7 +53,7 @@ final class MnemonicTile {
 /// an order of tiles it cannot read. What leaves is pixels — screenshot
 /// blocking stays the host screen's job; the semantics tree is excluded here.
 final class MnemonicChallenge extends StatefulWidget {
-  final Secret secret;
+  final MnemonicSource _source;
 
   /// Renders one tile. Called during build, once per tile.
   final Widget Function(BuildContext context, MnemonicTile tile) tileBuilder;
@@ -85,7 +84,7 @@ final class MnemonicChallenge extends StatefulWidget {
   @internal
   const MnemonicChallenge({
     super.key,
-    required this.secret,
+    required this._source,
     required this.tileBuilder,
     required this.layoutBuilder,
     required this.onSolved,
@@ -126,7 +125,7 @@ final class _MnemonicChallengeState extends State<MnemonicChallenge> {
   @override
   void didUpdateWidget(MnemonicChallenge oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (widget.secret.id != oldWidget.secret.id) {
+    if (widget._source.id != oldWidget._source.id) {
       setState(_startRead);
     }
   }
@@ -147,7 +146,7 @@ final class _MnemonicChallengeState extends State<MnemonicChallenge> {
   void _retry() {
     if (!mounted) return;
     setState(_startRead);
-    widget.onProgress?.call(0, widget.secret.info.wordCount ?? 0);
+    widget.onProgress?.call(0, widget._source.wordCount);
   }
 
   /// Reads for the secret this widget holds *now*. The read outlives an
@@ -156,11 +155,11 @@ final class _MnemonicChallengeState extends State<MnemonicChallenge> {
   /// widget is still mounted. Otherwise it is dropped: a stale read must not
   /// become the answer key for the secret on screen.
   Future<void> _reveal(int generation) async {
-    final id = widget.secret.id;
-    final result = await widget.secret.revealMnemonic(
-      reason: RevealReason.physicalBackupCheck,
+    final id = widget._source.id;
+    final result = await widget._source.reveal(
+      RevealReason.physicalBackupCheck,
     );
-    if (!mounted || widget.secret.id != id || generation != _generation) {
+    if (!mounted || widget._source.id != id || generation != _generation) {
       return;
     }
     setState(() {
@@ -217,11 +216,11 @@ final class _MnemonicChallengeState extends State<MnemonicChallenge> {
     // check the audit surface names. The secret is captured first: the
     // verdict is for *that* secret, and is reported only if the widget still
     // shows it once the read returns.
-    final secret = widget.secret;
+    final secret = widget._source;
     final generation = _generation;
-    final verdict = await secret.verify.mnemonic(placed);
+    final verdict = await secret.verify(placed);
     if (!mounted ||
-        widget.secret.id != secret.id ||
+        widget._source.id != secret.id ||
         generation != _generation) {
       return;
     }
@@ -247,7 +246,7 @@ final class _MnemonicChallengeState extends State<MnemonicChallenge> {
   Widget build(BuildContext context) {
     // Keyed by fingerprint and read generation, so host widgets under it start fresh when changing secrets or retrying.
     return KeyedSubtree(
-      key: ValueKey((widget.secret.id.hex, _generation)),
+      key: ValueKey((widget._source.id.hex, _generation)),
       child: Builder(
         builder: (context) {
           if (_failure case final failure?) {

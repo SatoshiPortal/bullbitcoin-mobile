@@ -24,3 +24,4 @@ export 'src/public/secrets.dart'
     show DatabaseKeys, Recoverbull, RestoredVault, SecretPreview, Secrets;
 export 'src/public/types.dart';
 export 'src/public/widgets.dart';
+export 'src/public/ephemeral_mnemonic.dart' show EphemeralMnemonic;

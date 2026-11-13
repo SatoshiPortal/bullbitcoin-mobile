@@ -220,6 +220,61 @@ class SecretRepository {
     }, orElse: FetchSecretFailure.new);
   }
 
+  /// Retains a words-only backing entry without replacing the original secret.
+  Future<Result<SecretInfo, SecretFailure>> retainCanonical(
+    Fingerprint id,
+  ) async {
+    switch (await describe(id)) {
+      case Err(:final failure):
+        return Err(failure);
+      case Ok(value: final info):
+        final verified = await use(info, (material) => material);
+        return switch (verified) {
+          Err(:final failure) => Err(failure),
+          Ok(
+            value: Mnemonic(
+              :final words,
+              :final language,
+              :final hasPassphrase,
+            ),
+          )
+              when hasPassphrase =>
+            await store(words: words, language: language),
+          Ok() => Ok(info),
+        };
+    }
+  }
+
+  /// Derives from user input without reading or writing the keystore.
+  Future<Result<PublicAccountKey, SecretFailure>> previewAccount({
+    required List<String> words,
+    required Language language,
+    required String derivationPath,
+    required BitcoinNetwork network,
+    required String passphrase,
+  }) {
+    final candidate = List<String>.of(words);
+    return boundary(
+      () => Isolate.run(() {
+        final bytes = Deriver.fingerprint.seed(
+          candidate,
+          language: language,
+          passphrase: passphrase,
+        );
+        try {
+          return Deriver.bitcoin.account(
+            Seed(id: Deriver.fingerprint.fingerprint(bytes), seedBytes: bytes),
+            derivationPath: derivationPath,
+            network: network,
+          );
+        } finally {
+          bytes.fillRange(0, bytes.length, 0);
+        }
+      }),
+      orElse: UseSecretFailure.new,
+    );
+  }
+
   /// Opens a RecoverBull vault and stores the words it carries, under [passphrase] when the user supplied one. The words exist only inside this call.
   Future<Result<RestoredSecret, SecretFailure>> restore({
     required String file,

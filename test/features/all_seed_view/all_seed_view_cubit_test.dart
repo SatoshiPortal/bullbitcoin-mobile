@@ -1,7 +1,10 @@
+import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/delete_swap_master_key_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_master_key_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_mnemonic_usecase.dart';
-import 'package:primitives/primitives.dart';
+import 'package:primitives/primitives.dart' show Ok;
+import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_signer.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/features/all_seed_view/domain/usecases/delete_secret_usecase.dart';
 import 'package:bb_mobile/features/all_seed_view/domain/usecases/get_all_secrets_usecase.dart';
@@ -78,7 +81,9 @@ void main() {
     when(
       () => getAllSecretsUsecase.execute(),
     ).thenAnswer((_) async => Ok([aSecret]));
-    when(() => getWalletsUsecase.execute()).thenAnswer((_) async => Ok([]));
+    when(
+      () => getWalletsUsecase.execute(includeHidden: true),
+    ).thenAnswer((_) async => Ok([]));
     when(() => getSwapMasterKeyUsecase.execute()).thenAnswer((_) async => null);
 
     cubit = AllSeedViewCubit(
@@ -94,6 +99,35 @@ void main() {
   });
 
   tearDown(() => cubit.close());
+
+  test(
+    'keeps the canonical seed of a protected wallet out of old seeds',
+    () async {
+      final wallet = Wallet(
+        origin: 'protected-wallet',
+        network: Network.bitcoinTestnet,
+        signers: [
+          WalletSigner.single(
+            masterFingerprint: 'cafebabe',
+            xpubFingerprint: '12345678',
+            xpub: 'xpub',
+            signer: SignerEntity.local,
+            signerDevice: null,
+          ).copyWith(localSeedFingerprint: aSecret.id.hex),
+        ],
+        scriptType: null,
+        publicDescriptor: 'wsh(pk(xpub/<0;1>/*))',
+        balanceSat: BigInt.zero,
+      );
+      when(
+        () => getWalletsUsecase.execute(includeHidden: true),
+      ).thenAnswer((_) async => Ok([wallet]));
+      await cubit.unlock(issueGrant());
+
+      expect(cubit.state.existingWallets, [aSecret]);
+      expect(cubit.state.oldWallets, isEmpty);
+    },
+  );
 
   group('AllSeedViewCubit — re-authentication gate (audit)', () {
     test(

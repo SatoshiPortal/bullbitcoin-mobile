@@ -50,6 +50,153 @@ final class BitcoinSigner {
     }
   }
 
+  /// Signs only the supplied key occurrences; public policy validation stays with the wallet.
+  String signDescriptorPsbt(
+    SecretMaterial secret, {
+    required String psbt,
+    required String descriptor,
+    required BitcoinNetwork network,
+    required List<DescriptorSigningKey> keys,
+    String? passphrase,
+    bool signWithTapInternalKey = false,
+  }) {
+    final releases = <void Function()>[];
+    var failed = false;
+    try {
+      if (keys.isEmpty) throw const PsbtSigningFailed();
+      final material = const BitcoinDeriver().withPassphrase(
+        secret,
+        passphrase,
+      );
+      final kind = network.isMainnet
+          ? bdk.NetworkKind.main
+          : bdk.NetworkKind.test;
+      final publicDescriptor = bdk.Descriptor(
+        descriptor: descriptor,
+        networkKind: kind,
+      );
+      releases.add(publicDescriptor.dispose);
+      if (publicDescriptor.toString() !=
+          publicDescriptor.toStringWithSecret()) {
+        throw const PsbtSigningFailed();
+      }
+      publicDescriptor.sanityCheck();
+      final branches = publicDescriptor.toSingleDescriptors();
+      releases.addAll(branches.map((branch) => branch.dispose));
+      if (!publicDescriptor.isMultipath() || branches.length != 2) {
+        throw const PsbtSigningFailed();
+      }
+      var privateDescriptor = descriptor.split('#').first;
+      final root = bdk.DescriptorSecretKey.fromString(
+        privateKey: const BitcoinDeriver().masterXprv(material, network),
+      );
+      releases.add(root.dispose);
+      for (final selected in keys) {
+        final account = const BitcoinDeriver().account(
+          material,
+          derivationPath: selected.derivationPath,
+          network: network,
+        );
+        final encoding = network.isMainnet ? XpubType.xpub : XpubType.tpub;
+        if (!_isPublicKey(selected.xpub, network) ||
+            encoding.reencode(selected.xpub) != account.xpub) {
+          throw const PsbtSigningFailed();
+        }
+        final expression = RegExp(
+          r'^(\[[0-9a-fA-F]{8}(?:/[0-9]+[h\x27]?)*\])?'
+          r'((?:xpub|tpub|ypub|zpub|upub|vpub)[1-9A-HJ-NP-Za-km-z]+)'
+          r'((?:/[^,(){}]+)?)$',
+        ).firstMatch(selected.publicExpression);
+        if (expression == null) throw const PsbtSigningFailed();
+        final publicKey = expression.group(2);
+        final suffix = expression.group(3);
+        if (publicKey == null ||
+            suffix == null ||
+            !_isPublicKey(publicKey, network) ||
+            encoding.reencode(publicKey) != account.xpub) {
+          throw const PsbtSigningFailed();
+        }
+        final occurrence = RegExp(
+          '${RegExp.escape(selected.publicExpression)}(?=[,)])',
+        ).firstMatch(privateDescriptor);
+        if (occurrence == null) throw const PsbtSigningFailed();
+        final path = bdk.DerivationPath(path: account.derivationPath);
+        releases.add(path.dispose);
+        final accountKey = root.derive(path: path);
+        releases.add(accountKey.dispose);
+        var privateExpression = accountKey.toString();
+        if (expression.group(1) == null) {
+          privateExpression = privateExpression.substring(
+            privateExpression.indexOf(']') + 1,
+          );
+        }
+        privateDescriptor = privateDescriptor.replaceRange(
+          occurrence.start,
+          occurrence.end,
+          '$privateExpression$suffix',
+        );
+      }
+      // BIP389 selects every tuple's first member for receive and second for change.
+      final tuple = RegExp(r'<([0-9]+);([0-9]+)>');
+      String branch(int member) =>
+          privateDescriptor.replaceAllMapped(tuple, (match) {
+            final value = match.group(member);
+            if (value == null) throw const PsbtSigningFailed();
+            return value;
+          });
+      final external = bdk.Descriptor(descriptor: branch(1), networkKind: kind);
+      releases.add(external.dispose);
+      final internal = bdk.Descriptor(descriptor: branch(2), networkKind: kind);
+      releases.add(internal.dispose);
+      final persister = bdk.Persister.newInMemory();
+      releases.add(persister.dispose);
+      final wallet = bdk.Wallet(
+        descriptor: external,
+        changeDescriptor: internal,
+        network: switch (network) {
+          BitcoinNetwork.mainnet => bdk.Network.bitcoin,
+          BitcoinNetwork.testnet => bdk.Network.testnet,
+          BitcoinNetwork.signet => bdk.Network.signet,
+          BitcoinNetwork.regtest => bdk.Network.regtest,
+        },
+        persister: persister,
+        lookahead: _lookahead,
+      );
+      releases.add(wallet.dispose);
+      final parsed = bdk.Psbt(psbtBase64: psbt);
+      releases.add(parsed.dispose);
+      wallet.sign(
+        psbt: parsed,
+        signOptions: bdk.SignOptions(
+          trustWitnessUtxo: true,
+          assumeHeight: null,
+          allowAllSighashes: false,
+          tryFinalize: false,
+          signWithTapInternalKey: signWithTapInternalKey,
+          allowGrinding: true,
+        ),
+      );
+      return parsed.serialize();
+    } catch (e) {
+      failed = true;
+      // FFI parse errors may contain the private descriptor being parsed.
+      if (e is Error || e is PassphraseUnsupported) rethrow;
+      throw const PsbtSigningFailed();
+    } finally {
+      final releaseFailure = disposeAll(releases.reversed.toList());
+      if (releaseFailure != null) {
+        if (!failed) throw const PsbtSigningFailed();
+        log.warning('Descriptor signing handle release failed');
+      }
+    }
+  }
+
+  static bool _isPublicKey(String key, BitcoinNetwork network) =>
+      (network.isMainnet
+              ? const ['xpub', 'ypub', 'zpub']
+              : const ['tpub', 'upub', 'vpub'])
+          .any(key.startsWith);
+
   /// bdk's exceptions do not leave as they are: bdk's parse error quotes
   /// its input, so every failure becomes the package's own.
   static String _sign(bdk.Wallet wallet, String psbt) {

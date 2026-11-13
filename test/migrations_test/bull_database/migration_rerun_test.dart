@@ -132,14 +132,22 @@ void _seedUserData(File file) {
       );
     }
     db.execute(
-      'INSERT INTO wallet_metadatas (id, master_fingerprint, xpub_fingerprint, '
-      'is_encrypted_vault_tested, is_physical_backup_tested, xpub, '
-      'external_public_descriptor, internal_public_descriptor, signer, '
-      'signer_device, is_default, label, birthday) VALUES '
-      "('73c5da0a/84h/0h/0h', '73c5da0a', 'e0b0c1d2', 1, 0, 'xpub6C', "
-      "'wpkh([73c5da0a/84h/0h/0h]xpub6C/0/*)', "
-      "'wpkh([73c5da0a/84h/0h/0h]xpub6C/1/*)', 'local', NULL, 1, 'Savings', "
+      'INSERT INTO wallet_metadatas (id, network, '
+      'is_encrypted_vault_tested, is_physical_backup_tested, '
+      'public_descriptor, is_default, label, birthday) VALUES '
+      "('73c5da0a/84h/0h/0h', 'bitcoinMainnet', 1, 0, "
+      "'wpkh([73c5da0a/84h/0h/0h]xpub6C/<0;1>/*)', 1, 'Savings', "
       "'2024-04-20T00:00:00.000')",
+    );
+    db.execute(
+      'INSERT INTO wallet_signers (wallet_id, id, position, signer) VALUES '
+      "('73c5da0a/84h/0h/0h', 'signer-0', 0, 'local')",
+    );
+    db.execute(
+      'INSERT INTO wallet_descriptor_keys (wallet_id, id, position, signer_id, '
+      'master_fingerprint, xpub_fingerprint, xpub, derivation_path, descriptor_path) VALUES '
+      "('73c5da0a/84h/0h/0h', 'key-0', 0, 'signer-0', '73c5da0a', 'e0b0c1d2', "
+      "'xpub6C', 'm/84h/0h/0h', '/<0;1>/*')",
     );
     db.execute(
       'INSERT INTO swaps (id, type, direction, status, is_testnet, key_index, '
@@ -172,7 +180,13 @@ void _expectUserData(File file) {
     expect(db.select('SELECT * FROM labels'), hasLength(5));
     final wallet = db.select('SELECT * FROM wallet_metadatas').single;
     expect(wallet['id'], '73c5da0a/84h/0h/0h');
-    expect(wallet['signer'], 'local');
+    expect(db.select('SELECT * FROM wallet_signers').single['signer'], 'local');
+    expect(
+      db
+          .select('SELECT * FROM wallet_descriptor_keys')
+          .single['master_fingerprint'],
+      '73c5da0a',
+    );
     expect(wallet['birthday'], '2024-04-20T00:00:00.000');
     expect(
       db

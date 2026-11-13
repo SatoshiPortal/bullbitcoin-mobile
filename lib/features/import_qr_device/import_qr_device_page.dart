@@ -15,6 +15,7 @@ class ImportQrDevicePage extends StatelessWidget {
   final String deviceName;
   final String instructionsTitle;
   final List<String> instructions;
+  final String? accountKeyDerivationPath;
 
   const ImportQrDevicePage({
     super.key,
@@ -22,6 +23,7 @@ class ImportQrDevicePage extends StatelessWidget {
     required this.deviceName,
     required this.instructionsTitle,
     required this.instructions,
+    this.accountKeyDerivationPath,
   });
 
   @override
@@ -34,10 +36,15 @@ class ImportQrDevicePage extends StatelessWidget {
           crossAxisAlignment: .stretch,
           children: [
             BullText(
-              context.loc.importQrDeviceScanPrompt(deviceName),
+              accountKeyDerivationPath == null
+                  ? context.loc.importQrDeviceScanPrompt(deviceName)
+                  : context.loc.bullVaultDeviceKeyPath(
+                      deviceName,
+                      accountKeyDerivationPath!,
+                    ),
               style: context.font.bodyLarge,
               textAlign: .center,
-              maxLines: 2,
+              maxLines: 4,
             ),
 
             if (device == SignerDeviceEntity.jade) ...[
@@ -60,10 +67,7 @@ class ImportQrDevicePage extends StatelessWidget {
               children: [
                 BullButton.small(
                   label: context.loc.importQrDeviceButtonOpenCamera,
-                  onPressed: () => context.pushNamed(
-                    ImportWatchOnlyWalletRoutes.scan.name,
-                    extra: device,
-                  ),
+                  onPressed: () => _scanWallet(context),
                   bgColor: context.appColors.surface,
                   textColor: context.appColors.text,
                   outlined: true,
@@ -86,6 +90,22 @@ class ImportQrDevicePage extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+
+  Future<void> _scanWallet(BuildContext context) async {
+    final input = await context.pushNamed<String>(
+      ImportWatchOnlyWalletRoutes.scan.name,
+      extra: device,
+    );
+    if (input == null || !context.mounted) return;
+    if (accountKeyDerivationPath != null) {
+      context.pop(input);
+      return;
+    }
+    await context.pushNamed(
+      ImportWatchOnlyWalletRoutes.import.name,
+      extra: (input: input, signerDevice: device),
     );
   }
 }

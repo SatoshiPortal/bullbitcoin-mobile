@@ -51,7 +51,11 @@ class TestWalletBackupBloc
     if (wallet == null) {
       return const Err(TestWalletBackupNoWalletSelectedFailure());
     }
-    return _getSecretFromFingerprintUsecase.execute(wallet.masterFingerprint);
+    final fingerprint = wallet.singleLocalSeedFingerprint;
+    if (fingerprint == null) {
+      return const Err(TestWalletBackupNoWalletSelectedFailure());
+    }
+    return _getSecretFromFingerprintUsecase.execute(fingerprint);
   }
 
   Future<void> _onLoadWallets(
@@ -61,10 +65,20 @@ class TestWalletBackupBloc
     switch (await _loadWalletsForNetworkUsecase.execute()) {
       case Ok(:final value):
         // The use-case rejects an empty list, so first/firstWhere are safe.
-        final Wallet selected = value.firstWhere(
-          (w) => w.isDefault,
-          orElse: () => value.first,
-        );
+        final fingerprint = event.fingerprint?.toLowerCase();
+        final Wallet? selected = fingerprint == null
+            ? value.firstWhere((w) => w.isDefault, orElse: () => value.first)
+            : value
+                  .where((w) => w.singleLocalSeedFingerprint == fingerprint)
+                  .firstOrNull;
+        if (selected == null) {
+          emit(
+            state.copyWith(
+              failure: const TestWalletBackupNoWalletSelectedFailure(),
+            ),
+          );
+          return;
+        }
         emit(
           state.copyWith(
             wallets: value,
@@ -100,7 +114,8 @@ class TestWalletBackupBloc
     VerifyPhysicalBackup event,
     Emitter<TestWalletBackupState> emit,
   ) async {
-    if (state.selectedWallet == null) {
+    final fingerprint = state.selectedWallet?.singleLocalSeedFingerprint;
+    if (fingerprint == null) {
       emit(
         state.copyWith(
           failure: const TestWalletBackupNoWalletSelectedFailure(),
@@ -109,9 +124,10 @@ class TestWalletBackupBloc
       return;
     }
 
-    if (await _completeBackupVerificationUsecase.execute() case Err(
-      :final failure,
-    )) {
+    if (await _completeBackupVerificationUsecase.execute(
+          fingerprint: fingerprint,
+        )
+        case Err(:final failure)) {
       // The words were right but recording it failed. Reported rather than
       // swallowed: the flow would otherwise claim success while the wallet
       // still shows its backup as untested.
