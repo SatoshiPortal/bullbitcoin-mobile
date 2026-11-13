@@ -2,7 +2,6 @@ import 'package:bull_ui/bull_ui.dart' show BuildContext, Widget;
 import 'package:bb_mobile/features/settings/ui/screens/exchange/exchange_access_settings_screen.dart';
 import 'package:bb_mobile/features/settings/presentation/exchange_access_settings_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/screens/quick_actions_settings_screen.dart';
-import 'package:bb_mobile/features/settings/domain/usecases/watch_settings_quick_actions_usecase.dart';
 import 'package:bull_quick_actions/bull_quick_actions.dart';
 import 'package:bb_mobile/features/address_view/presentation/address_view_bloc.dart';
 import 'package:bb_mobile/features/address_view/ui/screens/addresses_screen.dart';
@@ -93,10 +92,8 @@ class SettingsRouter {
       GoRoute(
         name: SettingsRoute.quickActions.name,
         path: SettingsRoute.quickActions.path,
-        builder: (context, state) => QuickActionsSettingsScreen(
-          facade: locator<QuickActionsFacade>(),
-          watch: locator<WatchSettingsQuickActionsUsecase>(),
-        ),
+        builder: (context, state) =>
+            QuickActionsSettingsScreen(cubit: locator<QuickActionsCubit>()),
       ),
       GoRoute(
         name: SettingsRoute.exchangeSettings.name,

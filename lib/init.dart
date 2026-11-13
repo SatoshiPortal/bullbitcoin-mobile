@@ -66,7 +66,7 @@ class Bull {
     // settings repository is available, then mark the wizard complete.
     final _ = await locator<ExchangeFacade>().resolveAccess();
     await locator<ApplyPendingWizardChoicesUsecase>().execute();
-    await locator<QuickActionsFacade>().load();
+    await locator<QuickActionsCubit>().load();
     await AppLocator.setupRecoverBull(
       locator,
       databasePath: p.join(bullDirectory.path, 'recoverbull.sqlite'),

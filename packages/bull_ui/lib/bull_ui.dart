@@ -15,10 +15,6 @@ export 'package:flutter/semantics.dart' show CustomSemanticsAction;
 export 'package:flutter/widgets.dart'
     show
         Align,
-        AsyncSnapshot,
-        ConnectionState,
-        StreamBuilder,
-        FutureBuilder,
         AppLifecycleListener,
         AppLifecycleState,
         Alignment,
@@ -105,17 +101,7 @@ export 'package:flutter/widgets.dart'
 
 // Material/services symbols required by component public APIs.
 export 'package:flutter/material.dart'
-    show
-        DropdownMenuItem,
-        FormFieldValidator,
-        RefreshCallback,
-        TextTheme,
-        TextButton,
-        IconButton,
-        Tooltip,
-        ReorderableListView,
-        ReorderableDelayedDragStartListener,
-        ReorderableDragStartListener;
+    show DropdownMenuItem, FormFieldValidator, RefreshCallback, TextTheme;
 export 'package:flutter/services.dart' show TextInputFormatter;
 export 'package:flutter/widgets.dart' show FocusNode;
 
@@ -135,6 +121,7 @@ export 'src/chrome/bull_top_bar.dart';
 
 // Buttons.
 export 'src/buttons/bull_button.dart';
+export 'src/buttons/bull_inline_buttons.dart';
 export 'src/buttons/bull_sync_button.dart';
 export 'src/buttons/bull_tab_menu_vertical_button.dart';
 export 'src/buttons/bull_tool_button.dart';
@@ -174,6 +161,8 @@ export 'src/feedback/bull_snack_bar.dart';
 
 // Layout.
 export 'src/layout/bull_carousel.dart';
+export 'src/layout/bull_reorderable_list.dart';
+export 'src/layout/bull_stream_value_builder.dart';
 export 'src/layout/bull_pullable_body.dart';
 export 'src/layout/bull_scrollable_column.dart';
 export 'src/layout/bull_stacked_page.dart';

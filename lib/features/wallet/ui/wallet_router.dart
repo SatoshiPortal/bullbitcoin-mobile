@@ -1,6 +1,4 @@
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/watch_wallet_quick_actions_usecase.dart';
 import 'package:bull_quick_actions/bull_quick_actions.dart';
 import 'package:flutter/widgets.dart';
 import 'package:bb_mobile/features/onboarding/ui/onboarding_router.dart';
@@ -21,12 +19,9 @@ enum WalletRoute {
 
 class WalletRouter {
   static GoRoute walletHomeRoute({
-    required QuickActionsFacade quickActions,
-    required ExchangeFacade exchangeAccess,
-    required bool Function(BuildContext) platformAllowsExchange,
+    required QuickActionsCubit quickActions,
     required void Function(BuildContext, QuickAction) onQuickAction,
-    required void Function(BuildContext, Set<QuickAction>, List<QuickAction>)
-    onCustomizeQuickActions,
+    required void Function(BuildContext) onCustomizeQuickActions,
   }) => GoRoute(
     name: WalletRoute.walletHome.name,
     path: WalletRoute.walletHome.path,
@@ -43,8 +38,6 @@ class WalletRouter {
           },
           child: WalletHomeScreen(
             quickActions: quickActions,
-            platformAllowsExchange: platformAllowsExchange,
-            quickActionsPolicy: WatchWalletQuickActionsUsecase(exchangeAccess),
             onQuickAction: onQuickAction,
             onCustomizeQuickActions: onCustomizeQuickActions,
           ),

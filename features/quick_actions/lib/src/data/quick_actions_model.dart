@@ -10,10 +10,10 @@ final class QuickActionsModel {
 
   factory QuickActionsModel.decode(String raw) {
     final decoded = jsonDecode(raw);
-    if (decoded is List && decoded.every((value) => value is String)) {
-      return QuickActionsModel(decoded.cast<String>());
-    }
-    if (decoded is Map<String, dynamic> && decoded['version'] == 2) {
+    if (decoded is Map<String, dynamic> &&
+        decoded.length == 2 &&
+        decoded.containsKey('home') &&
+        decoded.containsKey('more')) {
       final home = decoded['home'];
       final more = decoded['more'];
       if (home is List &&
@@ -50,7 +50,5 @@ final class QuickActionsModel {
     return QuickActionSelection(actions, more: more);
   }
 
-  String encode() => moreIds.isEmpty
-      ? jsonEncode(ids)
-      : jsonEncode({'version': 2, 'home': ids, 'more': moreIds});
+  String encode() => jsonEncode({'home': ids, 'more': moreIds});
 }

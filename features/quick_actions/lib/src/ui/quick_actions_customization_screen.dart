@@ -2,20 +2,13 @@ import 'dart:async';
 
 import 'package:bull_ui/bull_ui.dart';
 
-import '../../public/quick_actions_facade.dart';
+import '../../public/quick_actions.dart';
 import 'quick_action_presentation.dart';
 
 class QuickActionsCustomizationScreen extends StatefulWidget {
-  const QuickActionsCustomizationScreen({
-    super.key,
-    required this.facade,
-    required this.available,
-    required this.defaults,
-  });
+  const QuickActionsCustomizationScreen({super.key, required this.cubit});
 
-  final QuickActionsFacade facade;
-  final Set<QuickAction> available;
-  final List<QuickAction> defaults;
+  final QuickActionsCubit cubit;
 
   @override
   State<QuickActionsCustomizationScreen> createState() =>
@@ -24,24 +17,39 @@ class QuickActionsCustomizationScreen extends StatefulWidget {
 
 class _QuickActionsCustomizationScreenState
     extends State<QuickActionsCustomizationScreen> {
-  QuickActionSelection? draft;
-  bool saving = false;
+  QuickActionSelection? get draft => widget.cubit.state.draft;
+  bool get saving => widget.cubit.state.saving;
+  late StreamSubscription<QuickActionsState> _subscription;
   int undoVersion = 0;
 
   @override
   void initState() {
     super.initState();
-    _load();
+    _subscription = widget.cubit.stream.listen((_) {
+      if (mounted) setState(() {});
+    });
+    widget.cubit.load();
   }
 
-  Future<void> _load() async {
-    final saved = await widget.facade.load();
-    if (mounted) {
-      setState(() => draft = saved ?? QuickActionSelection(widget.defaults));
+  @override
+  void didUpdateWidget(QuickActionsCustomizationScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.cubit != widget.cubit) {
+      _subscription.cancel();
+      _subscription = widget.cubit.stream.listen((_) {
+        if (mounted) setState(() {});
+      });
+      widget.cubit.load();
     }
   }
 
-  /// Optimistic local presentation; the facade publishes only confirmed writes.
+  @override
+  void dispose() {
+    _subscription.cancel();
+    super.dispose();
+  }
+
+  /// The cubit holds the optimistic draft and restores it when a write fails.
   Future<bool> _write(QuickActionSelection? preference) async {
     final previous = draft;
     if (previous == null || saving) return false;
@@ -49,30 +57,13 @@ class _QuickActionsCustomizationScreenState
     final failureMessage = QuickActionsLocalizations.of(context).saveFailed;
     undoVersion++;
     BullSnackBar.dismiss();
-    setState(() {
-      draft = preference ?? QuickActionSelection(widget.defaults);
-      saving = true;
-    });
     final result = preference == null
-        ? await widget.facade.reset()
-        : await widget.facade.save(preference);
+        ? await widget.cubit.reset()
+        : await widget.cubit.save(preference);
     switch (result) {
       case Ok():
-        if (mounted) {
-          setState(() => saving = false);
-        } else {
-          saving = false;
-        }
         return true;
       case Err():
-        if (mounted) {
-          setState(() {
-            draft = previous;
-            saving = false;
-          });
-        } else {
-          saving = false;
-        }
         BullSnackBar.showOnOverlay(feedback, message: failureMessage);
         return false;
     }
@@ -85,28 +76,30 @@ class _QuickActionsCustomizationScreenState
 
   Future<void> _restoreDefaults() async {
     if (draft == null || saving) return;
-    final facade = widget.facade;
-    final previous = facade.selection;
+    final cubit = widget.cubit;
+    final previous = cubit.state.selection;
     final feedback = Overlay.of(context, rootOverlay: true);
     final l10n = QuickActionsLocalizations.of(context);
     final restored = await _write(null);
     if (restored == false || feedback.mounted == false) return;
     final version = undoVersion;
-    final revision = facade.revision;
+    final revision = cubit.state.revision;
     BullSnackBar.showOnOverlay(
       feedback,
       message: l10n.defaultsRestored,
       actionLabel: l10n.undo,
       onAction: () async {
-        if (version != undoVersion || saving || revision != facade.revision) {
+        if (version != undoVersion ||
+            saving ||
+            revision != cubit.state.revision) {
           return;
         }
         if (mounted) {
           await _write(previous);
         } else {
           final result = previous == null
-              ? await facade.reset()
-              : await facade.save(previous);
+              ? await cubit.reset()
+              : await cubit.save(previous);
           if (result is Err<void, QuickActionsFailure>) {
             BullSnackBar.showOnOverlay(feedback, message: l10n.saveFailed);
           }
@@ -166,13 +159,12 @@ class _QuickActionsCustomizationScreenState
     final l10n = QuickActionsLocalizations.of(context);
     final editor = QuickActionsEditorLayout(
       selection: current,
-      available: widget.available,
+      available: widget.cubit.state.available,
     );
     final items = editor.items;
-    return ReorderableListView.builder(
+    return BullReorderableList(
       key: const ValueKey('quick-actions-list'),
       padding: const EdgeInsets.all(16),
-      buildDefaultDragHandles: false,
       itemCount: items.length,
       header: _preview(context, current, editor),
       onReorderStart: (_) => unawaited(HapticFeedback.selectionClick()),
@@ -201,7 +193,7 @@ class _QuickActionsCustomizationScreenState
         }
         final name = action.label(l10n);
         final onHome = editor.home.contains(action);
-        return ReorderableDelayedDragStartListener(
+        return BullReorderHandle(
           key: ValueKey(action.id),
           index: index,
           enabled: !saving,
@@ -260,8 +252,8 @@ class _QuickActionsCustomizationScreenState
   ) {
     final l10n = QuickActionsLocalizations.of(context);
     final layout = QuickActionsLayout.resolve(
-      available: widget.available,
-      defaults: widget.defaults,
+      available: widget.cubit.state.available,
+
       selection: current,
     );
     final controls = <Widget>[

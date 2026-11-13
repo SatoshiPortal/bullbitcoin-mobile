@@ -9,7 +9,6 @@ import 'package:bb_mobile/features/wallet/ui/widgets/wallet_bottom_buttons.dart'
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_cards.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_home_top_section.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_quick_actions.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/watch_wallet_quick_actions_usecase.dart';
 import 'package:bull_quick_actions/bull_quick_actions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -20,18 +19,13 @@ class WalletHomeScreen extends StatefulWidget {
   const WalletHomeScreen({
     super.key,
     required this.quickActions,
-    required this.quickActionsPolicy,
-    required this.platformAllowsExchange,
     required this.onQuickAction,
     required this.onCustomizeQuickActions,
   });
 
-  final QuickActionsFacade quickActions;
-  final WatchWalletQuickActionsUsecase quickActionsPolicy;
-  final bool Function(BuildContext) platformAllowsExchange;
+  final QuickActionsCubit quickActions;
   final void Function(BuildContext, QuickAction) onQuickAction;
-  final void Function(BuildContext, Set<QuickAction>, List<QuickAction>)
-  onCustomizeQuickActions;
+  final void Function(BuildContext) onCustomizeQuickActions;
 
   @override
   State<WalletHomeScreen> createState() => _WalletHomeScreenState();
@@ -161,8 +155,6 @@ class _WalletHomeScreenState extends State<WalletHomeScreen> {
                   child: WalletHomeTopSection(
                     actions: WalletQuickActions(
                       quickActions: widget.quickActions,
-                      policy: widget.quickActionsPolicy,
-                      platformAllowsExchange: widget.platformAllowsExchange,
                       onAction: widget.onQuickAction,
                       onCustomize: widget.onCustomizeQuickActions,
                     ),

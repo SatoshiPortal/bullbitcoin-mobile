@@ -1,7 +1,6 @@
 import 'package:bb_mobile/features/bitcoin_price/public/bitcoin_price_facade.dart';
 import 'package:bb_mobile/features/support/public/support_facade.dart';
 import 'package:bull_quick_actions/bull_quick_actions.dart';
-import 'dart:io';
 
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/screens/route_error_screen.dart';
@@ -165,15 +164,9 @@ class AppRouter {
         },
         routes: [
           WalletRouter.walletHomeRoute(
-            quickActions: locator<QuickActionsFacade>(),
-            exchangeAccess: locator<ExchangeFacade>(),
-            platformAllowsExchange: (context) =>
-                !Platform.isIOS ||
-                context.select(
-                  (SettingsCubit cubit) => cubit.state.isSuperuser ?? false,
-                ),
+            quickActions: locator<QuickActionsCubit>(),
             onQuickAction: _openQuickAction,
-            onCustomizeQuickActions: (context, available, defaults) =>
+            onCustomizeQuickActions: (context) =>
                 context.pushNamed(SettingsRoute.quickActions.name),
           ),
           ...ExchangeRouter.routes(_exchangeConfig),

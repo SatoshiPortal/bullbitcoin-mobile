@@ -36,6 +36,12 @@ final class QuickActionSelection {
 final class QuickActionsLayout {
   QuickActionsLayout._(this.primary, this.more);
 
+  static const defaults = [
+    QuickAction.map,
+    QuickAction.transfer,
+    QuickAction.history,
+  ];
+
   static const int maximumCells = 4;
   static const int maximumHomeActions = 3;
 
@@ -57,7 +63,6 @@ final class QuickActionsLayout {
 
   factory QuickActionsLayout.resolve({
     required Set<QuickAction> available,
-    required List<QuickAction> defaults,
     QuickActionSelection? selection,
   }) {
     final requested = selection?.actions ?? defaults;

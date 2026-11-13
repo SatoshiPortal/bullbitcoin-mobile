@@ -1,4 +1,6 @@
-import 'package:bb_mobile/features/settings/domain/usecases/watch_settings_quick_actions_usecase.dart';
+import 'dart:io';
+
+import 'package:bb_mobile/features/settings/domain/usecases/watch_quick_actions_visibility_usecase.dart';
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
 import 'package:bb_mobile/features/settings/data/quick_actions_storage.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/manage_exchange_access_usecase.dart';
@@ -38,11 +40,20 @@ import 'package:get_it/get_it.dart';
 
 class SettingsLocator {
   static void setup(GetIt locator) {
-    locator.registerLazySingleton<QuickActionsFacade>(
-      () => QuickActionsFacade(
+    locator.registerLazySingleton<QuickActionsCubit>(
+      () => QuickActionsCubit(
         storage: SettingsQuickActionsStorage(),
         warning: log.warning,
+        exchangeVisible: WatchQuickActionsVisibilityUsecase(
+          exchange: locator<ExchangeFacade>(),
+          settings: locator<SettingsRepository>(),
+          isIOS: Platform.isIOS,
+          platformChanges: locator<SettingsCubit>().stream
+              .where((state) => state.storedSettings != null)
+              .map((state) => !Platform.isIOS || state.isSuperuser == true),
+        ).execute(),
       ),
+      dispose: (cubit) => cubit.close(),
     );
     locator.registerFactory<WatchSettingsExchangeAccessUsecase>(
       () => WatchSettingsExchangeAccessUsecase(locator<ExchangeFacade>()),
@@ -58,9 +69,6 @@ class SettingsLocator {
         locator<WatchSettingsExchangeAccessUsecase>(),
         locator<SetSettingsExchangeAccessUsecase>(),
       ),
-    );
-    locator.registerFactory<WatchSettingsQuickActionsUsecase>(
-      () => WatchSettingsQuickActionsUsecase(locator<ExchangeFacade>()),
     );
     // Usecases
     locator.registerFactory<SetEnvironmentUsecase>(

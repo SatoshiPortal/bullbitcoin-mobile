@@ -1,21 +1,19 @@
+import 'dart:async';
+
 import 'package:bull_ui/bull_ui.dart';
 
-import '../../public/quick_actions_facade.dart';
+import '../../public/quick_actions.dart';
 import 'quick_action_presentation.dart';
 
 class QuickActionsRow extends StatefulWidget {
   const QuickActionsRow({
     super.key,
-    required this.facade,
-    required this.available,
-    required this.defaults,
+    required this.cubit,
     required this.onAction,
     required this.onCustomize,
   });
 
-  final QuickActionsFacade facade;
-  final Set<QuickAction> available;
-  final List<QuickAction> defaults;
+  final QuickActionsCubit cubit;
   final ValueChanged<QuickAction> onAction;
   final VoidCallback onCustomize;
 
@@ -24,20 +22,22 @@ class QuickActionsRow extends StatefulWidget {
 }
 
 class _QuickActionsRowState extends State<QuickActionsRow> {
+  late StreamSubscription<QuickActionsState> _subscription;
+
   @override
   void initState() {
     super.initState();
-    widget.facade.addListener(_changed);
-    widget.facade.load();
+    _subscription = widget.cubit.stream.listen((_) => _changed());
+    widget.cubit.load();
   }
 
   @override
   void didUpdateWidget(QuickActionsRow oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.facade != widget.facade) {
-      oldWidget.facade.removeListener(_changed);
-      widget.facade.addListener(_changed);
-      widget.facade.load();
+    if (oldWidget.cubit != widget.cubit) {
+      _subscription.cancel();
+      _subscription = widget.cubit.stream.listen((_) => _changed());
+      widget.cubit.load();
     }
   }
 
@@ -47,18 +47,18 @@ class _QuickActionsRowState extends State<QuickActionsRow> {
 
   @override
   void dispose() {
-    widget.facade.removeListener(_changed);
+    _subscription.cancel();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     final l10n = QuickActionsLocalizations.of(context);
-    final loading = widget.facade.initialized == false;
+    final loading = widget.cubit.state.initialized == false;
     final layout = QuickActionsLayout.resolve(
-      available: widget.available,
-      defaults: widget.defaults,
-      selection: widget.facade.selection,
+      available: widget.cubit.state.available,
+
+      selection: widget.cubit.state.selection,
     );
     final controls = <Widget>[
       for (final action in layout.primary)
@@ -96,17 +96,15 @@ class _QuickActionsRowState extends State<QuickActionsRow> {
   Future<void> _showMore() async {
     final result = await BullBottomSheet.show<_MoreChoice>(
       context: context,
-      child: _MoreSheet(
-        facade: widget.facade,
-        available: widget.available,
-        defaults: widget.defaults,
-      ),
+      child: _MoreSheet(cubit: widget.cubit),
     );
     if (!mounted || result == null) return;
     if (result.edit) {
       widget.onCustomize();
     } else if (result.action case final action?) {
-      if (widget.available.contains(action)) widget.onAction(action);
+      if (widget.cubit.state.available.contains(action)) {
+        widget.onAction(action);
+      }
     }
   }
 }
@@ -120,101 +118,100 @@ class _MoreChoice {
 
 /// The sheet owns its Navigator context, so closing it cannot pop WalletHome.
 class _MoreSheet extends StatelessWidget {
-  const _MoreSheet({
-    required this.facade,
-    required this.available,
-    required this.defaults,
-  });
+  const _MoreSheet({required this.cubit});
 
-  final QuickActionsFacade facade;
-  final Set<QuickAction> available;
-  final List<QuickAction> defaults;
+  final QuickActionsCubit cubit;
 
   @override
-  Widget build(BuildContext context) {
-    final l10n = QuickActionsLocalizations.of(context);
-    final actions = QuickActionsLayout.resolve(
-      available: available,
-      defaults: defaults,
-      selection: facade.selection,
-    ).more;
-    return SafeArea(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Center(
-                child: Container(
-                  width: 32,
-                  height: 4,
-                  decoration: BoxDecoration(
-                    color: context.bull.border,
-                    borderRadius: BorderRadius.circular(
-                      context.bullShapes.badge,
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 8),
-              Row(
-                children: [
-                  Expanded(
-                    child: BullText(
-                      l10n.more,
-                      style: const TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w600,
+  Widget build(BuildContext context) =>
+      BullStreamValueBuilder<QuickActionsState>(
+        stream: cubit.stream,
+        initialValue: cubit.state,
+        builder: (context, value) {
+          final l10n = QuickActionsLocalizations.of(context);
+          final actions = QuickActionsLayout.resolve(
+            available: value.available,
+
+            selection: value.selection,
+          ).more;
+          return SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Center(
+                      child: Container(
+                        width: 32,
+                        height: 4,
+                        decoration: BoxDecoration(
+                          color: context.bull.border,
+                          borderRadius: BorderRadius.circular(
+                            context.bullShapes.badge,
+                          ),
+                        ),
                       ),
                     ),
-                  ),
-                  TextButton(
-                    onPressed: () =>
-                        Navigator.pop(context, const _MoreChoice.edit()),
-                    child: BullText(l10n.edit, style: null),
-                  ),
-                  IconButton(
-                    tooltip: l10n.close,
-                    onPressed: () => Navigator.pop(context),
-                    icon: const BullIcon(BullIcons.close),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 8),
-              LayoutBuilder(
-                builder: (context, constraints) {
-                  final width = (constraints.maxWidth - 24) / 4;
-                  return Wrap(
-                    spacing: 8,
-                    runSpacing: 8,
-                    children: [
-                      for (final action in actions)
-                        SizedBox(
-                          width: width,
-                          child: BullQuickAction(
-                            label: action.label(l10n),
-                            semanticLabel: action.fullLabel(l10n),
-                            icon: action.icon,
-                            onPressed: () => Navigator.pop(
-                              context,
-                              _MoreChoice.action(action),
-                            ),
-                            onLongPress: () => Navigator.pop(
-                              context,
-                              const _MoreChoice.edit(),
+                    const SizedBox(height: 8),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: BullText(
+                            l10n.more,
+                            style: const TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.w600,
                             ),
                           ),
                         ),
-                    ],
-                  );
-                },
+                        BullInlineTextButton(
+                          onPressed: () =>
+                              Navigator.pop(context, const _MoreChoice.edit()),
+                          child: BullText(l10n.edit, style: null),
+                        ),
+                        BullInlineIconButton(
+                          tooltip: l10n.close,
+                          onPressed: () => Navigator.pop(context),
+                          icon: const BullIcon(BullIcons.close),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    LayoutBuilder(
+                      builder: (context, constraints) {
+                        final width = (constraints.maxWidth - 24) / 4;
+                        return Wrap(
+                          spacing: 8,
+                          runSpacing: 8,
+                          children: [
+                            for (final action in actions)
+                              SizedBox(
+                                width: width,
+                                child: BullQuickAction(
+                                  label: action.label(l10n),
+                                  semanticLabel: action.fullLabel(l10n),
+                                  icon: action.icon,
+                                  onPressed: () => Navigator.pop(
+                                    context,
+                                    _MoreChoice.action(action),
+                                  ),
+                                  onLongPress: () => Navigator.pop(
+                                    context,
+                                    const _MoreChoice.edit(),
+                                  ),
+                                ),
+                              ),
+                          ],
+                        );
+                      },
+                    ),
+                  ],
+                ),
               ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
+            ),
+          );
+        },
+      );
 }

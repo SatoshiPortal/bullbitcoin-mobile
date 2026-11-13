@@ -8,7 +8,7 @@ import 'quick_actions_model.dart';
 final class QuickActionsRepositoryImpl implements QuickActionsRepository {
   const QuickActionsRepositoryImpl(this._storage);
 
-  static const key = 'quick_actions.v1';
+  static const key = 'quick_actions';
   final QuickActionsStorage _storage;
 
   @override
