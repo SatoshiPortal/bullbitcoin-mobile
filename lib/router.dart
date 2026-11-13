@@ -187,6 +187,7 @@ class AppRouter {
       ConsolidationRouter.route,
       SettingsRouter.route,
       TransactionsRouter.transactionsRoute,
+      TransactionsRouter.exchangeTransactionsRoute,
       TransactionsRouter.exportTransactionsRoute,
       ...TransactionsRouter.transactionDetailsRoutes,
       ReceiveRouter.route,

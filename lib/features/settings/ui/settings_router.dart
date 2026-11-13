@@ -7,9 +7,10 @@ import 'package:bb_mobile/features/autoswap/ui/screens/autoswap_settings_screen.
 import 'package:bb_mobile/features/backup_settings/ui/backup_settings_router.dart';
 import 'package:bb_mobile/features/backup_settings/ui/screens/backup_settings_screen.dart';
 import 'package:bb_mobile/features/default_wallets/public/default_wallets_facade.dart';
-import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
 import 'package:bb_mobile/features/exchange_settings/public/exchange_settings_facade.dart';
 import 'package:bb_mobile/features/pin_code/ui/pin_code_setting_flow.dart';
+import 'package:bb_mobile/features/pay/ui/pay_router.dart';
+import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/screens/all_settings_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/app_settings/app_settings_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/btc_map/btc_map_screen.dart';
@@ -18,13 +19,6 @@ import 'package:bb_mobile/features/settings/ui/screens/bitcoin/payjoin_advanced_
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/payjoin_settings_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/wallet_details_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/currency/currency_settings_screen.dart';
-import 'package:bb_mobile/features/settings/ui/screens/exchange/exchange_account_screen.dart';
-import 'package:bb_mobile/features/settings/ui/screens/exchange/exchange_settings_screen.dart';
-import 'package:bb_mobile/features/settings/ui/screens/exchange/legacy_transactions_screen.dart';
-import 'package:bb_mobile/features/settings/ui/screens/exchange/logout_screen.dart';
-import 'package:bb_mobile/features/settings/ui/screens/exchange/referrals_screen.dart';
-import 'package:bb_mobile/features/settings/ui/screens/exchange/security_screen.dart';
-import 'package:bb_mobile/features/settings/ui/screens/exchange/transactions_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/settings_search_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/theme/theme_settings_screen.dart';
 import 'package:bb_mobile/features/settings/ui/settings_route.dart';
@@ -32,6 +26,7 @@ import 'package:bb_mobile/features/settings/ui/widgets/wallet_deletion_failed_sh
 import 'package:bb_mobile/features/status_check/presentation/cubit.dart';
 import 'package:bb_mobile/features/test_wallet_backup/ui/test_wallet_backup_router.dart';
 import 'package:bb_mobile/features/tor_settings/ui/tor_settings_router.dart';
+import 'package:bb_mobile/features/transactions/transactions_facade.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/locator.dart';
@@ -56,50 +51,25 @@ class SettingsRouter {
         path: SettingsRoute.search.path,
         builder: (context, state) => const SettingsSearchScreen(),
       ),
-      GoRoute(
-        name: SettingsRoute.exchangeAccount.name,
-        path: SettingsRoute.exchangeAccount.path,
-        builder: (context, state) => const ExchangeAccountScreen(),
-      ),
-      GoRoute(
-        name: SettingsRoute.exchangeSettings.name,
-        path: SettingsRoute.exchangeSettings.path,
-
-        builder: (context, state) => ExchangeSessionListener(
-          listenWhen: (previous, current) => previous && !current,
-          listener: (context, state) {
-            // Redirect to landing page if the user logged out
-            context.goNamed(ExchangeRoute.exchangeLanding.name);
-          },
-          child: const ExchangeSettingsScreen(),
-        ),
-      ),
-      GoRoute(
-        name: SettingsRoute.exchangeSecurity.name,
-        path: SettingsRoute.exchangeSecurity.path,
-        builder: (context, state) => const ExchangeSecurityScreen(),
-      ),
       DefaultWalletsRouter.route,
-      ...ExchangeSettingsRouter.routes,
-      GoRoute(
-        name: SettingsRoute.exchangeTransactions.name,
-        path: SettingsRoute.exchangeTransactions.path,
-        builder: (context, state) => const ExchangeTransactionsScreen(),
-      ),
-      GoRoute(
-        name: SettingsRoute.exchangeLegacyTransactions.name,
-        path: SettingsRoute.exchangeLegacyTransactions.path,
-        builder: (context, state) => const ExchangeLegacyTransactionsScreen(),
-      ),
-      GoRoute(
-        name: SettingsRoute.exchangeReferrals.name,
-        path: SettingsRoute.exchangeReferrals.path,
-        builder: (context, state) => const ExchangeReferralsScreen(),
-      ),
-      GoRoute(
-        name: SettingsRoute.exchangeLogout.name,
-        path: SettingsRoute.exchangeLogout.path,
-        builder: (context, state) => const ExchangeLogoutScreen(),
+      ...ExchangeSettingsRouter.routes(
+        ExchangeSettingsRouterConfig(
+          isSuperuser: (context) =>
+              context.select(
+                (SettingsCubit cubit) => cubit.state.isSuperuser,
+              ) ??
+              false,
+          isTestnet: (context) =>
+              context.select(
+                (SettingsCubit cubit) => cubit.state.environment?.isTestnet,
+              ) ??
+              false,
+          onOpenRecipients: (context) => context.pushNamed(PayRoute.pay.name),
+          onOpenTransactions: (context) =>
+              context.pushNamed(TransactionsRoute.exchangeTransactions.name),
+          onOpenDefaultWallets: (context) =>
+              context.pushNamed(DefaultWalletsRoute.defaultWallets.name),
+        ),
       ),
       GoRoute(
         name: SettingsRoute.walletSettings.name,
