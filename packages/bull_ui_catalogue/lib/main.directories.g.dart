@@ -10,6 +10,8 @@
 // **************************************************************************
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:bull_ui_catalogue/amount_use_cases.dart'
+    as _bull_ui_catalogue_amount_use_cases;
 import 'package:bull_ui_catalogue/use_cases/foundation.dart'
     as _bull_ui_catalogue_use_cases_foundation;
 import 'package:bull_ui_catalogue/use_cases/use_cases.dart'
@@ -219,6 +221,15 @@ final directories = <_widgetbook.WidgetbookNode>[
             name: 'Default',
             builder:
                 _bull_ui_catalogue_use_cases_use_cases.bullAddressTextUseCase,
+          ),
+        ],
+      ),
+      _widgetbook.WidgetbookComponent(
+        name: 'BullAmount',
+        useCases: [
+          _widgetbook.WidgetbookUseCase(
+            name: 'Bitcoin denominations',
+            builder: _bull_ui_catalogue_amount_use_cases.bitcoinAmounts,
           ),
         ],
       ),

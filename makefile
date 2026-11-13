@@ -112,7 +112,12 @@ translations:
 	@$(MAKE) novlang-translations
 	@fvm flutter gen-l10n
 	@$(MAKE) recoverbull-translations
+	@$(MAKE) bull-ui-translations
 	@$(MAKE) novlang-bridge
+
+.PHONY: bull-ui-translations
+bull-ui-translations:
+	@(cd packages/bull_ui && fvm flutter gen-l10n)
 
 .PHONY: novlang-translations
 novlang-translations:

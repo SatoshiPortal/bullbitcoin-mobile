@@ -16,6 +16,7 @@ dependencies:
   flutter:
     sdk: flutter
   # Workspace-resolved (same mechanism the root app uses for bull_ui).
+  primitives:
   bull_ui:
   # Widgetbook v3 (stable). NOTE: v3 trips a Navigator assertion on Flutter
   # 3.44.1 inside its default app-builder MaterialApp — worked around in
