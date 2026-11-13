@@ -13,6 +13,7 @@ import 'package:bb_mobile/features/buy/ui/screens/buy_input_screen.dart';
 import 'package:bb_mobile/features/buy/ui/buy_router.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_state.dart';
+import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:go_router/go_router.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
@@ -31,6 +32,8 @@ class _MockExchangeCubit extends Mock implements ExchangeCubit {}
 class _MockSettingsCubit extends Mock implements SettingsCubit {}
 
 class _MockBuyOrder extends Mock implements BuyOrder {}
+
+class _MockExchangeFacade extends Mock implements ExchangeFacade {}
 
 void main() {
   setUpAll(() => registerFallbackValue(const BuyEvent.confirmOrder()));
@@ -217,8 +220,15 @@ void main() {
         () => exchange.state,
       ).thenReturn(const ExchangeState(userSummary: user));
       when(() => exchange.stream).thenAnswer((_) => const Stream.empty());
+      final access = _MockExchangeFacade();
+      when(
+        () => access.tradingEntry(isIOS: false),
+      ).thenAnswer((_) async => const Ok(ExchangeTradingEntry.allowed));
       locator.pushNewScope(
-        init: (scope) => scope.registerFactory<BuyBloc>(() => bloc),
+        init: (scope) {
+          scope.registerFactory<BuyBloc>(() => bloc);
+          scope.registerSingleton<ExchangeFacade>(access);
+        },
       );
       addTearDown(locator.popScope);
       final router = GoRouter(
