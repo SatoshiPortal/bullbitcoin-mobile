@@ -30,12 +30,3 @@ placeholder, or a forbidden word in an override.
 
 The legal disclosures, search keywords, bank/Interac/SEPA/SPEI rail names, NFC,
 PSBT wording and RecoverBull text are deliberately outside the manifest.
-
-## Forcing the Apple wording (development)
-
-`resolveNovlangPolicy(platform, isSuperuser, forceApple: true)` returns the Apple
-policy on every platform, so the Apple vocabulary can be seen on Android. The
-superuser stays first: a superuser sees the real words even when the wording is
-forced. The app exposes the switch as « Force App Store wording » in App
-Settings, only while Dev Mode is on (a local preference owned by the settings
-feature).

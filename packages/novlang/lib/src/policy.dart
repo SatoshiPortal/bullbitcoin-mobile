@@ -24,17 +24,8 @@ enum NovlangPolicy {
 /// [isSuperuser] is `null` while the setting is not loaded yet: the store
 /// constraint of the platform applies until the user is known to be a
 /// superuser. A superuser always gets [NovlangPolicy.none].
-///
-/// [forceApple] is a development switch that applies the Apple vocabulary on
-/// any platform, to see it without an iPhone. The superuser stays first: a
-/// superuser sees the real words even when [forceApple] is set.
-NovlangPolicy resolveNovlangPolicy(
-  TargetPlatform platform,
-  bool? isSuperuser, {
-  bool forceApple = false,
-}) {
+NovlangPolicy resolveNovlangPolicy(TargetPlatform platform, bool? isSuperuser) {
   if (isSuperuser == true) return NovlangPolicy.none;
-  if (forceApple) return NovlangPolicy.apple;
   return switch (platform) {
     TargetPlatform.iOS => NovlangPolicy.apple,
     TargetPlatform.android => NovlangPolicy.google,
