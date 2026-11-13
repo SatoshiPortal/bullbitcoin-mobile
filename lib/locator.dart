@@ -68,6 +68,18 @@ import 'package:secrets/secrets.dart';
 final GetIt locator = GetIt.instance;
 
 class AppLocator {
+  /// Read-only startup policy; the background handler receives no secret handles.
+  /// Legacy or unreadable storage must be handled by the foreground backup gate.
+  static Future<bool> canStartBackgroundTasks() async {
+    final legacy = await Secrets.legacyBackup(
+      scratchDirectory: () async => (await getTemporaryDirectory()).path,
+    );
+    return switch (legacy) {
+      Ok(value: null) => true,
+      _ => false,
+    };
+  }
+
   /// Foreground-only composition. Headless setup never opens this database.
   static Future<void> setupRecoverBull(
     GetIt locator, {

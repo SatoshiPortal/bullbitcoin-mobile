@@ -11,7 +11,6 @@ import 'package:get_it/get_it.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:primitives/primitives.dart';
-import 'package:secrets/secrets.dart';
 import 'package:workmanager/workmanager.dart';
 
 /// Removes schedules persisted by releases that enabled background execution.
@@ -28,15 +27,7 @@ void backgroundTasksHandler() {
 }
 
 Future<bool> tasksHandler(String task) async {
-  final legacy = await Secrets.legacyBackup(
-    scratchDirectory: () async => (await getTemporaryDirectory()).path,
-  );
-  switch (legacy) {
-    case Ok(value: null):
-      break;
-    default:
-      return true;
-  }
+  if (!await AppLocator.canStartBackgroundTasks()) return true;
   final startTime = DateTime.now();
   final bullDirectory = await getApplicationDocumentsDirectory();
 
