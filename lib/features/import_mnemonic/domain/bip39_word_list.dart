@@ -1,6 +1,31 @@
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
+import 'package:unorm_dart/unorm_dart.dart';
 
 class Bip39WordList {
+  /// Normalize each field, including Japanese ideographic space at its edges.
+  static String normalize(String word) => nfkd(word.trim());
+
+  /// All possible readings, never an inferred choice. Empty fields are ignored
+  /// while typing; a checksum is required only for a completed sentence.
+  static List<bip39.Language> matchingLanguages(
+    List<String> words, {
+    bool requireChecksum = false,
+  }) {
+    final normalized = words.map(normalize).toList();
+    final entered = normalized.where((word) => word.isNotEmpty).toList();
+    if (entered.isEmpty) return const [];
+    return bip39.Language.values.where((language) {
+      if (!entered.every(language.isValid)) return false;
+      if (!requireChecksum) return true;
+      try {
+        bip39.Mnemonic.fromWords(words: normalized, language: language);
+        return true;
+      } on bip39.MnemonicException {
+        return false;
+      }
+    }).toList();
+  }
+
   /// The words that give [words] a valid checksum once appended to it.
   ///
   /// The last word of a sentence carries the whole checksum, so only a small
@@ -16,7 +41,7 @@ class Bip39WordList {
   }) {
     try {
       return bip39.Mnemonic.lastWordCandidates(
-        words: words,
+        words: words.map((word) => nfkd(word.trim())).toList(),
         language: language,
       );
     } on bip39.MnemonicException {
@@ -42,17 +67,38 @@ class Bip39WordList {
   /// suggestion chips.
   ///
   /// A linear scan of the 2048-word list per keystroke is negligible, so no
-  /// trie is warranted.
+  /// trie is warranted. The set iterates in wordlist order.
   static Set<String> allowedNextLetters({
     required String prefix,
     bip39.Language language = bip39.Language.english,
   }) {
+    prefix = nfkd(prefix.trim());
     final letters = <String>{};
-    for (final word in language.list) {
+    for (final entry in language.list) {
+      final word = nfkd(entry);
       if (word.length > prefix.length && word.startsWith(prefix)) {
         letters.add(word[prefix.length]);
       }
     }
     return letters;
+  }
+
+  /// [allowedNextLetters] in key display order. The Chinese wordlists are
+  /// sorted by character frequency, so keeping their order puts common
+  /// characters first; code point order would scatter 2048 keys. Other
+  /// alphabets read best sorted.
+  static List<String> orderedNextLetters({
+    required String prefix,
+    bip39.Language language = bip39.Language.english,
+  }) {
+    final letters = allowedNextLetters(
+      prefix: prefix,
+      language: language,
+    ).toList();
+    return switch (language) {
+      bip39.Language.simplifiedChinese ||
+      bip39.Language.traditionalChinese => letters,
+      _ => letters..sort(),
+    };
   }
 }

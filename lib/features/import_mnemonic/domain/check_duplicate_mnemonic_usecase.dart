@@ -12,6 +12,7 @@ class CheckDuplicateMnemonicUsecase {
   @useResult
   Future<Result<void, ImportMnemonicFailure>> execute({
     required List<String> mnemonicWords,
+    Language language = Language.english,
     String passphrase = '',
   }) async {
     try {
@@ -19,6 +20,7 @@ class CheckDuplicateMnemonicUsecase {
       // remains responsible for rejecting a duplicate at the time of storage.
       return switch (await _secrets.contains(
         words: mnemonicWords,
+        language: language,
         passphrase: passphrase,
       )) {
         Ok(value: true) => const Err(ImportMnemonicDuplicateFailure()),
