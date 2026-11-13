@@ -182,16 +182,7 @@ class BullAmountUnitToggle extends StatelessWidget {
             tapTargetSize: MaterialTapTargetSize.padded,
             visualDensity: VisualDensity.standard,
           ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Flexible(
-                child: Text(text, style: effectiveStyle, textAlign: textAlign),
-              ),
-              const SizedBox(width: BullSpacing.xxs),
-              Icon(Icons.swap_horiz, size: BullSpacing.md, color: color),
-            ],
-          ),
+          child: Text(text, style: effectiveStyle, textAlign: textAlign),
         ),
       ),
     );
