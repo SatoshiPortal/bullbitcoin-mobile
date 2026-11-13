@@ -18,10 +18,10 @@ const _allowedTargets = <String, String>{
   'all_seed_view': 'app_unlock wallet',
   'announcements': 'settings swap',
   'app_startup':
-      'app_unlock import_mnemonic logs onboarding pin_code settings wallet',
+      'app_unlock import_mnemonic logs onboarding pin_code recoverbull settings wallet',
   'app_unlock': 'pin_code wallet',
   'autobuy': 'default_wallets exchange wallet',
-  'autoswap': 'labels send settings swap wallet',
+  'autoswap': 'labels send swap wallet',
   'backup_settings': 'recoverbull settings test_wallet_backup wallet',
   'bip85_entropy': 'wallet',
   'bitbox': 'import_watch_only_wallet wallet',
@@ -57,8 +57,6 @@ const _allowedTargets = <String, String>{
   'psbt_flow': 'broadcast_signed_tx wallet',
   'receive': 'bitbox labels ledger settings swap transactions wallet',
   'recipients': 'exchange settings',
-  'recoverbull': 'recoverbull_google_drive tor_settings wallet',
-  'recoverbull_google_drive': 'recoverbull',
   'replace_by_fee': 'fees send wallet',
   'sell':
       'bitcoin_price exchange fees labels recipients send settings transactions wallet',
@@ -67,15 +65,15 @@ const _allowedTargets = <String, String>{
   'settings':
       'address_view all_seed_view app_unlock autoswap backup_settings bip85_entropy bitcoin_price broadcast_signed_tx default_wallets electrum_settings exchange exchange_settings import_wallet labels logs mempool_settings pay pin_code recoverbull sp status_check swap test_wallet_backup tor_settings transactions wallet',
   'sp': 'wallet',
-  'status_check': 'electrum_settings wallet',
+  'status_check': 'electrum_settings recoverbull wallet',
   'support': 'exchange_support_chat',
   'swap':
       'autoswap consolidation fees labels send settings transactions wallet',
-  'test_wallet_backup': 'onboarding wallet',
+  'test_wallet_backup': 'onboarding recoverbull wallet',
   'transactions':
       'buy electrum_settings exchange labels pay replace_by_fee settings swap wallet',
   'wallet':
-      'announcements backup_settings bitcoin_price consolidation electrum_settings exchange import_watch_only_wallet labels onboarding receive send settings sp swap tor_settings transactions',
+      'announcements backup_settings bitcoin_price consolidation electrum_settings exchange import_watch_only_wallet labels onboarding receive recoverbull send settings sp swap tor_settings transactions',
   'withdraw': 'exchange recipients transactions',
   'wizard': 'settings',
 };
