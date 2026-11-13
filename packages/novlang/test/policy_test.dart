@@ -24,4 +24,33 @@ void main() {
       });
     }
   });
+
+  group('resolveNovlangPolicy with the Apple wording forced', () {
+    // forced: Apple on every platform, except that the superuser stays first.
+    for (final platform in TargetPlatform.values) {
+      for (final (superuser, expected) in <(bool?, NovlangPolicy)>[
+        (null, NovlangPolicy.apple),
+        (false, NovlangPolicy.apple),
+        (true, NovlangPolicy.none),
+      ]) {
+        test('$platform superuser=$superuser force -> $expected', () {
+          expect(
+            resolveNovlangPolicy(platform, superuser, forceApple: true),
+            expected,
+          );
+        });
+      }
+    }
+
+    test('not forced behaves as the plain platform policy', () {
+      for (final platform in TargetPlatform.values) {
+        for (final superuser in <bool?>[null, false, true]) {
+          expect(
+            resolveNovlangPolicy(platform, superuser, forceApple: false),
+            resolveNovlangPolicy(platform, superuser),
+          );
+        }
+      }
+    });
+  });
 }
