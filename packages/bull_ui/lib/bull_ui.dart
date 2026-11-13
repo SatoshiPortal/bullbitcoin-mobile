@@ -48,6 +48,7 @@ export 'package:flutter/widgets.dart'
         GestureDetector,
         HitTestBehavior,
         IconData,
+        IgnorePointer,
         IntrinsicHeight,
         Key,
         LayoutBuilder,
@@ -67,6 +68,7 @@ export 'package:flutter/widgets.dart'
         Radius,
         Row,
         SafeArea,
+        Semantics,
         ScrollController,
         SingleChildScrollView,
         SizedBox,
@@ -96,7 +98,16 @@ export 'package:flutter/widgets.dart'
 
 // Material/services symbols required by component public APIs.
 export 'package:flutter/material.dart'
-    show DropdownMenuItem, FormFieldValidator, RefreshCallback, TextTheme;
+    show
+        DropdownMenuItem,
+        FormFieldValidator,
+        RefreshCallback,
+        TextTheme,
+        TextButton,
+        IconButton,
+        Tooltip,
+        ReorderableListView,
+        ReorderableDragStartListener;
 export 'package:flutter/services.dart' show TextInputFormatter;
 export 'package:flutter/widgets.dart' show FocusNode;
 
@@ -119,6 +130,7 @@ export 'src/buttons/bull_button.dart';
 export 'src/buttons/bull_sync_button.dart';
 export 'src/buttons/bull_tab_menu_vertical_button.dart';
 export 'src/buttons/bull_tool_button.dart';
+export 'src/buttons/bull_quick_action.dart';
 export 'src/buttons/bull_viewer_action_button.dart';
 
 // Inputs.
