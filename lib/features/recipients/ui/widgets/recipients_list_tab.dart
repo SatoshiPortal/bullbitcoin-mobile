@@ -12,7 +12,7 @@ import 'package:bb_mobile/features/recipients/public/recipient_view_model.dart';
 import 'package:bb_mobile/features/recipients/presentation/recipients_failure_l10n.dart';
 import 'package:bb_mobile/features/recipients/ui/screens/virtual_iban_onboarding_screen.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullRefreshIndicator, BullShimmerBox, Gap;
+    show BullRefreshIndicator, BullShapesX, BullShimmerBox, Gap;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -116,7 +116,7 @@ class RecipientsListTabState extends State<RecipientsListTab> {
                     ),
             ),
             border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8.0),
+              borderRadius: BorderRadius.circular(context.bullShapes.input),
             ),
           ),
           onChanged: (value) {

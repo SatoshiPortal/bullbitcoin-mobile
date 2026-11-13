@@ -27,7 +27,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullBorderedTile, BullShimmerLine, Gap;
+    show BullBorderedTile, BullShapesX, BullShimmerLine, Gap;
 import 'package:go_router/go_router.dart';
 import 'package:bb_mobile/core/widgets/qr_display_widget.dart';
 
@@ -358,7 +358,7 @@ class ReceiveLnInfoDetails extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16),
       decoration: BoxDecoration(
         color: context.appColors.cardBackground,
-        borderRadius: BorderRadius.circular(2),
+        borderRadius: BorderRadius.circular(context.bullShapes.card),
         border: Border.all(color: context.appColors.surface),
         boxShadow: [
           BoxShadow(

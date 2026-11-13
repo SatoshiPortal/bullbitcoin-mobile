@@ -1,7 +1,7 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_setup_state.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullShapesX, Gap;
 import 'package:flutter/material.dart';
 
 /// Setup choice between a brand new SP wallet and one that already has history.
@@ -46,7 +46,9 @@ class SpScanStartSelector extends StatelessWidget {
               for (final value in SpScanStart.values) ...[
                 RadioListTile(
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(
+                      context.bullShapes.card,
+                    ),
                     side: BorderSide(color: context.appColors.onSecondaryFixed),
                   ),
                   title: Text(

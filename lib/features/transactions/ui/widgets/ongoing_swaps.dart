@@ -3,7 +3,7 @@ import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/transactions/ui/widgets/tx_list_item.dart';
 import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
 import 'package:flutter/material.dart';
-import 'package:bull_ui/bull_ui.dart' show BullText, Gap;
+import 'package:bull_ui/bull_ui.dart' show BullShapesX, BullText, Gap;
 
 class OngoingSwapsWidget extends StatelessWidget {
   const OngoingSwapsWidget({
@@ -44,7 +44,7 @@ class OngoingSwapsWidget extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
                   color: context.appColors.secondary,
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(context.bullShapes.dot),
                 ),
                 child: BullText(
                   ongoingSwaps.length.toString(),

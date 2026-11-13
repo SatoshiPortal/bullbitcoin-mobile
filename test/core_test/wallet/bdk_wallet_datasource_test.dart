@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/wallet/domain/no_spendable_utxo_exception.dart';
 // Regression test for a bug where `BdkWalletDatasource.buildPsbt` silently
 // dropped manual UTXO selection and the RBF-off sequence flag.
 //
@@ -35,8 +36,10 @@ import 'package:bb_mobile/core/wallet/data/datasources/bdk_facade.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/bdk_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_utxo_model.dart';
+import 'package:bb_mobile/core/wallet/data/models/bitcoin_transaction_recipient_model.dart';
 import 'package:bb_mobile/core/wallet/domain/insufficient_funds_exception.dart';
 import 'package:bull_sdk/bdk.dart' as bdk;
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -49,6 +52,17 @@ const _testMnemonic =
 // A well-known BIP173 test-vector P2WPKH testnet address, used only as an
 // external send destination (not owned by the test wallet).
 const _externalTestnetAddress = 'tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx';
+
+List<BitcoinTransactionRecipientModel> _fixedRecipients(int amountSat) => [
+  BitcoinTransactionRecipientModel.fixed(
+    address: _externalTestnetAddress,
+    fixedAmountSat: amountSat,
+  ),
+];
+
+final _remainderRecipients = <BitcoinTransactionRecipientModel>[
+  BitcoinTransactionRecipientModel.remainder(address: _externalTestnetAddress),
+];
 
 Uint8List _leUint32(int value) {
   final bytes = ByteData(4)..setUint32(0, value, Endian.little);
@@ -102,11 +116,14 @@ void main() {
   late PublicBdkWalletModel walletModel;
   late String utxoLargeTxId;
   late int utxoLargeVout;
+  late String firstRecipientAddress;
+  late String secondRecipientAddress;
 
   const utxoLargeAmountSat = 200000;
   const utxoSmallAmountSat = 30000;
-  // Both UTXOs share utxoLargeTxId (same funding tx); only vout differs.
+  // All test UTXOs share utxoLargeTxId (same funding tx); only vout differs.
   const utxoSmallVout = 1;
+  const utxoOtherAmountSat = 50000;
 
   setUp(() async {
     tempDir = await Directory.systemTemp.createTemp('bdk_wallet_datasource_');
@@ -156,10 +173,19 @@ void main() {
     final addr1 = wallet.revealNextAddress(
       keychain: bdk.KeychainKind.external_,
     );
+    final addr2 = wallet.revealNextAddress(
+      keychain: bdk.KeychainKind.external_,
+    );
+    firstRecipientAddress = addr0.address.toString();
+    secondRecipientAddress = wallet
+        .revealNextAddress(keychain: bdk.KeychainKind.external_)
+        .address
+        .toString();
 
     final fundingTxBytes = _buildFundingTx([
       (script: addr0.address.scriptPubkey(), amountSat: utxoLargeAmountSat),
       (script: addr1.address.scriptPubkey(), amountSat: utxoSmallAmountSat),
+      (script: addr2.address.scriptPubkey(), amountSat: utxoOtherAmountSat),
     ]);
     final fundingTx = bdk.Transaction(transactionBytes: fundingTxBytes);
     final fundingTxid = fundingTx.computeTxid().toString();
@@ -179,8 +205,8 @@ void main() {
     final utxos = wallet.listUnspent();
     expect(
       utxos.length,
-      2,
-      reason: 'test setup: expected exactly 2 synthetic UTXOs after funding',
+      3,
+      reason: 'test setup: expected exactly 3 synthetic UTXOs after funding',
     );
 
     utxoLargeTxId = fundingTxid;
@@ -193,6 +219,25 @@ void main() {
     if (await tempDir.exists()) {
       await tempDir.delete(recursive: true);
     }
+  });
+
+  test('checks multiple addresses against one wallet', () async {
+    final datasource = BdkWalletDatasource();
+
+    expect(
+      await datasource.areAddressesMine([
+        firstRecipientAddress,
+        secondRecipientAddress,
+      ], wallet: walletModel),
+      isTrue,
+    );
+    expect(
+      await datasource.areAddressesMine([
+        firstRecipientAddress,
+        _externalTestnetAddress,
+      ], wallet: walletModel),
+      isFalse,
+    );
   });
 
   test(
@@ -232,8 +277,7 @@ void main() {
       const sendAmountSat = 150000; // only the large (200k) utxo covers this
       final psbt = await datasource.buildPsbt(
         wallet: walletModel,
-        address: _externalTestnetAddress,
-        amountSat: sendAmountSat,
+        recipients: _fixedRecipients(sendAmountSat),
         networkFee: const NetworkFee.relativeSatPerKwu(1000), // 4 sat/vB
         unspendable: [(txId: utxoLargeTxId, vout: utxoLargeVout)],
         selected: [
@@ -274,8 +318,7 @@ void main() {
 
       final psbt = await datasource.buildPsbt(
         wallet: walletModel,
-        address: _externalTestnetAddress,
-        amountSat: 25000,
+        recipients: _fixedRecipients(25000),
         networkFee: const NetworkFee.relativeSatPerKwu(1000),
         selected: [
           WalletUtxoModel.bitcoin(
@@ -308,8 +351,7 @@ void main() {
 
       final psbt = await datasource.buildPsbt(
         wallet: walletModel,
-        address: _externalTestnetAddress,
-        amountSat: 25000,
+        recipients: _fixedRecipients(25000),
         networkFee: const NetworkFee.relativeSatPerKwu(1000),
         selected: [
           WalletUtxoModel.bitcoin(
@@ -335,6 +377,62 @@ void main() {
     },
   );
 
+  test('buildPsbt spends only the selected input and returns change', () async {
+    const sendAmountSat = 50000;
+    const feeSat = 1000;
+    final datasource = BdkWalletDatasource();
+
+    final psbt = await datasource.buildPsbt(
+      wallet: walletModel,
+      recipients: _fixedRecipients(sendAmountSat),
+      networkFee: const NetworkFee.absolute(feeSat),
+      selectedOnly: true,
+      selected: [
+        WalletUtxoModel.bitcoin(
+          txId: utxoLargeTxId,
+          vout: utxoLargeVout,
+          amountSat: BigInt.from(utxoLargeAmountSat),
+          scriptPubkey: Uint8List(0),
+          address: '',
+          isExternalKeyChain: true,
+        ),
+      ],
+    );
+
+    final parsed = bdk.Psbt(psbtBase64: psbt);
+    final tx = parsed.extractTx();
+    final inputs = tx.input();
+    final outputs = tx.output();
+    final recipientScript = bdk.Address(
+      address: _externalTestnetAddress,
+      network: bdk.Network.testnet,
+    ).scriptPubkey();
+
+    expect(inputs, hasLength(1));
+    expect(inputs.single.previousOutput.txid.toString(), utxoLargeTxId);
+    expect(inputs.single.previousOutput.vout, utxoLargeVout);
+    expect(outputs, hasLength(2));
+    expect(
+      outputs
+          .singleWhere(
+            (output) => listEquals(
+              output.scriptPubkey.toBytes(),
+              recipientScript.toBytes(),
+            ),
+          )
+          .value
+          .toSat(),
+      sendAmountSat,
+    );
+    expect(
+      outputs.fold(0, (total, output) => total + output.value.toSat()),
+      utxoLargeAmountSat - feeSat,
+    );
+
+    tx.dispose();
+    parsed.dispose();
+  });
+
   // BDK has two exception types for a shortfall and doesn't say which it uses
   // when, so these pin it against the real builder: either must arrive as
   // InsufficientFundsException.
@@ -346,8 +444,12 @@ void main() {
       await expectLater(
         datasource.buildPsbt(
           wallet: walletModel,
-          address: _externalTestnetAddress,
-          amountSat: utxoLargeAmountSat + utxoSmallAmountSat + 10000,
+          recipients: _fixedRecipients(
+            utxoLargeAmountSat +
+                utxoSmallAmountSat +
+                utxoOtherAmountSat +
+                10000,
+          ),
           networkFee: const NetworkFee.relativeSatPerKwu(1000),
         ),
         throwsA(isA<InsufficientFundsException>()),
@@ -355,9 +457,31 @@ void main() {
     },
   );
 
-  // The amount fits the picked coin but not the fee. The large coin must be
-  // unspendable too: `addUtxos` only makes a coin required, so BDK would
-  // otherwise top the transaction up from it and never fall short.
+  test('buildPsbt reports an aggregate multi-recipient shortfall', () async {
+    final datasource = BdkWalletDatasource();
+
+    await expectLater(
+      datasource.buildPsbt(
+        wallet: walletModel,
+        recipients: [
+          BitcoinTransactionRecipientModel.fixed(
+            address: _externalTestnetAddress,
+            fixedAmountSat: 150000,
+          ),
+          BitcoinTransactionRecipientModel.fixed(
+            address: secondRecipientAddress,
+            fixedAmountSat: 140000,
+          ),
+        ],
+        networkFee: const NetworkFee.relativeSatPerKwu(1000),
+      ),
+      throwsA(isA<InsufficientFundsException>()),
+    );
+  });
+
+  // The amount fits the picked coin but not the fee. The other coins must be
+  // unspendable: `addUtxos` only makes a coin required, so BDK would otherwise
+  // top the transaction up from them and never fall short.
   test(
     'buildPsbt reports a fee-only shortfall as insufficient funds',
     () async {
@@ -366,8 +490,7 @@ void main() {
       await expectLater(
         datasource.buildPsbt(
           wallet: walletModel,
-          address: _externalTestnetAddress,
-          amountSat: utxoSmallAmountSat,
+          recipients: _fixedRecipients(utxoSmallAmountSat),
           networkFee: const NetworkFee.relativeSatPerKwu(1000),
           selected: [
             WalletUtxoModel.bitcoin(
@@ -379,9 +502,409 @@ void main() {
               isExternalKeyChain: true,
             ),
           ],
-          unspendable: [(txId: utxoLargeTxId, vout: utxoLargeVout)],
+          unspendable: [
+            (txId: utxoLargeTxId, vout: utxoLargeVout),
+            (txId: utxoLargeTxId, vout: 2),
+          ],
         ),
         throwsA(isA<InsufficientFundsException>()),
+      );
+    },
+  );
+
+  test(
+    'buildPsbt drains exactly the manually selected UTXOs to one recipient',
+    () async {
+      const feeSat = 1000;
+      final datasource = BdkWalletDatasource();
+
+      final psbt = await datasource.buildPsbt(
+        wallet: walletModel,
+        recipients: _remainderRecipients,
+        networkFee: const NetworkFee.absolute(feeSat),
+        selectedOnly: true,
+        selected: [
+          WalletUtxoModel.bitcoin(
+            txId: utxoLargeTxId,
+            vout: utxoLargeVout,
+            amountSat: BigInt.from(utxoLargeAmountSat),
+            scriptPubkey: Uint8List(0),
+            address: '',
+            isExternalKeyChain: true,
+          ),
+          WalletUtxoModel.bitcoin(
+            txId: utxoLargeTxId,
+            vout: 1,
+            amountSat: BigInt.from(utxoSmallAmountSat),
+            scriptPubkey: Uint8List(0),
+            address: '',
+            isExternalKeyChain: true,
+          ),
+        ],
+      );
+
+      final parsed = bdk.Psbt(psbtBase64: psbt);
+      final tx = parsed.extractTx();
+      final inputs = tx.input();
+      final outputs = tx.output();
+      final recipientScript = bdk.Address(
+        address: _externalTestnetAddress,
+        network: bdk.Network.testnet,
+      ).scriptPubkey();
+
+      expect(inputs, hasLength(2));
+      expect(
+        {
+          for (final input in inputs)
+            (
+              txId: input.previousOutput.txid.toString(),
+              vout: input.previousOutput.vout,
+            ),
+        },
+        {
+          (txId: utxoLargeTxId, vout: utxoLargeVout),
+          (txId: utxoLargeTxId, vout: 1),
+        },
+      );
+      expect(outputs, hasLength(1));
+      expect(
+        outputs.single.value.toSat(),
+        utxoLargeAmountSat + utxoSmallAmountSat - feeSat,
+      );
+      expect(outputs.single.scriptPubkey.toBytes(), recipientScript.toBytes());
+
+      tx.dispose();
+      parsed.dispose();
+    },
+  );
+
+  test('buildPsbt creates every fixed recipient and wallet change', () async {
+    const firstAmountSat = 25000;
+    const secondAmountSat = 30000;
+    const feeSat = 1000;
+    final datasource = BdkWalletDatasource();
+
+    final psbt = await datasource.buildPsbt(
+      wallet: walletModel,
+      recipients: [
+        BitcoinTransactionRecipientModel.fixed(
+          address: _externalTestnetAddress,
+          fixedAmountSat: firstAmountSat,
+        ),
+        BitcoinTransactionRecipientModel.fixed(
+          address: secondRecipientAddress,
+          fixedAmountSat: secondAmountSat,
+        ),
+      ],
+      networkFee: const NetworkFee.absolute(feeSat),
+    );
+
+    final parsed = bdk.Psbt(psbtBase64: psbt);
+    final tx = parsed.extractTx();
+    final firstScript = bdk.Address(
+      address: _externalTestnetAddress,
+      network: bdk.Network.testnet,
+    ).scriptPubkey();
+    final secondScript = bdk.Address(
+      address: secondRecipientAddress,
+      network: bdk.Network.testnet,
+    ).scriptPubkey();
+
+    expect(tx.output(), hasLength(3));
+    expect(
+      tx.output().where(
+        (output) =>
+            listEquals(output.scriptPubkey.toBytes(), firstScript.toBytes()),
+      ),
+      hasLength(1),
+    );
+    expect(
+      tx
+          .output()
+          .singleWhere(
+            (output) => listEquals(
+              output.scriptPubkey.toBytes(),
+              firstScript.toBytes(),
+            ),
+          )
+          .value
+          .toSat(),
+      firstAmountSat,
+    );
+    expect(
+      tx
+          .output()
+          .singleWhere(
+            (output) => listEquals(
+              output.scriptPubkey.toBytes(),
+              secondScript.toBytes(),
+            ),
+          )
+          .value
+          .toSat(),
+      secondAmountSat,
+    );
+    expect(parsed.fee(), feeSat);
+
+    tx.dispose();
+    parsed.dispose();
+  });
+
+  test(
+    'buildPsbt gives the selected-input remainder to its recipient',
+    () async {
+      const fixedAmountSat = 50000;
+      const feeSat = 1000;
+      final datasource = BdkWalletDatasource();
+
+      final psbt = await datasource.buildPsbt(
+        wallet: walletModel,
+        recipients: [
+          BitcoinTransactionRecipientModel.remainder(
+            address: secondRecipientAddress,
+          ),
+          BitcoinTransactionRecipientModel.fixed(
+            address: _externalTestnetAddress,
+            fixedAmountSat: fixedAmountSat,
+          ),
+        ],
+        networkFee: const NetworkFee.absolute(feeSat),
+        selectedOnly: true,
+        selected: [
+          WalletUtxoModel.bitcoin(
+            txId: utxoLargeTxId,
+            vout: utxoLargeVout,
+            amountSat: BigInt.from(utxoLargeAmountSat),
+            scriptPubkey: Uint8List(0),
+            address: '',
+            isExternalKeyChain: true,
+          ),
+          WalletUtxoModel.bitcoin(
+            txId: utxoLargeTxId,
+            vout: utxoSmallVout,
+            amountSat: BigInt.from(utxoSmallAmountSat),
+            scriptPubkey: Uint8List(0),
+            address: '',
+            isExternalKeyChain: true,
+          ),
+        ],
+      );
+
+      final parsed = bdk.Psbt(psbtBase64: psbt);
+      final tx = parsed.extractTx();
+      final remainderScript = bdk.Address(
+        address: secondRecipientAddress,
+        network: bdk.Network.testnet,
+      ).scriptPubkey();
+      final remainder = tx.output().singleWhere(
+        (output) => listEquals(
+          output.scriptPubkey.toBytes(),
+          remainderScript.toBytes(),
+        ),
+      );
+
+      expect(tx.input(), hasLength(2));
+      expect(tx.output(), hasLength(2));
+      expect(
+        remainder.value.toSat(),
+        utxoLargeAmountSat + utxoSmallAmountSat - fixedAmountSat - feeSat,
+      );
+      expect(parsed.fee(), feeSat);
+
+      tx.dispose();
+      parsed.dispose();
+    },
+  );
+
+  test('buildPsbt recalculates the remainder when the fee changes', () async {
+    const fixedAmountSat = 50000;
+    final datasource = BdkWalletDatasource();
+    final selected = [
+      WalletUtxoModel.bitcoin(
+        txId: utxoLargeTxId,
+        vout: utxoLargeVout,
+        amountSat: BigInt.from(utxoLargeAmountSat),
+        scriptPubkey: Uint8List(0),
+        address: '',
+        isExternalKeyChain: true,
+      ),
+    ];
+    final recipients = [
+      BitcoinTransactionRecipientModel.fixed(
+        address: _externalTestnetAddress,
+        fixedAmountSat: fixedAmountSat,
+      ),
+      BitcoinTransactionRecipientModel.remainder(
+        address: secondRecipientAddress,
+      ),
+    ];
+
+    final lowFeePsbt = await datasource.buildPsbt(
+      wallet: walletModel,
+      recipients: recipients,
+      networkFee: const NetworkFee.absolute(1000),
+      selectedOnly: true,
+      selected: selected,
+    );
+    final highFeePsbt = await datasource.buildPsbt(
+      wallet: walletModel,
+      recipients: recipients,
+      networkFee: const NetworkFee.absolute(2000),
+      selectedOnly: true,
+      selected: selected,
+    );
+
+    final lowFeeAmounts = await datasource.getRecipientAmounts(
+      lowFeePsbt,
+      recipients,
+      isTestnet: true,
+    );
+    final highFeeAmounts = await datasource.getRecipientAmounts(
+      highFeePsbt,
+      recipients,
+      isTestnet: true,
+    );
+    expect(lowFeeAmounts.first, fixedAmountSat);
+    expect(highFeeAmounts.first, fixedAmountSat);
+    expect(lowFeeAmounts[1] - highFeeAmounts[1], 1000);
+  });
+
+  test('reports an uppercase Bech32 remainder by script', () async {
+    const feeSat = 1000;
+    final datasource = BdkWalletDatasource();
+    final recipients = [
+      BitcoinTransactionRecipientModel.remainder(
+        address: _externalTestnetAddress.toUpperCase(),
+      ),
+    ];
+
+    final psbt = await datasource.buildPsbt(
+      wallet: walletModel,
+      recipients: recipients,
+      networkFee: const NetworkFee.absolute(feeSat),
+      selectedOnly: true,
+      selected: [
+        WalletUtxoModel.bitcoin(
+          txId: utxoLargeTxId,
+          vout: utxoLargeVout,
+          amountSat: BigInt.from(utxoLargeAmountSat),
+          scriptPubkey: Uint8List(0),
+          address: '',
+          isExternalKeyChain: true,
+        ),
+      ],
+    );
+
+    expect(
+      await datasource.getRecipientAmounts(psbt, recipients, isTestnet: true),
+      [utxoLargeAmountSat - feeSat],
+    );
+  });
+
+  test(
+    'separates fixed and remainder amounts sent to the same script',
+    () async {
+      const fixedAmountSat = 50000;
+      const feeSat = 1000;
+      final datasource = BdkWalletDatasource();
+      final recipients = [
+        BitcoinTransactionRecipientModel.fixed(
+          address: _externalTestnetAddress,
+          fixedAmountSat: fixedAmountSat,
+        ),
+        BitcoinTransactionRecipientModel.remainder(
+          address: _externalTestnetAddress.toUpperCase(),
+        ),
+      ];
+
+      final psbt = await datasource.buildPsbt(
+        wallet: walletModel,
+        recipients: recipients,
+        networkFee: const NetworkFee.absolute(feeSat),
+        selectedOnly: true,
+        selected: [
+          WalletUtxoModel.bitcoin(
+            txId: utxoLargeTxId,
+            vout: utxoLargeVout,
+            amountSat: BigInt.from(utxoLargeAmountSat),
+            scriptPubkey: Uint8List(0),
+            address: '',
+            isExternalKeyChain: true,
+          ),
+        ],
+      );
+
+      expect(
+        await datasource.getRecipientAmounts(psbt, recipients, isTestnet: true),
+        [fixedAmountSat, utxoLargeAmountSat - fixedAmountSat - feeSat],
+      );
+    },
+  );
+
+  test('buildPsbt rejects a fixed output below dust', () async {
+    final datasource = BdkWalletDatasource();
+
+    await expectLater(
+      datasource.buildPsbt(
+        wallet: walletModel,
+        recipients: [
+          BitcoinTransactionRecipientModel.fixed(
+            address: _externalTestnetAddress,
+            fixedAmountSat: 1,
+          ),
+        ],
+        networkFee: const NetworkFee.absolute(1000),
+      ),
+      throwsA(isA<InsufficientFundsException>()),
+    );
+  });
+
+  test('buildPsbt rejects a dust remainder', () async {
+    final datasource = BdkWalletDatasource();
+
+    await expectLater(
+      datasource.buildPsbt(
+        wallet: walletModel,
+        recipients: [
+          BitcoinTransactionRecipientModel.fixed(
+            address: _externalTestnetAddress,
+            fixedAmountSat: 28800,
+          ),
+          BitcoinTransactionRecipientModel.remainder(
+            address: secondRecipientAddress,
+          ),
+        ],
+        networkFee: const NetworkFee.absolute(1000),
+        selectedOnly: true,
+        selected: [
+          WalletUtxoModel.bitcoin(
+            txId: utxoLargeTxId,
+            vout: utxoSmallVout,
+            amountSat: BigInt.from(utxoSmallAmountSat),
+            scriptPubkey: Uint8List(0),
+            address: '',
+            isExternalKeyChain: true,
+          ),
+        ],
+      ),
+      throwsA(isA<InsufficientFundsException>()),
+    );
+  });
+
+  test(
+    'buildPsbt never treats an empty exact selection as a wallet drain',
+    () async {
+      final datasource = BdkWalletDatasource();
+
+      await expectLater(
+        datasource.buildPsbt(
+          wallet: walletModel,
+          recipients: _remainderRecipients,
+          networkFee: const NetworkFee.absolute(1000),
+          selectedOnly: true,
+          selected: const [],
+        ),
+        throwsA(isA<NoSpendableUtxoException>()),
       );
     },
   );

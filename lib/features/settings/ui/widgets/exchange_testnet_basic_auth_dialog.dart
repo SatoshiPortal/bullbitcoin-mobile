@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
+import 'package:bull_ui/bull_ui.dart' show BullShapesX;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -49,6 +50,9 @@ class _ExchangeTestnetBasicAuthDialogState
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(context.bullShapes.sheet),
+      ),
       title: Text(context.loc.exchangeTestnetBasicAuthTitle),
       content: Column(
         mainAxisSize: MainAxisSize.min,

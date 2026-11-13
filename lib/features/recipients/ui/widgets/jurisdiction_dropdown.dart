@@ -1,3 +1,4 @@
+import 'package:bull_ui/bull_ui.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/recipients/presentation/recipients_bloc.dart';
@@ -29,14 +30,14 @@ class JurisdictionsDropdown extends StatelessWidget {
       elevation: 4,
       shadowColor: context.appColors.onSurface.withValues(alpha: 0.7),
       color: context.appColors.surface,
-      borderRadius: BorderRadius.circular(4.0),
+      borderRadius: BorderRadius.circular(context.bullShapes.input),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16.0),
         child: DropdownButton<String?>(
           isExpanded: true,
           alignment: Alignment.centerLeft,
           underline: const SizedBox.shrink(),
-          borderRadius: BorderRadius.circular(4.0),
+          borderRadius: BorderRadius.circular(context.bullShapes.input),
           dropdownColor: context.appColors.surface,
           icon: Icon(
             Icons.keyboard_arrow_down,

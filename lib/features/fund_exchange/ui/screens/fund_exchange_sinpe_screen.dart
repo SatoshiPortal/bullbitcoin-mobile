@@ -8,7 +8,7 @@ import 'package:bb_mobile/features/fund_exchange/ui/widgets/fund_exchange_detail
 import 'package:bb_mobile/features/fund_exchange/ui/widgets/fund_exchange_done_bottom_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullShapesX, Gap;
 
 class FundExchangeSinpeScreen extends StatelessWidget {
   const FundExchangeSinpeScreen({super.key});
@@ -66,7 +66,7 @@ class FundExchangeSinpeScreen extends StatelessWidget {
                   color: context.appColors.inverseSurface.withValues(
                     alpha: 0.1,
                   ),
-                  borderRadius: BorderRadius.circular(2),
+                  borderRadius: BorderRadius.circular(context.bullShapes.card),
                 ),
                 child: IntrinsicHeight(
                   child: Row(

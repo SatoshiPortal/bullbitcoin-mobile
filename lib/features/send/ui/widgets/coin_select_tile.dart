@@ -7,7 +7,8 @@ import 'package:bb_mobile/core/widgets/address_viewer.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bb_mobile/features/labels/ui/labels_widget.dart';
-import 'package:bull_ui/bull_ui.dart' show BullCheckbox, BullText;
+import 'package:bull_ui/bull_ui.dart'
+    show BullCheckbox, BullShapesX, BullSpacing, BullText, Gap;
 import 'package:flutter/material.dart';
 
 class CoinSelectTile extends StatelessWidget {
@@ -15,7 +16,7 @@ class CoinSelectTile extends StatelessWidget {
   final bool selected;
   final VoidCallback onTap;
   final BitcoinUnit bitcoinUnit;
-  final double exchangeRate;
+  final double? exchangeRate;
   final String fiatCurrency;
 
   const CoinSelectTile({
@@ -34,16 +35,24 @@ class CoinSelectTile extends StatelessWidget {
         ? FormatAmount.btc(ConvertAmount.satsToBtc(utxo.amountSat.toInt()))
         : FormatAmount.sats(utxo.amountSat.toInt());
 
-    final fiatEquivalent = FormatAmount.fiat(
-      ConvertAmount.satsToFiat(utxo.amountSat.toInt(), exchangeRate),
-      fiatCurrency,
-    ); // You can format this better
+    final rate = exchangeRate;
+    final fiatEquivalent = rate == null
+        ? null
+        : FormatAmount.fiat(
+            ConvertAmount.satsToFiat(utxo.amountSat.toInt(), rate),
+            fiatCurrency,
+          );
 
     final address = utxo.address;
     final addressType = utxo.addressKeyChain == WalletAddressKeyChain.external
         ? context.loc.sendReceive
         : context.loc.sendChange;
     final label = utxo.labels.join(', ');
+    final confirmations = !utxo.isConfirmed
+        ? context.loc.sendUnconfirmed
+        : utxo is LiquidWalletUtxo
+        ? context.loc.coreWalletTransactionStatusConfirmed
+        : context.loc.sendCoinConfirmations(utxo.confirmations);
 
     return GestureDetector(
       onTap: onTap,
@@ -51,7 +60,7 @@ class CoinSelectTile extends StatelessWidget {
         margin: const EdgeInsets.symmetric(vertical: 8),
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(4),
+          borderRadius: BorderRadius.circular(context.bullShapes.card),
           border: Border.all(
             color: context.appColors.onSurfaceVariant,
             width: 1.5,
@@ -66,7 +75,9 @@ class CoinSelectTile extends StatelessWidget {
                 children: [
                   ListTile(
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(2),
+                      borderRadius: BorderRadius.circular(
+                        context.bullShapes.card,
+                      ),
                     ),
                     tileColor: context.appColors.transparent,
                     contentPadding: EdgeInsets.zero,
@@ -93,8 +104,16 @@ class CoinSelectTile extends StatelessWidget {
                     ),
                   ),
                   // const SizedBox(height: 4),
+                  if (fiatEquivalent != null)
+                    BullText(
+                      '~$fiatEquivalent',
+                      style: context.font.labelSmall?.copyWith(
+                        color: context.appColors.onSurfaceVariant,
+                      ),
+                    ),
+                  const SizedBox(height: 4),
                   BullText(
-                    '~$fiatEquivalent',
+                    confirmations,
                     style: context.font.labelSmall?.copyWith(
                       color: context.appColors.onSurfaceVariant,
                     ),
@@ -118,18 +137,21 @@ class CoinSelectTile extends StatelessWidget {
                           color: context.appColors.onSurface,
                         ),
                       ),
-                      BullText(
-                        context.loc.sendType,
-                        style: context.font.labelMedium?.copyWith(
-                          color: context.appColors.onSurfaceVariant,
+                      if (utxo is BitcoinWalletUtxo) ...[
+                        const Gap(BullSpacing.xs),
+                        BullText(
+                          context.loc.sendType,
+                          style: context.font.labelMedium?.copyWith(
+                            color: context.appColors.onSurfaceVariant,
+                          ),
                         ),
-                      ),
-                      BullText(
-                        addressType,
-                        style: context.font.labelLarge?.copyWith(
-                          color: context.appColors.onSurface,
+                        BullText(
+                          addressType,
+                          style: context.font.labelLarge?.copyWith(
+                            color: context.appColors.onSurface,
+                          ),
                         ),
-                      ),
+                      ],
                     ],
                   ),
                   const SizedBox(height: 8),

@@ -210,7 +210,7 @@ class _IntroStepState extends State<_IntroStep> {
                 ),
                 decoration: BoxDecoration(
                   border: Border.all(color: colors.border),
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(context.bullShapes.card),
                   color: colors.surface,
                 ),
                 child: BullText(

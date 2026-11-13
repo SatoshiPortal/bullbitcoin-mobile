@@ -1,6 +1,6 @@
 import 'package:bull_ui/src/theme/bull_icon.dart';
 import 'package:bull_ui/src/theme/bull_theme.dart';
-import 'package:bull_ui/src/theme/bull_tokens.dart';
+import 'package:bull_ui/src/theme/bull_shapes.dart';
 import 'package:flutter/material.dart';
 
 /// A removable active-filter chip (label + ✕). **New.** Used in the sub-header
@@ -35,7 +35,7 @@ class BullFilterChip extends StatelessWidget {
       padding: const EdgeInsets.only(left: 8, right: 8, top: 4, bottom: 4),
       decoration: BoxDecoration(
         color: colors.primary.withValues(alpha: 0.11),
-        borderRadius: BorderRadius.circular(BullRadius.full),
+        borderRadius: BorderRadius.circular(context.bullShapes.dot),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -63,7 +63,7 @@ class BullFilterChip extends StatelessWidget {
       selected: selected,
       child: InkWell(
         onTap: () => onSelected!(!selected!),
-        borderRadius: BorderRadius.circular(BullRadius.full),
+        borderRadius: BorderRadius.circular(context.bullShapes.dot),
         child: Container(
           decoration: BoxDecoration(
             color:
@@ -76,7 +76,7 @@ class BullFilterChip extends StatelessWidget {
                   ? (selectionColor ?? colors.primary)
                   : colors.border,
             ),
-            borderRadius: BorderRadius.circular(BullRadius.full),
+            borderRadius: BorderRadius.circular(context.bullShapes.dot),
           ),
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
           child: Text(

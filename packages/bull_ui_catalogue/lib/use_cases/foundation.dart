@@ -77,7 +77,9 @@ class FoundationColours extends m.StatelessWidget {
                     height: 44,
                     decoration: m.BoxDecoration(
                       color: color,
-                      borderRadius: m.BorderRadius.circular(BullRadius.sm),
+                      borderRadius: m.BorderRadius.circular(
+                        context.bullShapes.card,
+                      ),
                       border: m.Border.all(color: b.outlineVariant),
                     ),
                   ),
@@ -100,7 +102,7 @@ class FoundationColours extends m.StatelessWidget {
 }
 
 // ---------------------------------------------------------------------------
-// Radius — BullRadius scale
+// Radius — BullShapes roles
 // ---------------------------------------------------------------------------
 
 @widgetbook.UseCase(name: 'Radius', type: FoundationRadius, path: 'Foundation')
@@ -114,15 +116,17 @@ class FoundationRadius extends m.StatelessWidget {
   m.Widget build(m.BuildContext context) {
     final b = context.bull;
     final t = m.Theme.of(context).textTheme;
-    const steps = <(String, double)>[
-      ('zero', BullRadius.zero),
-      ('xs', BullRadius.xs),
-      ('sm', BullRadius.sm),
-      ('md', BullRadius.md),
-      ('lg', BullRadius.lg),
-      ('xl', BullRadius.xl),
-      ('xxl', BullRadius.xxl),
-      ('full', BullRadius.full),
+    final shapes = context.bullShapes;
+    final steps = <(String, double)>[
+      ('button', shapes.button),
+      ('key', shapes.key),
+      ('card', shapes.card),
+      ('input', shapes.input),
+      ('checkbox', shapes.checkbox),
+      ('badge', shapes.badge),
+      ('chip', shapes.chip),
+      ('sheet', shapes.sheet),
+      ('dot', shapes.dot),
     ];
     return m.ColoredBox(
       color: b.surface,

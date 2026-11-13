@@ -8,6 +8,9 @@ part 'user_summary_model.g.dart';
 
 @freezed
 sealed class UserSummaryModel with _$UserSummaryModel {
+  // Freezed forwards this annotation to the generated concrete class.
+  // ignore: invalid_annotation_target
+  @JsonSerializable(checked: true)
   const factory UserSummaryModel({
     required int userNumber,
     String? userId,
@@ -112,9 +115,10 @@ sealed class UserDcaModel with _$UserDcaModel {
       },
       // A DCA currency this build doesn't support must not fail the whole user
       // summary parse (balances, stats and preferences come with it).
-      currency: currencyCode != null
-          ? FiatCurrency.tryFromCode(currencyCode!)
-          : null,
+      currency: switch (currencyCode) {
+        final String code => FiatCurrency.tryFromCode(code),
+        null => null,
+      },
       amount: amount,
       network: switch (recipientType) {
         'OUT_BITCOIN_ADDRESS' => DcaNetwork.bitcoin,

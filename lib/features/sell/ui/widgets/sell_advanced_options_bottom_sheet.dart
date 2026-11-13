@@ -5,7 +5,7 @@ import 'package:bb_mobile/features/sell/ui/widgets/sell_coin_selection_bottom_sh
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullBottomSheet, BullButton, BullText, Gap;
+    show BullBottomSheet, BullButton, BullShapesX, BullText, Gap;
 import 'package:go_router/go_router.dart';
 
 class SellAdvancedOptionsBottomSheet extends StatelessWidget {
@@ -19,8 +19,10 @@ class SellAdvancedOptionsBottomSheet extends StatelessWidget {
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
-      decoration: const BoxDecoration(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(context.bullShapes.sheet),
+        ),
       ),
       child: Column(
         mainAxisSize: .min,

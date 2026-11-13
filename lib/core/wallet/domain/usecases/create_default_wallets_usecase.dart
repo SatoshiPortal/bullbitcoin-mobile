@@ -1,30 +1,41 @@
 import 'package:bb_mobile/core/errors/bull_exception.dart';
-import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
-import 'package:bb_mobile/core/seed/data/services/mnemonic_generator.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
+import 'package:secrets/secrets.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-
 import 'package:bb_mobile/core/utils/result.dart';
 
+/// Creates the default Bitcoin and Liquid wallets from one secret: generated, imported from words, or restored by the secrets package.
+///
+/// Default wallets never carry a BIP39 passphrase. Supplied handles are checked before any wallet or storage operation. Several paths are only correct because the default secret is passphrase-less, and each would regress if one were allowed here:
+///
+/// - **Liquid.** Liquid now derives from the full seed, passphrase included, but every existing Liquid wallet was created from a passphrase-less default secret, and released builds derived Liquid from the words alone: a passphrase default restored on an older build would find another Liquid wallet.
+/// - **RecoverBull.** The vault carries the words only, so restoring it gives the passphrase-less wallet — a different Bitcoin wallet — while the vault key is derived from the seed *with* the passphrase.
+/// - **Swap key.** Derived from the default Bitcoin wallet; the package sends the passphrase to boltz, released builds up to v6.13.4 did not, so a passphrase default would re-derive a different swap key after a restore and lose sight of earlier swaps.
+/// - **BIP85 children.** Derived from the default wallet's seed, passphrase included, so every child would change with it.
+/// - **Physical backup check.** `verify.mnemonic` compares the words only; the passphrase would go unverified.
+///
+/// Supporting a passphrase on the default wallets therefore starts with a decision for each path above. Until then a passphrase secret is an imported, non-default wallet (`ImportWalletUsecase`, `isDefault: false`).
 class CreateDefaultWalletsUsecase {
-  final SeedRepository _seedRepository;
+  final Secrets _secrets;
   final SettingsRepository _settingsRepository;
-  final MnemonicGenerator _mnemonicGenerator;
   final WalletRepository _wallet;
 
   CreateDefaultWalletsUsecase({
-    required this._seedRepository,
+    required this._secrets,
     required this._settingsRepository,
-    required this._mnemonicGenerator,
     required WalletRepository walletRepository,
   }) : _wallet = walletRepository;
 
   Future<List<Wallet>> execute({
     List<String>? mnemonicWords,
-    String? passphrase,
+    Secret? secret,
   }) async {
+    if (secret != null && mnemonicWords != null) {
+      throw ArgumentError('Provide either a secret or mnemonic words');
+    }
+    if (secret != null) _requireDefaultCapable(secret.info);
     try {
       final settings = await _settingsRepository.fetch();
       final environment = settings.environment;
@@ -49,22 +60,39 @@ class CreateDefaultWalletsUsecase {
       };
       final hasBitcoin = existing.any((w) => w.network.isBitcoin);
       final hasLiquid = existing.any((w) => w.network.isLiquid);
-      if (hasBitcoin && hasLiquid) return existing;
+      if (existing.isNotEmpty) {
+        // A restore must never reuse or certify existing defaults. A partial
+        // setup is also refused rather than mixing secrets across networks.
+        if (secret != null ||
+            mnemonicWords != null ||
+            !hasBitcoin ||
+            !hasLiquid) {
+          throw StateError('Default wallets already exist');
+        }
+        return existing;
+      }
 
-      final isGenerated = mnemonicWords == null;
-      final mnemonic = mnemonicWords ?? _mnemonicGenerator.generate();
+      final isGenerated = secret == null && mnemonicWords == null;
       final DateTime? birthday = isGenerated ? DateTime.now().toUtc() : null;
-      final seed = await _seedRepository.createFromMnemonic(
-        mnemonicWords: mnemonic,
-        passphrase: passphrase,
-      );
+      // Generation and import both happen inside the package; the words never come back here.
+      final defaultSecret =
+          secret ??
+          switch (await _resolveSecret(mnemonicWords)) {
+            Ok(:final value) => value,
+            Err(:final failure) => throw StateError(
+              'could not create the default secret: ${failure.runtimeType}',
+            ),
+          };
+      // An import of words can resolve to an equivalent entry stored earlier
+      // in another wordlist: check what was resolved, before any wallet write.
+      _requireDefaultCapable(defaultSecret.info);
 
       final created = <Wallet>[];
       try {
         if (!hasBitcoin) {
           created.add(
             await _wallet.createWallet(
-              seed: seed,
+              secret: defaultSecret,
               network: bitcoinNetwork,
               scriptType: scriptType,
               isDefault: true,
@@ -75,7 +103,7 @@ class CreateDefaultWalletsUsecase {
         if (!hasLiquid) {
           created.add(
             await _wallet.createWallet(
-              seed: seed,
+              secret: defaultSecret,
               network: liquidNetwork,
               scriptType: scriptType,
               isDefault: true,
@@ -116,6 +144,32 @@ class CreateDefaultWalletsUsecase {
     } catch (e) {
       throw CreateDefaultWalletsException(e.toString());
     }
+  }
+
+  /// Refuses a secret both default wallets cannot be built from, before any wallet write.
+  static void _requireDefaultCapable(SecretInfo info) {
+    if (info.hasPassphrase) {
+      throw ArgumentError('Default wallets cannot use a passphrase');
+    }
+    // Liquid derives from words: a raw seed has none.
+    if (!info.isMnemonic) {
+      throw CreateDefaultWalletsException(
+        'Default wallets require a mnemonic, not a raw seed',
+      );
+    }
+  }
+
+  Future<Result<Secret, SecretFailure>> _resolveSecret(
+    List<String>? words,
+  ) async {
+    if (words == null) return _secrets.generate();
+    final imported = await _secrets.import(words: words);
+    // Import reports a duplicate only after comparing the full seed. Reuse it
+    // when retrying wallet creation, without rewriting or deleting its storage.
+    return switch (imported) {
+      Err(failure: SecretAlreadyExistsFailure(:final id)) => _secrets.fetch(id),
+      _ => imported,
+    };
   }
 }
 

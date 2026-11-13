@@ -5,7 +5,7 @@ import 'package:bb_mobile/features/recipients/ui/widgets/recipient_type_text.dar
 import 'package:bb_mobile/features/recipients/presentation/recipients_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullShapesX, Gap;
 
 class RecipientTypeSelector extends StatelessWidget {
   const RecipientTypeSelector({
@@ -42,7 +42,9 @@ class RecipientTypeSelector extends StatelessWidget {
               children: [
                 RadioListTile(
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(
+                      context.bullShapes.card,
+                    ),
                     side: BorderSide(color: context.appColors.onSecondaryFixed),
                   ),
                   title: RecipientTypeText(
@@ -67,14 +69,14 @@ class RecipientTypeSelector extends StatelessWidget {
       return Material(
         elevation: 4,
         color: context.appColors.onSecondary,
-        borderRadius: BorderRadius.circular(4.0),
+        borderRadius: BorderRadius.circular(context.bullShapes.input),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0),
           child: DropdownButton<RecipientType>(
             isExpanded: true,
             alignment: Alignment.centerLeft,
             underline: const SizedBox.shrink(),
-            borderRadius: BorderRadius.circular(4.0),
+            borderRadius: BorderRadius.circular(context.bullShapes.input),
             icon: Icon(
               Icons.keyboard_arrow_down,
               color: context.appColors.secondary,

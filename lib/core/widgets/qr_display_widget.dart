@@ -1,4 +1,4 @@
-import 'package:bull_ui/bull_ui.dart' show BullRadius, BullShimmerBox;
+import 'package:bull_ui/bull_ui.dart' show BullShapesX, BullShimmerBox;
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:qr_flutter/qr_flutter.dart';
@@ -20,7 +20,7 @@ class QrDisplayWidget extends StatelessWidget {
       constraints: BoxConstraints(maxHeight: size, maxWidth: size),
       decoration: BoxDecoration(
         color: context.appColors.surfaceFixed,
-        borderRadius: BorderRadius.circular(BullRadius.xxs),
+        borderRadius: BorderRadius.circular(context.bullShapes.card),
       ),
       child: QrImageView(data: data),
     );

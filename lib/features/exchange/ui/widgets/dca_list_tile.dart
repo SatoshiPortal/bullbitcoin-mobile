@@ -7,7 +7,8 @@ import 'package:bb_mobile/features/dca/public/dca_facade.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show BullDialog, BullSwitch, Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show BullDialog, BullShapesX, BullSwitch, Gap;
 import 'package:go_router/go_router.dart';
 
 class DcaListTile extends StatefulWidget {
@@ -93,6 +94,11 @@ class _DcaListTileState extends State<DcaListTile> {
                 BullDialog.show(
                   context: context,
                   builder: (dialogContext) => AlertDialog(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(
+                        dialogContext.bullShapes.sheet,
+                      ),
+                    ),
                     backgroundColor: context.appColors.surfaceFixed,
                     title: Text(
                       context.loc.exchangeDcaCancelDialogTitle,

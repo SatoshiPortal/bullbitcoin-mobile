@@ -1,0 +1,483 @@
+{
+  "_meta": {
+    "description": "This file contains a serialized version of schema entities for drift.",
+    "version": "1.3.0"
+  },
+  "options": {
+    "store_date_time_values_as_text": true
+  },
+  "entities": [
+    {
+      "id": 0,
+      "references": [],
+      "type": "table",
+      "data": {
+        "name": "recoverbull_state",
+        "was_declared_in_moor": false,
+        "columns": [
+          {
+            "name": "id",
+            "getter_name": "id",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": "const CustomExpression('1')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "server",
+            "getter_name": "server",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": "const CustomExpression('\\'http://5m7enm5y77tdgmaf3d5xuwa5c7fjma7v5ljtwxu4q5jtq6b5utspmpyd.onion\\'')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "permission_granted",
+            "getter_name": "permissionGranted",
+            "moor_type": "bool",
+            "nullable": false,
+            "customConstraints": null,
+            "defaultConstraints": "CHECK (\"permission_granted\" IN (0, 1))",
+            "dialectAwareDefaultConstraints": {
+              "sqlite": "CHECK (\"permission_granted\" IN (0, 1))"
+            },
+            "default_dart": "const CustomExpression('0')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "monitoring_enabled",
+            "getter_name": "monitoringEnabled",
+            "moor_type": "bool",
+            "nullable": false,
+            "customConstraints": null,
+            "defaultConstraints": "CHECK (\"monitoring_enabled\" IN (0, 1))",
+            "dialectAwareDefaultConstraints": {
+              "sqlite": "CHECK (\"monitoring_enabled\" IN (0, 1))"
+            },
+            "default_dart": "const CustomExpression('1')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "legacy_import_complete",
+            "getter_name": "legacyImportComplete",
+            "moor_type": "bool",
+            "nullable": false,
+            "customConstraints": null,
+            "defaultConstraints": "CHECK (\"legacy_import_complete\" IN (0, 1))",
+            "dialectAwareDefaultConstraints": {
+              "sqlite": "CHECK (\"legacy_import_complete\" IN (0, 1))"
+            },
+            "default_dart": "const CustomExpression('0')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "monitoring_revision",
+            "getter_name": "monitoringRevision",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": "const CustomExpression('0')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "generation",
+            "getter_name": "generation",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": "const CustomExpression('0')",
+            "default_client_dart": null,
+            "dsl_features": []
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": [
+          "CHECK (id = 1)",
+          "CHECK (generation >= 0)"
+        ],
+        "explicit_pk": [
+          "id"
+        ]
+      }
+    },
+    {
+      "id": 1,
+      "references": [],
+      "type": "table",
+      "data": {
+        "name": "recoverbull_backup_status",
+        "was_declared_in_moor": false,
+        "columns": [
+          {
+            "name": "network",
+            "getter_name": "network",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "fingerprint",
+            "getter_name": "fingerprint",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "vault_digest",
+            "getter_name": "vaultDigest",
+            "moor_type": "blob",
+            "nullable": false,
+            "customConstraints": "NOT NULL CHECK (length(vault_digest) = 32)",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "stored_at",
+            "getter_name": "storedAt",
+            "moor_type": "dateTime",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "verified_at",
+            "getter_name": "verifiedAt",
+            "moor_type": "dateTime",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": [],
+        "explicit_pk": [
+          "network",
+          "fingerprint",
+          "vault_digest"
+        ]
+      }
+    },
+    {
+      "id": 2,
+      "references": [],
+      "type": "table",
+      "data": {
+        "name": "recoverbull_monitored_vaults",
+        "was_declared_in_moor": false,
+        "columns": [
+          {
+            "name": "server",
+            "getter_name": "server",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "digest",
+            "getter_name": "digest",
+            "moor_type": "blob",
+            "nullable": false,
+            "customConstraints": "NOT NULL CHECK (length(digest) = 32)",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "anchor_requests",
+            "getter_name": "anchorRequests",
+            "moor_type": "int",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "observed_requests",
+            "getter_name": "observedRequests",
+            "moor_type": "int",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "window",
+            "getter_name": "window",
+            "moor_type": "int",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "collection",
+            "getter_name": "collection",
+            "moor_type": "int",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "exact_window",
+            "getter_name": "exactWindow",
+            "moor_type": "int",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "own_requests",
+            "getter_name": "ownRequests",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": "const CustomExpression('0')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "unknown",
+            "getter_name": "unknown",
+            "moor_type": "bool",
+            "nullable": false,
+            "customConstraints": null,
+            "defaultConstraints": "CHECK (\"unknown\" IN (0, 1))",
+            "dialectAwareDefaultConstraints": {
+              "sqlite": "CHECK (\"unknown\" IN (0, 1))"
+            },
+            "default_dart": "const CustomExpression('1')",
+            "default_client_dart": null,
+            "dsl_features": []
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": [],
+        "explicit_pk": [
+          "server",
+          "digest"
+        ]
+      }
+    },
+    {
+      "id": 3,
+      "references": [],
+      "type": "table",
+      "data": {
+        "name": "recoverbull_own_operations",
+        "was_declared_in_moor": false,
+        "columns": [
+          {
+            "name": "id",
+            "getter_name": "id",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": null,
+            "defaultConstraints": "PRIMARY KEY AUTOINCREMENT",
+            "dialectAwareDefaultConstraints": {
+              "sqlite": "PRIMARY KEY AUTOINCREMENT"
+            },
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [
+              "auto-increment"
+            ]
+          },
+          {
+            "name": "server",
+            "getter_name": "server",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "digest",
+            "getter_name": "digest",
+            "moor_type": "blob",
+            "nullable": false,
+            "customConstraints": "NOT NULL CHECK (length(digest) = 32)",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": []
+      }
+    },
+    {
+      "id": 4,
+      "references": [],
+      "type": "table",
+      "data": {
+        "name": "recoverbull_alerts",
+        "was_declared_in_moor": false,
+        "columns": [
+          {
+            "name": "id",
+            "getter_name": "id",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": null,
+            "defaultConstraints": "PRIMARY KEY AUTOINCREMENT",
+            "dialectAwareDefaultConstraints": {
+              "sqlite": "PRIMARY KEY AUTOINCREMENT"
+            },
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [
+              "auto-increment"
+            ]
+          },
+          {
+            "name": "server",
+            "getter_name": "server",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "digest",
+            "getter_name": "digest",
+            "moor_type": "blob",
+            "nullable": false,
+            "customConstraints": "NOT NULL CHECK (length(digest) = 32)",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "window",
+            "getter_name": "window",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "kind",
+            "getter_name": "kind",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "acknowledged",
+            "getter_name": "acknowledged",
+            "moor_type": "bool",
+            "nullable": false,
+            "customConstraints": null,
+            "defaultConstraints": "CHECK (\"acknowledged\" IN (0, 1))",
+            "dialectAwareDefaultConstraints": {
+              "sqlite": "CHECK (\"acknowledged\" IN (0, 1))"
+            },
+            "default_dart": "const CustomExpression('0')",
+            "default_client_dart": null,
+            "dsl_features": []
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": [],
+        "unique_keys": [
+          [
+            "server",
+            "digest",
+            "window",
+            "kind"
+          ]
+        ]
+      }
+    }
+  ],
+  "fixed_sql": [
+    {
+      "name": "recoverbull_state",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"recoverbull_state\" (\"id\" INTEGER NOT NULL DEFAULT 1, \"server\" TEXT NOT NULL DEFAULT 'http://5m7enm5y77tdgmaf3d5xuwa5c7fjma7v5ljtwxu4q5jtq6b5utspmpyd.onion', \"permission_granted\" INTEGER NOT NULL DEFAULT 0 CHECK (\"permission_granted\" IN (0, 1)), \"monitoring_enabled\" INTEGER NOT NULL DEFAULT 1 CHECK (\"monitoring_enabled\" IN (0, 1)), \"legacy_import_complete\" INTEGER NOT NULL DEFAULT 0 CHECK (\"legacy_import_complete\" IN (0, 1)), \"monitoring_revision\" INTEGER NOT NULL DEFAULT 0, \"generation\" INTEGER NOT NULL DEFAULT 0, PRIMARY KEY (\"id\"), CHECK (id = 1), CHECK (generation >= 0));"
+        }
+      ]
+    },
+    {
+      "name": "recoverbull_backup_status",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"recoverbull_backup_status\" (\"network\" TEXT NOT NULL, \"fingerprint\" TEXT NOT NULL, \"vault_digest\" BLOB NOT NULL CHECK (length(vault_digest) = 32), \"stored_at\" TEXT NULL, \"verified_at\" TEXT NULL, PRIMARY KEY (\"network\", \"fingerprint\", \"vault_digest\"));"
+        }
+      ]
+    },
+    {
+      "name": "recoverbull_monitored_vaults",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"recoverbull_monitored_vaults\" (\"server\" TEXT NOT NULL, \"digest\" BLOB NOT NULL CHECK (length(digest) = 32), \"anchor_requests\" INTEGER NULL, \"observed_requests\" INTEGER NULL, \"window\" INTEGER NULL, \"collection\" INTEGER NULL, \"exact_window\" INTEGER NULL, \"own_requests\" INTEGER NOT NULL DEFAULT 0, \"unknown\" INTEGER NOT NULL DEFAULT 1 CHECK (\"unknown\" IN (0, 1)), PRIMARY KEY (\"server\", \"digest\"));"
+        }
+      ]
+    },
+    {
+      "name": "recoverbull_own_operations",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"recoverbull_own_operations\" (\"id\" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, \"server\" TEXT NOT NULL, \"digest\" BLOB NOT NULL CHECK (length(digest) = 32));"
+        }
+      ]
+    },
+    {
+      "name": "recoverbull_alerts",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"recoverbull_alerts\" (\"id\" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, \"server\" TEXT NOT NULL, \"digest\" BLOB NOT NULL CHECK (length(digest) = 32), \"window\" INTEGER NOT NULL, \"kind\" TEXT NOT NULL, \"acknowledged\" INTEGER NOT NULL DEFAULT 0 CHECK (\"acknowledged\" IN (0, 1)), UNIQUE (\"server\", \"digest\", \"window\", \"kind\"));"
+        }
+      ]
+    }
+  ]
+}

@@ -264,14 +264,7 @@ class PayjoinInProgressPage extends StatelessWidget {
                           color: context.appColors.secondary,
                         ),
                         const Gap(4),
-                        BullCountdown(
-                          until: payjoinExpiresAt.add(
-                            const Duration(
-                              seconds:
-                                  PayjoinConstants.directoryPollingInterval,
-                            ),
-                          ),
-                        ),
+                        BullCountdown(until: payjoinExpiresAt),
                       ],
                     ),
                   ],
@@ -284,14 +277,16 @@ class PayjoinInProgressPage extends StatelessWidget {
                     style: context.font.displaySmall,
                     textAlign: .center,
                   ),
-                  const Gap(4),
-                  BBText(
-                    '~${FormatAmount.fiat(amountFiat, fiatCurrencyCode)}',
-                    style: context.font.bodyMedium,
-                    color: context.appColors.secondary,
-                    maxLines: 4,
-                    textAlign: .center,
-                  ),
+                  if (amountFiat != null) ...[
+                    const Gap(4),
+                    BBText(
+                      '~${FormatAmount.fiat(amountFiat, fiatCurrencyCode)}',
+                      style: context.font.bodyMedium,
+                      color: context.appColors.secondary,
+                      maxLines: 4,
+                      textAlign: .center,
+                    ),
+                  ],
                 ],
               ],
             ),

@@ -1,16 +1,14 @@
-import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
+import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
+import 'package:unorm_dart/unorm_dart.dart' show nfc;
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/import_mnemonic/domain/check_duplicate_mnemonic_usecase.dart';
 import 'package:bb_mobile/features/import_mnemonic/domain/import_mnemonic_failure.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mocktail/mocktail.dart';
+import 'package:secrets/secrets.dart';
+import 'package:secrets/testing.dart';
 
-class MockSeedRepository extends Mock implements SeedRepository {}
-
+/// These run the real package against an in-memory keystore installed at the plugin's own seam, so duplicate detection uses the production fingerprint derivation.
 void main() {
-  late MockSeedRepository seedRepository;
-  late CheckDuplicateMnemonicUsecase usecase;
-
   const words = [
     'abandon',
     'abandon',
@@ -26,67 +24,97 @@ void main() {
     'about',
   ];
 
+  late FakeSecureStoragePlatform storage;
+  late Secrets secrets;
+  late CheckDuplicateMnemonicUsecase usecase;
+
   setUp(() {
-    seedRepository = MockSeedRepository();
-    usecase = CheckDuplicateMnemonicUsecase(seedRepository: seedRepository);
+    storage = FakeSecureStoragePlatform()..install();
+    secrets = Secrets(scratchDirectory: () async => '/tmp');
+    usecase = CheckDuplicateMnemonicUsecase(secrets: secrets);
   });
 
+  for (final language in bip39.Language.values) {
+    test(
+      'recognizes ${language.name} duplicates across Unicode forms',
+      () async {
+        final words = bip39.Mnemonic(List.filled(16, 0), language).words;
+        expect(
+          await usecase.execute(mnemonicWords: words, language: language),
+          isA<Ok<void, ImportMnemonicFailure>>(),
+        );
+        expect(
+          await secrets.import(words: words, language: language),
+          isA<Ok<Secret, SecretFailure>>(),
+        );
+        final duplicate = await usecase.execute(
+          mnemonicWords: words.map(nfc).toList(),
+          language: language,
+        );
+        expect(
+          (duplicate as Err).failure,
+          isA<ImportMnemonicDuplicateFailure>(),
+        );
+        expect(
+          await usecase.execute(
+            mnemonicWords: words,
+            language: language,
+            passphrase: 'TREZOR',
+          ),
+          isA<Ok<void, ImportMnemonicFailure>>(),
+        );
+      },
+    );
+  }
+
   group('CheckDuplicateMnemonicUsecase', () {
-    test('returns Ok when mnemonic does not exist', () async {
-      when(
-        () => seedRepository.fingerprintFor(
-          mnemonicWords: any(named: 'mnemonicWords'),
-          passphrase: any(named: 'passphrase'),
-        ),
-      ).thenReturn('fp1');
-      when(() => seedRepository.exists('fp1')).thenAnswer((_) async => false);
+    test('returns Ok when the mnemonic is not stored', () async {
+      expect(
+        await usecase.execute(mnemonicWords: words),
+        isA<Ok<void, ImportMnemonicFailure>>(),
+      );
+    });
+
+    test('returns Err(duplicate) once the same mnemonic is stored', () async {
+      expect(
+        await secrets.import(words: words),
+        isA<Ok<Secret, SecretFailure>>(),
+      );
 
       final result = await usecase.execute(mnemonicWords: words);
+
+      expect((result as Err).failure, isA<ImportMnemonicDuplicateFailure>());
+    });
+
+    test('a passphrase makes a different secret, not a duplicate', () async {
+      expect(
+        await secrets.import(words: words),
+        isA<Ok<Secret, SecretFailure>>(),
+      );
+
+      final result = await usecase.execute(
+        mnemonicWords: words,
+        passphrase: 'TREZOR',
+      );
 
       expect(result, isA<Ok<void, ImportMnemonicFailure>>());
     });
 
-    test(
-      'returns Err(ImportMnemonicDuplicateFailure) when mnemonic already exists — no raw leak',
-      () async {
-        when(
-          () => seedRepository.fingerprintFor(
-            mnemonicWords: any(named: 'mnemonicWords'),
-            passphrase: any(named: 'passphrase'),
-          ),
-        ).thenReturn('fp1');
-        when(() => seedRepository.exists('fp1')).thenAnswer((_) async => true);
+    test('a keystore error is unexpected, and carries no stored text', () async {
+      const sentinel = 'SYNTHETIC_KEYSTORE_SENTINEL';
+      expect(
+        await secrets.import(words: words),
+        isA<Ok<Secret, SecretFailure>>(),
+      );
+      // contains now reads and compares the stored seed, so every retry must fail.
+      storage.scripted.addAll(List.filled(5, Exception(sentinel)));
 
-        final result = await usecase.execute(mnemonicWords: words);
+      final result = await usecase.execute(mnemonicWords: words);
 
-        expect(result, isA<Err<void, ImportMnemonicFailure>>());
-        expect((result as Err).failure, isA<ImportMnemonicDuplicateFailure>());
-      },
-    );
-
-    test(
-      'returns Err(ImportMnemonicUnexpectedFailure) on exception — raw message in logMessage only',
-      () async {
-        when(
-          () => seedRepository.fingerprintFor(
-            mnemonicWords: any(named: 'mnemonicWords'),
-            passphrase: any(named: 'passphrase'),
-          ),
-        ).thenReturn('fp1');
-        when(
-          () => seedRepository.exists('fp1'),
-        ).thenThrow(Exception('db error'));
-
-        final result = await usecase.execute(mnemonicWords: words);
-
-        expect(result, isA<Err<void, ImportMnemonicFailure>>());
-        final failure = (result as Err).failure;
-        expect(failure, isA<ImportMnemonicUnexpectedFailure>());
-        expect(
-          (failure as ImportMnemonicUnexpectedFailure).logMessage,
-          contains('db error'),
-        );
-      },
-    );
+      final failure = (result as Err).failure;
+      expect(failure, isA<ImportMnemonicUnexpectedFailure>());
+      // The package reports a foreign exception by type; the message it wrote never reaches this layer, so neither does anything the keystore held.
+      expect(failure.logMessage, isNot(contains(sentinel)));
+    });
   });
 }

@@ -1,9 +1,10 @@
+import 'package:bull_recoverbull/bull_recoverbull.dart' as rb;
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/check_backup_needed_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/check_backup_needed_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -28,6 +29,8 @@ void main() {
 
   Wallet wallet({required bool vaultTested, required bool physicalTested}) {
     final w = _MockWallet();
+    when(() => w.network).thenReturn(Network.bitcoinMainnet);
+    when(() => w.masterFingerprint).thenReturn('73c5da0a');
     when(() => w.isEncryptedVaultTested).thenReturn(vaultTested);
     when(() => w.isPhysicalBackupTested).thenReturn(physicalTested);
     return w;
@@ -51,6 +54,7 @@ void main() {
     usecase = CheckBackupNeededUsecase(
       walletRepository: walletRepository,
       settingsRepository: settingsRepository,
+      backupStatus: (_) async => const rb.Ok(rb.BackupStatus()),
     );
     final settings = _MockSettings();
     when(() => settings.environment).thenReturn(Environment.mainnet);
@@ -63,10 +67,24 @@ void main() {
     expect((await usecase.execute() as Ok).value, isTrue);
   });
 
-  test('one tested backup is enough — no banner', () async {
+  test('historical verification does not certify a backup', () async {
     stubWallets(Ok([wallet(vaultTested: true, physicalTested: false)]));
 
-    expect((await usecase.execute() as Ok).value, isFalse);
+    expect((await usecase.execute() as Ok).value, isTrue);
+  });
+
+  test('only the current context certificate suppresses the warning', () async {
+    stubWallets(Ok([wallet(vaultTested: false, physicalTested: false)]));
+    final certified = CheckBackupNeededUsecase(
+      walletRepository: walletRepository,
+      settingsRepository: settingsRepository,
+      backupStatus: (context) async {
+        expect(context.fingerprint.hex, '73c5da0a');
+        expect(context.network, rb.BitcoinNetwork.mainnet);
+        return rb.Ok(rb.BackupStatus(verifiedAt: DateTime.utc(2026)));
+      },
+    );
+    expect((await certified.execute() as Ok).value, isFalse);
   });
 
   test('no default wallets means nothing to back up', () async {
@@ -89,7 +107,7 @@ void main() {
   test('sanitizes a throwing settings read', () async {
     when(
       settingsRepository.fetch,
-    ).thenThrow(StateError('SqliteException(13): disk image is malformed'));
+    ).thenThrow(Exception('SqliteException(13): disk image is malformed'));
 
     final result = await usecase.execute();
 

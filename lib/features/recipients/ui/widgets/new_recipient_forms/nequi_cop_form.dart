@@ -8,7 +8,7 @@ import 'package:bb_mobile/features/recipients/presentation/models/cop_document_t
 import 'package:bb_mobile/features/recipients/presentation/models/recipient_form_data_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullShapesX, Gap;
 
 class NequiCopForm extends StatefulWidget {
   const NequiCopForm({super.key, this.hookError});
@@ -94,14 +94,14 @@ class NequiCopFormState extends State<NequiCopForm> {
             elevation: 4,
             shadowColor: context.appColors.onSurface.withValues(alpha: 0.7),
             color: context.appColors.surface,
-            borderRadius: BorderRadius.circular(4.0),
+            borderRadius: BorderRadius.circular(context.bullShapes.input),
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: DropdownButton<CopDocumentType>(
                 isExpanded: true,
                 alignment: Alignment.centerLeft,
                 underline: const SizedBox.shrink(),
-                borderRadius: BorderRadius.circular(4.0),
+                borderRadius: BorderRadius.circular(context.bullShapes.input),
                 dropdownColor: context.appColors.surface,
                 icon: Icon(
                   Icons.keyboard_arrow_down,

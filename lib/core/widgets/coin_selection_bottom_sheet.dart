@@ -7,12 +7,13 @@ import 'package:bb_mobile/core/widgets/address_viewer.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:flutter/material.dart';
-import 'package:bull_ui/bull_ui.dart' show BullButton, BullText, Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show BullButton, BullShapesX, BullText, Gap;
 import 'package:go_router/go_router.dart';
 
 class CommonCoinSelectionBottomSheet extends StatefulWidget {
   final BitcoinUnit bitcoinUnit;
-  final double exchangeRate;
+  final double? exchangeRate;
   final String fiatCurrency;
   final List<WalletUtxo> utxos;
   final List<WalletUtxo> initialSelectedUtxos;
@@ -87,9 +88,10 @@ class _CommonCoinSelectionBottomSheetState
 
     final isAmountSufficient = selectedUtxoTotalSat >= widget.amountToSendSat;
 
-    final selectedFiatEquivalent = widget.exchangeRate > 0
+    final rate = widget.exchangeRate;
+    final selectedFiatEquivalent = rate != null && rate > 0
         ? FormatAmount.fiat(
-            ConvertAmount.satsToFiat(selectedUtxoTotalSat, widget.exchangeRate),
+            ConvertAmount.satsToFiat(selectedUtxoTotalSat, rate),
             widget.fiatCurrency,
           )
         : null;
@@ -198,7 +200,7 @@ class CommonCoinSelectTile extends StatelessWidget {
   final bool selected;
   final VoidCallback onTap;
   final BitcoinUnit bitcoinUnit;
-  final double exchangeRate;
+  final double? exchangeRate;
   final String fiatCurrency;
 
   const CommonCoinSelectTile({
@@ -217,10 +219,13 @@ class CommonCoinSelectTile extends StatelessWidget {
         ? FormatAmount.btc(ConvertAmount.satsToBtc(utxo.amountSat.toInt()))
         : FormatAmount.sats(utxo.amountSat.toInt());
 
-    final fiatEquivalent = FormatAmount.fiat(
-      ConvertAmount.satsToFiat(utxo.amountSat.toInt(), exchangeRate),
-      fiatCurrency,
-    );
+    final rate = exchangeRate;
+    final fiatEquivalent = rate != null && rate > 0
+        ? FormatAmount.fiat(
+            ConvertAmount.satsToFiat(utxo.amountSat.toInt(), rate),
+            fiatCurrency,
+          )
+        : null;
 
     final address = utxo.address;
     final addressType = utxo.addressKeyChain == WalletAddressKeyChain.external
@@ -233,7 +238,7 @@ class CommonCoinSelectTile extends StatelessWidget {
         margin: const EdgeInsets.symmetric(vertical: 8),
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(4),
+          borderRadius: BorderRadius.circular(context.bullShapes.card),
           border: Border.all(color: context.appColors.outlineVariant),
         ),
         child: Row(
@@ -245,7 +250,9 @@ class CommonCoinSelectTile extends StatelessWidget {
                 children: [
                   ListTile(
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(2),
+                      borderRadius: BorderRadius.circular(
+                        context.bullShapes.card,
+                      ),
                     ),
                     tileColor: context.appColors.transparent,
                     contentPadding: EdgeInsets.zero,
@@ -269,12 +276,13 @@ class CommonCoinSelectTile extends StatelessWidget {
                       ),
                     ),
                   ),
-                  BullText(
-                    '~$fiatEquivalent',
-                    style: context.font.labelSmall?.copyWith(
-                      color: context.appColors.onSurfaceVariant,
+                  if (fiatEquivalent != null)
+                    BullText(
+                      '~$fiatEquivalent',
+                      style: context.font.labelSmall?.copyWith(
+                        color: context.appColors.onSurfaceVariant,
+                      ),
                     ),
-                  ),
                   const SizedBox(height: 12),
 
                   Divider(color: context.appColors.secondaryFixedDim),
