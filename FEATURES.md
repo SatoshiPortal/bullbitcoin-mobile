@@ -18,6 +18,7 @@ graph TB
     BULL_PRICER[Bull Pricer Package<br/>Bitcoin price and history]
 
     %% Feature modules
+    EXCHANGE_ACCESS[Exchange Access]
     SETTINGS[Settings]
     LOGS[Logs<br/>Workspace Feature]
     ELECTRUM_SETTINGS[Electrum Settings]
@@ -305,3 +306,7 @@ To verify no cyclic dependencies exist, you can:
 - Add dependency cardinality (required vs optional dependencies)
 - Include compile-time vs runtime dependency distinction
 - Add layer groupings (ui, presentation, domain, data) per [ARCHITECTURE.md](ARCHITECTURE.md)
+
+## Optional exchange access
+
+`exchange_access` owns environment-specific installation preferences and non-secret session facts behind its public facade. It adds no shared settings column or Drift revision.
