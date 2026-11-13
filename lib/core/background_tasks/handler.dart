@@ -1,6 +1,5 @@
 import 'package:bb_mobile/core/background_tasks/tasks.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
-import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/sync_wallet_usecase.dart';
 import 'package:bb_mobile/locator.dart';
@@ -11,7 +10,7 @@ import 'package:bull_logger/bull_logger.dart' show initializeLogging, log;
 import 'package:get_it/get_it.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
-import 'package:primitives/primitives.dart' as custody;
+import 'package:primitives/primitives.dart';
 import 'package:secrets/secrets.dart';
 import 'package:workmanager/workmanager.dart';
 
@@ -33,7 +32,7 @@ Future<bool> tasksHandler(String task) async {
     scratchDirectory: () async => (await getTemporaryDirectory()).path,
   );
   switch (legacy) {
-    case custody.Ok(value: null):
+    case Ok(value: null):
       break;
     default:
       return true;
