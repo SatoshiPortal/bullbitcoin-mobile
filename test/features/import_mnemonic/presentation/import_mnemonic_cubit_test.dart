@@ -7,10 +7,14 @@ import 'package:bb_mobile/features/import_mnemonic/domain/import_wallet_usecase.
 import 'package:bb_mobile/features/import_mnemonic/presentation/cubit.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:flutter_test/flutter_test.dart';
+import 'package:secrets/secrets.dart';
+import 'package:secrets/testing.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart' show Ok;
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart'
-    show ScriptType;
+    show ScriptType, Wallet;
+
+class MockWallet extends Mock implements Wallet {}
 
 class MockImportWalletUsecase extends Mock implements ImportWalletUsecase {}
 
@@ -36,6 +40,98 @@ void main() {
     checkWalletStatus = MockCheckWalletStatusUsecase();
     checkDuplicate = MockCheckDuplicateMnemonicUsecase();
   });
+
+  test('accepts a Japanese vector before scanning', () async {
+    FakeSecureStoragePlatform().install();
+    final secrets = Secrets(scratchDirectory: () async => '/tmp');
+    final cubit = ImportMnemonicCubit(
+      importWalletUsecase: importWallet,
+      checkWalletUsecase: checkWalletStatus,
+      checkDuplicateMnemonicUsecase: CheckDuplicateMnemonicUsecase(
+        secrets: secrets,
+      ),
+    );
+    addTearDown(cubit.close);
+    final mnemonic = (
+      label: 'Japanese vector',
+      passphrase: '',
+      words: [...List.filled(11, 'あいこくしん'), 'あおぞら'],
+      language: bip39.Language.japanese,
+    );
+    await cubit.updateMnemonic(mnemonic);
+    expect(cubit.state.failure, isNull);
+    expect(cubit.state.mnemonic, mnemonic);
+  });
+
+  for (final language in bip39.Language.values) {
+    test(
+      'forwards ${language.name} to duplicate check, scan and import',
+      () async {
+        final mnemonic = (
+          label: 'Vector',
+          passphrase: 'TREZOR',
+          words: bip39.Mnemonic(List.filled(16, 0), language).words,
+          language: language,
+        );
+        final wallet = MockWallet();
+        when(
+          () => checkDuplicate.execute(
+            mnemonicWords: mnemonic.words,
+            language: language,
+            passphrase: mnemonic.passphrase,
+          ),
+        ).thenAnswer((_) async => const Ok(null));
+        when(
+          () => checkWalletStatus(
+            words: mnemonic.words,
+            language: language,
+            passphrase: mnemonic.passphrase,
+            scriptTypes: {ScriptType.bip84, ScriptType.bip49, ScriptType.bip44},
+          ),
+        ).thenAnswer((_) async => {});
+        when(
+          () => importWallet.execute(
+            mnemonicWords: mnemonic.words,
+            language: language,
+            passphrase: mnemonic.passphrase,
+            label: mnemonic.label,
+            scriptType: ScriptType.bip84,
+          ),
+        ).thenAnswer((_) async => Ok(wallet));
+        final cubit = buildCubit();
+        addTearDown(cubit.close);
+        await cubit.updateMnemonic(mnemonic);
+        await pumpEventQueue();
+        expect(cubit.state.failure, isNull);
+        await cubit.import();
+        expect(cubit.state.wallet, wallet);
+        verify(
+          () => checkDuplicate.execute(
+            mnemonicWords: mnemonic.words,
+            language: language,
+            passphrase: mnemonic.passphrase,
+          ),
+        ).called(1);
+        verify(
+          () => checkWalletStatus(
+            words: mnemonic.words,
+            language: language,
+            passphrase: mnemonic.passphrase,
+            scriptTypes: {ScriptType.bip84, ScriptType.bip49, ScriptType.bip44},
+          ),
+        ).called(1);
+        verify(
+          () => importWallet.execute(
+            mnemonicWords: mnemonic.words,
+            language: language,
+            passphrase: mnemonic.passphrase,
+            label: mnemonic.label,
+            scriptType: ScriptType.bip84,
+          ),
+        ).called(1);
+      },
+    );
+  }
 
   group('ImportMnemonicCubit guards', () {
     test(
