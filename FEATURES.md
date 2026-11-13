@@ -480,3 +480,7 @@ The architecture test records source dependencies, including internal imports an
 The former `broadcast_signed_tx → settings` allowance is removed: broadcast now carries the captured wallet network instead of reading the mutable global environment. Develop also retires the four price-registration edges from buy, receive, send and swap; their allowances and diagram edges are removed.
 
 Develop also removes the price chart’s shell locator import; its obsolete entry is removed from `shell_imports_test.dart`. The existing `bip85_entropy → wallet` baseline remains unchanged.
+
+## RecoverBull public navigation and owner edges (2026-11-13)
+
+RecoverBull navigation is a public, stateless module entry point; onboarding, backup options and settings do not fetch the root locator. Composition substitutes native initialization through TorNativeInitializer while retaining the real Tor registrations. The source graph records published RecoverBull facade dependencies from app_startup, status_check, test_wallet_backup and wallet. Retired RecoverBull/Google Drive and autoswap-to-settings edges are removed; architecture guards retain their assertions. App startup and onboarding consume the published mnemonic-language facade through their import_mnemonic dependencies.
