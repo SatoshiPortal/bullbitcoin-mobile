@@ -1,14 +1,16 @@
 import 'package:primitives/primitives.dart' show BitcoinUnit;
+import 'package:bb_mobile/features/settings/domain/used_signing_key_account.dart';
+import 'package:bb_mobile/features/settings/domain/usecases/sync_used_signing_key_accounts_usecase.dart';
 import 'dart:async';
 import 'dart:convert';
-
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:secrets/secrets.dart';
 import 'package:secrets/testing.dart';
+
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
-import 'package:primitives/primitives.dart' show Err, Ok;
+import 'package:primitives/primitives.dart' show Err, Ok, Result;
 import 'package:bb_mobile/core/wallet/domain/entities/bip48_account_claim.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/bip48_account_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
@@ -19,21 +21,45 @@ import 'package:bb_mobile/features/settings/domain/usecases/release_signing_key_
 import 'package:bb_mobile/features/settings/presentation/bloc/signing_key_export_cubit.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:bb_mobile/features/labels/labels_facade.dart';
 
 class _MockWalletRepository extends Mock implements WalletRepository {}
+
+class _MockWallet extends Mock implements Wallet {}
 
 class _MockGetSettingsUsecase extends Mock implements GetSettingsUsecase {}
 
 class _MockBip48AccountRepository extends Mock
     implements Bip48AccountRepository {}
 
-class _MockWallet extends Mock implements Wallet {}
+class _MockUsedAccounts extends Mock
+    implements SyncUsedSigningKeyAccountsUsecase {}
+
+class _FakeLabels extends Fake implements LabelsFacade {
+  final saved = <NewLabel>[];
+  bool fail = false;
+  @override
+  Future<Result<Label, LabelFailure>> store(NewLabel label) async {
+    if (fail) return const Err(LabelUnexpectedFailure());
+    saved.add(label);
+    return Ok(
+      Label(
+        id: saved.length,
+        type: label.type,
+        label: label.label,
+        reference: label.reference,
+      ),
+    );
+  }
+}
 
 void main() {
   late _MockWalletRepository wallets;
   late _MockGetSettingsUsecase getSettings;
   late _MockBip48AccountRepository accountRepository;
   late ExportSigningKeyUsecase usecase;
+  late _FakeLabels labels;
+  late _MockUsedAccounts listUsed;
   late ReleaseSigningKeyAccountUsecase releaseUsecase;
 
   const fingerprint = '5a3469b6';
@@ -60,8 +86,18 @@ void main() {
     getSettings = _MockGetSettingsUsecase();
     accountRepository = _MockBip48AccountRepository();
     final accountSession = SigningKeyAccountSession(accountRepository);
+    labels = _FakeLabels();
+    listUsed = _MockUsedAccounts();
+    when(
+      () => listUsed.execute(
+        seedFingerprint: any(named: 'seedFingerprint'),
+        coinType: any(named: 'coinType'),
+      ),
+    ).thenAnswer((_) async => const Ok(<UsedSigningKeyAccount>[]));
     usecase = ExportSigningKeyUsecase(
       accountSession,
+      labelsFacade: labels,
+      syncUsedAccounts: listUsed,
       walletRepository: wallets,
       secrets: secrets,
       getSettingsUsecase: getSettings,
@@ -113,6 +149,107 @@ void main() {
         claim: any(named: 'claim'),
       ),
     ).thenAnswer((_) async => const Ok(null));
+  });
+
+  test('awaits reservation repair before proposing an account', () async {
+    when(() => getSettings.execute()).thenAnswer(
+      (_) async => const SettingsEntity(
+        environment: Environment.mainnet,
+        bitcoinUnit: BitcoinUnit.sats,
+        currencyCode: 'USD',
+      ),
+    );
+    final repaired =
+        Completer<Result<List<UsedSigningKeyAccount>, SettingsFailure>>();
+    when(
+      () => listUsed.execute(seedFingerprint: fingerprint, coinType: 0),
+    ).thenAnswer((_) => repaired.future);
+    final pending = usecase.execute();
+    await Future<void>.delayed(Duration.zero);
+    verifyNever(
+      () => accountRepository.claimNext(
+        seedFingerprint: any(named: 'seedFingerprint'),
+        coinType: any(named: 'coinType'),
+      ),
+    );
+    repaired.complete(
+      const Ok([
+        UsedSigningKeyAccount(account: 1, description: 'Restored vault'),
+      ]),
+    );
+    final result = await pending;
+    expect(
+      (result as Ok).value.usedAccounts.single.description,
+      'Restored vault',
+    );
+    verify(
+      () => accountRepository.claimNext(
+        seedFingerprint: fingerprint,
+        coinType: 0,
+      ),
+    ).called(1);
+  });
+
+  test('failed sync blocks export until Retry succeeds', () async {
+    when(() => getSettings.execute()).thenAnswer(
+      (_) async => const SettingsEntity(
+        environment: Environment.mainnet,
+        bitcoinUnit: BitcoinUnit.sats,
+        currencyCode: 'USD',
+      ),
+    );
+    when(
+      () => listUsed.execute(seedFingerprint: fingerprint, coinType: 0),
+    ).thenAnswer((_) async => const Err(SettingsSigningKeyExportFailure()));
+    final cubit = SigningKeyExportCubit(
+      exportSigningKeyUsecase: usecase,
+      releaseSigningKeyAccountUsecase: releaseUsecase,
+    );
+    addTearDown(cubit.close);
+    await cubit.load();
+    expect(cubit.state.failure, isA<SettingsSigningKeyExportFailure>());
+    expect(cubit.state.descriptorKey, isEmpty);
+    expect(cubit.state.usedAccounts, isEmpty);
+    verifyNever(
+      () => accountRepository.claimNext(
+        seedFingerprint: any(named: 'seedFingerprint'),
+        coinType: any(named: 'coinType'),
+      ),
+    );
+    when(
+      () => listUsed.execute(seedFingerprint: fingerprint, coinType: 0),
+    ).thenAnswer((_) async => const Ok(<UsedSigningKeyAccount>[]));
+    await cubit.load();
+    expect(cubit.state.failure, isNull);
+    expect(cubit.state.descriptorKey, isNotEmpty);
+  });
+
+  test('reloads used accounts after saving the memo', () async {
+    when(() => getSettings.execute()).thenAnswer(
+      (_) async => const SettingsEntity(
+        environment: Environment.mainnet,
+        bitcoinUnit: BitcoinUnit.sats,
+        currencyCode: 'USD',
+      ),
+    );
+    when(
+      () => listUsed.execute(seedFingerprint: fingerprint, coinType: 0),
+    ).thenAnswer(
+      (_) async => Ok([
+        for (final label in labels.saved)
+          UsedSigningKeyAccount(account: 1, description: label.label),
+      ]),
+    );
+    expect(await usecase.execute(account: 1), isA<Ok>());
+    final result = await usecase.execute(
+      account: 1,
+      markUsed: true,
+      description: 'Family vault',
+    );
+    expect(
+      (result as Ok).value.usedAccounts.single.description,
+      'Family vault',
+    );
   });
 
   test('exports a BIP48 account key on mainnet', () async {
@@ -270,7 +407,14 @@ void main() {
     firstSettings.complete(settings);
     expect(await first, isA<Err>());
 
-    expect(await usecase.execute(account: 8, markUsed: true), isA<Ok>());
+    expect(
+      await usecase.execute(
+        account: 8,
+        markUsed: true,
+        description: 'Family vault',
+      ),
+      isA<Ok>(),
+    );
     final committed =
         verify(
               () => accountRepository.commitClaim(
@@ -283,9 +427,8 @@ void main() {
     expect(committed.account, 8);
   });
 
-  test(
-    'retries the next suggestion after marking an exported account',
-    () async {
+  for (final failurePoint in ['next claim', 'inventory refresh']) {
+    test('retries $failurePoint after marking an exported account', () async {
       when(() => getSettings.execute()).thenAnswer(
         (_) async => const SettingsEntity(
           environment: Environment.mainnet,
@@ -306,13 +449,23 @@ void main() {
           coinType: 0,
         ),
       ).thenAnswer((_) async {
-        if (!failed) {
+        if (failurePoint == 'next claim' && !failed) {
           failed = true;
           return const Err(Bip48AccountAllocationFailure());
         }
         return const Ok(Bip48AccountClaim(account: 0, token: 'next'));
       });
-      await cubit.markAccountUsed();
+      if (failurePoint == 'inventory refresh') {
+        var reads = 0;
+        when(
+          () => listUsed.execute(seedFingerprint: fingerprint, coinType: 0),
+        ).thenAnswer(
+          (_) async => ++reads == 2
+              ? const Err(SettingsSigningKeyExportFailure())
+              : const Ok(<UsedSigningKeyAccount>[]),
+        );
+      }
+      await cubit.markAccountUsed('Family vault');
       expect(cubit.state.failure, isA<SettingsSigningKeyExportFailure>());
       await cubit.load();
       expect(cubit.state.failure, isNull);
@@ -330,8 +483,77 @@ void main() {
               ).captured.single
               as Bip48AccountClaim;
       expect((committed.account, committed.token), (7, 'exact-7'));
-    },
-  );
+    });
+  }
+
+  test('stores the marked account origin, not the next proposal', () async {
+    when(() => getSettings.execute()).thenAnswer(
+      (_) async => const SettingsEntity(
+        environment: Environment.mainnet,
+        bitcoinUnit: BitcoinUnit.sats,
+        currencyCode: 'USD',
+      ),
+    );
+    final previous = (await usecase.execute(account: 1) as Ok).value;
+    final result = await usecase.execute(
+      account: 1,
+      markUsed: true,
+      description: 'Family vault',
+    );
+
+    expect(result, isA<Ok>());
+    expect((result as Ok).value.account, 0);
+    expect(
+      labels.saved.single.origin,
+      '${previous.descriptorKey.split(']').first}]',
+    );
+  });
+
+  for (final labelFailure in [false, true]) {
+    test(
+      'marking keeps the used account reserved when label failure is $labelFailure',
+      () async {
+        when(() => getSettings.execute()).thenAnswer(
+          (_) async => const SettingsEntity(
+            environment: Environment.mainnet,
+            bitcoinUnit: BitcoinUnit.sats,
+            currencyCode: 'USD',
+          ),
+        );
+        final previous = (await usecase.execute(account: 7) as Ok).value;
+        labels.fail = labelFailure;
+        final result = await usecase.execute(
+          account: 7,
+          markUsed: true,
+          description: 'Family vault',
+        );
+        expect(result, isA<Ok>());
+        final next = (result as Ok).value;
+        expect(next.markedAccount, 7);
+        expect(next.account, 0);
+        expect(next.descriptionSaved, !labelFailure);
+        final committed =
+            verify(
+                  () => accountRepository.commitClaim(
+                    seedFingerprint: fingerprint,
+                    coinType: 0,
+                    claim: captureAny(named: 'claim'),
+                  ),
+                ).captured.single
+                as Bip48AccountClaim;
+        expect(committed.account, 7);
+        if (labelFailure) {
+          expect(labels.saved, isEmpty);
+        } else {
+          final saved = labels.saved.single;
+          expect(saved.label, 'Family vault');
+          expect(saved.type, LabelType.extendedPublicKey);
+          expect(saved.reference, previous.descriptorKey.split(']').last);
+          expect(saved.reference, isNot(next.descriptorKey.split(']').last));
+        }
+      },
+    );
+  }
 
   test('maps seed lookup errors to a settings failure', () async {
     when(

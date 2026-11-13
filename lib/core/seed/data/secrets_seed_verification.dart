@@ -1,5 +1,4 @@
 import 'package:bb_mobile/core/seed/domain/seed_verification_port.dart';
-import 'package:bb_mobile/core/utils/bip32_derivation.dart';
 import 'package:primitives/primitives.dart';
 import 'package:secrets/secrets.dart';
 
@@ -32,7 +31,7 @@ final class SecretsSeedVerification implements SeedVerificationPort {
       switch (account) {
         case Ok(:final value):
           if (value.fingerprint != secret.id ||
-              value.xpub != Bip32Derivation.getBip32Xpub(key.xpub).toBase58()) {
+              value.xpub != XpubType.xpub.reencode(key.xpub)) {
             return false;
           }
         case Err(:final failure):
