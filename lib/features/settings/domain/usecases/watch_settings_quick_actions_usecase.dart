@@ -16,9 +16,9 @@ class WatchSettingsQuickActionsUsecase {
       QuickAction.transfer,
       QuickAction.history,
       QuickAction.settings,
+      QuickAction.support,
+      QuickAction.priceHistory,
       if (access.enabledForHome) ...{
-        QuickAction.support,
-        QuickAction.priceHistory,
         QuickAction.buy,
         QuickAction.sell,
         QuickAction.pay,

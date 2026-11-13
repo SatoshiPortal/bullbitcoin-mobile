@@ -42,6 +42,8 @@ class _QuickActionsSettingsScreenState
                   QuickAction.transfer,
                   QuickAction.history,
                   QuickAction.settings,
+                  QuickAction.support,
+                  QuickAction.priceHistory,
                 };
           return QuickActionsCustomizationScreen(
             facade: widget.facade,

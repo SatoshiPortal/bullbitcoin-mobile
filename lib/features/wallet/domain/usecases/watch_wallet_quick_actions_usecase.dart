@@ -12,9 +12,9 @@ class WalletQuickActionsPolicy {
     QuickAction.map,
     QuickAction.settings,
     QuickAction.history,
+    QuickAction.support,
+    QuickAction.priceHistory,
     if (access.enabledForHome && platformAllowsExchange) ...{
-      QuickAction.support,
-      QuickAction.priceHistory,
       QuickAction.buy,
       QuickAction.sell,
       QuickAction.pay,

@@ -1,4 +1,4 @@
-/// The closed catalogue, in the order used by the More sheet.
+/// The closed catalogue with stable persisted identifiers.
 enum QuickAction {
   map('map'),
   transfer('transfer'),
@@ -33,6 +33,19 @@ final class QuickActionsLayout {
 
   static const int maximumCells = 4;
 
+  static const moreOrder = [
+    QuickAction.buy,
+    QuickAction.sell,
+    QuickAction.pay,
+    QuickAction.exchange,
+    QuickAction.settings,
+    QuickAction.support,
+    QuickAction.priceHistory,
+    QuickAction.map,
+    QuickAction.transfer,
+    QuickAction.history,
+  ];
+
   final List<QuickAction> primary;
   final List<QuickAction> more;
 
@@ -48,6 +61,11 @@ final class QuickActionsLayout {
         selected.add(action);
       }
     }
+    // Preserve the saved selection, including an empty or unavailable one.
+    // Settings is only a display fallback, never an implicit preference write.
+    if (selected.isEmpty && available.contains(QuickAction.settings)) {
+      selected.add(QuickAction.settings);
+    }
     final candidate = selected.take(maximumCells).toList();
     final needsMore = available.any(
       (action) => candidate.contains(action) == false,
@@ -58,7 +76,7 @@ final class QuickActionsLayout {
     return QuickActionsLayout._(
       List.unmodifiable(primary),
       List.unmodifiable(
-        QuickAction.values.where(
+        moreOrder.where(
           (action) =>
               available.contains(action) && primary.contains(action) == false,
         ),
