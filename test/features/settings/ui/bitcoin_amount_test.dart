@@ -1,7 +1,7 @@
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
-import 'package:bb_mobile/features/settings/public/settings_facade.dart';
+import 'package:bb_mobile/core/widgets/text/currency_text.dart';
 import 'package:bb_mobile/generated/l10n/localization.dart';
 import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter/material.dart';
@@ -36,7 +36,9 @@ void main() {
         supportedLocales: AppLocalizations.supportedLocales,
         home: BlocProvider<SettingsCubit>.value(
           value: cubit,
-          child: const Scaffold(body: BitcoinAmountView(1)),
+          child: const Scaffold(
+            body: CurrencyText(1, showFiat: false, interactive: true),
+          ),
         ),
       ),
     );
@@ -74,7 +76,9 @@ void main() {
         supportedLocales: AppLocalizations.supportedLocales,
         home: BlocProvider<SettingsCubit>.value(
           value: cubit,
-          child: const Scaffold(body: BitcoinAmountView(12345)),
+          child: const Scaffold(
+            body: CurrencyText(12345, showFiat: false, interactive: true),
+          ),
         ),
       ),
     );
@@ -84,5 +88,46 @@ void main() {
     await tester.pump();
     expect(find.text('** BTC'), findsOneWidget);
     expect(find.textContaining('12345'), findsNothing);
+  });
+  testWidgets('explicit fiat remains text and follows the privacy setting', (
+    tester,
+  ) async {
+    final cubit = _SettingsCubit();
+    SettingsState state(bool hidden) => SettingsState(
+      storedSettings: SettingsEntity(
+        environment: Environment.mainnet,
+        bitcoinUnit: BitcoinUnit.btc,
+        currencyCode: 'USD',
+        hideAmounts: hidden,
+      ),
+    );
+    var current = state(false);
+    when(() => cubit.state).thenAnswer((_) => current);
+    when(
+      () => cubit.stream,
+    ).thenAnswer((_) => const Stream<SettingsState>.empty());
+    Widget screen() => MaterialApp(
+      home: BlocProvider<SettingsCubit>.value(
+        value: cubit,
+        child: const Scaffold(
+          body: CurrencyText(
+            123,
+            showFiat: false,
+            fiatAmount: 12.5,
+            fiatCurrency: 'USD',
+            interactive: true,
+          ),
+        ),
+      ),
+    );
+    await tester.pumpWidget(screen());
+    expect(find.text('12.50 USD'), findsOneWidget);
+    expect(find.byType(BullAmountUnitToggle), findsNothing);
+    current = state(true);
+    await tester.pumpWidget(const SizedBox.shrink());
+    await tester.pumpWidget(screen());
+    expect(find.text('** USD'), findsOneWidget);
+    expect(find.text('12.50 USD'), findsNothing);
+    expect(find.byType(BullAmountUnitToggle), findsNothing);
   });
 }
