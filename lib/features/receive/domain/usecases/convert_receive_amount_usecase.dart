@@ -1,12 +1,12 @@
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
-import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/features/receive/domain/receive_failure.dart';
 import 'package:bull_pricer/bull_pricer.dart';
 import 'package:meta/meta.dart';
-import 'package:primitives/primitives.dart' show BitcoinNetwork;
+import 'package:primitives/primitives.dart'
+    show BitcoinNetwork, Err, Ok, Result;
 
 /// [amountSat] in [currencyCode], or in the settings currency when none is
 /// given. Without an amount, the price of one bitcoin. Without a price,

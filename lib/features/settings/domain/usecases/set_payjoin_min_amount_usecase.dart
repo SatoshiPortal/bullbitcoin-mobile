@@ -1,8 +1,7 @@
-import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/settings/domain/settings_failure.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:meta/meta.dart';
-import 'package:primitives/primitives.dart' show Sats;
+import 'package:primitives/primitives.dart' show Result, Sats;
 
 class SetPayjoinMinAmountUsecase {
   final PayjoinPolicyAccess _policy;

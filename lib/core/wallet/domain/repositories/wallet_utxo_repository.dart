@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/wallet/domain/entities/outpoint.dart';
+import 'package:primitives/primitives.dart' show Outpoint;
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 
 abstract interface class WalletUtxoRepository {

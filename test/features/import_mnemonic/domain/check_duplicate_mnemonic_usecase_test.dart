@@ -1,6 +1,6 @@
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:unorm_dart/unorm_dart.dart' show nfc;
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart' show Err, Ok;
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
