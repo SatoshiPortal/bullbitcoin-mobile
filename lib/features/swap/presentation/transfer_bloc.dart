@@ -4,7 +4,7 @@ import 'package:bb_mobile/features/send/public/send_facade.dart'
         SendInsufficientBalanceFailure,
         SendInsufficientFundsForFeesFailure;
 import 'package:primitives/primitives.dart'
-    show BitcoinTransactionRecipient, Err, Ok, Result, Sats;
+    show BitcoinTransactionRecipient, BitcoinUnit, Err, Ok, Result, Sats;
 import 'dart:async';
 
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';

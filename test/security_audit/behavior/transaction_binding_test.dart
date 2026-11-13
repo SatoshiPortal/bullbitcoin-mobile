@@ -27,7 +27,7 @@ import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart
 import 'package:bb_mobile/features/transactions/domain/transaction_failure.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:primitives/primitives.dart' show Ok;
+import 'package:primitives/primitives.dart' show BitcoinUnit, Ok;
 
 /// The use case returns a `Result`; these tests are about what it binds, so a
 /// failure is a test failure rather than a case to assert on.
