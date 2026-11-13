@@ -1,5 +1,3 @@
-import 'package:bb_mobile/core/wallet/domain/wallet_mutation_guard.dart';
-import 'package:bb_mobile/core/wallet/domain/ports/wallet_retention_port.dart';
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
@@ -12,22 +10,6 @@ import 'package:secrets/secrets.dart';
 import 'package:secrets/testing.dart';
 
 class _MockWalletRepository extends Mock implements WalletRepository {}
-
-class _Retention implements WalletRetentionPort {
-  bool retained = false;
-  bool fail = false;
-  @override
-  Future<bool> retainsWallet(String walletId) async {
-    if (fail) throw StateError('unavailable');
-    return retained;
-  }
-
-  @override
-  Future<bool> retainsSecret(Fingerprint secretId) async {
-    if (fail) throw StateError('unavailable');
-    return retained;
-  }
-}
 
 class _MockBoltzSwapRepository extends Mock implements BoltzSwapRepository {}
 
@@ -56,7 +38,6 @@ void main() {
   late FakeSecureStoragePlatform storage;
   late Secrets secrets;
   late _MockWalletRepository walletRepository;
-  late _Retention retention;
   late _MockBoltzSwapRepository swapRepository;
   late DeleteWalletUsecase usecase;
   late String fingerprint;
@@ -81,12 +62,9 @@ void main() {
     fingerprint = stored.value.id.hex;
 
     walletRepository = _MockWalletRepository();
-    retention = _Retention();
     swapRepository = _MockBoltzSwapRepository();
     usecase = DeleteWalletUsecase(
       walletRepository: walletRepository,
-      mutationGuard: WalletMutationGuard(),
-      retention: retention,
       swapRepository: swapRepository,
       secrets: secrets,
     );
@@ -99,27 +77,6 @@ void main() {
   });
 
   group('DeleteWalletUsecase — orphan seed cleanup (issue #2324)', () {
-    for (final failure in [false, true]) {
-      test(
-        'retention or a failed check keeps an orphan secret: error=$failure',
-        () async {
-          retention.retained = true;
-          retention.fail = failure;
-          when(
-            () => walletRepository.getWallet(walletId),
-          ).thenAnswer((_) async => Ok<Wallet, WalletFailure>(buildWallet()));
-          when(
-            () => walletRepository.getWallets(),
-          ).thenAnswer((_) async => Ok([]));
-          expect(
-            await usecase.execute(walletId: walletId),
-            isA<Ok<void, WalletFailure>>(),
-          );
-          expect(storage.entries, contains(key()));
-        },
-      );
-    }
-
     test('deletes the secret once no remaining wallet references it', () async {
       when(
         () => walletRepository.getWallet(walletId),

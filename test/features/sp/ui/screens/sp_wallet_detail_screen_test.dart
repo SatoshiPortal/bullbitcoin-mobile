@@ -108,24 +108,6 @@ void main() {
     );
   }
 
-  testWidgets('pending recovery shows an explicit retry action', (
-    tester,
-  ) async {
-    when(
-      () => loadUsecase.execute(),
-    ).thenAnswer((_) async => const Err(SpRecoveryRequired()));
-    when(
-      () => harness.resumeUsecase.execute(),
-    ).thenAnswer((_) async => const Err(SpRecoveryRequired()));
-    await cubit.load();
-    await pumpPage(tester);
-    await tester.pump();
-    expect(find.text('Retry'), findsOneWidget);
-    await tester.tap(find.text('Retry'));
-    await tester.pump();
-    verify(() => harness.resumeUsecase.execute()).called(1);
-  });
-
   testWidgets('renders wallet title', (tester) async {
     await pumpPage(tester);
 

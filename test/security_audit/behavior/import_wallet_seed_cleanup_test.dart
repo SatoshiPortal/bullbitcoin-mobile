@@ -1,11 +1,8 @@
-import 'package:bb_mobile/core/wallet/domain/wallet_mutation_guard.dart';
-import 'package:bb_mobile/core/wallet/domain/ports/wallet_retention_port.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
-import 'package:primitives/primitives.dart'
-    show BitcoinUnit, Err, Fingerprint, Ok;
+import 'package:primitives/primitives.dart' show BitcoinUnit, Err, Ok;
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_error.dart';
@@ -14,8 +11,7 @@ import 'package:bb_mobile/features/import_mnemonic/domain/import_mnemonic_failur
 import 'package:bb_mobile/features/import_mnemonic/domain/import_wallet_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:secrets/secrets.dart' hide Language;
-import 'package:secrets/secrets.dart' as mnemonic show Language;
+import 'package:secrets/secrets.dart';
 import 'package:secrets/testing.dart';
 
 class _MockCheckDuplicateMnemonicUsecase extends Mock
@@ -24,22 +20,6 @@ class _MockCheckDuplicateMnemonicUsecase extends Mock
 class _MockSettingsRepository extends Mock implements SettingsRepository {}
 
 class _MockWalletRepository extends Mock implements WalletRepository {}
-
-class _Retention implements WalletRetentionPort {
-  bool retained = false;
-  bool fail = false;
-  @override
-  Future<bool> retainsWallet(String walletId) async {
-    if (fail) throw StateError('unavailable');
-    return retained;
-  }
-
-  @override
-  Future<bool> retainsSecret(Fingerprint secretId) async {
-    if (fail) throw StateError('unavailable');
-    return retained;
-  }
-}
 
 /// An import must delete only what it created.
 ///
@@ -72,7 +52,6 @@ void main() {
   late _MockCheckDuplicateMnemonicUsecase checkDuplicate;
   late _MockSettingsRepository settingsRepository;
   late _MockWalletRepository walletRepository;
-  late _Retention retention;
   late ImportWalletUsecase usecase;
 
   Iterable<String> storedSecrets() =>
@@ -86,7 +65,6 @@ void main() {
     registerFallbackValue((fallback as Ok<Secret, SecretFailure>).value);
     registerFallbackValue(Network.bitcoinMainnet);
     registerFallbackValue(ScriptType.bip84);
-    registerFallbackValue(mnemonic.Language.english);
   });
 
   setUp(() {
@@ -95,19 +73,15 @@ void main() {
     checkDuplicate = _MockCheckDuplicateMnemonicUsecase();
     settingsRepository = _MockSettingsRepository();
     walletRepository = _MockWalletRepository();
-    retention = _Retention();
     usecase = ImportWalletUsecase(
       checkDuplicateMnemonicUsecase: checkDuplicate,
       secrets: secrets,
       settingsRepository: settingsRepository,
       walletRepository: walletRepository,
-      mutationGuard: WalletMutationGuard(),
-      retention: retention,
     );
     when(
       () => checkDuplicate.execute(
         mnemonicWords: any(named: 'mnemonicWords'),
-        language: any(named: 'language'),
         passphrase: any(named: 'passphrase'),
       ),
     ).thenAnswer((_) async => const Ok(null));

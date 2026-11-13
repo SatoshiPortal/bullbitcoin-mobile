@@ -24,25 +24,12 @@ class _MockSpSetupCubit extends Mock implements SpSetupCubit {}
 class _FakeSpSetupCubit extends Cubit<SpSetupState> implements SpSetupCubit {
   _FakeSpSetupCubit(super.initialState);
 
-  int retryCount = 0;
-
   // Drives a programmatic state change (defaults landing, network switch) so a
   // test can assert the URL fields follow the state.
   void pushState(SpSetupState state) => emit(state);
 
   @override
-  Future<void> create(String walletId) async {}
-
-  @override
-  Future<void> retryPendingSetup() async {
-    retryCount++;
-  }
-
-  @override
-  Future<
-    Result<List<({String id, String label, bool hasPassphrase})>, SpFailure>
-  >
-  candidates(BitcoinNetwork network) async => const Ok([]);
+  Future<void> create() async {}
 
   @override
   Future<void> fetchRegtestDefaults() async {}
@@ -90,44 +77,9 @@ Widget _buildPage(_FakeSpSetupCubit cubit) => MaterialApp(
 
 void main() {
   group('SpSetupScreen', () {
-    testWidgets('pending setup keeps source selection hidden while retrying', (
-      tester,
-    ) async {
-      final cubit = _FakeSpSetupCubit(
-        const SpSetupState(
-          isInspecting: false,
-          form: SpBackendForm(error: SpRecoveryRequired()),
-        ),
-      );
-      await tester.pumpWidget(_buildPage(cubit));
-      expect(find.text('Resume saved setup'), findsOneWidget);
-      expect(find.byType(DropdownButtonFormField<String>), findsNothing);
-      expect(
-        find.byType(DropdownButtonFormField<BitcoinNetwork>),
-        findsNothing,
-      );
-
-      // Retry clears the transient error while running, but the setup must not
-      // expose a new source selector in the same screen instance.
-      cubit.pushState(
-        const SpSetupState(isInspecting: false, isCreating: true),
-      );
-      await tester.pump();
-      expect(find.text('Resume saved setup'), findsOneWidget);
-      expect(find.byType(DropdownButtonFormField<String>), findsNothing);
-      cubit.pushState(const SpSetupState(isInspecting: false));
-      await tester.pump();
-      await tester.tap(find.text('Resume saved setup'));
-      await tester.pump();
-      expect(cubit.retryCount, 1);
-      expect(find.byType(DropdownButtonFormField<String>), findsNothing);
-      await cubit.close();
-    });
-
     testWidgets('renders title and Create button', (tester) async {
       final cubit = _FakeSpSetupCubit(
         const SpSetupState(
-          isInspecting: false,
           form: SpBackendForm(
             blindbitUrl: 'http://b.local',
             electrumUrl: 'tcp://e.local:1',
@@ -142,7 +94,7 @@ void main() {
     });
 
     testWidgets('renders network dropdown', (tester) async {
-      final cubit = _FakeSpSetupCubit(const SpSetupState(isInspecting: false));
+      final cubit = _FakeSpSetupCubit(const SpSetupState());
 
       await tester.pumpWidget(_buildPage(cubit));
 
@@ -157,7 +109,6 @@ void main() {
     ) async {
       final cubit = _FakeSpSetupCubit(
         const SpSetupState(
-          isInspecting: false,
           form: SpBackendForm(network: BitcoinNetwork.regtest),
         ),
       );
@@ -172,7 +123,6 @@ void main() {
     ) async {
       final cubit = _FakeSpSetupCubit(
         const SpSetupState(
-          isInspecting: false,
           form: SpBackendForm(network: BitcoinNetwork.mainnet),
         ),
       );
@@ -183,9 +133,7 @@ void main() {
     });
 
     testWidgets('shows progress indicator when isCreating', (tester) async {
-      final cubit = _FakeSpSetupCubit(
-        const SpSetupState(isInspecting: false, isCreating: true),
-      );
+      final cubit = _FakeSpSetupCubit(const SpSetupState(isCreating: true));
 
       await tester.pumpWidget(_buildPage(cubit));
 
@@ -197,7 +145,6 @@ void main() {
     ) async {
       final cubit = _FakeSpSetupCubit(
         const SpSetupState(
-          isInspecting: false,
           form: SpBackendForm(
             network: BitcoinNetwork.regtest,
             isFetchingDefaults: true,
@@ -213,7 +160,6 @@ void main() {
     testWidgets('shows error banner when error is non-null', (tester) async {
       final cubit = _FakeSpSetupCubit(
         const SpSetupState(
-          isInspecting: false,
           form: SpBackendForm(error: SpUnexpected('diagnostic detail')),
         ),
       );
@@ -226,7 +172,7 @@ void main() {
     });
 
     testWidgets('shows two text inputs for the URLs', (tester) async {
-      final cubit = _FakeSpSetupCubit(const SpSetupState(isInspecting: false));
+      final cubit = _FakeSpSetupCubit(const SpSetupState());
 
       await tester.pumpWidget(_buildPage(cubit));
 
@@ -234,7 +180,7 @@ void main() {
     });
 
     testWidgets('the URL inputs stay on one line', (tester) async {
-      final cubit = _FakeSpSetupCubit(const SpSetupState(isInspecting: false));
+      final cubit = _FakeSpSetupCubit(const SpSetupState());
 
       await tester.pumpWidget(_buildPage(cubit));
 
@@ -249,10 +195,7 @@ void main() {
       tester,
     ) async {
       final cubit = _FakeSpSetupCubit(
-        const SpSetupState(
-          isInspecting: false,
-          form: SpBackendForm(isFetchingDefaults: true),
-        ),
+        const SpSetupState(form: SpBackendForm(isFetchingDefaults: true)),
       );
 
       await tester.pumpWidget(_buildPage(cubit));
@@ -263,7 +206,6 @@ void main() {
 
       cubit.pushState(
         const SpSetupState(
-          isInspecting: false,
           form: SpBackendForm(
             blindbitUrl: 'http://b.default',
             electrumUrl: 'tcp://e.default:1',
@@ -285,7 +227,6 @@ void main() {
     testWidgets('URL fields follow a network switch', (tester) async {
       final cubit = _FakeSpSetupCubit(
         const SpSetupState(
-          isInspecting: false,
           form: SpBackendForm(
             network: BitcoinNetwork.regtest,
             blindbitUrl: 'http://regtest.blindbit',
@@ -302,7 +243,6 @@ void main() {
 
       cubit.pushState(
         const SpSetupState(
-          isInspecting: false,
           form: SpBackendForm(
             network: BitcoinNetwork.mainnet,
             blindbitUrl: 'http://bitcoin.blindbit',
@@ -325,7 +265,6 @@ void main() {
     testWidgets('Create button is visible', (tester) async {
       final cubit = _FakeSpSetupCubit(
         const SpSetupState(
-          isInspecting: false,
           form: SpBackendForm(
             blindbitUrl: 'http://b.local',
             electrumUrl: 'tcp://e.local:1',
@@ -370,12 +309,7 @@ void main() {
     setUp(() {
       cubit = _MockSpSetupCubit();
       when(() => cubit.close()).thenAnswer((_) async {});
-      when(() => cubit.candidates(any())).thenAnswer(
-        (_) async => const Ok([
-          (id: 'wallet', label: 'Selected wallet', hasPassphrase: true),
-        ]),
-      );
-      when(() => cubit.create(any())).thenAnswer((_) async {});
+      when(() => cubit.create()).thenAnswer((_) async {});
       when(() => cubit.fetchRegtestDefaults()).thenAnswer((_) async {});
       when(() => cubit.setNetwork(any())).thenAnswer((_) async {});
       when(() => cubit.setBlindbitUrl(any())).thenReturn(null);
@@ -386,7 +320,6 @@ void main() {
       // Create button is only enabled when both URLs are non-empty and tested.
       seed(
         const SpSetupState(
-          isInspecting: false,
           form: SpBackendForm(
             blindbitUrl: 'http://b.local',
             electrumUrl: 'tcp://e.local:1',
@@ -398,11 +331,6 @@ void main() {
 
       await tester.pumpWidget(buildMockPage(cubit));
 
-      await tester.pump();
-      await tester.tap(find.byType(DropdownButtonFormField<String>));
-      await tester.pumpAndSettle();
-      await tester.tap(find.text('Selected wallet').last);
-      await tester.pumpAndSettle();
       expect(find.text('Create'), findsOneWidget);
       // The themed form is taller than the test surface, so Create starts
       // below the fold.
@@ -410,13 +338,13 @@ void main() {
       await tester.tap(find.text('Create'));
       await tester.pump();
 
-      verify(() => cubit.create('wallet')).called(1);
+      verify(() => cubit.create()).called(1);
     });
 
     testWidgets('typing in Blindbit field calls setBlindbitUrl', (
       tester,
     ) async {
-      seed(const SpSetupState(isInspecting: false));
+      seed(const SpSetupState());
 
       await tester.pumpWidget(buildMockPage(cubit));
 
@@ -430,7 +358,7 @@ void main() {
     testWidgets('typing in Electrum field calls setElectrumUrl', (
       tester,
     ) async {
-      seed(const SpSetupState(isInspecting: false));
+      seed(const SpSetupState());
 
       await tester.pumpWidget(buildMockPage(cubit));
 
@@ -446,7 +374,6 @@ void main() {
     testWidgets('selecting a network calls cubit.setNetwork', (tester) async {
       seed(
         const SpSetupState(
-          isInspecting: false,
           form: SpBackendForm(network: BitcoinNetwork.regtest),
         ),
       );
@@ -473,7 +400,6 @@ void main() {
     ) async {
       seed(
         const SpSetupState(
-          isInspecting: false,
           form: SpBackendForm(network: BitcoinNetwork.regtest),
         ),
       );

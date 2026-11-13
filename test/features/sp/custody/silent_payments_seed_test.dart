@@ -76,25 +76,28 @@ void main() {
         expect(failure, isA<UseSecretFailure>());
         expect(failure.toString(), isNot(contains('untrusted native error')));
         expect(api.calls, 1);
-        expect(api.seed, isNotNull);
-        expect(api.passedBuffer, isNotNull);
+        final actualSeed = api.seed;
+        final passedBuffer = api.passedBuffer;
+        if (actualSeed == null || passedBuffer == null) {
+          fail('native boundary did not receive a seed buffer');
+        }
         expect(
-          api.seed!.length == expected.length &&
+          actualSeed.length == expected.length &&
               List.generate(
                 expected.length,
-                (i) => api.seed![i] == expected[i],
+                (i) => actualSeed[i] == expected[i],
               ).every((match) => match),
           isTrue,
           reason: 'native boundary receives the full BIP39 seed',
         );
         expect(
-          api.passedBuffer!.length == 64 &&
-              api.passedBuffer!.every((byte) => byte == 0),
+          passedBuffer.length == 64 && passedBuffer.every((byte) => byte == 0),
           isTrue,
           reason: 'the transferred Dart buffer is wiped after the call',
         );
       } finally {
-        api.seed?.fillRange(0, api.seed!.length, 0);
+        final seed = api.seed;
+        if (seed != null) seed.fillRange(0, seed.length, 0);
         expected.fillRange(0, expected.length, 0);
       }
     });
@@ -122,25 +125,28 @@ void main() {
       expect(result, isA<Ok<SpAccount, SecretFailure>>());
       expect((result as Ok<SpAccount, SecretFailure>).value, same(account));
       expect(api.calls, 1);
-      expect(api.seed, isNotNull);
-      expect(api.passedBuffer, isNotNull);
+      final actualSeed = api.seed;
+      final passedBuffer = api.passedBuffer;
+      if (actualSeed == null || passedBuffer == null) {
+        fail('native boundary did not receive a seed buffer');
+      }
       expect(
-        api.seed!.length == expected.length &&
+        actualSeed.length == expected.length &&
             List.generate(
               expected.length,
-              (i) => api.seed![i] == expected[i],
+              (i) => actualSeed[i] == expected[i],
             ).every((match) => match),
         isTrue,
         reason: 'native boundary receives the full BIP39 seed',
       );
       expect(
-        api.passedBuffer!.length == 64 &&
-            api.passedBuffer!.every((byte) => byte == 0),
+        passedBuffer.length == 64 && passedBuffer.every((byte) => byte == 0),
         isTrue,
         reason: 'the transferred Dart buffer is wiped after success',
       );
     } finally {
-      api.seed?.fillRange(0, api.seed!.length, 0);
+      final seed = api.seed;
+      if (seed != null) seed.fillRange(0, seed.length, 0);
       expected.fillRange(0, expected.length, 0);
     }
   });

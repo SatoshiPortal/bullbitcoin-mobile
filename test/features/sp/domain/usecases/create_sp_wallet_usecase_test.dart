@@ -1,6 +1,3 @@
-import 'dart:async';
-import 'package:bb_mobile/features/sp/domain/sp_session_guard.dart';
-import 'package:bb_mobile/core/wallet/domain/wallet_mutation_guard.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:primitives/primitives.dart';
@@ -32,22 +29,18 @@ void main() {
   late FakeSpBackendConfigRepository configRepo;
   late CreateSpWalletUsecase usecase;
 
-  CreateSpWalletUsecase build({WalletMutationGuard? mutationGuard}) =>
-      CreateSpWalletUsecase(
-        walletMutationGuard: mutationGuard ?? WalletMutationGuard(),
-        guard: SpSessionGuard(),
-        getSpSecretUsecase: secretUsecase,
-        settingsRepository: settingsRepo,
-        repository: accountRepo,
-        files: accountRepo,
-        configRepository: configRepo,
-        scanSpWalletUsecase: ScanSpWalletUsecase(repository: accountRepo),
-      );
+  CreateSpWalletUsecase build() => CreateSpWalletUsecase(
+    getSpSecretUsecase: secretUsecase,
+    settingsRepository: settingsRepo,
+    repository: accountRepo,
+    files: accountRepo,
+    configRepository: configRepo,
+    scanSpWalletUsecase: ScanSpWalletUsecase(repository: accountRepo),
+  );
 
   Future<Result<void, SpFailure>> run({bool scanFromNow = false}) =>
       usecase.execute(
         network: BitcoinNetwork.regtest,
-        walletId: 'wallet',
         blindbitUrl: 'http://blindbit.example',
         electrumUrl: 'tcp://electrum.example:50001',
         scanFromNow: scanFromNow,
@@ -60,48 +53,15 @@ void main() {
     final secret = await spSecret();
     settingsRepo = _MockSettingsRepository();
     // hasSessionValue false so create actually reaches createFromSecret.
-    accountRepo = FakeSpAccountRepository(
-      hasSessionValue: false,
-      accountDir: false,
-    );
+    accountRepo = FakeSpAccountRepository(hasSessionValue: false);
     configRepo = FakeSpBackendConfigRepository();
 
     when(() => settingsRepo.fetch()).thenAnswer((_) async => _settings());
     when(
-      () => secretUsecase.resolve(any(), walletId: any(named: 'walletId')),
-    ).thenAnswer((_) async => Ok((secret: secret, binding: spSourceBinding)));
+      () => secretUsecase.execute(any()),
+    ).thenAnswer((_) async => Ok(secret));
     usecase = build();
   });
-
-  test(
-    'holds the shared mutation guard across source selection and config save',
-    () async {
-      final guard = WalletMutationGuard();
-      final entered = Completer<void>();
-      final resume = Completer<void>();
-      final secret = await spSecret();
-      when(
-        () => secretUsecase.resolve(any(), walletId: any(named: 'walletId')),
-      ).thenAnswer((_) async {
-        entered.complete();
-        await resume.future;
-        return Ok((secret: secret, binding: spSourceBinding));
-      });
-      usecase = build(mutationGuard: guard);
-      final creating = run();
-      await entered.future;
-      var mutationEntered = false;
-      final otherMutation = guard.exclusive(() async {
-        mutationEntered = true;
-      });
-      await Future<void>.delayed(Duration.zero);
-      expect(mutationEntered, isFalse);
-      resume.complete();
-      expect(await creating, isA<Ok<void, SpFailure>>());
-      await otherMutation;
-      expect(mutationEntered, isTrue);
-    },
-  );
 
   group('CreateSpWalletUsecase gates', () {
     test('refuses with SpRequiresSuperuser when superuser is off', () async {
@@ -143,20 +103,6 @@ void main() {
   });
 
   group('CreateSpWalletUsecase double-setup', () {
-    test('does not overwrite orphaned backups without a config', () async {
-      accountRepo.orphanBackups = true;
-      final result = await run();
-      expect((result as Err).failure, isA<SpRecoveryRequired>());
-      expect(accountRepo.createCount, 0);
-    });
-
-    test('does not overwrite an account directory without a config', () async {
-      accountRepo.accountDir = true;
-      final result = await run();
-      expect((result as Err).failure, isA<SpRecoveryRequired>());
-      expect(accountRepo.createCount, 0);
-    });
-
     test(
       'refuses with SpAlreadySetUp when a config is stored and no sentinel',
       () async {
@@ -193,27 +139,55 @@ void main() {
       },
     );
 
-    test('a corrupt stored config blocks setup', () async {
-      configRepo.failFetch = true;
+    test(
+      'a corrupt stored config does not block setup (counts as absent)',
+      () async {
+        configRepo.failFetch = true;
 
-      final result = await run();
+        final result = await run();
 
-      expect(result, isA<Err<void, SpFailure>>());
-      expect(accountRepo.createCount, 0);
-    });
+        expect(result, isA<Ok<void, SpFailure>>());
+        expect(accountRepo.createCount, 1);
+      },
+    );
   });
 
-  group('CreateSpWalletUsecase incomplete revoke', () {
+  group('CreateSpWalletUsecase stale-sentinel cleanup', () {
     test(
-      'preserves the revoked directory and requires an explicit retry',
+      'wipes the stale account dir, then creates and persists the config',
+      () async {
+        accountRepo.sentinel = true; // a prior revoke left a sentinel behind
+
+        final result = await run();
+
+        expect(result, isA<Ok<void, SpFailure>>());
+        expect(accountRepo.sentinel, isFalse, reason: 'stale dir was wiped');
+        expect(accountRepo.createCount, 1);
+        expect(
+          (await configRepo.fetch()),
+          isA<Ok<SpBackendConfig?, SpFailure>>().having(
+            (r) => (r as Ok).value,
+            'config',
+            isNotNull,
+          ),
+        );
+      },
+    );
+
+    test(
+      'refuses with SpSetupCleanupFailed when the stale wipe throws',
       () async {
         accountRepo.sentinel = true;
-        accountRepo.accountDir = true;
+        accountRepo.wipeShouldFail = true;
+
         final result = await run();
-        expect((result as Err).failure, isA<SpRecoveryRequired>());
-        expect(accountRepo.sentinel, isTrue);
-        expect(accountRepo.accountDir, isTrue);
-        expect(accountRepo.createCount, 0);
+
+        expect((result as Err).failure, isA<SpSetupCleanupFailed>());
+        expect(
+          accountRepo.createCount,
+          0,
+          reason: 'no create if cleanup failed',
+        );
       },
     );
   });
@@ -222,15 +196,13 @@ void main() {
     test('looks the secret up on the network being set up', () async {
       await run();
 
-      verify(
-        () => secretUsecase.resolve(BitcoinNetwork.regtest, walletId: 'wallet'),
-      ).called(1);
+      verify(() => secretUsecase.execute(BitcoinNetwork.regtest)).called(1);
     });
 
     test('forwards a secret lookup failure and never creates', () async {
       when(
-        () => secretUsecase.resolve(any(), walletId: any(named: 'walletId')),
-      ).thenAnswer((_) async => const Err(SpUnexpected('lookup failed')));
+        () => secretUsecase.execute(any()),
+      ).thenAnswer((_) async => const Err(SpUnexpected()));
 
       final result = await run();
 
@@ -238,26 +210,31 @@ void main() {
       expect(accountRepo.createCount, 0);
     });
 
-    test('reports recovery required when native creation fails', () async {
+    test('maps a createFromSecret throw to SpUnexpected', () async {
       accountRepo.createShouldFail = true;
 
       final result = await run();
 
-      expect((result as Err).failure, isA<SpRecoveryRequired>());
+      expect((result as Err).failure, isA<SpUnexpected>());
     });
 
-    test(
-      'preserves the config and pending directory on native failure',
-      () async {
-        accountRepo.createShouldFail = true;
-        final result = await run();
-        expect((result as Err).failure, isA<SpRecoveryRequired>());
-        final stored =
-            (await configRepo.fetch()) as Ok<SpBackendConfig?, SpFailure>;
-        expect(stored.value, isNotNull);
-        expect(accountRepo.accountDir, isTrue);
-      },
-    );
+    test('rolls the config back on a createFromSecret throw so retry is not '
+        'wedged by SpAlreadySetUp', () async {
+      accountRepo.createShouldFail = true;
+
+      final result = await run();
+
+      expect((result as Err).failure, isA<SpUnexpected>());
+      final stored =
+          (await configRepo.fetch()) as Ok<SpBackendConfig?, SpFailure>;
+      expect(
+        stored.value,
+        isNull,
+        reason:
+            'a failed first-time setup must leave no persisted config, '
+            'else the next setup hits the double-setup guard',
+      );
+    });
 
     test('a save failure returns Err and never reaches create', () async {
       configRepo.saveShouldFail = true;
@@ -272,7 +249,7 @@ void main() {
       'a secret lookup throw returns Err (execute is total, does not throw)',
       () async {
         when(
-          () => secretUsecase.resolve(any(), walletId: any(named: 'walletId')),
+          () => secretUsecase.execute(any()),
         ).thenThrow(Exception('secret read failed'));
 
         final result = await run();

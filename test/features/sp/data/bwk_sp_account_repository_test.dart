@@ -48,9 +48,6 @@ class _FakeFfiDatasource extends BwkSpAccountDatasource {
   bool get hasSession => session;
 
   @override
-  bool get hasRetainedHandle => session;
-
-  @override
   Future<void> dispose() async {
     final error = disposeError;
     if (error != null) throw error;
@@ -154,31 +151,31 @@ void main() {
   Future<Result<void, SpFailure>> createOn(BwkSpAccountRepository repo) async =>
       repo.createFromSecret(
         network: BitcoinNetwork.mainnet,
-        expectedConfig: spBackendConfig(network: BitcoinNetwork.mainnet),
         secret: await spSecret(),
         blindbitUrl: 'http://blindbit.example',
         electrumUrl: 'tcp://electrum.example:50001',
       );
 
-  group('createFromSecret lock preservation', () {
-    test('preserves advisory lock files when opening fails', () async {
-      await SpAccountFilesDatasource().createAccountDir(
-        spBackendConfig(network: BitcoinNetwork.mainnet),
-      );
-      final locks = [
-        for (final name in SpStorageNames.lockFiles)
-          File('${accountDirOf().path}/$name')..writeAsStringSync(''),
-      ];
-      expect(locks.every((f) => f.existsSync()), isTrue);
+  group('createFromSecret lock clearing', () {
+    test(
+      'clears every stale advisory lock before opening the account',
+      () async {
+        accountDirOf().createSync();
+        final locks = [
+          for (final name in SpStorageNames.lockFiles)
+            File('${accountDirOf().path}/$name')..writeAsStringSync(''),
+        ];
+        expect(locks.every((f) => f.existsSync()), isTrue);
 
-      // The matching pending marker reaches the open path. Failure to open
-      // must not unlink advisory lock files.
-      await createOn(makeRepo(ffi: _FakeFfiDatasource(session: false)));
+        // The FFI create cannot run in a unit test, so it fails. The lock
+        // clearing happens first, which is what this asserts.
+        await createOn(makeRepo(ffi: _FakeFfiDatasource(session: false)));
 
-      expect(locks.every((f) => f.existsSync()), isTrue);
-    });
+        expect(locks.every((f) => f.existsSync()), isFalse);
+      },
+    );
 
-    test('the header store lock remains a recognized lock', () {
+    test('the header store lock is one of the cleared locks', () {
       expect(SpStorageNames.lockFiles, contains(SpStorageNames.headerLockFile));
     });
   });
@@ -199,7 +196,8 @@ void main() {
     });
 
     test('the refused create leaves the stale locks alone', () async {
-      // A refused second opener must not unlink the existing lock.
+      // The strong form of "bails before doing any work": lock clearing runs
+      // right after the guard, so a surviving lock pins the early return.
       accountDirOf().createSync();
       final lock = File('${accountDirOf().path}/${SpStorageNames.lockFile}')
         ..writeAsStringSync('');

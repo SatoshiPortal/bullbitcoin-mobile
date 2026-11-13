@@ -38,7 +38,6 @@ void main() {
     datasource = BwkSpAccountDatasource();
     await datasource.createFromSecret(
       network: SpNetwork.signet,
-      expectedAddress: 'same account',
       secret: secret,
       blindbitUrl: '',
       electrumUrl: '',
@@ -47,7 +46,6 @@ void main() {
       matchConcurrencyFactor: 1,
       headerCheckpoint: null,
     );
-    datasource.publish();
   });
 
   test('disposes then releases before clearing the session', () async {
@@ -88,38 +86,6 @@ void main() {
 
       verifyInOrder([() => account.dispose(), () => account.release()]);
       expect(datasource.hasSession, isTrue);
-    },
-  );
-
-  test(
-    'mismatched account is not published and failed release retains it',
-    () async {
-      when(() => account.dispose()).thenAnswer((_) async {});
-      when(() => account.release()).thenAnswer((_) async {});
-      await datasource.dispose();
-      datasource = BwkSpAccountDatasource();
-      when(() => account.spAddress()).thenReturn('different address');
-      when(() => account.dispose()).thenThrow(const SpError.disposeTimedOut());
-      await expectLater(
-        datasource.createFromSecret(
-          network: SpNetwork.signet,
-          expectedAddress: 'expected address',
-          secret: secret,
-          blindbitUrl: '',
-          electrumUrl: '',
-          dataDir: '/tmp',
-          fetchConcurrencyFactor: 1,
-          matchConcurrencyFactor: 1,
-          headerCheckpoint: null,
-        ),
-        throwsA(isA<SpAccountAddressMismatch>()),
-      );
-      expect(datasource.hasSession, isFalse);
-      expect(datasource.hasRetainedHandle, isTrue);
-      expect(() => datasource.spAddress(), throwsStateError);
-      when(() => account.dispose()).thenAnswer((_) async {});
-      await datasource.dispose();
-      expect(datasource.hasRetainedHandle, isFalse);
     },
   );
 }

@@ -184,7 +184,8 @@ void main() {
     final first = tester
         .widgetList<TextField>(find.byType(TextField))
         .first
-        .controller!;
+        .controller;
+    if (first == null) fail('first mnemonic field has no controller');
     first.text = '';
     first.text = words.first;
     await tester.pumpAndSettle();
@@ -224,7 +225,8 @@ void main() {
     final firstHint = find
         .ancestor(of: find.text('abandon').last, matching: find.byType(InkWell))
         .first;
-    final oldTap = tester.widget<InkWell>(firstHint).onTap!;
+    final oldTap = tester.widget<InkWell>(firstHint).onTap;
+    if (oldTap == null) fail('suggestion has no tap callback');
     final keyboard = tester.widget<MnemonicKeyboard>(
       find.byType(MnemonicKeyboard),
     );

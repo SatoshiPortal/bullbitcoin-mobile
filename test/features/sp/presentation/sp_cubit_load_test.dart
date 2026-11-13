@@ -70,16 +70,6 @@ void main() {
     await cubit.close();
   });
 
-  test('pending setup does not start automatic self-healing', () async {
-    when(
-      () => loadUsecase.execute(),
-    ).thenAnswer((_) async => const Err(SpRecoveryRequired()));
-    await cubit.load();
-    expect(cubit.state.error, isA<SpRecoveryRequired>());
-    verifyNever(() => watchUsecase.execute());
-    verifyNever(() => harness.resumeUsecase.execute());
-  });
-
   test('initial state is empty', () {
     expect(cubit.state, const SpState());
   });

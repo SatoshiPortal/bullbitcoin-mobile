@@ -397,7 +397,6 @@ import 'package:bip39_mnemonic/bip39_mnemonic.dart'
       'revealMnemonic': 'material',
       // a bwk account that scans and signs; bwk holds signing capability while it lives
       'silentPaymentsAccount': 'capability',
-      'silentPaymentsAddress': 'derived',
       // ciphertext plus the key that opens it
       'backupRecoverbull': 'ciphertext',
     };

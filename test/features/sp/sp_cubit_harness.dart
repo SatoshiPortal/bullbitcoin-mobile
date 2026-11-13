@@ -1,4 +1,3 @@
-import 'package:bb_mobile/features/sp/domain/usecases/resume_sp_setup_usecase.dart';
 import 'package:bb_mobile/features/sp/watchers/sp_header_retry_watcher.dart';
 import 'package:bb_mobile/features/sp/domain/sp_failure.dart';
 import 'package:bb_mobile/features/sp/watchers/sp_notifications_watcher.dart';
@@ -64,8 +63,6 @@ SpWalletData spWalletData({
 // keeps its own stubbing (return values, throws); this only factors out the
 // copy-pasted mock declarations and cubit construction.
 
-class MockResumeSpSetupUsecase extends Mock implements ResumeSpSetupUsecase {}
-
 class MockLoadSpWalletDataUsecase extends Mock
     implements LoadSpWalletDataUsecase {}
 
@@ -97,7 +94,6 @@ class MockEnsureSpSessionUsecase extends Mock
 /// stays in the test's `setUp`.
 class SpCubitHarness {
   final loadUsecase = MockLoadSpWalletDataUsecase();
-  final resumeUsecase = MockResumeSpSetupUsecase();
   final restampUsecase = MockRestampSpPaymentTimesUsecase();
   final watchUsecase = MockWatchSpNotificationsUsecase();
   final ensureUsecase = MockEnsureSpSessionUsecase();
@@ -124,7 +120,6 @@ class SpCubitHarness {
       () => restampUsecase.execute(),
     ).thenReturn(const Ok<void, SpFailure>(null));
     return SpCubit(
-      resumeSpSetupUsecase: resumeUsecase,
       loadSpWalletDataUsecase: loadUsecase,
       restampSpPaymentTimesUsecase: restampUsecase,
       spNotificationsWatcher: SpNotificationsWatcher(

@@ -16,7 +16,6 @@ void main() {
 
     SpBackendConfig config() => SpBackendConfig(
       network: BitcoinNetwork.regtest,
-      source: spSourceBinding,
       blindbitUrl: 'http://blindbit.example',
       electrumUrl: 'tcp://electrum.example:50001',
     );
@@ -47,7 +46,7 @@ void main() {
 
     test('fetch reports corrupt stored json as SpConfigInvalid', () async {
       final storage = InMemoryKeyValueStorage();
-      await storage.saveValue(key: 'sp_backend_config_v2', value: 'not json');
+      await storage.saveValue(key: 'sp_backend_config', value: 'not json');
 
       final result = await build(storage).fetch();
 
@@ -55,32 +54,22 @@ void main() {
       expect(failure, isA<SpConfigInvalid>());
     });
 
-    test(
-      'fetchOrNull preserves both corrupt config and read failure',
-      () async {
-        final storage = InMemoryKeyValueStorage();
-        await storage.saveValue(key: 'sp_backend_config_v2', value: 'not json');
-        expect(
-          await build(storage).fetchOrNull(),
-          isA<Err<SpBackendConfig?, SpFailure>>(),
-        );
-        expect(
-          await build(ThrowingKeyValueStorage()).fetchOrNull(),
-          isA<Err<SpBackendConfig?, SpFailure>>(),
-        );
-      },
-    );
-
-    test('legacy config is preserved and never treated as V2', () async {
+    test('fetchOrNull folds a corrupt config to absent but keeps a read '
+        'failure as Err', () async {
+      // Setup overwrites a corrupt config, so it reads as absent. A keystore
+      // that cannot be read is not the same as "no wallet".
       final storage = InMemoryKeyValueStorage();
-      await storage.saveValue(key: 'sp_backend_config', value: 'legacy');
-      final result = await build(storage).fetch();
+      await storage.saveValue(key: 'sp_backend_config', value: 'not json');
+
       expect(
-        (result as Err<SpBackendConfig?, SpFailure>).failure,
-        isA<SpLegacySourceUnverified>(),
+        (await build(storage).fetchOrNull() as Ok<SpBackendConfig?, SpFailure>)
+            .value,
+        isNull,
       );
-      await build(storage).delete();
-      expect(await storage.getValue('sp_backend_config'), 'legacy');
+      expect(
+        await build(ThrowingKeyValueStorage()).fetchOrNull(),
+        isA<Err<SpBackendConfig?, SpFailure>>(),
+      );
     });
 
     test('save then fetch round-trips the config', () async {
