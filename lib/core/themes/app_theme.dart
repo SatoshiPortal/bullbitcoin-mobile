@@ -64,20 +64,62 @@ class AppTheme {
         ? Brightness.dark
         : Brightness.light;
     final fonts = AppFonts.textTheme;
+    const shapes = BullShapes.standard;
 
     return ThemeData(
       useMaterial3: true,
       brightness: brightness,
-      extensions: [_bullThemeFrom(colors)],
+      extensions: [_bullThemeFrom(colors), shapes],
+      // Material widgets read Bull's colours, so nothing is derived from the red seed. Roles without a Bull colour use the nearest one.
       colorScheme: ColorScheme.fromSeed(
         seedColor: colors.primary,
         brightness: brightness,
         primary: colors.primary,
+        onPrimary: colors.onPrimary,
+        primaryContainer: colors.primary.withValues(alpha: 0.12),
+        onPrimaryContainer: colors.primary,
+        primaryFixed: colors.primaryFixed,
+        onPrimaryFixed: colors.onPrimaryFixed,
+        inversePrimary: colors.primary,
+        secondary: colors.secondary,
+        onSecondary: colors.onSecondary,
+        secondaryContainer: colors.surfaceContainerHighest,
+        onSecondaryContainer: colors.onSurface,
+        secondaryFixed: colors.secondaryFixed,
+        secondaryFixedDim: colors.secondaryFixedDim,
+        onSecondaryFixed: colors.onSecondaryFixed,
+        tertiary: colors.tertiary,
+        onTertiary: colors.onTertiary,
+        tertiaryContainer: colors.tertiaryContainer,
+        onTertiaryContainer: colors.onTertiary,
+        error: colors.error,
+        onError: colors.onError,
+        errorContainer: colors.errorContainer,
+        onErrorContainer: colors.error,
+        surface: colors.surface,
+        onSurface: colors.onSurface,
+        surfaceDim: colors.background,
+        surfaceBright: colors.surfaceBright,
+        surfaceContainerLowest: colors.surface,
+        surfaceContainerLow: colors.surface,
+        surfaceContainer: colors.surfaceContainer,
+        surfaceContainerHigh: colors.cardBackground,
+        surfaceContainerHighest: colors.surfaceContainerHighest,
+        onSurfaceVariant: colors.onSurfaceVariant,
+        inverseSurface: colors.inverseSurface,
+        onInverseSurface: colors.surface,
+        outline: colors.outline,
+        outlineVariant: colors.outlineVariant,
+        scrim: colors.scrim,
+        surfaceTint: colors.transparent,
       ),
       canvasColor: colors.cardBackground,
       scaffoldBackgroundColor: colors.background,
       fontFamily: fonts.fontFamily,
-      textTheme: fonts.textTheme,
+      textTheme: fonts.textTheme.apply(
+        bodyColor: colors.text,
+        displayColor: colors.text,
+      ),
       /* TODO: Add theme for inputs like TextField here and remove BBInputText
        Make sure to check impact on all different inputs in the app and adjust accordingly.
        + do the same for other widgets like dropdowns, buttons, etc.
@@ -116,6 +158,8 @@ class AppTheme {
           color: colors.text,
         ),
         centerTitle: true,
+        iconTheme: IconThemeData(color: colors.text),
+        actionsIconTheme: IconThemeData(color: colors.text),
       ),
       actionIconTheme: ActionIconThemeData(
         backButtonIconBuilder: (context) => const Icon(Icons.arrow_back),
@@ -132,7 +176,7 @@ class AppTheme {
       cardTheme: CardThemeData(
         color: colors.cardBackground,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(2),
+          borderRadius: BorderRadius.circular(shapes.card),
           side: BorderSide(color: colors.border),
         ),
         elevation: 0,
@@ -162,7 +206,7 @@ class AppTheme {
       listTileTheme: ListTileThemeData(
         tileColor: colors.surface,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(2),
+          borderRadius: BorderRadius.circular(shapes.card),
           side: BorderSide(color: colors.border),
         ),
         textColor: colors.text,
@@ -200,6 +244,7 @@ class WidgetStyles {
     BuildContext context,
     String hintText,
   ) {
+    final shapes = context.bullShapes;
     return InputDecoration(
       fillColor: context.appColors.surface,
       filled: true,
@@ -209,15 +254,15 @@ class WidgetStyles {
       ),
       contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 10),
       border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(4),
+        borderRadius: BorderRadius.circular(shapes.input),
         borderSide: BorderSide(color: context.appColors.border),
       ),
       enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(4),
+        borderRadius: BorderRadius.circular(shapes.input),
         borderSide: BorderSide(color: context.appColors.border),
       ),
       focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(shapes.input),
         borderSide: BorderSide(color: context.appColors.border, width: 2.0),
       ),
     );

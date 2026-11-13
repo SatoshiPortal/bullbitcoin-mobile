@@ -174,8 +174,8 @@ packages:
     dependency: "direct main"
     description:
       path: "packages/bitbox-transport"
-      ref: "1b01dc5e962c4c068fc4934b8125b839e2cd3264"
-      resolved-ref: "1b01dc5e962c4c068fc4934b8125b839e2cd3264"
+      ref: "571ab40a3dd2c458c7c212a95a2f192e0d0cef4b"
+      resolved-ref: "571ab40a3dd2c458c7c212a95a2f192e0d0cef4b"
       url: "https://github.com/SatoshiPortal/bull_sdk"
     source: git
     version: "0.1.0"
@@ -240,8 +240,8 @@ packages:
     dependency: "direct main"
     description:
       path: "packages/boltz-stream"
-      ref: "1b01dc5e962c4c068fc4934b8125b839e2cd3264"
-      resolved-ref: "1b01dc5e962c4c068fc4934b8125b839e2cd3264"
+      ref: "571ab40a3dd2c458c7c212a95a2f192e0d0cef4b"
+      resolved-ref: "571ab40a3dd2c458c7c212a95a2f192e0d0cef4b"
       url: "https://github.com/SatoshiPortal/bull_sdk"
     source: git
     version: "0.1.0"
@@ -329,8 +329,8 @@ packages:
     dependency: "direct main"
     description:
       path: "packages/bull_sdk"
-      ref: "1b01dc5e962c4c068fc4934b8125b839e2cd3264"
-      resolved-ref: "1b01dc5e962c4c068fc4934b8125b839e2cd3264"
+      ref: "571ab40a3dd2c458c7c212a95a2f192e0d0cef4b"
+      resolved-ref: "571ab40a3dd2c458c7c212a95a2f192e0d0cef4b"
       url: "https://github.com/SatoshiPortal/bull_sdk"
     source: git
     version: "1.0.0+1"
@@ -671,7 +671,7 @@ packages:
     source: hosted
     version: "0.2.8"
   extension_google_sign_in_as_googleapis_auth:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: extension_google_sign_in_as_googleapis_auth
       sha256: "0dcb17e399f62e897ac78f0a402a3cb6ab9313ced8b2bf131f684d317e05c9ab"
@@ -840,38 +840,19 @@ packages:
   flutter_secure_storage:
     dependency: "direct main"
     description:
-      path: flutter_secure_storage
-      ref: "0a0869d0ff0ba2b3cb3576c4a2350428dec30f77"
-      resolved-ref: "0a0869d0ff0ba2b3cb3576c4a2350428dec30f77"
-      url: "https://github.com/SatoshiPortal/flutter_secure_storage"
-    source: git
-    version: "10.0.0"
+      name: flutter_secure_storage
+      sha256: "6a79c298171e6165823c41db058e10ad0e0d1f10af361a7e7c8d74f058435f50"
+      url: "https://pub.dev"
+    source: hosted
+    version: "10.3.3"
   flutter_secure_storage_darwin:
     dependency: transitive
     description:
       name: flutter_secure_storage_darwin
-      sha256: "8878c25136a79def1668c75985e8e193d9d7d095453ec28730da0315dc69aee3"
+      sha256: "82329fa5cdf343773b1b6897dea959105a29f092454259edff92f9f6637e8149"
       url: "https://pub.dev"
     source: hosted
-    version: "0.2.0"
-  flutter_secure_storage_legacy:
-    dependency: "direct main"
-    description:
-      path: flutter_secure_storage
-      ref: "01ed2ee04192f4ecda8bbf68198baceb6386f1e6"
-      resolved-ref: "01ed2ee04192f4ecda8bbf68198baceb6386f1e6"
-      url: "https://github.com/SatoshiPortal/flutter_secure_storage_legacy"
-    source: git
-    version: "9.2.3"
-  flutter_secure_storage_legacy_platform_interface:
-    dependency: transitive
-    description:
-      path: flutter_secure_storage_platform_interface
-      ref: "01ed2ee04192f4ecda8bbf68198baceb6386f1e6"
-      resolved-ref: "01ed2ee04192f4ecda8bbf68198baceb6386f1e6"
-      url: "https://github.com/SatoshiPortal/flutter_secure_storage_legacy"
-    source: git
-    version: "1.1.2"
+    version: "0.3.2"
   flutter_secure_storage_linux:
     dependency: transitive
     description:
@@ -1016,7 +997,7 @@ packages:
     source: hosted
     version: "0.3.3+1"
   google_sign_in:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: google_sign_in
       sha256: d0a2c3bcb06e607bb11e4daca48bd4b6120f0bbc4015ccebbe757d24ea60ed2a
@@ -1056,7 +1037,7 @@ packages:
     source: hosted
     version: "0.12.4+4"
   googleapis:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: googleapis
       sha256: "692fb9e90c321b61a7a2123de0353ec8a20691cd979db2553d8d732f710f6535"
@@ -1481,8 +1462,8 @@ packages:
     dependency: transitive
     description:
       path: "packages/onion"
-      ref: "1b01dc5e962c4c068fc4934b8125b839e2cd3264"
-      resolved-ref: "1b01dc5e962c4c068fc4934b8125b839e2cd3264"
+      ref: "571ab40a3dd2c458c7c212a95a2f192e0d0cef4b"
+      resolved-ref: "571ab40a3dd2c458c7c212a95a2f192e0d0cef4b"
       url: "https://github.com/SatoshiPortal/bull_sdk"
     source: git
     version: "0.1.0"
@@ -1767,11 +1748,11 @@ packages:
     source: hosted
     version: "0.6.0"
   recoverbull:
-    dependency: "direct main"
+    dependency: transitive
     description:
       path: "."
-      ref: "92925c959f219fa4dfd0fe0f40392ddf868e2774"
-      resolved-ref: "92925c959f219fa4dfd0fe0f40392ddf868e2774"
+      ref: "293b0d709f6c7775180f775c6a5fe99a39f175ce"
+      resolved-ref: "293b0d709f6c7775180f775c6a5fe99a39f175ce"
       url: "https://github.com/SatoshiPortal/recoverbull-client-dart.git"
     source: git
     version: "1.0.0"
@@ -1787,8 +1768,8 @@ packages:
     dependency: transitive
     description:
       path: "packages/bull_sdk/rust_builder"
-      ref: "1b01dc5e962c4c068fc4934b8125b839e2cd3264"
-      resolved-ref: "1b01dc5e962c4c068fc4934b8125b839e2cd3264"
+      ref: "571ab40a3dd2c458c7c212a95a2f192e0d0cef4b"
+      resolved-ref: "571ab40a3dd2c458c7c212a95a2f192e0d0cef4b"
       url: "https://github.com/SatoshiPortal/bull_sdk"
     source: git
     version: "0.0.1"
@@ -1804,8 +1785,8 @@ packages:
     dependency: "direct main"
     description:
       path: "packages/satoshifier"
-      ref: "1b01dc5e962c4c068fc4934b8125b839e2cd3264"
-      resolved-ref: "1b01dc5e962c4c068fc4934b8125b839e2cd3264"
+      ref: "571ab40a3dd2c458c7c212a95a2f192e0d0cef4b"
+      resolved-ref: "571ab40a3dd2c458c7c212a95a2f192e0d0cef4b"
       url: "https://github.com/SatoshiPortal/bull_sdk"
     source: git
     version: "0.0.1"
@@ -2295,6 +2276,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "15.2.0"
+  wakelock_plus:
+    dependency: transitive
+    description:
+      name: wakelock_plus
+      sha256: ddf3db70eaa10c37558ff817519b85d527dbd21034fd5d8e1c2e85f31588f1c1
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.5.2"
+  wakelock_plus_platform_interface:
+    dependency: transitive
+    description:
+      name: wakelock_plus_platform_interface
+      sha256: "764c25504562abc8ac3406f5d175f126b276e6ba916c7c2675690b73368ca384"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.7.0"
   watcher:
     dependency: transitive
     description:

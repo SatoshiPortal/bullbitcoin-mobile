@@ -23,7 +23,7 @@ light and dark automatically.
 
 Brightness-invariant tokens are static consts, from the design system:
 
-- **`BullRadius`** — `zero·xs·sm·md·lg·xl·xxl·full` = `0·4·8·12·16·28·32·999`.
+- **`BullShapes`** — corner radius per role (`context.bullShapes.card`); Bull's values live in `BullShapes.standard`.
 - **`BullSpacing`** — `zero·xxs·xs·sm·md·lg·xl·xxl·xxxl` = `0·4·8·12·16·24·32·48·64`.
 - **Type** comes from the Material `TextTheme` (`Theme.of(context).textTheme`, sourced from
   `AppFonts`) — there is no separate text-token class.
@@ -57,7 +57,7 @@ Duplicated from `lib/core/widgets/**` as dependency-clean `Bull*` copies (the
 `BullViewerActionButton`.
 
 **Inputs** — `BullCheckbox`, `BullFilterChip`, `BullInputText`,
-`BullLabeledTextInput`, `BullPasteInput`, `BullDropdown`,
+`BullLabeledTextInput`, `BullSecretTextInput`, `BullPasteInput`, `BullDropdown`,
 `BullSelectableList` + `BullSelectableListItem`, `BullDialPad`,
 `BullAmountInputFormatter`, `BullLowerCaseTextFormatter`.
 
@@ -79,6 +79,8 @@ Duplicated from `lib/core/widgets/**` as dependency-clean `Bull*` copies (the
 (`BBPickerSheet`), `BullInstructionsSheet` (`InstructionsBottomSheet`).
 
 **Chrome** — `BullScaffold`, `BullTopBar`, `BullSelectionActionBar`.
+
+**Support** — `BullSupportButton` (`.big`, `.icon`, `.text`, `.tile`) and `BullSupportScope`, which the app places above its screens to supply the contact-support action. Without a scope the button renders disabled.
 
 ## Not yet migrated (needs dep abstraction)
 

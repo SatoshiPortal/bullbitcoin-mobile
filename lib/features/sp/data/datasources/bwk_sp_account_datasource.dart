@@ -1,3 +1,5 @@
+import 'package:bb_mobile/core/utils/result.dart';
+import 'package:secrets/secrets.dart' show Secret, SecretExtension;
 import 'package:bb_mobile/features/sp/data/sp_storage_names.dart';
 import 'package:bb_mobile/features/sp/domain/sp_config.dart';
 import 'package:bull_sdk/bwk.dart';
@@ -22,9 +24,13 @@ class BwkSpAccountDatasource {
   /// Async because the bwk-dart constructor is not `#[frb(sync)]`: FRB runs it
   /// on a worker isolate so the key derivation, the sqlite open and the header
   /// store open do not freeze the UI isolate.
-  Future<void> createFromMnemonic({
+  ///
+  /// The account is opened by `package:secrets`, which hands the words to bwk
+  /// itself: this layer never holds them. Throws the package's failure type as
+  /// a [SpAccountOpenException], fixed text only.
+  Future<void> createFromSecret({
     required SpNetwork network,
-    required String mnemonic,
+    required Secret secret,
     required String blindbitUrl,
     required String electrumUrl,
     required String dataDir,
@@ -32,10 +38,9 @@ class BwkSpAccountDatasource {
     required int matchConcurrencyFactor,
     required SpHeaderCheckpoint? headerCheckpoint,
   }) async {
-    _account = await SpAccount.createFromMnemonicWithScanRuntime(
+    switch (await secret.silentPayments.account(
       name: SpStorageNames.accountName,
       network: network,
-      mnemonic: mnemonic,
       blindbitUrl: blindbitUrl,
       electrumUrl: electrumUrl,
       dataDir: dataDir,
@@ -43,7 +48,12 @@ class BwkSpAccountDatasource {
       fetchConcurrencyFactor: fetchConcurrencyFactor,
       matchConcurrencyFactor: matchConcurrencyFactor,
       headerCheckpoint: headerCheckpoint,
-    );
+    )) {
+      case Ok(:final value):
+        _account = value;
+      case Err(:final failure):
+        throw SpAccountOpenException(failure.runtimeType.toString());
+    }
   }
 
   /// Tear down the live session and drop every simulation pinned to it.
@@ -133,4 +143,14 @@ class BwkSpAccountDatasource {
     }
     return account;
   }
+}
+
+/// The package refused to open the account. Carries the failure's type only.
+class SpAccountOpenException implements Exception {
+  final String failureType;
+
+  const SpAccountOpenException(this.failureType);
+
+  @override
+  String toString() => 'SpAccountOpenException: $failureType';
 }

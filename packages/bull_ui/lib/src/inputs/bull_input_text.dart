@@ -1,5 +1,5 @@
 import 'package:bull_ui/src/theme/bull_theme.dart';
-import 'package:bull_ui/src/theme/bull_tokens.dart';
+import 'package:bull_ui/src/theme/bull_shapes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -158,7 +158,7 @@ class _BullInputTextState extends State<BullInputText> {
     if (widget.hideBorder) return InputBorder.none;
 
     return OutlineInputBorder(
-      borderRadius: BorderRadius.circular(BullRadius.xs),
+      borderRadius: BorderRadius.circular(context.bullShapes.input),
       borderSide: BorderSide(color: context.bull.border),
     );
   }

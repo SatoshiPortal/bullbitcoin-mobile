@@ -8,6 +8,7 @@ environment:
   sdk: "3.12.2"
   flutter: "3.44.9"
 workspace:
+  - packages/secrets
   - packages/bull_payjoin
   - packages/bull_ui
   # Dev-only catalogue. Listed here only so the shared workspace
@@ -17,33 +18,31 @@ workspace:
   - packages/primitives
   - packages/bull_tor
   - packages/screen_privacy
+  - packages/screen_awake
   - packages/bull_logger
+  - packages/bull_pricer
   - features/logs
+  - features/recoverbull
 
 dependencies:
   flutter:
     sdk: flutter
+  secrets:
   bull_payjoin:
+  bull_pricer:
   bull_ui:
   primitives:
   bull_tor:
   screen_privacy:
+  screen_awake:
   bull_logger:
+  bull_recoverbull:
   bull_logs:
   flutter_bloc: ^9.1.1
   get_it: ^9.1.1
   flutter_svg: ^2.2.4
   go_router: ^17.0.0
-  flutter_secure_storage:
-    git:
-      url: https://github.com/SatoshiPortal/flutter_secure_storage
-      ref: 0a0869d0ff0ba2b3cb3576c4a2350428dec30f77
-      path: flutter_secure_storage
-  flutter_secure_storage_legacy:
-    git:
-      url: https://github.com/SatoshiPortal/flutter_secure_storage_legacy
-      ref: 01ed2ee04192f4ecda8bbf68198baceb6386f1e6
-      path: flutter_secure_storage
+  flutter_secure_storage: ^10.3.3
   path_provider: ^2.1.5
   shared_preferences: ^2.3.0
   qr_flutter: ^4.1.0
@@ -58,17 +57,17 @@ dependencies:
   bull_sdk:
     git:
       url: https://github.com/SatoshiPortal/bull_sdk
-      ref: 1b01dc5e962c4c068fc4934b8125b839e2cd3264
+      ref: 571ab40a3dd2c458c7c212a95a2f192e0d0cef4b
       path: packages/bull_sdk
   boltz_stream:
     git:
       url: https://github.com/SatoshiPortal/bull_sdk
-      ref: 1b01dc5e962c4c068fc4934b8125b839e2cd3264
+      ref: 571ab40a3dd2c458c7c212a95a2f192e0d0cef4b
       path: packages/boltz-stream
   bitbox_transport:
     git:
       url: https://github.com/SatoshiPortal/bull_sdk
-      ref: 1b01dc5e962c4c068fc4934b8125b839e2cd3264
+      ref: 571ab40a3dd2c458c7c212a95a2f192e0d0cef4b
       path: packages/bitbox-transport
   universal_ble: ^1.2.0
   auto_size_text: ^3.0.0
@@ -97,13 +96,6 @@ dependencies:
   gif: ^2.3.0
   custom_sliding_segmented_control: ^1.8.5
   shimmer: ^3.0.0
-  googleapis: ^15.0.0
-  google_sign_in: ^6.3.0
-  extension_google_sign_in_as_googleapis_auth: ^2.0.13
-  recoverbull:
-    git:
-      url: https://github.com/SatoshiPortal/recoverbull-client-dart.git
-      ref: 92925c959f219fa4dfd0fe0f40392ddf868e2774
   flutter_zxing: ^2.2.1
   webview_cookie_manager:
     git:
@@ -125,7 +117,7 @@ dependencies:
   satoshifier:
     git:
       url: https://github.com/SatoshiPortal/bull_sdk
-      ref: 1b01dc5e962c4c068fc4934b8125b839e2cd3264
+      ref: 571ab40a3dd2c458c7c212a95a2f192e0d0cef4b
       path: packages/satoshifier
   flutter_nfc_kit: ^3.6.1
   ndef: ^0.4.0

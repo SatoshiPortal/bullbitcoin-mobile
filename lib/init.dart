@@ -1,4 +1,6 @@
 import 'dart:io';
+import 'dart:async';
+import 'package:bull_recoverbull/bull_recoverbull.dart';
 
 import 'package:bb_mobile/bloc_observer.dart';
 import 'package:bb_mobile/core/background_tasks/handler.dart';
@@ -13,6 +15,7 @@ import 'package:bb_mobile/payjoin_setup.dart' show payjoinDatabaseFilename;
 import 'package:bb_mobile/report_logger_adapter.dart';
 import 'package:bb_mobile/startup_wizard.dart';
 import 'package:bull_logger/bull_logger.dart';
+import 'package:bull_pricer/bull_pricer.dart';
 import 'package:bull_tor/tor.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:path/path.dart' as p;
@@ -42,6 +45,12 @@ class Bull {
 
     await initFlutterRustBridgeDependencies();
 
+    // Foreground only: background tasks never read a price, and must not open
+    // the pricer's database while the app may be upgrading it.
+    await Pricer.init(
+      databasePath: p.join(bullDirectory.path, 'pricer.sqlite'),
+    );
+
     // The Locator setup might depend on the initialization of the libraries above
     //  so it's important to call it after the initialization
     await AppLocator.setup(
@@ -54,6 +63,11 @@ class Bull {
     // Flush wizard pending values (if any) to SQLite now that the
     // settings repository is available, then mark the wizard complete.
     await locator<ApplyPendingWizardChoicesUsecase>().execute();
+    await AppLocator.setupRecoverBull(
+      locator,
+      databasePath: p.join(bullDirectory.path, 'recoverbull.sqlite'),
+    );
+    unawaited(locator<RecoverBullFacade>().checkAtColdStart());
     final settings = locator<SettingsRepository>();
     configureLogTorContext(
       () => loadTorDiagnosticContext(settings, locator<Tor>()),

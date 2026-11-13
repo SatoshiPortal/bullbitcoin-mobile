@@ -2,12 +2,14 @@ import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/payment_request.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/send/domain/send_failure.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:primitives/primitives.dart' show Sats;
 
 import '../../../coins/wallet_utxo_fixture.dart';
 import 'package:bb_mobile/features/send/presentation/send_wallet_view.dart';
@@ -224,6 +226,35 @@ void main() {
     expect(state.maxAvailableBalanceSat, 30000);
   });
 
+  test('selected coins limit normal sends and the displayed balance', () {
+    final state = SendState(
+      selectedWallet: SendWalletBitcoin(_FakeWallet(130000)),
+      selectedUtxos: [walletUtxoFixture(sats: 30000)],
+      inputAmountCurrencyCode: BitcoinUnit.sats.code,
+      amount: '40000',
+    );
+
+    expect(state.formattedWalletBalance(), FormatAmount.sats(30000));
+    expect(state.walletHasBalance, isFalse);
+    expect(state.usesSelectedInputsOnly, isTrue);
+  });
+
+  test('an unresolved selected-input intent has no spendable balance', () {
+    final state = SendState(
+      selectedWallet: SendWalletBitcoin(_FakeWallet(130000)),
+      selectedInputOutpoints: const {(txId: 'missing', vout: 0)},
+      inputAmountCurrencyCode: BitcoinUnit.sats.code,
+      amount: '40000',
+    );
+
+    expect(state.usesSelectedInputsOnly, isTrue);
+    expect(state.selectedInputsUnavailable, isTrue);
+    expect(state.maxAvailableBalanceSat, 0);
+    expect(state.formattedWalletBalance(), FormatAmount.sats(0));
+    expect(state.walletHasBalance, isFalse);
+    expect(state.isPayjoinAvailable, isFalse);
+  });
+
   test('MAX clamps a selected balance that cannot cover its fee', () {
     final state = SendState(
       selectedWallet: SendWalletBitcoin(_FakeWallet(10000)),
@@ -411,6 +442,52 @@ void main() {
       const state = SendState();
 
       expect(state.spendableBalanceSat, 0);
+    });
+  });
+
+  group('SendState selected-coin sweep', () {
+    test('blocks destination input until the selected coins resolve', () {
+      const unresolved = SendState(
+        sweepOutpoints: {(txId: 'selected', vout: 0)},
+      );
+      final resolved = unresolved.copyWith(
+        selectedUtxos: [walletUtxoFixture(sats: 75000, txId: 'selected')],
+      );
+
+      expect(unresolved.selectedInputsUnavailable, isTrue);
+      expect(resolved.selectedInputsUnavailable, isFalse);
+    });
+
+    test('uses only the selected spendable value as the available balance', () {
+      final selected = walletUtxoFixture(sats: 75000, txId: 'selected');
+      final state = SendState(
+        sweepOutpoints: const {(txId: 'selected', vout: 0)},
+        selectedWallet: SendWalletBitcoin(_FakeWallet(300000)),
+        selectedUtxos: [selected],
+        utxos: [
+          selected,
+          walletUtxoFixture(sats: 225000, txId: 'other'),
+        ],
+      );
+
+      expect(state.spendableBalanceSat, 75000);
+    });
+
+    test('never offers Payjoin even when the recipient advertises it', () {
+      final state = SendState(
+        sweepOutpoints: const {(txId: 'selected', vout: 0)},
+        selectedWallet: SendWalletBitcoin(bitcoinWallet()),
+        paymentRequest: const PaymentRequest.bip21(
+          network: Network.bitcoinMainnet,
+          uri: 'bitcoin:bc1qtest?pj=https://payjo.in',
+          address: 'bc1qtest',
+          pj: 'https://payjo.in',
+        ),
+        payjoinGloballyEnabled: true,
+      );
+
+      expect(state.isPayjoinAvailable, isFalse);
+      expect(state.willAttemptPayjoin, isFalse);
     });
   });
 
@@ -705,42 +782,158 @@ void main() {
       );
     });
   });
-  // With no price, fiat cannot be shown or typed: no rate means no currency,
-  // never a zero amount or an amount read in the wrong unit.
-  group('SendState without a price', () {
-    test('offers only bitcoin units as input currencies', () {
-      const state = SendState(fiatCurrencyCodes: ['USD', 'CAD']);
-      expect(state.inputAmountCurrencyCodes, [
-        BitcoinUnit.btc.code,
-        BitcoinUnit.sats.code,
-      ]);
+
+  group('SendState multi-recipient compatibility', () {
+    final payjoinRequest = const PaymentRequest.bip21(
+      network: Network.bitcoinMainnet,
+      uri: 'bitcoin:bc1qrecipient?pj=https://payjo.in',
+      address: 'bc1qrecipient',
+      pj: 'https://payjo.in',
+    );
+
+    SendState payjoinState() => SendState(
+      selectedWallet: SendWalletBitcoin(bitcoinWallet()),
+      paymentRequest: payjoinRequest,
+      payjoinGloballyEnabled: true,
+      isToSelf: false,
+    );
+
+    test('disables payjoin for multiple recipients', () {
+      final state = payjoinState().copyWith(
+        recipientDrafts: const [
+          (
+            id: 0,
+            address: 'bc1qrecipient',
+            amount: '1000',
+            receivesRemainder: false,
+            isValid: true,
+          ),
+          (
+            id: 1,
+            address: 'bc1qother',
+            amount: '2000',
+            receivesRemainder: false,
+            isValid: true,
+          ),
+        ],
+      );
+
+      expect(state.isPayjoinAvailable, isFalse);
+      expect(state.willAttemptPayjoin, isFalse);
     });
 
-    test('offers fiat currencies once a price is known', () {
-      const state = SendState(
-        fiatCurrencyCodes: ['USD', 'CAD'],
-        exchangeRate: 70000,
+    test('disables payjoin for manually selected inputs', () {
+      final state = payjoinState().copyWith(
+        selectedUtxos: [walletUtxoFixture(walletId: 'w1')],
       );
-      expect(state.inputAmountCurrencyCodes, contains('USD'));
+
+      expect(state.isPayjoinAvailable, isFalse);
+      expect(state.willAttemptPayjoin, isFalse);
     });
 
-    test('shows no fiat equivalent of a bitcoin amount', () {
-      const state = SendState(
-        inputAmountCurrencyCode: 'sats',
-        amount: '1000',
-        fiatCurrencyCode: 'USD',
+    test('converts fixed and remainder drafts to transaction recipients', () {
+      final state = SendState(
+        bitcoinUnit: BitcoinUnit.sats,
+        inputAmountCurrencyCode: BitcoinUnit.sats.code,
+        recipientDrafts: const [
+          (
+            id: 0,
+            address: 'bc1qfixed',
+            amount: '12000',
+            receivesRemainder: false,
+            isValid: true,
+          ),
+          (
+            id: 1,
+            address: 'bc1qremaining',
+            amount: '',
+            receivesRemainder: true,
+            isValid: true,
+          ),
+        ],
       );
-      expect(state.formattedAmountInputEquivalent, isEmpty);
+
+      expect(
+        state.bitcoinTransactionRecipients[0].amountSat,
+        Sats.fromInt(12000),
+      );
+      expect(state.bitcoinTransactionRecipients[1].receivesRemainder, isTrue);
+      expect(state.totalFixedRecipientAmountSat, 12000);
     });
 
-    test('never reads an amount typed in fiat as bitcoin', () {
-      // 0.01 typed in a USD field must not become 0.01 BTC.
+    test('keeps the established amount input for one fixed recipient', () {
       const state = SendState(
-        inputAmountCurrencyCode: 'USD',
-        amount: '0.01',
-        fiatCurrencyCode: 'USD',
+        paymentRequest: BitcoinPaymentRequest(
+          address: 'bc1qrecipient',
+          isTestnet: false,
+        ),
+        recipientDrafts: [
+          (
+            id: 0,
+            address: 'bc1qrecipient',
+            amount: '12000',
+            receivesRemainder: false,
+            isValid: true,
+          ),
+        ],
       );
-      expect(state.inputAmountSat, 0);
+
+      expect(state.usesRecipientList, isTrue);
+      expect(state.showsRecipientAmountList, isFalse);
+    });
+
+    test('derives recipient-list max from the remainder designation', () {
+      const state = SendState(
+        paymentRequest: BitcoinPaymentRequest(
+          address: 'bc1qrecipient',
+          isTestnet: false,
+        ),
+        recipientDrafts: [
+          (
+            id: 0,
+            address: 'bc1qrecipient',
+            amount: '',
+            receivesRemainder: true,
+            isValid: true,
+          ),
+        ],
+      );
+
+      expect(state.sendMax, isFalse);
+      expect(state.isMaxSend, isTrue);
+      expect(state.showsRecipientAmountList, isFalse);
+      expect(const SendState(sendMax: true).isMaxSend, isTrue);
+    });
+
+    test('restricts multiple recipients to matching Bitcoin wallets', () {
+      final bitcoin = bitcoinWallet();
+      final liquid = liquidWallet();
+      final state = SendState(
+        paymentRequest: const BitcoinPaymentRequest(
+          address: 'bc1qrecipient',
+          isTestnet: false,
+        ),
+        wallets: [liquid, bitcoin],
+        recipientDrafts: const [
+          (
+            id: 0,
+            address: 'bc1qrecipient',
+            amount: '12000',
+            receivesRemainder: false,
+            isValid: true,
+          ),
+          (
+            id: 1,
+            address: 'bc1qother',
+            amount: '13000',
+            receivesRemainder: false,
+            isValid: true,
+          ),
+        ],
+      );
+
+      expect(state.selectableWallets, [bitcoin]);
+      expect(state.showsRecipientAmountList, isTrue);
     });
   });
 }

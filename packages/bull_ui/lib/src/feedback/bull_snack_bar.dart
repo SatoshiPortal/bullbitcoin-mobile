@@ -3,7 +3,7 @@ import 'dart:ui' show ImageFilter;
 
 import 'package:bull_ui/src/theme/bull_icon.dart';
 import 'package:bull_ui/src/theme/bull_theme.dart';
-import 'package:bull_ui/src/theme/bull_tokens.dart';
+import 'package:bull_ui/src/theme/bull_shapes.dart';
 import 'package:flutter/material.dart';
 
 /// Toast utility shown at the top of the screen, below the status bar, with an
@@ -318,7 +318,7 @@ class _BullSnackBarWidgetState extends State<_BullSnackBarWidget>
             // doesn't cut it off.
             child: DecoratedBox(
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(BullRadius.xxs),
+                borderRadius: BorderRadius.circular(context.bullShapes.card),
                 boxShadow: [
                   BoxShadow(
                     // Translucent black in both themes, so it never glows.
@@ -329,7 +329,7 @@ class _BullSnackBarWidgetState extends State<_BullSnackBarWidget>
                 ],
               ),
               child: ClipRRect(
-                borderRadius: BorderRadius.circular(BullRadius.xxs),
+                borderRadius: BorderRadius.circular(context.bullShapes.card),
                 // Frosted glass: whatever is behind the pill is blurred, so it
                 // reads as a soft wash instead of competing with the message.
                 child: BackdropFilter(
@@ -347,7 +347,9 @@ class _BullSnackBarWidgetState extends State<_BullSnackBarWidget>
                       color: colors.surfaceContainerHighest.withValues(
                         alpha: 0.85,
                       ),
-                      borderRadius: BorderRadius.circular(BullRadius.xxs),
+                      borderRadius: BorderRadius.circular(
+                        context.bullShapes.card,
+                      ),
                       border: Border.all(color: colors.secondaryFixedDim),
                     ),
                     child: widget.content,

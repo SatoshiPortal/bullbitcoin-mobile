@@ -9,7 +9,6 @@ import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bull_logger/bull_logger.dart';
 
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/widgets/cards/consolidation_required_card.dart';
 import 'package:bb_mobile/core/widgets/inputs/bb_keyboard_actions.dart';
 import 'package:bb_mobile/core/widgets/price_input/balance_row.dart';
@@ -28,13 +27,15 @@ import 'package:bb_mobile/features/send/ui/screens/open_the_camera_widget.dart';
 import 'package:bb_mobile/core/widgets/fees/fee_options_modal.dart';
 import 'package:bb_mobile/core/widgets/fees/fee_selection_label.dart';
 import 'package:bb_mobile/features/send/ui/widgets/advanced_options_bottom_sheet.dart';
+import 'package:bb_mobile/features/send/ui/widgets/multi_recipient_transaction_review.dart';
+import 'package:bb_mobile/features/send/ui/widgets/recipient_fields.dart';
+import 'package:bb_mobile/features/send/ui/widgets/send_info_row.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
 import 'package:bb_mobile/features/consolidation/public/consolidation_facade.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:bitcoin_base/bitcoin_base.dart';
-import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -48,12 +49,18 @@ import 'package:bull_ui/bull_ui.dart'
         BullInfoCard,
         BullInputText,
         BullSegmented,
+        BullShapesX,
         BullSnackBar,
         BullText,
         BullTopBar,
         Gap;
 import 'package:gif/gif.dart';
 import 'package:go_router/go_router.dart';
+
+String _sendFlowTitle(BuildContext context) {
+  final isSweep = context.select((SendCubit cubit) => cubit.state.isSweep);
+  return isSweep ? context.loc.coinsSweepTitle : context.loc.sendTitle;
+}
 
 class SendScreen extends StatelessWidget {
   const SendScreen({super.key});
@@ -83,13 +90,20 @@ class SendAddressScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final addressState = context.select(
+      (SendCubit cubit) => (
+        recipients: cubit.state.recipientDrafts,
+        canAddRecipient: !cubit.isSpMode && cubit.state.canAddRecipient,
+      ),
+    );
+    final cubit = context.read<SendCubit>();
     return Scaffold(
       backgroundColor: context.appColors.background,
       appBar: AppBar(
         forceMaterialTransparency: true,
         automaticallyImplyLeading: false,
         flexibleSpace: BullTopBar(
-          title: context.loc.sendTitle,
+          title: _sendFlowTitle(context),
           color: context.appColors.background,
           onBack: () => context.pop(),
         ),
@@ -115,6 +129,10 @@ class SendAddressScreen extends StatelessWidget {
                     SizedBox(
                       height: MediaQuery.of(context).size.height * 0.5,
                       child: OpenTheCameraWidget(
+                        disabled: context.select(
+                          (SendCubit cubit) =>
+                              cubit.state.selectedInputsUnavailable,
+                        ),
                         onScannedPaymentRequest: (data) => context
                             .read<SendCubit>()
                             .onScannedPaymentRequest(data.$1, data.$2),
@@ -128,9 +146,13 @@ class SendAddressScreen extends StatelessWidget {
                         child: Container(
                           decoration: BoxDecoration(
                             color: context.appColors.onSecondary,
-                            borderRadius: const BorderRadius.only(
-                              topLeft: Radius.circular(12),
-                              topRight: Radius.circular(12),
+                            borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(
+                                context.bullShapes.sheet,
+                              ),
+                              topRight: Radius.circular(
+                                context.bullShapes.sheet,
+                              ),
                             ),
                           ),
                           padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -139,14 +161,18 @@ class SendAddressScreen extends StatelessWidget {
                             mainAxisSize: .min,
                             children: [
                               const Gap(32),
-                              BullText(
-                                context.loc.sendRecipientAddress,
-                                style: context.font.bodyMedium,
-                                color: context.appColors.secondary,
+                              RecipientAddressFields(
+                                recipients: addressState.recipients,
+                                primaryField: const AddressField(),
+                                onRemoveRecipient: cubit.removeRecipient,
+                                onAddressChanged: cubit.recipientAddressChanged,
                               ),
-                              const Gap(16),
-                              const AddressField(),
-                              const Gap(16),
+                              AddRecipientButton(
+                                canAdd: addressState.canAddRecipient,
+                                onAdd: () async {
+                                  await cubit.addRecipient();
+                                },
+                              ),
                               const AddressErrorSection(),
                               const Gap(16),
                               const SendContinueWithAddressButton(),
@@ -182,13 +208,24 @@ class SendContinueWithAddressButton extends StatelessWidget {
     final creatingSwap = context.select(
       (SendCubit cubit) => cubit.state.creatingSwap,
     );
+    final selectedInputsUnavailable = context.select(
+      (SendCubit cubit) => cubit.state.selectedInputsUnavailable,
+    );
+    final hasInvalidAdditionalRecipient = context.select(
+      (SendCubit cubit) => cubit.state.hasInvalidAdditionalRecipient,
+    );
 
     return BullButton.big(
       label: context.loc.sendContinue,
       onPressed: () {
         context.read<SendCubit>().continueOnAddressConfirmed();
       },
-      disabled: !hasRecipientInput || loadingBestWallet || creatingSwap,
+      disabled:
+          !hasRecipientInput ||
+          hasInvalidAdditionalRecipient ||
+          loadingBestWallet ||
+          creatingSwap ||
+          selectedInputsUnavailable,
       bgColor: context.appColors.secondary,
       textColor: context.appColors.onSecondary,
     );
@@ -203,10 +240,14 @@ class AddressField extends StatelessWidget {
     final address = context.select<SendCubit, String>(
       (cubit) => cubit.state.copiedRawPaymentRequest,
     );
+    final selectedInputsUnavailable = context.select(
+      (SendCubit cubit) => cubit.state.selectedInputsUnavailable,
+    );
 
     return BullInputText(
       onChanged: context.read<SendCubit>().onChangedText,
       value: address,
+      disabled: selectedInputsUnavailable,
       hint: context.loc.sendPasteAddressOrInvoice,
       hintStyle: context.font.bodyLarge?.copyWith(
         color: context.appColors.textMuted,
@@ -268,7 +309,7 @@ class SendAmountScreen extends StatefulWidget {
 class _SendAmountScreenState extends State<SendAmountScreen> {
   late TextEditingController _amountController;
   late FocusNode _amountFocusNode;
-  bool _isMax = false;
+  final Map<int, FocusNode> _recipientAmountFocusNodes = {};
 
   @override
   void initState() {
@@ -284,15 +325,9 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
     _amountController.addListener(() {
       final text = _amountController.text;
       final cubit = context.read<SendCubit>();
-      if (text != cubit.state.amount && !_isMax) {
+      if (text != cubit.state.amount && !cubit.state.isMaxSend) {
         cubit.amountChanged(amount: text);
       }
-    });
-  }
-
-  void _setIsMax(bool isMax) {
-    setState(() {
-      _isMax = isMax;
     });
   }
 
@@ -300,11 +335,20 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
   void dispose() {
     _amountController.dispose();
     _amountFocusNode.dispose();
+    for (final focusNode in _recipientAmountFocusNodes.values) {
+      focusNode.dispose();
+    }
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    final recipientDrafts = context.select(
+      (SendCubit cubit) => cubit.state.recipientDrafts,
+    );
+    for (final recipient in recipientDrafts) {
+      _recipientAmountFocusNodes.putIfAbsent(recipient.id, FocusNode.new);
+    }
     return Scaffold(
       backgroundColor: context.appColors.background,
       resizeToAvoidBottomInset: true,
@@ -312,7 +356,7 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
         forceMaterialTransparency: true,
         automaticallyImplyLeading: false,
         flexibleSpace: BullTopBar(
-          title: context.loc.sendTitle,
+          title: _sendFlowTitle(context),
           onBack: () => context.read<SendCubit>().backClicked(),
         ),
       ),
@@ -329,7 +373,11 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
           Expanded(
             child: BBKeyboardActions(
               disableScroll: true,
-              focusNodes: [_amountFocusNode],
+              focusNodes: [
+                _amountFocusNode,
+                for (final recipient in recipientDrafts)
+                  ?_recipientAmountFocusNodes[recipient.id],
+              ],
               child: BlocListener<SendCubit, SendState>(
                 listenWhen: (previous, current) =>
                     previous.amount != current.amount &&
@@ -337,7 +385,7 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                 listener: (context, state) {
                   final amount = state.amount;
                   final currentCursor = _amountController.selection.baseOffset;
-                  final safePosition = _isMax
+                  final safePosition = state.isMaxSend
                       ? amount.length
                       : math.min(currentCursor, amount.length);
 
@@ -392,7 +440,7 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                       (SendCubit cubit) => cubit.state.selectedBitcoinWallet,
                     );
                     final wallets = context.select(
-                      (SendCubit cubit) => cubit.state.wallets,
+                      (SendCubit cubit) => cubit.state.selectableWallets,
                     );
                     return IgnorePointer(
                       ignoring: state.amountConfirmedClicked,
@@ -413,14 +461,24 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                                       padding: const EdgeInsets.symmetric(
                                         horizontal: 12.0,
                                       ),
-                                      child: pickableWallet == null
-                                          ? Text(
-                                              selectedWallet.displayLabel(
-                                                context,
+                                      child:
+                                          state.usesSelectedInputsOnly ||
+                                              pickableWallet == null
+                                          ? SizedBox(
+                                              height: 48,
+                                              child: Align(
+                                                alignment: Alignment.centerLeft,
+                                                child: Text(
+                                                  selectedWallet.displayLabel(
+                                                    context,
+                                                  ),
+                                                  style: context
+                                                      .font
+                                                      .headlineSmall,
+                                                ),
                                               ),
-                                              style: context.font.headlineSmall,
                                             )
-                                          : DropdownButtonFormField<Wallet>(
+                                          : DropdownButtonFormField<String>(
                                               alignment: Alignment.centerLeft,
                                               decoration: const InputDecoration(
                                                 border: InputBorder.none,
@@ -432,10 +490,10 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                                                     context.appColors.secondary,
                                               ),
                                               iconSize: 24,
-                                              initialValue: pickableWallet,
+                                              initialValue: selectedWallet.id,
                                               items: wallets.map((w) {
                                                 return DropdownMenuItem(
-                                                  value: w,
+                                                  value: w.id,
                                                   child: Text(
                                                     w.displayLabel(context),
                                                     style: context
@@ -444,12 +502,16 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                                                   ),
                                                 );
                                               }).toList(),
-                                              onChanged: (value) {
-                                                if (value != null) {
+                                              onChanged: (walletId) {
+                                                if (walletId != null) {
                                                   context
                                                       .read<SendCubit>()
                                                       .updateSelectedWallet(
-                                                        value,
+                                                        wallets.firstWhere(
+                                                          (wallet) =>
+                                                              wallet.id ==
+                                                              walletId,
+                                                        ),
                                                       );
                                                 }
                                               },
@@ -457,33 +519,82 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                                     ),
                                   ),
                                   const Gap(10),
-                                  PriceInput(
-                                    currency: inputCurrency,
-                                    amountEquivalent:
-                                        state.formattedAmountInputEquivalent,
-                                    availableCurrencies:
-                                        availableInputCurrencies,
-                                    amountController: _amountController,
-                                    onCurrencyChanged: (currencyCode) {
-                                      _setIsMax(false);
-                                      context
+                                  if (state.showsRecipientAmountList)
+                                    RecipientAmounts(
+                                      recipients: state.recipientDrafts,
+                                      preparedAmounts:
+                                          state.recipientAmountsSat,
+                                      isSweep: state.isSweep,
+                                      inputCurrency: inputCurrency,
+                                      focusNodes: _recipientAmountFocusNodes,
+                                      error: balanceError
+                                          ? (state.frozenBalanceSat > 0
+                                                ? context.loc
+                                                      .sendErrorInsufficientBalanceFrozenHint(
+                                                        state
+                                                            .formattedFrozenBalance,
+                                                      )
+                                                : context
+                                                      .loc
+                                                      .sendErrorInsufficientBalanceForPayment)
+                                          : (!walletHasBalance &&
+                                                amountConfirmedClicked)
+                                          ? context.loc.sendInsufficientBalance
+                                          : failure?.toTranslated(context),
+                                      onRemoveRecipient: context
                                           .read<SendCubit>()
-                                          .onCurrencyChanged(currencyCode);
-                                    },
-                                    error: balanceError
-                                        ? failure!.toTranslated(
-                                            context,
-                                            formattedFrozenBalance:
-                                                frozenBalanceHint,
-                                          )
-                                        : (!walletHasBalance &&
-                                              amountConfirmedClicked)
-                                        ? context.loc.sendInsufficientBalance
-                                        : failure?.toTranslated(context),
-                                    focusNode: _amountFocusNode,
-                                    readOnly: _isMax,
-                                    isMax: _isMax,
-                                  ),
+                                          .removeRecipient,
+                                      onAmountChanged: context
+                                          .read<SendCubit>()
+                                          .recipientAmountChanged,
+                                      onRemainderChanged: context
+                                          .read<SendCubit>()
+                                          .setRemainderRecipient,
+                                      amountBuilder: (amountSat) =>
+                                          CurrencyText(
+                                            amountSat,
+                                            showFiat: false,
+                                            style: context.font.bodyMedium,
+                                            color: context.appColors.textMuted,
+                                          ),
+                                    )
+                                  else
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.stretch,
+                                      children: [
+                                        PriceInput(
+                                          currency: inputCurrency,
+                                          amountEquivalent: state
+                                              .formattedAmountInputEquivalent,
+                                          availableCurrencies:
+                                              availableInputCurrencies,
+                                          amountController: _amountController,
+                                          onCurrencyChanged: (currencyCode) {
+                                            context
+                                                .read<SendCubit>()
+                                                .onCurrencyChanged(
+                                                  currencyCode,
+                                                );
+                                          },
+                                          error: balanceError && failure != null
+                                              ? failure.toTranslated(
+                                                  context,
+                                                  formattedFrozenBalance:
+                                                      frozenBalanceHint,
+                                                )
+                                              : (!walletHasBalance &&
+                                                    amountConfirmedClicked)
+                                              ? context
+                                                    .loc
+                                                    .sendInsufficientBalance
+                                              : failure?.toTranslated(context),
+                                          focusNode: _amountFocusNode,
+                                          readOnly: state.isMaxSend,
+                                          isMax: state.isMaxSend,
+                                        ),
+                                      ],
+                                    ),
                                   if (suggestsInstantPayments)
                                     Padding(
                                       padding: const EdgeInsets.only(top: 6),
@@ -565,15 +676,26 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                                       vertical: 16,
                                     ),
                                     child: BalanceRow(
+                                      title: state.usesSelectedInputsOnly
+                                          ? context.loc.sendSelectedCoinsLabel
+                                          : context.loc.addressViewBalance,
                                       balance: state.formattedWalletBalance(),
                                       currencyCode: '',
-                                      isMax: _isMax,
-                                      onMaxToggled: !isLightning && !isChainSwap
+                                      isMax: state.isMaxSend,
+                                      onMaxToggled:
+                                          !isLightning &&
+                                              !isChainSwap &&
+                                              !state.hasMultipleRecipients
                                           ? (value) {
-                                              _setIsMax(value);
                                               context
                                                   .read<SendCubit>()
-                                                  .amountChanged(isMax: value);
+                                                  .amountChanged(
+                                                    amount: value
+                                                        ? null
+                                                        : _amountController
+                                                              .text,
+                                                    isMax: value,
+                                                  );
                                               if (!value) {
                                                 _amountFocusNode.requestFocus();
                                               }
@@ -648,12 +770,20 @@ class SendAmountConfirmButton extends StatelessWidget {
     final inputAmountSat = context.select(
       (SendCubit cubit) => cubit.state.inputAmountSat,
     );
+    final recipientAmountsValid = context.select(
+      (SendCubit cubit) =>
+          !cubit.state.usesRecipientList || cubit.state.hasValidRecipientDrafts,
+    );
+    final usesRecipientList = context.select(
+      (SendCubit cubit) => cubit.state.usesRecipientList,
+    );
     return BullButton.big(
       label: context.loc.sendContinue,
       onPressed: () {
         final cubit = context.read<SendCubit>();
         final currentAmount = amountController.text;
-        if (currentAmount != cubit.state.amount) {
+        if (!cubit.state.usesRecipientList &&
+            currentAmount != cubit.state.amount) {
           cubit.amountChanged(amount: currentAmount);
         }
         cubit.onAmountConfirmed();
@@ -662,7 +792,8 @@ class SendAmountConfirmButton extends StatelessWidget {
           amountConfirmedClicked ||
           creatingSwap ||
           loadingBestWallet ||
-          inputAmountSat <= 0,
+          !recipientAmountsValid ||
+          (!usesRecipientList && inputAmountSat <= 0),
       bgColor: context.appColors.secondary,
       textColor: context.appColors.onSecondary,
     );
@@ -718,7 +849,7 @@ class SendConfirmScreen extends StatelessWidget {
         forceMaterialTransparency: true,
         automaticallyImplyLeading: false,
         flexibleSpace: BullTopBar(
-          title: context.loc.sendTitle,
+          title: _sendFlowTitle(context),
           onBack: () => context.read<SendCubit>().backClicked(),
         ),
       ),
@@ -789,11 +920,14 @@ class _SendError extends StatelessWidget {
       (SendCubit cubit) => cubit.state.frozenBalanceHint,
     );
 
-    if (buildError) {
+    if (buildError && failure != null) {
       return Padding(
         padding: const EdgeInsets.all(8.0),
         child: BullText(
-          failure!.toTranslated(context),
+          failure.toTranslated(
+            context,
+            formattedFrozenBalance: frozenBalanceHint,
+          ),
           style: context.font.bodyLarge,
           color: context.appColors.error,
           maxLines: 5,
@@ -888,6 +1022,10 @@ class _BottomButtons extends StatelessWidget {
     final isBitcoinWallet = context.select(
       (SendCubit cubit) => !cubit.state.selectedWallet!.isLiquid,
     );
+    final isOnchainSend = context.select(
+      (SendCubit cubit) => !cubit.state.isLightning && !cubit.state.isChainSwap,
+    );
+    final isSweep = context.select((SendCubit cubit) => cubit.state.isSweep);
     final wallet = context.select(
       (SendCubit cubit) => cubit.state.selectedWallet,
     );
@@ -895,15 +1033,24 @@ class _BottomButtons extends StatelessWidget {
       (SendCubit cubit) => cubit.state.signedBitcoinTx != null,
     );
     final isSpMode = context.read<SendCubit>().isSpMode;
+    final transactionBusy = context.select(
+      (SendCubit cubit) =>
+          cubit.state.buildingTransaction ||
+          cubit.state.signingTransaction ||
+          cubit.state.broadcastingTransaction,
+    );
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
         crossAxisAlignment: .stretch,
         children: [
-          if (isBitcoinWallet && !hasFinalizedTx && !isSpMode) ...[
+          if ((isBitcoinWallet || (isOnchainSend && !isSweep)) &&
+              !hasFinalizedTx &&
+              !isSpMode) ...[
             BullButton.big(
               label: context.loc.sendAdvancedSettings,
+              disabled: transactionBusy,
               onPressed: () {
                 BullBottomSheet.show(
                   context: context,
@@ -920,7 +1067,10 @@ class _BottomButtons extends StatelessWidget {
             ),
             const Gap(12),
           ],
-          if (wallet != null && wallet.signsRemotely && !hasFinalizedTx)
+          if (!isSpMode &&
+              wallet != null &&
+              !wallet.signsLocally &&
+              !hasFinalizedTx)
             (wallet.signerDevice != null && wallet.signerDevice!.isLedger)
                 ? const SignLedgerButton()
                 : (wallet.signerDevice != null && wallet.signerDevice!.isBitBox)
@@ -969,6 +1119,38 @@ class _OnchainTransactionReview extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final hasMultipleRecipients = context.select(
+      (SendCubit cubit) => cubit.state.hasMultipleRecipients,
+    );
+    if (hasMultipleRecipients) {
+      final state = context.watch<SendCubit>().state;
+      return MultiRecipientTransactionReview(
+        walletLabel: state.selectedWallet?.displayLabel(context) ?? '',
+        recipients: state.recipientDrafts,
+        recipientAmountsSat: state.recipientAmountsSat,
+        label: state.label,
+        formattedAbsoluteFees: state.formattedAbsoluteFees,
+        feePriorityTitle: state.selectedFeeOption.title(),
+        amountBuilder: (amountSat) => CurrencyText(
+          amountSat,
+          showFiat: false,
+          style: context.font.bodyLarge,
+          color: context.appColors.secondary,
+        ),
+        onFeePriorityTap: state.signedBitcoinTx == null
+            ? () => _showBitcoinFeeOptions(context)
+            : null,
+        selectedCoinsDetails: state.selectedUtxos.isEmpty
+            ? null
+            : _SelectedCoinsDetails(
+                count: state.selectedUtxos.length,
+                totalSat: state.selectedSpendableBalanceSat,
+              ),
+        feeWarning: state.showFeeWarning
+            ? _HighFeeWarning(state.getFeeAsPercentOfAmount())
+            : null,
+      );
+    }
     final selectedWallet = context.select(
       (SendCubit cubit) => cubit.state.selectedWallet,
     );
@@ -1010,6 +1192,12 @@ class _OnchainTransactionReview extends StatelessWidget {
       (SendCubit cubit) => cubit.state.willAttemptPayjoin,
     );
     final isSpMode = context.read<SendCubit>().isSpMode;
+    final selectedCoins = context.select(
+      (SendCubit cubit) => (
+        count: cubit.state.selectedUtxos.length,
+        totalSat: cubit.state.selectedSpendableBalanceSat,
+      ),
+    );
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -1018,7 +1206,9 @@ class _OnchainTransactionReview extends StatelessWidget {
           sendWalletLabel: selectedWallet?.displayLabel(context) ?? '',
           receiveWalletLabel: paymentRequestAddress,
           formattedBitcoinAmount: formattedBitcoinAmount,
-          formattedFiatEquivalent: '~$formattedFiatEquivalent',
+          formattedFiatEquivalent: formattedFiatEquivalent.isEmpty
+              ? ''
+              : '~$formattedFiatEquivalent',
           absoluteFees: formattedAbsoluteFees,
           selectedFeeOptionTitle: feeSelectionRowLabel(
             context,
@@ -1033,45 +1223,75 @@ class _OnchainTransactionReview extends StatelessWidget {
           note: label,
           onFeePriorityTap: hasFinalizedTx || isSpMode
               ? null
-              : () async {
-                  final sendCubit = context.read<SendCubit>();
-                  final selected = await BullBottomSheet.show<String>(
-                    context: context,
-                    child: FeeOptionsModal(
-                      viewState: sendCubit,
-                      actions: sendCubit,
-                      defaultAbsoluteCustomFee: false,
-                      customFeeColors: FeeModalCustomFeeColors(
-                        tile: context.appColors.surface,
-                        shadow: context.appColors.border,
-                        unselectedIcon: context.appColors.textMuted,
-                      ),
-                    ),
-                  );
-                  if (selected != null) {
-                    // User tapped a preset tile inside the modal —
-                    // commit it. feeOptionSelected clears any arm
-                    // state the user may have left from typing.
-                    final fee = FeeSelectionName.fromString(selected);
-                    await sendCubit.feeOptionSelected(fee);
-                  } else {
-                    // User dismissed the modal (tap outside, back,
-                    // swipe). If they had typed a custom rate, the
-                    // cubit is armed — finalize it: commit if valid,
-                    // roll back if below the 0.1 sat/vB floor. This
-                    // is the replacement for the old explicit
-                    // "Confirm Custom Fee" button — typing IS the
-                    // selection, dismissing IS the apply.
-                    await sendCubit.finalizeArmedCustomFee();
-                  }
-                },
+              : () => _showBitcoinFeeOptions(context),
         ),
+        if (selectedCoins.count > 0)
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: SendInfoRow(
+              title: context.loc.sendCoinControl,
+              details: _SelectedCoinsDetails(
+                count: selectedCoins.count,
+                totalSat: selectedCoins.totalSat,
+              ),
+            ),
+          ),
         if (showFeeWarning == true) ...[
           const Gap(16),
           _HighFeeWarning(feePercent),
         ],
       ],
     );
+  }
+}
+
+class _SelectedCoinsDetails extends StatelessWidget {
+  const _SelectedCoinsDetails({required this.count, required this.totalSat});
+
+  final int count;
+  final int totalSat;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: [
+        BullText(
+          context.loc.coinsSelectedCount(count),
+          style: context.font.bodyLarge,
+          color: context.appColors.secondary,
+          textAlign: TextAlign.end,
+        ),
+        CurrencyText(
+          totalSat,
+          showFiat: false,
+          style: context.font.labelSmall,
+          color: context.appColors.secondary,
+        ),
+      ],
+    );
+  }
+}
+
+Future<void> _showBitcoinFeeOptions(BuildContext context) async {
+  final sendCubit = context.read<SendCubit>();
+  final selected = await BullBottomSheet.show<String>(
+    context: context,
+    child: FeeOptionsModal(
+      viewState: sendCubit,
+      actions: sendCubit,
+      defaultAbsoluteCustomFee: false,
+      customFeeColors: FeeModalCustomFeeColors(
+        tile: context.appColors.surface,
+        shadow: context.appColors.border,
+        unselectedIcon: context.appColors.textMuted,
+      ),
+    ),
+  );
+  if (selected != null) {
+    await sendCubit.feeOptionSelected(FeeSelectionName.fromString(selected));
+  } else {
+    await sendCubit.finalizeArmedCustomFee();
   }
 }
 
@@ -1102,18 +1322,42 @@ class _LiquidOnchainSendInfoSection extends StatelessWidget {
     final formattedAbsoluteFees = context.select(
       (SendCubit cubit) => cubit.state.formattedAbsoluteFees,
     );
+    final selectedCoins = context.select(
+      (SendCubit cubit) => (
+        count: cubit.state.selectedUtxos.length,
+        totalSat: cubit.state.selectedSpendableBalanceSat,
+      ),
+    );
 
     final label = context.select((SendCubit cubit) => cubit.state.label);
-    return CommonOnchainSendInfoSection(
-      sendWalletLabel: selectedWallet?.displayLabel(context) ?? '',
-      receiveWalletLabel: paymentRequestAddress,
-      formattedBitcoinAmount: formattedBitcoinAmount,
-      formattedFiatEquivalent: '~$formattedFiatEquivalent',
-      absoluteFees: formattedAbsoluteFees,
-      selectedFeeOptionTitle: '',
-      note: label,
-      // Liquid has fixed fees — no fee priority selector
-      onFeePriorityTap: null,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        CommonOnchainSendInfoSection(
+          sendWalletLabel: selectedWallet?.displayLabel(context) ?? '',
+          receiveWalletLabel: paymentRequestAddress,
+          formattedBitcoinAmount: formattedBitcoinAmount,
+          formattedFiatEquivalent: formattedFiatEquivalent.isEmpty
+              ? ''
+              : '~$formattedFiatEquivalent',
+          absoluteFees: formattedAbsoluteFees,
+          selectedFeeOptionTitle: '',
+          note: label,
+          // Liquid has fixed fees — no fee priority selector
+          onFeePriorityTap: null,
+        ),
+        if (selectedCoins.count > 0)
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: SendInfoRow(
+              title: context.loc.sendCoinControl,
+              details: _SelectedCoinsDetails(
+                count: selectedCoins.count,
+                totalSat: selectedCoins.totalSat,
+              ),
+            ),
+          ),
+      ],
     );
   }
 }
@@ -1172,7 +1416,7 @@ class _LnSwapSendInfoSection extends StatelessWidget {
       child: Column(
         crossAxisAlignment: .stretch,
         children: [
-          InfoRow(
+          SendInfoRow(
             title: context.loc.sendFrom,
             details: BullText(
               selectedWallet!.displayLabel(context),
@@ -1182,7 +1426,7 @@ class _LnSwapSendInfoSection extends StatelessWidget {
             ),
           ),
           _divider(context),
-          InfoRow(
+          SendInfoRow(
             title: context.loc.sendSwapId,
             details: Row(
               mainAxisAlignment: MainAxisAlignment.end,
@@ -1212,7 +1456,7 @@ class _LnSwapSendInfoSection extends StatelessWidget {
             ),
           ),
           _divider(context),
-          InfoRow(
+          SendInfoRow(
             title: context.loc.sendTo,
             details: Row(
               mainAxisAlignment: MainAxisAlignment.end,
@@ -1244,7 +1488,7 @@ class _LnSwapSendInfoSection extends StatelessWidget {
           ),
           _divider(context),
           if (label.isNotEmpty) ...[
-            InfoRow(
+            SendInfoRow(
               title: context.loc.receiveNote,
               details: BullText(
                 label,
@@ -1255,7 +1499,7 @@ class _LnSwapSendInfoSection extends StatelessWidget {
             ),
             _divider(context),
           ],
-          InfoRow(
+          SendInfoRow(
             title: context.loc.sendSendAmount,
             details: Column(
               crossAxisAlignment: .end,
@@ -1270,7 +1514,7 @@ class _LnSwapSendInfoSection extends StatelessWidget {
             ),
           ),
           _divider(context),
-          InfoRow(
+          SendInfoRow(
             title: context.loc.sendReceiveAmount,
             details: Column(
               crossAxisAlignment: .end,
@@ -1286,7 +1530,7 @@ class _LnSwapSendInfoSection extends StatelessWidget {
           ),
           _divider(context),
           if (networkFee != null) ...[
-            InfoRow(
+            SendInfoRow(
               title: context.loc.sendSendNetworkFee,
               details: CurrencyText(
                 networkFee,
@@ -1299,7 +1543,7 @@ class _LnSwapSendInfoSection extends StatelessWidget {
             _divider(context),
           ],
           if (swapFee != null)
-            InfoRow(
+            SendInfoRow(
               title: context.loc.sendTransferFee,
               details: CurrencyText(
                 swapFee,
@@ -1474,7 +1718,7 @@ class _ChainSwapSendInfoSection extends StatelessWidget {
       child: Column(
         crossAxisAlignment: .stretch,
         children: [
-          InfoRow(
+          SendInfoRow(
             title: context.loc.sendFrom,
             details: BullText(
               selectedWallet!.displayLabel(context),
@@ -1484,7 +1728,7 @@ class _ChainSwapSendInfoSection extends StatelessWidget {
             ),
           ),
           _divider(context),
-          InfoRow(
+          SendInfoRow(
             title: context.loc.sendSwapId,
             details: Row(
               mainAxisAlignment: MainAxisAlignment.end,
@@ -1512,7 +1756,7 @@ class _ChainSwapSendInfoSection extends StatelessWidget {
             ),
           ),
           _divider(context),
-          InfoRow(
+          SendInfoRow(
             title: context.loc.sendTo,
             details: Row(
               mainAxisAlignment: MainAxisAlignment.end,
@@ -1543,7 +1787,7 @@ class _ChainSwapSendInfoSection extends StatelessWidget {
             ),
           ),
           _divider(context),
-          InfoRow(
+          SendInfoRow(
             title: context.loc.sendSendAmount,
             details: Column(
               crossAxisAlignment: .end,
@@ -1559,7 +1803,7 @@ class _ChainSwapSendInfoSection extends StatelessWidget {
           ),
           _divider(context),
           if (receiveAmount != null)
-            InfoRow(
+            SendInfoRow(
               title: context.loc.sendReceiveAmount,
               details: Column(
                 crossAxisAlignment: .end,
@@ -1575,7 +1819,7 @@ class _ChainSwapSendInfoSection extends StatelessWidget {
             ),
           if (receiveAmount != null) _divider(context),
           if (absoluteFees != null)
-            InfoRow(
+            SendInfoRow(
               title: context.loc.sendSendNetworkFee,
               details: Column(
                 crossAxisAlignment: .end,
@@ -1595,7 +1839,7 @@ class _ChainSwapSendInfoSection extends StatelessWidget {
           else if (orderSwap != null &&
               orderSwap.order!.payinAmountSat >
                   orderSwap.order!.payoutAmountSat)
-            InfoRow(
+            SendInfoRow(
               title: context.loc.sendTransferFee,
               details: CurrencyText(
                 (orderSwap.order!.payinAmountSat -
@@ -1616,31 +1860,6 @@ class _ChainSwapSendInfoSection extends StatelessWidget {
             _HighFeeWarning(feePercent),
           ],
           _divider(context),
-        ],
-      ),
-    );
-  }
-}
-
-class InfoRow extends StatelessWidget {
-  const InfoRow({super.key, required this.title, required this.details});
-
-  final String title;
-  final Widget details;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 10),
-      child: Row(
-        children: [
-          BullText(
-            title,
-            style: context.font.bodySmall,
-            color: context.appColors.onSurfaceVariant,
-          ),
-          const Gap(24),
-          Expanded(child: details),
         ],
       ),
     );
@@ -1729,7 +1948,7 @@ class SendSendingScreen extends StatelessWidget {
       appBar: AppBar(
         forceMaterialTransparency: true,
         automaticallyImplyLeading: false,
-        flexibleSpace: BullTopBar(title: context.loc.sendTitle),
+        flexibleSpace: BullTopBar(title: _sendFlowTitle(context)),
         actions: [
           CloseButton(
             onPressed: () => context.goNamed(WalletRoute.walletHome.name),
@@ -1809,13 +2028,7 @@ class SendSendingScreen extends StatelessWidget {
                         color: context.appColors.secondary,
                       ),
                       const Gap(4),
-                      BullCountdown(
-                        until: payjoinExpiresAt.add(
-                          const Duration(
-                            seconds: PayjoinConstants.directoryPollingInterval,
-                          ),
-                        ),
-                      ),
+                      BullCountdown(until: payjoinExpiresAt),
                     ],
                   ),
                 ],
@@ -1887,7 +2100,7 @@ class SendSucessScreen extends StatelessWidget {
         forceMaterialTransparency: true,
         automaticallyImplyLeading: false,
         flexibleSpace: BullTopBar(
-          title: context.loc.sendTitle,
+          title: _sendFlowTitle(context),
           onBack: () => context.goNamed(WalletRoute.walletHome.name),
         ),
       ),
@@ -2011,14 +2224,16 @@ class SendSucessScreen extends StatelessWidget {
                     maxLines: 4,
                     textAlign: .center,
                   ),
-                  const Gap(4),
-                  BullText(
-                    '~$fiatEquivalent',
-                    style: context.font.bodyMedium,
-                    color: context.appColors.secondary,
-                    maxLines: 4,
-                    textAlign: .center,
-                  ),
+                  if (fiatEquivalent.isNotEmpty) ...[
+                    const Gap(4),
+                    BullText(
+                      '~$fiatEquivalent',
+                      style: context.font.bodyMedium,
+                      color: context.appColors.secondary,
+                      maxLines: 4,
+                      textAlign: .center,
+                    ),
+                  ],
                 ],
               ),
             ),

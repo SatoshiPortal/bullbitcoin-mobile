@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/exchange/data/exchange_authentication.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/recipients/domain/repositories/recipients_repository.dart';
 import 'package:bb_mobile/features/recipients/domain/entities/recipient.dart';
@@ -340,6 +341,12 @@ class BullbitcoinApiRecipientsRepository implements RecipientsRepository {
     String operation,
     RecipientsFailure Function([String?]) onApiFailure,
   ) {
+    final refusal = exchangeAuthenticationException(e);
+    if (refusal != null) {
+      return refusal.isUnauthenticated
+          ? const RecipientsNotAuthenticatedFailure()
+          : onApiFailure('Exchange credential unavailable');
+    }
     if (e is DioException) {
       final isConnectivity = switch (e.type) {
         DioExceptionType.connectionTimeout ||

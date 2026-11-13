@@ -10,6 +10,7 @@ import 'package:bull_payjoin/src/data/payjoin_model.dart';
 import 'package:bull_payjoin/src/domain/payjoin_ports.dart'
     show PayjoinLogCode, PayjoinLogRole;
 import 'package:bull_payjoin/src/engine/bitcoin_tx.dart';
+import 'package:bull_payjoin/src/engine/directory_poller.dart';
 import 'package:bull_payjoin/src/engine/payjoin.dart' show Payjoin;
 import 'package:bull_payjoin/src/engine/payjoin_constants.dart';
 import 'package:bull_payjoin/src/engine/payjoin_engine_exception.dart';
@@ -43,21 +44,45 @@ class PdkPayjoinDatasource {
   final StreamController<PayjoinReceiverModel> _payjoinRequestedController;
   final StreamController<PayjoinSenderModel> _proposalSentController;
   final StreamController<PayjoinModel> _expiredController;
+  final DateTime Function() _now;
 
-  // Per-session polling timers keyed by session id
-  final Map<String, Timer> _receiverTimers = {};
-  final Map<String, Timer> _senderTimers = {};
-
-  // In-flight guards: Timer.periodic doesn't await its async callback, so a
-  // slow poll (e.g. an unresponsive OHTTP relay) could otherwise overlap with
-  // the next tick and process the same session twice — double-emitting the
-  // request/proposal and cancelling the payjoin downstream.
-  final Set<String> _receiverPollsInFlight = {};
-  final Set<String> _senderPollsInFlight = {};
+  // Monotonic clock the pollers measure poll durations with.
+  final Stopwatch _clock = Stopwatch()..start();
+  late final DirectoryPoller<PayjoinReceiverModel> _receiverPolls =
+      DirectoryPoller(now: _now, elapsed: () => _clock.elapsed);
+  late final DirectoryPoller<PayjoinSenderModel> _senderPolls = DirectoryPoller(
+    now: _now,
+    elapsed: () => _clock.elapsed,
+  );
 
   // Servers whose last request failed, per role (keyed by the failure code):
   // one that stays down is warned about once, not on every poll.
   final Set<(PayjoinLogCode, String)> _failingServers = {};
+
+  final Map<(PayjoinLogRole, String), PayjoinLogCode> _pollFailures = {};
+
+  bool isPolling(String id) =>
+      _receiverPolls.isPolling(id) || _senderPolls.isPolling(id);
+
+  void _pollFailed(
+    PayjoinModel model,
+    PayjoinLogRole role,
+    PayjoinLogCode code,
+  ) {
+    if (_pollFailures[(role, model.id)] == code) return;
+    _pollFailures[(role, model.id)] = code;
+    _log.warning(code: code, role: role, sessionRef: model.toEntity().logRef);
+  }
+
+  void _pollRecovered(PayjoinModel model, PayjoinLogRole role) {
+    if (_pollFailures.remove((role, model.id)) != null) {
+      _log.fine(
+        code: PayjoinLogCode.pollRecovered,
+        role: role,
+        sessionRef: model.toEntity().logRef,
+      );
+    }
+  }
 
   bool _disposed = false;
 
@@ -67,6 +92,7 @@ class PdkPayjoinDatasource {
     required this._dio,
     required this._log,
     OhttpKeysFetcher ohttpKeysFetcher = fetchOhttpKeys,
+    this._now = DateTime.now,
   }) : _servers = servers ?? PayjoinConstants.serverUrls,
        _random = random ?? Random.secure(),
        _fetchOhttpKeys = ohttpKeysFetcher,
@@ -92,31 +118,25 @@ class PdkPayjoinDatasource {
   /// (observed live: a redundant second broadcast of the original
   /// transaction a minute after the session had already resolved).
   void stopPolling(String payjoinId) {
-    _receiverTimers.remove(payjoinId)?.cancel();
-    _senderTimers.remove(payjoinId)?.cancel();
+    _pollFailures.removeWhere((key, _) => key.$2 == payjoinId);
+    _receiverPolls.stop(payjoinId);
+    _senderPolls.stop(payjoinId);
   }
 
   /// Cancels every polling timer and closes the event streams. Individual
-  /// poll timers self-cancel on success/expiry, but a session that never
-  /// resolves (a relay permanently down) would otherwise leave a
-  /// [Timer.periodic] firing forever plus three unclosed broadcast
-  /// controllers. The production singleton lives for the whole app session,
+  /// poll timers stop re-arming on success/expiry, but a session that never
+  /// resolves (a relay permanently down) would otherwise keep re-arming its
+  /// poll forever plus leave three unclosed broadcast controllers. The
+  /// production singleton lives for the whole app session,
   /// but tests (and any future teardown) need a clean exit; the repository's
   /// own dispose delegates here. Idempotent: a second call is a no-op (closing
   /// an already-closed controller would otherwise throw).
   Future<void> dispose() async {
     if (_disposed) return;
     _disposed = true;
-    for (final timer in _receiverTimers.values) {
-      timer.cancel();
-    }
-    _receiverTimers.clear();
-    for (final timer in _senderTimers.values) {
-      timer.cancel();
-    }
-    _senderTimers.clear();
-    _receiverPollsInFlight.clear();
-    _senderPollsInFlight.clear();
+    _pollFailures.clear();
+    _receiverPolls.dispose();
+    _senderPolls.dispose();
     await _payjoinRequestedController.close();
     await _proposalSentController.close();
     await _expiredController.close();
@@ -206,11 +226,13 @@ class PdkPayjoinDatasource {
   /// Sends a session [request] through the relays allowed for [payjoinUri].
   Future<T> _throughSessionRelays<T>(
     String payjoinUri,
-    Future<T> Function(String relay) request,
-  ) async => _throughRelays(
+    Future<T> Function(String relay) request, {
+    CancelToken? cancelToken,
+  }) async => _throughRelays(
     payjoinDirectoryOf(payjoinUri),
     allowedRelays(payjoinUri, servers: _servers),
     request,
+    cancelToken: cancelToken,
   );
 
   /// Sends [request] to [directory] through each of [relays], a non-empty
@@ -223,10 +245,12 @@ class PdkPayjoinDatasource {
   Future<T> _throughRelays<T>(
     core.Uri? directory,
     List<core.Uri> relays,
-    Future<T> Function(String relay) request,
-  ) async {
+    Future<T> Function(String relay) request, {
+    CancelToken? cancelToken,
+  }) async {
     final failed = <(core.Uri, Object)>[];
     for (final relay in [...relays]..shuffle(_random)) {
+      if (cancelToken?.cancelError case final error?) throw error;
       try {
         final result = await request(relay.toString());
         for (final (failedRelay, error) in failed) {
@@ -252,6 +276,7 @@ class PdkPayjoinDatasource {
         // Same on the receiver side, an expired session included.
         rethrow;
       } catch (e) {
+        if (cancelToken?.isCancelled ?? false) rethrow;
         failed.add((relay, e));
       }
     }
@@ -348,14 +373,10 @@ class PdkPayjoinDatasource {
               )
               as PayjoinReceiverModel;
 
-      // Start listening for a payjoin request from the sender. This starts
-      // polling before the repository persists `model` to the local DB
-      // (PayjoinRepositoryImpl.createPayjoinReceiver awaits this call, then
-      // stores the result) — benign today since the first tick is a full
-      // directoryPollingInterval away, giving the upsert plenty of time, but
-      // fragile enough to flag: don't start polling any earlier than this.
-      startListeningForRequest(model);
-
+      // The directory poll is not started here: the engine arms it once the
+      // session row is persisted and the policy re-check has passed, the way
+      // payjoin-cli saves a session before driving it. A request found by a
+      // poll must always land on a stored row.
       return model;
     } catch (e) {
       throw ReceiveCreationException(e.toString());
@@ -433,14 +454,10 @@ class PdkPayjoinDatasource {
     // pre-POST state is what the write-ahead needed, but the proposal poll
     // below replays `sender` and only proceeds on PollingForProposal.
     // Refresh the model to the post-POST state or the poll never advances.
-    final postedModel = model.copyWith(sender: persister.toJson());
-
-    // Start listening for a payjoin proposal from the receiver. The session
-    // row is already persisted, so a proposal arriving immediately still
-    // finds it.
-    startListeningForProposal(postedModel);
-
-    return postedModel;
+    // The proposal poll is not started here: the engine arms it once the
+    // row carries this post-POST state, so a proposal found by the first
+    // poll replays against a row that is already in PollingForProposal.
+    return model.copyWith(sender: persister.toJson());
   }
 
   Future<void> postOriginalProposal(
@@ -484,7 +501,7 @@ class PdkPayjoinDatasource {
     required bool Function(Outpoint) ownsOutpoint,
     required bool Function(Uint8List) hasReceiverOutput,
     required List<PayjoinInputPairModel> inputPairs,
-    required String Function(String) processPsbt,
+    required Future<String> Function(String psbt) signPsbt,
   }) async {
     final persister = InMemoryJsonReceiverSessionPersister.fromJson(
       receiverModel.receiver,
@@ -499,7 +516,7 @@ class PdkPayjoinDatasource {
       hasReceiverOutput: hasReceiverOutput,
       inputPairs: inputPairs,
       receiverModel: receiverModel,
-      processPsbt: processPsbt,
+      signPsbt: signPsbt,
     );
 
     // Update the model with the proposal psbt so it can be known a proposal has
@@ -576,7 +593,7 @@ class PdkPayjoinDatasource {
     required bool Function(Uint8List) hasReceiverOutput,
     required List<PayjoinInputPairModel> inputPairs,
     required PayjoinReceiverModel receiverModel,
-    required String Function(String) processPsbt,
+    required Future<String> Function(String psbt) signPsbt,
   }) async {
     switch (state) {
       case InitializedReceiveSession():
@@ -591,7 +608,7 @@ class PdkPayjoinDatasource {
           hasReceiverOutput,
           inputPairs,
           receiverModel,
-          processPsbt,
+          signPsbt,
         );
       case MaybeInputsOwnedReceiveSession():
         return _checkInputsNotOwned(
@@ -601,7 +618,7 @@ class PdkPayjoinDatasource {
           hasReceiverOutput,
           inputPairs,
           receiverModel,
-          processPsbt,
+          signPsbt,
         );
       case MaybeInputsSeenReceiveSession():
         return _checkNoInputsSeenBefore(
@@ -610,7 +627,7 @@ class PdkPayjoinDatasource {
           hasReceiverOutput,
           inputPairs,
           receiverModel,
-          processPsbt,
+          signPsbt,
         );
       case OutputsUnknownReceiveSession():
         return _identifyReceiverOutputs(
@@ -619,7 +636,7 @@ class PdkPayjoinDatasource {
           hasReceiverOutput,
           inputPairs,
           receiverModel,
-          processPsbt,
+          signPsbt,
         );
       case WantsOutputsReceiveSession():
         return _commitOutputs(
@@ -627,7 +644,7 @@ class PdkPayjoinDatasource {
           persister,
           inputPairs,
           receiverModel,
-          processPsbt,
+          signPsbt,
         );
       case WantsInputsReceiveSession():
         return _contributeInputs(
@@ -635,21 +652,16 @@ class PdkPayjoinDatasource {
           persister,
           inputPairs,
           receiverModel,
-          processPsbt,
+          signPsbt,
         );
       case WantsFeeRangeReceiveSession():
-        return _applyFeeRange(
-          state.inner,
-          persister,
-          receiverModel,
-          processPsbt,
-        );
+        return _applyFeeRange(state.inner, persister, receiverModel, signPsbt);
       case ProvisionalProposalReceiveSession():
         return _finalizeProposal(
           state.inner,
           persister,
           receiverModel,
-          processPsbt,
+          signPsbt,
         );
       case PayjoinProposalReceiveSession():
         return _sendPayjoinProposal(state.inner, persister, receiverModel);
@@ -673,7 +685,7 @@ class PdkPayjoinDatasource {
     bool Function(Uint8List) hasReceiverOutput,
     List<PayjoinInputPairModel> inputPairs,
     PayjoinReceiverModel receiverModel,
-    String Function(String) processPsbt,
+    Future<String> Function(String psbt) signPsbt,
   ) async {
     final next = inner.assumeInteractiveReceiver().save(persister: persister);
     return _checkInputsNotOwned(
@@ -683,7 +695,7 @@ class PdkPayjoinDatasource {
       hasReceiverOutput,
       inputPairs,
       receiverModel,
-      processPsbt,
+      signPsbt,
     );
   }
 
@@ -694,7 +706,7 @@ class PdkPayjoinDatasource {
     bool Function(Uint8List) hasReceiverOutput,
     List<PayjoinInputPairModel> inputPairs,
     PayjoinReceiverModel receiverModel,
-    String Function(String) processPsbt,
+    Future<String> Function(String psbt) signPsbt,
   ) async {
     final next = inner
         .checkInputsNotOwned(isOwned: _IsInputOwned(ownsOutpoint))
@@ -705,7 +717,7 @@ class PdkPayjoinDatasource {
       hasReceiverOutput,
       inputPairs,
       receiverModel,
-      processPsbt,
+      signPsbt,
     );
   }
 
@@ -715,7 +727,7 @@ class PdkPayjoinDatasource {
     bool Function(Uint8List) hasReceiverOutput,
     List<PayjoinInputPairModel> inputPairs,
     PayjoinReceiverModel receiverModel,
-    String Function(String) processPsbt,
+    Future<String> Function(String psbt) signPsbt,
   ) async {
     final next = inner
         .checkNoInputsSeenBefore(isKnown: _AssumeUnseen())
@@ -726,7 +738,7 @@ class PdkPayjoinDatasource {
       hasReceiverOutput,
       inputPairs,
       receiverModel,
-      processPsbt,
+      signPsbt,
     );
   }
 
@@ -736,20 +748,14 @@ class PdkPayjoinDatasource {
     bool Function(Uint8List) hasReceiverOutput,
     List<PayjoinInputPairModel> inputPairs,
     PayjoinReceiverModel receiverModel,
-    String Function(String) processPsbt,
+    Future<String> Function(String psbt) signPsbt,
   ) async {
     final next = inner
         .identifyReceiverOutputs(
           isReceiverOutput: _IsScriptOwned(hasReceiverOutput),
         )
         .save(persister: persister);
-    return _commitOutputs(
-      next,
-      persister,
-      inputPairs,
-      receiverModel,
-      processPsbt,
-    );
+    return _commitOutputs(next, persister, inputPairs, receiverModel, signPsbt);
   }
 
   Future<({Monitor monitor, String psbt})> _commitOutputs(
@@ -757,7 +763,7 @@ class PdkPayjoinDatasource {
     InMemoryJsonReceiverSessionPersister persister,
     List<PayjoinInputPairModel> inputPairs,
     PayjoinReceiverModel receiverModel,
-    String Function(String) processPsbt,
+    Future<String> Function(String psbt) signPsbt,
   ) async {
     final next = inner.commitOutputs().save(persister: persister);
     return _contributeInputs(
@@ -765,7 +771,7 @@ class PdkPayjoinDatasource {
       persister,
       inputPairs,
       receiverModel,
-      processPsbt,
+      signPsbt,
     );
   }
 
@@ -774,7 +780,7 @@ class PdkPayjoinDatasource {
     InMemoryJsonReceiverSessionPersister persister,
     List<PayjoinInputPairModel> inputPairs,
     PayjoinReceiverModel receiverModel,
-    String Function(String) processPsbt,
+    Future<String> Function(String psbt) signPsbt,
   ) async {
     final candidates = inputPairs.map(_buildInputPair).toList();
     InputPair? chosen;
@@ -792,14 +798,14 @@ class PdkPayjoinDatasource {
         .contributeInputs(replacementInputs: [chosen])
         .commitInputs()
         .save(persister: persister);
-    return _applyFeeRange(next, persister, receiverModel, processPsbt);
+    return _applyFeeRange(next, persister, receiverModel, signPsbt);
   }
 
   Future<({Monitor monitor, String psbt})> _applyFeeRange(
     WantsFeeRange inner,
     InMemoryJsonReceiverSessionPersister persister,
     PayjoinReceiverModel receiverModel,
-    String Function(String) processPsbt,
+    Future<String> Function(String psbt) signPsbt,
   ) async {
     final next = inner
         .applyFeeRange(
@@ -807,17 +813,20 @@ class PdkPayjoinDatasource {
           maxEffectiveFeeRateSatPerVb: receiverModel.maxFeeRateSatPerVb.toInt(),
         )
         .save(persister: persister);
-    return _finalizeProposal(next, persister, receiverModel, processPsbt);
+    return _finalizeProposal(next, persister, receiverModel, signPsbt);
   }
 
   Future<({Monitor monitor, String psbt})> _finalizeProposal(
     ProvisionalProposal inner,
     InMemoryJsonReceiverSessionPersister persister,
     PayjoinReceiverModel receiverModel,
-    String Function(String) processPsbt,
+    Future<String> Function(String psbt) signPsbt,
   ) async {
+    // Two steps, because the PDK's callback is synchronous and signing is not: the PSBT the PDK will ask for is computed first — deterministically, the proposal with the sender's signatures cleared — and signed; the callback then only hands back that result. Anything else it is asked to sign is refused, so no signature leaves for a PSBT the receiver did not see.
+    final unsigned = inner.psbtToSign();
+    final signed = await signPsbt(unsigned);
     final next = inner
-        .finalizeProposal(processPsbt: _ProcessPsbt(processPsbt))
+        .finalizeProposal(processPsbt: _ProcessPsbt(unsigned, signed))
         .save(persister: persister);
     return _sendPayjoinProposal(next, persister, receiverModel);
   }
@@ -896,39 +905,68 @@ class PdkPayjoinDatasource {
     );
   }
 
+  /// Starts polling the directory for the sender's request. A session that
+  /// is already polled is left as it is; [stopPolling] it first to replace it.
   void startListeningForRequest(PayjoinReceiverModel payjoin) {
-    _receiverTimers[payjoin.id]?.cancel();
-    _receiverTimers[payjoin.id] = Timer.periodic(
-      const Duration(seconds: PayjoinConstants.directoryPollingInterval),
-      (timer) => _pollReceiverOnce(payjoin, timer),
+    _receiverPolls.start(
+      id: payjoin.id,
+      expiresAt: _expiryOf(payjoin),
+      poll: (cancelToken) => _pollReceiverOnce(payjoin, cancelToken),
+      onFound: (value) {
+        _pollFailures.remove((PayjoinLogRole.receiver, payjoin.id));
+        _payjoinRequestedController.add(value);
+      },
+      onExpired: () {
+        _pollFailures.remove((PayjoinLogRole.receiver, payjoin.id));
+        _expiredController.add(payjoin.copyWith(isExpired: true));
+      },
     );
   }
 
+  /// Starts polling the directory for the receiver's proposal. A session
+  /// that is already polled is left as it is; [stopPolling] it first to
+  /// replace it.
   void startListeningForProposal(PayjoinSenderModel payjoin) {
-    _senderTimers[payjoin.id]?.cancel();
-    _senderTimers[payjoin.id] = Timer.periodic(
-      const Duration(seconds: PayjoinConstants.directoryPollingInterval),
-      (timer) => _pollSenderOnce(payjoin, timer),
+    _senderPolls.start(
+      id: payjoin.id,
+      expiresAt: _expiryOf(payjoin),
+      poll: (cancelToken) => _pollSenderOnce(payjoin, cancelToken),
+      onFound: (value) {
+        _pollFailures.remove((PayjoinLogRole.sender, payjoin.id));
+        _proposalSentController.add(value);
+      },
+      onExpired: () {
+        _pollFailures.remove((PayjoinLogRole.sender, payjoin.id));
+        _expiredController.add(payjoin.copyWith(isExpired: true));
+      },
     );
   }
 
-  Future<void> _pollReceiverOnce(
+  static DateTime _expiryOf(PayjoinModel payjoin) =>
+      DateTime.fromMillisecondsSinceEpoch(payjoin.expiresAt * 1000);
+
+  /// One directory poll for [receiverModel]. Finds the sender's request, or
+  /// says why it did not; never throws.
+  Future<DirectoryPollResult<PayjoinReceiverModel>> _pollReceiverOnce(
     PayjoinReceiverModel receiverModel,
-    Timer timer,
+    CancelToken cancelToken,
   ) async {
-    if (!_receiverPollsInFlight.add(receiverModel.id)) return;
+    var stage = 'replay';
+    var invalid = false;
     try {
-      // Local expiry backstop: don't rely solely on the PDK surfacing an
-      // "expired" error — bound polling by the session's own expiry time.
-      if (receiverModel.isExpiryTimePassed) {
-        throw PayjoinExpiredException(
-          'Payjoin receiver ${receiverModel.id} expiry time passed',
-        );
-      }
       final persister = InMemoryJsonReceiverSessionPersister.fromJson(
         receiverModel.receiver,
         log: _log,
+        onInvalid: () => invalid = true,
       );
+      if (invalid) {
+        _pollFailed(
+          receiverModel,
+          PayjoinLogRole.receiver,
+          PayjoinLogCode.storageFailure,
+        );
+        return const DirectoryPollResult(DirectoryPollOutcome.failed);
+      }
       final ReceiveSession state;
       try {
         state = replayReceiverEventLog(persister: persister).state();
@@ -938,15 +976,22 @@ class PdkPayjoinDatasource {
         }
         rethrow;
       }
-      if (state is! InitializedReceiveSession) return;
+      if (state is! InitializedReceiveSession) {
+        _pollFailures.remove((PayjoinLogRole.receiver, receiverModel.id));
+        return const DirectoryPollResult(DirectoryPollOutcome.stale);
+      }
 
+      stage = 'transport';
       final unchecked = await _getUncheckedOriginalPayload(
         state.inner,
         persister,
         receiverModel,
+        cancelToken,
       );
+      stage = 'parse';
       if (unchecked == null) {
-        return;
+        _pollRecovered(receiverModel, PayjoinLogRole.receiver);
+        return const DirectoryPollResult(DirectoryPollOutcome.empty);
       }
 
       final maybeInputsOwned = unchecked.assumeInteractiveReceiver().save(
@@ -958,52 +1003,61 @@ class PdkPayjoinDatasource {
         address: receiverModel.address,
         isTestnet: receiverModel.isTestnet,
       );
-      final updatedModel = receiverModel.copyWith(
-        receiver: persister.toJson(),
-        originalTxBytes: originalTxBytes,
-        originalTxId: originalTx.txid,
-        amountSat: amountSat,
+
+      _pollRecovered(receiverModel, PayjoinLogRole.receiver);
+      return DirectoryPollResult.found(
+        receiverModel.copyWith(
+          receiver: persister.toJson(),
+          originalTxBytes: originalTxBytes,
+          originalTxId: originalTx.txid,
+          amountSat: amountSat,
+        ),
       );
-      // Only stop polling and emit once all fallible work has succeeded: a
-      // throw above leaves the timer armed so the next tick retries. Skip
-      // the emit if this session's polling was stopped in the meantime.
-      if (!timer.isActive) return;
-      timer.cancel();
-      _receiverTimers.remove(receiverModel.id);
-      _payjoinRequestedController.add(updatedModel);
     } on PayjoinExpiredException {
-      if (!timer.isActive) return;
-      timer.cancel();
-      _receiverTimers.remove(receiverModel.id);
-      _expiredController.add(receiverModel.copyWith(isExpired: true));
+      return const DirectoryPollResult(DirectoryPollOutcome.expired);
     } catch (_) {
-      // Retry transient polling failures on the next timer tick.
-    } finally {
-      _receiverPollsInFlight.remove(receiverModel.id);
+      if (cancelToken.isCancelled) {
+        return const DirectoryPollResult(DirectoryPollOutcome.expired);
+      }
+
+      if (stage != 'transport') {
+        _pollFailed(
+          receiverModel,
+          PayjoinLogRole.receiver,
+          stage == 'replay'
+              ? PayjoinLogCode.pollReplayFailed
+              : PayjoinLogCode.pollParseFailed,
+        );
+      }
+      return const DirectoryPollResult(DirectoryPollOutcome.failed);
     }
   }
 
-  Future<void> _pollSenderOnce(
+  /// One directory poll for [senderModel]. Finds the receiver's proposal, or
+  /// says why it did not; never throws.
+  Future<DirectoryPollResult<PayjoinSenderModel>> _pollSenderOnce(
     PayjoinSenderModel senderModel,
-    Timer timer,
+    CancelToken cancelToken,
   ) async {
     // logRef, never the raw id in log lines/exception messages: a sender id
-    //  is the full BIP21 URI (address+amount+endpoint). The raw id is still
-    //  used as the internal map key below, which never reaches a log.
-    final senderLogRef = Payjoin.logRefForId(senderModel.id);
-    if (!_senderPollsInFlight.add(senderModel.id)) return;
+    //  is the full BIP21 URI (address+amount+endpoint).
+
+    var stage = 'replay';
+    var invalid = false;
     try {
-      // Local expiry backstop: don't rely solely on the PDK surfacing an
-      // "expired" error — bound polling by the session's own expiry time.
-      if (senderModel.isExpiryTimePassed) {
-        throw PayjoinExpiredException(
-          'Payjoin sender $senderLogRef expiry time passed',
-        );
-      }
       final persister = InMemoryJsonSenderSessionPersister.fromJson(
         senderModel.sender,
         log: _log,
+        onInvalid: () => invalid = true,
       );
+      if (invalid) {
+        _pollFailed(
+          senderModel,
+          PayjoinLogRole.sender,
+          PayjoinLogCode.storageFailure,
+        );
+        return const DirectoryPollResult(DirectoryPollOutcome.failed);
+      }
       final SendSession state;
       try {
         state = replaySenderEventLog(persister: persister).state();
@@ -1013,37 +1067,50 @@ class PdkPayjoinDatasource {
         }
         rethrow;
       }
-      if (state is! PollingForProposalSendSession) return;
+      if (state is! PollingForProposalSendSession) {
+        _pollFailures.remove((PayjoinLogRole.sender, senderModel.id));
+        return const DirectoryPollResult(DirectoryPollOutcome.stale);
+      }
 
+      stage = 'transport';
       final proposalPsbt = await _getProposalPsbt(
         state.inner,
         persister,
         senderModel,
+        cancelToken,
       );
-      if (proposalPsbt == null) return;
+      stage = 'parse';
+      if (proposalPsbt == null) {
+        _pollRecovered(senderModel, PayjoinLogRole.sender);
+        return const DirectoryPollResult(DirectoryPollOutcome.empty);
+      }
 
       final txId = (await BitcoinTx.fromPsbt(proposalPsbt)).txid;
-      final updatedModel = senderModel.copyWith(
-        sender: persister.toJson(),
-        proposalPsbt: proposalPsbt,
-        txId: txId,
+      _pollRecovered(senderModel, PayjoinLogRole.sender);
+      return DirectoryPollResult.found(
+        senderModel.copyWith(
+          sender: persister.toJson(),
+          proposalPsbt: proposalPsbt,
+          txId: txId,
+        ),
       );
-      // Only stop polling and emit once all fallible work has succeeded: a
-      // throw above leaves the timer armed so the next tick retries. Skip
-      // the emit if this session's polling was stopped in the meantime.
-      if (!timer.isActive) return;
-      timer.cancel();
-      _senderTimers.remove(senderModel.id);
-      _proposalSentController.add(updatedModel);
     } on PayjoinExpiredException {
-      if (!timer.isActive) return;
-      timer.cancel();
-      _senderTimers.remove(senderModel.id);
-      _expiredController.add(senderModel.copyWith(isExpired: true));
+      return const DirectoryPollResult(DirectoryPollOutcome.expired);
     } catch (_) {
-      // Retry transient polling failures on the next timer tick.
-    } finally {
-      _senderPollsInFlight.remove(senderModel.id);
+      if (cancelToken.isCancelled) {
+        return const DirectoryPollResult(DirectoryPollOutcome.expired);
+      }
+
+      if (stage != 'transport') {
+        _pollFailed(
+          senderModel,
+          PayjoinLogRole.sender,
+          stage == 'replay'
+              ? PayjoinLogCode.pollReplayFailed
+              : PayjoinLogCode.pollParseFailed,
+        );
+      }
+      return const DirectoryPollResult(DirectoryPollOutcome.failed);
     }
   }
 
@@ -1051,6 +1118,7 @@ class PdkPayjoinDatasource {
     Initialized initialized,
     InMemoryJsonReceiverSessionPersister persister,
     PayjoinReceiverModel receiverModel,
+    CancelToken cancelToken,
   ) async {
     try {
       return await _throughSessionRelays(receiverModel.pjUri, (relay) async {
@@ -1061,6 +1129,7 @@ class PdkPayjoinDatasource {
             poll.request.url,
             poll.request.body,
             poll.request.contentType,
+            cancelToken: cancelToken,
           );
           final outcome = initialized
               .processResponse(body: body, ctx: poll.clientResponse)
@@ -1073,11 +1142,16 @@ class PdkPayjoinDatasource {
           }
           rethrow;
         }
-      });
+      }, cancelToken: cancelToken);
     } on ReceiverCreateRequestException catch (e) {
       if (e.isExpired()) {
         throw PayjoinExpiredException('Payjoin receiver expired');
       }
+      _pollFailed(
+        receiverModel,
+        PayjoinLogRole.receiver,
+        PayjoinLogCode.pollRequestFailed,
+      );
       throw PayjoinNotFoundException('Could not create poll request');
     } on PayjoinExpiredException {
       rethrow;
@@ -1090,6 +1164,7 @@ class PdkPayjoinDatasource {
     PollingForProposal polling,
     InMemoryJsonSenderSessionPersister persister,
     PayjoinSenderModel senderModel,
+    CancelToken cancelToken,
   ) async {
     try {
       return await _throughSessionRelays(senderModel.uri, (relay) async {
@@ -1100,6 +1175,7 @@ class PdkPayjoinDatasource {
             poll.request.url,
             poll.request.body,
             poll.request.contentType,
+            cancelToken: cancelToken,
           );
           final outcome = polling
               .processResponse(response: body, ohttpCtx: poll.ohttpCtx)
@@ -1115,9 +1191,16 @@ class PdkPayjoinDatasource {
           }
           rethrow;
         }
-      });
+      }, cancelToken: cancelToken);
     } on PayjoinExpiredException {
       rethrow;
+    } on CreateRequestException {
+      _pollFailed(
+        senderModel,
+        PayjoinLogRole.sender,
+        PayjoinLogCode.pollRequestFailed,
+      );
+      throw PayjoinNotFoundException('Could not create poll request');
     } catch (e) {
       throw PayjoinNotFoundException('Failed to poll sender: $e');
     }
@@ -1139,8 +1222,9 @@ class PdkPayjoinDatasource {
     Dio dio,
     String url,
     Uint8List body,
-    String contentType,
-  ) async {
+    String contentType, {
+    CancelToken? cancelToken,
+  }) async {
     final response = await dio.post<List<int>>(
       url,
       data: body,
@@ -1151,6 +1235,7 @@ class PdkPayjoinDatasource {
         // which would expose the client's IP outside the OHTTP tunnel.
         followRedirects: false,
       ),
+      cancelToken: cancelToken,
     );
     return Uint8List.fromList(response.data ?? const []);
   }
@@ -1208,12 +1293,19 @@ class _AssumeUnseen implements IsOutputKnown {
   bool callback(OutPoint outpoint) => false;
 }
 
+/// Answers the PDK's signing callback with a PSBT signed beforehand, and only for the PSBT it was signed from.
 class _ProcessPsbt implements ProcessPsbt {
-  final String Function(String) _sign;
-  _ProcessPsbt(this._sign);
+  final String _unsigned;
+  final String _signed;
+  _ProcessPsbt(this._unsigned, this._signed);
 
   @override
-  String callback(String psbt) => _sign(psbt);
+  String callback(String psbt) {
+    if (psbt != _unsigned) {
+      throw StateError('Payjoin asked to sign a PSBT other than its proposal');
+    }
+    return _signed;
+  }
 }
 
 class InMemoryJsonReceiverSessionPersister
@@ -1228,8 +1320,11 @@ class InMemoryJsonReceiverSessionPersister
   factory InMemoryJsonReceiverSessionPersister.fromJson(
     String? raw, {
     logger.PayjoinLogger log = logger.PayjoinLogger.silent,
+    void Function()? onInvalid,
   }) {
-    return InMemoryJsonReceiverSessionPersister(_decodeEvents(raw, log));
+    return InMemoryJsonReceiverSessionPersister(
+      _decodeEvents(raw, log, onInvalid),
+    );
   }
 
   List<String> get events => List.unmodifiable(_events);
@@ -1259,8 +1354,11 @@ class InMemoryJsonSenderSessionPersister implements JsonSenderSessionPersister {
   factory InMemoryJsonSenderSessionPersister.fromJson(
     String? raw, {
     logger.PayjoinLogger log = logger.PayjoinLogger.silent,
+    void Function()? onInvalid,
   }) {
-    return InMemoryJsonSenderSessionPersister(_decodeEvents(raw, log));
+    return InMemoryJsonSenderSessionPersister(
+      _decodeEvents(raw, log, onInvalid),
+    );
   }
 
   List<String> get events => List.unmodifiable(_events);
@@ -1279,7 +1377,11 @@ class InMemoryJsonSenderSessionPersister implements JsonSenderSessionPersister {
   void close() => _closed = true;
 }
 
-List<String> _decodeEvents(String? raw, logger.PayjoinLogger log) {
+List<String> _decodeEvents(
+  String? raw,
+  logger.PayjoinLogger log, [
+  void Function()? onInvalid,
+]) {
   if (raw == null || raw.isEmpty) return const [];
   try {
     final decoded = jsonDecode(raw);
@@ -1290,9 +1392,13 @@ List<String> _decodeEvents(String? raw, logger.PayjoinLogger log) {
       // replayReceiverEventLog on every poll tick.
       return List<String>.from(decoded);
     }
-    log.warning();
-  } catch (e) {
-    log.warning(error: e);
+  } catch (_) {
+    // Saved event contents never reach diagnostics.
+  }
+  if (onInvalid != null) {
+    onInvalid();
+  } else {
+    log.warning(code: PayjoinLogCode.storageFailure);
   }
   return const [];
 }

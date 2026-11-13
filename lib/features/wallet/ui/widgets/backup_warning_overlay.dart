@@ -4,7 +4,8 @@ import 'package:bb_mobile/features/backup_settings/ui/backup_settings_router.dar
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show BullButton, BullText, Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show BullButton, BullShapesX, BullText, Gap;
 import 'package:go_router/go_router.dart';
 
 class BackupWarningOverlay extends StatelessWidget {
@@ -59,8 +60,8 @@ class _BackupWarningBlockerState extends State<_BackupWarningBlocker> {
                 padding: const EdgeInsets.all(24),
                 decoration: BoxDecoration(
                   color: context.appColors.surface,
-                  borderRadius: const BorderRadius.vertical(
-                    top: Radius.circular(16),
+                  borderRadius: BorderRadius.vertical(
+                    top: Radius.circular(context.bullShapes.sheet),
                   ),
                 ),
                 child: Column(

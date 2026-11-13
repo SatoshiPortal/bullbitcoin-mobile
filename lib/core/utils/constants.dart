@@ -43,23 +43,6 @@ class AssetConstants {
       '144c654344aa716d6f3abcc1ca90e5641e4e2a7f633bc09fe3baf64585819a49';
 }
 
-class CurrencyConstants {
-  /// Currencies supported by [CurrencyBottomSheet]'s flag/name lookup.
-  /// Single source of truth for both the pre-init wizard's currency
-  /// picker (which has no locator access) and the exchange-rate
-  /// datasource's hardcoded fallback (until the API supports
-  /// fetching the list dynamically).
-  static const List<String> supportedFiat = [
-    'USD',
-    'CAD',
-    'MXN',
-    'CRC',
-    'EUR',
-    'ARS',
-    'COP',
-  ];
-}
-
 class ApiServiceConstants {
   // Bitcoin mempool
   static const bbMempoolUrlPath = 'mempool.bullbitcoin.com';
@@ -84,16 +67,17 @@ class ApiServiceConstants {
   // Bitcoin Electrum servers
   static const fulcrumElectrumUrl = 'ssl://fulcrum.bullbitcoin.com:50002';
   static const bbElectrumUrl = 'ssl://wes.bullbitcoin.com:50002';
-  static const publicElectrumUrl = 'ssl://blockstream.info:700';
-  // BB test currently not operational
-  static const bbElectrumTestUrl = 'ssl://wes.bullbitcoin.com:60002';
-  static const publicElectrumTestUrl = 'ssl://blockstream.info:993';
+  static const publicElectrumUrl =
+      'ssl://bitcoin-mainnet.blockstream.info:50002';
+  static const publicElectrumTestUrl =
+      'ssl://bitcoin-testnet.blockstream.info:50002';
 
   // Liquid Electrum servers - lwk does not accept ssl:// prefix
   static const bbLiquidElectrumUrlPath = 'les.bullbitcoin.com:995';
-  static const bbLiquidElectrumTestUrlPath = 'les.bullbitcoin.com:465';
-  static const publicLiquidElectrumUrlPath = 'blockstream.info:995';
-  static const publicliquidElectrumTestUrlPath = 'blockstream.info:465';
+  static const publicLiquidElectrumUrlPath =
+      'elements-mainnet.blockstream.info:50002';
+  static const publicliquidElectrumTestUrlPath =
+      'elements-testnet.blockstream.info:50002';
 
   // Boltz API
   static const boltzMainnetUrlPath = 'api.boltz.exchange/v2';

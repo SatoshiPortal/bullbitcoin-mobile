@@ -2,10 +2,11 @@ import 'dart:async';
 
 import 'package:bb_mobile/app.dart';
 import 'package:bb_mobile/core/screens/app_init_error_screen.dart';
-import 'package:bb_mobile/core/storage/storage_locator.dart';
+import 'package:bb_mobile/features/support/public/support_facade.dart';
 import 'package:bb_mobile/init.dart';
 import 'package:bb_mobile/startup_wizard.dart';
 import 'package:bull_logger/bull_logger.dart';
+import 'package:bull_ui/bull_ui.dart' show BullSupportScope;
 import 'package:flutter/material.dart';
 
 Future<void> startApp() async {
@@ -13,15 +14,16 @@ Future<void> startApp() async {
     () async {
       try {
         WidgetsFlutterBinding.ensureInitialized();
-        // Android initializes FSS10 lazily and may spend several seconds in a
-        // cold fsync. When no supported prior-install marker exists, start that
-        // local-only work during the wizard. Upgrade probes stay in Bull.init.
-        unawaited(StorageLocator.prewarmSecureStorage());
         await runStartupWizard();
         await Bull.init();
       } catch (error, stackTrace) {
         log.severe(message: 'App Init Error', error: error, trace: stackTrace);
-        runApp(AppInitErrorScreen(error: error));
+        runApp(
+          BullSupportScope(
+            onContactSupport: SupportFacade.contactSupport,
+            child: AppInitErrorScreen(error: error),
+          ),
+        );
         _refreshDiagnosticContextAfterFirstFrame();
         return;
       } finally {
