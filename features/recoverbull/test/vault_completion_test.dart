@@ -96,6 +96,40 @@ void main() {
     password: 'public test password',
   );
 
+  for (final valid in [false, true]) {
+    test(
+      'server key reveal authenticates the file without certifying or restoring it: $valid',
+      () async {
+        final backup = ok(await vaults.create(context));
+        final flow = ManageVaultSessionUsecase(
+          metadata,
+          OpenKeyServerUsecase(metadata, _Sessions(server)),
+          FetchVaultKeyUsecase(monitoring),
+          create,
+          complete,
+          vaults,
+        );
+        final pending = flow.reveal(
+          vault: backup.vault,
+          password: 'test password',
+        );
+        await server.fetchStarted.future;
+        server.pendingFetch.complete(
+          Ok(VaultKeyFetch(valid ? backup.key : VaultKey('11' * 32), null)),
+        );
+        final result = await pending;
+        if (valid) {
+          expect(ok(result).hex, backup.key.hex);
+        } else {
+          expect(result, isA<Err<VaultKey, RecoverBullFailure>>());
+        }
+        expect(ok(await metadata.status(context)).isVerified, isFalse);
+        expect(wallets.restores, 0);
+        await flow.close();
+      },
+    );
+  }
+
   test('pending provider save rejects a replacement password', () async {
     final first = save();
     await files.started.future;
@@ -150,6 +184,7 @@ void main() {
         FetchVaultKeyUsecase(monitoring),
         create,
         complete,
+        vaults,
       );
       final cubit = VaultFlowCubit(
         ManageBackupSettingsUsecase(metadata, const VaultStorageFailure()),
@@ -377,6 +412,7 @@ void main() {
         FetchVaultKeyUsecase(monitoring),
         create,
         complete,
+        vaults,
       );
       expect(sessions.opens, 0, reason: 'construction must remain idle');
       final fetching = flow.verify(

@@ -4,9 +4,12 @@ import 'package:bull_recoverbull/generated/l10n/recoverbull_localizations.dart';
 import 'package:bull_recoverbull/src/domain/repositories/google_drive_repository.dart';
 import 'package:bull_recoverbull/src/domain/repositories/vault_file_repository.dart';
 import 'package:bull_recoverbull/src/domain/repositories/vault_repository.dart';
+import 'package:bull_recoverbull/src/domain/repositories/backup_metadata_repository.dart';
+import 'package:bull_recoverbull/src/domain/recoverbull_failure.dart';
 import 'package:bull_recoverbull/src/domain/usecases/complete_vault_usecase.dart';
 import 'package:bull_recoverbull/src/domain/usecases/manage_backup_settings_usecase.dart';
 import 'package:bull_recoverbull/src/domain/usecases/pick_vault_usecase.dart';
+import 'package:bull_recoverbull/src/domain/usecases/derive_vault_key_usecase.dart';
 import 'package:bull_recoverbull/src/domain/usecases/list_drive_vaults_usecase.dart';
 import 'package:bull_recoverbull/src/domain/usecases/read_drive_vault_usecase.dart';
 import 'package:bull_recoverbull/src/domain/usecases/delete_drive_vault_usecase.dart';
@@ -32,9 +35,15 @@ Widget app(Widget child) => MaterialApp(
   home: child,
 );
 
-VaultFlowPresentation flow() => VaultFlowPresentation(
+VaultFlowPresentation flow({
+  DeriveVaultKeyUsecase? localKey,
+  BackupMetadataRepository? metadata,
+}) => VaultFlowPresentation(
   VaultFlowCubit(
-    const ManageBackupSettingsUsecase(null, RecoverBullStorageFullFailure()),
+    ManageBackupSettingsUsecase(
+      metadata,
+      const RecoverBullStorageFullFailure(),
+    ),
     (
       pick: PickVaultUsecase(_Files()),
       list: ListDriveVaultsUsecase(_Drive()),
@@ -50,6 +59,7 @@ VaultFlowPresentation flow() => VaultFlowPresentation(
       null,
     ),
     unavailable: const RecoverBullStorageFullFailure(),
+    localKey: localKey,
     vault: EncryptedVault(
       id: '11' * 32,
       salt: '22' * 16,
@@ -139,6 +149,63 @@ void main() {
     },
   );
 
+  for (final hasSettings in [false, true]) {
+    testWidgets(
+      'local key viewing can replace the file without contacting the server: $hasSettings',
+      (tester) async {
+        tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+          _channel,
+          (_) async => true,
+        );
+        await tester.pumpWidget(
+          app(
+            VaultFlowPage(
+              flow: RecoverBullFlow.viewVaultKey,
+              presentation: () async => flow(
+                localKey: DeriveVaultKeyUsecase(_LocalVaults()),
+                metadata: hasSettings ? _Metadata() : null,
+              ),
+              copiedMessage: 'Copied',
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+        await tester.ensureVisible(find.text('Continue'));
+        await tester.tap(find.text('Continue'));
+        await tester.pumpAndSettle();
+        expect(find.byType(BullInputText), findsNothing);
+        expect(find.text('Use server instead'), findsOneWidget);
+        expect(find.widgetWithText(BullButton, 'Retry'), findsNothing);
+        await tester.ensureVisible(
+          find.widgetWithText(BullButton, 'Vault Key'),
+        );
+        await tester.tap(find.widgetWithText(BullButton, 'Vault Key'));
+        await tester.pumpAndSettle();
+        expect(find.textContaining('No wallet on this device'), findsOneWidget);
+        expect(find.widgetWithText(BullButton, 'Retry'), findsNothing);
+        final localizations = RecoverBullLocalizations.of(
+          tester.element(find.byType(VaultFlowPage)),
+        );
+        final picker = find.widgetWithText(
+          BullButton,
+          localizations.recoverbullSelectCustomLocationProvider,
+        );
+        await tester.ensureVisible(picker);
+        await tester.tap(picker);
+        await tester.pumpAndSettle();
+        await tester.ensureVisible(
+          find.widgetWithText(BullButton, 'Vault Key'),
+        );
+        await tester.tap(find.widgetWithText(BullButton, 'Vault Key'));
+        await tester.pumpAndSettle();
+        expect(find.text('*' * 64), findsOneWidget);
+        expect(find.text('11' * 32), findsNothing);
+        await tester.pumpWidget(app(const SizedBox.shrink()));
+        await tester.pumpAndSettle();
+      },
+    );
+  }
+
   testWidgets('late initialization after route close disposes the flow', (
     tester,
   ) async {
@@ -164,10 +231,41 @@ void main() {
   });
 }
 
-final class _Files extends Fake implements VaultFileRepository {}
+final class _Files extends Fake implements VaultFileRepository {
+  @override
+  Future<Result<EncryptedVault, RecoverBullFailure>> pick() async => Ok(
+    EncryptedVault(
+      id: '33' * 32,
+      salt: '22' * 16,
+      ciphertext: List.filled(64, 0),
+      createdAt: DateTime.utc(2026),
+    ),
+  );
+}
 
 final class _Drive extends Fake implements GoogleDriveRepository {}
 
 final class _Vaults extends Fake implements VaultRepository {}
 
 final class _Wallets extends Fake implements RecoverBullWalletPort {}
+
+final class _LocalVaults extends Fake implements VaultRepository {
+  @override
+  Future<Result<VaultKey, RecoverBullFailure>> deriveKey(
+    EncryptedVault vault,
+  ) async => vault.id == '11' * 32
+      ? const Err(VaultLocalKeyMismatchFailure())
+      : Ok(VaultKey('11' * 32));
+}
+
+final class _Metadata extends Fake implements BackupMetadataRepository {
+  @override
+  Future<Result<BackupSettings, RecoverBullFailure>> settings() async => Ok(
+    BackupSettings(
+      server: Uri.parse('http://backup-example.onion'),
+      permissionGranted: true,
+      monitoringEnabled: false,
+      generation: 0,
+    ),
+  );
+}

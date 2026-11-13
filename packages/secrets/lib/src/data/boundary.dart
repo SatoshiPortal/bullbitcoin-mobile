@@ -2,7 +2,11 @@ import 'package:bip39_mnemonic/bip39_mnemonic.dart' show MnemonicException;
 import 'package:bull_logger/bull_logger.dart';
 import 'package:primitives/primitives.dart';
 import 'package:secrets/src/crypto/crypto.dart'
-    show InvalidVault, PassphraseUnsupported, LanguageUnsupported;
+    show
+        InvalidVault,
+        InvalidVaultPath,
+        PassphraseUnsupported,
+        LanguageUnsupported;
 import 'package:secrets/src/data/exceptions.dart';
 import 'package:secrets/src/domain/domain.dart';
 
@@ -39,6 +43,8 @@ Future<Result<T, SecretFailure>> boundary<T>(
     return Err(LanguageUnsupportedFailure(e.message));
   } on PassphraseUnsupported catch (e) {
     return Err(PassphraseUnsupportedFailure(e.message));
+  } on InvalidVaultPath {
+    return const Err(InvalidVaultPathFailure());
   } on InvalidVault catch (e) {
     return Err(InvalidVaultFailure(e.message));
   } on MnemonicException catch (e) {

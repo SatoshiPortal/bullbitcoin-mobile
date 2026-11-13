@@ -84,6 +84,10 @@ void main() {
           if (language == bip39.Language.english) {
             expect(plaintext['mnemonicLanguage'], 'english');
           }
+          expect(
+            ok(await secret.backup.recoverbullKey(vault: backup.vault)).hex,
+            backup.key.hex,
+          );
           ok(await secrets.trash(secret.id));
           storage.locked = true;
           final inspected = ok(

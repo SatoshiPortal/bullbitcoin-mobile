@@ -11,6 +11,7 @@ import '../domain/recoverbull_failure.dart';
 import '../domain/usecases/complete_vault_usecase.dart';
 import '../domain/usecases/manage_backup_settings_usecase.dart';
 import '../domain/usecases/pick_vault_usecase.dart';
+import '../domain/usecases/derive_vault_key_usecase.dart';
 import '../domain/usecases/list_drive_vaults_usecase.dart';
 import '../domain/usecases/read_drive_vault_usecase.dart';
 import '../domain/usecases/delete_drive_vault_usecase.dart';
@@ -51,6 +52,7 @@ final class VaultFlowCubit extends Cubit<VaultFlowState> {
   _files;
   final ManageVaultSessionUsecase? _session;
   final CompleteVaultUsecase _complete;
+  final DeriveVaultKeyUsecase? _localKey;
   final RecoverBullFailure unavailable;
   bool _closing = false;
 
@@ -61,6 +63,7 @@ final class VaultFlowCubit extends Cubit<VaultFlowState> {
     this._complete, {
     required this.unavailable,
     EncryptedVault? vault,
+    this._localKey,
   }) : super(VaultFlowState(vault: vault));
 
   void _publish({
@@ -185,6 +188,13 @@ final class VaultFlowCubit extends Cubit<VaultFlowState> {
       ),
     );
     if (value != null) _publish(completion: value);
+  }
+
+  Future<VaultKey?> deriveKey() async {
+    final vault = state.vault;
+    final derive = _localKey;
+    if (vault == null || derive == null) return null;
+    return _run(() => derive.execute(vault));
   }
 
   Future<VaultKey?> reveal(String password) async {

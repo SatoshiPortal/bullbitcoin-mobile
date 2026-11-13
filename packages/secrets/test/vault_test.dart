@@ -43,6 +43,104 @@ void main() {
   Future<Secret> secretIn(Secrets secrets) async =>
       ok(await secrets.fetch(Fingerprint(plainFingerprint)));
 
+  group('deriving an existing vault key', () {
+    const hardenedKey =
+        '8f2c4b36f3a0b36058481ea6e2d740ae9b27d46986e24d92cc288bcacbab58d0';
+    const unhardenedKey =
+        '151a5a41f5eac5d49e67e0fad0bddd3beebe0f0e4b7739435997506cf12d9fce';
+    final vaultWords = [...List.filled(11, 'zoo'), 'wrong'];
+    late FakeSecureStoragePlatform storage;
+    late Secret secret;
+
+    EncryptedVault vault({
+      String? path = "1608'/0'/586053381'",
+      String key = hardenedKey,
+    }) {
+      final file =
+          jsonDecode(
+                Backup.recoverbull.seal(
+                  words: vaultWords,
+                  language: Language.english,
+                  metadata: const {},
+                  backupKey: key,
+                  derivationPath: path ?? '',
+                ),
+              )
+              as Map<String, dynamic>;
+      if (path == null) file.remove('path');
+      return EncryptedVault(json: jsonEncode(file));
+    }
+
+    setUp(() async {
+      storage = FakeSecureStoragePlatform();
+      final secrets = secretsWith(storage);
+      secret = ok(await secrets.import(words: vaultWords));
+      storage.writesFail = true;
+    });
+
+    test('preserves recorded path variants without changing storage', () async {
+      final stored = Map.of(storage.entries);
+      for (final (path, key) in [
+        ("1608'/0'/586053381'", hardenedKey),
+        ("m/1608'/0'/586053381'", hardenedKey),
+        ("1608'/0'/586053381", unhardenedKey),
+        ("m/1608'/0'/586053381", unhardenedKey),
+      ]) {
+        expect(
+          ok(
+            await secret.backup.recoverbullKey(
+              vault: vault(path: path, key: key),
+            ),
+          ).hex,
+          key,
+        );
+      }
+      expect(storage.entries, stored);
+    });
+
+    test('rejects absent or unsupported paths', () async {
+      for (final path in [
+        null,
+        '',
+        "1608'/1'/586053381'",
+        "39'/0'/586053381'",
+        "1608'/0'/2147483648'",
+        "1608'/0'/-1'",
+        "1608'/0'/1'/2'",
+        '1608/0/1',
+        "1608'/0'/1'\n",
+      ]) {
+        expect(
+          await secret.backup.recoverbullKey(vault: vault(path: path)),
+          isA<Err<VaultKey, SecretFailure>>().having(
+            (r) => r.failure,
+            'failure',
+            isA<InvalidVaultPathFailure>(),
+          ),
+        );
+      }
+    });
+
+    test(
+      'withholds keys that do not authenticate the selected vault',
+      () async {
+        for (final file in [
+          vault(path: "1608'/0'/1'"),
+          vault(key: '11' * 32),
+        ]) {
+          expect(
+            await secret.backup.recoverbullKey(vault: file),
+            isA<Err<VaultKey, SecretFailure>>().having(
+              (r) => r.failure,
+              'failure',
+              isA<InvalidVaultFailure>(),
+            ),
+          );
+        }
+      },
+    );
+  });
+
   group('vault keys', () {
     test('normalizes case and whitespace without changing the key', () {
       expect(VaultKey('AB ' * 32).hex, 'ab' * 32);
@@ -140,6 +238,11 @@ void main() {
       );
       final secret = ok(await source.fetch(Fingerprint(passphraseFingerprint)));
       final vault = ok(await secret.backup.recoverbull());
+
+      expect(
+        ok(await secret.backup.recoverbullKey(vault: vault.vault)).hex,
+        vault.key.hex,
+      );
 
       final without = secretsWith(FakeSecureStoragePlatform());
       final bare = ok(

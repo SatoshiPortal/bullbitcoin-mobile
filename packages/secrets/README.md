@@ -52,7 +52,8 @@ Secret
 |   |-- descriptorPsbt(psbt, descriptor:, network:, keys:, [passphrase:], [signWithTapInternalKey: false]) -> String
 |   `-- pset(pset, network:) -> String
 |-- backup
-|   `-- recoverbull([metadata: const {}]) -> ({VaultKey key, EncryptedVault vault})
+|   |-- recoverbull([metadata: const {}]) -> ({VaultKey key, EncryptedVault vault})
+|   `-- recoverbullKey(vault:) -> VaultKey
 |-- verify
 |   |-- mnemonic(words) -> bool
 |   `-- seed(hex) -> bool
@@ -134,6 +135,7 @@ Keep `secret.id`, a `primitives.Fingerprint`, to fetch a new handle later. Impor
 | `info`, `id` | fingerprint and shape | no key material |
 | `derive.bip85.hex`, `derive.bip85.mnemonic` | child entropy or words | spending authority over what the child controls |
 | `derive.swapKey` | `SwapMasterKey`, an independent swap credential | spending authority over swaps |
+| `backup.recoverbullKey` | verified key for an existing vault | same recovery credential, derived without storage writes |
 | `backup.recoverbull` | encrypted vault and its separate key | together recover the words; store them apart |
 | `silentPayments.account` | a live bwk Silent Payments account that scans and signs | ⚠️ bwk receives the stored words and holds them while the account lives; the app gets the account only |
 | `databaseKeys(module:).getOrCreate` | module database key | opens the encrypted database |
@@ -168,6 +170,8 @@ Sealed display and challenge widgets obtain language in the same read as the wor
 ## Recovery and module keys
 
 `secret.backup.recoverbull(metadata:)` returns `({EncryptedVault vault, VaultKey key})`. `EncryptedVault.json` is the encoded document, not a filesystem path. It contains no key. `secrets.recoverbull.restore(vault:, key:, passphrase:)` decrypts and imports the words internally, returning `RestoredVault`: a `Secret` and the caller's metadata. Restoring a vault whose secret already exists returns the existing handle, described with that entry's own language even when the vault's differs; direct `import` remains strict about duplicates. Every new RecoverBull vault stores its language in the reserved `mnemonicLanguage` plaintext field spelled as bip39's `Language.label`, including `english`. Historical keyless vaults restore as English unchanged. Open, restore and fingerprint inspection honor it; unknown values return `InvalidVaultFailure`. Caller metadata cannot override `mnemonic` or `mnemonicLanguage` and is snapshotted before the keystore read; a historical caller `language` key stays free and is returned untouched. The vault contains no passphrase; supply one separately when restoring a passphrase-protected Bitcoin wallet. The app's default wallets never have a passphrase.
+
+`secret.backup.recoverbullKey(vault:)` derives at the existing file’s recorded BIP85 path and authenticates its mnemonic payload before returning the key. It honors the stored passphrase, accepts historical hardened and unhardened backup indices, and neither imports words nor changes storage. A missing or unsupported path returns `InvalidVaultPathFailure`; a file that does not open returns `InvalidVaultFailure`.
 
 `secrets.recoverbull.fingerprint(vault:, key:)` derives the fingerprint of the decrypted words without a passphrase and without accessing the keystore. It never trusts a fingerprint in metadata and never imports a temporary secret. The result can differ from the original secret's fingerprint when that secret had a passphrase. The vault encryption key is derived from the original secret, including its passphrase, even though the encrypted payload contains words and their language without the passphrase.
 

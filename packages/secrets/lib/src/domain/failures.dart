@@ -70,6 +70,11 @@ final class InvalidMnemonicFailure extends SecretFailure {
   const InvalidMnemonicFailure([super.logMessage]);
 }
 
+/// The vault has no supported recorded BIP85 path for local key derivation.
+final class InvalidVaultPathFailure extends SecretFailure {
+  const InvalidVaultPathFailure();
+}
+
 /// The vault could not be opened: the file is not a RecoverBull vault,
 /// the key does not open it, or its plaintext carries no mnemonic.
 /// Nothing was stored. Distinct from [StoreSecretFailure] so a wrong

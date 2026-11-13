@@ -30,6 +30,7 @@ import '../domain/usecases/fetch_vault_key_usecase.dart';
 import '../domain/usecases/import_backup_settings_usecase.dart';
 import '../domain/usecases/manage_backup_settings_usecase.dart';
 import '../domain/usecases/pick_vault_usecase.dart';
+import '../domain/usecases/derive_vault_key_usecase.dart';
 import '../domain/usecases/list_drive_vaults_usecase.dart';
 import '../domain/usecases/read_drive_vault_usecase.dart';
 import '../domain/usecases/delete_drive_vault_usecase.dart';
@@ -191,6 +192,7 @@ final class RecoverBullRuntime {
           fetch,
         ),
         complete,
+        _vaults,
       );
     }
     return (session: session, complete: complete);
@@ -221,6 +223,7 @@ final class RecoverBullRuntime {
         operations.session,
         operations.complete,
         unavailable: unavailable,
+        localKey: DeriveVaultKeyUsecase(_vaults),
         vault: vault,
       ),
       captured.network,
