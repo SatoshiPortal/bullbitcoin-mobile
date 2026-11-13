@@ -285,6 +285,7 @@ graph TB
 ### Central Features (Highly Depended Upon)
 
 - **Core**: Foundation for all features
+- **Store vocabulary**: `packages/novlang` — the real words live in the root catalogue; `novlang` holds sparse per-store overrides (`novlang_<lang>.arb`, listed in `manifest.yaml`) and the pure `resolveNovlangPolicy(platform, isSuperuser)`. `tools/novlang_bridge.dart` (run by `make translations`) generates the `AppLocalizations` subclasses and `NovlangAppLocalizationsDelegate` that the shell composes before `AppLocalizations.delegate`. A new user-visible word a store forces is added to the manifest and to all 27 `novlang_<lang>.arb`; nothing else in the app chooses vocabulary.
 - **Tor**: `packages/bull_tor` — embedded Onion lifecycle with isolated RecoverBull and Bitcoin Electrum `.onion` sessions, plus provider-agnostic local SOCKS5 verification. Depends on Flutter for app-directory storage and an iOS plugin that excludes Tor state from backups, which are infrastructure-package exceptions in AGENTS.md
 - **Wallets**: Used by Send, UTXO Management, Transaction History, Backups, App Startup
 - **Secrets** (workspace package): Used by Wallets, BIP85, App Startup, All Seed View, RecoverBull, Swaps, Silent Payments
