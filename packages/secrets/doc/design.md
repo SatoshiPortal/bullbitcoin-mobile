@@ -481,3 +481,15 @@ read. PSETs lwk builds for the app leave the field absent. Beyond the
 sighash, the package applies no policy on outputs, fees or inputs: it
 signs the inputs its keys own, and deciding what is acceptable to sign is
 the caller's.
+
+## Read-only Android legacy backup
+
+`Secrets.legacyBackup` runs before normal foreground initialization and before a persisted background job opens the app's shared secure-storage client. A null result permits normal startup. A non-null list leads to the terminal backup screen; failures lead to its support state, never to a fresh wallet. Every normal package operation also checks the physical Android inventory before initializing FSS. Legacy handles use a separate read-only datasource and cannot write or delete.
+
+The private Android reader parses preference XML without opening SharedPreferences, whose own initialization can restore backup files. It has no write, reset, key generation or migration operation. Backups, corrupt XML, duplicate keys, unsupported formats, missing keys and changed snapshots are fixed-code failures. A prior database, Hive box or historical store flag prevents an empty inventory from authorizing normal startup.
+
+ESP uses existing encrypted or historical cleartext keysets through Tink 1.21.0, already supplied by the exactly pinned FSS 10.3.3 Android dependency. CBC unwraps the existing AES key with the application's historical RSA alias. A failed develop initialization may have added GCM markers and a GCM key; failed GCM authentication then permits only a successful complete CBC read, never default plugin initialization. Mixed or unreadable values are refused. CBC padding is not authentication: every displayed envelope must parse as SecretModel, pass BIP39 validation and derive to its storage-key fingerprint. Seed-only or incomplete inventories remain blocked.
+
+No material is retained in the returned handles. MnemonicView rereads through the native reader inside its sealed state and paints words and passphrases outside semantics. The host enables screen privacy before mounting the views and offers reinstall instructions only after every view reports a successful read. No old preferences are migrated, rewritten or deleted. Android uninstall and standard restoration are explicit user steps after a verified backup.
+
+Current OAEP/GCM stores are admitted only after unwrapping the existing canonical key and authenticating every raw value; markers alone do not authorize FSS. Empty current stores still need a usable existing key. Synthetic Java tests compare bytes on success and failure, and Dart tests cover the channel, model and fingerprint boundaries. These checks do not replace device upgrade and restore evidence.

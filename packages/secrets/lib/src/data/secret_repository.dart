@@ -21,10 +21,11 @@ import 'package:meta/meta.dart';
 ///
 /// Concrete by derogation to AGENTS.md rule 6 (2026-09-15): tests substitute below it, at `FlutterSecureStoragePlatform.instance`.
 class SecretRepository {
-  final _source = FlutterSecureStorageDatasource();
+  final FlutterSecureStorageDatasource _source;
 
   @internal
-  SecretRepository();
+  SecretRepository({bool legacyReadOnly = false})
+    : _source = FlutterSecureStorageDatasource(legacyReadOnly: legacyReadOnly);
 
   // ------------------------------------------------------------------- reads
 
