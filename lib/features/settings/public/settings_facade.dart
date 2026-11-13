@@ -5,6 +5,7 @@ import 'package:bb_mobile/features/settings/domain/usecases/watch_payjoin_policy
 import 'package:bull_payjoin/bull_payjoin.dart' show PayjoinAction;
 
 export 'bitcoin_amount_view.dart';
+export 'settings_amount_scope.dart';
 export '../domain/settings_failure.dart';
 export '../presentation/settings_failure_l10n.dart';
 export '../ui/settings_router.dart' show SettingsRoute;
