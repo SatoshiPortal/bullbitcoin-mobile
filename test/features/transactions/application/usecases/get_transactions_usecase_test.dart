@@ -21,7 +21,8 @@ import 'package:bb_mobile/features/transactions/domain/transaction_failure.dart'
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
-import 'package:primitives/primitives.dart' show BitcoinNetwork, Err, Ok;
+import 'package:primitives/primitives.dart'
+    show BitcoinNetwork, BitcoinUnit, Err, Ok;
 
 class _MockSettingsRepository extends Mock implements SettingsRepository {}
 

@@ -32,7 +32,7 @@ import 'package:fake_async/fake_async.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:primitives/primitives.dart'
-    show BitcoinNetwork, Err, Ok, Result;
+    show BitcoinNetwork, BitcoinUnit, Err, Ok, Result;
 
 class _MockGetReceiveWalletsUsecase extends Mock
     implements GetReceiveWalletsUsecase {}

@@ -5,6 +5,7 @@
 /// dependencies.
 library;
 
+export 'src/bitcoin_unit.dart';
 export 'src/failure.dart';
 export 'src/money.dart';
 export 'src/bitcoin_transaction_recipient.dart';
