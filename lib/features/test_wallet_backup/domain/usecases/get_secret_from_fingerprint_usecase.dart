@@ -1,8 +1,7 @@
-import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/test_wallet_backup/domain/test_wallet_backup_failure.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:meta/meta.dart';
-import 'package:primitives/primitives.dart' show Fingerprint;
+import 'package:primitives/primitives.dart' show Err, Fingerprint, Ok, Result;
 import 'package:secrets/secrets.dart';
 
 class GetSecretFromFingerprintUsecase {
