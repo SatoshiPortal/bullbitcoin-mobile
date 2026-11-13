@@ -115,6 +115,11 @@ translations:
 	@echo "🌐 Generating translations files"
 	@fvm flutter gen-l10n
 	@$(MAKE) recoverbull-translations
+	@$(MAKE) bull-ui-translations
+
+.PHONY: bull-ui-translations
+bull-ui-translations:
+	@(cd packages/bull_ui && fvm flutter gen-l10n)
 
 .PHONY: recoverbull-translations
 recoverbull-translations:
