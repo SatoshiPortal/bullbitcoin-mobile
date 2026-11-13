@@ -1,6 +1,8 @@
+import 'package:intl/intl.dart';
+import 'package:flutter/widgets.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/themes/fonts.dart';
-import 'package:bb_mobile/core/utils/transaction_day_label.dart';
 import 'package:bull_ui/bull_ui.dart' show BullText, Gap;
 import 'package:flutter/material.dart';
 
@@ -37,7 +39,7 @@ class TransactionsByDayList<T> extends StatelessWidget {
   final bool sliver;
 
   /// Label for a group key that is not a day; null falls back to
-  /// [transactionDayLabel].
+  /// [_transactionDayLabel].
   final String? Function(BuildContext, int dayKey)? dayLabel;
 
   Widget _wrapPlaceholder(Widget child) =>
@@ -115,7 +117,7 @@ class TransactionsByDayList<T> extends StatelessWidget {
           children: [
             BullText(
               dayLabel?.call(context, entry.key) ??
-                  transactionDayLabel(context, date),
+                  _transactionDayLabel(context, date),
               style: context.font.titleSmall?.copyWith(
                 color: context.appColors.onSurface,
               ),
@@ -143,4 +145,22 @@ class TransactionsByDayList<T> extends StatelessWidget {
       );
     }
   }
+}
+
+/// Header for a day group in a transaction list: the pending bucket, the two
+/// most recent days by name, then a date that keeps the year only once it is
+/// no longer the current one.
+String _transactionDayLabel(BuildContext context, DateTime date) {
+  final now = DateTime.now();
+  final today = DateTime(now.year, now.month, now.day);
+  final yesterday = DateTime(now.year, now.month, now.day - 1);
+
+  if (date.compareTo(today) > 0) return context.loc.transactionListPending;
+  if (date.isAtSameMomentAs(today)) return context.loc.transactionListToday;
+  if (date.isAtSameMomentAs(yesterday)) {
+    return context.loc.transactionListYesterday;
+  }
+  return date.year == now.year
+      ? DateFormat.MMMMd().format(date)
+      : DateFormat.yMMMMd().format(date);
 }

@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/failures/failure.dart';
+import 'package:primitives/primitives.dart' show Failure;
 
 /// Failures of [ExchangeApiKeyRepository], the stored-session side of the
 /// exchange API.

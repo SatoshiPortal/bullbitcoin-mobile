@@ -6,7 +6,7 @@ import 'package:bb_mobile/core/mempool/domain/repositories/mempool_server_reposi
 import 'package:bb_mobile/core/mempool/domain/repositories/mempool_settings_repository.dart';
 import 'package:bb_mobile/core/mempool/domain/value_objects/mempool_server_network.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart' show Err, Ok;
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 
 class FeesRepositoryImpl implements FeesRepository {

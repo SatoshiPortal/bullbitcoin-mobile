@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:bb_mobile/core/status/domain/entity/service_status.dart';
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/status_check/domain/check_service_status_usecase.dart';
 import 'package:bb_mobile/features/status_check/domain/status_check_failure.dart';
 import 'package:bb_mobile/features/status_check/presentation/cubit.dart';

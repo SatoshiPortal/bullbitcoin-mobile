@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/failures/failure.dart';
+import 'package:primitives/primitives.dart' show Failure;
 import 'package:bb_mobile/core/primitives/payment_network.dart';
 
 sealed class ReceiveFailure extends Failure {

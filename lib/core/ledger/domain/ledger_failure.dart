@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/failures/failure.dart';
+import 'package:primitives/primitives.dart' show Failure;
 
 sealed class LedgerFailure extends Failure {
   const LedgerFailure([super.logMessage]);
