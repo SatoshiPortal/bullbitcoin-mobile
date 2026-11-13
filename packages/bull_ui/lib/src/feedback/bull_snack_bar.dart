@@ -36,6 +36,25 @@ class BullSnackBar {
     );
   }
 
+  /// Show a toast on a captured overlay, including after its route closes.
+  /// Does nothing if the overlay has already been unmounted.
+  static void showOnOverlay(
+    OverlayState overlay, {
+    required String message,
+    IconData? leadingIcon,
+    String? actionLabel,
+    VoidCallback? onAction,
+  }) {
+    if (!overlay.mounted) return;
+    showIn(
+      overlay,
+      message: message,
+      leadingIcon: leadingIcon,
+      actionLabel: actionLabel,
+      onAction: onAction,
+    );
+  }
+
   /// Returns a dismissal callback that only affects this feedback instance.
   static VoidCallback showIn(
     OverlayState overlay, {

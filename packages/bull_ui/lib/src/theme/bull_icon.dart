@@ -3,6 +3,22 @@ import 'package:flutter/material.dart';
 /// The curated icon set `bull_ui` exposes. Feature code references these
 /// instead of Material `Icons` directly, e.g. `BullIcon(BullIcons.acUnit)`.
 abstract final class BullIcons {
+  static const IconData addCircleOutline = Icons.add_circle_outline;
+  static const IconData removeCircleOutline = Icons.remove_circle_outline;
+  static const IconData dragHandle = Icons.drag_handle;
+  static const IconData candlestickChart = Icons.candlestick_chart;
+  static const IconData receiptLong = Icons.receipt_long;
+  static const IconData history = Icons.history;
+  static const IconData supportAgent = Icons.support_agent;
+  static const IconData showChart = Icons.show_chart;
+  static const IconData shoppingCart = Icons.shopping_cart;
+  static const IconData payments = Icons.payments;
+  static const IconData swapHoriz = Icons.swap_horiz;
+  static const IconData map = Icons.map;
+  static const IconData settings = Icons.settings;
+  static const IconData accountBalance = Icons.account_balance;
+  static const IconData moreHoriz = Icons.more_horiz;
+  static const IconData arrowDownward = Icons.arrow_downward;
   static const IconData tune = Icons.tune;
   static const IconData acUnit = Icons.ac_unit;
   static const IconData lockOpen = Icons.lock_open;

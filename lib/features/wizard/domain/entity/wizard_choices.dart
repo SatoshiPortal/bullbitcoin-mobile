@@ -6,7 +6,13 @@ import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 /// the wizard merely *displayed* (e.g. brightness-detected theme,
 /// keyboard-detected language) stay out of the touched set and never
 /// clobber existing user values when `kCurrentWizardVersion` bumps.
-enum WizardField { language, themeMode, defaultCurrency, reportingConsent }
+enum WizardField {
+  language,
+  themeMode,
+  defaultCurrency,
+  reportingConsent,
+  exchangeAccess,
+}
 
 /// Tagged variant for the `reportingConsent` parameter of
 /// [WizardChoices.copyWith].
@@ -38,6 +44,7 @@ class WizardChoices {
     this.themeMode = AppThemeMode.system,
     this.defaultCurrency = 'USD',
     this.reportingConsent,
+    this.exchangeAccess = true,
     this.touched = const <WizardField>{},
   });
 
@@ -48,6 +55,7 @@ class WizardChoices {
   // Page 3 of the wizard requires an explicit Yes/No before the wizard can
   // be completed via Next/Skip/Get started.
   final bool? reportingConsent;
+  final bool exchangeAccess;
 
   /// Tracks which fields the user explicitly picked via the wizard's UI
   /// controls (theme/language/currency pickers, mission Yes/No buttons).
@@ -65,6 +73,8 @@ class WizardChoices {
     AppThemeMode? themeMode,
     String? defaultCurrency,
     ConsentArg reportingConsent = _consentUnset,
+    bool? exchangeAccess,
+    bool confirmExchange = false,
   }) {
     final t = Set<WizardField>.from(touched);
     if (language != null) t.add(WizardField.language);
@@ -73,7 +83,9 @@ class WizardChoices {
     if (reportingConsent is ConsentValue) {
       t.add(WizardField.reportingConsent);
     }
+    if (confirmExchange) t.add(WizardField.exchangeAccess);
     return WizardChoices(
+      exchangeAccess: exchangeAccess ?? this.exchangeAccess,
       language: language ?? this.language,
       themeMode: themeMode ?? this.themeMode,
       defaultCurrency: defaultCurrency ?? this.defaultCurrency,
@@ -91,6 +103,7 @@ class WizardChoices {
   /// later confirms via the theme picker.
   WizardChoices copyWithSilent({AppThemeMode? themeMode}) {
     return WizardChoices(
+      exchangeAccess: exchangeAccess,
       language: language,
       themeMode: themeMode ?? this.themeMode,
       defaultCurrency: defaultCurrency,

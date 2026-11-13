@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/widgets/cards/action_card.dart';
+import 'package:bb_mobile/features/exchange/ui/widgets/exchange_home_actions.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/bitcoin_price/presentation/cubit/price_chart_cubit.dart';
 import 'package:bb_mobile/features/bitcoin_price/ui/price_chart_widget.dart';
@@ -9,7 +9,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart' show Gap;
 
 class ExchangeHomeTopSection extends StatelessWidget {
-  const ExchangeHomeTopSection({super.key});
+  const ExchangeHomeTopSection({required this.onAction, super.key});
+
+  final void Function(ExchangeHomeAction) onAction;
 
   @override
   Widget build(BuildContext context) {
@@ -75,13 +77,13 @@ class ExchangeHomeTopSection extends StatelessWidget {
               ),
             ],
           ),
-          const Positioned(
+          Positioned(
             bottom: 0,
             left: 0,
             right: 0,
             child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 13.0),
-              child: ActionCard(),
+              padding: const EdgeInsets.symmetric(horizontal: 13.0),
+              child: ExchangeHomeActions(onAction: onAction),
             ),
           ),
         ],

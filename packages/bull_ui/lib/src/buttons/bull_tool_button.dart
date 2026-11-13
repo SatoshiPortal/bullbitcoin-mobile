@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 
 /// Compact icon-over-label button (the design's `ToolBtn`). **New.**
 ///
-/// 56px tall, button radius, icon (21) over label (11.5/w600). The [primary]
+/// At least 56px tall, growing with the localized label and text scale. The [primary]
 /// variant uses a red fill; [disabled] dims to 40% and ignores taps.
 class BullToolButton extends StatelessWidget {
   const BullToolButton({
@@ -52,14 +52,17 @@ class BullToolButton extends StatelessWidget {
           child: GestureDetector(
             onTap: onPressed,
             child: Container(
-              height: 56,
-              constraints: const BoxConstraints(minWidth: 72),
-              padding: const EdgeInsets.symmetric(horizontal: BullSpacing.sm),
+              constraints: const BoxConstraints(minWidth: 72, minHeight: 56),
+              padding: const EdgeInsets.symmetric(
+                horizontal: BullSpacing.sm,
+                vertical: BullSpacing.sm,
+              ),
               decoration: BoxDecoration(
                 color: bg,
                 borderRadius: BorderRadius.circular(context.bullShapes.button),
               ),
               child: Column(
+                mainAxisSize: MainAxisSize.min,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   BullIcon(icon, size: 21, color: fg),

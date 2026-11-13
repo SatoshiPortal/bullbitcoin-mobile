@@ -186,4 +186,37 @@ void main() {
       verify(() => wizard.markComplete()).called(1);
     },
   );
+  test('retains exchange choice when callback is missing', () async {
+    when(() => wizard.readPending()).thenAnswer(
+      (_) async => const WizardChoices(
+        exchangeAccess: false,
+        touched: {WizardField.exchangeAccess},
+      ),
+    );
+    await usecase.execute();
+    final staged =
+        verify(() => wizard.savePending(captureAny())).captured.single
+            as WizardChoices;
+    expect(staged.exchangeAccess, isFalse);
+    expect(staged.touched, {WizardField.exchangeAccess});
+    verifyNever(() => wizard.clearPending());
+  });
+
+  test('clears exchange choice only after successful application', () async {
+    when(() => wizard.readPending()).thenAnswer(
+      (_) async => const WizardChoices(touched: {WizardField.exchangeAccess}),
+    );
+    var applied = false;
+    final applying = ApplyPendingWizardChoicesUsecase(
+      wizardRepository: wizard,
+      settingsRepository: settings,
+      applyExchangeAccess: (enabled) async {
+        applied = enabled;
+        return true;
+      },
+    );
+    await applying.execute();
+    expect(applied, isTrue);
+    verify(() => wizard.clearPending()).called(1);
+  });
 }

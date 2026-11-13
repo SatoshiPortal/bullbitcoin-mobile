@@ -1,6 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/cards/action_card.dart';
 import 'package:bb_mobile/features/bitcoin_price/presentation/cubit/price_chart_cubit.dart';
 import 'package:bb_mobile/core/widgets/text/currency_text.dart';
 import 'package:bb_mobile/features/bitcoin_price/ui/price_chart_widget.dart';
@@ -17,42 +16,33 @@ import 'package:go_router/go_router.dart';
 import 'package:shimmer/shimmer.dart';
 
 class WalletHomeTopSection extends StatelessWidget {
-  const WalletHomeTopSection({super.key});
+  const WalletHomeTopSection({super.key, required this.actions});
 
-  /// Height of the dark area behind the balance (and the price chart, when it
+  final Widget actions;
+
+  /// Minimum height of the dark area behind the balance (and the price chart, when it
   /// is toggled on).
-  static const double _balanceAreaHeight = 264;
+  static const double _balanceAreaHeight = 224;
 
   /// Distance from the top of the dark area down to the balance.
   static const double _balanceTopSpacing = 96;
 
-  /// How far the [ActionCard] hangs below the dark area.
-  static const double _actionCardOverhang = 76;
-
-  /// Fixed height of the section.
-  static const double _height = _balanceAreaHeight + _actionCardOverhang;
-
   @override
   Widget build(BuildContext context) {
-    return const SizedBox(
-      height: _height,
-      child: Stack(
-        children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [SizedBox(height: _balanceAreaHeight, child: _UI())],
-          ),
-          Positioned(
-            bottom: 0,
-            left: 0,
-            right: 0,
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 13.0),
-              child: ActionCard(),
-            ),
-          ),
-        ],
-      ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        ConstrainedBox(
+          constraints: const BoxConstraints(minHeight: _balanceAreaHeight),
+          child: const _UI(),
+        ),
+        const SizedBox(height: 12),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 13.0),
+          child: actions,
+        ),
+      ],
     );
   }
 }
@@ -80,13 +70,14 @@ class _UIState extends State<_UI> {
     );
 
     return Stack(
-      fit: StackFit.expand,
       children: [
-        AnimatedContainer(
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeInOut,
-          color: Colors.transparent,
-          child: image,
+        Positioned.fill(
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeInOut,
+            color: Colors.transparent,
+            child: image,
+          ),
         ),
         AnimatedSwitcher(
           duration: const Duration(milliseconds: 300),
@@ -103,7 +94,11 @@ class _UIState extends State<_UI> {
             );
           },
           child: showChart
-              ? const _ChartView(key: ValueKey('chart'))
+              ? const SizedBox(
+                  key: ValueKey('chart'),
+                  height: WalletHomeTopSection._balanceAreaHeight,
+                  child: _ChartView(),
+                )
               : const _Amounts(key: ValueKey('amounts')),
         ),
       ],
@@ -117,6 +112,7 @@ class _Amounts extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
         Gap(WalletHomeTopSection._balanceTopSpacing),
         Row(
@@ -207,11 +203,24 @@ class _WalletHomeBtcAmountSkeleton extends StatelessWidget {
 }
 
 class _ChartView extends StatelessWidget {
-  const _ChartView({super.key});
+  const _ChartView();
 
   @override
   Widget build(BuildContext context) {
-    return const PriceChartWidget();
+    return Stack(
+      children: [
+        const Positioned.fill(child: PriceChartWidget()),
+        Positioned(
+          top: MediaQuery.paddingOf(context).top + kToolbarHeight,
+          left: 8,
+          child: IconButton(
+            tooltip: MaterialLocalizations.of(context).backButtonTooltip,
+            icon: Icon(Icons.arrow_back, color: context.appColors.onPrimary),
+            onPressed: () => context.read<PriceChartCubit>().hideChart(),
+          ),
+        ),
+      ],
+    );
   }
 }
 

@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bull_quick_actions/bull_quick_actions.dart';
 import 'package:flutter/widgets.dart';
 import 'package:bb_mobile/features/onboarding/ui/onboarding_router.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
@@ -17,7 +18,11 @@ enum WalletRoute {
 }
 
 class WalletRouter {
-  static final walletHomeRoute = GoRoute(
+  static GoRoute walletHomeRoute({
+    required QuickActionsCubit quickActions,
+    required void Function(BuildContext, QuickAction) onQuickAction,
+    required void Function(BuildContext) onCustomizeQuickActions,
+  }) => GoRoute(
     name: WalletRoute.walletHome.name,
     path: WalletRoute.walletHome.path,
     pageBuilder: (context, state) {
@@ -31,7 +36,11 @@ class WalletRouter {
             //  to allow the user to create or restore a wallet.
             context.goNamed(OnboardingRoute.onboarding.name);
           },
-          child: const WalletHomeScreen(),
+          child: WalletHomeScreen(
+            quickActions: quickActions,
+            onQuickAction: onQuickAction,
+            onCustomizeQuickActions: onCustomizeQuickActions,
+          ),
         ),
       );
     },

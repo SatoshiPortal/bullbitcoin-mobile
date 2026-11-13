@@ -15207,5 +15207,125 @@
   "coreScreensOutputsExceedInputs": "Outputs exceed inputs: this transaction is invalid and the network will reject it.",
   "@coreScreensOutputsExceedInputs": {
     "description": "Transaction review alert when a Bitcoin transaction's outputs exceed its inputs"
+  },
+  "exchangeAccessSettingsTitle": "BULL Exchange",
+  "@exchangeAccessSettingsTitle": {
+    "description": "Optional exchange access or wallet quick action setting."
+  },
+  "exchangeAccessSettingsLabel": "Exchange features",
+  "@exchangeAccessSettingsLabel": {
+    "description": "Optional exchange access or wallet quick action setting."
+  },
+  "exchangeAccessSettingsDescription": "Show Buy, Sell and Pay on the home screen. Transfer remains available.",
+  "@exchangeAccessSettingsDescription": {
+    "description": "Optional exchange access or wallet quick action setting."
+  },
+  "exchangeAccessSettingsOffHint": "Enable to sign in or create a Bull Bitcoin account.",
+  "@exchangeAccessSettingsOffHint": {
+    "description": "Optional exchange access or wallet quick action setting."
+  },
+  "exchangeAccessSettingsOnHint": "Exchange features are enabled.",
+  "@exchangeAccessSettingsOnHint": {
+    "description": "Optional exchange access or wallet quick action setting."
+  },
+  "exchangeAccessOpenAccount": "Open my Bull Bitcoin account",
+  "@exchangeAccessOpenAccount": {
+    "description": "Optional exchange access or wallet quick action setting."
+  },
+  "exchangeAccessSignIn": "Sign in or create an account",
+  "@exchangeAccessSignIn": {
+    "description": "Optional exchange access or wallet quick action setting."
+  },
+  "exchangeAccessDisableTitle": "Disable exchange features?",
+  "@exchangeAccessDisableTitle": {
+    "description": "Optional exchange access or wallet quick action setting."
+  },
+  "exchangeAccessDisableBody": "This signs you out on this device. Existing orders, AutoBuy and recurring buys are not cancelled.",
+  "@exchangeAccessDisableBody": {
+    "description": "Optional exchange access or wallet quick action setting."
+  },
+  "exchangeAccessDisableConfirm": "Sign out and disable",
+  "@exchangeAccessDisableConfirm": {
+    "description": "Optional exchange access or wallet quick action setting."
+  },
+  "exchangeAccessSessionExpired": "Your exchange session has ended. Sign in again to enable exchange features.",
+  "@exchangeAccessSessionExpired": {
+    "description": "Optional exchange access or wallet quick action setting."
+  },
+  "exchangeAccessUnavailable": "Exchange access is temporarily unavailable. Try again.",
+  "@exchangeAccessUnavailable": {
+    "description": "Optional exchange access or wallet quick action setting."
+  },
+  "exchangeAccessSaveFailed": "Your choice could not be saved. Try again.",
+  "@exchangeAccessSaveFailed": {
+    "description": "Optional exchange access or wallet quick action setting."
+  },
+  "exchangeAccessContinueSetup": "Review your exchange choice to continue.",
+  "@exchangeAccessContinueSetup": {
+    "description": "Optional exchange access or wallet quick action setting."
+  },
+  "exchangeAccessPendingOperations": "Existing operations may continue. Open your account to review them before signing out.",
+  "@exchangeAccessPendingOperations": {
+    "description": "Optional exchange access or wallet quick action setting."
+  },
+  "exchangeAccessEnableToContinue": "Enable exchange features in Settings to continue.",
+  "@exchangeAccessEnableToContinue": {
+    "description": "Optional exchange access or wallet quick action setting."
+  },
+  "exchangeAccessDisableIncomplete": "Sign-out is incomplete. Try again before using exchange features.",
+  "@exchangeAccessDisableIncomplete": {
+    "description": "Optional exchange access or wallet quick action setting."
+  },
+  "wizardExchangeTitle": "BULL Exchange",
+  "@wizardExchangeTitle": {
+    "description": "Optional exchange access or wallet quick action setting."
+  },
+  "wizardExchangeDescription": "Buy, sell and pay with Bull Bitcoin directly from your wallet. Additional identity verification may be needed to trade.",
+  "@wizardExchangeDescription": {
+    "description": "Optional exchange access or wallet quick action setting."
+  },
+  "wizardExchangeSupport": "Create a Bull Bitcoin account with just your email address to contact our support team.",
+  "@wizardExchangeSupport": {
+    "description": "Optional exchange access or wallet quick action setting."
+  },
+  "wizardExchangeToggle": "Enable BULL Exchange features",
+  "@wizardExchangeToggle": {
+    "description": "Optional exchange access or wallet quick action setting."
+  },
+  "quickActionsSettingsTitle": "Quick actions",
+  "@quickActionsSettingsTitle": {
+    "description": "Optional exchange access or wallet quick action setting."
+  },
+  "priceHistoryTitle": "Price history",
+  "@priceHistoryTitle": {
+    "description": "Full screen public bitcoin price history title."
+  },
+  "exchangeTradingUnavailable": "Trading is unavailable.",
+  "@exchangeTradingUnavailable": {
+    "description": "Exchange access recovery and navigation"
+  },
+  "exchangeTradingRetry": "Retry",
+  "@exchangeTradingRetry": {
+    "description": "Exchange access recovery and navigation"
+  },
+  "exchangeAccessUnreadable": "Exchange access could not be read. Retry or reset it.",
+  "@exchangeAccessUnreadable": {
+    "description": "Exchange access recovery and navigation"
+  },
+  "exchangeAccessReset": "Reset exchange access",
+  "@exchangeAccessReset": {
+    "description": "Exchange access recovery and navigation"
+  },
+  "exchangeAccessLogoutIncomplete": "Sign out is incomplete. Finish signing out before enabling exchange.",
+  "@exchangeAccessLogoutIncomplete": {
+    "description": "Exchange access recovery and navigation"
+  },
+  "exchangeAccessRetryLogout": "Finish signing out",
+  "@exchangeAccessRetryLogout": {
+    "description": "Exchange access recovery and navigation"
+  },
+  "exchangeAccessManage": "Manage access",
+  "@exchangeAccessManage": {
+    "description": "Exchange access settings destination"
   }
 }

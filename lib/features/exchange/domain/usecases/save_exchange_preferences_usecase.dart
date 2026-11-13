@@ -1,3 +1,5 @@
+import '../repositories/exchange_access_repository.dart';
+import '../exchange_access.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
 import 'package:bb_mobile/core/exchange/domain/exchange_user_failure.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_user_repository.dart';
@@ -18,11 +20,13 @@ class SaveExchangePreferencesUsecase {
   final ExchangeUserRepository _mainnetExchangeUserRepository;
   final ExchangeUserRepository _testnetExchangeUserRepository;
   final SettingsRepository _settingsRepository;
+  final ExchangeAccessRepository _access;
 
   const SaveExchangePreferencesUsecase({
     required this._mainnetExchangeUserRepository,
     required this._testnetExchangeUserRepository,
     required this._settingsRepository,
+    required this._access,
   });
 
   @useResult
@@ -33,22 +37,39 @@ class SaveExchangePreferencesUsecase {
     bool? dcaEnabled,
     String? autoBuyEnabled,
   }) async {
+    if (_access.current is! ExchangeAccessEnabled ||
+        (_access.current as ExchangeAccessEnabled).session !=
+            ExchangeAccessSession.signedIn) {
+      return const Err(ExchangeNotAuthenticatedFailure());
+    }
+    final epoch = _access.epoch;
     final Environment environment;
-    switch (await readExchangeEnvironment(
+    final readEnvironment = await readExchangeEnvironment(
       _settingsRepository,
       ExchangePreferencesSaveFailure.new,
-    )) {
+    );
+    if (_access.epoch != epoch) {
+      return const Err(ExchangeOperationStaleFailure());
+    }
+    switch (readEnvironment) {
       case Ok(:final value):
         environment = value;
       case Err(:final failure):
         return Err(failure);
+    }
+    if (_access.epoch != epoch) {
+      return const Err(ExchangeOperationStaleFailure());
     }
     final repo = environment.isTestnet
         ? _testnetExchangeUserRepository
         : _mainnetExchangeUserRepository;
 
     final UserSummary summary;
-    switch (await repo.getUserSummary()) {
+    final readSummary = await repo.getUserSummary();
+    if (_access.epoch != epoch) {
+      return const Err(ExchangeOperationStaleFailure());
+    }
+    switch (readSummary) {
       case Ok(:final value):
         summary = value;
       case Err(:final failure):
@@ -62,6 +83,9 @@ class SaveExchangePreferencesUsecase {
         });
     }
 
+    if (_access.epoch != epoch) {
+      return const Err(ExchangeOperationStaleFailure());
+    }
     final result = await repo.saveUserPreference(
       language: language ?? summary.language,
       currency: currency ?? summary.currency,
@@ -71,6 +95,9 @@ class SaveExchangePreferencesUsecase {
           emailNotificationsEnabled ?? summary.emailNotificationsEnabled,
     );
 
+    if (_access.epoch != epoch) {
+      return const Err(ExchangeOperationStaleFailure());
+    }
     return result.mapErr(
       (failure) => switch (failure) {
         ExchangeUserNetworkFailure() => ExchangeNetworkFailure(

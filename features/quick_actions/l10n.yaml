@@ -1,0 +1,6 @@
+arb-dir: localization
+output-dir: lib/generated/l10n
+template-arb-file: app_en.arb
+output-localization-file: quick_actions_localizations.dart
+output-class: QuickActionsLocalizations
+nullable-getter: false

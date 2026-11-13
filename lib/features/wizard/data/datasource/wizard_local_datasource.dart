@@ -23,10 +23,14 @@ abstract class WizardLocalDatasource {
   Future<bool?> readPendingErrorReporting();
   Future<void> writePendingErrorReporting(bool enabled);
 
+  Future<bool?> readPendingExchangeAccess();
+  Future<void> writePendingExchangeAccess(bool enabled);
+
   Future<void> clearAllPending();
 }
 
 class WizardLocalDatasourceImpl implements WizardLocalDatasource {
+  static const _pendingExchangeKey = 'wizard_pending_exchange_access';
   static const _versionKey = 'wizard_completed_version';
   static const _pendingVersionKey = 'wizard_pending_version';
   static const _pendingLanguageKey = 'wizard_pending_language';
@@ -107,8 +111,21 @@ class WizardLocalDatasourceImpl implements WizardLocalDatasource {
   }
 
   @override
+  Future<bool?> readPendingExchangeAccess() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(_pendingExchangeKey);
+  }
+
+  @override
+  Future<void> writePendingExchangeAccess(bool enabled) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_pendingExchangeKey, enabled);
+  }
+
+  @override
   Future<void> clearAllPending() async {
     final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(_pendingExchangeKey);
     await prefs.remove(_pendingVersionKey);
     await prefs.remove(_pendingLanguageKey);
     await prefs.remove(_pendingThemeKey);

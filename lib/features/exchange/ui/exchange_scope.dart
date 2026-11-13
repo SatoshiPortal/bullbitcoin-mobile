@@ -1,5 +1,6 @@
+import 'dart:async';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
-import 'package:bb_mobile/features/exchange/presentation/exchange_state.dart';
+import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_listener.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter/widgets.dart';
@@ -11,7 +12,7 @@ class ExchangeScope extends StatelessWidget {
   const ExchangeScope({required this.child, super.key});
 
   static bool isLoggedIn(BuildContext context) =>
-      context.read<ExchangeCubit>().state.hasUser;
+      _signedIn(locator<ExchangeFacade>().currentAccess);
 
   static Future<void> refreshSession(BuildContext context) =>
       context.read<ExchangeCubit>().fetchUserSummary();
@@ -32,11 +33,9 @@ class ExchangeSessionBuilder extends StatelessWidget {
   const ExchangeSessionBuilder({required this.builder, super.key});
 
   @override
-  Widget build(BuildContext context) =>
-      BlocSelector<ExchangeCubit, ExchangeState, bool>(
-        selector: (state) => state.hasUser,
-        builder: builder,
-      );
+  Widget build(BuildContext context) => ExchangeAccessBuilder(
+    builder: (context, access) => builder(context, _signedIn(access)),
+  );
 }
 
 class ExchangeSessionListener extends StatelessWidget {
@@ -52,12 +51,61 @@ class ExchangeSessionListener extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) =>
-      BlocListener<ExchangeCubit, ExchangeState>(
-        listenWhen: (previous, current) =>
-            previous.hasUser != current.hasUser &&
-            (listenWhen?.call(previous.hasUser, current.hasUser) ?? true),
-        listener: (context, state) => listener(context, state.hasUser),
-        child: child,
-      );
+  Widget build(BuildContext context) => _SessionChanges(owner: this);
+}
+
+bool _signedIn(ExchangeAccess access) =>
+    access is ExchangeAccessEnabled &&
+    access.session == ExchangeAccessSession.signedIn;
+
+class _SessionChanges extends StatefulWidget {
+  const _SessionChanges({required this.owner});
+  final ExchangeSessionListener owner;
+  @override
+  State<_SessionChanges> createState() => _SessionChangesState();
+}
+
+class _SessionChangesState extends State<_SessionChanges> {
+  StreamSubscription<ExchangeAccess>? _subscription;
+  @override
+  void initState() {
+    super.initState();
+    final exchange = locator<ExchangeFacade>();
+    var previous = _signedIn(exchange.currentAccess);
+    _subscription = exchange.watchAccess().listen((access) {
+      final current = _signedIn(access);
+      final changed = current != previous;
+      final notify =
+          changed && (widget.owner.listenWhen?.call(previous, current) ?? true);
+      previous = current;
+      if (mounted && notify) widget.owner.listener(context, current);
+    });
+  }
+
+  @override
+  void dispose() {
+    _subscription?.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => widget.owner.child;
+}
+
+/// Rebuilds account entry points as the access/session decision changes.
+class ExchangeAccessBuilder extends StatelessWidget {
+  const ExchangeAccessBuilder({required this.builder, super.key});
+
+  final Widget Function(BuildContext, ExchangeAccess) builder;
+
+  @override
+  Widget build(BuildContext context) {
+    final access = locator<ExchangeFacade>();
+    return StreamBuilder<ExchangeAccess>(
+      stream: access.watchAccess(),
+      initialData: access.currentAccess,
+      builder: (context, snapshot) =>
+          builder(context, snapshot.data ?? access.currentAccess),
+    );
+  }
 }

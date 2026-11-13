@@ -5,7 +5,9 @@
 /// Internals live under `lib/src/`.
 library;
 
-export 'package:flutter/services.dart' show SmartDashesType, SmartQuotesType;
+export 'package:flutter/services.dart'
+    show SmartDashesType, SmartQuotesType, HapticFeedback;
+export 'package:flutter/semantics.dart' show CustomSemanticsAction;
 
 // Curated re-export of Flutter foundation/layout primitives (Decision D5).
 // A blanket `export 'package:flutter/widgets.dart'` is deliberately avoided —
@@ -47,15 +49,20 @@ export 'package:flutter/widgets.dart'
         GestureDetector,
         HitTestBehavior,
         IconData,
+        IgnorePointer,
         IntrinsicHeight,
         Key,
         LayoutBuilder,
+        Locale,
+        LocalizationsDelegate,
         ListView,
         MainAxisAlignment,
         MainAxisSize,
         Navigator,
         NeverScrollableScrollPhysics,
         Opacity,
+        Overlay,
+        OverlayState,
         Padding,
         PageController,
         PageScrollPhysics,
@@ -64,6 +71,7 @@ export 'package:flutter/widgets.dart'
         Radius,
         Row,
         SafeArea,
+        Semantics,
         ScrollController,
         SingleChildScrollView,
         SizedBox,
@@ -113,9 +121,11 @@ export 'src/chrome/bull_top_bar.dart';
 
 // Buttons.
 export 'src/buttons/bull_button.dart';
+export 'src/buttons/bull_inline_buttons.dart';
 export 'src/buttons/bull_sync_button.dart';
 export 'src/buttons/bull_tab_menu_vertical_button.dart';
 export 'src/buttons/bull_tool_button.dart';
+export 'src/buttons/bull_quick_action.dart';
 export 'src/buttons/bull_viewer_action_button.dart';
 
 // Inputs.
@@ -151,6 +161,8 @@ export 'src/feedback/bull_snack_bar.dart';
 
 // Layout.
 export 'src/layout/bull_carousel.dart';
+export 'src/layout/bull_reorderable_list.dart';
+export 'src/layout/bull_stream_value_builder.dart';
 export 'src/layout/bull_pullable_body.dart';
 export 'src/layout/bull_scrollable_column.dart';
 export 'src/layout/bull_stacked_page.dart';

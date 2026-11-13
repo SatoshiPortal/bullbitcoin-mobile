@@ -1,8 +1,8 @@
+import '../repositories/exchange_access_repository.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/notification_message.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_notification_repository.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/exchange/domain/exchange_failure.dart';
-import 'package:meta/meta.dart';
 
 /// The notification socket, as the cubit needs it.
 ///
@@ -11,9 +11,11 @@ import 'package:meta/meta.dart';
 /// socket is best-effort and the cubit deliberately does not surface it.
 class WatchExchangeNotificationsUsecase {
   final ExchangeNotificationRepository _exchangeNotificationRepository;
+  final ExchangeAccessRepository _access;
 
   const WatchExchangeNotificationsUsecase({
     required this._exchangeNotificationRepository,
+    required this._access,
   });
 
   /// Emits whenever the server says the account may have changed.
@@ -30,19 +32,19 @@ class WatchExchangeNotificationsUsecase {
         },
       );
 
-  @useResult
-  Future<Result<void, ExchangeFailure>> connect() async =>
-      (await _exchangeNotificationRepository.connect()).mapErr(
-        (failure) =>
-            ExchangeNotificationsUnavailableFailure(failure.logMessage),
-      );
+  Future<Result<void, ExchangeFailure>> _connect(bool reconnect) =>
+      _access.runAuthenticated(() async {
+        final result = reconnect
+            ? await _exchangeNotificationRepository.reconnect()
+            : await _exchangeNotificationRepository.connect();
+        return result.mapErr(
+          (failure) =>
+              ExchangeNotificationsUnavailableFailure(failure.logMessage),
+        );
+      });
 
-  @useResult
-  Future<Result<void, ExchangeFailure>> reconnect() async =>
-      (await _exchangeNotificationRepository.reconnect()).mapErr(
-        (failure) =>
-            ExchangeNotificationsUnavailableFailure(failure.logMessage),
-      );
+  Future<Result<void, ExchangeFailure>> connect() => _connect(false);
+  Future<Result<void, ExchangeFailure>> reconnect() => _connect(true);
 
   void disconnect() => _exchangeNotificationRepository.disconnect();
 }

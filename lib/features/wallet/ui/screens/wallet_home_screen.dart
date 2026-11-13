@@ -8,13 +8,24 @@ import 'package:bb_mobile/features/wallet/ui/widgets/home_errors.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_bottom_buttons.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_cards.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_home_top_section.dart';
+import 'package:bb_mobile/features/wallet/ui/widgets/wallet_quick_actions.dart';
+import 'package:bull_quick_actions/bull_quick_actions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:bull_ui/bull_ui.dart' show BullPullableBody;
 
 class WalletHomeScreen extends StatefulWidget {
-  const WalletHomeScreen({super.key});
+  const WalletHomeScreen({
+    super.key,
+    required this.quickActions,
+    required this.onQuickAction,
+    required this.onCustomizeQuickActions,
+  });
+
+  final QuickActionsCubit quickActions;
+  final void Function(BuildContext, QuickAction) onQuickAction;
+  final void Function(BuildContext) onCustomizeQuickActions;
 
   @override
   State<WalletHomeScreen> createState() => _WalletHomeScreenState();
@@ -140,7 +151,15 @@ class _WalletHomeScreenState extends State<WalletHomeScreen> {
                 // Pinned rather than scrolled away: the balance and the
                 // Buy/Sell/Pay/Transfer actions stay put while the wallet cards
                 // scroll underneath.
-                const PinnedHeaderSliver(child: WalletHomeTopSection()),
+                PinnedHeaderSliver(
+                  child: WalletHomeTopSection(
+                    actions: WalletQuickActions(
+                      quickActions: widget.quickActions,
+                      onAction: widget.onQuickAction,
+                      onCustomize: widget.onCustomizeQuickActions,
+                    ),
+                  ),
+                ),
                 const SliverToBoxAdapter(child: AnnouncementCarousel()),
                 const SliverToBoxAdapter(child: HomeWarnings()),
                 const SliverToBoxAdapter(child: HomeConsolidationBanner()),

@@ -1,0 +1,108 @@
+import 'package:bb_mobile/core/exchange/data/datasources/bullbitcoin_api_datasource.dart';
+import 'package:bb_mobile/core/exchange/data/exchange_authentication.dart';
+import 'package:bb_mobile/core/exchange/domain/exchange_api_key_failure.dart';
+import 'package:primitives/primitives.dart' show Err;
+import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
+import 'package:bb_mobile/features/exchange/data/exchange_account_repository_impl.dart';
+import 'package:bb_mobile/features/exchange/domain/exchange_failure.dart';
+import 'package:dio/dio.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
+
+class _Datasource extends Mock implements BullbitcoinApiDatasource {}
+
+void main() {
+  late _Datasource datasource;
+  late ExchangeAccountRepositoryImpl repository;
+
+  setUp(() {
+    datasource = _Datasource();
+    repository = ExchangeAccountRepositoryImpl(datasource);
+  });
+
+  DioException responseError(int status) {
+    final request = RequestOptions(path: '/');
+    return DioException(
+      requestOptions: request,
+      response: Response<void>(requestOptions: request, statusCode: status),
+      type: DioExceptionType.badResponse,
+    );
+  }
+
+  test('missing JSON-RPC result never reports a rejected session', () async {
+    when(datasource.getUserSummary).thenAnswer((_) async => null);
+    final result = await repository.getAccount();
+    expect(
+      (result as Err<UserSummary, ExchangeFailure>).failure,
+      isA<ExchangeAccountUnavailableFailure>(),
+    );
+  });
+
+  test('only a server 401 reports a rejected session', () async {
+    when(datasource.getUserSummary).thenThrow(responseError(401));
+    final result = await repository.getAccount();
+    expect(
+      (result as Err<UserSummary, ExchangeFailure>).failure.runtimeType
+          .toString(),
+      'ExchangeSessionRejectedFailure',
+    );
+  });
+
+  test('a missing local key is not a server rejection', () async {
+    when(
+      datasource.getUserSummary,
+    ).thenThrow(const ExchangeAuthenticationException());
+    final result = await repository.getAccount();
+    expect(
+      (result as Err<UserSummary, ExchangeFailure>).failure,
+      isA<ExchangeNotAuthenticatedFailure>(),
+    );
+  });
+
+  test('401 is a definitive refusal; 403 and 503 retain the session', () async {
+    for (final status in [401, 403, 503]) {
+      when(datasource.getUserSummary).thenThrow(responseError(status));
+      final result = await repository.getAccount();
+      expect(result, isA<Err<UserSummary, ExchangeFailure>>());
+      final failure = (result as Err<UserSummary, ExchangeFailure>).failure;
+      expect(
+        failure,
+        status == 401
+            ? isA<ExchangeSessionRejectedFailure>()
+            : isA<ExchangeAccountUnavailableFailure>(),
+      );
+      expect(failure.logMessage, isNull);
+    }
+  });
+
+  test(
+    'timeouts and unreadable local credentials do not look like logout',
+    () async {
+      final request = RequestOptions(path: '/');
+      when(datasource.getUserSummary).thenThrow(
+        DioException(
+          requestOptions: request,
+          type: DioExceptionType.connectionTimeout,
+        ),
+      );
+      expect(
+        (await repository.getAccount() as Err<UserSummary, ExchangeFailure>)
+            .failure,
+        isA<ExchangeNetworkFailure>(),
+      );
+      when(datasource.getUserSummary).thenThrow(
+        DioException(
+          requestOptions: request,
+          error: const ExchangeAuthenticationException(
+            ExchangeApiKeyReadFailure(),
+          ),
+        ),
+      );
+      expect(
+        (await repository.getAccount() as Err<UserSummary, ExchangeFailure>)
+            .failure,
+        isA<ExchangeAccountUnavailableFailure>(),
+      );
+    },
+  );
+}

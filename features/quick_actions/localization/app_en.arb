@@ -1,0 +1,94 @@
+{
+  "buy": "Buy",
+  "@buy": {},
+  "sell": "Sell",
+  "@sell": {},
+  "pay": "Pay",
+  "@pay": {},
+  "transfer": "Transfer",
+  "@transfer": {},
+  "map": "Map",
+  "@map": {},
+  "settings": "Settings",
+  "@settings": {},
+  "more": "More",
+  "@more": {},
+  "customize": "Customize",
+  "@customize": {},
+  "title": "Quick actions",
+  "@title": {},
+  "reset": "Restore defaults",
+  "@reset": {},
+  "moveUp": "Move up",
+  "@moveUp": {},
+  "moveDown": "Move down",
+  "@moveDown": {},
+  "saveFailed": "Could not save changes. Please try again.",
+  "@saveFailed": {},
+  "loading": "Loading",
+  "@loading": {},
+  "history": "History",
+  "@history": {},
+  "support": "Support",
+  "@support": {},
+  "priceHistory": "Price",
+  "@priceHistory": {},
+  "quickActionTrade": "Trade",
+  "@quickActionTrade": {},
+  "onHome": "On Home",
+  "@onHome": {
+    "description": "Wallet quick action customization."
+  },
+  "inMore": "In More",
+  "@inMore": {
+    "description": "Wallet quick action customization."
+  },
+  "preview": "Preview",
+  "@preview": {
+    "description": "Wallet quick action customization."
+  },
+  "edit": "Edit",
+  "@edit": {
+    "description": "Wallet quick action customization."
+  },
+  "close": "Close",
+  "@close": {
+    "description": "Wallet quick action customization."
+  },
+  "priceHistoryFull": "Price history",
+  "@priceHistoryFull": {
+    "description": "Wallet quick action customization."
+  },
+  "saving": "Saving…",
+  "@saving": {
+    "description": "Wallet quick action customization."
+  },
+  "emptyHint": "No actions selected. Settings stays on Home.",
+  "@emptyHint": {
+    "description": "Wallet quick action customization."
+  },
+  "supportFull": "Support",
+  "@supportFull": {
+    "description": "Full accessible quick action name."
+  },
+  "defaultsRestored": "Default actions restored.",
+  "@defaultsRestored": {
+    "description": "Confirmation after restoring the default Home actions."
+  },
+  "undo": "Undo",
+  "@undo": {
+    "description": "Restore the complete preference from before Restore defaults."
+  },
+  "moveToHome": "Move to Home",
+  "@moveToHome": {
+    "description": "Accessible action that moves this row onto Home, displacing its previous last action if full."
+  },
+  "moveToMore": "Move to More",
+  "@moveToMore": {
+    "description": "Accessible action that moves this row below the fixed separator."
+  },
+  "dragHint": "Touch and hold an action to move it. Home holds up to 3 actions.",
+  "@dragHint": {
+    "description": "Explains whole-row long press and the Home capacity."
+  }
+}
