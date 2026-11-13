@@ -15088,6 +15088,48 @@
   "@appStartupRestoreMismatch": {
     "description": "App startup restore: the entered recovery phrase does not match the wallet whose secret is missing"
   },
+  "mnemonicLanguageLabel": "Recovery phrase language",
+  "@mnemonicLanguageLabel": {
+    "description": "Label for the BIP39 wordlist picker, independent of app language."
+  },
+  "mnemonicLanguageSuggestion": "These words match {language}. Select that language to continue.",
+  "@mnemonicLanguageSuggestion": {
+    "description": "Suggestion only; never silently changes the mnemonic language.",
+    "placeholders": {
+      "language": {
+        "type": "String"
+      }
+    }
+  },
+  "mnemonicLanguageAmbiguous": "These words match more than one language. Select the language of your recovery phrase.",
+  "@mnemonicLanguageAmbiguous": {
+    "description": "Requires explicit language confirmation when wordlists overlap."
+  },
+  "mnemonicDefaultEnglishOnly": "Default wallets currently require an English recovery phrase. After setup, you can import other languages as a separate Bitcoin wallet.",
+  "@mnemonicDefaultEnglishOnly": {
+    "description": "Explains the temporary Liquid SDK restriction before default-wallet recovery."
+  },
+  "mnemonicLanguageName": "{language, select, english{English} french{French} spanish{Spanish} italian{Italian} portuguese{Portuguese} czech{Czech} korean{Korean} simplifiedChinese{Chinese (Simplified)} traditionalChinese{Chinese (Traditional)} japanese{Japanese} other{Unknown language}}",
+  "@mnemonicLanguageName": {
+    "description": "Localized BIP39 wordlist names keyed by Language.name, not UI locales.",
+    "placeholders": {
+      "language": {
+        "type": "String"
+      }
+    }
+  },
+  "mnemonicOtherLanguageWordsError": "These words belong to the {language} word list, not {selected}, and do not form a valid recovery phrase in {language} either. Check each word and its position.",
+  "@mnemonicOtherLanguageWordsError": {
+    "description": "Complete phrase whose words belong to another BIP39 wordlist than the selected one, with an invalid checksum there too. Never names a word.",
+    "placeholders": {
+      "language": {
+        "type": "String"
+      },
+      "selected": {
+        "type": "String"
+      }
+    }
+  },
   "sendRemainingBalance": "Send remaining balance",
   "@sendRemainingBalance": {
     "description": "Toggle label that assigns the balance left after fixed outputs and fees to a recipient"

@@ -73,76 +73,78 @@ void main() {
   );
 
   for (final language in Language.values) {
-    testWidgets(
-      '${language.name} restored vault display uses its entire public wordlist',
-      (tester) async {
-        final secret = await store(tester, language, restore: true);
-        final semantics = tester.ensureSemantics();
-        try {
-          await tester.pumpWidget(
-            host(
-              secret.widgets.mnemonicView(
-                style: style,
-                failureBuilder: (_, _, _) => const Text('read failed'),
-                layoutBuilder: (_, words) => Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: words,
+    for (final restore in [false, true]) {
+      testWidgets(
+        '${language.name} ${restore ? 'restored vault' : 'imported'} display uses its entire public wordlist',
+        (tester) async {
+          final secret = await store(tester, language, restore: restore);
+          final semantics = tester.ensureSemantics();
+          try {
+            await tester.pumpWidget(
+              host(
+                secret.widgets.mnemonicView(
+                  style: style,
+                  failureBuilder: (_, _, _) => const Text('read failed'),
+                  layoutBuilder: (_, words) => Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: words,
+                  ),
                 ),
               ),
-            ),
-          );
-          await settle(tester);
+            );
+            await settle(tester);
 
-          final cells = find.byType(PaintedWord);
-          expect(cells, findsNWidgets(12));
-          final expected = publicCellSize(language);
-          for (final element in cells.evaluate()) {
-            final box = element.renderObject as RenderBox;
-            expect(box.size, expected);
-            expect(box.getMinIntrinsicWidth(double.infinity), expected.width);
-            expect(box.getMaxIntrinsicWidth(double.infinity), expected.width);
-            expect(box.getDryLayout(const BoxConstraints()), expected);
-          }
-          final words = Mnemonic(
-            List.filled(16, 0),
-            language,
-          ).words.map(nfkd).toList();
-          expect(cells.evaluate().map(debugPaintedTextOf), words);
-          for (final word in words) {
-            expect(find.text(word), findsNothing);
-            expect(find.bySemanticsLabel(word), findsNothing);
-          }
-          await tester.pumpWidget(
-            host(
-              secret.widgets.mnemonicView(
-                style: style,
-                failureBuilder: (_, _, _) => const Text('read failed'),
+            final cells = find.byType(PaintedWord);
+            expect(cells, findsNWidgets(12));
+            final expected = publicCellSize(language);
+            for (final element in cells.evaluate()) {
+              final box = element.renderObject as RenderBox;
+              expect(box.size, expected);
+              expect(box.getMinIntrinsicWidth(double.infinity), expected.width);
+              expect(box.getMaxIntrinsicWidth(double.infinity), expected.width);
+              expect(box.getDryLayout(const BoxConstraints()), expected);
+            }
+            final words = Mnemonic(
+              List.filled(16, 0),
+              language,
+            ).words.map(nfkd).toList();
+            expect(cells.evaluate().map(debugPaintedTextOf), words);
+            for (final word in words) {
+              expect(find.text(word), findsNothing);
+              expect(find.bySemanticsLabel(word), findsNothing);
+            }
+            await tester.pumpWidget(
+              host(
+                secret.widgets.mnemonicView(
+                  style: style,
+                  failureBuilder: (_, _, _) => const Text('read failed'),
+                ),
               ),
-            ),
-          );
-          await tester.pumpAndSettle();
-          final sentence = find.byType(PaintedMnemonic);
-          expect(sentence, findsOneWidget);
-          expect(
-            debugPaintedTextOf(sentence.evaluate().single),
-            words.join(language.separator),
-          );
-          final gap = TextPainter(
-            text: TextSpan(text: language.separator, style: style),
-            textDirection: TextDirection.ltr,
-          )..layout();
-          final box = sentence.evaluate().single.renderObject as RenderBox;
-          expect(
-            box.getMaxIntrinsicWidth(double.infinity),
-            12 * expected.width + 11 * gap.width,
-          );
-          gap.dispose();
-        } finally {
-          semantics.dispose();
-        }
-      },
-    );
+            );
+            await tester.pumpAndSettle();
+            final sentence = find.byType(PaintedMnemonic);
+            expect(sentence, findsOneWidget);
+            expect(
+              debugPaintedTextOf(sentence.evaluate().single),
+              words.join(language.separator),
+            );
+            final gap = TextPainter(
+              text: TextSpan(text: language.separator, style: style),
+              textDirection: TextDirection.ltr,
+            )..layout();
+            final box = sentence.evaluate().single.renderObject as RenderBox;
+            expect(
+              box.getMaxIntrinsicWidth(double.infinity),
+              12 * expected.width + 11 * gap.width,
+            );
+            gap.dispose();
+          } finally {
+            semantics.dispose();
+          }
+        },
+      );
+    }
 
     testWidgets('${language.name} sealed challenge sizes and verifies words', (
       tester,
