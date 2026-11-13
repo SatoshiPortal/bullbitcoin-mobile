@@ -13,6 +13,10 @@ export 'package:flutter/services.dart' show SmartDashesType, SmartQuotesType;
 export 'package:flutter/widgets.dart'
     show
         Align,
+        AsyncSnapshot,
+        ConnectionState,
+        StreamBuilder,
+        FutureBuilder,
         Alignment,
         AlwaysScrollableScrollPhysics,
         AnimatedContainer,
@@ -47,6 +51,8 @@ export 'package:flutter/widgets.dart'
         IntrinsicHeight,
         Key,
         LayoutBuilder,
+        Locale,
+        LocalizationsDelegate,
         ListView,
         MainAxisAlignment,
         MainAxisSize,

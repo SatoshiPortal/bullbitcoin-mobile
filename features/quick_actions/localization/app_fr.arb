@@ -1,0 +1,23 @@
+{
+  "buy": "Acheter",
+  "sell": "Vendre",
+  "pay": "Payer",
+  "transfer": "Transférer",
+  "map": "Cartes",
+  "settings": "Réglages",
+  "more": "Plus",
+  "customize": "Personnaliser",
+  "title": "Actions rapides",
+  "save": "Enregistrer",
+  "reset": "Rétablir par défaut",
+  "unavailable": "Actuellement indisponible",
+  "moveUp": "Monter",
+  "moveDown": "Descendre",
+  "saveFailed": "Impossible d’enregistrer. Veuillez réessayer.",
+  "loading": "Chargement",
+  "history": "Historique",
+  "support": "Assistance",
+  "priceHistory": "Historique des prix",
+  "quickActionTrade": "Trade",
+  "selectedCount": "Sélection : {count}"
+}

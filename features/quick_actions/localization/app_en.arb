@@ -1,0 +1,50 @@
+{
+  "buy": "Buy",
+  "@buy": {},
+  "sell": "Sell",
+  "@sell": {},
+  "pay": "Pay",
+  "@pay": {},
+  "transfer": "Transfer",
+  "@transfer": {},
+  "map": "Maps",
+  "@map": {},
+  "settings": "Settings",
+  "@settings": {},
+  "more": "More",
+  "@more": {},
+  "customize": "Customize",
+  "@customize": {},
+  "title": "Quick actions",
+  "@title": {},
+  "save": "Save",
+  "@save": {},
+  "reset": "Restore defaults",
+  "@reset": {},
+  "unavailable": "Currently unavailable",
+  "@unavailable": {},
+  "moveUp": "Move up",
+  "@moveUp": {},
+  "moveDown": "Move down",
+  "@moveDown": {},
+  "saveFailed": "Could not save changes. Please try again.",
+  "@saveFailed": {},
+  "loading": "Loading",
+  "@loading": {},
+  "history": "History",
+  "@history": {},
+  "support": "Support",
+  "@support": {},
+  "priceHistory": "Price history",
+  "@priceHistory": {},
+  "quickActionTrade": "Trade",
+  "@quickActionTrade": {},
+  "selectedCount": "Selected: {count}",
+  "@selectedCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
+}
