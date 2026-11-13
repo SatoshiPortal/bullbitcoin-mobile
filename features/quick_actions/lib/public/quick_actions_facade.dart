@@ -14,6 +14,7 @@ export '../src/domain/quick_action.dart';
 export '../src/domain/quick_actions_failure.dart';
 export '../src/presentation/quick_actions_fallback_delegate.dart';
 export '../src/ui/quick_actions_row.dart';
+export '../src/ui/quick_actions_customization_screen.dart';
 export 'package:primitives/primitives.dart' show Result, Ok, Err;
 export '../generated/l10n/quick_actions_localizations.dart';
 
