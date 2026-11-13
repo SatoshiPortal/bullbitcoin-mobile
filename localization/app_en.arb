@@ -15299,5 +15299,33 @@
   "priceHistoryTitle": "Price history",
   "@priceHistoryTitle": {
     "description": "Full screen public bitcoin price history title."
+  },
+  "exchangeTradingUnavailable": "Trading is unavailable.",
+  "@exchangeTradingUnavailable": {
+    "description": "Exchange access recovery and navigation"
+  },
+  "exchangeTradingRetry": "Retry",
+  "@exchangeTradingRetry": {
+    "description": "Exchange access recovery and navigation"
+  },
+  "exchangeAccessUnreadable": "Exchange access could not be read. Retry or reset it.",
+  "@exchangeAccessUnreadable": {
+    "description": "Exchange access recovery and navigation"
+  },
+  "exchangeAccessReset": "Reset exchange access",
+  "@exchangeAccessReset": {
+    "description": "Exchange access recovery and navigation"
+  },
+  "exchangeAccessLogoutIncomplete": "Sign out is incomplete. Finish signing out before enabling exchange.",
+  "@exchangeAccessLogoutIncomplete": {
+    "description": "Exchange access recovery and navigation"
+  },
+  "exchangeAccessRetryLogout": "Finish signing out",
+  "@exchangeAccessRetryLogout": {
+    "description": "Exchange access recovery and navigation"
+  },
+  "exchangeAccessManage": "Manage access",
+  "@exchangeAccessManage": {
+    "description": "Exchange access settings destination"
   }
 }

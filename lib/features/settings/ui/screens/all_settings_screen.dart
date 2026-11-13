@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
@@ -29,7 +32,11 @@ class _AllSettingsScreenState extends State<AllSettingsScreen> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) => ExchangeAccessBuilder(
+    builder: (context, access) => _build(context, access),
+  );
+
+  Widget _build(BuildContext context, ExchangeAccess access) {
     final theme = Theme.of(context);
 
     final appVersion = context.select(
@@ -44,7 +51,16 @@ class _AllSettingsScreenState extends State<AllSettingsScreen> {
       (ServiceStatusCubit cubit) => cubit.state.serviceStatus,
     );
 
-    final items = settingsItemsOf(context);
+    final isSuperuser = context.select(
+      (SettingsCubit cubit) => cubit.state.isSuperuser ?? false,
+    );
+    final ready =
+        ExchangeAvailability.resolve(
+          platformAllowed: !Platform.isIOS || isSuperuser,
+          access: access,
+        ) ==
+        ExchangeAvailability.ready;
+    final items = settingsItemsOf(context, accountReady: ready);
 
     return Scaffold(
       appBar: AppBar(title: Text(context.loc.settingsScreenTitle)),

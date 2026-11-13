@@ -8,9 +8,6 @@ abstract class WizardLocalDatasource {
   Future<int?> readCompletedVersion();
   Future<void> writeCompletedVersion(int version);
 
-  Future<String?> readPendingPayload();
-  Future<void> writePendingPayload(String payload);
-
   Future<int?> readPendingVersion();
   Future<void> writePendingVersion(int version);
 
@@ -33,7 +30,6 @@ abstract class WizardLocalDatasource {
 }
 
 class WizardLocalDatasourceImpl implements WizardLocalDatasource {
-  static const _pendingPayloadKey = 'wizard_pending_payload';
   static const _pendingExchangeKey = 'wizard_pending_exchange_access';
   static const _versionKey = 'wizard_completed_version';
   static const _pendingVersionKey = 'wizard_pending_version';
@@ -53,20 +49,6 @@ class WizardLocalDatasourceImpl implements WizardLocalDatasource {
     final prefs = await SharedPreferences.getInstance();
     if (!await prefs.setInt(_versionKey, version)) {
       throw const FormatException('Unable to persist wizard completion');
-    }
-  }
-
-  @override
-  Future<String?> readPendingPayload() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getString(_pendingPayloadKey);
-  }
-
-  @override
-  Future<void> writePendingPayload(String payload) async {
-    final prefs = await SharedPreferences.getInstance();
-    if (!await prefs.setString(_pendingPayloadKey, payload)) {
-      throw const FormatException('Unable to persist wizard choices');
     }
   }
 

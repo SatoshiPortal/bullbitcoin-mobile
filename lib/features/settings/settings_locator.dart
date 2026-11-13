@@ -1,6 +1,5 @@
 import 'package:bb_mobile/features/settings/domain/usecases/watch_settings_quick_actions_usecase.dart';
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
-import 'package:bb_mobile/features/exchange_access/public/exchange_access_facade.dart';
 import 'package:bb_mobile/features/settings/data/quick_actions_storage.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/manage_exchange_access_usecase.dart';
 import 'package:bb_mobile/features/settings/presentation/exchange_access_settings_cubit.dart';
@@ -46,12 +45,12 @@ class SettingsLocator {
       ),
     );
     locator.registerFactory<WatchSettingsExchangeAccessUsecase>(
-      () => WatchSettingsExchangeAccessUsecase(locator<ExchangeAccessFacade>()),
+      () => WatchSettingsExchangeAccessUsecase(locator<ExchangeFacade>()),
     );
     locator.registerFactory<SetSettingsExchangeAccessUsecase>(
       () => SetSettingsExchangeAccessUsecase(
-        locator<ExchangeAccessFacade>(),
         locator<ExchangeFacade>(),
+        locator<SettingsRepository>(),
       ),
     );
     locator.registerFactory<ExchangeAccessSettingsCubit>(
@@ -61,7 +60,7 @@ class SettingsLocator {
       ),
     );
     locator.registerFactory<WatchSettingsQuickActionsUsecase>(
-      () => WatchSettingsQuickActionsUsecase(locator<ExchangeAccessFacade>()),
+      () => WatchSettingsQuickActionsUsecase(locator<ExchangeFacade>()),
     );
     // Usecases
     locator.registerFactory<SetEnvironmentUsecase>(

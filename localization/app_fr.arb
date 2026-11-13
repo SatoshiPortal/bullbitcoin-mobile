@@ -4739,5 +4739,12 @@
   "wizardExchangeSupport": "Créez un compte Bull Bitcoin avec votre seule adresse courriel pour contacter notre équipe d’assistance.",
   "wizardExchangeToggle": "Activer les fonctionnalités de BULL Exchange",
   "quickActionsSettingsTitle": "Actions rapides",
-  "priceHistoryTitle": "Historique des prix"
+  "priceHistoryTitle": "Historique des prix",
+  "exchangeTradingUnavailable": "Les opérations sont indisponibles.",
+  "exchangeTradingRetry": "Réessayer",
+  "exchangeAccessUnreadable": "Impossible de lire l’accès à la plateforme. Réessayez ou réinitialisez-le.",
+  "exchangeAccessReset": "Réinitialiser l’accès à la plateforme",
+  "exchangeAccessLogoutIncomplete": "La déconnexion est incomplète. Terminez-la avant d’activer la plateforme.",
+  "exchangeAccessRetryLogout": "Terminer la déconnexion",
+  "exchangeAccessManage": "Gérer l’accès"
 }

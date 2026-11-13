@@ -1,7 +1,4 @@
-import 'dart:io';
-import 'package:bb_mobile/features/sell/domain/get_sell_entry_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
-import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
 import 'package:bb_mobile/features/recipients/public/recipients_facade.dart';
 import 'package:bb_mobile/features/recipients/public/recipients_ui.dart';
 import 'package:bb_mobile/features/sell/domain/get_sell_confidential_sepa_availability_usecase_v2.dart';
@@ -51,17 +48,6 @@ class SellRouter {
       GoRoute(
         name: SellRoute.sell.name,
         path: SellRoute.sell.path,
-        redirect: (context, state) async {
-          final result = await GetSellEntryUsecase(
-            locator<ExchangeFacade>(),
-          ).execute(isIOS: Platform.isIOS);
-          return switch (result) {
-            Ok(value: SellEntry.allowed) => null,
-            Ok(value: SellEntry.signIn) => ExchangeRoute.exchangeAuth.path,
-            _ => '/wallet',
-          };
-        },
-
         builder: (context, state) => BlocListener<SellBloc, SellState>(
           listenWhen: (previous, current) =>
               previous is SellAmountInputState &&

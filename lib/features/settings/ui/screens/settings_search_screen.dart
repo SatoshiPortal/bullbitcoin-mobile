@@ -1,3 +1,8 @@
+import 'dart:io';
+
+import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
+import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bb_mobile/features/settings/ui/settings_item.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/settings_search_view.dart';
 import 'package:flutter/material.dart';
@@ -12,6 +17,21 @@ class SettingsSearchScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SettingsSearchView(items: settingsItemsOf(context));
+    return ExchangeAccessBuilder(
+      builder: (context, access) {
+        final isSuperuser = context.select(
+          (SettingsCubit cubit) => cubit.state.isSuperuser ?? false,
+        );
+        final ready =
+            ExchangeAvailability.resolve(
+              platformAllowed: !Platform.isIOS || isSuperuser,
+              access: access,
+            ) ==
+            ExchangeAvailability.ready;
+        return SettingsSearchView(
+          items: settingsItemsOf(context, accountReady: ready),
+        );
+      },
+    );
   }
 }

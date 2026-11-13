@@ -19,7 +19,6 @@ graph TB
 
     %% Feature modules
     QUICK_ACTIONS[Quick Actions<br/>Workspace Feature]
-    EXCHANGE_ACCESS[Exchange Access]
     WIZARD[Wizard]
     IMPORT_MNEMONIC[Mnemonic Import]
     ONBOARDING[Onboarding]
@@ -103,12 +102,9 @@ graph TB
     SCREEN_AWAKE --> WAKELOCK_PLUS
 
     %% Optional exchange access and wallet quick actions
-    WIZARD --> EXCHANGE_ACCESS
-    EXCHANGE --> EXCHANGE_ACCESS
-    SETTINGS --> EXCHANGE_ACCESS
-    SETTINGS --> WIZARD
+    WIZARD --> EXCHANGE
     SETTINGS --> QUICK_ACTIONS
-    WALLETS --> EXCHANGE_ACCESS
+    WALLETS --> EXCHANGE
     WALLETS --> QUICK_ACTIONS
     QUICK_ACTIONS --> BULL_UI
     QUICK_ACTIONS --> PRIMITIVES

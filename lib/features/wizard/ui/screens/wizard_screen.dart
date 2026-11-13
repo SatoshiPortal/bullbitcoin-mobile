@@ -28,7 +28,8 @@ import 'package:bull_ui/bull_ui.dart'
 /// theme without marking it as touched, so the user's existing setting
 /// isn't clobbered when they tap Skip.
 class WizardScreen extends StatefulWidget {
-  const WizardScreen({super.key});
+  const WizardScreen({required this.exchangeAllowed, super.key});
+  final bool exchangeAllowed;
 
   @override
   State<WizardScreen> createState() => _WizardScreenState();
@@ -40,6 +41,14 @@ class _WizardScreenState extends State<WizardScreen> {
 
   final PageController _controller = PageController();
   WizardPage _page = WizardPage.welcome;
+
+  List<WizardPage> get _pages => [
+    WizardPage.welcome,
+    WizardPage.customize,
+    if (widget.exchangeAllowed) WizardPage.exchange,
+    WizardPage.mission,
+    WizardPage.journey,
+  ];
 
   @override
   void initState() {
@@ -89,9 +98,10 @@ class _WizardScreenState extends State<WizardScreen> {
   }
 
   void _tryFinish(WizardChoices choices) {
-    if (!choices.touched.contains(WizardField.exchangeAccess)) {
+    if (widget.exchangeAllowed &&
+        !choices.touched.contains(WizardField.exchangeAccess)) {
       _controller.animateToPage(
-        WizardPage.exchange.index,
+        _pages.indexOf(WizardPage.exchange),
         duration: _pageDuration,
         curve: _pageCurve,
       );
@@ -99,7 +109,7 @@ class _WizardScreenState extends State<WizardScreen> {
     }
     if (choices.reportingConsent == null) {
       _controller.animateToPage(
-        WizardPage.mission.index,
+        _pages.indexOf(WizardPage.mission),
         duration: _pageDuration,
         curve: _pageCurve,
       );
@@ -163,7 +173,7 @@ class _WizardScreenState extends State<WizardScreen> {
                             child: PageView(
                               controller: _controller,
                               onPageChanged: (i) =>
-                                  setState(() => _page = WizardPage.values[i]),
+                                  setState(() => _page = _pages[i]),
                               children: [
                                 const WelcomeStep(),
                                 CustomizeStep(
@@ -178,12 +188,13 @@ class _WizardScreenState extends State<WizardScreen> {
                                     WizardEvent.currencyPicked(code),
                                   ),
                                 ),
-                                ExchangeStep(
-                                  enabled: c.exchangeAccess,
-                                  onChanged: (value) => bloc.add(
-                                    WizardEvent.exchangePicked(value),
+                                if (widget.exchangeAllowed)
+                                  ExchangeStep(
+                                    enabled: c.exchangeAccess,
+                                    onChanged: (value) => bloc.add(
+                                      WizardEvent.exchangePicked(value),
+                                    ),
                                   ),
-                                ),
                                 const MissionStep(),
                                 const JourneyStep(),
                               ],
@@ -220,8 +231,8 @@ class _WizardScreenState extends State<WizardScreen> {
                                     ),
                                   ),
                                   child: WizardDots(
-                                    count: WizardPage.total,
-                                    index: _page.index,
+                                    count: _pages.length,
+                                    index: _pages.indexOf(_page),
                                   ),
                                 ),
                                 SizedBox(height: vGap),

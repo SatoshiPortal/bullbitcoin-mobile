@@ -26,6 +26,7 @@ import 'package:bull_ui/bull_ui.dart' show BullSettingsEntryItem;
 
 enum SettingsItemId {
   exchange,
+  exchangeAccountSettings,
   quickActions,
   priceHistory,
   backup,
@@ -138,7 +139,10 @@ extension SettingsItemsX on Iterable<SettingsItem> {
 /// gating and the platform-dependent exchange title are decided in exactly one
 /// place. Search depends on that: it surfaces items from every section at once,
 /// so a screen-local approximation of these flags would show the wrong rows.
-List<SettingsItem> settingsItemsOf(BuildContext context) {
+List<SettingsItem> settingsItemsOf(
+  BuildContext context, {
+  bool accountReady = false,
+}) {
   final isSuperuser = context.select(
     (SettingsCubit cubit) => cubit.state.isSuperuser ?? false,
   );
@@ -155,6 +159,7 @@ List<SettingsItem> settingsItemsOf(BuildContext context) {
     isSuperuser: isSuperuser,
     isDevModeEnabled: isDevModeEnabled,
     isSpWalletSetup: isSpWalletSetup,
+    accountReady: accountReady,
   );
 }
 
@@ -163,13 +168,13 @@ List<SettingsItem> buildSettingsItems({
   bool isSuperuser = false,
   bool isDevModeEnabled = false,
   bool isSpWalletSetup = false,
+  bool accountReady = false,
 }) {
   final english = AppLocalizationsEn();
   final rootSection = localization.settingsScreenTitle;
   final backupSection = localization.settingsBackupTitle;
   final walletSection = localization.settingsWalletTitle;
   final appSection = localization.settingsAppTitle;
-  final exchangeSection = localization.settingsExchangeTitle;
 
   List<String> path(SettingsItemSection section, String title) =>
       switch (section) {
@@ -291,8 +296,8 @@ List<SettingsItem> buildSettingsItems({
     SettingsItem(
       id: SettingsItemId.exchange,
       section: SettingsItemSection.root,
-      title: exchangeSection,
-      path: path(SettingsItemSection.root, exchangeSection),
+      title: localization.exchangeAccessManage,
+      path: path(SettingsItemSection.root, localization.exchangeAccessManage),
       icon: Icons.currency_exchange,
       open: (context) => context.pushNamed(SettingsRoute.exchangeAccess.name),
       keywords: _keywords(
@@ -305,6 +310,23 @@ List<SettingsItem> buildSettingsItems({
         ],
       ),
     ),
+    if (accountReady)
+      SettingsItem(
+        id: SettingsItemId.exchangeAccountSettings,
+        section: SettingsItemSection.root,
+        title: localization.settingsAccountSettingsTitle,
+        path: path(
+          SettingsItemSection.root,
+          localization.settingsAccountSettingsTitle,
+        ),
+        icon: Icons.account_circle_outlined,
+        open: (context) =>
+            context.pushNamed(SettingsRoute.exchangeSettings.name),
+        keywords: [
+          localization.settingsAccountSettingsTitle,
+          english.settingsAccountSettingsTitle,
+        ],
+      ),
     SettingsItem(
       id: SettingsItemId.priceHistory,
       section: SettingsItemSection.root,

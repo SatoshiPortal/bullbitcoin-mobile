@@ -1,4 +1,4 @@
-import 'package:bb_mobile/features/exchange_access/public/exchange_access_facade.dart';
+import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
 import 'package:bull_quick_actions/bull_quick_actions.dart';
 
 /// The wallet owns which actions are available for each exchange state.
@@ -14,7 +14,11 @@ class WalletQuickActionsPolicy {
     QuickAction.history,
     QuickAction.support,
     QuickAction.priceHistory,
-    if (access.enabledForHome && platformAllowsExchange) ...{
+    if (ExchangeAvailability.resolve(
+          platformAllowed: platformAllowsExchange,
+          access: access,
+        ) !=
+        ExchangeAvailability.hidden) ...{
       QuickAction.buy,
       QuickAction.sell,
       QuickAction.pay,
@@ -33,11 +37,11 @@ class WalletQuickActionsPolicy {
 class WatchWalletQuickActionsUsecase {
   WatchWalletQuickActionsUsecase(this._access);
 
-  final ExchangeAccessFacade _access;
+  final ExchangeFacade _access;
 
   WalletQuickActionsPolicy get current =>
-      WalletQuickActionsPolicy(_access.current);
+      WalletQuickActionsPolicy(_access.currentAccess);
 
   Stream<WalletQuickActionsPolicy> watch() =>
-      _access.watch().map(WalletQuickActionsPolicy.new);
+      _access.watchAccess().map(WalletQuickActionsPolicy.new);
 }

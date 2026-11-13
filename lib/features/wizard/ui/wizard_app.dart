@@ -1,3 +1,6 @@
+import 'dart:io';
+import 'package:bb_mobile/features/exchange/public/exchange_facade.dart'
+    show ExchangeAvailability, ExchangeAccessResolving;
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
@@ -78,7 +81,14 @@ class _WizardAppView extends StatelessWidget {
           locale: state.choices.language.locale,
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: const WizardScreen(),
+          home: WizardScreen(
+            exchangeAllowed:
+                ExchangeAvailability.resolve(
+                  platformAllowed: !Platform.isIOS,
+                  access: const ExchangeAccessResolving(),
+                ) !=
+                ExchangeAvailability.hidden,
+          ),
         );
       },
     );

@@ -1,6 +1,3 @@
-import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
-import 'dart:io';
-import 'package:bb_mobile/features/pay/domain/get_pay_entry_usecase.dart';
 import 'package:bb_mobile/features/pay/presentation/pay_bloc.dart';
 import 'package:bb_mobile/features/pay/ui/screens/pay_amount_screen.dart';
 import 'package:bb_mobile/features/pay/ui/screens/pay_external_wallet_network_selection_screen.dart';
@@ -36,16 +33,6 @@ class PayRouter {
   static final route = GoRoute(
     path: PayRoute.pay.path,
     name: PayRoute.pay.name,
-    redirect: (context, state) async {
-      final result = await GetPayEntryUsecase(
-        locator<ExchangeFacade>(),
-      ).execute(isIOS: Platform.isIOS);
-      return switch (result) {
-        Ok(value: PayEntry.allowed) => null,
-        Ok(value: PayEntry.signIn) => ExchangeRoute.exchangeAuth.path,
-        _ => '/wallet',
-      };
-    },
     builder: (context, state) {
       return BlocProvider(
         create: (_) => locator<PayBloc>()..add(const PayEvent.started()),

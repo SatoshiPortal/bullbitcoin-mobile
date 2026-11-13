@@ -84,7 +84,8 @@ class SettingsRouter {
             ExchangeRoute.exchangeAuth.name,
             queryParameters: {'from': 'settings'},
           ),
-          onOpenAccount: () => context.goNamed(ExchangeRoute.exchangeHome.name),
+          onOpenAccount: () =>
+              context.pushNamed(SettingsRoute.exchangeSettings.name),
           onDisabled: () => context.goNamed(WalletRoute.walletHome.name),
           onAuthenticated: () => context.goNamed(WalletRoute.walletHome.name),
         ),

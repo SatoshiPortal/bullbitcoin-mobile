@@ -1,4 +1,4 @@
-import 'package:bb_mobile/features/exchange_access/public/exchange_access_facade.dart';
+import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
 import 'package:bull_quick_actions/bull_quick_actions.dart';
 
 typedef SettingsQuickActionOptions = ({
@@ -8,7 +8,7 @@ typedef SettingsQuickActionOptions = ({
 
 class WatchSettingsQuickActionsUsecase {
   const WatchSettingsQuickActionsUsecase(this._access);
-  final ExchangeAccessFacade _access;
+  final ExchangeFacade _access;
 
   SettingsQuickActionOptions _options(ExchangeAccess access) => (
     available: {
@@ -18,7 +18,8 @@ class WatchSettingsQuickActionsUsecase {
       QuickAction.settings,
       QuickAction.support,
       QuickAction.priceHistory,
-      if (access.enabledForHome) ...{
+      if (ExchangeAvailability.resolve(platformAllowed: true, access: access) !=
+          ExchangeAvailability.hidden) ...{
         QuickAction.buy,
         QuickAction.sell,
         QuickAction.pay,
@@ -32,6 +33,7 @@ class WatchSettingsQuickActionsUsecase {
       QuickAction.settings,
     ],
   );
-  SettingsQuickActionOptions get current => _options(_access.current);
-  Stream<SettingsQuickActionOptions> execute() => _access.watch().map(_options);
+  SettingsQuickActionOptions get current => _options(_access.currentAccess);
+  Stream<SettingsQuickActionOptions> execute() =>
+      _access.watchAccess().map(_options);
 }

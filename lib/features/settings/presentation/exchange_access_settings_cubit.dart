@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:bb_mobile/features/exchange_access/public/exchange_access_facade.dart';
+import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
 import 'package:bb_mobile/features/settings/domain/settings_failure.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/manage_exchange_access_usecase.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -35,29 +35,38 @@ class ExchangeAccessSettingsCubit extends Cubit<ExchangeAccessSettingsState> {
   final SetSettingsExchangeAccessUsecase _set;
   StreamSubscription<ExchangeAccess>? _subscription;
 
-  Future<ExchangeAccessOutcome?> setEnabled(bool enabled) async {
-    if (state.busy) return null;
+  Future<bool> setEnabled(bool enabled) async {
+    if (state.busy ||
+        (enabled && state.access is ExchangeAccessSignOutIncomplete)) {
+      return false;
+    }
     emit(ExchangeAccessSettingsState(state.access, busy: true));
     final result = await _set.execute(enabled);
-    if (isClosed) return null;
+    if (isClosed) return false;
     switch (result) {
       case Err(:final failure):
         emit(ExchangeAccessSettingsState(state.access, failure: failure));
-        return null;
-      case Ok(:final value):
-        emit(ExchangeAccessSettingsState(state.access));
-        return value;
+        return false;
+      case Ok():
+        emit(ExchangeAccessSettingsState(_watch.current));
+        return true;
     }
   }
 
-  int get generation => _set.generation;
-  Future<void> cancelActivation(int generation) async {
-    final result = await _set.cancelActivation(generation);
-    if (result case Err(:final failure)) {
-      if (!isClosed) {
-        emit(ExchangeAccessSettingsState(state.access, failure: failure));
-      }
-    }
+  Future<void> retry() async {
+    if (state.busy) return;
+    emit(ExchangeAccessSettingsState(state.access, busy: true));
+    final result = await _set.retry();
+    if (isClosed) return;
+    emit(
+      ExchangeAccessSettingsState(
+        state.access,
+        failure: switch (result) {
+          Err(:final failure) => failure,
+          Ok() => null,
+        },
+      ),
+    );
   }
 
   @override

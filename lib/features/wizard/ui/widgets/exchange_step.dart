@@ -1,3 +1,4 @@
+import 'package:flutter/widgets.dart' show MergeSemantics;
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
@@ -33,13 +34,15 @@ class ExchangeStep extends StatelessWidget {
           SizedBox(height: gap),
           BullText(loc.wizardExchangeSupport, style: bodyStyle),
           SizedBox(height: gap),
-          Row(
-            children: [
-              Expanded(
-                child: BullText(loc.wizardExchangeToggle, style: bodyStyle),
-              ),
-              BullSwitch(value: enabled, onChanged: onChanged),
-            ],
+          MergeSemantics(
+            child: Row(
+              children: [
+                Expanded(
+                  child: BullText(loc.wizardExchangeToggle, style: bodyStyle),
+                ),
+                BullSwitch(value: enabled, onChanged: onChanged),
+              ],
+            ),
           ),
         ],
       ),

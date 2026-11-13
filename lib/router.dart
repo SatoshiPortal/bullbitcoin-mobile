@@ -1,5 +1,4 @@
 import 'package:bb_mobile/features/bitcoin_price/public/bitcoin_price_facade.dart';
-import 'package:bb_mobile/features/exchange_access/public/exchange_access_facade.dart';
 import 'package:bb_mobile/features/support/public/support_facade.dart';
 import 'package:bull_quick_actions/bull_quick_actions.dart';
 import 'dart:io';
@@ -105,6 +104,10 @@ class AppRouter {
 
   static final GoRouter router = GoRouter(
     navigatorKey: rootNavigatorKey,
+    onEnter: ExchangeTradingGuard(
+      locator<ExchangeFacade>(),
+      rootNavigatorKey,
+    ).onEnter,
     initialLocation: WalletRoute.walletHome.path,
     // Breadcrumbs only — `enableAutoTransactions: false` skips the
     // performance/TTID instrumentation so we stay within the
@@ -163,7 +166,7 @@ class AppRouter {
         routes: [
           WalletRouter.walletHomeRoute(
             quickActions: locator<QuickActionsFacade>(),
-            exchangeAccess: locator<ExchangeAccessFacade>(),
+            exchangeAccess: locator<ExchangeFacade>(),
             platformAllowsExchange: (context) =>
                 !Platform.isIOS ||
                 context.select(

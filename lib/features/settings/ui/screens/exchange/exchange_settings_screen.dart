@@ -1,3 +1,5 @@
+import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
+import 'package:bb_mobile/locator.dart';
 import 'dart:io';
 
 import 'package:bb_mobile/core/utils/build_context_x.dart';
@@ -8,15 +10,12 @@ import 'package:bb_mobile/core/widgets/not_logged_in_bottom_sheet.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/features/default_wallets/public/default_wallets_facade.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
-import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:bb_mobile/features/exchange_settings/public/exchange_settings_facade.dart';
 import 'package:bb_mobile/features/pay/ui/pay_router.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
-import 'package:bb_mobile/features/exchange/presentation/exchange_failure_l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:primitives/primitives.dart' show Err, Ok;
 import 'package:go_router/go_router.dart';
 import 'package:bull_ui/bull_ui.dart' show BullSettingsEntryItem;
 
@@ -208,10 +207,14 @@ class ExchangeSettingsScreen extends StatelessWidget {
                         LogoutConfirmationBottomSheet.show(
                           context,
                           onConfirm: () async {
-                            final failure = await context
-                                .read<ExchangeCubit>()
+                            final result = await locator<ExchangeFacade>()
                                 .logout();
-                            if (!context.mounted || failure == null) return;
+                            if (!context.mounted ||
+                                result is Ok<void, ExchangeFailure>) {
+                              return;
+                            }
+                            final failure =
+                                (result as Err<void, ExchangeFailure>).failure;
                             // The session survived, so the user is still
                             // signed in — say so rather than letting the UI
                             // imply the account is gone from this device.
