@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart' show Err, Ok;
 import 'package:bb_mobile/features/wizard/data/wizard_install_classifier.dart';
 import 'package:bb_mobile/features/wizard/domain/wizard_install_failure.dart';
 import 'package:flutter_test/flutter_test.dart';
