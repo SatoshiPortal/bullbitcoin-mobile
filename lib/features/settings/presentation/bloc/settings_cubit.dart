@@ -146,19 +146,28 @@ class SettingsCubit extends Cubit<SettingsState> {
     );
   }
 
-  Future<void> toggleSatsUnit(bool active) async {
-    final settings = state.storedSettings;
+  Future<Result<void, SettingsFailure>> setBitcoinUnit(BitcoinUnit unit) async {
     log.config(
-      'Bitcoin unit toggled: $active was ${settings?.bitcoinUnit.name}',
+      'Bitcoin unit changed to: ${unit.name} was ${state.bitcoinUnit?.name}',
     );
-    final unit = active ? BitcoinUnit.sats : BitcoinUnit.btc;
     final result = await _setBitcoinUnitUsecase.execute(unit);
-    if (result case Err(:final failure)) {
-      emit(state.copyWith(failure: failure));
-      return;
+    if (result is Ok<void, SettingsFailure> && !isClosed) {
+      emit(
+        state.copyWith(
+          storedSettings: state.storedSettings?.copyWith(bitcoinUnit: unit),
+        ),
+      );
     }
+    return result;
+  }
 
-    emit(state.copyWith(storedSettings: settings?.copyWith(bitcoinUnit: unit)));
+  Future<void> toggleSatsUnit(bool active) async {
+    final result = await setBitcoinUnit(
+      active ? BitcoinUnit.sats : BitcoinUnit.btc,
+    );
+    if (result case Err(:final failure)) {
+      if (!isClosed) emit(state.copyWith(failure: failure));
+    }
   }
 
   Future<void> changeLanguage(Language language) async {

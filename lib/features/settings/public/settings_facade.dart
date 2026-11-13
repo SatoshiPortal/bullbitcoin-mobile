@@ -1,4 +1,8 @@
 export 'active_network_scope.dart';
+import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
+import 'package:bull_ui/bull_ui.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/settings/domain/settings_failure.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_payjoin_enabled_usecase.dart';
@@ -12,8 +16,15 @@ export 'payjoin_disclaimer_dialog.dart';
 export '../reporting_setup.dart' show refreshReportingConsent;
 export '../background_setup.dart' show setupBackgroundPreferences;
 
+part '../ui/amount_preferences_binder.dart';
+
 /// Public settings contract consumed by other features.
 class SettingsFacade {
+  static Widget amountScope({
+    required Widget child,
+    required GlobalKey<NavigatorState> navigatorKey,
+  }) => _AmountPreferencesBinder(navigatorKey: navigatorKey, child: child);
+
   final SetPayjoinEnabledUsecase _setPayjoinEnabledUsecase;
   final WatchPayjoinPolicyUsecase _watchPayjoinPolicyUsecase;
 
