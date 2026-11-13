@@ -120,8 +120,5 @@ class QuickActionsLocalizationsEn extends QuickActionsLocalizations {
   String get emptyHint => 'No favorites selected. Settings remains on Home.';
 
   @override
-  String get transferFull => 'Transfer between wallets';
-
-  @override
   String get supportFull => 'Support';
 }

@@ -308,12 +308,6 @@ abstract class QuickActionsLocalizations {
   /// Full accessible quick action name.
   ///
   /// In en, this message translates to:
-  /// **'Transfer between wallets'**
-  String get transferFull;
-
-  /// Full accessible quick action name.
-  ///
-  /// In en, this message translates to:
   /// **'Support'**
   String get supportFull;
 }

@@ -121,8 +121,5 @@ class QuickActionsLocalizationsFr extends QuickActionsLocalizations {
       'Aucun favori sélectionné. Réglages reste sur l’accueil.';
 
   @override
-  String get transferFull => 'Transfert entre portefeuilles';
-
-  @override
   String get supportFull => 'Assistance';
 }
