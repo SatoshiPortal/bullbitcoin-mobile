@@ -20,12 +20,12 @@ class WalletHomeTopSection extends StatelessWidget {
 
   final Widget actions;
 
-  /// Height of the dark area behind the balance (and the price chart, when it
+  /// Minimum height of the dark area behind the balance (and the price chart, when it
   /// is toggled on).
-  static const double _balanceAreaHeight = 264;
+  static const double _balanceAreaHeight = 224;
 
   /// Distance from the top of the dark area down to the balance.
-  static const double _balanceTopSpacing = 123;
+  static const double _balanceTopSpacing = 96;
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +33,11 @@ class WalletHomeTopSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       mainAxisSize: MainAxisSize.min,
       children: [
-        const SizedBox(height: _balanceAreaHeight, child: _UI()),
+        ConstrainedBox(
+          constraints: const BoxConstraints(minHeight: _balanceAreaHeight),
+          child: const _UI(),
+        ),
+        const SizedBox(height: 12),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 13.0),
           child: actions,
@@ -66,13 +70,14 @@ class _UIState extends State<_UI> {
     );
 
     return Stack(
-      fit: StackFit.expand,
       children: [
-        AnimatedContainer(
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeInOut,
-          color: Colors.transparent,
-          child: image,
+        Positioned.fill(
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeInOut,
+            color: Colors.transparent,
+            child: image,
+          ),
         ),
         AnimatedSwitcher(
           duration: const Duration(milliseconds: 300),
@@ -89,7 +94,11 @@ class _UIState extends State<_UI> {
             );
           },
           child: showChart
-              ? const _ChartView(key: ValueKey('chart'))
+              ? const SizedBox(
+                  key: ValueKey('chart'),
+                  height: WalletHomeTopSection._balanceAreaHeight,
+                  child: _ChartView(),
+                )
               : const _Amounts(key: ValueKey('amounts')),
         ),
       ],
@@ -103,11 +112,16 @@ class _Amounts extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
         Gap(WalletHomeTopSection._balanceTopSpacing),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: [Spacer(), _BtcTotalAmt(), Gap(16), EyeToggle(), Spacer()],
+          children: [
+            Flexible(child: _BtcTotalAmt()),
+            Gap(16),
+            EyeToggle(),
+          ],
         ),
         Gap(12),
         _FiatAmt(),
@@ -188,7 +202,7 @@ class _WalletHomeBtcAmountSkeleton extends StatelessWidget {
 }
 
 class _ChartView extends StatelessWidget {
-  const _ChartView({super.key});
+  const _ChartView();
 
   @override
   Widget build(BuildContext context) {
