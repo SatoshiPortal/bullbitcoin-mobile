@@ -44,11 +44,13 @@ class CheckDuplicateMnemonicUsecase {
   @useResult
   Future<Result<void, ImportMnemonicFailure>> execute({
     required List<String> mnemonicWords,
+    Language language = Language.english,
     String passphrase = '',
   }) async {
     try {
       final existing = await _secrets.find(
         words: mnemonicWords,
+        language: language,
         passphrase: passphrase,
       );
       switch (existing) {

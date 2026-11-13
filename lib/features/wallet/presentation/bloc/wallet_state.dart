@@ -22,6 +22,7 @@ sealed class WalletState with _$WalletState {
     @Default(false) bool isSpFeatureEnabled,
     @Default(false) bool isSpWalletLoading,
     @Default(false) bool backupWarningDismissed,
+    bool? backupNeeded,
   }) = _WalletState;
   const WalletState._();
 
@@ -59,12 +60,11 @@ sealed class WalletState with _$WalletState {
   }
 
   bool hasNoBackup() {
+    final known = backupNeeded;
+    if (known != null) return known;
     final defaultWallets = wallets.where((wallet) => wallet.isDefault);
     return defaultWallets.isNotEmpty &&
-        defaultWallets.any(
-          (wallet) =>
-              !wallet.isEncryptedVaultTested && !wallet.isPhysicalBackupTested,
-        );
+        defaultWallets.any((wallet) => !wallet.isPhysicalBackupTested);
   }
 
   bool showBackupWarning() {

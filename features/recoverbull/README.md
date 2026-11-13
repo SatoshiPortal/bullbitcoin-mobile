@@ -1,0 +1,15 @@
+# RecoverBull
+
+RecoverBull owns encrypted-backup workflows, provider access, local certification and advisory attempt monitoring. Secrets alone seals, inspects and imports wallet material. The feature never receives a mnemonic and never uses secure storage directly. Consumers import `bull_recoverbull.dart`; owner adapters implement its wallet, environment, legacy-settings and per-flow route ports.
+
+The foreground composition mounts `RecoverBullFeature`, installs its route/localizations and displays its alert overlay below app unlock. It invokes `facade.checkAtColdStart()` once per fresh process. Resume does not check. There is no background entry point, scheduler or notification integration. Backup verification also reconciles the status returned by the counted fetch. Explicit service diagnostics use a separate owned route without polling attempt telemetry.
+
+Consent belongs to the current server URL. Changing that URL resets permission and fences old replies. Monitoring defaults on after consent; the existing switch opts out. Created, tested and restored vaults are enrolled, alongside vaults discovered through the signed-in Drive abstraction. Drive discovery is silent, account-scoped and paginated. User selections and deletion confirmations expire when the account changes. Automated tests use fakes, not a Drive account.
+
+`recoverbull.sqlite` has its own unpublished v1 baseline. It stores backup timestamps, consent, digest-only attempt attribution and persistent generic alerts. The published app database and historical backups remain intact. An old verification flag cannot certify a backup: verification stays unknown until Secrets inspects it against the captured wallet context. Historical backup dates keep access to old vaults available.
+
+Before any counted fetch or trash, a durable own-operation marker must commit, even with monitoring disabled. FULL/ENOSPC, corrupt/unreadable metadata and other write failures produce distinct typed failures. Failed admission sends no counted request. Manual vault-key recovery remains available without opening this database; a successful import and a failed metadata write are reported separately. Corrupt or future-schema files are preserved, never silently replaced. If opening the database fails at startup, restart after correcting the storage problem; ordinary write failures on an open database can be retried in the flow.
+
+Telemetry is advisory. Only unexplained activity or targeted lockout creates an alarm. Outages, stale projections, window changes and unresolved own requests produce unknown coverage. Alerts survive restart, contain no identifiers or counters, and require no automatic action. Delayed replies and cancellation never erase durable own-operation allowances.
+
+Run the pinned SDK through root make targets: `make deps`, `make recoverbull-build-runner`, `make recoverbull-translations`, `make recoverbull-drift-migrations`, and `make checks`. Generated Dart and localizations follow the repository's existing ignore policy; the v1 JSON schema snapshot is versioned. Only a full Xcode build validates iOS integration.

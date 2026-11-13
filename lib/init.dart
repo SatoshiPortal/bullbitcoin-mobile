@@ -1,4 +1,6 @@
 import 'package:bb_mobile/features/wallet/data/wallet_native_runtime.dart';
+import 'dart:async';
+import 'package:bull_recoverbull/bull_recoverbull.dart';
 
 import 'package:bb_mobile/bloc_observer.dart';
 import 'package:bb_mobile/background_setup.dart';
@@ -62,6 +64,11 @@ class Bull {
     // Flush wizard pending values (if any) to SQLite now that the
     // settings repository is available, then mark the wizard complete.
     await locator<ApplyPendingWizardChoicesUsecase>().execute();
+    await AppLocator.setupRecoverBull(
+      locator,
+      databasePath: p.join(bullDirectory.path, 'recoverbull.sqlite'),
+    );
+    unawaited(locator<RecoverBullFacade>().checkAtColdStart());
     final settings = locator<SettingsRepository>();
     configureLogTorContext(
       () => loadTorDiagnosticContext(settings, locator<Tor>()),

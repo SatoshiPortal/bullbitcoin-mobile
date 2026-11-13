@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/failures/failure.dart';
+import 'package:primitives/primitives.dart' show Failure;
 
 /// Every variant's [Failure.logMessage] is a short, fixed breadcrumb naming
 /// the step that failed — never the raw exception text and never an

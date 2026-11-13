@@ -5,7 +5,7 @@ import 'package:bb_mobile/core/mempool/domain/value_objects/mempool_server_netwo
 import 'package:bb_mobile/core/mempool/frameworks/drift/datasources/mempool_settings_storage_datasource.dart';
 import 'package:bb_mobile/core/mempool/frameworks/drift/models/mempool_settings_model.dart';
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart';
 
 class DriftMempoolSettingsRepository implements MempoolSettingsRepository {
   final MempoolSettingsStorageDatasource _datasource;

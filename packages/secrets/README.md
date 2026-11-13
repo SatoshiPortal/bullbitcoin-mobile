@@ -150,7 +150,9 @@ Historical seed-only entries support xpub, Bitcoin descriptor and BIP85 derivati
 
 Liquid descriptors and signatures, and the swap key, derive from the BIP39 seed of the words in their own language, so every language gets its own wallets; an English mnemonic gets exactly the keys its words gave before. Silent Payments still returns `LanguageUnsupportedFailure` for a non-English mnemonic before any native call: bwk builds an account from English words only, until it takes keys ([bwk-bitcoin/bwk#114](https://github.com/bwk-bitcoin/bwk/pull/114)).
 
-The application keyboard, suggestions and sealed-widget word metrics are a separate UI step. This change does not enable a non-English mnemonic entry flow. Generation continues to use the existing English BDK generator.
+The import picker offers English, Spanish, French, Italian, Czech and Portuguese for a separate, non-default Bitcoin wallet. Non-Latin lists stay hidden until a dedicated keyboard is available; the custody API still supports all ten. The in-app keyboard and suggestions normalize Unicode without exposing words to the platform IME. Detection never silently selects a language; ambiguous sentences require an explicit choice. Onboarding and default-wallet recovery remain English-only. Generation continues to use the existing English BDK generator.
+
+Sealed display and challenge widgets obtain language in the same read as the words and support all ten lists. Their cells use the dimensions of the entire public wordlist in that language, normalized to NFKD, never those of the actual secret words. Japanese sentence layout uses the ideographic separator. No raw-word getter or semantics exposure is added.
 
 ## Recovery and module keys
 

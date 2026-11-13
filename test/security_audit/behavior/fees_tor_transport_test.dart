@@ -9,7 +9,7 @@ import 'package:bb_mobile/core/mempool/domain/repositories/mempool_settings_repo
 import 'package:bb_mobile/core/mempool/domain/value_objects/mempool_server_network.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart' show BitcoinUnit, Ok;
 import 'package:bb_mobile/core/fees/fees_locator.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:flutter_test/flutter_test.dart';

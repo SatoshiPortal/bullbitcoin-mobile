@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/sp/public/sp_facade.dart';
 
 // Re-export the public SP snapshot type + failure family so this feature's

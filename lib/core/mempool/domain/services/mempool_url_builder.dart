@@ -1,6 +1,6 @@
 import 'package:bb_mobile/core/mempool/application/usecases/get_active_mempool_server_usecase.dart';
 import 'package:bb_mobile/core/mempool/domain/entities/mempool_server.dart';
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart';
 
 class MempoolUrlBuilder {
   final GetActiveMempoolServerUsecase _getActiveMempoolServerUsecase;

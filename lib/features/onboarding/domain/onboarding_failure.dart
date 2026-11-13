@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/failures/failure.dart';
+import 'package:primitives/primitives.dart' show Failure;
 
 /// Closed set of every failure the onboarding flow (create/recover default
 /// wallets) surfaces to the user.
