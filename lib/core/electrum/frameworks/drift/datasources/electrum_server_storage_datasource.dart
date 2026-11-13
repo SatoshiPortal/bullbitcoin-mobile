@@ -25,6 +25,23 @@ class ElectrumServerStorageDatasource {
     }
   }
 
+  Future<void> storeCustom(ElectrumServerModel server) {
+    return _sqlite.transaction(() async {
+      await store(server);
+      final updated =
+          await (_sqlite.update(
+            _sqlite.electrumSettings,
+          )..where((row) => row.network.equalsValue(server.network))).write(
+            const ElectrumSettingsCompanion(validateDomain: Value(false)),
+          );
+      if (updated != 1) {
+        throw const FormatException(
+          'Missing Electrum settings for custom server',
+        );
+      }
+    });
+  }
+
   Future<void> storeBatch(List<ElectrumServerModel> servers) async {
     try {
       await _sqlite.batch((batch) {
