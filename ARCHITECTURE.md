@@ -51,6 +51,8 @@ Each feature mirrors that with three plug-in points: **`<feature>_locator.dart`*
 
 Shared infrastructure and shared domain live in `lib/core/<domain>/` (see "Special Note on Core Module"); per-flow UI lives in `lib/features/<feature>/`.
 
+Mnemonic entry is shared through `lib/features/import_mnemonic/public/import_mnemonic_facade.dart`, which exports the entry widget used by onboarding and app-startup recovery. The import feature currently reaches into Wallets internals; replacing that import with the public Wallets facade is a scoped follow-up recorded in FEATURES.md.
+
 ## 🎯 The architecture we tend toward
 
 One pattern, everywhere: **`ui → bloc → usecase → repository → datasource`.** The vocabulary stays the one the team already uses — `datasource`, `repository`, `usecase`, `bloc` — with **no `port` / `adapter` / `application` / `framework` renaming**.
