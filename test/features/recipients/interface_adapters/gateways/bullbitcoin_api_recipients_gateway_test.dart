@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/recipients/application/dtos/recipient_details_dto.dart';
 import 'package:bb_mobile/features/recipients/domain/recipients_failure.dart';
 import 'package:bb_mobile/features/recipients/domain/value_objects/cad_biller.dart';

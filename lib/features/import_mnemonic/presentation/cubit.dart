@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart' show Err, Ok;
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/import_mnemonic/domain/check_duplicate_mnemonic_usecase.dart';
 import 'package:bb_mobile/features/import_mnemonic/domain/import_mnemonic_failure.dart';

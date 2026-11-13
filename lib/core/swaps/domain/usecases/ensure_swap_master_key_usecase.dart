@@ -1,10 +1,10 @@
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
 import 'package:secrets/secrets.dart';
-import 'package:primitives/primitives.dart' show BitcoinNetwork, Fingerprint;
+import 'package:primitives/primitives.dart'
+    show BitcoinNetwork, Err, Fingerprint, Ok;
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
-import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/errors/bull_exception.dart';
 
 /// Derives and persists the swap master key from the default bitcoin wallet's

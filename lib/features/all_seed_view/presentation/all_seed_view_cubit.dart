@@ -1,14 +1,13 @@
 import 'package:bb_mobile/features/all_seed_view/domain/usecases/delete_secret_usecase.dart';
 import 'package:bb_mobile/features/all_seed_view/domain/usecases/get_all_secrets_usecase.dart';
 import 'package:bb_mobile/features/all_seed_view/domain/usecases/separate_secrets_usecase.dart';
-import 'package:primitives/primitives.dart' show Fingerprint;
+import 'package:primitives/primitives.dart' show Err, Fingerprint, Ok;
 import 'package:secrets/secrets.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap_master_key_info.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/delete_swap_master_key_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_master_key_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_mnemonic_usecase.dart';
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/features/all_seed_view/domain/all_seed_view_failure.dart';
 import 'package:bb_mobile/features/app_unlock/public/app_unlock_facade.dart';

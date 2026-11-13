@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/exchange/data/exchange_authentication.dart';
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/recipients/application/ports/recipients_gateway_port.dart';
 import 'package:bb_mobile/features/recipients/domain/entities/recipient.dart';
 import 'package:bb_mobile/features/recipients/domain/recipients_failure.dart';

@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/labels/data/io_labels_file_datasource.dart';
 import 'package:bb_mobile/features/labels/domain/label_failure.dart';
 import 'package:flutter_test/flutter_test.dart';

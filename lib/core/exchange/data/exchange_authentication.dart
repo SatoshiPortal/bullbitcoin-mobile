@@ -1,6 +1,6 @@
 import 'package:bb_mobile/core/exchange/domain/exchange_api_key_failure.dart';
 import 'package:bb_mobile/core/errors/exchange_errors.dart';
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart';
 import 'package:dio/dio.dart';
 
 /// A transport capability, wired by the composition root, with no key cache.
