@@ -6,6 +6,7 @@ import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dar
 import 'package:bb_mobile/features/sp/public/sp_facade.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_cards.dart';
+import 'package:bull_ui/bull_ui.dart' show bullUiLocalizationsDelegate;
 import 'package:bull_ui/testing.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -39,7 +40,10 @@ Widget _buildCards({
 }) {
   return MaterialApp(
     theme: ThemeData(extensions: testBullExtensions),
-    localizationsDelegates: AppLocalizations.localizationsDelegates,
+    localizationsDelegates: [
+      ...AppLocalizations.localizationsDelegates,
+      bullUiLocalizationsDelegate,
+    ],
     supportedLocales: AppLocalizations.supportedLocales,
     home: MultiBlocProvider(
       providers: [
@@ -81,7 +85,10 @@ Widget _buildCardsRouter({
   return MaterialApp.router(
     theme: ThemeData(extensions: testBullExtensions),
     routerConfig: router,
-    localizationsDelegates: AppLocalizations.localizationsDelegates,
+    localizationsDelegates: [
+      ...AppLocalizations.localizationsDelegates,
+      bullUiLocalizationsDelegate,
+    ],
     supportedLocales: AppLocalizations.supportedLocales,
   );
 }
