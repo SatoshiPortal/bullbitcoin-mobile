@@ -12224,6 +12224,23 @@ class BullVaultRecords extends Table
     requiredDuringInsert: true,
     $customConstraints: 'NOT NULL',
   );
+  late final GeneratedColumn<String> descriptorTestedAt =
+      GeneratedColumn<String>(
+        'descriptor_tested_at',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+        $customConstraints: 'NULL',
+      );
+  late final GeneratedColumn<String> serverTestedAt = GeneratedColumn<String>(
+    'server_tested_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    $customConstraints: 'NULL',
+  );
   @override
   List<GeneratedColumn> get $columns => [
     walletId,
@@ -12243,6 +12260,8 @@ class BullVaultRecords extends Table
     recoveryPackageConfirmed,
     mobileBackupDeferred,
     createdAt,
+    descriptorTestedAt,
+    serverTestedAt,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -12327,6 +12346,14 @@ class BullVaultRecords extends Table
         DriftSqlType.string,
         data['${effectivePrefix}created_at'],
       )!,
+      descriptorTestedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}descriptor_tested_at'],
+      ),
+      serverTestedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}server_tested_at'],
+      ),
     );
   }
 
@@ -12363,6 +12390,8 @@ class BullVaultRecordsData extends DataClass
   final int recoveryPackageConfirmed;
   final int mobileBackupDeferred;
   final String createdAt;
+  final String? descriptorTestedAt;
+  final String? serverTestedAt;
   const BullVaultRecordsData({
     required this.walletId,
     required this.lineageId,
@@ -12381,6 +12410,8 @@ class BullVaultRecordsData extends DataClass
     required this.recoveryPackageConfirmed,
     required this.mobileBackupDeferred,
     required this.createdAt,
+    this.descriptorTestedAt,
+    this.serverTestedAt,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -12414,6 +12445,12 @@ class BullVaultRecordsData extends DataClass
     map['recovery_package_confirmed'] = Variable<int>(recoveryPackageConfirmed);
     map['mobile_backup_deferred'] = Variable<int>(mobileBackupDeferred);
     map['created_at'] = Variable<String>(createdAt);
+    if (!nullToAbsent || descriptorTestedAt != null) {
+      map['descriptor_tested_at'] = Variable<String>(descriptorTestedAt);
+    }
+    if (!nullToAbsent || serverTestedAt != null) {
+      map['server_tested_at'] = Variable<String>(serverTestedAt);
+    }
     return map;
   }
 
@@ -12446,6 +12483,12 @@ class BullVaultRecordsData extends DataClass
       recoveryPackageConfirmed: Value(recoveryPackageConfirmed),
       mobileBackupDeferred: Value(mobileBackupDeferred),
       createdAt: Value(createdAt),
+      descriptorTestedAt: descriptorTestedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(descriptorTestedAt),
+      serverTestedAt: serverTestedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(serverTestedAt),
     );
   }
 
@@ -12488,6 +12531,10 @@ class BullVaultRecordsData extends DataClass
         json['mobileBackupDeferred'],
       ),
       createdAt: serializer.fromJson<String>(json['createdAt']),
+      descriptorTestedAt: serializer.fromJson<String?>(
+        json['descriptorTestedAt'],
+      ),
+      serverTestedAt: serializer.fromJson<String?>(json['serverTestedAt']),
     );
   }
   @override
@@ -12519,6 +12566,8 @@ class BullVaultRecordsData extends DataClass
       ),
       'mobileBackupDeferred': serializer.toJson<int>(mobileBackupDeferred),
       'createdAt': serializer.toJson<String>(createdAt),
+      'descriptorTestedAt': serializer.toJson<String?>(descriptorTestedAt),
+      'serverTestedAt': serializer.toJson<String?>(serverTestedAt),
     };
   }
 
@@ -12540,6 +12589,8 @@ class BullVaultRecordsData extends DataClass
     int? recoveryPackageConfirmed,
     int? mobileBackupDeferred,
     String? createdAt,
+    Value<String?> descriptorTestedAt = const Value.absent(),
+    Value<String?> serverTestedAt = const Value.absent(),
   }) => BullVaultRecordsData(
     walletId: walletId ?? this.walletId,
     lineageId: lineageId ?? this.lineageId,
@@ -12569,6 +12620,12 @@ class BullVaultRecordsData extends DataClass
         recoveryPackageConfirmed ?? this.recoveryPackageConfirmed,
     mobileBackupDeferred: mobileBackupDeferred ?? this.mobileBackupDeferred,
     createdAt: createdAt ?? this.createdAt,
+    descriptorTestedAt: descriptorTestedAt.present
+        ? descriptorTestedAt.value
+        : this.descriptorTestedAt,
+    serverTestedAt: serverTestedAt.present
+        ? serverTestedAt.value
+        : this.serverTestedAt,
   );
   BullVaultRecordsData copyWithCompanion(BullVaultRecordsCompanion data) {
     return BullVaultRecordsData(
@@ -12616,6 +12673,12 @@ class BullVaultRecordsData extends DataClass
           ? data.mobileBackupDeferred.value
           : this.mobileBackupDeferred,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      descriptorTestedAt: data.descriptorTestedAt.present
+          ? data.descriptorTestedAt.value
+          : this.descriptorTestedAt,
+      serverTestedAt: data.serverTestedAt.present
+          ? data.serverTestedAt.value
+          : this.serverTestedAt,
     );
   }
 
@@ -12640,7 +12703,9 @@ class BullVaultRecordsData extends DataClass
           )
           ..write('recoveryPackageConfirmed: $recoveryPackageConfirmed, ')
           ..write('mobileBackupDeferred: $mobileBackupDeferred, ')
-          ..write('createdAt: $createdAt')
+          ..write('createdAt: $createdAt, ')
+          ..write('descriptorTestedAt: $descriptorTestedAt, ')
+          ..write('serverTestedAt: $serverTestedAt')
           ..write(')'))
         .toString();
   }
@@ -12664,6 +12729,8 @@ class BullVaultRecordsData extends DataClass
     recoveryPackageConfirmed,
     mobileBackupDeferred,
     createdAt,
+    descriptorTestedAt,
+    serverTestedAt,
   );
   @override
   bool operator ==(Object other) =>
@@ -12686,7 +12753,9 @@ class BullVaultRecordsData extends DataClass
               this.completedHardwareSignerIdsJson &&
           other.recoveryPackageConfirmed == this.recoveryPackageConfirmed &&
           other.mobileBackupDeferred == this.mobileBackupDeferred &&
-          other.createdAt == this.createdAt);
+          other.createdAt == this.createdAt &&
+          other.descriptorTestedAt == this.descriptorTestedAt &&
+          other.serverTestedAt == this.serverTestedAt);
 }
 
 class BullVaultRecordsCompanion extends UpdateCompanion<BullVaultRecordsData> {
@@ -12707,6 +12776,8 @@ class BullVaultRecordsCompanion extends UpdateCompanion<BullVaultRecordsData> {
   final Value<int> recoveryPackageConfirmed;
   final Value<int> mobileBackupDeferred;
   final Value<String> createdAt;
+  final Value<String?> descriptorTestedAt;
+  final Value<String?> serverTestedAt;
   final Value<int> rowid;
   const BullVaultRecordsCompanion({
     this.walletId = const Value.absent(),
@@ -12726,6 +12797,8 @@ class BullVaultRecordsCompanion extends UpdateCompanion<BullVaultRecordsData> {
     this.recoveryPackageConfirmed = const Value.absent(),
     this.mobileBackupDeferred = const Value.absent(),
     this.createdAt = const Value.absent(),
+    this.descriptorTestedAt = const Value.absent(),
+    this.serverTestedAt = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   BullVaultRecordsCompanion.insert({
@@ -12746,6 +12819,8 @@ class BullVaultRecordsCompanion extends UpdateCompanion<BullVaultRecordsData> {
     required int recoveryPackageConfirmed,
     required int mobileBackupDeferred,
     required String createdAt,
+    this.descriptorTestedAt = const Value.absent(),
+    this.serverTestedAt = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : walletId = Value(walletId),
        lineageId = Value(lineageId),
@@ -12776,6 +12851,8 @@ class BullVaultRecordsCompanion extends UpdateCompanion<BullVaultRecordsData> {
     Expression<int>? recoveryPackageConfirmed,
     Expression<int>? mobileBackupDeferred,
     Expression<String>? createdAt,
+    Expression<String>? descriptorTestedAt,
+    Expression<String>? serverTestedAt,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -12803,6 +12880,9 @@ class BullVaultRecordsCompanion extends UpdateCompanion<BullVaultRecordsData> {
       if (mobileBackupDeferred != null)
         'mobile_backup_deferred': mobileBackupDeferred,
       if (createdAt != null) 'created_at': createdAt,
+      if (descriptorTestedAt != null)
+        'descriptor_tested_at': descriptorTestedAt,
+      if (serverTestedAt != null) 'server_tested_at': serverTestedAt,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -12825,6 +12905,8 @@ class BullVaultRecordsCompanion extends UpdateCompanion<BullVaultRecordsData> {
     Value<int>? recoveryPackageConfirmed,
     Value<int>? mobileBackupDeferred,
     Value<String>? createdAt,
+    Value<String?>? descriptorTestedAt,
+    Value<String?>? serverTestedAt,
     Value<int>? rowid,
   }) {
     return BullVaultRecordsCompanion(
@@ -12851,6 +12933,8 @@ class BullVaultRecordsCompanion extends UpdateCompanion<BullVaultRecordsData> {
           recoveryPackageConfirmed ?? this.recoveryPackageConfirmed,
       mobileBackupDeferred: mobileBackupDeferred ?? this.mobileBackupDeferred,
       createdAt: createdAt ?? this.createdAt,
+      descriptorTestedAt: descriptorTestedAt ?? this.descriptorTestedAt,
+      serverTestedAt: serverTestedAt ?? this.serverTestedAt,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -12921,6 +13005,12 @@ class BullVaultRecordsCompanion extends UpdateCompanion<BullVaultRecordsData> {
     if (createdAt.present) {
       map['created_at'] = Variable<String>(createdAt.value);
     }
+    if (descriptorTestedAt.present) {
+      map['descriptor_tested_at'] = Variable<String>(descriptorTestedAt.value);
+    }
+    if (serverTestedAt.present) {
+      map['server_tested_at'] = Variable<String>(serverTestedAt.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -12949,6 +13039,8 @@ class BullVaultRecordsCompanion extends UpdateCompanion<BullVaultRecordsData> {
           ..write('recoveryPackageConfirmed: $recoveryPackageConfirmed, ')
           ..write('mobileBackupDeferred: $mobileBackupDeferred, ')
           ..write('createdAt: $createdAt, ')
+          ..write('descriptorTestedAt: $descriptorTestedAt, ')
+          ..write('serverTestedAt: $serverTestedAt, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();

@@ -11,7 +11,6 @@ import 'package:flutter/material.dart';
 class WalletPolicyDetailsBottomSheet extends StatelessWidget {
   final Wallet wallet;
   final BitcoinWalletPolicy policy;
-
   const WalletPolicyDetailsBottomSheet({
     super.key,
     required this.wallet,
@@ -28,6 +27,48 @@ class WalletPolicyDetailsBottomSheet extends StatelessWidget {
   );
 
   @override
+  Widget build(BuildContext context) => SingleChildScrollView(
+    padding: const EdgeInsets.fromLTRB(24, 24, 24, 32),
+    child: Column(
+      crossAxisAlignment: .stretch,
+      children: [
+        Row(
+          children: [
+            Expanded(
+              child: BBText(
+                context.loc.walletDetailsSpendingConditionsLabel,
+                style: context.font.headlineMedium,
+              ),
+            ),
+            IconButton(
+              tooltip: context.loc.closeDialogButton,
+              onPressed: () => Navigator.of(context).pop(),
+              icon: const Icon(Icons.close),
+            ),
+          ],
+        ),
+        const Gap(16),
+        WalletPolicyDetailsContent(wallet: wallet, policy: policy),
+      ],
+    ),
+  );
+}
+
+/// The existing policy tree renderer, shared with full-page policy views.
+class WalletPolicyDetailsContent extends StatelessWidget {
+  final Wallet wallet;
+  final BitcoinWalletPolicy policy;
+  final Widget? Function(BuildContext, BitcoinPolicyNode)? conditionBuilder;
+  final Widget? alternativePathsFooter;
+  const WalletPolicyDetailsContent({
+    super.key,
+    required this.wallet,
+    required this.policy,
+    this.conditionBuilder,
+    this.alternativePathsFooter,
+  });
+
+  @override
   Widget build(BuildContext context) {
     final root = policy.external.root;
     final pathSelector =
@@ -37,47 +78,37 @@ class WalletPolicyDetailsBottomSheet extends StatelessWidget {
         ? root
         : null;
     final paths = pathSelector?.children;
-
-    return SingleChildScrollView(
-      padding: const EdgeInsets.fromLTRB(24, 24, 24, 32),
-      child: Column(
-        crossAxisAlignment: .stretch,
-        children: [
-          Row(
-            children: [
-              Expanded(
-                child: BBText(
-                  context.loc.walletDetailsSpendingConditionsLabel,
-                  style: context.font.headlineMedium,
-                ),
-              ),
-              IconButton(
-                tooltip: context.loc.closeDialogButton,
-                onPressed: () => Navigator.of(context).pop(),
-                icon: const Icon(Icons.close),
-              ),
-            ],
+    return Column(
+      crossAxisAlignment: .stretch,
+      children: [
+        if (paths != null) ...[
+          BBText(
+            context.loc.walletDetailsAvailableSpendingPaths,
+            style: context.font.bodyMedium,
+            color: context.appColors.textMuted,
           ),
           const Gap(16),
-          if (paths != null) ...[
-            BBText(
-              context.loc.walletDetailsAvailableSpendingPaths,
-              style: context.font.bodyMedium,
-              color: context.appColors.textMuted,
+          for (final (index, path) in paths.indexed) ...[
+            _SpendingPath(
+              title: context.loc.walletDetailsSpendingPathTitle(index + 1),
+              node: path,
+              wallet: wallet,
+              conditionBuilder: conditionBuilder,
             ),
-            const Gap(16),
-            for (final (index, path) in paths.indexed) ...[
-              _SpendingPath(
-                title: context.loc.walletDetailsSpendingPathTitle(index + 1),
-                node: path,
-                wallet: wallet,
-              ),
-              if (index != paths.length - 1) const Gap(12),
-            ],
-          ] else
-            _SpendingPath(node: root, wallet: wallet),
-        ],
-      ),
+            if (index != paths.length - 1) const Gap(12),
+          ],
+          if (alternativePathsFooter case final footer?
+              when paths.length > 1) ...[
+            const Gap(12),
+            footer,
+          ],
+        ] else
+          _SpendingPath(
+            node: root,
+            wallet: wallet,
+            conditionBuilder: conditionBuilder,
+          ),
+      ],
     );
   }
 }
@@ -86,8 +117,14 @@ class _SpendingPath extends StatelessWidget {
   final String? title;
   final BitcoinPolicyNode node;
   final Wallet wallet;
+  final Widget? Function(BuildContext, BitcoinPolicyNode)? conditionBuilder;
 
-  const _SpendingPath({this.title, required this.node, required this.wallet});
+  const _SpendingPath({
+    this.title,
+    required this.node,
+    required this.wallet,
+    this.conditionBuilder,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -103,7 +140,11 @@ class _SpendingPath extends StatelessWidget {
             ),
             const Gap(12),
           ],
-          _PolicyNodeDetails(node: node, wallet: wallet),
+          _PolicyNodeDetails(
+            node: node,
+            wallet: wallet,
+            conditionBuilder: conditionBuilder,
+          ),
         ],
       ),
     );
@@ -113,8 +154,13 @@ class _SpendingPath extends StatelessWidget {
 class _PolicyNodeDetails extends StatelessWidget {
   final BitcoinPolicyNode node;
   final Wallet wallet;
+  final Widget? Function(BuildContext, BitcoinPolicyNode)? conditionBuilder;
 
-  const _PolicyNodeDetails({required this.node, required this.wallet});
+  const _PolicyNodeDetails({
+    required this.node,
+    required this.wallet,
+    this.conditionBuilder,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -144,22 +190,35 @@ class _PolicyNodeDetails extends StatelessWidget {
           ),
           const Gap(8),
           for (final (index, child) in children.indexed) ...[
-            _PolicyCondition(node: child, wallet: wallet),
+            _PolicyCondition(
+              node: child,
+              wallet: wallet,
+              conditionBuilder: conditionBuilder,
+            ),
             if (index != children.length - 1) const Gap(8),
           ],
         ],
       );
     }
 
-    return _PolicyCondition(node: node, wallet: wallet);
+    return _PolicyCondition(
+      node: node,
+      wallet: wallet,
+      conditionBuilder: conditionBuilder,
+    );
   }
 }
 
 class _PolicyCondition extends StatelessWidget {
   final BitcoinPolicyNode node;
   final Wallet wallet;
+  final Widget? Function(BuildContext, BitcoinPolicyNode)? conditionBuilder;
 
-  const _PolicyCondition({required this.node, required this.wallet});
+  const _PolicyCondition({
+    required this.node,
+    required this.wallet,
+    this.conditionBuilder,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -180,12 +239,17 @@ class _PolicyCondition extends StatelessWidget {
         const Gap(10),
         Expanded(
           child: node is BitcoinThresholdPolicyNode
-              ? _PolicyNodeDetails(node: node, wallet: wallet)
-              : BBText(
-                  _describeLeaf(context, node, wallet),
-                  style: context.font.bodyMedium,
-                  color: context.appColors.onSurface,
-                ),
+              ? _PolicyNodeDetails(
+                  node: node,
+                  wallet: wallet,
+                  conditionBuilder: conditionBuilder,
+                )
+              : conditionBuilder?.call(context, node) ??
+                    BBText(
+                      _describeLeaf(context, node, wallet),
+                      style: context.font.bodyMedium,
+                      color: context.appColors.onSurface,
+                    ),
         ),
       ],
     );

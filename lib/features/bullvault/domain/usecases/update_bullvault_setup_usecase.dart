@@ -7,20 +7,27 @@ import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
 import 'package:bb_mobile/features/bullvault/domain/bullvault_failure.dart';
 import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_record.dart';
 import 'package:bb_mobile/features/bullvault/domain/repositories/bullvault_repository.dart';
+import 'package:bb_mobile/features/bullvault/domain/usecases/verify_bullvault_descriptor_backup_usecase.dart';
 import 'package:meta/meta.dart';
 
 class UpdateBullVaultSetupUsecase {
   final BullVaultRepository _repository;
   final GetWalletUsecase _getWalletUsecase;
+  final VerifyBullVaultDescriptorBackupUsecase _verifyDescriptor;
   Future<void> _updateLock = Future.value();
 
-  UpdateBullVaultSetupUsecase(this._repository, this._getWalletUsecase);
+  UpdateBullVaultSetupUsecase(
+    this._repository,
+    this._getWalletUsecase,
+    this._verifyDescriptor,
+  );
 
   @useResult
   Future<Result<BullVaultRecord, BullVaultFailure>> execute({
     required String walletId,
     String? completedHardwareSignerId,
     bool? recoveryPackageConfirmed,
+    String? descriptorReadBack,
     bool? hardwareSetupDeferred,
     bool? mobileBackupDeferred,
   }) => _serialized(() async {
@@ -32,7 +39,7 @@ class UpdateBullVaultSetupUsecase {
       return const Err(BullVaultRenewalFailure());
     }
     final loaded = await _repository.getByWalletId(walletId);
-    late final BullVaultRecord record;
+    late BullVaultRecord record;
     switch (loaded) {
       case Ok(value: final value?):
         record = value;
@@ -42,6 +49,18 @@ class UpdateBullVaultSetupUsecase {
     if (record.status != BullVaultLifecycleStatus.pending &&
         record.status != BullVaultLifecycleStatus.active) {
       return const Err(BullVaultRenewalFailure());
+    }
+    if (recoveryPackageConfirmed == true) {
+      final verified = await _verifyDescriptor.execute(
+        expected: record,
+        source: descriptorReadBack ?? '',
+      );
+      switch (verified) {
+        case Ok(:final value):
+          record = record.copyWith(descriptorTestedAt: value);
+        case Err(:final failure):
+          return Err(failure);
+      }
     }
     final completedHardwareSignerIds = {
       ...record.completedHardwareSignerIds,

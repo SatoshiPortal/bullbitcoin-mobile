@@ -117,14 +117,20 @@ final class BullVaultOnboardingScreen extends StatelessWidget {
     BullVaultOnboardingStep.inheritance => _Inheritance(state: state),
     BullVaultOnboardingStep.mobilePassphrase => _MobilePassphrase(state: state),
     BullVaultOnboardingStep.review => _Review(state: state),
-    BullVaultOnboardingStep.recoveryPackage => BullVaultRecoveryPackageStep(
-      exported: state.recoveryPackageExported,
-      confirmed: state.recoveryPackageConfirmed,
-      onSave: () => _shareRecoveryPackage(context, state),
-      onConfirm: context
-          .read<BullVaultOnboardingCubit>()
-          .confirmRecoveryPackage,
-    ),
+    BullVaultOnboardingStep.recoveryPackage => switch (state.result) {
+      null => Text(context.loc.walletDetailsUnavailableLabel),
+      final result => BullVaultRecoveryPackageStep(
+        descriptor: result.policy.descriptor,
+        confirmed: state.recoveryPackageConfirmed,
+        onImport: context
+            .read<BullVaultOnboardingCubit>()
+            .importRecoveryPackage,
+        onSave: () => _shareRecoveryPackage(context, state),
+        onConfirm: context
+            .read<BullVaultOnboardingCubit>()
+            .confirmRecoveryPackage,
+      ),
+    },
     BullVaultOnboardingStep.hardwareSetup => BullVaultHardwareSetupStep(
       signers: state.result!.wallet.signers
           .where((signer) => signer.signer == SignerEntity.remote)
@@ -1156,9 +1162,6 @@ Future<void> _shareRecoveryPackage(
     context,
     content: state.recoveryPackageContent!,
     policyId: state.result!.policy.id,
-    onExported: context
-        .read<BullVaultOnboardingCubit>()
-        .markRecoveryPackageExported,
   );
 }
 

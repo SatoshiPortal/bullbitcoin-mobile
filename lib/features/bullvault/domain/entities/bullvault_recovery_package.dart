@@ -1,6 +1,8 @@
 import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_policy.dart';
 
 final class BullVaultRecoveryPackage {
+  static const maximumFileBytes = 1024 * 1024;
+
   final String? previousVaultId;
   final BullVaultPolicy policy;
 

@@ -37,7 +37,8 @@ class ActivateInitialBullVaultUsecase {
     if (record.status == BullVaultLifecycleStatus.active) {
       return const Ok(null);
     }
-    if (record.status != BullVaultLifecycleStatus.pending) {
+    if (record.status != BullVaultLifecycleStatus.pending ||
+        record.descriptorTestedAt == null) {
       return const Err(BullVaultCreationFailure());
     }
     final Wallet? wallet;
