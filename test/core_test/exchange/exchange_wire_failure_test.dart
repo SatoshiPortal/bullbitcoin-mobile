@@ -7,7 +7,7 @@ import 'package:bb_mobile/core/exchange/domain/exchange_order_failure.dart';
 import 'package:bb_mobile/core/exchange/domain/exchange_user_failure.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/recipients/domain/recipients_failure.dart';
-import 'package:bb_mobile/features/recipients/interface_adapters/gateways/bullbitcoin_api_recipients_gateway.dart';
+import 'package:bb_mobile/features/recipients/data/bullbitcoin_api_recipients_repository.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -152,11 +152,11 @@ void main() {
     respond({
       'result': {'ownerName': 42},
     });
-    final gateway = BullbitcoinApiRecipientsGateway(
+    final repository = BullbitcoinApiRecipientsRepository(
       authenticatedApiClient: http,
     );
     expect(
-      await gateway.checkSinpe(phoneNumber: 'synthetic', isTestnet: true),
+      await repository.checkSinpe(phoneNumber: 'synthetic', isTestnet: true),
       isA<Err<String, RecipientsFailure>>().having(
         (r) => r.failure,
         'failure',

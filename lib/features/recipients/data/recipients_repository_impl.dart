@@ -1,0 +1,127 @@
+import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/features/recipients/domain/repositories/recipients_repository.dart';
+import 'package:bb_mobile/features/recipients/domain/recipients_failure.dart';
+import 'package:bb_mobile/features/recipients/domain/entities/recipient.dart';
+import 'package:bb_mobile/features/recipients/domain/entities/cad_biller.dart';
+import 'package:bb_mobile/features/recipients/domain/entities/recipient_details.dart';
+import 'package:bb_mobile/features/recipients/domain/entities/recipient_type.dart';
+
+// This class delegates recipient-related operations to the appropriate
+// repository based on whether the operation is for testnet or mainnet.
+class RecipientsRepositoryImpl implements RecipientsRepository {
+  final RecipientsRepository _bullbitcoinApiClient;
+  final RecipientsRepository _bullBitcoinTestnetApiClient;
+
+  RecipientsRepositoryImpl({
+    required this._bullbitcoinApiClient,
+    required this._bullBitcoinTestnetApiClient,
+  });
+
+  @override
+  Future<Result<Recipient, RecipientsFailure>> saveRecipient(
+    RecipientDetails recipientDetails, {
+    bool isFiatRecipient = true,
+    required bool isTestnet,
+  }) {
+    return isTestnet
+        ? _bullBitcoinTestnetApiClient.saveRecipient(
+            recipientDetails,
+            isFiatRecipient: isFiatRecipient,
+            isTestnet: isTestnet,
+          )
+        : _bullbitcoinApiClient.saveRecipient(
+            recipientDetails,
+            isFiatRecipient: isFiatRecipient,
+            isTestnet: isTestnet,
+          );
+  }
+
+  @override
+  Future<Result<void, RecipientsFailure>> updateInteracSecurityDetails({
+    required String recipientId,
+    required String email,
+    required String? securityQuestion,
+    required String? securityAnswer,
+    required bool isTestnet,
+  }) {
+    final repository = isTestnet
+        ? _bullBitcoinTestnetApiClient
+        : _bullbitcoinApiClient;
+    return repository.updateInteracSecurityDetails(
+      recipientId: recipientId,
+      email: email,
+      securityQuestion: securityQuestion,
+      securityAnswer: securityAnswer,
+      isTestnet: isTestnet,
+    );
+  }
+
+  @override
+  Future<
+    Result<
+      ({List<Recipient> recipients, int totalRecipients}),
+      RecipientsFailure
+    >
+  >
+  listRecipients({
+    bool fiatOnly = true,
+    required bool isTestnet,
+    int page = 1,
+    int pageSize = 50,
+    List<RecipientType>? recipientTypes,
+    bool? isOwner,
+    String? search,
+  }) {
+    return isTestnet
+        ? _bullBitcoinTestnetApiClient.listRecipients(
+            fiatOnly: fiatOnly,
+            isTestnet: isTestnet,
+            page: page,
+            pageSize: pageSize,
+            recipientTypes: recipientTypes,
+            isOwner: isOwner,
+            search: search,
+          )
+        : _bullbitcoinApiClient.listRecipients(
+            fiatOnly: fiatOnly,
+            isTestnet: isTestnet,
+            page: page,
+            pageSize: pageSize,
+            recipientTypes: recipientTypes,
+            isOwner: isOwner,
+            search: search,
+          );
+  }
+
+  @override
+  Future<Result<String, RecipientsFailure>> checkSinpe({
+    required String phoneNumber,
+    required bool isTestnet,
+  }) {
+    return isTestnet
+        ? _bullBitcoinTestnetApiClient.checkSinpe(
+            phoneNumber: phoneNumber,
+            isTestnet: isTestnet,
+          )
+        : _bullbitcoinApiClient.checkSinpe(
+            phoneNumber: phoneNumber,
+            isTestnet: isTestnet,
+          );
+  }
+
+  @override
+  Future<Result<List<CadBiller>, RecipientsFailure>> listCadBillers({
+    required String searchTerm,
+    required bool isTestnet,
+  }) {
+    return isTestnet
+        ? _bullBitcoinTestnetApiClient.listCadBillers(
+            searchTerm: searchTerm,
+            isTestnet: isTestnet,
+          )
+        : _bullbitcoinApiClient.listCadBillers(
+            searchTerm: searchTerm,
+            isTestnet: isTestnet,
+          );
+  }
+}

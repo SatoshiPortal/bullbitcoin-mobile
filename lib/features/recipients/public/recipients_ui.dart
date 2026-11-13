@@ -1,4 +1,4 @@
-export '../frameworks/ui/screens/recipients_screen.dart' show RecipientsScreen;
+export '../ui/screens/recipients_screen.dart' show RecipientsScreen;
 export 'recipient_selection_screen.dart' show RecipientSelectionScreen;
 export '../ui/screens/recipient_selection_screen_v2.dart'
     show RecipientSelectionScreenV2;

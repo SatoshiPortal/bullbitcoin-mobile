@@ -1,4 +1,4 @@
-import 'package:bb_mobile/features/recipients/domain/value_objects/recipient_type.dart';
+import 'package:bb_mobile/features/recipients/domain/entities/recipient_type.dart';
 
 /// Recipient data published for cross-feature selection flows.
 final class RecipientSelection {

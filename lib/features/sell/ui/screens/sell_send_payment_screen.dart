@@ -11,7 +11,7 @@ import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/fees/fee_options_modal.dart';
 import 'package:bb_mobile/core/widgets/fees/fee_selection_label.dart';
 import 'package:bb_mobile/features/sell/domain/sell_failure.dart';
-import 'package:bb_mobile/features/sell/presentation/bloc/sell_bloc.dart';
+import 'package:bb_mobile/features/sell/presentation/sell_bloc.dart';
 import 'package:bb_mobile/features/sell/presentation/sell_failure_l10n.dart';
 import 'package:bb_mobile/features/sell/ui/widgets/sell_advanced_options_bottom_sheet.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';

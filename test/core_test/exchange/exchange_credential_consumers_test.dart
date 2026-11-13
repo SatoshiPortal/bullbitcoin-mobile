@@ -2,10 +2,10 @@ import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/sepa_payment_processor.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
-import 'package:bb_mobile/features/fund_exchange/adapters/funding_gateway/bullbitcoin_api_funding_gateway.dart';
+import 'package:bb_mobile/features/fund_exchange/data/bullbitcoin_api_funding_repository.dart';
 import 'package:bb_mobile/features/fund_exchange/domain/fund_exchange_failure.dart';
-import 'package:bb_mobile/features/fund_exchange/domain/primitives/funding_jurisdiction.dart';
-import 'package:bb_mobile/features/recipients/interface_adapters/gateways/bullbitcoin_api_recipients_gateway.dart';
+import 'package:bb_mobile/features/fund_exchange/domain/entities/funding_jurisdiction.dart';
+import 'package:bb_mobile/features/recipients/data/bullbitcoin_api_recipients_repository.dart';
 import 'package:bb_mobile/features/recipients/domain/recipients_failure.dart';
 import 'package:bb_mobile/features/limit_orders/data/datasources/limit_orders_api_datasource.dart';
 import 'package:bb_mobile/features/limit_orders/data/limit_order_repository_impl.dart';
@@ -187,8 +187,10 @@ void main() {
   test(
     'shared Dio features distinguish missing credentials from read failures',
     () async {
-      final funding = BullBitcoinApiFundingGateway(authenticatedApiClient: dio);
-      final recipients = BullbitcoinApiRecipientsGateway(
+      final funding = BullBitcoinApiFundingRepository(
+        authenticatedApiClient: dio,
+      );
+      final recipients = BullbitcoinApiRecipientsRepository(
         authenticatedApiClient: dio,
       );
       final api = LimitOrdersApiDatasource(authenticatedApiClient: dio);

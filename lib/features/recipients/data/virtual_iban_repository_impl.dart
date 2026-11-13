@@ -1,6 +1,6 @@
 import 'package:bb_mobile/core/exchange/data/exchange_authentication.dart';
 import 'package:bb_mobile/core/utils/result.dart';
-import 'package:bb_mobile/features/recipients/data/bullbitcoin_api_virtual_iban_datasource.dart';
+import 'package:bb_mobile/features/recipients/data/datasources/bullbitcoin_api_virtual_iban_datasource.dart';
 import 'package:bb_mobile/features/recipients/domain/entities/virtual_iban.dart';
 import 'package:bb_mobile/features/recipients/domain/recipients_failure.dart';
 import 'package:bb_mobile/features/recipients/domain/repositories/virtual_iban_repository.dart';

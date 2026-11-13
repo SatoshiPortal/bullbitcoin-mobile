@@ -5,7 +5,7 @@ import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/recipients/domain/entities/virtual_iban.dart';
 import 'package:bb_mobile/features/recipients/domain/recipients_failure.dart';
 import 'package:bb_mobile/features/recipients/domain/usecases/get_account_owner_name_usecase.dart';
-import 'package:bb_mobile/features/recipients/domain/value_objects/account_owner_name.dart';
+import 'package:bb_mobile/features/recipients/domain/entities/account_owner_name.dart';
 import 'package:bb_mobile/features/recipients/domain/usecases/watch_virtual_iban_usecase.dart';
 import 'package:bb_mobile/features/recipients/presentation/virtual_iban_onboarding_cubit.dart';
 import 'package:bb_mobile/features/recipients/ui/screens/virtual_iban_funding_screen.dart';
