@@ -4957,5 +4957,10 @@
   "passphraseHide": "Masquer la passphrase",
   "coreScreensOutputsExceedInputs": "Les sorties dépassent les entrées : cette transaction est invalide et le réseau la rejettera.",
   "amountSwitchToBtc": "Afficher ce montant en BTC",
-  "amountSwitchToSats": "Afficher ce montant en sats"
+  "amountSwitchToSats": "Afficher ce montant en sats",
+  "amountChangeDefaultEverywhere": "Changer l’unité par défaut partout",
+  "amountGesturesHint": "Touchez pour changer ce montant. Maintenez pour changer le défaut partout.",
+  "amountsDisplayedEverywhereSats": "Montants affichés en sats partout",
+  "amountsDisplayedEverywhereBtc": "Montants affichés en BTC partout",
+  "amountUndo": "Annuler"
 }

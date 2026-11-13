@@ -4850,5 +4850,10 @@
   "passphraseHide": "Ocultar frase de contraseña",
   "coreScreensOutputsExceedInputs": "Las salidas superan las entradas: esta transacción no es válida y la red la rechazará.",
   "amountSwitchToBtc": "Mostrar este importe en BTC",
-  "amountSwitchToSats": "Mostrar este importe en sats"
+  "amountSwitchToSats": "Mostrar este importe en sats",
+  "amountChangeDefaultEverywhere": "Cambiar la unidad predeterminada en todas partes",
+  "amountGesturesHint": "Toca para cambiar este importe. Mantén pulsado para cambiar la unidad predeterminada en todas partes.",
+  "amountsDisplayedEverywhereSats": "Importes mostrados en sats en todas partes",
+  "amountsDisplayedEverywhereBtc": "Importes mostrados en BTC en todas partes",
+  "amountUndo": "Deshacer"
 }
