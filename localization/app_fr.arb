@@ -4716,12 +4716,5 @@
   "importMnemonicScanUnavailable": "Vérification du solde indisponible. Vous pouvez quand même importer ce portefeuille.",
   "coreScreensOutputsExceedInputs": "Les sorties dépassent les entrées : cette transaction est invalide et le réseau la rejettera.",
   "passphraseShow": "Afficher la passphrase",
-  "passphraseHide": "Masquer la passphrase",
-  "amountSwitchToBtc": "Afficher ce montant en BTC",
-  "amountSwitchToSats": "Afficher ce montant en sats",
-  "amountChangeDefaultEverywhere": "Changer l’unité par défaut partout",
-  "amountGesturesHint": "Touchez pour changer ce montant. Maintenez pour changer le défaut partout.",
-  "amountsDisplayedEverywhereSats": "Montants affichés en sats partout",
-  "amountsDisplayedEverywhereBtc": "Montants affichés en BTC partout",
-  "amountUndo": "Annuler"
+  "passphraseHide": "Masquer la passphrase"
 }

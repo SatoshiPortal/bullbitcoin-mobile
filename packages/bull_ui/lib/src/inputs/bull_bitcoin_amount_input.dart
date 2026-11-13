@@ -1,8 +1,10 @@
+import 'package:bull_ui/generated/l10n/bull_ui_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:primitives/primitives.dart';
 
 import '../data_display/bull_amount.dart';
-import '../data_display/bull_amount_preferences.dart';
+import '../data_display/bull_amount_scope.dart';
 import '../theme/bull_theme.dart';
 import '../theme/bull_tokens.dart';
 import 'bull_amount_input_formatter.dart';
@@ -12,44 +14,42 @@ import 'bull_bitcoin_amount_text.dart';
 class BullBitcoinAmountInput extends StatefulWidget {
   const BullBitcoinAmountInput({
     super.key,
-    required this.currency,
+    required this.canonicalUnit,
     required this.amountController,
     required this.amountEquivalent,
-    required this.maxLabel,
-    required this.switchToBtcLabel,
-    required this.switchToSatsLabel,
     this.error,
     this.focusNode,
     this.readOnly = false,
     this.isMax = false,
-  }) : assert(currency == 'BTC' || currency == 'sats');
+  });
 
-  final String currency;
+  final BitcoinUnit canonicalUnit;
   final TextEditingController amountController;
   final String amountEquivalent;
   final String? error;
   final FocusNode? focusNode;
   final bool readOnly;
   final bool isMax;
-  final String maxLabel;
-  final String switchToBtcLabel;
-  final String switchToSatsLabel;
 
   @override
   State<BullBitcoinAmountInput> createState() => _BullBitcoinAmountInputState();
 }
 
 class _BullBitcoinAmountInputState extends State<BullBitcoinAmountInput> {
-  late String _unit;
+  late BitcoinUnit _unit;
   late final TextEditingController _display;
   bool _updating = false;
-  BullAmountUnit? _globalUnit;
+  BitcoinUnit? _globalUnit;
   int? _globalRevision;
+  late FocusNode _focusNode;
+  bool _ownsFocusNode = false;
+  bool _pendingGlobalReset = false;
 
   @override
   void initState() {
     super.initState();
-    _unit = widget.currency;
+    _unit = widget.canonicalUnit;
+    _attachFocusNode(widget.focusNode);
     _display = TextEditingController(text: widget.amountController.text);
     _display.addListener(_onDisplayChanged);
     widget.amountController.addListener(_onCanonicalChanged);
@@ -58,37 +58,33 @@ class _BullBitcoinAmountInputState extends State<BullBitcoinAmountInput> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    final globalUnit = BullAmountPreferencesScope.maybeOf(context)?.defaultUnit;
-    final revision = BullAmountPreferencesScope.revisionOf(context);
+    final scope = BullAmountScope.maybeOf(context);
+    final globalUnit = scope?.snapshot.unit;
+    final revision = scope?.generation;
     if (globalUnit != _globalUnit || revision != _globalRevision) {
       _globalUnit = globalUnit;
       _globalRevision = revision;
-      _unit = switch (globalUnit) {
-        BullAmountUnit.btc => 'BTC',
-        BullAmountUnit.sats => 'sats',
-        null => widget.currency,
-      };
-      // Incomplete/composing text has an empty canonical value and is cleared
-      // on a global reset rather than interpreted in the newly selected unit.
-      _onCanonicalChanged();
+      _pendingGlobalReset = true;
+      _applyPendingGlobalReset();
     }
   }
 
   @override
   void didUpdateWidget(BullBitcoinAmountInput oldWidget) {
     super.didUpdateWidget(oldWidget);
+    if (oldWidget.focusNode != widget.focusNode) {
+      _detachFocusNode();
+      _attachFocusNode(widget.focusNode);
+      _applyPendingGlobalReset();
+    }
     if (oldWidget.amountController != widget.amountController) {
       oldWidget.amountController.removeListener(_onCanonicalChanged);
       widget.amountController.addListener(_onCanonicalChanged);
     }
-    if (oldWidget.currency != widget.currency) {
-      _unit = switch (_globalUnit) {
-        BullAmountUnit.btc => 'BTC',
-        BullAmountUnit.sats => 'sats',
-        null => widget.currency,
-      };
+    if (oldWidget.canonicalUnit != widget.canonicalUnit) {
+      _unit = _globalUnit ?? widget.canonicalUnit;
     }
-    if (oldWidget.currency != widget.currency ||
+    if (oldWidget.canonicalUnit != widget.canonicalUnit ||
         oldWidget.amountController != widget.amountController) {
       _onCanonicalChanged();
     }
@@ -96,10 +92,45 @@ class _BullBitcoinAmountInputState extends State<BullBitcoinAmountInput> {
 
   @override
   void dispose() {
+    _detachFocusNode();
     widget.amountController.removeListener(_onCanonicalChanged);
     _display.removeListener(_onDisplayChanged);
     _display.dispose();
     super.dispose();
+  }
+
+  void _attachFocusNode(FocusNode? node) {
+    _ownsFocusNode = node == null;
+    _focusNode = node ?? FocusNode();
+    _focusNode.addListener(_onFocusChanged);
+  }
+
+  void _detachFocusNode() {
+    _focusNode.removeListener(_onFocusChanged);
+    if (_ownsFocusNode) _focusNode.dispose();
+  }
+
+  void _onFocusChanged() {
+    _applyPendingGlobalReset(startingEdit: _focusNode.hasFocus);
+  }
+
+  void _applyPendingGlobalReset({bool startingEdit = false}) {
+    if (!_pendingGlobalReset ||
+        (_focusNode.hasFocus && !startingEdit) ||
+        _composing) {
+      return;
+    }
+    final text = _display.text;
+    if (!startingEdit &&
+        text.isNotEmpty &&
+        BullBitcoinAmountText.parse(text, _unit) == null) {
+      return;
+    }
+    _pendingGlobalReset = false;
+    final target = _globalUnit ?? widget.canonicalUnit;
+    _unit = target;
+    _onCanonicalChanged();
+    if (mounted) setState(() {});
   }
 
   bool get _composing =>
@@ -115,14 +146,17 @@ class _BullBitcoinAmountInputState extends State<BullBitcoinAmountInput> {
     final String canonical;
     if (invalid || text.isEmpty) {
       canonical = '';
-    } else if (_unit == widget.currency) {
+    } else if (_unit == widget.canonicalUnit) {
       canonical = text;
     } else if (sats != null) {
-      canonical = BullBitcoinAmountText.format(sats, widget.currency);
+      canonical = BullBitcoinAmountText.format(sats, widget.canonicalUnit);
     } else {
       return;
     }
-    if (canonical == widget.amountController.text) return;
+    if (canonical == widget.amountController.text) {
+      _applyPendingGlobalReset();
+      return;
+    }
     _updating = true;
     widget.amountController.value = TextEditingValue(
       text: canonical,
@@ -133,17 +167,18 @@ class _BullBitcoinAmountInputState extends State<BullBitcoinAmountInput> {
     if (!invalid && widget.amountController.text != canonical) {
       _onCanonicalChanged();
     }
+    _applyPendingGlobalReset();
   }
 
   void _onCanonicalChanged() {
     if (_updating) return;
     final text = widget.amountController.text;
-    final sats = BullBitcoinAmountText.parse(text, widget.currency);
-    if (text.isNotEmpty && sats == null && _unit != widget.currency) {
-      setState(() => _unit = widget.currency);
+    final sats = BullBitcoinAmountText.parse(text, widget.canonicalUnit);
+    if (text.isNotEmpty && sats == null && _unit != widget.canonicalUnit) {
+      setState(() => _unit = widget.canonicalUnit);
     }
     final String display;
-    if (text.isEmpty || _unit == widget.currency) {
+    if (text.isEmpty || _unit == widget.canonicalUnit) {
       display = text;
     } else if (sats != null) {
       display = BullBitcoinAmountText.format(sats, _unit);
@@ -165,7 +200,7 @@ class _BullBitcoinAmountInputState extends State<BullBitcoinAmountInput> {
     final text = _display.text;
     final sats = BullBitcoinAmountText.parse(text, _unit);
     if (text.isNotEmpty && sats == null) return;
-    final next = _unit == 'BTC' ? 'sats' : 'BTC';
+    final next = _unit == BitcoinUnit.btc ? BitcoinUnit.sats : BitcoinUnit.btc;
     final String converted;
     if (text.isEmpty) {
       converted = '';
@@ -207,13 +242,16 @@ class _BullBitcoinAmountInputState extends State<BullBitcoinAmountInput> {
           children: [
             Flexible(
               child: widget.isMax
-                  ? Text(widget.maxLabel, style: style)
+                  ? Text(
+                      BullUiLocalizations.of(context).amountMax,
+                      style: style,
+                    )
                   : IntrinsicWidth(
                       child: TextField(
                         controller: _display,
-                        focusNode: widget.focusNode,
+                        focusNode: _focusNode,
                         keyboardType: TextInputType.numberWithOptions(
-                          decimal: _unit == 'BTC',
+                          decimal: _unit == BitcoinUnit.btc,
                         ),
                         inputFormatters: [_BitcoinEditingFormatter(_unit)],
                         readOnly: widget.readOnly,
@@ -228,13 +266,10 @@ class _BullBitcoinAmountInputState extends State<BullBitcoinAmountInput> {
                     ),
             ),
             BullAmountUnitToggle(
-              text: _unit,
-              unit: _unit == 'BTC' ? BullAmountUnit.btc : BullAmountUnit.sats,
+              text: _unit.code,
+              unit: _unit,
               semanticValue:
-                  '${widget.isMax ? widget.maxLabel : _display.text} $_unit',
-              actionLabel: _unit == 'BTC'
-                  ? widget.switchToSatsLabel
-                  : widget.switchToBtcLabel,
+                  '${widget.isMax ? BullUiLocalizations.of(context).amountMax : _display.text} ${_unit.code}',
               onPressed: _toggle,
               style: style,
             ),
@@ -257,7 +292,7 @@ class _BullBitcoinAmountInputState extends State<BullBitcoinAmountInput> {
 class _BitcoinEditingFormatter extends TextInputFormatter {
   _BitcoinEditingFormatter(this.unit);
 
-  final String unit;
+  final BitcoinUnit unit;
 
   @override
   TextEditingValue formatEditUpdate(
@@ -268,9 +303,9 @@ class _BitcoinEditingFormatter extends TextInputFormatter {
       return newValue;
     }
     final formatted = BullAmountInputFormatter(
-      unit,
+      unit.code,
     ).formatEditUpdate(oldValue, newValue);
-    final normalized = unit == 'BTC'
+    final normalized = unit == BitcoinUnit.btc
         ? newValue.text.replaceAll(',', '.')
         : newValue.text;
     return formatted.text == normalized ? formatted : oldValue;

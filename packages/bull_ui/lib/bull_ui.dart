@@ -157,7 +157,8 @@ export 'src/layout/bull_stacked_page.dart';
 
 // Data display.
 export 'src/data_display/bull_amount.dart';
-export 'src/data_display/bull_amount_preferences.dart';
+export 'src/data_display/bull_amount_scope.dart';
+export 'generated/l10n/bull_ui_localizations.dart';
 export 'src/data_display/bull_address_text.dart';
 export 'src/data_display/bull_backup_option_card.dart';
 export 'src/data_display/bull_badge.dart';
@@ -182,3 +183,5 @@ export 'src/overlays/bull_bottom_sheet.dart';
 export 'src/overlays/bull_dialog.dart';
 export 'src/overlays/bull_instructions_sheet.dart';
 export 'src/overlays/bull_picker_sheet.dart';
+
+export 'src/localization/bull_ui_localizations_delegate.dart';

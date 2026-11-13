@@ -1,5 +1,5 @@
 import 'package:bb_mobile/features/settings/public/settings_facade.dart'
-    show SettingsAmountScope;
+    show SettingsFacade;
 import 'package:bull_recoverbull/bull_recoverbull.dart';
 import 'dart:async';
 
@@ -21,7 +21,8 @@ import 'package:bull_logger/bull_logger.dart';
 import 'package:bull_logs/bull_logs.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:bull_tor/tor_adapter.dart' as tor;
-import 'package:bull_ui/bull_ui.dart' show BullSupportScope;
+import 'package:bull_ui/bull_ui.dart'
+    show BullSupportScope, bullUiLocalizationsDelegate;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show appFlavor;
@@ -181,12 +182,14 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
                     localizationsDelegates: [
                       ...AppLocalizations.localizationsDelegates,
                       LogsLocalizations.delegate,
+                      bullUiLocalizationsDelegate,
                       ...RecoverBullFeature.localizationsDelegates,
                     ],
                     supportedLocales: AppLocalizations.supportedLocales,
                     builder: (context, child) {
                       if (child == null) return const SizedBox.shrink();
-                      final app = SettingsAmountScope(
+                      final app = SettingsFacade.amountScope(
+                        navigatorKey: AppRouter.rootNavigatorKey,
                         child: BullSupportScope(
                           onContactSupport: SupportFacade.contactSupport,
                           child: AppStartupWidget(

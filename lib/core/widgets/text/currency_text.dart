@@ -1,5 +1,5 @@
-import 'package:bb_mobile/features/settings/public/settings_facade.dart'
-    show BitcoinAmountView;
+import 'package:bull_ui/bull_ui.dart' show BullAmount;
+import 'package:primitives/primitives.dart' show Sats;
 import 'package:bb_mobile/features/bitcoin_price/presentation/bloc/bitcoin_price_bloc.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:flutter/material.dart';
@@ -34,8 +34,10 @@ class CurrencyText extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (fiatAmount == null && !showFiat) {
-      return BitcoinAmountView(
-        satsAmount,
+      final value = BigInt.from(satsAmount);
+      return BullAmount(
+        magnitude: Sats(value.abs()),
+        isNegative: value.isNegative,
         style: style,
         color: color,
         textAlign: textAlign,

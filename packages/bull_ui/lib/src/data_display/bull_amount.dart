@@ -1,188 +1,204 @@
-import 'package:flutter/semantics.dart' show CustomSemanticsAction;
-import '../feedback/bull_snack_bar.dart';
-import 'bull_amount_preferences.dart';
-export 'bull_amount_preferences.dart' show BullAmountUnit;
-import 'package:flutter/material.dart';
-import 'package:bull_ui/src/theme/bull_tokens.dart';
+import 'dart:async';
 
-/// An amount whose unit override lasts only while this element is mounted.
-/// Callers supply already localized, privacy-safe representations.
+import 'package:flutter/material.dart';
+import 'package:flutter/semantics.dart';
+import 'package:intl/intl.dart';
+import 'package:primitives/primitives.dart';
+
+import '../../generated/l10n/bull_ui_localizations.dart';
+import '../inputs/bull_bitcoin_amount_text.dart';
+import '../theme/bull_tokens.dart';
+import 'bull_amount_scope.dart';
+
+/// A signed Bitcoin display: magnitude remains a nonnegative domain value.
+/// A local denomination belongs only to this mounted element.
 class BullAmount extends StatefulWidget {
   const BullAmount({
     super.key,
-    required this.satsText,
-    required this.btcText,
-    required this.defaultUnit,
-    required this.switchToBtcLabel,
-    required this.switchToSatsLabel,
+    required this.magnitude,
+    this.isNegative = false,
+    this.interactive = true,
+    this.overrideHideAmounts = false,
     this.style,
     this.color,
     this.textAlign,
-    this.onLongPress,
-    this.longPressLabel,
-    this.tooltip,
   });
 
-  final String satsText;
-  final String btcText;
-  final BullAmountUnit defaultUnit;
-  final String switchToBtcLabel;
-  final String switchToSatsLabel;
+  final Sats magnitude;
+  final bool isNegative;
+  final bool interactive;
+  final bool overrideHideAmounts;
   final TextStyle? style;
   final Color? color;
   final TextAlign? textAlign;
-  final VoidCallback? onLongPress;
-  final String? longPressLabel;
-  final String? tooltip;
 
   @override
   State<BullAmount> createState() => _BullAmountState();
 }
 
 class _BullAmountState extends State<BullAmount> {
-  BullAmountUnit? _override;
-  int? _revision;
+  BitcoinUnit? _override;
+  BitcoinUnit? _defaultUnit;
+  int? _generation;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    final revision = BullAmountPreferencesScope.revisionOf(context);
-    if (_revision != revision) _override = null;
-    _revision = revision;
+    final scope = BullAmountScope.maybeOf(context);
+    final unit = scope?.snapshot.unit;
+    final generation = scope?.generation;
+    if (unit != _defaultUnit || generation != _generation) _override = null;
+    _defaultUnit = unit;
+    _generation = generation;
   }
 
-  @override
-  void didUpdateWidget(BullAmount oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.defaultUnit != widget.defaultUnit) _override = null;
+  String _format(BitcoinUnit unit, BullUiLocalizations l10n) {
+    final symbols = NumberFormat.decimalPattern(l10n.localeName).symbols;
+    final String value;
+    if (unit == BitcoinUnit.sats) {
+      value = widget.magnitude.value.toString().replaceAllMapped(
+        RegExp(r'\B(?=(\d{3})+(?!\d))'),
+        (_) => symbols.GROUP_SEP,
+      );
+    } else {
+      var btc = BullBitcoinAmountText.format(widget.magnitude.value, unit);
+      if (widget.magnitude.value > BigInt.zero &&
+          widget.magnitude.value < BigInt.from(10000000)) {
+        final parts = btc.split('.');
+        final fraction = parts.length > 1 ? parts[1] : '';
+        btc = '${parts[0]}.${fraction.padRight(8, '0')}';
+      }
+      value = btc.replaceFirst('.', symbols.DECIMAL_SEP);
+    }
+    final sign = widget.isNegative && widget.magnitude.value > BigInt.zero
+        ? symbols.MINUS_SIGN
+        : '';
+    return '$sign$value ${unit.code}';
   }
 
   @override
   Widget build(BuildContext context) {
-    final unit =
-        _override ??
-        BullAmountPreferencesScope.maybeOf(context)?.defaultUnit ??
-        widget.defaultUnit;
-    final isSats = unit == BullAmountUnit.sats;
+    final scope = BullAmountScope.maybeOf(context);
+    final snapshot = scope?.snapshot;
+    final unit = _override ?? snapshot?.unit ?? BitcoinUnit.btc;
+    final l10n = BullUiLocalizations.of(context);
+    final hidden =
+        snapshot == null ||
+        !snapshot.isReady ||
+        (snapshot.hideAmounts && !widget.overrideHideAmounts);
+    final text = hidden
+        ? '${l10n.amountHidden} ${unit.code}'
+        : _format(unit, l10n);
+    if (!widget.interactive) {
+      return Text(
+        text,
+        style: widget.style?.copyWith(color: widget.color),
+        textAlign: widget.textAlign,
+      );
+    }
     return BullAmountUnitToggle(
-      text: isSats ? widget.satsText : widget.btcText,
+      text: text,
       unit: unit,
-      actionLabel: isSats ? widget.switchToBtcLabel : widget.switchToSatsLabel,
       style: widget.style,
       color: widget.color,
       textAlign: widget.textAlign,
-      onLongPress: widget.onLongPress,
-      longPressLabel: widget.longPressLabel,
-      tooltip: widget.tooltip,
-      onPressed: () => setState(() {
-        _override = isSats ? BullAmountUnit.btc : BullAmountUnit.sats;
-      }),
+      onPressed: snapshot?.isReady == true
+          ? () => setState(() {
+              _override = unit == BitcoinUnit.btc
+                  ? BitcoinUnit.sats
+                  : BitcoinUnit.btc;
+            })
+          : null,
     );
   }
 }
 
-/// Shared tap/keyboard affordance used by amounts and editable unit labels.
-/// The value is a live region; never pass an unmasked private amount here.
-class BullAmountUnitToggle extends StatelessWidget {
+/// Shared gestures and accessible unit control for display and editable input.
+class BullAmountUnitToggle extends StatefulWidget {
   const BullAmountUnitToggle({
     super.key,
     required this.text,
-    required this.actionLabel,
+    required this.unit,
     required this.onPressed,
+    this.semanticValue,
     this.style,
     this.color,
     this.textAlign,
-    this.liveRegion = true,
-    this.semanticValue,
-    this.unit,
-    this.onLongPress,
-    this.longPressLabel,
-    this.tooltip,
   });
 
   final String text;
-  final String actionLabel;
+  final BitcoinUnit unit;
   final VoidCallback? onPressed;
+  final String? semanticValue;
   final TextStyle? style;
   final Color? color;
   final TextAlign? textAlign;
-  final bool liveRegion;
-  final String? semanticValue;
-  final BullAmountUnit? unit;
-  final VoidCallback? onLongPress;
-  final String? longPressLabel;
-  final String? tooltip;
 
-  Future<void> _changeGlobalDefault(
-    BuildContext context,
-    BullAmountPreferences preferences,
-    BullAmountUnit displayedUnit,
-  ) async {
-    final previous = preferences.defaultUnit;
-    final next = displayedUnit == BullAmountUnit.sats
-        ? BullAmountUnit.btc
-        : BullAmountUnit.sats;
-    final reset = BullAmountPreferencesScope.resetterOf(context);
-    final changed = await preferences.changeDefaultUnit(next);
-    if (changed) reset?.call();
-    if (!context.mounted) return;
-    if (!changed) {
-      BullSnackBar.show(context, message: preferences.failureMessage);
-      return;
-    }
-    BullSnackBar.show(
-      context,
-      message: next == BullAmountUnit.sats
-          ? preferences.satsEverywhereMessage
-          : preferences.btcEverywhereMessage,
-      actionLabel: preferences.undoLabel,
-      onAction: () async {
-        final restored = await preferences.changeDefaultUnit(previous);
-        if (restored) reset?.call();
-        if (!restored && context.mounted) {
-          BullSnackBar.show(context, message: preferences.failureMessage);
-        }
-      },
-    );
+  @override
+  State<BullAmountUnitToggle> createState() => _BullAmountUnitToggleState();
+}
+
+class _BullAmountUnitToggleState extends State<BullAmountUnitToggle> {
+  void _tap() {
+    final before = widget.semanticValue ?? widget.text;
+    widget.onPressed?.call();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final after = widget.semanticValue ?? widget.text;
+      if (after == before) return;
+      unawaited(
+        SemanticsService.sendAnnouncement(
+          View.of(context),
+          after,
+          Directionality.of(context),
+        ),
+      );
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    final effectiveStyle = (style ?? Theme.of(context).textTheme.bodyLarge)
-        ?.copyWith(color: color);
-    final preferences = BullAmountPreferencesScope.maybeOf(context);
-    final displayedUnit = unit;
-    final VoidCallback? longPress = preferences != null && displayedUnit != null
-        ? () => _changeGlobalDefault(context, preferences, displayedUnit)
-        : onLongPress;
-    final label = preferences?.globalActionLabel ?? longPressLabel;
+    final l10n = BullUiLocalizations.of(context);
+    final scope = BullAmountScope.maybeOf(context);
+    final ready = scope?.snapshot.isReady == true;
+    final VoidCallback? globalAction = ready && scope != null
+        ? () => unawaited(scope.changeDefaultUnit(widget.unit))
+        : null;
+    final style = (widget.style ?? Theme.of(context).textTheme.bodyLarge)
+        ?.copyWith(color: widget.color);
     return Semantics(
       container: true,
       button: true,
-      enabled: onPressed != null || longPress != null,
-      liveRegion: liveRegion,
-      label: actionLabel,
-      value: semanticValue ?? text,
-      onTap: onPressed,
-      onLongPress: longPress,
-      customSemanticsActions: longPress != null && label != null
-          ? {CustomSemanticsAction(label: label): longPress}
-          : null,
+      enabled: widget.onPressed != null || globalAction != null,
+      liveRegion: false,
+      label: widget.unit == BitcoinUnit.sats
+          ? l10n.amountSwitchToBtc
+          : l10n.amountSwitchToSats,
+      value: widget.semanticValue ?? widget.text,
+      onTap: widget.onPressed == null ? null : _tap,
+      onLongPress: globalAction,
+      customSemanticsActions: globalAction == null
+          ? null
+          : {
+              CustomSemanticsAction(label: l10n.amountChangeDefaultEverywhere):
+                  globalAction,
+            },
       excludeSemantics: true,
       child: Tooltip(
-        message: preferences?.tooltip ?? tooltip ?? actionLabel,
+        message: l10n.amountGesturesHint,
+        triggerMode: TooltipTriggerMode.manual,
         excludeFromSemantics: true,
         child: TextButton(
-          onPressed: onPressed,
-          onLongPress: longPress,
+          onPressed: widget.onPressed == null ? null : _tap,
+          onLongPress: globalAction,
           style: TextButton.styleFrom(
             minimumSize: const Size(BullSpacing.xxl, BullSpacing.xxl),
             padding: const EdgeInsets.symmetric(horizontal: BullSpacing.xxs),
-            foregroundColor: color ?? effectiveStyle?.color,
+            foregroundColor: widget.color ?? style?.color,
             tapTargetSize: MaterialTapTargetSize.padded,
             visualDensity: VisualDensity.standard,
           ),
-          child: Text(text, style: effectiveStyle, textAlign: textAlign),
+          child: Text(widget.text, style: style, textAlign: widget.textAlign),
         ),
       ),
     );

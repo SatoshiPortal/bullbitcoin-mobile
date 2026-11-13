@@ -1,3 +1,4 @@
+import 'package:primitives/primitives.dart' show BitcoinUnit;
 import 'dart:math' as math;
 
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
@@ -564,10 +565,14 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                                       crossAxisAlignment:
                                           CrossAxisAlignment.stretch,
                                       children: [
-                                        if (inputCurrency == 'BTC' ||
-                                            inputCurrency == 'sats') ...[
+                                        if (inputCurrency ==
+                                                BitcoinUnit.btc.code ||
+                                            inputCurrency ==
+                                                BitcoinUnit.sats.code) ...[
                                           BullBitcoinAmountInput(
-                                            currency: inputCurrency,
+                                            canonicalUnit: BitcoinUnit.fromCode(
+                                              inputCurrency,
+                                            ),
                                             amountController: _amountController,
                                             amountEquivalent: state
                                                 .formattedAmountInputEquivalent,
@@ -589,11 +594,6 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                                             focusNode: _amountFocusNode,
                                             readOnly: state.isMaxSend,
                                             isMax: state.isMaxSend,
-                                            maxLabel: context.loc.swapMaxButton,
-                                            switchToBtcLabel:
-                                                context.loc.amountSwitchToBtc,
-                                            switchToSatsLabel:
-                                                context.loc.amountSwitchToSats,
                                           ),
                                           if (availableInputCurrencies.any(
                                             (code) =>

@@ -1,13 +1,15 @@
+import 'package:primitives/primitives.dart';
+
 /// Exact conversion between editable Bitcoin amount strings and satoshis.
 abstract final class BullBitcoinAmountText {
   /// Returns null for incomplete or invalid text. Empty text is handled by the
   /// caller so that it remains distinct from zero.
-  static BigInt? parse(String text, String unit) {
-    if (unit == 'sats') {
+  static BigInt? parse(String text, BitcoinUnit unit) {
+    if (unit == BitcoinUnit.sats) {
       if (!RegExp(r'^\d+$').hasMatch(text)) return null;
       return BigInt.tryParse(text);
     }
-    if (unit != 'BTC' || !RegExp(r'^\d+(\.\d{1,8})?$').hasMatch(text)) {
+    if (!RegExp(r'^\d+(\.\d{1,8})?$').hasMatch(text)) {
       return null;
     }
     final parts = text.split('.');
@@ -17,10 +19,9 @@ abstract final class BullBitcoinAmountText {
     return whole * BigInt.from(100000000) + BigInt.parse(fraction);
   }
 
-  static String format(BigInt sats, String unit) {
+  static String format(BigInt sats, BitcoinUnit unit) {
     if (sats.isNegative) throw ArgumentError.value(sats, 'sats');
-    if (unit == 'sats') return sats.toString();
-    if (unit != 'BTC') throw ArgumentError.value(unit, 'unit');
+    if (unit == BitcoinUnit.sats) return sats.toString();
     final digits = sats.toString().padLeft(9, '0');
     final whole = digits.substring(0, digits.length - 8);
     final fraction = digits
