@@ -2,7 +2,8 @@ import 'customization_test.dart'
     show openEditor, localizations, semanticMove, homeValue;
 import 'package:bull_quick_actions/bull_quick_actions.dart';
 import 'package:bull_ui/testing.dart';
-import 'package:bull_ui/bull_ui.dart' show BullQuickAction;
+import 'package:bull_ui/bull_ui.dart'
+    show BullQuickAction, BullText, BullThemeX;
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -13,7 +14,7 @@ void main() {
   testWidgets('More shows the complement and dispatches the chosen action', (
     tester,
   ) async {
-    final facade = QuickActionsCubit(
+    final facade = createQuickActionsCubit(
       storage: MemoryStorage(),
       warning: (_) {},
       exchangeVisible: Stream.value(true),
@@ -36,6 +37,22 @@ void main() {
     expect(find.text('More'), findsOneWidget);
     await tester.tap(find.text('More'));
     await tester.pumpAndSettle();
+    final title = find
+        .byWidgetPredicate(
+          (widget) => widget is BullText && widget.text == 'More',
+        )
+        .last;
+    final edit = find.byWidgetPredicate(
+      (widget) => widget is BullText && widget.text == 'Edit',
+    );
+    expect(
+      tester.widget<BullText>(title).style,
+      tester.element(title).bullText.titleLarge,
+    );
+    expect(
+      tester.widget<BullText>(edit).style,
+      tester.element(edit).bullText.labelLarge,
+    );
     expect(find.text('Trade'), findsOneWidget);
     await tester.tap(find.text('Buy'));
     await tester.pumpAndSettle();
@@ -43,7 +60,7 @@ void main() {
   });
 
   testWidgets('More remains available when exchange is hidden', (tester) async {
-    final facade = QuickActionsCubit(
+    final facade = createQuickActionsCubit(
       storage: MemoryStorage(),
       warning: (_) {},
       exchangeVisible: Stream.value(false),
@@ -69,7 +86,7 @@ void main() {
     tester,
   ) async {
     final storage = MemoryStorage();
-    final facade = QuickActionsCubit(
+    final facade = createQuickActionsCubit(
       storage: storage,
       warning: (_) {},
       exchangeVisible: Stream.value(true),
@@ -88,7 +105,7 @@ void main() {
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.resetPhysicalSize);
     addTearDown(tester.view.resetDevicePixelRatio);
-    final facade = QuickActionsCubit(
+    final facade = createQuickActionsCubit(
       storage: MemoryStorage(),
       warning: (_) {},
       exchangeVisible: Stream.value(true),
@@ -127,7 +144,7 @@ void main() {
 
   for (final locale in [const Locale('es'), const Locale('fr')]) {
     testWidgets('localizations support ${locale.languageCode}', (tester) async {
-      final facade = QuickActionsCubit(
+      final facade = createQuickActionsCubit(
         storage: MemoryStorage(),
         warning: (_) {},
         exchangeVisible: Stream.value(true),

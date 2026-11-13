@@ -13,7 +13,7 @@ void main() {
     ) async {
       await openEditor(
         tester,
-        QuickActionsCubit(
+        createQuickActionsCubit(
           storage: MemoryStorage(),
           warning: (_) {},
           exchangeVisible: Stream.value(true),
@@ -33,7 +33,7 @@ void main() {
       final storage = MemoryStorage();
       await openEditor(
         tester,
-        QuickActionsCubit(
+        createQuickActionsCubit(
           storage: storage,
           warning: (_) {},
           exchangeVisible: Stream.value(true),

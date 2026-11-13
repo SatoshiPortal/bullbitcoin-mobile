@@ -137,7 +137,7 @@ void main() {
     final storage = _EditorStorage();
     await openEditor(
       tester,
-      QuickActionsCubit(
+      createQuickActionsCubit(
         storage: storage,
         warning: (_) {},
         exchangeVisible: Stream.value(true),
@@ -173,7 +173,7 @@ void main() {
       final storage = MemoryStorage();
       await openEditor(
         tester,
-        QuickActionsCubit(
+        createQuickActionsCubit(
           storage: storage,
           warning: (_) {},
           exchangeVisible: Stream.value(true),
@@ -207,7 +207,7 @@ void main() {
     final storage = _EditorStorage();
     await openEditor(
       tester,
-      QuickActionsCubit(
+      createQuickActionsCubit(
         storage: storage,
         warning: (_) {},
         exchangeVisible: Stream.value(true),
@@ -235,7 +235,7 @@ void main() {
       ..value = '{"home":["map","transfer"],"more":[]}';
     await openEditor(
       tester,
-      QuickActionsCubit(
+      createQuickActionsCubit(
         storage: storage,
         warning: (_) {},
         exchangeVisible: Stream.value(true),
@@ -257,7 +257,7 @@ void main() {
       ..failWrite = true;
     await openEditor(
       tester,
-      QuickActionsCubit(
+      createQuickActionsCubit(
         storage: storage,
         warning: (_) {},
         exchangeVisible: Stream.value(true),
@@ -284,7 +284,7 @@ void main() {
     (tester) async {
       final original = '{"home":["buy","map","transfer","history"],"more":[]}';
       final storage = _EditorStorage()..value = original;
-      final facade = QuickActionsCubit(
+      final facade = createQuickActionsCubit(
         storage: storage,
         warning: (_) {},
         exchangeVisible: Stream.value(false),
@@ -315,7 +315,7 @@ void main() {
         final storage = _EditorStorage()..value = previous;
         await openEditor(
           tester,
-          QuickActionsCubit(
+          createQuickActionsCubit(
             storage: storage,
             warning: (_) {},
             exchangeVisible: Stream.value(true),
@@ -344,7 +344,7 @@ void main() {
       ..failRemove = true;
     await openEditor(
       tester,
-      QuickActionsCubit(
+      createQuickActionsCubit(
         storage: storage,
         warning: (_) {},
         exchangeVisible: Stream.value(true),
@@ -368,7 +368,7 @@ void main() {
     final storage = _EditorStorage()..value = '{"home":["buy"],"more":[]}';
     await openEditor(
       tester,
-      QuickActionsCubit(
+      createQuickActionsCubit(
         storage: storage,
         warning: (_) {},
         exchangeVisible: Stream.value(true),
@@ -398,7 +398,7 @@ void main() {
         ..gate = gate;
       await openEditor(
         tester,
-        QuickActionsCubit(
+        createQuickActionsCubit(
           storage: storage,
           warning: (_) {},
           exchangeVisible: Stream.value(true),
@@ -433,7 +433,7 @@ void main() {
     final storage = _EditorStorage()
       ..value = '{"home":["map","transfer"],"more":[]}'
       ..gate = gate;
-    final facade = QuickActionsCubit(
+    final facade = createQuickActionsCubit(
       storage: storage,
       warning: (_) {},
       exchangeVisible: Stream.value(true),
@@ -463,7 +463,7 @@ void main() {
       ..failWrite = true;
     await openEditor(
       tester,
-      QuickActionsCubit(
+      createQuickActionsCubit(
         storage: storage,
         warning: (_) {},
         exchangeVisible: Stream.value(true),
@@ -493,7 +493,7 @@ void main() {
     final storage = _EditorStorage()..value = '{"home":["buy"],"more":[]}';
     await openEditor(
       tester,
-      QuickActionsCubit(
+      createQuickActionsCubit(
         storage: storage,
         warning: (_) {},
         exchangeVisible: Stream.value(true),
@@ -521,7 +521,7 @@ void main() {
     tester,
   ) async {
     final storage = _EditorStorage()..value = '{"home":["buy"],"more":[]}';
-    final facade = QuickActionsCubit(
+    final facade = createQuickActionsCubit(
       storage: storage,
       warning: (_) {},
       exchangeVisible: Stream.value(true),
@@ -547,7 +547,7 @@ void main() {
         ..value = '{"home":["buy","map","transfer"],"more":[]}';
       await openEditor(
         tester,
-        QuickActionsCubit(
+        createQuickActionsCubit(
           storage: storage,
           warning: (_) {},
           exchangeVisible: Stream.value(false),
@@ -571,7 +571,7 @@ void main() {
       ..value = '{"home":["map","transfer","history","settings"],"more":[]}';
     await openEditor(
       tester,
-      QuickActionsCubit(
+      createQuickActionsCubit(
         storage: storage,
         warning: (_) {},
         exchangeVisible: Stream.value(true),
@@ -606,7 +606,7 @@ void stressEditorTests() {
                 '[${QuickAction.values.take(count).map((a) => '"${a.id}"').join(',')}]';
           await openEditor(
             tester,
-            QuickActionsCubit(
+            createQuickActionsCubit(
               storage: storage,
               warning: (_) {},
               exchangeVisible: Stream.value(true),

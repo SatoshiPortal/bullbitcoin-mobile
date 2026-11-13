@@ -8,7 +8,7 @@ import 'quick_actions_test.dart' show MemoryStorage;
 void main() {
   test('initial load waits for the host visibility snapshot', () async {
     final visibility = StreamController<bool>();
-    final cubit = QuickActionsCubit(
+    final cubit = createQuickActionsCubit(
       storage: MemoryStorage(),
       warning: (_) {},
       exchangeVisible: visibility.stream,
@@ -28,7 +28,7 @@ void main() {
     'failed save restores the draft and keeps the confirmed selection',
     () async {
       final storage = MemoryStorage();
-      final cubit = QuickActionsCubit(
+      final cubit = createQuickActionsCubit(
         storage: storage,
         warning: (_) {},
         exchangeVisible: const Stream.empty(),
@@ -47,7 +47,7 @@ void main() {
 
   test('failed save during load still completes initialization', () async {
     final storage = DelayedReadStorage()..failWrite = true;
-    final cubit = QuickActionsCubit(
+    final cubit = createQuickActionsCubit(
       storage: storage,
       warning: (_) {},
       exchangeVisible: const Stream.empty(),
@@ -63,7 +63,7 @@ void main() {
 
   test('exchange visibility updates available actions', () async {
     final visibility = StreamController<bool>();
-    final cubit = QuickActionsCubit(
+    final cubit = createQuickActionsCubit(
       storage: MemoryStorage(),
       warning: (_) {},
       exchangeVisible: visibility.stream,

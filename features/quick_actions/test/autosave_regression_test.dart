@@ -20,7 +20,7 @@ void main() {
           GlobalCupertinoLocalizations.delegate,
         ],
         home: QuickActionsCustomizationScreen(
-          cubit: QuickActionsCubit(
+          cubit: createQuickActionsCubit(
             storage: storage,
             warning: (_) {},
             exchangeVisible: Stream.value(true),

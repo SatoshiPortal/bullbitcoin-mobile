@@ -9,7 +9,7 @@ void main() {
   testWidgets('More has the same interactive width as each favorite', (
     tester,
   ) async {
-    final facade = QuickActionsCubit(
+    final facade = createQuickActionsCubit(
       storage: MemoryStorage(),
       warning: (_) {},
       exchangeVisible: Stream.value(true),

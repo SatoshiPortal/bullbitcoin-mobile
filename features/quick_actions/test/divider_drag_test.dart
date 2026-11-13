@@ -77,7 +77,7 @@ void main() {
       final storage = _Storage();
       await openEditor(
         tester,
-        QuickActionsCubit(
+        createQuickActionsCubit(
           storage: storage,
           warning: (_) {},
           exchangeVisible: Stream.value(true),
@@ -107,7 +107,7 @@ void main() {
       final storage = _Storage();
       await openEditor(
         tester,
-        QuickActionsCubit(
+        createQuickActionsCubit(
           storage: storage,
           warning: (_) {},
           exchangeVisible: Stream.value(true),
@@ -129,7 +129,7 @@ void main() {
     (tester) async {
       largeView(tester);
       final storage = _Storage()..failWrite = true;
-      final facade = QuickActionsCubit(
+      final facade = createQuickActionsCubit(
         storage: storage,
         warning: (_) {},
         exchangeVisible: Stream.value(true),
@@ -165,7 +165,7 @@ void main() {
     final storage = _Storage()..pending = gate;
     await openEditor(
       tester,
-      QuickActionsCubit(
+      createQuickActionsCubit(
         storage: storage,
         warning: (_) {},
         exchangeVisible: Stream.value(true),
@@ -194,7 +194,7 @@ void main() {
     final storage = _Storage()..value = original;
     await openEditor(
       tester,
-      QuickActionsCubit(
+      createQuickActionsCubit(
         storage: storage,
         warning: (_) {},
         exchangeVisible: Stream.value(true),
@@ -222,7 +222,7 @@ void main() {
     try {
       await openEditor(
         tester,
-        QuickActionsCubit(
+        createQuickActionsCubit(
           storage: storage,
           warning: (_) {},
           exchangeVisible: Stream.value(true),
@@ -262,7 +262,7 @@ void main() {
         try {
           await openEditor(
             tester,
-            QuickActionsCubit(
+            createQuickActionsCubit(
               storage: _Storage(),
               warning: (_) {},
               exchangeVisible: Stream.value(true),
@@ -295,7 +295,7 @@ void main() {
       final storage = _Storage();
       await openEditor(
         tester,
-        QuickActionsCubit(
+        createQuickActionsCubit(
           storage: storage,
           warning: (_) {},
           exchangeVisible: Stream.value(true),

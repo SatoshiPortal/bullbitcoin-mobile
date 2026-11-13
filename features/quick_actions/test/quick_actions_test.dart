@@ -137,7 +137,7 @@ void main() {
           'home': ['buy', 'future', 'map'],
           'more': [],
         });
-      final facade = QuickActionsCubit(
+      final facade = createQuickActionsCubit(
         storage: storage,
         warning: (_) {},
         exchangeVisible: Stream.value(true),
@@ -161,7 +161,7 @@ void main() {
   test('invalid preference falls back without rewriting and warns', () async {
     final storage = MemoryStorage()..value = '{';
     final warnings = <String>[];
-    final facade = QuickActionsCubit(
+    final facade = createQuickActionsCubit(
       storage: storage,
       warning: warnings.add,
       exchangeVisible: Stream.value(true),
@@ -177,7 +177,7 @@ void main() {
       final storage = MemoryStorage()
         ..value = 'existing'
         ..failWrite = true;
-      final facade = QuickActionsCubit(
+      final facade = createQuickActionsCubit(
         storage: storage,
         warning: (_) {},
         exchangeVisible: Stream.value(true),

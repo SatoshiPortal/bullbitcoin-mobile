@@ -119,7 +119,7 @@ void main() {
       () async {
         final storage = FakeStorage()
           ..value = '{"home":["map","transfer","history","buy"],"more":[]}';
-        final facade = QuickActionsCubit(
+        final facade = createQuickActionsCubit(
           storage: storage,
           warning: (_) {},
           exchangeVisible: Stream.value(true),
@@ -141,7 +141,7 @@ void main() {
 
     test('Settings fallback is visual only', () async {
       final storage = FakeStorage()..value = '{"home":[],"more":[]}';
-      final facade = QuickActionsCubit(
+      final facade = createQuickActionsCubit(
         storage: storage,
         warning: (_) {},
         exchangeVisible: Stream.value(true),
@@ -169,7 +169,7 @@ void main() {
       () async {
         final storage = FakeStorage()
           ..value = '{"home":["map","buy"],"more":[]}';
-        final facade = QuickActionsCubit(
+        final facade = createQuickActionsCubit(
           storage: storage,
           warning: (_) {},
           exchangeVisible: Stream.value(true),
@@ -195,7 +195,7 @@ void main() {
           'more': ['sell', 'buy'],
         });
         facade.close();
-        final reloadedFacade = QuickActionsCubit(
+        final reloadedFacade = createQuickActionsCubit(
           storage: storage,
           warning: (_) {},
           exchangeVisible: Stream.value(true),
@@ -219,7 +219,7 @@ void main() {
       ]) {
         final warnings = <String>[];
         final storage = FakeStorage()..value = raw;
-        final facade = QuickActionsCubit(
+        final facade = createQuickActionsCubit(
           storage: storage,
           warning: warnings.add,
           exchangeVisible: Stream.value(true),
@@ -236,7 +236,7 @@ void main() {
 
     test('write failures are returned as typed failures', () async {
       final storage = FakeStorage()..failWrite = true;
-      final facade = QuickActionsCubit(
+      final facade = createQuickActionsCubit(
         storage: storage,
         warning: (_) {},
         exchangeVisible: Stream.value(true),

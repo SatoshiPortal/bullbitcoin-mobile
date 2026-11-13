@@ -99,7 +99,7 @@ void main() {
     'save and reset are serialized and notify in completion order',
     () async {
       final storage = DelayedStorage();
-      final facade = QuickActionsCubit(
+      final facade = createQuickActionsCubit(
         storage: storage,
         warning: (_) {},
         exchangeVisible: Stream.value(true),
@@ -130,7 +130,7 @@ void main() {
 
   test('a failed write leaves state intact and the next write runs', () async {
     final storage = DelayedStorage();
-    final facade = QuickActionsCubit(
+    final facade = createQuickActionsCubit(
       storage: storage,
       warning: (_) {},
       exchangeVisible: Stream.value(true),

@@ -15,7 +15,7 @@ void main() {
     addTearDown(tester.view.resetDevicePixelRatio);
     await openEditor(
       tester,
-      QuickActionsCubit(
+      createQuickActionsCubit(
         storage: MemoryStorage(),
         warning: (_) {},
         exchangeVisible: Stream.value(true),

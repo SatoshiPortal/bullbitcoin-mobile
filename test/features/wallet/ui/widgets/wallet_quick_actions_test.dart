@@ -21,7 +21,7 @@ void main() {
     'wallet actions update with visibility and transfer remains usable',
     (tester) async {
       final changes = StreamController<bool>();
-      final actions = QuickActionsCubit(
+      final actions = createQuickActionsCubit(
         storage: _MemoryQuickActionsStorage(),
         warning: (_) {},
         exchangeVisible: changes.stream,
@@ -65,7 +65,7 @@ void main() {
     tester,
   ) async {
     final changes = StreamController<bool>();
-    final actions = QuickActionsCubit(
+    final actions = createQuickActionsCubit(
       storage: _MemoryQuickActionsStorage(),
       warning: (_) {},
       exchangeVisible: changes.stream,

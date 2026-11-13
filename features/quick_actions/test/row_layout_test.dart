@@ -55,7 +55,7 @@ void main() {
     tester,
   ) async {
     var edits = 0;
-    final facade = QuickActionsCubit(
+    final facade = createQuickActionsCubit(
       storage: MemoryStorage(),
       warning: (_) {},
       exchangeVisible: Stream.value(true),
@@ -78,7 +78,7 @@ void main() {
 
   testWidgets('loading reserves exactly the loaded row height', (tester) async {
     final storage = DelayedStorage();
-    final facade = QuickActionsCubit(
+    final facade = createQuickActionsCubit(
       storage: storage,
       warning: (_) {},
       exchangeVisible: Stream.value(true),
@@ -107,7 +107,7 @@ void main() {
     tester,
   ) async {
     var edits = 0;
-    final facade = QuickActionsCubit(
+    final facade = createQuickActionsCubit(
       storage: MemoryStorage(),
       warning: (_) {},
       exchangeVisible: Stream.value(true),
@@ -145,7 +145,7 @@ void matrixTests() {
             addTearDown(tester.view.resetDevicePixelRatio);
             final semantics = tester.ensureSemantics();
             try {
-              final facade = QuickActionsCubit(
+              final facade = createQuickActionsCubit(
                 storage: MemoryStorage(),
                 warning: (_) {},
                 exchangeVisible: Stream.value(true),
