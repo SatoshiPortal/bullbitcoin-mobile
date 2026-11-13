@@ -2,11 +2,11 @@ import 'dart:io';
 
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/features/buy/ui/buy_router.dart';
+import 'package:bb_mobile/features/buy/public/buy_facade.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
-import 'package:bb_mobile/features/pay/ui/pay_router.dart';
-import 'package:bb_mobile/features/sell/ui/sell_router.dart';
+import 'package:bb_mobile/features/pay/public/pay_facade.dart';
+import 'package:bb_mobile/features/sell/public/sell_facade.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/swap/ui/swap_router.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';

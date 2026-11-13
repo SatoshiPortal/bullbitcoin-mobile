@@ -2,7 +2,6 @@ import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:bb_mobile/features/recipients/public/recipients_facade.dart';
-import 'package:bb_mobile/features/recipients/public/recipients_ui.dart';
 import 'package:bb_mobile/features/sell/domain/usecases/get_sell_confidential_sepa_availability_usecase_v2.dart';
 import 'package:bb_mobile/features/sell/domain/sell_payin_source_v2.dart';
 import 'package:bb_mobile/features/sell/presentation/sell_bloc.dart';

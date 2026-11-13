@@ -3,7 +3,7 @@ import 'package:bb_mobile/core/exchange/domain/exchange_order_failure.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/sepa_payment_processor.dart';
-import 'package:bb_mobile/features/dca/domain/dca.dart';
+import 'package:bb_mobile/features/dca/public/dca_facade.dart';
 
 abstract interface class ExchangeOrderRepository {
   /// [payjoinBip21] replaces [toAddress] on the wire when set: the exchange then
