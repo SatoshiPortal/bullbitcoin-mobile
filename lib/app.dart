@@ -13,6 +13,7 @@ import 'package:bb_mobile/features/settings/ui/widgets/settings_failure_listener
 import 'package:bb_mobile/features/support/public/support_facade.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/generated/l10n/localization.dart';
+import 'package:bb_mobile/generated/novlang/novlang_app_localizations.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/router.dart';
 import 'package:bull_logger/bull_logger.dart';
@@ -24,6 +25,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show appFlavor;
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:novlang/novlang.dart';
 
 @visibleForTesting
 void resumePayjoinsOnAppResume(
@@ -147,12 +149,19 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
               BlocSelector<
                 SettingsCubit,
                 SettingsState,
-                (Language?, AppThemeMode?)
+                (Language?, AppThemeMode?, bool?)
               >(
-                selector: (settings) =>
-                    (settings.language, settings.storedSettings?.themeMode),
+                selector: (settings) => (
+                  settings.language,
+                  settings.storedSettings?.themeMode,
+                  settings.isSuperuser,
+                ),
                 builder: (context, data) {
-                  final (language, themeMode) = data;
+                  final (language, themeMode, isSuperuser) = data;
+                  final novlangPolicy = resolveNovlangPolicy(
+                    defaultTargetPlatform,
+                    isSuperuser,
+                  );
                   final systemBrightness = MediaQuery.platformBrightnessOf(
                     context,
                   );
@@ -177,6 +186,9 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
                     theme: AppTheme.themeData(appThemeType),
                     locale: language?.locale,
                     localizationsDelegates: [
+                      // Before AppLocalizations.delegate: Flutter uses the
+                      // first delegate of a type.
+                      NovlangAppLocalizationsDelegate(novlangPolicy),
                       ...AppLocalizations.localizationsDelegates,
                       LogsLocalizations.delegate,
                       ...RecoverBullFeature.localizationsDelegates,
