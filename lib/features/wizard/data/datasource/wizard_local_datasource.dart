@@ -47,9 +47,7 @@ class WizardLocalDatasourceImpl implements WizardLocalDatasource {
   @override
   Future<void> writeCompletedVersion(int version) async {
     final prefs = await SharedPreferences.getInstance();
-    if (!await prefs.setInt(_versionKey, version)) {
-      throw const FormatException('Unable to persist wizard completion');
-    }
+    await prefs.setInt(_versionKey, version);
   }
 
   @override
