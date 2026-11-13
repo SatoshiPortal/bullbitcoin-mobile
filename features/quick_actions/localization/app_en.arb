@@ -114,10 +114,6 @@
   "@emptyHint": {
     "description": "Wallet quick action customization."
   },
-  "transferFull": "Transfer between wallets",
-  "@transferFull": {
-    "description": "Full accessible quick action name."
-  },
   "supportFull": "Support",
   "@supportFull": {
     "description": "Full accessible quick action name."
