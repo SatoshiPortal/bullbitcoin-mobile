@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/utils/lightning.dart';
+import 'package:bull_sdk/boltz.dart';
 import 'package:bb_mobile/core/utils/payment_request.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/send/domain/send_failure.dart';
@@ -17,7 +17,7 @@ class ResolveLightningAddressUsecase {
       return const Err(SendInvoiceAmountRequiredFailure());
     }
     try {
-      final invoice = await invoiceFromLnAddress(
+      final invoice = await _invoiceFromLnAddress(
         lnAddress: lightningAddress,
         amountSat: amountSat,
       );
@@ -40,5 +40,23 @@ class ResolveLightningAddressUsecase {
         SendInvalidPaymentRequestFailure(logMessage: error.toString()),
       );
     }
+  }
+}
+
+Future<String> _invoiceFromLnAddress({
+  required String lnAddress,
+  required int amountSat,
+}) async {
+  try {
+    final lnurl = Lnurl(value: lnAddress);
+    final invoice = await lnurl.fetchInvoice(
+      msats: BigInt.from(amountSat * 1000),
+    );
+    return invoice.toLowerCase();
+  } catch (e) {
+    if (e is BoltzError) {
+      throw Exception(e.message);
+    }
+    rethrow;
   }
 }
