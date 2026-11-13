@@ -5,6 +5,7 @@ import 'package:bb_mobile/core/widgets/navbar/top_bar_bull_logo.dart';
 import 'package:bb_mobile/features/autobuy/public/autobuy_facade.dart';
 import 'package:bb_mobile/features/bitcoin_price/presentation/cubit/price_chart_cubit.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
+import 'package:bb_mobile/features/exchange/presentation/exchange_failure_l10n.dart';
 import 'package:bb_mobile/features/exchange/ui/widgets/announcement_banner.dart';
 import 'package:bb_mobile/features/exchange/ui/widgets/dca_list_tile.dart';
 import 'package:bb_mobile/features/exchange/ui/widgets/exchange_home_kyc_card.dart';
@@ -17,7 +18,13 @@ import 'package:bb_mobile/features/withdraw/ui/withdraw_router.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:bb_mobile/features/exchange/ui/widgets/exchange_failure_banner.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullPullableBody, BullSupportButton, Gap;
+    show
+        BullButton,
+        BullPullableBody,
+        BullSupportButton,
+        BullText,
+        BullThemeX,
+        Gap;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -62,6 +69,33 @@ class ExchangeHomeScreen extends StatelessWidget {
       (ExchangeCubit cubit) =>
           cubit.state.userSummary?.isFundingRestricted ?? true,
     );
+
+    if (notLoggedIn && getUserSummaryFailure != null) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              BullText(
+                getUserSummaryFailure.toTranslated(context),
+                style: context.bullText.bodyMedium,
+                textAlign: TextAlign.center,
+              ),
+              const Gap(16),
+              BullButton.big(
+                label: context.loc.retry,
+                onPressed: () =>
+                    context.read<ExchangeCubit>().fetchUserSummary(),
+                bgColor: context.bull.primary,
+                textColor: context.bull.onPrimary,
+              ),
+            ],
+          ),
+        ),
+      );
+    }
 
     if (isFetchingUserSummary || notLoggedIn) {
       return const Center(child: CircularProgressIndicator());
