@@ -40,6 +40,7 @@ class ExchangeCubit extends Cubit<ExchangeState> {
       )) {
         unawaited(fetchUserSummary());
       } else {
+        _accountAttempt++;
         emit(const ExchangeState());
       }
     });
@@ -52,11 +53,17 @@ class ExchangeCubit extends Cubit<ExchangeState> {
   final WatchExchangeNotificationsUsecase _watchNotifications;
   StreamSubscription<Object?>? _notifications;
   StreamSubscription<ExchangeAccess>? _access;
+  int _accountAttempt = 0;
 
   Future<void> fetchUserSummary() async {
     if (isClosed) return;
+    final attempt = ++_accountAttempt;
+    if (state.getUserSummaryFailure != null) {
+      emit(state.copyWith(getUserSummaryFailure: null));
+    }
     final result = await _getAccount.execute();
     if (isClosed ||
+        attempt != _accountAttempt ||
         _watchAccess.current is! ExchangeAccessEnabled ||
         (_watchAccess.current as ExchangeAccessEnabled).session !=
             ExchangeAccessSession.signedIn) {
