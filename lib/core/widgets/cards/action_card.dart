@@ -12,7 +12,7 @@ import 'package:bb_mobile/features/swap/ui/swap_router.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show BullText, Gap;
+import 'package:bull_ui/bull_ui.dart' show BullShapesX, BullText, Gap;
 import 'package:go_router/go_router.dart';
 
 enum _ButtonPosition { first, last, middle }
@@ -152,7 +152,7 @@ class _ActionButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const r = Radius.circular(2);
+    final r = Radius.circular(context.bullShapes.button);
     final radius = BorderRadius.only(
       topLeft: position == _ButtonPosition.first ? r : Radius.zero,
       topRight: position == _ButtonPosition.last ? r : Radius.zero,

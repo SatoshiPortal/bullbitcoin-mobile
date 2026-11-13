@@ -1,5 +1,6 @@
 import 'package:bull_ui/src/theme/bull_tokens.dart';
 import 'package:bull_ui/src/theme/bull_theme.dart';
+import 'package:bull_ui/src/theme/bull_shapes.dart';
 import 'package:flutter/material.dart';
 
 /// Centered modal dialog.
@@ -51,7 +52,7 @@ class BullDialog extends StatelessWidget {
     return Dialog(
       backgroundColor: colors.background,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(context.bullShapes.sheet),
         side: BorderSide(color: colors.secondaryFixedDim),
       ),
       child: Padding(padding: padding, child: child),

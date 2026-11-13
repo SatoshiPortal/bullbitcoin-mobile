@@ -27,6 +27,7 @@ extension SpFailureToSendFailure on SpFailure {
     SpConfigInvalid() ||
     SpSetupCleanupFailed() ||
     SpBroadcastUncertain() ||
+    SpPassphraseUnsupported() ||
     SpUnexpected() => null,
   };
 }

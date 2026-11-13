@@ -1,36 +1,3 @@
-/// Brightness-invariant corner-radius scale (px).
-///
-/// A fixed design-system scale — radii never scale with screen size.
-abstract final class BullRadius {
-  /// No rounding.
-  static const double zero = 0;
-
-  /// Hairline — buttons, cards, badges, checkbox (the design's 2px
-  /// `--r-button`/`--r-card`).
-  static const double xxs = 2;
-
-  /// Extra-small — sheets segments, small chips, inputs.
-  static const double xs = 4;
-
-  /// Small.
-  static const double sm = 8;
-
-  /// Medium.
-  static const double md = 12;
-
-  /// Large — bottom-sheet top corners.
-  static const double lg = 16;
-
-  /// Extra-large.
-  static const double xl = 28;
-
-  /// 2x extra-large.
-  static const double xxl = 32;
-
-  /// Fully rounded — pills and grabbers.
-  static const double full = 999;
-}
-
 /// Brightness-invariant spacing scale (px).
 ///
 /// A fixed design-system scale — spacing never scales with screen size.

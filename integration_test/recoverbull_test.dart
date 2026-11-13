@@ -1,39 +1,23 @@
+import 'package:bull_recoverbull/bull_recoverbull.dart';
 import 'dart:io';
 
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
-import 'package:bb_mobile/core/recoverbull/domain/entity/decrypted_vault.dart';
-import 'package:bb_mobile/core/recoverbull/domain/entity/encrypted_vault.dart';
-import 'package:bb_mobile/core/recoverbull/domain/recoverbull_failure.dart';
-import 'package:bb_mobile/core/recoverbull/domain/usecases/decrypt_vault_usecase.dart';
-import 'package:bb_mobile/core/recoverbull/domain/usecases/fetch_vault_key_from_server_usecase.dart';
-import 'package:bb_mobile/core/recoverbull/domain/usecases/restore_vault_usecase.dart';
-import 'package:bb_mobile/core/seed/data/models/seed_model.dart';
-import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
+import 'package:secrets/secrets.dart' as custody;
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
-import 'package:bb_mobile/core/utils/bip32_derivation.dart';
-import 'package:bb_mobile/core/utils/result.dart';
-import 'package:bb_mobile/core/utils/recoverbull_bip85.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/init.dart';
-import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
-import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:bull_tor/tor.dart';
 
 Future<void> main({bool isInitialized = false}) async {
   TestWidgetsFlutterBinding.ensureInitialized();
   if (!isInitialized) await Bull.init();
 
-  final ensureTorReadyUsecase = locator<EnsureTorReadyUsecase>();
-  final restoreVaultUsecase = locator<RestoreVaultUsecase>();
-  final decryptVaultUsecase = locator<DecryptVaultUsecase>();
-  final fetchVaultKeyFromServerUsecase =
-      locator<FetchVaultKeyFromServerUsecase>();
+  final recoverbull = locator<RecoverBullFacade>();
 
   final walletRepository = locator<WalletRepository>();
-  final seedRepository = locator<SeedRepository>();
+  final secrets = locator<custody.Secrets>();
 
   const oldPathZooMnemonicWithSevenZerosPassword =
       """{"created_at":784044000000,"id":"09a6ed8f4de8fd73b73e2392ea78410b7b306d7090cd6f91ed91e7d1c1159799","ciphertext":"U2FiHun3tiRRzVIyJKWwPFmvnfzPJ/K/OzbASAoOIamOP4NRs8ADU7CR87NsxS5mp2dzbl3wgiquhCdQVABJXhHRpTQS7PlCwbbIg2Vj9o3PBoERCfeeD2KRv8uD+6HjNkm33zdHDK/dt1uAYUCcJtqP9ARhn+bUPlKBIW0XP/fIiH94LuU4+AXjN2WD8SBWX1VtS+CrORofA+eMLphLRh2ibzEGotvfrlp52/VjSd5sY3LGkr12lapLSfx4zILhgc2AqgUeFn4Nv8v8F6d3kZ372ikuie963MrncvTS4LxIVO723zX+Lp86bUcDXRtb6B4ZTVHhmRABGqYnviamf84dpcCbC2JhvPHBnOVGTMgf5KbIiBsCNFTKlRmaEnj2HSJLFeC6yBNop02jQ/XkgjFC+35Z7cvO2sKhB5Es0uo=","salt":"658d4287b027f95ae7e5b9f52a5439a4","path":"m/1608'/0'/586053381"}""";
@@ -58,27 +42,12 @@ Future<void> main({bool isInitialized = false}) async {
     'zoo',
     'wrong',
   ];
-  final mnemonic = bip39.Mnemonic.fromWords(
-    words: expectedMnemonicWords,
-    language: bip39.Language.english,
-    passphrase: '',
-  );
-  final xprv = Bip32Derivation.getXprvFromSeed(
-    Uint8List.fromList(mnemonic.seed),
-    Network.bitcoinMainnet,
-  );
-
   // The restore test calls the production key server over Tor, so an outage
   // there would fail every PR. In CI it runs only on PRs to main and manual
   // runs; local runs always exercise it.
   final runLiveKeyServerTest =
       Platform.environment['CI'] != 'true' ||
       Platform.environment['RUN_LIVE_KEYSERVER_TEST'] == 'true';
-
-  setUpAll(() async {
-    final state = await ensureTorReadyUsecase.execute();
-    expect(state, isA<TorReady>());
-  });
 
   group('Recoverbull', () {
     // Fetches the vault key over Tor from the RecoverBull key server. Tor can
@@ -91,38 +60,25 @@ Future<void> main({bool isInitialized = false}) async {
           ? false
           : 'calls the production key server: runs on PRs to main or a manually dispatched CI run',
       () async {
-        debugPrint('''
-
-╔══════════════════════════════════════════════════════════════════════════╗
-║                                                                            ║
-║   ⏳  HEADS UP — THIS TEST IS SLOW (up to ~2 MINUTES). NOT FROZEN.         ║
-║                                                                            ║
-║   It fetches the vault key over Tor from the RecoverBull key server.       ║
-║   Tor needs ~20s just to bootstrap, then the key-server round-trip can     ║
-║   take a while. Sit tight — go grab a coffee. ☕                           ║
-║                                                                            ║
-╚══════════════════════════════════════════════════════════════════════════╝
-''');
-        final vaultKeyResult = await fetchVaultKeyFromServerUsecase.execute(
-          vault: EncryptedVault(file: oldPathZooMnemonicWithSevenZerosPassword),
+        final settings = await recoverbull.settings();
+        expect(settings, isA<Ok<BackupSettings, RecoverBullFailure>>());
+        final server =
+            (settings as Ok<BackupSettings, RecoverBullFailure>).value.server;
+        expect(await recoverbull.acceptServer(server), isA<Ok>());
+        final parsed = recoverbull.parseVault(
+          oldPathZooMnemonicWithSevenZerosPassword,
+        );
+        expect(parsed, isA<Ok<EncryptedVault, RecoverBullFailure>>());
+        final restored = await recoverbull.recoverFromServer(
+          vault: (parsed as Ok<EncryptedVault, RecoverBullFailure>).value,
           password: password,
         );
-        expect(vaultKeyResult, isA<Ok<String, RecoverBullCoreFailure>>());
-        final vaultKey =
-            (vaultKeyResult as Ok<String, RecoverBullCoreFailure>).value;
-        expect(vaultKey, oldPathVaultKey);
-
-        final decryptedResult = decryptVaultUsecase.execute(
-          vault: EncryptedVault(file: oldPathZooMnemonicWithSevenZerosPassword),
-          vaultKey: vaultKey,
-        );
-        final decryptedVault =
-            (decryptedResult as Ok<DecryptedVault, RecoverBullCoreFailure>)
-                .value;
-        final restored = await restoreVaultUsecase.execute(
-          decryptedVault: decryptedVault,
-        );
-        expect(restored, isA<Ok<Null, RecoverBullCoreFailure>>());
+        expect(restored, isA<Ok<VaultCompletion, RecoverBullFailure>>());
+        final completion =
+            (restored as Ok<VaultCompletion, RecoverBullFailure>).value;
+        expect(completion.recovery, isA<VaultRecovered>());
+        expect(completion.warning, isNull);
+        expect(completion.verifiedContext?.network, BitcoinNetwork.mainnet);
 
         final walletsResult = await walletRepository.getWallets(
           onlyDefaults: true,
@@ -136,53 +92,51 @@ Future<void> main({bool isInitialized = false}) async {
         expect(wallets.length, 1);
         final wallet = wallets.first;
         expect(wallet.masterFingerprint, isNotEmpty);
-        final seed = await seedRepository.get(wallet.masterFingerprint);
-        final seedModel = SeedModel.fromEntity(seed);
-        expect(seedModel, isA<MnemonicSeedModel>());
-        final mnemonicSeedModel = seedModel as MnemonicSeedModel;
-        expect(mnemonicSeedModel.mnemonicWords, equals(expectedMnemonicWords));
+        final secret = switch (await secrets.fetch(
+          Fingerprint(wallet.masterFingerprint),
+        )) {
+          Ok(:final value) => value,
+          Err(:final failure) => fail('fetch failed: ${failure.runtimeType}'),
+        };
+        // `verify.mnemonic` compares inside the package and returns only the verdict: the restored words are never read back out to be asserted on.
+        expect(switch (await secret.verify.mnemonic(expectedMnemonicWords)) {
+          Ok(:final value) => value,
+          Err(:final failure) => fail('verify failed: ${failure.runtimeType}'),
+        }, isTrue);
       },
     );
 
-    test('OLD path: Derive key from default wallet', () {
-      final derivedKey = RecoverbullBip85Utils.deriveBackupKey(
-        xprv,
-        EncryptedVault(
-          file: oldPathZooMnemonicWithSevenZerosPassword,
-        ).derivationPath,
-      );
-      expect(derivedKey, oldPathVaultKey);
-    });
-
-    test('NEW path: Derive key from default wallet', () {
-      final derivedKey = RecoverbullBip85Utils.deriveBackupKey(
-        xprv,
-        EncryptedVault(
-          file: newPathZooMnemonicWithSevenZerosPassword,
-        ).derivationPath,
-      );
-      expect(derivedKey, newPathVaultKey);
-    });
-
-    test('OLD path: Decrypt vault from key', () {
-      final decryptedResult = decryptVaultUsecase.execute(
-        vault: EncryptedVault(file: oldPathZooMnemonicWithSevenZerosPassword),
-        vaultKey: oldPathVaultKey,
+    test('OLD path: Inspect vault from key without restoring', () async {
+      final result = await secrets.recoverbull.fingerprint(
+        vault: custody.EncryptedVault(
+          json: oldPathZooMnemonicWithSevenZerosPassword,
+        ),
+        key: custody.VaultKey(oldPathVaultKey),
       );
       expect(
-        decryptedResult,
-        isA<Ok<DecryptedVault, RecoverBullCoreFailure>>(),
+        result,
+        isA<Ok<Fingerprint, custody.SecretFailure>>().having(
+          (result) => result.value.hex,
+          'fingerprint derived from the vault words',
+          '3f635a63',
+        ),
       );
     });
 
-    test('NEW path: Decrypt vault from key', () {
-      final decryptedResult = decryptVaultUsecase.execute(
-        vault: EncryptedVault(file: newPathZooMnemonicWithSevenZerosPassword),
-        vaultKey: newPathVaultKey,
+    test('NEW path: Inspect vault from key without restoring', () async {
+      final result = await secrets.recoverbull.fingerprint(
+        vault: custody.EncryptedVault(
+          json: newPathZooMnemonicWithSevenZerosPassword,
+        ),
+        key: custody.VaultKey(newPathVaultKey),
       );
       expect(
-        decryptedResult,
-        isA<Ok<DecryptedVault, RecoverBullCoreFailure>>(),
+        result,
+        isA<Ok<Fingerprint, custody.SecretFailure>>().having(
+          (result) => result.value.hex,
+          'fingerprint derived from the vault words',
+          '3f635a63',
+        ),
       );
     });
   });

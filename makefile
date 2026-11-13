@@ -1,4 +1,4 @@
-.PHONY: all setup clean deps deps-update bootstrap analyze build-runner translations hooks ios-pod-update ios-simulator ios-release drift-migrations devcontainer devcontainer-up container-tools container-app android release debug beta verify verify-rustc-pins action-pins-check pr-governance-test test unit-test integration-test catalogue fvm-check
+.PHONY: secrets-api-docs secrets-api-docs-check custody-check custody-ci-check all setup clean deps deps-update bootstrap analyze build-runner translations hooks ios-pod-update ios-simulator ios-release drift-migrations devcontainer devcontainer-up container-tools container-app android release debug beta verify verify-rustc-pins action-pins-check pr-governance-ci-test test unit-test integration-test catalogue fvm-check
 
 fvm-check:
 	@echo "🔍 Checking FVM"
@@ -44,7 +44,7 @@ analyze:
 	@echo "🔍 Analyze whole project (matches CI: --fatal-warnings --fatal-infos)"
 	@fvm flutter analyze --fatal-warnings --fatal-infos
 
-# Check-only gates, one target per gate of the CI `checks` job in analyze_and_test.yml (which invokes these targets so each definition lives in exactly one place). `make checks` runs the whole job locally: green here means the checks job is green in CI. The pre-commit hook deliberately does NOT call fix-check/format-check: it runs its own staged-only variants in parallel with `make analyze` for speed.
+# Local Dart/Flutter gates. CI also runs the Node-based custody import and PR governance checks; Node is not required for `make checks`. The pre-commit hook deliberately does NOT call fix-check/format-check: it runs its own staged-only variants in parallel with `make analyze` for speed.
 fix-check:
 	@echo "🧹 dart fix should have nothing to suggest"
 	@bash -c 'set -o pipefail; fvm dart fix --dry-run | tee /dev/stderr | grep -q "Nothing to fix!"'
@@ -57,8 +57,29 @@ format-check:
 bull-ui-check:
 	@echo "🧱 bull_ui import boundary (coins/ui imports only package:bull_ui)"
 	@if grep -rEl "package:flutter/(material|cupertino|widgets)\.dart" lib/features/coins/ui; then echo "lib/features/coins/ui must import only package:bull_ui/bull_ui.dart, not Flutter UI directly"; exit 1; fi
+	@echo "🧱 corner radius roles (widgets read context.bullShapes, never a typed-in radius)"
+	@if grep -rnE "Radius\.circular\( *[0-9]" lib features packages --include='*.dart' | grep -v "/test/" | grep -v "^lib/core/themes/app_theme.dart:"; then echo "Read a corner radius from context.bullShapes.<role>; the numbers live only in BullShapes.standard"; exit 1; fi
 
-checks: analyze bull-ui-check fix-check format-check unit-test
+# Resolved-symbol custody policy, available locally with the pinned Dart SDK.
+# Named exceptions cover exported swap child keys and public-only xpub decoding.
+custody-check:
+	@echo "🔒 custody key material: resolved Dart symbols"
+	@fvm dart packages/secrets/tool/key_material_gate.dart
+
+# CI-only import/dependency/internal-seal policy, shared with PR custody review.
+# Node is confined to these explicit CI targets, outside `make checks`.
+custody-ci-check:
+	@echo "🔒 custody imports and internal seal (CI only)"
+	@node tools/pr_governance/custody-check.js
+
+# The README's simplified public API trees are generated from resolved exports.
+secrets-api-docs:
+	@fvm dart packages/secrets/tool/api_docs.dart
+
+secrets-api-docs-check:
+	@fvm dart packages/secrets/tool/api_docs.dart --check
+
+checks: analyze bull-ui-check custody-check secrets-api-docs-check fix-check format-check unit-test
 
 # Supply-chain regression gate: every external GitHub Actions `uses:` reference
 # must stay pinned to a full commit SHA (mutable tags can be repointed).
@@ -67,22 +88,33 @@ action-pins-check:
 	@echo "📌 Checking GitHub Actions are pinned to a commit SHA"
 	@bash tools/check_action_pins.sh
 
-pr-governance-test:
-	@echo "🛡️ Testing PR governance policy"
-	@node --test tools/pr_governance/policy.test.js
+pr-governance-ci-test:
+	@echo "🛡️ Testing PR governance and custody policy (CI only)"
+	@node --test tools/pr_governance/policy.test.js tools/pr_governance/custody.test.js
 
 build-runner:
 	@echo "🏗️ Build runner for json_serializable and flutter_gen"
 	@fvm dart run build_runner build --force-jit
 	@(cd packages/bull_payjoin && fvm dart run build_runner build --force-jit)
+	@(cd packages/bull_pricer && fvm dart run build_runner build --force-jit)
+	@$(MAKE) recoverbull-build-runner
+
+.PHONY: recoverbull-build-runner
+recoverbull-build-runner:
+	@(cd features/recoverbull && fvm dart run build_runner build --force-jit)
 
 build-runner-watch:
 	@echo "🏗️ Build runner for json_serializable and flutter_gen (watch mode)"
-	@bash -c 'trap "kill \$$(jobs -p) 2>/dev/null || true" INT TERM EXIT; fvm dart run build_runner watch --force-jit & (cd packages/bull_payjoin && fvm dart run build_runner watch --force-jit) & wait'
+	@bash -c 'trap "kill \$$(jobs -p) 2>/dev/null || true" INT TERM EXIT; fvm dart run build_runner watch --force-jit & (cd packages/bull_payjoin && fvm dart run build_runner watch --force-jit) & (cd packages/bull_pricer && fvm dart run build_runner watch --force-jit) & wait'
 
 translations:
 	@echo "🌐 Generating translations files"
 	@fvm flutter gen-l10n
+	@$(MAKE) recoverbull-translations
+
+.PHONY: recoverbull-translations
+recoverbull-translations:
+	@(cd features/recoverbull && fvm flutter gen-l10n)
 
 hooks:
 	@CURRENT_HOOKS_PATH=$$(git config --local core.hooksPath); \
@@ -97,6 +129,11 @@ drift-migrations:
 	@echo "🔄 Create schema and sum migrations"
 	fvm dart run drift_dev make-migrations
 	cd packages/bull_payjoin && fvm dart run drift_dev make-migrations
+	@$(MAKE) recoverbull-drift-migrations
+
+.PHONY: recoverbull-drift-migrations
+recoverbull-drift-migrations:
+	@(cd features/recoverbull && fvm dart run drift_dev make-migrations)
 
 ios-pod-update:
 	@if [ "$$(uname)" != "Darwin" ]; then echo "Skipping pod update (not macOS)"; exit 0; fi
@@ -389,19 +426,11 @@ devcontainer-up:
 
 test: unit-test integration-test
 
+# One run per workspace member that has a test/ directory, each with its own tool, the app included (melos useRootAsPackage). melos iterates the declared `workspace:` list, not a directory glob, so a member added anywhere — features/ included — is tested without editing this target. `melos exec` is called directly through `fvm dart run`: `melos run` would re-invoke a bare `melos` from PATH, which the pinned SDK forbids. Fail-fast and one package at a time, like the loop it replaces.
 unit-test:
-	@echo "🏃‍ running unit tests"
-	@fvm flutter test test/ --reporter=compact
-	@set -e; for p in packages/*/; do \
-		if [ -d "$${p}test" ]; then \
-			echo "🏃‍ running $${p}test"; \
-			if grep -qE '^  flutter:$$' "$${p}pubspec.yaml"; then \
-				( cd "$$p" && fvm flutter test --reporter=compact ); \
-			else \
-				( cd "$$p" && fvm dart test --reporter=compact ); \
-			fi; \
-		fi; \
-	done
+	@echo "🏃‍ running unit tests of every workspace member"
+	@fvm dart run melos exec --flutter --dir-exists=test --concurrency 1 --fail-fast -- fvm flutter test --reporter=compact
+	@fvm dart run melos exec --no-flutter --dir-exists=test --concurrency 1 --fail-fast -- fvm dart test --reporter=compact
 
 # integration_test/all_test.dart is a single aggregator entrypoint: it runs
 # Bull.init() once, then every test file's main(isInitialized: true). On the
@@ -415,6 +444,20 @@ integration-test:
 	@echo "🧪 integration tests"
 	@fvm dart run tools/gen_all_test.dart
 	@fvm flutter test integration_test/all_test.dart --reporter=expanded
+
+# Physical-device credential probes use a separately installed debug APK.
+# The SDK driver connects through VM_SERVICE_URL without installing an app.
+.PHONY: exchange-credentials-device-build exchange-credentials-device-test
+EXCHANGE_DEVICE_LIVE ?= false
+exchange-credentials-device-build:
+	@fvm flutter build apk --debug --target-platform android-arm64 --split-per-abi --flavor production \
+		--target integration_test/device/exchange_credentials_test.dart \
+		--dart-define=INTEGRATION_TEST_SHOULD_REPORT_RESULTS_TO_NATIVE=false \
+		--dart-define=TEST_EXCHANGE_LIVE=$(EXCHANGE_DEVICE_LIVE)
+
+exchange-credentials-device-test:
+	@test -n "$$VM_SERVICE_URL" || { echo "Set VM_SERVICE_URL to the running test app"; exit 1; }
+	@fvm dart run integration_test/device/driver.dart
 
 # Build & render the bull_ui design-system catalogue (Widgetbook) locally in the
 # browser. Dev-only tooling — never shipped in the app. Regenerates the

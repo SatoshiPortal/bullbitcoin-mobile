@@ -1,6 +1,6 @@
+import 'package:bull_ui/src/theme/bull_shapes.dart';
 import 'package:bull_ui/src/theme/bull_icon.dart';
 import 'package:bull_ui/src/theme/bull_theme.dart';
-import 'package:bull_ui/src/theme/bull_tokens.dart';
 import 'package:flutter/material.dart';
 
 /// Tone of a [BullInfoBar].
@@ -45,7 +45,7 @@ class BullInfoBar extends StatelessWidget {
     // ClipRRect + a stretched leading bar gives the 4px left accent without a
     // non-uniform Border, which Flutter forbids combining with a borderRadius.
     return ClipRRect(
-      borderRadius: BorderRadius.circular(BullRadius.xs),
+      borderRadius: BorderRadius.circular(context.bullShapes.card),
       child: ColoredBox(
         color: accent.withValues(alpha: 0.12),
         child: IntrinsicHeight(

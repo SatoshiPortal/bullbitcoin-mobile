@@ -106,7 +106,7 @@ void main() {
           as bool;
     }
 
-    test('payjoin is on by default, with payments between users off', () async {
+    test('payjoin is on by default, with receiving for users off', () async {
       expect(await requestedPayjoin(PayjoinPolicy.defaults()), isTrue);
     });
 
@@ -140,7 +140,12 @@ void main() {
 
         final failure = (result as Err<FiatPaymentOrder, PayFailure>).failure;
         expect(failure, isA<PayUnauthenticatedFailure>());
-        expect(failure.logMessage, _rawReason);
+        expect(
+          failure.logMessage,
+          isNull,
+          reason:
+              'authentication failures must not retain credential-bearing exception messages',
+        );
       },
     );
 

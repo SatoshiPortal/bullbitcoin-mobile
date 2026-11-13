@@ -10,7 +10,6 @@ abstract class ExchangeState with _$ExchangeState {
   const factory ExchangeState({
     UserSummary? userSummary,
     ExchangeFailure? getUserSummaryFailure,
-    ExchangeFailure? saveApiKeyFailure,
     ExchangeFailure? stopDcaFailure,
     ExchangeFailure? logoutFailure,
     @Default(false) bool isSaving,

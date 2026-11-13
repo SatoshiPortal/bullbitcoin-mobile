@@ -1,3 +1,4 @@
+import 'package:bull_ui/src/theme/bull_shapes.dart';
 import 'package:bull_ui/src/theme/bull_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
@@ -40,7 +41,7 @@ class BullShimmerBox extends StatelessWidget {
               height: height,
               margin: const EdgeInsets.all(16.0),
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(12.0),
+                borderRadius: BorderRadius.circular(context.bullShapes.card),
                 color: colors.surface,
               ),
             ),

@@ -117,6 +117,16 @@ final class SendTransactionConfirmationFailure extends SendFailure {
   }) : super(logMessage);
 }
 
+/// No price of bitcoin in the fiat currency: sending works without one, and
+/// shows no fiat value.
+final class SendPriceUnavailableFailure extends SendFailure {
+  const SendPriceUnavailableFailure([super.logMessage]);
+}
+
 final class SendUnexpectedFailure extends SendFailure {
   const SendUnexpectedFailure([super.logMessage]);
+}
+
+final class SendConsolidationRequiredFailure extends SendFailure {
+  const SendConsolidationRequiredFailure([super.logMessage]);
 }

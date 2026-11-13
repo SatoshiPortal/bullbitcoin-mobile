@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/exchange/data/exchange_json_decoder.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order_stats.dart';
 
 /// Model for the complete order stats API response
@@ -15,12 +16,12 @@ class OrderStatsResponseModel {
   factory OrderStatsResponseModel.fromJson(Map<String, dynamic> json) {
     return OrderStatsResponseModel(
       orderStats: OrderStatsModel.fromJson(
-        json['orderStats'] as Map<String, dynamic>,
+        decodeExchangeJson<Map<String, dynamic>>(json['orderStats']),
       ),
       billerStats: BillerStatsModel.fromJson(
-        json['billerStats'] as Map<String, dynamic>,
+        decodeExchangeJson<Map<String, dynamic>>(json['billerStats']),
       ),
-      asOf: DateTime.parse(json['asOf'] as String),
+      asOf: DateTime.parse(decodeExchangeJson<String>(json['asOf'])),
     );
   }
 
@@ -68,15 +69,17 @@ class OrderStatsModel {
       totalBitcoinTradingVolume: _parseAmountList(
         json['totalBitcoinTradingVolume'],
       ),
-      buySellRatio: json['buySellRatio'] as String? ?? '0:0',
+      buySellRatio: decodeExchangeJson<String?>(json['buySellRatio']) ?? '0:0',
     );
   }
 
   static List<AmountByCurrencyCodeModel> _parseAmountList(dynamic list) {
     if (list == null) return [];
-    return (list as List)
+    return decodeExchangeJson<List<dynamic>>(list)
         .map(
-          (e) => AmountByCurrencyCodeModel.fromJson(e as Map<String, dynamic>),
+          (e) => AmountByCurrencyCodeModel.fromJson(
+            decodeExchangeJson<Map<String, dynamic>>(e),
+          ),
         )
         .toList();
   }
@@ -117,8 +120,8 @@ class AmountByCurrencyCodeModel {
 
   factory AmountByCurrencyCodeModel.fromJson(Map<String, dynamic> json) {
     return AmountByCurrencyCodeModel(
-      currency: json['currency'] as String,
-      value: (json['value'] as num).toDouble(),
+      currency: decodeExchangeJson<String>(json['currency']),
+      value: (decodeExchangeJson<num>(json['value'])).toDouble(),
     );
   }
 
@@ -136,15 +139,19 @@ class BillerStatsModel {
 
   factory BillerStatsModel.fromJson(Map<String, dynamic> json) {
     return BillerStatsModel(
-      currency: json['currency'] as String? ?? '',
+      currency: decodeExchangeJson<String?>(json['currency']) ?? '',
       stats: _parseStatsList(json['stats']),
     );
   }
 
   static List<BillerStatModel> _parseStatsList(dynamic list) {
     if (list == null) return [];
-    return (list as List)
-        .map((e) => BillerStatModel.fromJson(e as Map<String, dynamic>))
+    return decodeExchangeJson<List<dynamic>>(list)
+        .map(
+          (e) => BillerStatModel.fromJson(
+            decodeExchangeJson<Map<String, dynamic>>(e),
+          ),
+        )
         .toList();
   }
 
@@ -172,10 +179,11 @@ class BillerStatModel {
 
   factory BillerStatModel.fromJson(Map<String, dynamic> json) {
     return BillerStatModel(
-      billerName: json['billerName'] as String? ?? '',
-      billerCode: json['billerCode'] as String? ?? '',
-      totalAmount: (json['totalAmount'] as num?)?.toDouble() ?? 0.0,
-      tradeCount: json['tradeCount'] as int? ?? 0,
+      billerName: decodeExchangeJson<String?>(json['billerName']) ?? '',
+      billerCode: decodeExchangeJson<String?>(json['billerCode']) ?? '',
+      totalAmount:
+          (decodeExchangeJson<num?>(json['totalAmount']))?.toDouble() ?? 0.0,
+      tradeCount: decodeExchangeJson<int?>(json['tradeCount']) ?? 0,
     );
   }
 

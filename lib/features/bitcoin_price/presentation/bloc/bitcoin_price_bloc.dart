@@ -1,8 +1,7 @@
 import 'dart:async';
 
-import 'package:bb_mobile/core/price/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
-import 'package:bb_mobile/features/bitcoin_price/domain/bitcoin_price_failure.dart';
-import 'package:bb_mobile/core/price/domain/usecases/get_available_currencies_usecase.dart';
+import 'package:bull_pricer/bull_pricer.dart';
+import 'package:bb_mobile/features/bitcoin_price/domain/usecases/get_bitcoin_price_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/settings/domain/watch_currency_changes_usecase.dart';
@@ -12,6 +11,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:intl/intl.dart';
+import 'package:primitives/primitives.dart' show Err, Ok;
 
 part 'bitcoin_price_bloc.freezed.dart';
 part 'bitcoin_price_event.dart';
@@ -19,9 +19,8 @@ part 'bitcoin_price_state.dart';
 
 class BitcoinPriceBloc extends Bloc<BitcoinPriceEvent, BitcoinPriceState> {
   BitcoinPriceBloc({
-    required this._getAvailableCurrenciesUsecase,
     required this._getSettingsUsecase,
-    required this._convertSatsToCurrencyAmountUsecase,
+    required this._getBitcoinPriceUsecase,
     required this._watchCurrencyChangesUsecase,
   }) : super(const BitcoinPriceState()) {
     on<BitcoinPriceStarted>(_onStarted);
@@ -37,9 +36,8 @@ class BitcoinPriceBloc extends Bloc<BitcoinPriceEvent, BitcoinPriceState> {
     );
   }
 
-  final GetAvailableCurrenciesUsecase _getAvailableCurrenciesUsecase;
   final GetSettingsUsecase _getSettingsUsecase;
-  final ConvertSatsToCurrencyAmountUsecase _convertSatsToCurrencyAmountUsecase;
+  final GetBitcoinPriceUsecase _getBitcoinPriceUsecase;
   final WatchCurrencyChangesUsecase _watchCurrencyChangesUsecase;
   late final StreamSubscription<String> _currencyChangeSubscription;
 
@@ -74,12 +72,12 @@ class BitcoinPriceBloc extends Bloc<BitcoinPriceEvent, BitcoinPriceState> {
     try {
       final settings = await _getSettingsUsecase.execute();
       currency = event.currency ?? settings.currencyCode;
-      availableCurrencies = await _getAvailableCurrenciesUsecase.execute();
+      availableCurrencies = SupportedCurrency.codes;
     } catch (e) {
       log.warning('BitcoinPriceStarted failed', error: e);
       emit(
         state.copyWith(
-          failure: BitcoinPriceUnexpectedFailure(e.toString()),
+          failure: PricerUnexpectedFailure(e.toString()),
           startupFailed: true,
           loadingPrice: false,
         ),
@@ -97,45 +95,32 @@ class BitcoinPriceBloc extends Bloc<BitcoinPriceEvent, BitcoinPriceState> {
       ),
     );
 
-    try {
-      final price = await _convertSatsToCurrencyAmountUsecase.execute(
-        currencyCode: currency,
-      );
+    final price = await _getBitcoinPriceUsecase.execute(currencyCode: currency);
 
-      // The currency changed while this was in flight: the price is for the
-      // old one, and the change has fetched its own.
-      if (state.currency != currency) return;
+    // The currency changed while this was in flight: the price is for the
+    // old one, and the change has fetched its own.
+    if (state.currency != currency) return;
 
-      if (price <= 0) {
-        log.warning('Fiat rate invalid or zero for $currency');
+    switch (price) {
+      case Ok(:final value):
         emit(
           state.copyWith(
-            loadingPrice: false,
-            startupFailed: true,
+            bitcoinPrice: value,
+            startupFailed: false,
             failure: null,
+            loadingPrice: false,
           ),
         );
-        return;
-      }
-
-      emit(
-        state.copyWith(
-          bitcoinPrice: price,
-          startupFailed: false,
-          failure: null,
-          loadingPrice: false,
-        ),
-      );
-    } catch (e) {
-      log.warning('BitcoinPriceStarted failed', error: e);
-      if (state.currency != currency) return;
-      emit(
-        state.copyWith(
-          failure: BitcoinPriceUnexpectedFailure(e.toString()),
-          startupFailed: true,
-          loadingPrice: false,
-        ),
-      );
+      case Err(:final failure):
+        emit(
+          state.copyWith(
+            // Offline at start-up is shown by startupFailed alone; any other
+            // failure is shown as on a refresh.
+            failure: failure is PricerNetworkFailure ? null : failure,
+            startupFailed: true,
+            loadingPrice: false,
+          ),
+        );
     }
   }
 
@@ -155,44 +140,26 @@ class BitcoinPriceBloc extends Bloc<BitcoinPriceEvent, BitcoinPriceState> {
       return _onStarted(const BitcoinPriceStarted(), emit);
     }
 
-    try {
-      final price = await _convertSatsToCurrencyAmountUsecase.execute(
-        currencyCode: currency,
-      );
+    final price = await _getBitcoinPriceUsecase.execute(currencyCode: currency);
 
-      // The currency changed while this was in flight: the price is for the
-      // old one, and the change has fetched its own.
-      if (state.currency != currency) return;
+    // The currency changed while this was in flight: the price is for the
+    // old one, and the change has fetched its own.
+    if (state.currency != currency) return;
 
-      // A refresh only reaches the pricer once the price repository's rate is
-      // over a minute old, so the price on screen is outdated: with no answer,
-      // show no price rather than that one.
-      if (price <= 0) {
+    switch (price) {
+      case Ok(:final value):
         emit(
           state.copyWith(
-            bitcoinPrice: null,
-            failure: const BitcoinPriceInvalidRateFailure(),
+            bitcoinPrice: value,
+            failure: null,
+            startupFailed: false,
           ),
         );
-        return;
-      }
-
-      emit(
-        state.copyWith(
-          bitcoinPrice: price,
-          failure: null,
-          startupFailed: false,
-        ),
-      );
-    } catch (e) {
-      log.warning('BitcoinPriceFetched failed', error: e);
-      if (state.currency != currency) return;
-      emit(
-        state.copyWith(
-          bitcoinPrice: null,
-          failure: BitcoinPriceUnexpectedFailure(e.toString()),
-        ),
-      );
+      // A refresh only reaches the pricer once the cached price is over a
+      // minute old, so the price on screen is outdated: with no answer, show
+      // no price rather than that one.
+      case Err(:final failure):
+        emit(state.copyWith(bitcoinPrice: null, failure: failure));
     }
   }
 
@@ -213,45 +180,23 @@ class BitcoinPriceBloc extends Bloc<BitcoinPriceEvent, BitcoinPriceState> {
       emit(state.copyWith(loadingPrice: true));
 
       final currency = event.currencyCode;
-      final price = await _convertSatsToCurrencyAmountUsecase.execute(
+      final price = await _getBitcoinPriceUsecase.execute(
         currencyCode: currency,
       );
       if (!isLatest()) return;
 
-      if (price <= 0) {
-        log.warning(
-          'Fiat rate invalid or zero after currency change to $currency',
-        );
-        emit(
-          state.copyWith(
-            bitcoinPrice: null,
-            currency: currency,
-            loadingPrice: false,
-            failure: const BitcoinPriceInvalidRateFailure(),
-            startupFailed: false,
-          ),
-        );
-        return;
-      }
-
       emit(
         state.copyWith(
           currency: currency,
-          bitcoinPrice: price,
+          bitcoinPrice: switch (price) {
+            Ok(:final value) => value,
+            Err() => null,
+          },
           loadingPrice: false,
-          failure: null,
-          startupFailed: false,
-        ),
-      );
-    } catch (e) {
-      log.warning('BitcoinPriceCurrencyChanged failed', error: e);
-      if (!isLatest()) return;
-      emit(
-        state.copyWith(
-          bitcoinPrice: null,
-          currency: event.currencyCode,
-          loadingPrice: false,
-          failure: BitcoinPriceUnexpectedFailure(e.toString()),
+          failure: switch (price) {
+            Ok() => null,
+            Err(:final failure) => failure,
+          },
           startupFailed: false,
         ),
       );

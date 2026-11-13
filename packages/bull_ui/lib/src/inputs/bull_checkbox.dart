@@ -1,6 +1,6 @@
 import 'package:bull_ui/src/theme/bull_icon.dart';
 import 'package:bull_ui/src/theme/bull_theme.dart';
-import 'package:bull_ui/src/theme/bull_tokens.dart';
+import 'package:bull_ui/src/theme/bull_shapes.dart';
 import 'package:flutter/material.dart';
 
 /// Square selection box (the design's `SelectBox`). **New.** 22×22, 2px radius,
@@ -49,7 +49,9 @@ class BullCheckbox extends StatelessWidget {
               height: 22,
               decoration: BoxDecoration(
                 color: checked ? colors.primary : null,
-                borderRadius: BorderRadius.circular(BullRadius.xxs),
+                borderRadius: BorderRadius.circular(
+                  context.bullShapes.checkbox,
+                ),
                 border: Border.all(color: borderColor, width: 2),
               ),
               child: checked

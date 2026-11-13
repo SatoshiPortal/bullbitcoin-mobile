@@ -1,71 +1,83 @@
-import 'package:bb_mobile/core/utils/bitcoin_tx.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/send/domain/send_failure.dart';
 import 'package:bb_mobile/features/send/domain/usecases/verify_signed_tx_usecase.dart';
+import 'package:bull_sdk/bdk.dart' as bdk;
 import 'package:convert/convert.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-/// Asserts the use-case refused [signedTxHex] — the transaction must not reach
-/// the broadcast path, and the reason the user is shown must be the generic
-/// "could not confirm", never the raw decoding detail.
-Future<void> _expectRefused(
-  VerifySignedTxUsecase usecase, {
-  required String unsignedPsbt,
-  required String signedTxHex,
-  String? reason,
-}) async {
-  final result = await usecase.execute(
-    unsignedPsbt: unsignedPsbt,
-    signedTxHex: signedTxHex,
-  );
-
-  switch (result) {
-    case Ok():
-      fail(reason ?? 'the tampered transaction was accepted');
-    case Err(:final failure):
-      expect(
-        failure,
-        isA<SendTransactionConfirmationFailure>(),
-        reason: reason,
-      );
-  }
-}
-
-/// Security audit — hardware-signer transaction verification.
-///
-/// A directly-connected Ledger/BitBox returns raw signed bytes that the app
-/// used to broadcast unchecked, while the confirm screen kept showing the
-/// pre-signing address and amount. [VerifySignedTxUsecase] rejects a signed
-/// transaction whose non-witness fields differ from the unsigned PSBT's.
-///
-/// Runs in the host test VM: bdk_dart ships a native-assets build hook, so
-/// the real PSBT/transaction decoding works under plain `flutter test`.
+/// Verifies that signed transactions preserve the transaction confirmed by
+/// the user.
 void main() {
   // Minimal single-input single-output PSBT: one 100,000-sat P2WPKH output.
   const unsignedPsbt =
       'cHNidP8BAFICAAAAARERERERERERERERERERERERERERERERERERERERERERAAAAAAD9////'
       'AaCGAQAAAAAAFgAUIiIiIiIiIiIiIiIiIiIiIiIiIiIAAAAAAAEBH2iHAQAAAAAAFgAUMzMz'
       'MzMzMzMzMzMzMzMzMzMzMzMAAA==';
+  const multiOutputPsbt =
+      'cHNidP8BAHECAAAAARERERERERERERERERERERERERERERERERERERERERERAAAAAAD9////'
+      'AmDqAAAAAAAAFgAUIiIiIiIiIiIiIiIiIiIiIiIiIiJYmAAAAAAAABYAFERERERERERERERE'
+      'REREREREREREAAAAAAABAR9ohwEAAAAAABYAFDMzMzMzMzMzMzMzMzMzMzMzMzMzAAAA';
 
   final usecase = VerifySignedTxUsecase();
+  final verificationFailure = isA<Err<void, SendFailure>>().having(
+    (result) => result.failure,
+    'failure',
+    isA<SendTransactionConfirmationFailure>(),
+  );
 
-  // The bytes the PSBT's transaction serializes to. A hardware wallet's
-  // answer is these same bytes plus signatures and witnesses, so the extracted
-  // unsigned bytes stand in for an honest device's transaction skeleton.
-  late final List<int> honestTxBytes;
-  setUpAll(() async {
-    final psbt = await BitcoinTx.fromPsbt(unsignedPsbt);
-    expect(psbt.vout, hasLength(1));
-    honestTxBytes = await BitcoinTx.fromPsbt(
-      unsignedPsbt,
-    ).then((_) => _extractRawTxBytes(unsignedPsbt));
+  late final List<int> matchingTxBytes;
+  setUpAll(() {
+    final psbt = bdk.Psbt(psbtBase64: unsignedPsbt);
+    final tx = psbt.extractTx();
+    matchingTxBytes = tx.serialize();
+    tx.dispose();
+    psbt.dispose();
   });
 
   group('VerifySignedTxUsecase', () {
+    test('keeps malformed input out of the diagnostic reason', () async {
+      final result = await usecase.execute(
+        unsignedPsbt: unsignedPsbt,
+        signedTransaction: 'private-payment-input',
+      );
+
+      expect(
+        result,
+        verificationFailure.having(
+          (error) => error.failure.logMessage,
+          'safe diagnostic reason',
+          'Could not decode the signed transaction',
+        ),
+      );
+    });
+
     test('accepts a signed transaction matching the PSBT', () async {
       final result = await usecase.execute(
         unsignedPsbt: unsignedPsbt,
-        signedTxHex: hex.encode(honestTxBytes),
+        signedTransaction: hex.encode(matchingTxBytes),
+      );
+      expect(result, isA<Ok<void, SendFailure>>());
+    });
+
+    test('accepts a signed PSBT with the same transaction skeleton', () async {
+      final result = await usecase.execute(
+        unsignedPsbt: unsignedPsbt,
+        signedTransaction: unsignedPsbt,
+        isPsbt: true,
+      );
+      expect(result, isA<Ok<void, SendFailure>>());
+    });
+
+    test('accepts a matching transaction with multiple outputs', () async {
+      final psbt = bdk.Psbt(psbtBase64: multiOutputPsbt);
+      final tx = psbt.extractTx();
+      final signedTransaction = hex.encode(tx.serialize());
+      tx.dispose();
+      psbt.dispose();
+
+      final result = await usecase.execute(
+        unsignedPsbt: multiOutputPsbt,
+        signedTransaction: signedTransaction,
       );
 
       expect(result, isA<Ok<void, SendFailure>>());
@@ -77,14 +89,17 @@ void main() {
         // Tx layout for this vector (no witness): version(4) | inCount(1) |
         // input(41) | outCount(1) | value(8) | scriptLen(1) | script(22) |
         // locktime(4). The amount sits 31 bytes before the locktime tail.
-        final tampered = List<int>.from(honestTxBytes);
+        final tampered = List<int>.from(matchingTxBytes);
         final valueOffset = tampered.length - 4 - 22 - 1 - 8;
         tampered[valueOffset] ^= 0x01; // 100,000 -> 100,001 sats
 
-        await _expectRefused(
-          usecase,
+        final result = await usecase.execute(
           unsignedPsbt: unsignedPsbt,
-          signedTxHex: hex.encode(tampered),
+          signedTransaction: hex.encode(tampered),
+        );
+        expect(
+          result,
+          verificationFailure,
           reason: 'a device that inflates the payment amount must be refused',
         );
       },
@@ -95,95 +110,55 @@ void main() {
       () async {
         // Same layout: the scriptPubkey occupies the 22 bytes right before
         // the locktime. Flipping one byte redirects the payment.
-        final tampered = List<int>.from(honestTxBytes);
+        final tampered = List<int>.from(matchingTxBytes);
         final scriptOffset = tampered.length - 4 - 22;
         tampered[scriptOffset + 5] ^= 0xff;
 
-        await _expectRefused(
-          usecase,
+        final result = await usecase.execute(
           unsignedPsbt: unsignedPsbt,
-          signedTxHex: hex.encode(tampered),
+          signedTransaction: hex.encode(tampered),
+        );
+        expect(
+          result,
+          verificationFailure,
           reason: 'a device that redirects the payment must be refused',
         );
       },
     );
 
     test('rejects an undecodable signed transaction', () async {
-      await _expectRefused(
-        usecase,
+      final result = await usecase.execute(
         unsignedPsbt: unsignedPsbt,
-        signedTxHex: '00ff00ff',
+        signedTransaction: '00ff00ff',
       );
+      expect(result, verificationFailure);
     });
 
     test('rejects a signed transaction with a substituted input', () async {
-      final tampered = List<int>.from(honestTxBytes);
+      final tampered = List<int>.from(matchingTxBytes);
       // version(4) + input count(1), then the 32-byte previous txid.
       tampered[5] ^= 0x01;
 
-      await _expectRefused(
-        usecase,
+      final result = await usecase.execute(
         unsignedPsbt: unsignedPsbt,
-        signedTxHex: hex.encode(tampered),
+        signedTransaction: hex.encode(tampered),
+      );
+      expect(
+        result,
+        verificationFailure,
         reason: 'substituting wallet inputs can turn their value into fees',
       );
     });
 
     test('rejects a signed transaction with a changed locktime', () async {
-      final tampered = List<int>.from(honestTxBytes);
+      final tampered = List<int>.from(matchingTxBytes);
       tampered[tampered.length - 1] ^= 0x01;
 
-      await _expectRefused(
-        usecase,
+      final result = await usecase.execute(
         unsignedPsbt: unsignedPsbt,
-        signedTxHex: hex.encode(tampered),
+        signedTransaction: hex.encode(tampered),
       );
+      expect(result, verificationFailure);
     });
   });
-}
-
-/// Serializes the transaction carried by [psbtBase64] to raw bytes, the way
-/// a hardware signer would return them (minus the witnesses it adds).
-Future<List<int>> _extractRawTxBytes(String psbtBase64) async {
-  // BitcoinTx does not expose the raw serialization, so round-trip through
-  // the txid-stable fields: version, inputs, outputs and locktime are what
-  // the byte layout below re-encodes.
-  final tx = await BitcoinTx.fromPsbt(psbtBase64);
-  final bytes = <int>[];
-
-  void writeInt32LE(int value) => bytes.addAll([
-    value & 0xff,
-    (value >> 8) & 0xff,
-    (value >> 16) & 0xff,
-    (value >> 24) & 0xff,
-  ]);
-
-  void writeUint64LE(BigInt value) {
-    var v = value;
-    for (var i = 0; i < 8; i++) {
-      bytes.add((v & BigInt.from(0xff)).toInt());
-      v = v >> 8;
-    }
-  }
-
-  writeInt32LE(tx.version);
-  bytes.add(tx.vin.length);
-  for (final input in tx.vin) {
-    final txidBytes = hex.decode(input.txid);
-    // txids display big-endian, serialize little-endian.
-    bytes.addAll(txidBytes.reversed);
-    writeInt32LE(input.vout);
-    final script = input.scriptSig?.bytes ?? <int>[];
-    bytes.add(script.length);
-    bytes.addAll(script);
-    writeInt32LE(input.sequence);
-  }
-  bytes.add(tx.vout.length);
-  for (final output in tx.vout) {
-    writeUint64LE(output.value);
-    bytes.add(output.scriptPubKey.bytes.length);
-    bytes.addAll(output.scriptPubKey.bytes);
-  }
-  writeInt32LE(tx.locktime);
-  return bytes;
 }

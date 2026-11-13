@@ -289,8 +289,10 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
           role: api.PayjoinLogRole.receiver,
           sessionRef: receiver.logRef,
         );
+        _pdkPayjoinDatasource.startListeningForRequest(model);
         return receiver;
       } catch (_) {
+        // A concurrent resume may have started polling after persistence.
         _pdkPayjoinDatasource.stopPolling(model.id);
         if (stored && !settled) {
           // The row is still idle while this session lock is held. If another
@@ -363,8 +365,23 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     // The datasource returned the session in its post-POST state
     // (PollingForProposal); the write-ahead persist above stored the
     // pre-POST one. Bring the row to the live state so a resume replays
-    // PollingForProposal instead of stalling on the pre-POST state.
-    await _localPayjoinDatasource.updateSenderSessionState(model);
+    // PollingForProposal instead of stalling on the pre-POST state, then
+    // start polling the directory for the receiver's proposal. The poll is
+    // armed even if the row update fails: the original is already on the
+    // directory, the poll replays the in-memory posted model, and the
+    // proposal it finds is what brings the row back in line.
+    try {
+      await _localPayjoinDatasource.updateSenderSessionState(model);
+    } finally {
+      // Starting a polled id is a no-op, so replace whatever poll this id may
+      // already hold: one the expired attempt of a retry left (a retry reuses
+      // the payment's BIP21 URI as id), or one a resume armed during the POST
+      // on the stored pre-POST row, which would otherwise stay stale until
+      // the expiry. Only the poll is stopped, not the watchers, which keep an
+      // expired attempt's original under watch on purpose.
+      _pdkPayjoinDatasource.stopPolling(model.id);
+      _pdkPayjoinDatasource.startListeningForProposal(model);
+    }
 
     // On a retry, a broadcast watcher left on the superseded attempt's payjoin
     // stays armed on purpose: if that payjoin lands, the payment is made, and
@@ -1545,7 +1562,15 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
   }
 
   Future<void> _resumeOne(PayjoinModel model) async {
-    _log.fine(
+    bool ofSession(String key) =>
+        key == model.id || key.startsWith('${model.id}|');
+    // Proposal delivery ends directory polling, but its watchers stay active.
+    final alreadyActive =
+        _pdkPayjoinDatasource.isPolling(model.id) ||
+        _broadcastWatchers.keys.any(ofSession) ||
+        _fallbackWatchers.keys.any(ofSession);
+    final record = alreadyActive ? _log.info : _log.fine;
+    record(
       code: api.PayjoinLogCode.sessionResumed,
       role: _roleOf(model),
       sessionRef: model.toEntity().logRef,
@@ -1665,16 +1690,16 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
         walletId: payjoin.walletId,
         network: network,
       );
-      final signPsbtSync = await _wallet.createPsbtProcessor(
-        walletId: payjoin.walletId,
-        network: network,
-      );
       final updatedModel = await _pdkPayjoinDatasource.proposePayjoin(
         receiverModel: freshModel,
         ownsOutpoint: ownsOutpointSync,
         hasReceiverOutput: isMineSync,
         inputPairs: inputPairs,
-        processPsbt: signPsbtSync,
+        signPsbt: (psbt) => _wallet.signPsbt(
+          walletId: payjoin.walletId,
+          network: network,
+          psbt: psbt,
+        ),
       );
 
       _receiverFallbackAvailableAt.putIfAbsent(

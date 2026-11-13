@@ -1,4 +1,5 @@
 import 'package:bull_ui/src/theme/bull_theme.dart';
+import 'package:bull_ui/src/theme/bull_shapes.dart';
 import 'package:flutter/material.dart';
 
 /// A themed [DropdownButtonFormField].
@@ -42,7 +43,7 @@ class BullDropdown<T> extends StatelessWidget {
         data: Theme.of(context).copyWith(
           popupMenuTheme: PopupMenuThemeData(
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(4.0),
+              borderRadius: BorderRadius.circular(context.bullShapes.input),
               side: BorderSide(color: colors.primary, width: 1.0),
             ),
             color: colors.onPrimary,
@@ -75,7 +76,7 @@ class BullDropdown<T> extends StatelessWidget {
               filled: true,
               fillColor: colors.surface,
               border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(4.0),
+                borderRadius: BorderRadius.circular(context.bullShapes.input),
                 borderSide: BorderSide.none,
               ),
               contentPadding: const EdgeInsets.symmetric(

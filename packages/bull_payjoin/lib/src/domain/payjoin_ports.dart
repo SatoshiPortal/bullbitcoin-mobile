@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:primitives/primitives.dart';
 
 abstract interface class PayjoinWalletPort {
+  /// Signs this wallet's inputs of [psbt]. Serves the sender's original PSBT and the receiver's contribution to a proposal alike: the engine computes the PSBT the PDK will ask for, signs it here, and hands the result back — no signing capability outlives the call.
   Future<String> signPsbt({
     required String walletId,
     required BitcoinNetwork network,
@@ -25,11 +26,6 @@ abstract interface class PayjoinWalletPort {
   /// Must answer for every output the wallet has ever owned, spent included, so
   /// the receiver's guard has no gap to reason about.
   Future<bool Function(Outpoint outpoint)> createOutpointOwnershipChecker({
-    required String walletId,
-    required BitcoinNetwork network,
-  });
-
-  Future<String Function(String psbt)> createPsbtProcessor({
     required String walletId,
     required BitcoinNetwork network,
   });
@@ -276,6 +272,10 @@ enum PayjoinLogCode {
   signingFailure('Signing failed'),
   broadcastFailure('Broadcast failed'),
   storageFailure('Payjoin storage failed'),
+  pollReplayFailed('Poll failed stage=replay'),
+  pollRequestFailed('Poll failed stage=request'),
+  pollParseFailed('Poll failed stage=parse'),
+  pollRecovered('Poll state recovered'),
   migrationFailure('Payjoin storage migration failed'),
   labelFailure('Transaction labelling failed'),
   watchFailure('Transaction watch failed'),

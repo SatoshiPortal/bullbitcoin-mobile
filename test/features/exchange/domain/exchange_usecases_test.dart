@@ -15,7 +15,6 @@ import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_account
 import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_announcements_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/request_exchange_account_deletion_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/save_exchange_preferences_usecase.dart';
-import 'package:bb_mobile/features/exchange/domain/usecases/store_exchange_api_key_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:bb_mobile/core/failures/failure.dart';
@@ -110,19 +109,6 @@ void main() {
 
       expect(failure, isA<ExchangeAnnouncementsUnavailableFailure>());
       expect(failure.logMessage, reason);
-    });
-
-    test('StoreExchangeApiKeyUsecase', () async {
-      final failure = _failureOf(
-        await StoreExchangeApiKeyUsecase(
-          exchangeApiKeyRepository: apiKeys,
-          settingsRepository: settings,
-        ).execute(const {'key': 'bbk_live_7f3a9c2e'}),
-      );
-
-      expect(failure, isA<ExchangeApiKeyStorageFailure>());
-      expect(failure.logMessage, reason);
-      expect(failure.logMessage, isNot(contains('bbk_live')));
     });
 
     test('ClearExchangeSessionUsecase deletes both keys and clears the '
@@ -237,34 +223,6 @@ void main() {
       expect(await build().execute(), isA<Err<UserSummary, ExchangeFailure>>());
       verify(testnetUsers.getUserSummary).called(1);
       verifyNever(mainnetUsers.getUserSummary);
-    });
-  });
-
-  group('StoreExchangeApiKeyUsecase', () {
-    test('an api-key failure is lifted into the feature family', () async {
-      when(
-        () => apiKeys.saveApiKey(any(), isTestnet: any(named: 'isTestnet')),
-      ).thenAnswer(
-        (_) async => const Err(ExchangeApiKeySaveFailure('store failed: Type')),
-      );
-
-      final result = await StoreExchangeApiKeyUsecase(
-        exchangeApiKeyRepository: apiKeys,
-        settingsRepository: settings,
-      ).execute({'apiKey': 'bbk_live_7f3a9c2e'});
-      final failure = _failureOf(result);
-
-      expect(failure, isA<ExchangeApiKeyStorageFailure>());
-      expect(
-        failure,
-        isNot(isA<ExchangeApiKeyFailure>()),
-        reason: 'the core family must not escape into the cubit',
-      );
-      expect(
-        failure.logMessage,
-        isNot(contains('bbk_live_7f3a9c2e')),
-        reason: 'the key itself must never travel in a failure',
-      );
     });
   });
 

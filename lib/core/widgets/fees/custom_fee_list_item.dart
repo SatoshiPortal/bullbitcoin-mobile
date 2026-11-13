@@ -9,7 +9,7 @@ import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullAmountInputFormatter, BullShimmerLine, BullText, Gap;
+    show BullAmountInputFormatter, BullShapesX, BullShimmerLine, BullText, Gap;
 
 /// Reusable "Custom Fee" tile used inside the fee-selection modal of both
 /// Send and Swap, and as the inline custom-rate tile in RBF. Owns the
@@ -84,7 +84,7 @@ class CustomFeeListItem extends StatefulWidget {
   /// warning logic.
   final int txSize;
 
-  final double exchangeRate;
+  final double? exchangeRate;
   final String fiatCurrencyCode;
 
   /// Initial value of the abs/rel toggle when [initialFee] is null. Send
@@ -417,7 +417,7 @@ class _CustomFeeListItemState extends State<CustomFeeListItem> {
       },
       child: Material(
         elevation: showAsSelected ? 4 : 1,
-        borderRadius: BorderRadius.circular(2),
+        borderRadius: BorderRadius.circular(context.bullShapes.card),
         clipBehavior: .hardEdge,
         color: widget.tileColor,
         shadowColor: widget.tileShadowColor,
@@ -510,15 +510,21 @@ class _CustomFeeListItemState extends State<CustomFeeListItem> {
                   fillColor: context.appColors.surfaceContainer,
                   filled: true,
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8.0),
+                    borderRadius: BorderRadius.circular(
+                      context.bullShapes.input,
+                    ),
                     borderSide: BorderSide(color: context.appColors.border),
                   ),
                   enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8.0),
+                    borderRadius: BorderRadius.circular(
+                      context.bullShapes.input,
+                    ),
                     borderSide: BorderSide(color: context.appColors.border),
                   ),
                   disabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8.0),
+                    borderRadius: BorderRadius.circular(
+                      context.bullShapes.input,
+                    ),
                     borderSide: BorderSide(
                       color: context.appColors.border.withValues(alpha: 0.5),
                     ),
@@ -590,7 +596,7 @@ class _PreviewLine extends StatelessWidget {
   final bool isAbsolute;
   final int? previewFeeSat;
   final bool previewLoading;
-  final double exchangeRate;
+  final double? exchangeRate;
   final String fiatCurrencyCode;
 
   @override
@@ -618,9 +624,9 @@ class _PreviewLine extends StatelessWidget {
       return BullText(rateLabel, style: context.font.labelMedium);
     }
 
-    final showFiat = exchangeRate > 0 && fiatCurrencyCode.isNotEmpty;
-    final fiatEq = showFiat
-        ? ConvertAmount.satsToFiat(previewFeeSat!, exchangeRate)
+    final rate = exchangeRate;
+    final fiatEq = rate != null && rate > 0 && fiatCurrencyCode.isNotEmpty
+        ? ConvertAmount.satsToFiat(previewFeeSat!, rate)
         : null;
     final text = StringBuffer()
       ..write(rateLabel)
@@ -628,7 +634,7 @@ class _PreviewLine extends StatelessWidget {
       ..write(FormatAmount.satsApprox(previewFeeSat!))
       ..write(' ')
       ..write(context.loc.sendSats);
-    if (showFiat) {
+    if (fiatEq != null) {
       text
         ..write(' (~ ')
         ..write(fiatEq)

@@ -2,7 +2,7 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/dca/domain/dca.dart';
 import 'package:flutter/material.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullShapesX, Gap;
 
 class DcaWalletRadioList extends StatelessWidget {
   const DcaWalletRadioList({
@@ -41,7 +41,9 @@ class DcaWalletRadioList extends StatelessWidget {
                 children: [
                   RadioListTile(
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(
+                        context.bullShapes.card,
+                      ),
                       side: BorderSide(color: borderColor),
                     ),
                     title: Text(switch (walletType) {
