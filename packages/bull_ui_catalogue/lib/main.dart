@@ -1,3 +1,5 @@
+import 'package:bull_ui/bull_ui.dart'
+    show BullUiLocalizations, bullUiLocalizationsDelegates;
 import 'package:bull_ui_catalogue/catalogue_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:widgetbook/widgetbook.dart';
@@ -30,6 +32,10 @@ class BullUiCatalogue extends StatelessWidget {
       appBuilder: (context, child) =>
           Material(type: MaterialType.transparency, child: child),
       addons: [
+        LocalizationAddon(
+          locales: BullUiLocalizations.supportedLocales,
+          localizationsDelegates: bullUiLocalizationsDelegates,
+        ),
         // Light + dark, each carrying the BullTheme extension that components
         // read via `context.bull`. This is exactly how the app wires bull_ui.
         MaterialThemeAddon(
