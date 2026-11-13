@@ -101,6 +101,11 @@ void main() {
         final apple = await _load(NovlangPolicy.apple, locale);
         expect(apple.localeName, base.localeName);
         expect(
+          apple is NovlangAppOverrides,
+          isTrue,
+          reason: '${locale.toLanguageTag()} silently kept the real words',
+        );
+        expect(
           apple.coreSwapsChainExpired,
           isNot(contains(RegExp('swap', caseSensitive: false))),
           reason: '${locale.toLanguageTag()} leaks the forbidden word',
