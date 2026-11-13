@@ -1,3 +1,4 @@
+export 'quick_actions_composition.dart';
 export '../src/presentation/quick_actions_cubit.dart';
 export '../src/domain/quick_actions_repository.dart' show QuickActionsStorage;
 export '../src/domain/quick_action.dart';

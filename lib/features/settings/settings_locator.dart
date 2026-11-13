@@ -41,7 +41,7 @@ import 'package:get_it/get_it.dart';
 class SettingsLocator {
   static void setup(GetIt locator) {
     locator.registerLazySingleton<QuickActionsCubit>(
-      () => QuickActionsCubit(
+      () => createQuickActionsCubit(
         storage: SettingsQuickActionsStorage(),
         warning: log.warning,
         exchangeVisible: WatchQuickActionsVisibilityUsecase(

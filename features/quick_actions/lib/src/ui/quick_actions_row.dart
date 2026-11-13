@@ -160,16 +160,16 @@ class _MoreSheet extends StatelessWidget {
                         Expanded(
                           child: BullText(
                             l10n.more,
-                            style: const TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.w600,
-                            ),
+                            style: context.bullText.titleLarge,
                           ),
                         ),
                         BullInlineTextButton(
                           onPressed: () =>
                               Navigator.pop(context, const _MoreChoice.edit()),
-                          child: BullText(l10n.edit, style: null),
+                          child: BullText(
+                            l10n.edit,
+                            style: context.bullText.labelLarge,
+                          ),
                         ),
                         BullInlineIconButton(
                           tooltip: l10n.close,

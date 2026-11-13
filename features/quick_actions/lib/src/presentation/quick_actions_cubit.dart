@@ -3,10 +3,11 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:primitives/primitives.dart';
 
-import '../data/quick_actions_repository_impl.dart';
 import '../domain/quick_action.dart';
 import '../domain/quick_actions_failure.dart';
-import '../domain/quick_actions_repository.dart';
+import '../domain/usecases/load_quick_actions_usecase.dart';
+import '../domain/usecases/reset_quick_actions_usecase.dart';
+import '../domain/usecases/save_quick_actions_usecase.dart';
 
 final class QuickActionsState {
   const QuickActionsState({
@@ -27,11 +28,12 @@ final class QuickActionsState {
 
 final class QuickActionsCubit extends Cubit<QuickActionsState> {
   QuickActionsCubit({
-    required QuickActionsStorage storage,
+    required this._load,
+    required this._save,
+    required this._reset,
     required this._warning,
     required Stream<bool> exchangeVisible,
-  }) : _repository = QuickActionsRepositoryImpl(storage),
-       super(QuickActionsState(available: _available(false))) {
+  }) : super(QuickActionsState(available: _available(false))) {
     _visibility = exchangeVisible.listen(
       (visible) {
         _applyVisibility(visible);
@@ -64,7 +66,9 @@ final class QuickActionsCubit extends Cubit<QuickActionsState> {
   }
 
   final _firstVisibility = Completer<void>();
-  final QuickActionsRepository _repository;
+  final LoadQuickActionsUsecase _load;
+  final SaveQuickActionsUsecase _save;
+  final ResetQuickActionsUsecase _reset;
   final void Function(String) _warning;
   late final StreamSubscription<bool> _visibility;
   Future<void> _pendingWrite = Future.value();
@@ -87,7 +91,7 @@ final class QuickActionsCubit extends Cubit<QuickActionsState> {
     if (isClosed) return state.selection;
     if (state.initialized) return state.selection;
     final generation = _generation;
-    final result = await _repository.load();
+    final result = await _load.execute();
     if (isClosed) return state.selection;
     if (_generation != generation) {
       await _pendingWrite;
@@ -115,9 +119,9 @@ final class QuickActionsCubit extends Cubit<QuickActionsState> {
 
   Future<Result<void, QuickActionsFailure>> save(
     QuickActionSelection selection,
-  ) => _enqueue(() => _repository.save(selection), selection);
+  ) => _enqueue(() => _save.execute(selection), selection);
   Future<Result<void, QuickActionsFailure>> reset() =>
-      _enqueue(_repository.reset, null);
+      _enqueue(_reset.execute, null);
   Future<Result<void, QuickActionsFailure>> _enqueue(
     Future<Result<void, QuickActionsFailure>> Function() operation,
     QuickActionSelection? selection,
