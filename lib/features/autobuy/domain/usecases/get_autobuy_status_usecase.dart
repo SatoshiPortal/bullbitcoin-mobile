@@ -18,6 +18,9 @@ class GetAutoBuyStatusUsecase {
       summary = await _getExchangeUserSummaryUsecase.execute();
     } on Error {
       rethrow;
+    } on GetExchangeUserSummaryCredentialException catch (e) {
+      log.info('Exchange account credential refused: ${e.runtimeType}');
+      return Err(AutoBuyAccountUnavailableFailure('$e'));
     } on GetExchangeUserSummaryException catch (e, st) {
       log.severe(
         message: 'Failed to load the AutoBuy account status',

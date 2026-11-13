@@ -13,6 +13,8 @@ export 'package:flutter/services.dart' show SmartDashesType, SmartQuotesType;
 export 'package:flutter/widgets.dart'
     show
         Align,
+        AppLifecycleListener,
+        AppLifecycleState,
         Alignment,
         AlwaysScrollableScrollPhysics,
         AnimatedContainer,
@@ -37,6 +39,7 @@ export 'package:flutter/widgets.dart'
         EdgeInsets,
         EdgeInsetsGeometry,
         Expanded,
+        ExcludeSemantics,
         Flexible,
         FontFeature,
         FontWeight,
@@ -126,6 +129,7 @@ export 'src/inputs/bull_input_text.dart';
 export 'src/inputs/bull_labeled_text_input.dart';
 export 'src/inputs/bull_lowercase_input_formatter.dart';
 export 'src/inputs/bull_paste_input.dart';
+export 'src/inputs/bull_secret_text_input.dart';
 export 'src/inputs/bull_selectable_list.dart';
 
 // Controls.

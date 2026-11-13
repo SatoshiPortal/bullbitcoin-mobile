@@ -24,7 +24,7 @@ graph TB
     LOCAL_DATA[Local Data<br/>Workspace Feature]
     ELECTRUM_SETTINGS[Electrum Settings]
     TOR_SETTINGS[Tor Settings]
-    RECOVERBULL[RecoverBull]
+    RECOVERBULL[RecoverBull<br/>Workspace Feature]
     TOR[Tor<br/>Workspace Package]
     PIN_CODE[Pin Code]
     LABELS[Labels]
@@ -119,6 +119,9 @@ graph TB
     BIP85 --> SECRETS
     BIP85 --> SETTINGS
     BACKUPS --> BIP85
+    APP_STARTUP --> RECOVERBULL
+    WALLETS --> RECOVERBULL
+    STATUS --> RECOVERBULL
     BACKUPS --> RECOVERBULL
     BACKUPS --> TOR
     BACKUPS --> WALLETS
@@ -197,6 +200,10 @@ graph TB
     WALLETS --> ELECTRUM_SETTINGS
     RECOVERBULL --> TOR
     RECOVERBULL --> SECRETS
+    RECOVERBULL --> PRIMITIVES
+    RECOVERBULL --> BULL_LOGGER
+    RECOVERBULL --> BULL_UI
+    RECOVERBULL --> SCREEN_PRIVACY[Screen Privacy]
     TRANSFER --> CONSOLIDATION
     TRANSFER --> SEND
     TRANSFER --> RECEIVE

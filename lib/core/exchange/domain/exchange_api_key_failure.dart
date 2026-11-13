@@ -9,6 +9,16 @@ sealed class ExchangeApiKeyFailure extends Failure {
   const ExchangeApiKeyFailure([super.logMessage]);
 }
 
+/// The stored credential could not be read, including a locked keychain.
+final class ExchangeApiKeyReadFailure extends ExchangeApiKeyFailure {
+  const ExchangeApiKeyReadFailure([super.logMessage]);
+}
+
+/// The stored value cannot supply an authentication credential.
+final class ExchangeApiKeyInvalidFailure extends ExchangeApiKeyFailure {
+  const ExchangeApiKeyInvalidFailure([super.logMessage]);
+}
+
 /// The API key could not be stored, so the session would not survive.
 final class ExchangeApiKeySaveFailure extends ExchangeApiKeyFailure {
   const ExchangeApiKeySaveFailure([super.logMessage]);
