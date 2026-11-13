@@ -72,24 +72,6 @@ class QuickActionsLocalizationsEn extends QuickActionsLocalizations {
   String get preview => 'Preview';
 
   @override
-  String get maximumHint => 'Choose up to 3 actions for Home.';
-
-  @override
-  String addAction(String name) {
-    return 'Add $name to Home';
-  }
-
-  @override
-  String removeAction(String name) {
-    return 'Move $name to More';
-  }
-
-  @override
-  String reorderAction(String name) {
-    return 'Reorder $name';
-  }
-
-  @override
   String get edit => 'Edit';
 
   @override
@@ -108,11 +90,18 @@ class QuickActionsLocalizationsEn extends QuickActionsLocalizations {
   String get supportFull => 'Support';
 
   @override
-  String get homeFullHint => 'Home holds 3 actions. Remove one to add another.';
-
-  @override
   String get defaultsRestored => 'Default actions restored.';
 
   @override
   String get undo => 'Undo';
+
+  @override
+  String get moveToHome => 'Move to Home';
+
+  @override
+  String get moveToMore => 'Move to More';
+
+  @override
+  String get dragHint =>
+      'Touch and hold an action to move it. Home holds up to 3 actions.';
 }

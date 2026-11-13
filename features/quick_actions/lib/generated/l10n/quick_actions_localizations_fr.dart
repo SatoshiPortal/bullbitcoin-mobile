@@ -72,24 +72,6 @@ class QuickActionsLocalizationsFr extends QuickActionsLocalizations {
   String get preview => 'Aperçu';
 
   @override
-  String get maximumHint => 'Choisissez jusqu’à 3 actions pour l’accueil.';
-
-  @override
-  String addAction(String name) {
-    return 'Ajouter $name à l’accueil';
-  }
-
-  @override
-  String removeAction(String name) {
-    return 'Déplacer $name dans Plus';
-  }
-
-  @override
-  String reorderAction(String name) {
-    return 'Réorganiser $name';
-  }
-
-  @override
   String get edit => 'Modifier';
 
   @override
@@ -109,12 +91,18 @@ class QuickActionsLocalizationsFr extends QuickActionsLocalizations {
   String get supportFull => 'Assistance';
 
   @override
-  String get homeFullHint =>
-      'L’accueil contient 3 actions. Retirez-en une pour en ajouter une autre.';
-
-  @override
   String get defaultsRestored => 'Actions par défaut rétablies.';
 
   @override
   String get undo => 'Annuler';
+
+  @override
+  String get moveToHome => 'Déplacer sur l’accueil';
+
+  @override
+  String get moveToMore => 'Déplacer dans Plus';
+
+  @override
+  String get dragHint =>
+      'Appuyez longuement sur une action pour la déplacer. L’accueil contient jusqu’à 3 actions.';
 }

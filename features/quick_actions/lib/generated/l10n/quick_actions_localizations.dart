@@ -230,30 +230,6 @@ abstract class QuickActionsLocalizations {
   /// Wallet quick action customization.
   ///
   /// In en, this message translates to:
-  /// **'Choose up to 3 actions for Home.'**
-  String get maximumHint;
-
-  /// Wallet quick action customization.
-  ///
-  /// In en, this message translates to:
-  /// **'Add {name} to Home'**
-  String addAction(String name);
-
-  /// Wallet quick action customization.
-  ///
-  /// In en, this message translates to:
-  /// **'Move {name} to More'**
-  String removeAction(String name);
-
-  /// Wallet quick action customization.
-  ///
-  /// In en, this message translates to:
-  /// **'Reorder {name}'**
-  String reorderAction(String name);
-
-  /// Wallet quick action customization.
-  ///
-  /// In en, this message translates to:
   /// **'Edit'**
   String get edit;
 
@@ -287,12 +263,6 @@ abstract class QuickActionsLocalizations {
   /// **'Support'**
   String get supportFull;
 
-  /// Explains why adding another Home action is disabled at capacity.
-  ///
-  /// In en, this message translates to:
-  /// **'Home holds 3 actions. Remove one to add another.'**
-  String get homeFullHint;
-
   /// Confirmation after restoring the default Home actions.
   ///
   /// In en, this message translates to:
@@ -304,6 +274,24 @@ abstract class QuickActionsLocalizations {
   /// In en, this message translates to:
   /// **'Undo'**
   String get undo;
+
+  /// Accessible action that moves this row onto Home, displacing its previous last action if full.
+  ///
+  /// In en, this message translates to:
+  /// **'Move to Home'**
+  String get moveToHome;
+
+  /// Accessible action that moves this row below the fixed separator.
+  ///
+  /// In en, this message translates to:
+  /// **'Move to More'**
+  String get moveToMore;
+
+  /// Explains whole-row long press and the Home capacity.
+  ///
+  /// In en, this message translates to:
+  /// **'Touch and hold an action to move it. Home holds up to 3 actions.'**
+  String get dragHint;
 }
 
 class _QuickActionsLocalizationsDelegate
