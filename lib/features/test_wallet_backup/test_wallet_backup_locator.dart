@@ -1,3 +1,4 @@
+import 'package:bull_recoverbull/bull_recoverbull.dart';
 import 'package:secrets/secrets.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
@@ -28,6 +29,7 @@ class TestWalletBackupLocator {
       () => CheckBackupUsecase(
         walletRepository: locator<WalletRepository>(),
         settingsRepository: locator<SettingsRepository>(),
+        backupStatus: locator<RecoverBullFacade>().status,
       ),
     );
   }

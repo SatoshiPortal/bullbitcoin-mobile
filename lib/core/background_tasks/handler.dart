@@ -12,7 +12,7 @@ import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:workmanager/workmanager.dart';
 
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart';
 
 /// Removes schedules persisted by releases that enabled background execution.
 Future<void> cancelLegacyBackgroundTasks() async {

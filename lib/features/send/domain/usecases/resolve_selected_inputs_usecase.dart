@@ -1,5 +1,4 @@
-import 'package:bb_mobile/core/utils/result.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/outpoint.dart';
+import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bb_mobile/features/send/domain/send_failure.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';

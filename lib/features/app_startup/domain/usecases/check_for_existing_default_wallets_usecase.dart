@@ -1,13 +1,12 @@
 import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/keychain_locked_exception.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/app_startup/domain/app_startup_failure.dart';
 import 'package:meta/meta.dart';
-import 'package:primitives/primitives.dart' show Fingerprint;
+import 'package:primitives/primitives.dart' show Err, Fingerprint, Ok, Result;
 import 'package:secrets/secrets.dart';
 
 class CheckForExistingDefaultWalletsUsecase {

@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:bb_mobile/core/primitives/payment_network.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/swap/data/datasources/exchange_public_api_datasource.dart';
 import 'package:bb_mobile/features/swap/data/datasources/order_swap_local_datasource.dart';
 import 'package:bb_mobile/features/swap/data/models/order_swap_model.dart';
