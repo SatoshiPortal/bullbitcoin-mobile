@@ -14,7 +14,6 @@ import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_utxo_repository_impl.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_utxo_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/check_backup_needed_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/check_wallet_syncing_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/create_default_wallets_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/delete_wallet_usecase.dart';
@@ -127,12 +126,6 @@ class WalletLocator {
     locator.registerFactory<CheckWalletSyncingUsecase>(
       () => CheckWalletSyncingUsecase(
         walletRepository: locator<WalletRepository>(),
-      ),
-    );
-    locator.registerFactory<CheckBackupNeededUsecase>(
-      () => CheckBackupNeededUsecase(
-        walletRepository: locator<WalletRepository>(),
-        settingsRepository: locator<SettingsRepository>(),
       ),
     );
 

@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/outpoint.dart';
+import 'package:primitives/primitives.dart' show Outpoint;
 import 'package:drift/drift.dart';
 
 /// Persistence for user-frozen wallet outputs, backed by the `frozen_utxos`
