@@ -17,16 +17,23 @@ extension QuickActionPresentation on QuickAction {
     QuickAction.exchange => l10n.quickActionTrade,
   };
 
+  String fullLabel(QuickActionsLocalizations l10n) => switch (this) {
+    QuickAction.priceHistory => l10n.priceHistoryFull,
+    QuickAction.transfer => l10n.transferFull,
+    QuickAction.support => l10n.supportFull,
+    _ => label(l10n),
+  };
+
   IconData get icon => switch (this) {
-    QuickAction.buy => BullIcons.shoppingCart,
+    QuickAction.buy => BullIcons.addCircleOutline,
     QuickAction.sell => BullIcons.sell,
-    QuickAction.pay => BullIcons.payments,
+    QuickAction.pay => BullIcons.receiptLong,
     QuickAction.transfer => BullIcons.swapHoriz,
     QuickAction.map => BullIcons.map,
     QuickAction.settings => BullIcons.settings,
     QuickAction.history => BullIcons.history,
     QuickAction.support => BullIcons.supportAgent,
     QuickAction.priceHistory => BullIcons.showChart,
-    QuickAction.exchange => BullIcons.accountBalance,
+    QuickAction.exchange => BullIcons.candlestickChart,
   };
 }

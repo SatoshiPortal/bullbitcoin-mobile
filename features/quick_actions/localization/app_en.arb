@@ -7,7 +7,7 @@
   "@pay": {},
   "transfer": "Transfer",
   "@transfer": {},
-  "map": "Maps",
+  "map": "Map",
   "@map": {},
   "settings": "Settings",
   "@settings": {},
@@ -17,7 +17,7 @@
   "@customize": {},
   "title": "Quick actions",
   "@title": {},
-  "save": "Save",
+  "save": "Save changes",
   "@save": {},
   "reset": "Restore defaults",
   "@reset": {},
@@ -35,7 +35,7 @@
   "@history": {},
   "support": "Support",
   "@support": {},
-  "priceHistory": "Price history",
+  "priceHistory": "Price",
   "@priceHistory": {},
   "quickActionTrade": "Trade",
   "@quickActionTrade": {},
@@ -46,5 +46,80 @@
         "type": "int"
       }
     }
+  },
+  "onHome": "On Home",
+  "@onHome": {
+    "description": "Wallet quick action customization."
+  },
+  "inMore": "In More",
+  "@inMore": {
+    "description": "Wallet quick action customization."
+  },
+  "preview": "Preview",
+  "@preview": {
+    "description": "Wallet quick action customization."
+  },
+  "maximumHint": "Up to 4 cells on Home. When More is needed, your first 3 available favorites appear beside it.",
+  "@maximumHint": {
+    "description": "Wallet quick action customization."
+  },
+  "overflowHint": "These favorites appear in More",
+  "@overflowHint": {
+    "description": "Wallet quick action customization."
+  },
+  "addAction": "Add {name} to favorites",
+  "@addAction": {
+    "description": "Wallet quick action customization.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "removeAction": "Remove {name} from favorites",
+  "@removeAction": {
+    "description": "Wallet quick action customization.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "reorderAction": "Reorder {name}",
+  "@reorderAction": {
+    "description": "Wallet quick action customization.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "edit": "Edit",
+  "@edit": {
+    "description": "Wallet quick action customization."
+  },
+  "close": "Close",
+  "@close": {
+    "description": "Wallet quick action customization."
+  },
+  "priceHistoryFull": "Price history",
+  "@priceHistoryFull": {
+    "description": "Wallet quick action customization."
+  },
+  "saving": "Saving…",
+  "@saving": {
+    "description": "Wallet quick action customization."
+  },
+  "emptyHint": "No favorites selected. Settings remains on Home.",
+  "@emptyHint": {
+    "description": "Wallet quick action customization."
+  },
+  "transferFull": "Transfer between wallets",
+  "@transferFull": {
+    "description": "Full accessible quick action name."
+  },
+  "supportFull": "Support",
+  "@supportFull": {
+    "description": "Full accessible quick action name."
   }
 }

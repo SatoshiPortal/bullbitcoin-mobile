@@ -53,8 +53,8 @@ class _QuickActionsRowState extends State<QuickActionsRow> {
 
   @override
   Widget build(BuildContext context) {
-    if (widget.facade.initialized == false) return const SizedBox.shrink();
     final l10n = QuickActionsLocalizations.of(context);
+    final loading = widget.facade.initialized == false;
     final layout = QuickActionsLayout.resolve(
       available: widget.available,
       defaults: widget.defaults,
@@ -62,65 +62,154 @@ class _QuickActionsRowState extends State<QuickActionsRow> {
     );
     final controls = <Widget>[
       for (final action in layout.primary)
-        BullToolButton(
+        BullQuickAction(
           label: action.label(l10n),
+          semanticLabel: action.fullLabel(l10n),
           icon: action.icon,
+          disabled: loading,
           onPressed: () => widget.onAction(action),
+          onLongPress: widget.onCustomize,
         ),
       if (layout.more.isNotEmpty)
-        BullToolButton(
+        BullQuickAction(
           label: l10n.more,
           icon: BullIcons.moreHoriz,
-          onPressed: () => _showMore(context, layout.more),
+          outlined: true,
+          disabled: loading,
+          onPressed: _showMore,
+          onLongPress: widget.onCustomize,
         ),
     ];
-    return Row(
-      children: [
-        for (var index = 0; index < controls.length; index++)
-          Expanded(
-            child: Padding(
-              padding: EdgeInsets.only(
-                right: index == controls.length - 1 ? 0 : 8,
-              ),
-              child: controls[index],
-            ),
-          ),
-      ],
+    return SizedBox(
+      height: BullQuickAction.height,
+      child: Row(
+        children: [
+          for (var index = 0; index < controls.length; index++) ...[
+            if (index > 0) const SizedBox(width: 8),
+            Expanded(child: controls[index]),
+          ],
+        ],
+      ),
     );
   }
 
-  void _showMore(BuildContext context, List<QuickAction> actions) {
-    final l10n = QuickActionsLocalizations.of(context);
-    BullBottomSheet.show<void>(
+  Future<void> _showMore() async {
+    final result = await BullBottomSheet.show<_MoreChoice>(
       context: context,
-      child: FractionallySizedBox(
-        heightFactor: 0.8,
-        child: SafeArea(
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                for (final action in actions)
-                  BullSettingsEntryItem(
-                    icon: action.icon,
-                    title: action.label(l10n),
-                    onTap: () {
-                      Navigator.pop(context);
-                      if (widget.available.contains(action)) {
-                        widget.onAction(action);
-                      }
-                    },
+      child: _MoreSheet(
+        facade: widget.facade,
+        available: widget.available,
+        defaults: widget.defaults,
+      ),
+    );
+    if (!mounted || result == null) return;
+    if (result.edit) {
+      widget.onCustomize();
+    } else if (result.action case final action?) {
+      if (widget.available.contains(action)) widget.onAction(action);
+    }
+  }
+}
+
+class _MoreChoice {
+  const _MoreChoice.action(this.action) : edit = false;
+  const _MoreChoice.edit() : action = null, edit = true;
+  final QuickAction? action;
+  final bool edit;
+}
+
+/// The sheet owns its Navigator context, so closing it cannot pop WalletHome.
+class _MoreSheet extends StatelessWidget {
+  const _MoreSheet({
+    required this.facade,
+    required this.available,
+    required this.defaults,
+  });
+
+  final QuickActionsFacade facade;
+  final Set<QuickAction> available;
+  final List<QuickAction> defaults;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = QuickActionsLocalizations.of(context);
+    final actions = QuickActionsLayout.resolve(
+      available: available,
+      defaults: defaults,
+      selection: facade.selection,
+    ).more;
+    return SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Center(
+                child: Container(
+                  width: 32,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: context.bull.border,
+                    borderRadius: BorderRadius.circular(2),
                   ),
-                BullSettingsEntryItem(
-                  icon: BullIcons.tune,
-                  title: l10n.customize,
-                  onTap: () {
-                    Navigator.pop(context);
-                    widget.onCustomize();
-                  },
                 ),
-              ],
-            ),
+              ),
+              const SizedBox(height: 8),
+              Row(
+                children: [
+                  Expanded(
+                    child: BullText(
+                      l10n.more,
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: () =>
+                        Navigator.pop(context, const _MoreChoice.edit()),
+                    child: BullText(l10n.edit, style: null),
+                  ),
+                  IconButton(
+                    tooltip: l10n.close,
+                    onPressed: () => Navigator.pop(context),
+                    icon: const BullIcon(BullIcons.close),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              LayoutBuilder(
+                builder: (context, constraints) {
+                  final width = (constraints.maxWidth - 24) / 4;
+                  return Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: [
+                      for (final action in actions)
+                        SizedBox(
+                          width: width,
+                          child: BullQuickAction(
+                            label: action.label(l10n),
+                            semanticLabel: action.fullLabel(l10n),
+                            icon: action.icon,
+                            onPressed: () => Navigator.pop(
+                              context,
+                              _MoreChoice.action(action),
+                            ),
+                            onLongPress: () => Navigator.pop(
+                              context,
+                              const _MoreChoice.edit(),
+                            ),
+                          ),
+                        ),
+                    ],
+                  );
+                },
+              ),
+            ],
           ),
         ),
       ),
