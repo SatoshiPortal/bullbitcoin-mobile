@@ -137,6 +137,18 @@ abstract class LocalDataLocalizations {
   /// **'The Payjoin sessions this app keeps on this device are encrypted, and the key that opens them is no longer available on this device. Your wallets are not affected.'**
   String get localDataRecoveryPayjoinMessage;
 
+  /// Explains that RecoverBull local metadata is unavailable
+  ///
+  /// In en, this message translates to:
+  /// **'RecoverBull\'s local backup data cannot be opened safely on this device.'**
+  String get localDataRecoveryRecoverbullMessage;
+
+  /// Explains exactly what a consented RecoverBull reset removes and preserves
+  ///
+  /// In en, this message translates to:
+  /// **'Resetting removes local backup verification, monitoring history and alerts. Your wallets and exported encrypted backups are kept. Legacy server settings and permission may be imported again.'**
+  String get localDataRecoveryRecoverbullRestoreHint;
+
   /// Explains that local database files are in a state the app cannot open safely
   ///
   /// In en, this message translates to:

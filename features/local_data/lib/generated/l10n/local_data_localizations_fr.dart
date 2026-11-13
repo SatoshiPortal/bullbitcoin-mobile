@@ -31,6 +31,14 @@ class LocalDataLocalizationsFr extends LocalDataLocalizations {
       'Les sessions Payjoin que cette app conserve sur cet appareil sont chiffrées, et la clé qui les ouvre n\'est plus disponible sur cet appareil. Vos portefeuilles ne sont pas concernés.';
 
   @override
+  String get localDataRecoveryRecoverbullMessage =>
+      'Les données locales de sauvegarde RecoverBull ne peuvent pas être ouvertes sans risque sur cet appareil.';
+
+  @override
+  String get localDataRecoveryRecoverbullRestoreHint =>
+      'La réinitialisation efface la vérification locale des sauvegardes, l\'historique du suivi et les alertes. Vos portefeuilles et sauvegardes chiffrées exportées sont conservés. Les anciens réglages du serveur et son autorisation peuvent être réimportés.';
+
+  @override
   String get localDataRecoveryInconsistentMessage =>
       'Une partie des données que cette app conserve sur cet appareil est dans un état qu\'elle ne peut pas ouvrir sans risque.';
 

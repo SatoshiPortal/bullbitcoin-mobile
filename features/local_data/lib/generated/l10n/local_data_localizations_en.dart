@@ -30,6 +30,14 @@ class LocalDataLocalizationsEn extends LocalDataLocalizations {
       'The Payjoin sessions this app keeps on this device are encrypted, and the key that opens them is no longer available on this device. Your wallets are not affected.';
 
   @override
+  String get localDataRecoveryRecoverbullMessage =>
+      'RecoverBull\'s local backup data cannot be opened safely on this device.';
+
+  @override
+  String get localDataRecoveryRecoverbullRestoreHint =>
+      'Resetting removes local backup verification, monitoring history and alerts. Your wallets and exported encrypted backups are kept. Legacy server settings and permission may be imported again.';
+
+  @override
   String get localDataRecoveryInconsistentMessage =>
       'Some of the data this app keeps on this device is in a state it cannot open safely.';
 
