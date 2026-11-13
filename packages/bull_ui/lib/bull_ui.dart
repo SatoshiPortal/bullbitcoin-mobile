@@ -13,6 +13,8 @@ export 'package:flutter/services.dart' show SmartDashesType, SmartQuotesType;
 export 'package:flutter/widgets.dart'
     show
         Align,
+        AppLifecycleListener,
+        AppLifecycleState,
         Alignment,
         AlwaysScrollableScrollPhysics,
         AnimatedContainer,
@@ -37,6 +39,7 @@ export 'package:flutter/widgets.dart'
         EdgeInsets,
         EdgeInsetsGeometry,
         Expanded,
+        ExcludeSemantics,
         Flexible,
         FontFeature,
         FontWeight,

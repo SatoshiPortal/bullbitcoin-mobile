@@ -1,3 +1,4 @@
+import 'package:bull_recoverbull/bull_recoverbull.dart' as rb;
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/result.dart';
@@ -34,6 +35,7 @@ const _settings = SettingsEntity(
 
 Wallet _wallet({bool tested = false}) => Wallet(
   origin: 'w1',
+  masterFingerprint: '73c5da0a',
   network: Network.bitcoinMainnet,
   xpubFingerprint: '00000000',
   scriptType: ScriptType.bip84,
@@ -59,6 +61,7 @@ void main() {
       usecase = CheckBackupUsecase(
         walletRepository: wallets,
         settingsRepository: settings,
+        backupStatus: (_) async => const rb.Ok(rb.BackupStatus()),
       );
       when(() => settings.fetch()).thenAnswer((_) async => _settings);
     });
@@ -106,7 +109,7 @@ void main() {
           fail('a failed read must not be reported as a backup answer');
         case Err(:final failure):
           expect(failure, isA<TestWalletBackupWalletsUnavailableFailure>());
-          expect(failure.logMessage, contains('app.sqlite'));
+          expect(failure.logMessage, isNot(contains('app.sqlite')));
       }
     });
   });

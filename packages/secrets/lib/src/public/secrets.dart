@@ -191,7 +191,7 @@ final class Secrets {
         key: key.hex,
         passphrase: passphrase,
       )).map((restored) {
-        log.info('SECRET_RESTORE: vault opened into ${restored.info.id}');
+        log.fine('secret.backup.restored');
         return (secret: _handle(restored.info), metadata: restored.metadata);
       });
 
