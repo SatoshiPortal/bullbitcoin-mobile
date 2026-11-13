@@ -6,6 +6,7 @@
 library;
 
 export 'package:flutter/services.dart' show SmartDashesType, SmartQuotesType;
+export 'package:flutter/semantics.dart' show CustomSemanticsAction;
 
 // Curated re-export of Flutter foundation/layout primitives (Decision D5).
 // A blanket `export 'package:flutter/widgets.dart'` is deliberately avoided —

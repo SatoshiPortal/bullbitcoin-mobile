@@ -200,25 +200,23 @@ class _QuickActionsCustomizationScreenState
                         ],
                       ),
                     ),
-                    _iconControl(
-                      tooltip: '${l10n.moveUp}: $name',
-                      onPressed: saving || index == 0
-                          ? null
-                          : () => _move(current, index, index - 1),
-                      icon: const BullIcon(BullIcons.arrowUpward),
-                    ),
-                    _iconControl(
-                      tooltip: '${l10n.moveDown}: $name',
-                      onPressed: saving || index == current.length - 1
-                          ? null
-                          : () => _move(current, index, index + 1),
-                      icon: const BullIcon(BullIcons.arrowDownward),
-                    ),
                     ReorderableDragStartListener(
                       index: index,
                       enabled: saving == false,
                       child: Semantics(
                         label: l10n.reorderAction(name),
+                        customSemanticsActions: {
+                          if (!saving && index > 0)
+                            CustomSemanticsAction(
+                              label: '${l10n.moveUp}: $name',
+                            ): () =>
+                                _move(current, index, index - 1),
+                          if (!saving && index < current.length - 1)
+                            CustomSemanticsAction(
+                              label: '${l10n.moveDown}: $name',
+                            ): () =>
+                                _move(current, index, index + 1),
+                        },
                         child: const SizedBox(
                           width: 48,
                           height: 48,

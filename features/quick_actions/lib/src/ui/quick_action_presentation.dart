@@ -19,7 +19,7 @@ extension QuickActionPresentation on QuickAction {
 
   String fullLabel(QuickActionsLocalizations l10n) => switch (this) {
     QuickAction.priceHistory => l10n.priceHistoryFull,
-    QuickAction.transfer => l10n.transferFull,
+    QuickAction.transfer => l10n.transfer,
     QuickAction.support => l10n.supportFull,
     _ => label(l10n),
   };
