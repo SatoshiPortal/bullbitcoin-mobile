@@ -47,37 +47,6 @@
   "@preview": {
     "description": "Wallet quick action customization."
   },
-  "maximumHint": "Choose up to 3 actions for Home.",
-  "@maximumHint": {
-    "description": "Wallet quick action customization."
-  },
-  "addAction": "Add {name} to Home",
-  "@addAction": {
-    "description": "Wallet quick action customization.",
-    "placeholders": {
-      "name": {
-        "type": "String"
-      }
-    }
-  },
-  "removeAction": "Move {name} to More",
-  "@removeAction": {
-    "description": "Wallet quick action customization.",
-    "placeholders": {
-      "name": {
-        "type": "String"
-      }
-    }
-  },
-  "reorderAction": "Reorder {name}",
-  "@reorderAction": {
-    "description": "Wallet quick action customization.",
-    "placeholders": {
-      "name": {
-        "type": "String"
-      }
-    }
-  },
   "edit": "Edit",
   "@edit": {
     "description": "Wallet quick action customization."
@@ -102,10 +71,6 @@
   "@supportFull": {
     "description": "Full accessible quick action name."
   },
-  "homeFullHint": "Home holds 3 actions. Remove one to add another.",
-  "@homeFullHint": {
-    "description": "Explains why adding another Home action is disabled at capacity."
-  },
   "defaultsRestored": "Default actions restored.",
   "@defaultsRestored": {
     "description": "Confirmation after restoring the default Home actions."
@@ -113,5 +78,17 @@
   "undo": "Undo",
   "@undo": {
     "description": "Restore the complete preference from before Restore defaults."
+  },
+  "moveToHome": "Move to Home",
+  "@moveToHome": {
+    "description": "Accessible action that moves this row onto Home, displacing its previous last action if full."
+  },
+  "moveToMore": "Move to More",
+  "@moveToMore": {
+    "description": "Accessible action that moves this row below the fixed separator."
+  },
+  "dragHint": "Touch and hold an action to move it. Home holds up to 3 actions.",
+  "@dragHint": {
+    "description": "Explains whole-row long press and the Home capacity."
   }
 }

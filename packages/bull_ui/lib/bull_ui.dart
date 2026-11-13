@@ -5,7 +5,8 @@
 /// Internals live under `lib/src/`.
 library;
 
-export 'package:flutter/services.dart' show SmartDashesType, SmartQuotesType;
+export 'package:flutter/services.dart'
+    show SmartDashesType, SmartQuotesType, HapticFeedback;
 export 'package:flutter/semantics.dart' show CustomSemanticsAction;
 
 // Curated re-export of Flutter foundation/layout primitives (Decision D5).
@@ -113,6 +114,7 @@ export 'package:flutter/material.dart'
         IconButton,
         Tooltip,
         ReorderableListView,
+        ReorderableDelayedDragStartListener,
         ReorderableDragStartListener;
 export 'package:flutter/services.dart' show TextInputFormatter;
 export 'package:flutter/widgets.dart' show FocusNode;

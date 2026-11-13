@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bull_ui/bull_ui.dart';
 
 import '../../public/quick_actions_facade.dart';
@@ -76,12 +78,9 @@ class _QuickActionsCustomizationScreenState
     }
   }
 
-  Future<void> _editHome(List<QuickAction> home) async {
-    final current = draft;
-    if (current == null || saving) return;
-    final _ = await _write(
-      current.withHomeActions(available: widget.available, home: home),
-    );
+  Future<void> _apply(QuickActionSelection next) async {
+    if (saving || identical(next, draft)) return;
+    await _write(next);
   }
 
   Future<void> _restoreDefaults() async {
@@ -116,11 +115,6 @@ class _QuickActionsCustomizationScreenState
     );
   }
 
-  List<QuickAction> _home(QuickActionSelection current) => current.actions
-      .where(widget.available.contains)
-      .take(QuickActionsLayout.maximumHomeActions)
-      .toList();
-
   @override
   Widget build(BuildContext context) {
     final l10n = QuickActionsLocalizations.of(context);
@@ -133,12 +127,7 @@ class _QuickActionsCustomizationScreenState
             Expanded(
               child: current == null
                   ? Center(child: BullText(l10n.loading, style: null))
-                  : SingleChildScrollView(
-                      child: Padding(
-                        padding: const EdgeInsets.all(16),
-                        child: _editor(context, current),
-                      ),
-                    ),
+                  : _editor(context, current),
             ),
             if (current != null)
               Padding(
@@ -175,17 +164,107 @@ class _QuickActionsCustomizationScreenState
 
   Widget _editor(BuildContext context, QuickActionSelection current) {
     final l10n = QuickActionsLocalizations.of(context);
-    final home = _home(current);
+    final editor = QuickActionsEditorLayout(
+      selection: current,
+      available: widget.available,
+    );
+    final items = editor.items;
+    return ReorderableListView.builder(
+      key: const ValueKey('quick-actions-list'),
+      padding: const EdgeInsets.all(16),
+      buildDefaultDragHandles: false,
+      itemCount: items.length,
+      header: _preview(context, current, editor),
+      onReorderStart: (_) => unawaited(HapticFeedback.selectionClick()),
+      onReorderItem: (from, to) {
+        if (!saving) _apply(editor.move(from, to));
+      },
+      itemBuilder: (context, index) {
+        final action = items[index];
+        if (action == null) {
+          return Semantics(
+            key: const ValueKey('quick-actions-divider'),
+            container: true,
+            header: true,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Container(height: 1, color: context.bull.border),
+                  const SizedBox(height: 12),
+                  BullText(l10n.inMore, style: null),
+                ],
+              ),
+            ),
+          );
+        }
+        final name = action.label(l10n);
+        final onHome = editor.home.contains(action);
+        return ReorderableDelayedDragStartListener(
+          key: ValueKey(action.id),
+          index: index,
+          enabled: !saving,
+          child: Semantics(
+            container: true,
+            label: action.fullLabel(l10n),
+            customSemanticsActions: {
+              if (!saving && index > 0)
+                CustomSemanticsAction(label: l10n.moveUp): () =>
+                    _apply(editor.move(index, index - 1)),
+              if (!saving && index < items.length - 1)
+                CustomSemanticsAction(label: l10n.moveDown): () =>
+                    _apply(editor.move(index, index + 1)),
+              if (!saving && !onHome)
+                CustomSemanticsAction(label: l10n.moveToHome): () =>
+                    _apply(editor.moveToHome(action)),
+              if (!saving && onHome)
+                CustomSemanticsAction(label: l10n.moveToMore): () =>
+                    _apply(editor.moveToMore(action)),
+            },
+            child: ExcludeSemantics(
+              child: Container(
+                key: ValueKey('quick-action-tile-${action.id}'),
+                constraints: const BoxConstraints(minHeight: 56),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 8,
+                ),
+                decoration: BoxDecoration(
+                  color: context.bull.surface,
+                  borderRadius: BorderRadius.circular(
+                    context.bullShapes.button,
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    BullIcon(action.icon),
+                    const SizedBox(width: 12),
+                    Expanded(child: BullText(name, style: null)),
+                    const SizedBox(width: 12),
+                    const BullIcon(BullIcons.dragHandle),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _preview(
+    BuildContext context,
+    QuickActionSelection current,
+    QuickActionsEditorLayout editor,
+  ) {
+    final l10n = QuickActionsLocalizations.of(context);
     final layout = QuickActionsLayout.resolve(
       available: widget.available,
       defaults: widget.defaults,
       selection: current,
     );
-    final remainder = QuickActionsLayout.moreOrder.where(
-      (action) =>
-          widget.available.contains(action) && home.contains(action) == false,
-    );
-    final preview = <Widget>[
+    final controls = <Widget>[
       for (final action in layout.primary)
         BullQuickAction(
           label: action.label(l10n),
@@ -208,106 +287,20 @@ class _QuickActionsCustomizationScreenState
         IgnorePointer(
           child: Row(
             children: [
-              for (var index = 0; index < preview.length; index++) ...[
+              for (var index = 0; index < controls.length; index++) ...[
                 if (index > 0) const SizedBox(width: 8),
-                Expanded(child: preview[index]),
+                Expanded(child: controls[index]),
               ],
             ],
           ),
         ),
-        if (home.isEmpty) BullText(l10n.emptyHint, style: null),
+        if (editor.home.isEmpty) BullText(l10n.emptyHint, style: null),
         const SizedBox(height: 16),
-        BullText(l10n.maximumHint, style: null),
+        BullText(l10n.dragHint, style: null),
         const SizedBox(height: 16),
-        BullText(l10n.onHome, style: null),
-        ReorderableListView.builder(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          buildDefaultDragHandles: false,
-          itemCount: home.length,
-          onReorderItem: (oldIndex, newIndex) {
-            if (saving == false) _move(home, oldIndex, newIndex);
-          },
-          itemBuilder: (context, index) {
-            final action = home[index];
-            final name = action.fullLabel(l10n);
-            return Row(
-              key: ValueKey(action.id),
-              children: [
-                _iconControl(
-                  tooltip: l10n.removeAction(name),
-                  onPressed: saving
-                      ? null
-                      : () => _editHome(List.of(home)..removeAt(index)),
-                  icon: const BullIcon(BullIcons.removeCircleOutline),
-                ),
-                Expanded(child: BullText(name, style: null)),
-                ReorderableDragStartListener(
-                  index: index,
-                  enabled: saving == false,
-                  child: Semantics(
-                    label: l10n.reorderAction(name),
-                    customSemanticsActions: {
-                      if (!saving && index > 0)
-                        CustomSemanticsAction(
-                          label: '${l10n.moveUp}: $name',
-                        ): () =>
-                            _move(home, index, index - 1),
-                      if (!saving && index < home.length - 1)
-                        CustomSemanticsAction(
-                          label: '${l10n.moveDown}: $name',
-                        ): () =>
-                            _move(home, index, index + 1),
-                    },
-                    child: const SizedBox(
-                      width: 48,
-                      height: 48,
-                      child: Center(child: BullIcon(BullIcons.dragHandle)),
-                    ),
-                  ),
-                ),
-              ],
-            );
-          },
-        ),
-        const SizedBox(height: 16),
-        BullText(l10n.inMore, style: null),
-        if (home.length == QuickActionsLayout.maximumHomeActions)
-          BullText(l10n.homeFullHint, style: null),
-        for (final action in remainder)
-          Row(
-            children: [
-              _iconControl(
-                tooltip: l10n.addAction(action.fullLabel(l10n)),
-                onPressed:
-                    saving ||
-                        home.length == QuickActionsLayout.maximumHomeActions
-                    ? null
-                    : () => _editHome([...home, action]),
-                icon: const BullIcon(BullIcons.addCircleOutline),
-              ),
-              Expanded(child: BullText(action.fullLabel(l10n), style: null)),
-            ],
-          ),
+        Semantics(header: true, child: BullText(l10n.onHome, style: null)),
+        const SizedBox(height: 8),
       ],
     );
-  }
-
-  Widget _iconControl({
-    required String tooltip,
-    required VoidCallback? onPressed,
-    required Widget icon,
-  }) => SizedBox(
-    width: 48,
-    height: 48,
-    child: IconButton(tooltip: tooltip, onPressed: onPressed, icon: icon),
-  );
-
-  Future<void> _move(List<QuickAction> home, int from, int to) async {
-    if (saving || to < 0 || to >= home.length || from == to) return;
-    final next = List.of(home);
-    final action = next.removeAt(from);
-    next.insert(to, action);
-    await _editHome(next);
   }
 }

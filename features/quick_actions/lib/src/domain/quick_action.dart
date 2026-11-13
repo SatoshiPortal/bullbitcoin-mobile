@@ -17,40 +17,19 @@ enum QuickAction {
 
 /// A custom ordered selection of distinct actions.
 final class QuickActionSelection {
-  QuickActionSelection(Iterable<QuickAction> actions)
-    : actions = List.unmodifiable(actions) {
-    if (this.actions.toSet().length != this.actions.length) {
+  QuickActionSelection(
+    Iterable<QuickAction> actions, {
+    Iterable<QuickAction> more = const [],
+  }) : actions = List.unmodifiable(actions),
+       more = List.unmodifiable(more) {
+    final combined = [...this.actions, ...this.more];
+    if (combined.toSet().length != combined.length) {
       throw ArgumentError('A selection must contain distinct actions');
     }
   }
 
   final List<QuickAction> actions;
-
-  /// Replaces available favorites while retaining unavailable preferences.
-  QuickActionSelection withHomeActions({
-    required Set<QuickAction> available,
-    required Iterable<QuickAction> home,
-  }) {
-    final replacement = home.toList();
-    if (replacement.length > QuickActionsLayout.maximumHomeActions ||
-        replacement.toSet().length != replacement.length ||
-        replacement.any((action) => !available.contains(action))) {
-      throw ArgumentError(
-        'Home actions must be distinct, available, and at most three',
-      );
-    }
-    final result = <QuickAction>[];
-    var index = 0;
-    for (final action in actions) {
-      if (!available.contains(action)) {
-        result.add(action);
-      } else if (index < replacement.length) {
-        result.add(replacement[index++]);
-      }
-    }
-    result.addAll(replacement.skip(index));
-    return QuickActionSelection(result);
-  }
+  final List<QuickAction> more;
 }
 
 /// The visible selection and its canonical complement.
@@ -97,7 +76,7 @@ final class QuickActionsLayout {
     return QuickActionsLayout._(
       List.unmodifiable(primary),
       List.unmodifiable(
-        moreOrder.where(
+        {...?selection?.more, ...moreOrder}.where(
           (action) =>
               available.contains(action) && primary.contains(action) == false,
         ),

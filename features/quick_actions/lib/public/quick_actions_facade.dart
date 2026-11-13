@@ -11,6 +11,7 @@ import '../src/domain/usecases/save_quick_actions_usecase.dart';
 
 export '../src/domain/quick_actions_repository.dart' show QuickActionsStorage;
 export '../src/domain/quick_action.dart';
+export '../src/domain/quick_actions_editor_layout.dart';
 export '../src/domain/quick_actions_failure.dart';
 export '../src/presentation/quick_actions_fallback_delegate.dart';
 export '../src/ui/quick_actions_row.dart';

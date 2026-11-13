@@ -20,17 +20,15 @@
   "onHome": "Sur l’accueil",
   "inMore": "Dans Plus",
   "preview": "Aperçu",
-  "maximumHint": "Choisissez jusqu’à 3 actions pour l’accueil.",
-  "addAction": "Ajouter {name} à l’accueil",
-  "removeAction": "Déplacer {name} dans Plus",
-  "reorderAction": "Réorganiser {name}",
   "edit": "Modifier",
   "close": "Fermer",
   "priceHistoryFull": "Historique des prix",
   "saving": "Enregistrement…",
   "emptyHint": "Aucune action sélectionnée. Réglages reste sur l’accueil.",
   "supportFull": "Assistance",
-  "homeFullHint": "L’accueil contient 3 actions. Retirez-en une pour en ajouter une autre.",
   "defaultsRestored": "Actions par défaut rétablies.",
-  "undo": "Annuler"
+  "undo": "Annuler",
+  "moveToHome": "Déplacer sur l’accueil",
+  "moveToMore": "Déplacer dans Plus",
+  "dragHint": "Appuyez longuement sur une action pour la déplacer. L’accueil contient jusqu’à 3 actions."
 }
