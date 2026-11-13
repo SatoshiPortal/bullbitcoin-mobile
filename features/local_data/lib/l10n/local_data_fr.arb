@@ -5,6 +5,8 @@
   "localDataRecoveryTitle": "Impossible d'ouvrir les données locales",
   "localDataRecoveryMainMessage": "Les données que cette app conserve sur cet appareil (liste des portefeuilles, libellés, historique des transactions, swaps et réglages) sont chiffrées, et la clé qui les ouvre n'est plus disponible sur cet appareil.",
   "localDataRecoveryPayjoinMessage": "Les sessions Payjoin que cette app conserve sur cet appareil sont chiffrées, et la clé qui les ouvre n'est plus disponible sur cet appareil. Vos portefeuilles ne sont pas concernés.",
+  "localDataRecoveryRecoverbullMessage": "Les données locales de sauvegarde RecoverBull ne peuvent pas être ouvertes sans risque sur cet appareil.",
+  "localDataRecoveryRecoverbullRestoreHint": "La réinitialisation efface la vérification locale des sauvegardes, l'historique du suivi et les alertes. Vos portefeuilles et sauvegardes chiffrées exportées sont conservés. Les anciens réglages du serveur et son autorisation peuvent être réimportés.",
   "localDataRecoveryInconsistentMessage": "Une partie des données que cette app conserve sur cet appareil est dans un état qu'elle ne peut pas ouvrir sans risque.",
   "localDataRecoveryRestoreHint": "La réinitialisation les efface. Votre phrase de récupération ou votre sauvegarde chiffrée restaure ensuite vos portefeuilles ; les libellés, les swaps et les sessions Payjoin ne reviennent pas.",
   "localDataResetButton": "Réinitialiser les données locales",
