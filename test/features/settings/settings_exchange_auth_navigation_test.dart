@@ -60,14 +60,16 @@ void main() {
           routes: [
             GoRoute(
               path: '/manage',
-              builder: (context, state) => ExchangeAccessSettingsScreen(
-                cubit: cubit,
-                onBack: () {},
-                onAuthenticate: () => context.push<void>('/auth'),
-                onOpenAccount: () => context.push('/account'),
-                onDisabled: () {},
-                onAuthenticated: () {},
-              ),
+              builder: (context, state) =>
+                  BlocProvider<ExchangeAccessSettingsCubit>(
+                    create: (_) => cubit,
+                    child: ExchangeAccessSettingsScreen(
+                      onBack: () {},
+                      onAuthenticate: () => context.push<void>('/auth'),
+                      onOpenAccount: () => context.push('/account'),
+                      onDisabled: () {},
+                    ),
+                  ),
             ),
             GoRoute(
               path: '/account',
@@ -225,5 +227,83 @@ void main() {
     await locator.unregister<ExchangeAccessSettingsCubit>();
     await settings.close();
     await exchangeCubit.close();
+  });
+  testWidgets('route rebuild retains one owned cubit and closes it on exit', (
+    tester,
+  ) async {
+    final exchange = _Exchange();
+    final set = _Set();
+    final settings = _Settings();
+    when(() => settings.state).thenReturn(const SettingsState());
+    when(
+      () => exchange.currentAccess,
+    ).thenReturn(const ExchangeAccessDisabled());
+    when(exchange.watchAccess).thenAnswer((_) => const Stream.empty());
+    final cubits = <ExchangeAccessSettingsCubit>[];
+    locator.registerFactory<ExchangeAccessSettingsCubit>(() {
+      final cubit = ExchangeAccessSettingsCubit(
+        WatchSettingsExchangeAccessUsecase(exchange),
+        set,
+      );
+      cubits.add(cubit);
+      return cubit;
+    });
+    final route =
+        SettingsRouter.route(
+          buildPriceHistory: (_) => const SizedBox.shrink(),
+        ).routes.whereType<GoRoute>().singleWhere(
+          (route) => route.name == SettingsRoute.exchangeAccess.name,
+        );
+    final routeBuilder = route.builder;
+    expect(routeBuilder, isNotNull);
+    if (routeBuilder == null) throw StateError('Manage access needs a builder');
+    final refresh = ValueNotifier(0);
+    final router = GoRouter(
+      initialLocation: '/home',
+      routes: [
+        GoRoute(
+          path: '/home',
+          builder: (_, _) => const Scaffold(body: Text('Home')),
+        ),
+        GoRoute(
+          path: '/manage',
+          builder: (context, state) => ValueListenableBuilder<int>(
+            valueListenable: refresh,
+            builder: (context, _, _) => routeBuilder(context, state),
+          ),
+        ),
+      ],
+    );
+    await tester.pumpWidget(
+      BlocProvider<SettingsCubit>.value(
+        value: settings,
+        child: MaterialApp.router(
+          routerConfig: router,
+          theme: AppTheme.themeData(AppThemeType.light),
+          locale: const Locale('en'),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    router.push('/manage');
+    await tester.pumpAndSettle();
+    expect(cubits, hasLength(1));
+    refresh.value++;
+    await tester.pumpAndSettle();
+    expect(cubits, hasLength(1));
+    expect(cubits.single.isClosed, isFalse);
+    router.pop();
+    await tester.pumpAndSettle();
+    await tester.runAsync(() async {
+      await Future<void>.delayed(Duration.zero);
+    });
+    expect(cubits.single.isClosed, isTrue);
+    await tester.pumpWidget(const SizedBox.shrink());
+    router.dispose();
+    refresh.dispose();
+    await locator.unregister<ExchangeAccessSettingsCubit>();
+    await settings.close();
   });
 }
