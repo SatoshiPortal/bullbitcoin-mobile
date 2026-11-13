@@ -24,7 +24,7 @@ class WalletHomeTopSection extends StatelessWidget {
   static const double _balanceAreaHeight = 264;
 
   /// Distance from the top of the dark area down to the balance.
-  static const double _balanceTopSpacing = 123;
+  static const double _balanceTopSpacing = 96;
 
   /// How far the [ActionCard] hangs below the dark area.
   static const double _actionCardOverhang = 76;
@@ -121,7 +121,11 @@ class _Amounts extends StatelessWidget {
         Gap(WalletHomeTopSection._balanceTopSpacing),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: [Spacer(), _BtcTotalAmt(), Gap(16), EyeToggle(), Spacer()],
+          children: [
+            Flexible(child: _BtcTotalAmt()),
+            Gap(16),
+            EyeToggle(),
+          ],
         ),
         Gap(12),
         _FiatAmt(),
@@ -156,6 +160,7 @@ class _BtcTotalAmt extends StatelessWidget {
     return CurrencyText(
       btcTotal,
       showFiat: false,
+      interactive: true,
       style: context.font.displaySmall,
       color: context.appColors.onPrimary,
     );
@@ -235,6 +240,7 @@ class _UnconfirmedIncomingBalance extends StatelessWidget {
                 CurrencyText(
                   unconfirmed,
                   showFiat: false,
+                  interactive: true,
                   style: context.font.bodyLarge,
                   color: color,
                 ),
