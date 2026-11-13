@@ -41,6 +41,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
     show
+        BullBitcoinAmountInput,
         BullBorderedTile,
         BullBottomSheet,
         BullButton,
@@ -563,36 +564,112 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                                       crossAxisAlignment:
                                           CrossAxisAlignment.stretch,
                                       children: [
-                                        PriceInput(
-                                          currency: inputCurrency,
-                                          amountEquivalent: state
-                                              .formattedAmountInputEquivalent,
-                                          availableCurrencies:
-                                              availableInputCurrencies,
-                                          amountController: _amountController,
-                                          onCurrencyChanged: (currencyCode) {
-                                            context
-                                                .read<SendCubit>()
-                                                .onCurrencyChanged(
-                                                  currencyCode,
-                                                );
-                                          },
-                                          error: balanceError && failure != null
-                                              ? failure.toTranslated(
-                                                  context,
-                                                  formattedFrozenBalance:
-                                                      frozenBalanceHint,
-                                                )
-                                              : (!walletHasBalance &&
-                                                    amountConfirmedClicked)
-                                              ? context
-                                                    .loc
-                                                    .sendInsufficientBalance
-                                              : failure?.toTranslated(context),
-                                          focusNode: _amountFocusNode,
-                                          readOnly: state.isMaxSend,
-                                          isMax: state.isMaxSend,
-                                        ),
+                                        if (inputCurrency == 'BTC' ||
+                                            inputCurrency == 'sats') ...[
+                                          BullBitcoinAmountInput(
+                                            currency: inputCurrency,
+                                            amountController: _amountController,
+                                            amountEquivalent: state
+                                                .formattedAmountInputEquivalent,
+                                            error:
+                                                balanceError && failure != null
+                                                ? failure.toTranslated(
+                                                    context,
+                                                    formattedFrozenBalance:
+                                                        frozenBalanceHint,
+                                                  )
+                                                : (!walletHasBalance &&
+                                                      amountConfirmedClicked)
+                                                ? context
+                                                      .loc
+                                                      .sendInsufficientBalance
+                                                : failure?.toTranslated(
+                                                    context,
+                                                  ),
+                                            focusNode: _amountFocusNode,
+                                            readOnly: state.isMaxSend,
+                                            isMax: state.isMaxSend,
+                                            maxLabel: context.loc.swapMaxButton,
+                                            switchToBtcLabel:
+                                                context.loc.amountSwitchToBtc,
+                                            switchToSatsLabel:
+                                                context.loc.amountSwitchToSats,
+                                          ),
+                                          if (availableInputCurrencies.any(
+                                            (code) =>
+                                                code != 'BTC' && code != 'sats',
+                                          ))
+                                            IconButton(
+                                              tooltip: context
+                                                  .loc
+                                                  .settingsCurrencyTitle,
+                                              icon: const Icon(
+                                                Icons.arrow_drop_down,
+                                              ),
+                                              onPressed: () async {
+                                                final cubit = context
+                                                    .read<SendCubit>();
+                                                final selected =
+                                                    await BullBottomSheet.show<
+                                                      String?
+                                                    >(
+                                                      context: context,
+                                                      child: CurrencyBottomSheet(
+                                                        availableCurrencies:
+                                                            availableInputCurrencies
+                                                                .where(
+                                                                  (code) =>
+                                                                      code !=
+                                                                          'BTC' &&
+                                                                      code !=
+                                                                          'sats',
+                                                                )
+                                                                .toList(),
+                                                        selectedValue:
+                                                            inputCurrency,
+                                                      ),
+                                                    );
+                                                if (selected != null) {
+                                                  cubit.onCurrencyChanged(
+                                                    selected,
+                                                  );
+                                                }
+                                              },
+                                            ),
+                                        ] else
+                                          PriceInput(
+                                            currency: inputCurrency,
+                                            amountEquivalent: state
+                                                .formattedAmountInputEquivalent,
+                                            availableCurrencies:
+                                                availableInputCurrencies,
+                                            amountController: _amountController,
+                                            onCurrencyChanged: (currencyCode) {
+                                              context
+                                                  .read<SendCubit>()
+                                                  .onCurrencyChanged(
+                                                    currencyCode,
+                                                  );
+                                            },
+                                            error:
+                                                balanceError && failure != null
+                                                ? failure.toTranslated(
+                                                    context,
+                                                    formattedFrozenBalance:
+                                                        frozenBalanceHint,
+                                                  )
+                                                : (!walletHasBalance &&
+                                                      amountConfirmedClicked)
+                                                ? context
+                                                      .loc
+                                                      .sendInsufficientBalance
+                                                : failure?.toTranslated(
+                                                    context,
+                                                  ),
+                                            focusNode: _amountFocusNode,
+                                            readOnly: state.isMaxSend,
+                                            isMax: state.isMaxSend,
+                                          ),
                                       ],
                                     ),
                                   if (suggestsInstantPayments)
