@@ -117,52 +117,61 @@ class ExchangeRouter {
         return NoTransitionPage(key: state.pageKey, child: landingScreen);
       },
     ),
-    GoRoute(
-      name: ExchangeRoute.exchangeAuth.name,
-      path: ExchangeRoute.exchangeAuth.path,
-      pageBuilder: (context, state) {
-        final draft = state.extra as ExchangeSupportChatDraft?;
-        final fromSupport = state.uri.queryParameters['from'] == 'support';
-        final fromSettings = state.uri.queryParameters['from'] == 'settings';
-        if (fromSettings) {
-          return NoTransitionPage(
-            key: state.pageKey,
-            child: _SettingsAuthenticationReturn(
-              onExit: () => config.onExit(context),
-              child: ExchangeAuthScreen(onExit: () => config.onExit(context)),
-            ),
-          );
+  ];
+
+  static GoRoute authRoute(ExchangeRouterConfig config) => GoRoute(
+    name: ExchangeRoute.exchangeAuth.name,
+    path: ExchangeRoute.exchangeAuth.path,
+    pageBuilder: (context, state) {
+      final draft = state.extra as ExchangeSupportChatDraft?;
+      final fromSupport = state.uri.queryParameters['from'] == 'support';
+      final fromSettings = state.uri.queryParameters['from'] == 'settings';
+      if (fromSettings) {
+        void exitSettingsAuth() {
+          if (context.canPop()) {
+            context.pop();
+          } else {
+            config.onExit(context);
+          }
         }
+
         return NoTransitionPage(
           key: state.pageKey,
-          child: BlocListener<ExchangeCubit, ExchangeState>(
-            listenWhen: (previous, current) =>
-                previous.notLoggedIn && !current.notLoggedIn,
-            listener: (context, exchangeState) {
-              if (fromSupport) {
-                final isIOSNonSuperuser =
-                    Platform.isIOS && !config.isSuperuser(context);
-                context.goNamed(
-                  ExchangeSupportChatFacade.routeName,
-                  queryParameters: isIOSNonSuperuser
-                      ? {}
-                      : {'from': 'exchange'},
-                  extra: draft,
-                );
-                return;
-              }
-              if (Platform.isIOS && !config.isSuperuser(context)) {
-                config.onExit(context);
-                return;
-              }
-              context.goNamed(ExchangeRoute.exchangeHome.name);
-            },
-            child: ExchangeAuthScreen(onExit: () => config.onExit(context)),
+          child: _SettingsAuthenticationReturn(
+            onExit: exitSettingsAuth,
+            child: Scaffold(body: ExchangeAuthScreen(onExit: exitSettingsAuth)),
           ),
         );
-      },
-    ),
-  ];
+      }
+      return NoTransitionPage(
+        key: state.pageKey,
+        child: BlocListener<ExchangeCubit, ExchangeState>(
+          listenWhen: (previous, current) =>
+              previous.notLoggedIn && !current.notLoggedIn,
+          listener: (context, exchangeState) {
+            if (fromSupport) {
+              final isIOSNonSuperuser =
+                  Platform.isIOS && !config.isSuperuser(context);
+              context.goNamed(
+                ExchangeSupportChatFacade.routeName,
+                queryParameters: isIOSNonSuperuser ? {} : {'from': 'exchange'},
+                extra: draft,
+              );
+              return;
+            }
+            if (Platform.isIOS && !config.isSuperuser(context)) {
+              config.onExit(context);
+              return;
+            }
+            context.goNamed(ExchangeRoute.exchangeHome.name);
+          },
+          child: Scaffold(
+            body: ExchangeAuthScreen(onExit: () => config.onExit(context)),
+          ),
+        ),
+      );
+    },
+  );
 }
 
 class _SettingsAuthenticationReturn extends StatefulWidget {

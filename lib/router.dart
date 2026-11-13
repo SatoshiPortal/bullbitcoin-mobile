@@ -175,6 +175,7 @@ class AppRouter {
           ...ExchangeRouter.routes(_exchangeConfig),
         ],
       ),
+      ExchangeRouter.authRoute(_exchangeConfig),
       ExchangeRouter.supportChatRoute(_exchangeConfig),
       OnboardingRouter.route,
       AppUnlockRouter.route,

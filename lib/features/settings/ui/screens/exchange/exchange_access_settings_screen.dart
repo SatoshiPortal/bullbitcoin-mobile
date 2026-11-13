@@ -12,6 +12,7 @@ class ExchangeAccessSettingsScreen extends StatelessWidget {
     required this.onAuthenticate,
     required this.onOpenAccount,
     required this.onDisabled,
+    required this.onAuthenticated,
     super.key,
   });
   final ExchangeAccessSettingsCubit cubit;
@@ -19,13 +20,21 @@ class ExchangeAccessSettingsScreen extends StatelessWidget {
   final Future<void> Function() onAuthenticate;
   final VoidCallback onOpenAccount;
   final VoidCallback onDisabled;
+  final VoidCallback onAuthenticated;
 
   Future<void> _enable() async {
     final outcome = await cubit.setEnabled(true);
     if (outcome == ExchangeAccessOutcome.authenticationRequired) {
       final generation = cubit.generation;
       await onAuthenticate();
-      if (!cubit.isClosed) await cubit.cancelActivation(generation);
+      if (!cubit.isClosed) {
+        await cubit.cancelActivation(generation);
+        if (!cubit.isClosed &&
+            cubit.state.failure == null &&
+            cubit.state.access.canUseAuthenticatedExchange) {
+          onAuthenticated();
+        }
+      }
     }
   }
 
