@@ -6,6 +6,16 @@ enum ExchangeAvailability {
   ready,
   unavailable;
 
+  /// Account management and support authentication remain available when
+  /// platform policy hides activation and trading.
+  static bool canManageAccount(ExchangeAccess access) =>
+      access is ExchangeAccessEnabled &&
+      access.session == ExchangeAccessSession.signedIn;
+
+  static bool canAuthenticate(ExchangeAccess access) =>
+      access is ExchangeAccessEnabled &&
+      access.session != ExchangeAccessSession.unreadable;
+
   static ExchangeAvailability resolve({
     required bool platformAllowed,
     required ExchangeAccess access,

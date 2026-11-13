@@ -107,7 +107,6 @@ class ExchangeAccessRepositoryImpl implements ExchangeAccessRepository {
   @override
   Future<Result<void, ExchangeFailure>> resolve() {
     final token = ++_epoch;
-    _emit(const ExchangeAccessResolving());
     final disconnected = _attempt(_disconnectNotifications);
     return _serial(() async {
       await disconnected;
@@ -137,6 +136,16 @@ class ExchangeAccessRepositoryImpl implements ExchangeAccessRepository {
         }
         final present = (key as Ok<String?, dynamic>).value != null;
         final enabled = preference.enabled ?? present;
+        if (preference.enabled == null && present) {
+          final saved = await _write(true, false);
+          if (token != _epoch) {
+            return const Ok(null);
+          }
+          if (!saved) {
+            _emit(const ExchangeAccessUnreadable());
+            return const Err(ExchangeUnexpectedFailure());
+          }
+        }
         if (token != _epoch) {
           return const Ok(null);
         }
@@ -163,6 +172,7 @@ class ExchangeAccessRepositoryImpl implements ExchangeAccessRepository {
   Future<Result<void, ExchangeFailure>> enable({
     bool onlyIfUnset = false,
     bool choice = true,
+    bool forSupport = false,
   }) {
     final token = onlyIfUnset ? _epoch : ++_epoch;
     return _serial(() async {
@@ -177,7 +187,7 @@ class ExchangeAccessRepositoryImpl implements ExchangeAccessRepository {
         if (onlyIfUnset && preference.enabled != null) {
           return const Ok(null);
         }
-        if (choice && !await _platformAllowed()) {
+        if (choice && !forSupport && !await _platformAllowed()) {
           return const Err(ExchangeUnexpectedFailure());
         }
         final environment = await _readEnvironment();
@@ -309,6 +319,14 @@ class ExchangeAccessRepositoryImpl implements ExchangeAccessRepository {
         final cleanupEpoch = ++_epoch;
         _emit(const ExchangeAccessEnabled(ExchangeAccessSession.unreadable));
         final disconnected = await _attempt(_disconnectNotifications);
+        if (cleanupEpoch != _epoch) return const Ok(null);
+        final saved = await _write(true, false);
+        if (cleanupEpoch != _epoch) {
+          return const Ok(null);
+        }
+        if (!saved) {
+          return const Err(ExchangeUnexpectedFailure());
+        }
         var removed = false;
         try {
           final deleted = await _keys.deleteApiKey(isTestnet: isTestnet);
@@ -339,7 +357,7 @@ class ExchangeAccessRepositoryImpl implements ExchangeAccessRepository {
     }
     final token = ++_epoch;
     try {
-      if (!await _platformAllowed() || token != _epoch || !isCurrent()) {
+      if (token != _epoch || !isCurrent()) {
         return const Err(ExchangeAuthenticationFailure());
       }
     } on Exception {
@@ -353,7 +371,6 @@ class ExchangeAccessRepositoryImpl implements ExchangeAccessRepository {
       if (token != _epoch ||
           !isCurrent() ||
           _current is! ExchangeAccessEnabled ||
-          !await _platformAllowed() ||
           await _readEnvironment() != isTestnet ||
           token != _epoch ||
           !isCurrent()) {

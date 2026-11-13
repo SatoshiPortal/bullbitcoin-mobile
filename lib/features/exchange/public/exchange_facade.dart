@@ -61,11 +61,14 @@ class ExchangeFacade {
   ExchangeAccess get currentAccess => _watch.current;
   Stream<ExchangeAccess> watchAccess() => _watch.execute();
   Future<Result<void, ExchangeFailure>> resolveAccess() => _resolve.execute();
-  Future<Result<void, ExchangeFailure>> enable({bool? initialChoice}) =>
-      _enable.execute(
-        onlyIfUnset: initialChoice != null,
-        choice: initialChoice ?? true,
-      );
+  Future<Result<void, ExchangeFailure>> enable({
+    bool? initialChoice,
+    bool forSupport = false,
+  }) => _enable.execute(
+    onlyIfUnset: initialChoice != null,
+    choice: initialChoice ?? true,
+    forSupport: forSupport,
+  );
   Future<Result<void, ExchangeFailure>> logout() => _signOut.execute();
   Future<Result<ExchangeAvailability, ExchangeFailure>> guardTradingEntry() =>
       _tradingGuard.execute();

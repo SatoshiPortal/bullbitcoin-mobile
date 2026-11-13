@@ -11,6 +11,7 @@ abstract interface class ExchangeAccessRepository {
   Future<Result<void, ExchangeFailure>> enable({
     bool onlyIfUnset = false,
     bool choice = true,
+    bool forSupport = false,
   });
   Future<Result<void, ExchangeFailure>> signOut();
   Future<Result<void, ExchangeFailure>> runAuthenticated(

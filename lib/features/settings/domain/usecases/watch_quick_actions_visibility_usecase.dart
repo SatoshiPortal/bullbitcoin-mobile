@@ -31,11 +31,12 @@ class WatchQuickActionsVisibilityUsecase {
     void publish() {
       if (!platformResolved) return;
       final visible =
+          access is! ExchangeAccessResolving &&
           ExchangeAvailability.resolve(
-            platformAllowed: allowed,
-            access: access,
-          ) !=
-          ExchangeAvailability.hidden;
+                platformAllowed: allowed,
+                access: access,
+              ) !=
+              ExchangeAvailability.hidden;
       if (active && !controller.isClosed && visible != lastValue) {
         lastValue = visible;
         controller.add(visible);

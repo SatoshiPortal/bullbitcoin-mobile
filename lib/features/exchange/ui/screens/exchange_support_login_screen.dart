@@ -13,13 +13,7 @@ import 'package:go_router/go_router.dart';
 class ExchangeSupportLoginScreen extends StatefulWidget {
   final ExchangeSupportChatDraft? draft;
 
-  const ExchangeSupportLoginScreen({
-    super.key,
-    this.draft,
-    required this.canLogin,
-  });
-
-  final bool Function(BuildContext) canLogin;
+  const ExchangeSupportLoginScreen({super.key, this.draft});
 
   @override
   State<ExchangeSupportLoginScreen> createState() =>
@@ -31,14 +25,13 @@ class _ExchangeSupportLoginScreenState
   bool _busy = false;
 
   Future<void> _login() async {
-    if (_busy || !widget.canLogin(context)) return;
+    if (_busy) return;
     setState(() => _busy = true);
-    final result = await locator<ExchangeFacade>().enable();
+    final result = await locator<ExchangeFacade>().enable(forSupport: true);
     if (!mounted) return;
     setState(() => _busy = false);
     switch (result) {
       case Ok():
-        if (!widget.canLogin(context)) return;
         context.goNamed(
           ExchangeRoute.exchangeAuth.name,
           queryParameters: {'from': 'support'},
@@ -150,17 +143,16 @@ class _ExchangeSupportLoginScreenState
                               textAlign: TextAlign.center,
                             ),
                             const Gap(24),
-                            if (widget.canLogin(context))
-                              SizedBox(
-                                width: double.infinity,
-                                child: BBButton.big(
-                                  label: context.loc.exchangeLoginButton,
-                                  disabled: _busy,
-                                  onPressed: _login,
-                                  bgColor: context.appColors.primary,
-                                  textColor: context.appColors.onPrimary,
-                                ),
+                            SizedBox(
+                              width: double.infinity,
+                              child: BBButton.big(
+                                label: context.loc.exchangeLoginButton,
+                                disabled: _busy,
+                                onPressed: _login,
+                                bgColor: context.appColors.primary,
+                                textColor: context.appColors.onPrimary,
                               ),
+                            ),
                           ],
                         ),
                       ),

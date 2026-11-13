@@ -54,10 +54,7 @@ class ExchangeRouter {
   static GoRoute supportChatRoute(ExchangeRouterConfig config) =>
       ExchangeSupportChatRouter.route(
         isLoggedIn: (context) => ExchangeScope.isLoggedIn(context),
-        loginScreenBuilder: (draft) => ExchangeSupportLoginScreen(
-          draft: draft,
-          canLogin: (context) => !Platform.isIOS || config.isSuperuser(context),
-        ),
+        loginScreenBuilder: (draft) => ExchangeSupportLoginScreen(draft: draft),
         onExit: (context, fromExchange) {
           if (fromExchange) {
             context.goNamed(ExchangeRoute.exchangeHome.name);
@@ -236,12 +233,7 @@ class _AuthAccessGate extends StatelessWidget {
   @override
   Widget build(BuildContext context) => ExchangeAccessBuilder(
     builder: (context, access) {
-      final available = ExchangeAvailability.resolve(
-        platformAllowed: !Platform.isIOS || config.isSuperuser(context),
-        access: access,
-      );
-      if (available == ExchangeAvailability.signInRequired ||
-          available == ExchangeAvailability.ready) {
+      if (ExchangeAvailability.canAuthenticate(access)) {
         return child;
       }
       return BullScaffold(
@@ -255,7 +247,7 @@ class _AuthAccessGate extends StatelessWidget {
               const Gap(24),
               BullText(
                 context.loc.exchangeTradingUnavailable,
-                style: const TextStyle(),
+                style: context.bullText.bodyMedium,
               ),
               const Gap(16),
               BullButton.big(

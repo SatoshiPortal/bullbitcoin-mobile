@@ -8,5 +8,10 @@ class EnableExchangeUsecase {
   Future<Result<void, ExchangeFailure>> execute({
     bool onlyIfUnset = false,
     bool choice = true,
-  }) => _repository.enable(onlyIfUnset: onlyIfUnset, choice: choice);
+    bool forSupport = false,
+  }) => _repository.enable(
+    onlyIfUnset: onlyIfUnset,
+    choice: choice,
+    forSupport: forSupport,
+  );
 }

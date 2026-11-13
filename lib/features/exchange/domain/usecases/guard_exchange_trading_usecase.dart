@@ -10,6 +10,20 @@ class GuardExchangeTradingUsecase {
 
   Future<Result<ExchangeAvailability, ExchangeFailure>> execute() async {
     try {
+      final availability = ExchangeAvailability.resolve(
+        platformAllowed: await _platformAllowed(),
+        access: _access.current,
+      );
+      if (availability == ExchangeAvailability.ready) {
+        // Reconciliation uses the same queue. A displayed session is not
+        // permission to trade before the active environment has been read.
+        final settled = await _access.runAuthenticated(
+          () async => const Ok(null),
+        );
+        if (settled case Err(:final failure)) {
+          if (failure is! ExchangeNotAuthenticatedFailure) return Err(failure);
+        }
+      }
       return Ok(
         ExchangeAvailability.resolve(
           platformAllowed: await _platformAllowed(),
