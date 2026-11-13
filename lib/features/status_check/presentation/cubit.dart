@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/status_check/domain/check_service_status_usecase.dart';
 import 'package:bb_mobile/features/status_check/presentation/state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

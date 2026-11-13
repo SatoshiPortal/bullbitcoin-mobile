@@ -1,8 +1,8 @@
-import 'package:primitives/primitives.dart' show BitcoinTransactionRecipient;
+import 'package:primitives/primitives.dart'
+    show BitcoinTransactionRecipient, Err, Ok;
 import 'dart:io';
 
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
-import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:secrets/secrets.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';

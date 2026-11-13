@@ -1,6 +1,6 @@
 import 'package:bb_mobile/core/exchange/domain/entity/notification_message.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_notification_repository.dart';
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/exchange/domain/exchange_failure.dart';
 import 'package:meta/meta.dart';
 

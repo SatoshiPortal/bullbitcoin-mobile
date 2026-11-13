@@ -2,7 +2,7 @@ import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/core/errors/bull_exception.dart';
 
 /// Deletes the swap master key (the "swap mnemonic") for the current
