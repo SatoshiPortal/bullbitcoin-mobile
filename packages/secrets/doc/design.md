@@ -494,3 +494,5 @@ read. PSETs lwk builds for the app leave the field absent. Beyond the
 sighash, the package applies no policy on outputs, fees or inputs: it
 signs the inputs its keys own, and deciding what is acceptable to sign is
 the caller's.
+
+The sealed Nostr view follows the same boundary as mnemonic display. Its private state owns the nsec and QR matrix; the host gets widgets and a clipboard action, with stale actions invalidated when the public record changes.

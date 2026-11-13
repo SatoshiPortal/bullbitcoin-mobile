@@ -62,6 +62,7 @@ Secret
 |-- silentPayments
 |   `-- account(name:, network:, blindbitUrl:, electrumUrl:, dataDir:, dustLimit:, fetchConcurrencyFactor:, matchConcurrencyFactor:, [headerCheckpoint:]) -> SpAccount
 `-- widgets
+    |-- nostrKey([key:], identity:, publicKey:, qrForeground:, qrBackground:, builder:, failureBuilder:, [style:], [placeholder: const SizedBox.shrink()]) -> NostrKeyView
     |-- dataRecoveryWords([key:], failureBuilder:, [style:], [placeholder: const SizedBox.shrink()], [wordBuilder:], [layoutBuilder:]) -> MnemonicView
     |-- mnemonicView([key:], failureBuilder:, [style:], [passphraseLabel:], [passphraseLabelStyle:], [placeholder: const SizedBox.shrink()], [wordBuilder:], [layoutBuilder:]) -> MnemonicView
     `-- mnemonicChallenge([key:], tileBuilder:, layoutBuilder:, onSolved:, onMistake:, failureBuilder:, [onProgress:], [style:], [placeholder: const SizedBox.shrink()]) -> MnemonicChallenge
@@ -206,3 +207,5 @@ RecoverBull creation, restoration and backup inspection use the package. Decrypt
 ## Read next
 
 [doc/design.md](doc/design.md): contracts, passphrase behavior, storage ownership, module layout, custody checks and contributor rules.
+
+Nostr private-key display uses `secret.widgets.nostrKey`: the host supplies its public record, warning and capture protection. Secrets verifies the derived public key and renders the private text and QR internally. Only the explicit copy action writes the nsec to the clipboard. Identities 100 and 101 derive from Data Recovery Words; user identities derive from the stored secret.

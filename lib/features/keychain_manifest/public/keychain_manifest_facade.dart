@@ -12,6 +12,7 @@ export '../domain/entities/backup_identity_record.dart';
 export '../domain/entities/backup_wallet.dart';
 export '../domain/entities/keychain_manifest.dart';
 export '../domain/keychain_manifest_failure.dart';
+export '../ui/keychain_manifest_router.dart' show KeychainManifestRouter;
 
 class KeychainManifestFacade {
   static const nostrKeysRouteName = 'nostrKeys';
