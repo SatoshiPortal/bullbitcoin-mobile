@@ -2,6 +2,8 @@ import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
 import 'package:bb_mobile/features/exchange_access/public/exchange_access_facade.dart';
 import 'package:bull_quick_actions/bull_quick_actions.dart';
 import 'dart:io';
+import 'dart:async';
+import 'package:bull_recoverbull/bull_recoverbull.dart';
 
 import 'package:bb_mobile/bloc_observer.dart';
 import 'package:bb_mobile/core/background_tasks/handler.dart';
@@ -80,6 +82,11 @@ class Bull {
     }
     await locator<ApplyPendingWizardChoicesUsecase>().execute();
     await locator<QuickActionsFacade>().load();
+    await AppLocator.setupRecoverBull(
+      locator,
+      databasePath: p.join(bullDirectory.path, 'recoverbull.sqlite'),
+    );
+    unawaited(locator<RecoverBullFacade>().checkAtColdStart());
     final settings = locator<SettingsRepository>();
     configureLogTorContext(
       () => loadTorDiagnosticContext(settings, locator<Tor>()),

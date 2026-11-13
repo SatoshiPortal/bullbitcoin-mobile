@@ -1,5 +1,9 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
+
+import 'package:bull_recoverbull/bull_recoverbull.dart';
+import 'package:secrets/secrets.dart';
 
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_api_key_repository.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
@@ -30,6 +34,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+class _RecoverBullWallets extends Mock implements RecoverBullWalletPort {}
 
 class _SettingsCubit extends MockCubit<SettingsState>
     implements SettingsCubit {}
@@ -107,6 +113,21 @@ void main() {
             WatchSettingsExchangeAccessUsecase(access),
             SetSettingsExchangeAccessUsecase(access, exchange),
           ),
+        );
+
+        // Develop mounts RecoverBull before creating the application router.
+        // Supply its public composition for route registration only; this test
+        // never opens a vault or reads secret material.
+        final scratch = Directory.systemTemp.createTempSync(
+          'quick-actions-auth-',
+        );
+        addTearDown(() => scratch.deleteSync(recursive: true));
+        locator.registerSingleton<RecoverBullFeature>(
+          RecoverBullFeature.create(
+            secrets: Secrets(scratchDirectory: () async => scratch.path),
+            wallets: _RecoverBullWallets(),
+          ),
+          dispose: (feature) => feature.dispose(),
         );
 
         // Preserve the real route ownership; replace only WalletHome's unrelated

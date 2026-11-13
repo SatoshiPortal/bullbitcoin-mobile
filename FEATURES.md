@@ -21,11 +21,13 @@ graph TB
     QUICK_ACTIONS[Quick Actions<br/>Workspace Feature]
     EXCHANGE_ACCESS[Exchange Access]
     WIZARD[Wizard]
+    IMPORT_MNEMONIC[Mnemonic Import]
+    ONBOARDING[Onboarding]
     SETTINGS[Settings]
     LOGS[Logs<br/>Workspace Feature]
     ELECTRUM_SETTINGS[Electrum Settings]
     TOR_SETTINGS[Tor Settings]
-    RECOVERBULL[RecoverBull]
+    RECOVERBULL[RecoverBull<br/>Workspace Feature]
     TOR[Tor<br/>Workspace Package]
     PIN_CODE[Pin Code]
     LABELS[Labels]
@@ -107,6 +109,9 @@ graph TB
     WALLETS --> QUICK_ACTIONS
     QUICK_ACTIONS --> BULL_UI
     QUICK_ACTIONS --> PRIMITIVES
+    IMPORT_MNEMONIC --> WALLETS
+    ONBOARDING --> IMPORT_MNEMONIC
+    APP_STARTUP --> IMPORT_MNEMONIC
 
     %% Feature-to-feature dependencies (extracted from draw.io diagram)
     ADDRESS_MGMT --> LABELS
@@ -124,6 +129,9 @@ graph TB
     BIP85 --> SECRETS
     BIP85 --> SETTINGS
     BACKUPS --> BIP85
+    APP_STARTUP --> RECOVERBULL
+    WALLETS --> RECOVERBULL
+    STATUS --> RECOVERBULL
     BACKUPS --> RECOVERBULL
     BACKUPS --> TOR
     BACKUPS --> WALLETS
@@ -202,6 +210,10 @@ graph TB
     WALLETS --> ELECTRUM_SETTINGS
     RECOVERBULL --> TOR
     RECOVERBULL --> SECRETS
+    RECOVERBULL --> PRIMITIVES
+    RECOVERBULL --> BULL_LOGGER
+    RECOVERBULL --> BULL_UI
+    RECOVERBULL --> SCREEN_PRIVACY[Screen Privacy]
     TRANSFER --> CONSOLIDATION
     TRANSFER --> SEND
     TRANSFER --> RECEIVE
@@ -227,7 +239,7 @@ graph TB
 
     class CORE coreStyle
     class SECRETS,PRIMITIVES,BULL_PAYJOIN,BULL_PRICER,TOR,SCREEN_AWAKE packageStyle
-    class SETTINGS,PIN_CODE,LABELS,HW_WALLETS,BTC_PRICE,NETWORK,BIP85,FEES,WALLETS,EXCHANGE,EXCHANGE_SETTINGS,EXCHANGE_SUPPORT_CHAT,SUPPORT,APP_STARTUP,UTXO_MGMT,ADDRESS_MGMT,RECIPIENTS,FUNDING,BACKUPS,SWAPS,WITHDRAWAL,STATUS,SEND,RECEIVE,TRANSFER,TX_HISTORY,REPLACE_BY_FEE,BG_TASKS,AUTOSWAP,AUTOBUY,DCA,DEFAULT_WALLETS,LIMIT_ORDERS,SELL,PAY,BUY,COINS,ANNOUNCEMENTS,CONSOLIDATION,ALL_SEED_VIEW,APP_UNLOCK,SP featureStyle
+    class SETTINGS,PIN_CODE,LABELS,HW_WALLETS,BTC_PRICE,NETWORK,BIP85,FEES,WALLETS,EXCHANGE,EXCHANGE_SETTINGS,EXCHANGE_SUPPORT_CHAT,SUPPORT,APP_STARTUP,UTXO_MGMT,ADDRESS_MGMT,RECIPIENTS,FUNDING,BACKUPS,SWAPS,WITHDRAWAL,STATUS,SEND,RECEIVE,TRANSFER,TX_HISTORY,REPLACE_BY_FEE,BG_TASKS,AUTOSWAP,AUTOBUY,DCA,DEFAULT_WALLETS,LIMIT_ORDERS,SELL,PAY,BUY,COINS,ANNOUNCEMENTS,CONSOLIDATION,ALL_SEED_VIEW,APP_UNLOCK,SP,IMPORT_MNEMONIC,ONBOARDING featureStyle
 ```
 
 ## About Package Dependency Diagrams
@@ -325,3 +337,5 @@ To verify no cyclic dependencies exist, you can:
 `exchange_access` owns the installation-local, environment-specific opt-in and the last non-secret session facts. Exchange supplies recognized session transitions; wizard and settings submit explicit choices through the public facade. No settings column or shared database migration is added. Settings clears only an older pending exchange choice after a successful user update.
 
 `features/quick_actions` owns the closed catalogue, local ordered favorites, layout, More sheet and editor. It depends on `bull_ui` and `primitives`, never on routes, settings or exchange. Wallet supplies availability, including the iOS/superuser intersection, and the composition supplies an exhaustive navigation callback. Four cells is the maximum including More; with a complement, the fourth cell is More, including when exchange is disabled. Support and public price history remain available. An empty or fully unavailable selection displays Settings without rewriting preferences. The editor previews the same resolver used by Home. The persistent `exchange` identifier is presented as **Trade**. ExchangeHome keeps its fixed actions. WalletHome has no bottom tabs and its top bar contains only the logo.
+
+The mnemonic import feature currently imports Wallets internals. Replace that dependency with the Wallets public facade in a scoped follow-up; the graph records the existing dependency rather than implying facade compliance.

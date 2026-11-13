@@ -23,6 +23,7 @@ workspace:
   - packages/bull_pricer
   - features/logs
   - features/quick_actions
+  - features/recoverbull
 
 dependencies:
   flutter:
@@ -36,6 +37,7 @@ dependencies:
   screen_privacy:
   screen_awake:
   bull_logger:
+  bull_recoverbull:
   bull_logs:
   bull_quick_actions:
   flutter_bloc: ^9.1.1
@@ -96,13 +98,6 @@ dependencies:
   gif: ^2.3.0
   custom_sliding_segmented_control: ^1.8.5
   shimmer: ^3.0.0
-  googleapis: ^15.0.0
-  google_sign_in: ^6.3.0
-  extension_google_sign_in_as_googleapis_auth: ^2.0.13
-  recoverbull:
-    git:
-      url: https://github.com/SatoshiPortal/recoverbull-client-dart.git
-      ref: 92925c959f219fa4dfd0fe0f40392ddf868e2774
   flutter_zxing: ^2.2.1
   webview_cookie_manager:
     git:

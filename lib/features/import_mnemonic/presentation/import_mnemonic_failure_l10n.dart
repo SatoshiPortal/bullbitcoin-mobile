@@ -10,5 +10,12 @@ extension ImportMnemonicFailureL10n on ImportMnemonicFailure {
       context.loc.importMnemonicEmptyLabelError,
     ImportMnemonicNullMnemonicFailure() => context.loc.oopsSomethingWentWrong,
     ImportMnemonicUnexpectedFailure() => context.loc.oopsSomethingWentWrong,
+    ImportMnemonicScanServerUnavailableFailure() =>
+      context.loc.importMnemonicScanServerUnavailable,
+    ImportMnemonicScanTimeoutFailure() => context.loc.importMnemonicScanTimeout,
+    ImportMnemonicScanInvalidMnemonicFailure() =>
+      context.loc.importMnemonicScanInvalidMnemonic,
+    ImportMnemonicScanUnexpectedFailure() =>
+      context.loc.importMnemonicScanUnavailable,
   };
 }

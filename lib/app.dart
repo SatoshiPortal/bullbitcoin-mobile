@@ -1,4 +1,5 @@
 import 'package:bull_quick_actions/bull_quick_actions.dart';
+import 'package:bull_recoverbull/bull_recoverbull.dart';
 import 'dart:async';
 
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
@@ -196,12 +197,20 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
                       ...AppLocalizations.localizationsDelegates,
                       LogsLocalizations.delegate,
                       const QuickActionsFallbackDelegate(),
+                      ...RecoverBullFeature.localizationsDelegates,
                     ],
                     supportedLocales: AppLocalizations.supportedLocales,
                     builder: (context, child) {
+                      if (child == null) return const SizedBox.shrink();
                       final app = BullSupportScope(
                         onContactSupport: SupportFacade.contactSupport,
-                        child: AppStartupWidget(app: child!),
+                        child: AppStartupWidget(
+                          app: locator<RecoverBullFeature>().withAlerts(
+                            child,
+                            onOpen: () =>
+                                AppRouter.router.pushNamed('recoverbullFlows'),
+                          ),
+                        ),
                       );
                       // Mark beta-channel builds (`make android beta`) with a
                       // corner banner. Release mode drops the Flutter debug

@@ -1,6 +1,6 @@
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/core/status/domain/entity/service_status.dart';
-import 'package:bb_mobile/core/status/domain/usecases/check_all_service_status_usecase.dart';
+import 'package:bb_mobile/features/status_check/domain/check_all_service_status_usecase.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
