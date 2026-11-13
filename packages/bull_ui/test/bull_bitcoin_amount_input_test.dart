@@ -156,4 +156,154 @@ void main() {
     await tester.pump();
     expect(controller.text, '1');
   });
+  testWidgets(
+    'global changes and undo reset input units without changing canonical amounts',
+    (tester) async {
+      final controller = TextEditingController(text: '123');
+      final maxController = TextEditingController(text: '456');
+      addTearDown(controller.dispose);
+      addTearDown(maxController.dispose);
+      BullAmountPreferences preferences(BullAmountUnit unit) =>
+          BullAmountPreferences(
+            defaultUnit: unit,
+            changeDefaultUnit: (_) async => true,
+            globalActionLabel: 'Change default',
+            tooltip: 'Change unit',
+            satsEverywhereMessage: 'Sats',
+            btcEverywhereMessage: 'BTC',
+            undoLabel: 'Undo',
+            failureMessage: 'Failed',
+          );
+      Widget host(BullAmountUnit unit) => wrapWithTheme(
+        BullAmountPreferencesScope(
+          preferences: preferences(unit),
+          child: Column(
+            children: [
+              BullBitcoinAmountInput(
+                currency: 'sats',
+                amountController: controller,
+                amountEquivalent: '',
+                maxLabel: 'MAX',
+                switchToBtcLabel: 'To BTC',
+                switchToSatsLabel: 'To sats',
+              ),
+              BullBitcoinAmountInput(
+                currency: 'sats',
+                amountController: maxController,
+                amountEquivalent: '',
+                maxLabel: 'MAX',
+                switchToBtcLabel: 'To BTC',
+                switchToSatsLabel: 'To sats',
+                isMax: true,
+                readOnly: true,
+              ),
+            ],
+          ),
+        ),
+      );
+      await tester.pumpWidget(host(BullAmountUnit.sats));
+      await tester.tap(find.text('sats').first);
+      await tester.pump();
+      expect(find.text('0.00000123'), findsOneWidget);
+      await tester.pumpWidget(host(BullAmountUnit.btc));
+      expect(find.text('BTC'), findsNWidgets(2));
+      expect(find.text('0.00000123'), findsOneWidget);
+      expect(controller.text, '123');
+      expect(maxController.text, '456');
+      await tester.pumpWidget(host(BullAmountUnit.sats));
+      expect(find.text('sats'), findsNWidgets(2));
+      expect(find.text('123'), findsOneWidget);
+      expect(find.text('MAX'), findsOneWidget);
+      expect(controller.text, '123');
+      expect(maxController.text, '456');
+    },
+  );
+
+  testWidgets(
+    'global reset discards incomplete text without interpreting it in the new unit',
+    (tester) async {
+      final controller = TextEditingController(text: '1');
+      addTearDown(controller.dispose);
+      Widget host(BullAmountUnit unit) => wrapWithTheme(
+        BullAmountPreferencesScope(
+          preferences: BullAmountPreferences(
+            defaultUnit: unit,
+            changeDefaultUnit: (_) async => true,
+            globalActionLabel: 'Change default',
+            tooltip: 'Change unit',
+            satsEverywhereMessage: 'Sats',
+            btcEverywhereMessage: 'BTC',
+            undoLabel: 'Undo',
+            failureMessage: 'Failed',
+          ),
+          child: BullBitcoinAmountInput(
+            currency: 'BTC',
+            amountController: controller,
+            amountEquivalent: '',
+            maxLabel: 'MAX',
+            switchToBtcLabel: 'To BTC',
+            switchToSatsLabel: 'To sats',
+          ),
+        ),
+      );
+      await tester.pumpWidget(host(BullAmountUnit.btc));
+      await tester.enterText(find.byType(TextField), '1.');
+      expect(controller.text, isEmpty);
+      await tester.pumpWidget(host(BullAmountUnit.sats));
+      expect(controller.text, isEmpty);
+      expect(
+        tester.widget<TextField>(find.byType(TextField)).controller?.text,
+        isEmpty,
+      );
+      expect(find.text('sats'), findsOneWidget);
+    },
+  );
+
+  testWidgets(
+    'same-value global reset clears override but ordinary rebuild does not',
+    (tester) async {
+      final controller = TextEditingController(text: '123');
+      addTearDown(controller.dispose);
+      VoidCallback? reset;
+      Widget host() => wrapWithTheme(
+        BullAmountPreferencesScope(
+          preferences: BullAmountPreferences(
+            defaultUnit: BullAmountUnit.sats,
+            changeDefaultUnit: (_) async => true,
+            globalActionLabel: 'Change default',
+            tooltip: 'Change unit',
+            satsEverywhereMessage: 'Sats',
+            btcEverywhereMessage: 'BTC',
+            undoLabel: 'Undo',
+            failureMessage: 'Failed',
+          ),
+          child: Builder(
+            builder: (context) {
+              reset = BullAmountPreferencesScope.resetterOf(context);
+              return BullBitcoinAmountInput(
+                currency: 'sats',
+                amountController: controller,
+                amountEquivalent: '',
+                maxLabel: 'MAX',
+                switchToBtcLabel: 'To BTC',
+                switchToSatsLabel: 'To sats',
+              );
+            },
+          ),
+        ),
+      );
+      await tester.pumpWidget(host());
+      await tester.tap(find.text('sats'));
+      await tester.pump();
+      expect(find.text('0.00000123'), findsOneWidget);
+      await tester.pumpWidget(host());
+      expect(find.text('0.00000123'), findsOneWidget);
+      expect(reset, isNotNull);
+      reset?.call();
+      await tester.pump();
+      expect(find.text('123'), findsOneWidget);
+      expect(find.text('sats'), findsOneWidget);
+      expect(controller.text, '123');
+    },
+  );
 }
