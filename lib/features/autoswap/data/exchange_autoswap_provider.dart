@@ -160,7 +160,7 @@ class ExchangeAutoswapProvider implements AutoswapProviderPort {
             environment: orderEnvironment,
             sourceWalletId: liquidWallet.id,
             destinationWalletId: recipientWallet.id,
-            note: 'Auto-Transfer',
+            note: LabelSystem.autoSwap.label,
             quotedCounterpartAmountSat: quote.outAmountSat,
           );
 
@@ -318,7 +318,7 @@ class ExchangeAutoswapProvider implements AutoswapProviderPort {
       NewLabel.tx(
         transactionId: txid,
         origin: wallet.id,
-        label: 'Auto-Transfer',
+        label: LabelSystem.autoSwap.label,
       ),
     );
     return Ok(record.localId);
