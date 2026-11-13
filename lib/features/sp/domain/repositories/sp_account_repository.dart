@@ -8,6 +8,7 @@ import 'package:bb_mobile/features/sp/domain/entities/sp_update.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_wallet.dart';
 import 'package:bb_mobile/features/sp/domain/sp_config.dart';
 import 'package:bb_mobile/features/sp/domain/sp_failure.dart';
+import 'package:bb_mobile/features/sp/domain/entities/sp_backend_config.dart';
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
 
@@ -17,7 +18,7 @@ import 'package:primitives/primitives.dart';
 /// The public surface uses domain types only; the wire/FFI view types stay in
 /// `data/` behind the mappers.
 abstract interface class SpAccountRepository {
-  /// Create an account from the mnemonic, reusing any existing on-disk sqlite
+  /// Create an account from the bound secret, reusing any existing on-disk sqlite
   /// stores. Establishes the live session. Used both for first-time setup and
   /// to reconstruct the session on load (see `EnsureSpSessionUsecase`).
   ///
@@ -27,10 +28,12 @@ abstract interface class SpAccountRepository {
   /// a new one, so that guard only fires on a real programmer error.
   ///
   /// The account is opened inside `package:secrets` from [secret], so no
-  /// mnemonic crosses this boundary; its failures still carry fixed text.
+  /// mnemonic or seed crosses this boundary; its failures carry fixed text.
+  /// The native address must match [expectedConfig] before the session is published.
   @useResult
   Future<Result<void, SpFailure>> createFromSecret({
     required BitcoinNetwork network,
+    required SpBackendConfig expectedConfig,
     required Secret secret,
     required String blindbitUrl,
     required String electrumUrl,

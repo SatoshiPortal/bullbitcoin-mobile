@@ -1,4 +1,5 @@
-import 'package:bip39_mnemonic/bip39_mnemonic.dart' show Language;
+import 'dart:typed_data';
+
 import 'package:bull_sdk/bwk.dart';
 import 'package:secrets/src/crypto/exceptions.dart';
 import 'package:secrets/src/domain/domain.dart';
@@ -8,8 +9,23 @@ export 'package:bull_sdk/bwk.dart'
 
 /// Opens the bwk Silent Payments account (BIP352) of a mnemonic.
 ///
-/// ⚠️ The one place the stored words leave this package for a library: bwk-dart builds an account from a mnemonic only, and the account it returns keeps the keys for as long as it lives. A key-based constructor (bwk-bitcoin/bwk#114) would let the package hand over derived keys instead.
+/// The BIP39 seed crosses into bwk inside this package. The returned native account retains signing capability until disposed; copies inside Dart and the bridge cannot all be guaranteed erased.
 abstract final class SilentPayments {
+  /// Derives the public BIP352 address without opening an account or files.
+  static Future<String> address(
+    Mnemonic secret, {
+    required SpNetwork network,
+  }) async {
+    final seed = Uint8List.fromList(secret.seedBytes);
+    try {
+      return await deriveSpAddressFromSeed(seed: seed, network: network);
+    } catch (_) {
+      throw const SilentPaymentsAddressFailed();
+    } finally {
+      seed.fillRange(0, seed.length, 0);
+    }
+  }
+
   static Future<SpAccount> open(
     Mnemonic secret, {
     required String name,
@@ -22,21 +38,12 @@ abstract final class SilentPayments {
     required int matchConcurrencyFactor,
     required SpHeaderCheckpoint? headerCheckpoint,
   }) async {
-    if (secret.language != Language.english) {
-      throw const LanguageUnsupported(
-        'Silent Payments requires an English mnemonic',
-      );
-    }
-    // bwk derives from the words alone, so a passphrase would silently open
-    // the passphrase-less sibling's wallet.
-    if (secret.hasPassphrase) {
-      throw const PassphraseUnsupported('bwk derives from the words alone');
-    }
+    final seed = Uint8List.fromList(secret.seedBytes);
     try {
-      return await SpAccount.createFromMnemonicWithScanRuntime(
+      return await SpAccount.createFromSeedWithScanRuntime(
         name: name,
         network: network,
-        mnemonic: secret.words.join(' '),
+        seed: seed,
         blindbitUrl: blindbitUrl,
         electrumUrl: electrumUrl,
         dataDir: dataDir,
@@ -48,6 +55,8 @@ abstract final class SilentPayments {
     } catch (_) {
       // bwk's error is a string that can quote its input; only the type leaves.
       throw const SilentPaymentsOpenFailed();
+    } finally {
+      seed.fillRange(0, seed.length, 0);
     }
   }
 }

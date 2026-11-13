@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/sp/domain/entities/sp_backend_config.dart';
 import 'package:secrets/secrets.dart' show Secret;
 import 'package:primitives/primitives.dart';
 import 'dart:async';
@@ -149,7 +150,7 @@ class BwkSpAccountRepository
   }
 
   @override
-  bool get hasSession => _ffi.hasSession;
+  bool get hasSession => _ffi.hasRetainedHandle;
 
   @override
   bool get teardownInProgress => _teardownDepth > 0;
@@ -167,6 +168,7 @@ class BwkSpAccountRepository
   @override
   Future<Result<void, SpFailure>> createFromSecret({
     required BitcoinNetwork network,
+    required SpBackendConfig expectedConfig,
     required Secret secret,
     required String blindbitUrl,
     required String electrumUrl,
@@ -177,15 +179,15 @@ class BwkSpAccountRepository
     // create over an existing session would leak the old Rust notif thread,
     // electrum socket and sqlite handle. Callers dispose first; hitting this
     // means a teardown+create race slipped past EnsureSpSessionUsecase.
-    if (hasSession) {
+    if (_ffi.hasRetainedHandle) {
       return const Err(
         SpSessionBusy(
           'createFromSecret called while a session is live; dispose first',
         ),
       );
     }
-    // The account is opened inside package:secrets, which hands the words to
-    // bwk; this layer never holds them. Failures still return fixed text.
+    // The account is opened inside package:secrets from the full seed; this
+    // layer never holds it. Failures still return fixed text.
     final String dataDir;
     try {
       dataDir = await _files.dataDir();
@@ -195,17 +197,19 @@ class BwkSpAccountRepository
     _resetNotificationState();
     _scanning = false;
     _clearReadCaches();
-    // Clear any lingering advisory locks. On mobile (single process) a present
-    // lock is a disposed session whose Rust handle is not GC'd yet, so it can
-    // never be a real second owner; the in-app single-establishment guard
-    // (EnsureSpSessionUsecase) keeps two live sessions from ever racing. The
-    // header store locks its own sentinel, so missing it fails the create with
-    // "already opened by another instance".
-    await _files.clearStaleLocks();
+    try {
+      if (expectedConfig.network != network || expectedConfig.source == null) {
+        return const Err(SpSourceMismatch());
+      }
+      await _files.verifyOpenIdentity(expectedConfig);
+    } catch (_) {
+      return const Err(SpRecoveryRequired());
+    }
     final checkpoint = SpConfig.headerCheckpoint(network);
     try {
       await _ffi.createFromSecret(
         network: SpNetworkMapper.toFfi(network),
+        expectedAddress: expectedConfig.source!.spAddress,
         secret: secret,
         blindbitUrl: blindbitUrl,
         electrumUrl: electrumUrl,
@@ -216,9 +220,19 @@ class BwkSpAccountRepository
             ? null
             : SpHeaderCheckpointMapper.toFfi(checkpoint),
       );
+    } on SpAccountAddressMismatch {
+      return const Err(SpSourceMismatch());
     } catch (_) {
-      // Fixed text on purpose: see the note above.
       return const Err(SpUnexpected('SP account create failed'));
+    }
+    try {
+      await _files.commitAccountIdentity(expectedConfig);
+      _ffi.publish();
+    } catch (_) {
+      try {
+        await _ffi.dispose();
+      } catch (_) {}
+      return const Err(SpRecoveryRequired());
     }
     // Start the always-on taproot sub-account electrum listener so incoming txs
     // are pushed without a manual scan. createFromSecret does not propagate the
@@ -247,14 +261,17 @@ class BwkSpAccountRepository
   }
 
   @override
-  Result<SpWallet, SpFailure> snapshot() => _guard(
-    () => SpWallet(
-      spAddress: _ffi.spAddress(),
-      balance: SpBalanceMapper.toDomain(_ffi.unifiedBalance()),
-      isScanning: _ffi.isScanning(),
-      lastScannedHeight: _ffi.lastScannedHeight(),
-    ),
-  );
+  Result<SpWallet, SpFailure> snapshot() =>
+      _ffi.hasRetainedHandle && !_ffi.hasSession
+      ? const Err(SpRecoveryRequired())
+      : _guard(
+          () => SpWallet(
+            spAddress: _ffi.spAddress(),
+            balance: SpBalanceMapper.toDomain(_ffi.unifiedBalance()),
+            isScanning: _ffi.isScanning(),
+            lastScannedHeight: _ffi.lastScannedHeight(),
+          ),
+        );
 
   @override
   Future<Result<String, SpFailure>> generateTaprootAddress() =>
@@ -623,7 +640,7 @@ class BwkSpAccountRepository
     // after a clean dispose, so a timed-out dispose keeps the live session's
     // streams intact. A dispose that times out throws "dispose timed out" from
     // here and the session reference is kept.
-    if (_ffi.hasSession) {
+    if (_ffi.hasRetainedHandle) {
       await _ffi.dispose();
       _notifications = null;
     }

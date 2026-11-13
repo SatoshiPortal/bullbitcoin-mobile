@@ -1,4 +1,5 @@
-import 'package:primitives/primitives.dart';
+import 'package:bb_mobile/core/wallet/domain/wallet_mutation_guard.dart';
+import 'package:primitives/primitives.dart' show Err, Ok, Result;
 import 'package:bb_mobile/features/sp/domain/repositories/sp_account_repository.dart';
 import 'package:bb_mobile/features/sp/domain/ports/sp_account_files_port.dart';
 import 'package:bb_mobile/features/sp/domain/repositories/sp_backend_config_repository.dart';
@@ -21,12 +22,14 @@ import 'package:secrets/secrets.dart' show Secret;
 /// start) share one `createFromSecret` instead of racing two live sessions.
 class EnsureSpSessionUsecase {
   final SpAccountRepository _repository;
+  final WalletMutationGuard _walletMutationGuard;
   final SpAccountFilesPort _files;
   final SpBackendConfigRepository _configRepository;
   final GetSpSecretUsecase _getSpSecretUsecase;
 
   EnsureSpSessionUsecase({
     required this._repository,
+    required this._walletMutationGuard,
     required this._files,
     required this._configRepository,
     required this._getSpSecretUsecase,
@@ -42,6 +45,12 @@ class EnsureSpSessionUsecase {
   /// session while its own bracket is still held.
   Future<Result<SpWallet?, SpFailure>> execute({
     bool allowDuringTeardown = false,
+  }) => _walletMutationGuard.exclusive(
+    () => _execute(allowDuringTeardown: allowDuringTeardown),
+  );
+
+  Future<Result<SpWallet?, SpFailure>> _execute({
+    required bool allowDuringTeardown,
   }) async {
     // A recreate/revoke is disposing (and maybe re-establishing) the session;
     // do not start a competing establishment while it runs.
@@ -79,12 +88,6 @@ class EnsureSpSessionUsecase {
     if (!allowDuringTeardown && _repository.teardownInProgress) {
       return const Ok(null);
     }
-    // A recreate that crashed between the backup and the create left no account
-    // dir and a backup beside it; put it back before anything reads the dir, so
-    // the wallet is recovered instead of re-created empty.
-    if (await _files.adoptNewestBackup() case Err(:final failure)) {
-      return Err(failure);
-    }
     // A `.revoked` sentinel means a prior revoke deleted (or tried to) this
     // wallet; never reload it.
     switch (await _files.hasRevokedSentinel()) {
@@ -97,7 +100,7 @@ class EnsureSpSessionUsecase {
     }
 
     final SpBackendConfig config;
-    switch (await _configRepository.fetchOrNull()) {
+    switch (await _configRepository.fetch()) {
       case Err(:final failure):
         return Err(failure);
       case Ok(value: final stored?):
@@ -106,11 +109,19 @@ class EnsureSpSessionUsecase {
         return const Ok(null);
     }
 
+    final source = config.source;
+    if (source == null) {
+      return const Err(SpLegacySourceUnverified());
+    }
     final Secret secret;
     try {
-      switch (await _getSpSecretUsecase.execute(config.network)) {
+      switch (await _getSpSecretUsecase.resolve(
+        config.network,
+        walletId: source.walletId,
+        expected: source,
+      )) {
         case Ok(:final value):
-          secret = value;
+          secret = value.secret;
         case Err(:final failure):
           return Err(failure);
       }
@@ -120,19 +131,40 @@ class EnsureSpSessionUsecase {
       return const Err(SpUnexpected('SP session establish failed'));
     }
 
+    // Only after validating the bound source may crash recovery move a backup.
+    if (await _files.adoptNewestBackup(config) case Err(:final failure)) {
+      return Err(failure);
+    }
+    // The adopted directory may itself carry a revoke sentinel.
+    switch (await _files.hasRevokedSentinel()) {
+      case Err(:final failure):
+        return Err(failure);
+      case Ok(value: true):
+        return const Ok(null);
+      case Ok():
+        break;
+    }
+
+    if (await _files.verifyAccountIdentity(config) case Err(:final failure)) {
+      return Err(failure);
+    }
+
     // Re-check right before creating: a revoke/recreate may have begun teardown
     // during the awaits above, and creating now would race a live session.
     if (!allowDuringTeardown && _repository.teardownInProgress) {
       return const Ok(null);
     }
 
-    final created = await _repository.createFromSecret(
-      network: config.network,
-      secret: secret,
-      blindbitUrl: config.blindbitUrl,
-      electrumUrl: config.electrumUrl,
-      fetchConcurrencyFactor: config.fetchConcurrencyFactor,
-      matchConcurrencyFactor: config.matchConcurrencyFactor,
+    final created = await _walletMutationGuard.withoutReentrance(
+      () => _repository.createFromSecret(
+        network: config.network,
+        expectedConfig: config,
+        secret: secret,
+        blindbitUrl: config.blindbitUrl,
+        electrumUrl: config.electrumUrl,
+        fetchConcurrencyFactor: config.fetchConcurrencyFactor,
+        matchConcurrencyFactor: config.matchConcurrencyFactor,
+      ),
     );
     if (created case Err(:final failure)) return Err(failure);
     return _repository.snapshot();

@@ -4699,7 +4699,6 @@
   "sellPayoutSepaDescription": "Les retraits apparaissent comme envoyés par Leonod",
   "sellPayoutTitle": "Sélectionner le destinataire",
   "sellPayoutNewBadge": "NOUVEAU",
-  "spFailurePassphraseUnsupported": "Les Silent Payments ne sont pas disponibles pour un portefeuille protégé par une passphrase.",
   "screenPrivacyUnavailable": "La protection de l’écran n’a pas pu être activée : ce secret reste masqué.",
   "appStartupMissingSecretMessage": "Cet appareil ne contient plus la phrase de récupération de votre portefeuille. Saisissez-la à nouveau pour le retrouver.",
   "appStartupRestoreSecretButton": "Saisir ma phrase de récupération",
@@ -4716,5 +4715,14 @@
   "importMnemonicScanUnavailable": "Vérification du solde indisponible. Vous pouvez quand même importer ce portefeuille.",
   "coreScreensOutputsExceedInputs": "Les sorties dépassent les entrées : cette transaction est invalide et le réseau la rejettera.",
   "passphraseShow": "Afficher la passphrase",
-  "passphraseHide": "Masquer la passphrase"
+  "passphraseHide": "Masquer la passphrase",
+  "spSourceWalletLabel": "Portefeuille source",
+  "spSourceWalletHelp": "Ce portefeuille contrôle votre adresse Silent Payments.",
+  "spSourcePassphraseBackupNotice": "Conservez la phrase de récupération et la passphrase de ce portefeuille. Une restauration sans la passphrase crée une autre adresse Silent Payments.",
+  "spSourceNoEligibleWallets": "Aucun portefeuille Bitcoin compatible n’est disponible. Importez un portefeuille avec lequel vous pouvez signer avant de configurer Silent Payments.",
+  "spFailureLegacySourceUnverified": "L’identité d’origine de ce portefeuille Silent Payments doit être vérifiée avant son ouverture. Ses données ont été conservées.",
+  "spFailureSourceMismatch": "Le portefeuille sélectionné ne correspond pas à l’identité Silent Payments. Aucune donnée de portefeuille n’a été supprimée.",
+  "spFailureRecoveryRequired": "Les données Silent Payments sont incomplètes ou plusieurs sauvegardes sont en conflit. Les données ont été conservées ; une récupération est nécessaire avant de continuer.",
+  "spResumeSavedSetupButton": "Reprendre la configuration enregistrée",
+  "spResumeSavedSetupHelp": "Reprenez la configuration Silent Payments avec son wallet, son réseau et ses serveurs d’origine. Conservez la phrase de récupération et toute passphrase. Cette action ne sélectionne pas un autre wallet et ne répare pas des données endommagées."
 }

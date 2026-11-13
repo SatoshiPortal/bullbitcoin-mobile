@@ -57,17 +57,17 @@ dependencies:
   bull_sdk:
     git:
       url: https://github.com/SatoshiPortal/bull_sdk
-      ref: 571ab40a3dd2c458c7c212a95a2f192e0d0cef4b
+      ref: f10c012ec1bb79ddc1936ca3ab694eb491da0b4c
       path: packages/bull_sdk
   boltz_stream:
     git:
       url: https://github.com/SatoshiPortal/bull_sdk
-      ref: 571ab40a3dd2c458c7c212a95a2f192e0d0cef4b
+      ref: f10c012ec1bb79ddc1936ca3ab694eb491da0b4c
       path: packages/boltz-stream
   bitbox_transport:
     git:
       url: https://github.com/SatoshiPortal/bull_sdk
-      ref: 571ab40a3dd2c458c7c212a95a2f192e0d0cef4b
+      ref: f10c012ec1bb79ddc1936ca3ab694eb491da0b4c
       path: packages/bitbox-transport
   universal_ble: ^1.2.0
   auto_size_text: ^3.0.0
@@ -117,7 +117,7 @@ dependencies:
   satoshifier:
     git:
       url: https://github.com/SatoshiPortal/bull_sdk
-      ref: 571ab40a3dd2c458c7c212a95a2f192e0d0cef4b
+      ref: f10c012ec1bb79ddc1936ca3ab694eb491da0b4c
       path: packages/satoshifier
   flutter_nfc_kit: ^3.6.1
   ndef: ^0.4.0

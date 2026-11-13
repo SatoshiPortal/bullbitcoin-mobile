@@ -25,9 +25,11 @@ extension SpFailureToSendFailure on SpFailure {
     SpSimulationDrifted() ||
     SpBackendUnreachable() ||
     SpConfigInvalid() ||
+    SpLegacySourceUnverified() ||
+    SpSourceMismatch() ||
+    SpRecoveryRequired() ||
     SpSetupCleanupFailed() ||
     SpBroadcastUncertain() ||
-    SpPassphraseUnsupported() ||
     SpUnexpected() => null,
   };
 }

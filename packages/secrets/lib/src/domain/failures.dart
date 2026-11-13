@@ -50,11 +50,6 @@ final class MnemonicRequiredFailure extends SecretFailure {
   const MnemonicRequiredFailure([super.logMessage]);
 }
 
-/// The operation derives from the words alone and the secret has a passphrase: computing it would give the passphrase-less sibling's result, so it is refused.
-final class PassphraseUnsupportedFailure extends SecretFailure {
-  const PassphraseUnsupportedFailure([super.logMessage]);
-}
-
 /// The requested network exists in `primitives` but the underlying
 /// library cannot express it. No network is in that case since lwk-dart
 /// expresses Liquid regtest; kept so a library that cannot express a
@@ -118,9 +113,4 @@ String describeSafely(Object error) {
   // Raised by this package, with messages this package wrote.
   if (error is FormatException) return 'FormatException';
   return error.runtimeType.toString();
-}
-
-/// The operation cannot use the mnemonic's language.
-final class LanguageUnsupportedFailure extends SecretFailure {
-  const LanguageUnsupportedFailure([super.logMessage]);
 }

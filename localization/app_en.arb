@@ -15068,10 +15068,6 @@
       }
     }
   },
-  "spFailurePassphraseUnsupported": "Silent Payments is not available for a wallet protected by a passphrase.",
-  "@spFailurePassphraseUnsupported": {
-    "description": "Silent Payments failure: the default wallet has a BIP39 passphrase, which the Silent Payments library cannot use"
-  },
   "screenPrivacyUnavailable": "Screen protection could not be turned on, so this secret stays hidden.",
   "@screenPrivacyUnavailable": {
     "description": "Shown instead of a secret (recovery phrase, seed, BIP85 child) when the OS screen-capture blocking could not be enabled"
@@ -15207,5 +15203,14 @@
   "coreScreensOutputsExceedInputs": "Outputs exceed inputs: this transaction is invalid and the network will reject it.",
   "@coreScreensOutputsExceedInputs": {
     "description": "Transaction review alert when a Bitcoin transaction's outputs exceed its inputs"
-  }
+  },
+  "spSourceWalletLabel": "Source wallet",
+  "spSourceWalletHelp": "This wallet controls your Silent Payments address.",
+  "spSourcePassphraseBackupNotice": "Keep this wallet’s recovery phrase and passphrase. Restoring without the passphrase creates a different Silent Payments address.",
+  "spSourceNoEligibleWallets": "No eligible Bitcoin wallet is available. Import a wallet you can sign with before setting up Silent Payments.",
+  "spFailureLegacySourceUnverified": "This existing Silent Payments wallet needs its original identity verified before it can be opened. Its data has been kept.",
+  "spFailureSourceMismatch": "The selected wallet does not match the Silent Payments identity. No wallet data was removed.",
+  "spFailureRecoveryRequired": "Silent Payments data is incomplete or has conflicting backups. Its data has been kept; recovery is required before continuing.",
+  "spResumeSavedSetupButton": "Resume saved setup",
+  "spResumeSavedSetupHelp": "Resume the saved Silent Payments setup with its original wallet, network and servers. Keep the original recovery phrase and any passphrase. This does not select a different wallet or repair damaged data."
 }

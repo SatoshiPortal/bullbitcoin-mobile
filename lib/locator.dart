@@ -1,3 +1,6 @@
+import 'package:bb_mobile/core/wallet/domain/wallet_mutation_guard.dart';
+import 'package:bb_mobile/core/wallet/domain/ports/wallet_retention_port.dart';
+import 'package:bb_mobile/sp_wallet_retention_adapter.dart';
 import 'package:bb_mobile/core/core_locator.dart';
 import 'package:bb_mobile/features/settings/public/recoverbull_bindings.dart';
 import 'package:bb_mobile/features/wallet/public/recoverbull_bindings.dart';
@@ -99,6 +102,7 @@ class AppLocator {
     bool startPayjoinRecovery = true,
     bool startOrderSwapWatcher = true,
     bool startAutoswapWatcher = true,
+    bool allowDestructiveWalletOperations = false,
   }) async {
     locator.enableRegisteringMultipleInstancesOfOneType();
 
@@ -110,6 +114,22 @@ class AppLocator {
         scratchDirectory: () async => (await getTemporaryDirectory()).path,
       ),
     );
+
+    // A single foreground owner serializes source binding and destruction.
+    // Background containers deny destruction without resolving the SP facade.
+    if (!locator.isRegistered<WalletMutationGuard>()) {
+      locator.registerLazySingleton<WalletMutationGuard>(
+        WalletMutationGuard.new,
+      );
+    }
+    if (!locator.isRegistered<WalletRetentionPort>()) {
+      locator.registerLazySingleton<WalletRetentionPort>(
+        () => SpWalletRetentionAdapter(
+          facade: () => locator<SpFacade>(),
+          allowDestructiveOperations: allowDestructiveWalletOperations,
+        ),
+      );
+    }
 
     // Register core dependencies first
     CoreLocator.register(locator, database);

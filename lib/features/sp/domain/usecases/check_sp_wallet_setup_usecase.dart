@@ -26,7 +26,7 @@ class CheckSpWalletSetupUsecase {
   }
 
   Future<Result<bool, SpFailure>> _read() async {
-    switch (await _configRepository.fetchOrNull()) {
+    switch (await _configRepository.fetch()) {
       case Err(:final failure):
         return Err(failure);
       case Ok(value: null):

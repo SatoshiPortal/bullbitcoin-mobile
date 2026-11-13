@@ -151,7 +151,7 @@ final class Secrets {
 
   /// External and internal public descriptors of account 0 for words that are not stored, in [language] and with [passphrase], keyed by each of [scriptTypes].
   ///
-  /// Stateless: the keystore is neither read nor written, and the seed is derived once for every script type, used and wiped in a separate isolate. Only public descriptor strings leave it. Invalid words return [InvalidMnemonicFailure]. For English words they equal those of the same words once imported (`secret.derive.descriptors.bitcoin`); `import` accepts English only for now.
+  /// Stateless: the keystore is neither read nor written, and the seed is derived once for every script type, used and wiped in a separate isolate. Only public descriptor strings leave it. Invalid words return [InvalidMnemonicFailure]. For words in any supported language they equal those of the same words once imported with that language (`secret.derive.descriptors.bitcoin`).
   @internal
   @useResult
   Future<Result<Map<ScriptType, Descriptors>, SecretFailure>>

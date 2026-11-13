@@ -1,3 +1,5 @@
+import 'package:bb_mobile/features/sp/domain/sp_failure.dart';
+import 'package:bb_mobile/features/sp/presentation/sp_failure_l10n.dart';
 import 'dart:async';
 
 import 'package:bb_mobile/core/entities/signer_entity.dart';
@@ -89,6 +91,26 @@ class SpWalletDetailScreen extends StatelessWidget {
                 child: LinearProgressIndicator(
                   backgroundColor: context.appColors.surface,
                   color: context.appColors.primary,
+                ),
+              ),
+            if (state.error is SpRecoveryRequired ||
+                state.error is SpLegacySourceUnverified ||
+                state.error is SpSourceMismatch)
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    children: [
+                      Text(state.error!.toTranslated(context)),
+                      if (state.error is SpRecoveryRequired)
+                        TextButton(
+                          onPressed: state.isLoading
+                              ? null
+                              : cubit.retryPendingSetup,
+                          child: Text(context.loc.retry),
+                        ),
+                    ],
+                  ),
                 ),
               ),
             if (state.isScanning)

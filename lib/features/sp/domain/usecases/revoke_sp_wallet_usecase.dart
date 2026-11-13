@@ -1,19 +1,23 @@
+import 'package:bb_mobile/core/wallet/domain/wallet_mutation_guard.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/sp/domain/ports/sp_account_files_port.dart';
 import 'package:bb_mobile/features/sp/domain/repositories/sp_account_repository.dart';
 import 'package:bb_mobile/features/sp/domain/repositories/sp_backend_config_repository.dart';
 import 'package:bb_mobile/features/sp/domain/sp_failure.dart';
+import 'package:bb_mobile/features/sp/domain/entities/sp_backend_config.dart';
 import 'package:bb_mobile/features/sp/domain/sp_session_guard.dart';
 
 class RevokeSpWalletUsecase {
   final SpAccountRepository _repository;
+  final WalletMutationGuard _walletMutationGuard;
   final SpAccountFilesPort _files;
   final SpBackendConfigRepository _configRepository;
   final SpSessionGuard _guard;
 
   RevokeSpWalletUsecase({
     required this._repository,
+    required this._walletMutationGuard,
     required this._files,
     required this._configRepository,
     required this._guard,
@@ -26,8 +30,8 @@ class RevokeSpWalletUsecase {
   ///   1. Write the `.revoked` sentinel BEFORE any teardown, so a self-heal
   ///      racing the teardown sees a revoked dir and refuses to reload it.
   ///   2. Dispose the live session so the sqlite handle is released before the
-  ///      delete. A dispose timeout must NOT abort the revoke (that would leave
-  ///      the wallet undeletable), so it is logged and the revoke proceeds.
+  ///      delete. A dispose or release failure preserves the sentinel and data
+  ///      so a retry can finish the teardown.
   ///   3. Delete the backups first, then the account dir. Sweeping backups
   ///      first means a failure here still leaves the dir and its sentinel in
   ///      place, so the wallet stays unloadable and a retry is safe. Deleting
@@ -48,30 +52,32 @@ class RevokeSpWalletUsecase {
   /// Returns `Err` when the on-disk delete failed; the `.revoked` sentinel is
   /// already written and observers already dropped the SP card, so the caller
   /// only needs to surface a retry prompt.
-  Future<Result<void, SpFailure>> execute() => _guard.exclusive(() async {
-    _repository.beginTeardown();
-    try {
-      final revoked = await _revokeOnDisk();
-      // The sentinel is on disk now, so the wallet is unloadable even if the
-      // delete failed.
-      _configRepository.setIsSetUpNow(isSetUp: false);
-      if (revoked case Err(:final failure)) return Err(failure);
+  Future<Result<void, SpFailure>> execute() => _guard.exclusive(
+    () => _walletMutationGuard.exclusive(() async {
+      _repository.beginTeardown();
+      try {
+        final revoked = await _revokeOnDisk();
+        // The sentinel is on disk now, so the wallet is unloadable even if the
+        // delete failed.
+        _configRepository.setIsSetUpNow(isSetUp: false);
+        if (revoked case Err(:final failure)) return Err(failure);
 
-      if (await _configRepository.delete() case Err(:final failure)) {
-        log.warning(
-          'RevokeSpWalletUsecase: config delete failed, proceeding: '
-          '${failure.logMessage}',
-        );
+        if (await _configRepository.delete() case Err(:final failure)) {
+          log.warning(
+            'RevokeSpWalletUsecase: config delete failed, proceeding: '
+            '${failure.logMessage}',
+          );
+        }
+
+        _repository.notifySetupChanged();
+        return const Ok(null);
+      } catch (_) {
+        return const Err(SpUnexpected('SP revoke failed'));
+      } finally {
+        _repository.endTeardown();
       }
-
-      _repository.notifySetupChanged();
-      return const Ok(null);
-    } catch (e) {
-      return Err(SpUnexpected('SP revoke failed: $e'));
-    } finally {
-      _repository.endTeardown();
-    }
-  });
+    }),
+  );
 
   Future<Result<void, SpFailure>> _revokeOnDisk() async {
     final bool accountDirExists;
@@ -82,27 +88,39 @@ class RevokeSpWalletUsecase {
         return Err(failure);
     }
 
+    final SpBackendConfig? config;
+    switch (await _configRepository.fetch()) {
+      case Err(:final failure):
+        return Err(failure);
+      case Ok(:final value):
+        config = value;
+    }
     if (accountDirExists) {
+      if (config == null) return const Err(SpRecoveryRequired());
+      if (await _files.verifyAccountIdentity(config) case Err(:final failure)) {
+        // An unpublished retained handle may still need an explicit retry;
+        // leave all files unchanged even when teardown succeeds.
+        if (_repository.hasSession) {
+          if (await _repository.dispose() case Err(
+            failure: final disposeFailure,
+          )) {
+            return Err(disposeFailure);
+          }
+        }
+        return Err(failure);
+      }
       if (await _files.writeRevokedSentinel() case Err(:final failure)) {
-        log.severe(
-          message: 'Failed to write SP revoke sentinel',
-          error: failure,
-          trace: StackTrace.current,
-        );
         return Err(failure);
       }
     }
 
     if (_repository.hasSession) {
       if (await _repository.dispose() case Err(:final failure)) {
-        log.warning(
-          'RevokeSpWalletUsecase: dispose failed, proceeding: '
-          '${failure.logMessage}',
-        );
+        return Err(failure);
       }
     }
 
-    if (await _files.deleteOrphanBackups() case Err(:final failure)) {
+    if (await _files.deleteOrphanBackups(config) case Err(:final failure)) {
       return _afterFailedDelete(failure);
     }
     if (await _files.deleteAccountDir() case Err(:final failure)) {

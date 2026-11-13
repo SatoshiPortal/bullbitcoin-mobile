@@ -17,13 +17,15 @@ extension SpFailureL10n on SpFailure {
     SpSimulationDrifted() => context.loc.spFailureSimulationDrifted,
     SpBackendUnreachable() => context.loc.spFailureBackendUnreachable,
     SpConfigInvalid() => context.loc.spFailureConfigInvalid,
+    SpLegacySourceUnverified() => context.loc.spFailureLegacySourceUnverified,
+    SpSourceMismatch() => context.loc.spFailureSourceMismatch,
+    SpRecoveryRequired() => context.loc.spFailureRecoveryRequired,
     SpSetupCleanupFailed() => context.loc.spFailureSetupCleanupFailed,
     SpAmountBelowMinimum() => context.loc.spFailureAmountBelowMinimum,
     SpAmountExceedsBalance() => context.loc.spFailureAmountExceedsBalance,
     SpAddressNetworkMismatch() => context.loc.spFailureAddressNetworkMismatch,
     SpInvalidAddress() => context.loc.spFailureInvalidAddress,
     SpBroadcastUncertain() => context.loc.spFailureBroadcastUncertain,
-    SpPassphraseUnsupported() => context.loc.spFailurePassphraseUnsupported,
     SpUnexpected() => context.loc.oopsSomethingWentWrong,
   };
 }

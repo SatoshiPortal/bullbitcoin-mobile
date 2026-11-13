@@ -1,3 +1,5 @@
+import 'package:bb_mobile/core/wallet/domain/wallet_mutation_guard.dart';
+import 'package:bb_mobile/core/wallet/domain/ports/wallet_retention_port.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/features/all_seed_view/domain/all_seed_view_failure.dart';
 import 'package:bull_logger/bull_logger.dart';
@@ -11,16 +13,30 @@ import 'package:secrets/secrets.dart';
 class DeleteSecretUsecase {
   final Secrets _secrets;
   final WalletRepository _walletRepository;
+  final WalletMutationGuard _mutationGuard;
+  final WalletRetentionPort _retention;
 
   const DeleteSecretUsecase({
-    required Secrets secrets,
-    required WalletRepository walletRepository,
-  }) : this._(secrets, walletRepository);
-
-  const DeleteSecretUsecase._(this._secrets, this._walletRepository);
+    required this._secrets,
+    required this._walletRepository,
+    required this._mutationGuard,
+    required this._retention,
+  });
 
   @useResult
-  Future<Result<void, AllSeedViewFailure>> execute(Fingerprint id) async {
+  Future<Result<void, AllSeedViewFailure>> execute(Fingerprint id) =>
+      _mutationGuard.exclusive(() => _execute(id));
+
+  Future<Result<void, AllSeedViewFailure>> _execute(Fingerprint id) async {
+    try {
+      if (await _retention.retainsSecret(id)) {
+        return const Err(AllSeedViewDeleteFailure('secret is retained'));
+      }
+    } catch (_) {
+      return const Err(
+        AllSeedViewDeleteFailure('could not verify secret retention'),
+      );
+    }
     try {
       switch (await _walletRepository.getWallets()) {
         // Only a wallet that signs locally holds this seed; a watch-only wallet

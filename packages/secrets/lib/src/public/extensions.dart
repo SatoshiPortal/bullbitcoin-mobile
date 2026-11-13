@@ -42,7 +42,7 @@ extension SecretExtension on Secret {
 
   /// The Silent Payments (BIP352) account.
   ///
-  /// ⚠️ Hands the stored words to bwk. See [Secret.silentPaymentsAccount].
+  /// The full BIP39 seed reaches bwk inside the package. See [Secret.silentPaymentsAccount].
   SecretSilentPayments get silentPayments => SecretSilentPayments._(this);
 
   /// The sealed widgets: the words on screen, never in the caller's hands.
@@ -95,7 +95,7 @@ extension type const SecretDescriptors._(Secret _secret) {
 
   /// The confidential descriptor.
   ///
-  /// The passphrase is ignored. See [Secret.liquidDescriptor].
+  /// The stored passphrase is honoured. See [Secret.liquidDescriptor].
   @useResult
   Future<Result<String, SecretFailure>> liquid({
     required LiquidNetwork network,
@@ -176,10 +176,12 @@ extension type const SecretBackup._(Secret _secret) {
 
 /// The Silent Payments account, opened inside the package.
 extension type const SecretSilentPayments._(Secret _secret) {
-  /// Opens the bwk account, which scans and signs while it lives.
-  ///
-  /// ⚠️ bwk receives the stored words, and a secret with a passphrase is
-  /// refused. See [Secret.silentPaymentsAccount].
+  /// Derives the public address without opening an account. See [Secret.silentPaymentsAddress].
+  @useResult
+  Future<Result<String, SecretFailure>> address({required SpNetwork network}) =>
+      _secret.silentPaymentsAddress(network: network);
+
+  /// Opens the bwk account, which scans and signs while it lives. See [Secret.silentPaymentsAccount].
   @useResult
   Future<Result<SpAccount, SecretFailure>> account({
     required String name,
