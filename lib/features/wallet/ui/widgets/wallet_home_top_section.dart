@@ -2,7 +2,8 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/cards/action_card.dart';
 import 'package:bb_mobile/features/bitcoin_price/presentation/cubit/price_chart_cubit.dart';
-import 'package:bb_mobile/core/widgets/text/currency_text.dart';
+import 'package:bb_mobile/features/settings/public/settings_facade.dart'
+    show BitcoinAmountView;
 import 'package:bb_mobile/features/bitcoin_price/ui/price_chart_widget.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
@@ -24,7 +25,7 @@ class WalletHomeTopSection extends StatelessWidget {
   static const double _balanceAreaHeight = 264;
 
   /// Distance from the top of the dark area down to the balance.
-  static const double _balanceTopSpacing = 123;
+  static const double _balanceTopSpacing = 96;
 
   /// How far the [ActionCard] hangs below the dark area.
   static const double _actionCardOverhang = 76;
@@ -121,7 +122,11 @@ class _Amounts extends StatelessWidget {
         Gap(WalletHomeTopSection._balanceTopSpacing),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: [Spacer(), _BtcTotalAmt(), Gap(16), EyeToggle(), Spacer()],
+          children: [
+            Flexible(child: _BtcTotalAmt()),
+            Gap(16),
+            EyeToggle(),
+          ],
         ),
         Gap(12),
         _FiatAmt(),
@@ -153,9 +158,8 @@ class _BtcTotalAmt extends StatelessWidget {
 
     final btcTotal = walletState.totalBalance();
 
-    return CurrencyText(
+    return BitcoinAmountView(
       btcTotal,
-      showFiat: false,
       style: context.font.displaySmall,
       color: context.appColors.onPrimary,
     );
@@ -232,9 +236,8 @@ class _UnconfirmedIncomingBalance extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Icon(Icons.arrow_downward, color: color, size: 20),
-                CurrencyText(
+                BitcoinAmountView(
                   unconfirmed,
-                  showFiat: false,
                   style: context.font.bodyLarge,
                   color: color,
                 ),
