@@ -102,6 +102,9 @@ graph TB
     %% Instead, we note this in the documentation below
 
     %% Extracted package dependencies
+    BULL_UI[Design System Package]
+    BULL_UI --> PRIMITIVES
+    SETTINGS --> BULL_UI
     CORE --> PRIMITIVES
     CORE --> BULL_LOGGER
     LOGS --> BULL_LOGGER
