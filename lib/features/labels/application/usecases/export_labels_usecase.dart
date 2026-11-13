@@ -2,7 +2,7 @@ import 'package:bb_mobile/features/labels/application/labels_converter_port_regi
 import 'package:bb_mobile/features/labels/application/labels_repository_port.dart';
 import 'package:bb_mobile/features/labels/application/wallet_freeze_port.dart';
 import 'package:bb_mobile/features/labels/domain/formatted_labels.dart';
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/labels/domain/label_failure.dart';
 import 'package:bb_mobile/features/labels/domain/label_format.dart';
 import 'package:bull_logger/bull_logger.dart';

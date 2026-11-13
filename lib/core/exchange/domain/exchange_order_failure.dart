@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/failures/failure.dart';
+import 'package:primitives/primitives.dart' show Failure;
 
 /// Recoverable failures while reading exchange orders for history/enrichment.
 sealed class ExchangeOrderFailure extends Failure {

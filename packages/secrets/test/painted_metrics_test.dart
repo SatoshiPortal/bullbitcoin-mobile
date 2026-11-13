@@ -2,12 +2,15 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 
+import 'package:bip39_mnemonic/bip39_mnemonic.dart' show Language;
+
 import 'package:flutter/rendering.dart' show RenderRepaintBoundary;
 import 'package:flutter/services.dart' show FontLoader;
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:secrets/src/widgets/painted_text.dart'
     show PaintedMnemonic, PaintedPassphrase, PaintedWord;
+import 'package:unorm_dart/unorm_dart.dart' show nfc, nfkd;
 
 /// A host can measure what it places: its size after layout and the intrinsic sizes it can ask for at any width. None of it may follow the secret text, or measuring each word in a known font narrows it to a few BIP39 candidates.
 void main() {
@@ -60,6 +63,31 @@ void main() {
       box.getMaxIntrinsicHeight(width),
       box.getDryLayout(BoxConstraints(maxWidth: width)),
     ];
+  }
+
+  for (final language in Language.values) {
+    testWidgets('${language.name} public metrics never identify a word', (
+      tester,
+    ) async {
+      final first = await metricsOf(
+        tester,
+        PaintedWord(language.list.first, language: language, style: style),
+      );
+      final last = await metricsOf(
+        tester,
+        PaintedWord(language.list.last, language: language, style: style),
+      );
+      expect(last, first);
+      final composed = await metricsOf(
+        tester,
+        PaintedWord(nfc(language.list.last), language: language, style: style),
+      );
+      final decomposed = await metricsOf(
+        tester,
+        PaintedWord(nfkd(language.list.last), language: language, style: style),
+      );
+      expect(composed, decomposed);
+    });
   }
 
   Future<Uint8List> pixelsOf(WidgetTester tester, Widget child) async {

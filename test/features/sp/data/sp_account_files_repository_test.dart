@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/sp/data/datasources/sp_account_files_datasource.dart';
 import 'package:bb_mobile/features/sp/data/sp_account_files_repository.dart';
 import 'package:bb_mobile/features/sp/data/sp_storage_names.dart';
