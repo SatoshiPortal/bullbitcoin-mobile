@@ -1,10 +1,9 @@
 import 'dart:async';
 
 import 'package:bb_mobile/core/fees/domain/repositories/fees_repository.dart';
-import 'package:bb_mobile/core/recoverbull/domain/usecases/check_server_connection_usecase.dart';
 import 'package:bb_mobile/core/status/domain/entity/service_status.dart';
 import 'package:bb_mobile/core/status/domain/ports/electrum_connectivity_port.dart';
-import 'package:bb_mobile/core/status/domain/usecases/check_all_service_status_usecase.dart';
+import 'package:bb_mobile/features/status_check/domain/check_all_service_status_usecase.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
@@ -27,9 +26,6 @@ class _MockPayjoinPolicyAccess extends Mock implements PayjoinPolicyAccess {}
 class _MockPayjoinDiagnostics extends Mock implements PayjoinDiagnostics {}
 
 class _MockFeesRepository extends Mock implements FeesRepository {}
-
-class _MockCheckServerConnectionUsecase extends Mock
-    implements CheckServerConnectionUsecase {}
 
 class _MockWalletRepository extends Mock implements WalletRepository {}
 
@@ -89,7 +85,7 @@ void main() {
       feesRepository: feesRepository,
       walletRepository: walletRepository,
       ensureTorReadyUsecase: _MockEnsureTorReadyUsecase(),
-      checkServerConnectionUsecase: _MockCheckServerConnectionUsecase(),
+      checkServerConnection: () async => const Ok(false),
       settingsRepository: settingsRepository,
       tor: tor,
     );
@@ -135,7 +131,7 @@ void main() {
       feesRepository: feesRepository,
       walletRepository: walletRepository,
       ensureTorReadyUsecase: _MockEnsureTorReadyUsecase(),
-      checkServerConnectionUsecase: _MockCheckServerConnectionUsecase(),
+      checkServerConnection: () async => const Ok(false),
       settingsRepository: settingsRepository,
       tor: tor,
     );
@@ -185,7 +181,7 @@ void main() {
         feesRepository: feesRepository,
         walletRepository: walletRepository,
         ensureTorReadyUsecase: _MockEnsureTorReadyUsecase(),
-        checkServerConnectionUsecase: _MockCheckServerConnectionUsecase(),
+        checkServerConnection: () async => const Ok(false),
         settingsRepository: settingsRepository,
         tor: tor,
       );
@@ -240,7 +236,7 @@ void main() {
         feesRepository: feesRepository,
         walletRepository: walletRepository,
         ensureTorReadyUsecase: _MockEnsureTorReadyUsecase(),
-        checkServerConnectionUsecase: _MockCheckServerConnectionUsecase(),
+        checkServerConnection: () async => const Ok(false),
         settingsRepository: settingsRepository,
         tor: tor,
       );
@@ -248,7 +244,7 @@ void main() {
       final status = await usecase.execute(network: Network.bitcoinMainnet);
 
       expect(status.tor.status, ServiceStatus.online);
-      verify(walletRepository.isTorRequired).called(1);
+      verifyNever(walletRepository.isTorRequired);
     },
   );
 
@@ -291,7 +287,7 @@ void main() {
         feesRepository: feesRepository,
         walletRepository: walletRepository,
         ensureTorReadyUsecase: _MockEnsureTorReadyUsecase(),
-        checkServerConnectionUsecase: _MockCheckServerConnectionUsecase(),
+        checkServerConnection: () async => const Ok(false),
         settingsRepository: settingsRepository,
         tor: tor,
       );
@@ -299,7 +295,7 @@ void main() {
       final status = await usecase.execute(network: Network.bitcoinMainnet);
 
       expect(status.tor.status, ServiceStatus.offline);
-      verify(walletRepository.isTorRequired).called(1);
+      verifyNever(walletRepository.isTorRequired);
     },
   );
 
@@ -343,7 +339,7 @@ void main() {
         feesRepository: feesRepository,
         walletRepository: walletRepository,
         ensureTorReadyUsecase: _MockEnsureTorReadyUsecase(),
-        checkServerConnectionUsecase: _MockCheckServerConnectionUsecase(),
+        checkServerConnection: () async => const Ok(false),
         settingsRepository: settingsRepository,
         tor: _MockTor(),
       );
@@ -406,7 +402,7 @@ void main() {
       feesRepository: feesRepository,
       walletRepository: walletRepository,
       ensureTorReadyUsecase: _MockEnsureTorReadyUsecase(),
-      checkServerConnectionUsecase: _MockCheckServerConnectionUsecase(),
+      checkServerConnection: () async => const Ok(false),
       settingsRepository: settingsRepository,
       tor: _MockTor(),
     );
@@ -459,7 +455,7 @@ void main() {
         feesRepository: feesRepository,
         walletRepository: walletRepository,
         ensureTorReadyUsecase: _MockEnsureTorReadyUsecase(),
-        checkServerConnectionUsecase: _MockCheckServerConnectionUsecase(),
+        checkServerConnection: () async => const Ok(false),
         settingsRepository: settingsRepository,
         tor: _MockTor(),
       );
@@ -501,7 +497,7 @@ void main() {
       feesRepository: feesRepository,
       walletRepository: walletRepository,
       ensureTorReadyUsecase: _MockEnsureTorReadyUsecase(),
-      checkServerConnectionUsecase: _MockCheckServerConnectionUsecase(),
+      checkServerConnection: () async => const Ok(false),
       settingsRepository: settingsRepository,
       tor: _MockTor(),
     );
