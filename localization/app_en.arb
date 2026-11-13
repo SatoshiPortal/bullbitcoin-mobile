@@ -15823,5 +15823,13 @@
   "coreScreensOutputsExceedInputs": "Outputs exceed inputs: this transaction is invalid and the network will reject it.",
   "@coreScreensOutputsExceedInputs": {
     "description": "Transaction review alert when a Bitcoin transaction's outputs exceed its inputs"
+  },
+  "amountSwitchToBtc": "Show this amount in BTC",
+  "@amountSwitchToBtc": {
+    "description": "Accessible action and tooltip for switching only this Bitcoin amount to BTC without changing the global preference"
+  },
+  "amountSwitchToSats": "Show this amount in sats",
+  "@amountSwitchToSats": {
+    "description": "Accessible action and tooltip for switching only this Bitcoin amount to sats without changing the global preference"
   }
 }

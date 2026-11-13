@@ -4848,5 +4848,7 @@
   "sellPayoutNewBadge": "NUEVO",
   "passphraseShow": "Mostrar frase de contraseña",
   "passphraseHide": "Ocultar frase de contraseña",
-  "coreScreensOutputsExceedInputs": "Las salidas superan las entradas: esta transacción no es válida y la red la rechazará."
+  "coreScreensOutputsExceedInputs": "Las salidas superan las entradas: esta transacción no es válida y la red la rechazará.",
+  "amountSwitchToBtc": "Mostrar este importe en BTC",
+  "amountSwitchToSats": "Mostrar este importe en sats"
 }
