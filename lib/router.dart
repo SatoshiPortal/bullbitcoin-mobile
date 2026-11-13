@@ -1,8 +1,6 @@
 import 'dart:io';
 
 import 'package:bb_mobile/core/screens/route_error_screen.dart';
-import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/announcements/presentation/announcements_cubit.dart';
 import 'package:bb_mobile/features/autobuy/public/autobuy_facade.dart';
 import 'package:bb_mobile/features/app_unlock/ui/app_unlock_router.dart';
@@ -121,52 +119,6 @@ class AppRouter {
                   appBar: tabIndex == 0 ? const WalletHomeAppBar() : null,
                   extendBodyBehindAppBar: true,
                   body: child,
-                  bottomNavigationBar: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      BottomNavigationBar(
-                        currentIndex: tabIndex,
-                        onTap: (index) {
-                          if (index == 0) {
-                            context.goNamed(WalletRoute.walletHome.name);
-                          } else {
-                            // Exchange tab
-                            if (Platform.isIOS) {
-                              final isSuperuser =
-                                  context
-                                      .read<SettingsCubit>()
-                                      .state
-                                      .isSuperuser ??
-                                  false;
-                              if (isSuperuser) {
-                                context.goNamed(
-                                  ExchangeRoute.exchangeHome.name,
-                                );
-                              } else {
-                                context.goNamed(
-                                  ExchangeRoute.exchangeLanding.name,
-                                );
-                              }
-                            } else {
-                              context.goNamed(ExchangeRoute.exchangeHome.name);
-                            }
-                          }
-                        },
-                        items: [
-                          BottomNavigationBarItem(
-                            icon: const Icon(Icons.currency_bitcoin),
-                            label: context.loc.navigationTabWallet,
-                            backgroundColor: context.appColors.background,
-                          ),
-                          BottomNavigationBarItem(
-                            icon: const Icon(Icons.attach_money),
-                            label: context.loc.navigationTabExchange,
-                            backgroundColor: context.appColors.background,
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
                 ),
               ),
             ),
