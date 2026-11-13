@@ -74,13 +74,14 @@ void main() {
     },
   );
 
-  test('four favorites remain visible only when nothing is hidden', () {
+  test('Home keeps three actions and sends the legacy fourth to More', () {
     final four = QuickActionsLayout.resolve(
       available: defaults.toSet(),
       defaults: defaults,
     );
-    expect(four.primary, defaults);
-    expect(four.more, isEmpty);
+    expect(four.primary, defaults.take(3));
+    expect(four.more, [QuickAction.settings]);
+    expect(four.primary.length + 1, QuickActionsLayout.maximumCells);
     final six = QuickActionsLayout.resolve(
       available: walletActions,
       defaults: defaults,

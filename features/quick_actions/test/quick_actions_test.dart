@@ -31,8 +31,8 @@ void main() {
       available: defaults.toSet(),
       defaults: defaults,
     );
-    expect(disabled.primary, defaults);
-    expect(disabled.more, isEmpty);
+    expect(disabled.primary, defaults.take(3));
+    expect(disabled.more, [QuickAction.settings]);
   });
 
   test('unavailable custom actions retain their position when restored', () {
@@ -86,8 +86,8 @@ void main() {
         defaults: defaults,
         selection: reordered,
       );
-      expect(restored.primary, reordered.actions);
-      expect(restored.more, isEmpty);
+      expect(restored.primary, reordered.actions.take(3));
+      expect(restored.more, [QuickAction.buy]);
     },
   );
 

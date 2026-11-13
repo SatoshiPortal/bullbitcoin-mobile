@@ -1,3 +1,4 @@
+import 'customization_v2_test.dart' show openEditor, localizations;
 import 'package:bull_quick_actions/bull_quick_actions.dart';
 import 'package:bull_ui/testing.dart';
 import 'package:bull_ui/bull_ui.dart' show BullQuickAction;
@@ -62,13 +63,11 @@ void main() {
               QuickAction.map,
               QuickAction.transfer,
               QuickAction.history,
-              QuickAction.settings,
             },
             defaults: const [
               QuickAction.map,
               QuickAction.transfer,
               QuickAction.history,
-              QuickAction.settings,
             ],
             onAction: (_) {},
             onCustomize: () {},
@@ -80,51 +79,18 @@ void main() {
     expect(find.text('More'), findsNothing);
   });
 
-  testWidgets('customization saves the edited selection', (tester) async {
+  testWidgets('customization autosaves without closing the editor', (
+    tester,
+  ) async {
     final storage = MemoryStorage();
     final facade = QuickActionsFacade(storage: storage, warning: (_) {});
-    await tester.pumpWidget(
-      MaterialApp(
-        theme: ThemeData(extensions: testBullExtensions),
-        localizationsDelegates: const [QuickActionsLocalizations.delegate],
-        home: Builder(
-          builder: (context) => Scaffold(
-            body: TextButton(
-              onPressed: () => Navigator.of(context).push(
-                MaterialPageRoute<void>(
-                  builder: (_) => QuickActionsCustomizationScreen(
-                    facade: facade,
-                    available: QuickAction.values.toSet(),
-                    defaults: const [
-                      QuickAction.map,
-                      QuickAction.transfer,
-                      QuickAction.history,
-                      QuickAction.settings,
-                    ],
-                  ),
-                ),
-              ),
-              child: const Text('Open'),
-            ),
-          ),
-        ),
-      ),
-    );
-    await tester.tap(find.text('Open'));
+    await openEditor(tester, facade);
+    final l10n = localizations(tester);
+    await tester.tap(find.byTooltip(l10n.removeAction(l10n.map)));
     await tester.pumpAndSettle();
-    expect(find.byTooltip('Remove Settings from favorites'), findsOneWidget);
-    expect(find.byTooltip('Remove Map from favorites'), findsOneWidget);
-    await tester.tap(find.byTooltip('Remove Map from favorites'));
-    await tester.pumpAndSettle();
-    final addBuy = find.byTooltip('Add Buy to favorites');
-    await tester.ensureVisible(addBuy);
-    await tester.tap(addBuy);
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('Save changes'));
-    await tester.pumpAndSettle();
-    expect(storage.value, '["transfer","history","settings","buy"]');
+    expect(storage.value, '["transfer","history"]');
+    expect(find.byType(QuickActionsCustomizationScreen), findsOneWidget);
   });
-
   testWidgets('four cells stay on one line at 360 pixels with large text', (
     tester,
   ) async {

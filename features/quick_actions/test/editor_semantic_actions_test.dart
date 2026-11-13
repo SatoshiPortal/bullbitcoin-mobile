@@ -21,7 +21,7 @@ void main() {
     });
   }
 
-  testWidgets('semantic reorder replaces arrows and preserves draft and save', (
+  testWidgets('semantic reorder replaces arrows and saves immediately', (
     tester,
   ) async {
     final semantics = tester.ensureSemantics();
@@ -58,10 +58,7 @@ void main() {
         ),
       );
       await tester.pumpAndSettle();
-      expect(storage.value, isNull);
-      await tester.tap(find.text(l10n.save));
-      await tester.pumpAndSettle();
-      expect(storage.value, '["transfer","map","history","settings"]');
+      expect(storage.value, '["transfer","map","history"]');
     } finally {
       semantics.dispose();
     }
