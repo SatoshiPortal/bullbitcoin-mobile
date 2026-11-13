@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart' show Result;
 import 'package:bb_mobile/features/exchange_access/data/exchange_access_repository_impl.dart';
 import 'package:bb_mobile/features/exchange_access/domain/exchange_access.dart';
 import 'package:bb_mobile/features/exchange_access/domain/exchange_access_failure.dart';
@@ -6,7 +6,7 @@ import 'package:bb_mobile/features/exchange_access/domain/repositories/exchange_
 import 'package:bb_mobile/features/exchange_access/domain/usecases/exchange_access_controller.dart';
 import 'package:meta/meta.dart';
 
-export 'package:bb_mobile/core/utils/result.dart' show Err, Ok, Result;
+export 'package:primitives/primitives.dart' show Err, Ok, Result;
 export '../exchange_access_locator.dart' show ExchangeAccessLocator;
 export '../domain/exchange_access.dart';
 export '../domain/exchange_access_failure.dart';

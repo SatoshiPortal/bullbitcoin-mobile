@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart' show Err, Ok;
 import 'package:bb_mobile/features/wizard/public/wizard_startup_facade.dart';
 import 'package:bb_mobile/features/wizard/ui/wizard_app.dart';
 import 'package:flutter/widgets.dart';

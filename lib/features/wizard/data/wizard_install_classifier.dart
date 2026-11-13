@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart' show Err, Ok, Result;
 import 'package:bb_mobile/features/wizard/domain/wizard_install_failure.dart';
 import 'package:bb_mobile/features/wizard/domain/wizard_install_repository.dart';
 import 'package:path/path.dart' as p;

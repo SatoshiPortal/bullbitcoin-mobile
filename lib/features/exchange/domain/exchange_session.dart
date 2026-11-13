@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_api_key_repository.dart';
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart' show Err, Ok;
 
 enum ExchangeSessionStatus {
   resolving,
