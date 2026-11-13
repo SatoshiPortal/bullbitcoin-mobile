@@ -46,6 +46,7 @@ import 'package:bb_mobile/features/send/domain/usecases/get_send_cross_chain_quo
 import 'package:bb_mobile/features/send/domain/usecases/get_send_exchange_rate_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/get_send_swap_quote_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/detect_bitcoin_string_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/get_payjoin_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/get_send_payjoin_enabled_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/validate_bitcoin_selection_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/prepare_liquid_send_usecase.dart';
@@ -102,6 +103,7 @@ class SendCubit extends Cubit<SendState>
     required this._prepareLiquidSendUsecase,
     required this._sendWithPayjoinUsecase,
     required this._watchPayjoinUsecase,
+    required this._getPayjoinUsecase,
     required this._getWalletsUsecase,
     required this._getWalletUsecase,
     required this._createSendSwapUsecase,
@@ -192,6 +194,7 @@ class SendCubit extends Cubit<SendState>
   final BroadcastBitcoinTransactionUsecase _broadcastBitcoinTxUsecase;
   final SendWithPayjoinUsecase _sendWithPayjoinUsecase;
   final WatchPayjoinUsecase _watchPayjoinUsecase;
+  final GetPayjoinUsecase _getPayjoinUsecase;
   final UpdatePaidSendSwapUsecase _updatePaidSendSwapUsecase;
   final CalculateLiquidAbsoluteFeesUsecase _calculateLiquidAbsoluteFeesUsecase;
 
@@ -3084,8 +3087,31 @@ class SendCubit extends Cubit<SendState>
             case Ok(:final value):
               payjoinSender = value;
             case Err(:final failure):
-              emit(state.copyWith(failure: failure, signingTransaction: false));
-              return;
+              // A failed start is not a failed payment: the engine persists
+              // the session — signed original included — BEFORE posting to the
+              // directory, and a post failure keeps the row so the expiry
+              // fallback still settles the payment. Re-arming Confirm here
+              // would let a rebuilt send pay the same payee a second time on
+              // disjoint inputs (the persisted session's inputs are reserved
+              // out of coin selection, so the two transactions cannot
+              // conflict). When the row exists, adopt the session and proceed
+              // exactly as a successful start; only a start that left nothing
+              // behind may fall through to the error path.
+              final persisted = await _getPayjoinUsecase.execute(
+                paymentRequest.uri,
+              );
+              if (persisted is! PayjoinSenderSession) {
+                emit(
+                  state.copyWith(failure: failure, signingTransaction: false),
+                );
+                return;
+              }
+              log.warning(
+                'Send Payjoin start failed but session ${persisted.logRef} is '
+                'persisted (status=${persisted.status.name}); adopting it '
+                'instead of re-arming Confirm',
+              );
+              payjoinSender = persisted;
           }
           // Show originalTxId provisionally; the payjoin runs asynchronously
           //  in the repository (poll → sign → broadcast, or fallback to the

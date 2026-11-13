@@ -52,6 +52,7 @@ import 'package:bb_mobile/features/send/domain/usecases/update_send_swap_payin_u
 import 'package:bb_mobile/features/send/domain/usecases/validate_coin_control_payment_request_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/verify_exchange_payin_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/verify_send_signed_tx_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/get_payjoin_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/watch_payjoin_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/watch_send_swap_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/prepare_sp_payment_for_send_usecase.dart';
@@ -139,6 +140,8 @@ class _MockSendWithPayjoinUsecase extends Mock
 
 class _MockWatchPayjoinUsecase extends Mock implements WatchPayjoinUsecase {}
 
+class _MockGetPayjoinUsecase extends Mock implements GetPayjoinUsecase {}
+
 class _MockWatchFinishedWalletSyncsUsecase extends Mock
     implements WatchFinishedWalletSyncsUsecase {}
 
@@ -222,6 +225,7 @@ class _TestSendCubit extends SendCubit {
     required super.updatePaidSendSwapUsecase,
     required super.sendWithPayjoinUsecase,
     required super.watchPayjoinUsecase,
+    required super.getPayjoinUsecase,
     required super.watchFinishedWalletSyncsUsecase,
     required super.calculateLiquidAbsoluteFeesUsecase,
     required super.calculateLiquidPsetSizeUsecase,
@@ -326,6 +330,7 @@ void main() {
       updatePaidSendSwapUsecase: _MockUpdatePaidSendSwapUsecase(),
       sendWithPayjoinUsecase: _MockSendWithPayjoinUsecase(),
       watchPayjoinUsecase: _MockWatchPayjoinUsecase(),
+      getPayjoinUsecase: _MockGetPayjoinUsecase(),
       watchFinishedWalletSyncsUsecase: _MockWatchFinishedWalletSyncsUsecase(),
       calculateLiquidAbsoluteFeesUsecase: calculateLiquidAbsoluteFeesUsecase,
       calculateLiquidPsetSizeUsecase: _MockCalculateLiquidPsetSizeUsecase(),
