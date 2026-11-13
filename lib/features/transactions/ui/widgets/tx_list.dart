@@ -32,8 +32,18 @@ class TxList extends StatelessWidget {
     if (failure != null) {
       return TransactionsByDayList<Transaction>(
         itemsByDay: const {},
-        itemBuilder: (context, tx) =>
-            TransactionListItem.transaction(tx, onDetailsClosed: refreshLabels),
+        itemBuilder: (context, tx) => TransactionListItem.transaction(
+          tx,
+          key: ValueKey((
+            tx.walletTransaction?.walletId,
+            tx.txId,
+            tx.swap?.id,
+            tx.orderSwap?.localId,
+            tx.payjoin?.id,
+            tx.order?.orderId,
+          )),
+          onDetailsClosed: refreshLabels,
+        ),
         loadingMessage: context.loc.transactionListLoadingTransactions,
         emptyMessage: context.loc.transactionListNoTransactions,
         errorMessage: failure.toTranslated(context),
@@ -53,8 +63,18 @@ class TxList extends StatelessWidget {
 
     return TransactionsByDayList<Transaction>(
       itemsByDay: txsByDay,
-      itemBuilder: (context, tx) =>
-          TransactionListItem.transaction(tx, onDetailsClosed: refreshLabels),
+      itemBuilder: (context, tx) => TransactionListItem.transaction(
+        tx,
+        key: ValueKey((
+          tx.walletTransaction?.walletId,
+          tx.txId,
+          tx.swap?.id,
+          tx.orderSwap?.localId,
+          tx.payjoin?.id,
+          tx.order?.orderId,
+        )),
+        onDetailsClosed: refreshLabels,
+      ),
       loadingMessage: context.loc.transactionListLoadingTransactions,
       emptyMessage: context.loc.transactionListNoTransactions,
       header:

@@ -1,0 +1,43 @@
+{
+  "@@locale": "en",
+  "amountSwitchToBtc": "Show this amount in BTC",
+  "@amountSwitchToBtc": {
+    "description": "Accessible action and tooltip for switching only this Bitcoin amount to BTC without changing the global preference"
+  },
+  "amountSwitchToSats": "Show this amount in sats",
+  "@amountSwitchToSats": {
+    "description": "Accessible action and tooltip for switching only this Bitcoin amount to sats without changing the global preference"
+  },
+  "amountChangeDefaultEverywhere": "Change the default unit everywhere",
+  "@amountChangeDefaultEverywhere": {
+    "description": "Named accessible alternative to holding an amount to change the global Bitcoin unit"
+  },
+  "amountGesturesHint": "Tap to change this amount. Touch and hold to change the default everywhere.",
+  "@amountGesturesHint": {
+    "description": "Tooltip explaining the local tap and global long press gestures on Bitcoin amounts"
+  },
+  "amountsDisplayedEverywhereSats": "Amounts displayed in sats everywhere",
+  "@amountsDisplayedEverywhereSats": {
+    "description": "Confirmation after saving sats as the global default"
+  },
+  "amountsDisplayedEverywhereBtc": "Amounts displayed in BTC everywhere",
+  "@amountsDisplayedEverywhereBtc": {
+    "description": "Confirmation after saving BTC as the global default"
+  },
+  "amountUndo": "Undo",
+  "@amountUndo": {
+    "description": "Restore the previous global Bitcoin amount unit"
+  },
+  "amountChangeFailed": "Could not change the amount unit. Please try again.",
+  "@amountChangeFailed": {
+    "description": "Shared Bitcoin amount control."
+  },
+  "amountMax": "MAX",
+  "@amountMax": {
+    "description": "Shared Bitcoin amount control."
+  },
+  "amountHidden": "**",
+  "@amountHidden": {
+    "description": "Shared Bitcoin amount control."
+  }
+}
