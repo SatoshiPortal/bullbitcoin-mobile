@@ -127,6 +127,123 @@ void main() {
     expect(cubit.state.userSummary, isNull);
   });
 
+  test('a late older refresh cannot restore an active DCA', () async {
+    final first = Completer<Result<UserSummary, ExchangeFailure>>();
+    final second = Completer<Result<UserSummary, ExchangeFailure>>();
+    var calls = 0;
+    when(
+      getAccount.execute,
+    ).thenAnswer((_) => ++calls == 1 ? first.future : second.future);
+    final cubit = build();
+    addTearDown(cubit.close);
+    publish(const ExchangeAccessEnabled(ExchangeAccessSession.signedIn));
+    final newest = cubit.fetchUserSummary();
+    second.complete(const Ok(account));
+    await newest;
+    first.complete(Ok(account.copyWith(dca: const UserDca(isActive: true))));
+    await Future<void>.delayed(Duration.zero);
+    expect(cubit.state.userSummary, account);
+    expect(cubit.state.userSummary?.dca.isActive, isFalse);
+  });
+
+  test('a late older failure cannot replace a successful refresh', () async {
+    final first = Completer<Result<UserSummary, ExchangeFailure>>();
+    final second = Completer<Result<UserSummary, ExchangeFailure>>();
+    var calls = 0;
+    when(
+      getAccount.execute,
+    ).thenAnswer((_) => ++calls == 1 ? first.future : second.future);
+    final cubit = build();
+    addTearDown(cubit.close);
+    publish(const ExchangeAccessEnabled(ExchangeAccessSession.signedIn));
+    final newest = cubit.fetchUserSummary();
+    second.complete(const Ok(account));
+    await newest;
+    first.complete(const Err(ExchangeNetworkFailure()));
+    await Future<void>.delayed(Duration.zero);
+    expect(cubit.state.userSummary, account);
+    expect(cubit.state.getUserSummaryFailure, isNull);
+  });
+
+  test('a late older success cannot erase a newer refresh failure', () async {
+    final first = Completer<Result<UserSummary, ExchangeFailure>>();
+    final second = Completer<Result<UserSummary, ExchangeFailure>>();
+    var calls = 0;
+    when(
+      getAccount.execute,
+    ).thenAnswer((_) => ++calls == 1 ? first.future : second.future);
+    final cubit = build();
+    addTearDown(cubit.close);
+    publish(const ExchangeAccessEnabled(ExchangeAccessSession.signedIn));
+    final newest = cubit.fetchUserSummary();
+    second.complete(const Err(ExchangeNetworkFailure()));
+    await newest;
+    first.complete(const Ok(account));
+    await Future<void>.delayed(Duration.zero);
+    expect(cubit.state.userSummary, isNull);
+    expect(cubit.state.getUserSummaryFailure, isA<ExchangeNetworkFailure>());
+  });
+
+  test(
+    'retry clears an initial error while the new request is pending',
+    () async {
+      final retry = Completer<Result<UserSummary, ExchangeFailure>>();
+      var calls = 0;
+      when(getAccount.execute).thenAnswer(
+        (_) => ++calls == 1
+            ? Future.value(const Err(ExchangeNetworkFailure()))
+            : retry.future,
+      );
+      final cubit = build();
+      addTearDown(cubit.close);
+      publish(const ExchangeAccessEnabled(ExchangeAccessSession.signedIn));
+      await Future<void>.delayed(Duration.zero);
+      expect(cubit.state.getUserSummaryFailure, isA<ExchangeNetworkFailure>());
+      expect(cubit.state.isFetchingUserSummary, isFalse);
+
+      final pending = cubit.fetchUserSummary();
+      expect(cubit.state.getUserSummaryFailure, isNull);
+      expect(cubit.state.isFetchingUserSummary, isTrue);
+      retry.complete(const Ok(account));
+      await pending;
+      expect(cubit.state.userSummary, account);
+      expect(cubit.state.getUserSummaryFailure, isNull);
+      expect(cubit.state.isFetchingUserSummary, isFalse);
+    },
+  );
+
+  test(
+    'retry retains a previously loaded account and reports a new failure',
+    () async {
+      final retry = Completer<Result<UserSummary, ExchangeFailure>>();
+      var calls = 0;
+      when(getAccount.execute).thenAnswer((_) {
+        calls++;
+        if (calls == 1) return Future.value(const Ok(account));
+        if (calls == 2) {
+          return Future.value(const Err(ExchangeNetworkFailure()));
+        }
+        return retry.future;
+      });
+      final cubit = build();
+      addTearDown(cubit.close);
+      publish(const ExchangeAccessEnabled(ExchangeAccessSession.signedIn));
+      await Future<void>.delayed(Duration.zero);
+      await cubit.fetchUserSummary();
+      expect(cubit.state.getUserSummaryFailure, isA<ExchangeNetworkFailure>());
+      final pending = cubit.fetchUserSummary();
+      expect(cubit.state.userSummary, account);
+      expect(cubit.state.getUserSummaryFailure, isNull);
+      retry.complete(const Err(ExchangeAccountUnavailableFailure()));
+      await pending;
+      expect(cubit.state.userSummary, account);
+      expect(
+        cubit.state.getUserSummaryFailure,
+        isA<ExchangeAccountUnavailableFailure>(),
+      );
+    },
+  );
+
   test('stop DCA reports a preference failure', () async {
     when(
       () => preferences.execute(dcaEnabled: false),
