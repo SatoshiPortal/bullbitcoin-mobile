@@ -42,7 +42,7 @@ class LocalDataGateScreen extends StatelessWidget {
                   if (failure is LocalDataUnrecoverableFailure) ...[
                     const Gap(12),
                     Text(
-                      loc.localDataRecoveryRestoreHint,
+                      failure.restoreHint(loc),
                       style: context.bullText.bodyMedium,
                       textAlign: TextAlign.center,
                     ),

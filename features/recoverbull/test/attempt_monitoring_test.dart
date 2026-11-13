@@ -30,7 +30,10 @@ void main() {
   final collection = DateTime.utc(2026, 11, 9);
 
   Future<void> open() async {
-    database = RecoverBullDatabase.open('${directory.path}/rb.sqlite');
+    database = RecoverBullDatabase.open(
+      '${directory.path}/rb.sqlite',
+      key: DatabaseKey.fromHex('42' * 32),
+    );
     await database.forceOpen();
     repository = AttemptMonitoringRepositoryImpl(database, durable: true);
     metadata = BackupMetadataRepositoryImpl(database);

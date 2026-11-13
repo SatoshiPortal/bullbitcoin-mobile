@@ -68,14 +68,16 @@ final GetIt locator = GetIt.instance;
 
 class AppLocator {
   /// Foreground-only composition. Headless setup never opens this database.
-  static Future<void> setupRecoverBull(
+  static Future<RecoverBullFeature> setupRecoverBull(
     GetIt locator, {
     required String databasePath,
+    required DatabaseKey databaseKey,
   }) async {
     SettingsRecoverBullBindings.setup(locator);
     WalletRecoverBullBindings.setup(locator);
     final feature = await RecoverBullFeature.mount(
       databasePath: databasePath,
+      databaseKey: databaseKey,
       secrets: locator<Secrets>(),
       wallets: locator<RecoverBullWalletPort>(),
       environment: locator<RecoverBullEnvironmentPort>(),
@@ -83,11 +85,17 @@ class AppLocator {
       routes: locator<RecoverBullRoutePort>(),
       clients: locator<TorHttpClientFactory>(),
     );
-    locator.registerSingleton<RecoverBullFeature>(
-      feature,
-      dispose: (value) => value.dispose(),
-    );
-    locator.registerSingleton<RecoverBullFacade>(feature.facade);
+    try {
+      locator.registerSingleton<RecoverBullFeature>(
+        feature,
+        dispose: (value) => value.dispose(),
+      );
+      locator.registerSingleton<RecoverBullFacade>(feature.facade);
+      return feature;
+    } catch (_) {
+      await feature.dispose();
+      rethrow;
+    }
   }
 
   /// Call this in the `main` function **before** `runApp()`

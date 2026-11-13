@@ -7,6 +7,7 @@ import 'package:bull_tor/tor.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:secrets/secrets.dart' as custody;
 import 'package:secrets/testing.dart';
+import 'package:primitives/primitives.dart' show DatabaseKey;
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -39,6 +40,7 @@ void main() {
       final owners = _Owners();
       final runtime = await RecoverBullRuntime.open(
         databasePath: file.path,
+        databaseKey: DatabaseKey.fromHex('42' * 32),
         secrets: secrets,
         wallets: owners,
         environment: owners,

@@ -20,6 +20,10 @@ final class LocalDatabaseRepositoryImpl implements LocalDatabaseRepository {
       switch (database) {
         LocalDatabase.main => (module: 'bb_mobile', name: 'bullbitcoin_sqlite'),
         LocalDatabase.payjoin => (module: 'bull_payjoin', name: 'payjoin'),
+        LocalDatabase.recoverbull => (
+          module: 'bull_recoverbull',
+          name: 'recoverbull',
+        ),
       };
 
   DatabaseKeys _keys(LocalDatabase database) =>
@@ -47,6 +51,10 @@ final class LocalDatabaseRepositoryImpl implements LocalDatabaseRepository {
     }
 
     switch (state) {
+      case SqliteFileState.plaintext when database == LocalDatabase.recoverbull:
+        // RecoverBull has never shipped in clear. Preserve unexpected development files; only an explicit recovery choice may erase them.
+        return Err(LocalDataInconsistentFailure(database));
+
       case SqliteFileState.inconsistent:
         log.warning('Local database ${database.name}: inconsistent files');
         return Err(LocalDataInconsistentFailure(database));

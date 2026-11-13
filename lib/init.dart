@@ -58,6 +58,7 @@ class Bull {
     return LocalDatabasePaths(
       main: p.join(bullDirectory.path, '${SqliteDatabase.name}.sqlite'),
       payjoin: p.join(bullDirectory.path, payjoinDatabaseFilename),
+      recoverbull: p.join(bullDirectory.path, 'recoverbull.sqlite'),
     );
   }
 
@@ -93,30 +94,36 @@ class Bull {
     // Flush wizard pending values (if any) to SQLite now that the
     // settings repository is available, then mark the wizard complete.
     await locator<ApplyPendingWizardChoicesUsecase>().execute();
-    await AppLocator.setupRecoverBull(
+    final recoverbull = await AppLocator.setupRecoverBull(
       locator,
-      databasePath: p.join(bullDirectory.path, 'recoverbull.sqlite'),
+      databasePath: paths.recoverbull,
+      databaseKey: session.recoverbullKey,
     );
-    unawaited(locator<RecoverBullFacade>().checkAtColdStart());
-    final settings = locator<SettingsRepository>();
-    configureLogTorContext(
-      () => loadTorDiagnosticContext(settings, locator<Tor>()),
-    );
-    Report.consent = (await settings.fetch()).isErrorReportingEnabled;
-    if (Platform.isAndroid || Platform.isIOS) {
-      await cancelLegacyBackgroundTasks();
-    }
+    try {
+      final settings = locator<SettingsRepository>();
+      configureLogTorContext(
+        () => loadTorDiagnosticContext(settings, locator<Tor>()),
+      );
+      Report.consent = (await settings.fetch()).isErrorReportingEnabled;
+      if (Platform.isAndroid || Platform.isIOS) {
+        await cancelLegacyBackgroundTasks();
+      }
 
-    // Emits the install/upgrade transition event (no-op on a normal
-    // launch) and advances the persisted version marker. The shout is
-    // awaited so a crash between scheduling and capture cannot lose
-    // the milestone — the persisted marker only advances once Sentry
-    // has the event.
-    final type = Report.migrationType;
-    if (type != null) {
-      await log.shout(message: type.name, category: ReportCategory.migration);
-      await Report.commitVersion();
+      // Emits the install/upgrade transition event (no-op on a normal
+      // launch) and advances the persisted version marker. The shout is
+      // awaited so a crash between scheduling and capture cannot lose
+      // the milestone — the persisted marker only advances once Sentry
+      // has the event.
+      final type = Report.migrationType;
+      if (type != null) {
+        await log.shout(message: type.name, category: ReportCategory.migration);
+        await Report.commitVersion();
+      }
+    } catch (_) {
+      await recoverbull.dispose();
+      rethrow;
     }
+    unawaited(recoverbull.facade.checkAtColdStart());
   }
 }
 

@@ -27,6 +27,7 @@ void main() {
     paths = LocalDatabasePaths(
       main: '${directory.path}/bullbitcoin_sqlite.sqlite',
       payjoin: '${directory.path}/payjoin.sqlite',
+      recoverbull: '${directory.path}/recoverbull.sqlite',
     );
     storage = FakeSecureStoragePlatform()..install();
     repository = LocalDatabaseRepositoryImpl(

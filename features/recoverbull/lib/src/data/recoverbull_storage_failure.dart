@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:bull_sqlite/bull_sqlite.dart';
 import 'package:drift/isolate.dart' show DriftRemoteException;
 import 'package:drift/native.dart' show SqliteException;
 
@@ -8,6 +9,20 @@ import 'database/recoverbull_database.dart';
 
 RecoverBullFailure recoverBullStorageFailure(Object error) {
   final cause = error is DriftRemoteException ? error.remoteCause : error;
+  if (cause is RecoverBullSqliteException) {
+    final failure = cause.failure;
+    if (failure is SqliteKeyRejectedFailure ||
+        failure is SqliteCorruptFailure ||
+        failure is SqliteInconsistentFailure) {
+      return const RecoverBullStorageDamagedFailure();
+    }
+    if (failure is SqliteIoFailure &&
+        (failure.logMessage == 'sqlite error 13' ||
+            failure.logMessage == 'filesystem error 28')) {
+      return const RecoverBullStorageFullFailure();
+    }
+    return const RecoverBullJournalFailure();
+  }
   if (cause is SqliteException) {
     // SQLite extended result codes retain the primary code in the low byte.
     switch (cause.resultCode & 0xff) {

@@ -42,7 +42,11 @@ abstract final class LocalData {
       return Err(LocalDataUnexpectedFailure('$failure'));
     }
     return Ok(
-      LocalDataSession._(foregroundExecutor(unlocked.main), unlocked.payjoin),
+      LocalDataSession._(
+        foregroundExecutor(unlocked.main),
+        unlocked.payjoin,
+        unlocked.recoverbull,
+      ),
     );
   }
 
@@ -75,11 +79,15 @@ final class LocalDataSession {
   /// The main database's executor, keyed on every connection. Owned by the session.
   final QueryExecutor mainDatabase;
   final UnlockedDatabase _payjoin;
+  final UnlockedDatabase _recoverbull;
 
-  LocalDataSession._(this.mainDatabase, this._payjoin);
+  LocalDataSession._(this.mainDatabase, this._payjoin, this._recoverbull);
 
   /// Payjoin opens its database lazily, after startup; it needs the key at that point.
   DatabaseKey get payjoinKey => _payjoin.key;
+
+  /// RecoverBull owns the durable connection after the foreground feature mounts.
+  DatabaseKey get recoverbullKey => _recoverbull.key;
 
   /// Closes the main database. For a startup that fails after the unlock.
   Future<void> close() => mainDatabase.close();

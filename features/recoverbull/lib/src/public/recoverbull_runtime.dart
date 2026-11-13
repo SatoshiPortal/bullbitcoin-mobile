@@ -78,6 +78,7 @@ final class RecoverBullRuntime {
 
   static Future<RecoverBullRuntime> open({
     required String databasePath,
+    required DatabaseKey databaseKey,
     required Secrets secrets,
     required RecoverBullWalletPort wallets,
     required RecoverBullEnvironmentPort environment,
@@ -85,51 +86,60 @@ final class RecoverBullRuntime {
     required RecoverBullRoutePort routes,
     required TorHttpClientFactory clients,
   }) async {
-    final storage = RecoverBullStorage(databasePath);
+    final storage = RecoverBullStorage(databasePath, key: databaseKey);
     final vaults = SecretsVaultRepository(secrets);
     final drive = GoogleDriveRepositoryImpl(
       datasource: GoogleDriveAppDatasource(),
     );
-    final files = VaultFileRepositoryImpl();
-    final sessions = KeyServerSessionRepositoryImpl(routes, clients);
-    BackupMetadataRepositoryImpl? metadata;
-    AttemptMonitoringRepositoryImpl? monitoring;
-    RecoverBullFailure unavailable = const RecoverBullJournalFailure();
     try {
-      final database = await storage.open();
-      metadata = BackupMetadataRepositoryImpl(database);
-      monitoring = AttemptMonitoringRepositoryImpl(database, durable: true);
-    } on Exception {
-      unavailable = storage.unavailableFailure ?? unavailable;
-      log.warning('recoverbull.storage.unavailable');
-    }
-    StartBackupMonitoringUsecase? coldStart;
-    if (metadata != null && monitoring != null) {
-      if (await ImportBackupSettingsUsecase(metadata, legacy).execute()
-          case Err()) {
-        log.warning('recoverbull.settings.import.unavailable');
+      final files = VaultFileRepositoryImpl();
+      final sessions = KeyServerSessionRepositoryImpl(routes, clients);
+      BackupMetadataRepositoryImpl? metadata;
+      AttemptMonitoringRepositoryImpl? monitoring;
+      RecoverBullFailure unavailable = const RecoverBullJournalFailure();
+      try {
+        final database = await storage.open();
+        metadata = BackupMetadataRepositoryImpl(database);
+        monitoring = AttemptMonitoringRepositoryImpl(database, durable: true);
+      } on Exception {
+        unavailable = storage.unavailableFailure ?? unavailable;
+        log.warning('recoverbull.storage.unavailable');
       }
-      coldStart = StartBackupMonitoringUsecase(
-        DiscoverDriveBackupsUsecase(drive, vaults, metadata, monitoring),
-        CheckBackupMonitoringUsecase(
-          monitoring,
-          OpenKeyServerUsecase(metadata, sessions),
-        ),
+      StartBackupMonitoringUsecase? coldStart;
+      if (metadata != null && monitoring != null) {
+        if (await ImportBackupSettingsUsecase(metadata, legacy).execute()
+            case Err()) {
+          log.warning('recoverbull.settings.import.unavailable');
+        }
+        coldStart = StartBackupMonitoringUsecase(
+          DiscoverDriveBackupsUsecase(drive, vaults, metadata, monitoring),
+          CheckBackupMonitoringUsecase(
+            monitoring,
+            OpenKeyServerUsecase(metadata, sessions),
+          ),
+        );
+      }
+      return RecoverBullRuntime._(
+        storage,
+        vaults,
+        wallets,
+        StartVaultFlowUsecase(wallets, environment),
+        drive,
+        files,
+        sessions,
+        metadata,
+        monitoring,
+        unavailable,
+        coldStart,
       );
+    } catch (_) {
+      try {
+        drive.dispose();
+      } finally {
+        await storage.dispose();
+      }
+      rethrow;
     }
-    return RecoverBullRuntime._(
-      storage,
-      vaults,
-      wallets,
-      StartVaultFlowUsecase(wallets, environment),
-      drive,
-      files,
-      sessions,
-      metadata,
-      monitoring,
-      unavailable,
-      coldStart,
-    );
   }
 
   ReadBackupStatusUsecase get readStatus =>
@@ -229,7 +239,10 @@ final class RecoverBullRuntime {
   }
 
   Future<void> dispose() async {
-    _drive.dispose();
-    await _storage.dispose();
+    try {
+      _drive.dispose();
+    } finally {
+      await _storage.dispose();
+    }
   }
 }

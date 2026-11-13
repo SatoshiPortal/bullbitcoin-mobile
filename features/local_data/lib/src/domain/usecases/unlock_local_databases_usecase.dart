@@ -4,9 +4,13 @@ import 'package:bull_local_data/src/domain/local_database_repository.dart';
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
 
-typedef UnlockedDatabases = ({UnlockedDatabase main, UnlockedDatabase payjoin});
+typedef UnlockedDatabases = ({
+  UnlockedDatabase main,
+  UnlockedDatabase payjoin,
+  UnlockedDatabase recoverbull,
+});
 
-/// Unlocks the main database, then Payjoin's, and stops at the first that cannot be opened: each failure names its own database, so a reset never reaches a readable one.
+/// Unlocks main, Payjoin and RecoverBull in order, stopping at the first failure. Each failure names its own database, so a reset never reaches a readable one.
 class UnlockLocalDatabasesUsecase {
   final LocalDatabaseRepository _repository;
 
@@ -21,8 +25,19 @@ class UnlockLocalDatabasesUsecase {
       case Err(:final failure):
         return Err(failure);
     }
-    return switch (await _repository.unlock(LocalDatabase.payjoin)) {
-      Ok(:final value) => Ok((main: main, payjoin: value)),
+    final UnlockedDatabase payjoin;
+    switch (await _repository.unlock(LocalDatabase.payjoin)) {
+      case Ok(:final value):
+        payjoin = value;
+      case Err(:final failure):
+        return Err(failure);
+    }
+    return switch (await _repository.unlock(LocalDatabase.recoverbull)) {
+      Ok(:final value) => Ok((
+        main: main,
+        payjoin: payjoin,
+        recoverbull: value,
+      )),
       Err(:final failure) => Err(failure),
     };
   }

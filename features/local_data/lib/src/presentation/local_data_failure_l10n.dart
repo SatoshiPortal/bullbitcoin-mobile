@@ -13,11 +13,20 @@ extension LocalDataFailureL10n on LocalDataFailure {
   /// What happened, for the user. Never the log message.
   String message(LocalDataLocalizations loc) => switch (this) {
     LocalDataKeystoreLockedFailure() => loc.localDataLockedMessage,
+    LocalDataInconsistentFailure(database: LocalDatabase.recoverbull) =>
+      loc.localDataRecoveryRecoverbullMessage,
     LocalDataInconsistentFailure() => loc.localDataRecoveryInconsistentMessage,
     LocalDataUnrecoverableFailure(:final database) => switch (database) {
       LocalDatabase.main => loc.localDataRecoveryMainMessage,
       LocalDatabase.payjoin => loc.localDataRecoveryPayjoinMessage,
+      LocalDatabase.recoverbull => loc.localDataRecoveryRecoverbullMessage,
     },
     LocalDataUnexpectedFailure() => loc.localDataResetFailedMessage,
+  };
+
+  String restoreHint(LocalDataLocalizations loc) => switch (this) {
+    LocalDataUnrecoverableFailure(database: LocalDatabase.recoverbull) =>
+      loc.localDataRecoveryRecoverbullRestoreHint,
+    _ => loc.localDataRecoveryRestoreHint,
   };
 }

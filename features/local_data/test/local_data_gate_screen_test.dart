@@ -137,6 +137,7 @@ void main() {
     const paths = LocalDatabasePaths(
       main: '/tmp/m.sqlite',
       payjoin: '/tmp/p.sqlite',
+      recoverbull: '/tmp/r.sqlite',
     );
     Widget app(LocalDataFailure failure) => MaterialApp(
       theme: ThemeData(extensions: testBullExtensions),

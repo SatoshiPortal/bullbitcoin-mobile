@@ -7,18 +7,27 @@ enum LocalDatabase {
 
   /// `payjoin.sqlite`: Payjoin sessions and policy.
   payjoin,
+
+  /// `recoverbull.sqlite`: backup status, attempt attribution and alerts.
+  recoverbull,
 }
 
 /// Where each database lives. Given by the shell, which knows each owner's file name.
 final class LocalDatabasePaths {
   final String main;
   final String payjoin;
+  final String recoverbull;
 
-  const LocalDatabasePaths({required this.main, required this.payjoin});
+  const LocalDatabasePaths({
+    required this.main,
+    required this.payjoin,
+    required this.recoverbull,
+  });
 
   String of(LocalDatabase database) => switch (database) {
     LocalDatabase.main => main,
     LocalDatabase.payjoin => payjoin,
+    LocalDatabase.recoverbull => recoverbull,
   };
 }
 

@@ -18,6 +18,7 @@ dependencies:
   primitives:
   secrets:
   bull_logger:
+  bull_sqlite:
   bull_tor:
   bull_ui:
   screen_privacy:

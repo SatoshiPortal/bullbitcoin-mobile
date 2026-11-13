@@ -1,7 +1,9 @@
 import 'dart:io';
 
+import 'package:bull_sqlite/bull_sqlite.dart';
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
+import 'package:primitives/primitives.dart';
 
 import '../../domain/recoverbull_server_url.dart';
 
@@ -95,24 +97,41 @@ final class RecoverBullDatabase extends _$RecoverBullDatabase {
 
   RecoverBullDatabase.forTesting(super.executor);
 
-  factory RecoverBullDatabase.open(String path) =>
-      RecoverBullDatabase.forTesting(
-        NativeDatabase.createInBackground(
-          File(path),
-          setup: (database) {
-            final version =
-                database.select('PRAGMA user_version').single['user_version']
-                    as int;
-            if (version > schema) {
-              throw const RecoverBullUnsupportedSchemaException();
-            }
-            database.execute('PRAGMA busy_timeout = 2000');
-            database.execute('PRAGMA journal_mode = WAL');
-            database.execute('PRAGMA synchronous = FULL');
-            database.execute('PRAGMA secure_delete = ON');
-          },
-        ),
-      );
+  factory RecoverBullDatabase.open(String path, {required DatabaseKey key}) {
+    switch (EncryptedSqlite.inspect(path)) {
+      case Err(:final failure):
+        throw RecoverBullSqliteException(failure);
+      case Ok(value: SqliteFileState.plaintext || SqliteFileState.inconsistent):
+        throw const RecoverBullSqliteException(SqliteInconsistentFailure());
+      case Ok():
+        break;
+    }
+    if (EncryptedSqlite.barrier(path) case Err(:final failure)) {
+      throw RecoverBullSqliteException(failure);
+    }
+    return RecoverBullDatabase.forTesting(
+      NativeDatabase.createInBackground(
+        File(path),
+        setup: (database) {
+          try {
+            SqliteCipher.key(database, key);
+          } on Exception catch (error) {
+            throw RecoverBullSqliteException(EncryptedSqlite.failureOf(error));
+          }
+          final version =
+              database.select('PRAGMA user_version').single['user_version']
+                  as int;
+          if (version > schema) {
+            throw const RecoverBullUnsupportedSchemaException();
+          }
+          database.execute('PRAGMA busy_timeout = 2000');
+          database.execute('PRAGMA journal_mode = WAL');
+          database.execute('PRAGMA synchronous = FULL');
+          database.execute('PRAGMA secure_delete = ON');
+        },
+      ),
+    );
+  }
 
   @override
   int get schemaVersion => schema;
@@ -145,4 +164,10 @@ final class RecoverBullUnsupportedSchemaException implements Exception {
 
 final class RecoverBullDatabaseIntegrityException implements Exception {
   const RecoverBullDatabaseIntegrityException();
+}
+
+/// Carries only sanitized storage failures, never SQL or raw key material.
+final class RecoverBullSqliteException implements Exception {
+  final SqliteStorageFailure failure;
+  const RecoverBullSqliteException(this.failure);
 }
