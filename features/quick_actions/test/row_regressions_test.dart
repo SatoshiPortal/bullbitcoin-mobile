@@ -9,9 +9,10 @@ void main() {
   testWidgets('More has the same interactive width as each favorite', (
     tester,
   ) async {
-    final facade = QuickActionsFacade(
+    final facade = QuickActionsCubit(
       storage: MemoryStorage(),
       warning: (_) {},
+      exchangeVisible: Stream.value(true),
     );
     await tester.pumpWidget(
       MaterialApp(
@@ -21,14 +22,7 @@ void main() {
           body: SizedBox(
             width: 334,
             child: QuickActionsRow(
-              facade: facade,
-              available: QuickAction.values.toSet(),
-              defaults: const [
-                QuickAction.map,
-                QuickAction.transfer,
-                QuickAction.history,
-                QuickAction.settings,
-              ],
+              cubit: facade,
               onAction: (_) {},
               onCustomize: () {},
             ),

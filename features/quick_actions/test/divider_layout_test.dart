@@ -115,11 +115,15 @@ void main() {
     });
 
     test(
-      'legacy selections over three are displayed without a write',
+      'stored selections over three are displayed without a write',
       () async {
         final storage = FakeStorage()
-          ..value = '["map","transfer","history","buy"]';
-        final facade = QuickActionsFacade(storage: storage, warning: (_) {});
+          ..value = '{"home":["map","transfer","history","buy"],"more":[]}';
+        final facade = QuickActionsCubit(
+          storage: storage,
+          warning: (_) {},
+          exchangeVisible: Stream.value(true),
+        );
         final selection = await facade.load();
         expect(selection, isNotNull);
         expect(selection?.actions, [map, transfer, history, buy]);
@@ -127,79 +131,98 @@ void main() {
         expect(layout.home, [map, transfer, history]);
         expect(layout.more.first, buy);
         expect(storage.writes, 0);
-        expect(storage.value, '["map","transfer","history","buy"]');
-        facade.dispose();
+        expect(
+          storage.value,
+          '{"home":["map","transfer","history","buy"],"more":[]}',
+        );
+        facade.close();
       },
     );
 
     test('Settings fallback is visual only', () async {
-      final storage = FakeStorage()..value = '[]';
-      final facade = QuickActionsFacade(storage: storage, warning: (_) {});
+      final storage = FakeStorage()..value = '{"home":[],"more":[]}';
+      final facade = QuickActionsCubit(
+        storage: storage,
+        warning: (_) {},
+        exchangeVisible: Stream.value(true),
+      );
       final selection = await facade.load();
       expect(
         QuickActionsLayout.resolve(
           available: available,
-          defaults: [],
+
           selection: selection,
         ).primary,
         [settings],
       );
       expect(editor(selection as QuickActionSelection).home, isEmpty);
       expect(selection.actions, isEmpty);
-      expect(storage.value, '[]');
+      expect(storage.value, '{"home":[],"more":[]}');
       expect(storage.writes, 0);
-      facade.dispose();
+      facade.close();
     });
   });
 
   group('public storage facade', () {
-    test('reads v1 without rewriting and writes v1 or v2 as needed', () async {
-      final storage = FakeStorage()..value = '["map","buy"]';
-      final facade = QuickActionsFacade(storage: storage, warning: (_) {});
-      final loaded = await facade.load();
-      expect(loaded?.actions, [map, buy]);
-      expect(loaded?.more, isEmpty);
-      expect(storage.writes, 0);
-      expect(
-        await facade.save(QuickActionSelection([transfer])),
-        isA<Ok<void, QuickActionsFailure>>(),
-      );
-      expect(jsonDecode(storage.value as String), ['transfer']);
-      expect(
-        await facade.save(QuickActionSelection([map], more: [sell, buy])),
-        isA<Ok<void, QuickActionsFailure>>(),
-      );
-      expect(jsonDecode(storage.value as String), {
-        'version': 2,
-        'home': ['map'],
-        'more': ['sell', 'buy'],
-      });
-      facade.dispose();
-      final reloadedFacade = QuickActionsFacade(
-        storage: storage,
-        warning: (_) {},
-      );
-      final reloaded = await reloadedFacade.load();
-      expect(reloaded?.actions, [map]);
-      expect(reloaded?.more, [sell, buy]);
-      expect(storage.writes, 2);
-      reloadedFacade.dispose();
-    });
+    test(
+      'reads and writes the object format without rewriting on load',
+      () async {
+        final storage = FakeStorage()
+          ..value = '{"home":["map","buy"],"more":[]}';
+        final facade = QuickActionsCubit(
+          storage: storage,
+          warning: (_) {},
+          exchangeVisible: Stream.value(true),
+        );
+        final loaded = await facade.load();
+        expect(loaded?.actions, [map, buy]);
+        expect(loaded?.more, isEmpty);
+        expect(storage.writes, 0);
+        expect(
+          await facade.save(QuickActionSelection([transfer])),
+          isA<Ok<void, QuickActionsFailure>>(),
+        );
+        expect(jsonDecode(storage.value as String), {
+          'home': ['transfer'],
+          'more': [],
+        });
+        expect(
+          await facade.save(QuickActionSelection([map], more: [sell, buy])),
+          isA<Ok<void, QuickActionsFailure>>(),
+        );
+        expect(jsonDecode(storage.value as String), {
+          'home': ['map'],
+          'more': ['sell', 'buy'],
+        });
+        facade.close();
+        final reloadedFacade = QuickActionsCubit(
+          storage: storage,
+          warning: (_) {},
+          exchangeVisible: Stream.value(true),
+        );
+        final reloaded = await reloadedFacade.load();
+        expect(reloaded?.actions, [map]);
+        expect(reloaded?.more, [sell, buy]);
+        expect(storage.writes, 2);
+        reloadedFacade.close();
+      },
+    );
 
     test('invalid data warns and is never rewritten', () async {
       for (final raw in [
-        '{"version":2,"home":["map"],"more":["map"]}',
+        '{"home":["map"],"more":["map"]}',
         '{"version":1,"home":[],"more":[]}',
         '{"version":3,"home":[],"more":[]}',
-        '{"version":2,"home":[]}',
-        '{"version":2,"home":[],"more":[1]}',
-        '{"version":2,"home":"map","more":[]}',
+        '{"home":[]}',
+        '{"home":[],"more":[1]}',
+        '{"home":"map","more":[]}',
       ]) {
         final warnings = <String>[];
         final storage = FakeStorage()..value = raw;
-        final facade = QuickActionsFacade(
+        final facade = QuickActionsCubit(
           storage: storage,
           warning: warnings.add,
+          exchangeVisible: Stream.value(true),
         );
         expect(await facade.load(), isNull, reason: raw);
         expect(warnings, [
@@ -207,13 +230,17 @@ void main() {
         ], reason: raw);
         expect(storage.value, raw);
         expect(storage.writes, 0);
-        facade.dispose();
+        facade.close();
       }
     });
 
     test('write failures are returned as typed failures', () async {
       final storage = FakeStorage()..failWrite = true;
-      final facade = QuickActionsFacade(storage: storage, warning: (_) {});
+      final facade = QuickActionsCubit(
+        storage: storage,
+        warning: (_) {},
+        exchangeVisible: Stream.value(true),
+      );
       final result = await facade.save(QuickActionSelection([map]));
       expect(result, isA<Err<void, QuickActionsFailure>>());
       expect(
@@ -221,7 +248,7 @@ void main() {
         isA<QuickActionsStorageFailure>(),
       );
       expect(storage.writes, 0);
-      facade.dispose();
+      facade.close();
     });
   });
 }

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'customization_v2_test.dart' show localizations, openEditor, homeValue;
+import 'customization_test.dart' show localizations, openEditor, homeValue;
 import 'quick_actions_test.dart' show MemoryStorage;
 
 void main() {
@@ -13,7 +13,11 @@ void main() {
     ) async {
       await openEditor(
         tester,
-        QuickActionsFacade(storage: MemoryStorage(), warning: (_) {}),
+        QuickActionsCubit(
+          storage: MemoryStorage(),
+          warning: (_) {},
+          exchangeVisible: Stream.value(true),
+        ),
         locale: Locale(locale),
       );
       final l10n = localizations(tester);
@@ -29,7 +33,11 @@ void main() {
       final storage = MemoryStorage();
       await openEditor(
         tester,
-        QuickActionsFacade(storage: storage, warning: (_) {}),
+        QuickActionsCubit(
+          storage: storage,
+          warning: (_) {},
+          exchangeVisible: Stream.value(true),
+        ),
       );
       final l10n = localizations(tester);
       final handle = find.descendant(

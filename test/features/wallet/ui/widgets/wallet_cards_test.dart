@@ -1,3 +1,4 @@
+import 'package:bull_ui/bull_ui.dart' show bullUiLocalizationsDelegate;
 import 'package:primitives/primitives.dart' show BitcoinUnit;
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/generated/l10n/localization.dart';
@@ -39,7 +40,10 @@ Widget _buildCards({
 }) {
   return MaterialApp(
     theme: ThemeData(extensions: testBullExtensions),
-    localizationsDelegates: AppLocalizations.localizationsDelegates,
+    localizationsDelegates: [
+      ...AppLocalizations.localizationsDelegates,
+      bullUiLocalizationsDelegate,
+    ],
     supportedLocales: AppLocalizations.supportedLocales,
     home: MultiBlocProvider(
       providers: [
@@ -81,7 +85,10 @@ Widget _buildCardsRouter({
   return MaterialApp.router(
     theme: ThemeData(extensions: testBullExtensions),
     routerConfig: router,
-    localizationsDelegates: AppLocalizations.localizationsDelegates,
+    localizationsDelegates: [
+      ...AppLocalizations.localizationsDelegates,
+      bullUiLocalizationsDelegate,
+    ],
     supportedLocales: AppLocalizations.supportedLocales,
   );
 }

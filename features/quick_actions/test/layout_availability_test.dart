@@ -15,10 +15,7 @@ const walletActions = {
 
 void main() {
   test('OFF keeps More with Settings Support and Price history', () {
-    final layout = QuickActionsLayout.resolve(
-      available: walletActions,
-      defaults: defaults,
-    );
+    final layout = QuickActionsLayout.resolve(available: walletActions);
     expect(layout.primary, defaults.take(3));
     expect(layout.more, [
       QuickAction.settings,
@@ -31,7 +28,7 @@ void main() {
     final selection = QuickActionSelection([QuickAction.buy, QuickAction.map]);
     final layout = QuickActionsLayout.resolve(
       available: QuickAction.values.toSet(),
-      defaults: defaults,
+
       selection: selection,
     );
     expect(layout.primary, [QuickAction.buy, QuickAction.map]);
@@ -58,7 +55,7 @@ void main() {
         final selection = QuickActionSelection(chosen);
         final layout = QuickActionsLayout.resolve(
           available: walletActions,
-          defaults: defaults,
+
           selection: selection,
         );
         expect(layout.primary, [QuickAction.settings]);
@@ -74,18 +71,12 @@ void main() {
     },
   );
 
-  test('Home keeps three actions and sends the legacy fourth to More', () {
-    final four = QuickActionsLayout.resolve(
-      available: defaults.toSet(),
-      defaults: defaults,
-    );
+  test('Home keeps three actions and sends the fourth to More', () {
+    final four = QuickActionsLayout.resolve(available: defaults.toSet());
     expect(four.primary, defaults.take(3));
     expect(four.more, [QuickAction.settings]);
     expect(four.primary.length + 1, QuickActionsLayout.maximumCells);
-    final six = QuickActionsLayout.resolve(
-      available: walletActions,
-      defaults: defaults,
-    );
+    final six = QuickActionsLayout.resolve(available: walletActions);
     expect(six.primary, defaults.take(3));
     expect(six.primary.length + 1, QuickActionsLayout.maximumCells);
   });

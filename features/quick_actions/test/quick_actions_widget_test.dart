@@ -1,4 +1,4 @@
-import 'customization_v2_test.dart'
+import 'customization_test.dart'
     show openEditor, localizations, semanticMove, homeValue;
 import 'package:bull_quick_actions/bull_quick_actions.dart';
 import 'package:bull_ui/testing.dart';
@@ -13,9 +13,10 @@ void main() {
   testWidgets('More shows the complement and dispatches the chosen action', (
     tester,
   ) async {
-    final facade = QuickActionsFacade(
+    final facade = QuickActionsCubit(
       storage: MemoryStorage(),
       warning: (_) {},
+      exchangeVisible: Stream.value(true),
     );
     QuickAction? chosen;
     await tester.pumpWidget(
@@ -24,14 +25,7 @@ void main() {
         localizationsDelegates: const [QuickActionsLocalizations.delegate],
         home: Scaffold(
           body: QuickActionsRow(
-            facade: facade,
-            available: QuickAction.values.toSet(),
-            defaults: const [
-              QuickAction.map,
-              QuickAction.transfer,
-              QuickAction.history,
-              QuickAction.settings,
-            ],
+            cubit: facade,
             onAction: (action) => chosen = action,
             onCustomize: () {},
           ),
@@ -48,10 +42,11 @@ void main() {
     expect(chosen, QuickAction.buy);
   });
 
-  testWidgets('More is absent when there is no complement', (tester) async {
-    final facade = QuickActionsFacade(
+  testWidgets('More remains available when exchange is hidden', (tester) async {
+    final facade = QuickActionsCubit(
       storage: MemoryStorage(),
       warning: (_) {},
+      exchangeVisible: Stream.value(false),
     );
     await tester.pumpWidget(
       MaterialApp(
@@ -59,17 +54,7 @@ void main() {
         localizationsDelegates: const [QuickActionsLocalizations.delegate],
         home: Scaffold(
           body: QuickActionsRow(
-            facade: facade,
-            available: const {
-              QuickAction.map,
-              QuickAction.transfer,
-              QuickAction.history,
-            },
-            defaults: const [
-              QuickAction.map,
-              QuickAction.transfer,
-              QuickAction.history,
-            ],
+            cubit: facade,
             onAction: (_) {},
             onCustomize: () {},
           ),
@@ -77,14 +62,18 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
-    expect(find.text('More'), findsNothing);
+    expect(find.text('More'), findsOneWidget);
   });
 
   testWidgets('customization autosaves without closing the editor', (
     tester,
   ) async {
     final storage = MemoryStorage();
-    final facade = QuickActionsFacade(storage: storage, warning: (_) {});
+    final facade = QuickActionsCubit(
+      storage: storage,
+      warning: (_) {},
+      exchangeVisible: Stream.value(true),
+    );
     await openEditor(tester, facade);
     final l10n = localizations(tester);
     await semanticMove(tester, QuickAction.map, l10n.moveToMore);
@@ -99,9 +88,10 @@ void main() {
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.resetPhysicalSize);
     addTearDown(tester.view.resetDevicePixelRatio);
-    final facade = QuickActionsFacade(
+    final facade = QuickActionsCubit(
       storage: MemoryStorage(),
       warning: (_) {},
+      exchangeVisible: Stream.value(true),
     );
     await tester.pumpWidget(
       MaterialApp(
@@ -115,14 +105,7 @@ void main() {
         ),
         home: Scaffold(
           body: QuickActionsRow(
-            facade: facade,
-            available: QuickAction.values.toSet(),
-            defaults: const [
-              QuickAction.map,
-              QuickAction.transfer,
-              QuickAction.history,
-              QuickAction.settings,
-            ],
+            cubit: facade,
             onAction: (_) {},
             onCustomize: () {},
           ),
@@ -144,9 +127,10 @@ void main() {
 
   for (final locale in [const Locale('es'), const Locale('fr')]) {
     testWidgets('localizations support ${locale.languageCode}', (tester) async {
-      final facade = QuickActionsFacade(
+      final facade = QuickActionsCubit(
         storage: MemoryStorage(),
         warning: (_) {},
+        exchangeVisible: Stream.value(true),
       );
       await tester.pumpWidget(
         MaterialApp(
@@ -161,9 +145,7 @@ void main() {
           ],
           home: Scaffold(
             body: QuickActionsRow(
-              facade: facade,
-              available: const {QuickAction.map},
-              defaults: const [QuickAction.map],
+              cubit: facade,
               onAction: (_) {},
               onCustomize: () {},
             ),

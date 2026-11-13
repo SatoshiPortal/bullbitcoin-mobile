@@ -12,11 +12,8 @@ void main() {
     QuickAction.settings,
   ];
 
-  test('automatic layout uses host defaults and canonical complement', () {
-    final layout = QuickActionsLayout.resolve(
-      available: all.toSet(),
-      defaults: defaults,
-    );
+  test('automatic layout uses defaults and canonical complement', () {
+    final layout = QuickActionsLayout.resolve(available: all.toSet());
     expect(layout.primary, defaults.take(3));
     expect(layout.more, [
       QuickAction.buy,
@@ -27,10 +24,7 @@ void main() {
       QuickAction.support,
       QuickAction.priceHistory,
     ]);
-    final disabled = QuickActionsLayout.resolve(
-      available: defaults.toSet(),
-      defaults: defaults,
-    );
+    final disabled = QuickActionsLayout.resolve(available: defaults.toSet());
     expect(disabled.primary, defaults.take(3));
     expect(disabled.more, [QuickAction.settings]);
   });
@@ -43,14 +37,14 @@ void main() {
     ]);
     final unavailable = QuickActionsLayout.resolve(
       available: defaults.toSet(),
-      defaults: defaults,
+
       selection: selection,
     );
     expect(unavailable.primary, [QuickAction.transfer, QuickAction.map]);
     expect(unavailable.more, [QuickAction.settings, QuickAction.history]);
     final restored = QuickActionsLayout.resolve(
       available: all.toSet(),
-      defaults: defaults,
+
       selection: selection,
     );
     expect(restored.primary, [
@@ -71,7 +65,7 @@ void main() {
       ]);
       final hidden = QuickActionsLayout.resolve(
         available: defaults.toSet(),
-        defaults: defaults,
+
         selection: reordered,
       );
       expect(hidden.primary, [QuickAction.transfer, QuickAction.map]);
@@ -83,7 +77,7 @@ void main() {
       ]);
       final restored = QuickActionsLayout.resolve(
         available: reordered.actions.toSet(),
-        defaults: defaults,
+
         selection: reordered,
       );
       expect(restored.primary, reordered.actions.take(3));
@@ -94,7 +88,7 @@ void main() {
   test('empty custom selection is distinct from automatic', () {
     final layout = QuickActionsLayout.resolve(
       available: defaults.toSet(),
-      defaults: defaults,
+
       selection: QuickActionSelection([]),
     );
     expect(layout.primary, [QuickAction.settings]);
@@ -115,7 +109,7 @@ void main() {
     ]);
     final layout = QuickActionsLayout.resolve(
       available: selected.actions.toSet(),
-      defaults: defaults,
+
       selection: selected,
     );
     expect(layout.primary, [
@@ -139,13 +133,26 @@ void main() {
     'preference ignores unknown IDs without rewriting and reset removes it',
     () async {
       final storage = MemoryStorage()
-        ..value = jsonEncode(['buy', 'future', 'map']);
-      final facade = QuickActionsFacade(storage: storage, warning: (_) {});
+        ..value = jsonEncode({
+          'home': ['buy', 'future', 'map'],
+          'more': [],
+        });
+      final facade = QuickActionsCubit(
+        storage: storage,
+        warning: (_) {},
+        exchangeVisible: Stream.value(true),
+      );
       expect((await facade.load())?.actions, [
         QuickAction.buy,
         QuickAction.map,
       ]);
-      expect(storage.value, jsonEncode(['buy', 'future', 'map']));
+      expect(
+        storage.value,
+        jsonEncode({
+          'home': ['buy', 'future', 'map'],
+          'more': [],
+        }),
+      );
       expect(await facade.reset(), isA<Ok<void, QuickActionsFailure>>());
       expect(storage.value, isNull);
     },
@@ -154,7 +161,11 @@ void main() {
   test('invalid preference falls back without rewriting and warns', () async {
     final storage = MemoryStorage()..value = '{';
     final warnings = <String>[];
-    final facade = QuickActionsFacade(storage: storage, warning: warnings.add);
+    final facade = QuickActionsCubit(
+      storage: storage,
+      warning: warnings.add,
+      exchangeVisible: Stream.value(true),
+    );
     expect(await facade.load(), isNull);
     expect(storage.value, '{');
     expect(warnings, hasLength(1));
@@ -166,7 +177,11 @@ void main() {
       final storage = MemoryStorage()
         ..value = 'existing'
         ..failWrite = true;
-      final facade = QuickActionsFacade(storage: storage, warning: (_) {});
+      final facade = QuickActionsCubit(
+        storage: storage,
+        warning: (_) {},
+        exchangeVisible: Stream.value(true),
+      );
       expect(
         await facade.save(QuickActionSelection([])),
         isA<Err<void, QuickActionsFailure>>(),

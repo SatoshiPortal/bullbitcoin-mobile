@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'customization_v2_test.dart'
+import 'customization_test.dart'
     show openEditor, localizations, semanticMove, homeValue, clearNotice;
 import 'quick_actions_test.dart' show MemoryStorage;
 
@@ -77,7 +77,11 @@ void main() {
       final storage = _Storage();
       await openEditor(
         tester,
-        QuickActionsFacade(storage: storage, warning: (_) {}),
+        QuickActionsCubit(
+          storage: storage,
+          warning: (_) {},
+          exchangeVisible: Stream.value(true),
+        ),
       );
       final gesture = await holdLabel(tester, QuickAction.history);
       expect(haptics, ['HapticFeedbackType.selectionClick']);
@@ -103,7 +107,11 @@ void main() {
       final storage = _Storage();
       await openEditor(
         tester,
-        QuickActionsFacade(storage: storage, warning: (_) {}),
+        QuickActionsCubit(
+          storage: storage,
+          warning: (_) {},
+          exchangeVisible: Stream.value(true),
+        ),
       );
       final gesture = await holdLabel(tester, QuickAction.buy);
       await dropAcrossDivider(tester, gesture, home: true);
@@ -121,14 +129,18 @@ void main() {
     (tester) async {
       largeView(tester);
       final storage = _Storage()..failWrite = true;
-      final facade = QuickActionsFacade(storage: storage, warning: (_) {});
+      final facade = QuickActionsCubit(
+        storage: storage,
+        warning: (_) {},
+        exchangeVisible: Stream.value(true),
+      );
       await openEditor(tester, facade);
       final l10n = localizations(tester);
       try {
         final gesture = await holdLabel(tester, QuickAction.history);
         await dropAcrossDivider(tester, gesture, home: false);
         expect(storage.value, isNull);
-        expect(facade.selection, isNull);
+        expect(facade.state.selection, isNull);
         expect(find.text(l10n.saveFailed), findsOneWidget);
         final preview = tester.widgetList<BullQuickAction>(
           find.byType(BullQuickAction),
@@ -153,7 +165,11 @@ void main() {
     final storage = _Storage()..pending = gate;
     await openEditor(
       tester,
-      QuickActionsFacade(storage: storage, warning: (_) {}),
+      QuickActionsCubit(
+        storage: storage,
+        warning: (_) {},
+        exchangeVisible: Stream.value(true),
+      ),
     );
     final l10n = localizations(tester);
     await semanticMove(tester, QuickAction.history, l10n.moveToMore);
@@ -172,14 +188,17 @@ void main() {
   ) async {
     largeView(tester);
     final original = jsonEncode({
-      'version': 2,
       'home': ['transfer'],
       'more': ['history', 'buy', 'map', 'settings'],
     });
     final storage = _Storage()..value = original;
     await openEditor(
       tester,
-      QuickActionsFacade(storage: storage, warning: (_) {}),
+      QuickActionsCubit(
+        storage: storage,
+        warning: (_) {},
+        exchangeVisible: Stream.value(true),
+      ),
     );
     final l10n = localizations(tester);
     try {
@@ -203,7 +222,11 @@ void main() {
     try {
       await openEditor(
         tester,
-        QuickActionsFacade(storage: storage, warning: (_) {}),
+        QuickActionsCubit(
+          storage: storage,
+          warning: (_) {},
+          exchangeVisible: Stream.value(true),
+        ),
       );
       final divider = find.byKey(const ValueKey('quick-actions-divider'));
       expect(
@@ -239,7 +262,11 @@ void main() {
         try {
           await openEditor(
             tester,
-            QuickActionsFacade(storage: _Storage(), warning: (_) {}),
+            QuickActionsCubit(
+              storage: _Storage(),
+              warning: (_) {},
+              exchangeVisible: Stream.value(true),
+            ),
             locale: Locale(locale),
           );
           final l10n = localizations(tester);
@@ -268,7 +295,11 @@ void main() {
       final storage = _Storage();
       await openEditor(
         tester,
-        QuickActionsFacade(storage: storage, warning: (_) {}),
+        QuickActionsCubit(
+          storage: storage,
+          warning: (_) {},
+          exchangeVisible: Stream.value(true),
+        ),
         locale: Locale(locale),
       );
       final l10n = localizations(tester);

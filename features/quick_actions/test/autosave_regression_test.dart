@@ -3,7 +3,7 @@ import 'package:bull_ui/testing.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'customization_v2_test.dart' show semanticMove, homeValue;
+import 'customization_test.dart' show semanticMove, homeValue;
 
 void main() {
   testWidgets('removing a Home action persists before leaving the editor', (
@@ -20,13 +20,11 @@ void main() {
           GlobalCupertinoLocalizations.delegate,
         ],
         home: QuickActionsCustomizationScreen(
-          facade: QuickActionsFacade(storage: storage, warning: (_) {}),
-          available: QuickAction.values.toSet(),
-          defaults: const [
-            QuickAction.map,
-            QuickAction.transfer,
-            QuickAction.history,
-          ],
+          cubit: QuickActionsCubit(
+            storage: storage,
+            warning: (_) {},
+            exchangeVisible: Stream.value(true),
+          ),
         ),
       ),
     );
@@ -42,7 +40,7 @@ void main() {
 }
 
 class _Storage implements QuickActionsStorage {
-  String? value = '["map","transfer","history"]';
+  String? value = '{"home":["map","transfer","history"],"more":[]}';
 
   @override
   Future<String?> read(String key) async => value;

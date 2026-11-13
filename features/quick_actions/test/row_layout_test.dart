@@ -25,7 +25,7 @@ class DelayedStorage extends MemoryStorage {
 
 Future<void> mount(
   WidgetTester tester,
-  QuickActionsFacade facade, {
+  QuickActionsCubit facade, {
   VoidCallback? onCustomize,
 }) => tester.pumpWidget(
   MaterialApp(
@@ -40,9 +40,7 @@ Future<void> mount(
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 13),
         child: QuickActionsRow(
-          facade: facade,
-          available: available,
-          defaults: defaults,
+          cubit: facade,
           onAction: (_) {},
           onCustomize: onCustomize ?? () {},
         ),
@@ -57,9 +55,10 @@ void main() {
     tester,
   ) async {
     var edits = 0;
-    final facade = QuickActionsFacade(
+    final facade = QuickActionsCubit(
       storage: MemoryStorage(),
       warning: (_) {},
+      exchangeVisible: Stream.value(true),
     );
     await mount(tester, facade, onCustomize: () => edits++);
     await tester.pumpAndSettle();
@@ -79,7 +78,11 @@ void main() {
 
   testWidgets('loading reserves exactly the loaded row height', (tester) async {
     final storage = DelayedStorage();
-    final facade = QuickActionsFacade(storage: storage, warning: (_) {});
+    final facade = QuickActionsCubit(
+      storage: storage,
+      warning: (_) {},
+      exchangeVisible: Stream.value(true),
+    );
     await mount(tester, facade);
     final before = tester.getSize(find.byType(QuickActionsRow));
     expect(before.height, BullQuickAction.height);
@@ -104,9 +107,10 @@ void main() {
     tester,
   ) async {
     var edits = 0;
-    final facade = QuickActionsFacade(
+    final facade = QuickActionsCubit(
       storage: MemoryStorage(),
       warning: (_) {},
+      exchangeVisible: Stream.value(true),
     );
     await mount(tester, facade, onCustomize: () => edits++);
     await tester.pumpAndSettle();
@@ -141,9 +145,10 @@ void matrixTests() {
             addTearDown(tester.view.resetDevicePixelRatio);
             final semantics = tester.ensureSemantics();
             try {
-              final facade = QuickActionsFacade(
+              final facade = QuickActionsCubit(
                 storage: MemoryStorage(),
                 warning: (_) {},
+                exchangeVisible: Stream.value(true),
               );
               await tester.pumpWidget(
                 MaterialApp(
@@ -166,9 +171,7 @@ void matrixTests() {
                     body: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 13),
                       child: QuickActionsRow(
-                        facade: facade,
-                        available: available,
-                        defaults: defaults,
+                        cubit: facade,
                         onAction: (_) {},
                         onCustomize: () {},
                       ),

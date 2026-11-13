@@ -21,8 +21,7 @@ const defaults = [
 
 Future<void> openEditor(
   WidgetTester tester,
-  QuickActionsFacade facade, {
-  Set<QuickAction>? available,
+  QuickActionsCubit facade, {
   Locale locale = const Locale('en'),
   double textScale = 1,
   bool dark = false,
@@ -62,11 +61,7 @@ Future<void> openEditor(
           body: TextButton(
             onPressed: () => Navigator.of(context).push(
               MaterialPageRoute<void>(
-                builder: (_) => QuickActionsCustomizationScreen(
-                  facade: facade,
-                  available: available ?? QuickAction.values.toSet(),
-                  defaults: defaults,
-                ),
+                builder: (_) => QuickActionsCustomizationScreen(cubit: facade),
               ),
             ),
             child: const Text('Open editor'),
@@ -92,7 +87,7 @@ Future<void> clearNotice(WidgetTester tester) async {
 String? homeValue(String? raw) {
   if (raw == null) return null;
   final value = jsonDecode(raw);
-  return jsonEncode(value is Map ? value['home'] : value);
+  return jsonEncode((value as Map)['home']);
 }
 
 Future<void> semanticMove(
@@ -142,7 +137,11 @@ void main() {
     final storage = _EditorStorage();
     await openEditor(
       tester,
-      QuickActionsFacade(storage: storage, warning: (_) {}),
+      QuickActionsCubit(
+        storage: storage,
+        warning: (_) {},
+        exchangeVisible: Stream.value(true),
+      ),
     );
     final from = tester.getRect(find.byKey(const ValueKey('transfer')));
     final to = tester.getRect(find.byKey(const ValueKey('map')));
@@ -174,7 +173,11 @@ void main() {
       final storage = MemoryStorage();
       await openEditor(
         tester,
-        QuickActionsFacade(storage: storage, warning: (_) {}),
+        QuickActionsCubit(
+          storage: storage,
+          warning: (_) {},
+          exchangeVisible: Stream.value(true),
+        ),
         locale: Locale(locale),
       );
       final l10n = localizations(tester);
@@ -204,7 +207,11 @@ void main() {
     final storage = _EditorStorage();
     await openEditor(
       tester,
-      QuickActionsFacade(storage: storage, warning: (_) {}),
+      QuickActionsCubit(
+        storage: storage,
+        warning: (_) {},
+        exchangeVisible: Stream.value(true),
+      ),
     );
     final l10n = localizations(tester);
     await semanticMove(tester, QuickAction.buy, l10n.moveToHome);
@@ -224,10 +231,15 @@ void main() {
   testWidgets('moving between sections saves each operation immediately', (
     tester,
   ) async {
-    final storage = _EditorStorage()..value = '["map","transfer"]';
+    final storage = _EditorStorage()
+      ..value = '{"home":["map","transfer"],"more":[]}';
     await openEditor(
       tester,
-      QuickActionsFacade(storage: storage, warning: (_) {}),
+      QuickActionsCubit(
+        storage: storage,
+        warning: (_) {},
+        exchangeVisible: Stream.value(true),
+      ),
     );
     final l10n = localizations(tester);
     await semanticMove(tester, QuickAction.buy, l10n.moveToHome);
@@ -241,11 +253,15 @@ void main() {
     tester,
   ) async {
     final storage = _EditorStorage()
-      ..value = '["map","transfer"]'
+      ..value = '{"home":["map","transfer"],"more":[]}'
       ..failWrite = true;
     await openEditor(
       tester,
-      QuickActionsFacade(storage: storage, warning: (_) {}),
+      QuickActionsCubit(
+        storage: storage,
+        warning: (_) {},
+        exchangeVisible: Stream.value(true),
+      ),
     );
     final l10n = localizations(tester);
     try {
@@ -266,36 +282,44 @@ void main() {
   testWidgets(
     'Restore defaults persists immediately and Undo restores the complete previous list',
     (tester) async {
-      final original = '["buy","map","transfer","history"]';
+      final original = '{"home":["buy","map","transfer","history"],"more":[]}';
       final storage = _EditorStorage()..value = original;
-      final facade = QuickActionsFacade(storage: storage, warning: (_) {});
-      await openEditor(tester, facade, available: defaults.toSet());
+      final facade = QuickActionsCubit(
+        storage: storage,
+        warning: (_) {},
+        exchangeVisible: Stream.value(false),
+      );
+      await openEditor(tester, facade);
       final l10n = localizations(tester);
       try {
         await tester.tap(find.text(l10n.reset));
         await tester.pumpAndSettle();
         expect(storage.value, isNull);
-        expect(facade.selection, isNull);
+        expect(facade.state.selection, isNull);
         expect(find.byType(QuickActionsCustomizationScreen), findsOneWidget);
         expect(find.text(l10n.defaultsRestored), findsOneWidget);
         await tester.tap(find.text(l10n.undo));
         await tester.pumpAndSettle();
         expect(storage.value, original);
-        expect(facade.selection?.actions.first, QuickAction.buy);
+        expect(facade.state.selection?.actions.first, QuickAction.buy);
       } finally {
         await clearNotice(tester);
       }
     },
   );
 
-  for (final previous in <String?>[null, '[]']) {
+  for (final previous in <String?>[null, '{"home":[],"more":[]}']) {
     testWidgets(
       'Undo preserves automatic versus explicitly empty preference $previous',
       (tester) async {
         final storage = _EditorStorage()..value = previous;
         await openEditor(
           tester,
-          QuickActionsFacade(storage: storage, warning: (_) {}),
+          QuickActionsCubit(
+            storage: storage,
+            warning: (_) {},
+            exchangeVisible: Stream.value(true),
+          ),
         );
         final l10n = localizations(tester);
         try {
@@ -316,11 +340,15 @@ void main() {
     tester,
   ) async {
     final storage = _EditorStorage()
-      ..value = '["buy"]'
+      ..value = '{"home":["buy"],"more":[]}'
       ..failRemove = true;
     await openEditor(
       tester,
-      QuickActionsFacade(storage: storage, warning: (_) {}),
+      QuickActionsCubit(
+        storage: storage,
+        warning: (_) {},
+        exchangeVisible: Stream.value(true),
+      ),
     );
     final l10n = localizations(tester);
     try {
@@ -337,10 +365,14 @@ void main() {
   testWidgets('failed Undo stays at defaults and reports the write error', (
     tester,
   ) async {
-    final storage = _EditorStorage()..value = '["buy"]';
+    final storage = _EditorStorage()..value = '{"home":["buy"],"more":[]}';
     await openEditor(
       tester,
-      QuickActionsFacade(storage: storage, warning: (_) {}),
+      QuickActionsCubit(
+        storage: storage,
+        warning: (_) {},
+        exchangeVisible: Stream.value(true),
+      ),
     );
     final l10n = localizations(tester);
     try {
@@ -362,11 +394,15 @@ void main() {
     (tester) async {
       final gate = Completer<void>();
       final storage = _EditorStorage()
-        ..value = '["map","transfer"]'
+        ..value = '{"home":["map","transfer"],"more":[]}'
         ..gate = gate;
       await openEditor(
         tester,
-        QuickActionsFacade(storage: storage, warning: (_) {}),
+        QuickActionsCubit(
+          storage: storage,
+          warning: (_) {},
+          exchangeVisible: Stream.value(true),
+        ),
       );
       final l10n = localizations(tester);
       await semanticMove(tester, QuickAction.map, l10n.moveToMore);
@@ -395,9 +431,13 @@ void main() {
   testWidgets('pending save survives closing the editor', (tester) async {
     final gate = Completer<void>();
     final storage = _EditorStorage()
-      ..value = '["map","transfer"]'
+      ..value = '{"home":["map","transfer"],"more":[]}'
       ..gate = gate;
-    final facade = QuickActionsFacade(storage: storage, warning: (_) {});
+    final facade = QuickActionsCubit(
+      storage: storage,
+      warning: (_) {},
+      exchangeVisible: Stream.value(true),
+    );
     await openEditor(tester, facade);
     final l10n = localizations(tester);
     await semanticMove(tester, QuickAction.map, l10n.moveToMore);
@@ -409,7 +449,7 @@ void main() {
     gate.complete();
     await tester.pumpAndSettle();
     expect(homeValue(storage.value), '["transfer"]');
-    expect(facade.selection?.actions, [QuickAction.transfer]);
+    expect(facade.state.selection?.actions, [QuickAction.transfer]);
     expect(tester.takeException(), isNull);
   });
 
@@ -418,12 +458,16 @@ void main() {
   ) async {
     final gate = Completer<void>();
     final storage = _EditorStorage()
-      ..value = '["map","transfer"]'
+      ..value = '{"home":["map","transfer"],"more":[]}'
       ..gate = gate
       ..failWrite = true;
     await openEditor(
       tester,
-      QuickActionsFacade(storage: storage, warning: (_) {}),
+      QuickActionsCubit(
+        storage: storage,
+        warning: (_) {},
+        exchangeVisible: Stream.value(true),
+      ),
     );
     final l10n = localizations(tester);
     try {
@@ -446,10 +490,14 @@ void main() {
   testWidgets('Undo remains functional after closing the editor', (
     tester,
   ) async {
-    final storage = _EditorStorage()..value = '["buy"]';
+    final storage = _EditorStorage()..value = '{"home":["buy"],"more":[]}';
     await openEditor(
       tester,
-      QuickActionsFacade(storage: storage, warning: (_) {}),
+      QuickActionsCubit(
+        storage: storage,
+        warning: (_) {},
+        exchangeVisible: Stream.value(true),
+      ),
     );
     final l10n = localizations(tester);
     try {
@@ -472,8 +520,12 @@ void main() {
   testWidgets('Undo cannot overwrite a newer confirmed preference', (
     tester,
   ) async {
-    final storage = _EditorStorage()..value = '["buy"]';
-    final facade = QuickActionsFacade(storage: storage, warning: (_) {});
+    final storage = _EditorStorage()..value = '{"home":["buy"],"more":[]}';
+    final facade = QuickActionsCubit(
+      storage: storage,
+      warning: (_) {},
+      exchangeVisible: Stream.value(true),
+    );
     await openEditor(tester, facade);
     final l10n = localizations(tester);
     try {
@@ -491,11 +543,15 @@ void main() {
   testWidgets(
     'unavailable Buy is hidden without a write and survives a visible edit',
     (tester) async {
-      final storage = _EditorStorage()..value = '["buy","map","transfer"]';
+      final storage = _EditorStorage()
+        ..value = '{"home":["buy","map","transfer"],"more":[]}';
       await openEditor(
         tester,
-        QuickActionsFacade(storage: storage, warning: (_) {}),
-        available: defaults.toSet(),
+        QuickActionsCubit(
+          storage: storage,
+          warning: (_) {},
+          exchangeVisible: Stream.value(false),
+        ),
       );
       final l10n = localizations(tester);
       expect(find.text(l10n.buy), findsNothing);
@@ -508,65 +564,68 @@ void main() {
     },
   );
 
-  testWidgets(
-    'legacy fourth selection stays in More after removing one Home action',
-    (tester) async {
-      final storage = _EditorStorage()
-        ..value = '["map","transfer","history","settings"]';
-      await openEditor(
-        tester,
-        QuickActionsFacade(storage: storage, warning: (_) {}),
-      );
-      final l10n = localizations(tester);
-      expect(
-        homeValue(storage.value),
-        '["map","transfer","history","settings"]',
-      );
-      await semanticMove(tester, QuickAction.map, l10n.moveToMore);
-      await tester.pumpAndSettle();
-      expect(homeValue(storage.value), '["transfer","history"]');
-      await tester.scrollUntilVisible(
-        find.byKey(const ValueKey('settings')),
-        120,
-      );
-      expect(find.byKey(const ValueKey('settings')), findsOneWidget);
-    },
-  );
+  testWidgets('fourth selection stays in More after removing one Home action', (
+    tester,
+  ) async {
+    final storage = _EditorStorage()
+      ..value = '{"home":["map","transfer","history","settings"],"more":[]}';
+    await openEditor(
+      tester,
+      QuickActionsCubit(
+        storage: storage,
+        warning: (_) {},
+        exchangeVisible: Stream.value(true),
+      ),
+    );
+    final l10n = localizations(tester);
+    expect(homeValue(storage.value), '["map","transfer","history","settings"]');
+    await semanticMove(tester, QuickAction.map, l10n.moveToMore);
+    await tester.pumpAndSettle();
+    expect(homeValue(storage.value), '["transfer","history"]');
+    await tester.scrollUntilVisible(
+      find.byKey(const ValueKey('settings')),
+      120,
+    );
+    expect(find.byKey(const ValueKey('settings')), findsOneWidget);
+  });
 }
 
 void stressEditorTests() {
   for (final locale in ['en', 'fr']) {
     for (final count in [0, 1, 4, 10]) {
       for (final dark in [false, true]) {
-        testWidgets(
-          'editor $locale $count legacy choices dark=$dark at 200 percent',
-          (tester) async {
-            tester.view.physicalSize = const Size(320, 800);
-            tester.view.devicePixelRatio = 1;
-            addTearDown(tester.view.resetPhysicalSize);
-            addTearDown(tester.view.resetDevicePixelRatio);
-            final storage = MemoryStorage()
-              ..value =
-                  '[${QuickAction.values.take(count).map((a) => '"${a.id}"').join(',')}]';
-            await openEditor(
-              tester,
-              QuickActionsFacade(storage: storage, warning: (_) {}),
-              locale: Locale(locale),
-              textScale: 2,
-              dark: dark,
-            );
-            final l10n = localizations(tester);
-            expect(
-              tester.getRect(find.text(l10n.reset)).bottom,
-              lessThanOrEqualTo(800),
-            );
-            expect(tester.getRect(find.text(l10n.reset)).top, greaterThan(0));
-            expect(find.text(l10n.onHome), findsOneWidget);
-            await tester.scrollUntilVisible(find.text(l10n.inMore), 120);
-            expect(find.text(l10n.inMore), findsOneWidget);
-            expect(tester.takeException(), isNull);
-          },
-        );
+        testWidgets('editor $locale $count choices dark=$dark at 200 percent', (
+          tester,
+        ) async {
+          tester.view.physicalSize = const Size(320, 800);
+          tester.view.devicePixelRatio = 1;
+          addTearDown(tester.view.resetPhysicalSize);
+          addTearDown(tester.view.resetDevicePixelRatio);
+          final storage = MemoryStorage()
+            ..value =
+                '[${QuickAction.values.take(count).map((a) => '"${a.id}"').join(',')}]';
+          await openEditor(
+            tester,
+            QuickActionsCubit(
+              storage: storage,
+              warning: (_) {},
+              exchangeVisible: Stream.value(true),
+            ),
+            locale: Locale(locale),
+            textScale: 2,
+            dark: dark,
+          );
+          final l10n = localizations(tester);
+          expect(
+            tester.getRect(find.text(l10n.reset)).bottom,
+            lessThanOrEqualTo(800),
+          );
+          expect(tester.getRect(find.text(l10n.reset)).top, greaterThan(0));
+          expect(find.text(l10n.onHome), findsOneWidget);
+          await tester.scrollUntilVisible(find.text(l10n.inMore), 120);
+          expect(find.text(l10n.inMore), findsOneWidget);
+          expect(tester.takeException(), isNull);
+        });
       }
     }
   }

@@ -12,7 +12,7 @@ void main() {
     QuickAction.settings,
   };
 
-  test('legacy selection projects three and retains its stored order', () {
+  test('stored selection projects three and retains its stored order', () {
     final selection = QuickActionSelection([
       QuickAction.buy,
       QuickAction.map,
@@ -22,7 +22,7 @@ void main() {
     ]);
     final layout = QuickActionsLayout.resolve(
       available: available,
-      defaults: const [],
+
       selection: selection,
     );
     expect(layout.primary, [
@@ -40,42 +40,39 @@ void main() {
     ]);
   });
 
-  test(
-    'editing home preserves unavailable actions and drops legacy surplus',
-    () {
-      final selection = QuickActionSelection([
-        QuickAction.buy,
-        QuickAction.map,
-        QuickAction.sell,
-        QuickAction.transfer,
-        QuickAction.history,
-        QuickAction.settings,
-      ]);
-      final demoted = QuickActionsEditorLayout(
-        selection: selection,
+  test('editing home preserves unavailable actions and drops surplus', () {
+    final selection = QuickActionSelection([
+      QuickAction.buy,
+      QuickAction.map,
+      QuickAction.sell,
+      QuickAction.transfer,
+      QuickAction.history,
+      QuickAction.settings,
+    ]);
+    final demoted = QuickActionsEditorLayout(
+      selection: selection,
+      available: available,
+    ).moveToMore(QuickAction.transfer);
+    final edited = QuickActionsEditorLayout(
+      selection: demoted,
+      available: available,
+    ).move(1, 0);
+    expect(edited.actions, [
+      QuickAction.buy,
+      QuickAction.history,
+      QuickAction.sell,
+      QuickAction.map,
+    ]);
+    expect(
+      QuickActionsLayout.resolve(
         available: available,
-      ).moveToMore(QuickAction.transfer);
-      final edited = QuickActionsEditorLayout(
-        selection: demoted,
-        available: available,
-      ).move(1, 0);
-      expect(edited.actions, [
-        QuickAction.buy,
-        QuickAction.history,
-        QuickAction.sell,
-        QuickAction.map,
-      ]);
-      expect(
-        QuickActionsLayout.resolve(
-          available: available,
-          defaults: const [],
-          selection: edited,
-        ).primary,
-        [QuickAction.history, QuickAction.map],
-      );
-      expect(selection.actions, hasLength(6));
-    },
-  );
+
+        selection: edited,
+      ).primary,
+      [QuickAction.history, QuickAction.map],
+    );
+    expect(selection.actions, hasLength(6));
+  });
 
   test('unavailable moves cannot alter the preference', () {
     final selection = QuickActionSelection([QuickAction.map]);
@@ -91,7 +88,7 @@ void main() {
     final selection = QuickActionSelection([]);
     final layout = QuickActionsLayout.resolve(
       available: available,
-      defaults: const [],
+
       selection: selection,
     );
     expect(layout.primary, [QuickAction.settings]);
@@ -102,9 +99,15 @@ void main() {
     'save and reset are serialized and notify in completion order',
     () async {
       final storage = DelayedStorage();
-      final facade = QuickActionsFacade(storage: storage, warning: (_) {});
+      final facade = QuickActionsCubit(
+        storage: storage,
+        warning: (_) {},
+        exchangeVisible: Stream.value(true),
+      );
       final changes = <List<QuickAction>?>[];
-      facade.addListener(() => changes.add(facade.selection?.actions));
+      facade.stream
+          .where((state) => !state.saving && state.revision > 0)
+          .listen((state) => changes.add(state.selection?.actions));
       final save = facade.save(QuickActionSelection([QuickAction.map]));
       final reset = facade.reset();
       await Future<void>.delayed(Duration.zero);
@@ -115,32 +118,40 @@ void main() {
       expect(storage.operations, ['write', 'remove']);
       storage.completeNext();
       expect(await reset, isA<Ok<void, QuickActionsFailure>>());
+      await Future<void>.delayed(Duration.zero);
       expect(changes, [
         [QuickAction.map],
         null,
       ]);
       expect(storage.value, isNull);
-      facade.dispose();
+      facade.close();
     },
   );
 
   test('a failed write leaves state intact and the next write runs', () async {
     final storage = DelayedStorage();
-    final facade = QuickActionsFacade(storage: storage, warning: (_) {});
+    final facade = QuickActionsCubit(
+      storage: storage,
+      warning: (_) {},
+      exchangeVisible: Stream.value(true),
+    );
     final first = facade.save(QuickActionSelection([QuickAction.map]));
     final second = facade.save(QuickActionSelection([QuickAction.transfer]));
     await Future<void>.delayed(Duration.zero);
     expect(storage.operations, ['write']);
     storage.completeNext(fail: true);
     expect(await first, isA<Err<void, QuickActionsFailure>>());
-    expect(facade.initialized, isFalse);
+    expect(facade.state.initialized, isFalse);
     await Future<void>.delayed(Duration.zero);
     expect(storage.operations, ['write', 'write']);
     storage.completeNext();
     expect(await second, isA<Ok<void, QuickActionsFailure>>());
-    expect(facade.selection?.actions, [QuickAction.transfer]);
-    expect(jsonDecode(storage.value ?? ''), ['transfer']);
-    facade.dispose();
+    expect(facade.state.selection?.actions, [QuickAction.transfer]);
+    expect(jsonDecode(storage.value ?? ''), {
+      'home': ['transfer'],
+      'more': [],
+    });
+    facade.close();
   });
 }
 
