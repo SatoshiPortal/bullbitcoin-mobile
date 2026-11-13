@@ -139,12 +139,28 @@ void main() {
         isDevModeEnabled: true,
       ).inSection(SettingsItemSection.app).map((item) => item.id).toList();
 
-      expect(ids.sublist(ids.length - 4), [
+      expect(ids.sublist(ids.length - 5), [
         SettingsItemId.errorReporting,
         SettingsItemId.devMode,
         SettingsItemId.testnetMode,
         SettingsItemId.testnetCredentials,
+        SettingsItemId.forceAppStoreWording,
       ]);
+      // Visible only while Dev Mode is on, superuser or not.
+      expect(
+        _englishItems(
+          isSuperuser: false,
+          isDevModeEnabled: false,
+        ).inSection(SettingsItemSection.app).map((item) => item.id),
+        isNot(contains(SettingsItemId.forceAppStoreWording)),
+      );
+      expect(
+        _englishItems(
+          isSuperuser: false,
+          isDevModeEnabled: true,
+        ).inSection(SettingsItemSection.app).map((item) => item.id),
+        contains(SettingsItemId.forceAppStoreWording),
+      );
       expect(
         _englishItems(
           isSuperuser: true,

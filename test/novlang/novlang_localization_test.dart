@@ -188,6 +188,59 @@ void main() {
     expect(find.text('1'), findsOneWidget, reason: 'state must survive');
     expect(counterBuilds, greaterThan(1));
   });
+
+  testWidgets(
+    'forcing the Apple wording on Android swaps the words live, and the '
+    'superuser stays first',
+    (tester) async {
+      final forced = ValueNotifier<bool>(false);
+      final superuser = ValueNotifier<bool>(false);
+
+      await tester.pumpWidget(
+        ListenableBuilder(
+          listenable: Listenable.merge([forced, superuser]),
+          builder: (context, _) => MaterialApp(
+            locale: en,
+            localizationsDelegates: [
+              NovlangAppLocalizationsDelegate(
+                resolveNovlangPolicy(
+                  TargetPlatform.android,
+                  superuser.value,
+                  forceApple: forced.value,
+                ),
+              ),
+              ...AppLocalizations.localizationsDelegates,
+            ],
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: Scaffold(
+              body: Builder(
+                builder: (context) =>
+                    Text(AppLocalizations.of(context).homeActionTransfer),
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(find.text('Swap'), findsOneWidget);
+
+      forced.value = true;
+      await tester.pumpAndSettle();
+      expect(find.text('Transfer'), findsOneWidget);
+
+      superuser.value = true;
+      await tester.pumpAndSettle();
+      expect(find.text('Swap'), findsOneWidget, reason: 'superuser first');
+
+      superuser.value = false;
+      await tester.pumpAndSettle();
+      expect(find.text('Transfer'), findsOneWidget);
+
+      forced.value = false;
+      await tester.pumpAndSettle();
+      expect(find.text('Swap'), findsOneWidget);
+    },
+  );
 }
 
 class _Counter extends StatefulWidget {
