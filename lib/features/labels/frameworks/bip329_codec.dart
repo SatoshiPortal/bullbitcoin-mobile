@@ -125,6 +125,11 @@ class Bip329LabelsCodec {
         // annotation below.
         if (bip329Label.label.trim().isEmpty) continue;
       }
+      // The app's own markers (swaps, auto-swap, ...) come back in a file this
+      // app exported, and other wallets keep them. They are never stored as
+      // user labels (#2606: a forged marker would be privileged), so they are
+      // skipped one by one: the rest of the file still imports.
+      if (LabelSystem.isSystemLabel(bip329Label.label)) continue;
       labels.add(_convertBip329ToLabel(bip329Label));
     }
 
@@ -181,14 +186,6 @@ String? _walletIdFromBip329Origin(String? origin) {
 }
 
 NewLabel _convertBip329ToLabel(bip329.Bip329Label bip329Label) {
-  if (LabelSystem.isSystemLabel(bip329Label.label)) {
-    // Aborts the whole import: the decode loop calls this bare, by design —
-    //  a file naming a system label is rejected rather than silently
-    //  half-imported. It must be a LabelsImportException so the use-case can
-    //  say WHY; as a LabelValidationException it fell through to the
-    //  catch-all and read "Oops something went wrong".
-    throw const LabelsImportException(LabelsImportProblem.reservedName);
-  }
   return switch (bip329Label) {
     bip329.TxLabel() => NewLabel(
       type: LabelType.transaction,
