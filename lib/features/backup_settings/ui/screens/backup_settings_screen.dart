@@ -108,10 +108,7 @@ class _ViewVaultKeyButton extends StatelessWidget {
   Widget build(BuildContext context) => BullSettingsEntryItem(
     icon: Icons.vpn_key,
     title: context.loc.backupSettingsViewVaultKey,
-    onTap: () => locator<RecoverBullFeature>().open(
-      context,
-      RecoverBullFlow.viewVaultKey,
-    ),
+    onTap: () => RecoverBullFeature.open(context, RecoverBullFlow.viewVaultKey),
   );
 }
 

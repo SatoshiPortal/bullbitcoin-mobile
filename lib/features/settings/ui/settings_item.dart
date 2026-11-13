@@ -1,5 +1,4 @@
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/features/backup_settings/ui/backup_settings_router.dart';
@@ -241,7 +240,7 @@ List<SettingsItem> buildSettingsItems({
       ),
       icon: Icons.cloud_circle,
       open: (context) =>
-          locator<RecoverBullFeature>().open(context, RecoverBullFlow.settings),
+          RecoverBullFeature.open(context, RecoverBullFlow.settings),
       keywords: _keywords(
         localization.settingsSearchRecoverbullKeywords,
         english.settingsSearchRecoverbullKeywords,

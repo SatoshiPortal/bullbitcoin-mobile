@@ -10,9 +10,6 @@ import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/features/wallet/wallet_core_locator.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bull_recoverbull/bull_recoverbull.dart';
-// Substitute only the native Tor backend; keep its repository and owner wiring.
-// ignore: implementation_imports
-import 'package:bull_tor/src/domain/ports/embedded_tor_port.dart';
 import 'package:bull_tor/tor.dart';
 import 'package:bull_tor/tor_adapter.dart';
 import 'package:drift/native.dart';
@@ -20,11 +17,15 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
 import 'package:secrets/secrets.dart';
-import 'package:mocktail/mocktail.dart';
 
-class _EmbeddedTorPort extends Mock implements EmbeddedTorPort {}
+class _NativeTor implements TorNativeInitializer {
+  int calls = 0;
 
-class _ExternalTorPort extends Mock implements ExternalTorPort {}
+  @override
+  Future<void> initialize() async {
+    calls++;
+  }
+}
 
 final class _Picker extends FilePicker {}
 
@@ -51,16 +52,12 @@ void main() {
       );
       await SettingsLocator.registerDatasources(services);
       await SettingsLocator.registerRepositories(services);
-      // TorLocator.registerDatasources initializes libonion, unavailable in unit tests.
-      final embedded = _EmbeddedTorPort();
-      when(
-        embedded.watch,
-      ).thenAnswer((_) => const Stream<EmbeddedTorEvent>.empty());
-      services.registerSingleton<EmbeddedTorPort>(embedded);
-      services.registerSingleton<ExternalTorPort>(_ExternalTorPort());
-      services.registerLazySingleton<TorHttpClientFactory>(
-        TorHttpClientFactory.new,
-      );
+      // Replace native initialization through the published host seam; keep
+      // the real backend, repository and owner registrations.
+      final nativeTor = _NativeTor();
+      services.registerSingleton<TorNativeInitializer>(nativeTor);
+      await TorLocator.registerDatasources(services);
+      expect(nativeTor.calls, 1);
       TorLocator.registerRepositories(services);
       TorLocator.registerUsecases(services);
       await ElectrumLocator.registerDatasources(services);
