@@ -30,12 +30,27 @@ import 'package:yaml/yaml.dart';
 
 const _manifestPath = 'packages/novlang/manifest.yaml';
 const _l10nDir = 'lib/generated/l10n';
+const _arbDir = 'localization';
 const _outputPath = 'lib/generated/novlang/novlang_app_localizations.dart';
 
 void main(List<String> args) {
   final entries = _readManifest();
   final signatures = _readSignatures();
   final locales = _readLocaleClasses();
+
+  final arbCount = Directory(_arbDir)
+      .listSync()
+      .whereType<File>()
+      .where((f) => RegExp(r'app_[\w]+\.arb$').hasMatch(f.path))
+      .length;
+  if (locales.length != arbCount) {
+    stderr.writeln(
+      'Found ${locales.length} generated locale classes for $arbCount '
+      'catalogues in $_arbDir: a language would silently keep the real words. '
+      'Run gen-l10n first, or extend this tool if gen-l10n changed its output.',
+    );
+    exit(1);
+  }
 
   final missing = [
     for (final e in entries)
@@ -145,7 +160,9 @@ void main(List<String> args) {
     );
   }
   out
-    ..writeln('      _ => base,')
+    ..writeln(
+      "      _ => throw StateError('No novlang class for \${base.localeName}'),",
+    )
     ..writeln('    };')
     ..writeln('  }')
     ..writeln()
@@ -155,6 +172,22 @@ void main(List<String> args) {
       '      old.policy != policy;',
     )
     ..writeln('}');
+
+  out
+    ..writeln()
+    ..writeln(
+      '/// The delegates of every MaterialApp showing catalogue text: the\n'
+      '/// novlang delegate FIRST, then the stock ones. A MaterialApp that lists\n'
+      '/// only `AppLocalizations.localizationsDelegates` would bypass novlang.',
+    )
+    ..writeln(
+      'List<LocalizationsDelegate<dynamic>> novlangLocalizationsDelegates(\n'
+      '  NovlangPolicy policy,\n'
+      ') => [\n'
+      '  NovlangAppLocalizationsDelegate(policy),\n'
+      '  ...AppLocalizations.localizationsDelegates,\n'
+      '];',
+    );
 
   File(_outputPath)
     ..createSync(recursive: true)

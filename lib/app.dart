@@ -189,10 +189,7 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
                     theme: AppTheme.themeData(appThemeType),
                     locale: language?.locale,
                     localizationsDelegates: [
-                      // Before AppLocalizations.delegate: Flutter uses the
-                      // first delegate of a type.
-                      NovlangAppLocalizationsDelegate(novlangPolicy),
-                      ...AppLocalizations.localizationsDelegates,
+                      ...novlangLocalizationsDelegates(novlangPolicy),
                       LogsLocalizations.delegate,
                       bullUiLocalizationsDelegate,
                       ...RecoverBullFeature.localizationsDelegates,
