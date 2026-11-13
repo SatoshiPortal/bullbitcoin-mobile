@@ -15,8 +15,9 @@ import 'package:bb_mobile/features/exchange/data/exchange_auth_repository_impl.d
 import 'package:bb_mobile/features/exchange/data/exchange_web_auth_datasource.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/announcement.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
-import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/exchange/domain/exchange_failure.dart';
+import 'package:bb_mobile/features/exchange/domain/exchange_session.dart';
+import 'package:bb_mobile/features/exchange/domain/usecases/initialize_exchange_access_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/clear_exchange_session_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_account_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_announcements_usecase.dart';
@@ -27,6 +28,8 @@ import 'package:bb_mobile/features/exchange/domain/usecases/watch_exchange_notif
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:bb_mobile/features/exchange_access/public/exchange_access_facade.dart';
 
 const _account = UserSummary(
   userNumber: 1,
@@ -69,6 +72,15 @@ class _StoredKeys extends Fake implements ExchangeApiKeyRepository {
   }
 }
 
+class _RestartKeys extends Fake implements ExchangeApiKeyRepository {
+  String? active = 'synthetic';
+
+  @override
+  Future<Result<String?, ExchangeApiKeyFailure>> readActiveApiKey({
+    required bool isTestnet,
+  }) async => Ok(active);
+}
+
 void main() {
   late _MockClearSession clearSession;
   late _MockGetAccount getAccount;
@@ -77,7 +89,12 @@ void main() {
   late _MockGetAnnouncements announcements;
   late _MockSavePreferences savePreferences;
 
-  ExchangeCubit build() => ExchangeCubit(
+  ExchangeCubit build({
+    ExchangeAccessFacade? access,
+    ExchangeSession? sessionFacts,
+  }) => ExchangeCubit(
+    access: access,
+    sessionFacts: sessionFacts,
     getExchangeAccountUsecase: getAccount,
     saveExchangePreferencesUsecase: savePreferences,
     clearExchangeSessionUsecase: clearSession,
@@ -102,6 +119,136 @@ void main() {
     when(notifications.disconnect).thenReturn(null);
     when(getAccount.execute).thenAnswer((_) async => const Ok(_account));
   });
+
+  test(
+    'logout waits for in-flight authentication before clearing the session',
+    () async {
+      SharedPreferences.setMockInitialValues({});
+      final access = ExchangeAccessFacade();
+      expect(
+        await access.initialize(
+          isTestnet: false,
+          session: ExchangeSessionFact.authenticated,
+        ),
+        isA<Ok<ExchangeAccessOutcome, ExchangeAccessFailure>>(),
+      );
+      final response = Completer<Result<void, ExchangeFailure>>();
+      final operation = _MockCompleteAuthentication();
+      when(
+        () => operation.execute(isCurrent: any(named: 'isCurrent')),
+      ).thenAnswer((_) => response.future);
+      when(
+        () => clearSession.execute(isTestnet: false),
+      ).thenAnswer((_) async => const Ok(null));
+      final cubit = build(access: access);
+      addTearDown(cubit.close);
+      addTearDown(access.dispose);
+      final authentication = cubit.completeAuthentication(operation);
+      final logout = cubit.logout();
+      await Future<void>.delayed(Duration.zero);
+      verifyNever(() => clearSession.execute(isTestnet: false));
+      response.complete(const Ok(null));
+      await authentication;
+      expect(await logout, isNull);
+      verify(() => clearSession.execute(isTestnet: false)).called(1);
+      expect(access.current.choice, ExchangeAccessChoice.disabled);
+      expect(access.current.session, ExchangeSessionFact.anonymous);
+    },
+  );
+
+  test('account response from an old access generation is ignored', () async {
+    SharedPreferences.setMockInitialValues({});
+    final access = ExchangeAccessFacade();
+    expect(
+      await access.initialize(
+        isTestnet: false,
+        session: ExchangeSessionFact.authenticated,
+      ),
+      isA<Ok<ExchangeAccessOutcome, ExchangeAccessFailure>>(),
+    );
+    final response = Completer<Result<UserSummary, ExchangeFailure>>();
+    when(getAccount.execute).thenAnswer((_) => response.future);
+    final cubit = build(access: access);
+    addTearDown(cubit.close);
+    addTearDown(access.dispose);
+    final pending = cubit.fetchUserSummary();
+    access.suspend();
+    response.complete(const Ok(_account));
+    await pending;
+    expect(cubit.state.userSummary, isNull);
+  });
+
+  test(
+    'definitive unauthenticated result clears the session across restart',
+    () async {
+      SharedPreferences.setMockInitialValues({});
+      final access = ExchangeAccessFacade();
+      final keys = _RestartKeys();
+      final facts = ExchangeSession(keys);
+      expect(
+        await InitializeExchangeAccessUsecase(
+          facts,
+          access,
+        ).execute(isTestnet: false),
+        isA<Ok<void, ExchangeFailure>>(),
+      );
+      final cubit = build(access: access, sessionFacts: facts);
+      addTearDown(cubit.close);
+      addTearDown(access.dispose);
+      await cubit.fetchUserSummary();
+      expect(cubit.state.userSummary, _account);
+      when(
+        getAccount.execute,
+      ).thenAnswer((_) async => const Err(ExchangeNotAuthenticatedFailure()));
+      when(() => clearSession.execute(isTestnet: false)).thenAnswer((_) async {
+        keys.active = null;
+        return const Ok(null);
+      });
+      await cubit.fetchUserSummary();
+      expect(cubit.state.userSummary, isNull);
+      expect(access.current.choice, ExchangeAccessChoice.disabled);
+      expect(access.current.session, ExchangeSessionFact.expired);
+      expect(facts.current, ExchangeSessionStatus.expired);
+      final restarted = ExchangeAccessFacade();
+      addTearDown(restarted.dispose);
+      expect(
+        await InitializeExchangeAccessUsecase(
+          ExchangeSession(keys),
+          restarted,
+        ).execute(isTestnet: false),
+        isA<Ok<void, ExchangeFailure>>(),
+      );
+      expect(restarted.current.choice, ExchangeAccessChoice.disabled);
+      expect(restarted.current.canUseAuthenticatedExchange, isFalse);
+    },
+  );
+
+  test(
+    'network failure retains the recognized account and does not clear the key',
+    () async {
+      SharedPreferences.setMockInitialValues({});
+      final access = ExchangeAccessFacade();
+      expect(
+        await access.initialize(
+          isTestnet: false,
+          session: ExchangeSessionFact.authenticated,
+        ),
+        isA<Ok<ExchangeAccessOutcome, ExchangeAccessFailure>>(),
+      );
+      final cubit = build(access: access);
+      addTearDown(cubit.close);
+      addTearDown(access.dispose);
+      await cubit.fetchUserSummary();
+      when(
+        getAccount.execute,
+      ).thenAnswer((_) async => const Err(ExchangeNetworkFailure()));
+      await cubit.fetchUserSummary();
+      expect(cubit.state.userSummary, _account);
+      expect(access.current.canUseAuthenticatedExchange, isTrue);
+      expect(access.current.isStale, isTrue);
+      verifyNever(() => clearSession.execute(isTestnet: false));
+    },
+  );
 
   for (final clearPending in [false, true]) {
     test(
