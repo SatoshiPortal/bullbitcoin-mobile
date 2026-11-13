@@ -1,11 +1,12 @@
+import 'dart:io';
+import 'package:bb_mobile/features/buy/domain/get_buy_entry_usecase.dart';
 import 'package:bb_mobile/features/buy/presentation/buy_bloc.dart';
 import 'package:bb_mobile/features/buy/ui/screens/buy_accelerate_screen.dart';
 import 'package:bb_mobile/features/buy/ui/screens/buy_accelerate_success_screen.dart';
 import 'package:bb_mobile/features/buy/ui/screens/buy_confirm_screen.dart';
 import 'package:bb_mobile/features/buy/ui/screens/buy_input_screen.dart';
 import 'package:bb_mobile/features/buy/ui/screens/buy_success_screen.dart';
-import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
-import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
+import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -35,11 +36,17 @@ class BuyRouter {
         GoRoute(
           name: BuyRoute.buy.name,
           path: BuyRoute.buy.path,
-          redirect: (context, state) {
-            final notLoggedIn = context.read<ExchangeCubit>().state.notLoggedIn;
-            if (notLoggedIn) return ExchangeRoute.exchangeHome.path;
-            return null;
+          redirect: (context, state) async {
+            final result = await GetBuyEntryUsecase(
+              locator<ExchangeFacade>(),
+            ).execute(isIOS: Platform.isIOS);
+            return switch (result) {
+              Ok(value: BuyEntry.allowed) => null,
+              Ok(value: BuyEntry.signIn) => ExchangeRoute.exchangeAuth.path,
+              _ => '/wallet',
+            };
           },
+
           builder: (context, state) {
             return BlocListener<BuyBloc, BuyState>(
               listenWhen: (previous, current) =>

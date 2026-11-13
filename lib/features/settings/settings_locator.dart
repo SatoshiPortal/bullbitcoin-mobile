@@ -1,3 +1,11 @@
+import 'package:bb_mobile/features/settings/domain/usecases/watch_settings_quick_actions_usecase.dart';
+import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
+import 'package:bb_mobile/features/exchange_access/public/exchange_access_facade.dart';
+import 'package:bb_mobile/features/settings/data/quick_actions_storage.dart';
+import 'package:bb_mobile/features/settings/domain/usecases/manage_exchange_access_usecase.dart';
+import 'package:bb_mobile/features/settings/presentation/exchange_access_settings_cubit.dart';
+import 'package:bull_quick_actions/bull_quick_actions.dart';
+import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_user_repository.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
@@ -31,6 +39,30 @@ import 'package:get_it/get_it.dart';
 
 class SettingsLocator {
   static void setup(GetIt locator) {
+    locator.registerLazySingleton<QuickActionsFacade>(
+      () => QuickActionsFacade(
+        storage: SettingsQuickActionsStorage(),
+        warning: log.warning,
+      ),
+    );
+    locator.registerFactory<WatchSettingsExchangeAccessUsecase>(
+      () => WatchSettingsExchangeAccessUsecase(locator<ExchangeAccessFacade>()),
+    );
+    locator.registerFactory<SetSettingsExchangeAccessUsecase>(
+      () => SetSettingsExchangeAccessUsecase(
+        locator<ExchangeAccessFacade>(),
+        locator<ExchangeFacade>(),
+      ),
+    );
+    locator.registerFactory<ExchangeAccessSettingsCubit>(
+      () => ExchangeAccessSettingsCubit(
+        locator<WatchSettingsExchangeAccessUsecase>(),
+        locator<SetSettingsExchangeAccessUsecase>(),
+      ),
+    );
+    locator.registerFactory<WatchSettingsQuickActionsUsecase>(
+      () => WatchSettingsQuickActionsUsecase(locator<ExchangeAccessFacade>()),
+    );
     // Usecases
     locator.registerFactory<SetEnvironmentUsecase>(
       () => SetEnvironmentUsecase(

@@ -1,3 +1,7 @@
+import 'package:bb_mobile/features/bitcoin_price/public/bitcoin_price_facade.dart';
+import 'package:bb_mobile/features/exchange_access/public/exchange_access_facade.dart';
+import 'package:bb_mobile/features/support/public/support_facade.dart';
+import 'package:bull_quick_actions/bull_quick_actions.dart';
 import 'dart:io';
 
 import 'package:bb_mobile/core/screens/route_error_screen.dart';
@@ -65,7 +69,38 @@ class AppRouter {
     onHomeRefresh: () => locator<LimitOrdersFacade>().refreshDashboard(),
     onExit: (context) => context.goNamed(WalletRoute.walletHome.name),
     onOpenSettings: (context) => context.pushNamed(SettingsRoute.settings.name),
+    onAction: (context, action) => _openQuickAction(context, switch (action) {
+      ExchangeHomeAction.buy => QuickAction.buy,
+      ExchangeHomeAction.sell => QuickAction.sell,
+      ExchangeHomeAction.pay => QuickAction.pay,
+      ExchangeHomeAction.transfer => QuickAction.transfer,
+    }),
   );
+
+  static void _openQuickAction(BuildContext context, QuickAction action) {
+    switch (action) {
+      case QuickAction.map:
+        context.pushNamed(SettingsRoute.btcMap.name);
+      case QuickAction.transfer:
+        context.pushNamed(SwapRoute.swap.name);
+      case QuickAction.history:
+        context.pushNamed(TransactionsRoute.transactions.name);
+      case QuickAction.settings:
+        context.pushNamed(SettingsRoute.settings.name);
+      case QuickAction.support:
+        SupportFacade.contactSupport(context);
+      case QuickAction.priceHistory:
+        context.pushNamed(SettingsRoute.priceHistory.name);
+      case QuickAction.buy:
+        context.pushNamed(BuyRoute.buy.name);
+      case QuickAction.sell:
+        context.pushNamed(SellRoute.sell.name);
+      case QuickAction.pay:
+        context.pushNamed(PayRoute.pay.name);
+      case QuickAction.exchange:
+        context.pushNamed(ExchangeRoute.exchangeHome.name);
+    }
+  }
 
   static final router = GoRouter(
     navigatorKey: rootNavigatorKey,
@@ -125,7 +160,18 @@ class AppRouter {
           );
         },
         routes: [
-          WalletRouter.walletHomeRoute,
+          WalletRouter.walletHomeRoute(
+            quickActions: locator<QuickActionsFacade>(),
+            exchangeAccess: locator<ExchangeAccessFacade>(),
+            platformAllowsExchange: (context) =>
+                !Platform.isIOS ||
+                context.select(
+                  (SettingsCubit cubit) => cubit.state.isSuperuser ?? false,
+                ),
+            onQuickAction: _openQuickAction,
+            onCustomizeQuickActions: (context, available, defaults) =>
+                context.pushNamed(SettingsRoute.quickActions.name),
+          ),
           ...ExchangeRouter.routes(_exchangeConfig),
         ],
       ),
@@ -137,7 +183,10 @@ class AppRouter {
             context.pushNamed<void>(CoinsRoute.coins.name, extra: wallet),
       ),
       ConsolidationRouter.route,
-      SettingsRouter.route,
+      SettingsRouter.route(
+        buildPriceHistory: (context) => locator<BitcoinPriceFacade>()
+            .buildHistory(onBack: () => context.pop()),
+      ),
       TransactionsRouter.transactionsRoute,
       TransactionsRouter.exportTransactionsRoute,
       ...TransactionsRouter.transactionDetailsRoutes,

@@ -1,4 +1,5 @@
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
+import 'package:bb_mobile/features/exchange_access/public/exchange_access_facade.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_state.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_listener.dart';
 import 'package:bb_mobile/locator.dart';
@@ -60,4 +61,22 @@ class ExchangeSessionListener extends StatelessWidget {
         listener: (context, state) => listener(context, state.hasUser),
         child: child,
       );
+}
+
+/// Rebuilds account entry points as the access/session decision changes.
+class ExchangeAccessBuilder extends StatelessWidget {
+  const ExchangeAccessBuilder({required this.builder, super.key});
+
+  final Widget Function(BuildContext, ExchangeAccess) builder;
+
+  @override
+  Widget build(BuildContext context) {
+    final access = locator<ExchangeAccessFacade>();
+    return StreamBuilder<ExchangeAccess>(
+      stream: access.watch(),
+      initialData: access.current,
+      builder: (context, snapshot) =>
+          builder(context, snapshot.data ?? access.current),
+    );
+  }
 }

@@ -5,6 +5,7 @@ import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/exchange/domain/exchange_failure.dart';
+import 'package:bb_mobile/features/exchange/domain/repositories/exchange_account_repository.dart';
 import 'package:bb_mobile/features/exchange/domain/read_exchange_environment.dart';
 import 'package:meta/meta.dart';
 
@@ -16,11 +17,15 @@ class GetExchangeAccountUsecase {
   final ExchangeUserRepository _mainnetExchangeUserRepository;
   final ExchangeUserRepository _testnetExchangeUserRepository;
   final SettingsRepository _settingsRepository;
+  final ExchangeAccountRepository? _mainnetAccountRepository;
+  final ExchangeAccountRepository? _testnetAccountRepository;
 
   const GetExchangeAccountUsecase({
     required this._mainnetExchangeUserRepository,
     required this._testnetExchangeUserRepository,
     required this._settingsRepository,
+    this._mainnetAccountRepository,
+    this._testnetAccountRepository,
   });
 
   @useResult
@@ -35,6 +40,10 @@ class GetExchangeAccountUsecase {
       case Err(:final failure):
         return Err(failure);
     }
+    final accountRepository = environment.isTestnet
+        ? _testnetAccountRepository
+        : _mainnetAccountRepository;
+    if (accountRepository != null) return accountRepository.getAccount();
     final repo = environment.isTestnet
         ? _testnetExchangeUserRepository
         : _mainnetExchangeUserRepository;

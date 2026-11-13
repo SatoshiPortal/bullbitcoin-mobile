@@ -1,3 +1,9 @@
+import 'package:bull_ui/bull_ui.dart' show BuildContext, Widget;
+import 'package:bb_mobile/features/settings/ui/screens/exchange/exchange_access_settings_screen.dart';
+import 'package:bb_mobile/features/settings/presentation/exchange_access_settings_cubit.dart';
+import 'package:bb_mobile/features/settings/ui/screens/quick_actions_settings_screen.dart';
+import 'package:bb_mobile/features/settings/domain/usecases/watch_settings_quick_actions_usecase.dart';
+import 'package:bull_quick_actions/bull_quick_actions.dart';
 import 'package:bb_mobile/features/address_view/presentation/address_view_bloc.dart';
 import 'package:bb_mobile/features/address_view/ui/screens/addresses_screen.dart';
 import 'package:bb_mobile/features/all_seed_view/presentation/all_seed_view_cubit.dart';
@@ -43,7 +49,9 @@ import 'package:bull_logs/bull_logs.dart';
 export 'package:bb_mobile/features/settings/ui/settings_route.dart';
 
 class SettingsRouter {
-  static final route = GoRoute(
+  static GoRoute route({
+    required Widget Function(BuildContext) buildPriceHistory,
+  }) => GoRoute(
     name: SettingsRoute.settings.name,
     path: SettingsRoute.settings.path,
     builder: (context, state) => BlocProvider(
@@ -51,6 +59,11 @@ class SettingsRouter {
       child: const AllSettingsScreen(),
     ),
     routes: [
+      GoRoute(
+        name: SettingsRoute.priceHistory.name,
+        path: SettingsRoute.priceHistory.path,
+        builder: (context, state) => buildPriceHistory(context),
+      ),
       GoRoute(
         name: SettingsRoute.search.name,
         path: SettingsRoute.search.path,
@@ -60,6 +73,29 @@ class SettingsRouter {
         name: SettingsRoute.exchangeAccount.name,
         path: SettingsRoute.exchangeAccount.path,
         builder: (context, state) => const ExchangeAccountScreen(),
+      ),
+      GoRoute(
+        name: SettingsRoute.exchangeAccess.name,
+        path: SettingsRoute.exchangeAccess.path,
+        builder: (context, state) => ExchangeAccessSettingsScreen(
+          cubit: locator<ExchangeAccessSettingsCubit>(),
+          onBack: () => context.pop(),
+          onAuthenticate: () => context.pushNamed<void>(
+            ExchangeRoute.exchangeAuth.name,
+            queryParameters: {'from': 'settings'},
+          ),
+          onOpenAccount: () =>
+              context.pushNamed(ExchangeRoute.exchangeHome.name),
+          onDisabled: () => context.goNamed(WalletRoute.walletHome.name),
+        ),
+      ),
+      GoRoute(
+        name: SettingsRoute.quickActions.name,
+        path: SettingsRoute.quickActions.path,
+        builder: (context, state) => QuickActionsSettingsScreen(
+          facade: locator<QuickActionsFacade>(),
+          watch: locator<WatchSettingsQuickActionsUsecase>(),
+        ),
       ),
       GoRoute(
         name: SettingsRoute.exchangeSettings.name,

@@ -4,8 +4,6 @@ import 'package:bb_mobile/features/backup_settings/ui/backup_settings_router.dar
 import 'package:bb_mobile/features/bip85_entropy/router.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/router.dart';
 import 'package:bb_mobile/features/electrum_settings/frameworks/ui/routing/electrum_settings_router.dart';
-import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
-import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:bb_mobile/features/import_wallet/router.dart';
 import 'package:bb_mobile/features/labels/router.dart';
 import 'package:bb_mobile/features/mempool_settings/router.dart';
@@ -27,6 +25,8 @@ import 'package:bull_ui/bull_ui.dart' show BullSettingsEntryItem;
 
 enum SettingsItemId {
   exchange,
+  quickActions,
+  priceHistory,
   backup,
   startBackup,
   recoverbull,
@@ -292,14 +292,7 @@ List<SettingsItem> buildSettingsItems({
       title: exchangeSection,
       path: path(SettingsItemSection.root, exchangeSection),
       icon: Icons.currency_exchange,
-      open: (context) {
-        final notLoggedIn = context.read<ExchangeCubit>().state.notLoggedIn;
-        if (notLoggedIn) {
-          context.goNamed(ExchangeRoute.exchangeLanding.name);
-        } else {
-          context.pushNamed(SettingsRoute.exchangeSettings.name);
-        }
-      },
+      open: (context) => context.pushNamed(SettingsRoute.exchangeAccess.name),
       keywords: _keywords(
         localization.settingsSearchExchangeKeywords,
         english.settingsSearchExchangeKeywords,
@@ -309,6 +302,30 @@ List<SettingsItem> buildSettingsItems({
           english.settingsAccountSettingsTitle,
         ],
       ),
+    ),
+    SettingsItem(
+      id: SettingsItemId.priceHistory,
+      section: SettingsItemSection.root,
+      title: localization.priceHistoryTitle,
+      path: path(SettingsItemSection.root, localization.priceHistoryTitle),
+      icon: Icons.show_chart,
+      open: (context) => context.pushNamed(SettingsRoute.priceHistory.name),
+      keywords: [localization.priceHistoryTitle, english.priceHistoryTitle],
+    ),
+    SettingsItem(
+      id: SettingsItemId.quickActions,
+      section: SettingsItemSection.root,
+      title: localization.quickActionsSettingsTitle,
+      path: path(
+        SettingsItemSection.root,
+        localization.quickActionsSettingsTitle,
+      ),
+      icon: Icons.tune,
+      open: (context) => context.pushNamed(SettingsRoute.quickActions.name),
+      keywords: [
+        localization.quickActionsSettingsTitle,
+        english.quickActionsSettingsTitle,
+      ],
     ),
     SettingsItem(
       id: SettingsItemId.btcMap,

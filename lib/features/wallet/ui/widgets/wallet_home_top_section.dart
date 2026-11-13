@@ -1,6 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/cards/action_card.dart';
 import 'package:bb_mobile/features/bitcoin_price/presentation/cubit/price_chart_cubit.dart';
 import 'package:bb_mobile/core/widgets/text/currency_text.dart';
 import 'package:bb_mobile/features/bitcoin_price/ui/price_chart_widget.dart';
@@ -17,7 +16,9 @@ import 'package:go_router/go_router.dart';
 import 'package:shimmer/shimmer.dart';
 
 class WalletHomeTopSection extends StatelessWidget {
-  const WalletHomeTopSection({super.key});
+  const WalletHomeTopSection({super.key, required this.actions});
+
+  final Widget actions;
 
   /// Height of the dark area behind the balance (and the price chart, when it
   /// is toggled on).
@@ -26,33 +27,18 @@ class WalletHomeTopSection extends StatelessWidget {
   /// Distance from the top of the dark area down to the balance.
   static const double _balanceTopSpacing = 123;
 
-  /// How far the [ActionCard] hangs below the dark area.
-  static const double _actionCardOverhang = 76;
-
-  /// Fixed height of the section.
-  static const double _height = _balanceAreaHeight + _actionCardOverhang;
-
   @override
   Widget build(BuildContext context) {
-    return const SizedBox(
-      height: _height,
-      child: Stack(
-        children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [SizedBox(height: _balanceAreaHeight, child: _UI())],
-          ),
-          Positioned(
-            bottom: 0,
-            left: 0,
-            right: 0,
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 13.0),
-              child: ActionCard(),
-            ),
-          ),
-        ],
-      ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        const SizedBox(height: _balanceAreaHeight, child: _UI()),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 13.0),
+          child: actions,
+        ),
+      ],
     );
   }
 }
@@ -206,7 +192,20 @@ class _ChartView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const PriceChartWidget();
+    return Stack(
+      children: [
+        const Positioned.fill(child: PriceChartWidget()),
+        Positioned(
+          top: MediaQuery.paddingOf(context).top + kToolbarHeight,
+          left: 8,
+          child: IconButton(
+            tooltip: MaterialLocalizations.of(context).backButtonTooltip,
+            icon: Icon(Icons.arrow_back, color: context.appColors.onPrimary),
+            onPressed: () => context.read<PriceChartCubit>().hideChart(),
+          ),
+        ),
+      ],
+    );
   }
 }
 

@@ -1,8 +1,12 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
+import 'package:bb_mobile/features/exchange/domain/exchange_session.dart';
+import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_state.dart';
 import 'package:bb_mobile/features/exchange/ui/screens/exchange_auth_screen.dart';
+import 'package:bb_mobile/features/exchange/ui/widgets/exchange_home_actions.dart';
 import 'package:bb_mobile/features/exchange/ui/screens/exchange_home_screen.dart';
 import 'package:bb_mobile/features/exchange/ui/screens/exchange_kyc_screen.dart';
 import 'package:bb_mobile/features/exchange/ui/screens/exchange_landing_screen.dart';
@@ -31,6 +35,7 @@ class ExchangeRouterConfig {
   final VoidCallback onHomeRefresh;
   final void Function(BuildContext) onExit;
   final void Function(BuildContext) onOpenSettings;
+  final void Function(BuildContext, ExchangeHomeAction) onAction;
 
   const ExchangeRouterConfig({
     required this.isSuperuser,
@@ -39,6 +44,7 @@ class ExchangeRouterConfig {
     required this.onHomeRefresh,
     required this.onExit,
     required this.onOpenSettings,
+    required this.onAction,
   });
 }
 
@@ -77,6 +83,7 @@ class ExchangeRouter {
             homeCards: config.buildHomeCards(),
             onHomeRefresh: config.onHomeRefresh,
             onOpenSettings: () => config.onOpenSettings(context),
+            onAction: (action) => config.onAction(context, action),
           ),
         );
       },
@@ -116,6 +123,16 @@ class ExchangeRouter {
       pageBuilder: (context, state) {
         final draft = state.extra as ExchangeSupportChatDraft?;
         final fromSupport = state.uri.queryParameters['from'] == 'support';
+        final fromSettings = state.uri.queryParameters['from'] == 'settings';
+        if (fromSettings) {
+          return NoTransitionPage(
+            key: state.pageKey,
+            child: _SettingsAuthenticationReturn(
+              onExit: () => config.onExit(context),
+              child: ExchangeAuthScreen(onExit: () => config.onExit(context)),
+            ),
+          );
+        }
         return NoTransitionPage(
           key: state.pageKey,
           child: BlocListener<ExchangeCubit, ExchangeState>(
@@ -146,4 +163,42 @@ class ExchangeRouter {
       },
     ),
   ];
+}
+
+class _SettingsAuthenticationReturn extends StatefulWidget {
+  const _SettingsAuthenticationReturn({
+    required this.child,
+    required this.onExit,
+  });
+
+  final Widget child;
+  final VoidCallback onExit;
+
+  @override
+  State<_SettingsAuthenticationReturn> createState() =>
+      _SettingsAuthenticationReturnState();
+}
+
+class _SettingsAuthenticationReturnState
+    extends State<_SettingsAuthenticationReturn> {
+  StreamSubscription<ExchangeSessionStatus>? _subscription;
+
+  @override
+  void initState() {
+    super.initState();
+    _subscription = locator<ExchangeSession>().watch().listen((status) {
+      if (mounted && status == ExchangeSessionStatus.authenticated) {
+        widget.onExit();
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _subscription?.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => widget.child;
 }

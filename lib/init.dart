@@ -1,3 +1,6 @@
+import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
+import 'package:bb_mobile/features/exchange_access/public/exchange_access_facade.dart';
+import 'package:bull_quick_actions/bull_quick_actions.dart';
 import 'dart:io';
 
 import 'package:bb_mobile/bloc_observer.dart';
@@ -60,7 +63,23 @@ class Bull {
 
     // Flush wizard pending values (if any) to SQLite now that the
     // settings repository is available, then mark the wizard complete.
+    final environment =
+        (await locator<SettingsRepository>().fetch()).environment;
+    final accessResult = await locator<ExchangeFacade>().initializeAccess(
+      isTestnet: environment.isTestnet,
+    );
+    if (accessResult case Err(:final failure)) {
+      log.warning(
+        'Exchange access initialization unavailable',
+        error: failure.runtimeType,
+      );
+    }
+    if (locator<ExchangeAccessFacade>().current.transition ==
+        ExchangeAccessTransition.disabling) {
+      final _ = await locator<ExchangeFacade>().logout();
+    }
     await locator<ApplyPendingWizardChoicesUsecase>().execute();
+    await locator<QuickActionsFacade>().load();
     final settings = locator<SettingsRepository>();
     configureLogTorContext(
       () => loadTorDiagnosticContext(settings, locator<Tor>()),

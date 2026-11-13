@@ -1,0 +1,9 @@
+import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
+import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/features/exchange/domain/exchange_failure.dart';
+import 'package:meta/meta.dart';
+
+abstract interface class ExchangeAccountRepository {
+  @useResult
+  Future<Result<UserSummary, ExchangeFailure>> getAccount();
+}

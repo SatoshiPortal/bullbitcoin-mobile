@@ -1,4 +1,6 @@
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_notification_repository.dart';
+import 'package:bb_mobile/core/exchange/data/datasources/bullbitcoin_api_datasource.dart';
+import 'package:bb_mobile/features/exchange/data/exchange_account_repository_impl.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_api_key_repository.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_user_repository.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/send_support_chat_message_usecase.dart';
@@ -6,6 +8,10 @@ import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart'
     as settings_contract;
 import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_web_settings_usecase.dart';
+import 'package:bb_mobile/features/exchange/domain/exchange_session.dart';
+import 'package:bb_mobile/features/exchange/domain/usecases/initialize_exchange_access_usecase.dart';
+import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_trading_entry_usecase.dart';
+import 'package:bb_mobile/features/exchange_access/public/exchange_access_facade.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/clear_exchange_session_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_account_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_announcements_usecase.dart';
@@ -22,12 +28,28 @@ import 'package:webview_cookie_manager/webview_cookie_manager.dart';
 
 class ExchangeLocator {
   static void setup(GetIt locator) {
+    locator.registerLazySingleton<ExchangeSession>(
+      () => ExchangeSession(locator<ExchangeApiKeyRepository>()),
+    );
     registerUsecases(locator);
     registerBlocs(locator);
 
     locator.registerLazySingleton<ExchangeFacade>(
       () => ExchangeFacade(
         getExchangeAccountUsecase: locator<GetExchangeAccountUsecase>(),
+        access: locator<ExchangeAccessFacade>(),
+        tradingEntry: GetExchangeTradingEntryUsecase(
+          locator<ExchangeAccessFacade>(),
+          locator<settings_contract.SettingsRepository>(),
+        ),
+        session: locator<ExchangeSession>(),
+        initializeAccess: InitializeExchangeAccessUsecase(
+          locator<ExchangeSession>(),
+          locator<ExchangeAccessFacade>(),
+        ),
+        logout: () => locator<ExchangeCubit>().logout(),
+        suspendSession: (changed) =>
+            locator<ExchangeCubit>().suspendSession(clearAccount: changed),
         saveExchangePreferencesUsecase:
             locator<SaveExchangePreferencesUsecase>(),
       ),
@@ -50,6 +72,16 @@ class ExchangeLocator {
           instanceName: 'testnetExchangeUserRepository',
         ),
         settingsRepository: locator<SettingsRepository>(),
+        mainnetAccountRepository: ExchangeAccountRepositoryImpl(
+          locator<BullbitcoinApiDatasource>(
+            instanceName: 'mainnetExchangeApiDatasource',
+          ),
+        ),
+        testnetAccountRepository: ExchangeAccountRepositoryImpl(
+          locator<BullbitcoinApiDatasource>(
+            instanceName: 'testnetExchangeApiDatasource',
+          ),
+        ),
       ),
     );
 
@@ -131,6 +163,8 @@ class ExchangeLocator {
             locator<RequestExchangeAccountDeletionUsecase>(),
         watchExchangeNotificationsUsecase:
             locator<WatchExchangeNotificationsUsecase>(),
+        access: locator<ExchangeAccessFacade>(),
+        sessionFacts: locator<ExchangeSession>(),
       ),
     );
   }

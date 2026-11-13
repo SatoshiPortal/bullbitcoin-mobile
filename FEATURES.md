@@ -18,7 +18,9 @@ graph TB
     BULL_PRICER[Bull Pricer Package<br/>Bitcoin price and history]
 
     %% Feature modules
+    QUICK_ACTIONS[Quick Actions<br/>Workspace Feature]
     EXCHANGE_ACCESS[Exchange Access]
+    WIZARD[Wizard]
     SETTINGS[Settings]
     LOGS[Logs<br/>Workspace Feature]
     ELECTRUM_SETTINGS[Electrum Settings]
@@ -94,6 +96,17 @@ graph TB
     HW_WALLETS --> SCREEN_AWAKE
     SCREEN_AWAKE --> BULL_LOGGER
     SCREEN_AWAKE --> WAKELOCK_PLUS
+
+    %% Optional exchange access and wallet quick actions
+    WIZARD --> EXCHANGE_ACCESS
+    EXCHANGE --> EXCHANGE_ACCESS
+    SETTINGS --> EXCHANGE_ACCESS
+    SETTINGS --> WIZARD
+    SETTINGS --> QUICK_ACTIONS
+    WALLETS --> EXCHANGE_ACCESS
+    WALLETS --> QUICK_ACTIONS
+    QUICK_ACTIONS --> BULL_UI
+    QUICK_ACTIONS --> PRIMITIVES
 
     %% Feature-to-feature dependencies (extracted from draw.io diagram)
     ADDRESS_MGMT --> LABELS
@@ -307,6 +320,8 @@ To verify no cyclic dependencies exist, you can:
 - Include compile-time vs runtime dependency distinction
 - Add layer groupings (ui, presentation, domain, data) per [ARCHITECTURE.md](ARCHITECTURE.md)
 
-## Optional exchange access
+## Optional exchange access and quick actions
 
-`exchange_access` owns environment-specific installation preferences and non-secret session facts behind its public facade. It adds no shared settings column or Drift revision.
+`exchange_access` owns the installation-local, environment-specific opt-in and the last non-secret session facts. Exchange supplies recognized session transitions; wizard and settings submit explicit choices through the public facade. No settings column or shared database migration is added. Settings clears only an older pending exchange choice after a successful user update.
+
+`features/quick_actions` owns the closed catalogue, local ordered favorites, layout, More sheet and editor. It depends on `bull_ui` and `primitives`, never on routes, settings or exchange. Wallet supplies availability, including the iOS/superuser intersection, and the composition supplies an exhaustive navigation callback. Four cells is the maximum including More; with a complement, the fourth cell is More. The persistent `exchange` identifier is presented as **Trade**. ExchangeHome keeps its fixed actions. WalletHome has no bottom tabs and its top bar contains only the logo.

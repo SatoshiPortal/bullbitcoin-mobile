@@ -1,3 +1,4 @@
+import 'package:bull_quick_actions/bull_quick_actions.dart';
 import 'dart:async';
 
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
@@ -112,13 +113,23 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
                   previous != current &&
                   current is AppStartupSuccess &&
                   current.hasDefaultWallets,
-              listener: (context, settings) {
+              listener: (context, settings) async {
                 // If wallets exist and the app has started successfully,
                 // we can start the wallet bloc to fetch the wallets.
                 context.read<WalletBloc>().add(const WalletStarted());
                 // Also fetch user summary to check if user is logged in
                 // and connect WebSocket if so (handled by ExchangeListener)
-                ExchangeScope.refreshSession(context);
+                final environment = context
+                    .read<SettingsCubit>()
+                    .state
+                    .environment;
+                if (environment == null) return;
+                final _ = await locator<ExchangeFacade>().initializeAccess(
+                  isTestnet: environment.isTestnet,
+                );
+                if (!context.mounted) return;
+                await ExchangeScope.refreshSession(context);
+                if (!context.mounted) return;
                 // Reconnect WebSocket here too — when AppStartupBloc retries
                 // after a pre-warm KeychainLockedException, the SettingsCubit
                 // env-change listener below has ALREADY fired during pre-warm
@@ -136,6 +147,12 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
                 // Re-fetch user summary (re-init exchange bloc) and wallets
                 //  when environment changes
                 context.read<WalletBloc>().add(const WalletStarted());
+                final environment = settings.environment;
+                if (environment == null) return;
+                final _ = await locator<ExchangeFacade>().initializeAccess(
+                  isTestnet: environment.isTestnet,
+                );
+                if (!context.mounted) return;
                 await ExchangeScope.refreshSession(context);
                 // Reconnect WebSocket for the new environment
                 await ExchangeScope.reconnectNotifications(context);
@@ -178,6 +195,7 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
                     localizationsDelegates: [
                       ...AppLocalizations.localizationsDelegates,
                       LogsLocalizations.delegate,
+                      const QuickActionsFallbackDelegate(),
                     ],
                     supportedLocales: AppLocalizations.supportedLocales,
                     builder: (context, child) {

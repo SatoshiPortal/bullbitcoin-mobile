@@ -1,4 +1,7 @@
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/features/exchange_access/public/exchange_access_facade.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/watch_wallet_quick_actions_usecase.dart';
+import 'package:bull_quick_actions/bull_quick_actions.dart';
 import 'package:flutter/widgets.dart';
 import 'package:bb_mobile/features/onboarding/ui/onboarding_router.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
@@ -17,7 +20,14 @@ enum WalletRoute {
 }
 
 class WalletRouter {
-  static final walletHomeRoute = GoRoute(
+  static GoRoute walletHomeRoute({
+    required QuickActionsFacade quickActions,
+    required ExchangeAccessFacade exchangeAccess,
+    required bool Function(BuildContext) platformAllowsExchange,
+    required void Function(BuildContext, QuickAction) onQuickAction,
+    required void Function(BuildContext, Set<QuickAction>, List<QuickAction>)
+    onCustomizeQuickActions,
+  }) => GoRoute(
     name: WalletRoute.walletHome.name,
     path: WalletRoute.walletHome.path,
     pageBuilder: (context, state) {
@@ -31,7 +41,13 @@ class WalletRouter {
             //  to allow the user to create or restore a wallet.
             context.goNamed(OnboardingRoute.onboarding.name);
           },
-          child: const WalletHomeScreen(),
+          child: WalletHomeScreen(
+            quickActions: quickActions,
+            platformAllowsExchange: platformAllowsExchange,
+            quickActionsPolicy: WatchWalletQuickActionsUsecase(exchangeAccess),
+            onQuickAction: onQuickAction,
+            onCustomizeQuickActions: onCustomizeQuickActions,
+          ),
         ),
       );
     },

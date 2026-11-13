@@ -1,20 +1,11 @@
+import 'dart:convert';
+
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/features/wizard/data/datasource/wizard_local_datasource.dart';
 import 'package:bb_mobile/features/wizard/domain/entity/wizard_choices.dart';
 import 'package:bb_mobile/features/wizard/domain/repository/wizard_repository.dart';
 
-/// Bump this integer whenever the wizard gains new mandatory questions.
-/// Users whose stored version is lower will see the wizard again on
-/// next launch — fresh installs and existing users alike, since the
-/// wizard always runs pre-init.
-///
-/// WARNING: bumping this re-shows the wizard. The bloc stages choices
-/// in prefs on completion; `ApplyPendingWizardChoicesUsecase` flushes
-/// them to SQLite via `setLanguage` / `setThemeMode` / `setCurrency` /
-/// `setErrorReportingEnabled` — but only for fields the user explicitly
-/// touched (see [WizardChoices.touched]). A user who taps Skip without
-/// changing anything therefore preserves their existing settings
-/// unchanged.
+/// Keep version 1: adding optional exchange access must not replay onboarding.
 const int kCurrentWizardVersion = 1;
 
 class WizardRepositoryImpl implements WizardRepository {
@@ -34,23 +25,23 @@ class WizardRepositoryImpl implements WizardRepository {
 
   @override
   Future<void> savePending(WizardChoices choices) async {
-    await clearPending();
-    if (choices.touched.isEmpty) return;
-    await _datasource.writePendingVersion(kCurrentWizardVersion);
+    final payload = <String, Object?>{'version': kCurrentWizardVersion};
     if (choices.touched.contains(WizardField.language)) {
-      await _datasource.writePendingLanguage(choices.language.name);
+      payload['language'] = choices.language.name;
     }
     if (choices.touched.contains(WizardField.themeMode)) {
-      await _datasource.writePendingThemeMode(choices.themeMode.name);
+      payload['themeMode'] = choices.themeMode.name;
     }
     if (choices.touched.contains(WizardField.defaultCurrency)) {
-      await _datasource.writePendingCurrency(choices.defaultCurrency);
+      payload['currency'] = choices.defaultCurrency;
     }
-    final consent = choices.reportingConsent;
-    if (choices.touched.contains(WizardField.reportingConsent) &&
-        consent != null) {
-      await _datasource.writePendingErrorReporting(consent);
+    if (choices.touched.contains(WizardField.exchangeAccess)) {
+      payload['exchangeAccess'] = choices.exchangeAccess;
     }
+    if (choices.touched.contains(WizardField.reportingConsent)) {
+      payload['reportingConsent'] = choices.reportingConsent;
+    }
+    await _datasource.writePendingPayload(jsonEncode(payload));
   }
 
   /// Returns `null` when nothing is staged OR when the staged blob was
@@ -59,17 +50,39 @@ class WizardRepositoryImpl implements WizardRepository {
   /// must not leak into the new one).
   @override
   Future<WizardChoices?> readPending() async {
-    final languageName = await _datasource.readPendingLanguage();
-    final themeName = await _datasource.readPendingThemeMode();
-    final currency = await _datasource.readPendingCurrency();
-    final errorReporting = await _datasource.readPendingErrorReporting();
+    final payload = await _datasource.readPendingPayload();
+    String? languageName;
+    String? themeName;
+    String? currency;
+    bool? errorReporting;
+    bool? exchangeAccess;
+    int? pendingVersion;
+    if (payload != null) {
+      final decoded = jsonDecode(payload);
+      if (decoded is! Map<String, dynamic>) {
+        throw const FormatException('Invalid wizard choices');
+      }
+      pendingVersion = decoded['version'] as int?;
+      languageName = decoded['language'] as String?;
+      themeName = decoded['themeMode'] as String?;
+      currency = decoded['currency'] as String?;
+      errorReporting = decoded['reportingConsent'] as bool?;
+      exchangeAccess = decoded['exchangeAccess'] as bool?;
+    } else {
+      pendingVersion = await _datasource.readPendingVersion();
+      languageName = await _datasource.readPendingLanguage();
+      themeName = await _datasource.readPendingThemeMode();
+      currency = await _datasource.readPendingCurrency();
+      errorReporting = await _datasource.readPendingErrorReporting();
+      exchangeAccess = await _datasource.readPendingExchangeAccess();
+    }
     if (languageName == null &&
         themeName == null &&
         currency == null &&
-        errorReporting == null) {
+        errorReporting == null &&
+        exchangeAccess == null) {
       return null;
     }
-    final pendingVersion = await _datasource.readPendingVersion() ?? 0;
     if (pendingVersion != kCurrentWizardVersion) {
       await clearPending();
       return null;
@@ -79,7 +92,9 @@ class WizardRepositoryImpl implements WizardRepository {
     if (themeName != null) touched.add(WizardField.themeMode);
     if (currency != null) touched.add(WizardField.defaultCurrency);
     if (errorReporting != null) touched.add(WizardField.reportingConsent);
+    if (exchangeAccess != null) touched.add(WizardField.exchangeAccess);
     return WizardChoices(
+      exchangeAccess: exchangeAccess ?? true,
       language: languageName == null
           ? Language.unitedStatesEnglish
           : Language.fromName(languageName),
@@ -93,5 +108,7 @@ class WizardRepositoryImpl implements WizardRepository {
   }
 
   @override
-  Future<void> clearPending() => _datasource.clearAllPending();
+  Future<void> clearPending() => _datasource.writePendingPayload(
+    jsonEncode({'version': kCurrentWizardVersion}),
+  );
 }

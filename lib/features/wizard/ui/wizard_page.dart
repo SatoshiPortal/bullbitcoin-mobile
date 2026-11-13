@@ -5,13 +5,14 @@
 /// hidden behind it.
 const double kWizardChromeHeight = 140;
 
-/// The 4 fixed pages of the install/upgrade wizard, in render order.
+/// The 5 fixed pages of the install/upgrade wizard, in render order.
 /// Used by `WizardScreen` to gate chrome (header, dots, Next button,
 /// Yes/No row) and by each step widget to forward its position to
 /// `WizardStepLayout`'s eyebrow.
 enum WizardPage {
   welcome,
   customize,
+  exchange,
   mission,
   journey;
 

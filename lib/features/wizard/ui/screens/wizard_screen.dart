@@ -7,6 +7,7 @@ import 'package:bb_mobile/features/wizard/presentation/bloc/wizard_bloc.dart';
 import 'package:bb_mobile/features/wizard/ui/wizard_page.dart';
 import 'package:bb_mobile/features/wizard/ui/widgets/customize_step.dart';
 import 'package:bb_mobile/features/wizard/ui/widgets/journey_step.dart';
+import 'package:bb_mobile/features/wizard/ui/widgets/exchange_step.dart';
 import 'package:bb_mobile/features/wizard/ui/widgets/mission_consent_row.dart';
 import 'package:bb_mobile/features/wizard/ui/widgets/mission_step.dart';
 import 'package:bb_mobile/features/wizard/ui/widgets/welcome_bg_pattern.dart';
@@ -18,7 +19,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
     show BullButton, BullShapesX, BullSnackBar;
 
-/// 4-page wizard body rendered inside [WizardApp] pre-init. Pure UI —
+/// 5-page wizard body rendered inside [WizardApp] pre-init. Pure UI —
 /// reads choices from the surrounding [WizardBloc] and dispatches
 /// events on every user pick; dispatches `WizardEvent.completed()`
 /// from the last page's "Get started" button. `initState` runs a
@@ -73,6 +74,9 @@ class _WizardScreenState extends State<WizardScreen> {
     if (_page.isLast) {
       _tryFinish(choices);
     } else {
+      if (_page == WizardPage.exchange) {
+        context.read<WizardBloc>().add(const WizardEvent.exchangeConfirmed());
+      }
       _controller.nextPage(duration: _pageDuration, curve: _pageCurve);
     }
   }
@@ -85,6 +89,14 @@ class _WizardScreenState extends State<WizardScreen> {
   }
 
   void _tryFinish(WizardChoices choices) {
+    if (!choices.touched.contains(WizardField.exchangeAccess)) {
+      _controller.animateToPage(
+        WizardPage.exchange.index,
+        duration: _pageDuration,
+        curve: _pageCurve,
+      );
+      return;
+    }
     if (choices.reportingConsent == null) {
       _controller.animateToPage(
         WizardPage.mission.index,
@@ -164,6 +176,12 @@ class _WizardScreenState extends State<WizardScreen> {
                                       bloc.add(WizardEvent.languagePicked(l)),
                                   onCurrencyPicked: (code) => bloc.add(
                                     WizardEvent.currencyPicked(code),
+                                  ),
+                                ),
+                                ExchangeStep(
+                                  enabled: c.exchangeAccess,
+                                  onChanged: (value) => bloc.add(
+                                    WizardEvent.exchangePicked(value),
                                   ),
                                 ),
                                 const MissionStep(),

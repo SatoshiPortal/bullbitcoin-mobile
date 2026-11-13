@@ -9,6 +9,7 @@ import 'package:bb_mobile/features/exchange/ui/widgets/announcement_banner.dart'
 import 'package:bb_mobile/features/exchange/ui/widgets/dca_list_tile.dart';
 import 'package:bb_mobile/features/exchange/ui/widgets/exchange_home_kyc_card.dart';
 import 'package:bb_mobile/features/exchange/ui/widgets/exchange_home_top_section.dart';
+import 'package:bb_mobile/features/exchange/ui/widgets/exchange_home_actions.dart';
 import 'package:bb_mobile/features/fund_exchange/fund_exchange_router.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
@@ -25,11 +26,13 @@ class ExchangeHomeScreen extends StatelessWidget {
   final List<Widget> homeCards;
   final VoidCallback onHomeRefresh;
   final VoidCallback onOpenSettings;
+  final void Function(ExchangeHomeAction) onAction;
 
   const ExchangeHomeScreen({
     required this.homeCards,
     required this.onHomeRefresh,
     required this.onOpenSettings,
+    required this.onAction,
     super.key,
   });
 
@@ -72,7 +75,9 @@ class ExchangeHomeScreen extends StatelessWidget {
             await context.read<ExchangeCubit>().fetchUserSummary();
           },
           slivers: [
-            const PinnedHeaderSliver(child: ExchangeHomeTopSection()),
+            PinnedHeaderSliver(
+              child: ExchangeHomeTopSection(onAction: onAction),
+            ),
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 12),

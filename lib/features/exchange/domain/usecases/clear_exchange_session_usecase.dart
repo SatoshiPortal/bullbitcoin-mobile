@@ -23,33 +23,44 @@ class ClearExchangeSessionUsecase {
   });
 
   @useResult
-  Future<Result<void, ExchangeFailure>> execute() async {
+  Future<Result<void, ExchangeFailure>> execute({bool? isTestnet}) async {
     // Best effort: when the environment cannot be read, the key it would name
     // is unknown, so both keys are deleted rather than neither. The failure is
     // still reported, and the cookies below are cleared either way.
     final ExchangeFailure? failure;
-    switch (await readExchangeEnvironment(
-      _settingsRepository,
-      ExchangeSessionClearFailure.new,
-    )) {
-      case Err(failure: final envFailure):
-        // Each repository call logs its own reason; the environment failure
-        // is what gets reported, since the sign-out is incomplete either way.
-        await Future.wait([
-          _exchangeApiKeyRepository.deleteApiKey(isTestnet: false),
-          _exchangeApiKeyRepository.deleteApiKey(isTestnet: true),
-        ]);
-        failure = envFailure;
-      case Ok(value: final environment):
-        final deleted = await _exchangeApiKeyRepository.deleteApiKey(
-          isTestnet: environment.isTestnet,
-        );
-        failure = switch (deleted) {
-          Ok() => null,
-          Err(:final failure) => ExchangeSessionClearFailure(
-            failure.logMessage,
-          ),
-        };
+    final environment = isTestnet;
+    if (environment != null) {
+      final deleted = await _exchangeApiKeyRepository.deleteApiKey(
+        isTestnet: environment,
+      );
+      failure = switch (deleted) {
+        Ok() => null,
+        Err(:final failure) => ExchangeSessionClearFailure(failure.logMessage),
+      };
+    } else {
+      switch (await readExchangeEnvironment(
+        _settingsRepository,
+        ExchangeSessionClearFailure.new,
+      )) {
+        case Err(failure: final envFailure):
+          // Each repository call logs its own reason; the environment failure
+          // is what gets reported, since the sign-out is incomplete either way.
+          await Future.wait([
+            _exchangeApiKeyRepository.deleteApiKey(isTestnet: false),
+            _exchangeApiKeyRepository.deleteApiKey(isTestnet: true),
+          ]);
+          failure = envFailure;
+        case Ok(value: final environment):
+          final deleted = await _exchangeApiKeyRepository.deleteApiKey(
+            isTestnet: environment.isTestnet,
+          );
+          failure = switch (deleted) {
+            Ok() => null,
+            Err(:final failure) => ExchangeSessionClearFailure(
+              failure.logMessage,
+            ),
+          };
+      }
     }
 
     ExchangeFailure? cookieFailure;

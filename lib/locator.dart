@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/exchange_access/public/exchange_access_facade.dart';
 import 'package:bb_mobile/core/core_locator.dart';
 import 'package:bb_mobile/core/status/status_locator.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
@@ -148,6 +149,7 @@ class AppLocator {
     MempoolSettingsLocator.setup(locator);
     TorSettingsLocator.setup(locator);
     PinCodeLocator.setup(locator);
+    ExchangeAccessLocator.setup(locator);
     WizardLocator.setup(locator);
     AppStartupLocator.setup(locator);
     AppUnlockLocator.setup(locator);
