@@ -20,6 +20,33 @@ Widget amount(
 );
 
 void main() {
+  testWidgets('shared amount controls have no toggle icon', (tester) async {
+    await tester.pumpWidget(
+      wrapWithTheme(
+        Column(
+          children: [
+            amount('balance'),
+            BullAmountUnitToggle(
+              text: 'sats',
+              actionLabel: 'Show in BTC',
+              onPressed: () {},
+            ),
+          ],
+        ),
+      ),
+    );
+    expect(find.byType(BullAmountUnitToggle), findsNWidgets(2));
+    for (final control in find.byType(BullAmountUnitToggle).evaluate()) {
+      expect(
+        find.descendant(
+          of: find.byWidget(control.widget),
+          matching: find.byType(Icon),
+        ),
+        findsNothing,
+      );
+    }
+  });
+
   testWidgets('tap toggles only one amount and consumes parent navigation', (
     tester,
   ) async {
@@ -245,6 +272,8 @@ void main() {
     expect(find.bySemanticsLabel('Show in BTC'), findsOneWidget);
     final node = tester.getSemantics(find.byType(BullAmountUnitToggle));
     expect(node.value, '** sats');
+    expect(node.getSemanticsData().flagsCollection.isButton, isTrue);
+    expect(node.getSemanticsData().flagsCollection.isLiveRegion, isTrue);
     expect(node.getSemanticsData().hasAction(SemanticsAction.tap), isTrue);
     await tester.tap(find.text('** sats'));
     await tester.pump();
