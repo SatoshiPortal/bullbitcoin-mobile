@@ -26,13 +26,15 @@ class BullSnackBar {
     IconData? leadingIcon,
     String? actionLabel,
     VoidCallback? onAction,
-  }) => showOnOverlay(
-    Overlay.of(context, rootOverlay: true),
-    message: message,
-    leadingIcon: leadingIcon,
-    actionLabel: actionLabel,
-    onAction: onAction,
-  );
+  }) {
+    showIn(
+      Overlay.of(context, rootOverlay: true),
+      message: message,
+      leadingIcon: leadingIcon,
+      actionLabel: actionLabel,
+      onAction: onAction,
+    );
+  }
 
   /// Show a toast on a captured overlay, including after its route closes.
   /// Does nothing if the overlay has already been unmounted.
@@ -43,7 +45,26 @@ class BullSnackBar {
     String? actionLabel,
     VoidCallback? onAction,
   }) {
-    _show(
+    if (!overlay.mounted) return;
+    showIn(
+      overlay,
+      message: message,
+      leadingIcon: leadingIcon,
+      actionLabel: actionLabel,
+      onAction: onAction,
+    );
+  }
+
+  /// Returns a dismissal callback that only affects this feedback instance.
+  static VoidCallback showIn(
+    OverlayState overlay, {
+    required String message,
+    IconData? leadingIcon,
+    String? actionLabel,
+    VoidCallback? onAction,
+  }) {
+    late final OverlayEntry entry;
+    entry = _showIn(
       overlay,
       _BullSnackBarContent(
         message: message,
@@ -52,20 +73,31 @@ class BullSnackBar {
         onAction: onAction == null
             ? null
             : () {
+                if (!identical(_entry, entry)) return;
                 dismiss();
                 onAction();
               },
       ),
     );
+    return () {
+      if (!identical(_entry, entry)) return;
+      _timer?.cancel();
+      _timer = null;
+      if (overlay.mounted) {
+        _disposeEntryImmediate();
+      } else {
+        _entry = null;
+        _activeState = null;
+      }
+    };
   }
 
   /// Show a toast with custom [content] instead of a plain message.
   static void showContent(BuildContext context, Widget content) {
-    _show(Overlay.of(context, rootOverlay: true), content);
+    _showIn(Overlay.of(context, rootOverlay: true), content);
   }
 
-  static void _show(OverlayState overlay, Widget content) {
-    if (!overlay.mounted) return;
+  static OverlayEntry _showIn(OverlayState overlay, Widget content) {
     _disposeEntryImmediate();
     final entry = OverlayEntry(
       builder: (_) => Positioned(
@@ -88,6 +120,7 @@ class BullSnackBar {
     _entry = entry;
     overlay.insert(entry);
     _scheduleAutoDismiss();
+    return entry;
   }
 
   /// Dismiss the active toast (animated when possible).

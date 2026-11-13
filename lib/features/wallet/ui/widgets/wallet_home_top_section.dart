@@ -156,6 +156,7 @@ class _BtcTotalAmt extends StatelessWidget {
     return CurrencyText(
       btcTotal,
       showFiat: false,
+      interactive: true,
       style: context.font.displaySmall,
       color: context.appColors.onPrimary,
     );
@@ -248,6 +249,7 @@ class _UnconfirmedIncomingBalance extends StatelessWidget {
                 CurrencyText(
                   unconfirmed,
                   showFiat: false,
+                  interactive: true,
                   style: context.font.bodyLarge,
                   color: color,
                 ),

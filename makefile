@@ -112,6 +112,11 @@ translations:
 	@fvm flutter gen-l10n
 	@(cd features/quick_actions && fvm flutter gen-l10n)
 	@$(MAKE) recoverbull-translations
+	@$(MAKE) bull-ui-translations
+
+.PHONY: bull-ui-translations
+bull-ui-translations:
+	@(cd packages/bull_ui && fvm flutter gen-l10n)
 
 .PHONY: recoverbull-translations
 recoverbull-translations:
