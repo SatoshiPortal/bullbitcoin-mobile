@@ -4,7 +4,7 @@ import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:secrets/secrets.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullShapesX, Gap;
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -128,7 +128,7 @@ class _SealedLegacySeedsBackupState extends State<_SealedLegacySeedsBackup> {
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
               color: context.appColors.surface,
-              borderRadius: BorderRadius.circular(4),
+              borderRadius: BorderRadius.circular(context.bullShapes.card),
               border: Border.all(color: context.appColors.border),
             ),
             child: Column(
