@@ -19,11 +19,11 @@ void main() {
     );
     expect(layout.primary, defaults.take(3));
     expect(layout.more, [
-      QuickAction.settings,
       QuickAction.buy,
       QuickAction.sell,
       QuickAction.pay,
       QuickAction.exchange,
+      QuickAction.settings,
       QuickAction.support,
       QuickAction.priceHistory,
     ]);
@@ -47,7 +47,7 @@ void main() {
       selection: selection,
     );
     expect(unavailable.primary, [QuickAction.transfer, QuickAction.map]);
-    expect(unavailable.more, [QuickAction.history, QuickAction.settings]);
+    expect(unavailable.more, [QuickAction.settings, QuickAction.history]);
     final restored = QuickActionsLayout.resolve(
       available: all.toSet(),
       defaults: defaults,
@@ -97,12 +97,11 @@ void main() {
       defaults: defaults,
       selection: QuickActionSelection([]),
     );
-    expect(layout.primary, isEmpty);
+    expect(layout.primary, [QuickAction.settings]);
     expect(layout.more, [
       QuickAction.map,
       QuickAction.transfer,
       QuickAction.history,
-      QuickAction.settings,
     ]);
   });
 
@@ -124,7 +123,7 @@ void main() {
       QuickAction.buy,
       QuickAction.map,
     ]);
-    expect(layout.more, [QuickAction.settings, QuickAction.sell]);
+    expect(layout.more, [QuickAction.sell, QuickAction.settings]);
     expect(selected.actions, hasLength(5));
   });
 

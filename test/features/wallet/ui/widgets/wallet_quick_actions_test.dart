@@ -65,7 +65,7 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.text('Transfer'));
     expect(selected, QuickAction.transfer);
-    expect(find.text('More'), findsNothing);
+    expect(find.text('More'), findsOneWidget);
     expect(find.text('Buy'), findsNothing);
     expect(
       await access.choose(true),

@@ -9,7 +9,7 @@ import 'package:mocktail/mocktail.dart';
 class _Access extends Mock implements ExchangeAccessFacade {}
 
 void main() {
-  test('offers four wallet actions when exchange is unavailable', () {
+  test('offers wallet and help actions when exchange is unavailable', () {
     final access = _Access();
     when(() => access.current).thenReturn(const ExchangeAccess());
     final options = WatchSettingsQuickActionsUsecase(access).current;
@@ -18,6 +18,8 @@ void main() {
       QuickAction.transfer,
       QuickAction.history,
       QuickAction.settings,
+      QuickAction.support,
+      QuickAction.priceHistory,
     });
     expect(options.defaults, [
       QuickAction.map,

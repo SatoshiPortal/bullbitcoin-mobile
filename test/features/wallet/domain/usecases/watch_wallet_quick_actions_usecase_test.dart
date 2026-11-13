@@ -13,6 +13,8 @@ void main() {
       QuickAction.map,
       QuickAction.settings,
       QuickAction.history,
+      QuickAction.support,
+      QuickAction.priceHistory,
     });
     expect(policy.defaults, [
       QuickAction.map,
@@ -99,6 +101,8 @@ void main() {
         QuickAction.transfer,
         QuickAction.history,
         QuickAction.settings,
+        QuickAction.support,
+        QuickAction.priceHistory,
       });
       expect(
         policy.available(platformAllowsExchange: true),

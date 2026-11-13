@@ -1,0 +1,91 @@
+import 'package:bull_quick_actions/bull_quick_actions.dart';
+import 'package:flutter_test/flutter_test.dart';
+
+const defaults = [
+  QuickAction.map,
+  QuickAction.transfer,
+  QuickAction.history,
+  QuickAction.settings,
+];
+const walletActions = {
+  ...defaults,
+  QuickAction.support,
+  QuickAction.priceHistory,
+};
+
+void main() {
+  test('OFF keeps More with Settings Support and Price history', () {
+    final layout = QuickActionsLayout.resolve(
+      available: walletActions,
+      defaults: defaults,
+    );
+    expect(layout.primary, defaults.take(3));
+    expect(layout.more, [
+      QuickAction.settings,
+      QuickAction.support,
+      QuickAction.priceHistory,
+    ]);
+  });
+
+  test('ON prioritizes exchange then app controls then hidden favorites', () {
+    final selection = QuickActionSelection([QuickAction.buy, QuickAction.map]);
+    final layout = QuickActionsLayout.resolve(
+      available: QuickAction.values.toSet(),
+      defaults: defaults,
+      selection: selection,
+    );
+    expect(layout.primary, [QuickAction.buy, QuickAction.map]);
+    expect(layout.more, [
+      QuickAction.sell,
+      QuickAction.pay,
+      QuickAction.exchange,
+      QuickAction.settings,
+      QuickAction.support,
+      QuickAction.priceHistory,
+      QuickAction.transfer,
+      QuickAction.history,
+    ]);
+    expect(selection.actions, [QuickAction.buy, QuickAction.map]);
+  });
+
+  test(
+    'empty and filtered selections show Settings without rewriting favorites',
+    () {
+      for (final chosen in [
+        <QuickAction>[],
+        [QuickAction.buy],
+      ]) {
+        final selection = QuickActionSelection(chosen);
+        final layout = QuickActionsLayout.resolve(
+          available: walletActions,
+          defaults: defaults,
+          selection: selection,
+        );
+        expect(layout.primary, [QuickAction.settings]);
+        expect(layout.more, [
+          QuickAction.support,
+          QuickAction.priceHistory,
+          QuickAction.map,
+          QuickAction.transfer,
+          QuickAction.history,
+        ]);
+        expect(selection.actions, chosen);
+      }
+    },
+  );
+
+  test('four favorites remain visible only when nothing is hidden', () {
+    final four = QuickActionsLayout.resolve(
+      available: defaults.toSet(),
+      defaults: defaults,
+    );
+    expect(four.primary, defaults);
+    expect(four.more, isEmpty);
+    final six = QuickActionsLayout.resolve(
+      available: walletActions,
+      defaults: defaults,
+    );
+    expect(six.primary, defaults.take(3));
+    expect(six.primary.length + 1, QuickActionsLayout.maximumCells);
+  });
+}
