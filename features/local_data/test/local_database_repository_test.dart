@@ -71,7 +71,14 @@ void main() {
   test('a first start creates one key per database and nothing else', () async {
     final result = await UnlockLocalDatabasesUsecase(repository).execute();
     expect(result, isA<Ok<UnlockedDatabases, LocalDataFailure>>());
-    expect(storage.entries.keys, containsAll([mainKey, payjoinKey]));
+    expect(
+      storage.entries.keys,
+      containsAll([
+        mainKey,
+        payjoinKey,
+        'com.bullbitcoin.secrets/dek/bull_recoverbull/recoverbull',
+      ]),
+    );
     expect(File(paths.main).existsSync(), isFalse);
   });
 
