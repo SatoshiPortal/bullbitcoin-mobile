@@ -83,6 +83,58 @@ Future<ExchangeAccessRepositoryImpl> _access(_Keys keys, bool isTestnet) async {
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   setUp(() => SharedPreferences.setMockInitialValues({}));
+  test(
+    'support authentication remains allowed when platform trading is hidden',
+    () async {
+      SharedPreferences.setMockInitialValues({
+        'exchange_access': '{"enabled":true,"signOutPending":false}',
+      });
+      final keys = _Keys();
+      final access = ExchangeAccessRepositoryImpl(
+        apiKeyRepository: keys,
+        readEnvironment: () async => false,
+        platformAllowed: () async => false,
+        disconnectNotifications: () async {},
+        clearCookies: () async {},
+      );
+      await access.resolve();
+      final result = await CompleteExchangeAuthenticationUsecase(
+        authRepository: _repository(() async => fields),
+        access: access,
+        isTestnet: false,
+      ).execute(isCurrent: () => true);
+      expect(result, isA<Ok<void, ExchangeFailure>>());
+      expect(keys.writes, 1);
+    },
+  );
+
+  test(
+    'support can prepare login while ordinary activation is platform-blocked',
+    () async {
+      final keys = _Keys();
+      final access = ExchangeAccessRepositoryImpl(
+        apiKeyRepository: keys,
+        readEnvironment: () async => false,
+        platformAllowed: () async => false,
+        disconnectNotifications: () async {},
+        clearCookies: () async {},
+      );
+      await access.resolve();
+      expect(await access.enable(), isA<Err<void, ExchangeFailure>>());
+      expect(
+        await access.enable(forSupport: true),
+        isA<Ok<void, ExchangeFailure>>(),
+      );
+      final result = await CompleteExchangeAuthenticationUsecase(
+        authRepository: _repository(() async => fields),
+        access: access,
+        isTestnet: false,
+      ).execute(isCurrent: () => true);
+      expect(result, isA<Ok<void, ExchangeFailure>>());
+      expect(keys.writes, 1);
+    },
+  );
+
   test('invalid auth is sanitized at the repository boundary', () async {
     final result = await _repository(
       () async => throw Exception('synthetic-private-value'),

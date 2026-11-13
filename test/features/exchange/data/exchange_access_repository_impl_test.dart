@@ -1,3 +1,5 @@
+import 'package:bb_mobile/features/exchange/domain/exchange_availability.dart';
+import 'package:bb_mobile/features/exchange/domain/usecases/guard_exchange_trading_usecase.dart';
 import 'dart:async';
 import 'dart:convert';
 
@@ -334,6 +336,253 @@ void main() {
             as Map)['enabled'],
         isTrue,
       );
+    },
+  );
+
+  test(
+    'an inferred session enables access in another environment after restart',
+    () async {
+      SharedPreferences.setMockInitialValues({});
+      final keys = _Keys();
+      when(
+        () => keys.readActiveApiKey(isTestnet: false),
+      ).thenAnswer((_) async => const Ok('active'));
+      when(
+        () => keys.readActiveApiKey(isTestnet: true),
+      ).thenAnswer((_) async => const Ok(null));
+      ExchangeAccessRepositoryImpl repository(bool isTestnet) =>
+          ExchangeAccessRepositoryImpl(
+            apiKeyRepository: keys,
+            readEnvironment: () async => isTestnet,
+            platformAllowed: () async => true,
+            disconnectNotifications: () async {},
+            clearCookies: () async {},
+          );
+      await repository(false).resolve();
+      final restarted = repository(true);
+      await restarted.resolve();
+      expect(
+        restarted.current,
+        isA<ExchangeAccessEnabled>().having(
+          (state) => state.session,
+          'session',
+          ExchangeAccessSession.signedOut,
+        ),
+      );
+    },
+  );
+
+  test(
+    'an inferred active session survives a 401 and restart as enabled',
+    () async {
+      SharedPreferences.setMockInitialValues({});
+      final keys = _Keys();
+      var active = true;
+      when(
+        () => keys.readActiveApiKey(isTestnet: false),
+      ).thenAnswer((_) async => Ok(active ? 'active' : null));
+      when(() => keys.deleteApiKey(isTestnet: false)).thenAnswer((_) async {
+        active = false;
+        return const Ok(null);
+      });
+      ExchangeAccessRepositoryImpl repository() => ExchangeAccessRepositoryImpl(
+        apiKeyRepository: keys,
+        readEnvironment: () async => false,
+        platformAllowed: () async => true,
+        disconnectNotifications: () async {},
+        clearCookies: () async {},
+      );
+      final first = repository();
+      await first.resolve();
+      expect(first.current, isA<ExchangeAccessEnabled>());
+      expect(
+        await first.expireSession(epoch: first.epoch, isTestnet: false),
+        isA<Ok>(),
+      );
+      final restarted = repository();
+      await restarted.resolve();
+      expect(
+        restarted.current,
+        isA<ExchangeAccessEnabled>().having(
+          (state) => state.session,
+          'session',
+          ExchangeAccessSession.signedOut,
+        ),
+      );
+    },
+  );
+
+  test('re-resolving a known state never emits resolving', () async {
+    SharedPreferences.setMockInitialValues({});
+    final keys = _Keys();
+    when(
+      () => keys.readActiveApiKey(isTestnet: false),
+    ).thenAnswer((_) async => const Ok(null));
+    final repository = ExchangeAccessRepositoryImpl(
+      apiKeyRepository: keys,
+      readEnvironment: () async => false,
+      platformAllowed: () async => true,
+      disconnectNotifications: () async {},
+      clearCookies: () async {},
+    );
+    await repository.resolve();
+    final events = <ExchangeAccess>[];
+    final subscription = repository.watch().listen(events.add);
+    await Future<void>.delayed(Duration.zero);
+    events.clear();
+    await repository.resolve();
+    await Future<void>.delayed(Duration.zero);
+    await subscription.cancel();
+    expect(events.whereType<ExchangeAccessResolving>(), isEmpty);
+  });
+
+  test(
+    'a failed inferred-enabled preference write does not present a resolved session',
+    () async {
+      SharedPreferences.setMockInitialValues({});
+      final keys = _Keys();
+      when(
+        () => keys.readActiveApiKey(isTestnet: false),
+      ).thenAnswer((_) async => const Ok('active'));
+      final repository = ExchangeAccessRepositoryImpl(
+        apiKeyRepository: keys,
+        readEnvironment: () async => false,
+        platformAllowed: () async => true,
+        disconnectNotifications: () async {},
+        clearCookies: () async {},
+        writePreference: (_) async => false,
+      );
+      expect(await repository.resolve(), isA<Err>());
+      expect(repository.current, isA<ExchangeAccessUnreadable>());
+      verifyNever(() => keys.deleteApiKey(isTestnet: any(named: 'isTestnet')));
+    },
+  );
+
+  test(
+    '401 does not remove a key if the enabled preference cannot be saved',
+    () async {
+      SharedPreferences.setMockInitialValues({
+        'exchange_access': '{"enabled":true,"signOutPending":false}',
+      });
+      final keys = _Keys();
+      when(
+        () => keys.readActiveApiKey(isTestnet: false),
+      ).thenAnswer((_) async => const Ok('active'));
+      var disconnected = false;
+      final repository = ExchangeAccessRepositoryImpl(
+        apiKeyRepository: keys,
+        readEnvironment: () async => false,
+        platformAllowed: () async => true,
+        disconnectNotifications: () async {
+          disconnected = true;
+        },
+        clearCookies: () async {},
+        writePreference: (_) async => false,
+      );
+      await repository.resolve();
+      disconnected = false;
+      expect(
+        await repository.expireSession(
+          epoch: repository.epoch,
+          isTestnet: false,
+        ),
+        isA<Err>(),
+      );
+      expect(disconnected, isTrue);
+      verifyNever(() => keys.deleteApiKey(isTestnet: any(named: 'isTestnet')));
+    },
+  );
+
+  test(
+    'sign out supersedes expiration while the enabled write is pending',
+    () async {
+      SharedPreferences.setMockInitialValues({
+        'exchange_access': '{"enabled":true,"signOutPending":false}',
+      });
+      final keys = _Keys();
+      when(
+        () => keys.readActiveApiKey(isTestnet: false),
+      ).thenAnswer((_) async => const Ok('active'));
+      when(
+        () => keys.deleteApiKey(isTestnet: any(named: 'isTestnet')),
+      ).thenAnswer((_) async => const Ok(null));
+      final started = Completer<void>();
+      final release = Completer<void>();
+      var writes = 0;
+      final repository = ExchangeAccessRepositoryImpl(
+        apiKeyRepository: keys,
+        readEnvironment: () async => false,
+        platformAllowed: () async => true,
+        disconnectNotifications: () async {},
+        clearCookies: () async {},
+        writePreference: (value) async {
+          if (++writes == 1) {
+            started.complete();
+            await release.future;
+          }
+          final preferences = await SharedPreferences.getInstance();
+          return preferences.setString('exchange_access', value);
+        },
+      );
+      await repository.resolve();
+      final expiry = repository.expireSession(
+        epoch: repository.epoch,
+        isTestnet: false,
+      );
+      await started.future;
+      final signOut = repository.signOut();
+      release.complete();
+      await expiry;
+      expect(await signOut, isA<Ok>());
+      expect(repository.current, isA<ExchangeAccessDisabled>());
+      verify(() => keys.deleteApiKey(isTestnet: false)).called(1);
+      verify(() => keys.deleteApiKey(isTestnet: true)).called(1);
+      final preferences = await SharedPreferences.getInstance();
+      final saved = preferences.getString('exchange_access');
+      expect(saved, isA<String>());
+      expect((jsonDecode(saved as String) as Map)['enabled'], isFalse);
+    },
+  );
+  test(
+    'trading waits for environment reconciliation before authorizing',
+    () async {
+      SharedPreferences.setMockInitialValues({
+        'exchange_access': '{"enabled":true,"signOutPending":false}',
+      });
+      final keys = _Keys();
+      final readStarted = Completer<void>();
+      final nextKey = Completer<Result<String?, ExchangeApiKeyFailure>>();
+      var isTestnet = false;
+      when(
+        () => keys.readActiveApiKey(isTestnet: false),
+      ).thenAnswer((_) async => const Ok('active'));
+      when(() => keys.readActiveApiKey(isTestnet: true)).thenAnswer((_) {
+        readStarted.complete();
+        return nextKey.future;
+      });
+      final repository = ExchangeAccessRepositoryImpl(
+        apiKeyRepository: keys,
+        readEnvironment: () async => isTestnet,
+        platformAllowed: () async => true,
+        disconnectNotifications: () async {},
+        clearCookies: () async {},
+      );
+      await repository.resolve();
+      isTestnet = true;
+      final resolving = repository.resolve();
+      await readStarted.future;
+      var authorized = false;
+      final entry = GuardExchangeTradingUsecase(repository, () async => true)
+          .execute()
+          .then((value) {
+            authorized = true;
+            return value;
+          });
+      await Future<void>.delayed(Duration.zero);
+      expect(authorized, isFalse);
+      nextKey.complete(const Ok(null));
+      await resolving;
+      expect((await entry as Ok).value, ExchangeAvailability.signInRequired);
     },
   );
 }

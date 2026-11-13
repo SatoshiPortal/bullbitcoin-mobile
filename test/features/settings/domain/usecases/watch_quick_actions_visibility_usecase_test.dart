@@ -20,6 +20,32 @@ SettingsEntity _settings(bool superuser) => SettingsEntity(
 );
 
 void main() {
+  test(
+    'unresolved startup never flashes exchange actions for a disabled user',
+    () async {
+      final exchange = _Exchange();
+      final settings = _Settings();
+      final access = StreamController<ExchangeAccess>();
+      when(
+        () => exchange.currentAccess,
+      ).thenReturn(const ExchangeAccessResolving());
+      when(exchange.watchAccess).thenAnswer((_) => access.stream);
+      final values = <bool>[];
+      final sub = WatchQuickActionsVisibilityUsecase(
+        exchange: exchange,
+        settings: settings,
+        platformChanges: const Stream.empty(),
+        isIOS: false,
+      ).execute().listen(values.add);
+      await Future<void>.delayed(Duration.zero);
+      access.add(const ExchangeAccessDisabled());
+      await Future<void>.delayed(Duration.zero);
+      expect(values, [false]);
+      await sub.cancel();
+      await access.close();
+    },
+  );
+
   test('non-iOS visibility follows exchange access', () async {
     final exchange = _Exchange();
     final settings = _Settings();

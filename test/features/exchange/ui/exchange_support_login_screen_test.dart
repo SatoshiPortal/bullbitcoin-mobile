@@ -16,7 +16,9 @@ void main() {
     tester,
   ) async {
     final exchange = _Exchange();
-    when(() => exchange.enable()).thenAnswer((_) async => const Ok(null));
+    when(
+      () => exchange.enable(forSupport: true),
+    ).thenAnswer((_) async => const Ok(null));
     locator.registerSingleton<ExchangeFacade>(exchange);
     addTearDown(() => locator.unregister<ExchangeFacade>());
     const draft = ExchangeSupportChatDraft(initialMessage: 'Help');
@@ -27,8 +29,7 @@ void main() {
       routes: [
         GoRoute(
           path: '/support',
-          builder: (_, _) =>
-              ExchangeSupportLoginScreen(draft: draft, canLogin: (_) => true),
+          builder: (_, _) => ExchangeSupportLoginScreen(draft: draft),
         ),
         GoRoute(
           path: '/auth',
@@ -57,66 +58,56 @@ void main() {
       find.text(AppLocalizations.of(context).exchangeLoginButton),
     );
     await tester.pumpAndSettle();
-    verify(() => exchange.enable()).called(1);
+    verify(() => exchange.enable(forSupport: true)).called(1);
     expect(find.text('Authentication'), findsOneWidget);
     expect(receivedDraft, same(draft));
     expect(receivedSource, 'support');
   });
-  for (final allowed in [true, false]) {
-    testWidgets(
-      allowed
-          ? 'activation failure stays on support and shows an error'
-          : 'platform restriction hides login and never activates',
-      (tester) async {
-        final exchange = _Exchange();
-        when(
-          () => exchange.enable(),
-        ).thenAnswer((_) async => const Err(ExchangeNetworkFailure()));
-        locator.registerSingleton<ExchangeFacade>(exchange);
-        addTearDown(() => locator.unregister<ExchangeFacade>());
-        final router = GoRouter(
-          initialLocation: '/support',
-          routes: [
-            GoRoute(
-              path: '/support',
-              builder: (_, _) =>
-                  ExchangeSupportLoginScreen(canLogin: (_) => allowed),
-            ),
-            GoRoute(
-              path: '/auth',
-              name: ExchangeRoute.exchangeAuth.name,
-              builder: (_, _) => const Scaffold(body: Text('Authentication')),
-            ),
-          ],
-        );
-        addTearDown(router.dispose);
-        await tester.pumpWidget(
-          MaterialApp.router(
-            routerConfig: router,
-            theme: AppTheme.themeData(AppThemeType.light),
-            locale: const Locale('en'),
-            localizationsDelegates: AppLocalizations.localizationsDelegates,
-            supportedLocales: AppLocalizations.supportedLocales,
-          ),
-        );
-        await tester.pumpAndSettle();
-        final context = tester.element(find.byType(ExchangeSupportLoginScreen));
-        final loc = AppLocalizations.of(context);
-        if (allowed) {
-          await tester.tap(find.text(loc.exchangeLoginButton));
-          await tester.pump();
-          expect(find.text(loc.exchangeErrorNetwork), findsOneWidget);
-          verify(() => exchange.enable()).called(1);
-        } else {
-          expect(find.text(loc.exchangeLoginButton), findsNothing);
-          verifyNever(() => exchange.enable());
-        }
-        expect(find.text('Authentication'), findsNothing);
-        if (allowed) {
-          await tester.pump(const Duration(seconds: 4));
-          await tester.pumpAndSettle();
-        }
-      },
+  testWidgets('support login is visible even when trading is restricted', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.themeData(AppThemeType.light),
+        locale: const Locale('en'),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: const ExchangeSupportLoginScreen(),
+      ),
     );
-  }
+    await tester.pumpAndSettle();
+    final context = tester.element(find.byType(ExchangeSupportLoginScreen));
+    expect(
+      find.text(AppLocalizations.of(context).exchangeLoginButton),
+      findsOneWidget,
+    );
+  });
+  testWidgets('activation failure stays on support and shows an error', (
+    tester,
+  ) async {
+    final exchange = _Exchange();
+    when(
+      () => exchange.enable(forSupport: true),
+    ).thenAnswer((_) async => const Err(ExchangeNetworkFailure()));
+    locator.registerSingleton<ExchangeFacade>(exchange);
+    addTearDown(() => locator.unregister<ExchangeFacade>());
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.themeData(AppThemeType.light),
+        locale: const Locale('en'),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: const ExchangeSupportLoginScreen(),
+      ),
+    );
+    await tester.pumpAndSettle();
+    final context = tester.element(find.byType(ExchangeSupportLoginScreen));
+    final loc = AppLocalizations.of(context);
+    await tester.tap(find.text(loc.exchangeLoginButton));
+    await tester.pump();
+    expect(find.text(loc.exchangeErrorNetwork), findsOneWidget);
+    verify(() => exchange.enable(forSupport: true)).called(1);
+    await tester.pump(const Duration(seconds: 4));
+    await tester.pumpAndSettle();
+  });
 }
