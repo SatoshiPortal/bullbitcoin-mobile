@@ -57,7 +57,6 @@ enum SettingsItemId {
   screenPrivacy,
   devMode,
   testnetCredentials,
-  forceAppStoreWording,
   errorReporting,
 }
 
@@ -688,22 +687,6 @@ List<SettingsItem> buildSettingsItems({
           english.settingsSearchTestnetCredentialsKeywords,
           [english.exchangeTestnetBasicAuthTitle],
         ),
-      ),
-    if (isDevModeEnabled)
-      SettingsItem(
-        id: SettingsItemId.forceAppStoreWording,
-        section: SettingsItemSection.app,
-        title: localization.appSettingsForceAppStoreWordingTitle,
-        path: path(
-          SettingsItemSection.app,
-          localization.appSettingsForceAppStoreWordingTitle,
-        ),
-        icon: Icons.storefront,
-        open: (context) => context.pushNamed(SettingsRoute.appSettings.name),
-        keywords: _keywords('', '', [
-          english.appSettingsForceAppStoreWordingTitle,
-        ]),
-        isInlineControl: true,
       ),
   ];
 }

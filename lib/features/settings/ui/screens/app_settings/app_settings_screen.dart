@@ -6,7 +6,6 @@ import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dar
 import 'package:bb_mobile/features/settings/ui/settings_item.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/dev_mode_switch.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/error_reporting_switch.dart';
-import 'package:bb_mobile/features/settings/ui/widgets/force_app_store_wording_switch.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/screen_capture_protection_switch.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/testnet_mode_switch.dart';
 import 'package:flutter/material.dart';
@@ -31,7 +30,6 @@ class AppSettingsScreen extends StatelessWidget {
       SettingsItemId.screenPrivacy => const ScreenCaptureProtectionSwitch(),
       SettingsItemId.devMode => const DevModeSwitch(),
       SettingsItemId.testnetMode => const TestnetModeSwitch(),
-      SettingsItemId.forceAppStoreWording => const ForceAppStoreWordingSwitch(),
       SettingsItemId.errorReporting => const ErrorReportingSwitch(),
       _ => null,
     };

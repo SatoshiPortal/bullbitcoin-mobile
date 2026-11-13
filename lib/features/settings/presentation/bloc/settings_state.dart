@@ -19,9 +19,6 @@ sealed class SettingsState with _$SettingsState {
     // read through the SP facade. Drives the bitcoin-settings SP setup/settings
     // entry, so the screen reads it here instead of the WalletBloc.
     @Default(false) bool isSpWalletSetup,
-    // The stored value of the development switch "Force App Store wording".
-    // Read [isAppStoreWordingForced] to know whether it applies.
-    @Default(false) bool forceAppStoreWording,
     SettingsFailure? failure,
   }) = _SettingsState;
   const SettingsState._();
@@ -33,12 +30,6 @@ sealed class SettingsState with _$SettingsState {
   bool? get hideAmounts => storedSettings?.hideAmounts;
   bool? get isSuperuser => storedSettings?.isSuperuser;
   bool? get isDevModeEnabled => storedSettings?.isDevModeEnabled;
-
-  /// Whether the App Store vocabulary is forced on this device: the switch is
-  /// only reachable in Dev Mode, so turning Dev Mode off stops forcing it (the
-  /// stored value is kept for the next time).
-  bool get isAppStoreWordingForced =>
-      (isDevModeEnabled ?? false) && forceAppStoreWording;
   bool get isErrorReportingEnabled =>
       storedSettings?.isErrorReportingEnabled ?? false;
   bool get screenCaptureProtectionEnabled =>
