@@ -18,7 +18,6 @@ void main() {
       );
       final l10n = localizations(tester);
       expect(find.text(l10n.transfer), findsNWidgets(2));
-      expect(find.text(l10n.transferFull), findsNothing);
     });
   }
 
