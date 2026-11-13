@@ -19,6 +19,7 @@ class BullScreenPrivacyGate extends StatelessWidget {
     required this.retryLabel,
     required this.onRetry,
     required this.builder,
+    this.unavailableBuilder,
   });
 
   final Future<bool> protection;
@@ -26,6 +27,10 @@ class BullScreenPrivacyGate extends StatelessWidget {
   final String retryLabel;
   final VoidCallback onRetry;
   final WidgetBuilder builder;
+
+  /// Inline failure content for hosts such as unbounded scrollable sections.
+  /// When omitted, the gate shows its full-screen message and retry action.
+  final WidgetBuilder? unavailableBuilder;
 
   @override
   Widget build(BuildContext context) {
@@ -36,6 +41,8 @@ class BullScreenPrivacyGate extends StatelessWidget {
           return const SizedBox.shrink();
         }
         if (snapshot.data ?? false) return builder(context);
+        final unavailable = unavailableBuilder;
+        if (unavailable != null) return unavailable(context);
         return Scaffold(
           appBar: AppBar(),
           body: Center(

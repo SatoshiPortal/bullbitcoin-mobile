@@ -7,7 +7,7 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'dart:async';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_sync_result.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/check_backup_needed_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/check_backup_needed_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/check_wallet_syncing_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/entity/warning.dart';
@@ -39,7 +39,11 @@ class _MockGetUnconfirmedIncomingBalanceUsecase extends Mock
 class _MockDeleteWalletUsecase extends Mock implements DeleteWalletUsecase {}
 
 class _MockCheckBackupNeededUsecase extends Mock
-    implements CheckBackupNeededUsecase {}
+    implements CheckBackupNeededUsecase {
+  _MockCheckBackupNeededUsecase() {
+    when(execute).thenAnswer((_) async => const Err(WalletStorageFailure()));
+  }
+}
 
 class _MockExternalTorStatusUsecase extends Mock
     implements GetExternalTorProxyStatusUsecase {}
