@@ -1,9 +1,14 @@
 import 'package:primitives/primitives.dart'
-    show NetworkCapabilities, NetworkCapability;
+    show
+        BitcoinTransactionRecipient,
+        BitcoinUnit,
+        NetworkCapabilities,
+        NetworkCapability,
+        Outpoint,
+        Sats;
 import 'package:bb_mobile/features/wallet/domain/network_x.dart';
 import 'package:bb_mobile/core/fees/domain/fee_preview_cache.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
@@ -14,14 +19,11 @@ import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/send/presentation/send_wallet_view.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet_transaction.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/outpoint.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:bb_mobile/features/send/domain/send_failure.dart';
 import 'package:bb_mobile/features/send/domain/bitcoin_recipient_list_policy.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:primitives/primitives.dart'
-    show Sats, BitcoinTransactionRecipient;
 
 part 'send_state.freezed.dart';
 

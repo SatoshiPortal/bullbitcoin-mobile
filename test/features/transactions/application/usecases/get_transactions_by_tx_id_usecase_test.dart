@@ -8,7 +8,7 @@ import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_rep
 import 'package:bb_mobile/features/transactions/application/usecases/get_transaction_order_swaps_usecase.dart';
 import 'package:bb_mobile/features/transactions/application/usecases/get_transactions_by_tx_id_usecase.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
-import 'package:bb_mobile/core/utils/result.dart' as bb;
+import 'package:primitives/primitives.dart' as bb;
 import 'package:bb_mobile/features/swap/public/swap_facade.dart'
     show OrderSwapRecord;
 import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';

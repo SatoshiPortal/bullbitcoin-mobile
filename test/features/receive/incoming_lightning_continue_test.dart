@@ -1,5 +1,5 @@
+import 'package:primitives/primitives.dart' show BitcoinUnit, Ok;
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'dart:async';
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';

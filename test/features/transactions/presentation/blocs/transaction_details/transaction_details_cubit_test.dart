@@ -2,7 +2,8 @@ import 'dart:async';
 
 import 'package:bb_mobile/core/entities/signer_entity.dart' show SignerEntity;
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart'
+    show BitcoinNetwork, Err, Ok, Result, Sats;
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet_transaction.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_transaction_usecase.dart';
@@ -31,7 +32,6 @@ import 'package:bb_mobile/features/transactions/presentation/blocs/transaction_d
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
-import 'package:primitives/primitives.dart' show BitcoinNetwork, Sats;
 
 class _MockGetTransactionWalletUsecase extends Mock
     implements GetTransactionWalletUsecase {}

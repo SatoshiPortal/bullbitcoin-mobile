@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/failures/failure.dart';
+import 'package:primitives/primitives.dart' show Failure;
 
 /// Closed set of every failure the Silent Payments feature surfaces to the
 /// user. `sealed` keeps it closed (exhaustive switches; no foreign variants).

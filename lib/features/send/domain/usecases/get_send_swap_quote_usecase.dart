@@ -1,7 +1,5 @@
 import 'package:bb_mobile/features/wallet/domain/network_x.dart';
-import 'package:primitives/primitives.dart'
-    show NetworkCapabilities, NetworkCapability;
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/send/domain/send_failure.dart';
 import 'package:bb_mobile/features/send/domain/swap_failure_to_send_failure.dart';

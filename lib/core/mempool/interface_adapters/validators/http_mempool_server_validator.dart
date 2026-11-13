@@ -7,7 +7,7 @@ import 'package:bb_mobile/core/mempool/domain/ports/mempool_tor_session_port.dar
 import 'package:bb_mobile/core/mempool/domain/value_objects/mempool_server_network.dart';
 import 'package:bb_mobile/core/mempool/domain/value_objects/normalized_mempool_url.dart';
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart';
 import 'package:dio/dio.dart';
 import 'package:dio/io.dart';
 import 'package:bull_tor/tor.dart';

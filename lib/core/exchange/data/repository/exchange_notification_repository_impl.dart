@@ -2,7 +2,7 @@ import 'package:bb_mobile/features/exchange/data/services/exchange_notification_
 import 'package:bb_mobile/core/exchange/domain/entity/notification_message.dart';
 import 'package:bb_mobile/core/exchange/domain/exchange_notification_failure.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_notification_repository.dart';
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart';
 import 'package:bull_logger/bull_logger.dart';
 
 /// The `try/catch` boundary for the notification socket.

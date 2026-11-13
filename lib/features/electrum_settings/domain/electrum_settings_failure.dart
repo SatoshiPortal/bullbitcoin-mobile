@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/failures/failure.dart';
+import 'package:primitives/primitives.dart' show Failure;
 
 /// Closed set of failures shown in the server-list section of the Electrum
 /// settings screen. Lifted from the core [ElectrumFailure] by the bloc and

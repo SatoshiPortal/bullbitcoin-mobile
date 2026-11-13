@@ -16,7 +16,6 @@ import 'package:bb_mobile/features/sell/domain/sign_sell_payin_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/get_order_usercase.dart';
 import 'package:bb_mobile/core/fees/domain/fee_preview_cache.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
@@ -36,7 +35,14 @@ import 'package:mocktail/mocktail.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:primitives/primitives.dart'
-    show BitcoinNetwork, Err, Ok, Result, Sats, BitcoinTransactionRecipient;
+    show
+        BitcoinNetwork,
+        BitcoinTransactionRecipient,
+        BitcoinUnit,
+        Err,
+        Ok,
+        Result,
+        Sats;
 
 class _MockCreateSellOrder extends Mock implements CreateSellOrderUsecase {}
 

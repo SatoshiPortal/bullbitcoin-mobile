@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/recipients/data/bullbitcoin_api_sepa_virtual_payee_datasource.dart';
 import 'package:bb_mobile/features/recipients/data/sepa_virtual_payee_repository_impl.dart';
 import 'package:bb_mobile/features/recipients/domain/recipients_failure.dart';

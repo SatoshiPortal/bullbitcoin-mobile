@@ -5,7 +5,7 @@ import 'package:bb_mobile/core/bip85/domain/derive_next_bip85_hex_from_default_w
 import 'package:bb_mobile/core/bip85/domain/derive_next_bip85_mnemonic_from_default_wallet_usecase.dart';
 import 'package:bb_mobile/core/bip85/domain/fetch_all_bip85_derivations_with_entropy_usecase.dart';
 import 'package:bb_mobile/core/bip85/domain/revoke_bip85_derivation_usecase.dart';
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/bip85_entropy/presentation/state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 

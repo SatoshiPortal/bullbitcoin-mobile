@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/failures/failure.dart';
+import 'package:primitives/primitives.dart' show Failure;
 
 /// Every user-facing failure of the exchange feature, as one closed family.
 /// Flutter-free: translation lives in `presentation/exchange_failure_l10n.dart`.

@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/failures/failure.dart';
+import 'package:primitives/primitives.dart' show Failure;
 
 /// Closed set of failures the Electrum owner surfaces across its
 /// boundary (the repositories). Foreign errors — Drift/storage, connectivity,

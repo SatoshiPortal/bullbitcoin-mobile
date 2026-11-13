@@ -52,7 +52,7 @@ graph TB
     LOGS[Logs<br/>Workspace Feature]
     ELECTRUM_SETTINGS[Electrum Settings]
     TOR_SETTINGS[Tor Settings]
-    RECOVERBULL[RecoverBull]
+    RECOVERBULL[RecoverBull<br/>Workspace Feature]
     TOR[Tor<br/>Workspace Package]
     PIN_CODE[Pin Code]
     LABELS[Labels]
@@ -146,6 +146,9 @@ graph TB
     BIP85 --> SECRETS
     BIP85 --> SETTINGS
     BACKUPS --> BIP85
+    APP_STARTUP --> RECOVERBULL
+    WALLETS --> RECOVERBULL
+    STATUS --> RECOVERBULL
     BACKUPS --> RECOVERBULL
     BACKUPS --> TOR
     BACKUPS --> WALLETS
@@ -233,6 +236,10 @@ graph TB
     WALLETS --> ELECTRUM_SETTINGS
     RECOVERBULL --> TOR
     RECOVERBULL --> SECRETS
+    RECOVERBULL --> PRIMITIVES
+    RECOVERBULL --> BULL_LOGGER
+    RECOVERBULL --> BULL_UI
+    RECOVERBULL --> SCREEN_PRIVACY[Screen Privacy]
     TRANSFER --> CONSOLIDATION
     TRANSFER --> SEND
     TRANSFER --> RECEIVE
@@ -409,7 +416,7 @@ The mnemonic import feature currently imports Wallets internals. Replace that de
 
 ## Wallet failure compatibility edges (2026-11-08)
 
-The shell ownership move relocates wallet failures while retaining the `lib/core/wallet/domain/wallet_failure.dart` compatibility export. Two existing consumers therefore resolve to the wallet owner: `backup_settings` through `presentation/cubit/backup_settings_cubit.dart`, and `status_check` through `domain/check_service_status_usecase.dart`. The source-edge allowlist and diagram record those observed dependencies. These legacy internal imports are migration debt, not permission for new cross-feature internals; move consumers to a published wallet failure surface in a scoped follow-up.
+The shell ownership move relocates wallet failures while retaining the `lib/core/wallet/domain/wallet_failure.dart` compatibility export. The existing `status_check` consumer resolves to the wallet owner through `domain/check_service_status_usecase.dart`. The retired `backup_settings` implementation is no longer a consumer. The source-edge allowlist and diagram record those observed dependencies. These legacy internal imports are migration debt, not permission for new cross-feature internals; move consumers to a published wallet failure surface in a scoped follow-up.
 
 ## Networks source-edge review (2026-11-08)
 
