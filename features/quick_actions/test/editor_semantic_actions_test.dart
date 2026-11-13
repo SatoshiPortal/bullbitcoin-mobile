@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'customization_v2_test.dart' show localizations, openEditor;
+import 'customization_v2_test.dart' show localizations, openEditor, homeValue;
 import 'quick_actions_test.dart' show MemoryStorage;
 
 void main() {
@@ -32,16 +32,18 @@ void main() {
         QuickActionsFacade(storage: storage, warning: (_) {}),
       );
       final l10n = localizations(tester);
-      final handle = find.byWidgetPredicate(
-        (widget) =>
-            widget is Semantics &&
-            widget.properties.label == l10n.reorderAction(l10n.transfer),
+      final handle = find.descendant(
+        of: find.byKey(const ValueKey('transfer')),
+        matching: find.byWidgetPredicate(
+          (widget) =>
+              widget is Semantics && widget.properties.label == l10n.transfer,
+        ),
       );
       expect(handle, findsOneWidget);
       final node = tester.getSemantics(handle);
       final actions = node.getSemanticsData().customSemanticsActionIds ?? [];
-      final up = '${l10n.moveUp}: ${l10n.transfer}';
-      final down = '${l10n.moveDown}: ${l10n.transfer}';
+      final up = l10n.moveUp;
+      final down = l10n.moveDown;
       expect(
         actions.map((id) => CustomSemanticsAction.getAction(id)?.label),
         containsAll([up, down]),
@@ -58,7 +60,7 @@ void main() {
         ),
       );
       await tester.pumpAndSettle();
-      expect(storage.value, '["transfer","map","history"]');
+      expect(homeValue(storage.value), '["transfer","map","history"]');
     } finally {
       semantics.dispose();
     }

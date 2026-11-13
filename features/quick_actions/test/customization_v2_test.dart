@@ -1,10 +1,12 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:bull_quick_actions/bull_quick_actions.dart';
 import 'package:bull_ui/bull_ui.dart'
     show BullButton, BullQuickAction, BullShapes, BullSnackBar;
 import 'package:bull_ui/testing.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/semantics.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
@@ -87,39 +89,81 @@ Future<void> clearNotice(WidgetTester tester) async {
   await tester.pumpAndSettle();
 }
 
-IconButton actionButton(WidgetTester tester, String tooltip) =>
-    tester.widget<IconButton>(
-      find.byWidgetPredicate(
-        (widget) => widget is IconButton && widget.tooltip == tooltip,
-      ),
+String? homeValue(String? raw) {
+  if (raw == null) return null;
+  final value = jsonDecode(raw);
+  return jsonEncode(value is Map ? value['home'] : value);
+}
+
+Future<void> semanticMove(
+  WidgetTester tester,
+  QuickAction action,
+  String label,
+) async {
+  final handle = tester.ensureSemantics();
+  try {
+    final row = find.byKey(ValueKey(action.id));
+    if (row.evaluate().isEmpty) {
+      await tester.scrollUntilVisible(row, 100);
+      await tester.pumpAndSettle();
+    }
+    final viewport = tester.getRect(find.byType(ReorderableListView));
+    final bounds = tester.getRect(row);
+    if (bounds.top < viewport.top || bounds.bottom > viewport.bottom) {
+      await Scrollable.ensureVisible(tester.element(row), alignment: 0.5);
+      await tester.pumpAndSettle();
+    }
+    final node = tester.getSemantics(
+      find.descendant(of: row, matching: find.byType(Semantics)).first,
     );
+    final ids = node.getSemanticsData().customSemanticsActionIds ?? [];
+    expect(
+      ids.map((id) => CustomSemanticsAction.getAction(id)?.label),
+      contains(label),
+      reason: 'Accessible action for ${action.id}, node ${node.label}',
+    );
+    final id = ids.singleWhere(
+      (id) => CustomSemanticsAction.getAction(id)?.label == label,
+    );
+    final owner = node.owner;
+    expect(owner, isNotNull);
+    owner?.performAction(node.id, SemanticsAction.customAction, id);
+    await tester.pumpAndSettle();
+  } finally {
+    handle.dispose();
+  }
+}
 
 void main() {
   stressEditorTests();
-  testWidgets('drag immediately saves the three Home actions', (tester) async {
-    final storage = MemoryStorage();
+  testWidgets('long press on the label reorders and saves at drop', (
+    tester,
+  ) async {
+    final storage = _EditorStorage();
     await openEditor(
       tester,
       QuickActionsFacade(storage: storage, warning: (_) {}),
     );
-    final l10n = localizations(tester);
-    Finder handle(String label) => find.byWidgetPredicate(
-      (widget) =>
-          widget is Semantics &&
-          widget.properties.label == l10n.reorderAction(label),
+    final from = tester.getRect(find.byKey(const ValueKey('transfer')));
+    final to = tester.getRect(find.byKey(const ValueKey('map')));
+    final gesture = await tester.startGesture(
+      Offset(from.left + 80, from.center.dy),
     );
-    final from = tester.getRect(handle(l10n.transfer));
-    final to = tester.getRect(handle(l10n.map));
-    expect(from.height, 48);
-    final gesture = await tester.startGesture(from.center);
-    await tester.pump();
-    await gesture.moveBy(const Offset(0, -24));
+    await tester.pump(const Duration(milliseconds: 600));
+    await tester.pump(const Duration(milliseconds: 300));
+    expect(
+      find.byWidgetPredicate((w) => w is Material && w.elevation > 0),
+      findsWidgets,
+    );
+    expect(storage.writes, 0);
+    await gesture.moveBy(const Offset(0, -20));
     await tester.pump(const Duration(milliseconds: 30));
-    await gesture.moveTo(Offset(to.center.dx, to.top - 24));
+    await gesture.moveTo(to.center);
     await tester.pump(const Duration(milliseconds: 350));
     await gesture.up();
     await tester.pumpAndSettle();
-    expect(storage.value, '["transfer","map","history"]');
+    expect(homeValue(storage.value), '["transfer","map","history"]');
+    expect(storage.writes, 1);
     expect(find.byType(QuickActionsCustomizationScreen), findsOneWidget);
   });
 
@@ -135,8 +179,7 @@ void main() {
       );
       final l10n = localizations(tester);
       expect(find.text(l10n.onHome), findsOneWidget);
-      expect(find.text(l10n.inMore), findsOneWidget);
-      expect(find.text(l10n.homeFullHint), findsOneWidget);
+      expect(find.text(l10n.dragHint), findsOneWidget);
       expect(find.text(l10n.reset), findsOneWidget);
       expect(find.text('Save changes'), findsNothing);
       expect(find.text('These favorites appear in More'), findsNothing);
@@ -150,10 +193,12 @@ void main() {
         ),
       );
       expect(find.byType(BullQuickAction), findsNWidgets(4));
+      await tester.scrollUntilVisible(find.text(l10n.inMore), 120);
+      expect(find.text(l10n.inMore), findsOneWidget);
     });
   }
 
-  testWidgets('plus is disabled at three and removal opens one slot', (
+  testWidgets('moving a fourth action Home displaces the old third into More', (
     tester,
   ) async {
     final storage = _EditorStorage();
@@ -162,22 +207,21 @@ void main() {
       QuickActionsFacade(storage: storage, warning: (_) {}),
     );
     final l10n = localizations(tester);
-    final buy = find.byTooltip(l10n.addAction(l10n.buy));
-    expect(actionButton(tester, l10n.addAction(l10n.buy)).onPressed, isNull);
-    await tester.tap(find.byTooltip(l10n.removeAction(l10n.map)));
-    await tester.pumpAndSettle();
-    expect(storage.value, '["transfer","history"]');
-    expect(find.text(l10n.homeFullHint), findsNothing);
-    expect(actionButton(tester, l10n.addAction(l10n.buy)).onPressed, isNotNull);
-    await tester.ensureVisible(buy);
-    await tester.tap(buy);
-    await tester.pumpAndSettle();
-    expect(storage.value, '["transfer","history","buy"]');
-    expect(storage.writes, 2);
-    expect(actionButton(tester, l10n.addAction(l10n.sell)).onPressed, isNull);
+    await semanticMove(tester, QuickAction.buy, l10n.moveToHome);
+    expect(homeValue(storage.value), '["map","transfer","buy"]');
+    final value = jsonDecode(storage.value ?? '{}') as Map;
+    expect((value['more'] as List).first, 'history');
+    expect(storage.writes, 1);
+    expect(
+      find.descendant(
+        of: find.byType(ReorderableListView),
+        matching: find.byType(IconButton),
+      ),
+      findsNothing,
+    );
   });
 
-  testWidgets('each add and remove persists without a Save action', (
+  testWidgets('moving between sections saves each operation immediately', (
     tester,
   ) async {
     final storage = _EditorStorage()..value = '["map","transfer"]';
@@ -186,16 +230,10 @@ void main() {
       QuickActionsFacade(storage: storage, warning: (_) {}),
     );
     final l10n = localizations(tester);
-    final add = find.byTooltip(l10n.addAction(l10n.buy));
-    await tester.ensureVisible(add);
-    await tester.tap(add);
-    await tester.pumpAndSettle();
-    expect(storage.value, '["map","transfer","buy"]');
-    final remove = find.byTooltip(l10n.removeAction(l10n.buy));
-    await tester.ensureVisible(remove);
-    await tester.tap(remove);
-    await tester.pumpAndSettle();
-    expect(storage.value, '["map","transfer"]');
+    await semanticMove(tester, QuickAction.buy, l10n.moveToHome);
+    expect(homeValue(storage.value), '["map","transfer","buy"]');
+    await semanticMove(tester, QuickAction.buy, l10n.moveToMore);
+    expect(homeValue(storage.value), '["map","transfer"]');
     expect(storage.writes, 2);
   });
 
@@ -211,15 +249,15 @@ void main() {
     );
     final l10n = localizations(tester);
     try {
-      await tester.tap(find.byTooltip(l10n.removeAction(l10n.map)));
+      await semanticMove(tester, QuickAction.map, l10n.moveToMore);
       await tester.pumpAndSettle();
-      expect(storage.value, '["map","transfer"]');
+      expect(homeValue(storage.value), '["map","transfer"]');
       expect(find.text(l10n.map), findsNWidgets(2));
       expect(find.text(l10n.saveFailed), findsOneWidget);
       storage.failWrite = false;
-      await tester.tap(find.byTooltip(l10n.removeAction(l10n.map)));
+      await semanticMove(tester, QuickAction.map, l10n.moveToMore);
       await tester.pumpAndSettle();
-      expect(storage.value, '["transfer"]');
+      expect(homeValue(storage.value), '["transfer"]');
     } finally {
       await clearNotice(tester);
     }
@@ -288,7 +326,7 @@ void main() {
     try {
       await tester.tap(find.text(l10n.reset));
       await tester.pumpAndSettle();
-      expect(storage.value, '["buy"]');
+      expect(homeValue(storage.value), '["buy"]');
       expect(find.text(l10n.saveFailed), findsOneWidget);
       expect(find.text(l10n.undo), findsNothing);
     } finally {
@@ -331,18 +369,25 @@ void main() {
         QuickActionsFacade(storage: storage, warning: (_) {}),
       );
       final l10n = localizations(tester);
-      await tester.tap(find.byTooltip(l10n.removeAction(l10n.map)));
+      await semanticMove(tester, QuickAction.map, l10n.moveToMore);
       await tester.pump();
       expect(storage.writes, 1);
-      expect(storage.value, '["map","transfer"]');
-      expect(actionButton(tester, l10n.addAction(l10n.buy)).onPressed, isNull);
+      expect(homeValue(storage.value), '["map","transfer"]');
+      expect(
+        tester
+            .widgetList<ReorderableDelayedDragStartListener>(
+              find.byType(ReorderableDelayedDragStartListener),
+            )
+            .every((row) => !row.enabled),
+        isTrue,
+      );
       expect(
         tester.widget<BullButton>(find.byType(BullButton)).disabled,
         isTrue,
       );
       gate.complete();
       await tester.pumpAndSettle();
-      expect(storage.value, '["transfer"]');
+      expect(homeValue(storage.value), '["transfer"]');
       expect(storage.maximumInFlight, 1);
     },
   );
@@ -355,7 +400,7 @@ void main() {
     final facade = QuickActionsFacade(storage: storage, warning: (_) {});
     await openEditor(tester, facade);
     final l10n = localizations(tester);
-    await tester.tap(find.byTooltip(l10n.removeAction(l10n.map)));
+    await semanticMove(tester, QuickAction.map, l10n.moveToMore);
     await tester.pump();
     Navigator.of(
       tester.element(find.byType(QuickActionsCustomizationScreen)),
@@ -363,7 +408,7 @@ void main() {
     await tester.pumpAndSettle();
     gate.complete();
     await tester.pumpAndSettle();
-    expect(storage.value, '["transfer"]');
+    expect(homeValue(storage.value), '["transfer"]');
     expect(facade.selection?.actions, [QuickAction.transfer]);
     expect(tester.takeException(), isNull);
   });
@@ -382,7 +427,7 @@ void main() {
     );
     final l10n = localizations(tester);
     try {
-      await tester.tap(find.byTooltip(l10n.removeAction(l10n.map)));
+      await semanticMove(tester, QuickAction.map, l10n.moveToMore);
       await tester.pump();
       Navigator.of(
         tester.element(find.byType(QuickActionsCustomizationScreen)),
@@ -390,7 +435,7 @@ void main() {
       await tester.pumpAndSettle();
       gate.complete();
       await tester.pumpAndSettle();
-      expect(storage.value, '["map","transfer"]');
+      expect(homeValue(storage.value), '["map","transfer"]');
       expect(find.text(l10n.saveFailed), findsOneWidget);
       expect(tester.takeException(), isNull);
     } finally {
@@ -417,7 +462,7 @@ void main() {
       expect(storage.value, isNull);
       await tester.tap(find.text(l10n.undo));
       await tester.pumpAndSettle();
-      expect(storage.value, '["buy"]');
+      expect(homeValue(storage.value), '["buy"]');
       expect(tester.takeException(), isNull);
     } finally {
       await clearNotice(tester);
@@ -437,7 +482,7 @@ void main() {
       await facade.save(QuickActionSelection([QuickAction.support]));
       await tester.tap(find.text(l10n.undo));
       await tester.pumpAndSettle();
-      expect(storage.value, '["support"]');
+      expect(homeValue(storage.value), '["support"]');
     } finally {
       await clearNotice(tester);
     }
@@ -455,10 +500,10 @@ void main() {
       final l10n = localizations(tester);
       expect(find.text(l10n.buy), findsNothing);
       expect(storage.writes, 0);
-      expect(storage.value, '["buy","map","transfer"]');
-      await tester.tap(find.byTooltip(l10n.removeAction(l10n.map)));
+      expect(homeValue(storage.value), '["buy","map","transfer"]');
+      await semanticMove(tester, QuickAction.map, l10n.moveToMore);
       await tester.pumpAndSettle();
-      expect(storage.value, '["buy","transfer"]');
+      expect(homeValue(storage.value), '["buy","transfer"]');
       expect(find.text(l10n.transfer), findsNWidgets(2));
     },
   );
@@ -473,11 +518,18 @@ void main() {
         QuickActionsFacade(storage: storage, warning: (_) {}),
       );
       final l10n = localizations(tester);
-      expect(storage.value, '["map","transfer","history","settings"]');
-      await tester.tap(find.byTooltip(l10n.removeAction(l10n.map)));
+      expect(
+        homeValue(storage.value),
+        '["map","transfer","history","settings"]',
+      );
+      await semanticMove(tester, QuickAction.map, l10n.moveToMore);
       await tester.pumpAndSettle();
-      expect(storage.value, '["transfer","history"]');
-      expect(find.byTooltip(l10n.addAction(l10n.settings)), findsOneWidget);
+      expect(homeValue(storage.value), '["transfer","history"]');
+      await tester.scrollUntilVisible(
+        find.byKey(const ValueKey('settings')),
+        120,
+      );
+      expect(find.byKey(const ValueKey('settings')), findsOneWidget);
     },
   );
 }
@@ -510,6 +562,7 @@ void stressEditorTests() {
             );
             expect(tester.getRect(find.text(l10n.reset)).top, greaterThan(0));
             expect(find.text(l10n.onHome), findsOneWidget);
+            await tester.scrollUntilVisible(find.text(l10n.inMore), 120);
             expect(find.text(l10n.inMore), findsOneWidget);
             expect(tester.takeException(), isNull);
           },

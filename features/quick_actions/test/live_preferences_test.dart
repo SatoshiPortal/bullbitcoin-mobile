@@ -51,10 +51,14 @@ void main() {
         QuickAction.history,
         QuickAction.settings,
       ]);
-      final edited = selection.withHomeActions(
+      final demoted = QuickActionsEditorLayout(
+        selection: selection,
         available: available,
-        home: [QuickAction.history, QuickAction.map],
-      );
+      ).moveToMore(QuickAction.transfer);
+      final edited = QuickActionsEditorLayout(
+        selection: demoted,
+        available: available,
+      ).move(1, 0);
       expect(edited.actions, [
         QuickAction.buy,
         QuickAction.history,
@@ -73,26 +77,14 @@ void main() {
     },
   );
 
-  test('home replacement validates the visible selection', () {
-    final selection = QuickActionSelection([]);
-    expect(
-      () => selection.withHomeActions(available: available, home: available),
-      throwsArgumentError,
+  test('unavailable moves cannot alter the preference', () {
+    final selection = QuickActionSelection([QuickAction.map]);
+    final editor = QuickActionsEditorLayout(
+      selection: selection,
+      available: available,
     );
-    expect(
-      () => selection.withHomeActions(
-        available: available,
-        home: [QuickAction.map, QuickAction.map],
-      ),
-      throwsArgumentError,
-    );
-    expect(
-      () => selection.withHomeActions(
-        available: available,
-        home: [QuickAction.buy],
-      ),
-      throwsArgumentError,
-    );
+    expect(editor.moveToHome(QuickAction.buy), same(selection));
+    expect(editor.moveToMore(QuickAction.buy), same(selection));
   });
 
   test('empty selection uses settings only as an unrevised fallback', () {

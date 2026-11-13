@@ -3,6 +3,7 @@ import 'package:bull_ui/testing.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'customization_v2_test.dart' show semanticMove, homeValue;
 
 void main() {
   testWidgets('removing a Home action persists before leaving the editor', (
@@ -33,9 +34,9 @@ void main() {
     final l10n = QuickActionsLocalizations.of(
       tester.element(find.byType(QuickActionsCustomizationScreen)),
     );
-    await tester.tap(find.byTooltip(l10n.removeAction(l10n.map)));
+    await semanticMove(tester, QuickAction.map, l10n.moveToMore);
     await tester.pumpAndSettle();
-    expect(storage.value, '["transfer","history"]');
+    expect(homeValue(storage.value), '["transfer","history"]');
     expect(find.byType(QuickActionsCustomizationScreen), findsOneWidget);
   });
 }

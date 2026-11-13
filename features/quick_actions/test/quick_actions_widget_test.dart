@@ -1,4 +1,5 @@
-import 'customization_v2_test.dart' show openEditor, localizations;
+import 'customization_v2_test.dart'
+    show openEditor, localizations, semanticMove, homeValue;
 import 'package:bull_quick_actions/bull_quick_actions.dart';
 import 'package:bull_ui/testing.dart';
 import 'package:bull_ui/bull_ui.dart' show BullQuickAction;
@@ -86,9 +87,9 @@ void main() {
     final facade = QuickActionsFacade(storage: storage, warning: (_) {});
     await openEditor(tester, facade);
     final l10n = localizations(tester);
-    await tester.tap(find.byTooltip(l10n.removeAction(l10n.map)));
+    await semanticMove(tester, QuickAction.map, l10n.moveToMore);
     await tester.pumpAndSettle();
-    expect(storage.value, '["transfer","history"]');
+    expect(homeValue(storage.value), '["transfer","history"]');
     expect(find.byType(QuickActionsCustomizationScreen), findsOneWidget);
   });
   testWidgets('four cells stay on one line at 360 pixels with large text', (
