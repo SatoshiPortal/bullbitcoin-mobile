@@ -13,7 +13,7 @@ class _AmountPreferencesBinder extends StatelessWidget {
   Widget build(BuildContext context) {
     final state = context.watch<SettingsCubit>().state;
     final settings = state.storedSettings;
-    final isReady = settings != null && state.failure == null;
+    final isReady = settings != null;
     return BullAmountScope(
       snapshot: BullAmountSnapshot(
         unit: settings?.bitcoinUnit ?? BitcoinUnit.btc,
