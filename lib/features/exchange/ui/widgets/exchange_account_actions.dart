@@ -1,14 +1,14 @@
+import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
+import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/delete_account_confirmation_bottom_sheet.dart';
 import 'package:bb_mobile/core/widgets/delete_account_success_bottom_sheet.dart';
 import 'package:bb_mobile/core/widgets/logout_confirmation_bottom_sheet.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
-import 'package:bb_mobile/features/exchange/presentation/exchange_failure_l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:bull_ui/bull_ui.dart' show BullSettingsEntryItem;
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:primitives/primitives.dart' show Err, Ok;
 
 class ExchangeAccountActions extends StatelessWidget {
   final bool showDeleteAccount;
@@ -56,7 +56,11 @@ class ExchangeAccountActions extends StatelessWidget {
             LogoutConfirmationBottomSheet.show(
               context,
               onConfirm: () async {
-                final failure = await context.read<ExchangeCubit>().logout();
+                final result = await locator<ExchangeFacade>().logout();
+                final failure = switch (result) {
+                  Err(:final failure) => failure,
+                  Ok() => null,
+                };
                 if (!context.mounted || failure == null) return;
                 // The session survived, so the user is still
                 // signed in — say so rather than letting the UI

@@ -1,17 +1,53 @@
+import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
+import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
+import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
-import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:bb_mobile/features/exchange_support_chat/public/exchange_support_chat_facade.dart';
 import 'package:flutter/material.dart';
 import 'package:bull_ui/bull_ui.dart' show BullInputText, BullShapesX, Gap;
 import 'package:go_router/go_router.dart';
 
-class ExchangeSupportLoginScreen extends StatelessWidget {
+class ExchangeSupportLoginScreen extends StatefulWidget {
   final ExchangeSupportChatDraft? draft;
 
-  const ExchangeSupportLoginScreen({super.key, this.draft});
+  const ExchangeSupportLoginScreen({
+    super.key,
+    this.draft,
+    required this.canLogin,
+  });
+
+  final bool Function(BuildContext) canLogin;
+
+  @override
+  State<ExchangeSupportLoginScreen> createState() =>
+      _ExchangeSupportLoginScreenState();
+}
+
+class _ExchangeSupportLoginScreenState
+    extends State<ExchangeSupportLoginScreen> {
+  bool _busy = false;
+
+  Future<void> _login() async {
+    if (_busy || !widget.canLogin(context)) return;
+    setState(() => _busy = true);
+    final result = await locator<ExchangeFacade>().enable();
+    if (!mounted) return;
+    setState(() => _busy = false);
+    switch (result) {
+      case Ok():
+        if (!widget.canLogin(context)) return;
+        context.goNamed(
+          ExchangeRoute.exchangeAuth.name,
+          queryParameters: {'from': 'support'},
+          extra: widget.draft,
+        );
+      case Err(:final failure):
+        SnackBarUtils.showSnackBar(context, failure.toTranslated(context));
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -114,21 +150,17 @@ class ExchangeSupportLoginScreen extends StatelessWidget {
                               textAlign: TextAlign.center,
                             ),
                             const Gap(24),
-                            SizedBox(
-                              width: double.infinity,
-                              child: BBButton.big(
-                                label: context.loc.exchangeLoginButton,
-                                onPressed: () {
-                                  context.goNamed(
-                                    ExchangeRoute.exchangeAuth.name,
-                                    queryParameters: {'from': 'support'},
-                                    extra: draft,
-                                  );
-                                },
-                                bgColor: context.appColors.primary,
-                                textColor: context.appColors.onPrimary,
+                            if (widget.canLogin(context))
+                              SizedBox(
+                                width: double.infinity,
+                                child: BBButton.big(
+                                  label: context.loc.exchangeLoginButton,
+                                  disabled: _busy,
+                                  onPressed: _login,
+                                  bgColor: context.appColors.primary,
+                                  textColor: context.appColors.onPrimary,
+                                ),
                               ),
-                            ),
                           ],
                         ),
                       ),

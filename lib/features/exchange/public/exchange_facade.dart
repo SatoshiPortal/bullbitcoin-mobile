@@ -1,16 +1,15 @@
-import 'dart:async';
-
-import 'package:primitives/primitives.dart' show Err, Ok, Result;
-import 'package:bb_mobile/features/exchange/domain/exchange_failure.dart';
-import 'package:bb_mobile/features/exchange/domain/exchange_session.dart';
-import 'package:bb_mobile/features/exchange/domain/usecases/initialize_exchange_access_usecase.dart';
-import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_trading_entry_usecase.dart';
-import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_account_usecase.dart';
-import 'package:bb_mobile/features/exchange/domain/usecases/save_exchange_preferences_usecase.dart';
-import 'package:bb_mobile/features/exchange/public/exchange_account.dart';
-import 'package:bb_mobile/features/exchange_access/public/exchange_access_facade.dart'
-    show ExchangeAccessFacade;
-import 'package:meta/meta.dart';
+import 'package:primitives/primitives.dart';
+import '../domain/exchange_access.dart';
+import '../domain/exchange_availability.dart';
+import '../domain/exchange_failure.dart';
+import '../domain/usecases/get_exchange_account_usecase.dart';
+import '../domain/usecases/save_exchange_preferences_usecase.dart';
+import '../domain/usecases/resolve_exchange_access_usecase.dart';
+import '../domain/usecases/enable_exchange_usecase.dart';
+import '../domain/usecases/sign_out_exchange_usecase.dart';
+import '../domain/usecases/watch_exchange_access_usecase.dart';
+import '../domain/usecases/guard_exchange_trading_usecase.dart';
+import 'exchange_account.dart';
 
 export 'package:primitives/primitives.dart' show Err, Ok, Result;
 export '../domain/exchange_failure.dart';
@@ -32,118 +31,71 @@ export '../ui/widgets/exchange_amount_currency_dropdown.dart'
 export '../ui/widgets/exchange_amount_input_field.dart'
     show ExchangeAmountInputField;
 export 'exchange_account.dart' show ExchangeAccount;
-export '../domain/exchange_session.dart' show ExchangeSessionStatus;
-export '../domain/usecases/get_exchange_trading_entry_usecase.dart'
-    show ExchangeTradingEntry;
+
+export '../domain/exchange_access.dart';
+export '../domain/exchange_availability.dart';
+export '../ui/exchange_trading_guard.dart' show ExchangeTradingGuard;
 
 class ExchangeFacade {
-  final GetExchangeAccountUsecase _getExchangeAccountUsecase;
-  final SaveExchangePreferencesUsecase _saveExchangePreferencesUsecase;
-  final void Function(bool)? _suspendSession;
-  final GetExchangeTradingEntryUsecase? _tradingEntry;
-  final ExchangeAccessFacade? _access;
-  final ExchangeSession? _session;
-  final InitializeExchangeAccessUsecase? _initializeAccess;
-  final Future<ExchangeFailure?> Function()? _logout;
-
   const ExchangeFacade({
-    required this._getExchangeAccountUsecase,
-    required this._saveExchangePreferencesUsecase,
-    this._tradingEntry,
-    this._suspendSession,
-    this._access,
-    this._session,
-    this._initializeAccess,
-    this._logout,
-  });
+    required GetExchangeAccountUsecase getExchangeAccountUsecase,
+    required SaveExchangePreferencesUsecase saveExchangePreferencesUsecase,
+    required ResolveExchangeAccessUsecase resolveAccess,
+    required this._enable,
+    required this._signOut,
+    required WatchExchangeAccessUsecase watchAccess,
+    required this._tradingGuard,
+  }) : _getAccount = getExchangeAccountUsecase,
+       _savePreferences = saveExchangePreferencesUsecase,
+       _resolve = resolveAccess,
+       _watch = watchAccess;
 
-  ExchangeSessionStatus get session =>
-      _session?.current ?? ExchangeSessionStatus.resolving;
+  final GetExchangeAccountUsecase _getAccount;
+  final SaveExchangePreferencesUsecase _savePreferences;
+  final ResolveExchangeAccessUsecase _resolve;
+  final EnableExchangeUsecase _enable;
+  final SignOutExchangeUsecase _signOut;
+  final WatchExchangeAccessUsecase _watch;
+  final GuardExchangeTradingUsecase _tradingGuard;
 
-  Stream<ExchangeSessionStatus> watchSession() =>
-      _session?.watch() ?? const Stream.empty();
+  ExchangeAccess get currentAccess => _watch.current;
+  Stream<ExchangeAccess> watchAccess() => _watch.execute();
+  Future<Result<void, ExchangeFailure>> resolveAccess() => _resolve.execute();
+  Future<Result<void, ExchangeFailure>> enable({bool? initialChoice}) =>
+      _enable.execute(
+        onlyIfUnset: initialChoice != null,
+        choice: initialChoice ?? true,
+      );
+  Future<Result<void, ExchangeFailure>> logout() => _signOut.execute();
+  Future<Result<ExchangeAvailability, ExchangeFailure>> guardTradingEntry() =>
+      _tradingGuard.execute();
 
-  Future<ExchangeSessionStatus> resolveSession({
-    required bool isTestnet,
-  }) async =>
-      await _session?.resolve(isTestnet: isTestnet) ??
-      ExchangeSessionStatus.unavailable;
+  Future<Result<ExchangeAccount, ExchangeFailure>> getAccount() async =>
+      (await _getAccount.execute()).map(
+        (account) => ExchangeAccount(
+          userNumber: account.userNumber,
+          firstName: account.profile.firstName,
+          lastName: account.profile.lastName,
+          email: account.email,
+          language: account.language,
+          currency: account.currency,
+          emailNotificationsEnabled: account.emailNotificationsEnabled,
+          isFullyVerifiedKycLevel: account.isFullyVerifiedKycLevel,
+          isLightKycLevel: account.isLightKycLevel,
+          isLimitedKycLevel: account.isLimitedKycLevel,
+          isFundingRestricted: account.isFundingRestricted,
+          hasConsentedScamWarning: account.hasConsentedScamWarning,
+          payjoinReceiveEnabled: account.payjoinReceiveEnabled,
+        ),
+      );
 
-  @useResult
-  Future<Result<void, ExchangeFailure>> initializeAccess({
-    required bool isTestnet,
-  }) async {
-    final usecase = _initializeAccess;
-    if (usecase == null) return const Err(ExchangeUnexpectedFailure());
-    final previousEnvironment = _access?.isTestnet;
-    _suspendSession?.call(previousEnvironment != isTestnet);
-    return usecase.execute(isTestnet: isTestnet);
-  }
-
-  @useResult
-  Future<Result<ExchangeTradingEntry, ExchangeFailure>> tradingEntry({
-    required bool isIOS,
-  }) async {
-    final usecase = _tradingEntry;
-    if (usecase == null) return const Err(ExchangeUnexpectedFailure());
-    return usecase.execute(isIOS: isIOS);
-  }
-
-  @useResult
-  Future<Result<void, ExchangeFailure>> logout() async {
-    final operation = _logout;
-    if (operation == null) return const Err(ExchangeSessionClearFailure());
-    final failure = await operation();
-    return failure == null ? const Ok(null) : Err(failure);
-  }
-
-  @useResult
-  Future<Result<ExchangeAccount, ExchangeFailure>> getAccount() async {
-    if (_access != null && !_access.current.canUseAuthenticatedExchange) {
-      return const Err(ExchangeNotAuthenticatedFailure());
-    }
-    final generation = _access?.generation;
-    final result = await _getExchangeAccountUsecase.execute();
-    if (_access != null && _access.generation != generation) {
-      return const Err(ExchangeNotAuthenticatedFailure());
-    }
-    return result.map(
-      (account) => ExchangeAccount(
-        userNumber: account.userNumber,
-        firstName: account.profile.firstName,
-        lastName: account.profile.lastName,
-        email: account.email,
-        language: account.language,
-        currency: account.currency,
-        emailNotificationsEnabled: account.emailNotificationsEnabled,
-        isFullyVerifiedKycLevel: account.isFullyVerifiedKycLevel,
-        isLightKycLevel: account.isLightKycLevel,
-        isLimitedKycLevel: account.isLimitedKycLevel,
-        isFundingRestricted: account.isFundingRestricted,
-        hasConsentedScamWarning: account.hasConsentedScamWarning,
-        payjoinReceiveEnabled: account.payjoinReceiveEnabled,
-      ),
-    );
-  }
-
-  @useResult
   Future<Result<void, ExchangeFailure>> savePreferences({
     String? language,
     String? currency,
     bool? emailNotificationsEnabled,
-  }) async {
-    if (_access != null && !_access.current.canUseAuthenticatedExchange) {
-      return const Err(ExchangeNotAuthenticatedFailure());
-    }
-    final generation = _access?.generation;
-    final result = await _saveExchangePreferencesUsecase.execute(
-      language: language,
-      currency: currency,
-      emailNotificationsEnabled: emailNotificationsEnabled,
-    );
-    if (_access != null && _access.generation != generation) {
-      return const Err(ExchangeNotAuthenticatedFailure());
-    }
-    return result;
-  }
+  }) => _savePreferences.execute(
+    language: language,
+    currency: currency,
+    emailNotificationsEnabled: emailNotificationsEnabled,
+  );
 }

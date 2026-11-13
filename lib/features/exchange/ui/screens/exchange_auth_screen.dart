@@ -178,9 +178,16 @@ class _ExchangeAuthScreenState extends State<ExchangeAuthScreen> {
             var retry = false;
             setState(() => _isGeneratingApiKey = true);
             try {
-              final failure = await context
-                  .read<ExchangeCubit>()
-                  .completeAuthentication(_authentication);
+              final result = await _authentication.execute(
+                isCurrent: () => mounted && !_isClosing,
+              );
+              final failure = switch (result) {
+                Err(:final failure) => failure,
+                Ok() => null,
+              };
+              if (failure == null && mounted && !_isClosing) {
+                await context.read<ExchangeCubit>().fetchUserSummary();
+              }
               if (!mounted || _isClosing) return;
               if (failure != null &&
                   failure is! ExchangeAuthenticationDeferredFailure) {

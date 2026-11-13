@@ -17,7 +17,7 @@ class ExchangeAccountRepositoryImpl implements ExchangeAccountRepository {
     try {
       final model = await _datasource.getUserSummary();
       return model == null
-          ? const Err(ExchangeNotAuthenticatedFailure())
+          ? const Err(ExchangeAccountUnavailableFailure())
           : Ok(UserSummaryMapper.fromModelToEntity(model));
     } on Exception catch (error) {
       if (error case DioException(
@@ -34,7 +34,7 @@ class ExchangeAccountRepositoryImpl implements ExchangeAccountRepository {
       }
       if (error is DioException) {
         if (error.response?.statusCode == 401) {
-          return const Err(ExchangeNotAuthenticatedFailure());
+          return const Err(ExchangeSessionRejectedFailure());
         }
         if (switch (error.type) {
           DioExceptionType.connectionTimeout ||

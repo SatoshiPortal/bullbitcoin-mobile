@@ -1,65 +1,28 @@
-import 'package:bull_logger/bull_logger.dart';
-import 'package:bb_mobile/core/exchange/domain/repositories/exchange_api_key_repository.dart';
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/features/exchange/domain/exchange_failure.dart';
-import 'package:bb_mobile/features/exchange/domain/repositories/exchange_auth_repository.dart';
-import 'package:meta/meta.dart';
+import '../exchange_failure.dart';
+import '../repositories/exchange_access_repository.dart';
+import '../repositories/exchange_auth_repository.dart';
 
-/// Acquire and persist within the environment in which the web session began.
-/// The credential stays local to this operation and never enters bloc state.
+/// WebView-scoped capability; the repository serializes credential changes.
 class CompleteExchangeAuthenticationUsecase {
-  final ExchangeAuthRepository _authRepository;
-  final ExchangeApiKeyRepository _apiKeyRepository;
+  CompleteExchangeAuthenticationUsecase({
+    required ExchangeAuthRepository authRepository,
+    required this._access,
+    required this._isTestnet,
+  }) : _auth = authRepository;
+
+  final ExchangeAuthRepository _auth;
+  final ExchangeAccessRepository _access;
   final bool _isTestnet;
   Future<Result<void, ExchangeFailure>>? _inFlight;
-  bool Function() _isCurrent = () => true;
 
-  CompleteExchangeAuthenticationUsecase({
-    required this._authRepository,
-    required this._apiKeyRepository,
-    required this._isTestnet,
-  });
-
-  @useResult
-  Future<Result<void, ExchangeFailure>> execute({bool Function()? isCurrent}) {
-    final running = _inFlight;
-    if (running != null) {
-      // A duplicate may update an explicit scope, but cannot remove one.
-      if (isCurrent != null) _isCurrent = isCurrent;
-      return running;
-    }
-    _isCurrent = isCurrent ?? () => true;
-    final pending = _complete().whenComplete(() {
-      _inFlight = null;
-      _isCurrent = () => true;
-    });
-    _inFlight = pending;
-    return pending;
-  }
-
-  Future<Result<void, ExchangeFailure>> _complete() async {
-    if (!_isCurrent()) {
-      return const Err(
-        ExchangeAuthenticationFailure('Authentication cancelled'),
-      );
-    }
-    final generated = await _authRepository.generateApiKey();
-    if (!_isCurrent()) {
-      return const Err(
-        ExchangeAuthenticationFailure('Authentication cancelled'),
-      );
-    }
-    if (generated case Err(failure: ExchangeAuthenticationFailure())) {
-      log.warning(
-        'Exchange auth refused reason=invalid_response env=${_isTestnet ? 'testnet' : 'mainnet'}',
-      );
-    }
-    return switch (generated) {
-      Err(:final failure) => Err(failure),
-      Ok(:final value) => (await _apiKeyRepository.saveApiKey(
-        value,
+  Future<Result<void, ExchangeFailure>> execute({
+    required bool Function() isCurrent,
+  }) => _inFlight ??= _access
+      .completeAuthentication(
+        authRepository: _auth,
         isTestnet: _isTestnet,
-      )).mapErr((failure) => ExchangeApiKeyStorageFailure(failure.logMessage)),
-    };
-  }
+        isCurrent: isCurrent,
+      )
+      .whenComplete(() => _inFlight = null);
 }

@@ -1,12 +1,14 @@
+import 'package:bull_ui/bull_ui.dart'
+    show BullScaffold, BullTopBar, BullButton, BullText, BullThemeX, Gap;
+import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
 import 'dart:async';
 import 'dart:io';
 
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
-import 'package:bb_mobile/features/exchange/domain/exchange_session.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_state.dart';
 import 'package:bb_mobile/features/exchange/ui/screens/exchange_auth_screen.dart';
-import 'package:bb_mobile/features/exchange/ui/widgets/exchange_home_actions.dart';
 import 'package:bb_mobile/features/exchange/ui/screens/exchange_home_screen.dart';
 import 'package:bb_mobile/features/exchange/ui/screens/exchange_kyc_screen.dart';
 import 'package:bb_mobile/features/exchange/ui/screens/exchange_landing_screen.dart';
@@ -51,8 +53,11 @@ class ExchangeRouterConfig {
 class ExchangeRouter {
   static GoRoute supportChatRoute(ExchangeRouterConfig config) =>
       ExchangeSupportChatRouter.route(
-        isLoggedIn: (context) => context.read<ExchangeCubit>().state.hasUser,
-        loginScreenBuilder: (draft) => ExchangeSupportLoginScreen(draft: draft),
+        isLoggedIn: (context) => ExchangeScope.isLoggedIn(context),
+        loginScreenBuilder: (draft) => ExchangeSupportLoginScreen(
+          draft: draft,
+          canLogin: (context) => !Platform.isIOS || config.isSuperuser(context),
+        ),
         onExit: (context, fromExchange) {
           if (fromExchange) {
             context.goNamed(ExchangeRoute.exchangeHome.name);
@@ -67,7 +72,7 @@ class ExchangeRouter {
       name: ExchangeRoute.exchangeHome.name,
       path: ExchangeRoute.exchangeHome.path,
       redirect: (context, state) {
-        final notLoggedIn = context.read<ExchangeCubit>().state.notLoggedIn;
+        final notLoggedIn = !ExchangeScope.isLoggedIn(context);
         if (notLoggedIn) {
           return ExchangeRoute.exchangeLanding.path;
         }
@@ -137,36 +142,46 @@ class ExchangeRouter {
 
         return NoTransitionPage(
           key: state.pageKey,
-          child: _SettingsAuthenticationReturn(
-            onExit: exitSettingsAuth,
-            child: Scaffold(body: ExchangeAuthScreen(onExit: exitSettingsAuth)),
+          child: _AuthAccessGate(
+            config: config,
+            child: _SettingsAuthenticationReturn(
+              onExit: exitSettingsAuth,
+              child: Scaffold(
+                body: ExchangeAuthScreen(onExit: exitSettingsAuth),
+              ),
+            ),
           ),
         );
       }
       return NoTransitionPage(
         key: state.pageKey,
-        child: BlocListener<ExchangeCubit, ExchangeState>(
-          listenWhen: (previous, current) =>
-              previous.notLoggedIn && !current.notLoggedIn,
-          listener: (context, exchangeState) {
-            if (fromSupport) {
-              final isIOSNonSuperuser =
-                  Platform.isIOS && !config.isSuperuser(context);
-              context.goNamed(
-                ExchangeSupportChatFacade.routeName,
-                queryParameters: isIOSNonSuperuser ? {} : {'from': 'exchange'},
-                extra: draft,
-              );
-              return;
-            }
-            if (Platform.isIOS && !config.isSuperuser(context)) {
-              config.onExit(context);
-              return;
-            }
-            context.goNamed(ExchangeRoute.exchangeHome.name);
-          },
-          child: Scaffold(
-            body: ExchangeAuthScreen(onExit: () => config.onExit(context)),
+        child: _AuthAccessGate(
+          config: config,
+          child: BlocListener<ExchangeCubit, ExchangeState>(
+            listenWhen: (previous, current) =>
+                previous.notLoggedIn && !current.notLoggedIn,
+            listener: (context, exchangeState) {
+              if (fromSupport) {
+                final isIOSNonSuperuser =
+                    Platform.isIOS && !config.isSuperuser(context);
+                context.goNamed(
+                  ExchangeSupportChatFacade.routeName,
+                  queryParameters: isIOSNonSuperuser
+                      ? {}
+                      : {'from': 'exchange'},
+                  extra: draft,
+                );
+                return;
+              }
+              if (Platform.isIOS && !config.isSuperuser(context)) {
+                config.onExit(context);
+                return;
+              }
+              context.goNamed(ExchangeRoute.exchangeHome.name);
+            },
+            child: Scaffold(
+              body: ExchangeAuthScreen(onExit: () => config.onExit(context)),
+            ),
           ),
         ),
       );
@@ -190,13 +205,15 @@ class _SettingsAuthenticationReturn extends StatefulWidget {
 
 class _SettingsAuthenticationReturnState
     extends State<_SettingsAuthenticationReturn> {
-  StreamSubscription<ExchangeSessionStatus>? _subscription;
+  StreamSubscription<ExchangeAccess>? _subscription;
 
   @override
   void initState() {
     super.initState();
-    _subscription = locator<ExchangeSession>().watch().listen((status) {
-      if (mounted && status == ExchangeSessionStatus.authenticated) {
+    _subscription = locator<ExchangeFacade>().watchAccess().listen((status) {
+      if (mounted &&
+          status is ExchangeAccessEnabled &&
+          status.session == ExchangeAccessSession.signedIn) {
         widget.onExit();
       }
     });
@@ -210,4 +227,49 @@ class _SettingsAuthenticationReturnState
 
   @override
   Widget build(BuildContext context) => widget.child;
+}
+
+class _AuthAccessGate extends StatelessWidget {
+  const _AuthAccessGate({required this.config, required this.child});
+  final ExchangeRouterConfig config;
+  final Widget child;
+  @override
+  Widget build(BuildContext context) => ExchangeAccessBuilder(
+    builder: (context, access) {
+      final available = ExchangeAvailability.resolve(
+        platformAllowed: !Platform.isIOS || config.isSuperuser(context),
+        access: access,
+      );
+      if (available == ExchangeAvailability.signInRequired ||
+          available == ExchangeAvailability.ready) {
+        return child;
+      }
+      return BullScaffold(
+        body: SafeArea(
+          child: Column(
+            children: [
+              BullTopBar(
+                title: context.loc.exchangeAccessSettingsTitle,
+                onBack: () => config.onExit(context),
+              ),
+              const Gap(24),
+              BullText(
+                context.loc.exchangeTradingUnavailable,
+                style: const TextStyle(),
+              ),
+              const Gap(16),
+              BullButton.big(
+                label: context.loc.exchangeTradingRetry,
+                bgColor: context.bull.primary,
+                textColor: context.bull.onPrimary,
+                onPressed: () async {
+                  final _ = await locator<ExchangeFacade>().resolveAccess();
+                },
+              ),
+            ],
+          ),
+        ),
+      );
+    },
+  );
 }
