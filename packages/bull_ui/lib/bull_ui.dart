@@ -48,6 +48,7 @@ export 'package:flutter/widgets.dart'
         Key,
         LayoutBuilder,
         ListView,
+        Localizations,
         MainAxisAlignment,
         MainAxisSize,
         Navigator,
@@ -116,6 +117,8 @@ export 'src/buttons/bull_tool_button.dart';
 export 'src/buttons/bull_viewer_action_button.dart';
 
 // Inputs.
+export 'src/inputs/bull_bitcoin_amount_input.dart';
+export 'src/inputs/bull_bitcoin_amount_text.dart';
 export 'src/inputs/bull_amount_input_formatter.dart';
 export 'src/inputs/bull_checkbox.dart';
 export 'src/inputs/bull_copy_field.dart';
@@ -151,6 +154,7 @@ export 'src/layout/bull_scrollable_column.dart';
 export 'src/layout/bull_stacked_page.dart';
 
 // Data display.
+export 'src/data_display/bull_amount.dart';
 export 'src/data_display/bull_address_text.dart';
 export 'src/data_display/bull_backup_option_card.dart';
 export 'src/data_display/bull_badge.dart';
