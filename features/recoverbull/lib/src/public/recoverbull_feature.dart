@@ -90,7 +90,7 @@ final class RecoverBullFeature {
     },
   );
 
-  Future<T?> open<T>(
+  static Future<T?> open<T>(
     BuildContext context,
     RecoverBullFlow flow, {
     domain.EncryptedVault? vault,
