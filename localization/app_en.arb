@@ -15207,9 +15207,5 @@
   "coreScreensOutputsExceedInputs": "Outputs exceed inputs: this transaction is invalid and the network will reject it.",
   "@coreScreensOutputsExceedInputs": {
     "description": "Transaction review alert when a Bitcoin transaction's outputs exceed its inputs"
-  },
-  "appSettingsForceAppStoreWordingTitle": "Force App Store wording",
-  "@appSettingsForceAppStoreWordingTitle": {
-    "description": "Development switch in app settings (Dev Mode only): show the App Store vocabulary on any platform"
   }
 }
