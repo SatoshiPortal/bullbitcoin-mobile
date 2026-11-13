@@ -34,11 +34,12 @@ void main() {
         exchangeVisible: const Stream.empty(),
       );
       await cubit.load();
-      final initial = cubit.state.draft!.actions;
+      final initial = cubit.state.draft?.actions;
+      expect(initial, isNotNull);
       storage.failWrite = true;
       await cubit.save(QuickActionSelection([QuickAction.buy]));
       expect(cubit.state.selection, isNull);
-      expect(cubit.state.draft!.actions, initial);
+      expect(cubit.state.draft?.actions, initial);
       expect(cubit.state.saving, isFalse);
       await cubit.close();
     },
@@ -56,7 +57,7 @@ void main() {
     storage.firstRead.complete(null);
     await load;
     expect(cubit.state.initialized, isTrue);
-    expect(cubit.state.draft!.actions, QuickActionsLayout.defaults);
+    expect(cubit.state.draft?.actions, QuickActionsLayout.defaults);
     await cubit.close();
   });
 
