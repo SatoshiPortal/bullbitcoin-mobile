@@ -1,115 +1,106 @@
-import 'package:primitives/primitives.dart' show BitcoinUnit;
+import 'dart:async';
+
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
-import 'package:bb_mobile/features/settings/public/settings_amount_scope.dart';
-import 'package:bb_mobile/generated/l10n/localization.dart';
+import 'package:bb_mobile/features/settings/public/settings_facade.dart';
 import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:primitives/primitives.dart';
 
 class _SettingsCubit extends Mock implements SettingsCubit {}
 
-SettingsState _state(BitcoinUnit unit) => SettingsState(
+SettingsState _loaded({SettingsFailure? failure}) => SettingsState(
   storedSettings: SettingsEntity(
     environment: Environment.mainnet,
-    bitcoinUnit: unit,
+    bitcoinUnit: BitcoinUnit.btc,
     currencyCode: 'USD',
     hideAmounts: false,
   ),
+  failure: failure,
 );
 
+class _Child extends StatefulWidget {
+  const _Child();
+
+  @override
+  State<_Child> createState() => _ChildState();
+}
+
+class _ChildState extends State<_Child> {
+  @override
+  Widget build(BuildContext context) => const SizedBox();
+}
+
 void main() {
-  testWidgets('exposes the default unit, localized messages and writer', (
+  setUpAll(() => registerFallbackValue(BitcoinUnit.btc));
+
+  testWidgets('loading preserves descendant state and masks until ready', (
     tester,
   ) async {
     final cubit = _SettingsCubit();
-    var state = _state(BitcoinUnit.btc);
-    when(() => cubit.state).thenAnswer((_) => state);
-    when(
-      () => cubit.stream,
-    ).thenAnswer((_) => const Stream<SettingsState>.empty());
-    when(() => cubit.toggleSatsUnit(any())).thenAnswer((invocation) async {
-      final active = invocation.positionalArguments.single as bool;
-      state = _state(active ? BitcoinUnit.sats : BitcoinUnit.btc);
+    final controller = StreamController<SettingsState>.broadcast();
+    addTearDown(() async {
+      await tester.pumpWidget(const SizedBox());
+      await controller.close();
     });
-    BullAmountPreferences? found;
-    AppLocalizations? localizations;
+    var state = const SettingsState();
+    when(() => cubit.state).thenAnswer((_) => state);
+    when(() => cubit.stream).thenAnswer((_) => controller.stream);
     await tester.pumpWidget(
       MaterialApp(
-        locale: const Locale('en'),
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
-        supportedLocales: AppLocalizations.supportedLocales,
         home: BlocProvider<SettingsCubit>.value(
           value: cubit,
-          child: SettingsAmountScope(
-            child: Builder(
-              builder: (context) {
-                found = BullAmountPreferencesScope.maybeOf(context);
-                localizations = AppLocalizations.of(context);
-                return const SizedBox.shrink();
-              },
-            ),
+          child: SettingsFacade.amountScope(
+            navigatorKey: GlobalKey<NavigatorState>(),
+            child: const _Child(),
           ),
         ),
       ),
     );
-    final preferences = found;
-    final loc = localizations;
-    expect(preferences, isNotNull);
-    expect(loc, isNotNull);
-    if (preferences == null || loc == null) throw StateError('Missing scope');
-    expect(preferences.defaultUnit, BullAmountUnit.btc);
-    expect(preferences.globalActionLabel, loc.amountChangeDefaultEverywhere);
-    expect(preferences.tooltip, loc.amountGesturesHint);
-    expect(
-      preferences.satsEverywhereMessage,
-      loc.amountsDisplayedEverywhereSats,
-    );
-    expect(preferences.btcEverywhereMessage, loc.amountsDisplayedEverywhereBtc);
-    expect(preferences.undoLabel, loc.amountUndo);
-    expect(preferences.failureMessage, loc.oopsSomethingWentWrong);
-    expect(await preferences.changeDefaultUnit(BullAmountUnit.sats), isTrue);
-    verify(() => cubit.toggleSatsUnit(true)).called(1);
-    expect(cubit.state.bitcoinUnit, BitcoinUnit.sats);
-    expect(await preferences.changeDefaultUnit(BullAmountUnit.btc), isTrue);
-    verify(() => cubit.toggleSatsUnit(false)).called(1);
-    expect(cubit.state.bitcoinUnit, BitcoinUnit.btc);
+    final original = tester.state(find.byType(_Child));
+    var scope = tester.widget<BullAmountScope>(find.byType(BullAmountScope));
+    expect(scope.snapshot.isReady, isFalse);
+    expect(scope.snapshot.hideAmounts, isTrue);
+    state = _loaded();
+    controller.add(state);
+    await tester.pump();
+    await tester.pump();
+    expect(tester.state(find.byType(_Child)), same(original));
+    scope = tester.widget<BullAmountScope>(find.byType(BullAmountScope));
+    expect(scope.snapshot.isReady, isTrue);
+    expect(scope.snapshot.hideAmounts, isFalse);
+    state = _loaded(failure: const SettingsStorageFailure());
+    controller.add(state);
+    await tester.pump();
+    await tester.pump();
+    scope = tester.widget<BullAmountScope>(find.byType(BullAmountScope));
+    expect(scope.snapshot.isReady, isFalse);
+    expect(scope.snapshot.hideAmounts, isTrue);
   });
 
-  testWidgets('reports failure when the requested unit was not stored', (
-    tester,
-  ) async {
+  testWidgets('same-target failed write reports failure', (tester) async {
     final cubit = _SettingsCubit();
-    when(() => cubit.state).thenReturn(_state(BitcoinUnit.btc));
-    when(
-      () => cubit.stream,
-    ).thenAnswer((_) => const Stream<SettingsState>.empty());
-    when(() => cubit.toggleSatsUnit(any())).thenAnswer((_) async {});
-    BullAmountPreferences? found;
+    when(() => cubit.state).thenReturn(_loaded());
+    when(() => cubit.stream).thenAnswer((_) => const Stream.empty());
+    when(() => cubit.setBitcoinUnit(any())).thenAnswer(
+      (_) async => const Err<void, SettingsFailure>(SettingsStorageFailure()),
+    );
     await tester.pumpWidget(
       MaterialApp(
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
-        supportedLocales: AppLocalizations.supportedLocales,
         home: BlocProvider<SettingsCubit>.value(
           value: cubit,
-          child: SettingsAmountScope(
-            child: Builder(
-              builder: (context) {
-                found = BullAmountPreferencesScope.maybeOf(context);
-                return const SizedBox.shrink();
-              },
-            ),
+          child: SettingsFacade.amountScope(
+            navigatorKey: GlobalKey<NavigatorState>(),
+            child: const SizedBox(),
           ),
         ),
       ),
     );
-    final preferences = found;
-    expect(preferences, isNotNull);
-    if (preferences == null) throw StateError('Missing scope');
-    expect(await preferences.changeDefaultUnit(BullAmountUnit.sats), isFalse);
-    verify(() => cubit.toggleSatsUnit(true)).called(1);
-    expect(cubit.state.bitcoinUnit, BitcoinUnit.btc);
+    final scope = tester.widget<BullAmountScope>(find.byType(BullAmountScope));
+    expect(await scope.writeUnit(BitcoinUnit.btc), isFalse);
+    verify(() => cubit.setBitcoinUnit(BitcoinUnit.btc)).called(1);
   });
 }

@@ -10,7 +10,13 @@ import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/utils/payment_request.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullBitcoinAmountInput, BullAmountUnitToggle, BullButton;
+    show
+        BullAmountScope,
+        BullAmountSnapshot,
+        BullAmountUnitToggle,
+        BullBitcoinAmountInput,
+        BullButton,
+        bullUiLocalizationsDelegate;
 import 'package:bb_mobile/core/widgets/price_input/balance_row.dart';
 import 'package:bb_mobile/core/widgets/price_input/price_input.dart';
 import 'package:bb_mobile/features/send/domain/send_failure.dart';
@@ -75,7 +81,11 @@ void main() {
     await tester.pumpWidget(
       MaterialApp(
         theme: AppTheme.themeData(AppThemeType.light),
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        localizationsDelegates: const [
+          bullUiLocalizationsDelegate,
+          ...AppLocalizations.localizationsDelegates,
+        ],
+        builder: _amountScope,
         supportedLocales: AppLocalizations.supportedLocales,
         home: BlocProvider<SendCubit>.value(
           value: cubit,
@@ -132,7 +142,11 @@ void main() {
     await tester.pumpWidget(
       MaterialApp(
         theme: AppTheme.themeData(AppThemeType.light),
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        localizationsDelegates: const [
+          bullUiLocalizationsDelegate,
+          ...AppLocalizations.localizationsDelegates,
+        ],
+        builder: _amountScope,
         supportedLocales: AppLocalizations.supportedLocales,
         home: BlocProvider<SendCubit>.value(
           value: cubit,
@@ -224,7 +238,11 @@ void main() {
     await tester.pumpWidget(
       MaterialApp(
         theme: AppTheme.themeData(AppThemeType.light),
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        localizationsDelegates: const [
+          bullUiLocalizationsDelegate,
+          ...AppLocalizations.localizationsDelegates,
+        ],
+        builder: _amountScope,
         supportedLocales: AppLocalizations.supportedLocales,
         home: MultiBlocProvider(
           providers: [
@@ -308,7 +326,11 @@ void main() {
     await tester.pumpWidget(
       MaterialApp(
         theme: AppTheme.themeData(AppThemeType.light),
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        localizationsDelegates: const [
+          bullUiLocalizationsDelegate,
+          ...AppLocalizations.localizationsDelegates,
+        ],
+        builder: _amountScope,
         supportedLocales: AppLocalizations.supportedLocales,
         home: BlocProvider<SendCubit>.value(
           value: cubit,
@@ -374,7 +396,11 @@ void main() {
     await tester.pumpWidget(
       MaterialApp(
         theme: AppTheme.themeData(AppThemeType.light),
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        localizationsDelegates: const [
+          bullUiLocalizationsDelegate,
+          ...AppLocalizations.localizationsDelegates,
+        ],
+        builder: _amountScope,
         supportedLocales: AppLocalizations.supportedLocales,
         home: BlocProvider<SendCubit>.value(
           value: cubit,
@@ -445,7 +471,11 @@ void main() {
     await tester.pumpWidget(
       MaterialApp(
         theme: AppTheme.themeData(AppThemeType.light),
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        localizationsDelegates: const [
+          bullUiLocalizationsDelegate,
+          ...AppLocalizations.localizationsDelegates,
+        ],
+        builder: _amountScope,
         supportedLocales: AppLocalizations.supportedLocales,
         home: BlocProvider<SendCubit>.value(
           value: cubit,
@@ -512,7 +542,11 @@ void main() {
     await tester.pumpWidget(
       MaterialApp(
         theme: AppTheme.themeData(AppThemeType.light),
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        localizationsDelegates: const [
+          bullUiLocalizationsDelegate,
+          ...AppLocalizations.localizationsDelegates,
+        ],
+        builder: _amountScope,
         supportedLocales: AppLocalizations.supportedLocales,
         home: MultiBlocProvider(
           providers: [
@@ -578,7 +612,11 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           theme: AppTheme.themeData(AppThemeType.light),
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          localizationsDelegates: const [
+            bullUiLocalizationsDelegate,
+            ...AppLocalizations.localizationsDelegates,
+          ],
+          builder: _amountScope,
           supportedLocales: AppLocalizations.supportedLocales,
           home: BlocProvider<SendCubit>.value(
             value: cubit,
@@ -664,7 +702,11 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           theme: AppTheme.themeData(AppThemeType.light),
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          localizationsDelegates: const [
+            bullUiLocalizationsDelegate,
+            ...AppLocalizations.localizationsDelegates,
+          ],
+          builder: _amountScope,
           supportedLocales: AppLocalizations.supportedLocales,
           home: MultiBlocProvider(
             providers: [
@@ -706,3 +748,13 @@ void main() {
     },
   );
 }
+
+Widget _amountScope(BuildContext context, Widget? child) => BullAmountScope(
+  snapshot: const BullAmountSnapshot(
+    unit: BitcoinUnit.sats,
+    hideAmounts: false,
+    isReady: true,
+  ),
+  writeUnit: (_) async => true,
+  child: child ?? const SizedBox.shrink(),
+);
