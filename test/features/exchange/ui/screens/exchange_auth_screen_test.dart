@@ -1,3 +1,5 @@
+import 'package:bb_mobile/features/exchange/data/exchange_access_repository_impl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 
 import 'package:bb_mobile/core/themes/app_theme.dart';
@@ -69,6 +71,18 @@ void main() {
       final settings = _Settings();
       final keys = _Keys();
       final cubit = _Cubit();
+      SharedPreferences.setMockInitialValues({});
+      when(
+        () => keys.readActiveApiKey(isTestnet: true),
+      ).thenAnswer((_) async => const Ok(null));
+      final access = ExchangeAccessRepositoryImpl(
+        apiKeyRepository: keys,
+        readEnvironment: () async => true,
+        platformAllowed: () async => true,
+        disconnectNotifications: () async {},
+        clearCookies: () async {},
+      );
+      await access.enable();
       when(settings.execute).thenAnswer(
         (_) async => const Ok(
           SettingsEntity(
@@ -111,27 +125,10 @@ void main() {
               },
             ),
           ),
-          apiKeyRepository: keys,
+          access: access,
           isTestnet: session.isTestnet,
         ),
       );
-      registerFallbackValue(
-        locator<CompleteExchangeAuthenticationUsecase>(
-          param1: (String _) async => '',
-          param2: (isTestnet: true, isOpen: () => true),
-        ),
-      );
-      when(() => cubit.completeAuthentication(any())).thenAnswer((
-        invocation,
-      ) async {
-        final operation =
-            invocation.positionalArguments.first
-                as CompleteExchangeAuthenticationUsecase;
-        return switch (await operation.execute()) {
-          Err(:final failure) => failure,
-          Ok() => null,
-        };
-      });
       const channel = MethodChannel('webview_cookie_manager');
       tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(channel, (
         call,
@@ -187,7 +184,8 @@ void main() {
       expect(exits, 0);
       expect(find.byType(CircularProgressIndicator), findsNothing);
       expect(platform.controller?.reloadCount, scenario == 'retry' ? 1 : 0);
-      verifyZeroInteractions(keys);
+      verify(() => keys.readActiveApiKey(isTestnet: true)).called(1);
+      verifyNoMoreInteractions(keys);
     });
   }
 }

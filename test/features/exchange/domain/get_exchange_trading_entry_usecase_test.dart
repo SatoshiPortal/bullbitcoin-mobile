@@ -1,100 +1,38 @@
-import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_trading_entry_usecase.dart';
-import 'package:bb_mobile/features/exchange_access/public/exchange_access_facade.dart';
+import 'package:bb_mobile/features/exchange/domain/exchange_access.dart';
+import 'package:bb_mobile/features/exchange/domain/exchange_availability.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  test('trading entry respects choice, session, transition and platform', () {
-    const cases = <(ExchangeAccess, bool, ExchangeTradingEntry)>[
-      (
-        ExchangeAccess(
-          choice: ExchangeAccessChoice.enabled,
-          session: ExchangeSessionFact.authenticated,
-        ),
-        true,
-        ExchangeTradingEntry.allowed,
-      ),
-      (
-        ExchangeAccess(
-          choice: ExchangeAccessChoice.enabled,
-          session: ExchangeSessionFact.anonymous,
-        ),
-        true,
-        ExchangeTradingEntry.authenticationRequired,
-      ),
-      (
-        ExchangeAccess(
-          choice: ExchangeAccessChoice.disabled,
-          session: ExchangeSessionFact.authenticated,
-        ),
-        true,
-        ExchangeTradingEntry.unavailable,
-      ),
-      (
-        ExchangeAccess(
-          choice: ExchangeAccessChoice.unset,
-          session: ExchangeSessionFact.anonymous,
-        ),
-        true,
-        ExchangeTradingEntry.unavailable,
-      ),
-      (
-        ExchangeAccess(
-          choice: ExchangeAccessChoice.enabled,
-          session: ExchangeSessionFact.resolving,
-        ),
-        true,
-        ExchangeTradingEntry.unavailable,
-      ),
-      (
-        ExchangeAccess(
-          choice: ExchangeAccessChoice.enabled,
-          session: ExchangeSessionFact.unavailable,
-        ),
-        true,
-        ExchangeTradingEntry.unavailable,
-      ),
-      (
-        ExchangeAccess(
-          choice: ExchangeAccessChoice.enabled,
-          session: ExchangeSessionFact.expired,
-        ),
-        true,
-        ExchangeTradingEntry.unavailable,
-      ),
-      (
-        ExchangeAccess(
-          choice: ExchangeAccessChoice.enabled,
-          session: ExchangeSessionFact.authenticated,
-          transition: ExchangeAccessTransition.disabling,
-        ),
-        true,
-        ExchangeTradingEntry.unavailable,
-      ),
-      (
-        ExchangeAccess(
-          choice: ExchangeAccessChoice.enabled,
-          session: ExchangeSessionFact.authenticated,
-        ),
-        false,
-        ExchangeTradingEntry.unavailable,
-      ),
-      (
-        ExchangeAccess(
-          choice: ExchangeAccessChoice.enabled,
-          session: ExchangeSessionFact.anonymous,
-        ),
-        false,
-        ExchangeTradingEntry.unavailable,
-      ),
-    ];
-    for (final (access, allowed, expected) in cases) {
+  const cases = <(ExchangeAccess, ExchangeAvailability)>[
+    (ExchangeAccessResolving(), ExchangeAvailability.unavailable),
+    (ExchangeAccessUnreadable(), ExchangeAvailability.unavailable),
+    (ExchangeAccessSignOutIncomplete(), ExchangeAvailability.hidden),
+    (ExchangeAccessDisabled(), ExchangeAvailability.hidden),
+    (
+      ExchangeAccessEnabled(ExchangeAccessSession.unreadable),
+      ExchangeAvailability.unavailable,
+    ),
+    (
+      ExchangeAccessEnabled(ExchangeAccessSession.signedOut),
+      ExchangeAvailability.signInRequired,
+    ),
+    (
+      ExchangeAccessEnabled(ExchangeAccessSession.signedIn),
+      ExchangeAvailability.ready,
+    ),
+  ];
+  for (final (access, expected) in cases) {
+    test('$access maps to $expected when platform allows access', () {
       expect(
-        GetExchangeTradingEntryUsecase.resolve(
-          access: access,
-          platformAllowed: allowed,
-        ),
+        ExchangeAvailability.resolve(platformAllowed: true, access: access),
         expected,
       );
-    }
-  });
+    });
+    test('$access is hidden when platform disallows access', () {
+      expect(
+        ExchangeAvailability.resolve(platformAllowed: false, access: access),
+        ExchangeAvailability.hidden,
+      );
+    });
+  }
 }

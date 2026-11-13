@@ -1,5 +1,5 @@
-import 'dart:io';
-import 'package:bull_logger/bull_logger.dart';
+import 'package:bb_mobile/features/exchange/data/exchange_access_repository_impl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import 'dart:async';
 
@@ -34,8 +34,22 @@ ExchangeAuthRepositoryImpl _repository(Future<Object> Function() response) =>
     );
 
 class _Keys extends Fake implements ExchangeApiKeyRepository {
+  @override
+  Future<Result<String?, ExchangeApiKeyFailure>> readActiveApiKey({
+    required bool isTestnet,
+  }) async => const Ok(null);
+  @override
+  Future<Result<void, ExchangeApiKeyFailure>> deleteApiKey({
+    required bool isTestnet,
+  }) async {
+    saved = null;
+    return const Ok(null);
+  }
+
   ExchangeApiKey? saved;
   var writes = 0;
+  Completer<void>? writeGate;
+  final writeStarted = Completer<void>();
   bool? savedEnvironment;
   Result<void, ExchangeApiKeyFailure> result = const Ok(null);
   @override
@@ -44,35 +58,41 @@ class _Keys extends Fake implements ExchangeApiKeyRepository {
     required bool isTestnet,
   }) async {
     writes++;
+    if (!writeStarted.isCompleted) {
+      writeStarted.complete();
+    }
+    await writeGate?.future;
     saved = key;
     savedEnvironment = isTestnet;
     return result;
   }
 }
 
-void main() {
-  test(
-    'invalid auth has one persisted owner after response decoding',
-    () async {
-      final directory = await Directory.systemTemp.createTemp('auth-log-');
-      log = Logger.replace(directory: directory);
-      addTearDown(() async {
-        await log.flush();
-        await directory.delete(recursive: true);
-      });
-      final usecase = CompleteExchangeAuthenticationUsecase(
-        authRepository: _repository(
-          () async => throw Exception('synthetic-private-value'),
-        ),
-        apiKeyRepository: _Keys(),
-        isTestnet: true,
-      );
-      expect(await usecase.execute(), isA<Err>());
-      expect((await log.readLogs()).map((row) => row.split('\t')[2]), [
-        'Exchange auth refused reason=invalid_response env=testnet',
-      ]);
-    },
+Future<ExchangeAccessRepositoryImpl> _access(_Keys keys, bool isTestnet) async {
+  final access = ExchangeAccessRepositoryImpl(
+    apiKeyRepository: keys,
+    readEnvironment: () async => isTestnet,
+    platformAllowed: () async => true,
+    disconnectNotifications: () async {},
+    clearCookies: () async {},
   );
+  await access.enable();
+  return access;
+}
+
+void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+  setUp(() => SharedPreferences.setMockInitialValues({}));
+  test('invalid auth is sanitized at the repository boundary', () async {
+    final result = await _repository(
+      () async => throw Exception('synthetic-private-value'),
+    ).generateApiKey();
+    expect(result, isA<Err<ExchangeApiKey, ExchangeFailure>>());
+    expect(
+      (result as Err<ExchangeApiKey, ExchangeFailure>).failure.logMessage,
+      isNot(contains('synthetic-private-value')),
+    );
+  });
   for (final payload in <String, Object>{
     'bare': fields,
     'apiKey': {'apiKey': fields},
@@ -140,10 +160,10 @@ void main() {
         final keys = _Keys();
         final usecase = CompleteExchangeAuthenticationUsecase(
           authRepository: _repository(() async => payload),
-          apiKeyRepository: keys,
+          access: await _access(keys, true),
           isTestnet: true,
         );
-        final result = await usecase.execute();
+        final result = await usecase.execute(isCurrent: () => true);
         expect(
           result,
           isA<Err<void, ExchangeFailure>>().having(
@@ -208,10 +228,13 @@ void main() {
     for (final environment in [true, false]) {
       final usecase = CompleteExchangeAuthenticationUsecase(
         authRepository: _repository(() async => fields),
-        apiKeyRepository: keys,
+        access: await _access(keys, environment),
         isTestnet: environment,
       );
-      expect(await usecase.execute(), isA<Ok<void, ExchangeFailure>>());
+      expect(
+        await usecase.execute(isCurrent: () => true),
+        isA<Ok<void, ExchangeFailure>>(),
+      );
       expect(keys.savedEnvironment, environment);
       expect(keys.saved?.key, 'synthetic-key');
     }
@@ -221,9 +244,9 @@ void main() {
     final keys = _Keys()..result = const Err(ExchangeApiKeySaveFailure());
     final result = await CompleteExchangeAuthenticationUsecase(
       authRepository: _repository(() async => fields),
-      apiKeyRepository: keys,
+      access: await _access(keys, true),
       isTestnet: true,
-    ).execute();
+    ).execute(isCurrent: () => true);
     expect(
       result,
       isA<Err<void, ExchangeFailure>>().having(
@@ -252,9 +275,9 @@ void main() {
         );
         final result = await CompleteExchangeAuthenticationUsecase(
           authRepository: ExchangeAuthRepositoryImpl(datasource: datasource),
-          apiKeyRepository: keys,
+          access: await _access(keys, true),
           isTestnet: true,
-        ).execute();
+        ).execute(isCurrent: () => true);
         expect(result, isA<Err<void, ExchangeFailure>>());
         expect(keys.saved, isNull);
         expect(calls, closeBefore ? 0 : 1);
@@ -273,36 +296,10 @@ void main() {
           calls++;
           return response.future;
         }),
-        apiKeyRepository: keys,
+        access: await _access(keys, true),
         isTestnet: true,
       );
-      final first = usecase.execute();
-      final second = usecase.execute();
-      response.complete(fields);
-      expect(await first, isA<Ok<void, ExchangeFailure>>());
-      expect(await second, isA<Ok<void, ExchangeFailure>>());
-      expect(calls, 1);
-      expect(keys.writes, 1);
-    },
-  );
-
-  test(
-    'the latest active duplicate keeps shared authentication current',
-    () async {
-      final response = Completer<Object>();
-      var calls = 0;
-      final keys = _Keys();
-      final usecase = CompleteExchangeAuthenticationUsecase(
-        authRepository: _repository(() {
-          calls++;
-          return response.future;
-        }),
-        apiKeyRepository: keys,
-        isTestnet: true,
-      );
-      var firstIsCurrent = true;
-      final first = usecase.execute(isCurrent: () => firstIsCurrent);
-      firstIsCurrent = false;
+      final first = usecase.execute(isCurrent: () => true);
       final second = usecase.execute(isCurrent: () => true);
       response.complete(fields);
       expect(await first, isA<Ok<void, ExchangeFailure>>());
@@ -312,24 +309,49 @@ void main() {
     },
   );
 
+  test('duplicate cannot revive the cancelled first scope', () async {
+    final response = Completer<Object>();
+    final keys = _Keys();
+    var current = true;
+    var calls = 0;
+    final started = Completer<void>();
+    final usecase = CompleteExchangeAuthenticationUsecase(
+      authRepository: _repository(() {
+        calls++;
+        started.complete();
+        return response.future;
+      }),
+      access: await _access(keys, true),
+      isTestnet: true,
+    );
+    final first = usecase.execute(isCurrent: () => current);
+    await started.future;
+    current = false;
+    final duplicate = usecase.execute(isCurrent: () => true);
+    response.complete(fields);
+    expect(await first, isA<Err<void, ExchangeFailure>>());
+    expect(await duplicate, isA<Err<void, ExchangeFailure>>());
+    expect(calls, 1);
+    expect(keys.writes, 0);
+  });
+
   test(
-    'a predicate-less duplicate cannot widen a cancelled operation',
+    'closing the view cannot delete a credential whose write already started',
     () async {
-      final response = Completer<Object>();
-      final keys = _Keys();
-      var isCurrent = true;
+      final gate = Completer<void>();
+      final keys = _Keys()..writeGate = gate;
+      var current = true;
       final usecase = CompleteExchangeAuthenticationUsecase(
-        authRepository: _repository(() => response.future),
-        apiKeyRepository: keys,
+        authRepository: _repository(() async => fields),
+        access: await _access(keys, true),
         isTestnet: true,
       );
-      final first = usecase.execute(isCurrent: () => isCurrent);
-      isCurrent = false;
-      final second = usecase.execute();
-      response.complete(fields);
-      expect(await first, isA<Err<void, ExchangeFailure>>());
-      expect(await second, isA<Err<void, ExchangeFailure>>());
-      expect(keys.writes, 0);
+      final result = usecase.execute(isCurrent: () => current);
+      await keys.writeStarted.future;
+      current = false;
+      gate.complete();
+      expect(await result, isA<Ok<void, ExchangeFailure>>());
+      expect(keys.saved, isNotNull);
     },
   );
 
@@ -340,11 +362,17 @@ void main() {
       authRepository: _repository(
         () async => ++calls == 1 ? {'error': 'refused'} : fields,
       ),
-      apiKeyRepository: keys,
+      access: await _access(keys, true),
       isTestnet: true,
     );
-    expect(await usecase.execute(), isA<Err<void, ExchangeFailure>>());
-    expect(await usecase.execute(), isA<Ok<void, ExchangeFailure>>());
+    expect(
+      await usecase.execute(isCurrent: () => true),
+      isA<Err<void, ExchangeFailure>>(),
+    );
+    expect(
+      await usecase.execute(isCurrent: () => true),
+      isA<Ok<void, ExchangeFailure>>(),
+    );
     expect(calls, 2);
     expect(keys.writes, 1);
   });

@@ -29,6 +29,36 @@ void main() {
     );
   }
 
+  test('missing JSON-RPC result never reports a rejected session', () async {
+    when(datasource.getUserSummary).thenAnswer((_) async => null);
+    final result = await repository.getAccount();
+    expect(
+      (result as Err<UserSummary, ExchangeFailure>).failure,
+      isA<ExchangeAccountUnavailableFailure>(),
+    );
+  });
+
+  test('only a server 401 reports a rejected session', () async {
+    when(datasource.getUserSummary).thenThrow(responseError(401));
+    final result = await repository.getAccount();
+    expect(
+      (result as Err<UserSummary, ExchangeFailure>).failure.runtimeType
+          .toString(),
+      'ExchangeSessionRejectedFailure',
+    );
+  });
+
+  test('a missing local key is not a server rejection', () async {
+    when(
+      datasource.getUserSummary,
+    ).thenThrow(const ExchangeAuthenticationException());
+    final result = await repository.getAccount();
+    expect(
+      (result as Err<UserSummary, ExchangeFailure>).failure,
+      isA<ExchangeNotAuthenticatedFailure>(),
+    );
+  });
+
   test('401 is a definitive refusal; 403 and 503 retain the session', () async {
     for (final status in [401, 403, 503]) {
       when(datasource.getUserSummary).thenThrow(responseError(status));
@@ -38,7 +68,7 @@ void main() {
       expect(
         failure,
         status == 401
-            ? isA<ExchangeNotAuthenticatedFailure>()
+            ? isA<ExchangeSessionRejectedFailure>()
             : isA<ExchangeAccountUnavailableFailure>(),
       );
       expect(failure.logMessage, isNull);
