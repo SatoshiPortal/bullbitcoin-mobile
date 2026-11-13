@@ -21,6 +21,7 @@ workspace:
   - packages/screen_awake
   - packages/bull_logger
   - packages/bull_pricer
+  - packages/novlang
   - features/logs
   - features/recoverbull
 
@@ -30,6 +31,7 @@ dependencies:
   secrets:
   bull_payjoin:
   bull_pricer:
+  novlang:
   bull_ui:
   primitives:
   bull_tor:
@@ -162,6 +164,8 @@ dev_dependencies:
   flutter_gen_runner: any
   drift_dev: ^2.29.0
   melos: ^7.8.1
+  # Direct dep for tools/novlang_bridge.dart, which reads the novlang manifest.
+  yaml: ^3.1.3
   bloc_test: ^10.0.0
 
 # Melos monorepo workspace. The Flutter app remains at the root
