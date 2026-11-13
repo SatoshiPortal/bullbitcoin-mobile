@@ -222,8 +222,8 @@ void main() {
       when(() => exchange.stream).thenAnswer((_) => const Stream.empty());
       final access = _MockExchangeFacade();
       when(
-        () => access.tradingEntry(isIOS: false),
-      ).thenAnswer((_) async => const Ok(ExchangeTradingEntry.allowed));
+        () => access.guardTradingEntry(),
+      ).thenAnswer((_) async => const Ok(ExchangeAvailability.ready));
       locator.pushNewScope(
         init: (scope) {
           scope.registerFactory<BuyBloc>(() => bloc);

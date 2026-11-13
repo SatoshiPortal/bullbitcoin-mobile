@@ -1,13 +1,11 @@
-import 'package:bb_mobile/features/exchange_access/public/exchange_access_facade.dart';
+import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/watch_wallet_quick_actions_usecase.dart';
 import 'package:bull_quick_actions/bull_quick_actions.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   test('disabled exchange keeps wallet actions available', () {
-    final policy = WalletQuickActionsPolicy(
-      const ExchangeAccess(choice: ExchangeAccessChoice.disabled),
-    );
+    final policy = WalletQuickActionsPolicy(const ExchangeAccessDisabled());
     expect(policy.available(platformAllowsExchange: true), {
       QuickAction.transfer,
       QuickAction.map,
@@ -28,10 +26,7 @@ void main() {
     'enabled and signed-in accounts offer all actions with wallet defaults',
     () {
       final policy = WalletQuickActionsPolicy(
-        const ExchangeAccess(
-          choice: ExchangeAccessChoice.enabled,
-          lastKnownAuthenticated: true,
-        ),
+        const ExchangeAccessEnabled(ExchangeAccessSession.signedIn),
       );
       expect(
         policy.available(platformAllowsExchange: true),
@@ -52,7 +47,7 @@ void main() {
 
   test('enabled anonymous accounts retain wallet-first defaults', () {
     final policy = WalletQuickActionsPolicy(
-      const ExchangeAccess(choice: ExchangeAccessChoice.enabled),
+      const ExchangeAccessEnabled(ExchangeAccessSession.signedOut),
     );
     expect(
       policy.available(platformAllowsExchange: true),
@@ -70,11 +65,7 @@ void main() {
     'disabling exchange removes account actions while retaining transfer',
     () {
       final policy = WalletQuickActionsPolicy(
-        const ExchangeAccess(
-          choice: ExchangeAccessChoice.enabled,
-          transition: ExchangeAccessTransition.disabling,
-          lastKnownAuthenticated: true,
-        ),
+        const ExchangeAccessSignOutIncomplete(),
       );
       expect(
         policy.available(platformAllowsExchange: true),
@@ -94,7 +85,7 @@ void main() {
     'iOS without superuser hides exchange while preserving wallet actions',
     () {
       final policy = WalletQuickActionsPolicy(
-        const ExchangeAccess(choice: ExchangeAccessChoice.enabled),
+        const ExchangeAccessEnabled(ExchangeAccessSession.signedOut),
       );
       expect(policy.available(platformAllowsExchange: false), {
         QuickAction.map,

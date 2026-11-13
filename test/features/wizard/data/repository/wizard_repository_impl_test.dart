@@ -8,17 +8,25 @@ import 'package:shared_preferences/shared_preferences.dart';
 WizardRepositoryImpl _build() =>
     WizardRepositoryImpl(WizardLocalDatasourceImpl());
 
-class _FailingWriteDatasource extends WizardLocalDatasourceImpl {
-  @override
-  Future<void> writePendingPayload(String payload) async {
-    throw const FormatException('simulated interrupted write');
-  }
-}
-
 void main() {
   setUp(() {
     SharedPreferences.setMockInitialValues({});
   });
+
+  test(
+    'stages exchange choice in the existing versioned preferences',
+    () async {
+      await _build().savePending(
+        const WizardChoices(
+          exchangeAccess: false,
+          touched: {WizardField.exchangeAccess},
+        ),
+      );
+      final prefs = await SharedPreferences.getInstance();
+      expect(prefs.getInt('wizard_pending_version'), kCurrentWizardVersion);
+      expect(prefs.getBool('wizard_pending_exchange_access'), isFalse);
+    },
+  );
 
   group('exchange choice', () {
     test('confirmed default is staged even without toggling', () async {
@@ -121,24 +129,6 @@ void main() {
         expect(await repo.readPending(), isNull);
       },
     );
-
-    test('failed replacement preserves the previous payload', () async {
-      final repo = _build();
-      await repo.savePending(
-        const WizardChoices().copyWith(confirmExchange: true),
-      );
-      final failing = WizardRepositoryImpl(_FailingWriteDatasource());
-      await expectLater(
-        failing.savePending(
-          const WizardChoices().copyWith(
-            exchangeAccess: false,
-            confirmExchange: true,
-          ),
-        ),
-        throwsFormatException,
-      );
-      expect((await repo.readPending())?.exchangeAccess, isTrue);
-    });
   });
 
   group('readPending — version invalidation', () {

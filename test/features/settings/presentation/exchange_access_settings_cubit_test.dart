@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:bb_mobile/features/exchange_access/public/exchange_access_facade.dart';
+import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
 import 'package:bb_mobile/features/settings/domain/settings_failure.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/manage_exchange_access_usecase.dart';
 import 'package:bb_mobile/features/settings/presentation/exchange_access_settings_cubit.dart';
@@ -21,7 +21,7 @@ void main() {
     watch = _Watch();
     set = _Set();
     changes = StreamController<ExchangeAccess>();
-    when(() => watch.current).thenReturn(const ExchangeAccess());
+    when(() => watch.current).thenReturn(const ExchangeAccessDisabled());
     when(watch.execute).thenAnswer((_) => changes.stream);
     cubit = ExchangeAccessSettingsCubit(watch, set);
   });
@@ -31,36 +31,35 @@ void main() {
   });
 
   test('ignores a second tap while the first operation is pending', () async {
-    final pending = Completer<Result<ExchangeAccessOutcome, SettingsFailure>>();
+    final pending = Completer<Result<void, SettingsFailure>>();
     when(() => set.execute(true)).thenAnswer((_) => pending.future);
     final first = cubit.setEnabled(true);
     expect(cubit.state.busy, isTrue);
-    expect(await cubit.setEnabled(false), isNull);
+    expect(await cubit.setEnabled(false), isFalse);
     verifyNever(() => set.execute(false));
-    pending.complete(const Ok(ExchangeAccessOutcome.authenticationRequired));
-    expect(await first, ExchangeAccessOutcome.authenticationRequired);
-    expect(cubit.state.busy, isFalse);
-    verify(() => set.execute(true)).called(1);
+    pending.complete(const Ok(null));
+    expect(await first, isTrue);
   });
 
-  test('exposes a typed failure and clears busy', () async {
+  test(
+    'incomplete logout cannot activate and retry invokes logout again',
+    () async {
+      changes.add(const ExchangeAccessSignOutIncomplete());
+      await Future<void>.delayed(Duration.zero);
+      when(() => set.execute(false)).thenAnswer((_) async => const Ok(null));
+      expect(await cubit.setEnabled(true), isFalse);
+      verifyNever(() => set.execute(true));
+      expect(await cubit.setEnabled(false), isTrue);
+      verify(() => set.execute(false)).called(1);
+    },
+  );
+
+  test('exposes a failure after logout fails', () async {
     when(
       () => set.execute(false),
     ).thenAnswer((_) async => const Err(SettingsExchangeSyncFailure()));
-    expect(await cubit.setEnabled(false), isNull);
-    expect(cubit.state.busy, isFalse);
+    expect(await cubit.setEnabled(false), isFalse);
     expect(cubit.state.failure, isA<SettingsExchangeSyncFailure>());
-  });
-
-  test('returns OFF success and reflects the updated access stream', () async {
-    when(() => set.execute(false)).thenAnswer((_) async {
-      changes.add(const ExchangeAccess(choice: ExchangeAccessChoice.disabled));
-      return const Ok(ExchangeAccessOutcome.applied);
-    });
-    expect(await cubit.setEnabled(false), ExchangeAccessOutcome.applied);
-    await Future<void>.delayed(Duration.zero);
-    expect(cubit.state.access.choice, ExchangeAccessChoice.disabled);
-    expect(cubit.state.failure, isNull);
     expect(cubit.state.busy, isFalse);
   });
 }

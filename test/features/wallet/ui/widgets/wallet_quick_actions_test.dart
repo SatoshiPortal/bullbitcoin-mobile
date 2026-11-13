@@ -1,4 +1,6 @@
-import 'package:bb_mobile/features/exchange_access/public/exchange_access_facade.dart';
+import 'dart:async';
+import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/watch_wallet_quick_actions_usecase.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_quick_actions.dart';
 import 'package:bull_quick_actions/bull_quick_actions.dart';
@@ -16,32 +18,17 @@ class _MemoryQuickActionsStorage implements QuickActionsStorage {
   Future<void> remove(String key) async => value = null;
 }
 
-class _MemoryAccessRepository implements ExchangeAccessRepository {
-  Map<bool, ExchangeAccess> values = {};
-  @override
-  Future<Result<Map<bool, ExchangeAccess>, ExchangeAccessFailure>>
-  read() async => Ok(values);
-  @override
-  Future<Result<void, ExchangeAccessFailure>> write(
-    Map<bool, ExchangeAccess> value,
-  ) async {
-    values = Map.of(value);
-    return const Ok(null);
-  }
-}
+class _Exchange extends Mock implements ExchangeFacade {}
 
 void main() {
   testWidgets('wallet actions update with access and transfer remains usable', (
     tester,
   ) async {
-    final access = ExchangeAccessFacade(repository: _MemoryAccessRepository());
-    expect(
-      await access.initialize(
-        isTestnet: false,
-        session: ExchangeSessionFact.anonymous,
-      ),
-      isA<Ok<ExchangeAccessOutcome, ExchangeAccessFailure>>(),
-    );
+    final access = _Exchange();
+    final changes = StreamController<ExchangeAccess>.broadcast();
+    var current = const ExchangeAccessDisabled() as ExchangeAccess;
+    when(() => access.currentAccess).thenAnswer((_) => current);
+    when(access.watchAccess).thenAnswer((_) => changes.stream);
     final actions = QuickActionsFacade(
       storage: _MemoryQuickActionsStorage(),
       warning: (_) {},
@@ -67,10 +54,8 @@ void main() {
     expect(selected, QuickAction.transfer);
     expect(find.text('More'), findsOneWidget);
     expect(find.text('Buy'), findsNothing);
-    expect(
-      await access.choose(true),
-      isA<Ok<ExchangeAccessOutcome, ExchangeAccessFailure>>(),
-    );
+    current = const ExchangeAccessEnabled(ExchangeAccessSession.signedOut);
+    changes.add(current);
     await tester.pumpAndSettle();
     await tester.tap(find.text('More'));
     await tester.pumpAndSettle();
@@ -78,25 +63,16 @@ void main() {
     expect(find.text('Trade'), findsOneWidget);
     await tester.pumpWidget(const SizedBox.shrink());
     actions.dispose();
-    await access.dispose();
+    await changes.close();
   });
   testWidgets(
     'platform restriction hides and restores a saved exchange favorite',
     (tester) async {
-      final access = ExchangeAccessFacade(
-        repository: _MemoryAccessRepository(),
+      final access = _Exchange();
+      when(() => access.currentAccess).thenReturn(
+        const ExchangeAccessEnabled(ExchangeAccessSession.signedOut),
       );
-      expect(
-        await access.initialize(
-          isTestnet: false,
-          session: ExchangeSessionFact.anonymous,
-        ),
-        isA<Ok<ExchangeAccessOutcome, ExchangeAccessFailure>>(),
-      );
-      expect(
-        await access.choose(true),
-        isA<Ok<ExchangeAccessOutcome, ExchangeAccessFailure>>(),
-      );
+      when(access.watchAccess).thenAnswer((_) => const Stream.empty());
       final actions = QuickActionsFacade(
         storage: _MemoryQuickActionsStorage(),
         warning: (_) {},
@@ -140,7 +116,6 @@ void main() {
       await tester.pumpWidget(const SizedBox.shrink());
       allowed.dispose();
       actions.dispose();
-      await access.dispose();
     },
   );
 }

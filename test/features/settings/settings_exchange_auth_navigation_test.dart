@@ -1,228 +1,229 @@
-import 'dart:async';
-import 'dart:convert';
-import 'dart:io';
-
-import 'package:bull_recoverbull/bull_recoverbull.dart';
-import 'package:secrets/secrets.dart';
-
-import 'package:bb_mobile/core/exchange/domain/repositories/exchange_api_key_repository.dart';
-import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/features/exchange/domain/exchange_session.dart';
-import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_web_settings_usecase.dart';
+import 'package:bb_mobile/features/settings/ui/screens/exchange/exchange_settings_screen.dart';
+import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_state.dart';
+import 'package:bb_mobile/features/settings/ui/settings_router.dart';
+import 'package:bb_mobile/locator.dart';
+import 'package:primitives/primitives.dart' show BitcoinUnit;
+import 'dart:async';
+
+import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
-import 'package:bb_mobile/features/exchange/ui/screens/exchange_auth_screen.dart';
-import 'package:bb_mobile/features/exchange_access/public/exchange_access_facade.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/manage_exchange_access_usecase.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/presentation/exchange_access_settings_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/screens/exchange/exchange_access_settings_screen.dart';
-import 'package:bb_mobile/features/settings/ui/settings_route.dart';
-import 'package:bb_mobile/features/status_check/presentation/cubit.dart';
-import 'package:bb_mobile/features/status_check/presentation/state.dart';
-import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/generated/l10n/localization.dart';
-import 'package:bb_mobile/locator.dart';
-import 'package:bb_mobile/router.dart';
 import 'package:bloc_test/bloc_test.dart';
-import 'package:bull_quick_actions/bull_quick_actions.dart';
-import 'package:bull_ui/bull_ui.dart' show BullSwitch;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
-class _RecoverBullWallets extends Mock implements RecoverBullWalletPort {}
+class _Exchange extends Mock implements ExchangeFacade {}
 
-class _SettingsCubit extends MockCubit<SettingsState>
-    implements SettingsCubit {}
+class _Set extends Mock implements SetSettingsExchangeAccessUsecase {}
 
-class _StatusCubit extends MockCubit<ServiceStatusState>
-    implements ServiceStatusCubit {}
+class _Settings extends MockCubit<SettingsState> implements SettingsCubit {}
 
 class _ExchangeCubit extends MockCubit<ExchangeState>
     implements ExchangeCubit {}
 
-class _Exchange extends Mock implements ExchangeFacade {}
-
-class _Keys extends Mock implements ExchangeApiKeyRepository {}
-
-class _WebSettings extends Mock implements GetExchangeWebSettingsUsecase {}
-
-class _QuickActionsStorage implements QuickActionsStorage {
-  @override
-  Future<String?> read(String key) async => null;
-  @override
-  Future<void> write(String key, String value) async {}
-  @override
-  Future<void> remove(String key) async {}
-}
+class _ExchangeState extends Mock implements ExchangeState {}
 
 void main() {
-  TestWidgetsFlutterBinding.ensureInitialized();
-
-  for (final succeeds in [false, true]) {
+  for (final signedIn in [true, false]) {
     testWidgets(
-      'settings authentication ${succeeds ? 'success clears pending and returns home' : 'cancellation returns to settings'} without duplicate navigator keys',
+      signedIn
+          ? 'signed-in account opens account settings'
+          : 'sign-in returns to manage access',
       (tester) async {
-        SharedPreferences.setMockInitialValues({
-          'wizard_pending_payload':
-              '{"version":1,"exchangeAccess":false,"currency":"CAD"}',
-        });
-        final access = ExchangeAccessFacade();
-        expect(
-          await access.initialize(
-            isTestnet: false,
-            session: ExchangeSessionFact.anonymous,
-          ),
-          isA<Ok<ExchangeAccessOutcome, ExchangeAccessFailure>>(),
-        );
-        final session = ExchangeSession(_Keys());
-        final settingsCubit = _SettingsCubit();
-        final statusCubit = _StatusCubit();
-        final exchangeCubit = _ExchangeCubit();
         final exchange = _Exchange();
-        final webSettings = _WebSettings();
-        when(() => settingsCubit.state).thenReturn(const SettingsState());
-        when(
-          () => settingsCubit.stream,
-        ).thenAnswer((_) => const Stream.empty());
-        when(() => statusCubit.state).thenReturn(const ServiceStatusState());
-        when(() => statusCubit.stream).thenAnswer((_) => const Stream.empty());
-        when(statusCubit.checkStatus).thenAnswer((_) async {});
-        when(statusCubit.close).thenAnswer((_) async {});
-        when(() => exchangeCubit.state).thenReturn(const ExchangeState());
-        when(
-          () => exchangeCubit.stream,
-        ).thenAnswer((_) => const Stream.empty());
-        when(webSettings.execute).thenAnswer(
-          (_) async => const Err(ExchangeAccountUnavailableFailure()),
+        final set = _Set();
+        final settings = _Settings();
+        final changes = StreamController<ExchangeAccess>.broadcast();
+        final access = ExchangeAccessEnabled(
+          signedIn
+              ? ExchangeAccessSession.signedIn
+              : ExchangeAccessSession.signedOut,
         );
-        locator.registerSingleton<QuickActionsFacade>(
-          QuickActionsFacade(storage: _QuickActionsStorage(), warning: (_) {}),
-        );
-        locator.registerSingleton<ExchangeAccessFacade>(access);
-        locator.registerSingleton<ExchangeSession>(session);
-        locator.registerSingleton<GetExchangeWebSettingsUsecase>(webSettings);
-        locator.registerFactory<ServiceStatusCubit>(() => statusCubit);
-        locator.registerFactory<ExchangeAccessSettingsCubit>(
-          () => ExchangeAccessSettingsCubit(
-            WatchSettingsExchangeAccessUsecase(access),
-            SetSettingsExchangeAccessUsecase(access, exchange),
-          ),
-        );
-
-        // Develop mounts RecoverBull before creating the application router.
-        // Supply its public composition for route registration only; this test
-        // never opens a vault or reads secret material.
-        final scratch = Directory.systemTemp.createTempSync(
-          'quick-actions-auth-',
-        );
-        addTearDown(() => scratch.deleteSync(recursive: true));
-        locator.registerSingleton<RecoverBullFeature>(
-          RecoverBullFeature.create(
-            secrets: Secrets(scratchDirectory: () async => scratch.path),
-            wallets: _RecoverBullWallets(),
-          ),
-          dispose: (feature) => feature.dispose(),
-        );
-
-        // Preserve the real route ownership; replace only WalletHome's unrelated
-        // visual tree so the test exercises the actual Settings/Auth routes.
-        final configured = AppRouter.router.configuration.routes;
-        final originalShell = configured.whereType<ShellRoute>().first;
-        final shellExchangeRoutes = originalShell.routes
-            .whereType<GoRoute>()
-            .where(
-              (route) =>
-                  route.name == ExchangeRoute.exchangeHome.name ||
-                  route.name == ExchangeRoute.exchangeLanding.name ||
-                  route.name == ExchangeRoute.exchangeAuth.name,
-            );
-        final rootAuthRoutes = configured.whereType<GoRoute>().where(
-          (route) => route.name == ExchangeRoute.exchangeAuth.name,
-        );
-        final settingsRoute = configured.whereType<GoRoute>().singleWhere(
-          (route) => route.name == SettingsRoute.settings.name,
+        when(() => exchange.currentAccess).thenReturn(access);
+        when(exchange.watchAccess).thenAnswer((_) => changes.stream);
+        when(() => settings.state).thenReturn(const SettingsState());
+        final cubit = ExchangeAccessSettingsCubit(
+          WatchSettingsExchangeAccessUsecase(exchange),
+          set,
         );
         final router = GoRouter(
-          initialLocation: WalletRoute.walletHome.path,
+          initialLocation: '/manage',
           routes: [
-            ShellRoute(
-              builder: (_, _, child) => Scaffold(body: child),
-              routes: [
-                GoRoute(
-                  name: WalletRoute.walletHome.name,
-                  path: WalletRoute.walletHome.path,
-                  builder: (_, _) => const Text('wallet home'),
-                ),
-                ...shellExchangeRoutes,
-              ],
+            GoRoute(
+              path: '/manage',
+              builder: (context, state) => ExchangeAccessSettingsScreen(
+                cubit: cubit,
+                onBack: () {},
+                onAuthenticate: () => context.push<void>('/auth'),
+                onOpenAccount: () => context.push('/account'),
+                onDisabled: () {},
+                onAuthenticated: () {},
+              ),
             ),
-            ...rootAuthRoutes,
-            settingsRoute,
+            GoRoute(
+              path: '/account',
+              builder: (_, _) => const Scaffold(body: Text('Account settings')),
+            ),
+            GoRoute(
+              path: '/auth',
+              builder: (context, _) => Scaffold(
+                body: TextButton(
+                  onPressed: () => context.pop(),
+                  child: const Text('Return'),
+                ),
+              ),
+            ),
           ],
         );
-        addTearDown(() async {
-          router.dispose();
-          await locator.reset();
-          await access.dispose();
-        });
         await tester.pumpWidget(
-          MultiBlocProvider(
-            providers: [
-              BlocProvider<SettingsCubit>.value(value: settingsCubit),
-              BlocProvider<ExchangeCubit>.value(value: exchangeCubit),
-            ],
+          BlocProvider<SettingsCubit>.value(
+            value: settings,
             child: MaterialApp.router(
+              routerConfig: router,
               theme: AppTheme.themeData(AppThemeType.light),
+              locale: const Locale('en'),
               localizationsDelegates: AppLocalizations.localizationsDelegates,
               supportedLocales: AppLocalizations.supportedLocales,
-              routerConfig: router,
             ),
           ),
         );
         await tester.pumpAndSettle();
-        unawaited(router.pushNamed<void>(SettingsRoute.exchangeAccess.name));
+        final context = tester.element(
+          find.byType(ExchangeAccessSettingsScreen),
+        );
+        final labels = AppLocalizations.of(context);
+        await tester.tap(
+          find.text(
+            signedIn
+                ? labels.settingsAccountSettingsTitle
+                : labels.exchangeAccessSignIn,
+          ),
+        );
         await tester.pumpAndSettle();
-        expect(find.byType(ExchangeAccessSettingsScreen), findsOneWidget);
-        await tester.tap(find.byType(BullSwitch));
-        await tester.pumpAndSettle();
-        expect(tester.takeException(), isNull);
-        expect(find.byType(ExchangeAuthScreen), findsOneWidget);
-        expect(access.current.transition, ExchangeAccessTransition.enabling);
-
-        if (succeeds) {
-          expect(
-            await access.reconcileSession(ExchangeSessionFact.authenticated),
-            isA<Ok<ExchangeAccessOutcome, ExchangeAccessFailure>>(),
-          );
-          session.publish(ExchangeSessionStatus.authenticated);
-          await tester.pumpAndSettle();
-          expect(find.text('wallet home'), findsOneWidget);
-          final prefs = await SharedPreferences.getInstance();
-          final pending =
-              jsonDecode(prefs.getString('wizard_pending_payload') ?? '{}')
-                  as Map<String, dynamic>;
-          expect(pending.containsKey('exchangeAccess'), isFalse);
-          expect(pending['currency'], 'CAD');
+        if (signedIn) {
+          expect(find.text('Account settings'), findsOneWidget);
         } else {
-          await tester.tap(
-            find.descendant(
-              of: find.byType(ExchangeAuthScreen),
-              matching: find.byType(CloseButton),
-            ),
-          );
+          expect(find.text('Return'), findsOneWidget);
+          await tester.tap(find.text('Return'));
           await tester.pumpAndSettle();
           expect(find.byType(ExchangeAccessSettingsScreen), findsOneWidget);
-          expect(access.current.choice, ExchangeAccessChoice.disabled);
-          expect(access.current.transition, ExchangeAccessTransition.none);
         }
-        expect(tester.takeException(), isNull);
+        await tester.pumpWidget(const SizedBox.shrink());
+        router.dispose();
+        await changes.close();
+        await settings.close();
       },
     );
   }
+  testWidgets('real manage route reaches account settings and security route', (
+    tester,
+  ) async {
+    final exchange = _Exchange();
+    final set = _Set();
+    final settings = _Settings();
+    final exchangeCubit = _ExchangeCubit();
+    final exchangeState = _ExchangeState();
+    when(() => exchangeState.notLoggedIn).thenReturn(false);
+    when(() => exchangeState.hasUser).thenReturn(true);
+    when(() => exchangeCubit.state).thenReturn(exchangeState);
+    when(() => settings.state).thenReturn(
+      const SettingsState(
+        storedSettings: SettingsEntity(
+          environment: Environment.mainnet,
+          bitcoinUnit: BitcoinUnit.sats,
+          currencyCode: 'USD',
+          isSuperuser: true,
+        ),
+      ),
+    );
+    when(
+      () => exchange.currentAccess,
+    ).thenReturn(const ExchangeAccessEnabled(ExchangeAccessSession.signedIn));
+    when(exchange.watchAccess).thenAnswer((_) => const Stream.empty());
+    locator.registerFactory<ExchangeAccessSettingsCubit>(
+      () => ExchangeAccessSettingsCubit(
+        WatchSettingsExchangeAccessUsecase(exchange),
+        set,
+      ),
+    );
+    locator.registerSingleton<ExchangeFacade>(exchange);
+    addTearDown(() => locator.unregister<ExchangeFacade>());
+    final settingsRoute = SettingsRouter.route(
+      buildPriceHistory: (_) => const SizedBox.shrink(),
+    );
+    final manage = settingsRoute.routes.whereType<GoRoute>().singleWhere(
+      (route) => route.name == SettingsRoute.exchangeAccess.name,
+    );
+    final account = settingsRoute.routes.whereType<GoRoute>().singleWhere(
+      (route) => route.name == SettingsRoute.exchangeSettings.name,
+    );
+    final router = GoRouter(
+      initialLocation: '/manage',
+      routes: [
+        GoRoute(
+          path: '/manage',
+          name: SettingsRoute.exchangeAccess.name,
+          builder: manage.builder,
+        ),
+        GoRoute(
+          path: '/account',
+          name: SettingsRoute.exchangeSettings.name,
+          builder: account.builder,
+        ),
+        GoRoute(
+          path: '/exchange',
+          name: ExchangeRoute.exchangeHome.name,
+          builder: (_, _) => const Scaffold(body: Text('Exchange dashboard')),
+        ),
+        GoRoute(
+          path: '/security',
+          name: SettingsRoute.exchangeSecurity.name,
+          builder: (_, _) => const Scaffold(body: Text('Security destination')),
+        ),
+      ],
+    );
+    await tester.pumpWidget(
+      MultiBlocProvider(
+        providers: [
+          BlocProvider<SettingsCubit>.value(value: settings),
+          BlocProvider<ExchangeCubit>.value(value: exchangeCubit),
+        ],
+        child: MaterialApp.router(
+          routerConfig: router,
+          theme: AppTheme.themeData(AppThemeType.light),
+          locale: const Locale('en'),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    var context = tester.element(find.byType(ExchangeAccessSettingsScreen));
+    await tester.tap(
+      find.text(AppLocalizations.of(context).settingsAccountSettingsTitle),
+    );
+    await tester.pumpAndSettle();
+    context = tester.element(find.byType(ExchangeSettingsScreen));
+    await tester.tap(
+      find.text(
+        AppLocalizations.of(context).exchangeSettingsSecuritySettingsTitle,
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.text('Security destination'), findsOneWidget);
+    await tester.pumpWidget(const SizedBox.shrink());
+    router.dispose();
+    await locator.unregister<ExchangeAccessSettingsCubit>();
+    await settings.close();
+    await exchangeCubit.close();
+  });
 }
