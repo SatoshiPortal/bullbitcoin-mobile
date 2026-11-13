@@ -21,7 +21,7 @@ class QuickActionsLocalizationsEn extends QuickActionsLocalizations {
   String get transfer => 'Transfer';
 
   @override
-  String get map => 'Maps';
+  String get map => 'Map';
 
   @override
   String get settings => 'Settings';
@@ -36,7 +36,7 @@ class QuickActionsLocalizationsEn extends QuickActionsLocalizations {
   String get title => 'Quick actions';
 
   @override
-  String get save => 'Save';
+  String get save => 'Save changes';
 
   @override
   String get reset => 'Restore defaults';
@@ -63,7 +63,7 @@ class QuickActionsLocalizationsEn extends QuickActionsLocalizations {
   String get support => 'Support';
 
   @override
-  String get priceHistory => 'Price history';
+  String get priceHistory => 'Price';
 
   @override
   String get quickActionTrade => 'Trade';
@@ -72,4 +72,56 @@ class QuickActionsLocalizationsEn extends QuickActionsLocalizations {
   String selectedCount(int count) {
     return 'Selected: $count';
   }
+
+  @override
+  String get onHome => 'On Home';
+
+  @override
+  String get inMore => 'In More';
+
+  @override
+  String get preview => 'Preview';
+
+  @override
+  String get maximumHint =>
+      'Up to 4 cells on Home. When More is needed, your first 3 available favorites appear beside it.';
+
+  @override
+  String get overflowHint => 'These favorites appear in More';
+
+  @override
+  String addAction(String name) {
+    return 'Add $name to favorites';
+  }
+
+  @override
+  String removeAction(String name) {
+    return 'Remove $name from favorites';
+  }
+
+  @override
+  String reorderAction(String name) {
+    return 'Reorder $name';
+  }
+
+  @override
+  String get edit => 'Edit';
+
+  @override
+  String get close => 'Close';
+
+  @override
+  String get priceHistoryFull => 'Price history';
+
+  @override
+  String get saving => 'Saving…';
+
+  @override
+  String get emptyHint => 'No favorites selected. Settings remains on Home.';
+
+  @override
+  String get transferFull => 'Transfer between wallets';
+
+  @override
+  String get supportFull => 'Support';
 }

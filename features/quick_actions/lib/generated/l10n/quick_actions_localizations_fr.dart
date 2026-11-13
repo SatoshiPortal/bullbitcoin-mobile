@@ -18,10 +18,10 @@ class QuickActionsLocalizationsFr extends QuickActionsLocalizations {
   String get pay => 'Payer';
 
   @override
-  String get transfer => 'Transférer';
+  String get transfer => 'Transfert';
 
   @override
-  String get map => 'Cartes';
+  String get map => 'Carte';
 
   @override
   String get settings => 'Réglages';
@@ -60,10 +60,10 @@ class QuickActionsLocalizationsFr extends QuickActionsLocalizations {
   String get history => 'Historique';
 
   @override
-  String get support => 'Assistance';
+  String get support => 'Aide';
 
   @override
-  String get priceHistory => 'Historique des prix';
+  String get priceHistory => 'Prix';
 
   @override
   String get quickActionTrade => 'Trade';
@@ -72,4 +72,57 @@ class QuickActionsLocalizationsFr extends QuickActionsLocalizations {
   String selectedCount(int count) {
     return 'Sélection : $count';
   }
+
+  @override
+  String get onHome => 'Sur l’accueil';
+
+  @override
+  String get inMore => 'Dans Plus';
+
+  @override
+  String get preview => 'Aperçu';
+
+  @override
+  String get maximumHint =>
+      'Jusqu’à 4 cellules sur l’accueil. Si Plus est nécessaire, vos 3 premiers favoris disponibles apparaissent à côté.';
+
+  @override
+  String get overflowHint => 'Ces favoris apparaissent dans Plus';
+
+  @override
+  String addAction(String name) {
+    return 'Ajouter $name aux favoris';
+  }
+
+  @override
+  String removeAction(String name) {
+    return 'Retirer $name des favoris';
+  }
+
+  @override
+  String reorderAction(String name) {
+    return 'Réorganiser $name';
+  }
+
+  @override
+  String get edit => 'Modifier';
+
+  @override
+  String get close => 'Fermer';
+
+  @override
+  String get priceHistoryFull => 'Historique des prix';
+
+  @override
+  String get saving => 'Enregistrement…';
+
+  @override
+  String get emptyHint =>
+      'Aucun favori sélectionné. Réglages reste sur l’accueil.';
+
+  @override
+  String get transferFull => 'Transfert entre portefeuilles';
+
+  @override
+  String get supportFull => 'Assistance';
 }

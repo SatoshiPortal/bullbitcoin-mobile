@@ -128,7 +128,7 @@ abstract class QuickActionsLocalizations {
   /// No description provided for @map.
   ///
   /// In en, this message translates to:
-  /// **'Maps'**
+  /// **'Map'**
   String get map;
 
   /// No description provided for @settings.
@@ -158,7 +158,7 @@ abstract class QuickActionsLocalizations {
   /// No description provided for @save.
   ///
   /// In en, this message translates to:
-  /// **'Save'**
+  /// **'Save changes'**
   String get save;
 
   /// No description provided for @reset.
@@ -212,7 +212,7 @@ abstract class QuickActionsLocalizations {
   /// No description provided for @priceHistory.
   ///
   /// In en, this message translates to:
-  /// **'Price history'**
+  /// **'Price'**
   String get priceHistory;
 
   /// No description provided for @quickActionTrade.
@@ -226,6 +226,96 @@ abstract class QuickActionsLocalizations {
   /// In en, this message translates to:
   /// **'Selected: {count}'**
   String selectedCount(int count);
+
+  /// Wallet quick action customization.
+  ///
+  /// In en, this message translates to:
+  /// **'On Home'**
+  String get onHome;
+
+  /// Wallet quick action customization.
+  ///
+  /// In en, this message translates to:
+  /// **'In More'**
+  String get inMore;
+
+  /// Wallet quick action customization.
+  ///
+  /// In en, this message translates to:
+  /// **'Preview'**
+  String get preview;
+
+  /// Wallet quick action customization.
+  ///
+  /// In en, this message translates to:
+  /// **'Up to 4 cells on Home. When More is needed, your first 3 available favorites appear beside it.'**
+  String get maximumHint;
+
+  /// Wallet quick action customization.
+  ///
+  /// In en, this message translates to:
+  /// **'These favorites appear in More'**
+  String get overflowHint;
+
+  /// Wallet quick action customization.
+  ///
+  /// In en, this message translates to:
+  /// **'Add {name} to favorites'**
+  String addAction(String name);
+
+  /// Wallet quick action customization.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove {name} from favorites'**
+  String removeAction(String name);
+
+  /// Wallet quick action customization.
+  ///
+  /// In en, this message translates to:
+  /// **'Reorder {name}'**
+  String reorderAction(String name);
+
+  /// Wallet quick action customization.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit'**
+  String get edit;
+
+  /// Wallet quick action customization.
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get close;
+
+  /// Wallet quick action customization.
+  ///
+  /// In en, this message translates to:
+  /// **'Price history'**
+  String get priceHistoryFull;
+
+  /// Wallet quick action customization.
+  ///
+  /// In en, this message translates to:
+  /// **'Saving…'**
+  String get saving;
+
+  /// Wallet quick action customization.
+  ///
+  /// In en, this message translates to:
+  /// **'No favorites selected. Settings remains on Home.'**
+  String get emptyHint;
+
+  /// Full accessible quick action name.
+  ///
+  /// In en, this message translates to:
+  /// **'Transfer between wallets'**
+  String get transferFull;
+
+  /// Full accessible quick action name.
+  ///
+  /// In en, this message translates to:
+  /// **'Support'**
+  String get supportFull;
 }
 
 class _QuickActionsLocalizationsDelegate
