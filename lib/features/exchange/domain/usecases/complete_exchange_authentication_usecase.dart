@@ -1,6 +1,6 @@
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_api_key_repository.dart';
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/exchange/domain/exchange_failure.dart';
 import 'package:bb_mobile/features/exchange/domain/repositories/exchange_auth_repository.dart';
 import 'package:meta/meta.dart';

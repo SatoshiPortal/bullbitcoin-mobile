@@ -17,7 +17,7 @@ import 'package:bb_mobile/core/electrum/domain/entities/electrum_server.dart';
 import 'package:bb_mobile/core/electrum/domain/repositories/electrum_server_repository.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_network.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_status.dart';
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/features/electrum_settings/domain/electrum_settings_failure.dart';

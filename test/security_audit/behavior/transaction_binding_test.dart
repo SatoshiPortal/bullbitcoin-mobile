@@ -22,7 +22,7 @@ import 'package:bb_mobile/features/transactions/application/usecases/get_transac
 import 'package:bb_mobile/features/transactions/application/usecases/get_transaction_order_swaps_usecase.dart';
 import 'package:bb_mobile/features/transactions/application/usecases/label_exchange_orders_usecase.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
-import 'package:bb_mobile/core/utils/result.dart' as bb;
+import 'package:primitives/primitives.dart' as bb;
 import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
 import 'package:bb_mobile/features/transactions/domain/transaction_failure.dart';
 import 'package:flutter_test/flutter_test.dart';

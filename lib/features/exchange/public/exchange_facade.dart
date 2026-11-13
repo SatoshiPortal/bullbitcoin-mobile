@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart' show Err, Ok, Result;
 import 'package:bb_mobile/features/exchange/domain/exchange_failure.dart';
 import 'package:bb_mobile/features/exchange/domain/exchange_session.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/initialize_exchange_access_usecase.dart';
@@ -12,7 +12,7 @@ import 'package:bb_mobile/features/exchange_access/public/exchange_access_facade
     show ExchangeAccessFacade;
 import 'package:meta/meta.dart';
 
-export 'package:bb_mobile/core/utils/result.dart' show Err, Ok, Result;
+export 'package:primitives/primitives.dart' show Err, Ok, Result;
 export '../domain/exchange_failure.dart';
 export '../exchange_locator.dart' show ExchangeLocator;
 export '../presentation/exchange_failure_l10n.dart' show ExchangeFailureL10n;

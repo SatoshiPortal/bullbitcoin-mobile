@@ -5,7 +5,7 @@ import 'package:bb_mobile/core/electrum/domain/entities/electrum_server.dart';
 import 'package:bb_mobile/core/electrum/domain/errors/electrum_failure.dart';
 import 'package:bb_mobile/core/electrum/domain/repositories/electrum_server_repository.dart';
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart';
 import 'package:meta/meta.dart';
 
 class SetCustomServersPriorityUsecase {

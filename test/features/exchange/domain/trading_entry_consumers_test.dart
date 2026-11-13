@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/failures/failure.dart';
+import 'package:primitives/primitives.dart' show Failure;
 import 'package:bb_mobile/features/buy/domain/buy_failure.dart';
 import 'package:bb_mobile/features/buy/domain/get_buy_entry_usecase.dart';
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';

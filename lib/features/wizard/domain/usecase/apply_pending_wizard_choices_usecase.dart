@@ -1,6 +1,6 @@
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/settings_store_failure.dart';
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/features/wizard/domain/entity/wizard_choices.dart';
 import 'package:bb_mobile/features/wizard/domain/repository/wizard_repository.dart';

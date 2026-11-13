@@ -3,7 +3,7 @@ import 'package:bb_mobile/core/exchange/domain/exchange_user_failure.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_user_repository.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/exchange/domain/exchange_failure.dart';
 import 'package:bb_mobile/features/exchange/domain/repositories/exchange_account_repository.dart';
 import 'package:bb_mobile/features/exchange/domain/read_exchange_environment.dart';

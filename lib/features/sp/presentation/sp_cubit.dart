@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/clear_sp_scan_state_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/generate_taproot_address_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/load_sp_wallet_data_usecase.dart';

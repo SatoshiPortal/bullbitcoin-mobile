@@ -8,7 +8,7 @@ import 'package:bb_mobile/features/tor_settings/domain/update_tor_transport_mode
 import 'package:bb_mobile/features/tor_settings/domain/check_external_tor_connection_usecase.dart';
 import 'package:bb_mobile/features/tor_settings/presentation/bloc/tor_settings_cubit.dart';
 import 'package:bb_mobile/core/settings/domain/settings_store_failure.dart';
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:bull_tor/tor.dart';

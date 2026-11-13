@@ -2,7 +2,7 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'dart:async';
 
 import 'package:bb_mobile/features/sp/domain/sp_failure.dart';
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_cubit.dart';
 import 'package:bb_mobile/features/sp/ui/screens/sp_scan_screen.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_notification.dart';

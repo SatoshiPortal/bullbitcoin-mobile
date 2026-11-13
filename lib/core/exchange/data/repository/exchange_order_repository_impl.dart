@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:bb_mobile/core/exchange/domain/exchange_order_failure.dart';
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/core/errors/exchange_errors.dart';
 import 'package:bb_mobile/core/exchange/data/datasources/bullbitcoin_api_datasource.dart';
 import 'package:bb_mobile/core/exchange/data/exchange_authentication.dart';

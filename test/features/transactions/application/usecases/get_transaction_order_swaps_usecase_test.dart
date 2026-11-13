@@ -1,10 +1,9 @@
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:bb_mobile/features/transactions/application/usecases/get_transaction_order_swaps_usecase.dart';
 import 'package:bb_mobile/features/transactions/domain/transaction_failure.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:bb_mobile/core/failures/failure.dart';
 
 /// The failure an [Err] carries, typed by the [Result]; an [Ok] fails the test.
 F _failureOf<T, F extends Failure>(Result<T, F> result) => switch (result) {

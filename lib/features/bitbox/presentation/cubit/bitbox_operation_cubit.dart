@@ -3,7 +3,7 @@ import 'package:bb_mobile/core/bitbox/domain/errors/bitbox_failure.dart';
 import 'package:bb_mobile/core/bitbox/domain/repositories/bitbox_device_repository.dart';
 import 'package:bb_mobile/core/bitbox/domain/usecases/connect_bitbox_device_usecase.dart';
 import 'package:bb_mobile/core/bitbox/domain/usecases/scan_bitbox_devices_usecase.dart';
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/bitbox/presentation/cubit/bitbox_operation_state.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

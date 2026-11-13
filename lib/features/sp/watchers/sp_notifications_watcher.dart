@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart';
 
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_notification.dart';

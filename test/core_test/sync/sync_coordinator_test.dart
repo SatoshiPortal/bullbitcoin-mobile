@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'dart:io';
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 
 import 'package:bb_mobile/core/sync/sync_coordinator.dart';

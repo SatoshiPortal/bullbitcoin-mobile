@@ -7,7 +7,7 @@ import 'package:bb_mobile/core/mempool/domain/errors/mempool_failure.dart';
 import 'package:bb_mobile/core/mempool/domain/repositories/mempool_server_repository.dart';
 import 'package:bb_mobile/core/mempool/domain/repositories/mempool_settings_repository.dart';
 import 'package:bb_mobile/core/mempool/domain/value_objects/mempool_server_network.dart';
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart' show Err, Ok;
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
