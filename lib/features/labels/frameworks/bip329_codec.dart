@@ -29,12 +29,7 @@ class Bip329LabelsCodec {
     };
     final coveredRefs = <String>{};
 
-    // System labels are the app's own markers (swaps, auto-swap, payjoin, ...):
-    // an import rejects a file that names one, so exporting them would make
-    // the file unimportable here.
-    final exported = labels.where((l) => !LabelSystem.isSystemLabel(l.label));
-
-    final bip329Labels = exported.map((label) {
+    final bip329Labels = labels.map((label) {
       switch (label.type) {
         case LabelType.transaction:
           return bip329.TxLabel(ref: label.reference, label: label.label);
