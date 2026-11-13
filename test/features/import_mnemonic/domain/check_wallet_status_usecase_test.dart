@@ -1,7 +1,7 @@
+import 'dart:async';
 import 'dart:io';
-
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bb_mobile/core/electrum/domain/errors/electrum_fallback_exception.dart';
+
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/features/import_mnemonic/domain/check_wallet_status_usecase.dart';
@@ -17,8 +17,6 @@ import 'package:bb_mobile/core/wallet/data/repositories/bitcoin_wallet_repositor
 import 'package:bb_mobile/core/electrum/domain/ports/electrum_servers_port.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_connection.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_network.dart';
-
-class _MockReporter extends Mock implements LoggerReporter {}
 
 class _MockSettingsRepository extends Mock implements SettingsRepository {}
 
@@ -38,7 +36,6 @@ class _FakeConnection extends ElectrumConnection {
 }
 
 class _FakeServersPort implements ElectrumServersPort {
-  ElectrumFallbackException? failure;
   final networks = <ElectrumServerNetwork>[];
   final connection = _FakeConnection();
 
@@ -47,10 +44,8 @@ class _FakeServersPort implements ElectrumServersPort {
     required ElectrumServerNetwork network,
     required Future<T> Function(ElectrumConnection connection) operation,
     bool Function(Object error)? isTransient,
-  }) async {
+  }) {
     networks.add(network);
-    final error = failure;
-    if (error != null) throw error;
     return operation(connection);
   }
 }
@@ -61,8 +56,6 @@ void main() {
     'abandon', 'abandon', 'abandon', 'abandon', 'abandon', 'about',
   ];
 
-  late _MockReporter reporter;
-  late Directory logDirectory;
   late _MockSettingsRepository settings;
   late _FakeServersPort servers;
   late _MockBitcoinWalletRepository wallets;
@@ -83,10 +76,14 @@ void main() {
 
   setUpAll(() => registerFallbackValue(_FakeConnection()));
 
+  late Directory logDirectory;
+  tearDown(() async {
+    await log.flush();
+    await logDirectory.delete(recursive: true);
+  });
   setUp(() async {
-    logDirectory = await Directory.systemTemp.createTemp('pre-import-logs-');
-    reporter = _MockReporter();
-    log = Logger.replace(directory: logDirectory, reporter: reporter);
+    logDirectory = await Directory.systemTemp.createTemp('scan-log-');
+    log = Logger.replace(directory: logDirectory);
     storage = FakeSecureStoragePlatform()..install();
     secrets = Secrets(scratchDirectory: () async => '/tmp');
     settings = _MockSettingsRepository();
@@ -100,11 +97,6 @@ void main() {
         electrumServer: any(named: 'electrumServer'),
       ),
     ).thenAnswer((_) async => (satoshis: BigInt.from(1234), transactions: 2));
-  });
-
-  tearDown(() async {
-    await log.flush();
-    await logDirectory.delete(recursive: true);
   });
 
   for (final (env, network, legacy) in [
@@ -154,6 +146,15 @@ void main() {
         ),
       ).called(1);
       expect(servers.networks, [legacy]);
+      final messages = (await log.readLogs())
+          .map((row) => row.split('\t')[2])
+          .toList();
+      expect(messages, [
+        'Import scan started network=${network.env.name} script=bip49',
+        matches(
+          '^Import scan finished network=${network.env.name} script=bip49 outcome=history tx_count=2 duration_ms=[0-9]+\$',
+        ),
+      ]);
       // A scan before import stores nothing.
       expect(storage.entries, isEmpty);
     });
@@ -170,7 +171,7 @@ void main() {
         scriptTypes: {ScriptType.bip84},
       ),
       throwsA(
-        isA<CheckWalletStatusException>().having(
+        isA<CheckWalletStatusInvalidMnemonicException>().having(
           (e) => e.message,
           'message',
           isNot(contains('abandon')),
@@ -186,53 +187,7 @@ void main() {
       ),
     );
     expect(servers.networks, isEmpty);
-    verifyZeroInteractions(reporter);
-    final rows = (await log.readLogs()).map((line) => line.split('\t'));
-    expect(
-      rows.every((row) => row.skip(3).every((field) => field.isEmpty)),
-      isTrue,
-    );
-    expect(rows.map((row) => (row[1], row[2])), [
-      ('WARNING', 'InvalidMnemonicFailure'),
-    ]);
   });
-
-  test(
-    'failed scan persists only its script type and failure category',
-    () async {
-      environment(Environment.mainnet);
-      final failure = AllElectrumServersFailedException([
-        const ElectrumServerAttempt(
-          url: 'ssl://electrum.example:50002',
-          isCustom: true,
-          error: 'descriptor-and-address-sentinel',
-        ),
-      ]);
-      servers.failure = failure;
-
-      final scans = await usecase()(
-        words: words,
-        language: bip39.Language.english,
-        passphrase: '',
-        scriptTypes: {ScriptType.bip49},
-      );
-      await expectLater(scans[ScriptType.bip49], throwsA(same(failure)));
-
-      verifyZeroInteractions(reporter);
-      final rows = (await log.readLogs()).map((line) => line.split('\t'));
-      expect(
-        rows.every((row) => row.skip(3).every((field) => field.isEmpty)),
-        isTrue,
-      );
-      expect(rows.map((row) => (row[1], row[2])), [
-        (
-          'WARNING',
-          'Pre-import scan failed scriptType=bip49 '
-              'failure=all_servers_failed',
-        ),
-      ]);
-    },
-  );
 
   test(
     'derives once and scans each script type with its own descriptors',
@@ -300,4 +255,66 @@ void main() {
       );
     },
   );
+  test('a scan error keeps its type, never its message', () async {
+    environment(Environment.mainnet);
+    when(
+      () => wallets.dryScan(
+        externalDescriptor: any(named: 'externalDescriptor'),
+        internalDescriptor: any(named: 'internalDescriptor'),
+        isTestnet: any(named: 'isTestnet'),
+        electrumServer: any(named: 'electrumServer'),
+      ),
+    ).thenThrow(StateError('wpkh([73c5da0a/84h/0h/0h]xpub...)'));
+
+    final scans = await usecase()(
+      words: words,
+      language: bip39.Language.english,
+      passphrase: '',
+      scriptTypes: {ScriptType.bip84},
+    );
+
+    await expectLater(
+      scans[ScriptType.bip84],
+      throwsA(
+        isA<CheckWalletStatusException>().having(
+          (e) => e.message,
+          'message',
+          allOf(contains('StateError'), isNot(contains('xpub'))),
+        ),
+      ),
+    );
+  });
+
+  test('a scan timeout stays a timeout', () async {
+    environment(Environment.mainnet);
+    when(
+      () => wallets.dryScan(
+        externalDescriptor: any(named: 'externalDescriptor'),
+        internalDescriptor: any(named: 'internalDescriptor'),
+        isTestnet: any(named: 'isTestnet'),
+        electrumServer: any(named: 'electrumServer'),
+      ),
+    ).thenThrow(TimeoutException('no answer'));
+
+    final scans = await usecase()(
+      words: words,
+      language: bip39.Language.english,
+      passphrase: '',
+      scriptTypes: {ScriptType.bip84},
+    );
+
+    await expectLater(
+      scans[ScriptType.bip84],
+      throwsA(isA<TimeoutException>()),
+    );
+    final messages = (await log.readLogs())
+        .map((row) => row.split('\t')[2])
+        .toList();
+    expect(messages, [
+      'Import scan started network=mainnet script=bip84',
+      matches(
+        r'^Import scan failed network=mainnet script=bip84 reason=timeout duration_ms=[0-9]+$',
+      ),
+    ]);
+  });
 }

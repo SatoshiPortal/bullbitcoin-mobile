@@ -5,7 +5,7 @@ import 'package:mocktail/mocktail.dart';
 
 import 'package:bb_mobile/core/exchange/data/datasources/exchange_notification_datasource.dart';
 import 'package:bb_mobile/core/exchange/domain/exchange_api_key_failure.dart';
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart';
 import 'package:fake_async/fake_async.dart';
 import 'package:flutter_test/flutter_test.dart';
 
