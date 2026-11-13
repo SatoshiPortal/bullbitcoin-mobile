@@ -6,7 +6,7 @@ import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.
     as domain;
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/settings/domain/settings_store_failure.dart';
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart';
 import 'package:bull_reporting/bull_reporting.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bull_tor/tor.dart';

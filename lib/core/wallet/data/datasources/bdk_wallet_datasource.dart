@@ -1,10 +1,10 @@
 import 'package:transaction_sync/diagnostics.dart';
 import 'dart:async';
-import 'dart:math';
+import 'dart:math' hide log;
+import 'package:bull_logger/bull_logger.dart' show log;
 
 import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
-import 'package:bb_mobile/core/utils/address_script_conversions.dart';
 import 'package:bb_mobile/core/utils/generic_extensions.dart';
 import 'package:bb_mobile/core/wallet/data/models/balance_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/bitcoin_transaction_recipient_model.dart';
@@ -421,7 +421,7 @@ class BdkWalletDatasource {
     final utxos = await Future.wait(
       unspent.map((unspent) async {
         final address =
-            await AddressScriptConversions.bitcoinAddressFromScriptPubkey(
+            await _AddressScriptConversions.bitcoinAddressFromScriptPubkey(
               unspent.txout.scriptPubkey.toBytes(),
               isTestnet: wallet.isTestnet,
             );
@@ -483,7 +483,7 @@ class BdkWalletDatasource {
           final matches = (await Future.wait(
             outputs.map((output) async {
               final address =
-                  await AddressScriptConversions.bitcoinAddressFromScriptPubkey(
+                  await _AddressScriptConversions.bitcoinAddressFromScriptPubkey(
                     output.scriptPubkey.toBytes(),
                     isTestnet: wallet.isTestnet,
                   );
@@ -622,7 +622,7 @@ class BdkWalletDatasource {
 
       for (final output in txOutputs) {
         final generatedAddress =
-            await AddressScriptConversions.bitcoinAddressFromScriptPubkey(
+            await _AddressScriptConversions.bitcoinAddressFromScriptPubkey(
               output.scriptPubkey.toBytes(),
               isTestnet: wallet.isTestnet,
             );
@@ -648,7 +648,7 @@ class BdkWalletDatasource {
 
     for (final utxo in utxos) {
       final utxoAddress =
-          await AddressScriptConversions.bitcoinAddressFromScriptPubkey(
+          await _AddressScriptConversions.bitcoinAddressFromScriptPubkey(
             utxo.txout.scriptPubkey.toBytes(),
             isTestnet: wallet.isTestnet,
           );
@@ -724,7 +724,7 @@ class BdkWalletDatasource {
             final output = outputEntry.value;
             final scriptPubkeyBytes = output.scriptPubkey.toBytes();
             final address =
-                await AddressScriptConversions.bitcoinAddressFromScriptPubkey(
+                await _AddressScriptConversions.bitcoinAddressFromScriptPubkey(
                   output.scriptPubkey.toBytes(),
                   isTestnet: wallet.isTestnet,
                 );
@@ -1018,5 +1018,31 @@ bdk.ElectrumClient _createElectrumClient({
       return build();
     }
     rethrow;
+  }
+}
+
+class _AddressScriptConversions {
+  static Future<String?> bitcoinAddressFromScriptPubkey(
+    Uint8List scriptPubkey, {
+    required bool isTestnet,
+  }) async {
+    try {
+      final address = bdk.Address.fromScript(
+        script: bdk.Script(rawOutputScript: scriptPubkey),
+        network: isTestnet ? bdk.Network.testnet : bdk.Network.bitcoin,
+      );
+
+      return address.toString();
+    } catch (e) {
+      // This is expected for non-address scripts (e.g. OP_RETURN) and
+      // not really a bug so using fine instead of severe or warning to avoid
+      // flooding the logger with it.
+      log.fine(
+        'error converting scriptPubkey to address',
+        error: e,
+        trace: StackTrace.current,
+      );
+      return null;
+    }
   }
 }

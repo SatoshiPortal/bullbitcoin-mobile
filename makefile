@@ -101,6 +101,11 @@ build-runner:
 	@fvm dart run build_runner build --force-jit
 	@(cd packages/bull_payjoin && fvm dart run build_runner build --force-jit)
 	@(cd packages/bull_pricer && fvm dart run build_runner build --force-jit)
+	@$(MAKE) recoverbull-build-runner
+
+.PHONY: recoverbull-build-runner
+recoverbull-build-runner:
+	@(cd features/recoverbull && fvm dart run build_runner build --force-jit)
 
 build-runner-watch:
 	@echo "🏗️ Build runner for json_serializable and flutter_gen (watch mode)"
@@ -109,6 +114,11 @@ build-runner-watch:
 translations:
 	@echo "🌐 Generating translations files"
 	@fvm flutter gen-l10n
+	@$(MAKE) recoverbull-translations
+
+.PHONY: recoverbull-translations
+recoverbull-translations:
+	@(cd features/recoverbull && fvm flutter gen-l10n)
 
 hooks:
 	@CURRENT_HOOKS_PATH=$$(git config --local core.hooksPath); \
@@ -123,6 +133,11 @@ drift-migrations:
 	@echo "🔄 Create schema and sum migrations"
 	fvm dart run drift_dev make-migrations
 	cd packages/bull_payjoin && fvm dart run drift_dev make-migrations
+	@$(MAKE) recoverbull-drift-migrations
+
+.PHONY: recoverbull-drift-migrations
+recoverbull-drift-migrations:
+	@(cd features/recoverbull && fvm dart run drift_dev make-migrations)
 
 ios-pod-update:
 	@if [ "$$(uname)" != "Darwin" ]; then echo "Skipping pod update (not macOS)"; exit 0; fi

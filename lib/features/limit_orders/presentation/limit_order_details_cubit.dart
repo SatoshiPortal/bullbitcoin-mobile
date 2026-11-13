@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/limit_orders/domain/usecases/cancel_limit_order_usecase.dart';
 import 'package:bb_mobile/features/limit_orders/domain/usecases/get_limit_order_usecase.dart';
 import 'package:bb_mobile/features/limit_orders/presentation/limit_order_details_state.dart';

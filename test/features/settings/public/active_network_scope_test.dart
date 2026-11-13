@@ -1,3 +1,4 @@
+import 'package:primitives/primitives.dart' show BitcoinUnit;
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'dart:async';
 

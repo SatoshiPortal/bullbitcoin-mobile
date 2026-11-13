@@ -46,11 +46,13 @@ graph TB
     BULL_PRICER[Bull Pricer Package<br/>Bitcoin price and history]
 
     %% Feature modules
+    IMPORT_MNEMONIC[Mnemonic Import]
+    ONBOARDING[Onboarding]
     SETTINGS[Settings]
     LOGS[Logs<br/>Workspace Feature]
     ELECTRUM_SETTINGS[Electrum Settings]
     TOR_SETTINGS[Tor Settings]
-    RECOVERBULL[RecoverBull]
+    RECOVERBULL[RecoverBull<br/>Workspace Feature]
     TOR[Tor<br/>Workspace Package]
     PIN_CODE[Pin Code]
     LABELS[Labels]
@@ -122,6 +124,10 @@ graph TB
     SCREEN_AWAKE --> BULL_LOGGER
     SCREEN_AWAKE --> WAKELOCK_PLUS
 
+    IMPORT_MNEMONIC --> WALLETS
+    ONBOARDING --> IMPORT_MNEMONIC
+    APP_STARTUP --> IMPORT_MNEMONIC
+
     %% Feature-to-feature dependencies (extracted from draw.io diagram)
     ADDRESS_MGMT --> LABELS
     ADDRESS_MGMT -->|public revision stream| WALLETS
@@ -140,6 +146,9 @@ graph TB
     BIP85 --> SECRETS
     BIP85 --> SETTINGS
     BACKUPS --> BIP85
+    APP_STARTUP --> RECOVERBULL
+    WALLETS --> RECOVERBULL
+    STATUS --> RECOVERBULL
     BACKUPS --> RECOVERBULL
     BACKUPS --> TOR
     BACKUPS --> WALLETS
@@ -224,6 +233,10 @@ graph TB
     WALLETS --> ELECTRUM_SETTINGS
     RECOVERBULL --> TOR
     RECOVERBULL --> SECRETS
+    RECOVERBULL --> PRIMITIVES
+    RECOVERBULL --> BULL_LOGGER
+    RECOVERBULL --> BULL_UI
+    RECOVERBULL --> SCREEN_PRIVACY[Screen Privacy]
     TRANSFER --> CONSOLIDATION
     TRANSFER --> SEND
     TRANSFER --> RECEIVE
@@ -253,7 +266,7 @@ graph TB
 
     class CORE coreStyle
     class SECRETS,PRIMITIVES,BULL_PAYJOIN,BULL_PRICER,TOR,SCREEN_AWAKE packageStyle
-    class SETTINGS,PIN_CODE,LABELS,HW_WALLETS,BTC_PRICE,NETWORK,BIP85,FEES,WALLETS,EXCHANGE,EXCHANGE_SETTINGS,EXCHANGE_SUPPORT_CHAT,SUPPORT,APP_STARTUP,UTXO_MGMT,ADDRESS_MGMT,RECIPIENTS,FUNDING,BACKUPS,SWAPS,WITHDRAWAL,STATUS,SEND,RECEIVE,TRANSFER,TX_HISTORY,REPLACE_BY_FEE,BG_TASKS,AUTOSWAP,AUTOBUY,DCA,DEFAULT_WALLETS,LIMIT_ORDERS,SELL,PAY,BUY,COINS,ANNOUNCEMENTS,CONSOLIDATION,ALL_SEED_VIEW,APP_UNLOCK,SP featureStyle
+    class SETTINGS,PIN_CODE,LABELS,HW_WALLETS,BTC_PRICE,NETWORK,BIP85,FEES,WALLETS,EXCHANGE,EXCHANGE_SETTINGS,EXCHANGE_SUPPORT_CHAT,SUPPORT,APP_STARTUP,UTXO_MGMT,ADDRESS_MGMT,RECIPIENTS,FUNDING,BACKUPS,SWAPS,WITHDRAWAL,STATUS,SEND,RECEIVE,TRANSFER,TX_HISTORY,REPLACE_BY_FEE,BG_TASKS,AUTOSWAP,AUTOBUY,DCA,DEFAULT_WALLETS,LIMIT_ORDERS,SELL,PAY,BUY,COINS,ANNOUNCEMENTS,CONSOLIDATION,ALL_SEED_VIEW,APP_UNLOCK,SP,IMPORT_MNEMONIC,ONBOARDING featureStyle
 ```
 
 ## About Package Dependency Diagrams
@@ -354,4 +367,6 @@ To verify no cyclic dependencies exist, you can:
 
 ## Wallet failure compatibility edges (2026-11-08)
 
-The shell ownership move relocates wallet failures while retaining the `lib/core/wallet/domain/wallet_failure.dart` compatibility export. Two existing consumers therefore resolve to the wallet owner: `backup_settings` through `presentation/cubit/backup_settings_cubit.dart`, and `status_check` through `domain/check_service_status_usecase.dart`. The source-edge allowlist and diagram record those observed dependencies. These legacy internal imports are migration debt, not permission for new cross-feature internals; move consumers to a published wallet failure surface in a scoped follow-up.
+The shell ownership move relocates wallet failures while retaining the `lib/core/wallet/domain/wallet_failure.dart` compatibility export. The existing `status_check` consumer resolves to the wallet owner through `domain/check_service_status_usecase.dart`. The retired `backup_settings` implementation is no longer a consumer. The source-edge allowlist and diagram record those observed dependencies. These legacy internal imports are migration debt, not permission for new cross-feature internals; move consumers to a published wallet failure surface in a scoped follow-up.
+
+The mnemonic import feature currently imports Wallets internals. Replace that dependency with the Wallets public facade in a scoped follow-up; the graph records the existing dependency rather than implying facade compliance.

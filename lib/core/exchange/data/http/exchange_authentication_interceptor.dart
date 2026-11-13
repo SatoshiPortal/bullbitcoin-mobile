@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/exchange/data/exchange_authentication.dart';
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart';
 import 'package:dio/dio.dart';
 
 /// Attaches authentication without replacing the client's existing options.

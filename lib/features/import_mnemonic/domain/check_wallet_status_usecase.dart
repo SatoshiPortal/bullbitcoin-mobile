@@ -30,7 +30,7 @@ class CheckWalletStatusUsecase {
 
   /// Derives the descriptors of all [scriptTypes] in one call, then starts one scan per script type.
   ///
-  /// The returned future fails with [CheckWalletStatusException] when the descriptors cannot be derived; each scan's own future then carries its result or failure, so a slow or failing scan does not hold back the others.
+  /// The returned future fails with [CheckWalletStatusException] when the descriptors cannot be derived, [CheckWalletStatusInvalidMnemonicException] for words that are not a mnemonic. Each scan's own future then carries its result or failure ([ElectrumFallbackException], [TimeoutException] or [CheckWalletStatusException]), so a slow or failing scan does not hold back the others.
   Future<Map<ScriptType, Future<({BigInt satoshis, int transactions})>>> call({
     required List<String> words,
     required bip39.Language language,
@@ -43,7 +43,7 @@ class CheckWalletStatusUsecase {
       final settings = await _settingsRepository.fetch();
       isTestnet = settings.environment.isTestnet;
 
-      switch (await _secrets.preview.bitcoinDescriptors(
+      descriptors = switch (await _secrets.preview.bitcoinDescriptors(
         words: words,
         language: language,
         passphrase: passphrase,
@@ -52,20 +52,26 @@ class CheckWalletStatusUsecase {
             : primitives.BitcoinNetwork.mainnet,
         scriptTypes: {for (final scriptType in scriptTypes) scriptType.shared},
       )) {
-        case primitives.Ok(:final value):
-          descriptors = value;
-        case primitives.Err(:final failure):
-          // Only the failure's type travels: its message may describe the words.
-          log.warning('${failure.runtimeType}');
-          throw CheckWalletStatusException(
-            'Could not derive the descriptors to scan: ${failure.runtimeType}',
-          );
-      }
-    } on CheckWalletStatusException {
+        primitives.Ok(:final value) => value,
+        // Only the failure's type travels: its message may describe the words.
+        primitives.Err(failure: InvalidMnemonicFailure()) =>
+          throw CheckWalletStatusInvalidMnemonicException(),
+        primitives.Err(:final failure) => throw CheckWalletStatusException(
+          'Could not derive the descriptors to scan: ${failure.runtimeType}',
+        ),
+      };
+    } on CheckWalletStatusException catch (e) {
+      log.warning(
+        'Import scan blocked stage=derive reason=${e is CheckWalletStatusInvalidMnemonicException ? 'invalid_mnemonic' : 'derivation'}',
+      );
       rethrow;
     } catch (e) {
-      log.severe(error: e, trace: StackTrace.current);
-      throw CheckWalletStatusException(e.toString());
+      // Only the type is reported: a foreign message may quote the input.
+      final error = CheckWalletStatusException(
+        'Could not prepare the scan: ${e.runtimeType}',
+      );
+      log.warning('Import scan blocked stage=derive reason=preparation');
+      throw error;
     }
 
     return {
@@ -77,8 +83,8 @@ class CheckWalletStatusUsecase {
         }: _handled(
           _scan(
             descriptors: pair,
-            scriptType: scriptType,
             isTestnet: isTestnet,
+            scriptType: scriptType,
           ),
         ),
     };
@@ -86,11 +92,15 @@ class CheckWalletStatusUsecase {
 
   Future<({BigInt satoshis, int transactions})> _scan({
     required Descriptors descriptors,
-    required primitives.ScriptType scriptType,
     required bool isTestnet,
+    required primitives.ScriptType scriptType,
   }) async {
+    final timer = Stopwatch()..start();
+    final context =
+        'network=${isTestnet ? 'testnet' : 'mainnet'} script=${scriptType.name}';
+    log.fine('Import scan started $context');
     try {
-      return await _serversPort
+      final result = await _serversPort
           .runWithFallback<({BigInt satoshis, int transactions})>(
             network: isTestnet
                 ? ElectrumServerNetwork.bitcoinTestnet
@@ -102,22 +112,21 @@ class CheckWalletStatusUsecase {
               electrumServer: connection,
             ),
           );
-    } on ElectrumFallbackException catch (e) {
-      final category = switch (e) {
-        NoElectrumServersConfiguredException() => 'no_servers',
-        OnionServerWithoutTorException() => 'onion_without_tor',
-        ClearnetServerWithoutConfiguredTorException() => 'tor_unavailable',
-        AllElectrumServersFailedException() => 'all_servers_failed',
+      log.fine(
+        'Import scan finished $context outcome=${result.transactions == 0 ? 'empty' : 'history'} tx_count=${result.transactions} duration_ms=${timer.elapsedMilliseconds}',
+      );
+      return result;
+    } catch (e) {
+      final reason = switch (e) {
+        TimeoutException() => 'timeout',
+        ElectrumFallbackException() => 'server_unavailable',
+        _ => 'unexpected',
       };
       log.warning(
-        'Pre-import scan failed scriptType=${scriptType.name} failure=$category',
+        'Import scan failed $context reason=$reason duration_ms=${timer.elapsedMilliseconds}',
       );
-      // Preserve the typed exception so callers retain the per-server
-      // attempts (failure tier, urls, root-cause errors) for diagnostics.
-      rethrow;
-    } catch (e) {
-      log.severe(error: e, trace: StackTrace.current);
-      throw CheckWalletStatusException(e.toString());
+      if (e is ElectrumFallbackException || e is TimeoutException) rethrow;
+      throw CheckWalletStatusException('Scan failed: ${e.runtimeType}');
     }
   }
 
@@ -130,4 +139,11 @@ class CheckWalletStatusUsecase {
 
 class CheckWalletStatusException extends BullException {
   CheckWalletStatusException(super.message);
+}
+
+/// The words are not a BIP39 mnemonic in the language given, so nothing could be scanned.
+class CheckWalletStatusInvalidMnemonicException
+    extends CheckWalletStatusException {
+  CheckWalletStatusInvalidMnemonicException()
+    : super('Could not derive the descriptors to scan: invalid mnemonic');
 }

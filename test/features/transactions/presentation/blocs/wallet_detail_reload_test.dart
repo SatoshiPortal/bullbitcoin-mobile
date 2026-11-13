@@ -1,3 +1,5 @@
+import 'package:primitives/primitives.dart'
+    show BitcoinNetwork, BitcoinUnit, Ok, Result;
 import 'dart:async';
 
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
@@ -20,7 +22,6 @@ import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:primitives/primitives.dart' show BitcoinNetwork, Ok, Result;
 
 class _Settings extends Mock implements SettingsRepository {}
 

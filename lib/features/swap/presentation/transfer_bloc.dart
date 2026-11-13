@@ -4,7 +4,7 @@ import 'package:bb_mobile/features/send/public/send_facade.dart'
         SendInsufficientBalanceFailure,
         SendInsufficientFundsForFeesFailure;
 import 'package:primitives/primitives.dart'
-    show Sats, BitcoinTransactionRecipient;
+    show BitcoinTransactionRecipient, BitcoinUnit, Err, Ok, Result, Sats;
 import 'dart:async';
 
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
@@ -23,7 +23,6 @@ import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/verify_chain_swap_amount_send_usecase.dart';
-import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bull_logger/bull_logger.dart';

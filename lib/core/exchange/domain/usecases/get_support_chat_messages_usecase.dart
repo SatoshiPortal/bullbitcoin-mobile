@@ -3,7 +3,7 @@ import 'package:bb_mobile/core/exchange/domain/exchange_support_chat_failure.dar
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_support_chat_repository.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart';
 import 'package:meta/meta.dart';
 
 class GetSupportChatMessagesUsecase {

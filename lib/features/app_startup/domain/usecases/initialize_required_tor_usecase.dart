@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:bb_mobile/features/app_startup/domain/app_startup_wallet_port.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bull_tor/tor.dart';
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart';
 import 'package:bull_logger/bull_logger.dart';
 
 /// Eagerly warms the configured Tor route for an existing RecoverBull backup.
