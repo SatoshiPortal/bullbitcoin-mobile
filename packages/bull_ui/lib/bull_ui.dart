@@ -48,7 +48,6 @@ export 'package:flutter/widgets.dart'
         Key,
         LayoutBuilder,
         ListView,
-        Localizations,
         MainAxisAlignment,
         MainAxisSize,
         Navigator,
@@ -155,6 +154,7 @@ export 'src/layout/bull_stacked_page.dart';
 
 // Data display.
 export 'src/data_display/bull_amount.dart';
+export 'src/data_display/bull_amount_preferences.dart';
 export 'src/data_display/bull_address_text.dart';
 export 'src/data_display/bull_backup_option_card.dart';
 export 'src/data_display/bull_badge.dart';

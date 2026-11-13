@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../data_display/bull_amount.dart';
+import '../data_display/bull_amount_preferences.dart';
 import '../theme/bull_theme.dart';
 import '../theme/bull_tokens.dart';
 import 'bull_amount_input_formatter.dart';
@@ -42,6 +43,8 @@ class _BullBitcoinAmountInputState extends State<BullBitcoinAmountInput> {
   late String _unit;
   late final TextEditingController _display;
   bool _updating = false;
+  BullAmountUnit? _globalUnit;
+  int? _globalRevision;
 
   @override
   void initState() {
@@ -53,13 +56,38 @@ class _BullBitcoinAmountInputState extends State<BullBitcoinAmountInput> {
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final globalUnit = BullAmountPreferencesScope.maybeOf(context)?.defaultUnit;
+    final revision = BullAmountPreferencesScope.revisionOf(context);
+    if (globalUnit != _globalUnit || revision != _globalRevision) {
+      _globalUnit = globalUnit;
+      _globalRevision = revision;
+      _unit = switch (globalUnit) {
+        BullAmountUnit.btc => 'BTC',
+        BullAmountUnit.sats => 'sats',
+        null => widget.currency,
+      };
+      // Incomplete/composing text has an empty canonical value and is cleared
+      // on a global reset rather than interpreted in the newly selected unit.
+      _onCanonicalChanged();
+    }
+  }
+
+  @override
   void didUpdateWidget(BullBitcoinAmountInput oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.amountController != widget.amountController) {
       oldWidget.amountController.removeListener(_onCanonicalChanged);
       widget.amountController.addListener(_onCanonicalChanged);
     }
-    if (oldWidget.currency != widget.currency) _unit = widget.currency;
+    if (oldWidget.currency != widget.currency) {
+      _unit = switch (_globalUnit) {
+        BullAmountUnit.btc => 'BTC',
+        BullAmountUnit.sats => 'sats',
+        null => widget.currency,
+      };
+    }
     if (oldWidget.currency != widget.currency ||
         oldWidget.amountController != widget.amountController) {
       _onCanonicalChanged();
@@ -201,6 +229,7 @@ class _BullBitcoinAmountInputState extends State<BullBitcoinAmountInput> {
             ),
             BullAmountUnitToggle(
               text: _unit,
+              unit: _unit == 'BTC' ? BullAmountUnit.btc : BullAmountUnit.sats,
               semanticValue:
                   '${widget.isMax ? widget.maxLabel : _display.text} $_unit',
               actionLabel: _unit == 'BTC'
