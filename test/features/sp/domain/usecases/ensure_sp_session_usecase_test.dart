@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:bb_mobile/core/wallet/domain/wallet_mutation_guard.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_wallet.dart';
 import 'package:bb_mobile/features/sp/domain/repositories/sp_backend_config_repository.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/ensure_sp_session_usecase.dart';
@@ -22,6 +25,8 @@ void main() {
 
   setUpAll(() async {
     registerFallbackValue(BitcoinNetwork.regtest);
+    registerFallbackValue(spBackendConfig());
+    registerFallbackValue(spSourceBinding);
     registerFallbackValue(await spSecret());
   });
 
@@ -31,6 +36,7 @@ void main() {
     configRepository = _MockSpBackendConfigRepository();
     getSpSecretUsecase = MockGetSpSecretUsecase();
     usecase = EnsureSpSessionUsecase(
+      walletMutationGuard: WalletMutationGuard(),
       repository: repository,
       files: repository,
       configRepository: configRepository,
@@ -38,9 +44,12 @@ void main() {
     );
 
     when(() => repository.hasSession).thenReturn(false);
+    when(
+      () => repository.verifyAccountIdentity(any()),
+    ).thenAnswer((_) async => const Ok(null));
     when(() => repository.teardownInProgress).thenReturn(false);
     when(
-      () => repository.adoptNewestBackup(),
+      () => repository.adoptNewestBackup(any()),
     ).thenAnswer((_) async => const Ok(false));
     when(
       () => repository.hasRevokedSentinel(),
@@ -51,10 +60,15 @@ void main() {
       (_) async => Ok<SpBackendConfig?, SpFailure>(spBackendConfig()),
     );
     when(
-      () => getSpSecretUsecase.execute(any()),
-    ).thenAnswer((_) async => Ok(secret));
+      () => getSpSecretUsecase.resolve(
+        any(),
+        walletId: any(named: 'walletId'),
+        expected: any(named: 'expected'),
+      ),
+    ).thenAnswer((_) async => Ok((secret: secret, binding: spSourceBinding)));
     when(
       () => repository.createFromSecret(
+        expectedConfig: any(named: 'expectedConfig'),
         network: any(named: 'network'),
         blindbitUrl: any(named: 'blindbitUrl'),
         electrumUrl: any(named: 'electrumUrl'),
@@ -64,6 +78,36 @@ void main() {
   });
 
   group('EnsureSpSessionUsecase', () {
+    test('legacy config is never reopened from an inferred source', () async {
+      when(() => configRepository.fetch()).thenAnswer(
+        (_) async => Ok<SpBackendConfig?, SpFailure>(
+          SpBackendConfig(
+            network: BitcoinNetwork.regtest,
+            blindbitUrl: 'http://blindbit.example',
+            electrumUrl: 'tcp://electrum.example:50001',
+          ),
+        ),
+      );
+      final result = await usecase.execute();
+      expect((result as Err).failure, isA<SpLegacySourceUnverified>());
+      verifyNever(
+        () => getSpSecretUsecase.resolve(
+          any(),
+          walletId: any(named: 'walletId'),
+          expected: any(named: 'expected'),
+        ),
+      );
+      verifyNever(
+        () => repository.createFromSecret(
+          expectedConfig: any(named: 'expectedConfig'),
+          network: any(named: 'network'),
+          blindbitUrl: any(named: 'blindbitUrl'),
+          electrumUrl: any(named: 'electrumUrl'),
+          secret: any(named: 'secret'),
+        ),
+      );
+    });
+
     test('reuses the live session without reconstructing', () async {
       when(() => repository.hasSession).thenReturn(true);
 
@@ -73,6 +117,7 @@ void main() {
       verify(() => repository.snapshot()).called(1);
       verifyNever(
         () => repository.createFromSecret(
+          expectedConfig: any(named: 'expectedConfig'),
           network: any(named: 'network'),
           blindbitUrl: any(named: 'blindbitUrl'),
           electrumUrl: any(named: 'electrumUrl'),
@@ -100,12 +145,22 @@ void main() {
       final result = await usecase.execute();
 
       expect((result as Ok<SpWallet?, SpFailure>).value, isNull);
-      verifyNever(() => getSpSecretUsecase.execute(any()));
+      verifyNever(
+        () => getSpSecretUsecase.resolve(
+          any(),
+          walletId: any(named: 'walletId'),
+          expected: any(named: 'expected'),
+        ),
+      );
     });
 
     test('a secret read throw returns Err with no exception detail', () async {
       when(
-        () => getSpSecretUsecase.execute(any()),
+        () => getSpSecretUsecase.resolve(
+          any(),
+          walletId: any(named: 'walletId'),
+          expected: any(named: 'expected'),
+        ),
       ).thenThrow(Exception('keystore locked'));
 
       final result = await usecase.execute();
@@ -121,16 +176,21 @@ void main() {
       );
     });
 
-    test('forwards a passphrase refusal and never creates', () async {
+    test('forwards a secret lookup failure and never creates', () async {
       when(
-        () => getSpSecretUsecase.execute(any()),
-      ).thenAnswer((_) async => const Err(SpPassphraseUnsupported()));
+        () => getSpSecretUsecase.resolve(
+          any(),
+          walletId: any(named: 'walletId'),
+          expected: any(named: 'expected'),
+        ),
+      ).thenAnswer((_) async => const Err(SpUnexpected('lookup failed')));
 
       final result = await usecase.execute();
 
-      expect((result as Err).failure, isA<SpPassphraseUnsupported>());
+      expect((result as Err).failure, isA<SpUnexpected>());
       verifyNever(
         () => repository.createFromSecret(
+          expectedConfig: any(named: 'expectedConfig'),
           network: any(named: 'network'),
           blindbitUrl: any(named: 'blindbitUrl'),
           electrumUrl: any(named: 'electrumUrl'),
@@ -145,6 +205,7 @@ void main() {
       expect((result as Ok<SpWallet?, SpFailure>).value, isNotNull);
       verify(
         () => repository.createFromSecret(
+          expectedConfig: any(named: 'expectedConfig'),
           network: BitcoinNetwork.regtest,
           blindbitUrl: 'http://blindbit.example',
           electrumUrl: 'tcp://electrum.example:50001',
@@ -162,6 +223,7 @@ void main() {
       verifyNever(() => configRepository.fetch());
       verifyNever(
         () => repository.createFromSecret(
+          expectedConfig: any(named: 'expectedConfig'),
           network: any(named: 'network'),
           blindbitUrl: any(named: 'blindbitUrl'),
           electrumUrl: any(named: 'electrumUrl'),
@@ -182,6 +244,7 @@ void main() {
         expect((result as Ok<SpWallet?, SpFailure>).value, isNotNull);
         verify(
           () => repository.createFromSecret(
+            expectedConfig: any(named: 'expectedConfig'),
             network: any(named: 'network'),
             blindbitUrl: any(named: 'blindbitUrl'),
             electrumUrl: any(named: 'electrumUrl'),
@@ -199,9 +262,15 @@ void main() {
       // session.
       var tearingDown = false;
       when(() => repository.teardownInProgress).thenAnswer((_) => tearingDown);
-      when(() => getSpSecretUsecase.execute(any())).thenAnswer((_) async {
+      when(
+        () => getSpSecretUsecase.resolve(
+          any(),
+          walletId: any(named: 'walletId'),
+          expected: any(named: 'expected'),
+        ),
+      ).thenAnswer((_) async {
         tearingDown = true;
-        return Ok(secret);
+        return Ok((secret: secret, binding: spSourceBinding));
       });
 
       final result = await usecase.execute();
@@ -209,6 +278,7 @@ void main() {
       expect((result as Ok<SpWallet?, SpFailure>).value, isNull);
       verifyNever(
         () => repository.createFromSecret(
+          expectedConfig: any(named: 'expectedConfig'),
           network: any(named: 'network'),
           blindbitUrl: any(named: 'blindbitUrl'),
           electrumUrl: any(named: 'electrumUrl'),
@@ -236,15 +306,34 @@ void main() {
     test(
       'serializes concurrent establishment into one createFromSecret',
       () async {
-        final results = await Future.wait([
-          usecase.execute(),
-          usecase.execute(),
-        ]);
+        final opened = Completer<void>();
+        final finish = Completer<void>();
+        when(
+          () => repository.createFromSecret(
+            expectedConfig: any(named: 'expectedConfig'),
+            network: any(named: 'network'),
+            blindbitUrl: any(named: 'blindbitUrl'),
+            electrumUrl: any(named: 'electrumUrl'),
+            secret: any(named: 'secret'),
+          ),
+        ).thenAnswer((_) async {
+          opened.complete();
+          await finish.future;
+          // The real repository publishes its session on a successful open.
+          when(() => repository.hasSession).thenReturn(true);
+          return const Ok(null);
+        });
+        final first = usecase.execute();
+        final second = usecase.execute();
+        await opened.future;
+        finish.complete();
+        final results = await Future.wait([first, second]);
 
         expect((results[0] as Ok<SpWallet?, SpFailure>).value, isNotNull);
         expect((results[1] as Ok<SpWallet?, SpFailure>).value, isNotNull);
         verify(
           () => repository.createFromSecret(
+            expectedConfig: any(named: 'expectedConfig'),
             network: any(named: 'network'),
             blindbitUrl: any(named: 'blindbitUrl'),
             electrumUrl: any(named: 'electrumUrl'),

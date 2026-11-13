@@ -1,3 +1,6 @@
+import 'package:bb_mobile/features/sp/domain/usecases/check_sp_setup_entry_usecase.dart';
+import 'package:bb_mobile/features/sp/domain/usecases/resume_sp_setup_usecase.dart';
+import 'package:bb_mobile/features/sp/domain/usecases/get_sp_secret_usecase.dart';
 import 'dart:async';
 
 import 'package:bb_mobile/features/sp/domain/entities/sp_backend_kind.dart';
@@ -16,6 +19,13 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
 class MockCreateSpWalletUsecase extends Mock implements CreateSpWalletUsecase {}
+
+class _MockResumeSpSetupUsecase extends Mock implements ResumeSpSetupUsecase {}
+
+class _MockCheckSpSetupEntryUsecase extends Mock
+    implements CheckSpSetupEntryUsecase {}
+
+class _MockGetSpSecretUsecase extends Mock implements GetSpSecretUsecase {}
 
 /// Stubs the regtest-defaults + backend-test paths the setup cubit exercises;
 /// the static networks come from [SpConfig] inside the real usecase.
@@ -86,6 +96,9 @@ void main() {
     Future<void> Function({required String url})? testElectrum,
     Result<SpBackendDefaults, SpFailure>? regtest,
     Future<void>? regtestGate,
+    Result<bool, SpFailure>? entryResult,
+    Future<Result<bool, SpFailure>>? entryFuture,
+    _MockResumeSpSetupUsecase? resume,
   }) {
     final probe = _FakeBackendProbe(
       regtest ?? regtestDefaults,
@@ -93,8 +106,15 @@ void main() {
       testElectrum: testElectrum,
       regtestGate: regtestGate,
     );
+    final entry = _MockCheckSpSetupEntryUsecase();
+    when(() => entry.execute()).thenAnswer(
+      (_) => entryFuture ?? Future.value(entryResult ?? const Ok(false)),
+    );
     return SpSetupCubit(
+      checkSpSetupEntryUsecase: entry,
       createSpWalletUsecase: mockCreate,
+      getSpSecretUsecase: _MockGetSpSecretUsecase(),
+      resumeSpSetupUsecase: resume ?? _MockResumeSpSetupUsecase(),
       testSpBackendUsecase: TestSpBackendUsecase(probe: probe),
       getSpBackendDefaultsUsecase: GetSpBackendDefaultsUsecase(probe: probe),
     );
@@ -122,6 +142,7 @@ void main() {
     when(
       () => mockCreate.execute(
         network: any(named: 'network'),
+        walletId: any(named: 'walletId'),
         blindbitUrl: any(named: 'blindbitUrl'),
         electrumUrl: any(named: 'electrumUrl'),
         scanFromNow: any(named: 'scanFromNow'),
@@ -137,6 +158,91 @@ void main() {
   tearDown(() => cubit.close());
 
   group('SpSetupCubit', () {
+    test(
+      'a busy teardown retains the pending binding for a later retry',
+      () async {
+        final resume = _MockResumeSpSetupUsecase();
+        var attempts = 0;
+        when(() => resume.execute()).thenAnswer((_) async {
+          attempts++;
+          return attempts == 1 ? const Err(SpSessionBusy()) : const Ok(null);
+        });
+        final pending = buildSetup(
+          entryResult: const Err(SpRecoveryRequired()),
+          resume: resume,
+        );
+        await pending.stream.firstWhere((state) => !state.isInspecting);
+        await pending.retryPendingSetup();
+        expect(pending.state.entryFailure, isA<SpRecoveryRequired>());
+        expect(pending.state.error, isA<SpSessionBusy>());
+        expect(pending.state.created, isFalse);
+        await pending.retryPendingSetup();
+        expect(pending.state.created, isTrue);
+        verify(() => resume.execute()).called(2);
+        await pending.close();
+      },
+    );
+
+    test(
+      'does not test a backend or enable creation before inspection finishes',
+      () async {
+        final entry = Completer<Result<bool, SpFailure>>();
+        var backendCalls = 0;
+        final waiting = buildSetup(
+          entryFuture: entry.future,
+          testBlindbit: ({required url}) async {
+            backendCalls++;
+          },
+          testElectrum: ({required url}) async {
+            backendCalls++;
+          },
+        );
+        await waiting.setNetwork(BitcoinNetwork.regtest);
+        expect(waiting.state.isInspecting, isTrue);
+        expect(waiting.state.canCreate, isFalse);
+        expect(backendCalls, 0);
+        entry.complete(const Err(SpConfigInvalid('invalid')));
+        await waiting.stream.firstWhere((state) => !state.isInspecting);
+        expect(backendCalls, 0);
+        expect(waiting.state.entryFailure, isA<SpConfigInvalid>());
+        await waiting.close();
+      },
+    );
+
+    test(
+      'pending marker presents recovery without fetching network defaults',
+      () async {
+        final pending = buildSetup(
+          entryResult: const Err(SpRecoveryRequired()),
+        );
+        await pending.stream.firstWhere((s) => !s.isInspecting);
+        expect(pending.state.error, isA<SpRecoveryRequired>());
+        expect(pending.state.created, isFalse);
+        await pending.close();
+      },
+    );
+
+    test('verified account redirects without offering a new setup', () async {
+      final verified = buildSetup(entryResult: const Ok(true));
+      await verified.stream.firstWhere((s) => !s.isInspecting);
+      expect(verified.state.created, isTrue);
+      expect(verified.state.existingVerified, isTrue);
+      await verified.close();
+    });
+
+    test(
+      'unverifiable state reports its failure without offering a new setup',
+      () async {
+        final blocked = buildSetup(
+          entryResult: const Err(SpConfigInvalid('invalid')),
+        );
+        await blocked.stream.firstWhere((s) => !s.isInspecting);
+        expect(blocked.state.error, isA<SpConfigInvalid>());
+        expect(blocked.state.created, isFalse);
+        await blocked.close();
+      },
+    );
+
     test('initial state is default', () {
       expect(cubit.state.network, BitcoinNetwork.mainnet);
       expect(cubit.state.blindbitUrl, isNotEmpty);
@@ -245,6 +351,7 @@ void main() {
       when(
         () => mockCreate.execute(
           network: any(named: 'network'),
+          walletId: any(named: 'walletId'),
           blindbitUrl: any(named: 'blindbitUrl'),
           electrumUrl: any(named: 'electrumUrl'),
           scanFromNow: any(named: 'scanFromNow'),
@@ -257,7 +364,7 @@ void main() {
       cubit.setElectrumUrl('tcp://electrum.local:60001');
       await cubit.testBlindbit();
       await cubit.testElectrum();
-      await cubit.create();
+      await cubit.create('wallet');
       expect(cubit.state.error, isNotNull);
 
       await cubit.setNetwork(BitcoinNetwork.mainnet);
@@ -270,11 +377,12 @@ void main() {
 
       await cubit.testBlindbit();
       await cubit.testElectrum();
-      await cubit.create();
+      await cubit.create('wallet');
 
       verify(
         () => mockCreate.execute(
           network: BitcoinNetwork.mainnet,
+          walletId: 'wallet',
           blindbitUrl: 'http://blindbit.local',
           electrumUrl: 'tcp://electrum.local:60001',
           scanFromNow: true,
@@ -291,6 +399,7 @@ void main() {
         when(
           () => mockCreate.execute(
             network: any(named: 'network'),
+            walletId: any(named: 'walletId'),
             blindbitUrl: any(named: 'blindbitUrl'),
             electrumUrl: any(named: 'electrumUrl'),
             scanFromNow: any(named: 'scanFromNow'),
@@ -308,7 +417,7 @@ void main() {
 
         await cubit.testBlindbit();
         await cubit.testElectrum();
-        await cubit.create();
+        await cubit.create('wallet');
 
         expect(cubit.state.error, isA<SpUnexpected>());
         expect(
@@ -324,6 +433,7 @@ void main() {
       when(
         () => mockCreate.execute(
           network: any(named: 'network'),
+          walletId: any(named: 'walletId'),
           blindbitUrl: any(named: 'blindbitUrl'),
           electrumUrl: any(named: 'electrumUrl'),
           scanFromNow: any(named: 'scanFromNow'),
@@ -338,11 +448,12 @@ void main() {
 
       await cubit.testBlindbit();
       await cubit.testElectrum();
-      await cubit.create();
+      await cubit.create('wallet');
 
       verify(
         () => mockCreate.execute(
           network: any(named: 'network'),
+          walletId: any(named: 'walletId'),
           blindbitUrl: any(named: 'blindbitUrl'),
           electrumUrl: any(named: 'electrumUrl'),
           scanFromNow: any(named: 'scanFromNow'),
@@ -375,11 +486,12 @@ void main() {
         expect(c.state.electrumStatus, SpConnectionStatus.ok);
         expect(c.state.canCreate, isFalse);
 
-        await c.create();
+        await c.create('wallet');
 
         verifyNever(
           () => mockCreate.execute(
             network: any(named: 'network'),
+            walletId: any(named: 'walletId'),
             blindbitUrl: any(named: 'blindbitUrl'),
             electrumUrl: any(named: 'electrumUrl'),
             scanFromNow: any(named: 'scanFromNow'),
@@ -410,11 +522,12 @@ void main() {
         expect(c.state.blindbitStatus, SpConnectionStatus.ok);
         expect(c.state.canCreate, isFalse);
 
-        await c.create();
+        await c.create('wallet');
 
         verifyNever(
           () => mockCreate.execute(
             network: any(named: 'network'),
+            walletId: any(named: 'walletId'),
             blindbitUrl: any(named: 'blindbitUrl'),
             electrumUrl: any(named: 'electrumUrl'),
             scanFromNow: any(named: 'scanFromNow'),
@@ -431,11 +544,12 @@ void main() {
         // No testBlindbit()/testElectrum(): the conn tests stay untested.
         expect(cubit.state.canCreate, isFalse);
 
-        await cubit.create();
+        await cubit.create('wallet');
 
         verifyNever(
           () => mockCreate.execute(
             network: any(named: 'network'),
+            walletId: any(named: 'walletId'),
             blindbitUrl: any(named: 'blindbitUrl'),
             electrumUrl: any(named: 'electrumUrl'),
             scanFromNow: any(named: 'scanFromNow'),
@@ -504,11 +618,12 @@ void main() {
     test('create() seeds the cursor when starting from now', () async {
       await cubit.testBlindbit();
       await cubit.testElectrum();
-      await cubit.create();
+      await cubit.create('wallet');
 
       verify(
         () => mockCreate.execute(
           network: any(named: 'network'),
+          walletId: any(named: 'walletId'),
           blindbitUrl: any(named: 'blindbitUrl'),
           electrumUrl: any(named: 'electrumUrl'),
           scanFromNow: true,
@@ -520,11 +635,12 @@ void main() {
       cubit.setScanStart(SpScanStart.earlierBlock);
       await cubit.testBlindbit();
       await cubit.testElectrum();
-      await cubit.create();
+      await cubit.create('wallet');
 
       verify(
         () => mockCreate.execute(
           network: any(named: 'network'),
+          walletId: any(named: 'walletId'),
           blindbitUrl: any(named: 'blindbitUrl'),
           electrumUrl: any(named: 'electrumUrl'),
           scanFromNow: false,

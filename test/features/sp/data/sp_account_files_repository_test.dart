@@ -1,3 +1,7 @@
+import 'package:bb_mobile/features/sp/domain/entities/sp_backend_config.dart';
+import 'dart:convert';
+
+import '../sp_fakes.dart';
 import 'dart:io';
 
 import 'package:primitives/primitives.dart';
@@ -53,6 +57,174 @@ void main() {
   // then the microsecond stamp that orders them.
   Directory backupDirOf(int stamp) =>
       Directory('${tempDir.path}/${SpStorageNames.accountName}.backup-$stamp');
+
+  void markVerified(Directory directory) {
+    final source = spSourceBinding;
+    File(
+      '${directory.path}/${SpStorageNames.identityMarker}',
+    ).writeAsStringSync(
+      jsonEncode({
+        'version': 1,
+        'network': 'regtest',
+        'walletId': source.walletId,
+        'secretId': source.secretId,
+        'externalDescriptor': source.externalDescriptor,
+        'internalDescriptor': source.internalDescriptor,
+        'spAddress': source.spAddress,
+        'status': 'verified',
+      }),
+    );
+  }
+
+  test(
+    'legacy directory is detected and never deleted by V2 revoke cleanup',
+    () async {
+      final legacy = Directory(
+        '${tempDir.path}/${SpStorageNames.legacyAccountName}',
+      )..createSync();
+      File('${legacy.path}/account.sqlite').writeAsStringSync('historical');
+      final repo = makeRepo();
+      expect((await repo.hasLegacyData() as Ok<bool, SpFailure>).value, isTrue);
+      await repo.deleteOrphanBackups(null);
+      await repo.deleteAccountDir();
+      expect(
+        File('${legacy.path}/account.sqlite').readAsStringSync(),
+        'historical',
+      );
+    },
+  );
+
+  group('V2 identity marker', () {
+    test('pending creation is not accepted as a verified account', () async {
+      final repo = makeRepo();
+      expect(
+        await repo.createAccountDir(spBackendConfig()),
+        isA<Ok<void, SpFailure>>(),
+      );
+      expect(
+        await repo.verifyAccountIdentity(spBackendConfig()),
+        isA<Err<void, SpFailure>>(),
+      );
+      expect(
+        await repo.verifyPendingIdentity(spBackendConfig()),
+        isA<Ok<void, SpFailure>>(),
+      );
+      expect(accountDirOf().existsSync(), isTrue);
+    });
+
+    test(
+      'only a matching pending marker can be committed after verification',
+      () async {
+        final datasource = SpAccountFilesDatasource();
+        final repo = SpAccountFilesRepository(files: datasource);
+        await repo.createAccountDir(spBackendConfig());
+        await datasource.commitAccountIdentity(spBackendConfig());
+        expect(
+          await repo.verifyAccountIdentity(spBackendConfig()),
+          isA<Ok<void, SpFailure>>(),
+        );
+      },
+    );
+
+    test(
+      'an absent marker is never repaired on an existing directory',
+      () async {
+        accountDirOf().createSync();
+        final repo = makeRepo();
+        expect(
+          await repo.createAccountDir(spBackendConfig()),
+          isA<Err<void, SpFailure>>(),
+        );
+        expect(
+          await repo.verifyAccountIdentity(spBackendConfig()),
+          isA<Err<void, SpFailure>>(),
+        );
+        expect(
+          File(
+            '${accountDirOf().path}/${SpStorageNames.identityMarker}',
+          ).existsSync(),
+          isFalse,
+        );
+      },
+    );
+
+    test('incomplete staging blocks adoption and stays untouched', () async {
+      final stage = Directory('${tempDir.path}/sp_v2.new-interrupted')
+        ..createSync();
+      final backup = backupDirOf(1)..createSync();
+      markVerified(backup);
+      expect(
+        await makeRepo().adoptNewestBackup(spBackendConfig()),
+        isA<Err<bool, SpFailure>>(),
+      );
+      expect(stage.existsSync(), isTrue);
+      expect(backup.existsSync(), isTrue);
+    });
+
+    test(
+      'a marker symlink is refused without following or changing its target',
+      () async {
+        final account = accountDirOf()..createSync();
+        final outside = File('${tempDir.path}/outside-marker')
+          ..writeAsStringSync('unchanged');
+        Link(
+          '${account.path}/${SpStorageNames.identityMarker}',
+        ).createSync(outside.path);
+        expect(
+          await makeRepo().verifyAccountIdentity(spBackendConfig()),
+          isA<Err<void, SpFailure>>(),
+        );
+        expect(outside.readAsStringSync(), 'unchanged');
+      },
+    );
+
+    test('resume accepts one matching backup and preserves it', () async {
+      final backup = backupDirOf(1)..createSync();
+      markVerified(backup);
+      expect(
+        await makeRepo().verifyResumeBackups(spBackendConfig()),
+        isA<Ok<void, SpFailure>>(),
+      );
+      expect(backup.existsSync(), isTrue);
+    });
+
+    test('resume rejects a backup whose marker does not match', () async {
+      final backup = backupDirOf(1)..createSync();
+      expect(
+        await makeRepo().verifyResumeBackups(spBackendConfig()),
+        isA<Err<void, SpFailure>>(),
+      );
+      expect(backup.existsSync(), isTrue);
+    });
+
+    test('a backup symlink is not ignored or followed', () async {
+      final outside = Directory('${tempDir.path}/outside')..createSync();
+      final link = Link(backupDirOf(1).path)..createSync(outside.path);
+      expect(
+        await makeRepo().adoptNewestBackup(spBackendConfig()),
+        isA<Err<bool, SpFailure>>(),
+      );
+      expect(link.existsSync(), isTrue);
+      expect(outside.existsSync(), isTrue);
+    });
+
+    test('a mismatched marker is preserved and never adopted', () async {
+      final backup = backupDirOf(1)..createSync();
+      markVerified(backup);
+      final mismatch = SpBackendConfig(
+        network: BitcoinNetwork.mainnet,
+        source: spSourceBinding,
+        blindbitUrl: 'http://blindbit.example',
+        electrumUrl: 'tcp://electrum.example:50001',
+      );
+      expect(
+        await makeRepo().adoptNewestBackup(mismatch),
+        isA<Err<bool, SpFailure>>(),
+      );
+      expect(backup.existsSync(), isTrue);
+      expect(accountDirOf().existsSync(), isFalse);
+    });
+  });
 
   group('accountDirExists', () {
     test('false before the dir is created, true after', () async {
@@ -135,17 +307,20 @@ void main() {
     test('backupAccountDir moves the dir aside; restoreAccountDir brings it '
         'back', () async {
       final accountDir = accountDirOf()..createSync();
+      markVerified(accountDir);
       File('${accountDir.path}/account.sqlite').writeAsStringSync('old');
 
       final repo = makeRepo();
       expect(
-        (await repo.backupAccountDir() as Ok<bool, SpFailure>).value,
+        (await repo.backupAccountDir(spBackendConfig()) as Ok<bool, SpFailure>)
+            .value,
         isTrue,
       );
       expect(accountDir.existsSync(), isFalse);
 
       expect(
-        (await repo.restoreAccountDir() as Ok<bool, SpFailure>).value,
+        (await repo.restoreAccountDir(spBackendConfig()) as Ok<bool, SpFailure>)
+            .value,
         isTrue,
       );
       expect(accountDir.existsSync(), isTrue);
@@ -160,46 +335,54 @@ void main() {
       () async {
         final repo = makeRepo();
         expect(
-          (await repo.backupAccountDir() as Ok<bool, SpFailure>).value,
+          (await repo.backupAccountDir(spBackendConfig())
+                  as Ok<bool, SpFailure>)
+              .value,
           isFalse,
         );
         expect(
-          (await repo.restoreAccountDir() as Ok<bool, SpFailure>).value,
+          (await repo.restoreAccountDir(spBackendConfig())
+                  as Ok<bool, SpFailure>)
+              .value,
           isFalse,
         );
       },
     );
 
     test(
-      'restoreAccountDir deletes a partial new dir before restoring backup',
+      'restoreAccountDir preserves a partial new directory without a marker',
       () async {
         final accountDir = accountDirOf()..createSync();
+        markVerified(accountDir);
         File('${accountDir.path}/account.sqlite').writeAsStringSync('old');
-
         final repo = makeRepo();
-        await repo.backupAccountDir();
-        // A partial recreate left a fresh dir behind.
+        await repo.backupAccountDir(spBackendConfig());
         accountDirOf().createSync();
         File('${accountDirOf().path}/partial').writeAsStringSync('junk');
-
         expect(
-          (await repo.restoreAccountDir() as Ok<bool, SpFailure>).value,
+          await repo.restoreAccountDir(spBackendConfig()),
+          isA<Err<bool, SpFailure>>(),
+        );
+        expect(File('${accountDirOf().path}/partial').existsSync(), isTrue);
+        expect(
+          tempDir.listSync().whereType<Directory>().any(
+            (d) => d.path.contains('.backup-'),
+          ),
           isTrue,
         );
-        expect(
-          File('${accountDir.path}/account.sqlite').readAsStringSync(),
-          'old',
-        );
-        expect(File('${accountDir.path}/partial').existsSync(), isFalse);
       },
     );
 
     test('discardBackup removes the backup dir', () async {
       accountDirOf().createSync();
+      markVerified(accountDirOf());
       final repo = makeRepo();
-      await repo.backupAccountDir();
+      await repo.backupAccountDir(spBackendConfig());
 
-      expect(await repo.discardBackup(), isA<Ok<void, SpFailure>>());
+      expect(
+        await repo.discardBackup(spBackendConfig()),
+        isA<Ok<void, SpFailure>>(),
+      );
 
       final backups = tempDir
           .listSync()
@@ -211,37 +394,67 @@ void main() {
   });
 
   group('deleteOrphanBackups', () {
-    test('sweeps every leftover backup so no wallet copy stays', () async {
-      final first = backupDirOf(1)..createSync();
-      File('${first.path}/account.sqlite').writeAsStringSync('one');
-      final second = backupDirOf(2)..createSync();
-      File('${second.path}/account.sqlite').writeAsStringSync('two');
+    test(
+      'preserves multiple backups until their identity is resolved',
+      () async {
+        final first = backupDirOf(1)..createSync();
+        File('${first.path}/account.sqlite').writeAsStringSync('one');
+        final second = backupDirOf(2)..createSync();
+        File('${second.path}/account.sqlite').writeAsStringSync('two');
 
-      expect(
-        await makeRepo().deleteOrphanBackups(),
-        isA<Ok<void, SpFailure>>(),
-      );
-      expect(first.existsSync(), isFalse);
-      expect(second.existsSync(), isFalse);
-    });
+        expect(
+          await makeRepo().deleteOrphanBackups(spBackendConfig()),
+          isA<Err<void, SpFailure>>(),
+        );
+        expect(first.existsSync(), isTrue);
+        expect(second.existsSync(), isTrue);
+      },
+    );
   });
 
   group('adoptNewestBackup', () {
-    test('restores the newest backup and drops the older ones', () async {
-      final older = backupDirOf(1)..createSync();
-      File('${older.path}/account.sqlite').writeAsStringSync('older');
-      final newest = backupDirOf(2)..createSync();
-      File('${newest.path}/account.sqlite').writeAsStringSync('newest');
+    test(
+      'multiple backups are preserved without choosing by timestamp',
+      () async {
+        final older = backupDirOf(1)..createSync();
+        final newest = backupDirOf(2)..createSync();
+        markVerified(older);
+        markVerified(newest);
+        expect(
+          await makeRepo().adoptNewestBackup(spBackendConfig()),
+          isA<Err<bool, SpFailure>>(),
+        );
+        expect(older.existsSync(), isTrue);
+        expect(newest.existsSync(), isTrue);
+        expect(accountDirOf().existsSync(), isFalse);
+      },
+    );
 
-      final adopted = await makeRepo().adoptNewestBackup();
+    test(
+      'multiple backups block reopening even with an account directory',
+      () async {
+        final account = accountDirOf()..createSync();
+        markVerified(account);
+        final first = backupDirOf(1)..createSync();
+        final second = backupDirOf(2)..createSync();
+        markVerified(first);
+        markVerified(second);
+        expect(
+          await makeRepo().adoptNewestBackup(spBackendConfig()),
+          isA<Err<bool, SpFailure>>(),
+        );
+        expect(account.existsSync(), isTrue);
+        expect(first.existsSync(), isTrue);
+        expect(second.existsSync(), isTrue);
+      },
+    );
 
+    test('adopts one backup only when its marker matches', () async {
+      final backup = backupDirOf(1)..createSync();
+      markVerified(backup);
+      final adopted = await makeRepo().adoptNewestBackup(spBackendConfig());
       expect((adopted as Ok<bool, SpFailure>).value, isTrue);
-      expect(
-        File('${accountDirOf().path}/account.sqlite').readAsStringSync(),
-        'newest',
-      );
-      expect(older.existsSync(), isFalse);
-      expect(newest.existsSync(), isFalse);
+      expect(accountDirOf().existsSync(), isTrue);
     });
 
     test('does nothing when the account dir is still there', () async {
@@ -250,7 +463,7 @@ void main() {
       final backup = backupDirOf(1)..createSync();
       File('${backup.path}/account.sqlite').writeAsStringSync('stale');
 
-      final adopted = await makeRepo().adoptNewestBackup();
+      final adopted = await makeRepo().adoptNewestBackup(spBackendConfig());
 
       expect((adopted as Ok<bool, SpFailure>).value, isFalse);
       expect(
@@ -262,7 +475,7 @@ void main() {
     });
 
     test('does nothing when there is no backup at all', () async {
-      final adopted = await makeRepo().adoptNewestBackup();
+      final adopted = await makeRepo().adoptNewestBackup(spBackendConfig());
 
       expect((adopted as Ok<bool, SpFailure>).value, isFalse);
       expect(accountDirOf().existsSync(), isFalse);

@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/wallet/domain/wallet_mutation_guard.dart';
 import 'package:bb_mobile/features/sp/watchers/sp_header_retry_watcher.dart';
 import 'dart:async';
 import 'dart:io';
@@ -41,6 +42,7 @@ void main() {
   late RecreateSpWalletUsecase recreateSpWalletUsecase;
   late RevokeSpWalletUsecase revokeSpWalletUsecase;
   late SpSessionGuard guard;
+  late WalletMutationGuard walletGuard;
   late SpCubitHarness harness;
   late SpCubit cubit;
 
@@ -54,6 +56,7 @@ void main() {
     registerFallbackValue(await spSecret());
     TestWidgetsFlutterBinding.ensureInitialized();
     registerFallbackValue(BitcoinNetwork.regtest);
+    registerFallbackValue(spSourceBinding);
     registerFallbackValue(spBackendConfig());
   });
 
@@ -65,6 +68,7 @@ void main() {
     // One guard, as the locator registers it: it is what keeps a recreate and
     // a revoke off the same session.
     guard = SpSessionGuard();
+    walletGuard = WalletMutationGuard();
 
     // No account dir on disk, so no sentinel: ensure never treats the live
     // session as revoked.
@@ -92,16 +96,21 @@ void main() {
       if (!notif.isClosed) await notif.close();
       return const Ok(null);
     });
-    // No account dir on disk in this race harness, so backup/restore/discard
-    // are no-ops; the session orchestration is what this test exercises.
     when(
-      () => repository.backupAccountDir(),
+      () => repository.createAccountDir(any()),
+    ).thenAnswer((_) async => const Ok(null));
+    when(
+      () => repository.verifyAccountIdentity(any()),
+    ).thenAnswer((_) async => const Ok(null));
+    // This fake models a verified backup; no physical filesystem is touched.
+    when(
+      () => repository.backupAccountDir(any()),
+    ).thenAnswer((_) async => const Ok(true));
+    when(
+      () => repository.restoreAccountDir(any()),
     ).thenAnswer((_) async => const Ok(false));
     when(
-      () => repository.restoreAccountDir(),
-    ).thenAnswer((_) async => const Ok(false));
-    when(
-      () => repository.discardBackup(),
+      () => repository.discardBackup(any()),
     ).thenAnswer((_) async => const Ok(null));
     // Revoke side, so a revoke can be raced against a recreate below.
     when(
@@ -113,7 +122,7 @@ void main() {
       ),
     ).thenAnswer((_) async => const Ok(null));
     when(
-      () => repository.deleteOrphanBackups(),
+      () => repository.deleteOrphanBackups(any()),
     ).thenAnswer((_) async => const Ok(null));
     when(
       () => repository.deleteAccountDir(),
@@ -125,6 +134,7 @@ void main() {
     ).thenAnswer((_) async => const Ok(null));
     when(
       () => repository.createFromSecret(
+        expectedConfig: any(named: 'expectedConfig'),
         network: any(named: 'network'),
         blindbitUrl: any(named: 'blindbitUrl'),
         electrumUrl: any(named: 'electrumUrl'),
@@ -154,8 +164,12 @@ void main() {
     when(() => repository.minBirthdayHeight()).thenReturn(const Ok(0));
 
     when(
-      () => getSpSecretUsecase.execute(any()),
-    ).thenAnswer((_) async => Ok(secret));
+      () => getSpSecretUsecase.resolve(
+        any(),
+        walletId: any(named: 'walletId'),
+        expected: any(named: 'expected'),
+      ),
+    ).thenAnswer((_) async => Ok((secret: secret, binding: spSourceBinding)));
     when(() => configRepository.fetch()).thenAnswer(
       (_) async => Ok<SpBackendConfig?, SpFailure>(spBackendConfig()),
     );
@@ -164,6 +178,7 @@ void main() {
     ).thenAnswer((_) async => const Ok(null));
 
     ensureSpSessionUsecase = EnsureSpSessionUsecase(
+      walletMutationGuard: walletGuard,
       repository: repository,
       files: repository,
       configRepository: configRepository,
@@ -174,6 +189,7 @@ void main() {
       ensureSpSessionUsecase: ensureSpSessionUsecase,
     );
     recreateSpWalletUsecase = RecreateSpWalletUsecase(
+      walletMutationGuard: walletGuard,
       getSpSecretUsecase: getSpSecretUsecase,
       repository: repository,
       files: repository,
@@ -182,6 +198,7 @@ void main() {
       guard: guard,
     );
     revokeSpWalletUsecase = RevokeSpWalletUsecase(
+      walletMutationGuard: walletGuard,
       repository: repository,
       files: repository,
       configRepository: configRepository,
@@ -193,6 +210,7 @@ void main() {
       () => harness.watchUsecase.execute(),
     ).thenAnswer((_) => repository.notifications);
     cubit = SpCubit(
+      resumeSpSetupUsecase: harness.resumeUsecase,
       loadSpWalletDataUsecase: loadSpWalletDataUsecase,
       restampSpPaymentTimesUsecase: harness.restampUsecase,
       spNotificationsWatcher: SpNotificationsWatcher(

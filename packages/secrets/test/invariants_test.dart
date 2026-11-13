@@ -316,7 +316,6 @@ import 'package:bip39_mnemonic/bip39_mnemonic.dart'
       'DatabaseKeyCorruptFailure', 'MnemonicRequiredFailure',
       'InvalidMnemonicFailure', 'InvalidVaultFailure',
       'UnsupportedNetworkFailure', 'FingerprintMismatchFailure',
-      'PassphraseUnsupportedFailure', 'LanguageUnsupportedFailure',
       'UseSecretFailure',
     };
 
@@ -396,8 +395,9 @@ import 'package:bip39_mnemonic/bip39_mnemonic.dart'
       // material: the stored secret itself, and `@internal` — only the
       // package's own sealed widgets may call it
       'revealMnemonic': 'material',
-      // a bwk account that scans and signs; bwk holds the words while it lives
+      // a bwk account that scans and signs; bwk holds signing capability while it lives
       'silentPaymentsAccount': 'capability',
+      'silentPaymentsAddress': 'derived',
       // ciphertext plus the key that opens it
       'backupRecoverbull': 'ciphertext',
     };

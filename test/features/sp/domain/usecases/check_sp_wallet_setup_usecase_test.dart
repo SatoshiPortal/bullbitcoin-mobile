@@ -135,8 +135,7 @@ void main() {
       );
     });
 
-    test('a corrupt stored config reads as not set up', () async {
-      // Setup overwrites a corrupt config, so it is absent rather than an error.
+    test('a corrupt stored config is not treated as absent', () async {
       when(() => configRepo.fetch()).thenAnswer(
         (_) async =>
             const Err<SpBackendConfig?, SpFailure>(SpConfigInvalid('bad json')),
@@ -144,7 +143,7 @@ void main() {
 
       final result = await usecase.execute();
 
-      expect((result as Ok<bool, SpFailure>).value, isFalse);
+      expect((result as Err<bool, SpFailure>).failure, isA<SpConfigInvalid>());
     });
   });
 

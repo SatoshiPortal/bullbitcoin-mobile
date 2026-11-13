@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/sp/domain/usecases/check_sp_source_retention_usecase.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/check_sp_wallet_setup_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/get_sp_feature_gate_usecase.dart';
@@ -17,6 +18,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
 class MockGetSpWalletUsecase extends Mock implements GetSpWalletUsecase {}
+
+class MockCheckSpSourceRetentionUsecase extends Mock
+    implements CheckSpSourceRetentionUsecase {}
 
 class MockIsSpScanningUsecase extends Mock implements IsSpScanningUsecase {}
 
@@ -65,6 +69,7 @@ void main() {
     getSpWallet = MockGetSpWalletUsecase();
     isScanning = MockIsSpScanningUsecase();
     facade = SpFacade(
+      checkSpSourceRetentionUsecase: MockCheckSpSourceRetentionUsecase(),
       getSpWalletUsecase: getSpWallet,
       isSpScanningUsecase: isScanning,
       checkSpWalletSetupUsecase: MockCheckSpWalletSetupUsecase(),

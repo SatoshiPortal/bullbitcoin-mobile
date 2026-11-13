@@ -1,8 +1,11 @@
+import 'package:bb_mobile/core/wallet/domain/wallet_mutation_guard.dart';
+import 'package:bb_mobile/core/wallet/domain/ports/wallet_retention_port.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
-import 'package:primitives/primitives.dart' show BitcoinUnit, Err, Ok;
+import 'package:primitives/primitives.dart'
+    show BitcoinUnit, Err, Fingerprint, Ok;
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/import_mnemonic/domain/check_duplicate_mnemonic_usecase.dart';
@@ -19,6 +22,22 @@ class _MockCheckDuplicateMnemonicUsecase extends Mock
 class _MockSettingsRepository extends Mock implements SettingsRepository {}
 
 class _MockWalletRepository extends Mock implements WalletRepository {}
+
+class _Retention implements WalletRetentionPort {
+  bool retained = false;
+  bool fail = false;
+  @override
+  Future<bool> retainsWallet(String walletId) async {
+    if (fail) throw StateError('unavailable');
+    return retained;
+  }
+
+  @override
+  Future<bool> retainsSecret(Fingerprint secretId) async {
+    if (fail) throw StateError('unavailable');
+    return retained;
+  }
+}
 
 class _MockWallet extends Mock implements Wallet {}
 
@@ -48,6 +67,7 @@ void main() {
   late _MockCheckDuplicateMnemonicUsecase checkDuplicate;
   late _MockSettingsRepository settingsRepository;
   late _MockWalletRepository walletRepository;
+  late _Retention retention;
   late ImportWalletUsecase usecase;
 
   setUpAll(() async {
@@ -59,6 +79,7 @@ void main() {
     registerFallbackValue((fallback as Ok<Secret, SecretFailure>).value);
     registerFallbackValue(Network.bitcoinMainnet);
     registerFallbackValue(ScriptType.bip84);
+    registerFallbackValue(bip39.Language.english);
   });
 
   setUp(() {
@@ -67,15 +88,19 @@ void main() {
     checkDuplicate = _MockCheckDuplicateMnemonicUsecase();
     settingsRepository = _MockSettingsRepository();
     walletRepository = _MockWalletRepository();
+    retention = _Retention();
     usecase = ImportWalletUsecase(
       checkDuplicateMnemonicUsecase: checkDuplicate,
       secrets: secrets,
       settingsRepository: settingsRepository,
       walletRepository: walletRepository,
+      mutationGuard: WalletMutationGuard(),
+      retention: retention,
     );
     when(
       () => checkDuplicate.execute(
         mnemonicWords: any(named: 'mnemonicWords'),
+        language: any(named: 'language'),
         passphrase: any(named: 'passphrase'),
       ),
     ).thenAnswer((_) async => const Ok(null));
@@ -113,6 +138,8 @@ void main() {
           secrets: secrets,
           settingsRepository: settingsRepository,
           walletRepository: walletRepository,
+          mutationGuard: WalletMutationGuard(),
+          retention: retention,
         );
         final result = await usecase.execute(
           mnemonicWords: words,
@@ -156,6 +183,25 @@ void main() {
   }
 
   group('ImportWalletUsecase', () {
+    for (final failure in [false, true]) {
+      test(
+        'failed import keeps retained or unverifiable secret: error=$failure',
+        () async {
+          retention.retained = true;
+          retention.fail = failure;
+          stubCreateWallet(
+            () async => throw Exception('wallet creation failed'),
+          );
+          final result = await usecase.execute(mnemonicWords: words);
+          expect(result, isA<Err<Wallet, ImportMnemonicFailure>>());
+          expect(
+            storage.entries.keys.where((k) => k.startsWith('seed_')),
+            hasLength(1),
+          );
+        },
+      );
+    }
+
     test('returns Ok(wallet) and stores the secret', () async {
       final wallet = _MockWallet();
       stubCreateWallet(() async => wallet);
@@ -176,6 +222,7 @@ void main() {
       when(
         () => checkDuplicate.execute(
           mnemonicWords: any(named: 'mnemonicWords'),
+          language: any(named: 'language'),
           passphrase: any(named: 'passphrase'),
         ),
       ).thenAnswer((_) async => const Err(ImportMnemonicDuplicateFailure()));

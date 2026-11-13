@@ -54,12 +54,21 @@ Future<Secret> spSecret() async {
   return (imported as Ok<Secret, SecretFailure>).value;
 }
 
+const spSourceBinding = SpSourceBinding(
+  walletId: 'wallet',
+  secretId: '12345678',
+  externalDescriptor: 'external',
+  internalDescriptor: 'internal',
+  spAddress: 'address',
+);
+
 SpBackendConfig spBackendConfig({
   BitcoinNetwork network = BitcoinNetwork.regtest,
   String blindbitUrl = 'http://blindbit.example',
   String electrumUrl = 'tcp://electrum.example:50001',
 }) => SpBackendConfig(
   network: network,
+  source: spSourceBinding,
   blindbitUrl: blindbitUrl,
   electrumUrl: electrumUrl,
 );
@@ -115,6 +124,7 @@ class FakeSpAccountRepository
   bool hasSessionValue;
   bool sentinel;
   bool accountDir;
+  bool orphanBackups = false;
   BitcoinNetwork? networkValue;
 
   /// How many times the Rust scan was reached. Stays 0 unless the user
@@ -152,6 +162,7 @@ class FakeSpAccountRepository
   @override
   Future<Result<void, SpFailure>> createFromSecret({
     required BitcoinNetwork network,
+    required SpBackendConfig expectedConfig,
     required Secret secret,
     required String blindbitUrl,
     required String electrumUrl,
@@ -188,6 +199,35 @@ class FakeSpAccountRepository
   Future<Result<bool, SpFailure>> accountDirExists() async => Ok(accountDir);
 
   @override
+  Future<Result<bool, SpFailure>> hasOrphanBackups() async => Ok(orphanBackups);
+
+  @override
+  Future<Result<bool, SpFailure>> hasLegacyData() async => const Ok(false);
+
+  @override
+  Future<Result<void, SpFailure>> verifyResumeBackups(
+    SpBackendConfig config,
+  ) async => const Ok(null);
+
+  @override
+  Future<Result<void, SpFailure>> createAccountDir(
+    SpBackendConfig config,
+  ) async {
+    accountDir = true;
+    return const Ok(null);
+  }
+
+  @override
+  Future<Result<void, SpFailure>> verifyAccountIdentity(
+    SpBackendConfig config,
+  ) async => const Ok(null);
+
+  @override
+  Future<Result<void, SpFailure>> verifyPendingIdentity(
+    SpBackendConfig config,
+  ) async => const Ok(null);
+
+  @override
   Future<Result<void, SpFailure>> writeRevokedSentinel({
     bool skipIfPresent = false,
   }) async {
@@ -196,19 +236,28 @@ class FakeSpAccountRepository
   }
 
   @override
-  Future<Result<bool, SpFailure>> backupAccountDir() async => const Ok(false);
+  Future<Result<bool, SpFailure>> backupAccountDir(
+    SpBackendConfig config,
+  ) async => const Ok(false);
 
   @override
-  Future<Result<bool, SpFailure>> restoreAccountDir() async => const Ok(false);
+  Future<Result<bool, SpFailure>> restoreAccountDir(
+    SpBackendConfig config,
+  ) async => const Ok(false);
 
   @override
-  Future<Result<void, SpFailure>> discardBackup() async => const Ok(null);
+  Future<Result<void, SpFailure>> discardBackup(SpBackendConfig config) async =>
+      const Ok(null);
 
   @override
-  Future<Result<bool, SpFailure>> adoptNewestBackup() async => const Ok(false);
+  Future<Result<bool, SpFailure>> adoptNewestBackup(
+    SpBackendConfig config,
+  ) async => const Ok(false);
 
   @override
-  Future<Result<void, SpFailure>> deleteOrphanBackups() async => const Ok(null);
+  Future<Result<void, SpFailure>> deleteOrphanBackups(
+    SpBackendConfig? config,
+  ) async => const Ok(null);
 
   @override
   Future<Result<bool, SpFailure>> hasRevokedSentinel() async => Ok(sentinel);
@@ -371,6 +420,9 @@ class FakeSpBackendConfigRepository implements SpBackendConfigRepository {
 
   /// Model a save that fails on disk (used by the setup use case tests).
   bool saveShouldFail = false;
+
+  @override
+  Future<Result<bool, SpFailure>> hasLegacyConfig() async => const Ok(false);
 
   @override
   Future<Result<void, SpFailure>> save(SpBackendConfig config) async {

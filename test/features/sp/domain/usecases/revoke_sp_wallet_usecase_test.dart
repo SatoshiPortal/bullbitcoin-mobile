@@ -1,4 +1,5 @@
-import 'package:primitives/primitives.dart';
+import 'package:bb_mobile/core/wallet/domain/wallet_mutation_guard.dart';
+import 'package:primitives/primitives.dart' show Err, Ok;
 import 'package:bb_mobile/features/sp/domain/repositories/sp_backend_config_repository.dart';
 import 'package:bb_mobile/features/sp/domain/sp_failure.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/revoke_sp_wallet_usecase.dart';
@@ -16,6 +17,7 @@ class MockSpBackendConfigRepository extends Mock
 // account dir, and a sentinel put back when the delete only half succeeded.
 // Each individual file operation is covered by SpAccountFilesRepository's test.
 void main() {
+  setUpAll(() => registerFallbackValue(spBackendConfig()));
   late MockSpAccountRepository accountRepo;
   late MockSpBackendConfigRepository configRepo;
   late RevokeSpWalletUsecase usecase;
@@ -23,11 +25,17 @@ void main() {
   setUp(() {
     accountRepo = MockSpAccountRepository();
     configRepo = MockSpBackendConfigRepository();
+    when(
+      () => configRepo.fetch(),
+    ).thenAnswer((_) async => Ok(spBackendConfig()));
     when(() => accountRepo.beginTeardown()).thenReturn(null);
     when(() => accountRepo.endTeardown()).thenReturn(null);
     when(() => accountRepo.notifySetupChanged()).thenReturn(null);
     when(() => accountRepo.hasSession).thenReturn(true);
     when(() => accountRepo.dispose()).thenAnswer((_) async => const Ok(null));
+    when(
+      () => accountRepo.verifyAccountIdentity(any()),
+    ).thenAnswer((_) async => const Ok(null));
     when(
       () => accountRepo.accountDirExists(),
     ).thenAnswer((_) async => const Ok(true));
@@ -37,7 +45,7 @@ void main() {
       ),
     ).thenAnswer((_) async => const Ok(null));
     when(
-      () => accountRepo.deleteOrphanBackups(),
+      () => accountRepo.deleteOrphanBackups(any()),
     ).thenAnswer((_) async => const Ok(null));
     when(
       () => accountRepo.deleteAccountDir(),
@@ -45,6 +53,7 @@ void main() {
     when(() => configRepo.setIsSetUpNow(isSetUp: false)).thenReturn(null);
     when(() => configRepo.delete()).thenAnswer((_) async => const Ok(null));
     usecase = RevokeSpWalletUsecase(
+      walletMutationGuard: WalletMutationGuard(),
       repository: accountRepo,
       files: accountRepo,
       configRepository: configRepo,
@@ -69,7 +78,7 @@ void main() {
       await usecase.execute();
 
       verifyInOrder([
-        () => accountRepo.deleteOrphanBackups(),
+        () => accountRepo.deleteOrphanBackups(any()),
         () => accountRepo.deleteAccountDir(),
       ]);
     });
@@ -110,17 +119,37 @@ void main() {
   });
 
   group('RevokeSpWalletUsecase failure paths', () {
-    test('a dispose timeout does NOT abort the revoke', () async {
-      // Aborting would leave a wallet that can never be deleted.
-      when(
-        () => accountRepo.dispose(),
-      ).thenAnswer((_) async => const Err(SpSessionBusy('still locked')));
+    test(
+      'a bad marker only retries handle teardown and preserves files',
+      () async {
+        when(
+          () => accountRepo.verifyAccountIdentity(any()),
+        ).thenAnswer((_) async => const Err(SpRecoveryRequired()));
+        final result = await usecase.execute();
+        expect((result as Err).failure, isA<SpRecoveryRequired>());
+        verify(() => accountRepo.dispose()).called(1);
+        verifyNever(() => accountRepo.writeRevokedSentinel());
+        verifyNever(() => accountRepo.deleteOrphanBackups(any()));
+        verifyNever(() => accountRepo.deleteAccountDir());
+        verifyNever(() => configRepo.delete());
+      },
+    );
 
-      expect(await usecase.execute(), isA<Ok<void, SpFailure>>());
+    test(
+      'a dispose timeout preserves the sentinel and account for retry',
+      () async {
+        when(
+          () => accountRepo.dispose(),
+        ).thenAnswer((_) async => const Err(SpSessionBusy('still locked')));
 
-      verify(() => accountRepo.deleteAccountDir()).called(1);
-      verify(() => accountRepo.notifySetupChanged()).called(1);
-    });
+        expect(await usecase.execute(), isA<Err<void, SpFailure>>());
+
+        verify(() => accountRepo.writeRevokedSentinel()).called(1);
+        verifyNever(() => accountRepo.deleteOrphanBackups(any()));
+        verifyNever(() => accountRepo.deleteAccountDir());
+        verifyNever(() => configRepo.delete());
+      },
+    );
 
     test('a sentinel write failure stops before anything is deleted', () async {
       when(

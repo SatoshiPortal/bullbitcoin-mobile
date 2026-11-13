@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/wallet/domain/wallet_mutation_guard.dart';
 import 'package:bb_mobile/features/sp/domain/repositories/sp_backend_config_repository.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/ensure_sp_session_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/recreate_sp_wallet_usecase.dart';
@@ -20,6 +21,7 @@ class _MockEnsureSpSessionUsecase extends Mock
 // The previous (pre-recreate) config, distinct from the new URLs each test
 // passes to execute().
 SpBackendConfig _previousConfig() => spBackendConfig(
+  network: BitcoinNetwork.mainnet,
   blindbitUrl: 'http://blindbit.old',
   electrumUrl: 'tcp://electrum.old:50001',
 );
@@ -39,6 +41,8 @@ void main() {
   setUpAll(() async {
     registerFallbackValue(await spSecret());
     registerFallbackValue(BitcoinNetwork.regtest);
+    registerFallbackValue(spBackendConfig());
+    registerFallbackValue(spSourceBinding);
     registerFallbackValue(
       SpBackendConfig(
         network: BitcoinNetwork.regtest,
@@ -55,6 +59,7 @@ void main() {
     configRepository = _MockSpBackendConfigRepository();
     ensureSpSessionUsecase = _MockEnsureSpSessionUsecase();
     usecase = RecreateSpWalletUsecase(
+      walletMutationGuard: WalletMutationGuard(),
       getSpSecretUsecase: getSpSecretUsecase,
       repository: repository,
       files: repository,
@@ -64,19 +69,26 @@ void main() {
     );
 
     when(
-      () => getSpSecretUsecase.execute(any()),
-    ).thenAnswer((_) async => Ok(secret));
+      () => getSpSecretUsecase.resolve(
+        any(),
+        walletId: any(named: 'walletId'),
+        expected: any(named: 'expected'),
+      ),
+    ).thenAnswer((_) async => Ok((secret: secret, binding: spSourceBinding)));
     when(() => repository.beginTeardown()).thenReturn(null);
     when(() => repository.endTeardown()).thenReturn(null);
     when(() => repository.dispose()).thenAnswer((_) async => const Ok(null));
     when(
-      () => repository.backupAccountDir(),
+      () => repository.createAccountDir(any()),
+    ).thenAnswer((_) async => const Ok(null));
+    when(
+      () => repository.backupAccountDir(any()),
     ).thenAnswer((_) async => const Ok(true));
     when(
-      () => repository.restoreAccountDir(),
+      () => repository.restoreAccountDir(any()),
     ).thenAnswer((_) async => const Ok(true));
     when(
-      () => repository.discardBackup(),
+      () => repository.discardBackup(any()),
     ).thenAnswer((_) async => const Ok(null));
     when(() => configRepository.fetch()).thenAnswer(
       (_) async => Ok<SpBackendConfig?, SpFailure>(_previousConfig()),
@@ -91,12 +103,24 @@ void main() {
     ).thenAnswer((_) async => const Ok(null));
     when(
       () => repository.createFromSecret(
+        expectedConfig: any(named: 'expectedConfig'),
         network: any(named: 'network'),
         blindbitUrl: any(named: 'blindbitUrl'),
         electrumUrl: any(named: 'electrumUrl'),
         secret: any(named: 'secret'),
       ),
     ).thenAnswer((_) async => const Ok(null));
+  });
+
+  test('rejects a network change before disposing the account', () async {
+    final result = await usecase.execute(
+      network: BitcoinNetwork.regtest,
+      blindbitUrl: 'https://blindbit.example',
+      electrumUrl: 'ssl://electrum.example:50002',
+    );
+    expect((result as Err).failure, isA<SpConfigInvalid>());
+    verifyNever(() => repository.dispose());
+    verifyNever(() => repository.backupAccountDir(any()));
   });
 
   test(
@@ -112,7 +136,7 @@ void main() {
       verifyInOrder([
         () => repository.beginTeardown(),
         () => repository.dispose(),
-        () => repository.backupAccountDir(),
+        () => repository.backupAccountDir(any()),
         () => configRepository.save(
           any(
             that: isA<SpBackendConfig>()
@@ -130,87 +154,48 @@ void main() {
           ),
         ),
         () => repository.createFromSecret(
+          expectedConfig: any(named: 'expectedConfig'),
           network: BitcoinNetwork.mainnet,
           blindbitUrl: 'https://blindbit.example',
           electrumUrl: 'ssl://electrum.example:50002',
           secret: any(named: 'secret'),
         ),
-        () => repository.discardBackup(),
+        () => repository.discardBackup(any()),
         () => repository.endTeardown(),
       ]);
-      verifyNever(() => repository.restoreAccountDir());
+      verifyNever(() => repository.restoreAccountDir(any()));
     },
   );
 
   test(
-    'rolls back when the create fails: restores the dir, re-saves the '
-    'previous config, then re-establishes before releasing the teardown',
+    'native failure retains backup and does not restore or discard',
     () async {
       when(
         () => repository.createFromSecret(
+          expectedConfig: any(named: 'expectedConfig'),
           network: any(named: 'network'),
           blindbitUrl: any(named: 'blindbitUrl'),
           electrumUrl: any(named: 'electrumUrl'),
           secret: any(named: 'secret'),
         ),
-      ).thenAnswer((_) async => const Err(SpUnexpected('create failed')));
-
+      ).thenAnswer((_) async => const Err(SpSourceMismatch()));
       final result = await usecase.execute(
         network: BitcoinNetwork.mainnet,
         blindbitUrl: 'https://blindbit.example',
         electrumUrl: 'ssl://electrum.example:50002',
       );
-
-      expect(result, isA<Err<void, SpFailure>>());
-      // The previous config is re-saved, then the session is re-established
-      // with the bracket still held: only the outer finally releases it.
-      // (verifyInOrder runs first: a standalone verify would mark the call and
-      // break ordering.)
-      verifyInOrder([
-        () => repository.restoreAccountDir(),
-        () => configRepository.save(_previousConfig()),
-        () => ensureSpSessionUsecase.execute(allowDuringTeardown: true),
-        () => repository.endTeardown(),
-      ]);
-      // Two disposes: the pre-backup one and the rollback one before restore.
-      verify(() => repository.dispose()).called(2);
-      verifyNever(() => repository.discardBackup());
-    },
-  );
-
-  test(
-    'rollback without a backup still reverts config but skips re-establish',
-    () async {
-      when(
-        () => repository.restoreAccountDir(),
-      ).thenAnswer((_) async => const Ok(false));
-      when(
-        () => repository.createFromSecret(
-          network: any(named: 'network'),
-          blindbitUrl: any(named: 'blindbitUrl'),
-          electrumUrl: any(named: 'electrumUrl'),
-          secret: any(named: 'secret'),
-        ),
-      ).thenAnswer((_) async => const Err(SpUnexpected('create failed')));
-
-      final result = await usecase.execute(
-        network: BitcoinNetwork.mainnet,
-        blindbitUrl: 'https://blindbit.example',
-        electrumUrl: 'ssl://electrum.example:50002',
-      );
-
-      expect(result, isA<Err<void, SpFailure>>());
-      verify(() => repository.restoreAccountDir()).called(1);
-      // Config is always reverted so the failed new config never lingers, but with
-      // no restored dir the session is not re-established.
-      verify(() => configRepository.save(_previousConfig())).called(1);
-      verifyNever(() => ensureSpSessionUsecase.execute());
+      expect((result as Err).failure, isA<SpSourceMismatch>());
+      verifyNever(() => repository.restoreAccountDir(any()));
+      verifyNever(() => repository.discardBackup(any()));
+      verifyNever(() => configRepository.save(_previousConfig()));
+      verify(() => repository.endTeardown()).called(1);
     },
   );
 
   test('rollback releases the teardown bracket exactly once', () async {
     when(
       () => repository.createFromSecret(
+        expectedConfig: any(named: 'expectedConfig'),
         network: any(named: 'network'),
         blindbitUrl: any(named: 'blindbitUrl'),
         electrumUrl: any(named: 'electrumUrl'),
@@ -231,39 +216,37 @@ void main() {
     verify(() => repository.endTeardown()).called(1);
   });
 
-  test(
-    'rollback with no previous config deletes it (no persisted new config)',
-    () async {
-      // A corrupt/absent previous config: the fetch folds to null, so the rollback
-      // must delete() rather than re-save, leaving the wallet not-set-up.
-      when(
-        () => configRepository.fetch(),
-      ).thenAnswer((_) async => const Ok<SpBackendConfig?, SpFailure>(null));
-      when(
-        () => configRepository.delete(),
-      ).thenAnswer((_) async => const Ok(null));
-      when(
-        () => repository.restoreAccountDir(),
-      ).thenAnswer((_) async => const Ok(false));
-      when(
-        () => repository.createFromSecret(
-          network: any(named: 'network'),
-          blindbitUrl: any(named: 'blindbitUrl'),
-          electrumUrl: any(named: 'electrumUrl'),
-          secret: any(named: 'secret'),
-        ),
-      ).thenAnswer((_) async => const Err(SpUnexpected('create failed')));
+  test('missing previous config refuses recreation without deletion', () async {
+    // No previous source identity may be inferred or deleted.
+    when(
+      () => configRepository.fetch(),
+    ).thenAnswer((_) async => const Ok<SpBackendConfig?, SpFailure>(null));
+    when(
+      () => configRepository.delete(),
+    ).thenAnswer((_) async => const Ok(null));
+    when(
+      () => repository.restoreAccountDir(any()),
+    ).thenAnswer((_) async => const Ok(false));
+    when(
+      () => repository.createFromSecret(
+        expectedConfig: any(named: 'expectedConfig'),
+        network: any(named: 'network'),
+        blindbitUrl: any(named: 'blindbitUrl'),
+        electrumUrl: any(named: 'electrumUrl'),
+        secret: any(named: 'secret'),
+      ),
+    ).thenAnswer((_) async => const Err(SpUnexpected('create failed')));
 
-      final result = await usecase.execute(
-        network: BitcoinNetwork.mainnet,
-        blindbitUrl: 'https://blindbit.example',
-        electrumUrl: 'ssl://electrum.example:50002',
-      );
+    final result = await usecase.execute(
+      network: BitcoinNetwork.mainnet,
+      blindbitUrl: 'https://blindbit.example',
+      electrumUrl: 'ssl://electrum.example:50002',
+    );
 
-      expect(result, isA<Err<void, SpFailure>>());
-      verify(() => configRepository.delete()).called(1);
-    },
-  );
+    expect(result, isA<Err<void, SpFailure>>());
+    verifyNever(() => configRepository.delete());
+    verifyNever(() => repository.backupAccountDir(any()));
+  });
 
   test(
     'a dispose throw returns Err (execute is total) and clears teardown',
@@ -283,7 +266,7 @@ void main() {
 
   test('a backup throw returns Err (execute is total)', () async {
     when(
-      () => repository.backupAccountDir(),
+      () => repository.backupAccountDir(any()),
     ).thenThrow(Exception('backup boom'));
 
     final result = await usecase.execute(
@@ -316,7 +299,7 @@ void main() {
     expect((result as Err).failure, isA<SpConfigInvalid>());
     verifyNever(() => repository.beginTeardown());
     verifyNever(() => repository.dispose());
-    verifyNever(() => repository.backupAccountDir());
+    verifyNever(() => repository.backupAccountDir(any()));
     verifyNever(() => configRepository.save(any()));
   });
 }

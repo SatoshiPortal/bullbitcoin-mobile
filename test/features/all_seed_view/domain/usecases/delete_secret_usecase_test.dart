@@ -1,3 +1,5 @@
+import 'package:bb_mobile/core/wallet/domain/wallet_mutation_guard.dart';
+import 'package:bb_mobile/core/wallet/domain/ports/wallet_retention_port.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
@@ -10,6 +12,22 @@ import 'package:secrets/secrets.dart';
 import 'package:secrets/testing.dart';
 
 class _MockWalletRepository extends Mock implements WalletRepository {}
+
+class _Retention implements WalletRetentionPort {
+  bool retained = false;
+  bool fail = false;
+  @override
+  Future<bool> retainsWallet(String walletId) async {
+    if (fail) throw StateError('unavailable');
+    return retained;
+  }
+
+  @override
+  Future<bool> retainsSecret(Fingerprint secretId) async {
+    if (fail) throw StateError('unavailable');
+    return retained;
+  }
+}
 
 class _MockWallet extends Mock implements Wallet {}
 
@@ -35,6 +53,7 @@ void main() {
   late FakeSecureStoragePlatform storage;
   late Secrets secrets;
   late _MockWalletRepository walletRepository;
+  late _Retention retention;
   late DeleteSecretUsecase usecase;
   late Fingerprint id;
 
@@ -55,13 +74,30 @@ void main() {
         (await secrets.import(words: words)) as Ok<Secret, SecretFailure>;
     id = stored.value.id;
     walletRepository = _MockWalletRepository();
+    retention = _Retention();
     usecase = DeleteSecretUsecase(
       secrets: secrets,
       walletRepository: walletRepository,
+      mutationGuard: WalletMutationGuard(),
+      retention: retention,
     );
   });
 
   group('DeleteSecretUsecase', () {
+    for (final failure in [false, true]) {
+      test(
+        'retention or a failed check refuses deletion: error=$failure',
+        () async {
+          retention.retained = true;
+          retention.fail = failure;
+          final result = await usecase.execute(id);
+          expect(result, isA<Err<void, AllSeedViewFailure>>());
+          expect(storedSecrets(), hasLength(1));
+          verifyNever(() => walletRepository.getWallets());
+        },
+      );
+    }
+
     test('deletes when no wallet uses the secret', () async {
       when(
         () => walletRepository.getWallets(),
