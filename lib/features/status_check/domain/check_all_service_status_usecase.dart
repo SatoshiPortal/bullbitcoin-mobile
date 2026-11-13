@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:clock/clock.dart';
 
 import 'package:bb_mobile/core/fees/domain/repositories/fees_repository.dart';
-import 'package:bb_mobile/core/recoverbull/domain/usecases/check_server_connection_usecase.dart';
+import 'package:bull_recoverbull/bull_recoverbull.dart' as rb;
 import 'package:bb_mobile/core/status/domain/entity/service_status.dart';
 import 'package:bb_mobile/core/status/domain/ports/electrum_connectivity_port.dart';
 import 'package:bull_logger/bull_logger.dart';
@@ -29,7 +29,8 @@ class CheckAllServiceStatusUsecase {
   final FeesRepository _feesRepository;
   final WalletRepository _walletRepository;
   final EnsureTorReadyUsecase _ensureTorReadyUsecase;
-  final CheckServerConnectionUsecase _checkServerConnectionUsecase;
+  final Future<rb.Result<bool, rb.RecoverBullFailure>> Function()
+  _checkServerConnection;
   final SettingsRepository _settingsRepository;
   final Tor _tor;
 
@@ -41,7 +42,7 @@ class CheckAllServiceStatusUsecase {
     required this._feesRepository,
     required this._walletRepository,
     required this._ensureTorReadyUsecase,
-    required this._checkServerConnectionUsecase,
+    required this._checkServerConnection,
     required this._settingsRepository,
     required this._tor,
   });
@@ -333,18 +334,17 @@ class CheckAllServiceStatusUsecase {
       lastChecked: DateTime.now(),
     );
 
-    if (!await _walletRepository.isTorRequired()) return status;
-
     // Delegated rather than reimplemented: this is the same "can we reach the
     // key server over Tor" question the RecoverBull flow asks, and one answer
     // for both keeps the screen and the flow from disagreeing.
-    final result = await _checkServerConnectionUsecase.execute().timeout(
+    final result = await _checkServerConnection().timeout(
       _torStatusTimeout,
       onTimeout: () => const Ok(false),
     );
     return status.copyWith(
       status: switch (result) {
         Ok(value: true) => ServiceStatus.online,
+        Err(failure: rb.VaultContextChangedFailure()) => ServiceStatus.unknown,
         _ => ServiceStatus.offline,
       },
     );

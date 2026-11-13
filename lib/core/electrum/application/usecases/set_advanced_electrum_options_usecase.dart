@@ -4,7 +4,7 @@ import 'package:bb_mobile/features/electrum_settings/domain/electrum_failure.dar
 import 'package:bb_mobile/core/electrum/domain/errors/electrum_settings_exception.dart';
 import 'package:bb_mobile/core/electrum/domain/repositories/electrum_settings_repository.dart';
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart';
 import 'package:meta/meta.dart';
 
 class SetAdvancedElectrumOptionsUsecase {

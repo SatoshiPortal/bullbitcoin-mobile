@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_update.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/sync_sp_wallet_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/watch_sp_updates_usecase.dart';

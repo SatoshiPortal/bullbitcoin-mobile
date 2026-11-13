@@ -1,3 +1,4 @@
+import 'package:primitives/primitives.dart' show BitcoinUnit;
 import 'package:flutter/rendering.dart';
 import 'dart:async';
 

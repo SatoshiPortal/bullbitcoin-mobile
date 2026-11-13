@@ -1,5 +1,7 @@
+import 'package:bb_mobile/features/wallet/domain/network_x.dart';
+import 'package:bull_recoverbull/bull_recoverbull.dart' as rb;
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/features/test_wallet_backup/domain/test_wallet_backup_failure.dart';
@@ -9,10 +11,15 @@ import 'package:meta/meta.dart';
 class CheckBackupUsecase {
   final WalletRepository _walletRepository;
   final SettingsRepository _settingsRepository;
+  final Future<rb.Result<rb.BackupStatus, rb.RecoverBullFailure>> Function(
+    rb.VaultContext,
+  )
+  _backupStatus;
 
   CheckBackupUsecase({
     required this._walletRepository,
     required this._settingsRepository,
+    required this._backupStatus,
   });
 
   @useResult
@@ -35,21 +42,28 @@ class CheckBackupUsecase {
       if (defaultWallets.isEmpty) return const Ok(false);
 
       for (final defaultWallet in defaultWallets) {
-        if (defaultWallet.isPhysicalBackupTested ||
-            defaultWallet.isEncryptedVaultTested) {
+        if (defaultWallet.isPhysicalBackupTested) {
           // Exit early: the default wallets share a seed, so one backup is
           // enough.
           return const Ok(true);
         }
       }
-      return const Ok(false);
-    } on Object catch (e, st) {
-      log.warning(
-        'Failed to check whether a backup exists',
-        error: e,
-        trace: st,
-      );
-      return Err(TestWalletBackupWalletsUnavailableFailure(e.toString()));
+      final bitcoin = defaultWallets
+          .where((wallet) => wallet.network.isBitcoin)
+          .firstOrNull;
+      if (bitcoin == null) return const Ok(false);
+      return switch (await _backupStatus(
+        rb.VaultContext(
+          fingerprint: rb.Fingerprint(bitcoin.masterFingerprint),
+          network: bitcoin.network.bitcoin,
+        ),
+      )) {
+        rb.Ok(:final value) => Ok(value.isVerified),
+        rb.Err() => const Err(TestWalletBackupWalletsUnavailableFailure()),
+      };
+    } on Exception {
+      log.warning('recoverbull.backup.status.unavailable');
+      return Err(const TestWalletBackupWalletsUnavailableFailure());
     }
   }
 }

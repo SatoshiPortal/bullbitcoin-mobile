@@ -1,11 +1,11 @@
+import 'package:primitives/primitives.dart'
+    show BitcoinUnit, Err, Fingerprint, Ok;
 import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
-import 'package:primitives/primitives.dart' show Fingerprint;
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
-import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/import_mnemonic/domain/check_duplicate_mnemonic_usecase.dart';
@@ -56,6 +56,7 @@ void main() {
   late _MockSettingsRepository settingsRepository;
   late _MockWalletRepository walletRepository;
   late ImportWalletUsecase usecase;
+  late _MockMetadata metadata;
 
   setUpAll(() async {
     // `Secret` is final and cannot be mocked, so mocktail's fallback for `any(named: 'secret')` is a real one, made here and used for nothing else.
@@ -70,6 +71,8 @@ void main() {
   });
 
   setUp(() {
+    metadata = _MockMetadata();
+    when(metadata.fetchAll).thenAnswer((_) async => []);
     storage = FakeSecureStoragePlatform()..install();
     secrets = Secrets(scratchDirectory: () async => '/tmp');
     checkDuplicate = _MockCheckDuplicateMnemonicUsecase();
@@ -121,9 +124,9 @@ void main() {
         when(() => metadata.fetchAll()).thenAnswer((_) async => []);
         final usecase = ImportWalletUsecase(
           checkDuplicateMnemonicUsecase: CheckDuplicateMnemonicUsecase(
-            secrets: secrets,
             metadata: metadata,
             settings: settingsRepository,
+            secrets: secrets,
           ),
           secrets: secrets,
           settingsRepository: settingsRepository,

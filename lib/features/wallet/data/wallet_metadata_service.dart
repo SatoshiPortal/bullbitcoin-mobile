@@ -2,10 +2,10 @@ import 'package:bb_mobile/features/wallet/data/wallet_network_codec.dart';
 import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart';
 import 'package:bb_mobile/core/utils/bip32_derivation.dart';
-import 'package:bb_mobile/core/utils/descriptor_derivation.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/features/wallet/domain/network_x.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
+import 'package:bull_sdk/bdk.dart' as bdk;
 import 'package:bb_mobile/features/import_watch_only_wallet/watch_only_wallet_entity.dart';
 import 'package:primitives/primitives.dart' show Err, Ok, Result;
 import 'package:secrets/secrets.dart';
@@ -266,7 +266,7 @@ class WalletMetadataService {
     final pubkeyFingerprint = bip32Xpub.fingerprintHex;
 
     final descriptor =
-        await DescriptorDerivation.deriveBitcoinDescriptorFromXpub(
+        await _DescriptorDerivation.deriveBitcoinDescriptorFromXpub(
           xpubBase58,
           fingerprint: pubkeyFingerprint,
           scriptType: scriptType,
@@ -277,7 +277,7 @@ class WalletMetadataService {
           },
         );
     final changeDescriptor =
-        await DescriptorDerivation.deriveBitcoinDescriptorFromXpub(
+        await _DescriptorDerivation.deriveBitcoinDescriptorFromXpub(
           xpubBase58,
           fingerprint: pubkeyFingerprint,
           scriptType: scriptType,
@@ -340,4 +340,48 @@ class WalletMetadataService {
 
 class MnemonicSeedNeededException extends BullException {
   MnemonicSeedNeededException(super.message);
+}
+
+class _DescriptorDerivation {
+  static Future<String> deriveBitcoinDescriptorFromXpub(
+    String xpub, {
+    required String fingerprint,
+    required ScriptType scriptType,
+    required bool isTestnet,
+    bool isInternalKeychain = false,
+  }) async {
+    final publicKey = bdk.DescriptorPublicKey.fromString(publicKey: xpub);
+    final networkKind = isTestnet ? bdk.NetworkKind.test : bdk.NetworkKind.main;
+    final keychain = isInternalKeychain
+        ? bdk.KeychainKind.internal
+        : bdk.KeychainKind.external_;
+
+    bdk.Descriptor descriptor;
+
+    switch (scriptType) {
+      case ScriptType.bip84:
+        descriptor = bdk.Descriptor.newBip84Public(
+          publicKey: publicKey,
+          fingerprint: fingerprint,
+          keychainKind: keychain,
+          networkKind: networkKind,
+        );
+      case ScriptType.bip49:
+        descriptor = bdk.Descriptor.newBip49Public(
+          publicKey: publicKey,
+          fingerprint: fingerprint,
+          keychainKind: keychain,
+          networkKind: networkKind,
+        );
+      case ScriptType.bip44:
+        descriptor = bdk.Descriptor.newBip44Public(
+          publicKey: publicKey,
+          fingerprint: fingerprint,
+          keychainKind: keychain,
+          networkKind: networkKind,
+        );
+    }
+
+    return descriptor.toString();
+  }
 }

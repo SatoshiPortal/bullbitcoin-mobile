@@ -1,3 +1,4 @@
+import 'package:primitives/primitives.dart' show BitcoinUnit;
 import 'dart:typed_data';
 
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';

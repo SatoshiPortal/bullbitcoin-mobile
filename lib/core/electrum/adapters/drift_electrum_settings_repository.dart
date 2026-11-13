@@ -6,7 +6,7 @@ import 'package:bb_mobile/features/electrum_settings/domain/electrum_server_netw
 import 'package:bb_mobile/features/electrum_settings/data/electrum_settings_storage_datasource.dart';
 import 'package:bb_mobile/core/electrum/frameworks/drift/models/electrum_settings_model.dart';
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart';
 
 class DriftElectrumSettingsRepository implements ElectrumSettingsRepository {
   final ElectrumSettingsStorageDatasource _datasource;

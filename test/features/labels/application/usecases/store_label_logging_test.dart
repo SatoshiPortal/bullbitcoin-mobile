@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart' show Err;
 import 'package:bb_mobile/features/labels/adapters/labels_repository_adapter.dart';
 import 'package:bb_mobile/features/labels/application/store_label_application.dart';
 import 'package:bb_mobile/features/labels/application/usecases/store_labels_usecase.dart';

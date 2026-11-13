@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:bull_logger/bull_logger.dart';
 
 import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_value_storage_datasource.dart';
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/sp/data/mappers/sp_backend_config_mapper.dart';
 import 'package:bb_mobile/features/sp/data/sp_backend_config_model.dart';
 import 'package:bb_mobile/features/sp/domain/repositories/sp_backend_config_repository.dart';
