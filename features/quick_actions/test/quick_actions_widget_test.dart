@@ -1,7 +1,6 @@
 import 'package:bull_quick_actions/bull_quick_actions.dart';
 import 'package:bull_ui/testing.dart';
-import 'package:bull_ui/bull_ui.dart'
-    show BullCheckbox, BullSettingsEntryItem, BullToolButton;
+import 'package:bull_ui/bull_ui.dart' show BullQuickAction;
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -113,23 +112,15 @@ void main() {
     );
     await tester.tap(find.text('Open'));
     await tester.pumpAndSettle();
-    final settingsRow = find.ancestor(
-      of: find.text('Settings'),
-      matching: find.byType(BullSettingsEntryItem),
-    );
-    final settingsCheckbox = find.descendant(
-      of: settingsRow,
-      matching: find.byType(BullCheckbox),
-    );
-    expect(tester.widget<BullCheckbox>(settingsCheckbox).checked, isTrue);
-    expect(find.text('Selected: 4'), findsOneWidget);
-    await tester.tap(find.text('Maps'));
+    expect(find.byTooltip('Remove Settings from favorites'), findsOneWidget);
+    expect(find.byTooltip('Remove Map from favorites'), findsOneWidget);
+    await tester.tap(find.byTooltip('Remove Map from favorites'));
     await tester.pumpAndSettle();
-    await tester.ensureVisible(find.text('Buy'));
-    await tester.tap(find.text('Buy'));
+    final addBuy = find.byTooltip('Add Buy to favorites');
+    await tester.ensureVisible(addBuy);
+    await tester.tap(addBuy);
     await tester.pumpAndSettle();
-    await tester.ensureVisible(find.text('Save'));
-    await tester.tap(find.text('Save'));
+    await tester.tap(find.text('Save changes'));
     await tester.pumpAndSettle();
     expect(storage.value, '["transfer","history","settings","buy"]');
   });
@@ -173,7 +164,7 @@ void main() {
     );
     await tester.pumpAndSettle();
     expect(tester.takeException(), isNull);
-    final buttons = find.byType(BullToolButton);
+    final buttons = find.byType(BullQuickAction);
     expect(buttons, findsNWidgets(4));
     final y = tester.getCenter(buttons.first).dy;
     for (var index = 1; index < 4; index++) {
@@ -214,7 +205,7 @@ void main() {
       );
       await tester.pumpAndSettle();
       expect(
-        find.text(locale.languageCode == 'fr' ? 'Cartes' : 'Maps'),
+        find.text(locale.languageCode == 'fr' ? 'Carte' : 'Map'),
         findsOneWidget,
       );
       expect(tester.takeException(), isNull);
