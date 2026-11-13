@@ -1,4 +1,5 @@
-import 'package:primitives/primitives.dart' show Err, Fingerprint, Ok;
+import 'package:primitives/primitives.dart'
+    show BitcoinUnit, Err, Fingerprint, Ok;
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';

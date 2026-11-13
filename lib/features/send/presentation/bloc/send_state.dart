@@ -1,6 +1,5 @@
 import 'package:bb_mobile/core/fees/domain/fee_preview_cache.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
@@ -17,7 +16,7 @@ import 'package:bb_mobile/features/send/domain/bitcoin_recipient_list_policy.dar
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:primitives/primitives.dart'
-    show BitcoinTransactionRecipient, Outpoint, Sats;
+    show BitcoinTransactionRecipient, BitcoinUnit, Outpoint, Sats;
 
 part 'send_state.freezed.dart';
 
