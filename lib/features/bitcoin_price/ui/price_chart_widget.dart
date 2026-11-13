@@ -39,10 +39,19 @@ extension _CurrencyIconExtension on String {
 }
 
 class PriceChartWidget extends StatelessWidget {
-  const PriceChartWidget({super.key});
+  const PriceChartWidget({
+    super.key,
+    this.foregroundColor,
+    this.selectionColor,
+  });
+
+  final Color? foregroundColor;
+  final Color? selectionColor;
 
   @override
   Widget build(BuildContext context) {
+    final foreground = foregroundColor ?? context.bull.onPrimary;
+    final selection = selectionColor ?? context.bull.onTertiary;
     return BlocListener<BitcoinPriceBloc, BitcoinPriceState>(
       listenWhen: (p, c) => p.failure != c.failure && c.failure != null,
       listener: (context, state) {
@@ -63,9 +72,7 @@ class PriceChartWidget extends StatelessWidget {
                 children: [
                   BullText(
                     state.failure!.toTranslated(context),
-                    style: context.font.bodyLarge?.copyWith(
-                      color: context.appColors.onPrimary,
-                    ),
+                    style: context.font.bodyLarge?.copyWith(color: foreground),
                   ),
                   const Gap(16),
                   IconButton(
@@ -74,11 +81,7 @@ class PriceChartWidget extends StatelessWidget {
                         currency: state.currency,
                       );
                     },
-                    icon: Icon(
-                      Icons.refresh,
-                      color: context.appColors.onPrimary,
-                      size: 32,
-                    ),
+                    icon: Icon(Icons.refresh, color: foreground, size: 32),
                   ),
                 ],
               ),
@@ -91,14 +94,12 @@ class PriceChartWidget extends StatelessWidget {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    CircularProgressIndicator(
-                      color: context.appColors.onPrimary,
-                    ),
+                    CircularProgressIndicator(color: foreground),
                     const Gap(16),
                     BullText(
                       context.loc.priceChartFetchingHistory,
                       style: context.font.bodyLarge?.copyWith(
-                        color: context.appColors.onPrimary,
+                        color: foreground,
                       ),
                     ),
                   ],
@@ -126,15 +127,22 @@ class PriceChartWidget extends StatelessWidget {
                       _PriceDisplay(
                         rate: rates[selectedIndex],
                         currency: currency,
+                        foregroundColor: foreground,
                       )
                     else if (rates.isNotEmpty)
-                      _PriceDisplay(rate: rates.last, currency: currency),
+                      _PriceDisplay(
+                        rate: rates.last,
+                        currency: currency,
+                        foregroundColor: foreground,
+                      ),
                     const Gap(16),
                     Expanded(
                       child: Padding(
                         padding: const EdgeInsets.only(right: 16.0),
                         child: _Chart(
                           rates: rates,
+                          foregroundColor: foreground,
+                          selectionColor: selection,
                           selectedIndex: selectedIndex,
                           onTap: (index) {
                             context.read<PriceChartCubit>().selectDataPoint(
@@ -156,10 +164,15 @@ class PriceChartWidget extends StatelessWidget {
 }
 
 class _PriceDisplay extends StatelessWidget {
-  const _PriceDisplay({required this.rate, required this.currency});
+  const _PriceDisplay({
+    required this.rate,
+    required this.currency,
+    required this.foregroundColor,
+  });
 
   final PricePoint rate;
   final String currency;
+  final Color foregroundColor;
 
   Future<void> _openCurrencyBottomSheet(BuildContext context) async {
     final blocCurrencies = context
@@ -216,15 +229,15 @@ class _PriceDisplay extends StatelessWidget {
                   children: [
                     Text(
                       currency.currencyIcon,
-                      style: context.font.headlineSmall,
+                      style: context.font.headlineSmall?.copyWith(
+                        color: foregroundColor,
+                      ),
                     ),
                     const Gap(6),
                     BullText(
                       currency,
                       style: context.font.bodyMedium?.copyWith(
-                        color: context.appColors.onPrimary.withValues(
-                          alpha: 0.7,
-                        ),
+                        color: foregroundColor.withValues(alpha: 0.7),
                       ),
                     ),
                   ],
@@ -244,7 +257,7 @@ class _PriceDisplay extends StatelessWidget {
                     decimalDigits: 2,
                   ).format(price),
                   style: context.font.displaySmall?.copyWith(
-                    color: context.appColors.onPrimary,
+                    color: foregroundColor,
                   ),
                   textAlign: TextAlign.center,
                 ),
@@ -260,7 +273,7 @@ class _PriceDisplay extends StatelessWidget {
                 child: BullText(
                   dateFormat.format(date.toLocal()),
                   style: context.font.bodySmall?.copyWith(
-                    color: context.appColors.onPrimary.withValues(alpha: 0.6),
+                    color: foregroundColor.withValues(alpha: 0.6),
                   ),
                   textAlign: TextAlign.center,
                 ),
@@ -276,11 +289,15 @@ class _PriceDisplay extends StatelessWidget {
 class _Chart extends StatefulWidget {
   const _Chart({
     required this.rates,
+    required this.foregroundColor,
+    required this.selectionColor,
     required this.selectedIndex,
     required this.onTap,
   });
 
   final List<PricePoint> rates;
+  final Color foregroundColor;
+  final Color selectionColor;
   final int? selectedIndex;
   final ValueChanged<int> onTap;
 
@@ -388,13 +405,13 @@ class _ChartState extends State<_Chart> with TickerProviderStateMixin {
           prices: prices,
           minPrice: minPrice - padding,
           maxPrice: maxPrice + padding,
-          lineColor: context.appColors.onPrimary,
+          lineColor: widget.foregroundColor,
           selectedIndex: displayIndex,
           lineAnimation: _lineAnimation,
           pulseAnimation: _pulseAnimation,
           repaint: _chartAnimations,
-          dotColor: context.appColors.onTertiary,
-          borderColor: context.appColors.onPrimary,
+          dotColor: widget.selectionColor,
+          borderColor: widget.foregroundColor,
         ),
       ),
     );
