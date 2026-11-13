@@ -71,6 +71,7 @@ class OngoingSwapsWidget extends StatelessWidget {
         const Gap(8),
         ...ongoingSwaps.map((tx) {
           return Column(
+            key: ValueKey((tx.swap?.id, tx.orderSwap?.localId, tx.txId)),
             crossAxisAlignment: .start,
             children: [
               TransactionListItem.transaction(

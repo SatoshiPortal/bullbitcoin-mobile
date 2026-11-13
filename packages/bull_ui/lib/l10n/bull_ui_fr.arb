@@ -1,0 +1,13 @@
+{
+  "@@locale": "fr",
+  "amountSwitchToBtc": "Afficher ce montant en BTC",
+  "amountSwitchToSats": "Afficher ce montant en sats",
+  "amountChangeDefaultEverywhere": "Changer l’unité par défaut partout",
+  "amountGesturesHint": "Touchez pour changer ce montant. Maintenez pour changer le défaut partout.",
+  "amountsDisplayedEverywhereSats": "Montants affichés en sats partout",
+  "amountsDisplayedEverywhereBtc": "Montants affichés en BTC partout",
+  "amountUndo": "Annuler",
+  "amountChangeFailed": "Impossible de changer l’unité des montants. Réessayez.",
+  "amountMax": "MAX",
+  "amountHidden": "**"
+}
