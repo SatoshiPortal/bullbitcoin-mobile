@@ -5,7 +5,7 @@ import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_net
 import 'package:bb_mobile/core/electrum/frameworks/drift/datasources/electrum_server_storage_datasource.dart';
 import 'package:bb_mobile/core/electrum/frameworks/drift/models/electrum_server_model.dart';
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart';
 
 class DriftElectrumServerRepository implements ElectrumServerRepository {
   final ElectrumServerStorageDatasource _datasource;

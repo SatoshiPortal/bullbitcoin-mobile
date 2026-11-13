@@ -6,7 +6,7 @@ import 'package:bb_mobile/core/ledger/data/ledger_exception.dart';
 import 'package:bb_mobile/core/ledger/domain/ledger_failure.dart';
 import 'package:bb_mobile/core/ledger/domain/repositories/ledger_device_repository.dart';
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart' show Err, Ok, Result;
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 
 class LedgerDeviceRepositoryImpl implements LedgerDeviceRepository {

@@ -8,7 +8,7 @@ import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart';
 
 /// Rebuilds an orphaned restored swap into local storage + the watcher, sending
 /// funds to the [selectedWalletId] the user picked (on the swap's acting chain).
