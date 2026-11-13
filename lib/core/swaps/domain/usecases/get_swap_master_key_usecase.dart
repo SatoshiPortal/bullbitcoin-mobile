@@ -9,8 +9,7 @@ import 'package:bb_mobile/core/errors/bull_exception.dart';
 /// Reads the swap master key (the "swap mnemonic") for the current
 /// environment's default bitcoin wallet, for display in the seed viewer.
 /// Returns null when no default bitcoin wallet exists or no swap key has been
-/// derived yet. Mirrors the wallet-resolution of [EnsureSwapMasterKeyUsecase]
-/// so it reads exactly the key that creation/restore use.
+/// derived yet.
 class GetSwapMasterKeyUsecase {
   final SettingsRepository _settingsRepository;
   final WalletRepository _walletRepository;
