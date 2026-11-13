@@ -152,7 +152,9 @@ class _MoreSheet extends StatelessWidget {
                   height: 4,
                   decoration: BoxDecoration(
                     color: context.bull.border,
-                    borderRadius: BorderRadius.circular(2),
+                    borderRadius: BorderRadius.circular(
+                      context.bullShapes.badge,
+                    ),
                   ),
                 ),
               ),

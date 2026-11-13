@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:bull_ui/src/theme/bull_icon.dart';
 import 'package:bull_ui/src/theme/bull_theme.dart';
+import 'package:bull_ui/src/theme/bull_shapes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -60,9 +61,11 @@ class BullQuickAction extends StatelessWidget {
               opacity: disabled ? 0.4 : 1,
               child: Material(
                 color: colors.surface,
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(context.bullShapes.button),
                 child: InkWell(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(
+                    context.bullShapes.button,
+                  ),
                   onTap: tap,
                   onLongPress: longPress,
                   child: Padding(
