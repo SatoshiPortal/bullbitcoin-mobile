@@ -691,10 +691,6 @@
   "@mempoolErrorDeleteFailed": {
     "description": "Error when deleting custom mempool server fails"
   },
-  "walletSettingsImportWalletTitle": "Import wallet",
-  "@walletSettingsImportWalletTitle": {
-    "description": "Title for the import wallet option in Bitcoin settings"
-  },
   "bitcoinSettingsBroadcastTransactionTitle": "Broadcast Transaction",
   "@bitcoinSettingsBroadcastTransactionTitle": {
     "description": "Title for the broadcast transaction option in Bitcoin settings"
@@ -8282,17 +8278,9 @@
   "@jadeStep15": {
     "description": "Jade final instruction about broadcasting"
   },
-  "importWalletTitle": "Add a new wallet",
-  "@importWalletTitle": {
-    "description": "AppBar title for wallet import selection screen"
-  },
   "importWalletConnectHardware": "Connect Hardware Wallet",
   "@importWalletConnectHardware": {
     "description": "Button to connect hardware wallet"
-  },
-  "importWalletImportMnemonic": "Import Mnemonic",
-  "@importWalletImportMnemonic": {
-    "description": "Button to import wallet from seed phrase"
   },
   "importWalletImportWatchOnly": "Import watch-only",
   "@importWalletImportWatchOnly": {
@@ -13211,10 +13199,6 @@
   "@settingsSearchServicesStatusKeywords": {
     "description": "Pipe-separated search aliases for Services Status. Search metadata; not displayed."
   },
-  "settingsSearchImportWalletKeywords": "add wallet|recover wallet|import mnemonic|watch-only wallet|hardware wallet",
-  "@settingsSearchImportWalletKeywords": {
-    "description": "Pipe-separated search aliases for Import Wallet. Search metadata; not displayed."
-  },
   "settingsSearchBroadcastTransactionKeywords": "broadcast signed transaction|push transaction|raw transaction|transaction hex|PSBT",
   "@settingsSearchBroadcastTransactionKeywords": {
     "description": "Pipe-separated search aliases for Broadcast Transaction. Search metadata; not displayed."
@@ -17214,5 +17198,61 @@
   "@bitboxErrorWalletNameInUse": {
     "description": "BitBox policy registration failed because another policy has the same name."
   },
-  "bitboxErrorWalletNameInUse": "Another wallet on your BitBox already uses this name. Go back and choose a different registration name."
+  "bitboxErrorWalletNameInUse": "Another wallet on your BitBox already uses this name. Go back and choose a different registration name.",
+  "settingsSearchImportSeedKeywords": "add wallet|recover wallet|import mnemonic|seed|recovery words",
+  "@importWalletHardwareTitle": {
+    "description": "Settings entry and import page for hardware and watch-only wallets"
+  },
+  "@walletsListNoWalletsMessage": {
+    "description": "Empty wallet list in Settings"
+  },
+  "@settingsSearchToolsKeywords": {
+    "description": "Settings group title or search keywords"
+  },
+  "settingsDataExportTitle": "Data export",
+  "settingsToolsTitle": "Tools",
+  "settingsSearchToolsKeywords": "tools|broadcast|map|BIP85",
+  "importWalletHardwareTitle": "Hardware wallet",
+  "@settingsDataExportTitle": {
+    "description": "Settings menu containing labels and transaction history exports"
+  },
+  "@settingsAppAndDeviceTitle": {
+    "description": "Settings group title or search keywords"
+  },
+  "settingsHelpAndInfoTitle": "Help and info",
+  "@importWalletSeedTitle": {
+    "description": "Direct Settings entry to the existing seed import flow"
+  },
+  "@walletRecoverySettingsTitle": {
+    "description": "Settings entry and page title for recovering wallet funds"
+  },
+  "importWalletSeedTitle": "Import seed",
+  "settingsAppAndDeviceTitle": "App and device",
+  "walletRecoverySettingsTitle": "Wallet Recovery (money backup)",
+  "@settingsWalletAndBitcoinTitle": {
+    "description": "Settings group title or search keywords"
+  },
+  "@settingsSearchImportSeedKeywords": {
+    "description": "Search aliases for importing a wallet seed"
+  },
+  "@settingsToolsTitle": {
+    "description": "Settings group title or search keywords"
+  },
+  "@settingsSearchHelpAndInfoKeywords": {
+    "description": "Settings group title or search keywords"
+  },
+  "@walletsListTitle": {
+    "description": "Title of the wallet list in Settings"
+  },
+  "walletsListTitle": "Wallet details",
+  "settingsSearchHelpAndInfoKeywords": "help|support|GitHub|status|logs|terms",
+  "settingsWalletAndBitcoinTitle": "Wallet and Bitcoin",
+  "bitcoinSettingsWalletsTitle": "Wallets",
+  "@settingsHelpAndInfoTitle": {
+    "description": "Settings group title or search keywords"
+  },
+  "walletsListNoWalletsMessage": "No wallets found",
+  "@bitcoinSettingsWalletsTitle": {
+    "description": "Wallet list entry in Settings"
+  }
 }
