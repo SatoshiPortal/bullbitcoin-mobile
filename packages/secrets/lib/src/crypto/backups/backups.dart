@@ -21,6 +21,8 @@ library;
 
 import 'package:secrets/src/crypto/backups/recoverbull_backup.dart';
 
+export 'data_backup_credential.dart' show BackupCredential;
+
 export 'recoverbull_backup.dart' show RecoverBullBackup;
 
 /// The backup formats, by name. Not instantiable; a namespace.

@@ -32,6 +32,7 @@ import 'package:bull_ui/bull_ui.dart' show BullSettingsEntryItem;
 enum SettingsItemId {
   exchange,
   backup,
+  dataBackup,
   dataExport,
   tools,
   helpAndInfo,
@@ -84,6 +85,7 @@ enum SettingsItemSection {
 
 const walletSettingsItemOrder = [
   SettingsItemId.wallets,
+  SettingsItemId.dataBackup,
   SettingsItemId.importWallet,
   SettingsItemId.electrum,
   SettingsItemId.mempool,
@@ -230,6 +232,19 @@ List<SettingsItem> buildSettingsItems({
       open: (context) =>
           context.pushNamed(SettingsRoute.walletDetailsWalletList.name),
       keywords: [english.bitcoinSettingsWalletsTitle],
+    ),
+    SettingsItem(
+      id: SettingsItemId.dataBackup,
+      section: SettingsItemSection.wallet,
+      title: localization.dataBackupTitle,
+      path: path(SettingsItemSection.wallet, localization.dataBackupTitle),
+      icon: Icons.cloud_sync_outlined,
+      open: (context) => context.pushNamed(SettingsRoute.dataBackup.name),
+      keywords: _keywords(
+        localization.settingsSearchDataBackupKeywords,
+        english.settingsSearchDataBackupKeywords,
+        [english.dataBackupTitle],
+      ),
     ),
     SettingsItem(
       id: SettingsItemId.dataExport,

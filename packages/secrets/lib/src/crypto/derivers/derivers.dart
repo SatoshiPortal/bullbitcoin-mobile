@@ -23,12 +23,15 @@ import 'package:secrets/src/crypto/derivers/bitcoin_deriver.dart';
 import 'package:secrets/src/crypto/derivers/fingerprint_deriver.dart';
 import 'package:secrets/src/crypto/derivers/boltz_deriver.dart';
 import 'package:secrets/src/crypto/derivers/liquid_deriver.dart';
+import 'package:secrets/src/crypto/derivers/nostr_deriver.dart';
 
 export 'bip85_deriver.dart' show Bip85Deriver;
 export 'bitcoin_deriver.dart' show BitcoinDeriver, Descriptors;
 export 'fingerprint_deriver.dart' show FingerprintDeriver;
 export 'boltz_deriver.dart' show BoltzDeriver;
 export 'liquid_deriver.dart' show LiquidDeriver;
+
+export 'nostr_deriver.dart' show NostrDeriver;
 
 /// The derivers, by source. Not instantiable; a namespace.
 abstract final class Deriver {
@@ -46,4 +49,7 @@ abstract final class Deriver {
 
   /// The swap key, through boltz.
   static const boltz = BoltzDeriver();
+
+  /// User Nostr identities.
+  static const nostr = NostrDeriver();
 }

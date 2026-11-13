@@ -51,6 +51,35 @@ void main() {
     secret = ok(await repo.use(info, (m) => m));
   });
 
+  group('Nostr', () {
+    test(
+      'the first user key preserves its public key and private encoding',
+      () {
+        final key = Deriver.nostr.derive(secret, 1);
+        expect(
+          key.public,
+          'c071c9b02afd19a9d9b240ea9eed3f8ba80f89474953b752471f3d006b63a332',
+        );
+        expect(
+          key.nsec,
+          'nsec17s2p4ad3hpd3xs70ssq2xydj076uz6kw25m7umlf25hzmktlxydsw2t3sg',
+        );
+      },
+    );
+    test('reserved and out-of-bounds user identities cannot be derived', () {
+      for (final index in [-1, 0, 100, 199, 0x80000000]) {
+        expect(
+          () => Deriver.nostr.derive(secret, index),
+          throwsFormatException,
+        );
+      }
+      expect(
+        Deriver.nostr.derive(secret, 99).public,
+        isNot(Deriver.nostr.derive(secret, 200).public),
+      );
+    });
+  });
+
   group('master xprv', () {
     test('mainnet', () {
       expect(

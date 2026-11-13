@@ -5,7 +5,12 @@ import 'package:primitives/primitives.dart';
 import 'package:secrets/src/public/secret.dart';
 import 'package:secrets/src/domain/domain.dart';
 import 'package:secrets/src/crypto/crypto.dart'
-    show Descriptors, SpAccount, SpHeaderCheckpoint, SpNetwork;
+    show
+        BackupCredential,
+        Descriptors,
+        SpAccount,
+        SpHeaderCheckpoint,
+        SpNetwork;
 import 'package:secrets/src/widgets/widgets.dart' show SecretWidgets;
 
 /// Grouped spelling for [Secret]'s operations.
@@ -51,6 +56,12 @@ extension SecretExtension on Secret {
 
 /// Everything that derives *from* a secret.
 extension type const SecretDerivation._(Secret _secret) {
+  /// Public Nostr key for a user identity. See [Secret.nostrPublicKey].
+  @useResult
+  Future<Result<String, SecretFailure>> nostrPublicKey({
+    required int identity,
+  }) => _secret.nostrPublicKey(identity: identity);
+
   /// Public descriptors, per chain.
   SecretDescriptors get descriptors => SecretDescriptors._(_secret);
 
@@ -197,6 +208,11 @@ extension type const SecretVerification._(Secret _secret) {
 
 /// Sealed backups of this secret.
 extension type const SecretBackup._(Secret _secret) {
+  /// Data Backup encryption and signing without exposing private keys.
+  @useResult
+  Future<Result<BackupCredential, SecretFailure>> data() =>
+      _secret.dataBackupCredential();
+
   /// Seals words into a RecoverBull vault. Its key derivation honours the passphrase; the payload does not include it. Keep the returned key apart from the vault. See [Secret.backupRecoverbull].
   @useResult
   Future<Result<({EncryptedVault vault, VaultKey key}), SecretFailure>>

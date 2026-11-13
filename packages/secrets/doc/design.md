@@ -81,6 +81,19 @@ The README's operation table is the full inventory — every output, whether it 
 
 ⚠️ **BWK retains keys after the call.** `secret.silentPayments.account(…)` opens the Silent Payments account inside the package, so the words never reach the app — but bwk-dart builds an account from a mnemonic only, and the account it returns holds the keys until it is disposed. It is a capability, not an exit to the host. A key-based bwk constructor (bwk-bitcoin/bwk#114) would let the package pass derived keys instead.
 
+Data Backup uses `secret.backup.data()` to obtain an operation-scoped capability.
+It can encrypt/decrypt public metadata and sign artifact or server hashes, but
+has no public encryption-key or private-signing-key getter. `BackupCredential.fromWords`
+accepts user-entered Data Recovery Words for recovery without a local seed. These
+words are the BIP85 twelve-word child at index 100, reinterpreted as a BIP39 root
+without a passphrase before deriving the three separate keys. The stored seed's
+passphrase participates in the first derivation.
+
+`secret.widgets.dataRecoveryWords()` renders that child inside the package's
+sealed mnemonic view. The host receives word widgets and public failures only.
+`secret.derive.nostrPublicKey(identity:)` returns the public key for a user Nostr
+identity; reserved application indices are rejected inside the package.
+
 **The stored mnemonic has no exit.** `Secret.revealMnemonic` is `@internal`:
 the only callers are this package's own sealed widgets, `MnemonicView`
 and `MnemonicChallenge`, and a feature that reaches for it gets an
@@ -211,7 +224,7 @@ The boundary has structural checks in `test/invariants_test.dart` and `test/inte
 |---|---|
 | every failure is built in the data layer | no `SecretFailure` is constructed outside `src/data/boundary.dart`, `src/data/secret_repository.dart` and `src/data/database_key_repository.dart`; `public/` catches nothing |
 | the grouped API adds nothing | `src/public/extensions.dart` contains no `await`, no collaborator, no statement body |
-| material leaves at four named methods | the set of `Secret` methods returning material is exactly `{revealMnemonic, bip85Hex, bip85Mnemonic, swapKey}` — and `revealMnemonic` is `@internal` |
+| material exits are inventoried | `invariants_test.dart` lists every operation and whether it returns public data, a capability, ciphertext or material; mnemonic and Data Recovery Words reveals are `@internal` and serve only sealed widgets |
 | the public surface is a literal list | the export graph is walked and compared name for name |
 | modules are fronted by their entry point | every cross-module import targets `<module>/<module>.dart` |
 | foreign dependencies stay in their module | bdk/lwk/boltz/bwk/recoverbull only under `crypto/`, the keystore only under `data/` and `testing/`, Flutter only under `widgets/`, `data/` and `testing/`, only pure value dependencies under `domain/`, including the BIP39 `Language` enum (no mnemonic operations) |

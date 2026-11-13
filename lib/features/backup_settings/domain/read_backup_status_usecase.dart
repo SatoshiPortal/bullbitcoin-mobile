@@ -37,7 +37,11 @@ final class ReadBackupStatusUsecase {
     try {
       final settings = await _settings.fetch();
       final List<Wallet> wallets;
-      switch (await _wallets.execute(onlyDefaults: true)) {
+      switch (await _wallets.execute(
+        onlyDefaults: true,
+        onlyBitcoin: true,
+        includeHidden: true,
+      )) {
         case Err(failure: NoWalletsFoundFailure()):
           return const Ok(BackupStatusSummary());
         case Err():
@@ -72,8 +76,8 @@ final class ReadBackupStatusUsecase {
           physicalAt: bitcoin.latestPhysicalBackup,
           // The old date keeps access available, never the verification badge.
           encryptedAt:
-              current?.storedAt ??
               current?.verifiedAt ??
+              current?.storedAt ??
               bitcoin.latestEncryptedBackup,
         ),
       );

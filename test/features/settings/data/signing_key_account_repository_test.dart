@@ -1,6 +1,5 @@
 import 'package:primitives/primitives.dart' show BitcoinUnit;
 import 'package:bb_mobile/core/seed/data/secrets_seed_verification.dart';
-import 'package:bb_mobile/features/labels/domain/label_entity.dart';
 import 'package:bb_mobile/features/labels/frameworks/bip329_codec.dart';
 import 'package:primitives/primitives.dart' show BitcoinNetwork;
 import 'package:secrets/secrets.dart';

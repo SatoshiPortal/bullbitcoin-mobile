@@ -8,12 +8,15 @@ part 'backup_settings_state.dart';
 
 class BackupSettingsCubit extends Cubit<BackupSettingsState> {
   final ReadBackupStatusUsecase _read;
+  int _revision = 0;
+
   BackupSettingsCubit(this._read) : super(BackupSettingsState());
 
   Future<void> checkBackupStatus() async {
-    emit(state.copyWith(status: BackupSettingsStatus.loading));
+    final revision = ++_revision;
+    emit(state.copyWith(status: BackupSettingsStatus.loading, failure: null));
     final result = await _read.execute();
-    if (isClosed) return;
+    if (isClosed || revision != _revision) return;
     switch (result) {
       case Err(:final failure):
         emit(

@@ -36,4 +36,38 @@ void main() {
       expect(selected, 'b');
     });
   });
+  testWidgets('multiline options determine the field height', (tester) async {
+    const label = 'Contents fetched from the backup server';
+    await tester.pumpWidget(
+      wrapWithTheme(
+        Center(
+          child: SizedBox(
+            width: 240,
+            child: MediaQuery(
+              data: const MediaQueryData(textScaler: TextScaler.linear(2)),
+              child: BullDropdown<bool>(
+                height: null,
+                value: true,
+                items: const [
+                  DropdownMenuItem(value: true, child: Text(label)),
+                ],
+                onChanged: (_) {},
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+    expect(
+      tester.getSize(find.byType(BullDropdown<bool>)).height,
+      greaterThan(64),
+    );
+    expect(
+      tester
+          .getRect(find.byType(BullDropdown<bool>))
+          .contains(tester.getBottomRight(find.text(label))),
+      isTrue,
+    );
+    expect(tester.takeException(), isNull);
+  });
 }

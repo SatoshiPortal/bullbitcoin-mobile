@@ -22,6 +22,25 @@ extension type const SecretWidgets._(MnemonicSource _source) {
   SecretWidgets.ephemeral(EphemeralMnemonic mnemonic)
     : this._(EphemeralMnemonicSource(mnemonic));
 
+  /// Shows deterministic Data Recovery Words without exposing their text.
+  MnemonicView dataRecoveryWords({
+    Key? key,
+    required Widget Function(BuildContext, SecretFailure, VoidCallback retry)
+    failureBuilder,
+    TextStyle? style,
+    Widget placeholder = const SizedBox.shrink(),
+    Widget Function(BuildContext context, int number, Widget word)? wordBuilder,
+    Widget Function(BuildContext context, List<Widget> words)? layoutBuilder,
+  }) => MnemonicView(
+    key: ValueKey(('data-recovery', key, _source.id)),
+    source: DataRecoveryMnemonicSource.fromSource(_source),
+    failureBuilder: failureBuilder,
+    style: style,
+    placeholder: placeholder,
+    wordBuilder: wordBuilder,
+    layoutBuilder: layoutBuilder,
+  );
+
   /// Shows the words, and the passphrase when there is one. See [MnemonicView].
   MnemonicView mnemonicView({
     Key? key,
