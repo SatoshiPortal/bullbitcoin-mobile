@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/transactions/application/ports/transaction_export_saver.dart';
 import 'package:bb_mobile/features/transactions/application/usecases/export_transactions_csv_usecase.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/export/export_transactions_state.dart';

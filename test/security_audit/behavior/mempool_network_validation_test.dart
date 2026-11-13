@@ -10,7 +10,7 @@ import 'package:bb_mobile/core/mempool/domain/errors/mempool_failure.dart';
 import 'package:bb_mobile/core/mempool/domain/ports/mempool_tor_session_port.dart';
 import 'package:bb_mobile/core/mempool/domain/value_objects/mempool_server_network.dart';
 import 'package:bb_mobile/core/mempool/interface_adapters/validators/http_mempool_server_validator.dart';
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart';
 import 'package:bull_tor/tor.dart';
 import 'package:flutter_test/flutter_test.dart';
 

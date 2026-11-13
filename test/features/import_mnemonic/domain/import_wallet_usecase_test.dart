@@ -1,7 +1,8 @@
+import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart' show BitcoinUnit, Err, Ok;
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/import_mnemonic/domain/check_duplicate_mnemonic_usecase.dart';
@@ -96,6 +97,62 @@ void main() {
         label: any(named: 'label'),
       ),
     ).thenAnswer((_) async => answer());
+  }
+
+  for (final language in bip39.Language.values) {
+    test(
+      'imports ${language.name} only as a non-default Bitcoin wallet',
+      () async {
+        final wallet = _MockWallet();
+        stubCreateWallet(() async => wallet);
+        final words = bip39.Mnemonic(List.filled(16, 0), language).words;
+        final usecase = ImportWalletUsecase(
+          checkDuplicateMnemonicUsecase: CheckDuplicateMnemonicUsecase(
+            secrets: secrets,
+          ),
+          secrets: secrets,
+          settingsRepository: settingsRepository,
+          walletRepository: walletRepository,
+        );
+        final result = await usecase.execute(
+          mnemonicWords: words,
+          language: language,
+          label: 'Vector',
+        );
+        expect(result, isA<Ok<Wallet, ImportMnemonicFailure>>());
+        expect((result as Ok).value, wallet);
+        final entries =
+            (await secrets.list() as Ok<List<SecretEntry>, SecretFailure>)
+                .value;
+        final secret = entries.single as Secret;
+        expect(secret.info.language, language);
+        verify(
+          () => walletRepository.createWallet(
+            secret: any(
+              that: isA<Secret>().having((s) => s.id, 'id', secret.id),
+              named: 'secret',
+            ),
+            network: Network.bitcoinMainnet,
+            scriptType: ScriptType.bip84,
+            isDefault: false,
+            sync: false,
+            label: 'Vector',
+          ),
+        ).called(1);
+        final duplicate = await usecase.execute(
+          mnemonicWords: words,
+          language: language,
+        );
+        expect(
+          (duplicate as Err).failure,
+          isA<ImportMnemonicDuplicateFailure>(),
+        );
+        expect(
+          (await secrets.exists(secret.id) as Ok<bool, SecretFailure>).value,
+          isTrue,
+        );
+      },
+    );
   }
 
   group('ImportWalletUsecase', () {

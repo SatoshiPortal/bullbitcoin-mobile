@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/onboarding/complete_physical_backup_verification_usecase.dart';
 import 'package:bb_mobile/features/test_wallet_backup/domain/test_wallet_backup_failure.dart';
 import 'package:bull_logger/bull_logger.dart';

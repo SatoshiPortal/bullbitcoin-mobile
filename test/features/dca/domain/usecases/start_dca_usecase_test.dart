@@ -2,7 +2,7 @@ import 'package:bb_mobile/core/exchange/domain/exchange_user_failure.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_user_repository.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/dca/domain/dca_failure.dart';
 import 'package:bb_mobile/features/dca/domain/usecases/start_dca_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';

@@ -3,7 +3,7 @@ import 'package:bb_mobile/core/mempool/domain/ports/environment_port.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart';
 
 class SettingsEnvironmentAdapter implements MempoolEnvironmentPort {
   final SettingsRepository _settingsRepository;

@@ -1,4 +1,5 @@
-import 'package:bb_mobile/core/failures/failure.dart';
+import 'package:primitives/primitives.dart' show Failure;
+import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 
 /// Why a typed mnemonic could not be accepted.
 ///
@@ -26,6 +27,18 @@ final class MnemonicEntryInvalidChecksumFailure extends MnemonicEntryFailure {
 /// At least one word is not in the wordlist of the selected language.
 final class MnemonicEntryUnknownWordFailure extends MnemonicEntryFailure {
   const MnemonicEntryUnknownWordFailure();
+}
+
+/// Every word belongs to [wordlist] rather than the [selected] one, but the
+/// phrase has no valid checksum in [wordlist] either. Names wordlists only.
+final class MnemonicEntryOtherLanguageFailure extends MnemonicEntryFailure {
+  final bip39.Language wordlist;
+  final bip39.Language selected;
+
+  const MnemonicEntryOtherLanguageFailure({
+    required this.wordlist,
+    required this.selected,
+  });
 }
 
 /// Catch-all. [logMessage] holds the exception's *runtime type only* — never

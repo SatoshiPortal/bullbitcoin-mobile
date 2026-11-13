@@ -14,7 +14,8 @@ import 'package:clock/clock.dart';
 import 'package:bull_pricer/bull_pricer.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:primitives/primitives.dart' show BitcoinNetwork, Ok;
+import 'package:primitives/primitives.dart'
+    show BitcoinNetwork, BitcoinUnit, Ok;
 
 import '../../fake_index_price_reader.dart';
 

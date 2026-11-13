@@ -1,7 +1,7 @@
 import 'package:bb_mobile/core/exchange/domain/entity/announcement.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
 import 'package:bb_mobile/core/exchange/domain/exchange_user_failure.dart';
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart';
 import 'package:meta/meta.dart';
 
 /// The account side of the exchange API. Implementations are the `try/catch`

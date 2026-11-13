@@ -6,7 +6,7 @@ import 'package:bb_mobile/core/exchange/domain/usecases/create_log_attachment_us
 import 'package:bb_mobile/core/exchange/domain/usecases/get_support_chat_message_attachment_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_support_chat_messages_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/send_support_chat_message_usecase.dart';
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/exchange_support_chat/domain/usecases/pick_image_attachments_usecase.dart';
 import 'package:bb_mobile/features/exchange_support_chat/domain/usecases/resolve_support_chat_user_id_usecase.dart';
 import 'package:bb_mobile/features/exchange_support_chat/presentation/exchange_support_chat_cubit.dart';

@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/utils/result.dart' as bb;
+import 'package:primitives/primitives.dart' as bb;
 import 'package:bb_mobile/features/transactions/application/usecases/broadcast_original_transaction_usecase.dart';
 import 'package:bb_mobile/features/transactions/application/usecases/get_payjoin_by_id_usecase.dart';
 import 'package:bb_mobile/features/transactions/application/usecases/get_payjoin_by_tx_id_usecase.dart';
