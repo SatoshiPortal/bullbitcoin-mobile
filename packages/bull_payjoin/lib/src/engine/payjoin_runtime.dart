@@ -49,7 +49,7 @@ Future<Result<PayjoinLifecycle, PayjoinFailure>> openPayjoin({
         PayjoinMigrationFailure('Could not open Payjoin storage'),
       );
     case _Unrecoverable():
-      // Self-heal, for a corrupt file or a schema downgrade only: those fail every retry identically — and because reservedOutpoints() gates coin selection, that bricks every bitcoin send in the app until reinstall. Move the whole family aside (kept, still encrypted, for forensics) and retry once with a fresh database; the legacy import below re-populates it from the root database's legacy tables. Sessions created after that import are lost, but their funds are not: a sender's counterparty still holds the original and can broadcast it, and a receiver's sender owns their own fallback.
+      // Self-heal, for a positively identified corrupt file only: those fail every retry identically — and because reservedOutpoints() gates coin selection, that bricks every bitcoin send in the app until reinstall. Move the whole family aside (kept, still encrypted, for forensics) and retry once with a fresh database; the legacy import below re-populates it from the root database's legacy tables. Sessions created after that import are lost, but their funds are not: a sender's counterparty still holds the original and can broadcast it, and a receiver's sender owns their own fallback.
       final reopened = await _quarantineAndReopenDatabase(
         databasePath,
         databaseKey,
@@ -117,7 +117,7 @@ final class _Opened extends _OpenOutcome {
   const _Opened(this.database);
 }
 
-/// The file is corrupt or newer than this build: no retry will open it.
+/// SQLite positively identified corruption; a retry cannot repair the file.
 final class _Unrecoverable extends _OpenOutcome {
   const _Unrecoverable();
 }
@@ -140,8 +140,8 @@ Future<_OpenOutcome> _tryOpenDatabase(
   if (File(databasePath).existsSync()) {
     switch (EncryptedSqlite.userVersion(databasePath, key)) {
       case Ok(:final value) when value > PayjoinDatabase.schema:
-        _logOpenFailure(payjoinLog, 'schema downgrade');
-        return const _Unrecoverable();
+        _logOpenFailure(payjoinLog, 'schema is newer than this build');
+        return const _Refused();
       case Ok():
         break;
       case Err(:final failure):
