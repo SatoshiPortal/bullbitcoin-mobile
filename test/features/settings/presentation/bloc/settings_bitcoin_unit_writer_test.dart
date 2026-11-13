@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'fake_app_store_wording.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:primitives/primitives.dart';
@@ -100,6 +101,8 @@ class _TestSettingsCubit extends SettingsCubit {
     required super.watchPayjoinPolicyUsecase,
     required super.setPayjoinMinAmountUsecase,
     required super.setPayjoinExpireAfterSecUsecase,
+    required super.getForceAppStoreWordingUsecase,
+    required super.setForceAppStoreWordingUsecase,
   });
 
   void seed(SettingsEntity settings, PayjoinPolicy policy) {
@@ -144,6 +147,12 @@ void main() {
       watchPayjoinPolicyUsecase: watchChanges,
       setPayjoinMinAmountUsecase: _MockSetPayjoinMinAmountUsecase(),
       setPayjoinExpireAfterSecUsecase: _MockSetPayjoinExpireAfterSecUsecase(),
+      getForceAppStoreWordingUsecase: getForceWording(
+        FakeAppStoreWordingRepository(),
+      ),
+      setForceAppStoreWordingUsecase: setForceWording(
+        FakeAppStoreWordingRepository(),
+      ),
     );
     cubit.seed(
       const SettingsEntity(

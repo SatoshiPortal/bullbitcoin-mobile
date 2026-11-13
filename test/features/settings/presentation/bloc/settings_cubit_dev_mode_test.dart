@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
+import 'fake_app_store_wording.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/settings/domain/settings_failure.dart';
@@ -134,6 +135,12 @@ void main() {
       watchPayjoinPolicyUsecase: watchPayjoinPolicyUsecase,
       setPayjoinMinAmountUsecase: _MockSetPayjoinMinAmountUsecase(),
       setPayjoinExpireAfterSecUsecase: _MockSetPayjoinExpireAfterSecUsecase(),
+      getForceAppStoreWordingUsecase: getForceWording(
+        FakeAppStoreWordingRepository(),
+      ),
+      setForceAppStoreWordingUsecase: setForceWording(
+        FakeAppStoreWordingRepository(),
+      ),
     );
   });
 

@@ -1,7 +1,11 @@
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_user_repository.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
+import 'package:bb_mobile/features/settings/data/app_store_wording_repository_impl.dart';
 import 'package:bb_mobile/features/settings/data/payjoin_disclaimer_repository_impl.dart';
+import 'package:bb_mobile/features/settings/domain/repositories/app_store_wording_repository.dart';
+import 'package:bb_mobile/features/settings/domain/usecases/get_force_app_store_wording_usecase.dart';
+import 'package:bb_mobile/features/settings/domain/usecases/set_force_app_store_wording_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/repositories/payjoin_disclaimer_repository.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/get_payjoin_disclaimer_shown_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/mark_payjoin_disclaimer_shown_usecase.dart';
@@ -102,6 +106,20 @@ class SettingsLocator {
       ),
     );
 
+    locator.registerLazySingleton<AppStoreWordingRepository>(
+      AppStoreWordingRepositoryImpl.new,
+    );
+    locator.registerFactory<GetForceAppStoreWordingUsecase>(
+      () => GetForceAppStoreWordingUsecase(
+        repository: locator<AppStoreWordingRepository>(),
+      ),
+    );
+    locator.registerFactory<SetForceAppStoreWordingUsecase>(
+      () => SetForceAppStoreWordingUsecase(
+        repository: locator<AppStoreWordingRepository>(),
+      ),
+    );
+
     locator.registerLazySingleton<PayjoinDisclaimerRepository>(
       PayjoinDisclaimerRepositoryImpl.new,
     );
@@ -142,6 +160,10 @@ class SettingsLocator {
       () => SettingsFacade(
         setPayjoinEnabledUsecase: locator<SetPayjoinEnabledUsecase>(),
         watchPayjoinPolicyUsecase: locator<WatchPayjoinPolicyUsecase>(),
+        getForceAppStoreWordingUsecase:
+            locator<GetForceAppStoreWordingUsecase>(),
+        setForceAppStoreWordingUsecase:
+            locator<SetForceAppStoreWordingUsecase>(),
       ),
     );
 
@@ -179,6 +201,10 @@ class SettingsLocator {
         setPayjoinMinAmountUsecase: locator<SetPayjoinMinAmountUsecase>(),
         setPayjoinExpireAfterSecUsecase:
             locator<SetPayjoinExpireAfterSecUsecase>(),
+        getForceAppStoreWordingUsecase:
+            locator<GetForceAppStoreWordingUsecase>(),
+        setForceAppStoreWordingUsecase:
+            locator<SetForceAppStoreWordingUsecase>(),
       ),
     );
   }

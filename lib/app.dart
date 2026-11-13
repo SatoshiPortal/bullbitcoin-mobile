@@ -152,18 +152,21 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
               BlocSelector<
                 SettingsCubit,
                 SettingsState,
-                (Language?, AppThemeMode?, bool?)
+                (Language?, AppThemeMode?, bool?, bool)
               >(
                 selector: (settings) => (
                   settings.language,
                   settings.storedSettings?.themeMode,
                   settings.isSuperuser,
+                  settings.isAppStoreWordingForced,
                 ),
                 builder: (context, data) {
-                  final (language, themeMode, isSuperuser) = data;
+                  final (language, themeMode, isSuperuser, forceAppStore) =
+                      data;
                   final novlangPolicy = resolveNovlangPolicy(
                     defaultTargetPlatform,
                     isSuperuser,
+                    forceApple: forceAppStore,
                   );
                   final systemBrightness = MediaQuery.platformBrightnessOf(
                     context,

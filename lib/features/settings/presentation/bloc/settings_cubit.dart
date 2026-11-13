@@ -6,11 +6,13 @@ import 'package:bull_logger/bull_logger.dart';
 import 'package:screen_privacy/screen_privacy.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/check_sp_wallet_setup_for_settings_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/settings_failure.dart';
+import 'package:bb_mobile/features/settings/domain/usecases/get_force_app_store_wording_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/revoke_sp_wallet_for_settings_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_bitcoin_unit_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_error_reporting_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_currency_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_environment_usecase.dart';
+import 'package:bb_mobile/features/settings/domain/usecases/set_force_app_store_wording_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_hide_amounts_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_is_dev_mode_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_exchange_testnet_basic_auth_usecase.dart';
@@ -54,6 +56,8 @@ class SettingsCubit extends Cubit<SettingsState> {
     required this._watchPayjoinPolicyUsecase,
     required this._setPayjoinMinAmountUsecase,
     required this._setPayjoinExpireAfterSecUsecase,
+    required this._getForceAppStoreWordingUsecase,
+    required this._setForceAppStoreWordingUsecase,
   }) : super(const SettingsState()) {
     _payjoinPolicySubscription = _watchPayjoinPolicyUsecase.execute().listen((
       policy,
@@ -78,6 +82,8 @@ class SettingsCubit extends Cubit<SettingsState> {
   final SetErrorReportingUsecase _setErrorReportingUsecase;
   final SetScreenCaptureProtectionUsecase _setScreenCaptureProtectionUsecase;
   final SetExchangeTestnetBasicAuthUsecase _setExchangeTestnetBasicAuthUsecase;
+  final GetForceAppStoreWordingUsecase _getForceAppStoreWordingUsecase;
+  final SetForceAppStoreWordingUsecase _setForceAppStoreWordingUsecase;
   final SetPayjoinEnabledUsecase _setPayjoinEnabledUsecase;
   final WatchPayjoinPolicyUsecase _watchPayjoinPolicyUsecase;
   final SetPayjoinMinAmountUsecase _setPayjoinMinAmountUsecase;
@@ -106,10 +112,32 @@ class SettingsCubit extends Cubit<SettingsState> {
     ScreenCaptureProtection.instance.enabledByUser =
         storedSettings.screenCaptureProtectionEnabled;
 
+    // A failed read leaves the wording unforced: it is a development switch.
+    final forceWording = switch (await _getForceAppStoreWordingUsecase
+        .execute()) {
+      Ok(:final value) => value,
+      Err() => false,
+    };
+
     emit(
-      state.copyWith(storedSettings: storedSettings, appVersion: appVersion),
+      state.copyWith(
+        storedSettings: storedSettings,
+        appVersion: appVersion,
+        forceAppStoreWording: forceWording,
+      ),
     );
     await checkSpWalletSetup();
+  }
+
+  /// Development switch behind Dev Mode: show the App Store vocabulary on any
+  /// platform. Persisted locally; see [SettingsState.isAppStoreWordingForced].
+  Future<void> setForceAppStoreWording(bool forced) async {
+    final result = await _setForceAppStoreWordingUsecase.execute(forced);
+    if (result case Err(:final failure)) {
+      emit(state.copyWith(failure: failure));
+      return;
+    }
+    emit(state.copyWith(forceAppStoreWording: forced));
   }
 
   /// Refresh whether the SP wallet is set up (read through the facade). Called

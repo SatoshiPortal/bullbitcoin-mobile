@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/settings/domain/settings_failure.dart';
+import 'package:bb_mobile/features/settings/domain/usecases/get_force_app_store_wording_usecase.dart';
+import 'package:bb_mobile/features/settings/domain/usecases/set_force_app_store_wording_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_payjoin_enabled_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/watch_payjoin_policy_usecase.dart';
 import 'package:bull_payjoin/bull_payjoin.dart' show PayjoinAction;
@@ -24,11 +26,23 @@ class SettingsFacade {
 
   final SetPayjoinEnabledUsecase _setPayjoinEnabledUsecase;
   final WatchPayjoinPolicyUsecase _watchPayjoinPolicyUsecase;
+  final GetForceAppStoreWordingUsecase _getForceAppStoreWordingUsecase;
+  final SetForceAppStoreWordingUsecase _setForceAppStoreWordingUsecase;
 
   SettingsFacade({
     required this._setPayjoinEnabledUsecase,
     required this._watchPayjoinPolicyUsecase,
+    required this._getForceAppStoreWordingUsecase,
+    required this._setForceAppStoreWordingUsecase,
   });
+
+  /// Development switch (reachable in Dev Mode only): whether the App Store
+  /// vocabulary is forced on this device. Stored locally.
+  Future<Result<bool, SettingsFailure>> isAppStoreWordingForced() =>
+      _getForceAppStoreWordingUsecase.execute();
+
+  Future<Result<void, SettingsFailure>> setAppStoreWordingForced(bool forced) =>
+      _setForceAppStoreWordingUsecase.execute(forced);
 
   /// Payjoin when receiving from other users, behind the disclaimer.
   Future<Result<bool, SettingsFailure>> setPayjoinReceiveEnabled(
