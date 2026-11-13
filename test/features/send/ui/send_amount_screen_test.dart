@@ -1,3 +1,4 @@
+import 'package:primitives/primitives.dart' show BitcoinUnit;
 import 'package:bb_mobile/features/send/presentation/send_wallet_view.dart';
 import 'dart:async';
 
