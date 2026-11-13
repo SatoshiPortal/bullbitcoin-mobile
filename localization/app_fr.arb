@@ -4717,5 +4717,6 @@
   "coreScreensOutputsExceedInputs": "Les sorties dépassent les entrées : cette transaction est invalide et le réseau la rejettera.",
   "passphraseShow": "Afficher la passphrase",
   "passphraseHide": "Masquer la passphrase",
-  "bitcoinSettingsAutoTransferTitle": "Échange automatique"
+  "bitcoinSettingsAutoTransferTitle": "Échange automatique",
+  "appSettingsForceAppStoreWordingTitle": "Forcer le vocabulaire App Store"
 }
