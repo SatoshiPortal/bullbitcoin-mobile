@@ -2,8 +2,7 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/cards/action_card.dart';
 import 'package:bb_mobile/features/bitcoin_price/presentation/cubit/price_chart_cubit.dart';
-import 'package:bb_mobile/features/settings/public/settings_facade.dart'
-    show BitcoinAmountView;
+import 'package:bb_mobile/core/widgets/text/currency_text.dart';
 import 'package:bb_mobile/features/bitcoin_price/ui/price_chart_widget.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
@@ -158,8 +157,10 @@ class _BtcTotalAmt extends StatelessWidget {
 
     final btcTotal = walletState.totalBalance();
 
-    return BitcoinAmountView(
+    return CurrencyText(
       btcTotal,
+      showFiat: false,
+      interactive: true,
       style: context.font.displaySmall,
       color: context.appColors.onPrimary,
     );
@@ -236,8 +237,10 @@ class _UnconfirmedIncomingBalance extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Icon(Icons.arrow_downward, color: color, size: 20),
-                BitcoinAmountView(
+                CurrencyText(
                   unconfirmed,
+                  showFiat: false,
+                  interactive: true,
                   style: context.font.bodyLarge,
                   color: color,
                 ),

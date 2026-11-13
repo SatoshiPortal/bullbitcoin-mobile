@@ -1,6 +1,4 @@
 import 'package:bb_mobile/core/widgets/text/currency_text.dart';
-import 'package:bb_mobile/features/settings/public/settings_facade.dart'
-    show BitcoinAmountView;
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
@@ -84,10 +82,12 @@ class TransactionListItem extends StatelessWidget {
               fiatCurrency: orderAmountAndCurrency.$2,
               style: context.font.bodyLarge,
             )
-          : BitcoinAmountView(
+          : CurrencyText(
               isOrderType && orderAmountAndCurrency != null
                   ? orderAmountAndCurrency.$1.toInt()
                   : transaction.swapListAmountSat,
+              showFiat: false,
+              interactive: true,
               style: context.font.bodyLarge,
             ),
       labels: labels.isEmpty ? const [] : [LabelsWidget(labels: labels)],

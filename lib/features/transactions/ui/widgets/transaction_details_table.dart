@@ -7,8 +7,7 @@ import 'package:bb_mobile/core/utils/string_formatting.dart';
 import 'package:bb_mobile/core/widgets/address_viewer.dart';
 import 'package:bb_mobile/core/widgets/transaction_viewer.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
-import 'package:bb_mobile/features/settings/public/settings_facade.dart'
-    show BitcoinAmountView;
+import 'package:bb_mobile/core/widgets/text/currency_text.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transaction_details/transaction_details_cubit.dart';
 import 'package:bb_mobile/features/transactions/presentation/order_payment_method_l10n.dart';
 import 'package:bb_mobile/features/transactions/presentation/order_swap_status_l10n.dart';
@@ -160,10 +159,12 @@ class TransactionDetailsTable extends StatelessWidget {
             label: transaction?.isIncoming == true
                 ? context.loc.transactionDetailLabelAmountReceived
                 : context.loc.transactionDetailLabelAmountSent,
-            displayWidget: BitcoinAmountView(
+            displayWidget: CurrencyText(
               transaction?.isIncoming == true
                   ? amountReceived
                   : (displayAmountSent ?? amountSent),
+              showFiat: false,
+              interactive: true,
               overrideHideAmounts: true,
               style: context.font.bodyLarge,
               color: context.appColors.onSurface,
@@ -174,8 +175,10 @@ class TransactionDetailsTable extends StatelessWidget {
           if (walletTransaction.isToSelf == true)
             BullDetailsTableItem(
               label: context.loc.transactionDetailLabelAmountReceived,
-              displayWidget: BitcoinAmountView(
+              displayWidget: CurrencyText(
                 amountReceived,
+                showFiat: false,
+                interactive: true,
                 overrideHideAmounts: true,
                 style: context.font.bodyLarge,
                 color: context.appColors.onSurface,
@@ -185,8 +188,10 @@ class TransactionDetailsTable extends StatelessWidget {
           if (transaction?.isOutgoing == true && transaction?.isSwap != true)
             BullDetailsTableItem(
               label: context.loc.transactionDetailLabelTransactionFee,
-              displayWidget: BitcoinAmountView(
+              displayWidget: CurrencyText(
                 txFee ?? 0,
+                showFiat: false,
+                interactive: true,
                 overrideHideAmounts: true,
                 style: context.font.bodyLarge,
                 color: context.appColors.onSurface,
@@ -215,9 +220,11 @@ class TransactionDetailsTable extends StatelessWidget {
             ),
           BullDetailsTableItem(
             label: context.loc.transactionDetailLabelPayinAmount,
-            displayWidget: BitcoinAmountView(
+            displayWidget: CurrencyText(
               orderSwap.order?.payinAmountSat.toInt() ??
                   orderSwap.requestedAmountSat.toInt(),
+              showFiat: false,
+              interactive: true,
               overrideHideAmounts: true,
               style: context.font.bodyLarge,
               color: context.appColors.onSurface,
@@ -227,8 +234,10 @@ class TransactionDetailsTable extends StatelessWidget {
           if (orderSwap.order case final swapOrder?)
             BullDetailsTableItem(
               label: context.loc.transactionDetailLabelPayoutAmount,
-              displayWidget: BitcoinAmountView(
+              displayWidget: CurrencyText(
                 swapOrder.payoutAmountSat.toInt(),
+                showFiat: false,
+                interactive: true,
                 overrideHideAmounts: true,
                 style: context.font.bodyLarge,
                 color: context.appColors.onSurface,
@@ -238,8 +247,10 @@ class TransactionDetailsTable extends StatelessWidget {
           if (txFee != null)
             BullDetailsTableItem(
               label: context.loc.transactionDetailLabelTransactionFee,
-              displayWidget: BitcoinAmountView(
+              displayWidget: CurrencyText(
                 txFee,
+                showFiat: false,
+                interactive: true,
                 overrideHideAmounts: true,
                 style: context.font.bodyLarge,
                 color: context.appColors.onSurface,
@@ -289,8 +300,10 @@ class TransactionDetailsTable extends StatelessWidget {
                   displayWidget:
                       order.payinCurrency == 'LBTC' ||
                           order.payinCurrency == 'BTC'
-                      ? BitcoinAmountView(
+                      ? CurrencyText(
                           ConvertAmount.btcToSats(order.payinAmount),
+                          showFiat: false,
+                          interactive: true,
                           overrideHideAmounts: true,
                           style: context.font.bodyLarge,
                           color: context.appColors.onSurface,
@@ -308,8 +321,10 @@ class TransactionDetailsTable extends StatelessWidget {
                   displayWidget:
                       order.payoutCurrency == 'LBTC' ||
                           order.payoutCurrency == 'BTC'
-                      ? BitcoinAmountView(
+                      ? CurrencyText(
                           ConvertAmount.btcToSats(order.payoutAmount),
+                          showFiat: false,
+                          interactive: true,
                           overrideHideAmounts: true,
                           style: context.font.bodyLarge,
                           color: context.appColors.onSurface,
@@ -374,8 +389,10 @@ class TransactionDetailsTable extends StatelessWidget {
                 ),
                 BullDetailsTableItem(
                   label: context.loc.transactionDetailLabelPayinAmount,
-                  displayWidget: BitcoinAmountView(
+                  displayWidget: CurrencyText(
                     payinAmountSat,
+                    showFiat: false,
+                    interactive: true,
                     overrideHideAmounts: true,
                     style: context.font.bodyLarge,
                     color: context.appColors.onSurface,
@@ -651,8 +668,10 @@ class TransactionDetailsTable extends StatelessWidget {
                   displayWidget:
                       order.payinCurrency == 'LBTC' ||
                           order.payinCurrency == 'BTC'
-                      ? BitcoinAmountView(
+                      ? CurrencyText(
                           ConvertAmount.btcToSats(order.payinAmount),
+                          showFiat: false,
+                          interactive: true,
                           overrideHideAmounts: true,
                           style: context.font.bodyLarge,
                           color: context.appColors.onSurface,
@@ -670,8 +689,10 @@ class TransactionDetailsTable extends StatelessWidget {
                   displayWidget:
                       order.payoutCurrency == 'LBTC' ||
                           order.payoutCurrency == 'BTC'
-                      ? BitcoinAmountView(
+                      ? CurrencyText(
                           ConvertAmount.btcToSats(order.payoutAmount),
+                          showFiat: false,
+                          interactive: true,
                           overrideHideAmounts: true,
                           style: context.font.bodyLarge,
                           color: context.appColors.onSurface,
@@ -742,8 +763,10 @@ class TransactionDetailsTable extends StatelessWidget {
                   displayWidget:
                       order.payinCurrency == 'LBTC' ||
                           order.payinCurrency == 'BTC'
-                      ? BitcoinAmountView(
+                      ? CurrencyText(
                           ConvertAmount.btcToSats(order.payinAmount),
+                          showFiat: false,
+                          interactive: true,
                           overrideHideAmounts: true,
                           style: context.font.bodyLarge,
                           color: context.appColors.onSurface,
@@ -761,8 +784,10 @@ class TransactionDetailsTable extends StatelessWidget {
                   displayWidget:
                       order.payoutCurrency == 'LBTC' ||
                           order.payoutCurrency == 'BTC'
-                      ? BitcoinAmountView(
+                      ? CurrencyText(
                           ConvertAmount.btcToSats(order.payoutAmount),
+                          showFiat: false,
+                          interactive: true,
                           overrideHideAmounts: true,
                           style: context.font.bodyLarge,
                           color: context.appColors.onSurface,
@@ -941,8 +966,10 @@ class TransactionDetailsTable extends StatelessWidget {
             if (amountSent > 0)
               BullDetailsTableItem(
                 label: context.loc.transactionLabelSendAmount,
-                displayWidget: BitcoinAmountView(
+                displayWidget: CurrencyText(
                   amountSent,
+                  showFiat: false,
+                  interactive: true,
                   overrideHideAmounts: true,
                   style: context.font.bodyLarge,
                   color: context.appColors.onSurface,
@@ -952,8 +979,10 @@ class TransactionDetailsTable extends StatelessWidget {
             if (amountReceived > 0)
               BullDetailsTableItem(
                 label: context.loc.transactionLabelReceiveAmount,
-                displayWidget: BitcoinAmountView(
+                displayWidget: CurrencyText(
                   amountReceived,
+                  showFiat: false,
+                  interactive: true,
                   overrideHideAmounts: true,
                   style: context.font.bodyLarge,
                   color: context.appColors.onSurface,
@@ -963,8 +992,10 @@ class TransactionDetailsTable extends StatelessWidget {
             if (recoveredBoltzFee > 0)
               BullDetailsTableItem(
                 label: context.loc.transactionDetailLabelTransferFee,
-                displayWidget: BitcoinAmountView(
+                displayWidget: CurrencyText(
                   recoveredBoltzFee,
+                  showFiat: false,
+                  interactive: true,
                   overrideHideAmounts: true,
                   style: context.font.bodyLarge,
                   color: context.appColors.onSurface,
@@ -974,8 +1005,10 @@ class TransactionDetailsTable extends StatelessWidget {
             if (amountReceived > 0 && recoveredNetworkFee > 0)
               BullDetailsTableItem(
                 label: context.loc.transactionLabelNetworkFees,
-                displayWidget: BitcoinAmountView(
+                displayWidget: CurrencyText(
                   recoveredNetworkFee,
+                  showFiat: false,
+                  interactive: true,
                   overrideHideAmounts: true,
                   style: context.font.bodyLarge,
                   color: context.appColors.onSurface,
@@ -987,8 +1020,10 @@ class TransactionDetailsTable extends StatelessWidget {
             if (swap.isChainSwap) ...[
               BullDetailsTableItem(
                 label: context.loc.transactionLabelSendAmount,
-                displayWidget: BitcoinAmountView(
+                displayWidget: CurrencyText(
                   (swap as ChainSwap).paymentAmount,
+                  showFiat: false,
+                  interactive: true,
                   overrideHideAmounts: true,
                   style: context.font.bodyLarge,
                   color: context.appColors.onSurface,
@@ -998,8 +1033,10 @@ class TransactionDetailsTable extends StatelessWidget {
               if (swap.receieveAmount case final receiveAmount?)
                 BullDetailsTableItem(
                   label: context.loc.transactionLabelReceiveAmount,
-                  displayWidget: BitcoinAmountView(
+                  displayWidget: CurrencyText(
                     receiveAmount,
+                    showFiat: false,
+                    interactive: true,
                     overrideHideAmounts: true,
                     style: context.font.bodyLarge,
                     color: context.appColors.onSurface,
@@ -1009,8 +1046,10 @@ class TransactionDetailsTable extends StatelessWidget {
               if (swapSendNetworkFee != null)
                 BullDetailsTableItem(
                   label: context.loc.transactionLabelSendNetworkFees,
-                  displayWidget: BitcoinAmountView(
+                  displayWidget: CurrencyText(
                     swapSendNetworkFee,
+                    showFiat: false,
+                    interactive: true,
                     overrideHideAmounts: true,
                     style: context.font.bodyLarge,
                     color: context.appColors.onSurface,
@@ -1020,8 +1059,10 @@ class TransactionDetailsTable extends StatelessWidget {
             ] else if (swap.isLnSendSwap) ...[
               BullDetailsTableItem(
                 label: context.loc.transactionLabelSendAmount,
-                displayWidget: BitcoinAmountView(
+                displayWidget: CurrencyText(
                   (swap as LnSendSwap).paymentAmount,
+                  showFiat: false,
+                  interactive: true,
                   overrideHideAmounts: true,
                   style: context.font.bodyLarge,
                   color: context.appColors.onSurface,
@@ -1031,8 +1072,10 @@ class TransactionDetailsTable extends StatelessWidget {
               if (swap.receieveAmount case final receiveAmount?)
                 BullDetailsTableItem(
                   label: context.loc.transactionLabelReceiveAmount,
-                  displayWidget: BitcoinAmountView(
+                  displayWidget: CurrencyText(
                     receiveAmount,
+                    showFiat: false,
+                    interactive: true,
                     overrideHideAmounts: true,
                     style: context.font.bodyLarge,
                     color: context.appColors.onSurface,
@@ -1042,8 +1085,10 @@ class TransactionDetailsTable extends StatelessWidget {
               if (swapSendNetworkFee != null)
                 BullDetailsTableItem(
                   label: context.loc.transactionLabelSendNetworkFees,
-                  displayWidget: BitcoinAmountView(
+                  displayWidget: CurrencyText(
                     swapSendNetworkFee,
+                    showFiat: false,
+                    interactive: true,
                     overrideHideAmounts: true,
                     style: context.font.bodyLarge,
                     color: context.appColors.onSurface,
@@ -1054,8 +1099,10 @@ class TransactionDetailsTable extends StatelessWidget {
               if (swap.sendAmount case final sendAmount?)
                 BullDetailsTableItem(
                   label: context.loc.transactionLabelSendAmount,
-                  displayWidget: BitcoinAmountView(
+                  displayWidget: CurrencyText(
                     sendAmount,
+                    showFiat: false,
+                    interactive: true,
                     overrideHideAmounts: true,
                     style: context.font.bodyLarge,
                     color: context.appColors.onSurface,
@@ -1065,8 +1112,10 @@ class TransactionDetailsTable extends StatelessWidget {
               if (swap.receieveAmount case final receiveAmount?)
                 BullDetailsTableItem(
                   label: context.loc.transactionLabelReceiveAmount,
-                  displayWidget: BitcoinAmountView(
+                  displayWidget: CurrencyText(
                     receiveAmount,
+                    showFiat: false,
+                    interactive: true,
                     overrideHideAmounts: true,
                     style: context.font.bodyLarge,
                     color: context.appColors.onSurface,
@@ -1080,10 +1129,12 @@ class TransactionDetailsTable extends StatelessWidget {
               label: swap.type.isChain
                   ? context.loc.transactionDetailLabelTransferFees
                   : context.loc.transactionDetailLabelSwapFees,
-              displayWidget: BitcoinAmountView(
+              displayWidget: CurrencyText(
                 swap.isLnReceiveSwap
                     ? fees.totalFees(swap.amountSat)
                     : fees.totalFeesMinusLockup(swap.amountSat),
+                showFiat: false,
+                interactive: true,
                 overrideHideAmounts: true,
                 style: context.font.bodyLarge,
                 color: context.appColors.onSurface,
@@ -1174,8 +1225,10 @@ class TransactionDetailsTable extends StatelessWidget {
           if (transaction.payjoinFeeContributionSat case final feeContribution?)
             BullDetailsTableItem(
               label: context.loc.transactionDetailLabelPayjoinFeeContribution,
-              displayWidget: BitcoinAmountView(
+              displayWidget: CurrencyText(
                 feeContribution,
+                showFiat: false,
+                interactive: true,
                 overrideHideAmounts: true,
                 style: context.font.bodyLarge,
                 color: context.appColors.onSurface,
@@ -1206,8 +1259,10 @@ Widget _feeRow(BuildContext context, String label, int amt) {
           color: context.appColors.secondary,
         ),
         const Spacer(),
-        BitcoinAmountView(
+        CurrencyText(
           amt,
+          showFiat: false,
+          interactive: true,
           style: context.font.bodySmall,
           color: context.appColors.secondary,
         ),

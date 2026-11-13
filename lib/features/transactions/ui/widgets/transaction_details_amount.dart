@@ -1,7 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/text/currency_text.dart';
-import 'package:bb_mobile/features/settings/public/settings_facade.dart'
-    show BitcoinAmountView;
 import 'package:bb_mobile/features/transactions/presentation/blocs/transaction_details/transaction_details_cubit.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -46,10 +44,12 @@ class TransactionDetailsAmount extends StatelessWidget {
             fiatCurrency: orderAmountAndCurrency.$2,
           )
         else
-          BitcoinAmountView(
+          CurrencyText(
             isOrder && orderAmountAndCurrency != null
                 ? orderAmountAndCurrency.$1.toInt()
                 : amountSat ?? 0,
+            showFiat: false,
+            interactive: true,
             style: context.font.displaySmall?.copyWith(
               color: context.appColors.secondary,
               fontWeight: .w500,

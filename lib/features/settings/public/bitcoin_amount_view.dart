@@ -3,7 +3,8 @@ import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:intl/intl.dart';
+import 'package:bb_mobile/core/utils/amount_formatting.dart';
+import 'package:bb_mobile/core/utils/amount_conversions.dart';
 
 /// Resolves the global default and privacy policy for a local UI amount.
 /// This widget deliberately has no access to a preference writer.
@@ -15,6 +16,7 @@ class BitcoinAmountView extends StatelessWidget {
     this.color,
     this.textAlign,
     this.overrideHideAmounts = false,
+    this.interactive = true,
   });
 
   final int satsAmount;
@@ -22,6 +24,7 @@ class BitcoinAmountView extends StatelessWidget {
   final Color? color;
   final TextAlign? textAlign;
   final bool overrideHideAmounts;
+  final bool interactive;
 
   @override
   Widget build(BuildContext context) {
@@ -31,25 +34,20 @@ class BitcoinAmountView extends StatelessWidget {
     );
     if (unit == null) return const SizedBox.shrink();
     final masked = hide && !overrideHideAmounts;
-    final locale = Localizations.localeOf(context).toLanguageTag();
-    final sats = NumberFormat.decimalPattern(locale).format(satsAmount);
-    final absolute = BigInt.from(satsAmount).abs();
-    final scale = BigInt.from(100000000);
-    final whole = absolute ~/ scale;
-    var fraction = (absolute % scale).toString().padLeft(8, '0');
-    if (absolute == BigInt.zero || absolute >= BigInt.from(10000000)) {
-      fraction = fraction.replaceFirst(RegExp(r'0+$'), '');
+    final satsText = masked ? '** sats' : FormatAmount.sats(satsAmount);
+    final btcText = masked
+        ? '** BTC'
+        : FormatAmount.btc(ConvertAmount.satsToBtc(satsAmount));
+    if (!interactive) {
+      return Text(
+        unit == BitcoinUnit.sats ? satsText : btcText,
+        style: style?.copyWith(color: color),
+        textAlign: textAlign,
+      );
     }
-    final separator = NumberFormat.decimalPattern(locale).symbols.DECIMAL_SEP;
-    final sign = satsAmount < 0
-        ? NumberFormat.decimalPattern(locale).symbols.MINUS_SIGN
-        : '';
-    final btc = fraction.isEmpty
-        ? '$sign$whole'
-        : '$sign$whole$separator$fraction';
     return BullAmount(
-      satsText: masked ? '** sats' : '$sats sats',
-      btcText: masked ? '** BTC' : '$btc BTC',
+      satsText: satsText,
+      btcText: btcText,
       defaultUnit: unit == BitcoinUnit.sats
           ? BullAmountUnit.sats
           : BullAmountUnit.btc,
