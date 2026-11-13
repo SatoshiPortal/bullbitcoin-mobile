@@ -1,3 +1,4 @@
+import 'package:primitives/primitives.dart' show BitcoinUnit, Err;
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
@@ -8,7 +9,6 @@ import 'package:bb_mobile/features/swap/domain/usecases/rescue_swap_usecase.dart
 import 'package:bb_mobile/features/swap/domain/swap_failure.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:primitives/primitives.dart' show Err;
 
 class _Settings extends Mock implements SettingsRepository {}
 

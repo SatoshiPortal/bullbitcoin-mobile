@@ -1,7 +1,7 @@
 import 'package:bb_mobile/features/electrum_settings/domain/electrum_server.dart';
 import 'package:bb_mobile/features/electrum_settings/domain/electrum_failure.dart';
 import 'package:bb_mobile/features/electrum_settings/domain/electrum_server_network.dart';
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart';
 import 'package:meta/meta.dart';
 
 abstract interface class ElectrumServerRepository {

@@ -1,7 +1,7 @@
 import 'package:bb_mobile/features/electrum_settings/domain/delete_custom_server_request.dart';
 import 'package:bb_mobile/features/electrum_settings/domain/electrum_failure.dart';
 import 'package:bb_mobile/features/electrum_settings/domain/repositories/electrum_server_repository.dart';
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart' show Result;
 import 'package:meta/meta.dart';
 
 class DeleteCustomServerUsecase {

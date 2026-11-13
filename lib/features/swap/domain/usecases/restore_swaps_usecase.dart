@@ -1,7 +1,6 @@
 import 'package:bb_mobile/features/swap/domain/swap_failure.dart';
 import 'package:bb_mobile/features/swap/domain/swap_network_policy.dart';
-import 'package:bb_mobile/core/utils/result.dart';
-import 'package:primitives/primitives.dart' show NetworkEnv;
+import 'package:primitives/primitives.dart' show Err, NetworkEnv, Ok, Result;
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/restored_swap.dart';

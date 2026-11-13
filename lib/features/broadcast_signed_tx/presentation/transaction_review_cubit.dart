@@ -3,7 +3,7 @@ import 'package:bb_mobile/features/wallet/data/transaction_mapper.dart';
 import 'package:bb_mobile/core/transactions/domain/entities/transaction.dart';
 import 'package:bb_mobile/core/utils/bitcoin_tx.dart' as btc_utils;
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart' hide Network;
 import 'package:bb_mobile/features/broadcast_signed_tx/application/build_reviewable_transaction_usecase.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/domain/transaction_review_failure.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/presentation/transaction_review_state.dart';

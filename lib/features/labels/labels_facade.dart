@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/labels/adapters/label_mapper.dart';
 import 'package:bb_mobile/features/labels/application/store_label_application.dart';
 import 'package:bb_mobile/features/labels/application/usecases/fetch_all_labels_usecase.dart';

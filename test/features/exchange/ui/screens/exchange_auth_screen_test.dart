@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_api_key_repository.dart';
 import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/exchange/data/exchange_auth_repository_impl.dart';
 import 'package:bb_mobile/features/exchange/data/exchange_web_auth_datasource.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/complete_exchange_authentication_usecase.dart';

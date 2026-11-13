@@ -1,7 +1,5 @@
-import 'package:primitives/primitives.dart'
-    show BitcoinNetwork, NetworkCapabilities, NetworkCapability;
+import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
-import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/recipients/application/ports/recipients_gateway_port.dart';
 import 'package:bb_mobile/features/recipients/domain/interac_security_details.dart';
 import 'package:bb_mobile/features/recipients/domain/interac_security_details_repository.dart';

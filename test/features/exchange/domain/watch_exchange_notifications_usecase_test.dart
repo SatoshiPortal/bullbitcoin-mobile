@@ -5,12 +5,11 @@ import 'dart:async';
 import 'package:bb_mobile/core/exchange/domain/entity/notification_message.dart';
 import 'package:bb_mobile/core/exchange/domain/exchange_notification_failure.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_notification_repository.dart';
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/exchange/domain/exchange_failure.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/watch_exchange_notifications_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:bb_mobile/core/failures/failure.dart';
 
 /// The failure an [Err] carries, typed by the [Result]; an [Ok] fails the test.
 F _failureOf<T, F extends Failure>(Result<T, F> result) => switch (result) {

@@ -1,7 +1,7 @@
 import 'package:bb_mobile/features/wallet/domain/wallet.dart' as app;
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/features/fees/domain/get_network_fees_usecase.dart';
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/replace_by_fee/domain/bump_fee_usecase.dart';
 import 'package:bb_mobile/features/replace_by_fee/domain/replace_by_fee_failure.dart';
 import 'package:bull_sdk/bdk.dart' as bdk;

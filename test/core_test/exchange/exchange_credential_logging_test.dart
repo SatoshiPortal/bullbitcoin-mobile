@@ -20,7 +20,7 @@ import 'package:dio/dio.dart';
 import 'package:bb_mobile/core/exchange/data/exchange_api_key_repository_impl.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/exchange_api_key.dart';
 import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_value_storage_datasource.dart';
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:flutter_test/flutter_test.dart';
 

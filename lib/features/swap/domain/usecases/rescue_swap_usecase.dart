@@ -1,6 +1,6 @@
 import 'package:bb_mobile/features/swap/domain/swap_failure.dart';
 import 'package:bb_mobile/features/swap/domain/swap_network_policy.dart';
-import 'package:primitives/primitives.dart' show NetworkEnv;
+import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
@@ -10,8 +10,6 @@ import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-
-import 'package:bb_mobile/core/utils/result.dart';
 
 /// Rebuilds an orphaned restored swap into local storage + the watcher, sending
 /// funds to the [selectedWalletId] the user picked (on the swap's acting chain).

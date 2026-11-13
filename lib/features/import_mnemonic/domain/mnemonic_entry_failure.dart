@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/failures/failure.dart';
+import 'package:primitives/primitives.dart' show Failure;
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 
 /// Why a typed mnemonic could not be accepted.

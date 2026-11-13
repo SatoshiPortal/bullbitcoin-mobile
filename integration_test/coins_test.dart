@@ -1,8 +1,8 @@
-import 'package:primitives/primitives.dart' show BitcoinTransactionRecipient;
+import 'package:primitives/primitives.dart'
+    show BitcoinTransactionRecipient, Err, Ok;
 import 'dart:io';
 
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
-import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:secrets/secrets.dart';
 import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
@@ -11,6 +11,7 @@ import 'package:bb_mobile/core/wallet/data/datasources/frozen_wallet_utxo_dataso
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_address_repository.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_address_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_utxo_repository.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/prepare_bitcoin_send_usecase.dart';
 import 'package:bb_mobile/locator.dart';

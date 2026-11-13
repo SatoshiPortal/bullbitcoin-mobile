@@ -1,4 +1,4 @@
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
+import 'package:primitives/primitives.dart' show BitcoinUnit;
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

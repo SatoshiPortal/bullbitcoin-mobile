@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart' show BitcoinNetwork, Ok;
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_started_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
@@ -9,7 +9,6 @@ import 'package:bb_mobile/features/transactions/domain/usecases/watch_transactio
 import 'package:bb_mobile/features/transactions/application/usecases/get_transactions_usecase.dart';
 import 'package:bb_mobile/features/transactions/application/usecases/refresh_transaction_labels_usecase.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
-import 'package:primitives/primitives.dart' show BitcoinNetwork;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transactions_cubit.dart';

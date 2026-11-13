@@ -1,7 +1,7 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';

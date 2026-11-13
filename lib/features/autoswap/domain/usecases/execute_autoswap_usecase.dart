@@ -1,7 +1,7 @@
 import 'package:bb_mobile/features/autoswap/domain/repositories/auto_swap_settings_repository.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/auto_swap.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/get_auto_swap_settings_usecase.dart';
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/autoswap/domain/autoswap_failure.dart';
 import 'package:bb_mobile/features/autoswap/domain/autoswap_provider_port.dart';
 import 'package:meta/meta.dart';

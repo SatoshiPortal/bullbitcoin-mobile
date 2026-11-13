@@ -1,6 +1,6 @@
 import 'dart:developer' as developer;
 
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_backend_defaults.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_backend_kind.dart';
 import 'package:bb_mobile/features/sp/domain/ports/sp_backend_probe_port.dart';

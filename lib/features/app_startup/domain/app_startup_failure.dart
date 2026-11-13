@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/failures/failure.dart';
+import 'package:primitives/primitives.dart' show Failure;
 
 /// Deliberately has no `AppStartupUnexpectedFailure` catch-all. Every
 /// collaborator this feature calls is wrapped by one of its own use-cases, so

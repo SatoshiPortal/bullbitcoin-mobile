@@ -10,10 +10,10 @@ import 'package:bb_mobile/features/wallet/domain/usecases/watch_sp_wallet_usecas
 import 'package:bb_mobile/features/wallet/domain/usecases/check_sp_feature_gate_for_wallet_usecase.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_sync_result.dart';
 import 'package:bb_mobile/features/wallet/domain/sync_trigger.dart';
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart' hide Network;
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/check_backup_needed_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/check_backup_needed_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/check_wallet_syncing_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/delete_wallet_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
@@ -98,6 +98,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
   bool? _lastLiquidSyncSuccess;
   int _electrumWarningGeneration = 0;
   int _spBalanceUpdateVersion = 0;
+  int _backupStatusGeneration = 0;
 
   @override
   Future<void> close() {
@@ -205,15 +206,20 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     _walletReadVersions.clear();
     // copyWith, not a fresh WalletState: the Silent Payments fields are owned
     // by their own events and must survive a reload.
+    _backupStatusGeneration++;
     emit(
       state.copyWith(
         status: WalletStatus.success,
         wallets: _mergeWalletUpdates(wallets, updates),
+        backupNeeded: null,
         failure: null,
         // If a global sync is running, every wallet is syncing.
         syncStatus: {for (final wallet in wallets) wallet.id: isSyncing},
       ),
     );
+
+    add(const RefreshSpWallet());
+    add(const VerifyBackupStatus());
 
     // Now that the wallets are loaded, we can sync them as done by the refresh
     add(const WalletRefreshed());
@@ -355,10 +361,12 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
 
     add(const RefreshSpWallet());
 
+    _backupStatusGeneration++;
     emit(
       state.copyWith(
         status: WalletStatus.success,
         wallets: _mergeWalletUpdates(wallets, updates),
+        backupNeeded: null,
         // Carries the sync failure, or clears a previous one. The wallets
         // themselves loaded, so this is a stale-balance warning on top of a
         // correct list, not a failed load.
@@ -367,6 +375,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
         isRefreshing: false,
       ),
     );
+    add(const VerifyBackupStatus());
   }
 
   void _onWalletSyncStarted(
@@ -384,9 +393,14 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
   ) async {
     // Clear only this indicator even if its read is unavailable. A partial
     // success cannot clear a failed full-list load or the refresh failure.
+    _backupStatusGeneration++;
     emit(
-      state.copyWith(syncStatus: {...state.syncStatus, event.wallet.id: false}),
+      state.copyWith(
+        syncStatus: {...state.syncStatus, event.wallet.id: false},
+        backupNeeded: null,
+      ),
     );
+    add(const VerifyBackupStatus());
     final catalog = _catalogGeneration;
     final incomingVersion = ++_incomingReadVersion;
     await _reloadWallet(event.wallet.id, emit);
@@ -579,25 +593,15 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     VerifyBackupStatus event,
     Emitter<WalletState> emit,
   ) async {
-    // A failed check leaves the badge as it is: guessing either way would
-    // either nag a user who is backed up or hide a real warning.
-    final bool dbBackupNeeded;
-    switch (await _checkBackupNeededUsecase.execute()) {
+    final generation = ++_backupStatusGeneration;
+    final result = await _checkBackupNeededUsecase.execute();
+    if (generation != _backupStatusGeneration || emit.isDone) return;
+    switch (result) {
       case Ok(:final value):
-        dbBackupNeeded = value;
-      case Err(:final failure):
-        log.warning('Backup status check: ${failure.logMessage}');
-        return;
-    }
-    if (dbBackupNeeded == state.hasNoBackup()) return;
-    final catalog = ++_catalogGeneration;
-    final updates = Map<String, int>.of(_walletUpdateVersions);
-    // Refreshing the backup badge only: a failed read leaves the current list
-    // on screen rather than replacing it with an error.
-    final result = await _getWalletsUsecase.execute();
-    if (emit.isDone || catalog != _catalogGeneration) return;
-    if (result case Ok(:final value)) {
-      emit(state.copyWith(wallets: _mergeWalletUpdates(value, updates)));
+        emit(state.copyWith(backupNeeded: value));
+      case Err():
+        log.warning('recoverbull.backup.status.unavailable');
+        emit(state.copyWith(backupNeeded: null));
     }
   }
 }

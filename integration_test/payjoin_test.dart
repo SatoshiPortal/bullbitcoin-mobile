@@ -7,6 +7,7 @@ import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:secrets/secrets.dart';
 import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_address_repository.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_address_repository.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_utxo_repository.dart';

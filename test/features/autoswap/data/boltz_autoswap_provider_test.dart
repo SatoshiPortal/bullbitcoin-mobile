@@ -1,6 +1,6 @@
 import 'package:bb_mobile/features/send/domain/usecases/broadcast_liquid_transaction_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
-import 'package:primitives/primitives.dart' show Ok, Err;
+import 'package:primitives/primitives.dart' show BitcoinUnit, Err, Ok;
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
@@ -9,7 +9,6 @@ import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart'
 import 'package:bb_mobile/core/swaps/domain/entity/auto_swap.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
-import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/wallet/data/liquid_wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';

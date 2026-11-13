@@ -12,7 +12,7 @@ import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_connection
 import 'package:bb_mobile/core/electrum/domain/errors/electrum_fallback_exception.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart';
 import 'package:meta/meta.dart';
 
 class AddCustomServerUsecase {

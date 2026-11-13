@@ -1,5 +1,4 @@
-import 'package:bb_mobile/core/failures/failure.dart';
-import 'package:primitives/primitives.dart' show NetworkEnv;
+import 'package:primitives/primitives.dart' show Failure, NetworkEnv;
 
 sealed class SettingsFailure extends Failure {
   const SettingsFailure([super.logMessage]);

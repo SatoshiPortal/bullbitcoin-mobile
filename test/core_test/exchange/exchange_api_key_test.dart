@@ -1,6 +1,6 @@
 import 'package:bb_mobile/core/exchange/domain/entity/exchange_api_key.dart';
 import 'package:bb_mobile/core/exchange/domain/exchange_api_key_failure.dart';
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 Result<ExchangeApiKey, ExchangeApiKeyFailure> _create(String key) =>

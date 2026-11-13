@@ -1,12 +1,12 @@
 import 'package:bb_mobile/features/wallet/domain/default_wallet_secret_policy.dart';
-import 'package:primitives/primitives.dart' show Fingerprint, NetworkEnv;
+import 'package:primitives/primitives.dart'
+    show Err, Fingerprint, NetworkEnv, Ok, Result;
 import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:secrets/secrets.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/core/utils/result.dart';
 
 /// Creates the default Bitcoin and Liquid wallets from one secret: generated, imported from words, or restored by the secrets package.
 ///

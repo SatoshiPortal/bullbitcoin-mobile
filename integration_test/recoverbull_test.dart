@@ -1,30 +1,20 @@
+import 'package:bull_recoverbull/bull_recoverbull.dart';
 import 'dart:io';
 
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
-import 'package:bb_mobile/core/recoverbull/domain/entity/encrypted_vault.dart';
-import 'package:bb_mobile/core/recoverbull/domain/recoverbull_failure.dart';
-import 'package:bb_mobile/core/recoverbull/domain/usecases/fetch_vault_key_from_server_usecase.dart';
-import 'package:bb_mobile/core/recoverbull/domain/usecases/restore_vault_usecase.dart';
-import 'package:primitives/primitives.dart' show Fingerprint;
 import 'package:secrets/secrets.dart' as custody;
 import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
-import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/init.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:bull_tor/tor.dart';
 
 Future<void> main({bool isInitialized = false}) async {
   TestWidgetsFlutterBinding.ensureInitialized();
   if (!isInitialized) await Bull.init();
 
-  final ensureTorReadyUsecase = locator<EnsureTorReadyUsecase>();
-  final restoreVaultUsecase = locator<RestoreVaultUsecase>();
-  final fetchVaultKeyFromServerUsecase =
-      locator<FetchVaultKeyFromServerUsecase>();
+  final recoverbull = locator<RecoverBullFacade>();
 
   final walletRepository = locator<WalletRepository>();
   final secrets = locator<custody.Secrets>();
@@ -59,11 +49,6 @@ Future<void> main({bool isInitialized = false}) async {
       Platform.environment['CI'] != 'true' ||
       Platform.environment['RUN_LIVE_KEYSERVER_TEST'] == 'true';
 
-  setUpAll(() async {
-    final state = await ensureTorReadyUsecase.execute();
-    expect(state, isA<TorReady>());
-  });
-
   group('Recoverbull', () {
     // Fetches the vault key over Tor from the RecoverBull key server. Tor can
     // take ~20s to bootstrap before the first request even goes out, so the
@@ -75,32 +60,25 @@ Future<void> main({bool isInitialized = false}) async {
           ? false
           : 'calls the production key server: runs on PRs to main or a manually dispatched CI run',
       () async {
-        debugPrint('''
-
-╔══════════════════════════════════════════════════════════════════════════╗
-║                                                                            ║
-║   ⏳  HEADS UP — THIS TEST IS SLOW (up to ~2 MINUTES). NOT FROZEN.         ║
-║                                                                            ║
-║   It fetches the vault key over Tor from the RecoverBull key server.       ║
-║   Tor needs ~20s just to bootstrap, then the key-server round-trip can     ║
-║   take a while. Sit tight — go grab a coffee. ☕                           ║
-║                                                                            ║
-╚══════════════════════════════════════════════════════════════════════════╝
-''');
-        final vaultKeyResult = await fetchVaultKeyFromServerUsecase.execute(
-          vault: EncryptedVault(file: oldPathZooMnemonicWithSevenZerosPassword),
+        final settings = await recoverbull.settings();
+        expect(settings, isA<Ok<BackupSettings, RecoverBullFailure>>());
+        final server =
+            (settings as Ok<BackupSettings, RecoverBullFailure>).value.server;
+        expect(await recoverbull.acceptServer(server), isA<Ok>());
+        final parsed = recoverbull.parseVault(
+          oldPathZooMnemonicWithSevenZerosPassword,
+        );
+        expect(parsed, isA<Ok<EncryptedVault, RecoverBullFailure>>());
+        final restored = await recoverbull.recoverFromServer(
+          vault: (parsed as Ok<EncryptedVault, RecoverBullFailure>).value,
           password: password,
         );
-        expect(vaultKeyResult, isA<Ok<String, RecoverBullCoreFailure>>());
-        final vaultKey =
-            (vaultKeyResult as Ok<String, RecoverBullCoreFailure>).value;
-        expect(vaultKey, oldPathVaultKey);
-
-        final restored = await restoreVaultUsecase.execute(
-          vault: EncryptedVault(file: oldPathZooMnemonicWithSevenZerosPassword),
-          vaultKey: vaultKey,
-        );
-        expect(restored, isA<Ok<Null, RecoverBullCoreFailure>>());
+        expect(restored, isA<Ok<VaultCompletion, RecoverBullFailure>>());
+        final completion =
+            (restored as Ok<VaultCompletion, RecoverBullFailure>).value;
+        expect(completion.recovery, isA<VaultRecovered>());
+        expect(completion.warning, isNull);
+        expect(completion.verifiedContext?.network, BitcoinNetwork.mainnet);
 
         final walletsResult = await walletRepository.getWallets(
           onlyDefaults: true,
@@ -129,11 +107,10 @@ Future<void> main({bool isInitialized = false}) async {
     );
 
     test('OLD path: Inspect vault from key without restoring', () async {
-      final vault = EncryptedVault(
-        file: oldPathZooMnemonicWithSevenZerosPassword,
-      );
       final result = await secrets.recoverbull.fingerprint(
-        vault: custody.EncryptedVault(json: vault.toFile()),
+        vault: custody.EncryptedVault(
+          json: oldPathZooMnemonicWithSevenZerosPassword,
+        ),
         key: custody.VaultKey(oldPathVaultKey),
       );
       expect(
@@ -147,11 +124,10 @@ Future<void> main({bool isInitialized = false}) async {
     });
 
     test('NEW path: Inspect vault from key without restoring', () async {
-      final vault = EncryptedVault(
-        file: newPathZooMnemonicWithSevenZerosPassword,
-      );
       final result = await secrets.recoverbull.fingerprint(
-        vault: custody.EncryptedVault(json: vault.toFile()),
+        vault: custody.EncryptedVault(
+          json: newPathZooMnemonicWithSevenZerosPassword,
+        ),
         key: custody.VaultKey(newPathVaultKey),
       );
       expect(
