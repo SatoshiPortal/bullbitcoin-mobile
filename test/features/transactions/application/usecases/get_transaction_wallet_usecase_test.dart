@@ -1,12 +1,11 @@
 import 'package:bb_mobile/core/entities/signer_entity.dart' show SignerEntity;
-import 'package:primitives/primitives.dart' show Err, Ok, Result;
+import 'package:primitives/primitives.dart' show Err, Failure, Ok, Result;
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
 import 'package:bb_mobile/features/transactions/application/usecases/get_transaction_wallet_usecase.dart';
 import 'package:bb_mobile/features/transactions/domain/transaction_failure.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:bb_mobile/core/failures/failure.dart';
 
 /// The failure an [Err] carries, typed by the [Result]; an [Ok] fails the test.
 F _failureOf<T, F extends Failure>(Result<T, F> result) => switch (result) {
