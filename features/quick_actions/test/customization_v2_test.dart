@@ -93,7 +93,7 @@ void main() {
     final handle = find.byWidgetPredicate(
       (widget) =>
           widget is Semantics &&
-          widget.properties.label == l10n.reorderAction(l10n.transferFull),
+          widget.properties.label == l10n.reorderAction(l10n.transfer),
     );
     final target = find.byWidgetPredicate(
       (widget) =>
@@ -167,9 +167,18 @@ void main() {
     await tester.ensureVisible(addBuy);
     await tester.tap(addBuy);
     await tester.pumpAndSettle();
-    final upBuy = find.byTooltip('${l10n.moveUp}: ${l10n.buy}');
-    await tester.ensureVisible(upBuy);
-    await tester.tap(upBuy);
+    final buyHandle = find.byWidgetPredicate(
+      (widget) =>
+          widget is Semantics &&
+          widget.properties.label == l10n.reorderAction(l10n.buy),
+    );
+    await tester.ensureVisible(buyHandle);
+    final semantics = tester.widget<Semantics>(buyHandle);
+    final actions = semantics.properties.customSemanticsActions ?? {};
+    final upBuy = actions.entries.singleWhere(
+      (entry) => entry.key.label == '${l10n.moveUp}: ${l10n.buy}',
+    );
+    upBuy.value();
     await tester.pumpAndSettle();
     final removeMap = find.byTooltip(l10n.removeAction(l10n.map));
     await tester.ensureVisible(removeMap);
