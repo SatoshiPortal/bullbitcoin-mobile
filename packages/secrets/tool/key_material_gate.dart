@@ -321,7 +321,7 @@ bool _isException(String path, AstNode node, String symbol) {
     return true;
   }
   // The exported swap master key is a documented, independent child secret.
-  if (path == 'lib/core/swaps/data/models/swap_master_key_model.dart' &&
+  if (path == 'packages/swaps/lib/src/data/models/swap_master_key_model.dart' &&
       owner == 'SwapMasterKeyModel') {
     return (function == 'fromBoltz' &&
             {
