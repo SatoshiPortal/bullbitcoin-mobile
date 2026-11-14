@@ -8,20 +8,20 @@ import 'domain/observation.dart';
 import 'domain/repositories/notification_store_repository.dart';
 
 final class NotificationsFacade {
-  final LocalNotificationPort gateway;
-  final NotificationStoreRepository outbox;
+  final LocalNotificationPort _gateway;
+  final NotificationStoreRepository _outbox;
   bool? _allowed;
 
-  NotificationsFacade({required this.gateway, required this.outbox});
+  NotificationsFacade({required this._gateway, required this._outbox});
 
   Future<Result<void, NotificationsFailure>> initialize() =>
-      gateway.initialize();
+      _gateway.initialize();
 
   /// The complete history of a sync completed in the foreground, never a
   /// snapshot reload. What it holds is never announced.
   Future<Result<void, NotificationsFailure>> recordForeground(
     Observation observation,
-  ) => outbox.recordForeground(observation);
+  ) => _outbox.recordForeground(observation);
 
   /// The complete history of a background sync: events stored for the first
   /// time become one pending aggregate, built by [aggregate].
@@ -29,7 +29,7 @@ final class NotificationsFacade {
     Observation observation,
     LocalNotification Function(List<String> newEventIds) aggregate,
   ) async {
-    final result = await outbox.recordBackground(observation, aggregate);
+    final result = await _outbox.recordBackground(observation, aggregate);
     if (result case Ok(:final value)) {
       log.fine('Notifications observed outcome=${value.name}');
     }
@@ -37,7 +37,7 @@ final class NotificationsFacade {
   }
 
   Future<Result<void, NotificationsFailure>> deliverPending() async {
-    final enabled = await gateway.isEnabled();
+    final enabled = await _gateway.isEnabled();
     if (enabled case Ok(:final value) when value != _allowed) {
       _allowed = value;
       log.config('Notification permission changed allowed=$value');
@@ -64,7 +64,7 @@ final class NotificationsFacade {
     var count = 0;
     while (true) {
       final ClaimedNotification claim;
-      switch (await outbox.claimNext()) {
+      switch (await _outbox.claimNext()) {
         case Err(:final failure):
           return Err(failure);
         case Ok(value: null):
@@ -78,17 +78,17 @@ final class NotificationsFacade {
           claim = value;
       }
       if (show) {
-        final shown = await gateway.show(
+        final shown = await _gateway.show(
           claim.notification,
           platformId: claim.platformId,
         );
         if (shown case Err(:final failure)) {
-          final released = await outbox.release(claim);
+          final released = await _outbox.release(claim);
           if (released case Err(:final failure)) return Err(failure);
           return Err(failure);
         }
       }
-      final settled = await outbox.settle(claim);
+      final settled = await _outbox.settle(claim);
       if (settled case Err(:final failure)) return Err(failure);
       count++;
     }

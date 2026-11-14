@@ -21,10 +21,7 @@ final class FlutterLocalNotificationGateway implements LocalNotificationPort {
     required this.channelName,
     required this.androidIconResource,
     this.channelDescription,
-    // Phase A only: lib/features/wallet still passes false; removed with it.
-    bool emitDestinations = false,
-  }) : assert(!emitDestinations, 'Notifications carry no destination'),
-       _plugin = FlutterLocalNotificationsPlugin(),
+  }) : _plugin = FlutterLocalNotificationsPlugin(),
        _permissions = FlutterNotificationPermissionGateway(
          channelId: channelId,
        );

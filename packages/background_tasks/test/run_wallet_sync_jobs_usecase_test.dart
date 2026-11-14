@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:io';
 
 import 'package:background_tasks/background_tasks.dart';
+import 'package:background_tasks/src/data/sqlite_wallet_sync_job_queue_repository.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 import 'package:transaction_sync/transaction_sync.dart';

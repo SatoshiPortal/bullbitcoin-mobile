@@ -38,11 +38,14 @@ void main() {
     final directory = Directory.systemTemp.createTempSync(
       'payment-observation-',
     );
-    final outbox = SqliteNotificationOutbox(
-      databasePath: '${directory.path}/outbox.sqlite',
-    );
-    addTearDown(() {
-      outbox.dispose();
+    final outbox = switch (openForegroundNotificationStore(
+      '${directory.path}/outbox.sqlite',
+    )) {
+      Ok(:final value) => value,
+      Err(:final failure) => fail('$failure'),
+    };
+    addTearDown(() async {
+      await outbox.close();
       directory.deleteSync(recursive: true);
     });
     final key = WalletKey(id: 'test', network: BitcoinNetwork.testnet);

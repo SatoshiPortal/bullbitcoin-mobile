@@ -498,27 +498,3 @@ final class SqliteWalletSyncJobQueueRepository
     _database.dispose();
   }
 }
-
-/// Phase A contact: lib/features/wallet still opens the queue through this
-/// name, creating it like [SqliteWalletSyncJobQueueRepository.openForeground].
-/// Phase B moves the feature to the two named openings and deletes this class.
-final class SqliteWalletSyncJobQueue
-    extends SqliteWalletSyncJobQueueRepository {
-  SqliteWalletSyncJobQueue({required String databasePath})
-    : super._(
-        switch (SqliteWalletSyncJobQueueRepository._open(
-          databasePath,
-          create: true,
-        )) {
-          Ok(:final value) => value,
-          Err() => throw const _QueueUnavailable(),
-        },
-        leaseDuration: const Duration(minutes: 30),
-        retryBase: const Duration(minutes: 5),
-        retryMaximum: const Duration(hours: 6),
-      );
-}
-
-final class _QueueUnavailable implements Exception {
-  const _QueueUnavailable();
-}

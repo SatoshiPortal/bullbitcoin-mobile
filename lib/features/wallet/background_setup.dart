@@ -28,7 +28,7 @@ const _queueFilename = 'wallet_transaction_sync_queue.sqlite';
 Future<void> prepareBackgroundWalletStores(GetIt locator) async {
   if (!backgroundSyncAvailable) return;
   final documents = await getApplicationDocumentsDirectory();
-  final queue = SqliteWalletSyncJobQueueRepository.openForeground(
+  final queue = openForegroundWalletSyncJobQueue(
     p.join(documents.path, _queueFilename),
   );
   switch (queue) {
@@ -137,9 +137,7 @@ Future<BackgroundTaskHandler> setupBackgroundWalletTask(
 /// The queue the foreground created; a missing, older or newer one is refused.
 Result<WalletSyncJobQueueRepository, BackgroundTasksFailure>
 openBackgroundWalletSyncQueue(String documents) =>
-    SqliteWalletSyncJobQueueRepository.openExisting(
-      p.join(documents, _queueFilename),
-    );
+    openExistingWalletSyncJobQueue(p.join(documents, _queueFilename));
 
 final class _CatalogStartupFailure implements Exception {
   const _CatalogStartupFailure();

@@ -12,25 +12,22 @@ final class PaymentNotifications {
   static const channelId = 'bull_wallet_payments';
   static const outboxFilename = 'notification_outbox.sqlite';
 
-  static SqliteNotificationOutbox openOutbox(String documents) =>
-      SqliteNotificationOutbox(databasePath: p.join(documents, outboxFilename));
-
   static AppLocalizations localization(Language? language) =>
       lookupAppLocalizations(language?.locale ?? const Locale('en'));
 
   static NotificationsFacade create(
     NotificationStoreRepository outbox,
     Language? language,
-  ) => NotificationsFacade(
-    outbox: outbox,
-    gateway: FlutterLocalNotificationGateway(
-      channelId: channelId,
-      // A tap opens the app; no authenticated destination consumer is wired.
-      emitDestinations: false,
-      channelName: localization(language).receivePaymentReceived,
-      androidIconResource: 'ic_launcher_foreground',
-    ),
-  );
+  ) => NotificationsFacade(outbox: outbox, gateway: gateway(language));
+
+  /// The payment channel. A tap opens the app: no notification carries a
+  /// destination.
+  static LocalNotificationPort gateway(Language? language) =>
+      localNotifications(
+        channelId: channelId,
+        channelName: localization(language).receivePaymentReceived,
+        androidIconResource: 'ic_launcher_foreground',
+      );
 
   /// Notification storage and the platform plugin are optional to native
   /// sync. The store is never created nor migrated here: a missing, older or

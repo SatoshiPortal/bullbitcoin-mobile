@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:notifications/notifications.dart';
+import 'package:notifications/src/data/flutter_local_notification_gateway.dart';
 import 'package:primitives/primitives.dart';
 
 class _Android extends AndroidFlutterLocalNotificationsPlugin {

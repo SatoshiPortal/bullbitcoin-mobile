@@ -52,7 +52,7 @@ void main() {
           resources,
         );
         expect(notifications, isNull);
-        final queue = switch (SqliteWalletSyncJobQueueRepository.openForeground(
+        final queue = switch (openForegroundWalletSyncJobQueue(
           '${directory.path}/queue',
         )) {
           Ok(:final value) => value,

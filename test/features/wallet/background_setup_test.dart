@@ -67,7 +67,7 @@ void main() {
   }
 
   test('the queue the foreground created opens in the background', () async {
-    switch (SqliteWalletSyncJobQueueRepository.openForeground(queuePath())) {
+    switch (openForegroundWalletSyncJobQueue(queuePath())) {
       case Ok(:final value):
         await value.close();
       case Err(:final failure):

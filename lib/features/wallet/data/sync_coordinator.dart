@@ -45,7 +45,7 @@ export 'package:bb_mobile/features/wallet/domain/sync_outcome.dart';
 /// Background tasks (`lib/background_bootstrap.dart`) intentionally
 /// do **not** use this coordinator — they run in a separate Dart isolate with
 /// a task-specific graph, so the lifecycle gate would actively block them.
-/// They call the writer-backed Electrum path through BackgroundWalletSync.
+/// They call the writer-backed Electrum path through BackgroundWalletSyncPort.
 class SyncCoordinator {
   SyncCoordinator({
     required GetWalletsUsecase getWalletsUsecase,

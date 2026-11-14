@@ -322,19 +322,3 @@ final class _Refused implements Exception {
   final NotificationsFailure failure;
   const _Refused(this.failure);
 }
-
-/// Phase A contact: lib/features/wallet still opens the store through this
-/// name, creating it like [SqliteNotificationStoreRepository.openForeground].
-/// Phase B moves the feature to the two named openings and deletes this class.
-final class SqliteNotificationOutbox extends SqliteNotificationStoreRepository {
-  SqliteNotificationOutbox({required String databasePath})
-    : super._(switch (SqliteNotificationStoreRepository._open(
-        databasePath,
-        create: true,
-      )) {
-        Ok(:final value) => value,
-        Err(:final failure) => throw _Refused(failure),
-      }, const Duration(minutes: 5));
-
-  Future<void> dispose() => close();
-}
