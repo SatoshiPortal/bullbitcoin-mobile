@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 import 'package:sync/src/data/freeze_authority.dart';
@@ -37,6 +39,113 @@ void main() {
     Ok() => fail('Expected a failure'),
     Err(:final failure) => failure,
   };
+
+  group('store', () {
+    test('a failing store is never an empty one', () async {
+      final store = MemoryFreezeStore([row('a', 0, 'w')])
+        ..failure = const SyncStorageFailure();
+      final authority = open(store);
+
+      expect(err(await authority.read()), isA<SyncStorageFailure>());
+      expect(err(await authority.forbiddenInputs()), isA<SyncStorageFailure>());
+      expect(
+        err(await authority.freeze([row('b', 1, 'w')])),
+        isA<SyncStorageFailure>(),
+      );
+      expect(
+        err(await authority.unfreeze([outpoint('a', 0)])),
+        isA<SyncStorageFailure>(),
+      );
+      expect(
+        err(await authority.guard((forbidden) => fail('ran'))),
+        isA<SyncStorageFailure>(),
+      );
+      expect(authority.snapshot, isNull);
+      expect(authority.failure, isA<SyncStorageFailure>());
+      expect(store.rows, {row('a', 0, 'w')});
+
+      // The next use reads again.
+      store.failure = null;
+      expect(ok(await authority.read()), [row('a', 0, 'w')]);
+      expect(authority.snapshot?.outpoints, {outpoint('a', 0)});
+      expect(authority.failure, isNull);
+    });
+
+    test('a failed read keeps the freezes read before', () async {
+      final store = MemoryFreezeStore([row('a', 0, 'w')]);
+      final authority = open(store);
+      ok(await authority.read());
+
+      store.failure = const SyncStorageFailure();
+
+      expect(err(await authority.read()), isA<SyncStorageFailure>());
+      expect(authority.snapshot?.outpoints, {outpoint('a', 0)});
+    });
+
+    test('reads every row, empty and multiple origins included', () async {
+      final rows = [
+        row('a', 0, 'wpkh([0f36572d/84h/1h/0h])'),
+        // A second wallet froze the same outpoint.
+        row('a', 0, 'tr([0f36572d/86h/1h/0h])'),
+        // BIP329 import without a known wallet.
+        row('b', 1, ''),
+      ];
+      final authority = open(MemoryFreezeStore(rows));
+
+      expect(ok(await authority.read()).toSet(), rows.toSet());
+      expect(ok(await authority.forbiddenInputs()), {
+        outpoint('a', 0),
+        outpoint('b', 1),
+      });
+    });
+
+    test('unfreeze lifts every attribution of the outpoint', () async {
+      final store = MemoryFreezeStore([
+        row('a', 0, 'one'),
+        row('a', 0, ''),
+        row('b', 0, 'one'),
+      ]);
+      final authority = open(store);
+
+      ok(await authority.unfreeze([outpoint('a', 0)]));
+
+      expect(store.rows, {row('b', 0, 'one')});
+      expect(authority.snapshot?.outpoints, {outpoint('b', 0)});
+    });
+
+    test('each committed change is a new policy revision', () async {
+      final authority = open(MemoryFreezeStore());
+
+      final first = ok(await authority.freeze([row('a', 0, '')]));
+      final second = ok(await authority.freeze([row('b', 1, 'unknown')]));
+      final third = ok(await authority.unfreeze([outpoint('a', 0)]));
+
+      expect(second.value, greaterThan(first.value));
+      expect(third.value, greaterThan(second.value));
+      expect(authority.snapshot?.revision, third);
+    });
+
+    test('a guard holds back freezes until its body returns', () async {
+      final store = MemoryFreezeStore([row('a', 0, 'w')]);
+      final authority = open(store);
+      final release = Completer<void>();
+      final guarded = authority.guard((forbidden) async {
+        await release.future;
+        return forbidden;
+      });
+      var committed = false;
+      final freezing = authority
+          .freeze([row('b', 1, 'w')])
+          .whenComplete(() => committed = true);
+      await pumpEventQueue();
+
+      expect(committed, isFalse);
+      release.complete();
+      expect(ok(await guarded), {outpoint('a', 0)});
+      ok(await freezing);
+      expect(store.rows, {row('a', 0, 'w'), row('b', 1, 'w')});
+    });
+  });
 
   group('wallet coins', () {
     final key = WalletKey(id: 'coins', network: LiquidNetwork.testnet);

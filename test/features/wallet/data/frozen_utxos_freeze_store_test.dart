@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
@@ -7,14 +8,18 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 import 'package:sync/sync.dart';
 
+import 'freezes_only_sync.dart';
+
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   late SqliteDatabase db;
+  late FrozenUtxosFreezeStore store;
   late Directory dir;
 
   setUp(() {
     db = SqliteDatabase(NativeDatabase.memory());
+    store = FrozenUtxosFreezeStore(sqlite: db);
     dir = Directory.systemTemp.createTempSync('frozen-utxos-');
   });
   tearDown(() async {
@@ -22,81 +27,144 @@ void main() {
     dir.deleteSync(recursive: true);
   });
 
+  final a = 'a' * 64;
+  final b = 'b' * 64;
+  FrozenOutpoint row(String txId, int vout, String origin) =>
+      FrozenOutpoint((txId: txId, vout: vout), origin: origin);
+
+  T ok<T>(Result<T, SyncFailure> result) => switch (result) {
+    Ok(:final value) => value,
+    Err(:final failure) => fail('Unexpected ${failure.logCode}'),
+  };
+
   Future<void> insert(String walletId, String txId, int vout) => db
       .into(db.frozenUtxos)
       .insert(
         FrozenUtxosCompanion.insert(walletId: walletId, txId: txId, vout: vout),
       );
 
+  Future<Set<FrozenOutpoint>> table() async => {
+    for (final r in await db.select(db.frozenUtxos).get())
+      row(r.txId, r.vout, r.walletId),
+  };
+
   test('sync lists every row of the app table', () async {
-    final a = 'a' * 64;
-    final b = 'b' * 64;
     await insert('wpkh([0f36572d/84h/1h/0h])', a, 0);
     await insert('tr([0f36572d/86h/1h/0h])', a, 0);
     await insert('', b, 1);
-    final sync = Sync.openForeground(
-      documentsDirectory: dir.path,
-      catalog: const _NoCatalog(),
-      reservedAddresses: const _NoReserved(),
-      freezes: FrozenUtxosFreezeStore(sqlite: db),
-      inputReservations: _NoInputReservations(),
-    );
+    final sync = freezesOnlySync(dir.path, freezes: store);
     try {
       final listed = switch (await sync.coins.listFrozen()) {
         Ok(:final value) => value.toSet(),
         Err(:final failure) => fail(failure.logCode),
       };
       expect(listed, {
-        FrozenOutpoint((
-          txId: a,
-          vout: 0,
-        ), origin: 'wpkh([0f36572d/84h/1h/0h])'),
-        FrozenOutpoint((txId: a, vout: 0), origin: 'tr([0f36572d/86h/1h/0h])'),
-        FrozenOutpoint((txId: b, vout: 1), origin: ''),
+        row(a, 0, 'wpkh([0f36572d/84h/1h/0h])'),
+        row(a, 0, 'tr([0f36572d/86h/1h/0h])'),
+        row(b, 1, ''),
       });
     } finally {
       await sync.close();
     }
   });
 
-  test('an unreadable database is a failure, not an empty table', () async {
+  test('sync freezes and unfreezes in the app table', () async {
+    final sync = freezesOnlySync(dir.path, freezes: store);
+    try {
+      ok(await sync.coins.freeze((txId: a, vout: 0), origin: 'one'));
+      ok(await sync.coins.freeze((txId: a, vout: 0), origin: ''));
+      ok(await sync.coins.freeze((txId: b, vout: 1), origin: 'one'));
+      expect(await table(), {
+        row(a, 0, 'one'),
+        row(a, 0, ''),
+        row(b, 1, 'one'),
+      });
+
+      // An unfreeze lifts every origin of the outpoint, and only it.
+      ok(await sync.coins.unfreeze((txId: a, vout: 0)));
+      expect(await table(), {row(b, 1, 'one')});
+    } finally {
+      await sync.close();
+    }
+  });
+
+  test('a freeze already stored is kept as it is', () async {
+    await insert('one', a, 0);
+
+    ok(await store.freeze([row(a, 0, 'one'), row(a, 0, 'two')]));
+
+    expect(await table(), {row(a, 0, 'one'), row(a, 0, 'two')});
+  });
+
+  test('an unreadable database is a failure, never an empty table', () async {
     final file = File('${dir.path}/corrupt.sqlite')
       ..writeAsStringSync('not a database ' * 100);
     final corrupt = SqliteDatabase(NativeDatabase(file));
     try {
-      final result = await FrozenUtxosFreezeStore(sqlite: corrupt).readAll();
-      expect(result, isA<Err<List<FrozenOutpoint>, SyncFailure>>());
+      final broken = FrozenUtxosFreezeStore(sqlite: corrupt);
+      var ran = false;
+      expect(
+        await broken.readAll(),
+        isA<Err<List<FrozenOutpoint>, SyncFailure>>(),
+      );
+      expect(
+        await broken.freeze([row(a, 0, '')]),
+        isA<Err<void, SyncFailure>>(),
+      );
+      expect(
+        await broken.unfreeze([(txId: a, vout: 0)]),
+        isA<Err<void, SyncFailure>>(),
+      );
+      expect(
+        await broken.guard((rows) async => ran = true),
+        isA<Err<bool, SyncFailure>>(),
+      );
+      expect(ran, isFalse);
     } finally {
       await corrupt.close();
     }
   });
-}
 
-final class _NoCatalog implements WalletCatalogPort {
-  const _NoCatalog();
+  group('guard', () {
+    test('no freeze commits until its body returns', () async {
+      await insert('one', a, 0);
+      final entered = Completer<void>();
+      final release = Completer<void>();
+      final guarded = store.guard((rows) async {
+        entered.complete();
+        await release.future;
+        return rows;
+      });
+      await entered.future;
+      var committed = false;
+      final freezing = store
+          .freeze([row(b, 1, 'one')])
+          .whenComplete(() => committed = true);
+      await Future<void>.delayed(const Duration(milliseconds: 50));
 
-  @override
-  Future<Result<PublicWalletDescriptor, SyncFailure>> find(
-    WalletKey key,
-  ) async => const Err(SyncNotFoundFailure());
+      expect(committed, isFalse);
+      release.complete();
+      expect(ok(await guarded), [row(a, 0, 'one')]);
+      ok(await freezing);
+      expect(await table(), {row(a, 0, 'one'), row(b, 1, 'one')});
+    });
 
-  @override
-  Future<Result<List<PublicWalletDescriptor>, SyncFailure>> list() async =>
-      const Ok([]);
-}
+    test('its body reads the database inside the transaction', () async {
+      await insert('one', a, 0);
 
-final class _NoReserved implements ReservedAddressPort {
-  const _NoReserved();
+      final seen = ok(await store.guard((rows) async => store.readAll()));
 
-  @override
-  Future<Result<bool, SyncFailure>> isReserved(
-    WalletKey key,
-    String address,
-  ) async => const Ok(false);
-}
+      expect(ok(seen), [row(a, 0, 'one')]);
+    });
 
-final class _NoInputReservations implements InputReservationPort {
-  @override
-  Future<Result<List<InputReservation>, SyncFailure>> reservations() async =>
-      const Ok([]);
+    test('an exception of its body is rethrown, not a failure', () async {
+      await expectLater(
+        store.guard<void>((rows) async => throw const FormatException('body')),
+        throwsA(isA<FormatException>()),
+      );
+      // The store is still usable.
+      ok(await store.freeze([row(a, 0, 'one')]));
+      expect(await table(), {row(a, 0, 'one')});
+    });
+  });
 }
