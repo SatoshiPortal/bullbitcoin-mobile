@@ -1,5 +1,5 @@
 name: notifications
-description: Generic local notification outbox and deferred destination delivery.
+description: Local notifications with a durable store of observed events and pending aggregates.
 publish_to: "none"
 version: 0.1.0
 resolution: workspace

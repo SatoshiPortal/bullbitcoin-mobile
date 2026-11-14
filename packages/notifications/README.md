@@ -1,15 +1,35 @@
-# Notifications
+# notifications
 
-`notifications` owns generic local-notification delivery for the application. Its wallet identity helper accepts the typed WalletKey contract; delivery does not depend on native transactions, routes, background workers, or shell composition.
+Local notifications for the app: a durable store of observed events and of the aggregates waiting to be shown, and their delivery through `flutter_local_notifications`.
 
-Events are persisted in an SQLite outbox keyed by a stable event ID. Aggregate reconciliation is idempotent. The outbox starts with a deterministic 31-bit SHA-256 candidate and probes persistently until it finds a unique platform ID; this avoids claiming that the hash alone is unique. Delivery is at-least-once: an ownership token prevents simultaneous claims, while an expired lease permits crash recovery; a crash after `show` and before marking delivery retries the persisted platform ID for platform-side replacement/deduplication.
+## Store
 
-`reconcileTopicsAndEnqueue` receives stable topic IDs and current observations. It skips topics without a foreground baseline. For initialized topics it records previously unknown payments and enqueues one aggregate, atomically with platform-ID allocation. Repetition and reopen are safe; concurrent connections cannot create duplicate events.
+`notifications.sqlite` is created by a single `CREATE` with `user_version` 1; it is unpublished and has no migration.
 
-The gateway hides `flutter_local_notifications` from the public contract. `initialize` never requests notification permission. `NotificationPermissionsFacade` reports, requests and opens the system settings for the permission; it needs no outbox, so a startup wizard can use it before the app is initialized. A tap or launch payload is persisted by the callback passed during `initialize`; if persistence fails, the facade retains the payload in memory and the shell can call `retryUnpersistedResponses` on resume/init. A topic is initialized only by `recordObserved`, called by the sync-completion consumer with complete post-sync history, `onlyNew: true`, and the same history as `baselineEvents`. The outbox derives discoveries atomically from its stored set. The initial history is persisted without `seen_at`; existing baselines never absorb later payments. Only discoveries from a sync completed in the foreground are marked seen, never a snapshot re-read after a background revision: reconciliation skips a topic nobody recorded yet (it never takes a silent baseline behind the user's back), payments recorded as seen are never announced later, and a pending aggregate whose payments have all been seen is dropped. `deliverPending` checks that the OS shows the app's notifications first; while it does not, pending notifications are settled without being shown and the call returns `NotificationsPermissionDeniedFailure`, so granting the permission later never replays a backlog. Successfully persisted responses are consumed transactionally once across database reopenings, while platform callbacks and delivery remain at-least-once. If storage is unavailable and the process dies, no durable guarantee is possible. Payloads contain only the package's stable destination value; unknown values are rejected.
+- `topics`: a topic is initialized by its first complete foreground observation, even when it holds no event. That history is a silent baseline.
+- `observed_events (topic_id, event_id)`: inserted with `INSERT OR IGNORE` in bounded batches.
+- `outbox`: pending or claimed aggregates only, deleted once delivered.
+- `platform_ids`: a counter allocated with each aggregate in the same transaction. An ID is never reused, so a notification still on screen is never replaced; exhaustion is refused.
 
-The outbox schema starts at version 1 and is created in a single transaction; versions above 1 are refused. No compatibility code is included for unreleased intermediate development schemas. The SQLite busy timeout is 5 s; callers should retry rather than blocking indefinitely. Platform channel setup, Android desugaring, notification channels, permissions, and native lifecycle wiring belong to the first consuming shell. Background callbacks must use the plugin's documented top-level callback mechanism and forward durable data through this outbox; this package assumes no shared memory between isolates. Persisted platform IDs remain stable after crash/reopen while this outbox database is retained; deleting and reconstructing the database intentionally loses that allocation history.
+An `Observation` carries one topic and event identities, never text. The two transactions that matter are in `SqliteNotificationStoreRepository`:
 
-The outbox is durable, non-rebuildable state: deleting it loses seen baselines, pending deliveries and deferred destinations. It must not be treated as a cache. WalletSyncCompletion and WalletPaymentObservationAdapter belong to this package. The writer binding captures completion-time foreground visibility and records the completion before returning success to its caller; snapshot/revision reloads never invoke this adapter. The app constructs no foreground observer or outbox while the rollout switch is OFF. When ON, collection runs only after sync; observation failures log warnings without changing a committed sync result. Delivery is wired only into the mobile background task behind the rollout switch. Headless completions always carry `completedInForeground: false`; localized aggregate copy comes from the persisted app language without a BuildContext.
+- `recordForeground` stores what a foreground sync saw and initializes its topic. Those events are never announced.
+- `recordBackground` ignores a topic the foreground never observed. Otherwise the events it stored for the first time become one pending aggregate, built by the caller, in the same transaction.
 
-Bull payment notifications use `FlutterLocalNotificationGateway(emitDestinations: false)`: delivery emits no destination payload, and initialization installs no tap-response consumer or launch-response replay. A tap opens or resumes the application using the platform default; it does not promise navigation to a wallet screen. This is intentional until an authenticated foreground destination consumer is implemented. Generic hosts that provide such a consumer can retain the gateway default. Notification storage/plugin startup failure is optional to the wallet sync graph; recoverable observation exceptions remain isolated, while programmer Errors propagate.
+A pending aggregate stays until it is delivered, even if the app shows its payments in the meantime (rule P, undecided; the single query option P1 would add is marked in `recordForeground`).
+
+`openForegroundNotificationStore` creates the store. `openExistingNotificationStore` never creates or migrates it, and refuses a missing, older or newer store.
+
+## Delivery
+
+`NotificationsFacade.deliverPending` claims one aggregate at a time by token and deletes it once shown. A crash after the show replays it under the same platform ID; a claim taken over after its lease cannot be settled by its first owner. The permission decides first:
+
+- allowed: show;
+- refused: settle without showing, so granting it later replays no backlog (`NotificationsPermissionDeniedFailure`);
+- undetermined: keep everything pending (`NotificationsPermissionUndeterminedFailure`).
+
+A tap opens the app: notifications carry no destination. `initialize` never asks for the permission; `notificationPermissions` serves settings and the startup wizard without a store.
+
+## Phase A
+
+The wallet identity and observation files (`wallet_payment_notification_identity`, `wallet_sync_completion`, `wallet_payment_observation_adapter`) still live here, with the dependency on `transaction_sync` they need. The barrel still shows `FlutterLocalNotificationGateway` and `SqliteNotificationOutbox`, which `lib/features/wallet` constructs by name. All of these move to the wallet feature in phase B.
