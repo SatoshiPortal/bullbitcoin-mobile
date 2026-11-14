@@ -369,8 +369,10 @@ extension type const WalletTxGroup._(Wallet _wallet) {
     replacing: replacing,
   );
 
-  /// The guard's last verdict, published by [check] and by the spend
-  /// commands. Never a permission: [build] and [broadcast] check again.
+  /// The guard's last verdict, without IO. Scheduled on first demand and
+  /// asked again after every revision of the wallet, and published by
+  /// [check] and the spend commands. Never a permission: [build] and
+  /// [broadcast] check again.
   Observed<WalletValue<BitcoinSpendStatus>> get readiness =>
       _wallet._spender.readiness(_wallet.key);
 
