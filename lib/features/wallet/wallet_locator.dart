@@ -173,7 +173,7 @@ class WalletLocator {
         connections: locator<WalletConnectionPort>(),
         collectIncoming: backgroundSyncAvailable,
         onCompletion: backgroundSyncAvailable
-            ? locator<WalletPaymentObserver>().record
+            ? locator<WalletPaymentObserver>().recordCompletion
             : null,
         documentsDirectory: () async =>
             (await getApplicationDocumentsDirectory()).path,
@@ -188,9 +188,9 @@ class WalletLocator {
         dispose: (store) => store.close(),
       );
       locator.registerLazySingleton<WalletPaymentObserver>(
-        () => WalletPaymentObserver(
+        () => WalletPaymentObserver.foreground(
           locator<PaymentNotificationStore>().open,
-          () =>
+          isForeground: () =>
               WidgetsBinding.instance.lifecycleState ==
               AppLifecycleState.resumed,
         ),

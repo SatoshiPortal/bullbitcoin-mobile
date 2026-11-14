@@ -14,7 +14,3 @@ export 'src/data/flutter_local_notification_gateway.dart'
     show FlutterLocalNotificationGateway;
 export 'src/data/sqlite_notification_store_repository.dart'
     show SqliteNotificationOutbox;
-// Wallet mappings, moved to lib/features/wallet in phase B.
-export 'src/wallet_payment_notification_identity.dart';
-export 'src/wallet_sync_completion.dart';
-export 'src/wallet_payment_observation_adapter.dart';

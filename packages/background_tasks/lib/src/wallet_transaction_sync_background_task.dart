@@ -1,13 +1,12 @@
 import 'package:bull_logger/bull_logger.dart' show log;
-import 'package:notifications/notifications.dart';
 import 'package:transaction_sync/transaction_sync.dart';
 
 import 'data/logger_background_task_logger.dart';
 import 'domain/ports/background_task_logger_port.dart';
-import 'data/notifications_payment_announcement.dart';
 import 'data/shared_preferences_background_sync_interval_repository.dart';
 import 'domain/background_task_execution_result.dart';
 import 'domain/ports/background_wallet_sync_port.dart';
+import 'domain/ports/payment_announcement_port.dart';
 import 'domain/repositories/wallet_sync_job_queue_repository.dart';
 import 'domain/run_wallet_sync_jobs_usecase.dart';
 
@@ -24,8 +23,7 @@ final class WalletTransactionSyncBackgroundTask {
     required WalletRevisionReaderPort revisions,
     required Iterable<WalletKey> keys,
     required WalletSyncJobQueueRepository queue,
-    required NotificationsFacade? notifications,
-    required NotificationCopyBuilder copy,
+    required PaymentAnnouncementPort? announcements,
     BackgroundTaskLoggerPort? logSink,
     Duration? runBudget,
   }) : _usecase = RunWalletSyncJobsUsecase(
@@ -34,9 +32,7 @@ final class WalletTransactionSyncBackgroundTask {
          keys: keys,
          queue: queue,
          intervals: const SharedPreferencesBackgroundSyncIntervalRepository(),
-         announcements: notifications == null
-             ? null
-             : NotificationsPaymentAnnouncement(notifications, copy),
+         announcements: announcements,
          logger: logSink ?? LoggerBackgroundTaskLogger(log),
          runBudget: runBudget,
        );

@@ -21,5 +21,4 @@ export 'src/data/sqlite_wallet_sync_job_queue_repository.dart';
 export 'src/data/workmanager_runner.dart';
 export 'src/data/workmanager_scheduler.dart';
 // Phase A only, until lib/features/wallet builds the use case itself.
-export 'src/data/notifications_payment_announcement.dart';
 export 'src/wallet_transaction_sync_background_task.dart';

@@ -88,13 +88,20 @@ Future<BackgroundTaskHandler> setupBackgroundWalletTask(
       sync,
       notifications == null
           ? null
-          : WalletPaymentObserver(() async => notifications, () => false),
+          : WalletPaymentObserver.foreground(
+              () async => notifications,
+              isForeground: () => false,
+            ),
     ),
     revisions: stores.revisions,
     keys: descriptors.map((descriptor) => descriptor.key),
     queue: queue,
-    notifications: notifications,
-    copy: PaymentNotifications.copy(preferences.language),
+    announcements: notifications == null
+        ? null
+        : WalletPaymentObserver.background(
+            () async => notifications,
+            copy: PaymentNotifications.copy(preferences.language),
+          ),
     runBudget: backgroundRunBudget,
   );
   return () => handler.executeAll(clock: clock);

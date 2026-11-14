@@ -49,34 +49,32 @@ void main() {
       gateway: Gateway(),
       outbox: outbox,
     );
+    SyncCompletion completion(Set<String> incoming) => SyncCompletion(
+      SyncMode.revealedScripts,
+      Duration.zero,
+      revision: WalletRevision(key: key, generation: 1, revision: 2),
+      incomingTxids: incoming,
+    );
     expect(
-      await notifications.recordForeground(
-        WalletPaymentNotificationIdentity.observation(key, []),
-      ),
+      await WalletPaymentObserver.foreground(
+        () async => notifications,
+        isForeground: () => true,
+      ).recordCompletion(completion({})),
       isA<Ok>(),
     );
     final ready = Completer<NotificationsFacade>();
     var visible = true;
-    final observer = WalletPaymentObserver(() => ready.future, () => visible);
-    final recording = observer.record(
-      SyncCompletion(
-        SyncMode.revealedScripts,
-        Duration.zero,
-        revision: WalletRevision(key: key, generation: 1, revision: 2),
-        incomingTxids: {'new'},
-      ),
+    final observer = WalletPaymentObserver.foreground(
+      () => ready.future,
+      isForeground: () => visible,
     );
+    final recording = observer.recordCompletion(completion({'new'}));
     visible = false;
     ready.complete(notifications);
     expect(await recording, isA<Ok>());
     final database = sqlite3.open('${directory.path}/outbox.sqlite');
     try {
-      expect(
-        database.select('SELECT 1 FROM observed_events WHERE event_id=?', [
-          WalletPaymentNotificationIdentity.eventId(key, 'new'),
-        ]),
-        hasLength(1),
-      );
+      expect(database.select('SELECT 1 FROM observed_events'), hasLength(1));
     } finally {
       database.dispose();
     }

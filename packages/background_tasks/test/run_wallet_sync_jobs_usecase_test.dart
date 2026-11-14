@@ -1,24 +1,20 @@
 import 'package:bull_logger/bull_logger.dart';
-import 'package:sqlite3/sqlite3.dart';
 import 'dart:async';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:io';
 
 import 'package:background_tasks/background_tasks.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:notifications/notifications.dart';
 import 'package:primitives/primitives.dart';
 import 'package:transaction_sync/transaction_sync.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   late Directory directory;
-  late SqliteNotificationOutbox outbox;
   late WalletSyncJobQueueRepository queue;
   late _Writer writer;
   late _Revisions revisions;
-  late _Gateway gateway;
-  late NotificationsFacade notifications;
+  late _Announcements announcements;
   late _Logs logs;
   final key = WalletKey(id: 'wallet', network: BitcoinNetwork.testnet);
   final second = WalletKey(id: 'second', network: BitcoinNetwork.testnet);
@@ -31,40 +27,21 @@ void main() {
     incomingTxids: incoming,
     completedAt: DateTime.utc(2026),
   );
-  RunWalletSyncJobsUsecase task({
-    Duration? budget,
-    List<WalletKey>? keys,
-    NotificationCopyBuilder? copy,
-    PaymentAnnouncementPort? announcements,
-  }) => RunWalletSyncJobsUsecase(
-    wallets: writer,
-    revisions: revisions,
-    keys: keys ?? [key],
-    queue: queue,
-    intervals: const SharedPreferencesBackgroundSyncIntervalRepository(),
-    announcements:
-        announcements ??
-        NotificationsPaymentAnnouncement(
-          notifications,
-          copy ?? (count, chain) => (title: 'Payments', body: '$count'),
-        ),
-    logger: logs,
-    runBudget: budget,
-  );
-  Future<Result<void, NotificationsFailure>> baseline() =>
-      WalletPaymentObservationAdapter(notifications).recordCompletion(
-        WalletSyncCompletion(
-          revision: stamp(1),
-          incomingTxids: ['old'],
-          completedAt: DateTime.utc(2026),
-          completedInForeground: true,
-        ),
+  RunWalletSyncJobsUsecase task({Duration? budget, List<WalletKey>? keys}) =>
+      RunWalletSyncJobsUsecase(
+        wallets: writer,
+        revisions: revisions,
+        keys: keys ?? [key],
+        queue: queue,
+        intervals: const SharedPreferencesBackgroundSyncIntervalRepository(),
+        announcements: announcements,
+        logger: logs,
+        runBudget: budget,
       );
   setUp(() {
     SharedPreferences.setMockInitialValues({});
     directory = Directory.systemTemp.createTempSync('background-task-');
     log = Logger.replace(directory: directory);
-    outbox = SqliteNotificationOutbox(databasePath: '${directory.path}/outbox');
     queue = _ok(
       SqliteWalletSyncJobQueueRepository.openForeground(
         '${directory.path}/queue',
@@ -73,13 +50,11 @@ void main() {
     writer = _Writer();
     logs = _Logs();
     revisions = _Revisions();
-    gateway = _Gateway();
-    notifications = NotificationsFacade(gateway: gateway, outbox: outbox);
+    announcements = _Announcements();
   });
   tearDown(() async {
     await log.flush();
     await queue.close();
-    outbox.dispose();
     directory.deleteSync(recursive: true);
   });
 
@@ -219,7 +194,6 @@ void main() {
   test(
     'background run asks for revealed scripts but never an initial scan',
     () async {
-      await baseline();
       writer.operation = () async => Ok(outcome());
       await task().execute();
       expect(writer.discover, [false]);
@@ -228,10 +202,8 @@ void main() {
   );
 
   test(
-    'background commit replay announces payment with no new discovery',
+    'a committed sync is recorded, then announcements are delivered',
     () async {
-      await baseline();
-      // Simulates a prior native commit followed by interruption before outbox.
       writer.operation = () async => Ok(outcome());
       expect((await task().execute()).shouldRetry, isFalse);
       expect(writer.allowInitialScan, [false]);
@@ -243,29 +215,22 @@ void main() {
         isTrue,
       );
       expect(logs.entries.any((e) => e.$2.contains(key.id)), isFalse);
-      expect(gateway.shown, hasLength(1));
-      await task().execute();
-      expect(gateway.shown, hasLength(1));
+      expect(announcements.recorded.single.incomingTxids, {'old', 'new'});
+      // After each chain.
+      expect(announcements.deliveries, WalletSyncChain.values.length);
     },
   );
 
-  test('notification observation programmer errors propagate', () async {
-    await baseline();
+  test('announcement programmer errors propagate', () async {
     writer.operation = () async => Ok(outcome());
-    await expectLater(
-      task(copy: (_, _) => throw StateError('private')).execute(),
-      throwsStateError,
-    );
+    announcements.recording = () => throw StateError('private');
+    await expectLater(task().execute(), throwsStateError);
   });
 
-  test('outbox failure cannot retry a committed sync', () async {
-    await baseline();
-    final database = sqlite3.open('${directory.path}/outbox');
-    addTearDown(database.dispose);
-    database.execute(
-      "CREATE TRIGGER reject_observation BEFORE INSERT ON observed_events BEGIN SELECT RAISE(ABORT, 'injected'); END",
-    );
+  test('a failed announcement record cannot retry a committed sync', () async {
     writer.operation = () async => Ok(outcome());
+    announcements.recording = () =>
+        const Err(PaymentAnnouncementUnavailableFailure());
     expect((await task().execute()).shouldRetry, isFalse);
     expect(
       logs.entries,
@@ -279,7 +244,7 @@ void main() {
   test('missing observations still acknowledge the committed sync', () async {
     writer.operation = () async => Ok(outcome(incoming: null));
     expect((await task().execute()).shouldRetry, isFalse);
-    expect(gateway.shown, isEmpty);
+    expect(announcements.recorded.single.incomingTxids, isNull);
   });
 
   test(
@@ -341,9 +306,9 @@ void main() {
   ]) {
     test('a ${failure.runtimeType} delivery retries=$retried', () async {
       writer.operation = () async => Ok(outcome());
-      final announcements = _Announcements()..delivery = Err(failure);
+      announcements.delivery = Err(failure);
 
-      final result = await task(announcements: announcements).execute();
+      final result = await task().execute();
 
       expect(result.shouldRetry, retried);
       // Recorded after the queue settled the committed sync.
@@ -413,7 +378,7 @@ final class _Clock implements Stopwatch {
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
-final class _Writer implements BackgroundWalletSync {
+final class _Writer implements BackgroundWalletSyncPort {
   final List<bool> allowInitialScan = [];
   final List<bool> discover = [];
   Future<Result<BackgroundSyncOutcome, BackgroundSyncFailure>> Function()?
@@ -453,45 +418,26 @@ final class _Revisions implements WalletRevisionReaderPort {
   Stream<WalletRevisionState> watch(WalletKey key) => const Stream.empty();
 }
 
-final class _Gateway implements LocalNotificationPort {
-  final List<LocalNotification> shown = [];
-  @override
-  Future<Result<void, NotificationsFailure>> initialize() async =>
-      const Ok(null);
-  @override
-  Future<Result<bool, NotificationsFailure>> isEnabled() async =>
-      const Ok(true);
-  @override
-  Future<Result<bool, NotificationsFailure>> requestPermission() async =>
-      const Ok(true);
-  @override
-  Future<Result<void, NotificationsFailure>> openSystemSettings() async =>
-      const Ok(null);
-  @override
-  Future<Result<void, NotificationsFailure>> show(
-    LocalNotification notification, {
-    required int platformId,
-  }) async {
-    shown.add(notification);
-    return const Ok(null);
-  }
-}
-
 final class _Announcements implements PaymentAnnouncementPort {
   final List<BackgroundSyncOutcome> recorded = [];
+  Result<void, PaymentAnnouncementFailure> Function() recording = () =>
+      const Ok(null);
   Result<void, PaymentAnnouncementFailure> delivery = const Ok(null);
+  int deliveries = 0;
 
   @override
   Future<Result<void, PaymentAnnouncementFailure>> record(
     BackgroundSyncOutcome outcome,
   ) async {
     recorded.add(outcome);
-    return const Ok(null);
+    return recording();
   }
 
   @override
-  Future<Result<void, PaymentAnnouncementFailure>> deliverPending() async =>
-      delivery;
+  Future<Result<void, PaymentAnnouncementFailure>> deliverPending() async {
+    deliveries++;
+    return delivery;
+  }
 }
 
 final class _Logs implements BackgroundTaskLoggerPort {

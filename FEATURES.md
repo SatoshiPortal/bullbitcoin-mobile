@@ -14,10 +14,8 @@ graph TB
     TRANSACTION_SYNC[Transaction Sync Package<br/>Electrum sync, contracts and owner ports]
     NOTIFICATIONS[Notifications Package]
     BG_TASKS --> TRANSACTION_SYNC
-    BG_TASKS --> NOTIFICATIONS
     WALLETS --> NOTIFICATIONS
     WALLETS --> BG_TASKS
-    NOTIFICATIONS --> TRANSACTION_SYNC
     NOTIFICATIONS --> PRIMITIVES
     BG_TASKS --> PRIMITIVES
     BG_TASKS --> BULL_LOGGER

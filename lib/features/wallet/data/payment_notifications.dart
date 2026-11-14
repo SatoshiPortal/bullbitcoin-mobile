@@ -61,9 +61,12 @@ final class PaymentNotifications {
     }
   }
 
-  static NotificationCopyBuilder copy(Language? language) {
+  /// The localized text of an announcement of [count] new payments.
+  static ({String title, String body}) Function(int count) copy(
+    Language? language,
+  ) {
     final localized = localization(language);
-    return (count, chain) => (
+    return (count) => (
       title: localized.receivePaymentReceived,
       body: localized.backgroundPaymentCount(count),
     );
