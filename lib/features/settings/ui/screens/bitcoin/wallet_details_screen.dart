@@ -1,7 +1,7 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bull_logger/bull_logger.dart' show log;
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/settings/ui/settings_route.dart';
@@ -12,6 +12,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart' show BullIcon, BullIcons, Gap;
 import 'package:go_router/go_router.dart';
+import 'package:bb_mobile/features/settings/ui/widgets/wallet_discovery_button.dart';
 
 class WalletDetailsScreen extends StatelessWidget {
   const WalletDetailsScreen({super.key, required this.walletId});
@@ -118,6 +119,8 @@ class WalletDetailsScreen extends StatelessWidget {
                         context.loc.walletDetailsSignerDeviceNotSupported,
                   ),
                   const Gap(32),
+                  WalletDiscoveryButton(walletId: walletId),
+                  const Gap(16),
                   BBButton.big(
                     label: context.loc.addressViewAddressesTitle,
                     onPressed: () => context.pushNamed(

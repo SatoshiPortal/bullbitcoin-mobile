@@ -1,8 +1,7 @@
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart'
-    as wallet_model;
 import 'package:bb_mobile/features/sp/domain/sp_failure.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/get_sp_secret_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart' as wallet_model;
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -17,7 +16,7 @@ class _Wallet extends Mock implements wallet_model.Wallet {}
 void main() {
   for (final language in bip39.Language.values) {
     for (final passphrase in ['', 'TREZOR']) {
-      for (final network in [BitcoinNetwork.mainnet, BitcoinNetwork.signet]) {
+      for (final network in [BitcoinNetwork.mainnet, BitcoinNetwork.testnet]) {
         test(
           '${language.name} with passphrase ${passphrase.isNotEmpty} uses the $network default',
           () async {
@@ -68,5 +67,27 @@ void main() {
         );
       }
     }
+  }
+
+  for (final network in [BitcoinNetwork.signet, BitcoinNetwork.regtest]) {
+    test('$network is rejected before looking up wallets', () async {
+      FakeSecureStoragePlatform().install();
+      final repository = _WalletRepository();
+      final secrets = Secrets(scratchDirectory: () async => '/tmp');
+
+      final result = await GetSpSecretUsecase(
+        walletRepository: repository,
+        secrets: secrets,
+      ).execute(network);
+
+      expect(result, isA<Err<Secret, SpFailure>>());
+      expect(
+        (result as Err<Secret, SpFailure>).failure,
+        isA<SpUnsupportedNetwork>(),
+      );
+      verifyNever(
+        () => repository.getWallets(onlyDefaults: true, onlyBitcoin: true),
+      );
+    });
   }
 }

@@ -35,6 +35,11 @@ final class ReceiveSwapRouteUnavailableFailure extends ReceiveFailure {
   }) : super(logMessage);
 }
 
+/// The selected chain/environment does not admit this receive mode.
+final class ReceiveUnsupportedNetworkFailure extends ReceiveFailure {
+  const ReceiveUnsupportedNetworkFailure();
+}
+
 final class ReceiveNetworkFailure extends ReceiveFailure {
   const ReceiveNetworkFailure([super.logMessage]);
 }

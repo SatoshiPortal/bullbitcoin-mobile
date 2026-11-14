@@ -1,6 +1,6 @@
 import 'package:primitives/primitives.dart' show BitcoinUnit;
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/domain/import_watch_only_failure.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_descriptor_usecase.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_xpub_usecase.dart';
@@ -28,6 +28,23 @@ class _MockWatchOnlyDescriptor extends Mock
 class _MockDescriptor extends Mock implements satoshifier.Descriptor {}
 
 void main() {
+  test('successful parsing clears a previous validation failure', () async {
+    final cubit = ImportWatchOnlyCubit(
+      importWatchOnlyDescriptorUsecase: _MockImportWatchOnlyDescriptorUsecase(),
+      importWatchOnlyXpubUsecase: _MockImportWatchOnlyXpubUsecase(),
+      parseWatchOnlyInputUsecase: ParseWatchOnlyInputUsecase(),
+      settingsRepository: _MockSettingsRepository(),
+    );
+    addTearDown(cubit.close);
+    await cubit.import();
+    expect(cubit.state.failure, isA<NoWalletSelectedFailure>());
+    await cubit.parsePastedInput(
+      'vpub5Y6cjg78GGuNLsaPhmYsiw4gYX3HoQiRBiSwDaBXKUafCt9bNwWQiitDk5VZ5BVxYnQdwoTyXSs2JHRPAgjAvtbBrf8ZhDYe2jWAqvZVnsc',
+    );
+    expect(cubit.state.watchOnlyWallet, isA<WatchOnlyXpubEntity>());
+    expect(cubit.state.failure, isNull);
+  });
+
   test('rejects a watch-only wallet from the inactive environment', () async {
     final descriptor = _MockDescriptor();
     when(

@@ -49,7 +49,7 @@ final class RecoverBullWalletAdapter implements RecoverBullWalletPort {
             VaultContext(
               fingerprint: Fingerprint(wallet.masterFingerprint),
               hasPassphrase: hasPassphrase,
-              network: wallet.network.isTestnet
+              network: wallet.network.requireHistoricalTestnet()
                   ? BitcoinNetwork.testnet
                   : BitcoinNetwork.mainnet,
             ),
@@ -66,8 +66,14 @@ final class RecoverBullWalletAdapter implements RecoverBullWalletPort {
     VaultContext requested,
   ) async {
     try {
+      // RecoverBull's server protocol supports only mainnet and testnet.
+      // Refuse an unsupported captured request before opening the keystore.
+      if (requested.network != BitcoinNetwork.mainnet &&
+          requested.network != BitcoinNetwork.testnet) {
+        return const Err(VaultContextChangedFailure());
+      }
       final settings = await _settings.fetch();
-      if (settings.environment.isTestnet !=
+      if (settings.environment.requireHistoricalTestnet() !=
           (requested.network == BitcoinNetwork.testnet)) {
         return const Err(VaultContextChangedFailure());
       }
@@ -96,7 +102,7 @@ final class RecoverBullWalletAdapter implements RecoverBullWalletPort {
           return Ok(
             VaultContext(
               fingerprint: Fingerprint(wallet.masterFingerprint),
-              network: wallet.network.isTestnet
+              network: wallet.network.requireHistoricalTestnet()
                   ? BitcoinNetwork.testnet
                   : BitcoinNetwork.mainnet,
             ),

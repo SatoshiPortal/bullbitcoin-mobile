@@ -98,3 +98,8 @@ final class SpBroadcastUncertain extends SpFailure {
 final class SpUnexpected extends SpFailure {
   const SpUnexpected([super.logMessage]);
 }
+
+/// Silent Payments is unavailable on the selected concrete network.
+final class SpUnsupportedNetwork extends SpFailure {
+  const SpUnsupportedNetwork() : super('SP network unsupported');
+}

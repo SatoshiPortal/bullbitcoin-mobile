@@ -6,6 +6,11 @@ import 'package:flutter/widgets.dart';
 
 extension PayFailureL10n on PayFailure {
   String toTranslated(BuildContext context) => switch (this) {
+    PayPayjoinPausedFailure() => context.loc.sendPayjoinSpendPaused,
+    PaySpendBlockedFailure(:final busy) =>
+      busy
+          ? context.loc.walletSpendBusy
+          : context.loc.walletSpendAwaitingObservation,
     PayUnauthenticatedFailure() => context.loc.payUnauthenticatedError,
     PayBelowMinAmountFailure(:final minAmount, :final currency) =>
       context.loc.payBelowMinAmountError(_formatLimit(minAmount, currency)),
@@ -20,6 +25,7 @@ extension PayFailureL10n on PayFailure {
     PayQuoteUnavailableFailure() => context.loc.exchangeQuoteUnavailableError,
     // Never `logMessage`. This arm used to be `unexpected: (m) => m`, which put
     // BDK/LWK/Dio text straight onto the payment screen.
+    PayUnsupportedNetworkFailure() => context.loc.networkFeatureUnavailable,
     PayUnexpectedFailure() => context.loc.payUnexpectedError,
   };
 }

@@ -27,3 +27,7 @@ final class DefaultWalletCreationFailure extends DefaultWalletFailure {
 final class DefaultWalletUnexpectedFailure extends DefaultWalletFailure {
   const DefaultWalletUnexpectedFailure();
 }
+
+final class DefaultWalletNetworkChangedFailure extends DefaultWalletFailure {
+  const DefaultWalletNetworkChangedFailure();
+}

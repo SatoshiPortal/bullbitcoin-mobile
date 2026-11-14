@@ -1,10 +1,10 @@
 import 'dart:io';
 
-import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_network.dart';
+import 'package:bb_mobile/features/electrum_settings/domain/electrum_server_network.dart';
 import 'package:bb_mobile/core/storage/migrations/migrations.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.steps.dart';
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bb_mobile/core/utils/report.dart';
+import 'package:bull_reporting/bull_reporting.dart';
 import 'package:bb_mobile/core/storage/tables/auto_swap.dart';
 import 'package:bb_mobile/core/storage/tables/bip85_derivations_table.dart';
 import 'package:bb_mobile/core/storage/tables/dismissed_announcements_table.dart';
@@ -225,8 +225,8 @@ class SqliteDatabase extends _$SqliteDatabase {
         await m.database.transaction(() => fn(m, schema));
       } catch (e, s) {
         log.severe(
-          message: 'drift migration step $name failed',
-          error: e,
+          message: 'Schema migration failed step=$name reason=storage',
+          error: 'storage',
           trace: s,
           category: ReportCategory.migration,
         );

@@ -26,28 +26,42 @@ class BuySuccessScreen extends StatefulWidget {
 }
 
 class _BuySuccessScreenState extends State<BuySuccessScreen> {
-  Timer? _payjoinRefreshTimer;
+  Timer? _orderRefreshTimer;
 
   @override
   void initState() {
     super.initState();
-    _payjoinRefreshTimer = Timer.periodic(const Duration(seconds: 5), (_) {
+    _orderRefreshTimer = Timer.periodic(const Duration(seconds: 5), (_) {
+      final lifecycle = WidgetsBinding.instance.lifecycleState;
+      if (lifecycle != null && lifecycle != AppLifecycleState.resumed) return;
+      final router = GoRouter.maybeOf(context);
+      final configuration = router?.routerDelegate.currentConfiguration;
+      final top = configuration?.lastOrNull;
+      final route = top is ImperativeRouteMatch
+          ? top.matches.last.route
+          : top?.route;
+      if (route is GoRoute && route.name != BuyRoute.buySuccess.name) return;
       final bloc = context.read<BuyBloc>();
       final state = bloc.state;
       final order = state.buyOrder;
-      if (order == null || !order.isAwaitingPayjoinAt(clock.now())) {
-        _payjoinRefreshTimer?.cancel();
+      if (order == null ||
+          order.payoutStatus == OrderPayoutStatus.completed ||
+          order.payoutStatus == OrderPayoutStatus.canceled ||
+          order.payoutStatus == OrderPayoutStatus.failed) {
+        _orderRefreshTimer?.cancel();
         // Past the window the payjoin status no longer applies: drop it.
         setState(() {});
         return;
       }
+      // Keep payout tracking active for plain sends and payjoin fallbacks too.
+      if (!order.isAwaitingPayjoinAt(clock.now())) setState(() {});
       if (!state.isRefreshingOrder) bloc.add(const BuyEvent.refreshOrder());
     });
   }
 
   @override
   void dispose() {
-    _payjoinRefreshTimer?.cancel();
+    _orderRefreshTimer?.cancel();
     super.dispose();
   }
 

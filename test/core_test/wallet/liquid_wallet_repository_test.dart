@@ -1,19 +1,20 @@
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'dart:io';
 import 'package:bb_mobile/core/wallet/domain/insufficient_funds_exception.dart';
 import 'package:bb_mobile/core/wallet/domain/consolidation_required_exception.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:secrets/secrets.dart';
 import 'package:secrets/testing.dart';
-import 'package:primitives/primitives.dart';
+import 'package:primitives/primitives.dart' hide Network;
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/frozen_wallet_utxo_datasource.dart';
-import 'package:bb_mobile/core/wallet/data/datasources/lwk_wallet_datasource.dart';
-import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasource.dart';
-import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_model.dart';
-import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
+import 'package:bb_mobile/features/wallet/data/lwk_wallet_datasource.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
+import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
+import 'package:bb_mobile/features/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_utxo_model.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/liquid_wallet_repository.dart';
+import 'package:bb_mobile/features/wallet/data/liquid_wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/no_spendable_utxo_exception.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -40,7 +41,7 @@ void main() {
     registerFallbackValue(
       const WalletModel.publicLwk(
         id: walletId,
-        isTestnet: true,
+        network: Network.liquidTestnet,
         combinedCtDescriptor: 'descriptor',
       ),
     );
@@ -59,9 +60,13 @@ void main() {
       secrets: Secrets(scratchDirectory: () async => scratch.path),
       lwkWalletDatasource: lwk,
       frozenWalletUtxoDatasource: frozen,
+      // The address check needs lwk's native library; these tests cover
+      // selection, so they accept every address.
+      validateAddress: (_, _) async => const Ok(null),
     );
     when(() => metadata.fetch(walletId)).thenAnswer(
       (_) async => const WalletMetadataModel(
+        networkCode: 'liquidTestnet',
         id: walletId,
         masterFingerprint: '73c5da0a',
         xpubFingerprint: 'deadbeef',

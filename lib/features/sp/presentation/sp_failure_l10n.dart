@@ -23,6 +23,7 @@ extension SpFailureL10n on SpFailure {
     SpAddressNetworkMismatch() => context.loc.spFailureAddressNetworkMismatch,
     SpInvalidAddress() => context.loc.spFailureInvalidAddress,
     SpBroadcastUncertain() => context.loc.spFailureBroadcastUncertain,
+    SpUnsupportedNetwork() => context.loc.oopsSomethingWentWrong,
     SpUnexpected() => context.loc.oopsSomethingWentWrong,
   };
 }

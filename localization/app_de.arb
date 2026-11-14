@@ -3595,6 +3595,10 @@
       }
     }
   },
+  "legacyStorageStepEnsureSwapsCompleted": "Stellen Sie sicher, dass alle Swaps abgeschlossen sind.",
+  "legacyStorageStepUninstall": "Deinstallieren Sie die App von Ihrem Gerät.",
+  "legacyStorageStepReinstall": "Laden Sie die neueste Version herunter und installieren Sie sie neu.",
+  "legacyStorageStepRestoreBackup": "Stellen Sie Ihre Sicherung wieder her.",
   "walletSetupErrorTryAgain": "Beim Einrichten Ihrer Wallet ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut.",
   "importMnemonicDuplicateError": "Diese Mnemonic existiert bereits",
   "coreScreensResolvingInputs": "Transaktionseingaben werden verarbeitet…",
@@ -4838,7 +4842,11 @@
   "appStartupMissingSecretMessage": "Dieses Gerät enthält die Wiederherstellungsphrase Ihrer Wallet nicht mehr. Geben Sie sie erneut ein, um Ihre Wallet zurückzuerhalten.",
   "appStartupRestoreSecretButton": "Meine Wiederherstellungsphrase eingeben",
   "appStartupRestoreMismatch": "Diese Wiederherstellungsphrase gehört zu einer anderen Wallet. Geben Sie die Phrase der Wallet auf diesem Gerät ein.",
+  "broadcastSignedTxErrorAlreadyInChain": "Diese Transaktion ist bereits in der Blockchain. Es gibt nichts mehr zu senden.",
+  "broadcastSignedTxErrorRejected": "Das Netzwerk hat diese Transaktion abgelehnt. Sie ist möglicherweise unvollständig signiert, ungültig oder steht im Konflikt mit einer anderen Zahlung.",
+  "broadcastSignedTxErrorOutcomeUnknown": "Wir konnten nicht bestätigen, dass deine Transaktion gesendet wurde. Prüfe sie in einem Block-Explorer, bevor du es erneut versuchst.",
+  "broadcastSignedTxErrorNetworkNotEnabled": "Das Senden in diesem Netzwerk ist in den aktuellen Einstellungen nicht aktiviert.",
+  "coreScreensOutputsExceedInputs": "Die Ausgaben übersteigen die Eingaben: Diese Transaktion ist ungültig und wird vom Netzwerk abgelehnt.",
   "passphraseShow": "Passphrase anzeigen",
-  "passphraseHide": "Passphrase verbergen",
-  "coreScreensOutputsExceedInputs": "Die Ausgaben übersteigen die Eingaben: Diese Transaktion ist ungültig und wird vom Netzwerk abgelehnt."
+  "passphraseHide": "Passphrase verbergen"
 }

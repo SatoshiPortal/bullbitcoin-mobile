@@ -52,6 +52,7 @@ export 'package:bb_mobile/features/sp/domain/sp_failure.dart'
         SpSimulationDrifted,
         SpBackendUnreachable,
         SpConfigInvalid,
+        SpUnsupportedNetwork,
         SpSetupCleanupFailed,
         SpAmountBelowMinimum,
         SpAmountExceedsBalance,

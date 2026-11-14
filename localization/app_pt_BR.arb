@@ -11284,5 +11284,9 @@
   "sellPayoutSepaDescription": "Os saques aparecem como enviados pela Leonod",
   "sellPayoutTitle": "Selecionar destinatário",
   "sellPayoutNewBadge": "NOVO",
+  "broadcastSignedTxErrorAlreadyInChain": "Esta transação já está na blockchain. Não há mais nada para transmitir.",
+  "broadcastSignedTxErrorRejected": "A rede rejeitou esta transação. Ela pode não estar totalmente assinada, ser inválida ou estar em conflito com outro pagamento.",
+  "broadcastSignedTxErrorOutcomeUnknown": "Não foi possível confirmar que sua transação foi transmitida. Verifique em um explorador de blocos antes de tentar novamente.",
+  "broadcastSignedTxErrorNetworkNotEnabled": "A transmissão nesta rede não está ativada nas configurações atuais.",
   "coreScreensOutputsExceedInputs": "As saídas excedem as entradas: esta transação é inválida e a rede vai rejeitá-la."
 }

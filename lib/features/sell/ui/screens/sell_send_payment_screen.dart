@@ -390,6 +390,19 @@ class _BottomButtons extends StatelessWidget {
     final isReady = context.select(
       (SellBloc bloc) => bloc.state is SellPaymentState,
     );
+    final paused = context.select(
+      (SellBloc bloc) => switch (bloc.state) {
+        SellPaymentState(:final pausedPayjoinSession) => pausedPayjoinSession,
+        _ => null,
+      },
+    );
+    final retrying = context.select(
+      (SellBloc bloc) => switch (bloc.state) {
+        SellPaymentState(:final isRetryingPayjoinProposal) =>
+          isRetryingPayjoinProposal,
+        _ => false,
+      },
+    );
     final pastDeadlineTxid = context.select(
       (SellBloc bloc) => switch (bloc.state) {
         SellPaymentState(
@@ -437,6 +450,16 @@ class _BottomButtons extends StatelessWidget {
             actionLabel: context.loc.exchangePaymentSentLeave,
             onAction: () => _leavePastDeadlinePayin(context),
           )
+        else if (paused != null && !isPayinBroadcast)
+          BullButton.big(
+            label: context.loc.retry,
+            disabled: retrying || !paused.canRetryProposal,
+            onPressed: () => context.read<SellBloc>().add(
+              const SellEvent.payjoinProposalRetryRequested(),
+            ),
+            bgColor: context.appColors.secondary,
+            textColor: context.appColors.onSecondary,
+          )
         else if (isConfirmingPayment || isPayinBroadcast)
           BullAsyncStatus.progress(
             label: isPayinBroadcast
@@ -465,7 +488,9 @@ class _SellError extends StatelessWidget {
   Widget build(BuildContext context) {
     final SellFailure? sellError = context.select(
       (SellBloc bloc) => bloc.state is SellPaymentState
-          ? (bloc.state as SellPaymentState).error
+          ? ((bloc.state as SellPaymentState).pausedPayjoinSession != null
+                ? const SellPayjoinPausedFailure()
+                : (bloc.state as SellPaymentState).error)
           : null,
     );
 

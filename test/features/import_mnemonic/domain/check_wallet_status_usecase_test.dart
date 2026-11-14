@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:bull_logger/bull_logger.dart';
 
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/features/import_mnemonic/domain/check_wallet_status_usecase.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:flutter_test/flutter_test.dart';
@@ -13,11 +13,11 @@ import 'package:primitives/primitives.dart'
     show BitcoinNetwork, BitcoinUnit, Ok;
 import 'package:secrets/secrets.dart';
 import 'package:secrets/testing.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/bitcoin_wallet_repository.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
+import 'package:bb_mobile/features/wallet/data/bitcoin_wallet_repository.dart';
 import 'package:bb_mobile/core/electrum/domain/ports/electrum_servers_port.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_connection.dart';
-import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_network.dart';
+import 'package:bb_mobile/features/electrum_settings/domain/electrum_server_network.dart';
 
 class _MockSettingsRepository extends Mock implements SettingsRepository {}
 
@@ -75,13 +75,17 @@ void main() {
         ),
       );
 
-  setUpAll(() => registerFallbackValue(_FakeConnection()));
+  setUpAll(() {
+    registerFallbackValue(_FakeConnection());
+    registerFallbackValue(Network.bitcoinMainnet);
+  });
 
   late Directory logDirectory;
   tearDown(() async {
     await log.flush();
     await logDirectory.delete(recursive: true);
   });
+
   setUp(() async {
     logDirectory = await Directory.systemTemp.createTemp('scan-log-');
     log = Logger.replace(directory: logDirectory);
@@ -94,7 +98,7 @@ void main() {
       () => wallets.dryScan(
         externalDescriptor: any(named: 'externalDescriptor'),
         internalDescriptor: any(named: 'internalDescriptor'),
-        isTestnet: any(named: 'isTestnet'),
+        network: any(named: 'network'),
         electrumServer: any(named: 'electrumServer'),
       ),
     ).thenAnswer((_) async => (satoshis: BigInt.from(1234), transactions: 2));
@@ -142,7 +146,10 @@ void main() {
         () => wallets.dryScan(
           externalDescriptor: expected.external,
           internalDescriptor: expected.internal,
-          isTestnet: env.isTestnet,
+          network: Network.fromEnvironment(
+            environment: env.networkEnv,
+            isLiquid: false,
+          ),
           electrumServer: servers.connection,
         ),
       ).called(1);
@@ -183,7 +190,7 @@ void main() {
       () => wallets.dryScan(
         externalDescriptor: any(named: 'externalDescriptor'),
         internalDescriptor: any(named: 'internalDescriptor'),
-        isTestnet: any(named: 'isTestnet'),
+        network: any(named: 'network'),
         electrumServer: any(named: 'electrumServer'),
       ),
     );
@@ -202,7 +209,7 @@ void main() {
             that: startsWith('sh('),
           ),
           internalDescriptor: any(named: 'internalDescriptor'),
-          isTestnet: any(named: 'isTestnet'),
+          network: any(named: 'network'),
           electrumServer: any(named: 'electrumServer'),
         ),
       ).thenThrow(Exception('unreachable server'));
@@ -245,7 +252,7 @@ void main() {
           () => wallets.dryScan(
             externalDescriptor: pair.external,
             internalDescriptor: pair.internal,
-            isTestnet: false,
+            network: Network.bitcoinMainnet,
             electrumServer: servers.connection,
           ),
         ).called(1);
@@ -262,7 +269,7 @@ void main() {
       () => wallets.dryScan(
         externalDescriptor: any(named: 'externalDescriptor'),
         internalDescriptor: any(named: 'internalDescriptor'),
-        isTestnet: any(named: 'isTestnet'),
+        network: any(named: 'network'),
         electrumServer: any(named: 'electrumServer'),
       ),
     ).thenThrow(StateError('wpkh([73c5da0a/84h/0h/0h]xpub...)'));
@@ -292,7 +299,7 @@ void main() {
       () => wallets.dryScan(
         externalDescriptor: any(named: 'externalDescriptor'),
         internalDescriptor: any(named: 'internalDescriptor'),
-        isTestnet: any(named: 'isTestnet'),
+        network: any(named: 'network'),
         electrumServer: any(named: 'electrumServer'),
       ),
     ).thenThrow(TimeoutException('no answer'));

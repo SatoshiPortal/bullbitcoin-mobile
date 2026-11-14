@@ -1,7 +1,7 @@
 import 'package:bull_ui/bull_ui.dart';
 import 'dart:io';
 
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
@@ -20,8 +20,9 @@ class ExchangeSecurityScreen extends StatelessWidget {
   const ExchangeSecurityScreen({super.key});
 
   void _openSecurityWebView(BuildContext context) {
-    final isTestnet =
-        context.read<SettingsCubit>().state.environment == Environment.testnet;
+    final environment = context.read<SettingsCubit>().state.environment;
+    if (environment == null || environment == Environment.regtest) return;
+    final isTestnet = environment.requireHistoricalTestnet();
     final baseUrl = isTestnet
         ? ApiServiceConstants.bbAuthTestUrl
         : ApiServiceConstants.bbAuthUrl;

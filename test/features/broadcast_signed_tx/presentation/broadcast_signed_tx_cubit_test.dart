@@ -1,5 +1,12 @@
+import '../../../frozen_outpoints_fixture.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart' as app;
 import 'package:bb_mobile/core/bbqr/bbqr.dart';
-import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
+import 'dart:io';
+
+import 'package:bb_mobile/core/settings/data/settings_repository.dart';
+import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/features/send/data/bitcoin_blockchain_repository.dart';
+import 'package:bb_mobile/features/send/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/core/utils/bitcoin_tx.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/send/domain/usecases/verify_signed_tx_usecase.dart';
@@ -17,6 +24,11 @@ class _MockBroadcastBitcoinTransactionUsecase extends Mock
 
 class _MockVerifySignedTxUsecase extends Mock
     implements VerifyBroadcastSignedTxUsecase {}
+
+class _MockBitcoinBlockchainRepository extends Mock
+    implements BitcoinBlockchainRepository {}
+
+class _MockSettingsRepository extends Mock implements SettingsRepository {}
 
 void main() {
   const psbt =
@@ -36,6 +48,7 @@ void main() {
       (_) async => const Err(InvalidTransactionFailure('transaction mismatch')),
     );
     final cubit = BroadcastSignedTxCubit(
+      network: app.Network.bitcoinTestnet,
       broadcastBitcoinTransactionUsecase:
           _MockBroadcastBitcoinTransactionUsecase(),
       verifySignedTxUsecase: verifier,
@@ -66,6 +79,7 @@ void main() {
       ),
     ).thenThrow(StateError('programmer defect'));
     final cubit = BroadcastSignedTxCubit(
+      network: app.Network.bitcoinTestnet,
       broadcastBitcoinTransactionUsecase:
           _MockBroadcastBitcoinTransactionUsecase(),
       verifySignedTxUsecase: verifier,
@@ -98,6 +112,7 @@ void main() {
       ),
     ).thenAnswer((_) async => const Ok(null));
     final cubit = BroadcastSignedTxCubit(
+      network: app.Network.bitcoinTestnet,
       broadcastBitcoinTransactionUsecase:
           _MockBroadcastBitcoinTransactionUsecase(),
       verifySignedTxUsecase: verifier,
@@ -116,6 +131,7 @@ void main() {
     () async {
       final verifier = _MockVerifySignedTxUsecase();
       final cubit = BroadcastSignedTxCubit(
+        network: app.Network.bitcoinTestnet,
         broadcastBitcoinTransactionUsecase:
             _MockBroadcastBitcoinTransactionUsecase(),
         verifySignedTxUsecase: verifier,
@@ -136,6 +152,107 @@ void main() {
     },
   );
 
+  group('broadcast failure categories reach the screen', () {
+    late _MockBitcoinBlockchainRepository blockchain;
+    late _MockSettingsRepository settings;
+
+    Future<BroadcastSignedTxCubit> broadcastThrough(
+      Object? nodeError, {
+      app.Network network = app.Network.bitcoinMainnet,
+    }) async {
+      if (nodeError != null) {
+        when(
+          () => blockchain.broadcastPsbt(any(), network: any(named: 'network')),
+        ).thenThrow(nodeError);
+      }
+      // The real use case, called without a wallet as Broadcast Transaction
+      // does, so the category travels from the mapper to the cubit.
+      final cubit = BroadcastSignedTxCubit(
+        network: network,
+        broadcastBitcoinTransactionUsecase: BroadcastBitcoinTransactionUsecase(
+          bitcoinBlockchainRepository: blockchain,
+          walletUtxoRepository: EmptyFrozenOutpoints(),
+          settingsRepository: settings,
+        ),
+        verifySignedTxUsecase: _MockVerifySignedTxUsecase(),
+      );
+      addTearDown(cubit.close);
+      await cubit.tryParseTransaction(psbt);
+      await cubit.broadcastTransaction();
+      expect(cubit.state.isBroadcasted, isFalse);
+      expect(cubit.state.isBroadcasting, isFalse);
+      return cubit;
+    }
+
+    setUpAll(() => registerFallbackValue(app.Network.bitcoinMainnet));
+
+    setUp(() {
+      blockchain = _MockBitcoinBlockchainRepository();
+      settings = _MockSettingsRepository();
+    });
+
+    // Regression (Pixel 6a): rebroadcasting a confirmed transaction said
+    // "Check your internet connection" instead of reporting it confirmed.
+    test('-27 reports a transaction already in the chain', () async {
+      final cubit = await broadcastThrough(
+        bdk.ProtocolElectrumException(
+          '{"code":2,"message":"sendrawtransaction RPC error -27: Transaction outputs already in utxo set"}',
+        ),
+      );
+
+      expect(cubit.state.failure, isA<TransactionAlreadyInChainFailure>());
+    });
+
+    // Propagation of the rejected category, as for the modified signed
+    // transaction refused on the Pixel 6a; not a proof of its cause.
+    test('-26 reports a rejected transaction', () async {
+      final cubit = await broadcastThrough(
+        bdk.ProtocolElectrumException(
+          '{"code":2,"message":"sendrawtransaction RPC error -26: mandatory-script-verify-flag-failed (Signature must be zero for failed CHECK(MULTI)SIG operation)"}',
+        ),
+      );
+
+      expect(cubit.state.failure, isA<TransactionRejectedFailure>());
+    });
+
+    // Propagation of the unexpected category, as for the PSBT pasted again
+    // on the Pixel 6a; not a proof of a mempool cause.
+    test('an unclassified failure leaves the outcome unknown', () async {
+      final cubit = await broadcastThrough(
+        bdk.AllAttemptsErroredElectrumException(),
+      );
+
+      expect(cubit.state.failure, isA<BroadcastOutcomeUnknownFailure>());
+    });
+
+    test('only a connection failure blames the connection', () async {
+      final cubit = await broadcastThrough(
+        const SocketException('electrum.invalid'),
+      );
+
+      expect(cubit.state.failure, isA<BroadcastFailedFailure>());
+    });
+
+    test('a network the settings do not enable is refused before any '
+        'network call', () async {
+      when(settings.fetch).thenAnswer(
+        (_) async => const SettingsEntity(
+          environment: Environment.testnet,
+          bitcoinUnit: BitcoinUnit.sats,
+          currencyCode: 'USD',
+        ),
+      );
+
+      final cubit = await broadcastThrough(
+        null,
+        network: app.Network.bitcoinTestnet,
+      );
+
+      expect(cubit.state.failure, isA<BroadcastNetworkNotEnabledFailure>());
+      verifyZeroInteractions(blockchain);
+    });
+  });
+
   const unsignedPsbt =
       'cHNidP8BAKQCAAAAA6DLc9RAdKwWQb/7Nrq1FyAtDQ3e0w5E4LkLpcrwBL0aAAAAAAD9////78NG2vqjywKaa0QHfo6C44o1+odXeWZ43FfHy4bLdxABAAAAAP3///8rhueJha90HzgJ6alnJ1uvi0Zbq0JQoXnwDb0Cjn79DwAAAAAA/f///wHWCBAAAAAAABYAFDraKFKubXzlSvRQy8V4X+TwKhLXAAAAAE8BBDWHzwQJeplqgAAAAqmHnnoRR+XJd7gJt/PhLazKeWAfCBLJ4/OF/s0PqqF1AzK8fcttOUsU2k9a6Valj6kLb/Bh2gB7YuxenNz7LY5PFJkKc60wAACAAQAAgAAAAIACAACATwEENYfPBEgFouKAAAACOeERUyCmIJuSdQNDB1mxkahw4tc2UCtjxJQoQGnRCtQCZUSXwQF+nA8dl/RG6U1b9ViWJxkzNrDCCagYEWch72cUrnhJ4jAAAIABAACAAAAAgAIAAIAAAQErckUPAAAAAAAiACDwHjagvyTvVDVn+RqxW0xaMLODBm2IVCwDBQm5uK8rDQEFR1IhAi/hk/Tz0aHcNwsVyv86bqQj30sUexPlc738CqJg+flLIQKmgeTdVjPh9P+MPnsTPbFRcGGLPAO3iTyYBR7eYQC4VlKuIgYCL+GT9PPRodw3CxXK/zpupCPfSxR7E+VzvfwKomD5+UscrnhJ4jAAAIABAACAAAAAgAIAAIABAAAACgAAACIGAqaB5N1WM+H0/4w+exM9sVFwYYs8A7eJPJgFHt5hALhWHJkKc60wAACAAQAAgAAAAIACAACAAQAAAAoAAAAAAQErMHUAAAAAAAAiACAUS+ztgOw4wxEOYDdQEZp42Ii3sA39MdXZMWolM3s9VgEFR1IhAmdcnz6cgLhxNS0Lv3mz7OVOGunGsAlEsekZiQRDLDXHIQLfPg77+MKPe073vgkXRfWAZMxohe3ysPahJ0jIFl3GU1KuIgYCZ1yfPpyAuHE1LQu/ebPs5U4a6cawCUSx6RmJBEMsNcccrnhJ4jAAAIABAACAAAAAgAIAAIAAAAAAQgAAACIGAt8+Dvv4wo97Tve+CRdF9YBkzGiF7fKw9qEnSMgWXcZTHJkKc60wAACAAQAAgAAAAIACAACAAAAAAEIAAAAAAQEr8FUAAAAAAAAiACCcheUwIAj6XLtEe5QO+fTi25/ZvJGX9MuZkpghbW3VMgEFR1IhAkhWBpUeAB+UbbJc8f1fkEMEZgIChQVpMdJnD05uBtU4IQMUAdnwr2UVz6AhNBI5j6an4wHRGVX3uhSLaWy2qS70xlKuIgYCSFYGlR4AH5Rtslzx/V+QQwRmAgKFBWkx0mcPTm4G1TgcmQpzrTAAAIABAACAAAAAgAIAAIAAAAAARAAAACIGAxQB2fCvZRXPoCE0EjmPpqfjAdEZVfe6FItpbLapLvTGHK54SeIwAACAAQAAgAAAAIACAACAAAAAAEQAAAAAAA==';
   const firstSignedTrimmedPsbt =
@@ -149,12 +266,21 @@ void main() {
     ).combine(other: bdk.Psbt(psbtBase64: secondSignedTrimmedPsbt)).serialize();
     final broadcast = _MockBroadcastBitcoinTransactionUsecase();
     when(
-      () => broadcast.execute(any(), isPsbt: any(named: 'isPsbt')),
+      () => broadcast.execute(
+        any(),
+        isPsbt: any(named: 'isPsbt'),
+        network: app.Network.bitcoinMainnet,
+      ),
     ).thenAnswer((_) async => 'txid');
     final cubit = BroadcastSignedTxCubit(
+      network: app.Network.bitcoinMainnet,
       broadcastBitcoinTransactionUsecase: broadcast,
       verifySignedTxUsecase: VerifyBroadcastSignedTxUsecase(
-        SendFacade(VerifySignedTxUsecase()),
+        SendFacade(
+          bitcoin: _unusedBitcoinBroadcast,
+          liquid: _unusedLiquidBroadcast,
+          verifySignedTxUsecase: VerifySignedTxUsecase(),
+        ),
       ),
       unsignedPsbt: unsignedPsbt,
     );
@@ -171,17 +297,26 @@ void main() {
     await cubit.broadcastTransaction();
 
     verify(
-      () => broadcast.execute(finalizedTransaction, isPsbt: false),
+      () => broadcast.execute(
+        finalizedTransaction,
+        isPsbt: false,
+        network: app.Network.bitcoinMainnet,
+      ),
     ).called(1);
     expect(cubit.state.isBroadcasted, isTrue);
   });
 
   test('rejects a combined PSBT that cannot be finalized', () async {
     final cubit = BroadcastSignedTxCubit(
+      network: app.Network.bitcoinMainnet,
       broadcastBitcoinTransactionUsecase:
           _MockBroadcastBitcoinTransactionUsecase(),
       verifySignedTxUsecase: VerifyBroadcastSignedTxUsecase(
-        SendFacade(VerifySignedTxUsecase()),
+        SendFacade(
+          bitcoin: _unusedBitcoinBroadcast,
+          liquid: _unusedLiquidBroadcast,
+          verifySignedTxUsecase: VerifySignedTxUsecase(),
+        ),
       ),
       unsignedPsbt: unsignedPsbt,
     );
@@ -221,9 +356,14 @@ void main() {
     test('is finalized before review and broadcast', () async {
       final broadcast = _MockBroadcastBitcoinTransactionUsecase();
       when(
-        () => broadcast.execute(any(), isPsbt: any(named: 'isPsbt')),
+        () => broadcast.execute(
+          any(),
+          isPsbt: any(named: 'isPsbt'),
+          network: app.Network.bitcoinTestnet,
+        ),
       ).thenAnswer((_) async => 'txid');
       final cubit = BroadcastSignedTxCubit(
+        network: app.Network.bitcoinTestnet,
         broadcastBitcoinTransactionUsecase: broadcast,
         verifySignedTxUsecase: _MockVerifySignedTxUsecase(),
       );
@@ -241,7 +381,13 @@ void main() {
 
       await cubit.broadcastTransaction();
 
-      verify(() => broadcast.execute(finalizedTx, isPsbt: false)).called(1);
+      verify(
+        () => broadcast.execute(
+          finalizedTx,
+          isPsbt: false,
+          network: app.Network.bitcoinTestnet,
+        ),
+      ).called(1);
       expect(cubit.state.isBroadcasted, isTrue);
     });
 
@@ -256,9 +402,14 @@ void main() {
           'AAAAAAA=';
       final broadcast = _MockBroadcastBitcoinTransactionUsecase();
       when(
-        () => broadcast.execute(any(), isPsbt: any(named: 'isPsbt')),
+        () => broadcast.execute(
+          any(),
+          isPsbt: any(named: 'isPsbt'),
+          network: app.Network.bitcoinTestnet,
+        ),
       ).thenAnswer((_) async => 'txid');
       final cubit = BroadcastSignedTxCubit(
+        network: app.Network.bitcoinTestnet,
         broadcastBitcoinTransactionUsecase: broadcast,
         verifySignedTxUsecase: _MockVerifySignedTxUsecase(),
       );
@@ -297,6 +448,7 @@ void main() {
         ),
       ).thenAnswer((_) async => const Ok(null));
       final cubit = BroadcastSignedTxCubit(
+        network: app.Network.bitcoinTestnet,
         broadcastBitcoinTransactionUsecase:
             _MockBroadcastBitcoinTransactionUsecase(),
         verifySignedTxUsecase: verifier,
@@ -318,10 +470,15 @@ void main() {
 
     test('accepts it against its own exported PSBT', () async {
       final cubit = BroadcastSignedTxCubit(
+        network: app.Network.bitcoinTestnet,
         broadcastBitcoinTransactionUsecase:
             _MockBroadcastBitcoinTransactionUsecase(),
         verifySignedTxUsecase: VerifyBroadcastSignedTxUsecase(
-          SendFacade(VerifySignedTxUsecase()),
+          SendFacade(
+            bitcoin: _unusedBitcoinBroadcast,
+            liquid: _unusedLiquidBroadcast,
+            verifySignedTxUsecase: VerifySignedTxUsecase(),
+          ),
         ),
         unsignedPsbt: exportedPsbt,
       );
@@ -336,10 +493,15 @@ void main() {
     test('a different skeleton is refused, without falling back to the '
         'PSBT', () async {
       final cubit = BroadcastSignedTxCubit(
+        network: app.Network.bitcoinTestnet,
         broadcastBitcoinTransactionUsecase:
             _MockBroadcastBitcoinTransactionUsecase(),
         verifySignedTxUsecase: VerifyBroadcastSignedTxUsecase(
-          SendFacade(VerifySignedTxUsecase()),
+          SendFacade(
+            bitcoin: _unusedBitcoinBroadcast,
+            liquid: _unusedLiquidBroadcast,
+            verifySignedTxUsecase: VerifySignedTxUsecase(),
+          ),
         ),
         unsignedPsbt: otherExportedPsbt,
       );
@@ -354,9 +516,14 @@ void main() {
     test('an unsigned PSBT stays a PSBT and is broadcast as one', () async {
       final broadcast = _MockBroadcastBitcoinTransactionUsecase();
       when(
-        () => broadcast.execute(any(), isPsbt: any(named: 'isPsbt')),
+        () => broadcast.execute(
+          any(),
+          isPsbt: any(named: 'isPsbt'),
+          network: app.Network.bitcoinTestnet,
+        ),
       ).thenAnswer((_) async => 'txid');
       final cubit = BroadcastSignedTxCubit(
+        network: app.Network.bitcoinTestnet,
         broadcastBitcoinTransactionUsecase: broadcast,
         verifySignedTxUsecase: _MockVerifySignedTxUsecase(),
       );
@@ -368,7 +535,23 @@ void main() {
       expect(cubit.state.transaction?.format, TxFormat.psbt);
       expect(cubit.state.transaction?.data, exportedPsbt);
       await cubit.broadcastTransaction();
-      verify(() => broadcast.execute(exportedPsbt, isPsbt: true)).called(1);
+      verify(
+        () => broadcast.execute(
+          exportedPsbt,
+          isPsbt: true,
+          network: app.Network.bitcoinTestnet,
+        ),
+      ).called(1);
     });
   });
 }
+
+Future<String> _unusedBitcoinBroadcast(
+  String transaction, {
+  required String walletId,
+  required bool isPsbt,
+  required app.Network network,
+}) => throw UnimplementedError('verification only');
+
+Future<String> _unusedLiquidBroadcast(String transaction) =>
+    throw UnimplementedError('verification only');

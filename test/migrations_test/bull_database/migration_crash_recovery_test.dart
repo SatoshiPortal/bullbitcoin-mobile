@@ -16,6 +16,7 @@ import 'generated/schema_v12.dart' as v12;
 import 'generated/schema_v13.dart' as v13;
 import 'generated/schema_v14.dart' as v14;
 import 'generated/schema_v15.dart' as v15;
+import 'generated/schema_v16.dart' as v16;
 import 'generated/schema_v2.dart' as v2;
 import 'generated/schema_v3.dart' as v3;
 import 'generated/schema_v4.dart' as v4;
@@ -41,6 +42,7 @@ final _fixtures = <int, GeneratedDatabase Function(QueryExecutor)>{
   13: v13.DatabaseAtV13.new,
   14: v14.DatabaseAtV14.new,
   15: v15.DatabaseAtV15.new,
+  16: v16.DatabaseAtV16.new,
 };
 
 const _labelCount = 3;
@@ -85,14 +87,20 @@ void main() {
   // upgrade after every possible number of commits, then relaunches with the
   // current code. The relaunch must reach the current schema, validate, and
   // keep every label that survived the crash.
+  // Exhaustive file-backed crash points exceed 30 s when suites share disk I/O.
   group('killed after any commit while upgrading on an older release', () {
     for (final MapEntry(key: version, value: fixture) in _fixtures.entries) {
-      test('from schema $version, the next launch recovers', () async {
-        await _everyCrashPoint(
-          seed: (file) => _seedFixture(file, version, fixture),
-          crashingOpen: (executor) => _ReleasedMigrationOrder(executor),
-        );
-      });
+      test(
+        'from schema $version, the next launch recovers',
+        () async {
+          await _everyCrashPoint(
+            seed: (file) => _seedFixture(file, version, fixture),
+            expectRegtest: version == 16,
+            crashingOpen: (executor) => _ReleasedMigrationOrder(executor),
+          );
+        },
+        timeout: const Timeout(Duration(minutes: 2)),
+      );
     }
   });
 
@@ -104,6 +112,7 @@ void main() {
           'label', () async {
         await _everyCrashPoint(
           seed: (file) => _seedFixture(file, version, fixture),
+          expectRegtest: version == 16,
           crashingOpen: SqliteDatabase.new,
           everyLabelSurvives: true,
         );
@@ -181,6 +190,7 @@ Future<void> _everyCrashPoint({
   required Future<void> Function(File file) seed,
   required SqliteDatabase Function(QueryExecutor executor) crashingOpen,
   bool expectLabels = true,
+  bool expectRegtest = false,
   bool everyLabelSurvives = false,
 }) async {
   for (var allowed = 0; ; allowed++) {
@@ -220,6 +230,15 @@ Future<void> _everyCrashPoint({
           reason: 'crash after $allowed commits',
         );
         await relaunch.validateDatabaseSchema();
+        if (expectRegtest) {
+          final row = await relaunch
+              .customSelect(
+                "SELECT network FROM wallet_metadatas WHERE id = 'regtest-fixture'",
+              )
+              .getSingle();
+          expect(row.read<String>('network'), 'bitcoinRegtest');
+        }
+
         final labels = await relaunch.select(relaunch.labels).get();
         expect(
           labels,
@@ -257,6 +276,14 @@ Future<void> _seedFixture(
       'INSERT INTO labels (label, $reference, type, origin) '
       "VALUES ('label $i', 'txid$i', 'tx', 'wallet')",
     );
+  }
+  if (version == 16) {
+    await seeded.customStatement('''INSERT INTO wallet_metadatas
+        (id, network, master_fingerprint, xpub_fingerprint,
+         is_encrypted_vault_tested, is_physical_backup_tested, xpub,
+         external_public_descriptor, internal_public_descriptor, signer, is_default)
+        VALUES ('regtest-fixture', 'bitcoinRegtest', 'aabbccdd', 'aabbccdd',
+                0, 0, 'public', 'public', 'public', 'none', 0)''');
   }
   await seeded.close();
 }

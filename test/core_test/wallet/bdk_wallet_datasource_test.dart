@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/no_spendable_utxo_exception.dart';
 // Regression test for a bug where `BdkWalletDatasource.buildPsbt` silently
 // dropped manual UTXO selection and the RBF-off sequence flag.
@@ -32,9 +33,9 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
-import 'package:bb_mobile/core/wallet/data/datasources/bdk_facade.dart';
-import 'package:bb_mobile/core/wallet/data/datasources/bdk_wallet_datasource.dart';
-import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
+import 'support/bdk_test_store.dart';
+import 'package:bb_mobile/features/wallet/data/bdk_wallet_datasource.dart';
+import 'package:bb_mobile/features/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_utxo_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/bitcoin_transaction_recipient_model.dart';
 import 'package:bb_mobile/core/wallet/domain/insufficient_funds_exception.dart';
@@ -158,14 +159,14 @@ void main() {
               id: 'bdk-wallet-datasource-test',
               externalDescriptor: external.toString(),
               internalDescriptor: internal.toString(),
-              isTestnet: true,
+              network: Network.bitcoinTestnet,
             )
             as PublicBdkWalletModel;
 
     // Build the wallet once here to fund it, then persist so the
-    // datasource's own (separate) `BdkFacade.createWallet` call sees the
+    // datasource's own (separate) `BdkTestStore.createWallet` call sees the
     // exact same UTXOs when the test invokes `buildPsbt`.
-    final wallet = await BdkFacade.createWallet(walletModel);
+    final wallet = await BdkTestStore.createWallet(walletModel);
 
     final addr0 = wallet.revealNextAddress(
       keychain: bdk.KeychainKind.external_,
@@ -212,7 +213,7 @@ void main() {
     utxoLargeTxId = fundingTxid;
     utxoLargeVout = 0;
 
-    await BdkFacade.saveWallet(wallet, walletModel.hexId);
+    await BdkTestStore.saveWallet(wallet, walletModel.hexId);
   });
 
   tearDown(() async {
@@ -221,8 +222,39 @@ void main() {
     }
   });
 
+  test('last revealed index read does not reveal an address', () async {
+    final native = await BdkTestStore.createWallet(walletModel);
+    final datasource = BdkWalletDatasource(readWallet: (_) async => native);
+    final before = native.nextDerivationIndex(
+      keychain: bdk.KeychainKind.external_,
+    );
+    expect(
+      await datasource.getLastRevealedAddressIndex(wallet: walletModel),
+      before - 1,
+    );
+    expect(
+      native.nextDerivationIndex(keychain: bdk.KeychainKind.external_),
+      before,
+    );
+  });
+
+  test('load mismatch preserves the existing native store', () async {
+    final file = File('${tempDir.path}/${walletModel.hexId}_bdk_dart');
+    final before = await file.readAsBytes();
+    final mismatched = WalletModel.publicBdk(
+      id: walletModel.id,
+      externalDescriptor: walletModel.internalDescriptor,
+      internalDescriptor: walletModel.externalDescriptor,
+      network: Network.bitcoinTestnet,
+    );
+    await expectLater(BdkTestStore.createWallet(mismatched), throwsA(anything));
+    expect(await file.readAsBytes(), before);
+  });
+
   test('checks multiple addresses against one wallet', () async {
-    final datasource = BdkWalletDatasource();
+    final datasource = BdkWalletDatasource(
+      readWallet: BdkTestStore.createWallet,
+    );
 
     expect(
       await datasource.areAddressesMine([
@@ -244,7 +276,9 @@ void main() {
     'buildPsbt honors manual UTXO selection: a manually selected UTXO must '
     'be spendable even when every other UTXO is frozen/unspendable',
     () async {
-      final datasource = BdkWalletDatasource();
+      final datasource = BdkWalletDatasource(
+        readWallet: BdkTestStore.createWallet,
+      );
 
       // The LARGE utxo (200k) is marked unspendable — i.e. excluded from
       // BDK's own automatic coin-selection pool. It is ALSO the one
@@ -314,7 +348,9 @@ void main() {
   test(
     'buildPsbt sets a non-RBF sequence when replaceByFee is false',
     () async {
-      final datasource = BdkWalletDatasource();
+      final datasource = BdkWalletDatasource(
+        readWallet: BdkTestStore.createWallet,
+      );
 
       final psbt = await datasource.buildPsbt(
         wallet: walletModel,
@@ -347,7 +383,9 @@ void main() {
   test(
     'buildPsbt keeps the default RBF sequence when replaceByFee is true',
     () async {
-      final datasource = BdkWalletDatasource();
+      final datasource = BdkWalletDatasource(
+        readWallet: BdkTestStore.createWallet,
+      );
 
       final psbt = await datasource.buildPsbt(
         wallet: walletModel,
@@ -380,7 +418,9 @@ void main() {
   test('buildPsbt spends only the selected input and returns change', () async {
     const sendAmountSat = 50000;
     const feeSat = 1000;
-    final datasource = BdkWalletDatasource();
+    final datasource = BdkWalletDatasource(
+      readWallet: BdkTestStore.createWallet,
+    );
 
     final psbt = await datasource.buildPsbt(
       wallet: walletModel,
@@ -439,7 +479,9 @@ void main() {
   test(
     'buildPsbt reports more than the whole balance as insufficient funds',
     () async {
-      final datasource = BdkWalletDatasource();
+      final datasource = BdkWalletDatasource(
+        readWallet: BdkTestStore.createWallet,
+      );
 
       await expectLater(
         datasource.buildPsbt(
@@ -458,7 +500,9 @@ void main() {
   );
 
   test('buildPsbt reports an aggregate multi-recipient shortfall', () async {
-    final datasource = BdkWalletDatasource();
+    final datasource = BdkWalletDatasource(
+      readWallet: BdkTestStore.createWallet,
+    );
 
     await expectLater(
       datasource.buildPsbt(
@@ -485,7 +529,9 @@ void main() {
   test(
     'buildPsbt reports a fee-only shortfall as insufficient funds',
     () async {
-      final datasource = BdkWalletDatasource();
+      final datasource = BdkWalletDatasource(
+        readWallet: BdkTestStore.createWallet,
+      );
 
       await expectLater(
         datasource.buildPsbt(
@@ -516,7 +562,9 @@ void main() {
     'buildPsbt drains exactly the manually selected UTXOs to one recipient',
     () async {
       const feeSat = 1000;
-      final datasource = BdkWalletDatasource();
+      final datasource = BdkWalletDatasource(
+        readWallet: BdkTestStore.createWallet,
+      );
 
       final psbt = await datasource.buildPsbt(
         wallet: walletModel,
@@ -582,7 +630,9 @@ void main() {
     const firstAmountSat = 25000;
     const secondAmountSat = 30000;
     const feeSat = 1000;
-    final datasource = BdkWalletDatasource();
+    final datasource = BdkWalletDatasource(
+      readWallet: BdkTestStore.createWallet,
+    );
 
     final psbt = await datasource.buildPsbt(
       wallet: walletModel,
@@ -655,7 +705,9 @@ void main() {
     () async {
       const fixedAmountSat = 50000;
       const feeSat = 1000;
-      final datasource = BdkWalletDatasource();
+      final datasource = BdkWalletDatasource(
+        readWallet: BdkTestStore.createWallet,
+      );
 
       final psbt = await datasource.buildPsbt(
         wallet: walletModel,
@@ -718,7 +770,9 @@ void main() {
 
   test('buildPsbt recalculates the remainder when the fee changes', () async {
     const fixedAmountSat = 50000;
-    final datasource = BdkWalletDatasource();
+    final datasource = BdkWalletDatasource(
+      readWallet: BdkTestStore.createWallet,
+    );
     final selected = [
       WalletUtxoModel.bitcoin(
         txId: utxoLargeTxId,
@@ -757,12 +811,12 @@ void main() {
     final lowFeeAmounts = await datasource.getRecipientAmounts(
       lowFeePsbt,
       recipients,
-      isTestnet: true,
+      network: Network.bitcoinTestnet,
     );
     final highFeeAmounts = await datasource.getRecipientAmounts(
       highFeePsbt,
       recipients,
-      isTestnet: true,
+      network: Network.bitcoinTestnet,
     );
     expect(lowFeeAmounts.first, fixedAmountSat);
     expect(highFeeAmounts.first, fixedAmountSat);
@@ -771,7 +825,9 @@ void main() {
 
   test('reports an uppercase Bech32 remainder by script', () async {
     const feeSat = 1000;
-    final datasource = BdkWalletDatasource();
+    final datasource = BdkWalletDatasource(
+      readWallet: BdkTestStore.createWallet,
+    );
     final recipients = [
       BitcoinTransactionRecipientModel.remainder(
         address: _externalTestnetAddress.toUpperCase(),
@@ -796,7 +852,11 @@ void main() {
     );
 
     expect(
-      await datasource.getRecipientAmounts(psbt, recipients, isTestnet: true),
+      await datasource.getRecipientAmounts(
+        psbt,
+        recipients,
+        network: Network.bitcoinTestnet,
+      ),
       [utxoLargeAmountSat - feeSat],
     );
   });
@@ -806,7 +866,9 @@ void main() {
     () async {
       const fixedAmountSat = 50000;
       const feeSat = 1000;
-      final datasource = BdkWalletDatasource();
+      final datasource = BdkWalletDatasource(
+        readWallet: BdkTestStore.createWallet,
+      );
       final recipients = [
         BitcoinTransactionRecipientModel.fixed(
           address: _externalTestnetAddress,
@@ -835,14 +897,20 @@ void main() {
       );
 
       expect(
-        await datasource.getRecipientAmounts(psbt, recipients, isTestnet: true),
+        await datasource.getRecipientAmounts(
+          psbt,
+          recipients,
+          network: Network.bitcoinTestnet,
+        ),
         [fixedAmountSat, utxoLargeAmountSat - fixedAmountSat - feeSat],
       );
     },
   );
 
   test('buildPsbt rejects a fixed output below dust', () async {
-    final datasource = BdkWalletDatasource();
+    final datasource = BdkWalletDatasource(
+      readWallet: BdkTestStore.createWallet,
+    );
 
     await expectLater(
       datasource.buildPsbt(
@@ -860,7 +928,9 @@ void main() {
   });
 
   test('buildPsbt rejects a dust remainder', () async {
-    final datasource = BdkWalletDatasource();
+    final datasource = BdkWalletDatasource(
+      readWallet: BdkTestStore.createWallet,
+    );
 
     await expectLater(
       datasource.buildPsbt(
@@ -894,7 +964,9 @@ void main() {
   test(
     'buildPsbt never treats an empty exact selection as a wallet drain',
     () async {
-      final datasource = BdkWalletDatasource();
+      final datasource = BdkWalletDatasource(
+        readWallet: BdkTestStore.createWallet,
+      );
 
       await expectLater(
         datasource.buildPsbt(

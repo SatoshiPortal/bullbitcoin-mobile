@@ -1,5 +1,4 @@
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart'
-    show ScriptType;
+import 'package:bb_mobile/features/wallet/domain/wallet.dart' show ScriptType;
 import 'package:bb_mobile/features/import_mnemonic/domain/import_mnemonic_failure.dart';
 import 'package:bb_mobile/features/import_mnemonic/domain/scan_mnemonic_usecase.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' show Language;

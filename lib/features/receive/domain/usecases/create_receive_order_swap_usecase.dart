@@ -1,8 +1,9 @@
-import 'package:bb_mobile/core/utils/payment_request.dart';
+import 'package:bb_mobile/features/wallet/domain/network_x.dart';
 import 'package:primitives/primitives.dart';
+import 'package:bb_mobile/core/utils/payment_request.dart';
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/get_receive_address_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/get_receive_address_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/receive_failure.dart';
 import 'package:meta/meta.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
@@ -27,10 +28,17 @@ class CreateReceiveOrderSwapUsecase {
     required int amountSat,
     String? note,
   }) async {
+    if (!NetworkCapabilities.supports(
+      wallet.network.shared,
+      NetworkCapability.swaps,
+    )) {
+      log.warning('Capability refused feature=receive_swap reason=unsupported');
+      return const Err(ReceiveSwapUnavailableFailure());
+    }
     if (!wallet.isLiquid || amountSat <= 0) {
       return const Err(ReceiveSwapUnavailableFailure());
     }
-    final environment = wallet.isTestnet
+    final environment = wallet.network.requireHistoricalTestnet()
         ? OrderSwapEnvironment.testnet
         : OrderSwapEnvironment.mainnet;
 
@@ -94,7 +102,7 @@ class CreateReceiveOrderSwapUsecase {
       }
       final request = await _parsePaymentRequest(invoice);
       if (request is! Bolt11PaymentRequest ||
-          request.isTestnet != wallet.isTestnet ||
+          request.isTestnet != wallet.network.requireHistoricalTestnet() ||
           request.amountSat != amountSat) {
         log.warning('[ReceiveOrderSwap] create returned an invalid invoice');
         return const Err(
@@ -151,6 +159,7 @@ class CreateReceiveOrderSwapUsecase {
         outNetwork: outNetwork,
         logMessage: failure.logMessage,
       ),
+    SwapUnsupportedNetworkFailure() ||
     SwapValidationFailure() ||
     SwapProviderFailure() => ReceiveSwapUnavailableFailure(failure.logMessage),
     SwapRateLimitedFailure(:final retryAfter) => ReceiveRateLimitedFailure(

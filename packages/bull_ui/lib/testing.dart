@@ -59,6 +59,8 @@ const testBullExtensions = <ThemeExtension<dynamic>>[
 Widget wrapWithTheme(Widget child) {
   return MaterialApp(
     theme: ThemeData(extensions: testBullExtensions),
+    localizationsDelegates: bullUiLocalizationsDelegates,
+    supportedLocales: BullUiLocalizations.supportedLocales,
     home: Scaffold(body: child),
   );
 }

@@ -1,5 +1,7 @@
+import 'dart:io';
+import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_backend_config.dart';
 import 'package:bb_mobile/features/sp/domain/sp_failure.dart';
@@ -35,18 +37,21 @@ void main() {
     repository: accountRepo,
     files: accountRepo,
     configRepository: configRepo,
-    scanSpWalletUsecase: ScanSpWalletUsecase(repository: accountRepo),
+    scanSpWalletUsecase: ScanSpWalletUsecase(
+      getSpFeatureGateUsecase: FakeSpFeatureGateUsecase(),
+      repository: accountRepo,
+    ),
   );
 
   Future<Result<void, SpFailure>> run({bool scanFromNow = false}) =>
       usecase.execute(
-        network: BitcoinNetwork.regtest,
+        network: BitcoinNetwork.testnet,
         blindbitUrl: 'http://blindbit.example',
         electrumUrl: 'tcp://electrum.example:50001',
         scanFromNow: scanFromNow,
       );
 
-  setUpAll(() => registerFallbackValue(BitcoinNetwork.regtest));
+  setUpAll(() => registerFallbackValue(BitcoinNetwork.testnet));
 
   setUp(() async {
     secretUsecase = MockGetSpSecretUsecase();
@@ -64,6 +69,43 @@ void main() {
   });
 
   group('CreateSpWalletUsecase gates', () {
+    test(
+      'regtest active refuses creation before custody or backend access',
+      () async {
+        when(() => settingsRepo.fetch()).thenAnswer(
+          (_) async => _settings().copyWith(environment: Environment.regtest),
+        );
+        final result = await run();
+        expect((result as Err).failure, isA<SpUnsupportedNetwork>());
+        verifyZeroInteractions(secretUsecase);
+        expect(accountRepo.createCount, 0);
+      },
+    );
+
+    test(
+      'regtest requested refuses creation before custody or backend access',
+      () async {
+        final directory = await Directory.systemTemp.createTemp('sp-refusal-');
+        log = Logger.replace(directory: directory);
+        addTearDown(() async {
+          await log.flush();
+          await directory.delete(recursive: true);
+        });
+        final result = await usecase.execute(
+          network: BitcoinNetwork.regtest,
+          blindbitUrl: 'http://blindbit.example',
+          electrumUrl: 'tcp://electrum.example:50001',
+          scanFromNow: false,
+        );
+        expect((result as Err).failure, isA<SpUnsupportedNetwork>());
+        verifyZeroInteractions(secretUsecase);
+        expect(accountRepo.createCount, 0);
+        expect((await log.readLogs()).map((row) => row.split('\t')[2]), [
+          'Capability refused feature=sp reason=unsupported',
+        ]);
+      },
+    );
+
     test('refuses with SpRequiresSuperuser when superuser is off', () async {
       when(
         () => settingsRepo.fetch(),
@@ -108,7 +150,7 @@ void main() {
       () async {
         await configRepo.save(
           SpBackendConfig(
-            network: BitcoinNetwork.regtest,
+            network: BitcoinNetwork.testnet,
             blindbitUrl: 'http://existing.example',
             electrumUrl: 'tcp://existing.example:50001',
           ),
@@ -196,7 +238,7 @@ void main() {
     test('looks the secret up on the network being set up', () async {
       await run();
 
-      verify(() => secretUsecase.execute(BitcoinNetwork.regtest)).called(1);
+      verify(() => secretUsecase.execute(BitcoinNetwork.testnet)).called(1);
     });
 
     test('forwards a secret lookup failure and never creates', () async {
@@ -274,7 +316,7 @@ void main() {
       expect(accountRepo.createCount, 1);
       final stored =
           (await configRepo.fetch()) as Ok<SpBackendConfig?, SpFailure>;
-      expect(stored.value?.network, BitcoinNetwork.regtest);
+      expect(stored.value?.network, BitcoinNetwork.testnet);
       expect(stored.value?.blindbitUrl, 'http://blindbit.example');
     });
   });

@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/sp/domain/usecases/get_sp_feature_gate_usecase.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/sp/domain/ports/sp_scan_port.dart';
 import 'package:bb_mobile/features/sp/domain/sp_failure.dart';
@@ -11,13 +12,21 @@ import 'package:meta/meta.dart';
 /// background service directly: the policy lives in `SyncSpWalletUsecase` and
 /// the audit script depends on that staying the only automatic route.
 class ScanSpWalletUsecase {
+  final GetSpFeatureGateUsecase _getSpFeatureGateUsecase;
   final SpScanPort _repository;
 
-  ScanSpWalletUsecase({required this._repository});
+  ScanSpWalletUsecase({
+    required this._getSpFeatureGateUsecase,
+    required this._repository,
+  });
 
   /// `startHeight` overrides where the scan begins (null resumes from the last
   /// scanned position); used by the first-scan start chooser.
   @useResult
-  Future<Result<void, SpFailure>> execute({int? startHeight}) =>
-      _repository.scanOnce(startHeight: startHeight);
+  Future<Result<void, SpFailure>> execute({int? startHeight}) async {
+    if (!await _getSpFeatureGateUsecase.execute()) {
+      return const Err(SpUnsupportedNetwork());
+    }
+    return _repository.scanOnce(startHeight: startHeight);
+  }
 }

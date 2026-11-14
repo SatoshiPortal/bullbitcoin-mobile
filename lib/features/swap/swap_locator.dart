@@ -1,25 +1,26 @@
-import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
-import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_liquid_transaction_usecase.dart';
-import 'package:bb_mobile/core/fees/domain/get_network_fees_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/broadcast_liquid_transaction_usecase.dart';
+import 'package:bb_mobile/features/fees/domain/get_network_fees_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
-import 'package:bb_mobile/core/sync/sync_coordinator.dart';
+import 'package:bb_mobile/features/swap/domain/usecases/schedule_order_swap_refresh_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/verify_chain_swap_amount_send_usecase.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/bitcoin_wallet_repository.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/liquid_wallet_repository.dart';
+import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
+import 'package:bb_mobile/features/wallet/data/bitcoin_wallet_repository.dart';
+import 'package:bb_mobile/features/wallet/data/liquid_wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_utxo_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/check_liquid_consolidation_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_utxos_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/get_receive_address_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/get_receive_address_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/calculate_bitcoin_absolute_fees_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/calculate_liquid_absolute_fees_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/detect_bitcoin_string_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/prepare_bitcoin_send_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/prepare_bitcoin_send_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/validate_bitcoin_selection_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/prepare_liquid_send_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_presets_usecase.dart';
@@ -33,6 +34,7 @@ import 'package:bb_mobile/features/swap/data/datasources/exchange_public_api_dat
 import 'package:bb_mobile/features/swap/data/datasources/order_swap_local_datasource.dart';
 import 'package:bb_mobile/features/swap/data/order_swap_repository_impl.dart';
 import 'package:bb_mobile/features/swap/domain/repositories/order_swap_repository.dart';
+import 'package:bb_mobile/features/swap/domain/usecases/check_swap_spend_admission_usecase.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/create_order_swap_usecase.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/apply_completed_order_swap_labels_usecase.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/get_order_swap_quote_usecase.dart';
@@ -196,9 +198,12 @@ class SwapLocator {
         locator<WatchSwapAppUpdateRequiredUsecase>(),
       ),
     );
+    locator.registerFactory<ScheduleOrderSwapRefreshUsecase>(
+      () => ScheduleOrderSwapRefreshUsecase(locator<SwapSyncPort>()),
+    );
     locator.registerLazySingleton<OrderSwapWatcher>(
       () => OrderSwapWatcher(
-        locator<SyncCoordinator>(),
+        locator<ScheduleOrderSwapRefreshUsecase>(),
         isAppUpdateRequired: () => locator<SwapFacade>().isAppUpdateRequired,
       ),
       dispose: (watcher) => watcher.dispose(),
@@ -206,6 +211,9 @@ class SwapLocator {
   }
 
   static void registerUsecases(GetIt locator) {
+    locator.registerFactory<CheckSwapSpendAdmissionUsecase>(
+      () => CheckSwapSpendAdmissionUsecase(locator<WalletFacade>()),
+    );
     locator.registerFactory<PrepareBitcoinSendUsecase>(
       () => PrepareBitcoinSendUsecase(
         payjoinSessions: locator<PayjoinSessions>(),
@@ -292,6 +300,8 @@ class SwapLocator {
         getOrderSwapQuoteUsecase: locator<GetOrderSwapQuoteUsecase>(),
         getPendingOrderSwapsUsecase: locator<GetPendingOrderSwapsUsecase>(),
         createOrderSwapUsecase: locator<CreateOrderSwapUsecase>(),
+        checkSwapSpendAdmissionUsecase:
+            locator<CheckSwapSpendAdmissionUsecase>(),
         savePreparedOrderSwapPayinUsecase:
             locator<SavePreparedOrderSwapPayinUsecase>(),
         replacePreparedOrderSwapPayinUsecase:

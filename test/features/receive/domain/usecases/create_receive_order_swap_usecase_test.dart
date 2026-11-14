@@ -2,9 +2,9 @@ import 'package:bb_mobile/core/primitives/payment_network.dart';
 import 'package:bb_mobile/core/utils/payment_request.dart';
 import 'package:primitives/primitives.dart' show Err, Ok;
 import 'package:bb_mobile/core/entities/signer_entity.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/get_receive_address_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/get_receive_address_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/receive_failure.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/create_receive_order_swap_usecase.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
@@ -31,6 +31,26 @@ void main() {
       parsePaymentRequest: (_) async => _invoice(),
     );
   });
+
+  test(
+    'Liquid regtest refuses before address or provider side effects',
+    () async {
+      final result = await usecase.execute(
+        wallet: _wallet(Network.liquidRegtest),
+        amountSat: 1000,
+      );
+      expect(
+        result,
+        isA<Err>().having(
+          (result) => result.failure,
+          'failure',
+          isA<ReceiveSwapUnavailableFailure>(),
+        ),
+      );
+      verifyZeroInteractions(swapFacade);
+      verifyZeroInteractions(getReceiveAddress);
+    },
+  );
 
   test(
     'creates an input-fixed Lightning to Liquid order without fallback',

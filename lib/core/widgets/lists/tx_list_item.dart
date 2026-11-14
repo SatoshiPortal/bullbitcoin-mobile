@@ -1,5 +1,4 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/widgets/text/currency_text.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bull_ui/bull_ui.dart' show BullShapesX, Gap;
 import 'package:flutter/material.dart';
@@ -12,9 +11,7 @@ class TxListItemData {
   final IconData icon;
   final Color iconBackgroundColor;
   final Color iconBorderColor;
-  final int amountSat;
-  final double? fiatAmount;
-  final String? fiatCurrency;
+  final Widget amount;
 
   /// Label chips the caller already built, so the row needs no label types.
   final List<Widget> labels;
@@ -27,9 +24,7 @@ class TxListItemData {
     required this.icon,
     required this.iconBackgroundColor,
     required this.iconBorderColor,
-    required this.amountSat,
-    this.fiatAmount,
-    this.fiatCurrency,
+    required this.amount,
     required this.labels,
     required this.networkLabel,
     required this.networkColor,
@@ -71,16 +66,7 @@ class TxListItem extends StatelessWidget {
             Expanded(
               child: Column(
                 crossAxisAlignment: .start,
-                children: [
-                  CurrencyText(
-                    data.amountSat,
-                    showFiat: false,
-                    style: context.font.bodyLarge,
-                    fiatAmount: data.fiatAmount,
-                    fiatCurrency: data.fiatCurrency,
-                  ),
-                  ...data.labels,
-                ],
+                children: [data.amount, ...data.labels],
               ),
             ),
             Column(

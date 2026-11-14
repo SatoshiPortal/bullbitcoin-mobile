@@ -1,10 +1,11 @@
+import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/sepa_payment_processor.dart';
 import 'package:bb_mobile/features/recipients/public/recipients_facade.dart';
 import 'package:bb_mobile/core/errors/exchange_errors.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/features/sell/domain/create_sell_order_usecase.dart';
 import 'package:bb_mobile/features/sell/domain/sell_failure.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
@@ -26,6 +27,7 @@ class _MockSellOrder extends Mock implements SellOrder {}
 class _MockFiatPaymentOrder extends Mock implements FiatPaymentOrder {}
 
 void main() {
+  var spendStatus = BitcoinSpendStatus.ready;
   late _MockExchangeOrderRepository mainnet;
   late _MockPayjoinPolicy payjoinPolicy;
   late CreateSellOrderUsecase usecase;
@@ -37,6 +39,7 @@ void main() {
   });
 
   setUp(() {
+    spendStatus = BitcoinSpendStatus.ready;
     mainnet = _MockExchangeOrderRepository();
     final settingsRepository = _MockSettingsRepository();
     final settings = _MockSettings();
@@ -50,6 +53,10 @@ void main() {
     );
 
     usecase = CreateSellOrderUsecase(
+      wallet: WalletFacade(
+        const Stream.empty(),
+        spendStatus: (_, {replacing}) async => spendStatus,
+      ),
       mainnetExchangeOrderRepository: mainnet,
       testnetExchangeOrderRepository: _MockExchangeOrderRepository(),
       settingsRepository: settingsRepository,
@@ -58,6 +65,7 @@ void main() {
   });
 
   Future<Result<Order, SellFailure>> run() => usecase.execute(
+    walletId: 'wallet-1',
     orderAmount: const FiatAmount(100),
     currency: FiatCurrency.cad,
     network: OrderBitcoinNetwork.bitcoin,
@@ -73,6 +81,74 @@ void main() {
       ),
     ).thenThrow(error);
   }
+
+  test('gated Bitcoin wallet creates no exchange order', () async {
+    spendStatus = BitcoinSpendStatus.pending;
+    final result = await run();
+    expect(
+      result,
+      isA<Err>().having(
+        (result) => result.failure,
+        'failure',
+        isA<SellSpendBlockedFailure>().having((f) => f.busy, 'busy', isFalse),
+      ),
+    );
+    verifyZeroInteractions(mainnet);
+    verifyZeroInteractions(payjoinPolicy);
+  });
+
+  test('a busy wallet is not reported as awaiting a payment', () async {
+    spendStatus = BitcoinSpendStatus.busy;
+    final result = await run();
+    expect(
+      result,
+      isA<Err>().having(
+        (result) => result.failure,
+        'failure',
+        isA<SellSpendBlockedFailure>().having((f) => f.busy, 'busy', isTrue),
+      ),
+    );
+    verifyZeroInteractions(mainnet);
+  });
+
+  test('regtest refuses sell creation before backend IO', () async {
+    final settings = _MockSettingsRepository();
+    final testnet = _MockExchangeOrderRepository();
+    when(settings.fetch).thenAnswer(
+      (_) async => const SettingsEntity(
+        environment: Environment.regtest,
+        bitcoinUnit: BitcoinUnit.sats,
+        currencyCode: 'CAD',
+      ),
+    );
+    final guarded = CreateSellOrderUsecase(
+      wallet: WalletFacade(
+        const Stream.empty(),
+        spendStatus: (_, {replacing}) async => spendStatus,
+      ),
+      mainnetExchangeOrderRepository: mainnet,
+      testnetExchangeOrderRepository: testnet,
+      settingsRepository: settings,
+      payjoinPolicy: payjoinPolicy,
+    );
+    final result = await guarded.execute(
+      walletId: 'wallet-1',
+      orderAmount: const FiatAmount(100),
+      currency: FiatCurrency.cad,
+      network: OrderBitcoinNetwork.bitcoin,
+    );
+    expect(
+      result,
+      isA<Err>().having(
+        (result) => result.failure,
+        'failure',
+        isA<SellUnsupportedNetworkFailure>(),
+      ),
+    );
+    verifyZeroInteractions(mainnet);
+    verifyZeroInteractions(testnet);
+    verifyZeroInteractions(payjoinPolicy);
+  });
 
   group('EUR recipient payouts', () {
     for (final network in OrderBitcoinNetwork.values) {
@@ -100,6 +176,7 @@ void main() {
               ),
             ).thenAnswer((_) async => order);
             final result = await usecase.execute(
+              walletId: 'wallet-1',
               orderAmount: const FiatAmount(100),
               currency: FiatCurrency.eur,
               network: network,
@@ -135,6 +212,7 @@ void main() {
       'requires confidential recipient activation before creation',
       () async {
         final result = await usecase.execute(
+          walletId: 'wallet-1',
           orderAmount: const FiatAmount(100),
           currency: FiatCurrency.eur,
           network: OrderBitcoinNetwork.bitcoin,
@@ -157,6 +235,7 @@ void main() {
         (FiatCurrency.eur, RecipientType.interacEmailCad),
       ]) {
         final result = await usecase.execute(
+          walletId: 'wallet-1',
           orderAmount: const FiatAmount(100),
           currency: currency,
           network: OrderBitcoinNetwork.bitcoin,
@@ -181,6 +260,7 @@ void main() {
           const BullBitcoinApiConfidentialSepaNotActivatedException(),
         );
         final result = await usecase.execute(
+          walletId: 'wallet-1',
           orderAmount: const FiatAmount(100),
           currency: FiatCurrency.eur,
           network: OrderBitcoinNetwork.bitcoin,
@@ -213,6 +293,7 @@ void main() {
       ).thenAnswer((_) async => _MockSellOrder());
 
       final _ = await usecase.execute(
+        walletId: 'wallet-1',
         orderAmount: const FiatAmount(100),
         currency: FiatCurrency.cad,
         network: OrderBitcoinNetwork.bitcoin,

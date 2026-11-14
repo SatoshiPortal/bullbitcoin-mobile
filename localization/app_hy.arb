@@ -3507,5 +3507,9 @@
   "sellPayoutSepaDescription": "Կանխիկացումները ցուցադրվում են որպես Leonod-ի կողմից ուղարկված",
   "sellPayoutTitle": "Ընտրեք ստացողին",
   "sellPayoutNewBadge": "ՆՈՐ",
+  "broadcastSignedTxErrorAlreadyInChain": "Այս գործարքն արդեն բլոկչեյնում է։ Հեռարձակելու այլևս ոչինչ չկա։",
+  "broadcastSignedTxErrorRejected": "Ցանցը մերժեց այս գործարքը։ Այն կարող է ամբողջությամբ ստորագրված չլինել, անվավեր լինել կամ հակասել մեկ այլ վճարման։",
+  "broadcastSignedTxErrorOutcomeUnknown": "Չհաջողվեց հաստատել, որ ձեր գործարքը հեռարձակվել է։ Նորից փորձելուց առաջ ստուգեք բլոկների դիտարկիչում։",
+  "broadcastSignedTxErrorNetworkNotEnabled": "Այս ցանցում հեռարձակումը միացված չէ ընթացիկ կարգավորումներում։",
   "coreScreensOutputsExceedInputs": "Ելքերը գերազանցում են մուտքերին․ այս գործարքն անվավեր է, և ցանցը կմերժի այն։"
 }

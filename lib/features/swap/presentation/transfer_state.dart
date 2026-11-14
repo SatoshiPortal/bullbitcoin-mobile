@@ -231,7 +231,8 @@ sealed class TransferState with _$TransferState {
   bool get isInsufficientBalance {
     if (fromWallet == null) return false;
     if (inputAmountSat <= 0) return false;
-    return inputAmountSat > fromWallet!.balanceSat.toInt();
+    final balance = fromWallet?.balanceSat;
+    return balance == null || inputAmountSat > balance.toInt();
   }
 
   bool get hasAmountError {
@@ -243,7 +244,7 @@ sealed class TransferState with _$TransferState {
 
     if (inputAmountSat <= 0) return null;
 
-    final balanceSat = fromWallet?.balanceSat.toInt() ?? 0;
+    final balanceSat = fromWallet?.balanceSat?.toInt() ?? 0;
     if (inputAmountSat > balanceSat) return null;
 
     final limits = swapLimits;

@@ -4613,5 +4613,9 @@
   "sellPayoutSepaDescription": "Виведення відображаються як перекази від Leonod",
   "sellPayoutTitle": "Вибрати одержувача",
   "sellPayoutNewBadge": "НОВЕ",
+  "broadcastSignedTxErrorAlreadyInChain": "Ця транзакція вже в блокчейні. Транслювати більше нічого.",
+  "broadcastSignedTxErrorRejected": "Мережа відхилила цю транзакцію. Можливо, її підписано не повністю, вона недійсна або конфліктує з іншим платежем.",
+  "broadcastSignedTxErrorOutcomeUnknown": "Не вдалося підтвердити, що транзакцію було трансльовано. Перевірте її в оглядачі блоків, перш ніж повторити спробу.",
+  "broadcastSignedTxErrorNetworkNotEnabled": "Трансляцію в цій мережі не ввімкнено в поточних налаштуваннях.",
   "coreScreensOutputsExceedInputs": "Виходи перевищують входи: ця транзакція недійсна, і мережа її відхилить."
 }

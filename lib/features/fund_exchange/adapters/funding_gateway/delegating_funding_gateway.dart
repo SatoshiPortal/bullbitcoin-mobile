@@ -25,25 +25,30 @@ class DelegatingFundingGateway implements FundingGatewayPort {
   @useResult
   Future<Result<FundingDetails, FundExchangeFailure>> getFundingDetails({
     required FundingMethod fundingMethod,
-  }) async {
-    final gateway = await _gateway;
-    return gateway.getFundingDetails(fundingMethod: fundingMethod);
-  }
+  }) => _withGateway(
+    (gateway) => gateway.getFundingDetails(fundingMethod: fundingMethod),
+  );
 
   @override
   @useResult
   Future<Result<List<FundingInstitution>, FundExchangeFailure>>
-  listInstitutions({required FundingJurisdiction jurisdiction}) async {
-    final gateway = await _gateway;
-    return gateway.listInstitutions(jurisdiction: jurisdiction);
-  }
+  listInstitutions({required FundingJurisdiction jurisdiction}) => _withGateway(
+    (gateway) => gateway.listInstitutions(jurisdiction: jurisdiction),
+  );
 
   @override
   @useResult
-  Future<Result<void, FundExchangeFailure>>
-  registerResponsibilityConsent() async {
-    final gateway = await _gateway;
-    return gateway.registerResponsibilityConsent();
+  Future<Result<void, FundExchangeFailure>> registerResponsibilityConsent() =>
+      _withGateway((gateway) => gateway.registerResponsibilityConsent());
+
+  Future<Result<T, FundExchangeFailure>> _withGateway<T>(
+    Future<Result<T, FundExchangeFailure>> Function(FundingGatewayPort) action,
+  ) async {
+    try {
+      return await action(await _gateway);
+    } on UnsupportedExchangeNetworkException {
+      return const Err(FundExchangeUnsupportedNetworkFailure());
+    }
   }
 
   Future<FundingGatewayPort> get _gateway async =>

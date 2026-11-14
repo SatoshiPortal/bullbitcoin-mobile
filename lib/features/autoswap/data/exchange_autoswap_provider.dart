@@ -2,15 +2,15 @@ import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/auto_swap.dart';
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/liquid_wallet_repository.dart';
+import 'package:bb_mobile/features/wallet/data/liquid_wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/get_receive_address_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/get_receive_address_usecase.dart';
 import 'package:bb_mobile/features/autoswap/domain/autoswap_failure.dart';
 import 'package:bb_mobile/features/autoswap/domain/autoswap_provider_port.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
-import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_liquid_transaction_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/broadcast_liquid_transaction_usecase.dart';
 
 class ExchangeAutoswapProvider implements AutoswapProviderPort {
   /// Fallback when the server sends no Retry-After.
@@ -87,7 +87,10 @@ class ExchangeAutoswapProvider implements AutoswapProviderPort {
         return Err(AutoswapProviderFailure(failure.runtimeType.toString()));
       }
 
-      final balanceSat = liquidWallet.balanceSat.toInt();
+      final balanceSat = liquidWallet.balanceSat?.toInt();
+      if (balanceSat == null) {
+        return const Err(AutoswapExecutionFailure('Wallet unavailable'));
+      }
       if (!settings.passedRequiredBalance(balanceSat)) {
         return Err(
           AutoswapInsufficientBalanceFailure(
@@ -104,6 +107,7 @@ class ExchangeAutoswapProvider implements AutoswapProviderPort {
         walletId: liquidWallet.id,
       );
       final feeResult = await _estimateNetworkFee(
+        balanceSat: balanceSat,
         wallet: liquidWallet,
         address: fallback.address,
         targetBalanceSat: settings.balanceThresholdSats,
@@ -121,7 +125,7 @@ class ExchangeAutoswapProvider implements AutoswapProviderPort {
         return const Err(AutoswapInsufficientBalanceFailure());
       }
 
-      final orderEnvironment = environment.isTestnet
+      final orderEnvironment = environment.requireHistoricalTestnet()
           ? OrderSwapEnvironment.testnet
           : OrderSwapEnvironment.mainnet;
       final quoteResult = await _swapFacade.getQuote(
@@ -253,8 +257,11 @@ class ExchangeAutoswapProvider implements AutoswapProviderPort {
     }
     final (_, actualFeeSat) = await _liquidWalletRepository
         .getPsetSizeAndAbsoluteFees(pset: pset);
-    final projectedBalanceSat =
-        wallet.balanceSat.toInt() - actualAmount - actualFeeSat;
+    final balance = wallet.balanceSat;
+    if (balance == null) {
+      return const Err(AutoswapExecutionFailure('Wallet unavailable'));
+    }
+    final projectedBalanceSat = balance.toInt() - actualAmount - actualFeeSat;
     if (projectedBalanceSat < settings.balanceThresholdSats) {
       return const Err(AutoswapTargetBalanceFailure());
     }
@@ -305,7 +312,7 @@ class ExchangeAutoswapProvider implements AutoswapProviderPort {
     }
     final txid = await _broadcastLiquidTransaction.execute(
       signedTransaction,
-      isTestnet: wallet.isTestnet,
+      isTestnet: wallet.network.requireHistoricalTestnet(),
     );
     final paidResult = await _swapFacade.markPayinBroadcast(
       localId: record.localId,
@@ -325,11 +332,12 @@ class ExchangeAutoswapProvider implements AutoswapProviderPort {
   }
 
   Future<Result<int, AutoswapFailure>> _estimateNetworkFee({
+    required int balanceSat,
     required Wallet wallet,
     required String address,
     required int targetBalanceSat,
   }) async {
-    final provisionalAmount = wallet.balanceSat.toInt() - targetBalanceSat;
+    final provisionalAmount = balanceSat - targetBalanceSat;
     final preparation = await _liquidWalletRepository.buildPset(
       walletId: wallet.id,
       address: address,
