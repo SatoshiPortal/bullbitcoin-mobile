@@ -1,7 +1,6 @@
-import 'dart:io';
-
+import 'package:bull_sqlite/bull_sqlite.dart';
 import 'package:drift/drift.dart';
-import 'package:drift/native.dart';
+import 'package:primitives/primitives.dart' show DatabaseKey, Result;
 
 import 'payjoin_database.steps.dart';
 
@@ -97,18 +96,13 @@ final class PayjoinDatabase extends _$PayjoinDatabase {
 
   PayjoinDatabase._(super.executor);
 
-  factory PayjoinDatabase.open(String path) {
-    return PayjoinDatabase._(
-      NativeDatabase.createInBackground(
-        File(path),
-        setup: (database) {
-          database.execute('PRAGMA busy_timeout = 2000;');
-          database.execute('PRAGMA journal_mode = WAL;');
-          database.execute('PRAGMA synchronous = FULL;');
-        },
-      ),
-    );
-  }
+  /// Opens the encrypted database at [path] with [key], creating it encrypted if it does not exist.
+  ///
+  /// There is no way to open it without a key: a plaintext database is refused, because the app encrypts it before Payjoin opens (`features/local_data`).
+  static Result<PayjoinDatabase, SqliteStorageFailure> open(
+    String path,
+    DatabaseKey key,
+  ) => EncryptedSqlite.open(path, key, fullSync: true).map(PayjoinDatabase._);
 
   factory PayjoinDatabase.forTesting(QueryExecutor executor) =
       PayjoinDatabase._;

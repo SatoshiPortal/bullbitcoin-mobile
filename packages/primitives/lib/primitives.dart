@@ -6,6 +6,7 @@
 library;
 
 export 'src/bitcoin_unit.dart';
+export 'src/database_key.dart';
 export 'src/failure.dart';
 export 'src/money.dart';
 export 'src/bitcoin_transaction_recipient.dart';

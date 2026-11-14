@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:bull_recoverbull/bull_recoverbull.dart';
+import 'package:bull_sqlite/bull_sqlite.dart';
 import 'package:bull_recoverbull/src/data/backup_metadata_repository_impl.dart';
 import 'package:bull_recoverbull/src/data/database/recoverbull_database.dart';
 import 'package:bull_recoverbull/src/data/database/recoverbull_storage.dart';
@@ -10,6 +11,7 @@ import 'package:primitives/primitives.dart';
 import 'package:sqlite3/sqlite3.dart';
 
 void main() {
+  final key = DatabaseKey.fromHex('42' * 32);
   late Directory directory;
   late String path;
   late RecoverBullStorage owner;
@@ -29,7 +31,7 @@ void main() {
   setUp(() async {
     directory = await Directory.systemTemp.createTemp('recoverbull-storage-');
     path = '${directory.path}/recoverbull.sqlite';
-    owner = RecoverBullStorage(path);
+    owner = RecoverBullStorage(path, key: key);
   });
   tearDown(() async {
     await owner.dispose();
@@ -43,7 +45,7 @@ void main() {
     final repository = BackupMetadataRepositoryImpl(connections.first);
     _ok(await repository.markVerified(context, vault));
     await owner.dispose();
-    owner = RecoverBullStorage(path);
+    owner = RecoverBullStorage(path, key: key);
     final reopened = BackupMetadataRepositoryImpl(await owner.open());
     expect(_ok(await reopened.status(context)).isVerified, isTrue);
   });
@@ -109,10 +111,11 @@ void main() {
 
   test('future schema is refused without changing its bytes', () async {
     final future = sqlite3.open(path);
+    SqliteCipher.key(future, key);
     future.execute('CREATE TABLE future_data (value TEXT)');
     future.execute("INSERT INTO future_data VALUES ('preserve')");
     future.execute('PRAGMA user_version = 99');
-    future.dispose();
+    future.close();
     final before = await File(path).readAsBytes();
     await expectLater(owner.open(), throwsA(anything));
     expect(await File(path).readAsBytes(), before);
@@ -125,18 +128,22 @@ void main() {
       final interrupted = RecoverBullDatabase.forTesting(
         NativeDatabase(
           File(path),
-          setup: (database) => database.commitFilter = () => false,
+          setup: (database) {
+            SqliteCipher.key(database, key);
+            database.commitFilter = () => false;
+          },
         ),
       );
       await expectLater(interrupted.forceOpen(), throwsA(anything));
       await interrupted.close();
       final raw = sqlite3.open(path);
+      SqliteCipher.key(raw, key);
       expect(
         raw.select("SELECT name FROM sqlite_master WHERE type = 'table'"),
         isEmpty,
       );
       expect(raw.select('PRAGMA user_version').single['user_version'], 0);
-      raw.dispose();
+      raw.close();
       final repository = BackupMetadataRepositoryImpl(await owner.open());
       expect(_ok(await repository.settings()).permissionGranted, isFalse);
     },

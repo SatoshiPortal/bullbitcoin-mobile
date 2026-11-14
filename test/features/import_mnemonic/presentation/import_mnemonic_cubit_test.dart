@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
+import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/features/import_mnemonic/domain/check_duplicate_mnemonic_usecase.dart';
 import 'package:bb_mobile/features/import_mnemonic/domain/import_mnemonic_failure.dart';
 import 'package:bb_mobile/features/import_mnemonic/domain/import_wallet_usecase.dart';
@@ -16,6 +18,8 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart'
     show ScriptType, Wallet;
 
 class MockWallet extends Mock implements Wallet {}
+
+class MockWalletRepository extends Mock implements WalletRepository {}
 
 class MockImportWalletUsecase extends Mock implements ImportWalletUsecase {}
 
@@ -59,11 +63,16 @@ void main() {
   test('accepts a Japanese vector before scanning', () async {
     FakeSecureStoragePlatform().install();
     final secrets = Secrets(scratchDirectory: () async => '/tmp');
+    final wallets = MockWalletRepository();
+    when(
+      () => wallets.getWallets(),
+    ).thenAnswer((_) async => Ok<List<Wallet>, WalletFailure>([]));
     final cubit = ImportMnemonicCubit(
       importWalletUsecase: importWallet,
       scanMnemonicUsecase: scanMnemonic,
       checkDuplicateMnemonicUsecase: CheckDuplicateMnemonicUsecase(
         secrets: secrets,
+        walletRepository: wallets,
       ),
     );
     addTearDown(cubit.close);

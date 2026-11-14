@@ -32,6 +32,7 @@ final class RecoverBullFeature {
 
   static Future<RecoverBullFeature> mount({
     required String databasePath,
+    required DatabaseKey databaseKey,
     required Secrets secrets,
     required RecoverBullWalletPort wallets,
     required RecoverBullEnvironmentPort environment,
@@ -41,6 +42,7 @@ final class RecoverBullFeature {
   }) async {
     final runtime = await RecoverBullRuntime.open(
       databasePath: databasePath,
+      databaseKey: databaseKey,
       secrets: secrets,
       wallets: wallets,
       environment: environment,
@@ -48,21 +50,26 @@ final class RecoverBullFeature {
       routes: routes,
       clients: clients,
     );
-    final vaults = SecretsVaultRepository(secrets);
-    return RecoverBullFeature._(
-      RecoverBullFacade(
-        CreateVaultUsecase(vaults, wallets),
-        TestVaultUsecase(vaults, wallets),
-        RestoreVaultUsecase(vaults, wallets),
-        runtime.readStatus,
-        runtime.coldStart,
-        runtime.checkServer,
-        runtime.parseVault,
-        runtime.settings,
-        runtime.recoverServerVault,
-      ),
-      runtime,
-    );
+    try {
+      final vaults = SecretsVaultRepository(secrets);
+      return RecoverBullFeature._(
+        RecoverBullFacade(
+          CreateVaultUsecase(vaults, wallets),
+          TestVaultUsecase(vaults, wallets),
+          RestoreVaultUsecase(vaults, wallets),
+          runtime.readStatus,
+          runtime.coldStart,
+          runtime.checkServer,
+          runtime.parseVault,
+          runtime.settings,
+          runtime.recoverServerVault,
+        ),
+        runtime,
+      );
+    } catch (_) {
+      await runtime.dispose();
+      rethrow;
+    }
   }
 
   GoRoute route({

@@ -12,6 +12,8 @@ resolution: workspace
 
 dependencies:
   bs58check: ^1.0.2
+  # Hex for `DatabaseKey`; already in the workspace lockfile.
+  convert: ^3.1.2
   meta: ^1.17.0
 
 dev_dependencies:

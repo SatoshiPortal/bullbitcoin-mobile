@@ -17,6 +17,7 @@ import 'package:bull_payjoin/src/engine/payjoin_logger.dart' as logger;
 import 'package:bull_payjoin/src/engine/pdk_payjoin_datasource.dart';
 import 'package:bull_payjoin/src/public/payjoin.dart';
 import 'package:bull_payjoin/src/public/payjoin_lifecycle.dart';
+import 'package:bull_sqlite/bull_sqlite.dart';
 import 'package:bull_payjoin/src/public/payjoin_roles.dart';
 import 'package:dio/dio.dart';
 import 'package:primitives/primitives.dart';
@@ -24,6 +25,7 @@ import 'package:synchronized/synchronized.dart';
 
 Future<Result<PayjoinLifecycle, PayjoinFailure>> openPayjoin({
   required String databasePath,
+  required DatabaseKey databaseKey,
   required PayjoinWalletPort wallet,
   required PayjoinBlockchainPort blockchain,
   required PayjoinFeesPort fees,
@@ -37,23 +39,28 @@ Future<Result<PayjoinLifecycle, PayjoinFailure>> openPayjoin({
   // other's destination, and the order of `openPayjoin` calls would silently
   // decide where a session's failures are reported.
   final payjoinLog = logger.PayjoinLogger(log);
-  var database = await _tryOpenDatabase(databasePath, payjoinLog);
-  if (database == null) {
-    // Self-heal: a corrupt database file or a schema downgrade would
-    // otherwise fail every open retry identically — and because
-    // reservedOutpoints() gates coin selection, that bricks every bitcoin
-    // send in the app until reinstall. Move the unreadable file aside (kept
-    // for forensics) and retry once with a fresh database; the legacy import
-    // below re-populates it from the root database's legacy tables. Sessions
-    // created after that import are lost, but their funds are not: a
-    // sender's counterparty still holds the original and can broadcast it,
-    // and a receiver's sender owns their own fallback.
-    database = await _quarantineAndReopenDatabase(databasePath, payjoinLog);
-    if (database == null) {
+  final PayjoinDatabase database;
+  switch (await _tryOpenDatabase(databasePath, databaseKey, payjoinLog)) {
+    case _Opened(database: final opened):
+      database = opened;
+    case _Refused():
+      // A busy file, an I/O error, a full disk, a rejected key: retrying can help, recreating cannot, and the user's sessions are still in that file. Nothing is moved aside.
       return const Err(
-        PayjoinMigrationFailure('Could not open or migrate Payjoin storage'),
+        PayjoinMigrationFailure('Could not open Payjoin storage'),
       );
-    }
+    case _Unrecoverable():
+      // Self-heal, for a positively identified corrupt file only: those fail every retry identically — and because reservedOutpoints() gates coin selection, that bricks every bitcoin send in the app until reinstall. Move the whole family aside (kept, still encrypted, for forensics) and retry once with a fresh database; the legacy import below re-populates it from the root database's legacy tables. Sessions created after that import are lost, but their funds are not: a sender's counterparty still holds the original and can broadcast it, and a receiver's sender owns their own fallback.
+      final reopened = await _quarantineAndReopenDatabase(
+        databasePath,
+        databaseKey,
+        payjoinLog,
+      );
+      if (reopened == null) {
+        return const Err(
+          PayjoinMigrationFailure('Could not open or migrate Payjoin storage'),
+        );
+      }
+      database = reopened;
   }
 
   try {
@@ -99,52 +106,107 @@ Future<Result<PayjoinLifecycle, PayjoinFailure>> openPayjoin({
   }
 }
 
-Future<PayjoinDatabase?> _tryOpenDatabase(
+/// What an open attempt concluded.
+sealed class _OpenOutcome {
+  const _OpenOutcome();
+}
+
+final class _Opened extends _OpenOutcome {
+  final PayjoinDatabase database;
+
+  const _Opened(this.database);
+}
+
+/// SQLite positively identified corruption; a retry cannot repair the file.
+final class _Unrecoverable extends _OpenOutcome {
+  const _Unrecoverable();
+}
+
+/// Anything else. Nothing is moved; a later attempt may succeed.
+final class _Refused extends _OpenOutcome {
+  const _Refused();
+}
+
+Future<_OpenOutcome> _tryOpenDatabase(
   String databasePath,
+  DatabaseKey key,
   logger.PayjoinLogger payjoinLog,
 ) async {
+  // A quarantine cut short by a crash is finished first, as it was decided.
+  if (EncryptedSqlite.resumeRetirement(databasePath) case Err(:final failure)) {
+    return _refused(failure, payjoinLog);
+  }
+  // Read before drift opens: a file newer than this build would otherwise reach the migration strategy.
+  if (File(databasePath).existsSync()) {
+    switch (EncryptedSqlite.userVersion(databasePath, key)) {
+      case Ok(:final value) when value > PayjoinDatabase.schema:
+        _logOpenFailure(payjoinLog, 'schema is newer than this build');
+        return const _Refused();
+      case Ok():
+        break;
+      case Err(:final failure):
+        return failure is SqliteCorruptFailure
+            ? _unrecoverable(failure, payjoinLog)
+            : _refused(failure, payjoinLog);
+    }
+  }
+  final PayjoinDatabase database;
+  switch (PayjoinDatabase.open(databasePath, key)) {
+    case Ok(:final value):
+      database = value;
+    case Err(:final failure):
+      return _refused(failure, payjoinLog);
+  }
   try {
-    final database = PayjoinDatabase.open(databasePath);
     // Force the lazy open NOW: drift spawns the background isolate, opens
     // the file and runs schema migrations on the first statement, so a
-    // corrupt file or a schema downgrade surfaces here rather than
-    // mid-import.
+    // corrupt file surfaces here rather than mid-import.
     await database.customSelect('SELECT 1').getSingle();
-    return database;
-  } catch (error, trace) {
-    payjoinLog.severe(
-      code: PayjoinLogCode.migrationFailure,
-      error: error,
-      trace: trace,
-    );
-    return null;
+    return _Opened(database);
+  } on Exception catch (error) {
+    await database.close();
+    final failure = EncryptedSqlite.failureOf(error);
+    return failure is SqliteCorruptFailure
+        ? _unrecoverable(failure, payjoinLog)
+        : _refused(failure, payjoinLog);
   }
+}
+
+_OpenOutcome _refused(
+  SqliteStorageFailure failure,
+  logger.PayjoinLogger payjoinLog,
+) {
+  _logOpenFailure(payjoinLog, '$failure');
+  return const _Refused();
+}
+
+_OpenOutcome _unrecoverable(
+  SqliteStorageFailure failure,
+  logger.PayjoinLogger payjoinLog,
+) {
+  _logOpenFailure(payjoinLog, '$failure');
+  return const _Unrecoverable();
+}
+
+/// [reason] is a failure type or a fixed string: never SQL, which may hold the key.
+void _logOpenFailure(logger.PayjoinLogger payjoinLog, String reason) {
+  payjoinLog.severe(
+    code: PayjoinLogCode.migrationFailure,
+    error: StateError('Payjoin storage did not open: $reason'),
+    trace: StackTrace.current,
+  );
 }
 
 Future<PayjoinDatabase?> _quarantineAndReopenDatabase(
   String databasePath,
+  DatabaseKey key,
   logger.PayjoinLogger payjoinLog,
 ) async {
-  try {
-    final suffix =
-        '.unreadable-${DateTime.now().toUtc().millisecondsSinceEpoch}';
-    // The WAL and SHM siblings belong to the unreadable database: leaving
-    // them in place would let SQLite replay them into the FRESH database
-    // created at the same path. Rename all three together.
-    for (final path in [
-      databasePath,
-      '$databasePath-wal',
-      '$databasePath-shm',
-    ]) {
-      final file = File(path);
-      if (file.existsSync()) await file.rename('$path$suffix');
-    }
-  } catch (error, trace) {
-    payjoinLog.severe(
-      code: PayjoinLogCode.migrationFailure,
-      error: error,
-      trace: trace,
-    );
+  // The whole family, journals and WAL included, through a marker that a crash cannot leave half done: a sidecar left behind would be replayed into the fresh database.
+  if (EncryptedSqlite.retire(databasePath, Retirement.unreadable()) case Err(
+    :final failure,
+  )) {
+    _logOpenFailure(payjoinLog, '$failure');
     return null;
   }
   payjoinLog.warning(
@@ -154,7 +216,10 @@ Future<PayjoinDatabase?> _quarantineAndReopenDatabase(
       'sessions created after the legacy import were lost',
     ),
   );
-  return _tryOpenDatabase(databasePath, payjoinLog);
+  return switch (await _tryOpenDatabase(databasePath, key, payjoinLog)) {
+    _Opened(:final database) => database,
+    _Refused() || _Unrecoverable() => null,
+  };
 }
 
 final class _PayjoinLifecycle implements PayjoinLifecycle {

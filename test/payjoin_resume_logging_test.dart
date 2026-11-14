@@ -67,6 +67,7 @@ void main() {
       Future<PayjoinLifecycle> open() async {
         final result = await openPayjoin(
           databasePath: '${dir.path}/payjoin.sqlite',
+          databaseKey: DatabaseKey.fromHex('42' * 32),
           wallet: _Wallet(),
           blockchain: _Blockchain(),
           fees: _Fees(),

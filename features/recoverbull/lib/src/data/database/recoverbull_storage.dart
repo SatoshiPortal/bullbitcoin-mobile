@@ -1,4 +1,5 @@
 import 'package:drift/native.dart' show NativeDatabase;
+import 'package:primitives/primitives.dart' show DatabaseKey;
 
 import '../../domain/recoverbull_failure.dart';
 import '../recoverbull_storage_failure.dart';
@@ -7,13 +8,14 @@ import 'recoverbull_database.dart';
 /// Owns a single connection and preserves unavailable or future databases.
 final class RecoverBullStorage {
   final String path;
+  final DatabaseKey key;
   Future<RecoverBullDatabase>? _opening;
   RecoverBullDatabase? _database;
   bool _disposed = false;
   bool _temporary = false;
   RecoverBullFailure? _unavailableFailure;
 
-  RecoverBullStorage(this.path);
+  RecoverBullStorage(this.path, {required this.key});
 
   bool get isTemporary => _temporary;
   RecoverBullFailure? get unavailableFailure => _unavailableFailure;
@@ -28,12 +30,13 @@ final class RecoverBullStorage {
   }
 
   Future<RecoverBullDatabase> _open() async {
-    final database = RecoverBullDatabase.open(path);
+    RecoverBullDatabase? database;
     try {
+      database = RecoverBullDatabase.open(path, key: key);
       await database.forceOpen();
-    } on Exception catch (error) {
+    } catch (error) {
       _unavailableFailure = recoverBullStorageFailure(error);
-      await database.close();
+      if (database != null) await database.close();
       // Replacing corrupt metadata would silently discard own-operation
       // markers and alarms. Preserve the file and offer manual-key recovery.
       rethrow;
@@ -72,9 +75,16 @@ final class RecoverBullStorage {
   Future<void> dispose() async {
     if (_disposed) return;
     _disposed = true;
+    final opening = _opening;
+    if (opening != null) {
+      try {
+        await opening;
+      } catch (_) {
+        // The opening path closes its own connection on failure or disposal.
+      }
+    }
     final database = _database;
     _database = null;
     if (database != null) await database.close();
-    // An in-flight open observes _disposed and closes its own connection.
   }
 }

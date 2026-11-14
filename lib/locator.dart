@@ -62,21 +62,22 @@ import 'package:bb_mobile/features/withdraw/withdraw_locator.dart';
 import 'package:bb_mobile/features/wizard/wizard_locator.dart';
 import 'package:get_it/get_it.dart';
 import 'package:bull_logs/bull_logs.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:secrets/secrets.dart';
 
 final GetIt locator = GetIt.instance;
 
 class AppLocator {
   /// Foreground-only composition. Headless setup never opens this database.
-  static Future<void> setupRecoverBull(
+  static Future<RecoverBullFeature> setupRecoverBull(
     GetIt locator, {
     required String databasePath,
+    required DatabaseKey databaseKey,
   }) async {
     SettingsRecoverBullBindings.setup(locator);
     WalletRecoverBullBindings.setup(locator);
     final feature = await RecoverBullFeature.mount(
       databasePath: databasePath,
+      databaseKey: databaseKey,
       secrets: locator<Secrets>(),
       wallets: locator<RecoverBullWalletPort>(),
       environment: locator<RecoverBullEnvironmentPort>(),
@@ -84,32 +85,35 @@ class AppLocator {
       routes: locator<RecoverBullRoutePort>(),
       clients: locator<TorHttpClientFactory>(),
     );
-    locator.registerSingleton<RecoverBullFeature>(
-      feature,
-      dispose: (value) => value.dispose(),
-    );
-    locator.registerSingleton<RecoverBullFacade>(feature.facade);
+    try {
+      locator.registerSingleton<RecoverBullFeature>(
+        feature,
+        dispose: (value) => value.dispose(),
+      );
+      locator.registerSingleton<RecoverBullFacade>(feature.facade);
+      return feature;
+    } catch (_) {
+      await feature.dispose();
+      rethrow;
+    }
   }
 
   /// Call this in the `main` function **before** `runApp()`
   static Future<void> setup(
     GetIt locator,
     SqliteDatabase database, {
+    required Secrets secrets,
     required String payjoinDatabasePath,
+    required DatabaseKey payjoinDatabaseKey,
     bool startPayjoinRecovery = true,
     bool startOrderSwapWatcher = true,
     bool startAutoswapWatcher = true,
   }) async {
     locator.enableRegisteringMultipleInstancesOfOneType();
 
-    // One instance per isolate; background tasks must not use its keystore.
-    // Liquid signing removes its temporary children after use. Stale caches
-    // contain blinding material, so keep them in the OS's non-backed-up cache.
-    locator.registerLazySingleton<Secrets>(
-      () => Secrets(
-        scratchDirectory: () async => (await getTemporaryDirectory()).path,
-      ),
-    );
+    // Built by the shell before the local databases are unlocked, which needs
+    // their keys; one instance for the whole foreground run.
+    locator.registerSingleton<Secrets>(secrets);
 
     // Register core dependencies first
     CoreLocator.register(locator, database);
@@ -128,6 +132,7 @@ class AppLocator {
       locator,
       database,
       payjoinDatabasePath,
+      databaseKey: payjoinDatabaseKey,
       startRecovery: startPayjoinRecovery,
     );
 

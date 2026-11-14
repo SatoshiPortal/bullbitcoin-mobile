@@ -71,6 +71,7 @@ void main() {
       await AppLocator.setupRecoverBull(
         services,
         databasePath: '${directory.path}/recoverbull.sqlite',
+        databaseKey: DatabaseKey.fromHex('42' * 32),
       );
 
       expect(

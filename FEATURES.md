@@ -16,12 +16,14 @@ graph TB
     BULL_LOGGER[Bull Logger Package<br/>Logger, diagnostics, log files]
     BULL_PAYJOIN[Bull Payjoin Package<br/>Public contract]
     BULL_PRICER[Bull Pricer Package<br/>Bitcoin price and history]
+    BULL_SQLITE[Bull Sqlite Package<br/>Local databases encrypted at rest]
 
     %% Feature modules
     IMPORT_MNEMONIC[Mnemonic Import]
     ONBOARDING[Onboarding]
     SETTINGS[Settings]
     LOGS[Logs<br/>Workspace Feature]
+    LOCAL_DATA[Local Data<br/>Workspace Feature]
     ELECTRUM_SETTINGS[Electrum Settings]
     TOR_SETTINGS[Tor Settings]
     RECOVERBULL[RecoverBull<br/>Workspace Feature]
@@ -85,8 +87,15 @@ graph TB
     SETTINGS --> LOGS
     CORE --> BULL_PAYJOIN
     BULL_PAYJOIN --> PRIMITIVES
+    BULL_PAYJOIN --> BULL_SQLITE
     CORE --> BULL_PRICER
     BULL_PRICER --> PRIMITIVES
+    BULL_SQLITE --> PRIMITIVES
+    LOCAL_DATA --> BULL_SQLITE
+    LOCAL_DATA --> SECRETS
+    LOCAL_DATA --> BULL_LOGGER
+    LOCAL_DATA --> BULL_UI
+    LOCAL_DATA --> PRIMITIVES
     BTC_PRICE --> BULL_PRICER
     BUY --> BULL_PRICER
     PAY --> BULL_PRICER
@@ -200,6 +209,7 @@ graph TB
     WALLETS --> ELECTRUM_SETTINGS
     RECOVERBULL --> TOR
     RECOVERBULL --> SECRETS
+    RECOVERBULL --> BULL_SQLITE
     RECOVERBULL --> PRIMITIVES
     RECOVERBULL --> BULL_LOGGER
     RECOVERBULL --> BULL_UI

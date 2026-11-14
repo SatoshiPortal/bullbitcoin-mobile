@@ -1,0 +1,23 @@
+name: bull_sqlite
+description: Local SQLite databases encrypted at rest with SQLite3MultipleCiphers.
+publish_to: "none"
+version: 0.1.0
+
+environment:
+  sdk: "3.12.2"
+
+resolution: workspace
+
+dependencies:
+  drift: 2.34.0
+  # `fsync` of a directory, which `dart:io` does not offer. Already in the
+  # workspace lockfile.
+  ffi: ^2.2.0
+  meta: ^1.17.0
+  path: ^1.9.0
+  primitives:
+  sqlite3: ^3.5.2
+
+dev_dependencies:
+  lints: ^6.0.0
+  test: ^1.26.3

@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_network.dart';
 import 'package:bb_mobile/core/storage/migrations/migrations.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.steps.dart';
@@ -23,14 +21,6 @@ import 'package:bb_mobile/core/storage/tables/swaps_table.dart';
 import 'package:bb_mobile/core/storage/tables/transactions_table.dart';
 import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart';
 import 'package:drift/drift.dart';
-import 'package:drift/isolate.dart';
-import 'package:drift/native.dart';
-import 'package:drift_flutter/drift_flutter.dart';
-import 'package:flutter/foundation.dart' show visibleForTesting;
-import 'package:flutter/services.dart';
-import 'package:path/path.dart' as p;
-import 'package:path_provider/path_provider.dart';
-import 'package:sqlite3/sqlite3.dart' show OpenMode, sqlite3;
 
 part 'sqlite_database.g.dart';
 
@@ -58,73 +48,10 @@ part 'sqlite_database.g.dart';
 class SqliteDatabase extends _$SqliteDatabase {
   static const name = 'bullbitcoin_sqlite';
 
-  /// The file `driftDatabase(name: name)` opens in the foreground.
-  static Future<File> _databaseFile() async {
-    final dbFolder = await getApplicationDocumentsDirectory();
-    return File(p.join(dbFolder.path, '${SqliteDatabase.name}.sqlite'));
-  }
-
-  /// Whether the database exists and is already at [currentSchemaVersion].
+  /// Opens nothing itself. In the app the executor comes only from `LocalData` (features/local_data), which keys every connection before anything runs on it; tests pass their own.
   ///
-  /// Only the foreground app may migrate. A background task opening the
-  /// database on its own connection while the app migrates it races the
-  /// migration (#3045), so background tasks skip until this is true.
-  static Future<bool> isAtCurrentSchema() async =>
-      isFileAtCurrentSchema(await _databaseFile());
-
-  /// Reads `user_version` directly, without drift: opening through drift
-  /// would run the migrations this check exists to avoid. Never creates the
-  /// file.
-  @visibleForTesting
-  static bool isFileAtCurrentSchema(File file) {
-    if (!file.existsSync()) return false;
-    final database = sqlite3.open(file.path, mode: OpenMode.readWrite);
-    try {
-      database.execute('PRAGMA busy_timeout = 2000;');
-      return database.userVersion == currentSchemaVersion;
-    } finally {
-      database.dispose();
-    }
-  }
-
-  static Future<DriftIsolate> createIsolateWithSpawn() async {
-    final token = RootIsolateToken.instance!;
-    return await DriftIsolate.spawn(() {
-      BackgroundIsolateBinaryMessenger.ensureInitialized(token);
-
-      return LazyDatabase(() async {
-        return NativeDatabase(
-          await _databaseFile(),
-          setup: (database) {
-            // busy_timeout MUST be set FIRST so the subsequent
-            // `journal_mode = WAL` switch retries (instead of
-            // returning `database is locked, errno=261` —
-            // SQLITE_BUSY_RECOVERY — and surfacing as the
-            // "database is locked (code 261)" the production logs
-            // showed) if the main isolate holds the file when this
-            // BG-spawned isolate opens it. The busy handler is
-            // connection-scoped (sqlite3_busy_timeout) and applies
-            // to every operation issued on this connection
-            // afterwards, including PRAGMA writes that wait for an
-            // exclusive lock to flip journal modes. 2000ms gives
-            // 2× headroom over typical FG write durations (<1s);
-            // longer values risk wedging this BG isolate behind a
-            // hung FG transaction.
-            database.execute('PRAGMA busy_timeout = 2000;');
-            // With write-ahead logging (WAL) enabled, a single writer
-            // and multiple readers can operate on the database in
-            // parallel.
-            database.execute('PRAGMA journal_mode = WAL;');
-            // Maximum durability: fsync before and after every write.
-            database.execute('PRAGMA synchronous = FULL;');
-          },
-        );
-      });
-    });
-  }
-
-  SqliteDatabase([QueryExecutor? executor])
-    : super(executor ?? _openConnection());
+  /// Only the foreground app opens it. A background task opening it on its own connection while the app migrates it races the migration (#3045), and while the app encrypts or resets it would race that too.
+  SqliteDatabase(super.executor);
 
   /// Current drift schema version. Bump in lockstep with adding a new
   /// `Schema<N-1>To<N>.migrate` step in [migration] and regenerating the
@@ -133,40 +60,6 @@ class SqliteDatabase extends _$SqliteDatabase {
 
   @override
   int get schemaVersion => currentSchemaVersion;
-
-  static QueryExecutor _openConnection() {
-    return driftDatabase(
-      name: name,
-      native: DriftNativeOptions(
-        databaseDirectory: getApplicationDocumentsDirectory,
-
-        /// When using a shared instance, stream queries synchronize across the two
-        /// isolates. Also, drift then manages concurrent access to the database,
-        /// preventing "database is locked" errors due to concurrent transactions.
-        shareAcrossIsolates: true,
-        setup: (database) {
-          // busy_timeout MUST be set FIRST so subsequent PRAGMA
-          // writes that require an exclusive lock (notably
-          // `journal_mode = WAL`) retry instead of returning
-          // `SQLITE_BUSY_RECOVERY` (extended errno 261 — the
-          // "database is locked (code 261)" we saw in production
-          // logs) when another isolate or the BG-spawned drift
-          // isolate is holding the file. 2000ms is held conservative
-          // for the FG path: a UI-thread query blocked on the timeout
-          // freezes the app, and the FG `_openConnection` runs at
-          // startup before any BG isolate exists so contention here
-          // is essentially zero anyway.
-          database.execute('PRAGMA busy_timeout = 2000;');
-          // With write-ahead logging (WAL) enabled, a single writer and
-          // multiple readers can operate on the database in parallel.
-          // Required to avoid cross-isolate "database locked" errors.
-          database.execute('PRAGMA journal_mode = WAL;');
-          // Ensure maximum durability: fsync before and after every write.
-          database.execute('PRAGMA synchronous = FULL;');
-        },
-      ),
-    );
-  }
 
   @override
   MigrationStrategy get migration {

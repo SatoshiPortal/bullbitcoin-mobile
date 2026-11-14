@@ -9,10 +9,14 @@ import 'package:meta/meta.dart';
 /// database and nothing else. It cannot reach a seed, and it cannot open
 /// another package's database.
 ///
-/// Hand it to SQLCipher in **raw mode** — `PRAGMA key = "x'<hex>'"`,
+/// Generated and kept by `secrets` (`Secrets.databaseKeys`); declared here
+/// so that the pure-Dart packages that open a database can name it without
+/// depending on the custody package.
+///
+/// Hand it to the cipher in **raw mode** — `PRAGMA key = "x'<hex>'"`,
 /// which [pragma] spells for you. Passing [hex] as a bare string makes
-/// SQLCipher treat it as a passphrase and run 256 000 PBKDF2 rounds over
-/// an already-random key: pure loss, roughly 200 ms per database open.
+/// the cipher treat it as a passphrase and run a key derivation over
+/// an already-random key: pure loss on every database open.
 @immutable
 final class DatabaseKey {
   static const lengthInBytes = 32;
