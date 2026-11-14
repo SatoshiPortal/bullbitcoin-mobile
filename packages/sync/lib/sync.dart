@@ -9,6 +9,7 @@ library;
 
 export 'src/public/sync.dart'
     show
+        BackgroundRevision,
         BackgroundSync,
         Sync,
         SyncChanges,

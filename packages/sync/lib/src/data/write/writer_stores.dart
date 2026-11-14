@@ -114,6 +114,9 @@ final class ExistingStores {
 
   WalletRevisionReaderPort get revisions => _revisions;
 
+  /// Every state this isolate reads, for all wallets.
+  Stream<WalletRevisionState> get changes => _revisions.changes;
+
   Future<void> close() async {
     try {
       await _revisions.close();

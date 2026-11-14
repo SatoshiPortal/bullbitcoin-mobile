@@ -440,18 +440,25 @@ extension type const WalletOwnsGroup._(Wallet _wallet) {
       .owns(_wallet.key, _wallet.generation, outpoint: outpoint);
 }
 
-/// What background code may do: refresh an existing wallet, then close.
+/// What background code may do: refresh an existing wallet, read the
+/// revision this isolate last saw, and close. Nothing else: no wallet
+/// handle, address, freeze, spend, creation, discovery or initial scan.
 final class BackgroundSync {
   final ExistingStores _stores;
   final WalletCatalogPort _catalog;
   final ElectrumSync _engine;
+  final _revisions = <WalletKey, WalletValue<WalletRevisionState>>{};
+  late final StreamSubscription<WalletRevisionState> _changes;
   bool _closed = false;
 
-  BackgroundSync._(this._stores, this._catalog, this._engine);
+  BackgroundSync._(this._stores, this._catalog, this._engine) {
+    _changes = _stores.changes.listen(_seen);
+  }
 
-  /// Synchronizes an existing store in a worker. Never creates, adopts or
-  /// repairs: those wait for the foreground. Incoming payment ids are
-  /// collected only with [collectIncoming].
+  /// Synchronizes an existing store in a worker, without discovery or an
+  /// initial scan: those wait for the foreground. Never creates, adopts or
+  /// repairs. Incoming payment ids are collected only with
+  /// [collectIncoming], for the background job's payment notifications.
   @useResult
   Future<Result<SyncCompletion, SyncFailure>> refresh(
     WalletKey key, {
@@ -460,19 +467,62 @@ final class BackgroundSync {
     if (_closed) return const Err(SyncClosedFailure());
     final descriptor = await _catalog.find(key);
     if (descriptor case Err(:final failure)) return Err(failure);
-    return _engine.execute(
+    final result = await _engine.execute(
       (descriptor as Ok<PublicWalletDescriptor, SyncFailure>).value,
       headless: true,
       reason: SyncReason.background,
+      discover: false,
       allowInitialScan: false,
       collectIncoming: collectIncoming,
     );
+    // Whatever the outcome, the revision it left is republished.
+    await _read(key);
+    return result;
+  }
+
+  /// `revision(key).now`: the revision state this isolate last read for
+  /// [key]. The first demand schedules a read; `now` never reads.
+  BackgroundRevision revision(WalletKey key) {
+    if (!_closed && !_revisions.containsKey(key)) {
+      _revisions[key] = const WalletValue.notLoaded();
+      unawaited(Future.microtask(() => _read(key)));
+    }
+    return BackgroundRevision._((this, key));
+  }
+
+  Future<void> _read(WalletKey key) async {
+    if (_closed) return;
+    // A read publishes on [ExistingStores.changes]; only a failure is
+    // recorded here.
+    if (await _stores.revisions.read(key) case Err(:final failure)) {
+      if (!_closed) _revisions[key] = WalletValue.unavailable(failure);
+    }
+  }
+
+  void _seen(WalletRevisionState state) {
+    if (_closed) return;
+    _revisions[state.stamp.key] = state.syncFailed
+        ? WalletValue.stale(state, state.stamp)
+        : WalletValue.ready(state, state.stamp);
   }
 
   Future<void> close() async {
     if (_closed) return;
     _closed = true;
+    _revisions.clear();
+    await _changes.cancel();
     await _stores.close();
+  }
+}
+
+/// `backgroundSync.revision(key)`: read-only, without IO.
+extension type const BackgroundRevision._((BackgroundSync, WalletKey) _of) {
+  /// The last state read in this isolate: `notLoaded` until a first read,
+  /// `stale` after a failed sync, `closed` once the sync is closed.
+  WalletValue<WalletRevisionState> get now {
+    final (sync, key) = _of;
+    if (sync._closed) return const WalletValue.closed();
+    return sync._revisions[key] ?? const WalletValue.notLoaded();
   }
 }
 
