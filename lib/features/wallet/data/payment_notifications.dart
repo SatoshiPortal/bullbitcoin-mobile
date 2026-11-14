@@ -19,7 +19,7 @@ final class PaymentNotifications {
       lookupAppLocalizations(language?.locale ?? const Locale('en'));
 
   static NotificationsFacade create(
-    SqliteNotificationOutbox outbox,
+    NotificationStoreRepository outbox,
     Language? language,
   ) => NotificationsFacade(
     outbox: outbox,
@@ -73,12 +73,16 @@ final class PaymentNotifications {
   }
 }
 
+final class PaymentNotificationStoreUnavailable implements Exception {
+  const PaymentNotificationStoreUnavailable();
+}
+
 /// One app-owned outbox, with retry after transient startup failures.
 final class PaymentNotificationStore {
   final Future<String> Function() _documents;
   final Future<Language?> Function() _language;
   Future<NotificationsFacade>? _opening;
-  SqliteNotificationOutbox? _outbox;
+  NotificationStoreRepository? _outbox;
 
   PaymentNotificationStore(this._documents, this._language);
 
@@ -98,7 +102,13 @@ final class PaymentNotificationStore {
   Future<NotificationsFacade> _open() async {
     final documents = await _documents();
     final language = await _language();
-    final outbox = PaymentNotifications.openOutbox(documents);
+    // The foreground is the only creator of the store.
+    final outbox = switch (openForegroundNotificationStore(
+      p.join(documents, PaymentNotifications.outboxFilename),
+    )) {
+      Ok(:final value) => value,
+      Err() => throw const PaymentNotificationStoreUnavailable(),
+    };
     _outbox = outbox;
     return PaymentNotifications.create(outbox, language);
   }
@@ -107,7 +117,7 @@ final class PaymentNotificationStore {
     try {
       await _opening;
     } finally {
-      _outbox?.dispose();
+      await _outbox?.close();
       _outbox = null;
       _opening = null;
     }

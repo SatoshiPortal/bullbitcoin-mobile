@@ -14,12 +14,37 @@ import 'package:bull_tor/tor.dart';
 import 'package:bull_tor/tor_adapter.dart';
 import 'package:get_it/get_it.dart';
 import 'package:path/path.dart' as p;
+import 'package:path_provider/path_provider.dart';
 import 'package:primitives/primitives.dart';
 import 'package:transaction_sync/transaction_sync.dart';
 import 'package:transaction_sync/write.dart';
 import 'package:bb_mobile/features/electrum_settings/public/electrum_settings_facade.dart';
 
 const paymentNotificationChannelId = PaymentNotifications.channelId;
+const _queueFilename = 'wallet_transaction_sync_queue.sqlite';
+
+/// Foreground only, and the only creator of the queue and of the
+/// notification store, which the background task opens without creating.
+Future<void> prepareBackgroundWalletStores(GetIt locator) async {
+  if (!backgroundSyncAvailable) return;
+  final documents = await getApplicationDocumentsDirectory();
+  final queue = SqliteWalletSyncJobQueueRepository.openForeground(
+    p.join(documents.path, _queueFilename),
+  );
+  switch (queue) {
+    case Ok(:final value):
+      await value.close();
+    case Err(:final failure):
+      log.warning(
+        'Background queue unavailable category=${failure.runtimeType}',
+      );
+  }
+  try {
+    await locator<PaymentNotificationStore>().open();
+  } on Exception {
+    log.warning('Payment notification store unavailable');
+  }
+}
 
 Future<BackgroundTaskHandler> setupBackgroundWalletTask(
   BackgroundTaskResources resources,
