@@ -3212,11 +3212,17 @@ class SendCubit extends Cubit<SendState>
               // exactly as a successful start. A start that left nothing
               // behind, or found only a terminal row (settled, aborted or
               // expired, which the session stream never replays), falls
-              // through to the error path.
+              // through to the error path. So does a live row for another
+              // payment on the same link (a different wallet or amount): the
+              // link is the session id, and adopting it would report this
+              // amount as sent when only the earlier one went out.
               final persisted = await _getPayjoinUsecase.execute(
                 paymentRequest.uri,
               );
-              if (persisted is! PayjoinSenderSession || !persisted.isOngoing) {
+              if (persisted is! PayjoinSenderSession ||
+                  !persisted.isOngoing ||
+                  persisted.walletId != wallet.id ||
+                  persisted.amountSat != state.confirmedAmountSat) {
                 emit(
                   state.copyWith(failure: failure, signingTransaction: false),
                 );

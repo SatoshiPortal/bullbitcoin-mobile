@@ -405,14 +405,16 @@ PayjoinSenderSession _sender({
   String? txId,
   String originalTxId = 'sender-orig-txid',
   PayjoinSpendBlockedFailure? spendFailure,
+  String walletId = 'w1',
+  int amountSat = 50000,
 }) => PayjoinSenderSession(
   spendFailure: spendFailure,
   status: status,
   uri: 'bitcoin:bc1qaddr?amount=0.0005&pj=https://payjo.in',
   network: BitcoinNetwork.mainnet,
-  walletId: 'w1',
+  walletId: walletId,
   originalTransactionId: originalTxId,
-  amount: Sats.fromInt(50000),
+  amount: Sats.fromInt(amountSat),
   createdAt: DateTime(2026),
   expiresAt: DateTime.now().add(const Duration(minutes: 1)),
   transactionId: txId,
@@ -4849,6 +4851,90 @@ void main() {
             network: any(named: 'network'),
           ),
         );
+      });
+    }
+
+    test('a failed payjoin start adopts a saved session that already holds '
+        'a proposal', () async {
+      final cubit = buildCubit();
+      addTearDown(cubit.close);
+      when(
+        () => sendWithPayjoinUsecase.execute(
+          walletId: any(named: 'walletId'),
+          network: any(named: 'network'),
+          bip21: any(named: 'bip21'),
+          unsignedOriginalPsbt: any(named: 'unsignedOriginalPsbt'),
+          amountSat: any(named: 'amountSat'),
+          networkFeesSatPerVb: any(named: 'networkFeesSatPerVb'),
+        ),
+      ).thenAnswer(
+        (_) async => const Err<PayjoinSenderSession, SendFailure>(
+          SendTransactionConfirmationFailure(
+            logMessage: 'A Payjoin session already exists for this payment',
+          ),
+        ),
+      );
+      when(
+        () => getPayjoinUsecase.execute(_payjoinBip21().uri),
+      ).thenAnswer((_) async => _sender(status: PayjoinStatus.proposed));
+      cubit.setStateForTest(
+        payjoinReadyState().copyWith(signedBitcoinPsbt: 'signed-regular-psbt'),
+      );
+
+      await cubit.onConfirmTransactionClicked();
+
+      expect(cubit.state.step, SendStep.sending);
+      expect(cubit.state.payjoinSender?.status, PayjoinStatus.proposed);
+    });
+
+    // The session id is the payment link, so a live row can belong to an
+    // earlier payment on the same link from another wallet or for another
+    // amount. Adopting it would report this amount as sent.
+    for (final (label, persisted) in [
+      (
+        'another wallet',
+        _sender(status: PayjoinStatus.requested, walletId: 'w2'),
+      ),
+      (
+        'another amount',
+        _sender(status: PayjoinStatus.requested, amountSat: 40000),
+      ),
+    ]) {
+      test('a failed payjoin start does not adopt a live session for $label '
+          'on the same link', () async {
+        final cubit = buildCubit();
+        addTearDown(cubit.close);
+        when(
+          () => sendWithPayjoinUsecase.execute(
+            walletId: any(named: 'walletId'),
+            network: any(named: 'network'),
+            bip21: any(named: 'bip21'),
+            unsignedOriginalPsbt: any(named: 'unsignedOriginalPsbt'),
+            amountSat: any(named: 'amountSat'),
+            networkFeesSatPerVb: any(named: 'networkFeesSatPerVb'),
+          ),
+        ).thenAnswer(
+          (_) async => const Err<PayjoinSenderSession, SendFailure>(
+            SendTransactionConfirmationFailure(
+              logMessage: 'A Payjoin session already exists for this payment',
+            ),
+          ),
+        );
+        when(
+          () => getPayjoinUsecase.execute(_payjoinBip21().uri),
+        ).thenAnswer((_) async => persisted);
+        cubit.setStateForTest(
+          payjoinReadyState().copyWith(
+            signedBitcoinPsbt: 'signed-regular-psbt',
+          ),
+        );
+
+        await cubit.onConfirmTransactionClicked();
+
+        expect(cubit.state.step, SendStep.confirm);
+        expect(cubit.state.failure, isA<SendTransactionConfirmationFailure>());
+        expect(cubit.state.payjoinSender, isNull);
+        expect(cubit.state.txId, isNull);
       });
     }
 
