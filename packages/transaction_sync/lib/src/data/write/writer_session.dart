@@ -261,11 +261,6 @@ final class WriterSession {
     final lock = (acquisition as Ok<WriterLock, TransactionSyncFailure>).value;
     final watch = Stopwatch()..start();
     try {
-      if (key.network is BitcoinNetwork &&
-          intent != WriteIntent.receive &&
-          intent != WriteIntent.sync) {
-        _invalidateSpendGate(key);
-      }
       final admitted = revisions.record(key);
       expectGeneration(admitted, expectedGeneration);
       if (!reconcile &&
@@ -281,6 +276,13 @@ final class WriterSession {
               : LeaseBusySource.lifecycleGate,
         );
         throw const WriterRefusal(TransactionSyncBusyFailure());
+      }
+      // Only an admitted request invalidates the gate: a stale one is refused
+      // above without touching obligations.
+      if (key.network is BitcoinNetwork &&
+          intent != WriteIntent.receive &&
+          intent != WriteIntent.sync) {
+        _invalidateSpendGate(key);
       }
       // Delete must remain possible for damaged stores: it supersedes an
       // unfinished write, but completes an existing tombstone without another
