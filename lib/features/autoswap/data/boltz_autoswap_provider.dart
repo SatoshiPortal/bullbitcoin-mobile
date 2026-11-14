@@ -214,7 +214,7 @@ class BoltzAutoswapProvider implements AutoswapProviderPort {
         NewLabel.tx(
           transactionId: txid,
           origin: liquidWallet.id,
-          label: 'Auto-Transfer',
+          label: LabelSystem.autoSwap.label,
         ),
       );
       return Ok(swap.id);
