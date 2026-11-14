@@ -370,7 +370,7 @@ Future<void> main({bool isInitialized = false}) async {
             name: 'unicode-vector',
             network: bwk.SpNetwork.signet,
             blindbitUrl: 'http://127.0.0.1:1',
-            electrumUrl: 'tcp://127.0.0.1:1',
+            electrumUrl: '',
             dataDir: scratch.path,
             dustLimit: BigInt.zero,
             fetchConcurrencyFactor: 1,
@@ -506,11 +506,21 @@ Future<void> main({bool isInitialized = false}) async {
         final withPassphrase = await importWords(passphrase: 'TREZOR');
         final sealed = unwrap(await withPassphrase.backup.recoverbull());
 
-        // The file alone gives the sibling; with the passphrase, the wallet.
+        // Missing passphrase is refused before import. Only an explicit
+        // unverified request may open the empty-passphrase sibling.
+        final missing = await secrets.recoverbull.restore(
+          vault: sealed.vault,
+          key: sealed.key,
+        );
+        expect(
+          (missing as Err<RestoredVault, SecretFailure>).failure,
+          isA<VaultIdentityMismatchFailure>(),
+        );
         final bare = unwrap(
           await secrets.recoverbull.restore(
             vault: sealed.vault,
             key: sealed.key,
+            allowUnverified: true,
           ),
         );
         expect(bare.secret.id.hex, zooId);

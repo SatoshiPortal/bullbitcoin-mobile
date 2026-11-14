@@ -6,6 +6,7 @@ import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/features/all_seed_view/ui/all_seed_view_screen.dart';
 import 'package:bb_mobile/features/all_seed_view/presentation/all_seed_view_cubit.dart';
 import 'package:bb_mobile/features/app_unlock/public/app_unlock_facade.dart';
+import 'package:bb_mobile/features/app_unlock/ui/pin_code_unlock_screen.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:primitives/primitives.dart' show Err, Ok, Result;
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
@@ -27,6 +28,26 @@ import 'package:secrets/secrets.dart';
 import 'package:secrets/testing.dart';
 
 class _AllCubit extends Mock implements AllSeedViewCubit {}
+
+class _RevealUnlock extends AppUnlockFacade {
+  const _RevealUnlock();
+
+  @override
+  Widget buildReauthenticationGate({
+    required ValueChanged<AppUnlockGrant> onSuccess,
+    bool canPop = false,
+  }) {
+    final gate =
+        super.buildReauthenticationGate(onSuccess: onSuccess, canPop: canPop)
+            as PinCodeUnlockScreen;
+    return Scaffold(
+      body: TextButton(
+        onPressed: gate.onSuccess,
+        child: const Text('Authenticate reveal'),
+      ),
+    );
+  }
+}
 
 class _MockCompleteBackupVerificationUsecase extends Mock
     implements CompleteBackupVerificationUsecase {}
@@ -269,19 +290,62 @@ void main() {
         supportedLocales: AppLocalizations.supportedLocales,
         home: BlocProvider<TestWalletBackupBloc>.value(
           value: bloc,
-          child: const ShowMnemonicScreen(),
+          child: const ShowMnemonicScreen(appUnlockFacade: _RevealUnlock()),
         ),
       ),
     );
     await flush(tester);
     expect(find.text('Show passphrase'), findsOneWidget);
     expect(
+      find.text(
+        'These words alone cannot restore this wallet. Keep your passphrase separately.',
+      ),
+      findsOneWidget,
+    );
+    expect(
       tester.widget<MnemonicView>(find.byType(MnemonicView)).showPassphrase,
       isFalse,
     );
     await tester.ensureVisible(find.text('Show passphrase'));
     await tester.tap(find.text('Show passphrase'));
+    await tester.pumpAndSettle();
+    expect(find.text('Authenticate reveal'), findsOneWidget);
+    await tester.binding.handlePopRoute();
+    await tester.pumpAndSettle();
+    expect(
+      tester.widget<MnemonicView>(find.byType(MnemonicView)).showPassphrase,
+      isFalse,
+    );
+    await tester.ensureVisible(find.text('Show passphrase'));
+    await tester.tap(find.text('Show passphrase'));
+    await tester.pumpAndSettle();
+    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.inactive);
+    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
+    await tester.tap(find.text('Authenticate reveal'));
+    await tester.pumpAndSettle();
+    expect(
+      tester.widget<MnemonicView>(find.byType(MnemonicView)).showPassphrase,
+      isFalse,
+    );
+    await tester.ensureVisible(find.text('Show passphrase'));
+    await tester.tap(find.text('Show passphrase'));
+    await tester.pumpAndSettle();
+    stubSecret(_secretB);
+    bloc.seed(_selected(_walletB));
+    await tester.tap(find.text('Authenticate reveal'));
     await tester.pump();
+    await flush(tester);
+    expect(
+      tester.widget<MnemonicView>(find.byType(MnemonicView)).showPassphrase,
+      isFalse,
+    );
+    bloc.seed(_selected(wallet));
+    await flush(tester);
+    await tester.ensureVisible(find.text('Show passphrase'));
+    await tester.tap(find.text('Show passphrase'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Authenticate reveal'));
+    await tester.pumpAndSettle();
     expect(
       tester.widget<MnemonicView>(find.byType(MnemonicView)).showPassphrase,
       isTrue,
@@ -320,19 +384,39 @@ void main() {
           supportedLocales: AppLocalizations.supportedLocales,
           home: BlocProvider<AllSeedViewCubit>.value(
             value: cubit,
-            child: const AllSeedViewScreen(appUnlockFacade: AppUnlockFacade()),
+            child: const AllSeedViewScreen(appUnlockFacade: _RevealUnlock()),
           ),
         ),
       );
       await flush(tester);
       expect(find.text('Show passphrase'), findsOneWidget);
       expect(
+        find.text(
+          'These words alone cannot restore this wallet. Keep your passphrase separately.',
+        ),
+        findsOneWidget,
+      );
+      expect(
         tester.widget<MnemonicView>(find.byType(MnemonicView)).showPassphrase,
         isFalse,
       );
       await tester.ensureVisible(find.text('Show passphrase'));
       await tester.tap(find.text('Show passphrase'));
-      await tester.pump();
+      await tester.pumpAndSettle();
+      expect(find.text('Authenticate reveal'), findsOneWidget);
+      tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.inactive);
+      tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
+      await tester.tap(find.text('Authenticate reveal'));
+      await tester.pumpAndSettle();
+      expect(
+        tester.widget<MnemonicView>(find.byType(MnemonicView)).showPassphrase,
+        isFalse,
+      );
+      await tester.ensureVisible(find.text('Show passphrase'));
+      await tester.tap(find.text('Show passphrase'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Authenticate reveal'));
+      await tester.pumpAndSettle();
       expect(
         tester.widget<MnemonicView>(find.byType(MnemonicView)).showPassphrase,
         isTrue,

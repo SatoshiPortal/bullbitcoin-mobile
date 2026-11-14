@@ -574,6 +574,71 @@ void main() {
       tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
     });
 
+    testWidgets(
+      'a cleared passphrase blocks submission until explicitly skipped',
+      (tester) async {
+        Mnemonic? submitted;
+        await pumpWidget(
+          tester,
+          allowPassphrase: true,
+          onSubmit: (m) => submitted = m,
+        );
+        await fillAll(tester, validWords);
+        await tester.ensureVisible(find.text('I have a passphrase'));
+        await tester.tap(find.text('I have a passphrase'));
+        await tester.pumpAndSettle();
+        await tester.enterText(passphraseField(), 'secret');
+        tester.binding.handleAppLifecycleStateChanged(
+          AppLifecycleState.inactive,
+        );
+        await tester.pump();
+        tester.binding.handleAppLifecycleStateChanged(
+          AppLifecycleState.resumed,
+        );
+        await tester.pump();
+        await submit(tester);
+        expect(submitted, isNull);
+        expect(
+          find.text(
+            'For your privacy, your passphrase was cleared. Enter it again or choose to continue without one.',
+          ),
+          findsOneWidget,
+        );
+        await tester.enterText(passphraseField(), 'x');
+        await tester.enterText(passphraseField(), '');
+        await submit(tester);
+        expect(submitted, isNull);
+        await tester.ensureVisible(find.text('Continue without a passphrase'));
+        await tester.tap(find.text('Continue without a passphrase'));
+        await tester.pumpAndSettle();
+        await submit(tester);
+        expect(submitted?.passphrase, '');
+      },
+    );
+
+    testWidgets('re-entering a cleared passphrase permits submission', (
+      tester,
+    ) async {
+      Mnemonic? submitted;
+      await pumpWidget(
+        tester,
+        allowPassphrase: true,
+        onSubmit: (m) => submitted = m,
+      );
+      await fillAll(tester, validWords);
+      await tester.ensureVisible(find.text('I have a passphrase'));
+      await tester.tap(find.text('I have a passphrase'));
+      await tester.pumpAndSettle();
+      await tester.enterText(passphraseField(), 'secret');
+      tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.inactive);
+      await tester.pump();
+      tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
+      await tester.pump();
+      await tester.enterText(passphraseField(), ' Mixed ');
+      await submit(tester);
+      expect(submitted?.passphrase, ' Mixed ');
+    });
+
     testWidgets('the passphrase field takes the value exactly as typed', (
       tester,
     ) async {

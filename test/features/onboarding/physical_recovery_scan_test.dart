@@ -279,7 +279,7 @@ void main() {
     await tester.pumpAndSettle();
     tester.widget<MnemonicWidget>(find.byType(MnemonicWidget)).onSubmit((
       words: const ['abandon'],
-      passphrase: '',
+      passphrase: 'pass',
       label: '',
       language: bip39.Language.english,
     ));
@@ -293,6 +293,68 @@ void main() {
       isTrue,
     );
     pending.complete(const Err(OnboardingWalletScanFailure()));
+    await tester.pump();
+    await tester.pumpWidget(const SizedBox());
+    unawaited(bloc.close());
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(channel, null);
+  });
+  testWidgets('recovery without a passphrase does not scan or warn', (
+    tester,
+  ) async {
+    const channel = MethodChannel('com.flutterplaza.no_screenshot_methods');
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(channel, (_) async => true);
+    final recover = _Recover();
+    final recovery = Completer<Result<void, OnboardingFailure>>();
+    when(
+      () => recover.execute(
+        mnemonicWords: any(named: 'mnemonicWords'),
+        passphrase: any(named: 'passphrase'),
+      ),
+    ).thenAnswer((_) => recovery.future);
+    final scan = _Scan();
+    when(
+      () => scan.execute(
+        words: any(named: 'words'),
+        passphrase: any(named: 'passphrase'),
+      ),
+    ).thenAnswer((_) async => const Ok(false));
+    final bloc = OnboardingBloc(
+      createOnboardingWalletUsecase: _Create(),
+      recoverOnboardingWalletUsecase: recover,
+      scanOnboardingWalletUsecase: scan,
+    );
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.themeData(AppThemeType.light),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: BlocProvider.value(
+          value: bloc,
+          child: const OnboardingPhysicalRecovery(),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    tester.widget<MnemonicWidget>(find.byType(MnemonicWidget)).onSubmit((
+      words: const ['abandon'],
+      passphrase: '',
+      label: '',
+      language: bip39.Language.english,
+    ));
+    await tester.pump();
+    verifyNever(
+      () => scan.execute(
+        words: any(named: 'words'),
+        passphrase: any(named: 'passphrase'),
+      ),
+    );
+    verify(
+      () => recover.execute(mnemonicWords: ['abandon'], passphrase: ''),
+    ).called(1);
+    expect(find.textContaining('This wallet looks empty'), findsNothing);
+    recovery.complete(const Err(OnboardingWalletSetupFailure()));
     await tester.pump();
     await tester.pumpWidget(const SizedBox());
     unawaited(bloc.close());

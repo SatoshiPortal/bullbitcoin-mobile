@@ -208,6 +208,29 @@ void main() {
         if (changeServer) {
           expect(wallets.restores, 0);
           expect(target.entries, isEmpty);
+          expect(find.text('Verify'), findsNothing);
+          expect(find.text('Passphrase required'), findsNothing);
+          expect(find.text('Enter a vault key instead'), findsOneWidget);
+          expect(find.text('Continue'), findsOneWidget);
+          expect(
+            tester.widget<TextField>(find.byType(TextField)).controller?.text,
+            isEmpty,
+          );
+          await tester.tap(find.text('Enter a vault key instead'));
+          await tester.pumpAndSettle();
+          await tester.enterText(find.byType(TextField), server.key.hex);
+          await tester.ensureVisible(find.text('Continue'));
+          await tester.runAsync(() async {
+            final failure = presentation.cubit.stream.firstWhere(
+              (state) => state.failure is VaultPassphraseRequiredFailure,
+            );
+            await tester.tap(find.text('Continue'));
+            await failure;
+          });
+          await tester.pumpAndSettle();
+          expect(find.text('Passphrase required'), findsWidgets);
+          expect(server.fetches, 1);
+          expect(target.entries, isEmpty);
         } else {
           expect(wallets.restores, 1);
           expect(
