@@ -43,7 +43,7 @@ Each asynchronous `Future<Result<T, SyncFailure>>` is shown as `T`. Other return
 
 ```text
 Sync
-|-- static openForeground(documentsDirectory:, catalog:, reservedAddresses:) -> Sync
+|-- static openForeground(documentsDirectory:, catalog:, reservedAddresses:, legacyFreezes:) -> Sync
 |-- static openExisting(documentsDirectory:, catalog:, connections:) -> HeadlessSync
 |-- wallet(key) -> Wallet
 |-- changes
@@ -51,6 +51,11 @@ Sync
 |-- recovery
 |   |-- pending -> Observed<bool>
 |   `-- complete() -> Result<void, SyncFailure>
+|-- coins
+|   |-- listFrozen() -> List<FrozenOutpoint>
+|   |-- freeze(outpoint, origin:) -> PolicyRevision
+|   |-- unfreeze(outpoint) -> PolicyRevision
+|   `-- recover() -> void
 `-- close() -> Future<void>
 ```
 
@@ -59,7 +64,11 @@ Wallet
 |-- key -> WalletKey
 |-- generation -> int
 |-- balances -> Observed<WalletValue<Balances>>
-|-- coins -> Observed<WalletValue<CoinList>>
+|-- coins
+|   |-- now -> WalletCoins
+|   |-- watch() -> Stream<WalletValue<CoinList>>
+|   |-- freeze(outpoint) -> PolicyRevision
+|   `-- unfreeze(outpoint) -> PolicyRevision
 |-- transactions -> Observed<WalletValue<ChainTransactionList>>
 |-- addresses
 |   |-- current -> Observed<WalletValue<AddressBook>>
