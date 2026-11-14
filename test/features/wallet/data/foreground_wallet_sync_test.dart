@@ -121,6 +121,7 @@ void main() {
       ElectrumSync(
         connections: policy,
         documentsDirectory: () async => directory.path,
+        readRevision: (_) async => const Err(TransactionSyncNotFoundFailure()),
       ),
     );
     repository = WalletRepository(
@@ -397,6 +398,7 @@ void main() {
       ElectrumSync(
         connections: policy,
         documentsDirectory: () async => directory.path,
+        readRevision: (_) async => const Err(TransactionSyncNotFoundFailure()),
       ),
       null,
     );
@@ -500,6 +502,7 @@ void main() {
       final sync = ElectrumSync(
         connections: _ThrowingPolicy(),
         documentsDirectory: () async => directory.path,
+        readRevision: (_) async => const Err(TransactionSyncNotFoundFailure()),
       );
       final descriptor = BitcoinWalletDescriptor(
         key: WalletKey(id: id, network: BitcoinNetwork.testnet),

@@ -2,8 +2,8 @@ import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
-import 'package:transaction_sync/read.dart';
 import 'package:transaction_sync/transaction_sync.dart';
+import 'package:transaction_sync/src/read/persisted_wallet_readiness.dart';
 import 'package:transaction_sync/src/write/revision_store.dart';
 import 'package:transaction_sync/src/write/store_identity.dart';
 
@@ -19,7 +19,9 @@ void main() {
     'readiness requires the committed exact descriptor and revision',
     () async {
       final dir = Directory.systemTemp.createTempSync('readiness-');
-      final store = RevisionStore('${dir.path}/revisions.sqlite');
+      final store = RevisionStore.openForeground(
+        '${dir.path}/revisions.sqlite',
+      );
       final key = WalletKey(id: 'fixture', network: BitcoinNetwork.testnet);
       final descriptor = BitcoinWalletDescriptor(
         key: key,
@@ -38,7 +40,7 @@ void main() {
       final readiness = PersistedWalletReadiness(store);
       try {
         store.begin(key, WriteIntent.create);
-        final unproven = store.finish(key);
+        final unproven = store.finish(key).stamp;
         expect(
           (await readiness.check(descriptor, unproven, writerSchemaVersion)
                   as Err)
@@ -46,7 +48,9 @@ void main() {
           isA<TransactionSyncBusyFailure>(),
         );
         store.begin(key, WriteIntent.load);
-        final stamp = store.finish(key, initializedDescriptor: descriptor);
+        final stamp = store
+            .finish(key, initializedDescriptor: descriptor)
+            .stamp;
         expect(
           await readiness.check(descriptor, stamp, writerSchemaVersion),
           isA<Ok>(),
@@ -74,7 +78,7 @@ void main() {
               .failure,
           isA<TransactionSyncBusyFailure>(),
         );
-        final uncertain = store.finish(key, needsSync: true);
+        final uncertain = store.finish(key, needsSync: true).stamp;
         expect(
           (await readiness.check(descriptor, uncertain, writerSchemaVersion)
                   as Err)
@@ -82,7 +86,7 @@ void main() {
           isA<TransactionSyncNeedsRepairFailure>(),
         );
         store.begin(key, WriteIntent.delete);
-        final deleted = store.finish(key);
+        final deleted = store.finish(key).stamp;
         expect(
           (await readiness.check(descriptor, deleted, writerSchemaVersion)
                   as Err)
@@ -92,7 +96,7 @@ void main() {
         expect(store.record(key)?.descriptorHash, isNull);
         expect(store.record(key)?.liquidCachePath, isNull);
       } finally {
-        await store.close();
+        store.close();
         dir.deleteSync(recursive: true);
       }
     },

@@ -1,4 +1,10 @@
 // Run explicitly against a disposable local Nigiri instance; not a unit test.
+import 'package:transaction_sync/src/write/bitcoin_spend_gate_store.dart';
+import 'package:transaction_sync/src/read/persisted_wallet_readiness.dart';
+import 'package:transaction_sync/src/write/native_store_paths.dart';
+import 'package:transaction_sync/src/write/native_wallet_writer_repository.dart';
+import 'package:transaction_sync/src/write/revision_store.dart';
+import 'package:transaction_sync/src/write/sqlite_wallet_revision_reader.dart';
 import 'dart:convert';
 import 'dart:io';
 
@@ -7,7 +13,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 import 'package:transaction_sync/read.dart';
 import 'package:transaction_sync/transaction_sync.dart';
-import 'package:transaction_sync/write.dart';
 
 import '../test/support/connections.dart';
 import '../test/support/regtest_wallet.dart';
@@ -20,10 +25,13 @@ void main() {
       final descriptor = regtestDescriptor();
       final key = descriptor.key;
       final catalog = SingleWalletCatalog(descriptor);
-      final revisions = RevisionStore(writerMetadataPath(directory.path));
+      final revisions = RevisionStore.openForeground(
+        revisionStorePath(directory.path),
+      );
+      BitcoinSpendGateStore.provision(spendGateStorePath(directory.path));
       final writer = NativeWalletWriterRepository(
-        lockDirectory: writerLockDirectory(directory.path),
         revisions: revisions,
+        reader: SqliteWalletRevisionReader(revisions),
         documentsDirectory: directory.path,
         catalog: catalog,
         reservedAddresses: NoReservedAddresses(),
@@ -36,13 +44,13 @@ void main() {
           ),
         ]),
         documentsDirectory: () async => directory.path,
-        readRevision: revisions.read,
+        readRevision: SqliteWalletRevisionReader(revisions).read,
       );
       WalletSnapshotReader reader() => WalletSnapshotReader(
         documentsDirectory: directory.path,
         readiness: PersistedWalletReadiness(revisions),
         requiredSchemaVersion: writerSchemaVersion,
-        revisions: revisions,
+        revisions: SqliteWalletRevisionReader(revisions),
         liquidAdmission: writer,
       );
       final http = HttpClient();
@@ -157,7 +165,7 @@ void main() {
         );
       } finally {
         http.close(force: true);
-        await revisions.close();
+        revisions.close();
         directory.deleteSync(recursive: true);
       }
     },

@@ -6,6 +6,7 @@ import 'package:primitives/primitives.dart';
 import 'package:test/test.dart';
 import 'package:transaction_sync/src/write/lease_diagnostics.dart';
 import 'package:transaction_sync/src/write/revision_store.dart';
+import 'package:transaction_sync/src/write/sqlite_wallet_revision_reader.dart';
 import 'package:transaction_sync/src/write/writer_lock.dart';
 import 'package:transaction_sync/src/write/writer_session.dart';
 import 'package:transaction_sync/src/write/writer_sync_operation.dart';
@@ -51,12 +52,13 @@ Future<bool> _admittedElsewhere(String directory, WalletKey wallet) =>
 void main() {
   late Directory dir;
   late RevisionStore store;
+  late SqliteWalletRevisionReader reader;
   late Sessions sessions;
-  String locks() => '${dir.path}/locks';
 
   WriterSession worker({PublicWalletDescriptor? given}) => WriterSession.worker(
-    lockDirectory: locks(),
+    documentsDirectory: dir.path,
     revisions: store,
+    reader: reader,
     sessions: sessions,
     descriptor: given ?? descriptor,
     diagnostics: (_, _) {},
@@ -64,8 +66,9 @@ void main() {
   );
 
   WriterSession app() => WriterSession.app(
-    lockDirectory: locks(),
+    documentsDirectory: dir.path,
     revisions: store,
+    reader: reader,
     sessions: sessions,
     catalog: Catalog(),
     diagnostics: (_, _) {},
@@ -73,11 +76,13 @@ void main() {
 
   setUp(() {
     dir = Directory.systemTemp.createTempSync('writer-session-');
-    store = RevisionStore('${dir.path}/revisions.sqlite');
+    store = RevisionStore.openForeground('${dir.path}/revisions.sqlite');
+    reader = SqliteWalletRevisionReader(store);
     sessions = Sessions()..exists = true;
   });
   tearDown(() async {
-    await store.close();
+    await reader.close();
+    store.close();
     dir.deleteSync(recursive: true);
   });
 
@@ -156,7 +161,7 @@ void main() {
     final held = _HeldSync();
     final pass = worker().sync(key, expectedGeneration: 1, operation: held);
     await held.started.future;
-    expect(await _admittedElsewhere(locks(), key), isFalse);
+    expect(await _admittedElsewhere(dir.path, key), isFalse);
     // The app entry waits its bounded time, then reports busy.
     expect(
       await app().create(key, expectedGeneration: 1),
@@ -168,6 +173,6 @@ void main() {
     );
     held.finish.complete();
     expect(await pass, isA<Ok>());
-    expect(await _admittedElsewhere(locks(), key), isTrue);
+    expect(await _admittedElsewhere(dir.path, key), isTrue);
   });
 }

@@ -1,7 +1,12 @@
+import 'package:transaction_sync/src/read/persisted_wallet_readiness.dart';
+import 'package:transaction_sync/src/write/bitcoin_spend_gate_store.dart';
+import 'package:transaction_sync/src/write/native_store_paths.dart';
+import 'package:transaction_sync/src/write/native_wallet_writer_repository.dart';
+import 'package:transaction_sync/src/write/revision_store.dart';
+import 'package:transaction_sync/src/write/sqlite_wallet_revision_reader.dart';
 import 'support/connections.dart';
 import 'support/regtest_wallet.dart';
 import 'package:transaction_sync/write.dart';
-import 'package:transaction_sync/src/write/bitcoin_spend_gate_store.dart';
 import 'package:transaction_sync/read.dart';
 import 'package:transaction_sync/src/write/writer_lock.dart';
 import 'package:bull_logger/bull_logger.dart';
@@ -235,10 +240,7 @@ void main() {
       installed.wallet.persist(persister: installed.persister);
       installed.close();
       connections = FixtureConnections([fixture.url]);
-      sync = ElectrumSync(
-        connections: connections,
-        documentsDirectory: () async => dir.path,
-      );
+      sync = foregroundSync(dir.path, connections);
     });
     tearDown(() => dir.deleteSync(recursive: true));
 
@@ -316,15 +318,14 @@ void main() {
         'ext5': script,
       });
       addTearDown(isolated.close);
-      sync = ElectrumSync(
-        connections: FixtureConnections([isolated.url]),
-        documentsDirectory: () async => dir.path,
+      sync = foregroundSync(dir.path, FixtureConnections([isolated.url]));
+      final revisions = RevisionStore.openForeground(
+        revisionStorePath(dir.path),
       );
-      final revisions = RevisionStore(writerMetadataPath(dir.path));
       try {
         final writer = NativeWalletWriterRepository(
-          lockDirectory: writerLockDirectory(dir.path),
           revisions: revisions,
+          reader: SqliteWalletRevisionReader(revisions),
           documentsDirectory: dir.path,
           catalog: SingleWalletCatalog(descriptor),
           reservedAddresses: NoReservedAddresses(),
@@ -334,7 +335,7 @@ void main() {
           isA<Ok>(),
         );
       } finally {
-        await revisions.close();
+        revisions.close();
       }
       await isolated.load('S7-incoming-unrevealed-in-gap', 0);
       if (scanFirst) completed(await sync.execute(descriptor));
@@ -403,14 +404,13 @@ void main() {
           'ext5': script,
         });
         addTearDown(isolated.close);
-        sync = ElectrumSync(
-          connections: FixtureConnections([isolated.url]),
-          documentsDirectory: () async => dir.path,
+        sync = foregroundSync(dir.path, FixtureConnections([isolated.url]));
+        final revisions = RevisionStore.openForeground(
+          revisionStorePath(dir.path),
         );
-        final revisions = RevisionStore(writerMetadataPath(dir.path));
         final writer = NativeWalletWriterRepository(
-          lockDirectory: writerLockDirectory(dir.path),
           revisions: revisions,
+          reader: SqliteWalletRevisionReader(revisions),
           documentsDirectory: dir.path,
           catalog: SingleWalletCatalog(descriptor),
           reservedAddresses: NoReservedAddresses(),
@@ -443,7 +443,7 @@ void main() {
             );
           }
         } finally {
-          await revisions.close();
+          revisions.close();
         }
         final phase = await isolated.load('S7-incoming-unrevealed-in-gap', 1);
         expect(
@@ -546,10 +546,7 @@ void main() {
     test('fallback happens before opening the native store', () async {
       await fixture.load('S10-no-change', 0);
       connections = FixtureConnections(['tcp://127.0.0.1:0', fixture.url]);
-      sync = ElectrumSync(
-        connections: connections,
-        documentsDirectory: () async => dir.path,
-      );
+      sync = foregroundSync(dir.path, connections);
       completed(await sync.execute(descriptor));
       expect(connections.attempts, 2);
     });
@@ -557,10 +554,7 @@ void main() {
     test('corrupt native store is preserved and never retried', () async {
       File(path).writeAsStringSync('corrupted native wallet');
       connections = FixtureConnections([fixture.url, fixture.url]);
-      sync = ElectrumSync(
-        connections: connections,
-        documentsDirectory: () async => dir.path,
-      );
+      sync = foregroundSync(dir.path, connections);
       expect(
         await sync.execute(descriptor),
         isA<Err<SyncCompletion, TransactionSyncFailure>>(),
@@ -578,10 +572,7 @@ void main() {
         "BEGIN SELECT RAISE(ABORT, 'fixture persist failure'); END",
       );
       connections = FixtureConnections([fixture.url, fixture.url]);
-      sync = ElectrumSync(
-        connections: connections,
-        documentsDirectory: () async => dir.path,
-      );
+      sync = foregroundSync(dir.path, connections);
       try {
         final result = await sync.execute(descriptor);
         expect(result, isA<Err<SyncCompletion, TransactionSyncFailure>>());
@@ -617,10 +608,7 @@ void main() {
         connections = FixtureConnections([
           fixture.url,
         ], socks5: '127.0.0.1:9050');
-        sync = ElectrumSync(
-          connections: connections,
-          documentsDirectory: () async => dir.path,
-        );
+        sync = foregroundSync(dir.path, connections);
         await fixture.requests();
         final result = await sync.execute(liquid);
         expect(result, isA<Err<SyncCompletion, TransactionSyncFailure>>());
@@ -635,7 +623,7 @@ void main() {
       'writer contention skips native sync and emits a visible failure',
       () async {
         final acquisition =
-            WriterLock.acquire(writerLockDirectory(dir.path), descriptor.key)
+            WriterLock.acquire((dir.path), descriptor.key)
                 as Ok<WriterLock, TransactionSyncFailure>;
         try {
           final finished = sync.finished.first;
@@ -656,11 +644,13 @@ void main() {
       test('chained send diagnostic: broadcast visible=$visible', () async {
         await fixture.load('S10-no-change', 0);
         completed(await sync.execute(descriptor));
-        final revisions = RevisionStore(writerMetadataPath(dir.path));
+        final revisions = RevisionStore.openForeground(
+          revisionStorePath(dir.path),
+        );
         addTearDown(revisions.close);
         final writer = NativeWalletWriterRepository(
-          lockDirectory: writerLockDirectory(dir.path),
           revisions: revisions,
+          reader: SqliteWalletRevisionReader(revisions),
           documentsDirectory: dir.path,
           catalog: SingleWalletCatalog(descriptor),
           reservedAddresses: NoReservedAddresses(),
@@ -669,7 +659,7 @@ void main() {
           documentsDirectory: dir.path,
           readiness: PersistedWalletReadiness(revisions),
           requiredSchemaVersion: writerSchemaVersion,
-          revisions: revisions,
+          revisions: SqliteWalletRevisionReader(revisions),
           liquidAdmission: writer,
         );
         Future<WalletReadSnapshot<bdk.Wallet>> read() async =>
@@ -760,8 +750,8 @@ void main() {
           validateDomain: false,
         );
         final gate = BitcoinSpendGate(
+          documentsDirectory: dir.path,
           revisions: revisions,
-          lockDirectory: writerLockDirectory(dir.path),
           catalog: SingleWalletCatalog(descriptor),
         );
         final admitted = await gate.acquire(descriptor.key);
@@ -791,20 +781,19 @@ void main() {
           expect(await gate.check(descriptor.key), BitcoinSpendStatus.pending);
           // Restart reads durable state, not a Cubit flag. No second build is
           // admitted until a subsequent successful pass observes the payment.
-          final restartedRevisions = RevisionStore(
-            writerMetadataPath(dir.path),
-            existingOnly: true,
+          final restartedRevisions = RevisionStore.openExisting(
+            revisionStorePath(dir.path),
           );
           final restarted = BitcoinSpendGate(
+            documentsDirectory: dir.path,
             revisions: restartedRevisions,
-            lockDirectory: writerLockDirectory(dir.path),
             catalog: SingleWalletCatalog(descriptor),
           );
           expect(
             await restarted.check(descriptor.key),
             BitcoinSpendStatus.pending,
           );
-          await restartedRevisions.close();
+          restartedRevisions.close();
           await fixture.exposeBroadcasts(true);
           completed(await sync.execute(descriptor));
         }
@@ -848,16 +837,18 @@ void main() {
         expect(await gate.acquire(descriptor.key), isA<BitcoinSpendRefused>());
         // Repetition, another endpoint and a discovery scan prove nothing more.
         completed(await sync.execute(descriptor));
-        final fallback = ElectrumSync(
-          connections: FixtureConnections(['tcp://127.0.0.1:1', fixture.url]),
-          documentsDirectory: () async => dir.path,
+        final fallback = foregroundSync(
+          dir.path,
+          FixtureConnections(['tcp://127.0.0.1:1', fixture.url]),
         );
         completed(await fallback.execute(descriptor));
         completed(await sync.execute(descriptor, discover: true));
         expect(await gate.check(descriptor.key), BitcoinSpendStatus.pending);
 
         bool settled(String txid) {
-          final store = BitcoinSpendGateStore(revisions.spendGatePath);
+          final store = BitcoinSpendGateStore.openExisting(
+            spendGateStorePath(dir.path),
+          );
           try {
             expect(store.tracked(descriptor), contains(txid));
             return store.isObserved(descriptor.key, txid);
@@ -936,11 +927,13 @@ void main() {
       test('discovery spend evidence: broadcast seen $scenario', () async {
         await fixture.load('S10-no-change', 0);
         completed(await sync.execute(descriptor));
-        final revisions = RevisionStore(writerMetadataPath(dir.path));
+        final revisions = RevisionStore.openForeground(
+          revisionStorePath(dir.path),
+        );
         addTearDown(revisions.close);
         final writer = NativeWalletWriterRepository(
-          lockDirectory: writerLockDirectory(dir.path),
           revisions: revisions,
+          reader: SqliteWalletRevisionReader(revisions),
           documentsDirectory: dir.path,
           catalog: SingleWalletCatalog(descriptor),
           reservedAddresses: NoReservedAddresses(),
@@ -949,7 +942,7 @@ void main() {
           documentsDirectory: dir.path,
           readiness: PersistedWalletReadiness(revisions),
           requiredSchemaVersion: writerSchemaVersion,
-          revisions: revisions,
+          revisions: SqliteWalletRevisionReader(revisions),
           liquidAdmission: writer,
         );
         Future<WalletReadSnapshot<bdk.Wallet>> read() async =>
@@ -1029,8 +1022,8 @@ void main() {
           validateDomain: false,
         );
         final gate = BitcoinSpendGate(
+          documentsDirectory: dir.path,
           revisions: revisions,
-          lockDirectory: writerLockDirectory(dir.path),
           catalog: SingleWalletCatalog(descriptor),
         );
         final admission =
@@ -1107,9 +1100,13 @@ void main() {
           changed.revision?.revision,
           greaterThan(initial.revision?.revision ?? 0),
         );
-        final revisions = RevisionStore(writerMetadataPath(dir.path));
+        final revisions = RevisionStore.openForeground(
+          revisionStorePath(dir.path),
+        );
         try {
-          final result = await revisions.read(descriptor.key);
+          final result = await SqliteWalletRevisionReader(
+            revisions,
+          ).read(descriptor.key);
           expect(
             result,
             isA<Ok<WalletRevisionState, TransactionSyncFailure>>(),
@@ -1119,7 +1116,7 @@ void main() {
           expect(state.stamp, changed.revision);
           expect(state.syncFailed, isFalse);
         } finally {
-          await revisions.close();
+          revisions.close();
         }
       },
     );
@@ -1127,17 +1124,19 @@ void main() {
     test('successful sync publishes an initialized durable revision', () async {
       await fixture.load(electrumFixtureScenarios.first, 0);
       completed(await sync.execute(descriptor));
-      final revisions = RevisionStore(writerMetadataPath(dir.path));
+      final revisions = RevisionStore.openForeground(
+        revisionStorePath(dir.path),
+      );
       try {
         final state =
-            (await revisions.read(descriptor.key)
+            (await SqliteWalletRevisionReader(revisions).read(descriptor.key)
                     as Ok<WalletRevisionState, TransactionSyncFailure>)
                 .value;
         expect(state.lifecycle, WalletLifecycle.active);
         expect(state.initializedSchema, writerSchemaVersion);
         expect(state.stamp.revision, 2);
       } finally {
-        await revisions.close();
+        revisions.close();
       }
     });
 

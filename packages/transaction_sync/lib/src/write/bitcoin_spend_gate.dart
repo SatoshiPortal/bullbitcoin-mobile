@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:primitives/primitives.dart';
 import '../domain/bitcoin_spend.dart';
 import '../domain/transaction_sync_failure.dart';
@@ -6,6 +8,7 @@ import '../domain/ports/wallet_catalog_port.dart';
 import '../domain/wallet_key.dart';
 import '../domain/wallet_revision.dart';
 import 'bitcoin_spend_gate_store.dart';
+import 'native_store_paths.dart';
 import 'revision_store.dart';
 import 'writer_lock.dart';
 import 'lease_diagnostics.dart';
@@ -15,14 +18,14 @@ import 'lease_diagnostics.dart';
 /// this process and is retried on the next admission, never reported as rejection.
 final class BitcoinSpendGate {
   final RevisionStore revisions;
-  final String lockDirectory;
+  final String documentsDirectory;
   final WalletCatalogPort catalog;
   static final _pending =
       <(String, WalletKey), (PublicWalletDescriptor, int, String)>{};
 
   const BitcoinSpendGate({
     required this.revisions,
-    required this.lockDirectory,
+    required this.documentsDirectory,
     required this.catalog,
   });
 
@@ -44,7 +47,7 @@ final class BitcoinSpendGate {
       return const BitcoinSpendRefused(BitcoinSpendStatus.unavailable);
     }
     final acquired = await WriterLock.acquireWriter(
-      lockDirectory,
+      documentsDirectory,
       key,
       diagnostics: LeaseDiagnostics(
         role: LeaseRole.writer,
@@ -62,7 +65,10 @@ final class BitcoinSpendGate {
     final lock = (acquired as Ok<WriterLock, TransactionSyncFailure>).value;
     BitcoinSpendGateStore? store;
     try {
-      if (revisions.recoveryPending) throw const BitcoinSpendGateUnavailable();
+      // Quarantined metadata: no spend until every wallet has been adopted.
+      if (File(recoveryMarkerPath(documentsDirectory)).existsSync()) {
+        throw const BitcoinSpendGateUnavailable();
+      }
       final record = revisions.record(key);
       if (record == null ||
           record.intent != null ||
@@ -76,8 +82,9 @@ final class BitcoinSpendGate {
       if (found case Err()) throw const BitcoinSpendGateUnavailable();
       final descriptor =
           (found as Ok<PublicWalletDescriptor, TransactionSyncFailure>).value;
-      store = revisions.openSpendGate();
-      final pendingKey = (revisions.spendGatePath, key);
+      final path = spendGateStorePath(documentsDirectory);
+      store = BitcoinSpendGateStore.openExisting(path);
+      final pendingKey = (path, key);
       final pending = _pending[pendingKey];
       if (pending != null) {
         store.accepted(pending.$1, pending.$2, pending.$3);

@@ -56,7 +56,7 @@ void main() {
         'lib/features/electrum_settings/background_setup.dart',
       ].map((path) => File(path).readAsStringSync()).join('\n');
       expect(source, contains('await getApplicationDocumentsDirectory()'));
-      expect(source, contains('writerMetadataPath(documents.path)'));
+      expect(source, contains('openExisting(documents.path)'));
       expect(
         source,
         matches(

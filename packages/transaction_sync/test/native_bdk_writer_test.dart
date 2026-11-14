@@ -1,3 +1,9 @@
+import 'package:transaction_sync/src/write/bitcoin_spend_gate_store.dart';
+import 'package:transaction_sync/src/write/native_store_paths.dart';
+import 'package:transaction_sync/src/write/native_wallet_writer_repository.dart';
+import 'package:transaction_sync/src/write/revision_store.dart';
+import 'package:transaction_sync/src/write/sqlite_wallet_revision_reader.dart';
+import 'package:transaction_sync/src/write/writer_sync_operation.dart';
 import 'package:transaction_sync/src/write/lease_diagnostics.dart';
 import 'package:transaction_sync/src/write/native_write_session.dart';
 import 'package:transaction_sync/src/write/writer_diagnostics.dart';
@@ -8,9 +14,6 @@ import 'package:primitives/primitives.dart';
 import 'package:bull_sdk/bdk.dart' as bdk;
 import 'package:test/test.dart';
 import 'package:transaction_sync/transaction_sync.dart';
-import 'package:transaction_sync/write.dart';
-import 'package:transaction_sync/src/write/revision_store.dart'
-    show WriteIntent;
 
 // Published BIP39 test-vector account, also pinned by wallet_identity_pins_test.
 const _xpub =
@@ -57,11 +60,14 @@ void main() {
       'adoption preserves native high water through store loss; interrupted=$interrupted',
       () async {
         final dir = Directory.systemTemp.createTempSync('bdk-adoption-');
-        final revisions = RevisionStore('${dir.path}/revisions.sqlite');
+        final revisions = RevisionStore.openForeground(
+          '${dir.path}/revisions.sqlite',
+        );
+        BitcoinSpendGateStore.provision(spendGateStorePath(dir.path));
         final sessions = SdkWriteSessions(dir.path);
         final writer = NativeWalletWriterRepository(
-          lockDirectory: '${dir.path}/locks',
           revisions: revisions,
+          reader: SqliteWalletRevisionReader(revisions),
           documentsDirectory: dir.path,
           catalog: _Catalog(),
           reservedAddresses: _Reserved(),
@@ -92,8 +98,9 @@ void main() {
           );
           expect(
             await WriterSession.worker(
-              lockDirectory: '${dir.path}/locks',
+              documentsDirectory: dir.path,
               revisions: revisions,
+              reader: SqliteWalletRevisionReader(revisions),
               sessions: sessions,
               descriptor: _descriptor,
               diagnostics: persistWriterDiagnostic,
@@ -106,7 +113,7 @@ void main() {
           expect(((result as Ok).value as ReceiveAddressIssued).index, 10);
           expect(adoptedIndex, 10);
         } finally {
-          await revisions.close();
+          revisions.close();
           dir.deleteSync(recursive: true);
         }
       },
@@ -116,11 +123,12 @@ void main() {
   test('real BDK interrupted create, reserved skip, reopen and delete', () async {
     final directory = Directory.systemTemp.createTempSync('native-bdk-writer-');
     final metadataPath = '${directory.path}/revisions.sqlite';
-    var revisions = RevisionStore(metadataPath);
+    var revisions = RevisionStore.openForeground(metadataPath);
+    BitcoinSpendGateStore.provision(spendGateStorePath(directory.path));
     final reserved = _Reserved();
     NativeWalletWriterRepository writer() => NativeWalletWriterRepository(
-      lockDirectory: '${directory.path}/locks',
       revisions: revisions,
+      reader: SqliteWalletRevisionReader(revisions),
       documentsDirectory: directory.path,
       catalog: _Catalog(),
       reservedAddresses: reserved,
@@ -141,8 +149,8 @@ void main() {
       reserved.reserved = first.address;
       final next = await writer().receive(_key, expectedGeneration: 1) as Ok;
       expect((next.value as ReceiveAddressIssued).index, 1);
-      await revisions.close();
-      revisions = RevisionStore(metadataPath);
+      revisions.close();
+      revisions = RevisionStore.openForeground(metadataPath);
       final reopened =
           await writer().receive(_key, expectedGeneration: 1) as Ok;
       expect(
@@ -159,7 +167,7 @@ void main() {
       expect(await writer().create(_key, expectedGeneration: 2), isA<Err>());
       expect(damaged.readAsStringSync(), 'not a wallet database');
     } finally {
-      await revisions.close();
+      revisions.close();
       directory.deleteSync(recursive: true);
     }
   });

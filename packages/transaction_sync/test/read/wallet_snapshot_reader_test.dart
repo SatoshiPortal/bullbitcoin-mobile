@@ -1,3 +1,9 @@
+import 'package:transaction_sync/src/write/bitcoin_spend_gate_store.dart';
+import 'package:transaction_sync/src/read/persisted_wallet_readiness.dart';
+import 'package:transaction_sync/src/write/native_store_paths.dart';
+import 'package:transaction_sync/src/write/native_wallet_writer_repository.dart';
+import 'package:transaction_sync/src/write/revision_store.dart';
+import 'package:transaction_sync/src/write/sqlite_wallet_revision_reader.dart';
 import 'package:flutter/foundation.dart';
 import 'package:transaction_sync/diagnostics.dart';
 import 'dart:io';
@@ -8,7 +14,6 @@ import 'package:crypto/crypto.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 import 'package:transaction_sync/read.dart';
-import 'package:transaction_sync/write.dart';
 import 'package:transaction_sync/transaction_sync.dart';
 
 void main() {
@@ -125,10 +130,13 @@ void main() {
     'native reader logs hydrate and cache leases with caller context',
     () async {
       create();
-      final store = RevisionStore(writerMetadataPath(documents.path));
+      final store = RevisionStore.openForeground(
+        revisionStorePath(documents.path),
+      );
+      BitcoinSpendGateStore.provision(spendGateStorePath(documents.path));
       final writer = NativeWalletWriterRepository(
-        lockDirectory: writerLockDirectory(documents.path),
         revisions: store,
+        reader: SqliteWalletRevisionReader(store),
         documentsDirectory: documents.path,
         catalog: _Catalog(descriptor),
         reservedAddresses: _Reserved(),
@@ -148,7 +156,7 @@ void main() {
           documentsDirectory: documents.path,
           readiness: PersistedWalletReadiness(store),
           requiredSchemaVersion: writerSchemaVersion,
-          revisions: store,
+          revisions: SqliteWalletRevisionReader(store),
           liquidAdmission: writer,
         );
         debugPrint = (message, {wrapWidth}) {
@@ -188,17 +196,20 @@ void main() {
         );
       } finally {
         debugPrint = previous;
-        await store.close();
+        store.close();
       }
     },
   );
 
   test('writer adopts the previously revealed receive index', () async {
     create(revealed: 12);
-    final revisions = RevisionStore(writerMetadataPath(documents.path));
+    final revisions = RevisionStore.openForeground(
+      revisionStorePath(documents.path),
+    );
+    BitcoinSpendGateStore.provision(spendGateStorePath(documents.path));
     final writer = NativeWalletWriterRepository(
-      lockDirectory: writerLockDirectory(documents.path),
       revisions: revisions,
+      reader: SqliteWalletRevisionReader(revisions),
       documentsDirectory: documents.path,
       catalog: _Catalog(descriptor),
       reservedAddresses: _Reserved(),
@@ -217,8 +228,8 @@ void main() {
               as Ok<ReceiveAddressIssued, TransactionSyncFailure>;
       expect(first.value.index, 12);
       final reopened = NativeWalletWriterRepository(
-        lockDirectory: writerLockDirectory(documents.path),
         revisions: revisions,
+        reader: SqliteWalletRevisionReader(revisions),
         documentsDirectory: documents.path,
         catalog: _Catalog(descriptor),
         reservedAddresses: _Reserved(),
@@ -241,7 +252,7 @@ void main() {
               as Ok<ReceiveAddressIssued, TransactionSyncFailure>;
       expect(same.value.address, next.value.address);
     } finally {
-      await revisions.close();
+      revisions.close();
     }
   });
 

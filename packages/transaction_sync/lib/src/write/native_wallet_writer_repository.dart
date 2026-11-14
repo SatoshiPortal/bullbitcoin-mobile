@@ -15,6 +15,7 @@ import '../domain/wallet_revision.dart';
 import 'lease_diagnostics.dart';
 import 'native_write_session.dart';
 import 'revision_store.dart';
+import 'sqlite_wallet_revision_reader.dart';
 import 'writer_lock.dart';
 import 'writer_session.dart';
 
@@ -29,15 +30,16 @@ final class NativeWalletWriterRepository
   final ReservedAddressPort _reserved;
 
   NativeWalletWriterRepository({
-    required String lockDirectory,
-    required RevisionStore revisions,
     required String documentsDirectory,
+    required RevisionStore revisions,
+    required SqliteWalletRevisionReader reader,
     required WalletCatalogPort catalog,
     required ReservedAddressPort reservedAddresses,
     LeaseScope leaseScope = LeaseScope.foreground,
   }) : this.withSessions(
-         lockDirectory: lockDirectory,
+         documentsDirectory: documentsDirectory,
          revisions: revisions,
+         reader: reader,
          catalog: catalog,
          reservedAddresses: reservedAddresses,
          sessions: SdkWriteSessions(documentsDirectory),
@@ -46,8 +48,9 @@ final class NativeWalletWriterRepository
 
   @visibleForTesting
   NativeWalletWriterRepository.withSessions({
-    required String lockDirectory,
+    required String documentsDirectory,
     required RevisionStore revisions,
+    required SqliteWalletRevisionReader reader,
     required WalletCatalogPort catalog,
     required ReservedAddressPort reservedAddresses,
     required NativeWriteSessions sessions,
@@ -55,8 +58,9 @@ final class NativeWalletWriterRepository
   }) : _catalog = catalog,
        _reserved = reservedAddresses,
        _session = WriterSession.app(
-         lockDirectory: lockDirectory,
+         documentsDirectory: documentsDirectory,
          revisions: revisions,
+         reader: reader,
          sessions: sessions,
          catalog: catalog,
          leaseScope: leaseScope,
@@ -136,7 +140,7 @@ final class NativeWalletWriterRepository
           // candidate; the next call checks reservations and usage again.
           revisions.reserveReceive(key, index);
           await session.revealAndPersist(index);
-          final revision = revisions.finish(key, issued: index);
+          final revision = _session.finish(key, issued: index);
           return ReceiveAddressIssued(revision, address: address, index: index);
         }
         index++;
@@ -160,7 +164,7 @@ final class NativeWalletWriterRepository
     }
     revisions.begin(key, WriteIntent.delete);
     await _session.sessions.delete(key);
-    return WriterCommitted(revisions.finish(key));
+    return WriterCommitted(_session.finish(key));
   }, deleting: true);
 
   /// Repair is explicit and only erases a store after the precise LWK conflict.
@@ -181,7 +185,7 @@ final class NativeWalletWriterRepository
       final session = await _session.sessions.open(descriptor, create: false);
       try {
         return WriterCommitted(
-          revisions.finish(
+          _session.finish(
             key,
             initializedDescriptor: descriptor,
             liquidCachePath: session.liquidCachePath,
@@ -196,7 +200,7 @@ final class NativeWalletWriterRepository
     revisions.requireRepair(key);
     final cachePath = await _session.rebuild(descriptor, record.issued);
     return WriterCommitted(
-      revisions.finish(
+      _session.finish(
         key,
         needsSync: true,
         initializedDescriptor: descriptor,
@@ -221,7 +225,7 @@ final class NativeWalletWriterRepository
           sink: _session.diagnostics,
         );
     final acquisition = WriterLock.acquire(
-      _session.lockDirectory,
+      _session.documentsDirectory,
       key,
       diagnostics: trace,
     );

@@ -14,7 +14,8 @@ import 'package:primitives/primitives.dart';
 
 import '../write/native_write_session.dart';
 import '../write/revision_store.dart';
-import '../write/writer_paths.dart';
+import '../write/native_store_paths.dart';
+import '../write/sqlite_wallet_revision_reader.dart';
 import '../write/writer_session.dart';
 import '../write/writer_sync_operation.dart';
 import '../domain/native_network_policy.dart';
@@ -33,7 +34,7 @@ final class ElectrumSync {
   final WalletConnectionPort _connections;
   final Future<Result<WalletRevisionState, TransactionSyncFailure>> Function(
     WalletKey,
-  )?
+  )
   _readRevision;
   final Future<Result<void, TransactionSyncFailure>> Function(SyncCompletion)?
   _onCompletion;
@@ -48,7 +49,7 @@ final class ElectrumSync {
   ElectrumSync({
     required this._connections,
     required this._documentsDirectory,
-    this._readRevision,
+    required this._readRevision,
     this._onCompletion,
   });
 
@@ -170,18 +171,8 @@ final class ElectrumSync {
     } on Exception {
       return const Err(TransactionSyncStorageFailure());
     }
-    final readRevision = _readRevision;
-    final Result<WalletRevisionState, TransactionSyncFailure> state;
-    if (readRevision != null) {
-      state = await readRevision(descriptor.key);
-    } else {
-      final revisions = RevisionStore(writerMetadataPath(root));
-      try {
-        state = await revisions.read(descriptor.key);
-      } finally {
-        await revisions.close();
-      }
-    }
+    // The caller's reader: this class never opens, let alone creates, a store.
+    final state = await _readRevision(descriptor.key);
     final int generation;
     switch (state) {
       case Ok(:final value):
@@ -337,13 +328,21 @@ Future<_Attempt> _performSync(_SyncParams params) async {
     probe?.dispose();
   }
   if (params.descriptor is LiquidWalletDescriptor) await BullSdk.init();
-  final revisions = RevisionStore(
-    writerMetadataPath(params.root),
-    existingOnly: params.headless,
-  );
+  final RevisionStore revisions;
+  try {
+    // The foreground created the store before any pass; the worker only opens it.
+    revisions = RevisionStore.openExisting(revisionStorePath(params.root));
+  } on RevisionStoreUnavailable {
+    return const _Attempt(
+      Err(TransactionSyncStorageFailure()),
+      retryable: false,
+    );
+  }
+  final reader = SqliteWalletRevisionReader(revisions);
   final writer = WriterSession.worker(
-    lockDirectory: writerLockDirectory(params.root),
+    documentsDirectory: params.root,
     revisions: revisions,
+    reader: reader,
     sessions: SdkWriteSessions(params.root),
     descriptor: params.descriptor,
     leaseScope: params.headless ? LeaseScope.headless : LeaseScope.compute,
@@ -355,7 +354,7 @@ Future<_Attempt> _performSync(_SyncParams params) async {
     )),
   );
   try {
-    final current = await revisions.read(params.descriptor.key);
+    final current = await reader.read(params.descriptor.key);
     if (current case Ok(
       value: final state,
     ) when state.lifecycle == WalletLifecycle.deleted) {
@@ -428,7 +427,8 @@ Future<_Attempt> _performSync(_SyncParams params) async {
       ),
     };
   } finally {
-    await revisions.close();
+    await reader.close();
+    revisions.close();
     // Same-port ordering plus acknowledgement drains all diagnostics before
     // compute returns and the foreground closes its listener.
     final acknowledged = ReceivePort();

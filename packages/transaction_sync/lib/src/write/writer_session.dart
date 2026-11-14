@@ -11,8 +11,10 @@ import '../domain/wallet_key.dart';
 import '../domain/wallet_revision.dart';
 import 'bitcoin_spend_gate_store.dart';
 import 'lease_diagnostics.dart';
+import 'native_store_paths.dart';
 import 'native_write_session.dart';
 import 'revision_store.dart';
+import 'sqlite_wallet_revision_reader.dart';
 import 'store_identity.dart';
 import 'writer_diagnostics.dart';
 import 'writer_lock.dart';
@@ -27,8 +29,9 @@ import 'writer_sync_operation.dart';
 /// ([WriterSession.app]); the sync worker supplies the descriptor it was given
 /// ([WriterSession.worker]). Invoke inside the isolate doing native IO.
 final class WriterSession {
-  final String lockDirectory;
+  final String documentsDirectory;
   final RevisionStore revisions;
+  final SqliteWalletRevisionReader reader;
   final NativeWriteSessions sessions;
   final Future<Result<PublicWalletDescriptor, TransactionSyncFailure>> Function(
     WalletKey,
@@ -40,8 +43,9 @@ final class WriterSession {
   final Map<WalletKey, Type> _failures = {};
 
   WriterSession.app({
-    required this.lockDirectory,
+    required this.documentsDirectory,
     required this.revisions,
+    required this.reader,
     required this.sessions,
     required WalletCatalogPort catalog,
     this.diagnostics = persistWriterDiagnostic,
@@ -50,8 +54,9 @@ final class WriterSession {
   }) : _resolve = catalog.find;
 
   WriterSession.worker({
-    required this.lockDirectory,
+    required this.documentsDirectory,
     required this.revisions,
+    required this.reader,
     required this.sessions,
     required PublicWalletDescriptor descriptor,
     required this.diagnostics,
@@ -79,7 +84,7 @@ final class WriterSession {
         session = await sessions.open(descriptor, create: false);
       } on NativeStoreMissing {
         if (old == null || old.state.initializedSchema == 0) {
-          revisions.cancelUnchanged(key, old);
+          cancelUnchanged(key, old);
           rethrow;
         }
         diagnostics(
@@ -105,11 +110,11 @@ final class WriterSession {
             old.descriptorHash == descriptorDigest(descriptor) &&
             old.liquidCachePath == session.liquidCachePath &&
             old.issued == issued) {
-          revisions.cancelUnchanged(key, old);
+          cancelUnchanged(key, old);
           return WriterUnchanged(old.state.stamp);
         }
         return WriterCommitted(
-          revisions.finish(
+          finish(
             key,
             needsSync: rebuilt ? true : null,
             issued: issued,
@@ -125,7 +130,7 @@ final class WriterSession {
     final session = await sessions.open(descriptor, create: true);
     try {
       return WriterCommitted(
-        revisions.finish(
+        finish(
           key,
           issued: highestIndex(old?.issued, await session.lastIssuedIndex()),
           initializedDescriptor: descriptor,
@@ -149,7 +154,7 @@ final class WriterSession {
     if (preflight != null) value(await preflight());
     BitcoinSpendGateStore? gates;
     if (key.network is BitcoinNetwork) {
-      gates = revisions.openSpendGate();
+      gates = openSpendGate();
       try {
         final tracked = gates.trackedInputs(descriptor);
         if (operation case final WriterSyncSpendObservation observer) {
@@ -175,11 +180,11 @@ final class WriterSession {
       revisions.requireRepair(key);
     } else if (result is Err) {
       if (operation case WriterSyncMutation(mayHaveMutated: false)) {
-        revisions.cancelUnchanged(key, record);
+        cancelUnchanged(key, record);
       } else {
         // Native work completed with an uncertain mutation: invalidate readers,
         // but never claim a successful sync or clear a prior repair barrier.
-        final stamp = revisions.finish(key, syncFailed: true);
+        final stamp = finish(key, syncFailed: true);
         diagnostics(
           WriterLogLevel.fine,
           'Writer revision invalidated generation=${stamp.generation} revision=${stamp.revision} reason=${(result as Err<void, TransactionSyncFailure>).failure.logCode}',
@@ -192,7 +197,7 @@ final class WriterSession {
       :final spendTransactionInputs,
       :final settledSpendTransactions,
     ) when key.network is BitcoinNetwork) {
-      final observed = revisions.openSpendGate();
+      final observed = openSpendGate();
       try {
         observed.observed(descriptor, expectedGeneration, {
           ...observedSpendTransactions,
@@ -205,10 +210,10 @@ final class WriterSession {
     if (operation case WriterSyncChanges(
       hasChanges: false,
     ) when !record.needsSync && !record.state.syncFailed) {
-      revisions.cancelUnchanged(key, record, syncSucceeded: true);
+      cancelUnchanged(key, record, syncSucceeded: true);
       return WriterUnchanged(record.state.stamp);
     }
-    return WriterCommitted(revisions.finish(key, needsSync: false));
+    return WriterCommitted(finish(key, needsSync: false));
   }, reconcile: reconcile);
 
   /// Runs [operation] under one writer lock acquisition, after resuming any
@@ -244,7 +249,7 @@ final class WriterSession {
       sink: diagnostics,
     );
     final acquisition = await WriterLock.acquireWriter(
-      lockDirectory,
+      documentsDirectory,
       key,
       diagnostics: trace,
     );
@@ -258,7 +263,7 @@ final class WriterSession {
       if (key.network is BitcoinNetwork &&
           intent != WriteIntent.receive &&
           intent != WriteIntent.sync) {
-        revisions.invalidateSpendGate(key);
+        _invalidateSpendGate(key);
       }
       final admitted = revisions.record(key);
       expectGeneration(admitted, expectedGeneration);
@@ -319,7 +324,7 @@ final class WriterSession {
     final record = revisions.record(key);
     if (record == null || record.intent == null) return;
     if (key.network is BitcoinNetwork && record.intent != WriteIntent.receive) {
-      revisions.invalidateSpendGate(key);
+      _invalidateSpendGate(key);
     }
     diagnostics(
       WriterLogLevel.warning,
@@ -327,7 +332,7 @@ final class WriterSession {
     );
     if (record.intent == WriteIntent.delete) {
       await sessions.delete(key);
-      revisions.finish(key);
+      finish(key);
       return;
     }
     final descriptor = await this.descriptor(key);
@@ -340,7 +345,7 @@ final class WriterSession {
         throw const WriterRefusal(TransactionSyncNeedsRepairFailure());
       }
       final cachePath = await rebuild(descriptor, record.issued);
-      revisions.finish(
+      finish(
         key,
         needsSync: true,
         initializedDescriptor: descriptor,
@@ -357,7 +362,7 @@ final class WriterSession {
     } on NativeStoreMissing {
       if (record.state.initializedSchema == 0 &&
           record.intent == WriteIntent.load) {
-        revisions.cancelUnchanged(key, null);
+        cancelUnchanged(key, null);
         return;
       }
       if (record.intent != WriteIntent.load) rethrow;
@@ -372,7 +377,7 @@ final class WriterSession {
       if (!allowRepairIntent || !isLiquidStatusConflict(error)) rethrow;
       revisions.requireRepair(key);
       final cachePath = await rebuild(descriptor, record.issued);
-      revisions.finish(
+      finish(
         key,
         needsSync: true,
         initializedDescriptor: descriptor,
@@ -387,7 +392,7 @@ final class WriterSession {
       }
       // Unknown sync completion still invalidates snapshots. It does not
       // unblock post-repair receive or produce any payment-seen receipt.
-      revisions.finish(
+      finish(
         key,
         issued: highestIndex(
           highestIndex(record.issued, candidate),
@@ -413,7 +418,7 @@ final class WriterSession {
     }
     try {
       if (issued != null) await session.revealAndPersist(issued);
-      revisions.finish(
+      finish(
         descriptor.key,
         needsSync: true,
         initializedDescriptor: descriptor,
@@ -440,6 +445,57 @@ final class WriterSession {
       return session.liquidCachePath;
     } finally {
       session.close();
+    }
+  }
+
+  /// Commits the pending intent, then publishes the new state in this isolate.
+  WalletRevision finish(
+    WalletKey key, {
+    int? issued,
+    bool? needsSync,
+    bool? syncFailed,
+    PublicWalletDescriptor? initializedDescriptor,
+    String? liquidCachePath,
+  }) {
+    final state = revisions.finish(
+      key,
+      issued: issued,
+      needsSync: needsSync,
+      syncFailed: syncFailed,
+      initializedDescriptor: initializedDescriptor,
+      liquidCachePath: liquidCachePath,
+    );
+    reader.publish(state);
+    return state.stamp;
+  }
+
+  /// Clears a proven non-mutating intent and publishes the restored state.
+  void cancelUnchanged(
+    WalletKey key,
+    RevisionRecord? previous, {
+    bool syncSucceeded = false,
+  }) {
+    final state = revisions.cancelUnchanged(
+      key,
+      previous,
+      syncSucceeded: syncSucceeded,
+    );
+    if (state != null) reader.publish(state);
+  }
+
+  /// The foreground provisioned the spend gate; it is never created here.
+  BitcoinSpendGateStore openSpendGate() => BitcoinSpendGateStore.openExisting(
+    spendGateStorePath(documentsDirectory),
+  );
+
+  /// Recovery cannot silently forget protection when native metadata changes.
+  void _invalidateSpendGate(WalletKey key) {
+    if (key.network is! BitcoinNetwork) return;
+    final gates = openSpendGate();
+    try {
+      gates.requireValidation(key);
+    } finally {
+      gates.close();
     }
   }
 

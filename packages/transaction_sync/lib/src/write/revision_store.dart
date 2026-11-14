@@ -1,20 +1,19 @@
-import 'dart:async';
 import 'dart:io';
 import 'store_identity.dart';
-import 'bitcoin_spend_gate_store.dart';
 
 import 'package:primitives/primitives.dart';
 import 'package:meta/meta.dart';
 import 'package:sqlite3/sqlite3.dart';
-import '../domain/transaction_sync_failure.dart';
 import '../domain/public_wallet_descriptor.dart';
 import '../domain/wallet_key.dart';
 import '../domain/wallet_revision.dart';
-import '../domain/ports/wallet_revision_reader_port.dart';
 
 /// Bump whenever the pinned native SDK or native store layout changes.
 /// Version 1: bull_sdk f4ee00bf61a810d034a397a41a2e40cd7903aa51, legacy BDK/LWK paths.
 const writerSchemaVersion = 1;
+
+/// SQL layout of the revision store. Unpublished layouts are not migrated.
+const revisionStoreVersion = 1;
 
 /// Intents contain no descriptors, addresses, endpoints or key material.
 enum WriteIntent { create, load, receive, sync, delete, repair, rebuild }
@@ -41,117 +40,79 @@ final class RevisionRecord {
 
 /// Metadata is separate from both native stores and the never-deleted lock DB.
 /// All mutations require the wallet lease. Transactions contain only synchronous
-/// SQLite calls, never native IO or an await. Share this instance with readers
-/// for in-isolate notifications; read again on resume for cross-isolate writes.
-final class RevisionStore implements WalletRevisionReaderPort {
+/// SQLite calls, never native IO or an await. Publication of committed states
+/// belongs to [SqliteWalletRevisionReader]; this class only reads and writes rows.
+final class RevisionStore {
   final Database _db;
-  final String _path;
-  final bool _existingOnly;
-  bool _spendGateProvisioned = false;
-  final _changes = StreamController<WalletRevisionState>.broadcast();
-  final _published = <WalletKey, WalletRevisionState>{};
 
-  RevisionStore(this._path, {bool existingOnly = false})
-    : _existingOnly = existingOnly,
-      _db = _open(_path, existingOnly: existingOnly);
+  RevisionStore._(this._db);
 
-  String get spendGatePath => '$_path.spend-gate.sqlite';
-
-  /// Only Bitcoin spend and write paths open the gate: a damaged gate refuses
-  /// them, never Liquid work or revision reads. Headless openers do not
-  /// provision it; they defer until the foreground has.
-  @internal
-  BitcoinSpendGateStore openSpendGate() {
-    if (!_existingOnly && !_spendGateProvisioned) {
-      BitcoinSpendGateStore.provision(spendGatePath);
-      _spendGateProvisioned = true;
-    }
-    return BitcoinSpendGateStore(spendGatePath);
-  }
-
-  bool get recoveryPending => File('$_path.recovery').existsSync();
-
-  /// Recovery cannot silently forget protection when native metadata is rebuilt.
-  void invalidateSpendGate(WalletKey key) {
-    if (key.network is! BitcoinNetwork) return;
-    final gates = openSpendGate();
-    try {
-      gates.requireValidation(key);
-    } finally {
-      gates.close();
-    }
-  }
-
-  /// Called only after the complete catalog adoption pass has recorded outcomes.
-  void completeRecovery() {
-    final gates = openSpendGate();
-    try {
-      gates.requireRecoveryValidation();
-    } finally {
-      gates.close();
-    }
-    File('$_path.recovery').deleteSync();
-  }
-
-  static Database _open(String path, {required bool existingOnly}) {
-    if (existingOnly && !File(path).existsSync()) {
-      throw const BitcoinSpendGateUnavailable();
-    }
+  /// Foreground only: creates the complete schema in one step. A store at
+  /// another version is refused with [RevisionStoreUnavailable].
+  static RevisionStore openForeground(String path) {
     File(path).parent.createSync(recursive: true);
     final db = sqlite3.open(path);
     try {
-      db.execute('PRAGMA busy_timeout = 5000');
-      db.execute('PRAGMA journal_mode = WAL');
-      db.execute('PRAGMA synchronous = FULL');
-      final existingColumns = db
-          .select('PRAGMA table_info(revisions)')
-          .map((row) => row['name'])
-          .toSet();
-      if (existingColumns.containsAll({
-        'initialized_schema',
-        'descriptor_hash',
-        'liquid_cache_path',
-        'sync_failed',
-      })) {
-        return db;
-      }
-      if (existingOnly) throw const BitcoinSpendGateUnavailable();
-      db.execute('BEGIN IMMEDIATE');
-      db.execute('''CREATE TABLE IF NOT EXISTS revisions (
-        wallet TEXT NOT NULL, network TEXT NOT NULL,
-        generation INTEGER NOT NULL, revision INTEGER NOT NULL,
-        lifecycle TEXT NOT NULL, intent TEXT, candidate INTEGER,
-        issued INTEGER, needs_sync INTEGER NOT NULL DEFAULT 0,
-        initialized_schema INTEGER NOT NULL DEFAULT 0,
-        PRIMARY KEY(wallet, network))''');
-      if (!db
-          .select('PRAGMA table_info(revisions)')
-          .any((row) => row['name'] == 'initialized_schema')) {
-        db.execute(
-          'ALTER TABLE revisions ADD COLUMN initialized_schema INTEGER NOT NULL DEFAULT 0',
-        );
-      }
-      final columns = db
-          .select('PRAGMA table_info(revisions)')
-          .map((row) => row['name'])
-          .toSet();
-      for (final column in ['descriptor_hash', 'liquid_cache_path']) {
-        if (!columns.contains(column)) {
-          db.execute('ALTER TABLE revisions ADD COLUMN $column TEXT');
+      _configure(db);
+      if (db.userVersion == 0) {
+        db.execute('BEGIN IMMEDIATE');
+        try {
+          if (db.userVersion == 0) {
+            db.execute(_schema);
+            db.userVersion = revisionStoreVersion;
+          }
+          db.execute('COMMIT');
+        } on Object {
+          db.execute('ROLLBACK');
+          rethrow;
         }
       }
-      if (!columns.contains('sync_failed')) {
-        db.execute(
-          'ALTER TABLE revisions ADD COLUMN sync_failed INTEGER NOT NULL DEFAULT 0',
-        );
+      if (db.userVersion != revisionStoreVersion) {
+        throw const RevisionStoreUnavailable();
       }
-      db.execute('COMMIT');
-      return db;
-    } on Exception {
+      return RevisionStore._(db);
+    } on Object {
       db.dispose();
       rethrow;
     }
   }
+
+  /// Background and worker: opens the store only if it already exists at the
+  /// current version, checked on the same connection. Never creates a file,
+  /// a table or a migration.
+  static RevisionStore openExisting(String path) {
+    Database? db;
+    try {
+      db = sqlite3.open(path, mode: OpenMode.readWrite);
+      _configure(db);
+      if (db.userVersion != revisionStoreVersion) {
+        throw const RevisionStoreUnavailable();
+      }
+      return RevisionStore._(db);
+    } on SqliteException {
+      db?.dispose();
+      throw const RevisionStoreUnavailable();
+    } on Object {
+      db?.dispose();
+      rethrow;
+    }
+  }
+
+  static void _configure(Database db) {
+    db.execute('PRAGMA busy_timeout = 5000');
+    db.execute('PRAGMA journal_mode = WAL');
+    db.execute('PRAGMA synchronous = FULL');
+  }
+
+  static const _schema = '''CREATE TABLE revisions (
+    wallet TEXT NOT NULL, network TEXT NOT NULL,
+    generation INTEGER NOT NULL, revision INTEGER NOT NULL,
+    lifecycle TEXT NOT NULL, intent TEXT, candidate INTEGER,
+    issued INTEGER, needs_sync INTEGER NOT NULL DEFAULT 0,
+    initialized_schema INTEGER NOT NULL DEFAULT 0,
+    descriptor_hash TEXT, liquid_cache_path TEXT,
+    sync_failed INTEGER NOT NULL DEFAULT 0,
+    PRIMARY KEY(wallet, network))''';
 
   static String _network(WalletKey key) => switch (key.network) {
     BitcoinNetwork() => 'bitcoin/${key.network.env.name}',
@@ -266,7 +227,7 @@ final class RevisionStore implements WalletRevisionReaderPort {
   /// Clears a proven non-mutating attempt without invalidating snapshots.
   /// A successful no-op sync preserves health; a failed sync marks it stale.
   @internal
-  void cancelUnchanged(
+  WalletRevisionState? cancelUnchanged(
     WalletKey key,
     RevisionRecord? previous, {
     bool syncSucceeded = false,
@@ -294,13 +255,13 @@ final class RevisionStore implements WalletRevisionReaderPort {
           _network(key),
         ],
       );
-      final current = record(key);
-      if (current != null) _publish(current.state);
+      return record(key)?.state;
     }
+    return null;
   }
 
   @internal
-  WalletRevision finish(
+  WalletRevisionState finish(
     WalletKey key, {
     int? issued,
     bool? needsSync,
@@ -360,50 +321,13 @@ final class RevisionStore implements WalletRevisionReaderPort {
       _db.execute('ROLLBACK');
       rethrow;
     }
-    _publish(state);
-    return state.stamp;
+    return state;
   }
 
-  @override
-  Future<Result<WalletRevisionState, TransactionSyncFailure>> read(
-    WalletKey key,
-  ) async {
-    try {
-      final value = record(key);
-      if (value == null) return const Err(TransactionSyncNotFoundFailure());
-      // Also bridges a completed compute worker: its caller reads the persisted
-      // revision here. Resume/open uses the same path for background commits.
-      _publish(value.state);
-      return Ok(value.state);
-    } on SqliteException catch (error) {
-      return Err(
-        error.resultCode == 5
-            ? const TransactionSyncBusyFailure()
-            : const TransactionSyncStorageFailure(),
-      );
-    }
-  }
+  void close() => _db.dispose();
+}
 
-  void _publish(WalletRevisionState state) {
-    final previous = _published[state.stamp.key];
-    if (previous?.stamp == state.stamp &&
-        previous?.lifecycle == state.lifecycle &&
-        previous?.initializedSchema == state.initializedSchema &&
-        previous?.syncFailed == state.syncFailed) {
-      return;
-    }
-    _published[state.stamp.key] = state;
-    _changes.add(state);
-  }
-
-  Stream<WalletRevisionState> get changes => _changes.stream;
-
-  @override
-  Stream<WalletRevisionState> watch(WalletKey key) =>
-      _changes.stream.where((state) => state.stamp.key == key);
-
-  Future<void> close() async {
-    _db.dispose();
-    await _changes.close();
-  }
+/// Missing, or at a version this build neither creates nor migrates.
+final class RevisionStoreUnavailable implements Exception {
+  const RevisionStoreUnavailable();
 }

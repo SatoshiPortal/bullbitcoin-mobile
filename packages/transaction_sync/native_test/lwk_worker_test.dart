@@ -1,5 +1,6 @@
+import 'package:transaction_sync/src/write/native_store_paths.dart';
+import 'package:transaction_sync/src/write/revision_store.dart';
 import 'dart:io';
-import 'package:transaction_sync/write.dart';
 
 import 'package:bull_sdk/bull_sdk.dart' show BullSdk;
 import 'package:bull_sdk/lwk.dart' as lwk;
@@ -53,12 +54,11 @@ void main() {
         fixture.url,
         fixture.url,
       ], socks5: '127.0.0.1:1');
-      final sync = ElectrumSync(
-        connections: connections,
-        documentsDirectory: () async => dir.path,
+      final sync = foregroundSync(dir.path, connections);
+      final metadata = RevisionStore.openForeground(
+        revisionStorePath(dir.path),
       );
-      final metadata = RevisionStore(writerMetadataPath(dir.path));
-      await metadata.close();
+      metadata.close();
       // The Bitcoin fixture deliberately cannot serve Liquid headers. The error must occur inside sync_, after successful worker initialization.
       final result = await sync.execute(liquid);
       expect(result, isA<Err<SyncCompletion, TransactionSyncFailure>>());

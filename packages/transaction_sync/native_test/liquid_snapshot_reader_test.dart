@@ -1,3 +1,8 @@
+import 'package:transaction_sync/src/read/persisted_wallet_readiness.dart';
+import 'package:transaction_sync/src/write/native_store_paths.dart';
+import 'package:transaction_sync/src/write/native_wallet_writer_repository.dart';
+import 'package:transaction_sync/src/write/revision_store.dart';
+import 'package:transaction_sync/src/write/sqlite_wallet_revision_reader.dart';
 import 'dart:io';
 
 import 'package:bull_sdk/bull_sdk.dart' show BullSdk;
@@ -5,7 +10,6 @@ import 'package:bull_sdk/lwk.dart' as lwk;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 import 'package:transaction_sync/read.dart';
-import 'package:transaction_sync/write.dart';
 import 'package:transaction_sync/transaction_sync.dart';
 
 import '../test/read/wallet_snapshot_reader_test.dart'
@@ -18,7 +22,9 @@ void main() {
 
   test('writer attests the canonical Liquid cache for a production reader', () async {
     final root = Directory.systemTemp.createTempSync('writer-readiness-');
-    final revisions = RevisionStore(writerMetadataPath(root.path));
+    final revisions = RevisionStore.openForeground(
+      revisionStorePath(root.path),
+    );
     final key = WalletKey(id: 'fixture', network: LiquidNetwork.testnet);
     final native = await lwk.Descriptor.newConfidential(
       network: lwk.LiquidNetwork.testnet,
@@ -33,8 +39,8 @@ void main() {
     );
     final catalog = _Catalog(descriptor);
     final writer = NativeWalletWriterRepository(
-      lockDirectory: writerLockDirectory(root.path),
       revisions: revisions,
+      reader: SqliteWalletRevisionReader(revisions),
       documentsDirectory: root.path,
       catalog: catalog,
       reservedAddresses: _Reserved(),
@@ -45,7 +51,7 @@ void main() {
         documentsDirectory: root.path,
         readiness: PersistedWalletReadiness(revisions),
         requiredSchemaVersion: writerSchemaVersion,
-        revisions: revisions,
+        revisions: SqliteWalletRevisionReader(revisions),
         liquidAdmission: writer,
       );
       expect(await reader.liquid(descriptor), isA<Ok>());
@@ -73,7 +79,7 @@ void main() {
         before,
       );
     } finally {
-      await revisions.close();
+      revisions.close();
       root.deleteSync(recursive: true);
     }
   });

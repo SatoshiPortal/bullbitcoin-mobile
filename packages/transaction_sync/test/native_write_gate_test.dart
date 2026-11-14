@@ -136,6 +136,7 @@ Object sync(lwk.Wallet wallet) => wallet.sync_;
     final violations = await inspect('delete', '''
 import 'dart:io';
 import 'package:transaction_sync/transaction_sync.dart';
+import 'package:transaction_sync/write.dart';
 void remove(String root, WalletKey key) {
   final path = nativeWalletStoragePath(root, key);
   final alias = File(path);

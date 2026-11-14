@@ -6,6 +6,7 @@ import 'package:primitives/primitives.dart';
 import 'package:sqlite3/sqlite3.dart';
 import '../domain/transaction_sync_failure.dart';
 import '../domain/wallet_key.dart';
+import 'native_store_paths.dart';
 
 /// Only package:sqlite3 may open these files. Never unlink them, including on
 /// wallet deletion. Acquire in the isolate awaiting the actual native work.
@@ -23,19 +24,8 @@ final class WriterLock {
 
   WriterLock._(this._db, this._diagnostics);
 
-  static String path(String directory, WalletKey key) {
-    final id = key.id.codeUnits
-        .map((unit) => unit.toRadixString(16).padLeft(4, '0'))
-        .join();
-    final chain = switch (key.network) {
-      BitcoinNetwork() => 'bitcoin',
-      LiquidNetwork() => 'liquid',
-    };
-    return '$directory/$chain-${key.network.env.name}-$id.lock.sqlite';
-  }
-
   static Result<WriterLock, TransactionSyncFailure> acquire(
-    String directory,
+    String documentsDirectory,
     WalletKey key, {
     LeaseDiagnostics? diagnostics,
   }) {
@@ -43,10 +33,12 @@ final class WriterLock {
         diagnostics ??
         LeaseDiagnostics.current ??
         LeaseDiagnostics(role: LeaseRole.writer, intent: LeaseIntent.sync);
+    final path = writerLockPath(documentsDirectory, key);
+    if (path case Err(:final failure)) return Err(failure);
     var busySource = LeaseBusySource.leaseOpen;
     Database? db;
     try {
-      db = _open(directory, key);
+      db = _open((path as Ok<String, TransactionSyncFailure>).value);
       if (db == null) return const Err(TransactionSyncStorageFailure());
       busySource = LeaseBusySource.leaseBegin;
       db.execute('BEGIN IMMEDIATE');
@@ -69,15 +61,17 @@ final class WriterLock {
 
   /// Writer-only admission. Readers use [acquire] and never wait.
   static Future<Result<WriterLock, TransactionSyncFailure>> acquireWriter(
-    String directory,
+    String documentsDirectory,
     WalletKey key, {
     required LeaseDiagnostics diagnostics,
   }) async {
+    final path = writerLockPath(documentsDirectory, key);
+    if (path case Err(:final failure)) return Err(failure);
     Database? db;
     var busySource = LeaseBusySource.leaseOpen;
     final waited = Stopwatch();
     try {
-      db = _open(directory, key);
+      db = _open((path as Ok<String, TransactionSyncFailure>).value);
       if (db == null) return const Err(TransactionSyncStorageFailure());
       final connection = db;
       busySource = LeaseBusySource.leaseBegin;
@@ -119,9 +113,9 @@ final class WriterLock {
     }
   }
 
-  static Database? _open(String directory, WalletKey key) {
-    Directory(directory).createSync(recursive: true);
-    final db = sqlite3.open(path(directory, key));
+  static Database? _open(String path) {
+    File(path).parent.createSync(recursive: true);
+    final db = sqlite3.open(path);
     try {
       db.execute('PRAGMA busy_timeout = 0');
       // Refuse an unexpected journal configuration; no WAL lock semantics.

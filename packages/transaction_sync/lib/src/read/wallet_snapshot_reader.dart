@@ -13,6 +13,7 @@ import '../domain/native_network_policy.dart';
 import '../domain/public_wallet_descriptor.dart';
 import '../domain/ports/wallet_catalog_port.dart';
 import '../domain/wallet_key.dart';
+import '../write/native_store_paths.dart';
 import '../domain/wallet_revision.dart';
 import '../domain/ports/read_admission_port.dart';
 import '../domain/ports/wallet_revision_reader_port.dart';

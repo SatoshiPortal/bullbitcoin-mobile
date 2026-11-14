@@ -1,4 +1,9 @@
 import 'package:primitives/primitives.dart';
+import 'package:test/test.dart';
+import 'package:transaction_sync/src/write/bitcoin_spend_gate_store.dart';
+import 'package:transaction_sync/src/write/native_store_paths.dart';
+import 'package:transaction_sync/src/write/revision_store.dart';
+import 'package:transaction_sync/src/write/sqlite_wallet_revision_reader.dart';
 import 'package:transaction_sync/transaction_sync.dart';
 
 final class FixtureConnections implements WalletConnectionPort {
@@ -40,4 +45,21 @@ final class FixtureConnections implements WalletConnectionPort {
       routeActive = false;
     }
   }
+}
+
+/// An engine whose foreground already created the package stores, as the app
+/// does before any pass; the stores close with the current test.
+ElectrumSync foregroundSync(String root, WalletConnectionPort connections) {
+  final store = RevisionStore.openForeground(revisionStorePath(root));
+  BitcoinSpendGateStore.provision(spendGateStorePath(root));
+  final reader = SqliteWalletRevisionReader(store);
+  addTearDown(() async {
+    await reader.close();
+    store.close();
+  });
+  return ElectrumSync(
+    connections: connections,
+    documentsDirectory: () async => root,
+    readRevision: reader.read,
+  );
 }

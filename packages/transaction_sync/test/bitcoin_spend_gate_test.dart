@@ -6,8 +6,17 @@ import 'package:sqlite3/sqlite3.dart';
 import 'package:transaction_sync/transaction_sync.dart';
 import 'package:transaction_sync/write.dart';
 import 'package:transaction_sync/src/write/bitcoin_spend_gate_store.dart';
+import 'package:transaction_sync/src/write/native_store_paths.dart';
 import 'package:transaction_sync/src/write/revision_store.dart';
 import 'package:transaction_sync/src/write/writer_lock.dart';
+
+final class _Reserved implements ReservedAddressPort {
+  @override
+  Future<Result<bool, TransactionSyncFailure>> isReserved(
+    WalletKey key,
+    String address,
+  ) async => const Ok(false);
+}
 
 final class _Catalog implements WalletCatalogPort {
   final List<PublicWalletDescriptor> wallets;
@@ -23,6 +32,7 @@ final class _Catalog implements WalletCatalogPort {
 
 void main() {
   late Directory dir;
+  late ForegroundStores stores;
   late RevisionStore revisions;
   late BitcoinSpendGate gate;
   late BitcoinWalletDescriptor wallet;
@@ -41,22 +51,23 @@ void main() {
 
   setUp(() {
     dir = Directory.systemTemp.createTempSync('spend-gate-');
-    revisions = RevisionStore(writerMetadataPath(dir.path));
-    revisions.openSpendGate().close();
     wallet = descriptor('one');
     other = descriptor('two');
+    stores = openForeground(
+      documentsDirectory: dir.path,
+      catalog: _Catalog([wallet, other]),
+      reservedAddresses: _Reserved(),
+    );
+    revisions = RevisionStore.openExisting(revisionStorePath(dir.path));
     for (final descriptor in [wallet, other]) {
       revisions.begin(descriptor.key, WriteIntent.create);
       revisions.finish(descriptor.key, initializedDescriptor: descriptor);
     }
-    gate = BitcoinSpendGate(
-      revisions: revisions,
-      lockDirectory: writerLockDirectory(dir.path),
-      catalog: _Catalog([wallet, other]),
-    );
+    gate = stores.spendGate;
   });
   tearDown(() async {
-    await revisions.close();
+    revisions.close();
+    await stores.close();
     dir.deleteSync(recursive: true);
   });
 
@@ -74,19 +85,16 @@ void main() {
       await accepted();
       expect(await gate.check(wallet.key), BitcoinSpendStatus.pending);
       expect(await gate.check(other.key), BitcoinSpendStatus.ready);
-      final restarted = RevisionStore(
-        writerMetadataPath(dir.path),
-        existingOnly: true,
-      );
+      final restarted = RevisionStore.openExisting(revisionStorePath(dir.path));
       try {
         final restored = BitcoinSpendGate(
           revisions: restarted,
-          lockDirectory: writerLockDirectory(dir.path),
+          documentsDirectory: dir.path,
           catalog: _Catalog([wallet, other]),
         );
         expect(await restored.check(wallet.key), BitcoinSpendStatus.pending);
       } finally {
-        await restarted.close();
+        restarted.close();
       }
     },
   );
@@ -99,7 +107,9 @@ void main() {
         await gate.check(wallet.key, replacing: txid),
         BitcoinSpendStatus.replacementPending,
       );
-      final store = BitcoinSpendGateStore(revisions.spendGatePath);
+      final store = BitcoinSpendGateStore.openExisting(
+        spendGateStorePath(dir.path),
+      );
       try {
         store.observed(wallet, 1, {txid});
         expect(await gate.check(wallet.key), BitcoinSpendStatus.ready);
@@ -147,7 +157,9 @@ void main() {
 
   test('a settled spend is retained and blocks again after a reset', () async {
     await accepted();
-    final store = BitcoinSpendGateStore(revisions.spendGatePath);
+    final store = BitcoinSpendGateStore.openExisting(
+      spendGateStorePath(dir.path),
+    );
     try {
       final spent = {'${'b' * 64}:0', '${'b' * 64}:1'};
       store.observed(wallet, 1, {txid}, inputs: {txid: spent});
@@ -165,7 +177,7 @@ void main() {
 
   test('writer contention is busy, not an unobserved payment', () async {
     final held =
-        WriterLock.acquire(writerLockDirectory(dir.path), wallet.key)
+        WriterLock.acquire(dir.path, wallet.key)
             as Ok<WriterLock, TransactionSyncFailure>;
     try {
       expect(await gate.check(wallet.key), BitcoinSpendStatus.busy);
@@ -177,21 +189,25 @@ void main() {
 
   test('revision quarantine marker keeps spend admission closed', () async {
     await accepted();
-    final store = BitcoinSpendGateStore(revisions.spendGatePath);
+    final store = BitcoinSpendGateStore.openExisting(
+      spendGateStorePath(dir.path),
+    );
     store.observed(wallet, 1, {txid});
     store.close();
-    final marker = File('${writerMetadataPath(dir.path)}.recovery');
+    final marker = File(recoveryMarkerPath(dir.path));
     marker.writeAsStringSync('pending', flush: true);
     expect(await gate.check(wallet.key), BitcoinSpendStatus.unavailable);
     // Even obligations whose native store could not be adopted are invalidated.
-    revisions.completeRecovery();
+    stores.completeRecovery();
     expect(marker.existsSync(), isFalse);
     expect(await gate.check(wallet.key), BitcoinSpendStatus.pending);
   });
 
   test('generation reset never orphans an accepted obligation', () async {
     await accepted();
-    final store = BitcoinSpendGateStore(revisions.spendGatePath);
+    final store = BitcoinSpendGateStore.openExisting(
+      spendGateStorePath(dir.path),
+    );
     try {
       store.observed(wallet, 99, {txid});
       expect(await gate.check(wallet.key), BitcoinSpendStatus.pending);
@@ -204,14 +220,14 @@ void main() {
 
   test('failed recovery validation retains the global barrier', () async {
     await accepted();
-    final marker = File('${writerMetadataPath(dir.path)}.recovery');
+    final marker = File(recoveryMarkerPath(dir.path));
     marker.writeAsStringSync('pending', flush: true);
-    final db = sqlite3.open(revisions.spendGatePath);
+    final db = sqlite3.open(spendGateStorePath(dir.path));
     try {
       db.execute(
         "CREATE TRIGGER fail_validation BEFORE UPDATE ON broadcasts BEGIN SELECT RAISE(FAIL, 'storage unavailable'); END",
       );
-      expect(revisions.completeRecovery, throwsA(isA<SqliteException>()));
+      expect(stores.completeRecovery, throwsA(isA<SqliteException>()));
       expect(marker.existsSync(), isTrue);
       expect(await gate.check(wallet.key), BitcoinSpendStatus.unavailable);
     } finally {
@@ -222,7 +238,7 @@ void main() {
   test(
     'accepted storage failure stays accepted and blocks admission until recorded',
     () async {
-      final db = sqlite3.open(revisions.spendGatePath);
+      final db = sqlite3.open(spendGateStorePath(dir.path));
       db.execute(
         "CREATE TRIGGER fail_record BEFORE INSERT ON broadcasts BEGIN SELECT RAISE(FAIL, 'storage unavailable'); END",
       );
@@ -238,29 +254,27 @@ void main() {
     },
   );
 
-  test('headless opening does not provision missing gate schema', () async {
-    final emptyPath = '${dir.path}/headless.sqlite';
-    expect(
-      () => RevisionStore(emptyPath, existingOnly: true),
-      throwsA(isA<BitcoinSpendGateUnavailable>()),
-    );
-    expect(File(emptyPath).existsSync(), isFalse);
-    final gateFile = File(revisions.spendGatePath);
+  test('a lost gate is never recreated, even by the foreground', () async {
+    final gateFile = File(spendGateStorePath(dir.path));
     gateFile.renameSync('${gateFile.path}.saved');
-    // Metadata still opens for Liquid and reads; only the gate is refused,
-    // and a provisioned gate that went missing is never silently recreated.
-    for (final existingOnly in [true, false]) {
-      final reopened = RevisionStore(
-        writerMetadataPath(dir.path),
-        existingOnly: existingOnly,
-      );
+    // Metadata still opens for Liquid and reads; only the gate is refused.
+    final reopened = openForeground(
+      documentsDirectory: dir.path,
+      catalog: _Catalog([wallet, other]),
+      reservedAddresses: _Reserved(),
+    );
+    try {
       expect(
-        reopened.openSpendGate,
+        () => BitcoinSpendGateStore.openExisting(gateFile.path),
         throwsA(isA<BitcoinSpendGateUnavailable>()),
       );
+      expect(gateFile.existsSync(), isFalse);
+      expect(
+        await reopened.spendGate.check(wallet.key),
+        BitcoinSpendStatus.unavailable,
+      );
+    } finally {
       await reopened.close();
     }
-    expect(gateFile.existsSync(), isFalse);
-    expect(await gate.check(wallet.key), BitcoinSpendStatus.unavailable);
   });
 }

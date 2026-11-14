@@ -45,7 +45,7 @@ void main() {
       final directory = Directory.systemTemp.createTempSync('runtime-open-');
       final metadata = _Metadata();
       when(() => metadata.fetchAll()).thenAnswer((_) async => []);
-      RevisionStore? abandoned;
+      ForegroundStores? abandoned;
       var attempts = 0;
       final runtime = WalletNativeRuntime(
         catalog: WalletCatalogPortImpl(metadata),
@@ -54,11 +54,13 @@ void main() {
         sync: ElectrumSync(
           connections: _Offline(),
           documentsDirectory: () async => directory.path,
+          readRevision: (_) async =>
+              const Err(TransactionSyncNotFoundFailure()),
         ),
         documentsDirectory: () async => directory.path,
-        onRevisionStoreOpened: (store) {
+        onStoresOpened: (stores) {
           if (++attempts == 1) {
-            abandoned = store;
+            abandoned = stores;
             throw const FileSystemException('assembly interrupted');
           }
         },
@@ -69,7 +71,7 @@ void main() {
         expect(failedStore, isNotNull);
         if (failedStore == null) return;
         await expectLater(
-          failedStore.read(
+          failedStore.revisions.read(
             WalletKey(id: 'probe', network: BitcoinNetwork.testnet),
           ),
           throwsStateError,
@@ -97,6 +99,8 @@ void main() {
         sync: ElectrumSync(
           connections: _Offline(),
           documentsDirectory: () async => directory.path,
+          readRevision: (_) async =>
+              const Err(TransactionSyncNotFoundFailure()),
         ),
         documentsDirectory: () async {
           if (++attempts == 1) throw const FileSystemException('unavailable');
@@ -170,6 +174,8 @@ void main() {
         sync: ElectrumSync(
           connections: _Offline(),
           documentsDirectory: () async => directory.path,
+          readRevision: (_) async =>
+              const Err(TransactionSyncNotFoundFailure()),
         ),
         documentsDirectory: () async => directory.path,
       );
@@ -225,7 +231,9 @@ void main() {
         final missingStore = File(
           nativeWalletStoragePath(directory.path, missingKey),
         );
-        final metadataFile = File(writerMetadataPath(directory.path));
+        final metadataFile = File(
+          '${directory.path}/transaction_sync/revisions.sqlite',
+        );
         metadataFile.writeAsStringSync('corrupt revision metadata');
         runtime = open();
         // A global catalog failure leaves recovery pending across a restart.

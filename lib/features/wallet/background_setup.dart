@@ -52,17 +52,14 @@ Future<BackgroundTaskHandler> setupBackgroundWalletTask(
   final catalog = WalletCatalogPortImpl(
     WalletMetadataDatasource(sqlite: sqlite),
   );
-  final RevisionStore revisions;
+  final ExistingStores stores;
   try {
-    revisions = RevisionStore(
-      writerMetadataPath(documents.path),
-      existingOnly: true,
-    );
+    stores = openExisting(documents.path);
   } on Exception {
     log.fine('Background wallet task deferred: writer metadata unavailable');
     return () async => const BackgroundTaskExecutionResult.success();
   }
-  resources.onClose(revisions.close);
+  resources.onClose(stores.close);
   final queue = SqliteWalletSyncJobQueue(
     databasePath: p.join(
       documents.path,
@@ -83,6 +80,7 @@ Future<BackgroundTaskHandler> setupBackgroundWalletTask(
   final sync = ElectrumSync(
     connections: connections,
     documentsDirectory: () async => documents.path,
+    readRevision: stores.revisions.read,
   );
   final handler = WalletTransactionSyncBackgroundTask(
     writer: BackgroundWalletSyncImpl(
@@ -92,7 +90,7 @@ Future<BackgroundTaskHandler> setupBackgroundWalletTask(
           ? null
           : WalletPaymentObserver(() async => notifications, () => false),
     ),
-    revisions: revisions,
+    revisions: stores.revisions,
     keys: descriptors.map((descriptor) => descriptor.key),
     queue: queue,
     notifications: notifications,

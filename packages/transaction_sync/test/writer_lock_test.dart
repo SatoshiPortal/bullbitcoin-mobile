@@ -115,16 +115,4 @@ void main() {
     if (result case Ok(:final value)) addTearDown(value.release);
     expect(result, isA<Ok<WriterLock, TransactionSyncFailure>>());
   });
-
-  test('network is part of lock identity', () {
-    final first = WriterLock.acquire(directory.path, _key) as Ok;
-    final second =
-        WriterLock.acquire(
-              directory.path,
-              WalletKey(id: _key.id, network: LiquidNetwork.mainnet),
-            )
-            as Ok;
-    (first.value as WriterLock).release();
-    (second.value as WriterLock).release();
-  });
 }

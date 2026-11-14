@@ -1,3 +1,9 @@
+import 'package:transaction_sync/src/write/bitcoin_spend_gate_store.dart';
+import 'package:transaction_sync/src/read/persisted_wallet_readiness.dart';
+import 'package:transaction_sync/src/write/native_store_paths.dart';
+import 'package:transaction_sync/src/write/native_wallet_writer_repository.dart';
+import 'package:transaction_sync/src/write/revision_store.dart';
+import 'package:transaction_sync/src/write/sqlite_wallet_revision_reader.dart';
 import 'dart:io';
 
 import 'package:bull_sdk/bdk.dart' as bdk;
@@ -5,7 +11,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 import 'package:transaction_sync/transaction_sync.dart';
 import 'package:transaction_sync/read.dart';
-import 'package:transaction_sync/write.dart';
 
 import 'support/regtest_wallet.dart';
 import 'package:transaction_sync/src/domain/native_network_policy.dart';
@@ -54,11 +59,12 @@ void main() {
       final descriptor = regtestDescriptor();
       final key = descriptor.key;
       final catalog = SingleWalletCatalog(descriptor);
-      final metadataPath = writerMetadataPath(directory.path);
-      var revisions = RevisionStore(metadataPath);
+      final metadataPath = revisionStorePath(directory.path);
+      var revisions = RevisionStore.openForeground(metadataPath);
+      BitcoinSpendGateStore.provision(spendGateStorePath(directory.path));
       NativeWalletWriterRepository writer() => NativeWalletWriterRepository(
-        lockDirectory: writerLockDirectory(directory.path),
         revisions: revisions,
+        reader: SqliteWalletRevisionReader(revisions),
         documentsDirectory: directory.path,
         catalog: catalog,
         reservedAddresses: NoReservedAddresses(),
@@ -83,7 +89,7 @@ void main() {
           documentsDirectory: directory.path,
           readiness: PersistedWalletReadiness(revisions),
           requiredSchemaVersion: writerSchemaVersion,
-          revisions: revisions,
+          revisions: SqliteWalletRevisionReader(revisions),
           liquidAdmission: writer(),
         );
         final snapshot = await reader.bitcoin(descriptor);
@@ -96,8 +102,8 @@ void main() {
               .network(),
           bdk.Network.regtest,
         );
-        await revisions.close();
-        revisions = RevisionStore(metadataPath);
+        revisions.close();
+        revisions = RevisionStore.openForeground(metadataPath);
         final reopened = await writer().receive(key, expectedGeneration: 1);
         expect(reopened, isA<Ok>());
         expect(
@@ -114,7 +120,7 @@ void main() {
         );
         expect(historical.readAsStringSync(), 'untouched historical store');
       } finally {
-        await revisions.close();
+        revisions.close();
         directory.deleteSync(recursive: true);
       }
     },
@@ -139,10 +145,13 @@ void main() {
               ? 'sh(${original.internalDescriptor})'
               : original.internalDescriptor,
         );
-        final revisions = RevisionStore(writerMetadataPath(directory.path));
+        final revisions = RevisionStore.openForeground(
+          revisionStorePath(directory.path),
+        );
+        BitcoinSpendGateStore.provision(spendGateStorePath(directory.path));
         final writer = NativeWalletWriterRepository(
-          lockDirectory: writerLockDirectory(directory.path),
           revisions: revisions,
+          reader: SqliteWalletRevisionReader(revisions),
           documentsDirectory: directory.path,
           catalog: SingleWalletCatalog(descriptor),
           reservedAddresses: NoReservedAddresses(),
@@ -165,7 +174,7 @@ void main() {
             isFalse,
           );
         } finally {
-          await revisions.close();
+          revisions.close();
           directory.deleteSync(recursive: true);
         }
       }

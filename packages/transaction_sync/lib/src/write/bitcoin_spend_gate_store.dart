@@ -10,18 +10,19 @@ import 'store_identity.dart';
 final class BitcoinSpendGateStore {
   final Database _db;
 
-  BitcoinSpendGateStore(String path) : _db = _openExisting(path);
+  BitcoinSpendGateStore._(this._db);
 
-  static Database _openExisting(String path) {
+  /// Opens the provisioned store at its version; never creates it.
+  static BitcoinSpendGateStore openExisting(String path) {
     Database? db;
     try {
       db = sqlite3.open(path, mode: OpenMode.readWrite);
       db.execute('PRAGMA busy_timeout = 1000');
       db.execute('PRAGMA synchronous = FULL');
-      if (db.userVersion != 1 || !_hasInputs(db)) {
+      if (db.userVersion != _version) {
         throw const BitcoinSpendGateUnavailable();
       }
-      return db;
+      return BitcoinSpendGateStore._(db);
     } on Exception {
       db?.dispose();
       // Do not let revision-store recovery quarantine the wrong database.
@@ -29,37 +30,34 @@ final class BitcoinSpendGateStore {
     }
   }
 
-  static bool _hasInputs(Database db) => db
-      .select('PRAGMA table_info(broadcasts)')
-      .any((row) => row['name'] == 'inputs');
+  static const _version = 1;
 
+  /// Foreground only. A marker without its database means the store was
+  /// lost: it is never recreated empty.
   static void provision(String path) {
     final marker = File('$path.provisioned');
     if (marker.existsSync() && !File(path).existsSync()) {
       throw const BitcoinSpendGateUnavailable();
     }
+    File(path).parent.createSync(recursive: true);
     final db = sqlite3.open(path);
     try {
       // The first Bitcoin paths of two isolates may provision concurrently.
       db.execute('PRAGMA busy_timeout = 1000');
-      if (db.userVersion == 0 || !_hasInputs(db)) {
+      if (db.userVersion == 0) {
         db.execute('BEGIN IMMEDIATE');
         if (db.userVersion == 0) {
-          db.execute('''CREATE TABLE IF NOT EXISTS broadcasts (
+          db.execute('''CREATE TABLE broadcasts (
           wallet TEXT NOT NULL, network TEXT NOT NULL,
           descriptor TEXT NOT NULL, generation INTEGER NOT NULL,
           txid TEXT NOT NULL, observed INTEGER NOT NULL DEFAULT 0,
           inputs TEXT,
           PRIMARY KEY(wallet, network, txid))''');
-          db.userVersion = 1;
-        }
-        // Development stores created before release evidence lack the column.
-        if (db.userVersion == 1 && !_hasInputs(db)) {
-          db.execute('ALTER TABLE broadcasts ADD COLUMN inputs TEXT');
+          db.userVersion = _version;
         }
         db.execute('COMMIT');
       }
-      if (db.userVersion != 1) throw const BitcoinSpendGateUnavailable();
+      if (db.userVersion != _version) throw const BitcoinSpendGateUnavailable();
       marker.writeAsStringSync('1\n', flush: true);
     } on Exception {
       throw const BitcoinSpendGateUnavailable();
