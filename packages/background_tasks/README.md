@@ -20,4 +20,4 @@ After the chain, `deliverPending` shows the announcements. A refused permission 
 
 ## Composition
 
-The package depends on `transaction_sync` for its domain types only, never on `notifications`. The wallet feature implements both ports and builds the use case in `lib/features/wallet/background_setup.dart`. The foreground creates the queue (`openForegroundWalletSyncJobQueue`) behind `backgroundSyncAvailable`; the background opens it with `openExistingWalletSyncJobQueue` and defers the task when it is missing, older or newer.
+The package depends on `sync` for its domain types only, never on `notifications`. The wallet feature implements both ports and builds the use case in `lib/features/wallet/background_setup.dart`. The foreground creates the queue (`openForegroundWalletSyncJobQueue`) behind `backgroundSyncAvailable`; the background opens it with `openExistingWalletSyncJobQueue` and defers the task when it is missing, older or newer.

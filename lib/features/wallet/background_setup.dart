@@ -16,7 +16,7 @@ import 'package:get_it/get_it.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:primitives/primitives.dart';
-import 'package:transaction_sync/write.dart';
+import 'package:sync/write.dart';
 import 'package:bb_mobile/features/electrum_settings/public/electrum_settings_facade.dart';
 
 const paymentNotificationChannelId = PaymentNotifications.channelId;

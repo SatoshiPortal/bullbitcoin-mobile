@@ -1,4 +1,4 @@
-import 'package:transaction_sync/transaction_sync.dart';
+import 'package:sync/sync.dart';
 
 /// A leased job: only the holder of [leaseToken] can complete or release it.
 final class WalletSyncJobClaim {

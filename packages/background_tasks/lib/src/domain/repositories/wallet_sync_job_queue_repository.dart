@@ -1,6 +1,6 @@
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
-import 'package:transaction_sync/transaction_sync.dart';
+import 'package:sync/sync.dart';
 
 import '../background_tasks_failure.dart';
 import '../wallet_sync_chain.dart';

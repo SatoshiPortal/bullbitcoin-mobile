@@ -5,7 +5,7 @@ import 'package:bb_mobile/features/labels/domain/primitive/label_system.dart';
 import 'package:bb_mobile/features/labels/domain/primitive/label_type.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
-import 'package:transaction_sync/transaction_sync.dart';
+import 'package:sync/sync.dart';
 
 final class _Labels implements LabelsRepositoryPort {
   List<LabelEntity> labels = [];

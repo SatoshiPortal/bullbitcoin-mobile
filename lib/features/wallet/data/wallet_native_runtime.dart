@@ -10,9 +10,9 @@ import 'package:bull_logger/bull_logger.dart';
 import 'package:bull_sdk/bdk.dart' as bdk;
 import 'package:bull_sdk/lwk.dart' as lwk;
 import 'package:primitives/primitives.dart';
-import 'package:transaction_sync/read.dart';
-import 'package:transaction_sync/transaction_sync.dart';
-import 'package:transaction_sync/write.dart';
+import 'package:sync/read.dart';
+import 'package:sync/sync.dart';
+import 'package:sync/write.dart';
 
 import 'wallet_catalog_port_impl.dart';
 import '../domain/wallet_spend_failure.dart';

@@ -7,44 +7,47 @@ import 'package:flutter_test/flutter_test.dart';
 // Regression test for the fix.
 void main() {
   group('Security audit #2599 iOS backup exposure', () {
-    test('sensitive files use Documents and backup exclusion is configured', () {
-      final sqlite = File(
-        'lib/core/storage/sqlite_database.dart',
-      ).readAsStringSync();
-      final initialization = File('lib/init.dart').readAsStringSync();
-      final walletComposition = File(
-        'lib/features/wallet/wallet_locator.dart',
-      ).readAsStringSync();
-      final writer = File(
-        'packages/transaction_sync/lib/src/data/write/native_write_session.dart',
-      ).readAsStringSync();
-      expect(sqlite, contains('getApplicationDocumentsDirectory'));
-      expect(initialization, contains('getApplicationDocumentsDirectory'));
-      expect(walletComposition, contains('getApplicationDocumentsDirectory'));
-      expect(writer, contains('nativeWalletStoragePath(documentsDirectory'));
+    test(
+      'sensitive files use Documents and backup exclusion is configured',
+      () {
+        final sqlite = File(
+          'lib/core/storage/sqlite_database.dart',
+        ).readAsStringSync();
+        final initialization = File('lib/init.dart').readAsStringSync();
+        final walletComposition = File(
+          'lib/features/wallet/wallet_locator.dart',
+        ).readAsStringSync();
+        final writer = File(
+          'packages/sync/lib/src/data/write/native_write_session.dart',
+        ).readAsStringSync();
+        expect(sqlite, contains('getApplicationDocumentsDirectory'));
+        expect(initialization, contains('getApplicationDocumentsDirectory'));
+        expect(walletComposition, contains('getApplicationDocumentsDirectory'));
+        expect(writer, contains('nativeWalletStoragePath(documentsDirectory'));
 
-      final nativeAndDart = <String>[];
-      for (final root in [Directory('lib'), Directory('ios')]) {
-        if (!root.existsSync()) continue;
-        nativeAndDart.addAll(
-          root
-              .listSync(recursive: true)
-              .whereType<File>()
-              .where(
-                (file) =>
-                    file.path.endsWith('.dart') ||
-                    file.path.endsWith('.swift') ||
-                    file.path.endsWith('.m') ||
-                    file.path.endsWith('.h'),
-              )
-              .map((file) => file.readAsStringSync()),
+        final nativeAndDart = <String>[];
+        for (final root in [Directory('lib'), Directory('ios')]) {
+          if (!root.existsSync()) continue;
+          nativeAndDart.addAll(
+            root
+                .listSync(recursive: true)
+                .whereType<File>()
+                .where(
+                  (file) =>
+                      file.path.endsWith('.dart') ||
+                      file.path.endsWith('.swift') ||
+                      file.path.endsWith('.m') ||
+                      file.path.endsWith('.h'),
+                )
+                .map((file) => file.readAsStringSync()),
+          );
+        }
+        expect(
+          nativeAndDart.join('\n'),
+          contains('NSURLIsExcludedFromBackupKey'),
         );
-      }
-      expect(
-        nativeAndDart.join('\n'),
-        contains('NSURLIsExcludedFromBackupKey'),
-      );
-    });
+      },
+    );
 
     test(
       'background stores use Documents without opening Payjoin or custody',

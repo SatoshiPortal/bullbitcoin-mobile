@@ -6,7 +6,7 @@ import 'package:background_tasks/src/data/sqlite_wallet_sync_job_queue_repositor
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 import 'package:sqlite3/sqlite3.dart';
-import 'package:transaction_sync/transaction_sync.dart';
+import 'package:sync/sync.dart';
 
 void main() {
   late Directory directory;

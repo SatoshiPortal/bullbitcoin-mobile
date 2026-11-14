@@ -4,7 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 import 'dart:io';
 
-import 'package:transaction_sync/transaction_sync.dart';
+import 'package:sync/sync.dart';
 
 void main() {
   for (final changeGeneration in [false, true]) {

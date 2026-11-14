@@ -21,13 +21,13 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:secrets/secrets.dart';
 import 'package:primitives/primitives.dart' show Err, Ok;
-import 'package:transaction_sync/transaction_sync.dart'
+import 'package:sync/sync.dart'
     show
         ReservedAddressPort,
         SyncReason,
         TransactionSyncNotFoundFailure,
         WalletConnectionPort;
-import 'package:transaction_sync/write.dart' show ElectrumSync;
+import 'package:sync/write.dart' show ElectrumSync;
 import 'package:bb_mobile/features/wallet/data/wallet_catalog_port_impl.dart';
 
 import 'package:secrets/testing.dart';

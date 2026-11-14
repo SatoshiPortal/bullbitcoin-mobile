@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:primitives/primitives.dart';
-import 'package:transaction_sync/transaction_sync.dart';
+import 'package:sync/sync.dart';
 
 import 'ports/background_task_logger_port.dart';
 import 'background_sync_interval.dart';

@@ -1,5 +1,5 @@
 import 'package:primitives/primitives.dart';
-import 'package:transaction_sync/transaction_sync.dart';
+import 'package:sync/sync.dart';
 
 enum WalletSyncChain { bitcoin, liquid }
 

@@ -1,5 +1,5 @@
 import 'package:primitives/primitives.dart';
-import 'package:transaction_sync/transaction_sync.dart' show BitcoinSpendStatus;
+import 'package:sync/sync.dart' show BitcoinSpendStatus;
 
 sealed class WalletSpendFailure extends Failure {
   const WalletSpendFailure();

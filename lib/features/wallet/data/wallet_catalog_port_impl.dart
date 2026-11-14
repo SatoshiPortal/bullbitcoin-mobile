@@ -4,7 +4,7 @@ import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart
 import 'package:bb_mobile/features/wallet/domain/network_x.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_service.dart';
 import 'package:primitives/primitives.dart';
-import 'package:transaction_sync/transaction_sync.dart';
+import 'package:sync/sync.dart';
 
 /// Reads the existing Drift catalog. Never opens native stores or secrets.
 final class WalletCatalogPortImpl implements WalletCatalogPort {

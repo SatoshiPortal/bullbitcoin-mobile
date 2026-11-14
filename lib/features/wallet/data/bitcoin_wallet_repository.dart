@@ -1,7 +1,6 @@
-import 'package:transaction_sync/transaction_sync.dart'
-    show BitcoinSpendStatus, WalletRevision;
+import 'package:sync/sync.dart' show BitcoinSpendStatus, WalletRevision;
 import '../domain/wallet_spend_failure.dart';
-import 'package:transaction_sync/read.dart' show validateAddress;
+import 'package:sync/read.dart' show validateAddress;
 import 'package:bb_mobile/core/wallet/data/models/bitcoin_transaction_recipient_model.dart';
 import 'dart:typed_data';
 

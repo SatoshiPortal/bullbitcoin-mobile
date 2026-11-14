@@ -1,4 +1,4 @@
-import 'package:transaction_sync/transaction_sync.dart' show SyncReason;
+import 'package:sync/sync.dart' show SyncReason;
 import 'package:primitives/primitives.dart' show Fingerprint, Ok;
 import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart';

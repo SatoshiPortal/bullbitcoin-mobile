@@ -5,7 +5,7 @@ import 'package:bull_logger/bull_logger.dart';
 import 'package:crypto/crypto.dart';
 import 'package:notifications/notifications.dart';
 import 'package:primitives/primitives.dart';
-import 'package:transaction_sync/transaction_sync.dart';
+import 'package:sync/sync.dart';
 
 /// The wallet's payments as notification events: what a visible sync saw is
 /// recorded silently, what a background sync found is announced. Snapshot

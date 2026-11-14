@@ -5,7 +5,7 @@ import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart'
 import 'package:bb_mobile/features/wallet/data/wallet_catalog_port_impl.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
-import 'package:transaction_sync/transaction_sync.dart';
+import 'package:sync/sync.dart';
 
 final class _Catalog implements WalletMetadataDatasource {
   List<WalletMetadataModel> rows = [];

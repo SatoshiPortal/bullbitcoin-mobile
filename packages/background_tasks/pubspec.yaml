@@ -13,7 +13,7 @@ dependencies:
     sdk: flutter
   workmanager: ^0.10.10
   shared_preferences: ^2.3.0
-  transaction_sync:
+  sync:
   bull_logger:
   crypto: ^3.0.7
   meta: ^1.17.0
