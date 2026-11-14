@@ -1,6 +1,4 @@
-import 'package:bb_mobile/core/swaps/domain/usecases/delete_swap_master_key_usecase.dart';
-import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_master_key_usecase.dart';
-import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_mnemonic_usecase.dart';
+import 'package:swaps/swaps.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/features/all_seed_view/domain/usecases/delete_secret_usecase.dart';
@@ -79,7 +77,9 @@ void main() {
       () => getAllSecretsUsecase.execute(),
     ).thenAnswer((_) async => Ok([aSecret]));
     when(() => getWalletsUsecase.execute()).thenAnswer((_) async => Ok([]));
-    when(() => getSwapMasterKeyUsecase.execute()).thenAnswer((_) async => null);
+    when(
+      () => getSwapMasterKeyUsecase.execute(),
+    ).thenAnswer((_) async => const Ok(null));
 
     cubit = AllSeedViewCubit(
       getAllSecretsUsecase: getAllSecretsUsecase,

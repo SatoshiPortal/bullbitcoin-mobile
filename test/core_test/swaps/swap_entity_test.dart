@@ -1,5 +1,4 @@
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
-import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
+import 'package:swaps/swaps.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -14,7 +13,7 @@ void main() {
     keyIndex: 0,
     type: SwapType.bitcoinToLightning,
     status: SwapStatus.pending,
-    environment: Environment.mainnet,
+    environment: SwapEnvironment.mainnet,
     creationTime: DateTime(2026),
     sendWalletId: 'wallet-1',
     invoice: invoice,
@@ -41,7 +40,7 @@ void main() {
         keyIndex: 0,
         type: SwapType.bitcoinToLiquid,
         status: SwapStatus.pending,
-        environment: Environment.mainnet,
+        environment: SwapEnvironment.mainnet,
         creationTime: DateTime(2026),
         sendWalletId: 'wallet-1',
         paymentAddress: 'bc1qar0srrr7xfkvy5l643lydnw9re59gtzzwf5mdq',

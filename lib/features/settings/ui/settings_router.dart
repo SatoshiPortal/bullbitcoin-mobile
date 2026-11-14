@@ -1,8 +1,10 @@
 import 'package:bb_mobile/features/address_view/presentation/address_view_bloc.dart';
+import 'package:flutter/widgets.dart';
 import 'package:bb_mobile/features/address_view/ui/screens/addresses_screen.dart';
 import 'package:bb_mobile/features/all_seed_view/presentation/all_seed_view_cubit.dart';
 import 'package:bb_mobile/features/all_seed_view/ui/all_seed_view_screen.dart';
 import 'package:bb_mobile/features/app_unlock/public/app_unlock_facade.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/features/autoswap/ui/screens/autoswap_settings_screen.dart';
 import 'package:bb_mobile/features/backup_settings/ui/backup_settings_router.dart';
 import 'package:bb_mobile/features/backup_settings/ui/screens/backup_settings_screen.dart';
@@ -16,6 +18,10 @@ import 'package:bb_mobile/features/settings/ui/screens/btc_map/btc_map_screen.da
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/wallet_settings_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/payjoin_advanced_settings_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/payjoin_settings_screen.dart';
+import 'package:bb_mobile/features/settings/presentation/bloc/swap_rescue_cubit.dart';
+import 'package:bb_mobile/features/settings/presentation/bloc/swap_restore_cubit.dart';
+import 'package:bb_mobile/features/settings/ui/screens/bitcoin/swap_rescue_details_screen.dart';
+import 'package:bb_mobile/features/settings/ui/screens/bitcoin/swap_restore_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/wallet_details_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/currency/currency_settings_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/exchange/exchange_account_screen.dart';
@@ -38,6 +44,7 @@ import 'package:bb_mobile/locator.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:swaps/swaps.dart';
 import 'package:bull_logs/bull_logs.dart';
 import 'package:bb_mobile/features/settings/presentation/wallet_discovery_cubit.dart';
 
@@ -116,6 +123,32 @@ class SettingsRouter {
         name: SettingsRoute.payjoinAdvancedSettings.name,
         path: SettingsRoute.payjoinAdvancedSettings.path,
         builder: (context, state) => const PayjoinAdvancedSettingsScreen(),
+      ),
+      GoRoute(
+        name: SettingsRoute.swapRestore.name,
+        path: SettingsRoute.swapRestore.path,
+        builder: (context, state) => BlocProvider(
+          create: (_) => locator<SwapRestoreCubit>()..restore(),
+          child: const SwapRestoreScreen(),
+        ),
+      ),
+      GoRoute(
+        name: SettingsRoute.swapRescue.name,
+        path: SettingsRoute.swapRescue.path,
+        redirect: (context, state) => state.extra is RestorableSwap
+            ? null
+            : state.namedLocation(SettingsRoute.swapRestore.name),
+        builder: (context, state) => switch (state.extra) {
+          final RestorableSwap restorable => BlocProvider(
+            create: (_) => SwapRescueCubit(
+              rescueSwapUsecase: locator<RescueSwapUsecase>(),
+              getWalletsUsecase: locator<GetWalletsUsecase>(),
+              restored: restorable.swap,
+            ),
+            child: SwapRescueDetailsScreen(restorable: restorable),
+          ),
+          _ => const SizedBox.shrink(),
+        },
       ),
       GoRoute(
         name: SettingsRoute.autoswapSettings.name,

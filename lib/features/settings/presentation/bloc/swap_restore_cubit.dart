@@ -1,5 +1,4 @@
-import 'package:bb_mobile/core/swaps/domain/entity/restored_swap.dart';
-import 'package:bb_mobile/features/swap/public/swap_facade.dart';
+import 'package:swaps/swaps.dart';
 import 'package:primitives/primitives.dart' show Ok, Err;
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -8,7 +7,7 @@ enum SwapRestoreStatus { initial, loading, success, error }
 class SwapRestoreState {
   final SwapRestoreStatus status;
   final List<RestorableSwap> swaps;
-  final SwapFailure? error;
+  final SwapsFailure? error;
 
   const SwapRestoreState({
     this.status = SwapRestoreStatus.initial,
@@ -34,7 +33,7 @@ class SwapRestoreState {
   SwapRestoreState copyWith({
     SwapRestoreStatus? status,
     List<RestorableSwap>? swaps,
-    SwapFailure? error,
+    SwapsFailure? error,
   }) {
     return SwapRestoreState(
       status: status ?? this.status,

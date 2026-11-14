@@ -6,8 +6,7 @@
 // holds, so an exported accounting file still carries server-controlled fees.
 import 'dart:typed_data';
 
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
-import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
+import 'package:swaps/swaps.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/transaction_output.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet_transaction.dart';
@@ -49,7 +48,7 @@ void main() {
         keyIndex: 0,
         type: SwapType.bitcoinToLiquid,
         status: SwapStatus.pending,
-        environment: Environment.mainnet,
+        environment: SwapEnvironment.mainnet,
         creationTime: DateTime.utc(2026, 7, 29, 12),
         sendWalletId: 'wallet-1',
         paymentAddress: 'bc1qswap-lockup-address',

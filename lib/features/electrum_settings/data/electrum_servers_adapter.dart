@@ -30,6 +30,14 @@ class ElectrumServersAdapter implements ElectrumServersPort {
   });
 
   @override
+  Future<bool> hasCustomServers({
+    required ElectrumServerNetwork network,
+  }) async {
+    final custom = await _serverRepository.fetchCustomServers(network: network);
+    return custom.fold((servers) => servers.isNotEmpty, (_) => true);
+  }
+
+  @override
   Future<T> runWithFallback<T>({
     required ElectrumServerNetwork network,
     required Future<T> Function(ElectrumConnection connection) operation,

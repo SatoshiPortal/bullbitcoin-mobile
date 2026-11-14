@@ -2,10 +2,8 @@ import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/send/domain/usecases/broadcast_liquid_transaction_usecase.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
-import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
+import 'package:swaps/swaps.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/auto_swap.dart';
-import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
-import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/wallet/data/liquid_wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
@@ -13,9 +11,16 @@ import 'package:bb_mobile/features/wallet/domain/usecases/get_receive_address_us
 import 'package:bb_mobile/features/autoswap/domain/autoswap_failure.dart';
 import 'package:bb_mobile/features/autoswap/domain/autoswap_provider_port.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
+import 'package:bull_logger/bull_logger.dart';
+import 'package:bb_mobile/core/errors/send_errors.dart';
+import 'package:bb_mobile/features/send/domain/broadcast_failure.dart';
 
 class BoltzAutoswapProvider implements AutoswapProviderPort {
-  final BoltzSwapRepository _swapRepository;
+  final GetSwapLimitsAndFeesUsecase _getSwapLimitsAndFees;
+  final CreateLiquidToBitcoinSwapUsecase _createLiquidToBitcoinSwap;
+  final RecordSwapLockupUsecase _recordSwapLockup;
+  final RecordPendingSwapLockupUsecase _recordPendingLockup;
+  final DropPendingSwapLockupUsecase _dropPendingLockup;
   final WalletRepository _walletRepository;
   final SettingsRepository _settingsRepository;
   final LiquidWalletRepository _liquidWalletRepository;
@@ -24,7 +29,11 @@ class BoltzAutoswapProvider implements AutoswapProviderPort {
   final LabelsFacade _labelsFacade;
 
   const BoltzAutoswapProvider(
-    this._swapRepository,
+    this._getSwapLimitsAndFees,
+    this._createLiquidToBitcoinSwap,
+    this._recordSwapLockup,
+    this._recordPendingLockup,
+    this._dropPendingLockup,
     this._walletRepository,
     this._settingsRepository,
     this._liquidWalletRepository,
@@ -61,21 +70,6 @@ class BoltzAutoswapProvider implements AutoswapProviderPort {
         return const Err(AutoswapUnsupportedWalletFailure());
       }
 
-      final existing =
-          (await _swapRepository.getOngoingSwaps(walletId: liquidWallet.id))
-              .whereType<ChainSwap>()
-              .where(
-                (swap) =>
-                    swap.type == SwapType.liquidToBitcoin &&
-                    swap.sendWalletId == liquidWallet.id,
-              )
-              .firstOrNull;
-      if (existing != null) {
-        return existing.sendTxid == null
-            ? const Err(AutoswapPendingFailure())
-            : Ok(existing.id);
-      }
-
       final balanceSat = liquidWallet.balanceSat?.toInt();
       if (balanceSat == null) {
         return const Err(AutoswapExecutionFailure('Wallet unavailable'));
@@ -109,10 +103,15 @@ class BoltzAutoswapProvider implements AutoswapProviderPort {
         return const Err(AutoswapInsufficientBalanceFailure());
       }
 
-      final (limits, providerFees) = await _swapRepository.getSwapLimitsAndFees(
-        SwapType.liquidToBitcoin,
-      );
-      if (amountSat < limits.min || amountSat > limits.max) {
+      final SwapLimits limits;
+      final SwapFees providerFees;
+      switch (await _getSwapLimitsAndFees.execute(SwapType.liquidToBitcoin)) {
+        case Ok(:final value):
+          (limits, providerFees) = value;
+        case Err(:final failure):
+          return Err(_creationFailure(failure));
+      }
+      if (!limits.accepts(amountSat)) {
         return const Err(AutoswapAmountOutOfBoundsFailure());
       }
       final totalFeePercent =
@@ -127,17 +126,17 @@ class BoltzAutoswapProvider implements AutoswapProviderPort {
         );
       }
 
-      final swap = await _swapRepository.createLiquidToBitcoinSwap(
+      final ChainSwap swap;
+      switch (await _createLiquidToBitcoinSwap.execute(
         sendWalletId: liquidWallet.id,
         amountSat: amountSat,
-        btcElectrumUrl: environment.requireHistoricalTestnet()
-            ? ApiServiceConstants.publicElectrumTestUrl
-            : ApiServiceConstants.bbElectrumUrl,
-        lbtcElectrumUrl: environment.requireHistoricalTestnet()
-            ? ApiServiceConstants.publicliquidElectrumTestUrlPath
-            : ApiServiceConstants.bbLiquidElectrumUrlPath,
-        receiveWalletId: recipientWallet.id,
-      );
+        destination: ToWallet(recipientWallet.id),
+      )) {
+        case Ok(:final value):
+          swap = value;
+        case Err(:final failure):
+          return Err(_creationFailure(failure));
+      }
       final preparation = await _liquidWalletRepository.buildPset(
         walletId: liquidWallet.id,
         address: swap.paymentAddress,
@@ -180,15 +179,37 @@ class BoltzAutoswapProvider implements AutoswapProviderPort {
         walletId: liquidWallet.id,
         pset: pset,
       );
-      final txid = await _broadcastLiquidTransaction.execute(
-        signed,
-        isTestnet: environment.requireHistoricalTestnet(),
-      );
-      await _swapRepository.updatePaidSendSwap(
+      // Stored before the broadcast so an unclear outcome is settled from
+      // this exact transaction and the swap can never be funded twice.
+      if (await _recordPendingLockup.execute(swapId: swap.id, signedTx: signed)
+          case Err(:final failure)) {
+        return Err(AutoswapExecutionFailure(failure.runtimeType.toString()));
+      }
+      final String txid;
+      try {
+        txid = await _broadcastLiquidTransaction.execute(
+          signed,
+          isTestnet: environment.requireHistoricalTestnet(),
+        );
+      } on BroadcastTransactionException catch (e) {
+        final category = BroadcastFailureCategory.of(e);
+        if (category == BroadcastFailureCategory.rejected ||
+            category == BroadcastFailureCategory.authorization) {
+          final _ = await _dropPendingLockup.execute(swap.id);
+        }
+        rethrow;
+      }
+      final recorded = await _recordSwapLockup.execute(
         swapId: swap.id,
         txid: txid,
-        absoluteFees: actualFeeSat,
+        lockupFeeSat: actualFeeSat,
       );
+      if (recorded case Err(:final failure)) {
+        log.warning(
+          '[Autoswap] lockup broadcast but not recorded '
+          '(${failure.runtimeType}); the swap status will backfill it',
+        );
+      }
       await _labelsFacade.store(
         NewLabel.tx(
           transactionId: txid,
@@ -201,6 +222,14 @@ class BoltzAutoswapProvider implements AutoswapProviderPort {
       return Err(AutoswapExecutionFailure(error.runtimeType.toString()));
     }
   }
+
+  AutoswapFailure _creationFailure(SwapsFailure failure) => switch (failure) {
+    SwapsBoltzUnavailableFailure() => AutoswapBoltzUnavailableFailure(
+      failure.logMessage,
+    ),
+    SwapsAmountOutOfLimitsFailure() => const AutoswapAmountOutOfBoundsFailure(),
+    _ => AutoswapProviderFailure(failure.runtimeType.toString()),
+  };
 
   Future<Result<int, AutoswapFailure>> _estimateNetworkFee({
     required String walletId,

@@ -9,7 +9,7 @@ import 'package:primitives/primitives.dart'
 import 'package:bb_mobile/features/wallet/domain/network_x.dart';
 import 'package:bb_mobile/core/fees/domain/fee_preview_cache.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
-import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
+import 'package:swaps/swaps.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/liquid_address.dart';
@@ -184,6 +184,7 @@ abstract class SendState with _$SendState {
     OrderSwapRecord? lightningOrder,
     OrderSwapQuote? lightningQuote,
     ChainSwap? chainSwap,
+    LnSendSwap? lightningSwap,
     // confirm
     String? txId,
     PayjoinSenderSession? payjoinSender,
@@ -461,8 +462,36 @@ abstract class SendState with _$SendState {
   }
 
   int? get lightningPayinAmountSat =>
+      lightningSwap?.paymentAmount ??
       lightningOrder?.order?.payinAmountSat.toInt() ??
       lightningQuote?.inAmountSat.toInt();
+
+  /// What the Lightning recipient receives: the invoice amount for a Boltz
+  /// swap, the order payout for an exchange one.
+  int? get lightningPayoutAmountSat => lightningSwap != null
+      ? lightningInvoice?.amountSat
+      : lightningOrder?.order?.payoutAmountSat.toInt() ??
+            lightningQuote?.outAmountSat.toInt();
+
+  /// The id the user can quote to support: the Boltz swap id, or the
+  /// exchange order number.
+  String? get lightningSwapReference =>
+      lightningSwap?.id ?? lightningOrder?.order?.orderNumber.toString();
+
+  /// The Boltz swap whose lockup this send funds, if any.
+  Swap? get boltzSendSwap => lightningSwap ?? chainSwap;
+
+  String? get boltzLockupAddress => switch (boltzSendSwap) {
+    LnSendSwap(:final paymentAddress) ||
+    ChainSwap(:final paymentAddress) => paymentAddress,
+    _ => null,
+  };
+
+  int? get boltzLockupAmountSat => switch (boltzSendSwap) {
+    LnSendSwap(:final paymentAmount) ||
+    ChainSwap(:final paymentAmount) => paymentAmount,
+    _ => null,
+  };
 
   double get confirmedSwapAmountBtc =>
       ConvertAmount.satsToBtc(lightningPayinAmountSat ?? 0);
@@ -669,11 +698,14 @@ abstract class SendState with _$SendState {
       isLightning && selectedWallet!.network.isBitcoin;
 
   bool get isLnInvoicePaid {
-    return lightningOrder?.localStatus == OrderSwapLocalStatus.completed;
+    return lightningOrder?.localStatus == OrderSwapLocalStatus.completed ||
+        lightningSwap?.status == SwapStatus.canCoop ||
+        lightningSwap?.status == SwapStatus.completed;
   }
 
   bool get isSwapCompleted {
-    return lightningOrder?.localStatus == OrderSwapLocalStatus.completed;
+    return lightningOrder?.localStatus == OrderSwapLocalStatus.completed ||
+        lightningSwap?.status == SwapStatus.completed;
   }
 
   bool get disableConfirmSend =>
@@ -747,6 +779,12 @@ abstract class SendState with _$SendState {
       : bitcoinAbsoluteFeesSat;
 
   int? get totalSwapFees {
+    if (lightningSwap != null) {
+      final lockupSat = lightningPayinAmountSat;
+      final invoiceSat = lightningPayoutAmountSat;
+      if (lockupSat == null || invoiceSat == null) return null;
+      return lockupSat > invoiceSat ? lockupSat - invoiceSat : 0;
+    }
     final order = lightningOrder?.order;
     final payin = order?.payinAmountSat ?? lightningQuote?.inAmountSat;
     final payout = order?.payoutAmountSat ?? lightningQuote?.outAmountSat;
@@ -767,15 +805,12 @@ abstract class SendState with _$SendState {
 
 extension SendStateFeePercent on SendState {
   double getFeeAsPercentOfAmount() {
-    if (lightningPayinAmountSat != null) {
-      return calculatePercentage(
-        lightningOrder?.order?.payoutAmountSat.toInt() ??
-            lightningQuote!.outAmountSat.toInt(),
-        totalSwapFees ?? 0,
-      );
+    final payout = lightningPayoutAmountSat;
+    if (lightningPayinAmountSat != null && payout != null) {
+      return calculatePercentage(payout, totalSwapFees ?? 0);
     }
-    if (chainSwap != null) {
-      return chainSwap!.getFeeAsPercentOfAmount();
+    if (chainSwap case final swap?) {
+      return swap.getFeeAsPercentOfAmount();
     }
     final fee = absoluteFees ?? 0;
     final amount = confirmedAmountSat ?? 0;

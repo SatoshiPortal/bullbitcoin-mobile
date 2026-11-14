@@ -39,6 +39,9 @@ import 'package:bb_mobile/features/receive/ui/receive_router.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/router.dart';
 import 'package:go_router/go_router.dart';
+import 'package:bb_mobile/features/receive/domain/usecases/create_boltz_receive_swap_usecase.dart';
+import 'package:bb_mobile/features/receive/domain/usecases/get_receive_swap_route_usecase.dart';
+import 'package:swaps/swaps.dart' as swaps;
 
 class _MockSettings extends Mock implements GetSettingsUsecase {}
 
@@ -86,6 +89,14 @@ class _MockGetReceivePayjoinPolicyUsecase extends Mock
 class _MockSetReceivePayjoinEnabledUsecase extends Mock
     implements SetReceivePayjoinEnabledUsecase {}
 
+class _MockGetReceiveSwapRouteUsecase extends Mock
+    implements GetReceiveSwapRouteUsecase {}
+
+class _MockCreateBoltzReceiveSwapUsecase extends Mock
+    implements CreateBoltzReceiveSwapUsecase {}
+
+class _MockWatchSwapUsecase extends Mock implements swaps.WatchSwapUsecase {}
+
 class _MockWatchReceivePayjoinMinAmountUsecase extends Mock
     implements WatchReceivePayjoinMinAmountUsecase {}
 
@@ -132,6 +143,10 @@ void main() {
               convertReceiveAmountUsecase: _MockConvertReceiveAmountUsecase(),
               prepareReceiveAddressUsecase: _MockPrepareReceiveAddressUsecase(),
               createReceiveOrderSwapUsecase: swap,
+              getReceiveSwapRouteUsecase: _MockGetReceiveSwapRouteUsecase(),
+              createBoltzReceiveSwapUsecase:
+                  _MockCreateBoltzReceiveSwapUsecase(),
+              watchSwapUsecase: _MockWatchSwapUsecase(),
               receiveWithPayjoinUsecase: _MockReceiveWithPayjoinUsecase(),
               broadcastOriginalTransactionUsecase:
                   _MockBroadcastOriginalTransactionUsecase(),

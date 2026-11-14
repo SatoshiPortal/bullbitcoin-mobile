@@ -39,4 +39,6 @@ class ReceiveEvent with _$ReceiveEvent {
   const factory ReceiveEvent.receiveOrderSwapUpdated(
     Result<OrderSwapRecord, ReceiveFailure> result,
   ) = ReceiveOrderSwapUpdated;
+  const factory ReceiveEvent.receiveLightningSwapUpdated(Swap swap) =
+      ReceiveLightningSwapUpdated;
 }

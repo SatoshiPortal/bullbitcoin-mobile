@@ -3,10 +3,7 @@ import 'package:bb_mobile/features/all_seed_view/domain/usecases/get_all_secrets
 import 'package:bb_mobile/features/all_seed_view/domain/usecases/separate_secrets_usecase.dart';
 import 'package:primitives/primitives.dart' show Err, Fingerprint, Ok;
 import 'package:secrets/secrets.dart';
-import 'package:bb_mobile/core/swaps/domain/entity/swap_master_key_info.dart';
-import 'package:bb_mobile/core/swaps/domain/usecases/delete_swap_master_key_usecase.dart';
-import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_master_key_usecase.dart';
-import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_mnemonic_usecase.dart';
+import 'package:swaps/swaps.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/features/all_seed_view/domain/all_seed_view_failure.dart';
@@ -87,12 +84,10 @@ class AllSeedViewCubit extends Cubit<AllSeedViewState> {
 
     // Best-effort: the swap mnemonic is a separate secret from the wallet
     // seeds; a failure to read it must not hide the wallet seeds.
-    SwapMasterKeyInfo? swapMasterKey;
-    try {
-      swapMasterKey = await _getSwapMasterKeyUsecase.execute();
-    } catch (_) {
-      swapMasterKey = null;
-    }
+    final swapMasterKey = switch (await _getSwapMasterKeyUsecase.execute()) {
+      Ok(:final value) => value,
+      Err() => null,
+    };
 
     emit(
       state.copyWith(
@@ -115,9 +110,12 @@ class AllSeedViewCubit extends Cubit<AllSeedViewState> {
   Future<String?> loadSwapMnemonic() async {
     final walletFingerprint = state.swapMasterKey?.walletFingerprint;
     if (walletFingerprint == null) return null;
-    return _getSwapMnemonicUsecase.execute(
+    return switch (await _getSwapMnemonicUsecase.execute(
       walletFingerprint: walletFingerprint,
-    );
+    )) {
+      Ok(:final value) => value,
+      Err() => null,
+    };
   }
 
   void showSeeds() => emit(state.copyWith(seedsVisible: true));

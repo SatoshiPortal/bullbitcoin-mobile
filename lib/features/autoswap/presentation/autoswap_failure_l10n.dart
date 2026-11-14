@@ -5,38 +5,38 @@ import 'package:bb_mobile/features/autoswap/domain/autoswap_failure.dart';
 import 'package:flutter/widgets.dart';
 
 extension AutoswapFailureL10n on AutoswapFailure {
-  String toTranslated(
-    BuildContext context, {
-    BitcoinUnit? unit,
-  }) => switch (this) {
-    AutoswapUnsupportedNetworkFailure() =>
-      context.loc.networkFeatureUnavailable,
-    AutoswapSettingsUnavailableFailure() =>
-      context.loc.autoswapLoadSettingsError,
-    AutoswapSettingsSaveFailure() => context.loc.autoswapUpdateSettingsError,
-    AutoswapRecipientWalletRequiredFailure() =>
-      context.loc.autoswapSelectWalletError,
-    AutoswapBalanceThresholdTooLowFailure(:final minimumSats) =>
-      unit == BitcoinUnit.btc
-          ? context.loc.autoswapMinimumThresholdErrorBtc(
-              ConvertAmount.satsToBtc(minimumSats).toString(),
-            )
-          : context.loc.autoswapMinimumThresholdErrorSats('$minimumSats'),
-    AutoswapTriggerBalanceTooLowFailure() =>
-      context.loc.autoswapTriggerBalanceError,
-    AutoswapFeeThresholdTooHighFailure(:final maximumPercent) =>
-      context.loc.autoswapMaximumFeeError('$maximumPercent'),
-    AutoswapDisabledFailure() ||
-    AutoswapInvalidSettingsFailure() ||
-    AutoswapNoWalletFailure() ||
-    AutoswapUnsupportedWalletFailure() ||
-    AutoswapInsufficientBalanceFailure() ||
-    AutoswapFeeLimitExceededFailure() ||
-    AutoswapProviderFailure() ||
-    AutoswapExecutionFailure() ||
-    AutoswapPendingFailure() ||
-    AutoswapPayinMismatchFailure() ||
-    AutoswapTargetBalanceFailure() ||
-    AutoswapAmountOutOfBoundsFailure() => context.loc.oopsSomethingWentWrong,
-  };
+  String toTranslated(BuildContext context, {BitcoinUnit? unit}) =>
+      switch (this) {
+        AutoswapUnsupportedNetworkFailure() =>
+          context.loc.networkFeatureUnavailable,
+        AutoswapSettingsUnavailableFailure() =>
+          context.loc.autoswapLoadSettingsError,
+        AutoswapSettingsSaveFailure() =>
+          context.loc.autoswapUpdateSettingsError,
+        AutoswapRecipientWalletRequiredFailure() =>
+          context.loc.autoswapSelectWalletError,
+        AutoswapBalanceThresholdTooLowFailure(:final minimumSats) =>
+          unit == BitcoinUnit.btc
+              ? context.loc.autoswapMinimumThresholdErrorBtc(
+                  ConvertAmount.satsToBtc(minimumSats).toString(),
+                )
+              : context.loc.autoswapMinimumThresholdErrorSats('$minimumSats'),
+        AutoswapTriggerBalanceTooLowFailure() =>
+          context.loc.autoswapTriggerBalanceError,
+        AutoswapFeeThresholdTooHighFailure(:final maximumPercent) =>
+          context.loc.autoswapMaximumFeeError('$maximumPercent'),
+        AutoswapDisabledFailure() ||
+        AutoswapInvalidSettingsFailure() ||
+        AutoswapNoWalletFailure() ||
+        AutoswapUnsupportedWalletFailure() ||
+        AutoswapInsufficientBalanceFailure() ||
+        AutoswapFeeLimitExceededFailure() ||
+        AutoswapProviderFailure() ||
+        AutoswapExecutionFailure() ||
+        AutoswapPendingFailure() ||
+        AutoswapPayinMismatchFailure() ||
+        AutoswapTargetBalanceFailure() ||
+        AutoswapAmountOutOfBoundsFailure() ||
+        AutoswapBoltzUnavailableFailure() => context.loc.oopsSomethingWentWrong,
+      };
 }

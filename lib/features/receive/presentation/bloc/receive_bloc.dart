@@ -4,8 +4,7 @@ import 'package:primitives/primitives.dart'
 import 'package:bb_mobile/features/wallet/domain/network_x.dart';
 import 'dart:async';
 
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
-import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
+import 'package:swaps/swaps.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
@@ -20,8 +19,11 @@ import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_transaction_b
 import 'package:bb_mobile/features/receive/domain/usecases/broadcast_original_transaction_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/get_receive_payjoin_policy_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/receive_with_payjoin_usecase.dart';
+import 'package:bb_mobile/features/receive/domain/boltz_swap_failure_to_receive_failure.dart';
 import 'package:bb_mobile/features/receive/domain/receive_failure.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/convert_receive_amount_usecase.dart';
+import 'package:bb_mobile/features/receive/domain/usecases/create_boltz_receive_swap_usecase.dart';
+import 'package:bb_mobile/features/receive/domain/usecases/get_receive_swap_route_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/fetch_receive_note_suggestions_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/get_receive_settings_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/get_receive_wallets_usecase.dart';
@@ -52,6 +54,9 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     required this._convertReceiveAmountUsecase,
     required this._prepareReceiveAddressUsecase,
     required this._createReceiveOrderSwapUsecase,
+    required this._getReceiveSwapRouteUsecase,
+    required this._createBoltzReceiveSwapUsecase,
+    required this._watchSwapUsecase,
     required this._receiveWithPayjoinUsecase,
     required this._broadcastOriginalTransactionUsecase,
     required this._watchPayjoinUsecase,
@@ -123,6 +128,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
           add(ReceivePayjoinMinAmountChanged(amountSat));
         });
     on<ReceiveOrderSwapUpdated>(_onOrderSwapUpdated);
+    on<ReceiveLightningSwapUpdated>(_onLightningSwapUpdated);
   }
 
   final GetReceiveWalletsUsecase _getReceiveWalletsUsecase;
@@ -133,6 +139,9 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
   final BroadcastOriginalTransactionUsecase
   _broadcastOriginalTransactionUsecase;
   final CreateReceiveOrderSwapUsecase _createReceiveOrderSwapUsecase;
+  final GetReceiveSwapRouteUsecase _getReceiveSwapRouteUsecase;
+  final CreateBoltzReceiveSwapUsecase _createBoltzReceiveSwapUsecase;
+  final WatchSwapUsecase _watchSwapUsecase;
   final WatchPayjoinUsecase _watchPayjoinUsecase;
   final WatchWalletTransactionByAddressUsecase
   _watchWalletTransactionByAddressUsecase;
@@ -152,6 +161,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
   int _receiveGeneration = 0;
   StreamSubscription<Result<OrderSwapRecord, ReceiveFailure>>?
   _orderSwapSubscription;
+  StreamSubscription<Swap>? _lightningSwapSubscription;
   late final StreamSubscription<bool> _payjoinSettingChangeSubscription;
   late final StreamSubscription<int> _payjoinMinAmountChangeSubscription;
 
@@ -166,6 +176,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
       _payjoinSubscription?.cancel() ?? Future.value(),
       _walletTransactionSubscription?.cancel() ?? Future.value(),
       _orderSwapSubscription?.cancel() ?? Future.value(),
+      _lightningSwapSubscription?.cancel() ?? Future.value(),
       _payjoinSettingChangeSubscription.cancel(),
       _payjoinMinAmountChangeSubscription.cancel(),
     ]);
@@ -569,7 +580,13 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     // If no wallet is passed through the constructor, get the default liquid wallet,
     //  which is the default wallet to receive lightning payments since fees are lower
     //  than on the bitcoin network.
-    Wallet? wallet = _wallet?.isLiquid == true ? _wallet : null;
+    final presetWallet = _wallet;
+    Wallet? wallet = presetWallet?.isLiquid == true ? presetWallet : null;
+    if (presetWallet != null &&
+        presetWallet.isBitcoin &&
+        (await _getReceiveSwapRouteUsecase.execute()).startsWithBoltz) {
+      wallet = presetWallet;
+    }
     if (wallet == null) {
       final walletsResult = await _getReceiveWalletsUsecase.execute(
         onlyLiquid: true,
@@ -950,6 +967,15 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
         failure: null,
       ),
     );
+    await _stopWatchingLightningSwaps();
+    if (await _receiveLightningViaBoltz(
+      wallet: wallet,
+      amountSat: confirmedAmountSat,
+      generation: generation,
+      emit: emit,
+    )) {
+      return;
+    }
     final result = await _createReceiveOrderSwapUsecase.execute(
       wallet: wallet,
       amountSat: confirmedAmountSat,
@@ -1443,6 +1469,99 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     }
   }
 
+  /// Creates the invoice through a Boltz reverse swap when the swap route
+  /// starts with Boltz. Returns true when Boltz handled the request — the
+  /// swap exists or its failure was surfaced — and false when the exchange
+  /// path should run instead: the route is exchange-only, or Boltz failed
+  /// before creating anything and the user opted into the exchange fallback.
+  Future<bool> _receiveLightningViaBoltz({
+    required Wallet wallet,
+    required int amountSat,
+    required int generation,
+    required Emitter<ReceiveState> emit,
+  }) async {
+    final route = await _getReceiveSwapRouteUsecase.execute();
+    if (generation != _receiveGeneration || emit.isDone) return true;
+    if (!route.startsWithBoltz) return false;
+    final note = state.note;
+    final created = await _createBoltzReceiveSwapUsecase.execute(
+      wallet: wallet,
+      amountSat: amountSat,
+      note: note,
+    );
+    if (generation != _receiveGeneration || emit.isDone) return true;
+    switch (created) {
+      case Ok(:final value):
+        _watchLightningSwap(value.id);
+        final receiveAddress = value.receiveAddress;
+        if (receiveAddress != null) {
+          _watchWalletTransactionToAddress(
+            walletId: wallet.id,
+            address: receiveAddress,
+          );
+          if (note.isNotEmpty) {
+            final _ = await _saveReceiveAddressLabelUsecase.execute(
+              address: receiveAddress,
+              walletId: wallet.id,
+              note: note,
+            );
+          }
+        }
+        emit(
+          state.copyWith(
+            confirmedAmountSat: amountSat,
+            lightningSwap: value,
+            creatingSwap: false,
+          ),
+        );
+        return true;
+      case Err(:final failure):
+        if (wallet.isLiquid && route.fallsBackToExchangeAfter(failure)) {
+          log.fine(
+            '[Receive] Boltz unavailable, falling back to the exchange '
+            '(${failure.runtimeType})',
+          );
+          return false;
+        }
+        emit(
+          state.copyWith(
+            creatingSwap: false,
+            failure: failure.toReceiveFailure(amountSat: amountSat),
+          ),
+        );
+        return true;
+    }
+  }
+
+  Future<void> _onLightningSwapUpdated(
+    ReceiveLightningSwapUpdated event,
+    Emitter<ReceiveState> emit,
+  ) async {
+    final swap = event.swap;
+    if (state.type != ReceiveType.lightning ||
+        swap is! LnReceiveSwap ||
+        swap.id != state.lightningSwap?.id) {
+      return;
+    }
+    emit(
+      state.copyWith(
+        lightningSwap: swap,
+        failure: switch (swap.status) {
+          SwapStatus.expired => const ReceiveSwapUnavailableFailure(
+            'Boltz swap expired',
+          ),
+          SwapStatus.failed => const ReceiveSwapUnavailableFailure(
+            'Boltz swap failed',
+          ),
+          _ => state.failure,
+        },
+      ),
+    );
+    if (swap.status == SwapStatus.completed) {
+      final _ = await _getReceiveWalletsUsecase.execute(sync: true);
+    }
+  }
+
   /// The note previously saved against [address], so the receive note tile
   /// and the note bottom sheet pre-fill with it.
   ///
@@ -1529,5 +1648,26 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
           if (isClosed) return;
           add(ReceiveOrderSwapUpdated(result));
         });
+  }
+
+  void _watchLightningSwap(String swapId) {
+    _lightningSwapSubscription?.cancel();
+    _lightningSwapSubscription = _watchSwapUsecase.execute(swapId).listen((
+      swap,
+    ) {
+      if (isClosed) return;
+      add(ReceiveLightningSwapUpdated(swap));
+    });
+  }
+
+  Future<void> _stopWatchingLightningSwaps() async {
+    final orderSwapSubscription = _orderSwapSubscription;
+    final lightningSwapSubscription = _lightningSwapSubscription;
+    _orderSwapSubscription = null;
+    _lightningSwapSubscription = null;
+    await Future.wait([
+      orderSwapSubscription?.cancel() ?? Future.value(),
+      lightningSwapSubscription?.cancel() ?? Future.value(),
+    ]);
   }
 }

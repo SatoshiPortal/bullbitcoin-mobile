@@ -116,6 +116,17 @@ graph TB
     CORE --> BULL_PRICER
     BULL_PRICER --> PRIMITIVES
     BTC_PRICE --> BULL_PRICER
+    SWAPS_PKG[Swaps Package<br/>Swap engine: store, resolver, Boltz provider]
+    SWAPS_PKG --> PRIMITIVES
+    SWAPS --> SWAPS_PKG
+    SEND --> SWAPS_PKG
+    RECEIVE --> SWAPS_PKG
+    AUTOSWAP --> SWAPS_PKG
+    TX_HISTORY --> SWAPS_PKG
+    WALLETS --> SWAPS_PKG
+    SETTINGS --> SWAPS_PKG
+    ALL_SEED_VIEW --> SWAPS_PKG
+    APP_STARTUP --> SWAPS_PKG
     BUY --> BULL_PRICER
     PAY --> BULL_PRICER
     RECEIVE --> BULL_PRICER
@@ -320,7 +331,7 @@ graph TB
     classDef featureStyle fill:#1a202c,stroke:#2d3748,stroke-width:2px,color:#e2e8f0
 
     class CORE coreStyle
-    class SECRETS,PRIMITIVES,BULL_PAYJOIN,BULL_PRICER,TOR,SCREEN_AWAKE packageStyle
+    class SECRETS,PRIMITIVES,BULL_PAYJOIN,BULL_PRICER,TOR,SCREEN_AWAKE,SWAPS_PKG packageStyle
     class IMPORT_MNEMONIC,ONBOARDING,SETTINGS,PIN_CODE,LABELS,HW_WALLETS,BTC_PRICE,NETWORK,BIP85,FEES,WALLETS,EXCHANGE,EXCHANGE_SETTINGS,EXCHANGE_SUPPORT_CHAT,SUPPORT,APP_STARTUP,UTXO_MGMT,ADDRESS_MGMT,RECIPIENTS,FUNDING,BACKUPS,SWAPS,WITHDRAWAL,STATUS,SEND,RECEIVE,TRANSFER,TX_HISTORY,REPLACE_BY_FEE,BG_TASKS,AUTOSWAP,AUTOBUY,DCA,DEFAULT_WALLETS,LIMIT_ORDERS,SELL,PAY,BUY,COINS,ANNOUNCEMENTS,CONSOLIDATION,ALL_SEED_VIEW,APP_UNLOCK,SP featureStyle
 ```
 
@@ -390,6 +401,7 @@ The pre-existing reverse source edges remain: SP uses the wallet repository via 
 - **Wallets**: Used by Send, UTXO Management, Transaction History, Backups, App Startup
 - **Secrets** (workspace package): Used by Wallets, BIP85, App Startup, All Seed View, RecoverBull, Swaps, Silent Payments
 - **Settings**: Used by Wallets, BIP85, Bitcoin Price
+- **Swaps** (workspace package `packages/swaps`): the swap engine behind one provider-neutral surface — `SwapStore` (reads), `SwapResolver` (claim, refund, recovery; one per provider) and per-provider create methods (`BoltzSwaps`). Used by Swaps, Send, Receive, Autoswap, Transaction History, Wallets, Settings, All Seed View, App Startup
 - **Recipients**: Used by Pay, Withdrawal
 - **UTXO Management**: Used by Send, Swaps, Payjoin
 

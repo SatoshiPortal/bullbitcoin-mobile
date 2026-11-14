@@ -7,6 +7,7 @@ import 'package:bb_mobile/features/app_startup/domain/usecases/check_for_existin
 import 'package:bb_mobile/features/app_startup/domain/usecases/initialize_required_tor_usecase.dart';
 import 'package:bb_mobile/features/app_startup/domain/usecases/reset_app_data_usecase.dart';
 import 'package:bb_mobile/features/app_startup/domain/usecases/restore_missing_default_secret_usecase.dart';
+import 'package:bb_mobile/features/app_startup/domain/usecases/start_swap_engine_usecase.dart';
 import 'package:bb_mobile/features/app_unlock/domain/app_unlock_failure.dart';
 import 'package:bb_mobile/features/app_unlock/domain/usecases/check_pin_code_exists_usecase.dart';
 import 'package:flutter/foundation.dart';
@@ -28,6 +29,7 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState>
     required this._checkForExistingDefaultWalletsUsecase,
     required this._initializeRequiredTorUsecase,
     required this._restoreMissingDefaultSecretUsecase,
+    required this._startSwapEngineUsecase,
   }) : super(const AppStartupState.initial()) {
     on<AppStartupStarted>(_onAppStartupStarted);
     WidgetsBinding.instance.addObserver(this);
@@ -39,6 +41,7 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState>
   _checkForExistingDefaultWalletsUsecase;
   final InitializeRequiredTorUsecase _initializeRequiredTorUsecase;
   final RestoreMissingDefaultSecretUsecase _restoreMissingDefaultSecretUsecase;
+  final StartSwapEngineUsecase _startSwapEngineUsecase;
 
   /// Stores the recovery phrase of a default wallet whose secret is missing,
   /// then starts the app again. The words go straight to the use case and are
@@ -125,6 +128,7 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState>
           return;
       }
       // Other startup logic can be added here, e.g. payjoin sessions resume
+      await _startSwapEngineUsecase.execute();
     } else {
       // This is a fresh install, so reset the app data that might still be
       //  there from a previous install.

@@ -22,6 +22,7 @@ class _MockDatasource extends Mock implements SettingsDatasource {}
 void main() {
   setUpAll(() {
     registerFallbackValue(BitcoinUnit.btc);
+    registerFallbackValue(Environment.mainnet);
     registerFallbackValue(Language.unitedStatesEnglish);
   });
 
@@ -130,6 +131,36 @@ void main() {
       await Future<void>.delayed(Duration.zero);
 
       expect(seen, ['EUR']);
+    });
+  });
+
+  group('environment change stream', () {
+    test('a successful write emits the new environment', () async {
+      when(() => datasource.setEnvironment(any())).thenAnswer((_) async {});
+      final repository = build();
+      final seen = <Environment>[];
+      final sub = repository.environmentChangeStream.listen(seen.add);
+      addTearDown(sub.cancel);
+
+      await repository.setEnvironment(Environment.testnet);
+      await Future<void>.delayed(Duration.zero);
+
+      expect(seen, [Environment.testnet]);
+    });
+
+    test('a failed write does not emit an environment change', () async {
+      when(
+        () => datasource.setEnvironment(any()),
+      ).thenThrow(Exception(_rawReason));
+      final repository = build();
+      final seen = <Environment>[];
+      final sub = repository.environmentChangeStream.listen(seen.add);
+      addTearDown(sub.cancel);
+
+      await repository.setEnvironment(Environment.testnet);
+      await Future<void>.delayed(Duration.zero);
+
+      expect(seen, isEmpty);
     });
   });
 }

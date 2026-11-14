@@ -51,6 +51,7 @@ import 'package:bb_mobile/features/sp/sp_locator.dart';
 import 'package:bb_mobile/features/status_check/locator.dart';
 import 'package:bb_mobile/features/swap/order_swap_watcher.dart';
 import 'package:bb_mobile/features/swap/swap_locator.dart';
+import 'package:bb_mobile/core/swaps/swap_engine_switcher.dart';
 import 'package:bb_mobile/features/test_wallet_backup/test_wallet_backup_locator.dart';
 import 'package:bb_mobile/features/tor_settings/tor_settings_locator.dart';
 import 'package:bb_mobile/features/transactions/transactions_locator.dart';
@@ -199,5 +200,10 @@ class AppLocator {
     LedgerLocator.setup(locator);
     RecipientsLocator.setup(locator);
     BitBoxLocator.setup(locator);
+
+    // Follows network switches from launch on, whether or not the swap
+    // watcher has started yet: the engine must match the network the first
+    // swap is created on. A switch stops and relaunches the watcher.
+    locator<SwapEngineSwitcher>().start();
   }
 }

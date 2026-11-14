@@ -1,9 +1,9 @@
+import 'package:swaps/swaps.dart';
 import 'dart:io';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart'
     show SeedReferences;
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/delete_stored_wallet_usecase.dart';
@@ -17,7 +17,7 @@ class _MockSeedOwner extends Mock implements SeedReferencePort {}
 
 class _MockWalletRepository extends Mock implements WalletRepository {}
 
-class _MockBoltzSwapRepository extends Mock implements BoltzSwapRepository {}
+class _MockSwapStore extends Mock implements SwapStore {}
 
 class _MockWallet extends Mock implements Wallet {}
 
@@ -44,7 +44,7 @@ void main() {
   late FakeSecureStoragePlatform storage;
   late Secrets secrets;
   late _MockWalletRepository walletRepository;
-  late _MockBoltzSwapRepository swapRepository;
+  late _MockSwapStore swapStore;
   late SeedReferences references;
   late DeleteWalletUsecase usecase;
   late String fingerprint;
@@ -77,17 +77,17 @@ void main() {
     fingerprint = stored.value.id.hex;
 
     walletRepository = _MockWalletRepository();
-    swapRepository = _MockBoltzSwapRepository();
+    swapStore = _MockSwapStore();
     references = SeedReferences(walletRepository);
     usecase = DeleteWalletUsecase(
       walletRepository: walletRepository,
       seedReferences: references,
-      swapRepository: swapRepository,
+      swapStore: swapStore,
       secrets: secrets,
     );
     when(
-      () => swapRepository.getOngoingSwaps(walletId: any(named: 'walletId')),
-    ).thenAnswer((_) async => []);
+      () => swapStore.ongoing(walletId: any(named: 'walletId')),
+    ).thenAnswer((_) async => const Ok([]));
     when(
       () => walletRepository.deleteWallet(walletId: any(named: 'walletId')),
     ).thenAnswer((_) async => const Ok<void, WalletFailure>(null));
@@ -117,8 +117,8 @@ void main() {
         () => walletRepository.getWallet(walletId),
       ).thenAnswer((_) async => Ok(buildWallet()));
       when(
-        () => swapRepository.getOngoingSwaps(walletId: walletId),
-      ).thenAnswer((_) async => []);
+        () => swapStore.ongoing(walletId: walletId),
+      ).thenAnswer((_) async => const Ok([]));
       when(
         () => walletRepository.deleteWallet(walletId: walletId),
       ).thenAnswer((_) async => const Ok(null));

@@ -1,5 +1,6 @@
-import 'package:bb_mobile/core/swaps/domain/entity/restored_swap.dart';
-import 'package:bb_mobile/features/swap/public/swap_facade.dart';
+import 'package:swaps/swaps.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
+import 'package:bull_logger/bull_logger.dart';
 import 'package:primitives/primitives.dart' show Ok, Err;
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -10,7 +11,7 @@ class SwapRescueState {
   final SwapRescueStatus status;
   final List<Wallet> wallets;
   final String? selectedWalletId;
-  final SwapFailure? error;
+  final SwapsFailure? error;
 
   const SwapRescueState({
     this.status = SwapRescueStatus.loading,
@@ -28,7 +29,7 @@ class SwapRescueState {
     SwapRescueStatus? status,
     List<Wallet>? wallets,
     String? selectedWalletId,
-    SwapFailure? error,
+    SwapsFailure? error,
   }) {
     return SwapRescueState(
       status: status ?? this.status,
@@ -41,16 +42,23 @@ class SwapRescueState {
 
 class SwapRescueCubit extends Cubit<SwapRescueState> {
   final RescueSwapUsecase _rescueSwapUsecase;
+  final GetWalletsUsecase _getWalletsUsecase;
   final RestoredSwap _restored;
 
-  SwapRescueCubit({required this._rescueSwapUsecase, required this._restored})
-    : super(const SwapRescueState()) {
+  SwapRescueCubit({
+    required this._rescueSwapUsecase,
+    required this._getWalletsUsecase,
+    required this._restored,
+  }) : super(const SwapRescueState()) {
     _loadWallets();
   }
 
   Future<void> _loadWallets() async {
     emit(state.copyWith(status: SwapRescueStatus.loading));
-    final result = await _rescueSwapUsecase.candidateWallets(_restored);
+    final result = await _getWalletsUsecase.execute(
+      onlyBitcoin: !_restored.actsOnLiquid,
+      onlyLiquid: _restored.actsOnLiquid,
+    );
     if (isClosed) return;
     switch (result) {
       case Ok(:final value):
@@ -58,11 +66,21 @@ class SwapRescueCubit extends Cubit<SwapRescueState> {
           state.copyWith(
             status: SwapRescueStatus.ready,
             wallets: value,
-            selectedWalletId: value.firstOrNull?.id,
+            selectedWalletId: value.isNotEmpty ? value.first.id : null,
           ),
         );
       case Err(:final failure):
-        emit(state.copyWith(status: SwapRescueStatus.error, error: failure));
+        log.warning(
+          'SWAPS: rescue wallets read failed: ${failure.runtimeType}',
+        );
+        emit(
+          state.copyWith(
+            status: SwapRescueStatus.error,
+            error: SwapsUnexpectedFailure(
+              'wallets read failed: ${failure.runtimeType}',
+            ),
+          ),
+        );
     }
   }
 
@@ -80,7 +98,11 @@ class SwapRescueCubit extends Cubit<SwapRescueState> {
     );
     if (isClosed) return;
     switch (result) {
-      case Ok():
+      case Ok(:final value):
+        log.fine(
+          'SWAPS: rescue of ${value.id} finished with status '
+          '${value.status.name}',
+        );
         emit(state.copyWith(status: SwapRescueStatus.success));
       case Err(:final failure):
         emit(state.copyWith(status: SwapRescueStatus.error, error: failure));

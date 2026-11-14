@@ -4607,6 +4607,11 @@
   "sellPayoutSepaDescription": "Los retiros aparecen como enviados por Leonod",
   "sellPayoutTitle": "Seleccionar destinatario",
   "sellPayoutNewBadge": "NUEVO",
+  "swapsFailureMasterKeyUnavailable": "Esta billetera no puede restaurar swaps: no hay semilla bitcoin disponible para derivar la clave de swap.",
+  "swapsFailureNotRestorable": "No se pudo reconstruir este swap desde el servidor. Contacte a soporte con su ID de swap.",
+  "swapsFailureRefundNotFinal": "El reembolso aún no es gastable (timelock). Inténtelo de nuevo más tarde.",
+  "swapsFailureNetwork": "No se pudo conectar con ningún servidor. Verifique su conexión e inténtelo de nuevo.",
+  "swapsFailureUnexpected": "Algo salió mal con el swap. Inténtelo de nuevo.",
   "walletSpendAwaitingObservation": "Los gastos no están disponibles hasta que esta cartera esté sincronizada y haya visto sus pagos anteriores en la red. Actualiza la cartera o busca transacciones faltantes y vuelve a intentarlo.",
   "walletSpendReplacementUnavailable": "No se pueden aumentar las comisiones hasta que esta cartera vea el pago en la red. Actualiza la cartera y vuelve a intentarlo.",
   "sendPayjoinSpendPaused": "Este pago Payjoin está en pausa porque la cartera no puede continuar de forma segura. Sus entradas siguen reservadas. Actualiza la cartera o busca las transacciones faltantes y vuelve a intentar esta propuesta mientras siga siendo válida. Si ha caducado, revisa el pago en Transacciones antes de hacer nada más.",
@@ -4617,5 +4622,6 @@
   "broadcastSignedTxErrorNetworkNotEnabled": "La transmisión en esta red no está habilitada en la configuración actual.",
   "coreScreensOutputsExceedInputs": "Las salidas superan las entradas: esta transacción no es válida y la red la rechazará.",
   "passphraseShow": "Mostrar frase de contraseña",
-  "passphraseHide": "Ocultar frase de contraseña"
+  "passphraseHide": "Ocultar frase de contraseña",
+  "swapServerBusyError": "Termina tus swaps en curso antes de cambiar el servidor de swaps."
 }

@@ -25,7 +25,9 @@ import 'package:bb_mobile/features/settings/domain/usecases/set_theme_mode_useca
 import 'package:bb_mobile/features/settings/domain/usecases/sync_exchange_currency_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/watch_payjoin_policy_usecase.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
+import 'package:bb_mobile/features/settings/presentation/bloc/swap_restore_cubit.dart';
 import 'package:bb_mobile/features/settings/public/settings_facade.dart';
+import 'package:swaps/swaps.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:get_it/get_it.dart';
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
@@ -34,6 +36,10 @@ import 'package:bb_mobile/features/settings/presentation/wallet_discovery_cubit.
 
 class SettingsLocator {
   static void setup(GetIt locator) {
+    locator.registerFactory<SwapRestoreCubit>(
+      () =>
+          SwapRestoreCubit(restoreSwapsUsecase: locator<RestoreSwapsUsecase>()),
+    );
     locator.registerFactory<DiscoverWalletUsecase>(
       () => DiscoverWalletUsecase(locator<WalletFacade>()),
     );

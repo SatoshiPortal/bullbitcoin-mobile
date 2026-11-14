@@ -1,12 +1,11 @@
-import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
-import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_usecase.dart';
+import 'package:swaps/swaps.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/transactions/domain/transaction_failure.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:meta/meta.dart';
 
-/// Reads the swap behind a transaction. Boundary for the throwing shared
-/// [GetSwapUsecase] — see [GetTransactionWalletUsecase] for the rationale.
+/// Reads the swap behind a transaction, mapping the engine's failure into the
+/// transactions family.
 class GetTransactionSwapUsecase {
   final GetSwapUsecase _getSwapUsecase;
 
@@ -14,17 +13,18 @@ class GetTransactionSwapUsecase {
 
   @useResult
   Future<Result<Swap, TransactionFailure>> execute(String swapId) async {
-    try {
-      return Ok(await _getSwapUsecase.execute(swapId));
-    } catch (e, st) {
-      log.severe(
-        message: 'Failed to load the swap of a transaction',
-        error: e.runtimeType,
-        trace: st,
-      );
-      return Err(
-        TransactionSwapUnavailableFailure('getSwap failed: ${e.runtimeType}'),
-      );
+    switch (await _getSwapUsecase.execute(swapId: swapId)) {
+      case Ok(:final value):
+        return Ok(value);
+      case Err(:final failure):
+        log.warning(
+          'Swap of a transaction not loaded (${failure.runtimeType})',
+        );
+        return Err(
+          TransactionSwapUnavailableFailure(
+            'getSwap failed: ${failure.runtimeType}',
+          ),
+        );
     }
   }
 }

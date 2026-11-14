@@ -381,7 +381,8 @@ class SwapMasterKeyModel {
     xprv: '', xpub: '', network: boltz.Network.mainnet, mnemonic: '', fingerprint: '');
 }
 ''';
-  const swapPath = 'lib/core/swaps/data/models/swap_master_key_model.dart';
+  const swapPath =
+      'packages/swaps/lib/src/data/models/swap_master_key_model.dart';
 
   test('swap exemption permits only the named model operations', () async {
     expect(await inspect('swap', swaps, policyPath: swapPath), isEmpty);

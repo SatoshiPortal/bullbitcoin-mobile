@@ -1,7 +1,4 @@
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
-import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
-import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_usecase.dart';
-import 'package:bb_mobile/core/swaps/domain/usecases/watch_swap_usecase.dart';
+import 'package:swaps/swaps.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/transactions/application/usecases/get_transaction_swap_usecase.dart';
 import 'package:bb_mobile/features/transactions/application/usecases/watch_transaction_swap_usecase.dart';
@@ -30,7 +27,7 @@ Swap _swap() => Swap.lnReceive(
   keyIndex: 0,
   type: SwapType.lightningToBitcoin,
   status: SwapStatus.pending,
-  environment: Environment.mainnet,
+  environment: SwapEnvironment.mainnet,
   creationTime: DateTime.utc(2026),
   receiveWalletId: 'w1',
   invoice: 'lnbc1',
@@ -48,14 +45,18 @@ void main() {
 
     test('forwards the swap on success', () async {
       final swap = _swap();
-      when(() => getSwap.execute('swap-1')).thenAnswer((_) async => swap);
+      when(
+        () => getSwap.execute(swapId: 'swap-1'),
+      ).thenAnswer((_) async => Ok(swap));
 
       expect(_valueOf(await usecase.execute('swap-1')), swap);
     });
 
-    test('sanitizes a thrown Boltz reason', () async {
-      when(() => getSwap.execute('swap-1')).thenThrow(
-        GetSwapException('boltz: swap not found for preimage abc123'),
+    test('sanitizes a Boltz reason', () async {
+      when(() => getSwap.execute(swapId: 'swap-1')).thenAnswer(
+        (_) async => const Err(
+          SwapsUnexpectedFailure('boltz: swap not found for preimage abc123'),
+        ),
       );
 
       final result = await usecase.execute('swap-1');
@@ -103,7 +104,7 @@ void main() {
     test('turns a throw on subscribe into a failure value', () async {
       when(
         () => watchSwap.execute('swap-1'),
-      ).thenThrow(WatchSwapException('no such swap'));
+      ).thenThrow(SwapsException('no such swap'));
 
       final emitted = await usecase.execute('swap-1').toList();
 

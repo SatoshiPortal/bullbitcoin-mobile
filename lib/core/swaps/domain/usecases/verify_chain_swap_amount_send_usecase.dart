@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/errors/send_errors.dart';
-import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
+import 'package:swaps/swaps.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 
@@ -8,21 +8,33 @@ class VerifyChainSwapAmountSendUsecase {
 
   VerifyChainSwapAmountSendUsecase({required this._walletRepository});
 
+  /// Checks that [psbtOrPset] pays exactly the lockup of a send-side swap
+  /// ([ChainSwap] or [LnSendSwap]) to its lockup address.
   Future<void> execute({
     required String psbtOrPset,
-    required ChainSwap swap,
+    required Swap swap,
     required String walletId,
   }) async {
+    final (lockupAddress, lockupAmount) = switch (swap) {
+      ChainSwap(:final paymentAddress, :final paymentAmount) ||
+      LnSendSwap(
+        :final paymentAddress,
+        :final paymentAmount,
+      ) => (paymentAddress, paymentAmount),
+      LnReceiveSwap() => throw SwapCreationException(
+        'A receive swap has no lockup to verify',
+      ),
+    };
     try {
       final actualAmount = await _walletRepository.getAmountSentToAddress(
         psbtOrPset: psbtOrPset,
-        address: swap.paymentAddress,
+        address: lockupAddress,
         walletId: walletId,
       );
 
-      if (actualAmount != swap.paymentAmount) {
+      if (actualAmount != lockupAmount) {
         final error = SwapCreationException(
-          'Amount mismatch: expected ${swap.paymentAmount} sats, but transaction sends $actualAmount sats to swap address',
+          'Amount mismatch: expected $lockupAmount sats, but transaction sends $actualAmount sats to swap address',
         );
         log.severe(
           message: 'Swap amount verification failed: Amount mismatch',

@@ -4,11 +4,10 @@ import 'package:primitives/primitives.dart' show BitcoinUnit, Err, Ok;
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
+import 'package:swaps/swaps.dart' hide Environment;
+import 'package:swaps/swaps.dart' as swaps show Environment;
 import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
-import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/auto_swap.dart';
-import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
-import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/features/wallet/data/liquid_wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
@@ -20,7 +19,19 @@ import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
-class _MockBoltzSwapRepository extends Mock implements BoltzSwapRepository {}
+class _MockGetSwapLimitsAndFees extends Mock
+    implements GetSwapLimitsAndFeesUsecase {}
+
+class _MockCreateLiquidToBitcoinSwap extends Mock
+    implements CreateLiquidToBitcoinSwapUsecase {}
+
+class _MockRecordSwapLockup extends Mock implements RecordSwapLockupUsecase {}
+
+class _MockRecordPendingLockup extends Mock
+    implements RecordPendingSwapLockupUsecase {}
+
+class _MockDropPendingLockup extends Mock
+    implements DropPendingSwapLockupUsecase {}
 
 class _MockWalletRepository extends Mock implements WalletRepository {}
 
@@ -50,8 +61,15 @@ Wallet _wallet({required bool liquid}) => Wallet(
   balanceSat: BigInt.from(liquid ? 3_000_000 : 0),
 );
 
+Matcher _toWallet(String walletId) =>
+    isA<ToWallet>().having((d) => d.walletId, 'walletId', walletId);
+
 void main() {
-  late _MockBoltzSwapRepository swapRepository;
+  late _MockGetSwapLimitsAndFees getLimitsAndFees;
+  late _MockCreateLiquidToBitcoinSwap createLiquidToBitcoinSwap;
+  late _MockRecordSwapLockup recordLockup;
+  late _MockRecordPendingLockup recordPendingLockup;
+  late _MockDropPendingLockup dropPendingLockup;
   late _MockWalletRepository walletRepository;
   late _MockSettingsRepository settingsRepository;
   late _MockLiquidWalletRepository liquidWalletRepository;
@@ -71,13 +89,42 @@ void main() {
 
   setUpAll(() {
     registerFallbackValue(const RelativeFee(25));
+    registerFallbackValue(SwapType.liquidToBitcoin);
+    registerFallbackValue(const ToWallet(''));
     registerFallbackValue(
       NewLabel.tx(transactionId: '', origin: '', label: ''),
     );
   });
 
   setUp(() {
-    swapRepository = _MockBoltzSwapRepository();
+    getLimitsAndFees = _MockGetSwapLimitsAndFees();
+    createLiquidToBitcoinSwap = _MockCreateLiquidToBitcoinSwap();
+    recordLockup = _MockRecordSwapLockup();
+    recordPendingLockup = _MockRecordPendingLockup();
+    dropPendingLockup = _MockDropPendingLockup();
+    when(
+      () => recordPendingLockup.execute(
+        swapId: any(named: 'swapId'),
+        signedTx: any(named: 'signedTx'),
+      ),
+    ).thenAnswer(
+      (_) async => Ok(
+        Swap.chain(
+          id: 'pending',
+          keyIndex: 0,
+          type: SwapType.liquidToBitcoin,
+          status: SwapStatus.pending,
+          environment: swaps.Environment.testnet,
+          creationTime: DateTime.utc(2026),
+          sendWalletId: 'liquid-wallet',
+          paymentAddress: 'tlq1payin',
+          paymentAmount: 1_000,
+        ),
+      ),
+    );
+    when(
+      () => dropPendingLockup.execute(any()),
+    ).thenAnswer((_) async => const Ok(null));
     walletRepository = _MockWalletRepository();
     settingsRepository = _MockSettingsRepository();
     liquidWalletRepository = _MockLiquidWalletRepository();
@@ -85,7 +132,11 @@ void main() {
     broadcastLiquid = _MockBroadcastLiquid();
     labelsFacade = _MockLabelsFacade();
     provider = BoltzAutoswapProvider(
-      swapRepository,
+      getLimitsAndFees,
+      createLiquidToBitcoinSwap,
+      recordLockup,
+      recordPendingLockup,
+      dropPendingLockup,
       walletRepository,
       settingsRepository,
       liquidWalletRepository,
@@ -106,9 +157,6 @@ void main() {
     ).thenAnswer(
       (_) async => Ok([_wallet(liquid: true), _wallet(liquid: false)]),
     );
-    when(
-      () => swapRepository.getOngoingSwaps(walletId: 'liquid-wallet'),
-    ).thenAnswer((_) async => []);
     when(() => getReceiveAddress.execute(walletId: 'liquid-wallet')).thenAnswer(
       (_) async => WalletAddress(
         walletId: 'liquid-wallet',
@@ -129,37 +177,37 @@ void main() {
     when(
       () => liquidWalletRepository.getPsetSizeAndAbsoluteFees(pset: 'pset'),
     ).thenAnswer((_) async => (100, 500));
-    when(
-      () => swapRepository.getSwapLimitsAndFees(SwapType.liquidToBitcoin),
-    ).thenAnswer(
-      (_) async => (
-        const SwapLimits(min: 3_570, max: 10_000_000),
-        const SwapFees(boltzPercent: 0.25, claimFee: 389),
-      ),
+    when(() => getLimitsAndFees.execute(SwapType.liquidToBitcoin)).thenAnswer(
+      (_) async => const Ok((
+        SwapLimits(min: 3_570, max: 10_000_000),
+        SwapFees(boltzPercent: 0.25, claimFee: 389),
+      )),
     );
     when(
-      () => swapRepository.createLiquidToBitcoinSwap(
+      () => createLiquidToBitcoinSwap.execute(
         sendWalletId: 'liquid-wallet',
         amountSat: 2_499_500,
-        btcElectrumUrl: ApiServiceConstants.publicElectrumTestUrl,
-        lbtcElectrumUrl: ApiServiceConstants.publicliquidElectrumTestUrlPath,
-        receiveWalletId: 'bitcoin-wallet',
+        destination: any(
+          named: 'destination',
+          that: _toWallet('bitcoin-wallet'),
+        ),
       ),
     ).thenAnswer(
-      (_) async =>
-          Swap.chain(
-                id: 'swap-id',
-                keyIndex: 0,
-                type: SwapType.liquidToBitcoin,
-                status: SwapStatus.pending,
-                environment: Environment.testnet,
-                creationTime: DateTime.utc(2026),
-                sendWalletId: 'liquid-wallet',
-                paymentAddress: 'tlq1payin',
-                paymentAmount: 2_499_500,
-                receiveWalletId: 'bitcoin-wallet',
-              )
-              as ChainSwap,
+      (_) async => Ok(
+        Swap.chain(
+              id: 'swap-id',
+              keyIndex: 0,
+              type: SwapType.liquidToBitcoin,
+              status: SwapStatus.pending,
+              environment: swaps.Environment.testnet,
+              creationTime: DateTime.utc(2026),
+              sendWalletId: 'liquid-wallet',
+              paymentAddress: 'tlq1payin',
+              paymentAmount: 2_499_500,
+              receiveWalletId: 'bitcoin-wallet',
+            )
+            as ChainSwap,
+      ),
     );
     when(
       () => liquidWalletRepository.getAmountSentToAddress(
@@ -178,12 +226,12 @@ void main() {
       () => broadcastLiquid.execute('signed-pset', isTestnet: true),
     ).thenAnswer((_) async => 'txid');
     when(
-      () => swapRepository.updatePaidSendSwap(
+      () => recordLockup.execute(
         swapId: 'swap-id',
         txid: 'txid',
-        absoluteFees: 500,
+        lockupFeeSat: 500,
       ),
-    ).thenAnswer((_) async {});
+    ).thenAnswer((_) async => const Err(SwapsUnexpectedFailure()));
     when(
       () => labelsFacade.store(any()),
     ).thenAnswer((_) async => const Err(LabelUnexpectedFailure()));
@@ -241,25 +289,103 @@ void main() {
     verifyZeroInteractions(broadcastLiquid);
   });
 
-  test('uses testnet services and broadcasts the payin on testnet', () async {
+  test(
+    'creates the chain swap, broadcasts the lockup and records it',
+    () async {
+      final result = await provider.execute(settings);
+
+      expect(result, isA<Ok<String, AutoswapFailure>>());
+      expect((result as Ok<String, AutoswapFailure>).value, 'swap-id');
+      verify(
+        () => createLiquidToBitcoinSwap.execute(
+          sendWalletId: 'liquid-wallet',
+          amountSat: 2_499_500,
+          destination: any(
+            named: 'destination',
+            that: _toWallet('bitcoin-wallet'),
+          ),
+        ),
+      ).called(1);
+      verify(
+        () => broadcastLiquid.execute('signed-pset', isTestnet: true),
+      ).called(1);
+      verify(
+        () => recordLockup.execute(
+          swapId: 'swap-id',
+          txid: 'txid',
+          lockupFeeSat: 500,
+        ),
+      ).called(1);
+    },
+  );
+
+  test('stores the signed lockup before broadcasting it', () async {
+    await provider.execute(settings);
+
+    verifyInOrder([
+      () => recordPendingLockup.execute(
+        swapId: 'swap-id',
+        signedTx: 'signed-pset',
+      ),
+      () => broadcastLiquid.execute('signed-pset', isTestnet: true),
+    ]);
+  });
+
+  test('broadcasts nothing when the lockup cannot be stored', () async {
+    when(
+      () => recordPendingLockup.execute(
+        swapId: any(named: 'swapId'),
+        signedTx: any(named: 'signedTx'),
+      ),
+    ).thenAnswer((_) async => const Err(SwapsUnexpectedFailure()));
+
     final result = await provider.execute(settings);
 
-    expect(result, isA<Ok<String, AutoswapFailure>>());
-    expect((result as Ok<String, AutoswapFailure>).value, 'swap-id');
-    verify(
-      () => walletRepository.getWallets(environment: Environment.testnet),
-    ).called(1);
-    verify(
-      () => swapRepository.createLiquidToBitcoinSwap(
-        sendWalletId: 'liquid-wallet',
-        amountSat: 2_499_500,
-        btcElectrumUrl: ApiServiceConstants.publicElectrumTestUrl,
-        lbtcElectrumUrl: ApiServiceConstants.publicliquidElectrumTestUrlPath,
-        receiveWalletId: 'bitcoin-wallet',
-      ),
-    ).called(1);
-    verify(
-      () => broadcastLiquid.execute('signed-pset', isTestnet: true),
-    ).called(1);
+    expect((result as Err).failure, isA<AutoswapExecutionFailure>());
+    verifyNever(
+      () => broadcastLiquid.execute(any(), isTestnet: any(named: 'isTestnet')),
+    );
   });
+
+  test('Boltz unreachable is reported before anything is created', () async {
+    when(
+      () => getLimitsAndFees.execute(SwapType.liquidToBitcoin),
+    ).thenAnswer((_) async => const Err(SwapsBoltzUnavailableFailure('418')));
+
+    final result = await provider.execute(settings);
+
+    expect((result as Err).failure, isA<AutoswapBoltzUnavailableFailure>());
+    verifyNever(
+      () => createLiquidToBitcoinSwap.execute(
+        sendWalletId: any(named: 'sendWalletId'),
+        amountSat: any(named: 'amountSat'),
+        destination: any(named: 'destination'),
+      ),
+    );
+  });
+
+  test(
+    'a refused creation maps to the failures the route can fall back on',
+    () async {
+      when(
+        () => createLiquidToBitcoinSwap.execute(
+          sendWalletId: any(named: 'sendWalletId'),
+          amountSat: any(named: 'amountSat'),
+          destination: any(named: 'destination'),
+        ),
+      ).thenAnswer(
+        (_) async => const Err(
+          SwapsAmountOutOfLimitsFailure(minSat: 3_570, maxSat: 2_000_000),
+        ),
+      );
+
+      final result = await provider.execute(settings);
+
+      expect((result as Err).failure, isA<AutoswapAmountOutOfBoundsFailure>());
+      verifyNever(
+        () =>
+            broadcastLiquid.execute(any(), isTestnet: any(named: 'isTestnet')),
+      );
+    },
+  );
 }

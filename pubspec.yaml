@@ -25,6 +25,7 @@ workspace:
   - packages/screen_awake
   - packages/bull_logger
   - packages/bull_pricer
+  - packages/swaps
   - features/logs
   - features/recoverbull
 
@@ -47,6 +48,7 @@ dependencies:
   bull_logger:
   bull_recoverbull:
   bull_logs:
+  swaps:
   flutter_bloc: ^9.1.1
   get_it: ^9.1.1
   flutter_svg: ^2.2.4

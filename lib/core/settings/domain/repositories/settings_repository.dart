@@ -12,8 +12,11 @@ import 'package:bull_tor/tor.dart';
 abstract interface class SettingsRepository {
   Stream<String> get currencyChangeStream;
 
-  /// Closes the currency-change stream. Not a persistence write, so it does
-  /// not return a write failure.
+  /// The environment after each successful [setEnvironment].
+  Stream<Environment> get environmentChangeStream;
+
+  /// Closes the change streams. Not a persistence write, so it does not
+  /// return a write failure.
   Future<void> close();
 
   @useResult

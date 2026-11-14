@@ -4,13 +4,22 @@ import 'package:bb_mobile/core/swaps/domain/usecases/get_auto_swap_settings_usec
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/autoswap/domain/autoswap_failure.dart';
 import 'package:bb_mobile/features/autoswap/domain/autoswap_provider_port.dart';
+import 'package:bb_mobile/features/swap/public/swap_facade.dart';
+import 'package:bull_logger/bull_logger.dart';
 import 'package:meta/meta.dart';
 
 class ExecuteAutoswapUsecase {
   final GetAutoSwapSettingsUsecase _getSettings;
-  final AutoswapProviderPort _provider;
+  final SwapFacade _swapFacade;
+  final AutoswapProviderPort _boltzProvider;
+  final AutoswapProviderPort _exchangeProvider;
 
-  const ExecuteAutoswapUsecase(this._getSettings, this._provider);
+  const ExecuteAutoswapUsecase(
+    this._getSettings,
+    this._swapFacade, {
+    required this._boltzProvider,
+    required this._exchangeProvider,
+  });
 
   @useResult
   Future<Result<String, AutoswapFailure>> execute() async {
@@ -26,6 +35,16 @@ class ExecuteAutoswapUsecase {
     if (settings.violation case final violation?) {
       return Err(AutoswapInvalidSettingsFailure(violation));
     }
-    return _provider.execute(settings);
+    final route = await _swapFacade.getRoute();
+    if (!route.startsWithBoltz) return _exchangeProvider.execute(settings);
+    final result = await _boltzProvider.execute(settings);
+    if (result case Err(
+      failure: AutoswapBoltzUnavailableFailure() ||
+          AutoswapAmountOutOfBoundsFailure(),
+    ) when route == SwapRoute.boltzWithExchangeFallback) {
+      log.fine('[Autoswap] Boltz cannot take the transfer, using the exchange');
+      return _exchangeProvider.execute(settings);
+    }
+    return result;
   }
 }

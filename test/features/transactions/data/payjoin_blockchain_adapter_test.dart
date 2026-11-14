@@ -9,6 +9,11 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart' hide Network;
 
 final class _Servers implements ElectrumServersPort {
+  @override
+  Future<bool> hasCustomServers({
+    required ElectrumServerNetwork network,
+  }) async => false;
+
   int calls = 0;
 
   @override
