@@ -194,6 +194,7 @@ abstract interface class _PayjoinRuntimeContract {
   );
   Future<Result<PayjoinSession, PayjoinFailure>> broadcastOriginal(String id);
   Future<Result<bool, PayjoinFailure>> canBroadcastOriginal(String id);
+  Future<Result<String?, PayjoinFailure>> visibleTransaction(String id);
   Future<Result<PayjoinSession, PayjoinFailure>> retryProposal(String id);
   Future<Result<void, PayjoinFailure>> cancel(String id);
   Future<Result<void, PayjoinFailure>> disableAll();
@@ -392,6 +393,19 @@ final class _PayjoinRoles implements _PayjoinRuntimeContract {
     } catch (_) {
       return const Err(
         PayjoinUnavailableFailure('Could not check fallback availability'),
+      );
+    }
+  }
+
+  @override
+  Future<Result<String?, PayjoinFailure>> visibleTransaction(
+    String sessionId,
+  ) async {
+    try {
+      return Ok(await _engine.visibleCompetingTransaction(sessionId));
+    } catch (_) {
+      return const Err(
+        PayjoinUnavailableFailure('Could not check transaction visibility'),
       );
     }
   }
@@ -662,6 +676,11 @@ final class _SessionsRole implements PayjoinSessions {
   @override
   Future<Result<Set<Outpoint>, PayjoinFailure>> reservedOutpoints() =>
       _runtime.reservedOutpoints();
+
+  @override
+  Future<Result<String?, PayjoinFailure>> visibleTransaction(
+    String sessionId,
+  ) => _runtime.visibleTransaction(sessionId);
 }
 
 final class _PolicyRole implements PayjoinPolicyAccess {

@@ -262,6 +262,9 @@ enum PayjoinLogCode {
   expiredMidNegotiation('Expired after the negotiation had started'),
   sessionCancelled('Session cancelled before any payment'),
   sessionStartFailed('Session could not be started'),
+  senderKeptAfterPostFailure(
+    'Sender session kept after the directory post failed; fallback armed',
+  ),
   originalPosted('Original transaction sent to the Payjoin directory'),
   requestReceived('Original transaction received from the sender'),
   proposalSent('Payjoin proposal sent to the sender'),

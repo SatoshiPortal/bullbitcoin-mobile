@@ -351,40 +351,76 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       throw StateError('A Payjoin session already exists for this payment');
     }
 
-    final model = await _pdkPayjoinDatasource.createSender(
-      walletId: walletId,
-      isTestnet: isTestnet,
-      bip21: bip21,
-      originalPsbt: originalPsbt,
-      networkFeesSatPerVb: networkFeesSatPerVb,
-      amountSat: amountSat,
-      expireAfterSec: expireAfterSec,
-      // Write-ahead: the datasource invokes this AFTER the session is built
-      // but BEFORE the signed original is posted to the directory. A crash
-      // after the POST with no persisted row would leave a broadcastable
-      // payment with no fallback watcher, no input reservation
-      // (getUtxosFrozenByOngoingPayjoins reads persisted rows only) and no
-      // duplicate guard above — a retry would post a SECOND signed original
-      // for the same payment, potentially on different inputs, and both
-      // could confirm. A persist failure therefore aborts the creation
-      // before any publication; a POST failure after a successful persist
-      // deliberately keeps the row (the receiver may still have received
-      // the original) and lets the expiry fallback settle the payment.
-      persistBeforePost: (model) async {
-        if (existing == null) {
-          await _localPayjoinDatasource.storeSender(model);
-        } else {
-          final replaced = await _localPayjoinDatasource.replaceExpiredSender(
-            model,
-          );
-          if (!replaced) {
-            throw StateError(
-              'The expired Payjoin session could not be replaced',
+    final PayjoinSenderModel model;
+    try {
+      model = await _pdkPayjoinDatasource.createSender(
+        walletId: walletId,
+        isTestnet: isTestnet,
+        bip21: bip21,
+        originalPsbt: originalPsbt,
+        networkFeesSatPerVb: networkFeesSatPerVb,
+        amountSat: amountSat,
+        expireAfterSec: expireAfterSec,
+        // Write-ahead: the datasource invokes this AFTER the session is built
+        // but BEFORE the signed original is posted to the directory. A crash
+        // after the POST with no persisted row would leave a broadcastable
+        // payment with no fallback watcher, no input reservation
+        // (getUtxosFrozenByOngoingPayjoins reads persisted rows only) and no
+        // duplicate guard above — a retry would post a SECOND signed original
+        // for the same payment, potentially on different inputs, and both
+        // could confirm. A persist failure therefore aborts the creation
+        // before any publication; a POST failure after a successful persist
+        // deliberately keeps the row (the receiver may still have received
+        // the original) and lets the expiry fallback settle the payment.
+        persistBeforePost: (model) async {
+          if (existing == null) {
+            await _localPayjoinDatasource.storeSender(model);
+          } else {
+            final replaced = await _localPayjoinDatasource.replaceExpiredSender(
+              model,
             );
+            if (!replaced) {
+              throw StateError(
+                'The expired Payjoin session could not be replaced',
+              );
+            }
           }
-        }
-      },
-    );
+        },
+      );
+    } catch (_) {
+      // A POST failure after the write-ahead persist leaves a live row that
+      // only a resume would otherwise drive. Arm it now, exactly as a resume
+      // does for a sender without a proposal: the expiry timer lives in the
+      // poll, and the fallback watcher catches a receiver that broadcasts
+      // the original on its own. Both are no-ops when already armed. A row
+      // that is not this attempt's (a retry whose replacement failed leaves
+      // the expired one) is left alone.
+      PayjoinSenderModel? stored;
+      try {
+        stored = await _localPayjoinDatasource.fetchSender(bip21);
+      } catch (_) {
+        stored = null;
+      }
+      if (stored != null &&
+          !stored.isExpired &&
+          !stored.isCompleted &&
+          !stored.isAborted &&
+          !stored.isExpiryTimePassed &&
+          stored.proposalPsbt == null) {
+        _watchForFallback(
+          payjoinId: stored.id,
+          walletId: stored.walletId,
+          originalTxId: stored.originalTxId,
+        );
+        _pdkPayjoinDatasource.startListeningForProposal(stored);
+        _log.fine(
+          code: api.PayjoinLogCode.senderKeptAfterPostFailure,
+          role: api.PayjoinLogRole.sender,
+          sessionRef: stored.toEntity().logRef,
+        );
+      }
+      rethrow;
+    }
 
     // The datasource returned the session in its post-POST state
     // (PollingForProposal); the write-ahead persist above stored the
@@ -437,6 +473,19 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       payjoin.canManuallyBroadcastOriginal &&
       !_isWaitingForSender(payjoin) &&
       await _visibleCompetingTransaction(payjoin) == null;
+
+  /// The session's spend the network already knows (the original or the
+  /// payjoin transaction), or null when neither is visible. Lets a caller
+  /// that saw the session expire tell "nothing was broadcast" from "the
+  /// fallback broadcast reached the network but its outcome was not
+  /// recorded" before it offers the payment again.
+  Future<String?> visibleCompetingTransaction(String payjoinId) async {
+    final freshModel =
+        await _localPayjoinDatasource.fetchReceiver(payjoinId) ??
+        await _localPayjoinDatasource.fetchSender(payjoinId);
+    if (freshModel == null) return null;
+    return _visibleCompetingTransaction(freshModel.toEntity());
+  }
 
   /// The first of the session's competing spends the network already knows,
   /// or null when neither is visible.

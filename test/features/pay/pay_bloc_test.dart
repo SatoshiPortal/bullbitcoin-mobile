@@ -17,6 +17,7 @@ import 'package:bb_mobile/features/pay/domain/prepare_pay_bitcoin_payin_usecase.
 import 'package:bb_mobile/features/pay/domain/prepare_pay_liquid_payin_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/sign_pay_payin_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/get_payjoin_usecase.dart';
+import 'package:bb_mobile/features/pay/domain/get_visible_payjoin_transaction_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/refresh_pay_order_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/send_with_payjoin_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/watch_payjoin_usecase.dart';
@@ -71,6 +72,9 @@ class _MockWatchPayjoinUsecase extends Mock implements WatchPayjoinUsecase {}
 
 class _MockGetPayjoinUsecase extends Mock implements GetPayjoinUsecase {}
 
+class _MockGetVisiblePayjoinTransactionUsecase extends Mock
+    implements GetVisiblePayjoinTransactionUsecase {}
+
 class _MockPreviewBitcoinFeeUsecase extends Mock
     implements PreviewBitcoinFeeUsecase {}
 
@@ -99,6 +103,7 @@ class _SeedablePayBloc extends PayBloc {
     required super.sendWithPayjoinUsecase,
     required super.watchPayjoinUsecase,
     required super.getPayjoinUsecase,
+    required super.getVisiblePayjoinTransactionUsecase,
     required super.retryPayjoinProposalUsecase,
     required super.previewBitcoinFeeUsecase,
     required super.previewBitcoinFeePresetsUsecase,
@@ -173,6 +178,8 @@ void main() {
     sendWithPayjoinUsecase: _MockSendWithPayjoinUsecase(),
     watchPayjoinUsecase: _MockWatchPayjoinUsecase(),
     getPayjoinUsecase: _MockGetPayjoinUsecase(),
+    getVisiblePayjoinTransactionUsecase:
+        _MockGetVisiblePayjoinTransactionUsecase(),
     retryPayjoinProposalUsecase: _MockRetryPayjoin(),
     loadPayNetworkFeesUsecase: _MockLoadPayNetworkFeesUsecase(),
     calculatePayAbsoluteFeesUsecase: _MockCalculatePayAbsoluteFeesUsecase(),

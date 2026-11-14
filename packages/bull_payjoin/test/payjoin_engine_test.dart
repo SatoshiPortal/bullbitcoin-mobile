@@ -1027,6 +1027,85 @@ void main() {
     verify(() => pdk.startListeningForProposal(posted)).called(1);
   });
 
+  test('a failed POST after the write-ahead persist arms the stored '
+      'session', () async {
+    final prePost = sender().copyWith(sender: '["pre-post"]');
+    when(
+      () => pdk.createSender(
+        walletId: any(named: 'walletId'),
+        isTestnet: any(named: 'isTestnet'),
+        bip21: any(named: 'bip21'),
+        originalPsbt: any(named: 'originalPsbt'),
+        networkFeesSatPerVb: any(named: 'networkFeesSatPerVb'),
+        amountSat: any(named: 'amountSat'),
+        expireAfterSec: any(named: 'expireAfterSec'),
+        persistBeforePost: any(named: 'persistBeforePost'),
+      ),
+    ).thenAnswer((inv) async {
+      final persist =
+          inv.namedArguments[#persistBeforePost]
+              as Future<void> Function(PayjoinSenderModel);
+      await persist(prePost);
+      throw SendCreationException('directory unreachable');
+    });
+
+    await expectLater(
+      engine.createPayjoinSender(
+        walletId: prePost.walletId,
+        isTestnet: true,
+        bip21: prePost.id,
+        originalPsbt: prePost.originalPsbt,
+        amountSat: prePost.amountSat,
+        networkFeesSatPerVb: 1,
+      ),
+      throwsA(isA<SendCreationException>()),
+    );
+
+    // The row is kept (the receiver may hold the original) and must not
+    // wait for the next app resume to be driven: the poll carries the expiry
+    // that broadcasts the original, and the fallback watcher catches a
+    // receiver broadcasting it first.
+    expect(await local.fetchSender(prePost.id), isNotNull);
+    verify(() => pdk.startListeningForProposal(prePost)).called(1);
+    verify(() => transactions.watchWallet(prePost.walletId)).called(1);
+  });
+
+  test('a failed start that persisted nothing leaves the expired row it '
+      'found alone', () async {
+    // A retry of an expired payment that fails before the write-ahead
+    // persist (signing, builder rejection): the only row is the expired one,
+    // which released its inputs and must not be driven again.
+    final expired = sender().copyWith(isExpired: true);
+    await local.storeSender(expired);
+    when(
+      () => pdk.createSender(
+        walletId: any(named: 'walletId'),
+        isTestnet: any(named: 'isTestnet'),
+        bip21: any(named: 'bip21'),
+        originalPsbt: any(named: 'originalPsbt'),
+        networkFeesSatPerVb: any(named: 'networkFeesSatPerVb'),
+        amountSat: any(named: 'amountSat'),
+        expireAfterSec: any(named: 'expireAfterSec'),
+        persistBeforePost: any(named: 'persistBeforePost'),
+      ),
+    ).thenThrow(SendCreationException('signing failed'));
+
+    await expectLater(
+      engine.createPayjoinSender(
+        walletId: expired.walletId,
+        isTestnet: true,
+        bip21: expired.id,
+        originalPsbt: expired.originalPsbt,
+        amountSat: expired.amountSat,
+        networkFeesSatPerVb: 1,
+      ),
+      throwsA(isA<SendCreationException>()),
+    );
+
+    verifyNever(() => pdk.startListeningForProposal(expired));
+    verifyNever(() => transactions.watchWallet(expired.walletId));
+  });
+
   test('startup resumes sender proposal polling', () async {
     final model = sender();
     await local.storeSender(model);

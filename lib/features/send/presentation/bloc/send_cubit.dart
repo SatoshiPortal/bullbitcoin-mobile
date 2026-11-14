@@ -51,6 +51,8 @@ import 'package:bb_mobile/features/send/domain/usecases/get_send_cross_chain_quo
 import 'package:bb_mobile/features/send/domain/usecases/get_send_exchange_rate_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/get_send_swap_quote_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/detect_bitcoin_string_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/broadcast_payjoin_original_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/get_adoptable_payjoin_sender_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/get_send_payjoin_enabled_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/prepare_bitcoin_send_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/validate_bitcoin_selection_usecase.dart';
@@ -109,6 +111,8 @@ class SendCubit extends Cubit<SendState>
     required this._prepareLiquidSendUsecase,
     required this._sendWithPayjoinUsecase,
     required this._watchPayjoinUsecase,
+    required this._getAdoptablePayjoinSenderUsecase,
+    required this._broadcastPayjoinOriginalUsecase,
     required this._retryPayjoinProposalUsecase,
     required this._getWalletsUsecase,
     required this._getWalletUsecase,
@@ -204,6 +208,8 @@ class SendCubit extends Cubit<SendState>
   final BroadcastBitcoinTransactionUsecase _broadcastBitcoinTxUsecase;
   final SendWithPayjoinUsecase _sendWithPayjoinUsecase;
   final WatchPayjoinUsecase _watchPayjoinUsecase;
+  final GetAdoptablePayjoinSenderUsecase _getAdoptablePayjoinSenderUsecase;
+  final BroadcastPayjoinOriginalUsecase _broadcastPayjoinOriginalUsecase;
   final RetryPayjoinProposalUsecase _retryPayjoinProposalUsecase;
   final UpdatePaidSendSwapUsecase _updatePaidSendSwapUsecase;
   final CalculateLiquidAbsoluteFeesUsecase _calculateLiquidAbsoluteFeesUsecase;
@@ -3194,12 +3200,39 @@ class SendCubit extends Cubit<SendState>
                 : 1,
           );
           final PayjoinSenderSession payjoinSender;
+          var adoptedAfterFailedStart = false;
           switch (payjoinResult) {
             case Ok(:final value):
               payjoinSender = value;
             case Err(:final failure):
-              emit(state.copyWith(failure: failure, signingTransaction: false));
-              return;
+              // A failed start is not a failed payment: the engine persists
+              // the session — signed original included — BEFORE posting to the
+              // directory, and a post failure keeps the row so the expiry
+              // fallback still settles the payment. Re-arming Confirm here
+              // would let a rebuilt send pay the same payee a second time on
+              // disjoint inputs (the persisted session's inputs are reserved
+              // out of coin selection, so the two transactions cannot
+              // conflict). When this payment's session is persisted, adopt it
+              // and proceed exactly as a successful start; otherwise fall
+              // through to the error path.
+              final persisted = await _getAdoptablePayjoinSenderUsecase.execute(
+                sessionId: paymentRequest.uri,
+                walletId: wallet.id,
+                amountSat: state.confirmedAmountSat,
+              );
+              if (persisted == null) {
+                emit(
+                  state.copyWith(failure: failure, signingTransaction: false),
+                );
+                return;
+              }
+              log.warning(
+                'Send Payjoin start failed but session ${persisted.logRef} is '
+                'persisted (status=${persisted.status.name}); adopting it '
+                'instead of re-arming Confirm',
+              );
+              payjoinSender = persisted;
+              adoptedAfterFailedStart = true;
           }
           // Show originalTxId provisionally; the payjoin runs asynchronously
           //  in the repository (poll → sign → broadcast, or fallback to the
@@ -3210,10 +3243,21 @@ class SendCubit extends Cubit<SendState>
             state.copyWith(
               txId: payjoinSender.originalTxId,
               payjoinSender: payjoinSender,
+              failure: payjoinSender.spendFailure == null
+                  ? null
+                  : const SendPayjoinPausedFailure(),
               signingTransaction: false,
             ),
           );
           _watchPayjoin(payjoinSender.id);
+          // The directory most likely never received the original and the
+          // stored row cannot pick up a proposal: settle now rather than at
+          // the session deadline. A refusal leaves the armed session as is.
+          if (adoptedAfterFailedStart) {
+            unawaited(
+              _broadcastPayjoinOriginalUsecase.execute(payjoinSender.id),
+            );
+          }
         } else {
           final signedPsbtAndTxSize = await _signBitcoinTxUsecase.execute(
             psbt: unsignedPsbt,

@@ -18,6 +18,7 @@ import 'package:bb_mobile/features/pay/domain/estimate_pay_payin_fees_usecase.da
 import 'package:bb_mobile/features/pay/domain/get_pay_order_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/get_pay_payin_address_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/get_payjoin_usecase.dart';
+import 'package:bb_mobile/features/pay/domain/get_visible_payjoin_transaction_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/load_pay_network_fees_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/load_pay_user_summary_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/load_pay_wallet_utxos_usecase.dart';
@@ -65,6 +66,7 @@ class PayBloc extends Bloc<PayEvent, PayState>
     required this._sendWithPayjoinUsecase,
     required this._watchPayjoinUsecase,
     required this._getPayjoinUsecase,
+    required this._getVisiblePayjoinTransactionUsecase,
     required this._retryPayjoinProposalUsecase,
     required this._previewBitcoinFeeUsecase,
     required this._previewBitcoinFeePresetsUsecase,
@@ -122,6 +124,8 @@ class PayBloc extends Bloc<PayEvent, PayState>
   final SendWithPayjoinUsecase _sendWithPayjoinUsecase;
   final WatchPayjoinUsecase _watchPayjoinUsecase;
   final GetPayjoinUsecase _getPayjoinUsecase;
+  final GetVisiblePayjoinTransactionUsecase
+  _getVisiblePayjoinTransactionUsecase;
   final RetryPayjoinProposalUsecase _retryPayjoinProposalUsecase;
   final PreviewBitcoinFeeUsecase _previewBitcoinFeeUsecase;
   final PreviewBitcoinFeePresetsUsecase _previewBitcoinFeePresetsUsecase;
@@ -952,8 +956,29 @@ class PayBloc extends Bloc<PayEvent, PayState>
     }
 
     if (session.isExpired) {
+      // `expired` means the engine proved its own fallback sent nothing, but
+      // the receiver may broadcast the original on its own (BIP78 invites it
+      // to) and a fresh lookup can see a transaction a lagging sync did not.
+      // Latch such a transaction instead of re-arming Confirm on the inputs
+      // the expiry just released, which would pay the order a second time.
+      final visibleTxId = await _getVisiblePayjoinTransactionUsecase.execute(
+        session.id,
+      );
+      final rearmed = _currentPaymentState;
+      if (rearmed == null || rearmed.payOrder.orderId != sessionOrderId) {
+        return;
+      }
+      if (visibleTxId != null) {
+        log.warning(
+          'Pay Payjoin session ${session.logRef} expired but its transaction '
+          'is visible; latching it instead of re-arming Confirm',
+        );
+        _latchBroadcast(emit, visibleTxId);
+        await _completeAfterBroadcast(emit);
+        return;
+      }
       emit(
-        current.copyWith(
+        rearmed.copyWith(
           isConfirmingPayment: false,
           error: null,
           pausedPayjoinSession: null,
