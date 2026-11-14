@@ -31,19 +31,25 @@ void main() {
     incomingTxids: incoming,
     completedAt: DateTime.utc(2026),
   );
-  WalletTransactionSyncBackgroundTask task({
+  RunWalletSyncJobsUsecase task({
     Duration? budget,
     List<WalletKey>? keys,
     NotificationCopyBuilder? copy,
-  }) => WalletTransactionSyncBackgroundTask(
-    writer: writer,
+    PaymentAnnouncementPort? announcements,
+  }) => RunWalletSyncJobsUsecase(
+    wallets: writer,
     revisions: revisions,
     keys: keys ?? [key],
     queue: queue,
-    notifications: notifications,
-    copy: copy ?? (count, chain) => (title: 'Payments', body: '$count'),
+    intervals: const SharedPreferencesBackgroundSyncIntervalRepository(),
+    announcements:
+        announcements ??
+        NotificationsPaymentAnnouncement(
+          notifications,
+          copy ?? (count, chain) => (title: 'Payments', body: '$count'),
+        ),
+    logger: logs,
     runBudget: budget,
-    logSink: logs,
   );
   Future<Result<void, NotificationsFailure>> baseline() =>
       WalletPaymentObservationAdapter(notifications).recordCompletion(
@@ -87,7 +93,7 @@ void main() {
         isA<Ok>(),
       );
       writer.operation = () async => Ok(outcome());
-      expect((await task().executeAll()).shouldRetry, isFalse);
+      expect((await task().execute()).shouldRetry, isFalse);
       expect(writer.allowInitialScan, isEmpty);
       expect(
         logs.entries,
@@ -122,7 +128,7 @@ void main() {
       var finished = false;
       final run = task(
         keys: [key, second],
-      ).executeAll().then((_) => finished = true);
+      ).execute().then((_) => finished = true);
       await started.future;
       expect(
         await const SharedPreferencesBackgroundSyncIntervalRepository().write(
@@ -166,7 +172,7 @@ void main() {
             completedAt: DateTime.utc(2026),
           ),
         );
-        await task(keys: [key, second]).executeAll();
+        await task(keys: [key, second]).execute();
         expect(writer.allowInitialScan, [false]);
         revisions.unavailable = null;
         // A temporary read failure must not erase the permanent retry state.
@@ -205,7 +211,7 @@ void main() {
           completedAt: DateTime.utc(2026),
         ),
       );
-      await task(keys: [key, second]).executeAll();
+      await task(keys: [key, second]).execute();
       expect(writer.allowInitialScan, [false]);
     },
   );
@@ -215,7 +221,7 @@ void main() {
     () async {
       await baseline();
       writer.operation = () async => Ok(outcome());
-      await task().executeAll();
+      await task().execute();
       expect(writer.discover, [false]);
       expect(writer.allowInitialScan, [false]);
     },
@@ -227,7 +233,7 @@ void main() {
       await baseline();
       // Simulates a prior native commit followed by interruption before outbox.
       writer.operation = () async => Ok(outcome());
-      expect((await task().executeAll()).shouldRetry, isFalse);
+      expect((await task().execute()).shouldRetry, isFalse);
       expect(writer.allowInitialScan, [false]);
       expect(
         logs.entries.any(
@@ -238,7 +244,7 @@ void main() {
       );
       expect(logs.entries.any((e) => e.$2.contains(key.id)), isFalse);
       expect(gateway.shown, hasLength(1));
-      await task().executeAll();
+      await task().execute();
       expect(gateway.shown, hasLength(1));
     },
   );
@@ -247,7 +253,7 @@ void main() {
     await baseline();
     writer.operation = () async => Ok(outcome());
     await expectLater(
-      task(copy: (_, _) => throw StateError('private')).executeAll(),
+      task(copy: (_, _) => throw StateError('private')).execute(),
       throwsStateError,
     );
   });
@@ -260,7 +266,7 @@ void main() {
       "CREATE TRIGGER reject_observation BEFORE INSERT ON observed_events BEGIN SELECT RAISE(ABORT, 'injected'); END",
     );
     writer.operation = () async => Ok(outcome());
-    expect((await task().executeAll()).shouldRetry, isFalse);
+    expect((await task().execute()).shouldRetry, isFalse);
     expect(
       logs.entries,
       contains((
@@ -272,7 +278,7 @@ void main() {
 
   test('missing observations still acknowledge the committed sync', () async {
     writer.operation = () async => Ok(outcome(incoming: null));
-    expect((await task().executeAll()).shouldRetry, isFalse);
+    expect((await task().execute()).shouldRetry, isFalse);
     expect(gateway.shown, isEmpty);
   });
 
@@ -285,12 +291,12 @@ void main() {
         revisions.revision = 2;
         return Err(BackgroundSyncNeedsRepairFailure(stamp(2)));
       };
-      await task().executeAll();
-      await task().executeAll();
+      await task().execute();
+      await task().execute();
       expect(writer.allowInitialScan, hasLength(1));
       revisions.revision = 3;
       writer.operation = () async => Ok(outcome());
-      await task().executeAll();
+      await task().execute();
       expect(writer.allowInitialScan, hasLength(2));
     },
   );
@@ -325,13 +331,29 @@ void main() {
       }
       return Ok(outcome());
     };
-    expect((await task(keys: [key, liquid]).executeAll()).shouldRetry, isTrue);
+    expect((await task(keys: [key, liquid]).execute()).shouldRetry, isTrue);
     expect(writer.allowInitialScan, [false]);
   });
 
+  for (final (failure, retried) in [
+    (const PaymentAnnouncementDeniedFailure(), false),
+    (const PaymentAnnouncementUnavailableFailure(), true),
+  ]) {
+    test('a ${failure.runtimeType} delivery retries=$retried', () async {
+      writer.operation = () async => Ok(outcome());
+      final announcements = _Announcements()..delivery = Err(failure);
+
+      final result = await task(announcements: announcements).execute();
+
+      expect(result.shouldRetry, retried);
+      // Recorded after the queue settled the committed sync.
+      expect(announcements.recorded.single.revision, stamp(2));
+    });
+  }
+
   test('operation exceptions log a fixed category and request retry', () async {
     writer.operation = () => throw Exception('private connection detail');
-    expect((await task().executeAll()).shouldRetry, isTrue);
+    expect((await task().execute()).shouldRetry, isTrue);
     expect(
       logs.entries.map((e) => e.$2),
       contains('Background job retry: category=operation_exception'),
@@ -340,7 +362,7 @@ void main() {
   });
 
   test('zero admission budget does not start a writer', () async {
-    await task(budget: Duration.zero).executeAll();
+    await task(budget: Duration.zero).execute();
     expect(writer.allowInitialScan, isEmpty);
     final messages = (await log.readLogs()).map((row) => row.split('\t')[2]);
     expect(
@@ -368,7 +390,7 @@ void main() {
           task(
             budget: const Duration(seconds: 10),
             keys: [key, second],
-          ).executeAll(clock: clock).then((value) {
+          ).execute(clock: clock).then((value) {
             finished = true;
             return value;
           });
@@ -453,6 +475,23 @@ final class _Gateway implements LocalNotificationPort {
     shown.add(notification);
     return const Ok(null);
   }
+}
+
+final class _Announcements implements PaymentAnnouncementPort {
+  final List<BackgroundSyncOutcome> recorded = [];
+  Result<void, PaymentAnnouncementFailure> delivery = const Ok(null);
+
+  @override
+  Future<Result<void, PaymentAnnouncementFailure>> record(
+    BackgroundSyncOutcome outcome,
+  ) async {
+    recorded.add(outcome);
+    return const Ok(null);
+  }
+
+  @override
+  Future<Result<void, PaymentAnnouncementFailure>> deliverPending() async =>
+      delivery;
 }
 
 final class _Logs implements BackgroundTaskLogger {
