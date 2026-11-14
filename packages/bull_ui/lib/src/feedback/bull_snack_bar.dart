@@ -27,8 +27,26 @@ class BullSnackBar {
     String? actionLabel,
     VoidCallback? onAction,
   }) {
-    _show(
-      context,
+    showIn(
+      Overlay.of(context, rootOverlay: true),
+      message: message,
+      leadingIcon: leadingIcon,
+      actionLabel: actionLabel,
+      onAction: onAction,
+    );
+  }
+
+  /// Returns a dismissal callback that only affects this feedback instance.
+  static VoidCallback showIn(
+    OverlayState overlay, {
+    required String message,
+    IconData? leadingIcon,
+    String? actionLabel,
+    VoidCallback? onAction,
+  }) {
+    late final OverlayEntry entry;
+    entry = _showIn(
+      overlay,
       _BullSnackBarContent(
         message: message,
         leadingIcon: leadingIcon,
@@ -36,21 +54,33 @@ class BullSnackBar {
         onAction: onAction == null
             ? null
             : () {
+                if (!identical(_entry, entry)) return;
                 dismiss();
                 onAction();
               },
       ),
     );
+    return () {
+      if (!identical(_entry, entry)) return;
+      _timer?.cancel();
+      _timer = null;
+      if (overlay.mounted) {
+        _disposeEntryImmediate();
+      } else {
+        _entry = null;
+        _activeState = null;
+      }
+    };
   }
 
   /// Show a toast with custom [content] instead of a plain message.
   static void showContent(BuildContext context, Widget content) {
-    _show(context, content);
+    _showIn(Overlay.of(context, rootOverlay: true), content);
   }
 
-  static void _show(BuildContext context, Widget content) {
+  static OverlayEntry _showIn(OverlayState overlay, Widget content) {
     _disposeEntryImmediate();
-    _entry = OverlayEntry(
+    final entry = OverlayEntry(
       builder: (_) => Positioned(
         top: 0,
         left: 16,
@@ -68,8 +98,10 @@ class BullSnackBar {
         ),
       ),
     );
-    Overlay.of(context, rootOverlay: true).insert(_entry!);
+    _entry = entry;
+    overlay.insert(entry);
     _scheduleAutoDismiss();
+    return entry;
   }
 
   /// Dismiss the active toast (animated when possible).

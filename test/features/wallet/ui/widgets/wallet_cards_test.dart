@@ -1,11 +1,14 @@
+import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:primitives/primitives.dart' show BitcoinUnit;
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/generated/l10n/localization.dart';
 import 'package:bb_mobile/features/bitcoin_price/presentation/bloc/bitcoin_price_bloc.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
+import 'package:bb_mobile/features/settings/public/settings_facade.dart'
+    show SettingsFacade;
 import 'package:bb_mobile/features/sp/public/sp_facade.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_cards.dart';
+import 'package:bull_ui/bull_ui.dart' show bullUiLocalizationsDelegate;
 import 'package:bull_ui/testing.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -37,9 +40,14 @@ Widget _buildCards({
   required _MockSettingsCubit settingsCubit,
   required _MockBitcoinPriceBloc bitcoinPriceBloc,
 }) {
+  final navigatorKey = GlobalKey<NavigatorState>();
   return MaterialApp(
+    navigatorKey: navigatorKey,
     theme: ThemeData(extensions: testBullExtensions),
-    localizationsDelegates: AppLocalizations.localizationsDelegates,
+    localizationsDelegates: const [
+      bullUiLocalizationsDelegate,
+      ...AppLocalizations.localizationsDelegates,
+    ],
     supportedLocales: AppLocalizations.supportedLocales,
     home: MultiBlocProvider(
       providers: [
@@ -47,7 +55,10 @@ Widget _buildCards({
         BlocProvider<SettingsCubit>.value(value: settingsCubit),
         BlocProvider<BitcoinPriceBloc>.value(value: bitcoinPriceBloc),
       ],
-      child: const Scaffold(body: WalletCards()),
+      child: SettingsFacade.amountScope(
+        navigatorKey: navigatorKey,
+        child: const Scaffold(body: WalletCards()),
+      ),
     ),
   );
 }
@@ -57,7 +68,9 @@ Widget _buildCardsRouter({
   required _MockSettingsCubit settingsCubit,
   required _MockBitcoinPriceBloc bitcoinPriceBloc,
 }) {
+  final navigatorKey = GlobalKey<NavigatorState>();
   final router = GoRouter(
+    navigatorKey: navigatorKey,
     initialLocation: '/',
     routes: [
       GoRoute(
@@ -68,7 +81,10 @@ Widget _buildCardsRouter({
             BlocProvider<SettingsCubit>.value(value: settingsCubit),
             BlocProvider<BitcoinPriceBloc>.value(value: bitcoinPriceBloc),
           ],
-          child: const Scaffold(body: WalletCards()),
+          child: SettingsFacade.amountScope(
+            navigatorKey: navigatorKey,
+            child: const Scaffold(body: WalletCards()),
+          ),
         ),
       ),
       GoRoute(
@@ -81,7 +97,10 @@ Widget _buildCardsRouter({
   return MaterialApp.router(
     theme: ThemeData(extensions: testBullExtensions),
     routerConfig: router,
-    localizationsDelegates: AppLocalizations.localizationsDelegates,
+    localizationsDelegates: const [
+      bullUiLocalizationsDelegate,
+      ...AppLocalizations.localizationsDelegates,
+    ],
     supportedLocales: AppLocalizations.supportedLocales,
   );
 }

@@ -1,10 +1,13 @@
+import 'package:primitives/primitives.dart'
+    show BitcoinUnit, Err, Fingerprint, Ok;
+import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
-import 'package:primitives/primitives.dart' show BitcoinUnit, Err, Ok;
+import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/import_mnemonic/domain/check_duplicate_mnemonic_usecase.dart';
 import 'package:bb_mobile/features/import_mnemonic/domain/import_mnemonic_failure.dart';
 import 'package:bb_mobile/features/import_mnemonic/domain/import_wallet_usecase.dart';
@@ -20,7 +23,11 @@ class _MockSettingsRepository extends Mock implements SettingsRepository {}
 
 class _MockWalletRepository extends Mock implements WalletRepository {}
 
+class _MockMetadata extends Mock implements WalletMetadataDatasource {}
+
 class _MockWallet extends Mock implements Wallet {}
+
+class _MockMetadataRow extends Mock implements WalletMetadataModel {}
 
 void main() {
   const words = [
@@ -49,6 +56,7 @@ void main() {
   late _MockSettingsRepository settingsRepository;
   late _MockWalletRepository walletRepository;
   late ImportWalletUsecase usecase;
+  late _MockMetadata metadata;
 
   setUpAll(() async {
     // `Secret` is final and cannot be mocked, so mocktail's fallback for `any(named: 'secret')` is a real one, made here and used for nothing else.
@@ -57,11 +65,14 @@ void main() {
       scratchDirectory: () async => '/tmp',
     ).import(words: words);
     registerFallbackValue((fallback as Ok<Secret, SecretFailure>).value);
+    registerFallbackValue(Fingerprint('73c5da0a'));
     registerFallbackValue(Network.bitcoinMainnet);
     registerFallbackValue(ScriptType.bip84);
   });
 
   setUp(() {
+    metadata = _MockMetadata();
+    when(metadata.fetchAll).thenAnswer((_) async => []);
     storage = FakeSecureStoragePlatform()..install();
     secrets = Secrets(scratchDirectory: () async => '/tmp');
     checkDuplicate = _MockCheckDuplicateMnemonicUsecase();
@@ -79,6 +90,9 @@ void main() {
         passphrase: any(named: 'passphrase'),
       ),
     ).thenAnswer((_) async => const Ok(null));
+    when(
+      () => checkDuplicate.isReferenced(any(), any()),
+    ).thenAnswer((_) async => false);
     // No wallet references any seed unless a test says so.
     when(
       () => walletRepository.getWallets(),
@@ -106,8 +120,12 @@ void main() {
         final wallet = _MockWallet();
         stubCreateWallet(() async => wallet);
         final words = bip39.Mnemonic(List.filled(16, 0), language).words;
+        final metadata = _MockMetadata();
+        when(() => metadata.fetchAll()).thenAnswer((_) async => []);
         final usecase = ImportWalletUsecase(
           checkDuplicateMnemonicUsecase: CheckDuplicateMnemonicUsecase(
+            metadata: metadata,
+            settings: settingsRepository,
             secrets: secrets,
           ),
           secrets: secrets,
@@ -139,6 +157,11 @@ void main() {
             label: 'Vector',
           ),
         ).called(1);
+        // The first successful provisioning now references this secret on mainnet.
+        final row = _MockMetadataRow();
+        when(() => row.masterFingerprint).thenReturn(secret.id.hex);
+        when(() => row.networkCode).thenReturn('bitcoinMainnet');
+        when(() => metadata.fetchAll()).thenAnswer((_) async => [row]);
         final duplicate = await usecase.execute(
           mnemonicWords: words,
           language: language,
@@ -172,6 +195,22 @@ void main() {
       );
     });
 
+    test('#2634 retries an orphan secret without replacing custody', () async {
+      final wallet = _MockWallet();
+      stubCreateWallet(() async => throw Exception('catalog write failed'));
+      expect(await usecase.execute(mnemonicWords: words), isA<Err>());
+      final keys = storage.entries.keys
+          .where((k) => k.startsWith('seed_'))
+          .toList();
+      expect(keys, hasLength(1));
+      stubCreateWallet(() async => wallet);
+      expect(
+        await usecase.execute(mnemonicWords: words),
+        isA<Ok<Wallet, ImportMnemonicFailure>>(),
+      );
+      expect(storage.entries.keys.where((k) => k.startsWith('seed_')), keys);
+    });
+
     test('a duplicate stops before anything else is touched', () async {
       when(
         () => checkDuplicate.execute(
@@ -188,7 +227,7 @@ void main() {
     });
 
     test(
-      'a secret this import created is removed when the wallet cannot be built (#2634)',
+      'a failed wallet import preserves its secret for explicit recovery',
       () async {
         stubCreateWallet(() async => throw Exception('wallet creation failed'));
 
@@ -197,15 +236,18 @@ void main() {
         expect((result as Err).failure, isA<ImportMnemonicUnexpectedFailure>());
         expect(
           storage.entries.keys.where((k) => k.startsWith('seed_')),
-          isEmpty,
-          reason: 'the import that created it owns the cleanup',
+          hasLength(1),
+          reason: 'orphan cleanup requires explicit user action',
         );
       },
     );
 
     test(
-      'strict import rejects a duplicate missed by preflight without cleanup',
+      'strict import rejects a referenced duplicate without cleanup',
       () async {
+        when(
+          () => checkDuplicate.isReferenced(any(), any()),
+        ).thenAnswer((_) async => true);
         // The mocked preflight says the words are new, as it can after a stale
         // read or a concurrent storage operation. Import still rejects them.
         expect(
@@ -241,6 +283,9 @@ void main() {
         var creations = 0;
         stubCreateWallet(() async {
           creations++;
+          when(
+            () => checkDuplicate.isReferenced(any(), any()),
+          ).thenAnswer((_) async => true);
           return wallet;
         });
 

@@ -85,7 +85,8 @@ class _ReviewView extends StatelessWidget {
       }
     });
 
-    final balanceSat = wallet?.balanceSat.toInt() ?? 0;
+    final balanceSat = wallet?.balanceSat?.toInt();
+    if (balanceSat == null) return Text(context.loc.walletLoadFailed);
     final before = state.utxoCount;
     final after = state.transactionCount;
     final feeSat = state.feeSat;

@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/features/swap/domain/swap_failure.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bull_pricer/bull_pricer.dart';
@@ -37,9 +37,11 @@ class GetSwapExchangeRateUsecase {
       return Err(SwapPriceUnavailableFailure('Currency not available: $code'));
     }
     final price = await _getIndexPrice(
-      network: settings.environment.isTestnet
-          ? BitcoinNetwork.testnet
-          : BitcoinNetwork.mainnet,
+      network: switch (settings.environment) {
+        Environment.mainnet => BitcoinNetwork.mainnet,
+        Environment.testnet => BitcoinNetwork.testnet,
+        Environment.regtest => BitcoinNetwork.regtest,
+      },
       currency: currency,
     );
     switch (price) {

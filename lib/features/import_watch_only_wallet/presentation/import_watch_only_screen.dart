@@ -75,16 +75,17 @@ class ImportWatchOnlyScreen extends StatelessWidget {
                           hint: context.loc.importWatchOnlyPasteHint,
                           onChanged: cubit.parsePastedInput,
                         ),
-                        if (state.failure != null)
-                          Center(
-                            child: BullText(
-                              state.failure!.toTranslated(context),
-                              style: TextStyle(color: context.appColors.error),
-                            ),
-                          ),
                         const Gap(32),
                         const ImportMethodWidget(),
                       ],
+                      if (state.failure case final failure?)
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 24),
+                          child: BullText(
+                            failure.toTranslated(context),
+                            style: TextStyle(color: context.appColors.error),
+                          ),
+                        ),
                     ],
                   ),
                 ),

@@ -1,9 +1,9 @@
 import 'dart:io';
 
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_connection.dart';
-import 'package:bb_mobile/core/electrum/adapters/server_status_adapter.dart';
+import 'package:bb_mobile/features/electrum_settings/data/server_status_adapter.dart';
 import 'package:bb_mobile/core/electrum/data/electrum_socket_connector.dart';
-import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_network.dart';
+import 'package:bb_mobile/features/electrum_settings/domain/electrum_server_network.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_status.dart';
 import 'package:bull_tor/tor.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -117,6 +117,46 @@ void main() {
     expect(probedRetry, 3);
     expect(probedValidateDomain, isFalse);
     expect(probedIsMainnet, isTrue);
+  });
+
+  test('Bitcoin regtest uses BDK without a historical chain probe', () async {
+    var probes = 0;
+    final adapter = ServerStatusAdapter(
+      const ElectrumSocketConnector(),
+      bdkProbe:
+          ({
+            required url,
+            required socks5,
+            required timeout,
+            required retry,
+            required validateDomain,
+            required isMainnet,
+          }) async {
+            probes++;
+            expect(isMainnet, isFalse);
+          },
+    );
+    expect(
+      await adapter.checkElectrum(
+        url: 'tcp://127.0.0.1:50000',
+        network: ElectrumServerNetwork.bitcoinRegtest,
+        validateDomain: true,
+      ),
+      ElectrumServerStatus.online,
+    );
+    expect(probes, 1);
+    final server = await ServerSocket.bind('127.0.0.1', 0);
+    addTearDown(server.close);
+    serveElectrumStub(server);
+    expect(
+      await adapter.checkElectrum(
+        url: 'tcp://127.0.0.1:${server.port}',
+        network: ElectrumServerNetwork.liquidRegtest,
+        validateDomain: true,
+      ),
+      ElectrumServerStatus.online,
+    );
+    expect(probes, 1);
   });
 
   test('Bitcoin reports a failed BDK probe as offline', () async {

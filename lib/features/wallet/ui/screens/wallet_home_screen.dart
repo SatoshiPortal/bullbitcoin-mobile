@@ -1,3 +1,5 @@
+import 'package:bb_mobile/features/wallet/presentation/network_wallet_setup_cubit.dart';
+import 'package:bb_mobile/features/wallet/ui/widgets/empty_network_wallets.dart';
 import 'package:bb_mobile/core/themes/colors.dart';
 import 'package:bb_mobile/features/announcements/ui/widgets/announcement_carousel.dart';
 import 'package:bb_mobile/features/bitcoin_price/presentation/bloc/bitcoin_price_bloc.dart';
@@ -11,10 +13,19 @@ import 'package:bb_mobile/features/wallet/ui/widgets/wallet_home_top_section.dar
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:bull_ui/bull_ui.dart' show BullPullableBody;
+import 'package:bb_mobile/features/wallet/ui/widgets/wallet_refresh_body.dart';
 
 class WalletHomeScreen extends StatefulWidget {
-  const WalletHomeScreen({super.key});
+  final NetworkWalletSetupCubit Function() createSetupCubit;
+  final VoidCallback onEmptyMainnet;
+  final VoidCallback onImportNetworkWallet;
+
+  const WalletHomeScreen({
+    super.key,
+    required this.createSetupCubit,
+    required this.onEmptyMainnet,
+    required this.onImportNetworkWallet,
+  });
 
   @override
   State<WalletHomeScreen> createState() => _WalletHomeScreenState();
@@ -24,10 +35,8 @@ class _WalletHomeScreenState extends State<WalletHomeScreen> {
   /// Height the pinned Receive/Send bar occupies
   static const double _bottomBarHeight = 52.0 + 16.0 * 2;
 
-  final GlobalKey<RefreshIndicatorState> _indicatorKey =
-      GlobalKey<RefreshIndicatorState>();
-
   GoRouter? _router;
+  bool _homeVisible = false;
 
   @override
   void initState() {
@@ -39,13 +48,7 @@ class _WalletHomeScreenState extends State<WalletHomeScreen> {
       // screen remounts). The pop-back-to-home path, where this screen stays
       // mounted, is handled by the router listener below. The coordinator
       // throttles, so a redundant trigger is cheap.
-      _refreshOnVisible();
-      // If a refresh was already in flight before this mount (e.g. the
-      // post-startup WalletStarted refresh), show the spinner over it so the
-      // user sees activity instead of landing on apparently-static data.
-      if (context.read<WalletBloc>().state.isRefreshing) {
-        _indicatorKey.currentState?.show();
-      }
+      _onRouteChanged();
     });
   }
 
@@ -68,8 +71,17 @@ class _WalletHomeScreenState extends State<WalletHomeScreen> {
 
   void _onRouteChanged() {
     if (!mounted) return;
-    final location = _router?.routerDelegate.currentConfiguration.uri.path;
-    if (location == WalletRoute.walletHome.path) _refreshOnVisible();
+    final configuration = _router?.routerDelegate.currentConfiguration;
+    final top = configuration?.lastOrNull;
+    // A push keeps the base URI (/wallet). Its imperative match owns the
+    // visible location, including Receive on the root navigator.
+    final location = top is ImperativeRouteMatch
+        ? top.matches.uri.path
+        : configuration?.uri.path;
+    final visible = location == WalletRoute.walletHome.path;
+    final becameVisible = visible && !_homeVisible;
+    _homeVisible = visible;
+    if (becameVisible) _refreshOnVisible();
   }
 
   @override
@@ -92,87 +104,81 @@ class _WalletHomeScreenState extends State<WalletHomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return MultiBlocListener(
-      listeners: [
-        BlocListener<WalletBloc, WalletState>(
-          listenWhen: (previous, current) =>
-              !previous.isRefreshing && current.isRefreshing,
-          listener: (context, state) {
-            // A refresh just started (manual pull, post-activity dispatch,
-            // env change, etc.) — surface the spinner. RefreshIndicator.show()
-            // is a no-op if it's already running, so this is safe to combine
-            // with the initState path.
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              if (!mounted) return;
-              _indicatorKey.currentState?.show();
-            });
-          },
-        ),
-      ],
-      child: PopScope(
-        canPop: false,
-        onPopInvokedWithResult: (didPop, _) {},
-        child: Stack(
-          children: [
-            // Black background visible only during iOS top overscroll
-            Positioned(
-              top: 0,
-              left: 0,
-              right: 0,
-              child: ColoredBox(
-                color: AppColors.dark.background,
-                child: const SizedBox(height: 300),
-              ),
+    final noWallets = context.select(
+      (WalletBloc bloc) => bloc.state.noWalletsFound,
+    );
+    if (noWallets) {
+      return EmptyNetworkWallets(
+        createSetupCubit: widget.createSetupCubit,
+        onMainnet: widget.onEmptyMainnet,
+        onImport: widget.onImportNetworkWallet,
+      );
+    }
+    final isRefreshing = context.select(
+      (WalletBloc bloc) => bloc.state.isRefreshing,
+    );
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, _) {},
+      child: Stack(
+        children: [
+          // Black background visible only during iOS top overscroll
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            child: ColoredBox(
+              color: AppColors.dark.background,
+              child: const SizedBox(height: 300),
             ),
-            BullPullableBody(
-              indicatorKey: _indicatorKey,
-              onRefresh: () {
-                context.read<BitcoinPriceBloc>().add(
-                  const BitcoinPriceFetched(),
-                );
-                return context.read<WalletBloc>().refresh();
-              },
-              // Clearance for the bar pinned at the bottom of this Stack, so
-              // the last wallet card can be scrolled out from under it.
-              bottomInset:
-                  _bottomBarHeight + MediaQuery.paddingOf(context).bottom,
-              slivers: [
-                // Pinned rather than scrolled away: the balance and the
-                // Buy/Sell/Pay/Transfer actions stay put while the wallet cards
-                // scroll underneath.
-                const PinnedHeaderSliver(child: WalletHomeTopSection()),
-                const SliverToBoxAdapter(child: AnnouncementCarousel()),
-                const SliverToBoxAdapter(child: HomeWarnings()),
-                const SliverToBoxAdapter(child: HomeConsolidationBanner()),
-                SliverToBoxAdapter(
-                  child: WalletCards(
-                    onTap: (w) {
-                      context.pushNamed(
-                        WalletRoute.walletDetail.name,
-                        pathParameters: {'walletId': w.id},
-                      );
-                    },
-                  ),
-                ),
-              ],
-            ),
-            Positioned(
-              left: 0,
-              right: 0,
-              bottom: 0,
-              child: SafeArea(
-                top: false,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 13.0,
-                    vertical: 16.0,
-                  ),
-                  child: WalletBottomButtons(),
+          ),
+          WalletRefreshBody(
+            isRefreshing: isRefreshing,
+            waitForRefresh: context.read<WalletBloc>().waitForRefresh,
+            onRefresh: () {
+              context.read<BitcoinPriceBloc>().add(const BitcoinPriceFetched());
+              return context.read<WalletBloc>().refresh();
+            },
+            // Clearance for the bar pinned at the bottom of this Stack, so
+            // the last wallet card can be scrolled out from under it.
+            bottomInset:
+                _bottomBarHeight + MediaQuery.paddingOf(context).bottom,
+            slivers: [
+              // Pinned rather than scrolled away: the balance and the
+              // Buy/Sell/Pay/Transfer actions stay put while the wallet cards
+              // scroll underneath.
+              const PinnedHeaderSliver(child: WalletHomeTopSection()),
+              const SliverToBoxAdapter(child: AnnouncementCarousel()),
+              const SliverToBoxAdapter(child: HomeWarnings()),
+              const SliverToBoxAdapter(child: HomeConsolidationBanner()),
+              SliverToBoxAdapter(
+                child: WalletCards(
+                  onTap: (w) {
+                    context.pushNamed(
+                      WalletRoute.walletDetail.name,
+                      pathParameters: {'walletId': w.id},
+                    );
+                  },
                 ),
               ),
+            ],
+          ),
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: 0,
+            child: SafeArea(
+              top: false,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 13.0,
+                  vertical: 16.0,
+                ),
+                child: WalletBottomButtons(),
+              ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

@@ -1,17 +1,16 @@
-import 'package:bb_mobile/core/sync/sync_coordinator.dart';
-import 'package:bb_mobile/core/sync/sync_trigger.dart';
-import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
-import 'package:bull_logger/bull_logger.dart';
+import 'package:transaction_sync/read.dart';
+import 'package:transaction_sync/transaction_sync.dart'
+    show TransactionSyncBusyFailure;
+import 'package:bb_mobile/features/wallet/data/sync_coordinator.dart';
+import 'package:bb_mobile/features/wallet/domain/sync_trigger.dart';
+import 'package:primitives/primitives.dart' show Err, Ok, Result;
+import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
 import 'package:meta/meta.dart';
 
 /// Runs a wallet sync round.
 ///
-/// [SyncCoordinator] is a shared core service, not a repository, so there is
-/// no repository boundary to push this into: this use case — the first layer
-/// the wallet feature owns — is it. The coordinator throws
-/// `SyncCoordinatorException` aggregating per-kind failures; that stays in the
-/// log and only a typed failure comes out (#1895).
+/// The wallet-owned coordinator throws `SyncCoordinatorException` aggregating
+/// per-kind failures. This usecase maps those to a typed wallet failure.
 class SyncWalletsUsecase {
   final SyncCoordinator _syncCoordinator;
 
@@ -24,8 +23,17 @@ class SyncWalletsUsecase {
     try {
       await _syncCoordinator.sync(trigger: trigger);
       return const Ok(null);
-    } catch (e, st) {
-      log.warning('SyncWallets: sync round failed', error: e, trace: st);
+    } catch (e) {
+      if (e is SyncCoordinatorException &&
+          e.failures.isNotEmpty &&
+          e.failures.values.every(
+            (failure) =>
+                failure is WalletSnapshotException &&
+                failure.failure is TransactionSyncBusyFailure,
+          )) {
+        return const Err(WalletSyncBusyFailure());
+      }
+      // The engine owns the failure diagnostic; coalesced callers only map it.
       return Err(WalletSyncFailure('sync: ${e.runtimeType}'));
     }
   }

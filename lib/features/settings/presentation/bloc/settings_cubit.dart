@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:screen_privacy/screen_privacy.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/check_sp_wallet_setup_for_settings_usecase.dart';
@@ -127,12 +127,11 @@ class SettingsCubit extends Cubit<SettingsState> {
     }
   }
 
-  Future<void> toggleTestnetMode(bool active) async {
+  Future<void> toggleTestnetMode(bool active) =>
+      selectNetwork(active ? Environment.testnet : Environment.mainnet);
+
+  Future<void> selectNetwork(Environment environment) async {
     final settings = state.storedSettings;
-    log.config(
-      'Testnet mode toggled: $active was ${settings?.environment.name}',
-    );
-    final environment = active ? Environment.testnet : Environment.mainnet;
     final result = await _setEnvironmentUsecase.execute(environment);
     if (result case Err(:final failure)) {
       emit(state.copyWith(failure: failure));
@@ -146,19 +145,28 @@ class SettingsCubit extends Cubit<SettingsState> {
     );
   }
 
-  Future<void> toggleSatsUnit(bool active) async {
-    final settings = state.storedSettings;
+  Future<Result<void, SettingsFailure>> setBitcoinUnit(BitcoinUnit unit) async {
     log.config(
-      'Bitcoin unit toggled: $active was ${settings?.bitcoinUnit.name}',
+      'Bitcoin unit changed to: ${unit.name} was ${state.bitcoinUnit?.name}',
     );
-    final unit = active ? BitcoinUnit.sats : BitcoinUnit.btc;
     final result = await _setBitcoinUnitUsecase.execute(unit);
-    if (result case Err(:final failure)) {
-      emit(state.copyWith(failure: failure));
-      return;
+    if (result is Ok<void, SettingsFailure> && !isClosed) {
+      emit(
+        state.copyWith(
+          storedSettings: state.storedSettings?.copyWith(bitcoinUnit: unit),
+        ),
+      );
     }
+    return result;
+  }
 
-    emit(state.copyWith(storedSettings: settings?.copyWith(bitcoinUnit: unit)));
+  Future<void> toggleSatsUnit(bool active) async {
+    final result = await setBitcoinUnit(
+      active ? BitcoinUnit.sats : BitcoinUnit.btc,
+    );
+    if (result case Err(:final failure)) {
+      if (!isClosed) emit(state.copyWith(failure: failure));
+    }
   }
 
   Future<void> changeLanguage(Language language) async {
@@ -255,12 +263,9 @@ class SettingsCubit extends Cubit<SettingsState> {
       // The revoke use case disposes the live session, deletes the wallet, and
       // emits SpSetupChanged; the WalletBloc observes that and refreshes itself,
       // so settings never drives the wallet for SP.
-      if (await _revokeSpWalletUsecase.execute() case Err(:final failure)) {
-        log.severe(
-          message: 'Failed to revoke SP wallet',
-          error: failure,
-          trace: StackTrace.current,
-        );
+      if (await _revokeSpWalletUsecase.execute() case Err()) {
+        // The SP owner reports the failure; this only records the refused change.
+        log.fine('Developer mode unchanged reason=revoke');
         emit(state.copyWith(revokeSpFailed: true));
         return;
       }
@@ -277,7 +282,10 @@ class SettingsCubit extends Cubit<SettingsState> {
 
     emit(
       state.copyWith(
-        storedSettings: settings?.copyWith(isDevModeEnabled: isEnabled),
+        storedSettings: settings?.copyWith(
+          isDevModeEnabled: isEnabled,
+          environment: isEnabled ? settings.environment : Environment.mainnet,
+        ),
         revokeSpFailed: false,
       ),
     );

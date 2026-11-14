@@ -1,4 +1,4 @@
-.PHONY: secrets-api-docs secrets-api-docs-check custody-check custody-ci-check all setup clean deps deps-update bootstrap analyze build-runner translations hooks ios-pod-update ios-simulator ios-release drift-migrations devcontainer devcontainer-up container-tools container-app android release debug beta verify verify-rustc-pins action-pins-check pr-governance-ci-test test unit-test integration-test catalogue fvm-check
+.PHONY: native-write-check secrets-api-docs secrets-api-docs-check custody-check custody-ci-check all setup clean deps deps-update bootstrap analyze build-runner translations hooks ios-pod-update ios-simulator ios-release drift-migrations devcontainer devcontainer-up container-tools container-app android release debug beta verify verify-rustc-pins action-pins-check pr-governance-ci-test test unit-test integration-test catalogue fvm-check
 
 fvm-check:
 	@echo "🔍 Checking FVM"
@@ -66,6 +66,10 @@ custody-check:
 	@echo "🔒 custody key material: resolved Dart symbols"
 	@fvm dart packages/secrets/tool/key_material_gate.dart
 
+# Native stores have exactly one writer; readers and signers have scoped exceptions.
+native-write-check:
+	@fvm dart packages/transaction_sync/tool/native_write_gate.dart
+
 # CI-only import/dependency/internal-seal policy, shared with PR custody review.
 # Node is confined to these explicit CI targets, outside `make checks`.
 custody-ci-check:
@@ -79,7 +83,7 @@ secrets-api-docs:
 secrets-api-docs-check:
 	@fvm dart packages/secrets/tool/api_docs.dart --check
 
-checks: analyze bull-ui-check custody-check secrets-api-docs-check fix-check format-check unit-test
+checks: analyze bull-ui-check native-write-check custody-check secrets-api-docs-check fix-check format-check unit-test
 
 # Supply-chain regression gate: every external GitHub Actions `uses:` reference
 # must stay pinned to a full commit SHA (mutable tags can be repointed).
@@ -111,6 +115,11 @@ translations:
 	@echo "🌐 Generating translations files"
 	@fvm flutter gen-l10n
 	@$(MAKE) recoverbull-translations
+	@$(MAKE) bull-ui-translations
+
+.PHONY: bull-ui-translations
+bull-ui-translations:
+	@(cd packages/bull_ui && fvm flutter gen-l10n)
 
 .PHONY: recoverbull-translations
 recoverbull-translations:
@@ -429,7 +438,7 @@ test: unit-test integration-test
 # One run per workspace member that has a test/ directory, each with its own tool, the app included (melos useRootAsPackage). melos iterates the declared `workspace:` list, not a directory glob, so a member added anywhere — features/ included — is tested without editing this target. `melos exec` is called directly through `fvm dart run`: `melos run` would re-invoke a bare `melos` from PATH, which the pinned SDK forbids. Fail-fast and one package at a time, like the loop it replaces.
 unit-test:
 	@echo "🏃‍ running unit tests of every workspace member"
-	@fvm dart run melos exec --flutter --dir-exists=test --concurrency 1 --fail-fast -- fvm flutter test --reporter=compact
+	@fvm dart run melos exec --flutter --dir-exists=test --concurrency 1 --fail-fast -- fvm flutter test --enable-vmservice --reporter=compact
 	@fvm dart run melos exec --no-flutter --dir-exists=test --concurrency 1 --fail-fast -- fvm dart test --reporter=compact
 
 # integration_test/all_test.dart is a single aggregator entrypoint: it runs

@@ -138,11 +138,24 @@ final class Secrets {
     required List<String> words,
     Language language = Language.english,
     String? passphrase,
-  }) => _repository.contains(
+  }) async => (await find(
     words: words,
     language: language,
     passphrase: passphrase,
-  );
+  )).map((secret) => secret != null);
+
+  /// Finds an existing secret by full seed equality, including its passphrase.
+  /// Does not write storage. Absence is null; unreadable custody remains Err.
+  @useResult
+  Future<Result<Secret?, SecretFailure>> find({
+    required List<String> words,
+    Language language = Language.english,
+    String? passphrase,
+  }) async => (await _repository.find(
+    words: words,
+    language: language,
+    passphrase: passphrase,
+  )).map((info) => info == null ? null : _handle(info));
 
   // ----------------------------------------------------------------- preview
 

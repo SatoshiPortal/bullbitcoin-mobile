@@ -1,6 +1,11 @@
+import 'package:bb_mobile/features/settings/domain/usecases/discover_wallet_usecase.dart';
+import 'package:bb_mobile/features/settings/presentation/wallet_discovery_cubit.dart';
+import 'package:bb_mobile/features/wallet/public/wallet_facade.dart'
+    show WalletFacade;
+import 'package:primitives/primitives.dart' show Ok;
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/wallet_details_screen.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/generated/l10n/localization.dart';
@@ -44,7 +49,17 @@ Future<void> _pumpScreen(WidgetTester tester, {required bool isDefault}) async {
         theme: AppTheme.themeData(AppThemeType.light),
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
-        home: const WalletDetailsScreen(walletId: 'wallet-id'),
+        home: BlocProvider(
+          create: (_) => WalletDiscoveryCubit(
+            DiscoverWalletUsecase(
+              WalletFacade(
+                const Stream.empty(),
+                discoverWallet: (_) async => const Ok(null),
+              ),
+            ),
+          ),
+          child: const WalletDetailsScreen(walletId: 'wallet-id'),
+        ),
       ),
     ),
   );
@@ -59,6 +74,8 @@ void main() {
     expect(find.text('Savings'), findsOneWidget);
     expect(find.text('abcd1234'), findsOneWidget);
     expect(find.text('xpub-test'), findsOneWidget);
+    await tester.scrollUntilVisible(find.text('Addresses'), 100);
+    expect(find.text('Scan for missing transactions'), findsOneWidget);
     expect(find.text('Addresses'), findsOneWidget);
   });
 

@@ -1,5 +1,10 @@
+import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_connection.dart';
+import 'package:bb_mobile/features/electrum_settings/domain/electrum_server_network.dart';
+import 'package:bb_mobile/features/fees/data/regtest_fees_datasource.dart';
+import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
+import 'package:bb_mobile/core/electrum/domain/ports/electrum_servers_port.dart';
 import 'package:bb_mobile/core/fees/data/fees_datasource.dart';
-import 'package:bb_mobile/core/fees/data/fees_repository_impl.dart';
+import 'package:bb_mobile/features/fees/data/fees_repository_impl.dart';
 import 'package:bb_mobile/core/fees/data/models/mempool_fees_model.dart';
 import 'package:bb_mobile/core/mempool/domain/entities/mempool_server.dart';
 import 'package:bb_mobile/core/mempool/domain/entities/mempool_settings.dart';
@@ -8,9 +13,39 @@ import 'package:bb_mobile/core/mempool/domain/repositories/mempool_server_reposi
 import 'package:bb_mobile/core/mempool/domain/repositories/mempool_settings_repository.dart';
 import 'package:bb_mobile/core/mempool/domain/value_objects/mempool_server_network.dart';
 import 'package:primitives/primitives.dart' show Err, Ok;
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+
+class _RegtestPort extends ElectrumServersPort {
+  ElectrumServerNetwork? selected;
+  @override
+  Future<T> runWithFallback<T>({
+    required ElectrumServerNetwork network,
+    required Future<T> Function(ElectrumConnection) operation,
+    bool Function(Object)? isTransient,
+  }) {
+    selected = network;
+    return operation(
+      const ElectrumConnection(
+        url: 'tcp://127.0.0.1:50000',
+        retry: 0,
+        timeout: 2,
+        stopGap: 20,
+        validateDomain: false,
+        isCustom: true,
+      ),
+    );
+  }
+}
+
+class _UnavailableRegtest extends RegtestFeesDatasource {
+  @override
+  Future<FeeOptions> fetch(ElectrumConnection connection) async =>
+      throw const FormatException('no estimate');
+}
+
+class _MockElectrum extends Mock implements ElectrumServersPort {}
 
 class _MockDatasource extends Mock implements FeesDatasource {}
 
@@ -46,6 +81,7 @@ void main() {
     serverRepository = _MockServerRepository();
     repository = FeesRepositoryImpl(
       feesDatasource: datasource,
+      electrumServers: _MockElectrum(),
       mempoolSettingsRepository: settingsRepository,
       mempoolServerRepository: serverRepository,
     );
@@ -56,6 +92,25 @@ void main() {
     when(
       () => datasource.fetchBitcoinNetworkFees(baseUrl: any(named: 'baseUrl')),
     ).thenAnswer((_) async => _fees);
+  });
+
+  test('regtest estimate failure never falls back to public mempool', () async {
+    final electrum = _RegtestPort();
+    final regtestRepository = FeesRepositoryImpl(
+      feesDatasource: datasource,
+      mempoolSettingsRepository: settingsRepository,
+      mempoolServerRepository: serverRepository,
+      electrumServers: electrum,
+      regtestFeesDatasource: _UnavailableRegtest(),
+    );
+    await expectLater(
+      regtestRepository.getNetworkFees(network: Network.bitcoinRegtest),
+      throwsA(isA<MempoolFeesException>()),
+    );
+    expect(electrum.selected, ElectrumServerNetwork.bitcoinRegtest);
+    verifyZeroInteractions(datasource);
+    verifyZeroInteractions(settingsRepository);
+    verifyZeroInteractions(serverRepository);
   });
 
   test('uses the BB URL when fee estimation is disabled', () async {

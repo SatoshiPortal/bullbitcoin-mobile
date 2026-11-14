@@ -1,4 +1,4 @@
-import 'package:bb_mobile/locator.dart';
+import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/features/backup_settings/ui/backup_settings_router.dart';
@@ -155,6 +155,10 @@ List<SettingsItem> settingsItemsOf(BuildContext context) {
     isSuperuser: isSuperuser,
     isDevModeEnabled: isDevModeEnabled,
     isSpWalletSetup: isSpWalletSetup,
+    environment: context.select(
+      (SettingsCubit cubit) =>
+          cubit.state.storedSettings?.activeNetwork ?? NetworkEnv.mainnet,
+    ),
   );
 }
 
@@ -163,6 +167,7 @@ List<SettingsItem> buildSettingsItems({
   bool isSuperuser = false,
   bool isDevModeEnabled = false,
   bool isSpWalletSetup = false,
+  NetworkEnv environment = NetworkEnv.mainnet,
 }) {
   final english = AppLocalizationsEn();
   final rootSection = localization.settingsScreenTitle;
@@ -235,7 +240,7 @@ List<SettingsItem> buildSettingsItems({
       ),
       icon: Icons.cloud_circle,
       open: (context) =>
-          locator<RecoverBullFeature>().open(context, RecoverBullFlow.settings),
+          RecoverBullFeature.open(context, RecoverBullFlow.settings),
       keywords: _keywords(
         localization.settingsSearchRecoverbullKeywords,
         english.settingsSearchRecoverbullKeywords,
@@ -656,11 +661,8 @@ List<SettingsItem> buildSettingsItems({
       SettingsItem(
         id: SettingsItemId.testnetMode,
         section: SettingsItemSection.app,
-        title: localization.bitcoinSettingsTestnetModeTitle,
-        path: path(
-          SettingsItemSection.app,
-          localization.bitcoinSettingsTestnetModeTitle,
-        ),
+        title: localization.networkSelectorTitle,
+        path: path(SettingsItemSection.app, localization.networkSelectorTitle),
         icon: Icons.science,
         open: (context) => context.pushNamed(SettingsRoute.appSettings.name),
         keywords: _keywords(
@@ -688,7 +690,26 @@ List<SettingsItem> buildSettingsItems({
           [english.exchangeTestnetBasicAuthTitle],
         ),
       ),
-  ];
+  ].where((item) {
+    final capability = switch (item.id) {
+      SettingsItemId.exchange ||
+      SettingsItemId.testnetCredentials => NetworkCapability.exchange,
+      SettingsItemId.autoswap => NetworkCapability.swaps,
+      SettingsItemId.payjoin => NetworkCapability.payjoin,
+      SettingsItemId.sp => NetworkCapability.silentPayments,
+      SettingsItemId.mempool ||
+      SettingsItemId.servicesStatus => NetworkCapability.publicFeeEstimates,
+      _ => null,
+    };
+    if (capability == null) return true;
+    final network = switch (environment) {
+      NetworkEnv.mainnet => BitcoinNetwork.mainnet,
+      NetworkEnv.testnet => BitcoinNetwork.testnet,
+      NetworkEnv.regtest => BitcoinNetwork.regtest,
+      NetworkEnv.signet => BitcoinNetwork.signet,
+    };
+    return NetworkCapabilities.supports(network, capability);
+  }).toList();
 }
 
 List<String> _keywords(

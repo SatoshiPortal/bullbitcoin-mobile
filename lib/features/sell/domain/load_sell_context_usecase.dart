@@ -1,11 +1,11 @@
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/get_order_usercase.dart';
+import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
+import 'package:bb_mobile/features/exchange/domain/usecases/get_order_usercase.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
-import 'package:bb_mobile/core/fees/domain/get_network_fees_usecase.dart';
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/features/fees/domain/get_network_fees_usecase.dart';
+import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_address_at_index_usecase.dart';
@@ -118,9 +118,11 @@ class LoadSellContextUsecase {
       return Err(SellUnexpectedFailure('Currency not available: $code'));
     }
     final price = await _getIndexPrice(
-      network: settings.environment.isTestnet
-          ? BitcoinNetwork.testnet
-          : BitcoinNetwork.mainnet,
+      network: switch (settings.environment) {
+        Environment.mainnet => BitcoinNetwork.mainnet,
+        Environment.testnet => BitcoinNetwork.testnet,
+        Environment.regtest => BitcoinNetwork.regtest,
+      },
       currency: currency,
     );
     switch (price) {
@@ -142,9 +144,14 @@ class LoadSellContextUsecase {
   Future<Result<Order, SellFailure>> order({required String orderId}) async {
     try {
       return Ok(await _getOrderUsecase.execute(orderId: orderId));
-    } catch (e, st) {
-      log.severe(message: 'Failed to load the sell order', error: e, trace: st);
-      return Err(SellUnexpectedFailure('$e'));
+    } catch (_) {
+      const diagnostic = 'sell_order_read_failed category=unexpected';
+      log.severe(
+        message: diagnostic,
+        error: Exception(diagnostic),
+        trace: StackTrace.current,
+      );
+      return const Err(SellUnexpectedFailure(diagnostic));
     }
   }
 }

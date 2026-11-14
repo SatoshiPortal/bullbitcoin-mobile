@@ -25,6 +25,7 @@ enum ExchangeRoute {
 }
 
 class ExchangeRouterConfig {
+  final Future<bool> Function() networkUnavailable;
   final bool Function(BuildContext) isSuperuser;
   final String homePath;
   final List<Widget> Function() buildHomeCards;
@@ -33,6 +34,7 @@ class ExchangeRouterConfig {
   final void Function(BuildContext) onOpenSettings;
 
   const ExchangeRouterConfig({
+    required this.networkUnavailable,
     required this.isSuperuser,
     required this.homePath,
     required this.buildHomeCards,
@@ -60,7 +62,9 @@ class ExchangeRouter {
     GoRoute(
       name: ExchangeRoute.exchangeHome.name,
       path: ExchangeRoute.exchangeHome.path,
-      redirect: (context, state) {
+      redirect: (context, state) async {
+        if (await config.networkUnavailable()) return config.homePath;
+        if (!context.mounted) return null;
         final notLoggedIn = context.read<ExchangeCubit>().state.notLoggedIn;
         if (notLoggedIn) {
           return ExchangeRoute.exchangeLanding.path;
@@ -93,6 +97,8 @@ class ExchangeRouter {
     GoRoute(
       name: ExchangeRoute.exchangeLanding.name,
       path: ExchangeRoute.exchangeLanding.path,
+      redirect: (context, state) async =>
+          await config.networkUnavailable() ? config.homePath : null,
       pageBuilder: (context, state) {
         // Show v2 screen for iOS without superuser, v1 for iOS with superuser, regular screen for Android
         void onExit() => config.onExit(context);
@@ -113,6 +119,8 @@ class ExchangeRouter {
     GoRoute(
       name: ExchangeRoute.exchangeAuth.name,
       path: ExchangeRoute.exchangeAuth.path,
+      redirect: (context, state) async =>
+          await config.networkUnavailable() ? config.homePath : null,
       pageBuilder: (context, state) {
         final draft = state.extra as ExchangeSupportChatDraft?;
         final fromSupport = state.uri.queryParameters['from'] == 'support';

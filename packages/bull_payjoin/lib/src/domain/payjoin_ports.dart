@@ -43,6 +43,7 @@ abstract interface class PayjoinBlockchainPort {
   });
 
   Future<void> broadcastPsbt({
+    required String walletId,
     required BitcoinNetwork network,
     required String psbt,
   });
@@ -58,6 +59,12 @@ abstract interface class PayjoinFeesPort {
 }
 
 abstract interface class PayjoinTransactionPort {
+  /// Transfer owned-input protection before releasing a terminal session.
+  Future<bool> protectObservedSpend({
+    required String walletId,
+    required String transactionId,
+  });
+
   Stream<void> watchWallet(String walletId);
 
   Future<bool> isTransactionVisible({
@@ -260,6 +267,7 @@ enum PayjoinLogCode {
   proposalSent('Payjoin proposal sent to the sender'),
   proposalReceived('Payjoin proposal received from the receiver'),
   proposalSigned('Payjoin proposal signed'),
+  proposalSpendPaused('Proposal paused while wallet spending is unavailable'),
   payjoinBroadcast('Payjoin transaction broadcast'),
   fallbackBroadcast('Original transaction broadcast instead of a payjoin'),
   fallbackObserved('Original transaction seen on the network instead'),
@@ -325,4 +333,19 @@ final class PayjoinLogEvent {
       );
     }
   }
+}
+
+/// A local spend barrier is not a failed network broadcast and must never
+/// trigger the competing original-transaction fallback.
+final class PayjoinSpendBlockedException implements Exception {
+  /// The wallet is only busy with another operation: retrying shortly works.
+  final bool busy;
+  const PayjoinSpendBlockedException({this.busy = false});
+}
+
+/// A broadcast that failed before anything was handed to the network. Thrown
+/// by a [PayjoinBlockchainPort] only when that is certain; any other failure
+/// is treated as a payment that may have gone out.
+final class PayjoinBroadcastNotAttemptedException implements Exception {
+  const PayjoinBroadcastNotAttemptedException();
 }

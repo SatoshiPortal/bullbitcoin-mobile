@@ -2,7 +2,7 @@ import 'package:bb_mobile/core/exchange/domain/exchange_order_failure.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/swaps/domain/repositories/swap_history_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
 import 'package:bb_mobile/features/transactions/application/usecases/get_transaction_order_swaps_usecase.dart';
@@ -74,6 +74,7 @@ void main() {
     when(
       () => walletTransactionRepository.getWalletTransactions(
         txId: any(named: 'txId'),
+        environment: any(named: 'environment'),
       ),
     ).thenAnswer((_) async => []);
     when(
@@ -83,6 +84,37 @@ void main() {
       (_) async => const bb.Ok<List<OrderSwapRecord>, TransactionFailure>([]),
     );
   });
+
+  test(
+    'regtest tx lookup never queries public network feature histories',
+    () async {
+      when(settingsRepository.fetch).thenAnswer(
+        (_) async => const SettingsEntity(
+          environment: Environment.regtest,
+          bitcoinUnit: BitcoinUnit.sats,
+          currencyCode: 'USD',
+        ),
+      );
+      when(
+        () => walletTransactionRepository.getWalletTransactions(
+          txId: _txId,
+          environment: Environment.regtest,
+        ),
+      ).thenAnswer((_) async => []);
+      expect(unwrap(await usecase.execute(_txId)), isEmpty);
+      verify(
+        () => walletTransactionRepository.getWalletTransactions(
+          txId: _txId,
+          environment: Environment.regtest,
+        ),
+      ).called(1);
+      verifyZeroInteractions(mainnetOrderRepository);
+      verifyZeroInteractions(testnetOrderRepository);
+      verifyZeroInteractions(payjoinSessions);
+      verifyZeroInteractions(swapHistoryRepository);
+      verifyZeroInteractions(getTransactionOrderSwapsUsecase);
+    },
+  );
 
   test(
     'credential failure does not hide the remaining transaction data',

@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/sp/domain/usecases/get_sp_feature_gate_usecase.dart';
 import 'dart:async';
 
 import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_value_storage_datasource.dart';
@@ -485,4 +486,11 @@ class FakeSpAutoScanRepository implements SpAutoScanRepository {
     _isEnabled = isEnabled;
     stored = isEnabled;
   }
+}
+
+class FakeSpFeatureGateUsecase implements GetSpFeatureGateUsecase {
+  bool allowed;
+  FakeSpFeatureGateUsecase({this.allowed = true});
+  @override
+  Future<bool> execute() async => allowed;
 }

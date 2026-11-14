@@ -1,7 +1,7 @@
 import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/presentation/cubit/import_watch_only_cubit.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/watch_only_wallet_entity.dart';
 import 'package:flutter/material.dart';
@@ -45,7 +45,10 @@ class _DescriptorDetailsWidget extends StatelessWidget {
         context.loc.importWatchOnlyNetworkBitcoinMainnet,
       Network.bitcoinTestnet =>
         context.loc.importWatchOnlyNetworkBitcoinTestnet,
-      Network.liquidMainnet || Network.liquidTestnet => throw StateError(
+      Network.bitcoinRegtest => context.loc.electrumRegtest,
+      Network.liquidMainnet ||
+      Network.liquidTestnet ||
+      Network.liquidRegtest => throw StateError(
         'Liquid watch-only wallets must be rejected before presentation',
       ),
     };

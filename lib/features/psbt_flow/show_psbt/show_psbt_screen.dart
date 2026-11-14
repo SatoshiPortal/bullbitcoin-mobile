@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
@@ -11,9 +12,15 @@ import 'package:go_router/go_router.dart';
 
 class ShowPsbtScreen extends StatelessWidget {
   final String psbt;
+  final Wallet? wallet;
   final SignerDeviceEntity? signerDevice;
 
-  const ShowPsbtScreen({super.key, required this.psbt, this.signerDevice});
+  const ShowPsbtScreen({
+    super.key,
+    required this.psbt,
+    this.signerDevice,
+    this.wallet,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -56,7 +63,7 @@ class ShowPsbtScreen extends StatelessWidget {
                         if (!context.mounted) return;
                         await context.pushNamed(
                           BroadcastSignedTxRoute.broadcastHome.name,
-                          extra: psbt,
+                          extra: (psbt: psbt, wallet: wallet),
                         );
                       },
                     ),
@@ -125,7 +132,7 @@ class ShowPsbtScreen extends StatelessWidget {
               onPressed: () {
                 context.pushNamed(
                   BroadcastSignedTxRoute.broadcastHome.name,
-                  extra: psbt,
+                  extra: (psbt: psbt, wallet: wallet),
                 );
               },
             ),

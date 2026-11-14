@@ -8,7 +8,7 @@ import 'package:bb_mobile/core/status/domain/entity/service_status.dart';
 import 'package:bb_mobile/core/status/domain/ports/electrum_connectivity_port.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:bull_pricer/bull_pricer.dart';
@@ -144,7 +144,10 @@ class CheckAllServiceStatusUsecase {
   Future<ServiceStatusInfo> _checkBitcoinElectrumServer(Network network) async {
     final isOnline = await _electrumConnectivityPort
         .checkServersInUseAreOnlineForNetwork(
-          network.isTestnet ? Network.bitcoinTestnet : Network.bitcoinMainnet,
+          Network.fromEnvironment(
+            environment: network.environment,
+            isLiquid: false,
+          ),
         );
 
     return ServiceStatusInfo(
@@ -155,9 +158,19 @@ class CheckAllServiceStatusUsecase {
   }
 
   Future<ServiceStatusInfo> _checkLiquidElectrumServer(Network network) async {
+    if (network == Network.bitcoinRegtest || network == Network.liquidRegtest) {
+      return ServiceStatusInfo(
+        status: ServiceStatus.disabled,
+        name: 'Liquid Electrum',
+        lastChecked: DateTime.now(),
+      );
+    }
     final isOnline = await _electrumConnectivityPort
         .checkServersInUseAreOnlineForNetwork(
-          network.isTestnet ? Network.liquidTestnet : Network.liquidMainnet,
+          Network.fromEnvironment(
+            environment: network.environment,
+            isLiquid: true,
+          ),
         );
 
     return ServiceStatusInfo(
@@ -229,9 +242,16 @@ class CheckAllServiceStatusUsecase {
   }
 
   Future<ServiceStatusInfo> _checkMempoolService(Network network) async {
+    if (network == Network.bitcoinRegtest || network == Network.liquidRegtest) {
+      return ServiceStatusInfo(
+        status: ServiceStatus.disabled,
+        name: 'Mempool',
+        lastChecked: DateTime.now(),
+      );
+    }
     // NOTE: Mempool is a Bitcoin only service
     // Liquid fees are hardcoded it will always return connected!
-    final onlyBitcoinNetwork = network.isTestnet
+    final onlyBitcoinNetwork = network.requireHistoricalTestnet()
         ? Network.bitcoinTestnet
         : Network.bitcoinMainnet;
     await _feesRepository.getNetworkFees(network: onlyBitcoinNetwork);

@@ -45,7 +45,17 @@ class GetTransactionsByTxIdUsecase {
   ) async {
     try {
       final settings = await _settingsRepository.fetch();
-      final orderRepository = settings.environment.isTestnet
+      final environment = settings.environment;
+      if (environment.networkEnv == NetworkEnv.regtest) {
+        final transactions = await _walletTransactionRepository
+            .getWalletTransactions(txId: txId, environment: environment);
+        return Ok(
+          transactions
+              .map((transaction) => Transaction(walletTransaction: transaction))
+              .toList(),
+        );
+      }
+      final orderRepository = environment.requireHistoricalTestnet()
           ? _testnetExchangeOrderRepository
           : _mainnetExchangeOrderRepository;
 
@@ -57,7 +67,10 @@ class GetTransactionsByTxIdUsecase {
         orderResult,
         orderSwaps,
       ) = await (
-        _walletTransactionRepository.getWalletTransactions(txId: txId),
+        _walletTransactionRepository.getWalletTransactions(
+          txId: txId,
+          environment: environment,
+        ),
         _boltzSwapRepository.getSwapByTxId(txId),
         _payjoinSessions.byTransactionId(txId),
         orderRepository.getOrderByTxId(txId),

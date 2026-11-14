@@ -1,7 +1,9 @@
+import 'package:bb_mobile/features/wallet/public/wallet_facade.dart'
+    show BitcoinSpendStatus, WalletSpendBlockedException;
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/calculate_bitcoin_absolute_fees_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/prepare_bitcoin_send_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/prepare_bitcoin_send_usecase.dart';
 import 'package:bb_mobile/features/sell/domain/sell_failure.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:meta/meta.dart';
@@ -58,6 +60,10 @@ class PrepareSellBitcoinPayinUsecase {
         isToSelf: prepared.isToSelf,
         absoluteFees: absoluteFees,
       ));
+    } on WalletSpendBlockedException catch (e) {
+      return Err(
+        SellSpendBlockedFailure(busy: e.status == BitcoinSpendStatus.busy),
+      );
     } on Exception catch (e, st) {
       log.severe(
         message: 'Failed to build the Bitcoin sell payin',

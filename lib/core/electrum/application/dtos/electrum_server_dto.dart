@@ -1,5 +1,5 @@
-import 'package:bb_mobile/core/electrum/domain/entities/electrum_server.dart';
-import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_network.dart';
+import 'package:bb_mobile/features/electrum_settings/domain/electrum_server.dart';
+import 'package:bb_mobile/features/electrum_settings/domain/electrum_server_network.dart';
 
 class ElectrumServerDto {
   final String url;

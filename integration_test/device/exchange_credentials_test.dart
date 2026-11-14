@@ -10,7 +10,8 @@ import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repos
 import 'package:bb_mobile/core/exchange/data/datasources/exchange_notification_datasource.dart';
 import 'package:bb_mobile/core/exchange/data/http/exchange_authentication_interceptor.dart';
 import 'package:bb_mobile/core/exchange/data/exchange_authentication.dart';
-import 'package:bb_mobile/core/exchange/exchange_locator.dart' as core_exchange;
+import 'package:bb_mobile/features/exchange/exchange_core_locator.dart'
+    as core_exchange;
 import 'package:bb_mobile/features/exchange/exchange_locator.dart'
     as feature_exchange;
 import 'package:bb_mobile/features/exchange/domain/usecases/complete_exchange_authentication_usecase.dart';

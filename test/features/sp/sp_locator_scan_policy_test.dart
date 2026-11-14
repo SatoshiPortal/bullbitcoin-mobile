@@ -1,10 +1,12 @@
 import 'dart:async';
 
+import 'package:bb_mobile/features/wallet/data/sync_coordinator.dart';
+
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:secrets/secrets.dart' show Secrets;
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_coin.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_notification.dart';
 import 'package:bb_mobile/features/sp/domain/ports/sp_account_files_port.dart';
@@ -37,6 +39,8 @@ import 'sp_fakes.dart';
 //
 // The sync tick is the one sanctioned automatic scan, so it is exercised here
 // too: it must scan only when SpScanPolicy allows it.
+
+class _MockCoordinator extends Mock implements SyncCoordinator {}
 
 class _MockWalletRepository extends Mock implements WalletRepository {}
 
@@ -75,6 +79,9 @@ void main() {
     locator.registerSingleton<SettingsRepository>(settingsRepo);
 
     // Real SP wiring: registers the whole use case + presentation graph.
+    // A coordinator registration must not implicitly opt this isolated graph
+    // into foreground watchers. Only composition grants that lifecycle fact.
+    locator.registerSingleton<SyncCoordinator>(_MockCoordinator());
     SpLocator.setup(locator);
 
     // Swap ONLY the outbound ports for in-memory fakes. The lazy singletons are
@@ -103,6 +110,27 @@ void main() {
   const settleWindow = Duration(milliseconds: 200);
 
   group('SP scan policy (real sp_locator wiring)', () {
+    test(
+      'regtest denies load and scan with an already stored SP account',
+      () async {
+        await cubit.load();
+        when(() => settingsRepo.fetch()).thenAnswer(
+          (_) async => const SettingsEntity(
+            environment: Environment.regtest,
+            bitcoinUnit: BitcoinUnit.sats,
+            currencyCode: 'CAD',
+            isSuperuser: true,
+            isDevModeEnabled: true,
+          ),
+        );
+        await cubit.load();
+        await cubit.scan();
+        expect(fakeRepo.scanOnceCount, 0);
+        expect(fakeRepo.createCount, 0);
+        expect(fakeRepo.hasSession, isTrue);
+      },
+    );
+
     test('load() through the real graph never reaches scanOnce', () {
       fakeAsync((async) {
         expect(fakeRepo.scanOnceCount, 0);

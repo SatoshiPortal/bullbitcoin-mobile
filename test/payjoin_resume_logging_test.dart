@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:bb_mobile/payjoin_runtime_adapters.dart';
+import 'package:bb_mobile/features/transactions/data/payjoin_log_adapter.dart';
 import 'package:bull_logger/bull_logger.dart' as support;
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:flutter_test/flutter_test.dart';
