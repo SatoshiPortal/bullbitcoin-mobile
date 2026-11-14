@@ -1,8 +1,8 @@
 import 'package:bb_mobile/core/exchange/domain/exchange_user_failure.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_user_repository.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
+import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/dca/domain/dca_failure.dart';
 import 'package:bb_mobile/features/dca/domain/usecases/start_dca_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -47,6 +47,15 @@ void main() {
   }
 
   group('StartDcaUsecase', () {
+    test('regtest refuses DCA before backend IO', () async {
+      when(settings.fetch).thenAnswer(
+        (_) async => mainnetSettings.copyWith(environment: Environment.regtest),
+      );
+      expect(await usecase.execute(), isA<Err>());
+      verifyZeroInteractions(mainnetUsers);
+      verifyZeroInteractions(testnetUsers);
+    });
+
     test('maps a not-logged-in repository failure to '
         'AccountUnavailableFailure', () async {
       when(() => mainnetUsers.getUserSummary()).thenAnswer(

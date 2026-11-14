@@ -74,6 +74,43 @@ export 'package:secrets/testing.dart';
   }
 
   test(
+    'the Bitcoin signer may parse its xprv but never mnemonic words',
+    () async {
+      const path =
+          'packages/secrets/lib/src/crypto/signers/bitcoin_signer.dart';
+      const xprv = """
+import 'package:bull_sdk/bdk.dart' as bdk;
+class BitcoinSigner {
+  void _wallet(String value) {
+    final key = bdk.DescriptorSecretKey.fromString(privateKey: value);
+    key.dispose();
+  }
+}
+""";
+      expect(await inspect('signer_xprv', xprv, policyPath: path), isEmpty);
+      expect(await inspect('outside_signer', xprv), isNotEmpty);
+      const words = """
+import 'package:bull_sdk/bdk.dart' as bdk;
+class BitcoinSigner {
+  bdk.Mnemonic _wallet(String value) => bdk.Mnemonic.fromString(mnemonic: value);
+}
+""";
+      expect(
+        await inspect('signer_words', words, policyPath: path),
+        isNotEmpty,
+      );
+      expect(
+        await inspect(
+          'wrong_method',
+          xprv.replaceAll('_wallet', '_other'),
+          policyPath: path,
+        ),
+        isNotEmpty,
+      );
+    },
+  );
+
+  test(
     'aliases and getter access resolve to the private seed declaration',
     () async {
       final violations = await inspect('alias', '''
@@ -323,8 +360,7 @@ Object _performDryScan() {
     keychainKind: bdk.KeychainKind.external_, networkKind: bdk.NetworkKind.main);
 }
 ''';
-  const scanPath =
-      'lib/core/wallet/data/datasources/bdk_wallet_datasource.dart';
+  const scanPath = 'lib/features/wallet/data/bdk_wallet_datasource.dart';
 
   test('the former pre-import scan has no exemption', () async {
     // The scan now receives public descriptors from `secrets`; deriving them from words in the wallet package is a violation again.
@@ -387,11 +423,12 @@ class SwapMasterKeyModel {
   );
 
   test(
-    'production discovery excludes custody, generated code and vendor files',
+    'production discovery includes the signer but excludes other custody',
     () {
       final root = Directory('${fixture.path}/discovery')..createSync();
       const included = [
         'lib/app.dart',
+        'packages/secrets/lib/src/crypto/signers/bitcoin_signer.dart',
         'packages/other/lib/value.dart',
         'features/other/lib/feature.dart',
       ];
@@ -413,6 +450,26 @@ class SwapMasterKeyModel {
       );
     },
   );
+
+  test('seed-based Liquid and swap entry points are checked', () async {
+    final violations = await inspect('seed_entry_points', '''
+import 'package:bull_sdk/boltz.dart' as boltz;
+import 'package:bull_sdk/lwk.dart' as lwk;
+final descriptor = lwk.Descriptor.newConfidentialFromSeed;
+Object sign(lwk.Wallet wallet) => wallet.signTxWithSeed;
+Object details(lwk.Wallet wallet) =>
+    wallet.signedPsetWithExtraDetailsWithSeed;
+final swap = boltz.SwapMasterKey.createFromSeed;
+''');
+    expect(violations, hasLength(4));
+    expect(violations.join(), contains('#Descriptor.newConfidentialFromSeed'));
+    expect(violations.join(), contains('#Wallet.signTxWithSeed'));
+    expect(
+      violations.join(),
+      contains('#Wallet.signedPsetWithExtraDetailsWithSeed'),
+    );
+    expect(violations.join(), contains('#SwapMasterKey.createFromSeed'));
+  });
 
   test('Silent Payments accounts built from words are checked', () async {
     final violations = await inspect('bwk_constructors', '''

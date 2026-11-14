@@ -1,9 +1,14 @@
-import 'package:bb_mobile/core/core_locator.dart';
-import 'package:bb_mobile/core/status/status_locator.dart';
+import 'package:bb_mobile/background_setup.dart';
+import 'package:bb_mobile/core_locator.dart';
+import 'package:bb_mobile/features/status_check/status_core_locator.dart';
+import 'package:bb_mobile/features/settings/public/recoverbull_bindings.dart';
+import 'package:bb_mobile/features/wallet/public/recoverbull_bindings.dart';
+import 'package:bull_recoverbull/bull_recoverbull.dart';
+import 'package:bull_tor/tor.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
-import 'package:bb_mobile/core/sync/sync_locator.dart';
-import 'package:bb_mobile/core/sync/sync_coordinator.dart';
-import 'package:bb_mobile/payjoin_setup.dart';
+import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
+import 'package:bb_mobile/features/settings/public/settings_facade.dart';
+import 'package:bb_mobile/features/transactions/public/transactions_facade.dart';
 import 'package:bb_mobile/features/address_view/address_view_locator.dart';
 import 'package:bb_mobile/features/all_seed_view/all_seed_view_locator.dart';
 import 'package:bb_mobile/features/app_startup/app_startup_locator.dart';
@@ -42,14 +47,10 @@ import 'package:bb_mobile/features/replace_by_fee/locator.dart';
 import 'package:bb_mobile/features/sell/sell_locator.dart';
 import 'package:bb_mobile/features/send/send_locator.dart';
 import 'package:bb_mobile/features/settings/settings_locator.dart';
-import 'package:bb_mobile/features/sp/public/sp_facade.dart';
 import 'package:bb_mobile/features/sp/sp_locator.dart';
 import 'package:bb_mobile/features/status_check/locator.dart';
 import 'package:bb_mobile/features/swap/order_swap_watcher.dart';
 import 'package:bb_mobile/features/swap/swap_locator.dart';
-import 'package:bb_mobile/features/swap/public/swap_facade.dart';
-import 'package:bb_mobile/features/swap/domain/swap_failure.dart';
-import 'package:bb_mobile/features/swap/domain/usecases/refresh_order_swaps_usecase.dart';
 import 'package:bb_mobile/features/test_wallet_backup/test_wallet_backup_locator.dart';
 import 'package:bb_mobile/features/tor_settings/tor_settings_locator.dart';
 import 'package:bb_mobile/features/transactions/transactions_locator.dart';
@@ -64,6 +65,29 @@ import 'package:secrets/secrets.dart';
 final GetIt locator = GetIt.instance;
 
 class AppLocator {
+  /// Foreground-only composition. Headless setup never opens this database.
+  static Future<void> setupRecoverBull(
+    GetIt locator, {
+    required String databasePath,
+  }) async {
+    SettingsRecoverBullBindings.setup(locator);
+    WalletRecoverBullBindings.setup(locator);
+    final feature = await RecoverBullFeature.mount(
+      databasePath: databasePath,
+      secrets: locator<Secrets>(),
+      wallets: locator<RecoverBullWalletPort>(),
+      environment: locator<RecoverBullEnvironmentPort>(),
+      legacy: locator<RecoverBullLegacySettingsPort>(),
+      routes: locator<RecoverBullRoutePort>(),
+      clients: locator<TorHttpClientFactory>(),
+    );
+    locator.registerSingleton<RecoverBullFeature>(
+      feature,
+      dispose: (value) => value.dispose(),
+    );
+    locator.registerSingleton<RecoverBullFacade>(feature.facade);
+  }
+
   /// Call this in the `main` function **before** `runApp()`
   static Future<void> setup(
     GetIt locator,
@@ -104,44 +128,7 @@ class AppLocator {
       startRecovery: startPayjoinRecovery,
     );
 
-    SyncLocator.setup(
-      locator,
-      syncSwapsOutcome: () async {
-        final result = await locator<RefreshOrderSwapsUsecase>().execute();
-        switch (result) {
-          case Ok(:final value):
-            final rateLimited = value.failures
-                .whereType<SwapRateLimitedFailure>()
-                .firstOrNull;
-            if (rateLimited != null) {
-              return SyncOutcome.rateLimited(
-                retryAfter: rateLimited.retryAfter,
-                failure: _SwapSyncException(rateLimited.runtimeType),
-              );
-            }
-            return value.pollableOrderCount == 0
-                ? const SyncOutcome.idle()
-                : const SyncOutcome.active();
-          case Err(:final failure):
-            return failure is SwapRateLimitedFailure
-                ? SyncOutcome.rateLimited(
-                    retryAfter: failure.retryAfter,
-                    failure: _SwapSyncException(failure.runtimeType),
-                  )
-                : SyncOutcome.rateLimited(
-                    failure: _SwapSyncException(failure.runtimeType),
-                  );
-        }
-      },
-      // Lazy, like the swap callback above: SpLocator runs after this, and the
-      // closure only resolves the facade when a sync tick actually fires.
-      syncSp: () async {
-        final result = await locator<SpFacade>().syncWallet();
-        if (result case Err(:final failure)) {
-          throw SpSyncException(failure.logMessage);
-        }
-      },
-    );
+    SyncLocator.setupForeground(locator);
 
     // Register feature-specific dependencies
     ElectrumSettingsLocator.setup(locator);
@@ -153,13 +140,18 @@ class AppLocator {
     AppUnlockLocator.setup(locator);
     OnboardingLocator.setup(locator);
     AllSeedViewLocator.setup(locator);
-    // SP must register before settings/wallet: their wrapper use cases
-    // resolve locator<SpFacade>().
-    SpLocator.setup(locator);
+    // SP starts watchers eagerly, so its wallet infrastructure must exist.
+    // Wallet's SP use cases resolve the facade lazily, after registration.
+    WalletLocator.setup(locator);
+    SpLocator.setup(locator, startForegroundWatchers: true);
     SettingsLocator.setup(locator);
+    setupBackgroundPreferences(
+      locator,
+      configureBackgroundTasks,
+      notificationChannelId: paymentNotificationChannelId,
+    );
     const LogsFeature().setup(locator);
     BitcoinPriceLocator.setup(locator);
-    WalletLocator.setup(locator);
     TransactionsLocator.registerAdapters(locator);
     TransactionsLocator.registerUsecases(locator);
     TransactionsLocator.registerBlocs(locator);
@@ -208,10 +200,4 @@ class AppLocator {
     RecipientsLocator.setup(locator);
     BitBoxLocator.setup(locator);
   }
-}
-
-final class _SwapSyncException implements Exception {
-  final Type failureType;
-
-  const _SwapSyncException(this.failureType);
 }

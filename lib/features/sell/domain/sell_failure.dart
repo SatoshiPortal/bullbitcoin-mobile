@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/failures/failure.dart';
+import 'package:primitives/primitives.dart' show Failure;
 
 sealed class SellFailure extends Failure {
   const SellFailure([super.logMessage]);
@@ -102,4 +102,20 @@ final class SellQuoteUnavailableFailure extends SellFailure {
 /// where BDK/LWK/API text used to reach the screen verbatim (#1895).
 final class SellUnexpectedFailure extends SellFailure {
   const SellUnexpectedFailure([super.logMessage]);
+}
+
+/// The selected network has no exchange order service.
+final class SellUnsupportedNetworkFailure extends SellFailure {
+  const SellUnsupportedNetworkFailure();
+}
+
+final class SellSpendBlockedFailure extends SellFailure {
+  /// The wallet is only busy with another operation: retrying shortly works.
+  final bool busy;
+  const SellSpendBlockedFailure({this.busy = false});
+}
+
+/// The existing proposal remains reserved until it can safely continue.
+final class SellPayjoinPausedFailure extends SellFailure {
+  const SellPayjoinPausedFailure();
 }

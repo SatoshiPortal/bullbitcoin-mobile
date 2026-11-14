@@ -1,6 +1,9 @@
+import 'package:bb_mobile/features/transactions/domain/usecases/watch_transaction_reloads_usecase.dart';
+import 'package:bb_mobile/features/transactions/domain/usecases/watch_wallet_revisions_usecase.dart';
+import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/get_order_usercase.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/list_all_orders_usecase.dart';
+import 'package:bb_mobile/features/exchange/domain/usecases/get_order_usercase.dart';
+import 'package:bb_mobile/features/exchange/domain/usecases/list_all_orders_usecase.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:boltz_swaps/boltz_swaps.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
@@ -165,6 +168,12 @@ class TransactionsLocator {
     // Bloc
     locator.registerFactoryParam<TransactionsCubit, String?, bool?>(
       (walletId, exchangeOnly) => TransactionsCubit(
+        watchWalletRevisionsUsecase: WatchWalletRevisionsUsecase(
+          locator<WalletFacade>(),
+        ),
+        watchTransactionReloadsUsecase: WatchTransactionReloadsUsecase(
+          locator<WalletFacade>(),
+        ),
         walletId: walletId,
         exchangeOnly: exchangeOnly ?? false,
         getTransactionsUsecase: locator<GetTransactionsUsecase>(),

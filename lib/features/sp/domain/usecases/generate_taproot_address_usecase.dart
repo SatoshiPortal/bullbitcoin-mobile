@@ -1,4 +1,6 @@
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bull_logger/bull_logger.dart';
+import 'package:bb_mobile/features/sp/domain/usecases/get_sp_feature_gate_usecase.dart';
+import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/sp/domain/ports/sp_payments_port.dart';
 import 'package:bb_mobile/features/sp/domain/sp_failure.dart';
 import 'package:meta/meta.dart';
@@ -9,11 +11,20 @@ import 'package:meta/meta.dart';
 /// receive tip), so the same address is never handed to two payers. Invoke
 /// only on an explicit user "generate" action.
 class GenerateTaprootAddressUsecase {
+  final GetSpFeatureGateUsecase _getSpFeatureGateUsecase;
   final SpPaymentsPort _repository;
 
-  GenerateTaprootAddressUsecase({required this._repository});
+  GenerateTaprootAddressUsecase({
+    required this._getSpFeatureGateUsecase,
+    required this._repository,
+  });
 
   @useResult
-  Future<Result<String, SpFailure>> execute() =>
-      _repository.generateTaprootAddress();
+  Future<Result<String, SpFailure>> execute() async {
+    if (!await _getSpFeatureGateUsecase.execute()) {
+      log.warning('Capability refused feature=sp_receive reason=unsupported');
+      return const Err(SpUnsupportedNetwork());
+    }
+    return _repository.generateTaprootAddress();
+  }
 }

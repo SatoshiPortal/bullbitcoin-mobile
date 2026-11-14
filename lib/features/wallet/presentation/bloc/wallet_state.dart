@@ -22,6 +22,7 @@ sealed class WalletState with _$WalletState {
     @Default(false) bool isSpFeatureEnabled,
     @Default(false) bool isSpWalletLoading,
     @Default(false) bool backupWarningDismissed,
+    bool? backupNeeded,
   }) = _WalletState;
   const WalletState._();
 
@@ -48,23 +49,27 @@ sealed class WalletState with _$WalletState {
   /// move the total.
   bool get showSpWallet => isSpFeatureEnabled && isSpWalletSetup;
 
-  int totalBalance() =>
-      wallets.fold<int>(
-        0,
-        (previousValue, element) => previousValue + element.balanceSat.toInt(),
-      ) +
-      (showSpWallet ? spBalanceSat : 0);
+  int? totalBalance() {
+    var total = showSpWallet ? spBalanceSat : 0;
+    for (final wallet in wallets) {
+      final balance = wallet.balanceSat;
+      if (balance == null) return null;
+      total += balance.toInt();
+    }
+    return total;
+  }
 
   bool hasNoBackup() {
+    final known = backupNeeded;
+    if (known != null) return known;
     final defaultWallets = wallets.where((wallet) => wallet.isDefault);
     return defaultWallets.isNotEmpty &&
-        defaultWallets.any(
-          (wallet) =>
-              !wallet.isEncryptedVaultTested && !wallet.isPhysicalBackupTested,
-        );
+        defaultWallets.any((wallet) => !wallet.isPhysicalBackupTested);
   }
 
   bool showBackupWarning() {
-    return hasNoBackup() && totalBalance() > 0 && !backupWarningDismissed;
+    return hasNoBackup() &&
+        (totalBalance() == null || (totalBalance() ?? 0) > 0) &&
+        !backupWarningDismissed;
   }
 }

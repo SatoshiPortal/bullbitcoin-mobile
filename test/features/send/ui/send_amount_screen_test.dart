@@ -1,14 +1,22 @@
+import 'package:primitives/primitives.dart' show BitcoinUnit;
 import 'package:bb_mobile/features/send/presentation/send_wallet_view.dart';
 import 'dart:async';
 
 import 'package:bb_mobile/core/entities/signer_entity.dart';
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/utils/payment_request.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bull_ui/bull_ui.dart' show BullButton;
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
+import 'package:bull_ui/bull_ui.dart'
+    show
+        BullAmountScope,
+        BullAmountSnapshot,
+        BullAmountUnitToggle,
+        BullBitcoinAmountInput,
+        BullButton,
+        bullUiLocalizationsDelegate;
 import 'package:bb_mobile/core/widgets/price_input/balance_row.dart';
 import 'package:bb_mobile/core/widgets/price_input/price_input.dart';
 import 'package:bb_mobile/features/send/domain/send_failure.dart';
@@ -73,7 +81,11 @@ void main() {
     await tester.pumpWidget(
       MaterialApp(
         theme: AppTheme.themeData(AppThemeType.light),
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        localizationsDelegates: const [
+          bullUiLocalizationsDelegate,
+          ...AppLocalizations.localizationsDelegates,
+        ],
+        builder: _amountScope,
         supportedLocales: AppLocalizations.supportedLocales,
         home: BlocProvider<SendCubit>.value(
           value: cubit,
@@ -130,7 +142,11 @@ void main() {
     await tester.pumpWidget(
       MaterialApp(
         theme: AppTheme.themeData(AppThemeType.light),
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        localizationsDelegates: const [
+          bullUiLocalizationsDelegate,
+          ...AppLocalizations.localizationsDelegates,
+        ],
+        builder: _amountScope,
         supportedLocales: AppLocalizations.supportedLocales,
         home: BlocProvider<SendCubit>.value(
           value: cubit,
@@ -140,7 +156,9 @@ void main() {
     );
     await tester.pump();
 
-    final input = tester.widget<PriceInput>(find.byType(PriceInput));
+    final input = tester.widget<BullBitcoinAmountInput>(
+      find.byType(BullBitcoinAmountInput),
+    );
     expect(input.readOnly, isFalse);
     expect(input.isMax, isFalse);
     expect(find.text('MAX'), findsOneWidget);
@@ -154,6 +172,126 @@ void main() {
 
     await tester.tap(find.byType(Switch));
     verify(() => cubit.amountChanged(amount: null, isMax: true)).called(1);
+  });
+
+  testWidgets('single amount unit toggle keeps the canonical send draft', (
+    tester,
+  ) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(800, 1200);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
+    Device.screen = const Size(800, 1200);
+    final wallet = _wallet();
+    var state = SendState(
+      step: SendStep.amount,
+      sendType: SendType.bitcoin,
+      wallets: [wallet],
+      selectedWallet: SendWalletBitcoin(wallet),
+      paymentRequest: const PaymentRequest.bitcoin(
+        address: 'bc1qfirst',
+        isTestnet: false,
+      ),
+      amount: '10000',
+      bitcoinUnit: BitcoinUnit.sats,
+      inputAmountCurrencyCode: BitcoinUnit.sats.code,
+      fiatCurrencyCodes: const ['USD'],
+      fiatCurrencyCode: 'USD',
+      exchangeRate: 50000,
+      recipientDrafts: const [
+        (
+          id: 0,
+          address: 'bc1qfirst',
+          amount: '10000',
+          receivesRemainder: false,
+          isValid: true,
+        ),
+      ],
+    );
+    final cubit = _MockSendCubit();
+    when(() => cubit.isSpMode).thenReturn(false);
+    when(() => cubit.state).thenAnswer((_) => state);
+    when(() => cubit.stream).thenAnswer((_) => const Stream.empty());
+    when(
+      () => cubit.amountChanged(
+        amount: any(named: 'amount'),
+        isMax: any(named: 'isMax'),
+      ),
+    ).thenAnswer((invocation) async {
+      final amount = invocation.namedArguments[#amount] as String?;
+      if (amount != null) state = state.copyWith(amount: amount);
+    });
+    when(() => cubit.onAmountConfirmed()).thenAnswer((_) async {});
+    final settingsCubit = _MockSettingsCubit();
+    when(() => settingsCubit.state).thenReturn(
+      const SettingsState(
+        storedSettings: SettingsEntity(
+          environment: Environment.mainnet,
+          bitcoinUnit: BitcoinUnit.sats,
+          currencyCode: 'USD',
+          hideAmounts: false,
+        ),
+      ),
+    );
+    when(() => settingsCubit.stream).thenAnswer((_) => const Stream.empty());
+
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.themeData(AppThemeType.light),
+        localizationsDelegates: const [
+          bullUiLocalizationsDelegate,
+          ...AppLocalizations.localizationsDelegates,
+        ],
+        builder: _amountScope,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: MultiBlocProvider(
+          providers: [
+            BlocProvider<SendCubit>.value(value: cubit),
+            BlocProvider<SettingsCubit>.value(value: settingsCubit),
+          ],
+          child: const SendAmountScreen(),
+        ),
+      ),
+    );
+    await tester.pump();
+
+    final inputFinder = find.byType(BullBitcoinAmountInput);
+    final input = tester.widget<BullBitcoinAmountInput>(inputFinder);
+    expect(input.amountController.text, '10000');
+    await tester.tap(
+      find.descendant(
+        of: inputFinder,
+        matching: find.byType(BullAmountUnitToggle),
+      ),
+    );
+    await tester.pump();
+    expect(input.amountController.text, '10000');
+    expect(find.text('0.0001'), findsOneWidget);
+    verifyNever(
+      () => cubit.amountChanged(
+        amount: any(named: 'amount'),
+        isMax: any(named: 'isMax'),
+      ),
+    );
+    verifyNever(() => cubit.onCurrencyChanged(any()));
+    verifyNever(() => settingsCubit.toggleSatsUnit(any()));
+
+    await tester.enterText(
+      find.descendant(of: inputFinder, matching: find.byType(TextField)),
+      '0.0002',
+    );
+    await tester.pump();
+    expect(input.amountController.text, '20000');
+    verify(() => cubit.amountChanged(amount: '20000')).called(1);
+    final continueButton = tester
+        .widgetList<BullButton>(find.byType(BullButton))
+        .singleWhere((button) => button.label == 'Continue');
+    expect(continueButton.disabled, isFalse);
+    await tester.tap(find.byWidget(continueButton));
+    await tester.pump();
+    verify(() => cubit.onAmountConfirmed()).called(1);
+    verifyNever(() => cubit.onCurrencyChanged(any()));
+    verifyNever(() => settingsCubit.toggleSatsUnit(any()));
   });
 
   testWidgets('matches a refreshed wallet option by id', (tester) async {
@@ -188,7 +326,11 @@ void main() {
     await tester.pumpWidget(
       MaterialApp(
         theme: AppTheme.themeData(AppThemeType.light),
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        localizationsDelegates: const [
+          bullUiLocalizationsDelegate,
+          ...AppLocalizations.localizationsDelegates,
+        ],
+        builder: _amountScope,
         supportedLocales: AppLocalizations.supportedLocales,
         home: BlocProvider<SendCubit>.value(
           value: cubit,
@@ -254,7 +396,11 @@ void main() {
     await tester.pumpWidget(
       MaterialApp(
         theme: AppTheme.themeData(AppThemeType.light),
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        localizationsDelegates: const [
+          bullUiLocalizationsDelegate,
+          ...AppLocalizations.localizationsDelegates,
+        ],
+        builder: _amountScope,
         supportedLocales: AppLocalizations.supportedLocales,
         home: BlocProvider<SendCubit>.value(
           value: cubit,
@@ -264,7 +410,9 @@ void main() {
     );
     await tester.pump();
 
-    final input = tester.widget<PriceInput>(find.byType(PriceInput));
+    final input = tester.widget<BullBitcoinAmountInput>(
+      find.byType(BullBitcoinAmountInput),
+    );
     expect(input.readOnly, isTrue);
     expect(input.isMax, isTrue);
     expect(find.text('MAX'), findsNWidgets(2));
@@ -323,7 +471,11 @@ void main() {
     await tester.pumpWidget(
       MaterialApp(
         theme: AppTheme.themeData(AppThemeType.light),
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        localizationsDelegates: const [
+          bullUiLocalizationsDelegate,
+          ...AppLocalizations.localizationsDelegates,
+        ],
+        builder: _amountScope,
         supportedLocales: AppLocalizations.supportedLocales,
         home: BlocProvider<SendCubit>.value(
           value: cubit,
@@ -390,7 +542,11 @@ void main() {
     await tester.pumpWidget(
       MaterialApp(
         theme: AppTheme.themeData(AppThemeType.light),
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        localizationsDelegates: const [
+          bullUiLocalizationsDelegate,
+          ...AppLocalizations.localizationsDelegates,
+        ],
+        builder: _amountScope,
         supportedLocales: AppLocalizations.supportedLocales,
         home: MultiBlocProvider(
           providers: [
@@ -456,7 +612,11 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           theme: AppTheme.themeData(AppThemeType.light),
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          localizationsDelegates: const [
+            bullUiLocalizationsDelegate,
+            ...AppLocalizations.localizationsDelegates,
+          ],
+          builder: _amountScope,
           supportedLocales: AppLocalizations.supportedLocales,
           home: BlocProvider<SendCubit>.value(
             value: cubit,
@@ -542,7 +702,11 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           theme: AppTheme.themeData(AppThemeType.light),
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          localizationsDelegates: const [
+            bullUiLocalizationsDelegate,
+            ...AppLocalizations.localizationsDelegates,
+          ],
+          builder: _amountScope,
           supportedLocales: AppLocalizations.supportedLocales,
           home: MultiBlocProvider(
             providers: [
@@ -584,3 +748,13 @@ void main() {
     },
   );
 }
+
+Widget _amountScope(BuildContext context, Widget? child) => BullAmountScope(
+  snapshot: const BullAmountSnapshot(
+    unit: BitcoinUnit.sats,
+    hideAmounts: false,
+    isReady: true,
+  ),
+  writeUnit: (_) async => true,
+  child: child ?? const SizedBox.shrink(),
+);

@@ -1,8 +1,8 @@
 import 'dart:async';
 
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
-import 'package:bb_mobile/core/utils/result.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:primitives/primitives.dart' show Err, Ok, Result;
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/limit_orders/domain/entities/limit_order_amount_limits.dart';
 import 'package:bb_mobile/features/limit_orders/domain/entities/limit_order_creation_context.dart';
 import 'package:bb_mobile/features/limit_orders/domain/entities/limit_order_rate.dart';

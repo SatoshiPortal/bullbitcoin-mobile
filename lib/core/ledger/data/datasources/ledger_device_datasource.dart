@@ -6,7 +6,7 @@ import 'package:bb_mobile/core/ledger/data/models/ledger_device_model.dart';
 import 'package:bb_mobile/core/ledger/domain/entities/ledger_device_entity.dart';
 import 'package:bb_mobile/core/ledger/data/ledger_exception.dart';
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bull_sdk/bdk.dart' as bdk;
 import 'package:convert/convert.dart' as convert;
 import 'package:flutter/foundation.dart';

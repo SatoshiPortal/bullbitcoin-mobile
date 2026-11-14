@@ -1,6 +1,6 @@
 import 'package:bb_mobile/core/utils/payment_request.dart';
-import 'package:bb_mobile/core/utils/result.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:primitives/primitives.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:boltz_swaps/boltz_swaps.dart';
 import 'package:meta/meta.dart';
 

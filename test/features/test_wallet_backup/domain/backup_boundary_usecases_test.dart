@@ -1,9 +1,10 @@
+import 'package:bull_recoverbull/bull_recoverbull.dart' as rb;
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
+import 'package:primitives/primitives.dart' show BitcoinUnit, Err, Ok;
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/entities/signer_entity.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/onboarding/complete_physical_backup_verification_usecase.dart';
 import 'package:bb_mobile/features/test_wallet_backup/domain/test_wallet_backup_failure.dart';
 import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/check_backup_usecase.dart';
@@ -34,6 +35,7 @@ const _settings = SettingsEntity(
 
 Wallet _wallet({bool tested = false}) => Wallet(
   origin: 'w1',
+  masterFingerprint: '73c5da0a',
   network: Network.bitcoinMainnet,
   xpubFingerprint: '00000000',
   scriptType: ScriptType.bip84,
@@ -59,6 +61,7 @@ void main() {
       usecase = CheckBackupUsecase(
         walletRepository: wallets,
         settingsRepository: settings,
+        backupStatus: (_) async => const rb.Ok(rb.BackupStatus()),
       );
       when(() => settings.fetch()).thenAnswer((_) async => _settings);
     });
@@ -106,7 +109,7 @@ void main() {
           fail('a failed read must not be reported as a backup answer');
         case Err(:final failure):
           expect(failure, isA<TestWalletBackupWalletsUnavailableFailure>());
-          expect(failure.logMessage, contains('app.sqlite'));
+          expect(failure.logMessage, isNot(contains('app.sqlite')));
       }
     });
   });

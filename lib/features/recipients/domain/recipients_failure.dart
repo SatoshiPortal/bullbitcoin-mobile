@@ -1,7 +1,12 @@
-import 'package:bb_mobile/core/failures/failure.dart';
+import 'package:primitives/primitives.dart' show Failure;
 
 sealed class RecipientsFailure extends Failure {
   const RecipientsFailure([super.logMessage]);
+}
+
+/// No usable exchange credential is available for this authenticated action.
+final class RecipientsNotAuthenticatedFailure extends RecipientsFailure {
+  const RecipientsNotAuthenticatedFailure();
 }
 
 /// The recipient list could not be loaded.
@@ -72,4 +77,8 @@ final class RecipientsEuResidencyRequiredFailure extends RecipientsFailure {
 /// the presentation extension returns the shared generic string.
 final class RecipientsUnexpectedFailure extends RecipientsFailure {
   const RecipientsUnexpectedFailure([super.logMessage]);
+}
+
+final class RecipientsUnsupportedNetworkFailure extends RecipientsFailure {
+  const RecipientsUnsupportedNetworkFailure();
 }

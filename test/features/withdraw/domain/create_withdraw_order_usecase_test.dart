@@ -2,10 +2,9 @@ import 'package:bb_mobile/core/errors/exchange_errors.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/sepa_payment_processor.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
-import 'package:bb_mobile/core/failures/failure.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
+import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/recipients/public/recipients_facade.dart';
 import 'package:bb_mobile/features/withdraw/domain/create_withdraw_order_usecase.dart';
 import 'package:bb_mobile/features/withdraw/domain/withdraw_failure.dart';
@@ -53,6 +52,22 @@ void main() {
         currencyCode: 'CAD',
       ),
     );
+  });
+
+  test('regtest refuses withdrawal before backend IO', () async {
+    when(settingsRepository.fetch).thenAnswer(
+      (_) async => const SettingsEntity(
+        environment: Environment.regtest,
+        bitcoinUnit: BitcoinUnit.sats,
+        currencyCode: 'CAD',
+      ),
+    );
+    expect(
+      await usecase.execute(fiatAmount: 100, recipientId: 'recipient'),
+      isA<Err>(),
+    );
+    verifyZeroInteractions(mainnetRepository);
+    verifyZeroInteractions(testnetRepository);
   });
 
   test('validates and submits trimmed Interac security details', () async {

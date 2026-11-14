@@ -28,7 +28,13 @@ class RefreshSellOrderUsecase {
   }) async {
     try {
       final settings = await _settingsRepository.fetch();
-      final isTestnet = settings.environment.isTestnet;
+      if (!NetworkCapabilities.supports(
+        BitcoinNetwork.fromName(settings.environment.name),
+        NetworkCapability.exchange,
+      )) {
+        return const Err(SellUnsupportedNetworkFailure());
+      }
+      final isTestnet = settings.environment.requireHistoricalTestnet();
       final repo = isTestnet
           ? _testnetExchangeOrderRepository
           : _mainnetExchangeOrderRepository;
@@ -46,8 +52,11 @@ class RefreshSellOrderUsecase {
       if (deposit case Err(:final failure)) return Err(failure);
 
       return Ok(order);
-    } on ApiKeyException catch (e) {
-      return Err(SellUnauthenticatedFailure(e.message));
+    } on ExchangeCredentialUnavailableException {
+      log.warning('Exchange order unavailable: credential read refused');
+      return const Err(SellUnexpectedFailure());
+    } on ApiKeyException {
+      return const Err(SellUnauthenticatedFailure());
     } catch (e, st) {
       log.severe(
         message: 'Failed to refresh the sell order',

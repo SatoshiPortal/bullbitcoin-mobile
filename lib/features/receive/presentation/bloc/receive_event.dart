@@ -24,8 +24,10 @@ class ReceiveEvent with _$ReceiveEvent {
       ReceivePayjoinOriginalTxBroadcasted;
   const factory ReceiveEvent.receivePayjoinSenderWaitElapsed(String sessionId) =
       ReceivePayjoinSenderWaitElapsed;
-  const factory ReceiveEvent.receiveTransactionReceived(WalletTransaction tx) =
-      ReceiveTransactionReceived;
+  const factory ReceiveEvent.receiveTransactionReceived(
+    WalletTransaction tx, {
+    required int generation,
+  }) = ReceiveTransactionReceived;
   const factory ReceiveEvent.receivePayjoinSettingChanged(bool enabled) =
       ReceivePayjoinSettingChanged;
   const factory ReceiveEvent.receivePayjoinMinAmountChanged(int amountSat) =

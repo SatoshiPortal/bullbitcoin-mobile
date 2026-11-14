@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/settings/data/payjoin_disclaimer_repository_impl.dart';
 import 'package:bb_mobile/features/settings/domain/settings_failure.dart';
 import 'package:flutter_test/flutter_test.dart';

@@ -1,24 +1,24 @@
 import 'package:bb_mobile/core/electrum/application/dtos/electrum_server_dto.dart';
 import 'package:bb_mobile/core/electrum/application/dtos/electrum_settings_dto.dart';
 import 'package:bb_mobile/core/electrum/application/dtos/requests/add_custom_server_request.dart';
-import 'package:bb_mobile/core/electrum/application/dtos/requests/delete_custom_server_request.dart';
+import 'package:bb_mobile/features/electrum_settings/domain/delete_custom_server_request.dart';
 import 'package:bb_mobile/core/electrum/application/dtos/requests/load_electrum_server_data_request.dart';
 import 'package:bb_mobile/core/electrum/application/dtos/requests/set_advanced_electrum_options_request.dart';
 import 'package:bb_mobile/core/electrum/application/dtos/requests/set_custom_servers_priority_request.dart';
 import 'package:bb_mobile/core/electrum/application/dtos/responses/load_electrum_server_data_response.dart';
-import 'package:bb_mobile/core/electrum/application/usecases/add_custom_server_usecase.dart';
-import 'package:bb_mobile/core/electrum/application/usecases/delete_custom_server_usecase.dart';
-import 'package:bb_mobile/core/electrum/application/usecases/load_electrum_server_data_usecase.dart';
+import 'package:bb_mobile/features/electrum_settings/domain/usecases/add_custom_server_usecase.dart';
+import 'package:bb_mobile/features/electrum_settings/domain/usecases/delete_custom_server_usecase.dart';
+import 'package:bb_mobile/features/electrum_settings/domain/usecases/load_electrum_server_data_usecase.dart';
 import 'package:bb_mobile/core/electrum/application/usecases/set_advanced_electrum_options_usecase.dart';
 import 'package:bb_mobile/core/electrum/application/usecases/set_custom_servers_priority_usecase.dart';
-import 'package:bb_mobile/core/electrum/domain/errors/electrum_failure.dart'
+import 'package:bb_mobile/features/electrum_settings/domain/electrum_failure.dart'
     as core;
-import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_environment.dart';
-import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_network.dart';
+import 'package:bb_mobile/features/electrum_settings/domain/electrum_environment.dart';
+import 'package:bb_mobile/features/electrum_settings/domain/electrum_server_network.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_status.dart';
 import 'package:bb_mobile/core/utils/electrum_url_parser.dart';
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/electrum_settings/domain/electrum_settings_failure.dart';
 import 'package:bb_mobile/features/electrum_settings/domain/usecases/has_active_custom_bitcoin_onion_server_usecase.dart';
 import 'package:bb_mobile/features/electrum_settings/interface_adapters/presenters/view_models/electrum_advanced_options_view_model.dart';
@@ -117,14 +117,13 @@ class ElectrumSettingsBloc
     ElectrumServerViewModel toViewModel(ElectrumServerDto server) =>
         ElectrumServerViewModel(
           url: server.url,
+          network: server.network,
           status: statuses[server.url] ?? ElectrumServerStatus.unknown,
           priority: server.priority,
         );
 
     return state.copyWith(
-      environment: settings.network.isTestnet
-          ? ElectrumEnvironment.testnet
-          : ElectrumEnvironment.mainnet,
+      environment: settings.network.environment,
       defaultServers: servers
           .where((server) => !server.isCustom)
           .map(toViewModel)
@@ -151,13 +150,21 @@ class ElectrumSettingsBloc
     ElectrumCustomServerAdded event,
     Emitter<ElectrumSettingsState> emit,
   ) async {
+    final environment = state.environment;
+    if (environment == null) {
+      emit(
+        state.copyWith(
+          electrumServersError: const ElectrumServersLoadFailure(),
+        ),
+      );
+      return;
+    }
     _invalidateLoadGeneration();
     emit(
       state.copyWith(isAddingCustomServer: true, electrumServersError: null),
     );
-    final isTestnet = state.environment == ElectrumEnvironment.testnet;
     final network = ElectrumServerNetwork.fromEnvironment(
-      isTestnet: isTestnet,
+      environment: environment,
       isLiquid: state.isLiquid,
     );
     final sortedServers = state.getServersSortedByPriority(isCustom: true);
@@ -181,6 +188,7 @@ class ElectrumSettingsBloc
     switch (await _addCustomServerUsecase.execute(request)) {
       case Ok(:final value):
         final newServer = ElectrumServerViewModel(
+          network: network,
           url: event.enableSsl ? 'ssl://$cleanUrl' : 'tcp://$cleanUrl',
           status: value,
           priority: priority,
@@ -217,6 +225,15 @@ class ElectrumSettingsBloc
     ElectrumCustomServersPrioritized event,
     Emitter<ElectrumSettingsState> emit,
   ) async {
+    final environment = state.environment;
+    if (environment == null) {
+      emit(
+        state.copyWith(
+          electrumServersError: const ElectrumServersLoadFailure(),
+        ),
+      );
+      return;
+    }
     _invalidateLoadGeneration();
     emit(
       state.copyWith(
@@ -245,7 +262,7 @@ class ElectrumSettingsBloc
               isCustom: true,
               url: e.url,
               network: ElectrumServerNetwork.fromEnvironment(
-                isTestnet: state.environment == ElectrumEnvironment.testnet,
+                environment: environment,
                 isLiquid: state.isLiquid,
               ),
               priority: e.priority,
@@ -259,6 +276,7 @@ class ElectrumSettingsBloc
         final updatedServers = value.servers
             .map(
               (dto) => ElectrumServerViewModel(
+                network: dto.network,
                 url: dto.url,
                 status: currentServers
                     .firstWhere((s) => s.url == dto.url)
@@ -293,19 +311,37 @@ class ElectrumSettingsBloc
     ElectrumCustomServerDeleted event,
     Emitter<ElectrumSettingsState> emit,
   ) async {
+    final environment = state.environment;
+    if (environment == null) {
+      emit(
+        state.copyWith(
+          electrumServersError: const ElectrumServersLoadFailure(),
+        ),
+      );
+      return;
+    }
     _invalidateLoadGeneration();
     emit(
       state.copyWith(isDeletingCustomServer: true, electrumServersError: null),
     );
 
-    final isTestnet = state.environment == ElectrumEnvironment.testnet;
     final network = ElectrumServerNetwork.fromEnvironment(
-      isTestnet: isTestnet,
+      environment: environment,
       isLiquid: state.isLiquid,
     );
 
+    if (network != event.server.network) {
+      emit(
+        state.copyWith(
+          isDeletingCustomServer: false,
+          electrumServersError: const ElectrumServersDeleteFailure(),
+        ),
+      );
+      return;
+    }
+
     switch (await _deleteCustomServerUsecase.execute(
-      DeleteCustomServerRequest(url: event.server.url),
+      DeleteCustomServerRequest(url: event.server.url, network: network),
     )) {
       case Ok():
         // Re-derive from the latest state, not a pre-await snapshot: a
@@ -347,14 +383,22 @@ class ElectrumSettingsBloc
     ElectrumAdvancedOptionsSaved event,
     Emitter<ElectrumSettingsState> emit,
   ) async {
+    final environment = state.environment;
+    if (environment == null) {
+      emit(
+        state.copyWith(
+          electrumServersError: const ElectrumServersLoadFailure(),
+        ),
+      );
+      return;
+    }
     _invalidateLoadGeneration();
     emit(
       state.copyWith(isSavingAdvancedOptions: true, advancedOptionsError: null),
     );
 
-    final isTestnet = state.environment == ElectrumEnvironment.testnet;
     final network = ElectrumServerNetwork.fromEnvironment(
-      isTestnet: isTestnet,
+      environment: environment,
       isLiquid: state.isLiquid,
     );
 

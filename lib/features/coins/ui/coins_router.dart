@@ -1,5 +1,5 @@
-import 'package:bb_mobile/core/wallet/domain/entities/outpoint.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
+import 'package:primitives/primitives.dart' show Outpoint;
 import 'package:bb_mobile/features/coins/presentation/coins_cubit.dart';
 import 'package:bb_mobile/features/coins/ui/screens/coins_screen.dart';
 import 'package:bb_mobile/locator.dart';

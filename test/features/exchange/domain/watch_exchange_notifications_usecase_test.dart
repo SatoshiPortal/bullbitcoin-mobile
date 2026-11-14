@@ -1,14 +1,15 @@
+import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
+import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'dart:async';
 
 import 'package:bb_mobile/core/exchange/domain/entity/notification_message.dart';
 import 'package:bb_mobile/core/exchange/domain/exchange_notification_failure.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_notification_repository.dart';
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/exchange/domain/exchange_failure.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/watch_exchange_notifications_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:bb_mobile/core/failures/failure.dart';
 
 /// The failure an [Err] carries, typed by the [Result]; an [Ok] fails the test.
 F _failureOf<T, F extends Failure>(Result<T, F> result) => switch (result) {
@@ -19,20 +20,32 @@ F _failureOf<T, F extends Failure>(Result<T, F> result) => switch (result) {
 class _MockNotificationRepository extends Mock
     implements ExchangeNotificationRepository {}
 
+class _MockSettings extends Mock implements SettingsRepository {}
+
 NotificationMessage _message(NotificationMessageKind kind) =>
     NotificationMessage(kind: kind, rawData: const {});
 
 void main() {
   late _MockNotificationRepository repository;
+  late _MockSettings settings;
   late StreamController<NotificationMessage> messages;
 
   WatchExchangeNotificationsUsecase build() =>
       WatchExchangeNotificationsUsecase(
         exchangeNotificationRepository: repository,
+        settingsRepository: settings,
       );
 
   setUp(() {
     repository = _MockNotificationRepository();
+    settings = _MockSettings();
+    when(settings.fetch).thenAnswer(
+      (_) async => const SettingsEntity(
+        environment: Environment.mainnet,
+        bitcoinUnit: BitcoinUnit.sats,
+        currencyCode: 'USD',
+      ),
+    );
     messages = StreamController<NotificationMessage>.broadcast();
     when(() => repository.messages).thenAnswer((_) => messages.stream);
   });
@@ -92,6 +105,31 @@ void main() {
 
     expect(await build().connect(), isA<Ok<void, ExchangeFailure>>());
   });
+
+  test(
+    'regtest disconnects without opening either historical socket',
+    () async {
+      when(settings.fetch).thenAnswer(
+        (_) async => const SettingsEntity(
+          environment: Environment.regtest,
+          bitcoinUnit: BitcoinUnit.sats,
+          currencyCode: 'USD',
+        ),
+      );
+      when(repository.disconnect).thenReturn(null);
+      expect(
+        _failureOf(await build().connect()),
+        isA<ExchangeUnsupportedNetworkFailure>(),
+      );
+      expect(
+        _failureOf(await build().reconnect()),
+        isA<ExchangeUnsupportedNetworkFailure>(),
+      );
+      verifyNever(repository.connect);
+      verifyNever(repository.reconnect);
+      verify(repository.disconnect).called(2);
+    },
+  );
 
   test('disconnect is forwarded', () {
     when(repository.disconnect).thenReturn(null);

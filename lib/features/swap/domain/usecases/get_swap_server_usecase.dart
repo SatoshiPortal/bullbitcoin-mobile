@@ -13,7 +13,8 @@ class GetSwapServerUsecase {
   });
 
   Future<({SwapServer server, bool isTestnet})> execute() async {
-    final isTestnet = (await _settingsRepository.fetch()).environment.isTestnet;
+    final isTestnet =
+        !(await _settingsRepository.fetch()).environment.isMainnet;
     return (
       server: await _swapServerSettingRepository.fetch(isTestnet: isTestnet),
       isTestnet: isTestnet,

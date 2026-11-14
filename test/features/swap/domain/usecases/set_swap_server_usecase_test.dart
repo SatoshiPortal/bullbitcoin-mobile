@@ -1,9 +1,9 @@
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap_server.dart';
 import 'package:bb_mobile/core/swaps/domain/repositories/swap_server_setting_repository.dart';
 import 'package:bb_mobile/core/swaps/swap_engine_switcher.dart';
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/swap/domain/swap_failure.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/set_swap_server_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';

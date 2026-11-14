@@ -7,9 +7,14 @@ import 'package:flutter/widgets.dart';
 /// `logMessage`.
 extension ExchangeFailureL10n on ExchangeFailure {
   String toTranslated(BuildContext context) => switch (this) {
+    ExchangeUnsupportedNetworkFailure() =>
+      context.loc.networkFeatureUnavailable,
     ExchangeAccountUnavailableFailure() =>
       context.loc.exchangeAccountInfoLoadErrorMessage,
     ExchangeNotAuthenticatedFailure() => context.loc.exchangeAuthErrorMessage,
+    ExchangeAuthenticationDeferredFailure() =>
+      context.loc.exchangeAuthErrorMessage,
+    ExchangeAuthenticationFailure() => context.loc.exchangeAuthErrorMessage,
     ExchangeApiKeyStorageFailure() => context.loc.exchangeAuthErrorMessage,
     ExchangeSessionClearFailure() => context.loc.exchangeErrorSigningOut,
     ExchangePreferencesSaveFailure() =>

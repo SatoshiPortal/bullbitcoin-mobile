@@ -1,5 +1,5 @@
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/labels/adapters/label_mapper.dart';
 import 'package:bb_mobile/features/labels/application/application_label.dart';
 import 'package:bb_mobile/features/labels/application/labels_repository_port.dart';
@@ -26,11 +26,14 @@ class StoreLabelUsecase {
       );
       final storedLabel = await _labelRepository.store(newLabel);
       return Ok(LabelMapper.labelEntityToApplicationLabel(storedLabel));
-    } catch (e, st) {
-      // Keep the technical reason in the logs; the failure carries only the
-      // logged-only reason and the UI maps it to a generic message.
-      log.severe(message: 'Failed to store label', error: e, trace: st);
-      return Err(LabelUnexpectedFailure('$e'));
+    } catch (_) {
+      const diagnostic = 'label_store_failed category=unexpected';
+      log.severe(
+        message: diagnostic,
+        error: Exception(diagnostic),
+        trace: StackTrace.current,
+      );
+      return const Err(LabelUnexpectedFailure(diagnostic));
     }
   }
 }

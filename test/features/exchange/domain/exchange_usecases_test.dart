@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_web_settings_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/announcement.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
 import 'package:bb_mobile/core/exchange/domain/exchange_api_key_failure.dart';
@@ -5,20 +6,18 @@ import 'package:bb_mobile/core/exchange/domain/exchange_support_chat_failure.dar
 import 'package:bb_mobile/core/exchange/domain/exchange_user_failure.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_api_key_repository.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_user_repository.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/send_support_chat_message_usecase.dart';
+import 'package:bb_mobile/features/exchange/domain/usecases/send_support_chat_message_usecase.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
+import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/exchange/domain/exchange_failure.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/clear_exchange_session_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_account_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_announcements_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/request_exchange_account_deletion_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/save_exchange_preferences_usecase.dart';
-import 'package:bb_mobile/features/exchange/domain/usecases/store_exchange_api_key_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:bb_mobile/core/failures/failure.dart';
 
 /// What the repository boundary already sanitized it to: a type name, no
 /// payload. If a use-case ever widened this, the assertions below would catch
@@ -112,19 +111,6 @@ void main() {
       expect(failure.logMessage, reason);
     });
 
-    test('StoreExchangeApiKeyUsecase', () async {
-      final failure = _failureOf(
-        await StoreExchangeApiKeyUsecase(
-          exchangeApiKeyRepository: apiKeys,
-          settingsRepository: settings,
-        ).execute(const {'key': 'bbk_live_7f3a9c2e'}),
-      );
-
-      expect(failure, isA<ExchangeApiKeyStorageFailure>());
-      expect(failure.logMessage, reason);
-      expect(failure.logMessage, isNot(contains('bbk_live')));
-    });
-
     test('ClearExchangeSessionUsecase deletes both keys and clears the '
         'cookies', () async {
       when(
@@ -153,6 +139,56 @@ void main() {
       verify(() => apiKeys.deleteApiKey(isTestnet: true)).called(1);
     });
   });
+
+  test(
+    'regtest refuses exchange operations without historical side effects',
+    () async {
+      when(
+        settings.fetch,
+      ).thenAnswer((_) async => _settings(Environment.regtest));
+      final support = _MockSendSupportChat();
+      var clearedCookies = false;
+      final results = [
+        await GetExchangeAccountUsecase(
+          mainnetExchangeUserRepository: mainnetUsers,
+          testnetExchangeUserRepository: testnetUsers,
+          settingsRepository: settings,
+        ).execute(),
+        await GetExchangeAnnouncementsUsecase(
+          mainnetExchangeUserRepository: mainnetUsers,
+          testnetExchangeUserRepository: testnetUsers,
+          settingsRepository: settings,
+        ).execute(),
+        await SaveExchangePreferencesUsecase(
+          mainnetExchangeUserRepository: mainnetUsers,
+          testnetExchangeUserRepository: testnetUsers,
+          settingsRepository: settings,
+        ).execute(language: 'fr'),
+        await ClearExchangeSessionUsecase(
+          exchangeApiKeyRepository: apiKeys,
+          settingsRepository: settings,
+          clearCookies: () async {
+            clearedCookies = true;
+          },
+        ).execute(),
+        await GetExchangeWebSettingsUsecase(
+          settingsRepository: settings,
+        ).execute(),
+        await RequestExchangeAccountDeletionUsecase(
+          sendSupportChatMessageUsecase: support,
+          settingsRepository: settings,
+        ).execute(),
+      ];
+      for (final result in results) {
+        expect(_failureOf(result), isA<ExchangeUnsupportedNetworkFailure>());
+      }
+      verifyZeroInteractions(mainnetUsers);
+      verifyZeroInteractions(testnetUsers);
+      verifyZeroInteractions(apiKeys);
+      verifyZeroInteractions(support);
+      expect(clearedCookies, isFalse);
+    },
+  );
 
   group('GetExchangeAccountUsecase', () {
     GetExchangeAccountUsecase build() => GetExchangeAccountUsecase(
@@ -237,34 +273,6 @@ void main() {
       expect(await build().execute(), isA<Err<UserSummary, ExchangeFailure>>());
       verify(testnetUsers.getUserSummary).called(1);
       verifyNever(mainnetUsers.getUserSummary);
-    });
-  });
-
-  group('StoreExchangeApiKeyUsecase', () {
-    test('an api-key failure is lifted into the feature family', () async {
-      when(
-        () => apiKeys.saveApiKey(any(), isTestnet: any(named: 'isTestnet')),
-      ).thenAnswer(
-        (_) async => const Err(ExchangeApiKeySaveFailure('store failed: Type')),
-      );
-
-      final result = await StoreExchangeApiKeyUsecase(
-        exchangeApiKeyRepository: apiKeys,
-        settingsRepository: settings,
-      ).execute({'apiKey': 'bbk_live_7f3a9c2e'});
-      final failure = _failureOf(result);
-
-      expect(failure, isA<ExchangeApiKeyStorageFailure>());
-      expect(
-        failure,
-        isNot(isA<ExchangeApiKeyFailure>()),
-        reason: 'the core family must not escape into the cubit',
-      );
-      expect(
-        failure.logMessage,
-        isNot(contains('bbk_live_7f3a9c2e')),
-        reason: 'the key itself must never travel in a failure',
-      );
     });
   });
 
@@ -458,6 +466,7 @@ void main() {
 
       final result = await RequestExchangeAccountDeletionUsecase(
         sendSupportChatMessageUsecase: sendSupportChat,
+        settingsRepository: settings,
       ).execute();
       final failure = _failureOf(result);
 
@@ -480,6 +489,7 @@ void main() {
       expect(
         await RequestExchangeAccountDeletionUsecase(
           sendSupportChatMessageUsecase: sendSupportChat,
+          settingsRepository: settings,
         ).execute(),
         isA<Ok<void, ExchangeFailure>>(),
       );

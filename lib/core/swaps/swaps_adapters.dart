@@ -1,16 +1,16 @@
 import 'package:bb_mobile/core/electrum/domain/ports/electrum_servers_port.dart';
-import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_network.dart';
+import 'package:bb_mobile/features/electrum_settings/domain/electrum_server_network.dart';
+import 'package:bb_mobile/features/swap/domain/swap_network_policy.dart';
 import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_value_storage_datasource.dart';
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:boltz_swaps/boltz_swaps.dart' as swaps;
 import 'package:bull_logger/bull_logger.dart';
 import 'package:drift/drift.dart';
 import 'package:drift_flutter/drift_flutter.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:primitives/primitives.dart' show BitcoinNetwork, Fingerprint;
 import 'package:secrets/secrets.dart';
 
 /// Opens the engine's own database file. Same platform choices as the app
@@ -86,8 +86,8 @@ class AppElectrumRunner implements swaps.ElectrumRunner {
     required Future<T> Function(swaps.ElectrumConnection connection) operation,
     bool Function(Object error)? isTransient,
   }) => _port.runWithFallback(
-    network: ElectrumServerNetwork.fromEnvironment(
-      isTestnet: isTestnet,
+    network: ElectrumServerNetwork.fromNetworkEnv(
+      isTestnet ? NetworkEnv.testnet : NetworkEnv.mainnet,
       isLiquid: isLiquid,
     ),
     isTransient: isTransient,
@@ -115,6 +115,7 @@ class SwapsAppGlue {
 
   Future<List<swaps.SwapWalletInfo>> wallets({required bool isTestnet}) async {
     final settings = await _settingsRepository.fetch();
+    if (!swapEnvironmentAvailable(settings.environment.networkEnv)) return [];
     final all = switch (await _walletRepository.getWallets(
       environment: settings.environment,
     )) {
@@ -142,6 +143,9 @@ class SwapsAppGlue {
     required bool isTestnet,
   }) async {
     final settings = await _settingsRepository.fetch();
+    if (!swapEnvironmentAvailable(settings.environment.networkEnv)) {
+      return null;
+    }
     final defaults = switch (await _walletRepository.getWallets(
       onlyDefaults: true,
       onlyBitcoin: true,

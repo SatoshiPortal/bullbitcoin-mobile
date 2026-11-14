@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/utils/result.dart' as core;
+import 'package:primitives/primitives.dart' as core;
 import 'package:bb_mobile/features/send/domain/send_failure.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
@@ -13,17 +13,22 @@ class SendWithPayjoinUsecase {
   @useResult
   Future<core.Result<PayjoinSenderSession, SendFailure>> execute({
     required String walletId,
-    required bool isTestnet,
+    required BitcoinNetwork network,
     required String bip21,
     required String unsignedOriginalPsbt,
     required int amountSat,
     required double networkFeesSatPerVb,
     int? expireAfterSec,
   }) async {
+    if (!NetworkCapabilities.supports(network, NetworkCapability.payjoin)) {
+      return const core.Err(
+        SendTransactionConfirmationFailure(logMessage: 'unsupported network'),
+      );
+    }
     final result = await _sender.start(
       StartPayjoinSender(
         walletId: walletId,
-        network: isTestnet ? BitcoinNetwork.testnet : BitcoinNetwork.mainnet,
+        network: network,
         bip21Uri: bip21,
         unsignedOriginalPsbt: unsignedOriginalPsbt,
         amount: Sats.fromInt(amountSat),
@@ -36,6 +41,8 @@ class SendWithPayjoinUsecase {
     switch (result) {
       case Ok(:final value):
         return core.Ok(value);
+      case Err(failure: PayjoinSpendBlockedFailure(:final busy)):
+        return core.Err(SendSpendBlockedFailure(busy: busy));
       case Err(:final failure):
         // Both parts: Failure has no toString() override, so passing the value
         // itself would log "Instance of 'PayjoinX'" and drop the message,

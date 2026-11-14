@@ -80,10 +80,12 @@ final class Secrets {
   @useResult
   Future<Result<Secret, SecretFailure>> import({
     required List<String> words,
+    Language language = Language.english,
     String? passphrase,
     Set<Fingerprint>? acceptOnly,
   }) async => (await _repository.store(
     words: words,
+    language: language,
     passphrase: passphrase,
     rejectExisting: true,
     acceptOnly: acceptOnly,
@@ -134,8 +136,26 @@ final class Secrets {
   @useResult
   Future<Result<bool, SecretFailure>> contains({
     required List<String> words,
+    Language language = Language.english,
     String? passphrase,
-  }) => _repository.contains(words: words, passphrase: passphrase);
+  }) async => (await find(
+    words: words,
+    language: language,
+    passphrase: passphrase,
+  )).map((secret) => secret != null);
+
+  /// Finds an existing secret by full seed equality, including its passphrase.
+  /// Does not write storage. Absence is null; unreadable custody remains Err.
+  @useResult
+  Future<Result<Secret?, SecretFailure>> find({
+    required List<String> words,
+    Language language = Language.english,
+    String? passphrase,
+  }) async => (await _repository.find(
+    words: words,
+    language: language,
+    passphrase: passphrase,
+  )).map((info) => info == null ? null : _handle(info));
 
   // ----------------------------------------------------------------- preview
 
@@ -184,7 +204,7 @@ final class Secrets {
         key: key.hex,
         passphrase: passphrase,
       )).map((restored) {
-        log.info('SECRET_RESTORE: vault opened into ${restored.info.id}');
+        log.fine('secret.backup.restored');
         return (secret: _handle(restored.info), metadata: restored.metadata);
       });
 

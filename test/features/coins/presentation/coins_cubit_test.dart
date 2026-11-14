@@ -1,7 +1,10 @@
+import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
+import 'package:bb_mobile/features/coins/domain/usecases/watch_wallet_revisions_usecase.dart';
+import 'package:primitives/primitives.dart' as primitives;
 import 'dart:async';
 
-import 'package:bb_mobile/core/utils/result.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
+import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_started_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/features/coins/domain/coins_failure.dart';
@@ -43,12 +46,16 @@ void main() {
   late _MockLabelsFacade labelsFacade;
   late _MockWatchStarted watchStarted;
   late _MockWatchFinished watchFinished;
-  late StreamController<Wallet> startedController;
+  late StreamController<WalletRevisionState> revisions;
+  late StreamController<String> startedController;
   late StreamController<Wallet> finishedController;
 
   const walletId = 'w1';
 
   CoinsCubit buildCubit() => CoinsCubit(
+    watchWalletRevisionsUsecase: WatchWalletRevisionsUsecase(
+      WalletFacade(revisions.stream),
+    ),
     walletId: walletId,
     getUtxosUsecase: getUtxos,
     freezeUtxosUsecase: freezeUtxos,
@@ -60,6 +67,7 @@ void main() {
   );
 
   setUp(() {
+    revisions = StreamController<WalletRevisionState>.broadcast();
     getUtxos = _MockGetUtxosUsecase();
     freezeUtxos = _MockFreezeUtxosUsecase();
     unfreezeUtxos = _MockUnfreezeUtxosUsecase();
@@ -67,7 +75,7 @@ void main() {
     labelsFacade = _MockLabelsFacade();
     watchStarted = _MockWatchStarted();
     watchFinished = _MockWatchFinished();
-    startedController = StreamController<Wallet>.broadcast();
+    startedController = StreamController<String>.broadcast();
     finishedController = StreamController<Wallet>.broadcast();
 
     when(
@@ -79,12 +87,52 @@ void main() {
     when(
       () => labelsFacade.fetchDistinctLabels(),
     ).thenAnswer((_) async => <String>{});
-    when(() => refreshCoins.execute()).thenAnswer((_) async {});
+    when(
+      () => refreshCoins.execute(walletId: any(named: 'walletId')),
+    ).thenAnswer((_) async {});
   });
 
   tearDown(() {
+    revisions.close();
     startedController.close();
     finishedController.close();
+  });
+
+  test('wallet revisions coalesce local reloads without sync events', () {
+    fakeAsync((async) {
+      when(
+        () => getUtxos.execute(walletId: walletId),
+      ).thenAnswer((_) async => const Ok([]));
+      final cubit = buildCubit();
+      WalletRevisionState revision(String id, int number) =>
+          WalletRevisionState(
+            stamp: WalletRevision(
+              key: WalletKey(
+                id: id,
+                network: primitives.BitcoinNetwork.testnet,
+              ),
+              generation: 1,
+              revision: number,
+            ),
+            lifecycle: WalletLifecycle.active,
+            initializedSchema: 1,
+          );
+      revisions.add(revision('other', 1));
+      async.elapse(const Duration(seconds: 3));
+      verifyNever(() => getUtxos.execute(walletId: walletId));
+      revisions.add(revision(walletId, 1));
+      revisions.add(revision(walletId, 2));
+      async.flushMicrotasks();
+      async.elapse(const Duration(seconds: 3));
+      async.flushMicrotasks();
+      verify(() => getUtxos.execute(walletId: walletId)).called(1);
+      expect(cubit.state.syncing, isFalse);
+      cubit.close();
+      async.flushMicrotasks();
+      revisions.add(revision(walletId, 3));
+      async.elapse(const Duration(seconds: 3));
+      verifyNever(() => getUtxos.execute(walletId: walletId));
+    });
   });
 
   group('load', () {
@@ -140,7 +188,7 @@ void main() {
     await cubit.refresh();
 
     verifyInOrder([
-      () => refreshCoins.execute(),
+      () => refreshCoins.execute(walletId: any(named: 'walletId')),
       () => getUtxos.execute(walletId: walletId),
     ]);
     await cubit.close();
@@ -302,7 +350,7 @@ void main() {
         final cubit = buildCubit();
 
         // Sync started → syncing flips true.
-        startedController.add(_fakeWallet());
+        startedController.add(_fakeWallet().id);
         async.flushMicrotasks();
         expect(cubit.state.syncing, isTrue);
 

@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/failures/failure.dart';
+import 'package:primitives/primitives.dart' show Failure;
 import 'package:bb_mobile/core/primitives/payment_network.dart';
 
 sealed class SendFailure extends Failure {
@@ -125,6 +125,16 @@ final class SendPriceUnavailableFailure extends SendFailure {
 
 final class SendUnexpectedFailure extends SendFailure {
   const SendUnexpectedFailure([super.logMessage]);
+}
+
+final class SendSpendBlockedFailure extends SendFailure {
+  /// The wallet is only busy with another operation: retrying shortly works.
+  final bool busy;
+  const SendSpendBlockedFailure({this.busy = false});
+}
+
+final class SendPayjoinPausedFailure extends SendFailure {
+  const SendPayjoinPausedFailure();
 }
 
 final class SendConsolidationRequiredFailure extends SendFailure {

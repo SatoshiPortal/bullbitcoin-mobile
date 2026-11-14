@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/swaps/domain/entity/swap_server.dart';
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/swap/domain/entities/swap_route.dart';
 import 'package:bb_mobile/features/swap/domain/swap_failure.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/get_swap_route_settings_usecase.dart';

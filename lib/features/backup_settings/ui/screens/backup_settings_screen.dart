@@ -3,7 +3,7 @@ import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/backup_settings/presentation/backup_settings_failure_l10n.dart';
 import 'package:bb_mobile/features/backup_settings/presentation/cubit/backup_settings_cubit.dart';
 import 'package:bb_mobile/features/backup_settings/ui/backup_settings_router.dart';
-import 'package:bb_mobile/features/recoverbull/public/recoverbull_facade.dart';
+import 'package:bull_recoverbull/bull_recoverbull.dart';
 import 'package:bb_mobile/features/settings/ui/settings_item.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
@@ -39,7 +39,10 @@ class _Screen extends StatelessWidget {
       listener: (context, state) {
         BullSnackBar.show(
           context,
-          message: state.failure!.toTranslated(context),
+          message: switch (state.failure) {
+            final failure? => failure.toTranslated(context),
+            null => context.loc.oopsSomethingWentWrong,
+          },
         );
       },
       child: BlocBuilder<BackupSettingsCubit, BackupSettingsState>(
@@ -105,7 +108,7 @@ class _ViewVaultKeyButton extends StatelessWidget {
   Widget build(BuildContext context) => BullSettingsEntryItem(
     icon: Icons.vpn_key,
     title: context.loc.backupSettingsViewVaultKey,
-    onTap: () => const RecoverBullFacade().openViewVaultKey(context),
+    onTap: () => RecoverBullFeature.open(context, RecoverBullFlow.viewVaultKey),
   );
 }
 
@@ -127,7 +130,11 @@ class _BackupTestStatusWidget extends StatelessWidget {
             _StatusRow(
               label: context.loc.backupSettingsEncryptedVault,
               isTested: state.isDefaultEncryptedBackupTested,
+              unknown: !state.isDefaultEncryptedBackupTested,
             ),
+            if (!state.isDefaultEncryptedBackupTested &&
+                state.lastEncryptedBackup != null)
+              const RecoverBullHistoricalWarning(),
           ],
         );
       },
@@ -138,8 +145,13 @@ class _BackupTestStatusWidget extends StatelessWidget {
 class _StatusRow extends StatelessWidget {
   final String label;
   final bool isTested;
+  final bool unknown;
 
-  const _StatusRow({required this.label, required this.isTested});
+  const _StatusRow({
+    required this.label,
+    required this.isTested,
+    this.unknown = false,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -150,6 +162,8 @@ class _StatusRow extends StatelessWidget {
         Text(
           isTested
               ? context.loc.backupSettingsTested
+              : unknown
+              ? context.loc.coreScreensUnknown
               : context.loc.backupSettingsNotTested,
           style: context.font.bodyMedium?.copyWith(
             color: isTested

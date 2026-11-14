@@ -2,7 +2,7 @@ import 'package:boltz_swaps/boltz_swaps.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/swap_rescue_cubit.dart';
 import 'package:bb_mobile/features/settings/presentation/swaps_failure_l10n.dart';

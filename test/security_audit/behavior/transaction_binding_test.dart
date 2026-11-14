@@ -11,23 +11,23 @@ import 'dart:typed_data';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:boltz_swaps/boltz_swaps.dart' hide Environment;
 import 'package:boltz_swaps/boltz_swaps.dart' as swaps show Environment;
+import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/transaction_output.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet_transaction.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
 import 'package:bb_mobile/features/transactions/application/usecases/get_transactions_usecase.dart';
 import 'package:bb_mobile/features/transactions/application/usecases/get_transaction_order_swaps_usecase.dart';
 import 'package:bb_mobile/features/transactions/application/usecases/label_exchange_orders_usecase.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
-import 'package:bb_mobile/core/utils/result.dart' as bb;
+import 'package:primitives/primitives.dart' as bb;
 import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
 import 'package:bb_mobile/features/transactions/domain/transaction_failure.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:primitives/primitives.dart' show Ok;
+import 'package:primitives/primitives.dart' show BitcoinUnit, Ok;
 
 /// The use case returns a `Result`; these tests are about what it binds, so a
 /// failure is a test failure rather than a case to assert on.
@@ -120,7 +120,9 @@ void main() {
     when(
       () => boltzSwapRepository.all(walletId: any(named: 'walletId')),
     ).thenAnswer((_) async => <Swap>[]);
-    when(() => orderRepository.getOrders()).thenAnswer((_) async => <Order>[]);
+    when(
+      () => orderRepository.getOrders(),
+    ).thenAnswer((_) async => const Ok(<Order>[]));
     when(
       () => labelExchangeOrdersUsecase.execute(orders: any(named: 'orders')),
     ).thenAnswer((_) async {});
@@ -159,7 +161,7 @@ void main() {
         ),
       ).thenAnswer((_) async => [tx]);
       when(() => orderRepository.getOrders()).thenAnswer(
-        (_) async => [
+        (_) async => Ok([
           Order.buy(
             orderId: 'order-1',
             orderType: OrderType.buy,
@@ -181,7 +183,7 @@ void main() {
             bitcoinTransactionId: 'shared-txid',
             isTestnet: false,
           ),
-        ],
+        ]),
       );
 
       final transactions = _transactionsOf(await usecase.execute());

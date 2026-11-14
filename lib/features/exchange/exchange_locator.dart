@@ -1,7 +1,7 @@
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_notification_repository.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_api_key_repository.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_user_repository.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/send_support_chat_message_usecase.dart';
+import 'package:bb_mobile/features/exchange/domain/usecases/send_support_chat_message_usecase.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart'
     as settings_contract;
@@ -11,7 +11,9 @@ import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_account
 import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_announcements_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/request_exchange_account_deletion_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/save_exchange_preferences_usecase.dart';
-import 'package:bb_mobile/features/exchange/domain/usecases/store_exchange_api_key_usecase.dart';
+import 'package:bb_mobile/features/exchange/domain/usecases/complete_exchange_authentication_usecase.dart';
+import 'package:bb_mobile/features/exchange/data/exchange_auth_repository_impl.dart';
+import 'package:bb_mobile/features/exchange/data/exchange_web_auth_datasource.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/watch_exchange_notifications_usecase.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
@@ -25,6 +27,7 @@ class ExchangeLocator {
 
     locator.registerLazySingleton<ExchangeFacade>(
       () => ExchangeFacade(
+        getExchangeWebSettingsUsecase: locator<GetExchangeWebSettingsUsecase>(),
         getExchangeAccountUsecase: locator<GetExchangeAccountUsecase>(),
         saveExchangePreferencesUsecase:
             locator<SaveExchangePreferencesUsecase>(),
@@ -32,9 +35,7 @@ class ExchangeLocator {
     );
   }
 
-  /// Each use-case takes the shared `core/exchange` repository directly and is
-  /// the feature's `try/catch` boundary: the raw reason is logged there and
-  /// only a sanitized `ExchangeFailure` travels up.
+  /// Registers feature orchestration and view-scoped authentication dependencies.
   static void registerUsecases(GetIt locator) {
     locator.registerFactory<GetExchangeWebSettingsUsecase>(
       () => GetExchangeWebSettingsUsecase(
@@ -77,10 +78,22 @@ class ExchangeLocator {
       ),
     );
 
-    locator.registerFactory<StoreExchangeApiKeyUsecase>(
-      () => StoreExchangeApiKeyUsecase(
-        exchangeApiKeyRepository: locator<ExchangeApiKeyRepository>(),
-        settingsRepository: locator<SettingsRepository>(),
+    // The native controller and session lifetime belong to one auth view.
+    locator.registerFactoryParam<
+      CompleteExchangeAuthenticationUsecase,
+      Future<Object> Function(String),
+      ({bool isTestnet, bool Function() isOpen})
+    >(
+      (evaluateJavaScript, session) => CompleteExchangeAuthenticationUsecase(
+        authRepository: ExchangeAuthRepositoryImpl(
+          datasource: ExchangeWebAuthDatasource(
+            isTestnet: session.isTestnet,
+            evaluateJavaScript: evaluateJavaScript,
+            isOpen: session.isOpen,
+          ),
+        ),
+        apiKeyRepository: locator<ExchangeApiKeyRepository>(),
+        isTestnet: session.isTestnet,
       ),
     );
 
@@ -94,12 +107,14 @@ class ExchangeLocator {
 
     locator.registerFactory<RequestExchangeAccountDeletionUsecase>(
       () => RequestExchangeAccountDeletionUsecase(
+        settingsRepository: locator<settings_contract.SettingsRepository>(),
         sendSupportChatMessageUsecase: locator<SendSupportChatMessageUsecase>(),
       ),
     );
 
     locator.registerFactory<WatchExchangeNotificationsUsecase>(
       () => WatchExchangeNotificationsUsecase(
+        settingsRepository: locator<settings_contract.SettingsRepository>(),
         exchangeNotificationRepository:
             locator<ExchangeNotificationRepository>(),
       ),
@@ -110,7 +125,6 @@ class ExchangeLocator {
     locator.registerLazySingleton<ExchangeCubit>(
       () => ExchangeCubit(
         getExchangeAccountUsecase: locator<GetExchangeAccountUsecase>(),
-        storeExchangeApiKeyUsecase: locator<StoreExchangeApiKeyUsecase>(),
         saveExchangePreferencesUsecase:
             locator<SaveExchangePreferencesUsecase>(),
         clearExchangeSessionUsecase: locator<ClearExchangeSessionUsecase>(),

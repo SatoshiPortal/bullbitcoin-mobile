@@ -1,6 +1,6 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/import_mnemonic/presentation/cubit.dart';
 import 'package:bb_mobile/features/import_mnemonic/presentation/import_mnemonic_failure_l10n.dart';
 import 'package:bb_mobile/features/import_mnemonic/presentation/state.dart';
@@ -57,23 +57,26 @@ class SelectScriptTypePage extends StatelessWidget {
                     children: [
                       _WalletTypeCard(
                         title: context.loc.importMnemonicSegwit,
-                        status: state.bip84Status,
+                        scan: state.bip84Scan,
                         isSelected: scriptType == ScriptType.bip84,
                         onTap: () => cubit.updateBip39Purpose(ScriptType.bip84),
+                        onRetry: () => cubit.retryScan(ScriptType.bip84),
                       ),
                       const Gap(16),
                       _WalletTypeCard(
                         title: context.loc.importMnemonicNestedSegwit,
-                        status: state.bip49Status,
+                        scan: state.bip49Scan,
                         isSelected: scriptType == ScriptType.bip49,
                         onTap: () => cubit.updateBip39Purpose(ScriptType.bip49),
+                        onRetry: () => cubit.retryScan(ScriptType.bip49),
                       ),
                       const Gap(16),
                       _WalletTypeCard(
                         title: context.loc.importMnemonicLegacy,
-                        status: state.bip44Status,
+                        scan: state.bip44Scan,
                         isSelected: scriptType == ScriptType.bip44,
                         onTap: () => cubit.updateBip39Purpose(ScriptType.bip44),
+                        onRetry: () => cubit.retryScan(ScriptType.bip44),
                       ),
                     ],
                   ),
@@ -98,16 +101,33 @@ class SelectScriptTypePage extends StatelessWidget {
 
 class _WalletTypeCard extends StatelessWidget {
   final String title;
-  final ({BigInt satoshis, int transactions})? status;
+  final ScriptTypeScan scan;
   final bool isSelected;
   final VoidCallback onTap;
+  final VoidCallback onRetry;
 
   const _WalletTypeCard({
     required this.title,
-    required this.status,
+    required this.scan,
     required this.isSelected,
     required this.onTap,
+    required this.onRetry,
   });
+
+  List<Widget> _summary(BuildContext context, BigInt satoshis, int count) => [
+    BullText(
+      context.loc.importMnemonicBalanceLabel(satoshis.toString()),
+      style: _mutedStyle(context),
+    ),
+    const Gap(4),
+    BullText(
+      context.loc.importMnemonicTransactionsLabel(count.toString()),
+      style: _mutedStyle(context),
+    ),
+  ];
+
+  TextStyle? _mutedStyle(BuildContext context) =>
+      context.font.bodyMedium?.copyWith(color: context.appColors.textMuted);
 
   @override
   Widget build(BuildContext context) {
@@ -138,31 +158,33 @@ class _WalletTypeCard extends StatelessWidget {
                       color: context.appColors.text,
                     ),
                   ),
-
-                  if (status != null) ...[
-                    const Gap(8),
-                    BullText(
-                      context.loc.importMnemonicBalanceLabel(
-                        status!.satoshis.toString(),
+                  const Gap(8),
+                  ...switch (scan) {
+                    ScriptTypeScanLoading() => const [
+                      BullShimmerLine(height: 8, padding: EdgeInsets.zero),
+                    ],
+                    ScriptTypeScanFound(:final satoshis, :final transactions) =>
+                      _summary(context, satoshis, transactions),
+                    ScriptTypeScanEmpty() => _summary(context, BigInt.zero, 0),
+                    ScriptTypeScanFailed(:final failure) => [
+                      BullText(
+                        failure.toTranslated(context),
+                        style: _mutedStyle(context),
                       ),
-                      style: context.font.bodyMedium?.copyWith(
-                        color: context.appColors.textMuted,
+                      const Gap(8),
+                      BullButton.small(
+                        label: context.loc.retry,
+                        onPressed: onRetry,
+                        iconData: Icons.refresh,
+                        iconFirst: true,
+                        outlined: true,
+                        compact: true,
+                        bgColor: context.appColors.transparent,
+                        borderColor: context.appColors.border,
+                        textColor: context.appColors.text,
                       ),
-                    ),
-                    const Gap(4),
-                    BullText(
-                      context.loc.importMnemonicTransactionsLabel(
-                        status!.transactions.toString(),
-                      ),
-                      style: context.font.bodyMedium?.copyWith(
-                        color: context.appColors.textMuted,
-                      ),
-                    ),
-                  ],
-                  if (status == null) ...[
-                    const Gap(8),
-                    const BullShimmerLine(height: 8, padding: EdgeInsets.zero),
-                  ],
+                    ],
+                  },
                 ],
               ),
             ),

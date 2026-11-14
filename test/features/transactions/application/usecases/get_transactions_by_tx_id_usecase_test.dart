@@ -1,13 +1,14 @@
+import 'package:bb_mobile/core/exchange/domain/exchange_order_failure.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:boltz_swaps/boltz_swaps.dart' hide Environment;
+import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
 import 'package:bb_mobile/features/transactions/application/usecases/get_transaction_order_swaps_usecase.dart';
 import 'package:bb_mobile/features/transactions/application/usecases/get_transactions_by_tx_id_usecase.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
-import 'package:bb_mobile/core/utils/result.dart' as bb;
+import 'package:primitives/primitives.dart' as bb;
 import 'package:bb_mobile/features/swap/public/swap_facade.dart'
     show OrderSwapRecord;
 import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
@@ -72,6 +73,7 @@ void main() {
     when(
       () => walletTransactionRepository.getWalletTransactions(
         txId: any(named: 'txId'),
+        environment: any(named: 'environment'),
       ),
     ).thenAnswer((_) async => []);
     when(
@@ -83,6 +85,54 @@ void main() {
   });
 
   test(
+    'regtest tx lookup never queries public network feature histories',
+    () async {
+      when(settingsRepository.fetch).thenAnswer(
+        (_) async => const SettingsEntity(
+          environment: Environment.regtest,
+          bitcoinUnit: BitcoinUnit.sats,
+          currencyCode: 'USD',
+        ),
+      );
+      when(
+        () => walletTransactionRepository.getWalletTransactions(
+          txId: _txId,
+          environment: Environment.regtest,
+        ),
+      ).thenAnswer((_) async => []);
+      expect(unwrap(await usecase.execute(_txId)), isEmpty);
+      verify(
+        () => walletTransactionRepository.getWalletTransactions(
+          txId: _txId,
+          environment: Environment.regtest,
+        ),
+      ).called(1);
+      verifyZeroInteractions(mainnetOrderRepository);
+      verifyZeroInteractions(testnetOrderRepository);
+      verifyZeroInteractions(payjoinSessions);
+      verifyZeroInteractions(swapHistoryRepository);
+      verifyZeroInteractions(getTransactionOrderSwapsUsecase);
+    },
+  );
+
+  test(
+    'credential failure does not hide the remaining transaction data',
+    () async {
+      final payjoin = _payjoinSession();
+      when(
+        () => payjoinSessions.byTransactionId(_txId),
+      ).thenAnswer((_) async => Ok([payjoin]));
+      when(
+        () => mainnetOrderRepository.getOrderByTxId(_txId),
+      ).thenAnswer((_) async => const Err(ExchangeOrderCredentialFailure()));
+      final transactions = unwrap(await usecase.execute(_txId));
+      expect(transactions, hasLength(1));
+      expect(transactions.single.payjoin, payjoin);
+      expect(transactions.single.order, isNull);
+    },
+  );
+
+  test(
     'keeps the order when only a payjoin session is found for the txid',
     () async {
       final payjoin = _payjoinSession();
@@ -92,7 +142,7 @@ void main() {
       ).thenAnswer((_) async => Ok([payjoin]));
       when(
         () => mainnetOrderRepository.getOrderByTxId(_txId),
-      ).thenAnswer((_) async => order);
+      ).thenAnswer((_) async => Ok(order));
 
       final transactions = unwrap(await usecase.execute(_txId));
 
@@ -111,7 +161,7 @@ void main() {
     ).thenAnswer((_) async => Ok([payjoin]));
     when(
       () => mainnetOrderRepository.getOrderByTxId(_txId),
-    ).thenAnswer((_) async => null);
+    ).thenAnswer((_) async => const Ok(null));
 
     final transactions = unwrap(await usecase.execute(_txId));
 

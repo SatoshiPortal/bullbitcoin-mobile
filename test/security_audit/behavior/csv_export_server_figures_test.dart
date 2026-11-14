@@ -8,8 +8,8 @@ import 'dart:typed_data';
 
 import 'package:boltz_swaps/boltz_swaps.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/transaction_output.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet_transaction.dart';
 import 'package:bb_mobile/features/transactions/adapters/csv_transaction_export_formatter.dart';
 import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -48,7 +48,7 @@ void main() {
         keyIndex: 0,
         type: SwapType.bitcoinToLiquid,
         status: SwapStatus.pending,
-        environment: Environment.mainnet,
+        environment: SwapEnvironment.mainnet,
         creationTime: DateTime.utc(2026, 7, 29, 12),
         sendWalletId: 'wallet-1',
         paymentAddress: 'bc1qswap-lockup-address',

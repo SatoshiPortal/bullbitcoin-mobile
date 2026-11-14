@@ -5,11 +5,12 @@ import 'package:bb_mobile/core/exchange/domain/exchange_user_failure.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_user_repository.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
+import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_address_repository.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_address_repository.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_error.dart';
 import 'package:bb_mobile/features/dca/domain/dca.dart';
 import 'package:bb_mobile/features/dca/domain/dca_failure.dart';
@@ -119,6 +120,29 @@ void main() {
   }
 
   group('SetDcaUsecase', () {
+    test('regtest refuses before wallet or account access', () async {
+      when(() => settings.fetch()).thenAnswer(
+        (_) async => mainnetSettings.copyWith(environment: Environment.regtest),
+      );
+      when(
+        () => mainnetUsers.getUserSummary(),
+      ).thenAnswer((_) async => const Err(ExchangeUserUnexpectedFailure()));
+      final result = await usecase.execute(
+        amount: 10,
+        currency: FiatCurrency.cad,
+        frequency: DcaBuyFrequency.daily,
+        network: DcaNetwork.lightning,
+        lightningAddress: 'user@example.com',
+      );
+      expect(result, isA<Err<Dca, DcaFailure>>());
+      verifyZeroInteractions(mainnetUsers);
+      verifyZeroInteractions(testnetUsers);
+      verifyZeroInteractions(mainnetOrders);
+      verifyZeroInteractions(testnetOrders);
+      verifyZeroInteractions(wallet);
+      verifyZeroInteractions(walletAddress);
+    });
+
     test('maps a missing lightning address to LightningAddressRequired '
         'without calling the exchange', () async {
       final result = await usecase.execute(

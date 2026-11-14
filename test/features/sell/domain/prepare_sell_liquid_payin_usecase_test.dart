@@ -1,6 +1,6 @@
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/liquid_wallet_repository.dart';
+import 'package:bb_mobile/features/wallet/data/liquid_wallet_repository.dart';
 import 'package:bb_mobile/features/sell/domain/prepare_sell_liquid_payin_usecase.dart';
 import 'package:bb_mobile/features/sell/domain/sell_failure.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -118,6 +118,37 @@ void main() {
     // Raw SDK diagnostics do not cross into the feature failure.
     expect(failure.logMessage, isNull);
   });
+
+  for (final error in <Object>[
+    _rawReason,
+    StateError('invalid wallet state'),
+  ]) {
+    test(
+      error is String
+          ? 'maps native initialization failures without exposing their message'
+          : 'does not mask programmer errors as recoverable failures',
+      () async {
+        when(
+          () => repository.buildPset(
+            walletId: any(named: 'walletId'),
+            address: any(named: 'address'),
+            amountSat: any(named: 'amountSat'),
+            feeRate: any(named: 'feeRate'),
+            drain: any(named: 'drain'),
+          ),
+        ).thenAnswer((_) async => throw error);
+
+        if (error is String) {
+          final result = await run();
+          final failure = (result as Err<String, SellFailure>).failure;
+          expect(failure, isA<SellUnexpectedFailure>());
+          expect(failure.logMessage, isNull);
+        } else {
+          await expectLater(run(), throwsA(same(error)));
+        }
+      },
+    );
+  }
 
   test('refuses to build without an amount and without drain', () async {
     final result = await run(amountSat: null);

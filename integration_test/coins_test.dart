@@ -1,27 +1,27 @@
-import 'package:primitives/primitives.dart' show BitcoinTransactionRecipient;
+import 'package:primitives/primitives.dart'
+    show BitcoinTransactionRecipient, Err, Ok;
 import 'dart:io';
 
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
-import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:secrets/secrets.dart';
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
-import 'package:bb_mobile/core/wallet/domain/no_spendable_utxo_exception.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/frozen_wallet_utxo_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_address_repository.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_address_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_utxo_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/prepare_bitcoin_send_usecase.dart';
-import 'package:bb_mobile/features/settings/domain/usecases/set_environment_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/prepare_bitcoin_send_usecase.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/init.dart';
 import 'package:bull_sdk/bdk.dart' as bdk;
 import 'package:drift/drift.dart' show driftRuntimeOptions;
 import 'package:drift/native.dart';
-import 'package:bb_mobile/features/settings/domain/settings_failure.dart';
 import 'package:flutter_test/flutter_test.dart';
+
+import 'developer_network.dart';
 
 // Integration tests for the Coins / UTXO view + freeze (issue #760).
 //
@@ -155,12 +155,9 @@ Future<void> main({bool isInitialized = false}) async {
         addressRepository = locator<WalletAddressRepository>();
         prepareBitcoinSendUsecase = locator<PrepareBitcoinSendUsecase>();
 
-        // Setup: assert rather than discard, so a failed write surfaces here
-        // instead of as a confusing failure further down the test.
-        expect(
-          await locator<SetEnvironmentUsecase>().execute(Environment.testnet),
-          isA<Ok<void, SettingsFailure>>(),
-        );
+        // Testnet is a developer network: enable it as a user would.
+        // Restored when the group ends, even if this setup fails.
+        await selectDeveloperNetwork(Environment.testnet);
         final secret = switch (await locator<Secrets>().import(
           words: mnemonic!.split(' '),
         )) {
@@ -179,14 +176,6 @@ Future<void> main({bool isInitialized = false}) async {
           isA<Ok<List<Wallet>, WalletFailure>>(),
         );
       });
-
-      // Restore the shared app environment so this group can't leave the
-      // aggregated run on testnet — later files (e.g. sqlite_transactions)
-      // fetch mainnet data through env-bound ports and would otherwise fail.
-      // mainnet is the seeded default (database_seeds.dart).
-      tearDownAll(
-        () => locator<SetEnvironmentUsecase>().execute(Environment.mainnet),
-      );
 
       test('list surfaces confirmations and labels per UTXO', () async {
         final utxos = await utxoRepository.getWalletUtxos(walletId: wallet.id);
@@ -283,7 +272,13 @@ Future<void> main({bool isInitialized = false}) async {
             selectedInputs: selection,
             networkFee: NetworkFee.relativeFromSatPerVbyte(2),
           ),
-          throwsA(isA<NoSpendableUtxoException>()),
+          completion(
+            isA<Err<Object?, WalletFailure>>().having(
+              (result) => result.failure,
+              'failure',
+              isA<WalletSelectedInputsUnavailableFailure>(),
+            ),
+          ),
         );
       });
 
@@ -297,7 +292,7 @@ Future<void> main({bool isInitialized = false}) async {
         // Freeze EVERY coin. A decode-free way to prove D7 exclusion is real:
         // if frozen coins were still selectable, a drain would build fine; with
         // all coins in the unspendable set, BDK has nothing to pick and the
-        // build must fail with NoSpendableUtxoException. (Asserting a specific
+        // build must fail with WalletNoSpendableInputsFailure. (Asserting a specific
         // outpoint's absence would need PSBT-input decoding; this is the same
         // guarantee without that machinery.)
         final allOutpoints = utxos
@@ -319,7 +314,7 @@ Future<void> main({bool isInitialized = false}) async {
         );
 
         // Drain to self: selection would otherwise sweep every coin. With all
-        // frozen, the prepare must throw NoSpendableUtxoException.
+        // frozen, the prepare must return WalletNoSpendableInputsFailure.
         await expectLater(
           prepareBitcoinSendUsecase.execute(
             walletId: wallet.id,
@@ -328,7 +323,13 @@ Future<void> main({bool isInitialized = false}) async {
             ],
             networkFee: NetworkFee.relativeFromSatPerVbyte(2),
           ),
-          throwsA(isA<NoSpendableUtxoException>()),
+          completion(
+            isA<Err<Object?, WalletFailure>>().having(
+              (result) => result.failure,
+              'failure',
+              isA<WalletNoSpendableInputsFailure>(),
+            ),
+          ),
         );
       });
     },

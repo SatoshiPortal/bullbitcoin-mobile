@@ -1,4 +1,7 @@
-import 'package:bb_mobile/core/utils/result.dart';
+import 'dart:async';
+import 'package:bloc_concurrency/bloc_concurrency.dart';
+import 'package:bb_mobile/features/address_view/domain/usecases/watch_wallet_revisions_usecase.dart';
+import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
 import 'package:bb_mobile/features/address_view/domain/address_view_failure.dart';
 import 'package:bb_mobile/features/address_view/domain/usecases/check_wallet_is_liquid_usecase.dart';
@@ -16,16 +19,33 @@ class AddressViewBloc extends Bloc<AddressViewEvent, AddressViewState> {
   final CheckWalletIsLiquidUsecase _checkWalletIsLiquidUsecase;
   final GetAddressListUsecase _getAddressListUsecase;
 
+  StreamSubscription<String>? _revisions;
+
   AddressViewBloc({
+    WatchWalletRevisionsUsecase? watchWalletRevisionsUsecase,
     required this._walletId,
     required this._checkWalletIsLiquidUsecase,
     required this._getAddressListUsecase,
     int? limit,
   }) : _limit = limit ?? 20,
        super(const AddressViewState()) {
-    on<AddressViewInitialAddressesLoaded>(_onInitialAddressesLoaded);
+    on<AddressViewInitialAddressesLoaded>(
+      _onInitialAddressesLoaded,
+      transformer: restartable(),
+    );
+    _revisions = watchWalletRevisionsUsecase
+        ?.execute(walletId: _walletId)
+        .listen((_) {
+          if (!isClosed) add(const AddressViewInitialAddressesLoaded());
+        });
     on<AddressViewMoreReceiveAddressesLoaded>(_onMoreReceiveAddressesLoaded);
     on<AddressViewMoreChangeAddressesLoaded>(_onMoreChangeAddressesLoaded);
+  }
+
+  @override
+  Future<void> close() async {
+    await _revisions?.cancel();
+    return super.close();
   }
 
   Future<void> _onInitialAddressesLoaded(

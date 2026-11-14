@@ -1,7 +1,8 @@
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
-import 'package:bb_mobile/core/wallet/data/datasources/lwk_wallet_datasource.dart';
-import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
+import 'package:bb_mobile/features/wallet/data/lwk_wallet_datasource.dart';
+import 'package:bb_mobile/features/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_utxo_model.dart';
 import 'package:bb_mobile/core/wallet/domain/insufficient_funds_exception.dart';
 import 'package:bull_sdk/lwk.dart' as lwk;
@@ -14,7 +15,7 @@ void main() {
   const wallet = WalletModel.publicLwk(
     id: 'liquid-wallet',
     combinedCtDescriptor: 'descriptor',
-    isTestnet: true,
+    network: Network.liquidTestnet,
   );
   const selection = {(txId: 'selected', vout: 1)};
   const fee = RelativeFee(25);
@@ -46,9 +47,10 @@ void main() {
 
   setUp(() {
     lwkWallet = _MockLwkWallet();
-    datasource = LwkWalletDatasource(
-      createPublicWallet: (_) async => lwkWallet,
-    );
+    datasource = LwkWalletDatasource(readWallet: (_) async => lwkWallet);
+    when(
+      () => lwkWallet.policyAsset(),
+    ).thenAnswer((_) async => AssetConstants.lbtcTestnet);
     when(
       () => lwkWallet.buildCustomTx(
         utxos: any(named: 'utxos'),
@@ -297,4 +299,108 @@ void main() {
       ]);
     },
   );
+
+  group('Liquid self-transfer amount', () {
+    lwk.TxOut owned(
+      String confidential,
+      int sats, {
+      int vout = 0,
+      String asset = AssetConstants.lbtcTestnet,
+    }) => lwk.TxOut(
+      scriptPubkey: 'script',
+      outpoint: lwk.OutPoint(txid: 'self', vout: vout),
+      unblinded: lwk.TxOutSecrets(
+        value: BigInt.from(sats),
+        valueBf: '',
+        asset: asset,
+        assetBf: '',
+      ),
+      isSpent: false,
+      address: lwk.Address(standard: '', confidential: confidential),
+    );
+
+    lwk.Tx walletTx(
+      List<lwk.TxOut> outputs, {
+      String kind = 'redeposit',
+      int balance = -33,
+    }) => lwk.Tx(
+      kind: kind,
+      balances: [
+        lwk.Balance(assetId: AssetConstants.lbtcTestnet, value: balance),
+      ],
+      txid: 'self',
+      outputs: outputs,
+      inputs: [owned('tlq1spent', 8527)],
+      fee: BigInt.from(33),
+      unblindedUrl: '',
+      vsize: BigInt.from(1000),
+    );
+
+    Future<int> amountOf(lwk.Tx tx) async {
+      when(() => lwkWallet.txs()).thenAnswer((_) async => [tx]);
+      final txs = await datasource.getTransactions(wallet: wallet);
+      return txs.single.amountSat;
+    }
+
+    setUp(() {
+      // Only the first receive address is listed; LWK does not expose change
+      // addresses, so any other wallet output is outside this listing.
+      when(() => lwkWallet.addressLastUnused()).thenAnswer(
+        (_) async =>
+            const lwk.Address(standard: '', confidential: '', index: 0),
+      );
+      when(() => lwkWallet.address(index: 0)).thenAnswer(
+        (_) async => const lwk.Address(
+          standard: 'tex1receive',
+          confidential: 'tlq1receive',
+          index: 0,
+        ),
+      );
+    });
+
+    // Regression (Pixel 6a, txid e04d3380…): a MAX send to an address of the
+    // same wallet that is not a listed receive address left a single wallet
+    // output, and the details screen showed "Send 0 sats".
+    test(
+      'a redeposit with one unlisted L-BTC output shows its value',
+      () async {
+        expect(await amountOf(walletTx([owned('tlq1change', 8494)])), 8494);
+      },
+    );
+
+    test('a listed receive output stays apart from the change', () async {
+      final tx = walletTx([
+        owned('tlq1receive', 5000),
+        owned('tlq1change', 3494, vout: 1),
+      ]);
+      expect(await amountOf(tx), 5000);
+    });
+
+    test('two unlisted outputs stay unresolved', () async {
+      final tx = walletTx([
+        owned('tlq1internal', 1000),
+        owned('tlq1change', 7494, vout: 1),
+      ]);
+      expect(await amountOf(tx), 0);
+    });
+
+    test('an unlisted output of another asset is not counted', () async {
+      final tx = walletTx([owned('tlq1change', 8494, asset: 'other-asset')]);
+      expect(await amountOf(tx), 0);
+    });
+
+    test('a fee-only balance that is not a redeposit is unchanged', () async {
+      final tx = walletTx([owned('tlq1change', 8494)], kind: 'outgoing');
+      expect(await amountOf(tx), 0);
+    });
+
+    test('an incoming transaction keeps its balance', () async {
+      final tx = walletTx(
+        [owned('tlq1receive', 5000)],
+        kind: 'incoming',
+        balance: 5000,
+      );
+      expect(await amountOf(tx), 5000);
+    });
+  });
 }

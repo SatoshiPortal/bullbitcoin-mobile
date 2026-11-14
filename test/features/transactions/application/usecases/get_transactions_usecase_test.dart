@@ -1,26 +1,28 @@
+import 'package:bb_mobile/core/exchange/domain/exchange_order_failure.dart';
 import 'dart:collection';
 import 'dart:typed_data';
 
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:boltz_swaps/boltz_swaps.dart' hide Environment;
+import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/transaction_output.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet_transaction.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:bb_mobile/features/transactions/application/usecases/get_transaction_order_swaps_usecase.dart';
 import 'package:bb_mobile/features/transactions/application/usecases/get_transactions_usecase.dart';
 import 'package:bb_mobile/features/transactions/application/usecases/label_exchange_orders_usecase.dart';
-import 'package:bb_mobile/core/utils/result.dart' as bb;
+import 'package:primitives/primitives.dart' as bb;
 import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
 import 'package:bb_mobile/features/transactions/domain/transaction_failure.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
-import 'package:primitives/primitives.dart' show BitcoinNetwork, Err, Ok;
+import 'package:primitives/primitives.dart'
+    show BitcoinNetwork, BitcoinUnit, Err, Ok;
 
 class _MockSettingsRepository extends Mock implements SettingsRepository {}
 
@@ -133,7 +135,7 @@ void main() {
     ).thenAnswer((_) async => []);
     when(
       () => mainnetOrderRepository.getOrders(),
-    ).thenAnswer((_) async => orders);
+    ).thenAnswer((_) async => Ok(orders));
     when(
       () => labelExchangeOrdersUsecase.execute(orders: orders),
     ).thenAnswer((_) async {});
@@ -154,6 +156,66 @@ void main() {
       getTransactionOrderSwapsUsecase: getOrderSwaps,
     );
   });
+
+  test('regtest history reads only its concrete wallet transactions', () async {
+    when(settingsRepository.fetch).thenAnswer(
+      (_) async => const SettingsEntity(
+        environment: Environment.regtest,
+        bitcoinUnit: BitcoinUnit.sats,
+        currencyCode: 'USD',
+      ),
+    );
+    final walletTx = _walletTransaction(
+      txId: 'regtest-tx',
+      walletId: 'regtest-wallet',
+      isIncoming: true,
+    ).copyWith(network: Network.bitcoinRegtest);
+    when(
+      () => walletTransactionRepository.getWalletTransactions(
+        walletId: 'regtest-wallet',
+        sync: false,
+        environment: Environment.regtest,
+      ),
+    ).thenAnswer((_) async => [walletTx]);
+    final rows = unwrap(await usecase.execute(walletId: 'regtest-wallet'));
+    expect(rows.single.walletTransaction, walletTx);
+    expect(rows.single.supportsPublicExplorer, false);
+    verifyZeroInteractions(mainnetOrderRepository);
+    verifyZeroInteractions(testnetOrderRepository);
+    verifyZeroInteractions(payjoinSessions);
+    verifyZeroInteractions(boltzSwapRepository);
+    verifyZeroInteractions(getOrderSwaps);
+  });
+
+  test(
+    'credential failure removes exchange enrichment, not wallet history',
+    () async {
+      final tx = _walletTransaction(
+        txId: 'wallet-tx',
+        walletId: 'w1',
+        isIncoming: true,
+      );
+      when(
+        () => mainnetOrderRepository.getOrders(),
+      ).thenAnswer((_) async => const Err(ExchangeOrderCredentialFailure()));
+      when(
+        () => walletTransactionRepository.getWalletTransactions(
+          walletId: any(named: 'walletId'),
+          sync: any(named: 'sync'),
+          environment: any(named: 'environment'),
+        ),
+      ).thenAnswer((_) async => [tx]);
+      when(
+        () => payjoinSessions.list(any()),
+      ).thenAnswer((_) async => const Ok([]));
+      when(
+        () => labelExchangeOrdersUsecase.execute(orders: any(named: 'orders')),
+      ).thenAnswer((_) async {});
+      final transactions = unwrap(await usecase.execute());
+      expect(transactions, hasLength(1));
+      expect(transactions.single.walletTransaction?.txId, 'wallet-tx');
+    },
+  );
 
   test(
     'hides an aborted Payjoin until its original wallet tx is synced',

@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:bb_mobile/core/exchange/domain/entity/notification_message.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_notification_repository.dart';
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/recipients/application/usecases/get_recipients_environment_usecase.dart';
 import 'package:bb_mobile/features/recipients/domain/entities/virtual_iban.dart';
 import 'package:bb_mobile/features/recipients/domain/recipients_failure.dart';
@@ -36,7 +36,7 @@ class WatchVirtualIbanUsecase {
     final bool isTestnet;
     switch (await _getRecipientsEnvironmentUsecase.execute()) {
       case Ok(:final value):
-        isTestnet = value.isTestnet;
+        isTestnet = value.requireHistoricalTestnet();
       case Err(:final failure):
         yield Err(failure);
         return;

@@ -1,7 +1,7 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/transactions/domain/entities/transaction.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/address_viewer.dart';
+import 'package:bb_mobile/features/wallet/ui/widgets/address_viewer.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/domain/reviewable_transaction.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/domain/transaction_review_failure.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/presentation/transaction_review_cubit.dart';
@@ -258,6 +258,31 @@ class _SummarySection extends StatelessWidget {
             textAlign: TextAlign.end,
           ),
         ),
+
+        // --- Invalid amounts alert — outputs exceed inputs ---
+        if (transaction.outputsExceedInputs)
+          Padding(
+            padding: const EdgeInsets.only(bottom: 8),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Icon(
+                  Icons.error_outline,
+                  size: 14,
+                  color: context.appColors.error,
+                ),
+                const Gap(4),
+                Expanded(
+                  child: BullText(
+                    context.loc.coreScreensOutputsExceedInputs,
+                    style: context.font.bodySmall?.copyWith(
+                      color: context.appColors.error,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
 
         // --- Fee rate row (optional) ---
         if (transaction.feeRate != null) ...[

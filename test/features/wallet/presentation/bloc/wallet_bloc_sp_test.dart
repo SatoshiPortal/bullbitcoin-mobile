@@ -1,16 +1,20 @@
+import 'package:bb_mobile/features/wallet/domain/usecases/read_wallet_usecase.dart';
 import 'package:primitives/primitives.dart';
 import 'dart:async';
+import 'dart:io';
+
+import 'package:bull_logger/bull_logger.dart';
 
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_sync_result.dart';
-import 'package:bb_mobile/core/sync/sync_coordinator.dart';
+import 'package:bb_mobile/features/wallet/data/sync_coordinator.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_external_tor_proxy_status_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/sp_failure.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/check_sp_feature_gate_for_wallet_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/check_backup_needed_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/check_backup_needed_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/check_wallet_syncing_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/delete_wallet_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_electrum_sync_results_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_started_wallet_syncs_usecase.dart';
@@ -45,7 +49,11 @@ class _MockGetWalletsUsecase extends Mock implements GetWalletsUsecase {}
 class _MockCheckWalletSyncingUsecase extends Mock
     implements CheckWalletSyncingUsecase {}
 
-class _MockCheckBackupNeeded extends Mock implements CheckBackupNeededUsecase {}
+class _MockCheckBackupNeeded extends Mock implements CheckBackupNeededUsecase {
+  _MockCheckBackupNeeded() {
+    when(execute).thenAnswer((_) async => const Err(WalletStorageFailure()));
+  }
+}
 
 class _MockWatchStarted extends Mock
     implements WatchStartedWalletSyncsUsecase {}
@@ -102,6 +110,7 @@ WalletBloc _makeBloc({
   // The superuser + dev mode feature gate. Defaults on so existing tests see
   // the SP card enabled.
   bool gateEnabled = true,
+  Object? gateFailure,
 }) {
   checkSetup ??= _MockCheckSpWalletSetupForWallet();
   checkScanning ??= _MockCheckSpScanningForWallet();
@@ -115,7 +124,7 @@ WalletBloc _makeBloc({
   final checkWalletSyncing = _MockCheckWalletSyncingUsecase();
   when(
     () => watchStarted.execute(),
-  ).thenAnswer((_) => const Stream<Wallet>.empty());
+  ).thenAnswer((_) => const Stream<String>.empty());
   when(
     () => watchFinished.execute(),
   ).thenAnswer((_) => const Stream<Wallet>.empty());
@@ -138,9 +147,13 @@ WalletBloc _makeBloc({
   ).thenReturn(const Ok(false));
   when(() => checkWalletSyncing.execute()).thenReturn(const Ok(false));
   final checkSpFeatureGate = _MockCheckSpFeatureGate();
-  when(() => checkSpFeatureGate.execute()).thenAnswer((_) async => gateEnabled);
+  when(() => checkSpFeatureGate.execute()).thenAnswer((_) async {
+    if (gateFailure case final failure?) throw failure;
+    return gateEnabled;
+  });
 
   return WalletBloc(
+    readWalletUsecase: _ReadWallet(),
     getWalletsUsecase: getWallets,
     checkWalletSyncingUsecase: checkWalletSyncing,
     checkBackupNeededUsecase: _MockCheckBackupNeeded(),
@@ -185,6 +198,44 @@ Future<List<WalletState>> driveCollecting(
 
 void main() {
   group('WalletBloc SP: RefreshSpWallet handler', () {
+    test(
+      'feature gate failure persists a fixed warning without foreign text',
+      () async {
+        final directory = await Directory.systemTemp.createTemp('sp-gate-log-');
+        await initializeLogging(directory: directory);
+        addTearDown(() async {
+          await log.flush();
+          await directory.delete(recursive: true);
+        });
+        final refreshSp = _MockRefreshSpWalletForWallet();
+        final checkSetup = _MockCheckSpWalletSetupForWallet();
+        when(
+          () => checkSetup.execute(),
+        ).thenAnswer((_) async => const Ok(false));
+        when(
+          () => refreshSp.execute(),
+        ).thenAnswer((_) async => const Ok<SpWallet?, SpFailure>(null));
+        final bloc = _makeBloc(
+          refreshSp: refreshSp,
+          checkSetup: checkSetup,
+          gateFailure: Exception('foreign-gate-sentinel'),
+        );
+        addTearDown(bloc.close);
+
+        await drive(bloc, const RefreshSpWallet());
+
+        final lines = await log.readLogs();
+        final warnings = lines
+            .map((line) => line.split('\t'))
+            .where((row) => row[1] == 'WARNING');
+        expect(
+          warnings.map((row) => row[2]),
+          contains('SP feature gate refresh failed category=feature_gate'),
+        );
+        expect(lines.join('\n'), isNot(contains('foreign-gate-sentinel')));
+      },
+    );
+
     test(
       'spBalanceSat set in state when setup=true and wallet loaded',
       () async {
@@ -272,6 +323,7 @@ void main() {
       expect(states.last.isSpFeatureEnabled, isFalse);
       expect(states.last.isSpWalletSetup, isTrue);
       expect(states.last.showSpWallet, isFalse);
+      verifyNever(() => refreshSp.execute());
 
       await bloc.close();
     });
@@ -660,3 +712,5 @@ void main() {
     });
   });
 }
+
+class _ReadWallet extends Mock implements ReadWalletUsecase {}

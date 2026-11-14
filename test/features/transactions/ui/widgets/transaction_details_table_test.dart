@@ -1,6 +1,7 @@
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:primitives/primitives.dart' show BitcoinUnit;
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
+import 'package:bb_mobile/features/settings/public/settings_facade.dart';
 import 'package:bb_mobile/features/swap/domain/entities/order_swap.dart';
 import 'package:bb_mobile/features/swap/domain/entities/order_swap_network.dart';
 import 'package:bb_mobile/features/swap/domain/entities/order_swap_record.dart';
@@ -13,7 +14,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:bull_ui/bull_ui.dart' show BullDetailsTableItem;
+import 'package:bull_ui/bull_ui.dart'
+    show BullDetailsTableItem, bullUiLocalizationsDelegate;
 
 class _MockTransactionDetailsCubit extends Mock
     implements TransactionDetailsCubit {}
@@ -63,17 +65,25 @@ void main() {
       () => settingsCubit.stream,
     ).thenAnswer((_) => const Stream<SettingsState>.empty());
 
+    final navigatorKey = GlobalKey<NavigatorState>();
     await tester.pumpWidget(
       MaterialApp(
+        navigatorKey: navigatorKey,
         theme: AppTheme.themeData(AppThemeType.light),
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        localizationsDelegates: const [
+          bullUiLocalizationsDelegate,
+          ...AppLocalizations.localizationsDelegates,
+        ],
         supportedLocales: AppLocalizations.supportedLocales,
         home: MultiBlocProvider(
           providers: [
             BlocProvider<TransactionDetailsCubit>.value(value: detailsCubit),
             BlocProvider<SettingsCubit>.value(value: settingsCubit),
           ],
-          child: const Scaffold(body: TransactionDetailsTable()),
+          child: SettingsFacade.amountScope(
+            navigatorKey: navigatorKey,
+            child: const Scaffold(body: TransactionDetailsTable()),
+          ),
         ),
       ),
     );

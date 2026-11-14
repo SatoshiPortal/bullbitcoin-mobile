@@ -1,7 +1,7 @@
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/utils/msats.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bull_sdk/bdk.dart' as bdk;
 import 'package:bip21_uri/bip21_uri.dart';
 import 'package:bull_sdk/boltz.dart' as boltz;
@@ -259,10 +259,15 @@ sealed class PaymentRequest with _$PaymentRequest {
   static Future<PaymentRequest?> _tryParseLiquidAddress(String data) async {
     try {
       final network = await lwk.Address.validate(addressString: data);
-      return PaymentRequest.liquid(
-        address: data,
-        isTestnet: network == lwk.LiquidNetwork.testnet,
-      );
+      // The app has no Liquid regtest environment: an Elements regtest
+      // address is not a destination, rather than a mainnet one.
+      final isTestnet = switch (network) {
+        lwk.LiquidNetwork.mainnet => false,
+        lwk.LiquidNetwork.testnet => true,
+        lwk.LiquidNetwork.regtest => null,
+      };
+      if (isTestnet == null) return null;
+      return PaymentRequest.liquid(address: data, isTestnet: isTestnet);
     } catch (e) {
       log.warning(e.toString());
     }
@@ -349,7 +354,8 @@ sealed class PaymentRequest with _$PaymentRequest {
     BitcoinPaymentRequest(isTestnet: final isTestnet) => isTestnet,
     LiquidPaymentRequest(isTestnet: final isTestnet) => isTestnet,
     Bolt11PaymentRequest(isTestnet: final isTestnet) => isTestnet,
-    Bip21PaymentRequest(network: final network) => network.isTestnet,
+    Bip21PaymentRequest(network: final network) =>
+      network.requireHistoricalTestnet(),
     LnAddressPaymentRequest() => false,
     PsbtPaymentRequest() => false,
   };

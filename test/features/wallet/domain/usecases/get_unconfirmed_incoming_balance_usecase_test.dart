@@ -1,5 +1,5 @@
 import 'package:boltz_swaps/boltz_swaps.dart';
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_unconfirmed_incoming_balance_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -42,7 +42,7 @@ void main() {
       keyIndex: 0,
       type: SwapType.bitcoinToLiquid,
       status: status,
-      environment: Environment.mainnet,
+      environment: SwapEnvironment.mainnet,
       creationTime: DateTime(2026),
       sendWalletId: 'w1',
       paymentAddress: 'bc1qexampleaddress',

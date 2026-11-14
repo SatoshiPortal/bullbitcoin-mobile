@@ -1,3 +1,4 @@
+import 'package:bull_recoverbull/bull_recoverbull.dart';
 import 'package:secrets/secrets.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
@@ -19,7 +20,10 @@ import 'package:bull_tor/tor.dart';
 class AppStartupLocator {
   static void setup(GetIt locator) {
     locator.registerLazySingleton<AppStartupWalletPort>(
-      () => WalletStartupAdapter(locator<WalletRepository>()),
+      () => WalletStartupAdapter(
+        locator<WalletRepository>(),
+        (context) => locator<RecoverBullFacade>().status(context),
+      ),
     );
 
     // Use cases

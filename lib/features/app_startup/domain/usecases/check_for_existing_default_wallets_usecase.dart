@@ -1,13 +1,14 @@
+import 'package:bb_mobile/features/wallet/domain/network_x.dart';
 import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/keychain_locked_exception.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/app_startup/domain/app_startup_failure.dart';
 import 'package:meta/meta.dart';
-import 'package:primitives/primitives.dart' show Fingerprint;
+import 'package:primitives/primitives.dart'
+    show Err, Fingerprint, NetworkCapabilities, NetworkCapability, Ok, Result;
 import 'package:secrets/secrets.dart';
 
 class CheckForExistingDefaultWalletsUsecase {
@@ -48,34 +49,30 @@ class CheckForExistingDefaultWalletsUsecase {
     )) {
       case Ok(:final value):
         defaultWallets = value;
-      // LWK disagrees with its own stored status: drop its database and retry
-      // once. Keyed on the failure type now, not on matching the words
-      // "UpdateOnDifferentStatus" in an exception string.
-      case Err(failure: WalletLwkStatusConflictFailure()):
-        log.fine('LWK status conflict, deleting lwkDb');
-        await _walletRepository.deleteLwkDb();
-        log.fine('Deleted LwkDb, retrying getWallets');
-        switch (await _walletRepository.getWallets(
-          onlyDefaults: true,
-          environment: environment,
-        )) {
-          case Ok(:final value):
-            defaultWallets = value;
-          case Err(:final failure):
-            return Err(_walletCheckFailed(failure));
-        }
       case Err(:final failure):
         return Err(_walletCheckFailed(failure));
     }
 
     if (defaultWallets.isEmpty) {
-      log.fine('No default wallets found');
-      return const Ok(false);
+      // An empty developer network is not a fresh installation. Preserve
+      // app protection and route to the network-wallet setup on the home page.
+      return switch (await _walletRepository.hasStoredWallets()) {
+        Ok(:final value) => Ok(value),
+        Err(:final failure) => Err(_walletCheckFailed(failure)),
+      };
     }
 
     final hasBitcoin = defaultWallets.any((w) => w.network.isBitcoin);
     final hasLiquid = defaultWallets.any((w) => w.network.isLiquid);
-    if (!hasBitcoin || !hasLiquid) {
+    final liquidNetwork = Network.fromEnvironment(
+      environment: environment.networkEnv,
+      isLiquid: true,
+    );
+    final needsLiquid = NetworkCapabilities.supports(
+      liquidNetwork.shared,
+      NetworkCapability.softwareWallet,
+    );
+    if (!hasBitcoin || (needsLiquid && !hasLiquid)) {
       final missing = !hasBitcoin ? 'bitcoin' : 'liquid';
       log.severe(
         message:
@@ -92,13 +89,10 @@ class CheckForExistingDefaultWalletsUsecase {
             'default secret unavailable: ${failure.runtimeType}',
           ),
         };
-        final network = !hasBitcoin
-            ? (environment.isMainnet
-                  ? Network.bitcoinMainnet
-                  : Network.bitcoinTestnet)
-            : (environment.isMainnet
-                  ? Network.liquidMainnet
-                  : Network.liquidTestnet);
+        final network = Network.fromEnvironment(
+          environment: environment.networkEnv,
+          isLiquid: hasBitcoin,
+        );
         await _walletRepository.createWallet(
           secret: secret,
           network: network,
@@ -141,7 +135,7 @@ class CheckForExistingDefaultWalletsUsecase {
           log.fine('FINE: Seed Found');
         case Err(failure: KeystoreLockedFailure()):
           log.warning(
-            'Keystore locked while checking ${wallet.masterFingerprint}; '
+            'Keystore locked while checking default wallet; '
             'waiting for unlock',
           );
           return const Err(AppStartupKeychainLockedFailure());

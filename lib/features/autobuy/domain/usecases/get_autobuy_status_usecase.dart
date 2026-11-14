@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
+import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
 import 'package:bb_mobile/features/autobuy/domain/autobuy_failure.dart';
 import 'package:bb_mobile/features/autobuy/domain/autobuy_status.dart';
 import 'package:bull_logger/bull_logger.dart';
@@ -18,6 +18,9 @@ class GetAutoBuyStatusUsecase {
       summary = await _getExchangeUserSummaryUsecase.execute();
     } on Error {
       rethrow;
+    } on GetExchangeUserSummaryCredentialException catch (e) {
+      log.info('Exchange account credential refused: ${e.runtimeType}');
+      return Err(AutoBuyAccountUnavailableFailure('$e'));
     } on GetExchangeUserSummaryException catch (e, st) {
       log.severe(
         message: 'Failed to load the AutoBuy account status',

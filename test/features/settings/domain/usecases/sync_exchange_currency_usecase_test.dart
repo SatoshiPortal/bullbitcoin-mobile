@@ -2,8 +2,8 @@ import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
 import 'package:bb_mobile/core/exchange/domain/exchange_user_failure.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_user_repository.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
+import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/settings/domain/settings_failure.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/sync_exchange_currency_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -51,6 +51,16 @@ void main() {
   });
 
   group('SyncExchangeCurrencyUsecase', () {
+    test('regtest refuses exchange currency sync before backend IO', () async {
+      when(settings.fetch).thenAnswer(
+        (_) async => mainnetSettings.copyWith(environment: Environment.regtest),
+      );
+      final result = await usecase.execute('CAD');
+      expect(result, isA<Err>());
+      verifyZeroInteractions(mainnetUsers);
+      verifyZeroInteractions(testnetUsers);
+    });
+
     test('a currency the exchange does not offer is not synced', () async {
       final result = await usecase.execute('JPY');
 

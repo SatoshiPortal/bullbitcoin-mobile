@@ -92,7 +92,6 @@ void main() {
 
       await expectLater(
         datasource.createSellOrder(
-          apiKey: 'key',
           fiatCurrency: FiatCurrency.eur,
           recipientId: 'own-account',
           paymentProcessor: SepaPaymentProcessor.regular,
@@ -115,7 +114,6 @@ void main() {
     test('balance keeps the sellToBalance contract', () async {
       stubPost(_order(orderJsonFixture(orderType: 'Sell Bitcoin')));
       await datasource.createSellOrder(
-        apiKey: 'key',
         fiatCurrency: FiatCurrency.eur,
         orderAmount: const FiatAmount(100),
         network: OrderBitcoinNetwork.bitcoin,
@@ -135,7 +133,6 @@ void main() {
         () async {
           stubPost(_order(orderJsonFixture(orderType: 'Fiat Payment')));
           final model = await datasource.createSellOrder(
-            apiKey: 'key',
             fiatCurrency: FiatCurrency.eur,
             recipientId: 'own-account',
             paymentProcessor: processor,
@@ -172,7 +169,6 @@ void main() {
         );
         await expectLater(
           datasource.createSellOrder(
-            apiKey: 'key',
             fiatCurrency: FiatCurrency.eur,
             recipientId: 'own-account',
             paymentProcessor: SepaPaymentProcessor.confidential,
@@ -194,7 +190,7 @@ void main() {
         orderJsonFixture(orderId: 'good-2'),
       ]);
 
-      final orders = await datasource.listOrderSummaries(apiKey: 'key');
+      final orders = await datasource.listOrderSummaries();
 
       expect(orders.map((o) => o.orderId), ['good-1', 'good-2']);
     });
@@ -205,7 +201,7 @@ void main() {
         orderJsonFixture(orderId: 'good-1'),
       ]);
 
-      final orders = await datasource.listOrderSummaries(apiKey: 'key');
+      final orders = await datasource.listOrderSummaries();
 
       expect(orders.map((o) => o.orderId), ['expired-1', 'good-1']);
     });
@@ -222,7 +218,6 @@ void main() {
       ).thenAnswer((_) async => _order(orderJsonFixture()));
 
       await datasource.createWithdrawalOrder(
-        apiKey: 'key',
         fiatAmount: 100,
         recipientId: 'recipient-1',
       );
@@ -255,7 +250,6 @@ void main() {
       ).thenAnswer((_) async => _order(orderJsonFixture()));
 
       await datasource.createWithdrawalOrder(
-        apiKey: 'key',
         fiatAmount: 100,
         recipientId: 'recipient-1',
         securityQuestion: 'Favourite city?',
@@ -301,7 +295,6 @@ void main() {
       stubPost(_order(orderJsonFixture()));
 
       await datasource.createWithdrawalOrder(
-        apiKey: 'key',
         fiatAmount: 100,
         recipientId: 'recipient-1',
         paymentProcessor: SepaPaymentProcessor.confidential,
@@ -319,7 +312,6 @@ void main() {
 
       await expectLater(
         datasource.createWithdrawalOrder(
-          apiKey: 'key',
           fiatAmount: 100,
           recipientId: 'recipient-1',
           paymentProcessor: SepaPaymentProcessor.confidential,

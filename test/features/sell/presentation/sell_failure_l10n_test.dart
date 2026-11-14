@@ -12,6 +12,7 @@ const _rawReason =
     'bc1qsecret, xprv9s21ZrQH143K3';
 
 final _everyFailure = <SellFailure>[
+  const SellPayjoinPausedFailure(),
   const SellUnauthenticatedFailure(_rawReason),
   const SellBelowMinAmountFailure(
     minAmount: 10,
@@ -97,6 +98,22 @@ void main() {
         withoutReason,
         reason: 'the message must not depend on the raw reason at all',
       );
+    });
+
+    testWidgets('a busy wallet is told to retry, not to await a payment', (
+      tester,
+    ) async {
+      final busy = await _translate(
+        tester,
+        const SellSpendBlockedFailure(busy: true),
+      );
+      final awaiting = await _translate(
+        tester,
+        const SellSpendBlockedFailure(),
+      );
+
+      expect(busy, isNot(awaiting));
+      expect(busy, contains('busy'));
     });
 
     testWidgets('every variant reads differently from the catch-all', (

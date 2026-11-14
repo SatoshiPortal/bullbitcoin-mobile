@@ -1,6 +1,6 @@
 import 'package:boltz_swaps/boltz_swaps.dart';
 import 'package:bb_mobile/core/utils/generic_extensions.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet_transaction.dart';
 import 'package:bb_mobile/features/transactions/application/ports/transaction_export_formatter.dart';
 import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';

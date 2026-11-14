@@ -131,7 +131,10 @@ void main() {
 
     test('a model does not follow the list it was built from', () {
       final input = [...a];
-      final model = MnemonicSecretModel(mnemonicWords: input);
+      final model = MnemonicSecretModel(
+        language: Language.english,
+        mnemonicWords: input,
+      );
       input.setAll(0, b);
       expect(model.mnemonicWords, a);
     });

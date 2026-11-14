@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:primitives/primitives.dart' show BitcoinUnit;
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/autoswap/domain/autoswap_failure.dart';
@@ -7,6 +7,8 @@ import 'package:flutter/widgets.dart';
 extension AutoswapFailureL10n on AutoswapFailure {
   String toTranslated(BuildContext context, {BitcoinUnit? unit}) =>
       switch (this) {
+        AutoswapUnsupportedNetworkFailure() =>
+          context.loc.networkFeatureUnavailable,
         AutoswapSettingsUnavailableFailure() =>
           context.loc.autoswapLoadSettingsError,
         AutoswapSettingsSaveFailure() =>

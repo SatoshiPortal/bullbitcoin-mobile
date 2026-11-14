@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/failures/failure.dart';
+import 'package:primitives/primitives.dart' show Failure;
 
 /// Failures of [ExchangeUserRepository], the account side of the exchange API.
 ///
@@ -12,6 +12,12 @@ sealed class ExchangeUserFailure extends Failure {
 /// signal is "log in", not "retry".
 final class ExchangeUserNotAuthenticatedFailure extends ExchangeUserFailure {
   const ExchangeUserNotAuthenticatedFailure([super.logMessage]);
+}
+
+/// A stored credential is temporarily unreadable or invalid; retry, never logout.
+final class ExchangeUserCredentialUnavailableFailure
+    extends ExchangeUserFailure {
+  const ExchangeUserCredentialUnavailableFailure([super.logMessage]);
 }
 
 /// The account could not be read.

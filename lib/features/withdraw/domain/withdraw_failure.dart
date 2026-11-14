@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/failures/failure.dart';
+import 'package:primitives/primitives.dart' show Failure;
 
 sealed class WithdrawFailure extends Failure {
   const WithdrawFailure([super.logMessage]);
@@ -52,4 +52,9 @@ final class WithdrawConfidentialSepaNotActivatedFailure
 /// deliberately ignores it and returns a generic message.
 final class WithdrawUnexpectedFailure extends WithdrawFailure {
   const WithdrawUnexpectedFailure([super.logMessage]);
+}
+
+/// The selected network has no exchange withdrawal service.
+final class WithdrawUnsupportedNetworkFailure extends WithdrawFailure {
+  const WithdrawUnsupportedNetworkFailure();
 }

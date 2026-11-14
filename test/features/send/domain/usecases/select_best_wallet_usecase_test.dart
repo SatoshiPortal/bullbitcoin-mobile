@@ -1,7 +1,7 @@
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/utils/payment_request.dart';
-import 'package:bb_mobile/core/utils/result.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:primitives/primitives.dart' show Err, Ok;
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/send/domain/send_failure.dart';
 import 'package:bb_mobile/features/send/domain/usecases/select_best_wallet_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -13,6 +13,15 @@ void main() {
     address: 'bc1qaddress',
     isTestnet: false,
   );
+
+  test('unknown balance cannot fund even an amountless payment', () {
+    final unknown = _wallet(
+      id: 'unknown',
+      balanceSat: 100000,
+    ).copyWith(balanceSat: null);
+    expect(unknown.unavailable, isTrue);
+    expect(usecase.execute(wallets: [unknown], request: request), isA<Err>());
+  });
 
   test('prefers the default wallet on the request network', () async {
     final result = usecase.execute(

@@ -19,19 +19,26 @@ final class FingerprintDeriver {
 
   /// The BIP39 seed of [words] in [language] with [passphrase]. Throws bip39's own exception on words that are not a mnemonic — before any PBKDF2 is spent.
   ///
-  /// bip39 validates; the PBKDF2 runs on `package:crypto`, about 20× faster than bip39's pointycastle one and paid on every operation. Pinned against bip39 by `seed_pbkdf2_test.dart`. The sentence is the words themselves joined by a space, which NFKD makes identical to a sentence joined by the language's own separator.
+  /// bip39 validates; the PBKDF2 runs on `package:crypto`, about 20× faster than bip39's pointycastle one and paid on every operation. Pinned against bip39 by `seed_pbkdf2_test.dart`. The sentence is bip39's canonical words joined by a space, which NFKD makes identical to a sentence joined by the language's own separator.
   Uint8List seed(
     List<String> words, {
     String passphrase = '',
     bip39.Language language = bip39.Language.english,
   }) {
+    words = normalizeWords(words);
     _elements(words, language);
     final mnemonic = bip39.Mnemonic.fromWords(words: words, language: language);
     return _pbkdf2HmacSha512(
-      password: utf8.encode(nfkd(mnemonic.words.join(' '))),
+      // bip39 rebuilds `words` from its wordlists, which are NFKD already
+      // (all ten, pinned by `seed_pbkdf2_test.dart`), so only the
+      // caller-supplied passphrase needs normalizing.
+      password: utf8.encode(mnemonic.words.join(' ')),
       salt: utf8.encode(nfkd('mnemonic$passphrase')),
     );
   }
+
+  /// Canonical BIP39 spelling, without changing element boundaries.
+  List<String> normalizeWords(List<String> words) => words.map(nfkd).toList();
 
   /// The master fingerprint of a seed — 4 bytes, 8 lowercase hex.
   Fingerprint fingerprint(Uint8List seed) =>
@@ -42,6 +49,7 @@ final class FingerprintDeriver {
     List<String> words, {
     bip39.Language language = bip39.Language.english,
   }) {
+    words = normalizeWords(words);
     _elements(words, language);
     bip39.Mnemonic.fromWords(words: words, language: language);
   }

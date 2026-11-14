@@ -1,8 +1,7 @@
 import 'package:boltz_swaps/boltz_swaps.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet_transaction.dart';
 import 'package:bb_mobile/features/transactions/adapters/csv_transaction_export_formatter.dart';
-import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/transactions/domain/transaction_failure.dart';
 import 'package:bb_mobile/features/transactions/application/usecases/export_transactions_csv_usecase.dart';
 import 'package:bb_mobile/features/transactions/application/usecases/get_transactions_usecase.dart';
@@ -10,7 +9,7 @@ import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
-import 'package:primitives/primitives.dart' show BitcoinNetwork, Sats;
+import 'package:primitives/primitives.dart' show BitcoinNetwork, Err, Ok, Sats;
 
 class _MockGetTransactionsUsecase extends Mock
     implements GetTransactionsUsecase {}
@@ -45,7 +44,7 @@ Swap _lnReceive({String id = 'swap_ln_recv', String? receiveTxid}) =>
       keyIndex: 0,
       type: SwapType.lightningToBitcoin,
       status: SwapStatus.completed,
-      environment: Environment.mainnet,
+      environment: SwapEnvironment.mainnet,
       creationTime: DateTime.utc(2026, 3, 1, 12),
       receiveWalletId: 'w1',
       invoice: 'lnbc_test_invoice_recv',
@@ -61,7 +60,7 @@ Swap _lnSend({
   keyIndex: 0,
   type: SwapType.bitcoinToLightning,
   status: SwapStatus.completed,
-  environment: Environment.mainnet,
+  environment: SwapEnvironment.mainnet,
   creationTime: DateTime.utc(2026, 3, 2, 14),
   sendWalletId: 'w1',
   invoice: 'lnbc_test_invoice_send',
@@ -84,7 +83,7 @@ Swap _chainSwap({
   keyIndex: 0,
   type: type,
   status: SwapStatus.completed,
-  environment: Environment.mainnet,
+  environment: SwapEnvironment.mainnet,
   creationTime: DateTime.utc(2026, 3, 3, 10),
   sendWalletId: 'w1',
   paymentAddress: 'bc1qsendaddr',

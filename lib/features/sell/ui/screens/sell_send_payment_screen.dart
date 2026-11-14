@@ -1,9 +1,9 @@
+import 'package:primitives/primitives.dart' show BitcoinUnit;
 import 'package:bb_mobile/features/sell/domain/sell_order_payin_x.dart';
 import 'package:bb_mobile/features/sell/ui/widgets/sell_payout_details_v2.dart';
 import 'package:bb_mobile/core/widgets/lists/payment_detail_row.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
@@ -390,6 +390,19 @@ class _BottomButtons extends StatelessWidget {
     final isReady = context.select(
       (SellBloc bloc) => bloc.state is SellPaymentState,
     );
+    final paused = context.select(
+      (SellBloc bloc) => switch (bloc.state) {
+        SellPaymentState(:final pausedPayjoinSession) => pausedPayjoinSession,
+        _ => null,
+      },
+    );
+    final retrying = context.select(
+      (SellBloc bloc) => switch (bloc.state) {
+        SellPaymentState(:final isRetryingPayjoinProposal) =>
+          isRetryingPayjoinProposal,
+        _ => false,
+      },
+    );
     final pastDeadlineTxid = context.select(
       (SellBloc bloc) => switch (bloc.state) {
         SellPaymentState(
@@ -437,6 +450,16 @@ class _BottomButtons extends StatelessWidget {
             actionLabel: context.loc.exchangePaymentSentLeave,
             onAction: () => _leavePastDeadlinePayin(context),
           )
+        else if (paused != null && !isPayinBroadcast)
+          BullButton.big(
+            label: context.loc.retry,
+            disabled: retrying || !paused.canRetryProposal,
+            onPressed: () => context.read<SellBloc>().add(
+              const SellEvent.payjoinProposalRetryRequested(),
+            ),
+            bgColor: context.appColors.secondary,
+            textColor: context.appColors.onSecondary,
+          )
         else if (isConfirmingPayment || isPayinBroadcast)
           BullAsyncStatus.progress(
             label: isPayinBroadcast
@@ -465,7 +488,9 @@ class _SellError extends StatelessWidget {
   Widget build(BuildContext context) {
     final SellFailure? sellError = context.select(
       (SellBloc bloc) => bloc.state is SellPaymentState
-          ? (bloc.state as SellPaymentState).error
+          ? ((bloc.state as SellPaymentState).pausedPayjoinSession != null
+                ? const SellPayjoinPausedFailure()
+                : (bloc.state as SellPaymentState).error)
           : null,
     );
 

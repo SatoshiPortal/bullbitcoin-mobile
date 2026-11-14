@@ -1,6 +1,6 @@
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
+import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/limit_orders/data/datasources/limit_orders_api_datasource.dart';
 import 'package:bb_mobile/features/limit_orders/data/limit_order_repository_impl.dart';
 import 'package:bb_mobile/features/limit_orders/domain/entities/limit_order.dart';
@@ -40,6 +40,24 @@ void main() {
     settingsRepository = MockSettingsRepository();
     repository = LimitOrderRepositoryImpl(mainnet, testnet, settingsRepository);
     useEnvironment(isTestnet: false);
+  });
+
+  test('regtest refuses before either orders backend', () async {
+    when(() => settingsRepository.fetch()).thenAnswer(
+      (_) async => const SettingsEntity(
+        environment: Environment.regtest,
+        bitcoinUnit: BitcoinUnit.sats,
+        currencyCode: 'CAD',
+      ),
+    );
+    when(() => mainnet.listActive()).thenAnswer((_) async => []);
+
+    expect(
+      failureOf(await repository.listActive()),
+      isA<LimitOrdersUnsupportedNetworkFailure>(),
+    );
+    verifyZeroInteractions(mainnet);
+    verifyZeroInteractions(testnet);
   });
 
   test('routes to the testnet datasource on testnet', () async {

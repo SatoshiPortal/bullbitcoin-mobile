@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/recipients/application/dtos/recipient_details_dto.dart';
 import 'package:bb_mobile/features/recipients/domain/entities/recipient.dart';
 import 'package:bb_mobile/features/recipients/application/ports/recipients_gateway_port.dart';
@@ -39,7 +39,7 @@ class AddRecipientUsecase {
     final bool isTestnet;
     switch (await _getRecipientsEnvironmentUsecase.execute()) {
       case Ok(:final value):
-        isTestnet = value.isTestnet;
+        isTestnet = value.requireHistoricalTestnet();
       case Err(:final failure):
         return Err(failure);
     }

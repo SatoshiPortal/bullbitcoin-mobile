@@ -1,3 +1,5 @@
+import 'package:bb_mobile/features/sell/domain/retry_payjoin_proposal_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/network_x.dart';
 import 'dart:async';
 
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
@@ -5,13 +7,12 @@ import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
 import 'package:bb_mobile/core/exchange/domain/order_deadline_scheduler.dart';
 import 'package:bb_mobile/core/fees/domain/fee_preview_cache.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart' hide Network;
+import 'package:bb_mobile/core/utils/constants.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart' hide Network;
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bull_logger/bull_logger.dart' show log;
-import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/widgets/fees/fee_modal_controller.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/features/recipients/public/recipients_facade.dart';
@@ -59,6 +60,7 @@ class SellBloc extends Bloc<SellEvent, SellState>
     required this._sendWithPayjoinUsecase,
     required this._watchPayjoinUsecase,
     required this._getPayjoinUsecase,
+    required this._retryPayjoinProposalUsecase,
     required this._calculateSellLiquidFeesUsecase,
     required this._loadSellWalletUtxosUsecase,
     required this._readSellPayinTxidUsecase,
@@ -84,6 +86,10 @@ class SellBloc extends Bloc<SellEvent, SellState>
     on<SellPollOrderStatus>(_onPollOrderStatus);
     on<SellPayjoinToggled>(_onPayjoinToggled);
     on<SellPayjoinSessionUpdated>(_onPayjoinSessionUpdated);
+    on<SellPayjoinProposalRetryRequested>(
+      _onPayjoinProposalRetryRequested,
+      transformer: droppable(),
+    );
     on<SellReplaceByFeeChanged>(_onReplaceByFeeChanged);
     on<SellUtxosSelected>(_onUtxosSelected);
     on<SellLoadUtxos>(_onLoadUtxos);
@@ -106,6 +112,7 @@ class SellBloc extends Bloc<SellEvent, SellState>
   final SendWithPayjoinUsecase _sendWithPayjoinUsecase;
   final WatchPayjoinUsecase _watchPayjoinUsecase;
   final GetPayjoinUsecase _getPayjoinUsecase;
+  final RetryPayjoinProposalUsecase _retryPayjoinProposalUsecase;
   final CalculateSellLiquidFeesUsecase _calculateSellLiquidFeesUsecase;
   final LoadSellWalletUtxosUsecase _loadSellWalletUtxosUsecase;
   final ReadSellPayinTxidUsecase _readSellPayinTxidUsecase;
@@ -299,7 +306,12 @@ class SellBloc extends Bloc<SellEvent, SellState>
         );
       }
 
-      if (event.wallet.balanceSat.toInt() < requiredAmountSat) {
+      final balance = event.wallet.balanceSat;
+      if (balance == null) {
+        emit(preparing.copyWith(error: const SellUnexpectedFailure()));
+        return;
+      }
+      if (balance.toInt() < requiredAmountSat) {
         if (!isCurrent()) return;
         emit(
           preparing.copyWith(
@@ -407,6 +419,7 @@ class SellBloc extends Bloc<SellEvent, SellState>
     if (!isCurrent()) return;
     try {
       final orderResult = await _createSellOrderUsecase.execute(
+        walletId: event.wallet.id,
         orderAmount: walletSelectionState.orderAmount,
         currency: walletSelectionState.fiatCurrency,
         recipient: event.recipient,
@@ -517,6 +530,7 @@ class SellBloc extends Bloc<SellEvent, SellState>
 
     try {
       final orderResult = await _createSellOrderUsecase.execute(
+        walletId: null,
         orderAmount: walletSelectionState.orderAmount,
         currency: walletSelectionState.fiatCurrency,
         network: event.network,
@@ -667,6 +681,9 @@ class SellBloc extends Bloc<SellEvent, SellState>
     SellSendPaymentConfirmed event,
     Emitter<SellState> emit,
   ) async {
+    // A retained proposal owns this payment, including its paused feedback.
+    if (_activePayjoinSessionId != null) return;
+
     // We should be on a SellPaymentState
     final sellPaymentState = state.toCleanPaymentState;
     if (sellPaymentState == null) {
@@ -687,14 +704,6 @@ class SellBloc extends Bloc<SellEvent, SellState>
       } catch (e) {
         log.severe(error: e, trace: StackTrace.current);
       }
-      return;
-    }
-
-    // Second half of that same latch, for the payjoin path: the txid only lands
-    // once the session resolves, so until then the *session* is what says this
-    // order's payin is already committed.
-    if (_activePayjoinSessionId != null) {
-      emit(sellPaymentState.copyWith(isConfirmingPayment: true));
       return;
     }
 
@@ -774,7 +783,10 @@ class SellBloc extends Bloc<SellEvent, SellState>
           _emitSendPaymentError(emit, const SellQuoteExpiredFailure());
           return;
         }
-        final broadcast = await _broadcastSellPayinUsecase.liquid(signedPset);
+        final broadcast = await _broadcastSellPayinUsecase.liquid(
+          signedPset,
+          walletId: wallet.id,
+        );
         if (broadcast case Err(:final failure)) {
           _emitSendPaymentError(emit, failure);
           return;
@@ -880,7 +892,7 @@ class SellBloc extends Bloc<SellEvent, SellState>
           log.fine('Sell Payjoin sender creation started');
           final payjoinResult = await _sendWithPayjoinUsecase.execute(
             walletId: wallet.id,
-            isTestnet: wallet.network.isTestnet,
+            network: wallet.network.bitcoin,
             bip21: payjoinBip21,
             unsignedOriginalPsbt: preparedSend.unsignedPsbt,
             amountSat: payinAmountSat,
@@ -987,7 +999,9 @@ class SellBloc extends Bloc<SellEvent, SellState>
           }
           final broadcast = await _broadcastSellPayinUsecase.bitcoin(
             signedTx.signedPsbt,
+            walletId: wallet.id,
             isPsbt: true,
+            network: wallet.network,
           );
           if (broadcast case Err(:final failure)) {
             _emitSendPaymentError(emit, failure);
@@ -1004,13 +1018,14 @@ class SellBloc extends Bloc<SellEvent, SellState>
         }
       }
       if (!waitingForPayjoin) await _completeAfterBroadcast(emit);
-    } catch (e, st) {
+    } catch (_) {
+      const code = 'sell_payin_confirmation_failed';
       log.severe(
-        message: 'Unexpected error while confirming the sell payin',
-        error: e,
-        trace: st,
+        message: '$code category=unexpected',
+        error: Exception(code),
+        trace: StackTrace.current,
       );
-      _emitSendPaymentError(emit, SellUnexpectedFailure(e.toString()));
+      _emitSendPaymentError(emit, SellUnexpectedFailure(code));
     } finally {
       final current = _currentPaymentState;
       // Once broadcast, the confirmation stays in flight until the order
@@ -1068,12 +1083,76 @@ class SellBloc extends Bloc<SellEvent, SellState>
         );
   }
 
+  Future<void> _onPayjoinProposalRetryRequested(
+    SellPayjoinProposalRetryRequested event,
+    Emitter<SellState> emit,
+  ) async {
+    final current = _currentPaymentState;
+    final paused = current?.pausedPayjoinSession;
+    if (current == null ||
+        paused == null ||
+        !paused.canRetryProposal ||
+        current.isRetryingPayjoinProposal ||
+        current.isPayinBroadcast ||
+        paused.id != _activePayjoinSessionId ||
+        current.sellOrder.orderId != _activePayjoinOrderId) {
+      return;
+    }
+    final orderId = current.sellOrder.orderId;
+    emit(current.copyWith(isRetryingPayjoinProposal: true));
+    final result = await _retryPayjoinProposalUsecase.execute(paused.id);
+    final latest = _currentPaymentState;
+    if (emit.isDone ||
+        latest == null ||
+        latest.isPayinBroadcast ||
+        _activePayjoinSessionId != paused.id ||
+        _activePayjoinOrderId != orderId ||
+        latest.sellOrder.orderId != orderId) {
+      return;
+    }
+    // The subscription owns session transitions; a late retry response must
+    // never replace a newer observation or revive a completed payment.
+    emit(
+      latest.copyWith(
+        isRetryingPayjoinProposal: false,
+        error:
+            result is Err<PayjoinSession, SellFailure> &&
+                identical(latest.pausedPayjoinSession, paused)
+            ? result.failure
+            : latest.error,
+      ),
+    );
+  }
+
   Future<void> _onPayjoinSessionUpdated(
     SellPayjoinSessionUpdated event,
     Emitter<SellState> emit,
   ) async {
     final session = event.session;
-    if (session.id != _activePayjoinSessionId || session.isOngoing) return;
+    if (session.id != _activePayjoinSessionId) return;
+    if (session.isOngoing) {
+      final current = _currentPaymentState;
+      if (current == null ||
+          current.sellOrder.orderId != _activePayjoinOrderId ||
+          current.isPayinBroadcast) {
+        return;
+      }
+      final paused =
+          session is PayjoinSenderSession && session.spendFailure != null
+          ? session
+          : null;
+      emit(
+        current.copyWith(
+          pausedPayjoinSession: paused,
+          error: paused != null
+              ? const SellPayjoinPausedFailure()
+              : current.error is SellPayjoinPausedFailure
+              ? null
+              : current.error,
+        ),
+      );
+      return;
+    }
     if (session.hasProposal) {
       log.fine(
         'Sell Payjoin session resolved: ${session.logRef}, '
@@ -1114,7 +1193,14 @@ class SellBloc extends Bloc<SellEvent, SellState>
     }
 
     if (session.isExpired) {
-      emit(current.copyWith(isConfirmingPayment: false));
+      emit(
+        current.copyWith(
+          isConfirmingPayment: false,
+          error: null,
+          pausedPayjoinSession: null,
+          isRetryingPayjoinProposal: false,
+        ),
+      );
       return;
     }
 
@@ -1150,6 +1236,8 @@ class SellBloc extends Bloc<SellEvent, SellState>
     emit(
       current.copyWith(
         payinBroadcastTxid: txid,
+        pausedPayjoinSession: null,
+        isRetryingPayjoinProposal: false,
         isConfirmingPayment: true,
         error: null,
       ),

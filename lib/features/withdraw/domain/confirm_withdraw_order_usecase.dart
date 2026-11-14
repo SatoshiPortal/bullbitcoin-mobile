@@ -1,8 +1,8 @@
+import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/core/errors/exchange_errors.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
-import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/recipients/public/recipients_facade.dart';
 import 'package:bb_mobile/features/withdraw/domain/withdraw_failure.dart';
 import 'package:bull_logger/bull_logger.dart';
@@ -30,18 +30,35 @@ class ConfirmWithdrawOrderUsecase {
     final WithdrawOrder order;
     try {
       final settings = await _settingsRepository.fetch();
-      final isTestnet = settings.environment.isTestnet;
+      final environment = settings.environment.networkEnv;
+      final exchangeNetwork = switch (environment) {
+        NetworkEnv.mainnet => BitcoinNetwork.mainnet,
+        NetworkEnv.testnet => BitcoinNetwork.testnet,
+        NetworkEnv.regtest => BitcoinNetwork.regtest,
+        NetworkEnv.signet => BitcoinNetwork.signet,
+      };
+      if (!NetworkCapabilities.supports(
+        exchangeNetwork,
+        NetworkCapability.exchange,
+      )) {
+        log.warning('Capability refused feature=withdraw reason=unsupported');
+        return const Err(WithdrawUnsupportedNetworkFailure());
+      }
+      final isTestnet = environment == NetworkEnv.testnet;
       final repo = isTestnet
           ? _testnetExchangeOrderRepository
           : _mainnetExchangeOrderRepository;
       order = await repo.confirmWithdrawOrder(orderId);
+    } on ExchangeCredentialUnavailableException {
+      log.warning('Exchange order unavailable: credential read refused');
+      return const Err(WithdrawUnexpectedFailure());
     } on ApiKeyException catch (e, st) {
-      log.severe(
-        message: 'Cannot confirm the withdrawal order: not authenticated',
-        error: e,
+      log.warning(
+        'Cannot confirm the withdrawal order: not authenticated',
+        error: e.runtimeType,
         trace: st,
       );
-      return Err(WithdrawUnauthenticatedFailure(e.message));
+      return const Err(WithdrawUnauthenticatedFailure());
     } catch (_, st) {
       // The raw error is deliberately dropped, as for order creation: it must
       // not carry order payment data into diagnostics.

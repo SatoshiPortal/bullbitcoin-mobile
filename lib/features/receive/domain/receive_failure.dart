@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/failures/failure.dart';
+import 'package:primitives/primitives.dart' show Failure;
 import 'package:bb_mobile/core/primitives/payment_network.dart';
 
 sealed class ReceiveFailure extends Failure {
@@ -33,6 +33,11 @@ final class ReceiveSwapRouteUnavailableFailure extends ReceiveFailure {
     this.outNetwork,
     String? logMessage,
   }) : super(logMessage);
+}
+
+/// The selected chain/environment does not admit this receive mode.
+final class ReceiveUnsupportedNetworkFailure extends ReceiveFailure {
+  const ReceiveUnsupportedNetworkFailure();
 }
 
 final class ReceiveNetworkFailure extends ReceiveFailure {

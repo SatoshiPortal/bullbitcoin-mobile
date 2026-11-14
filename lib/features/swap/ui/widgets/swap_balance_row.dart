@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:primitives/primitives.dart' show BitcoinUnit;
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
@@ -21,8 +21,10 @@ class SwapBalanceRow extends StatelessWidget {
     final bitcoinUnit = context.select(
       (TransferBloc bloc) => bloc.state.bitcoinUnit,
     );
-    final balanceSat = fromWallet?.balanceSat.toInt() ?? 0;
-    final balance = bitcoinUnit == BitcoinUnit.sats
+    final balanceSat = fromWallet?.balanceSat?.toInt();
+    final balance = balanceSat == null
+        ? context.loc.walletLoadFailed
+        : bitcoinUnit == BitcoinUnit.sats
         ? FormatAmount.sats(balanceSat)
         : FormatAmount.btc(ConvertAmount.satsToBtc(balanceSat));
 

@@ -1,5 +1,7 @@
-import 'package:bb_mobile/core/exchange/domain/usecases/send_support_chat_message_usecase.dart';
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
+import 'package:bb_mobile/features/exchange/domain/read_exchange_environment.dart';
+import 'package:bb_mobile/features/exchange/domain/usecases/send_support_chat_message_usecase.dart';
+import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/exchange/domain/exchange_failure.dart';
 import 'package:meta/meta.dart';
 
@@ -11,14 +13,21 @@ import 'package:meta/meta.dart';
 class RequestExchangeAccountDeletionUsecase {
   static const _message = 'I want to delete my account';
 
+  final SettingsRepository _settingsRepository;
   final SendSupportChatMessageUsecase _sendSupportChatMessageUsecase;
 
   const RequestExchangeAccountDeletionUsecase({
     required this._sendSupportChatMessageUsecase,
+    required this._settingsRepository,
   });
 
   @useResult
   Future<Result<void, ExchangeFailure>> execute() async {
+    final allowed = await readExchangeEnvironment(
+      _settingsRepository,
+      ExchangeAccountDeletionRequestFailure.new,
+    );
+    if (allowed case Err(:final failure)) return Err(failure);
     final result = await _sendSupportChatMessageUsecase.execute(text: _message);
 
     return result.mapErr(

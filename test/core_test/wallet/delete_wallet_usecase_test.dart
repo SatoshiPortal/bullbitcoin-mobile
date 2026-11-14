@@ -1,13 +1,19 @@
 import 'package:boltz_swaps/boltz_swaps.dart';
-import 'package:bb_mobile/core/utils/result.dart';
+import 'dart:io';
+import 'package:bull_logger/bull_logger.dart';
+import 'package:bb_mobile/features/wallet/public/wallet_facade.dart'
+    show SeedReferences;
+import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/delete_wallet_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/delete_stored_wallet_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:secrets/secrets.dart';
 import 'package:secrets/testing.dart';
+
+class _MockSeedOwner extends Mock implements SeedReferencePort {}
 
 class _MockWalletRepository extends Mock implements WalletRepository {}
 
@@ -39,6 +45,7 @@ void main() {
   late Secrets secrets;
   late _MockWalletRepository walletRepository;
   late _MockBoltzSwapRepository swapRepository;
+  late SeedReferences references;
   late DeleteWalletUsecase usecase;
   late String fingerprint;
 
@@ -54,7 +61,15 @@ void main() {
     return wallet;
   }
 
+  late Directory logDirectory;
+  tearDown(() async {
+    await log.flush();
+    await logDirectory.delete(recursive: true);
+  });
+
   setUp(() async {
+    logDirectory = await Directory.systemTemp.createTemp("seed-log-");
+    log = Logger.replace(directory: logDirectory);
     storage = FakeSecureStoragePlatform()..install();
     secrets = Secrets(scratchDirectory: () async => '/tmp');
     final stored =
@@ -63,8 +78,10 @@ void main() {
 
     walletRepository = _MockWalletRepository();
     swapRepository = _MockBoltzSwapRepository();
+    references = SeedReferences(walletRepository);
     usecase = DeleteWalletUsecase(
       walletRepository: walletRepository,
+      seedReferences: references,
       swapRepository: swapRepository,
       secrets: secrets,
     );
@@ -76,17 +93,62 @@ void main() {
     ).thenAnswer((_) async => const Ok<void, WalletFailure>(null));
   });
 
+  for (final outcome in ['referenced', 'incomplete', 'throws']) {
+    test('additional custody owner $outcome preserves seed', () async {
+      when(
+        () => walletRepository.getCustodyFingerprints(),
+      ).thenAnswer((_) async => const Ok<Set<Fingerprint>, WalletFailure>({}));
+      final owner = _MockSeedOwner();
+      references.register(owner);
+      if (outcome == 'throws') {
+        when(
+          () => owner.getCustodyFingerprints(),
+        ).thenThrow(Exception('unavailable'));
+      } else {
+        when(() => owner.getCustodyFingerprints()).thenAnswer(
+          (_) async => outcome == 'referenced'
+              ? Ok<Set<Fingerprint>, WalletFailure>({Fingerprint(fingerprint)})
+              : const Err<Set<Fingerprint>, WalletFailure>(
+                  WalletStorageFailure('incomplete'),
+                ),
+        );
+      }
+      when(
+        () => walletRepository.getWallet(walletId),
+      ).thenAnswer((_) async => Ok(buildWallet()));
+      when(
+        () => swapRepository.getOngoingSwaps(walletId: walletId),
+      ).thenAnswer((_) async => []);
+      when(
+        () => walletRepository.deleteWallet(walletId: walletId),
+      ).thenAnswer((_) async => const Ok(null));
+      expect(await usecase.execute(walletId: walletId), isA<Ok>());
+      expect(storage.entries.containsKey(key()), isTrue);
+      final rows = await log.readLogs();
+      expect(rows.map((row) => row.split('\t')[2]), [
+        outcome == 'referenced'
+            ? 'Seed cleanup skipped reason=referenced'
+            : 'Seed cleanup failed reason=references_unavailable',
+      ]);
+    });
+  }
+
   group('DeleteWalletUsecase — orphan seed cleanup (issue #2324)', () {
     test('deletes the secret once no remaining wallet references it', () async {
       when(
         () => walletRepository.getWallet(walletId),
       ).thenAnswer((_) async => Ok<Wallet, WalletFailure>(buildWallet()));
-      when(() => walletRepository.getWallets()).thenAnswer((_) async => Ok([]));
+      when(
+        () => walletRepository.getCustodyFingerprints(),
+      ).thenAnswer((_) async => Ok(<Fingerprint>{}));
 
       final result = await usecase.execute(walletId: walletId);
 
       expect(result, isA<Ok<void, WalletFailure>>());
       expect(storage.entries, isNot(contains(key())));
+      expect((await log.readLogs()).map((row) => row.split('\t')[2]), [
+        'Seed deleted source=wallet_cleanup',
+      ]);
     });
 
     test(
@@ -96,8 +158,8 @@ void main() {
           () => walletRepository.getWallet(walletId),
         ).thenAnswer((_) async => Ok<Wallet, WalletFailure>(buildWallet()));
         when(
-          () => walletRepository.getWallets(),
-        ).thenAnswer((_) async => Ok([buildWallet()]));
+          () => walletRepository.getCustodyFingerprints(),
+        ).thenAnswer((_) async => Ok({Fingerprint(fingerprint)}));
 
         final result = await usecase.execute(walletId: walletId);
 
@@ -116,7 +178,7 @@ void main() {
 
       expect(result, isA<Ok<void, WalletFailure>>());
       expect(storage.entries, contains(key()));
-      verifyNever(() => walletRepository.getWallets());
+      verifyNever(() => walletRepository.getCustodyFingerprints());
     });
 
     test(
@@ -132,10 +194,9 @@ void main() {
             buildWallet(masterFingerprint: fingerprint.toUpperCase()),
           ),
         );
-        when(() => walletRepository.getWallets()).thenAnswer(
-          (_) async => Ok<List<Wallet>, WalletFailure>([
-            buildWallet(masterFingerprint: fingerprint),
-          ]),
+        when(() => walletRepository.getCustodyFingerprints()).thenAnswer(
+          (_) async =>
+              Ok<Set<Fingerprint>, WalletFailure>({Fingerprint(fingerprint)}),
         );
 
         expect(
@@ -159,14 +220,9 @@ void main() {
         when(
           () => walletRepository.getWallet(walletId),
         ).thenAnswer((_) async => Ok<Wallet, WalletFailure>(buildWallet()));
-        when(() => walletRepository.getWallets()).thenAnswer(
-          (_) async => Ok<List<Wallet>, WalletFailure>([
-            buildWallet(
-              masterFingerprint: fingerprint.toUpperCase(),
-              local: false,
-            ),
-          ]),
-        );
+        when(
+          () => walletRepository.getCustodyFingerprints(),
+        ).thenAnswer((_) async => Ok<Set<Fingerprint>, WalletFailure>({}));
 
         expect(
           await usecase.execute(walletId: walletId),
@@ -198,7 +254,7 @@ void main() {
         ).called(1);
         // A watch-only wallet never owned a seed entry, so nothing is even
         // looked up — the same shape as the empty-fingerprint case.
-        verifyNever(() => walletRepository.getWallets());
+        verifyNever(() => walletRepository.getCustodyFingerprints());
         expect(storage.entries, contains(key()));
       },
     );
@@ -210,8 +266,8 @@ void main() {
           () => walletRepository.getWallet(walletId),
         ).thenAnswer((_) async => Ok<Wallet, WalletFailure>(buildWallet()));
         when(
-          () => walletRepository.getWallets(),
-        ).thenAnswer((_) async => Ok([]));
+          () => walletRepository.getCustodyFingerprints(),
+        ).thenAnswer((_) async => Ok(<Fingerprint>{}));
         // Scripted on the MUTATION queue, not the read queue. `trash` performs
         // no read, so an exception queued on `scripted` was never consumed and
         // this test passed while exercising nothing.
@@ -235,7 +291,7 @@ void main() {
           () => walletRepository.getWallet(walletId),
         ).thenAnswer((_) async => Ok<Wallet, WalletFailure>(buildWallet()));
         when(
-          () => walletRepository.getWallets(),
+          () => walletRepository.getCustodyFingerprints(),
         ).thenAnswer((_) async => const Err(WalletUnexpectedFailure('read')));
 
         final result = await usecase.execute(walletId: walletId);

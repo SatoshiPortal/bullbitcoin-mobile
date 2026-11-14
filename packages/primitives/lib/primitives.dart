@@ -5,11 +5,13 @@
 /// dependencies.
 library;
 
+export 'src/bitcoin_unit.dart';
 export 'src/failure.dart';
 export 'src/money.dart';
 export 'src/bitcoin_transaction_recipient.dart';
 export 'src/fingerprint.dart';
 export 'src/network.dart';
+export 'src/network_capabilities.dart';
 export 'src/outpoint.dart';
 export 'src/result.dart';
 export 'src/script_type.dart';

@@ -41,7 +41,7 @@ void main() {
       PayjoinSender sender,
     ) => SendWithPayjoinUsecase(sender).execute(
       walletId: 'wallet-1',
-      isTestnet: false,
+      network: BitcoinNetwork.mainnet,
       bip21: 'bitcoin:bc1qaddress?pj=https://payjo.in/session',
       unsignedOriginalPsbt: 'cHNidP8=',
       amountSat: 100000,

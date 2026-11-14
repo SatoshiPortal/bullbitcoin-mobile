@@ -1,13 +1,13 @@
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_liquid_transaction_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
+import 'package:bb_mobile/features/send/domain/usecases/broadcast_liquid_transaction_usecase.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:boltz_swaps/boltz_swaps.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/auto_swap.dart';
-import 'package:bb_mobile/core/utils/result.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/liquid_wallet_repository.dart';
+import 'package:primitives/primitives.dart';
+import 'package:bb_mobile/features/wallet/data/liquid_wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/get_receive_address_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/get_receive_address_usecase.dart';
 import 'package:bb_mobile/features/autoswap/domain/autoswap_failure.dart';
 import 'package:bb_mobile/features/autoswap/domain/autoswap_provider_port.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
@@ -81,7 +81,10 @@ class BoltzAutoswapProvider implements AutoswapProviderPort {
             : Ok(existing.id);
       }
 
-      final balanceSat = liquidWallet.balanceSat.toInt();
+      final balanceSat = liquidWallet.balanceSat?.toInt();
+      if (balanceSat == null) {
+        return const Err(AutoswapExecutionFailure('Wallet unavailable'));
+      }
       if (!settings.passedRequiredBalance(balanceSat)) {
         return Err(
           AutoswapInsufficientBalanceFailure(
@@ -190,7 +193,7 @@ class BoltzAutoswapProvider implements AutoswapProviderPort {
       );
       final txid = await _broadcastLiquidTransaction.execute(
         signed,
-        isTestnet: environment.isTestnet,
+        isTestnet: environment.requireHistoricalTestnet(),
       );
       final recorded = await _recordSwapLockup.execute(
         swapId: swap.id,

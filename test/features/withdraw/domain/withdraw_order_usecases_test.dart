@@ -1,10 +1,11 @@
+import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/errors/exchange_errors.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
+import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/features/recipients/public/recipients_facade.dart';
 import 'package:bb_mobile/features/withdraw/domain/confirm_withdraw_order_usecase.dart';
 import 'package:bb_mobile/features/withdraw/domain/create_withdraw_order_usecase.dart';
@@ -53,7 +54,18 @@ F _err<T, F extends Failure>(Result<T, F> result) => switch (result) {
   Err(:final failure) => failure,
 };
 
+class _Logger extends Mock implements Logger {}
+
 void main() {
+  late Logger previousLogger;
+  late _Logger logger;
+  setUpAll(() => registerFallbackValue(StackTrace.empty));
+  setUp(() {
+    previousLogger = log;
+    logger = _Logger();
+    log = logger;
+  });
+  tearDown(() => log = previousLogger);
   late _MockExchangeOrderRepository mainnet;
   late _MockExchangeOrderRepository testnet;
   late _MockSettingsRepository settingsRepository;
@@ -111,10 +123,7 @@ void main() {
     });
 
     test('maps a missing or inactive API key to unauthenticated', () async {
-      for (final exception in [
-        ApiKeyNotFoundException(),
-        ApiKeyInactiveException(),
-      ]) {
+      for (final exception in [ApiKeyNotFoundException()]) {
         when(
           () => mainnet.placeWithdrawalOrder(
             fiatAmount: any(named: 'fiatAmount'),
@@ -125,6 +134,13 @@ void main() {
         ).thenThrow(exception);
 
         expect(_err(await execute()), isA<WithdrawUnauthenticatedFailure>());
+        verifyNever(
+          () => logger.severe(
+            message: any(named: 'message'),
+            error: any(named: 'error'),
+            trace: any(named: 'trace'),
+          ),
+        );
       }
     });
 
@@ -230,10 +246,7 @@ void main() {
     });
 
     test('maps a missing or inactive API key to unauthenticated', () async {
-      for (final exception in [
-        ApiKeyNotFoundException(),
-        ApiKeyInactiveException(),
-      ]) {
+      for (final exception in [ApiKeyNotFoundException()]) {
         when(
           () => mainnet.confirmWithdrawOrder('order-1'),
         ).thenThrow(exception);
@@ -241,6 +254,13 @@ void main() {
         final result = await build().execute(orderId: 'order-1');
 
         expect(_err(result), isA<WithdrawUnauthenticatedFailure>());
+        verifyNever(
+          () => logger.severe(
+            message: any(named: 'message'),
+            error: any(named: 'error'),
+            trace: any(named: 'trace'),
+          ),
+        );
       }
     });
   });

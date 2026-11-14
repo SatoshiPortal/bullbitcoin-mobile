@@ -1,11 +1,11 @@
+import 'package:bb_mobile/features/autoswap/domain/repositories/auto_swap_settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/auto_swap.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/get_auto_swap_settings_usecase.dart';
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/autoswap/domain/autoswap_failure.dart';
 import 'package:meta/meta.dart';
 
@@ -59,10 +59,12 @@ class LoadAutoswapSettingsUsecase {
         recipientWalletId:
             autoSwapSettings.recipientWalletId ?? defaultBitcoinWallet?.id,
       ));
+    } on AutoswapNetworkUnavailableException {
+      return const Err(AutoswapUnsupportedNetworkFailure());
     } catch (e, st) {
       log.severe(
         message: 'Failed to load auto swap settings',
-        error: e,
+        error: e.runtimeType,
         trace: st,
       );
       return Err(AutoswapSettingsUnavailableFailure(e.runtimeType.toString()));

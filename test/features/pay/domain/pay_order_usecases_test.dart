@@ -1,8 +1,9 @@
+import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
 import 'package:bb_mobile/core/errors/exchange_errors.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/features/pay/domain/place_pay_order_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/pay_failure.dart';
 import 'package:bb_mobile/features/pay/domain/refresh_pay_order_usecase.dart';
@@ -27,6 +28,7 @@ class _MockPayOrder extends Mock implements FiatPaymentOrder {}
 const _rawReason = 'DioException 500 apiKey=live_secret_abc';
 
 void main() {
+  var spendStatus = BitcoinSpendStatus.ready;
   late _MockExchangeOrderRepository mainnet;
   late _MockExchangeOrderRepository testnet;
   late _MockSettingsRepository settings;
@@ -38,6 +40,7 @@ void main() {
   });
 
   setUp(() {
+    spendStatus = BitcoinSpendStatus.ready;
     mainnet = _MockExchangeOrderRepository();
     testnet = _MockExchangeOrderRepository();
     settings = _MockSettingsRepository();
@@ -53,6 +56,10 @@ void main() {
   });
 
   PlacePayOrderUsecase buildPlace() => PlacePayOrderUsecase(
+    wallet: WalletFacade(
+      const Stream.empty(),
+      spendStatus: (_, {replacing}) async => spendStatus,
+    ),
     mainnetExchangeOrderRepository: mainnet,
     testnetExchangeOrderRepository: testnet,
     settingsRepository: settings,
@@ -66,10 +73,72 @@ void main() {
   );
 
   Future<Result<FiatPaymentOrder, PayFailure>> place() => buildPlace().execute(
+    walletId: 'wallet-1',
     orderAmount: const FiatAmount(100),
     recipientId: 'recipient-1',
     network: OrderBitcoinNetwork.bitcoin,
   );
+
+  test('gated Bitcoin wallet creates no exchange order', () async {
+    spendStatus = BitcoinSpendStatus.pending;
+    final result = await place();
+    expect(
+      result,
+      isA<Err>().having(
+        (result) => result.failure,
+        'failure',
+        isA<PaySpendBlockedFailure>().having((f) => f.busy, 'busy', isFalse),
+      ),
+    );
+    verifyZeroInteractions(mainnet);
+    verifyZeroInteractions(payjoinPolicy);
+  });
+
+  test('a busy wallet is not reported as awaiting a payment', () async {
+    spendStatus = BitcoinSpendStatus.busy;
+    final result = await place();
+    expect(
+      result,
+      isA<Err>().having(
+        (result) => result.failure,
+        'failure',
+        isA<PaySpendBlockedFailure>().having((f) => f.busy, 'busy', isTrue),
+      ),
+    );
+    verifyZeroInteractions(mainnet);
+  });
+
+  for (final refresh in [false, true]) {
+    test(
+      'regtest refuses pay ${refresh ? 'refresh' : 'creation'} before backend IO',
+      () async {
+        when(settings.fetch).thenAnswer(
+          (_) async => const SettingsEntity(
+            environment: Environment.regtest,
+            bitcoinUnit: BitcoinUnit.sats,
+            currencyCode: 'CAD',
+          ),
+        );
+        final result = refresh
+            ? await buildRefresh().execute(
+                orderId: 'order-1',
+                expectedDepositAddress: 'address',
+              )
+            : await place();
+        expect(
+          result,
+          isA<Err>().having(
+            (result) => result.failure,
+            'failure',
+            isA<PayUnsupportedNetworkFailure>(),
+          ),
+        );
+        verifyZeroInteractions(mainnet);
+        verifyZeroInteractions(testnet);
+        verifyZeroInteractions(payjoinPolicy);
+      },
+    );
+  }
 
   group('PlacePayOrderUsecase', () {
     // A bill payment pays the exchange like a sell order does.
@@ -88,6 +157,7 @@ void main() {
       ).thenAnswer((_) async => _MockPayOrder());
 
       final _ = await buildPlace().execute(
+        walletId: 'wallet-1',
         orderAmount: const FiatAmount(100),
         recipientId: 'recipient-1',
         network: OrderBitcoinNetwork.bitcoin,
@@ -140,7 +210,12 @@ void main() {
 
         final failure = (result as Err<FiatPaymentOrder, PayFailure>).failure;
         expect(failure, isA<PayUnauthenticatedFailure>());
-        expect(failure.logMessage, _rawReason);
+        expect(
+          failure.logMessage,
+          isNull,
+          reason:
+              'authentication failures must not retain credential-bearing exception messages',
+        );
       },
     );
 

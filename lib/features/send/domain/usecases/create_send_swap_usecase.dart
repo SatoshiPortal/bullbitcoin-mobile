@@ -1,6 +1,7 @@
+import 'package:bb_mobile/features/wallet/domain/network_x.dart';
+import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/core/utils/payment_request.dart';
-import 'package:bb_mobile/core/utils/result.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/get_receive_address_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/get_receive_address_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
 import 'package:bb_mobile/features/send/domain/send_failure.dart';
 import 'package:bb_mobile/features/send/domain/swap_failure_to_send_failure.dart';
@@ -50,10 +51,16 @@ class CreateSendSwapUsecase {
       if (wallet == null) {
         return const Err(SendSwapCreationFailure('Wallet not found'));
       }
+      if (!NetworkCapabilities.supports(
+        wallet.network.shared,
+        NetworkCapability.swaps,
+      )) {
+        return const Err(SendSwapRouteUnavailableFailure());
+      }
       final inNetwork = wallet.network.isLiquid
           ? OrderSwapNetwork.liquid
           : OrderSwapNetwork.bitcoin;
-      if (invoice.isTestnet != wallet.network.isTestnet) {
+      if (invoice.isTestnet != wallet.network.requireHistoricalTestnet()) {
         return const Err(
           SendInvalidPaymentRequestFailure(
             logMessage: 'Invoice network does not match wallet network',
@@ -73,7 +80,7 @@ class CreateSendSwapUsecase {
         destinationAddress: invoice.invoice,
         fallbackAddress: fallback.address,
         purpose: OrderSwapPurpose.sendLightning,
-        environment: wallet.network.isTestnet
+        environment: wallet.network.requireHistoricalTestnet()
             ? OrderSwapEnvironment.testnet
             : OrderSwapEnvironment.mainnet,
         sourceWalletId: walletId,
@@ -84,10 +91,10 @@ class CreateSendSwapUsecase {
     } catch (error, st) {
       log.severe(
         message: 'Failed to create the send swap',
-        error: error,
+        error: error.runtimeType,
         trace: st,
       );
-      return Err(SendSwapCreationFailure(error.toString()));
+      return Err(SendSwapCreationFailure(error.runtimeType.toString()));
     }
   }
 }

@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/features/transactions/application/usecases/delete_transaction_note_usecase.dart';
 import 'package:bb_mobile/features/transactions/application/usecases/get_transaction_note_suggestions_usecase.dart';
@@ -7,7 +7,6 @@ import 'package:bb_mobile/features/transactions/domain/transaction_failure.dart'
 import 'package:bb_mobile/features/transactions/domain/transaction_label_policy.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:bb_mobile/core/failures/failure.dart';
 
 /// The failure an [Err] carries, typed by the [Result]; an [Ok] fails the test.
 F _failureOf<T, F extends Failure>(Result<T, F> result) => switch (result) {

@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/failures/failure.dart';
+import 'package:primitives/primitives.dart' show Failure;
 
 sealed class PayFailure extends Failure {
   const PayFailure([super.logMessage]);
@@ -90,4 +90,20 @@ final class PayQuoteUnavailableFailure extends PayFailure {
 /// BDK/LWK/API text used to reach the screen verbatim (#1895).
 final class PayUnexpectedFailure extends PayFailure {
   const PayUnexpectedFailure([super.logMessage]);
+}
+
+/// The selected network has no exchange order service.
+final class PayUnsupportedNetworkFailure extends PayFailure {
+  const PayUnsupportedNetworkFailure();
+}
+
+final class PaySpendBlockedFailure extends PayFailure {
+  /// The wallet is only busy with another operation: retrying shortly works.
+  final bool busy;
+  const PaySpendBlockedFailure({this.busy = false});
+}
+
+/// The existing proposal remains reserved until it can safely continue.
+final class PayPayjoinPausedFailure extends PayFailure {
+  const PayPayjoinPausedFailure();
 }

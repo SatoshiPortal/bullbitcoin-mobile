@@ -1,6 +1,6 @@
-import 'package:bb_mobile/core/utils/result.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
+import 'package:primitives/primitives.dart' show Err, Ok;
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet_transaction.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/features/transactions/application/usecases/refresh_transaction_labels_usecase.dart';
 import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';

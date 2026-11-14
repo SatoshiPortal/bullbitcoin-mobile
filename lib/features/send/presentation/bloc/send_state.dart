@@ -1,24 +1,29 @@
+import 'package:primitives/primitives.dart'
+    show
+        BitcoinTransactionRecipient,
+        BitcoinUnit,
+        NetworkCapabilities,
+        NetworkCapability,
+        Outpoint,
+        Sats;
+import 'package:bb_mobile/features/wallet/domain/network_x.dart';
 import 'package:bb_mobile/core/fees/domain/fee_preview_cache.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:boltz_swaps/boltz_swaps.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/liquid_address.dart';
 import 'package:bb_mobile/core/utils/payment_request.dart';
 import 'package:bb_mobile/core/utils/percentage.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/send/presentation/send_wallet_view.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet_transaction.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/outpoint.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:bb_mobile/features/send/domain/send_failure.dart';
 import 'package:bb_mobile/features/send/domain/bitcoin_recipient_list_policy.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:primitives/primitives.dart'
-    show Sats, BitcoinTransactionRecipient;
 
 part 'send_state.freezed.dart';
 
@@ -183,6 +188,7 @@ abstract class SendState with _$SendState {
     // confirm
     String? txId,
     PayjoinSenderSession? payjoinSender,
+    @Default(false) bool isRetryingPayjoinProposal,
     WalletTransaction? walletTransaction,
     @Default(false) bool sendMax,
     @Default(false) bool amountConfirmedClicked,
@@ -236,12 +242,15 @@ abstract class SendState with _$SendState {
     );
     if (isTestnet == null) return const [];
     final matchingWallets = wallets
-        .where((wallet) => wallet.isBitcoin && wallet.isTestnet == isTestnet)
+        .where(
+          (wallet) =>
+              wallet.isBitcoin && !wallet.network.isMainnet == isTestnet,
+        )
         .toList();
     final currentWallet = selectedBitcoinWallet;
     if (currentWallet != null &&
         currentWallet.isBitcoin &&
-        currentWallet.isTestnet == isTestnet &&
+        !currentWallet.network.isMainnet == isTestnet &&
         matchingWallets.every((wallet) => wallet.id != currentWallet.id)) {
       matchingWallets.add(currentWallet);
     }
@@ -304,15 +313,23 @@ abstract class SendState with _$SendState {
   /// confirm screen swaps in a device-specific sign button for those
   /// wallets instead), so without this check the toggle could promise a
   /// payjoin that structurally can never happen for that wallet class.
-  bool get isPayjoinAvailable =>
-      !isSweep &&
-      !hasMultipleRecipients &&
-      !usesSelectedInputsOnly &&
-      payjoinGloballyEnabled &&
-      (selectedWallet?.signsLocally ?? false) &&
-      isToSelf != true &&
-      paymentRequest is Bip21PaymentRequest &&
-      (paymentRequest! as Bip21PaymentRequest).pj.isNotEmpty;
+  bool get isPayjoinAvailable {
+    final wallet = selectedWallet;
+    final request = paymentRequest;
+    return !isSweep &&
+        !hasMultipleRecipients &&
+        !usesSelectedInputsOnly &&
+        payjoinGloballyEnabled &&
+        wallet != null &&
+        NetworkCapabilities.supports(
+          wallet.network.shared,
+          NetworkCapability.payjoin,
+        ) &&
+        wallet.signsLocally &&
+        isToSelf != true &&
+        request is Bip21PaymentRequest &&
+        request.pj.isNotEmpty;
+  }
 
   /// Single source of truth for whether a payjoin will actually be attempted
   /// for this send — same pattern as [Payjoin.canManuallyBroadcastOriginal],
@@ -526,7 +543,7 @@ abstract class SendState with _$SendState {
       code == BitcoinUnit.btc.code || code == BitcoinUnit.sats.code;
 
   String formattedWalletBalance() {
-    if (selectedWallet == null) return '0';
+    if (selectedWallet?.balanceSat == null) return '—';
     final balanceSat = maxAvailableBalanceSat;
 
     if (inputAmountCurrencyCode == BitcoinUnit.btc.code) {
@@ -544,7 +561,8 @@ abstract class SendState with _$SendState {
   }
 
   String formattedApproximateBalance() {
-    if (selectedWallet == null) return '0';
+    final balance = selectedWallet?.balanceSat;
+    if (balance == null) return '—';
 
     final satsBalance = maxAvailableBalanceSat;
 
@@ -603,7 +621,7 @@ abstract class SendState with _$SendState {
   /// full balance before [utxos] have loaded so it never under-reports.
   int get spendableBalanceSat => isSweep
       ? selectedSpendableBalanceSat
-      : (selectedWallet?.balanceSat.toInt() ?? 0) - frozenBalanceSat;
+      : (selectedWallet?.balanceSat?.toInt() ?? 0) - frozenBalanceSat;
 
   int get maxAvailableBalanceSat => usesSelectedInputsOnly
       ? selectedSpendableBalanceSat

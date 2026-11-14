@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
+import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
 import 'package:bb_mobile/features/exchange_settings/domain/entities/account_info.dart';
 import 'package:bb_mobile/features/exchange_settings/domain/exchange_settings_failure.dart';
 import 'package:bull_logger/bull_logger.dart';
@@ -24,6 +24,15 @@ class GetAccountInfoUsecase {
           firstName: summary.profile.firstName,
           lastName: summary.profile.lastName,
           verificationLevel: _verificationLevel(summary),
+        ),
+      );
+    } on Error {
+      rethrow;
+    } on GetExchangeUserSummaryCredentialException catch (e) {
+      log.info('Exchange account credential refused: ${e.runtimeType}');
+      return const Err(
+        ExchangeSettingsAccountUnavailableFailure(
+          'Exchange credential unavailable',
         ),
       );
     } catch (e, st) {

@@ -33,10 +33,19 @@ class BullAmountInputFormatter extends TextInputFormatter {
             : 2); // Fiat currencies default to 2 decimals.
 
     var newText = newValue.text;
+    var selection = newValue.selection;
 
     // Convert commas to dots for decimal input.
     if (decimalPlaces > 0) {
       newText = newText.replaceAll(',', '.');
+      // A leading separator means a zero whole part: ".01" is "0.01".
+      if (newText.startsWith('.')) {
+        newText = '0$newText';
+        selection = TextSelection(
+          baseOffset: selection.baseOffset + 1,
+          extentOffset: selection.extentOffset + 1,
+        );
+      }
     }
 
     // If decimalPlaces is 0, reject any input with comma or dot.
@@ -69,7 +78,7 @@ class BullAmountInputFormatter extends TextInputFormatter {
           selection: TextSelection.collapsed(offset: validText.length),
         );
       } else {
-        return TextEditingValue(text: validText, selection: newValue.selection);
+        return TextEditingValue(text: validText, selection: selection);
       }
     } else if (newText.isEmpty) {
       return const TextEditingValue(

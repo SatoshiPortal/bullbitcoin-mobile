@@ -1,9 +1,10 @@
-import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
-import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_liquid_transaction_usecase.dart';
+import 'package:bb_mobile/features/pay/domain/retry_payjoin_proposal_usecase.dart';
+import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
+import 'package:bb_mobile/features/send/public/send_facade.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/get_order_usercase.dart';
-import 'package:bb_mobile/core/fees/domain/get_network_fees_usecase.dart';
+import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
+import 'package:bb_mobile/features/exchange/domain/usecases/get_order_usercase.dart';
+import 'package:bb_mobile/features/fees/domain/get_network_fees_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 
 import 'package:bb_mobile/core/wallet/domain/usecases/get_address_at_index_usecase.dart';
@@ -26,11 +27,11 @@ import 'package:bb_mobile/features/pay/domain/send_with_payjoin_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/sign_pay_payin_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/watch_payjoin_usecase.dart';
 import 'package:bb_mobile/features/pay/presentation/pay_bloc.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/bitcoin_wallet_repository.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/liquid_wallet_repository.dart';
+import 'package:bb_mobile/features/wallet/data/bitcoin_wallet_repository.dart';
+import 'package:bb_mobile/features/wallet/data/liquid_wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/calculate_bitcoin_absolute_fees_usecase.dart';
 
-import 'package:bb_mobile/core/wallet/domain/usecases/prepare_bitcoin_send_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/prepare_bitcoin_send_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_presets_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_usecase.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
@@ -50,11 +51,15 @@ class PayLocator {
     locator.registerFactory<WatchPayjoinUsecase>(
       () => WatchPayjoinUsecase(locator<PayjoinSessions>()),
     );
+    locator.registerFactory<RetryPayjoinProposalUsecase>(
+      () => RetryPayjoinProposalUsecase(locator<PayjoinSender>()),
+    );
     locator.registerFactory<GetPayjoinUsecase>(
       () => GetPayjoinUsecase(locator<PayjoinSessions>()),
     );
     locator.registerFactory<PlacePayOrderUsecase>(
       () => PlacePayOrderUsecase(
+        wallet: locator<WalletFacade>(),
         mainnetExchangeOrderRepository: locator<ExchangeOrderRepository>(
           instanceName: 'mainnetExchangeOrderRepository',
         ),
@@ -96,10 +101,8 @@ class PayLocator {
     );
     locator.registerFactory<BroadcastPayPayinUsecase>(
       () => BroadcastPayPayinUsecase(
-        broadcastBitcoinTransactionUsecase:
-            locator<BroadcastBitcoinTransactionUsecase>(),
-        broadcastLiquidTransactionUsecase:
-            locator<BroadcastLiquidTransactionUsecase>(),
+        wallet: locator<WalletFacade>(),
+        send: locator<SendFacade>(),
       ),
     );
     locator.registerFactory<LoadPayWalletUtxosUsecase>(
@@ -171,6 +174,7 @@ class PayLocator {
         sendWithPayjoinUsecase: locator<SendWithPayjoinUsecase>(),
         watchPayjoinUsecase: locator<WatchPayjoinUsecase>(),
         getPayjoinUsecase: locator<GetPayjoinUsecase>(),
+        retryPayjoinProposalUsecase: locator<RetryPayjoinProposalUsecase>(),
         previewBitcoinFeeUsecase: locator<PreviewBitcoinFeeUsecase>(),
         previewBitcoinFeePresetsUsecase:
             locator<PreviewBitcoinFeePresetsUsecase>(),

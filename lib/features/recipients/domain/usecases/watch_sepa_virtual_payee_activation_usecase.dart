@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/recipients/application/usecases/get_recipients_environment_usecase.dart';
 import 'package:bb_mobile/features/recipients/domain/recipients_failure.dart';
 import 'package:bb_mobile/features/recipients/domain/repositories/sepa_virtual_payee_repository.dart';
@@ -29,7 +29,7 @@ class WatchSepaVirtualPayeeActivationUsecase {
     final bool isTestnet;
     switch (await _getRecipientsEnvironmentUsecase.execute()) {
       case Ok(:final value):
-        isTestnet = value.isTestnet;
+        isTestnet = value.requireHistoricalTestnet();
       case Err(:final failure):
         yield Err(failure);
         return;

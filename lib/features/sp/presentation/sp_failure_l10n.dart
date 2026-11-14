@@ -24,6 +24,7 @@ extension SpFailureL10n on SpFailure {
     SpInvalidAddress() => context.loc.spFailureInvalidAddress,
     SpBroadcastUncertain() => context.loc.spFailureBroadcastUncertain,
     SpPassphraseUnsupported() => context.loc.spFailurePassphraseUnsupported,
+    SpUnsupportedNetwork() => context.loc.oopsSomethingWentWrong,
     SpUnexpected() => context.loc.oopsSomethingWentWrong,
   };
 }

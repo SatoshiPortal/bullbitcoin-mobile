@@ -1,5 +1,5 @@
-import 'package:bb_mobile/core/wallet/domain/entities/outpoint.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:primitives/primitives.dart' show Outpoint;
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 
 final class SendRouteArgs {
   final Wallet? wallet;

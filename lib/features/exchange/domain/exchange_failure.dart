@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/failures/failure.dart';
+import 'package:primitives/primitives.dart' show Failure;
 
 /// Every user-facing failure of the exchange feature, as one closed family.
 /// Flutter-free: translation lives in `presentation/exchange_failure_l10n.dart`.
@@ -20,6 +20,17 @@ final class ExchangeNotAuthenticatedFailure extends ExchangeFailure {
 /// preferences are all unknown.
 final class ExchangeAccountUnavailableFailure extends ExchangeFailure {
   const ExchangeAccountUnavailableFailure([super.logMessage]);
+}
+
+/// The web request was rejected before a credential was generated.
+/// Leave the WebView open so authentication can continue.
+final class ExchangeAuthenticationDeferredFailure extends ExchangeFailure {
+  const ExchangeAuthenticationDeferredFailure();
+}
+
+/// The web authentication response could not provide a usable credential.
+final class ExchangeAuthenticationFailure extends ExchangeFailure {
+  const ExchangeAuthenticationFailure([super.logMessage]);
 }
 
 /// The API key returned by the auth flow could not be stored, so the session
@@ -65,4 +76,9 @@ final class ExchangeNetworkFailure extends ExchangeFailure {
 /// the presentation extension returns the shared generic string.
 final class ExchangeUnexpectedFailure extends ExchangeFailure {
   const ExchangeUnexpectedFailure([super.logMessage]);
+}
+
+/// This environment has no supported exchange backend.
+final class ExchangeUnsupportedNetworkFailure extends ExchangeFailure {
+  const ExchangeUnsupportedNetworkFailure();
 }

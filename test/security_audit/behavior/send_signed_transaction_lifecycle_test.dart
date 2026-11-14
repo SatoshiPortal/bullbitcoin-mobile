@@ -1,3 +1,5 @@
+import 'package:bb_mobile/features/send/domain/usecases/retry_payjoin_proposal_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart' as app;
 import 'package:primitives/primitives.dart' show Ok;
 import 'package:bb_mobile/features/send/domain/usecases/prepare_send_bitcoin_transaction_usecase.dart';
 // Behavioral proof for two audit findings on SendCubit:
@@ -19,21 +21,20 @@ import 'package:boltz_swaps/boltz_swaps.dart'
         GetSwapLimitsAndFeesUsecase,
         RecordSwapLockupUsecase,
         WatchSwapUsecase;
-import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
-import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_liquid_transaction_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/broadcast_liquid_transaction_usecase.dart';
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
-import 'package:bb_mobile/core/fees/domain/get_network_fees_usecase.dart';
+import 'package:bb_mobile/features/fees/domain/get_network_fees_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/verify_chain_swap_amount_send_usecase.dart';
-import 'package:bb_mobile/core/utils/result.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/calculate_bitcoin_absolute_fees_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/check_liquid_consolidation_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_utxos_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/validate_bitcoin_selection_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_transaction_by_tx_id_usecase.dart';
@@ -243,6 +244,7 @@ class _TestSendCubit extends SendCubit {
     required super.watchSendSwapUsecase,
     required super.sendWithPayjoinUsecase,
     required super.watchPayjoinUsecase,
+    required super.retryPayjoinProposalUsecase,
     required super.watchFinishedWalletSyncsUsecase,
     required super.calculateLiquidAbsoluteFeesUsecase,
     required super.calculateLiquidPsetSizeUsecase,
@@ -352,6 +354,7 @@ void main() {
       watchSendSwapUsecase: _MockWatchSendSwapUsecase(),
       sendWithPayjoinUsecase: _MockSendWithPayjoinUsecase(),
       watchPayjoinUsecase: _MockWatchPayjoinUsecase(),
+      retryPayjoinProposalUsecase: _MockRetryPayjoinProposalUsecase(),
       watchFinishedWalletSyncsUsecase: _MockWatchFinishedWalletSyncsUsecase(),
       calculateLiquidAbsoluteFeesUsecase: calculateLiquidAbsoluteFeesUsecase,
       calculateLiquidPsetSizeUsecase: _MockCalculateLiquidPsetSizeUsecase(),
@@ -521,7 +524,12 @@ void main() {
     test('a cubit closed mid-broadcast still records the send', () async {
       final broadcast = Completer<String>();
       when(
-        () => broadcastBitcoinTx.execute(any(), isPsbt: any(named: 'isPsbt')),
+        () => broadcastBitcoinTx.execute(
+          walletId: _wallet.id,
+          any(),
+          isPsbt: any(named: 'isPsbt'),
+          network: app.Network.bitcoinMainnet,
+        ),
       ).thenAnswer((_) => broadcast.future);
       when(() => labelsFacade.store(any())).thenAnswer(
         (invocation) async =>
@@ -553,3 +561,6 @@ void main() {
     });
   });
 }
+
+class _MockRetryPayjoinProposalUsecase extends Mock
+    implements RetryPayjoinProposalUsecase {}

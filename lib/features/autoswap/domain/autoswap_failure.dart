@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/failures/failure.dart';
+import 'package:primitives/primitives.dart' show Failure;
 import 'package:bb_mobile/core/swaps/domain/entity/auto_swap.dart';
 
 sealed class AutoswapFailure extends Failure {
@@ -112,4 +112,8 @@ final class AutoswapAmountOutOfBoundsFailure extends AutoswapFailure {
 /// Boltz could not be reached, so no swap was created and no funds moved.
 final class AutoswapBoltzUnavailableFailure extends AutoswapFailure {
   const AutoswapBoltzUnavailableFailure([super.logMessage]);
+}
+
+final class AutoswapUnsupportedNetworkFailure extends AutoswapFailure {
+  const AutoswapUnsupportedNetworkFailure();
 }

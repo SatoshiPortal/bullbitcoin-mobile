@@ -1,7 +1,7 @@
 import 'package:bb_mobile/core/bbqr/bbqr.dart';
 import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 import 'package:bb_mobile/core/urqr/urqr.dart';
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/psbt_flow/domain/psbt_flow_failure.dart';
 import 'package:bb_mobile/features/psbt_flow/domain/psbt_qr_encoder_port.dart';
 import 'package:bull_logger/bull_logger.dart';

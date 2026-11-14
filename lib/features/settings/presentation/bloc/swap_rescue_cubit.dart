@@ -1,8 +1,8 @@
-import 'package:bb_mobile/core/utils/result.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:boltz_swaps/boltz_swaps.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bull_logger/bull_logger.dart';
+import 'package:primitives/primitives.dart' show Ok, Err;
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 enum SwapRescueStatus { loading, ready, rescuing, success, error }

@@ -1,5 +1,5 @@
-import 'package:bb_mobile/core/utils/result.dart';
 import 'package:boltz_swaps/boltz_swaps.dart';
+import 'package:primitives/primitives.dart' show Ok, Err;
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 enum SwapRestoreStatus { initial, loading, success, error }

@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/failures/failure.dart';
+import 'package:primitives/primitives.dart' show Failure;
 
 sealed class LimitOrdersFailure extends Failure {
   const LimitOrdersFailure([super.logMessage]);
@@ -46,4 +46,8 @@ final class LimitOrderCancellationFailure extends LimitOrdersFailure {
 
 final class LimitOrdersUnexpectedFailure extends LimitOrdersFailure {
   const LimitOrdersUnexpectedFailure([super.logMessage]);
+}
+
+final class LimitOrdersUnsupportedNetworkFailure extends LimitOrdersFailure {
+  const LimitOrdersUnsupportedNetworkFailure();
 }

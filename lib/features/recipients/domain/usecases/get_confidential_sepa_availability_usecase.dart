@@ -1,5 +1,5 @@
-import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
+import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/recipients/application/usecases/get_recipients_environment_usecase.dart';
 import 'package:bb_mobile/features/recipients/domain/entities/virtual_iban.dart';
 import 'package:bb_mobile/features/recipients/domain/recipients_failure.dart';
@@ -44,7 +44,7 @@ class GetConfidentialSepaAvailabilityUsecase {
     final bool isTestnet;
     switch (await _getRecipientsEnvironmentUsecase.execute()) {
       case Ok(:final value):
-        isTestnet = value.isTestnet;
+        isTestnet = value.requireHistoricalTestnet();
       case Err(:final failure):
         return Err(failure);
     }

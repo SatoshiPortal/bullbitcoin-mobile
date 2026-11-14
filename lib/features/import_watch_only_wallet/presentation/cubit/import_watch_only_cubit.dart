@@ -1,7 +1,7 @@
 import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 import 'package:bb_mobile/core/entities/signer_entity.dart';
-import 'package:bb_mobile/core/utils/result.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:primitives/primitives.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/domain/import_watch_only_failure.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_descriptor_usecase.dart';
@@ -33,9 +33,17 @@ class ImportWatchOnlyCubit extends Cubit<ImportWatchOnlyState> {
   }
 
   void updateLabel(String label) {
-    if (state.watchOnlyWallet == null) return;
-    final watchOnlyWallet = state.watchOnlyWallet!.copyWith(label: label);
-    emit(state.copyWith(watchOnlyWallet: watchOnlyWallet));
+    final wallet = state.watchOnlyWallet;
+    if (wallet == null) return;
+    final failure = state.failure;
+    emit(
+      state.copyWith(
+        watchOnlyWallet: wallet.copyWith(label: label),
+        failure: failure is LabelRequiredFailure && label.isNotEmpty
+            ? null
+            : failure,
+      ),
+    );
   }
 
   Future<void> import() async {
@@ -51,7 +59,7 @@ class ImportWatchOnlyCubit extends Cubit<ImportWatchOnlyState> {
       return;
     }
     final settings = await _settingsRepository.fetch();
-    if (wallet.network.isMainnet != settings.environment.isMainnet) {
+    if (wallet.network.environment != settings.environment.networkEnv) {
       emit(state.copyWith(failure: const NetworkMismatchFailure()));
       return;
     }
@@ -81,7 +89,7 @@ class ImportWatchOnlyCubit extends Cubit<ImportWatchOnlyState> {
     if (trimmed.length >= 111) {
       switch (await _parseWatchOnlyInputUsecase.execute(trimmed)) {
         case Ok(:final value):
-          emit(state.copyWith(watchOnlyWallet: value));
+          emit(state.copyWith(watchOnlyWallet: value, failure: null));
         case Err(:final failure):
           emit(state.copyWith(failure: failure));
       }

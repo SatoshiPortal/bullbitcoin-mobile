@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/swaps/switchable_swap_repository.dart';
 import 'package:boltz_swaps/boltz_swaps.dart' show SwapWatcher;
 import 'package:bull_logger/bull_logger.dart';
@@ -29,8 +29,9 @@ class SwapEngineSwitcher {
     _environmentChanges ??= _settingsRepository.environmentChangeStream.listen((
       environment,
     ) {
-      if (environment.isTestnet == _swapRepository.isTestnet) return;
-      unawaited(rebuild(isTestnet: environment.isTestnet));
+      final isTestnet = !environment.isMainnet;
+      if (isTestnet == _swapRepository.isTestnet) return;
+      unawaited(rebuild(isTestnet: isTestnet));
     });
   }
 

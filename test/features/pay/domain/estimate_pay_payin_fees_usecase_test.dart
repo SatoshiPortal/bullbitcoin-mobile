@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/pay/domain/calculate_pay_absolute_fees_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/estimate_pay_payin_fees_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/get_pay_exchange_rate_usecase.dart';

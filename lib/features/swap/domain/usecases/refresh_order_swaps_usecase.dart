@@ -1,4 +1,5 @@
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart' hide Network;
+import 'package:bb_mobile/features/swap/domain/entities/order_swap_refresh_batch.dart';
 import 'package:bb_mobile/features/swap/domain/swap_failure.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/apply_completed_order_swap_labels_usecase.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/refresh_pending_order_swaps_usecase.dart';

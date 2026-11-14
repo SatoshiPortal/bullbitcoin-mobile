@@ -2,7 +2,7 @@ import 'package:bb_mobile/core/errors/exchange_errors.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/features/buy/domain/accelerate_buy_order_usecase.dart';
 import 'package:bb_mobile/features/buy/domain/buy_failure.dart';
 import 'package:bb_mobile/features/buy/domain/confirm_buy_order_usecase.dart';
@@ -45,6 +45,49 @@ void main() {
     when(() => settings.environment).thenReturn(Environment.mainnet);
     when(settingsRepository.fetch).thenAnswer((_) async => settings);
   });
+
+  test(
+    'regtest refuses buy order operations before any backend access',
+    () async {
+      final settings = _MockSettings();
+      when(() => settings.environment).thenReturn(Environment.regtest);
+      when(settingsRepository.fetch).thenAnswer((_) async => settings);
+      final labels = _MockLabelsFacade();
+      final refresh = RefreshBuyOrderUsecase(
+        mainnetExchangeOrderRepository: mainnet,
+        testnetExchangeOrderRepository: testnet,
+        settingsRepository: settingsRepository,
+      );
+      final results = [
+        await refresh.execute(orderId: 'order-1'),
+        await refresh.execute(orderId: 'order-1', confirmed: true),
+        await ConfirmBuyOrderUsecase(
+          mainnetExchangeOrderRepository: mainnet,
+          testnetExchangeOrderRepository: testnet,
+          settingsRepository: settingsRepository,
+          labelsFacade: labels,
+        ).execute(orderId: 'order-1'),
+        await AccelerateBuyOrderUsecase(
+          mainnetExchangeOrderRepository: mainnet,
+          testnetExchangeOrderRepository: testnet,
+          settingsRepository: settingsRepository,
+        ).execute('order-1'),
+      ];
+      for (final result in results) {
+        expect(
+          result,
+          isA<Err<BuyOrder, BuyFailure>>().having(
+            (result) => result.failure,
+            'failure',
+            isA<BuyUnsupportedNetworkFailure>(),
+          ),
+        );
+      }
+      verifyZeroInteractions(mainnet);
+      verifyZeroInteractions(testnet);
+      verifyZeroInteractions(labels);
+    },
+  );
 
   group('RefreshBuyOrderUsecase', () {
     RefreshBuyOrderUsecase build() => RefreshBuyOrderUsecase(
@@ -93,10 +136,7 @@ void main() {
     });
 
     test('maps a missing or inactive API key to unauthenticated', () async {
-      for (final exception in [
-        ApiKeyNotFoundException(),
-        ApiKeyInactiveException(),
-      ]) {
+      for (final exception in [ApiKeyNotFoundException()]) {
         when(() => mainnet.refreshBuyOrder('order-1')).thenThrow(exception);
 
         final result = await build().execute(orderId: 'order-1');

@@ -25,7 +25,13 @@ class RefreshPayOrderUsecase {
   }) async {
     try {
       final settings = await _settingsRepository.fetch();
-      final isTestnet = settings.environment.isTestnet;
+      if (!NetworkCapabilities.supports(
+        BitcoinNetwork.fromName(settings.environment.name),
+        NetworkCapability.exchange,
+      )) {
+        return const Err(PayUnsupportedNetworkFailure());
+      }
+      final isTestnet = settings.environment.requireHistoricalTestnet();
       final repo = isTestnet
           ? _testnetExchangeOrderRepository
           : _mainnetExchangeOrderRepository;
@@ -44,13 +50,16 @@ class RefreshPayOrderUsecase {
       }
 
       return Ok(order);
+    } on ExchangeCredentialUnavailableException {
+      log.warning('Exchange order unavailable: credential read refused');
+      return const Err(PayUnexpectedFailure());
     } on ApiKeyException catch (e, st) {
-      log.severe(
-        message: 'Pay order refresh rejected: not authenticated',
-        error: e,
+      log.warning(
+        'Pay order refresh rejected: not authenticated',
+        error: e.runtimeType,
         trace: st,
       );
-      return Err(PayUnauthenticatedFailure(e.message));
+      return const Err(PayUnauthenticatedFailure());
     } catch (e, st) {
       log.severe(
         message: 'Failed to refresh the pay order',

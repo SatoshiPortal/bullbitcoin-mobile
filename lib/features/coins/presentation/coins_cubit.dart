@@ -1,7 +1,7 @@
+import 'package:bb_mobile/features/coins/domain/usecases/watch_wallet_revisions_usecase.dart';
 import 'dart:async';
 
-import 'package:bb_mobile/core/utils/result.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/outpoint.dart';
+import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_started_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/features/coins/domain/usecases/freeze_utxos_usecase.dart';
@@ -22,6 +22,7 @@ const _syncReloadDebounce = Duration(seconds: 3);
 /// and reacts to wallet syncs. No business decisions live here.
 class CoinsCubit extends Cubit<CoinsState> {
   CoinsCubit({
+    WatchWalletRevisionsUsecase? watchWalletRevisionsUsecase,
     required String walletId,
     required this._getUtxosUsecase,
     required this._freezeUtxosUsecase,
@@ -36,9 +37,12 @@ class CoinsCubit extends Cubit<CoinsState> {
         .listen((_) {
           if (!isClosed) emit(state.copyWith(syncing: true));
         });
+    _revisionsSubscription = watchWalletRevisionsUsecase
+        ?.execute(walletId: walletId)
+        .listen((_) => _scheduleReload());
     _finishedSub = watchFinishedWalletSyncsUsecase
         .execute(walletId: walletId)
-        .listen((_) => _onSyncFinished());
+        .listen((_) => _scheduleReload());
   }
 
   final GetUtxosUsecase _getUtxosUsecase;
@@ -49,11 +53,13 @@ class CoinsCubit extends Cubit<CoinsState> {
 
   StreamSubscription? _startedSub;
   StreamSubscription? _finishedSub;
+  StreamSubscription? _revisionsSubscription;
   Timer? _debounceTimer;
 
   @override
   Future<void> close() async {
     _debounceTimer?.cancel();
+    await _revisionsSubscription?.cancel();
     await _startedSub?.cancel();
     await _finishedSub?.cancel();
     return super.close();
@@ -100,11 +106,11 @@ class CoinsCubit extends Cubit<CoinsState> {
   }
 
   Future<void> refresh() async {
-    await _refreshCoinsUsecase.execute();
+    await _refreshCoinsUsecase.execute(walletId: state.walletId);
     await load();
   }
 
-  Future<void> _onSyncFinished() async {
+  Future<void> _scheduleReload() async {
     _debounceTimer?.cancel();
     _debounceTimer = Timer(_syncReloadDebounce, load);
   }

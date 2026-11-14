@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/sp/domain/sp_failure.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/scan_sp_wallet_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -9,11 +9,26 @@ import '../../sp_fakes.dart';
 void main() {
   late MockSpAccountRepository repository;
   late ScanSpWalletUsecase usecase;
+  late FakeSpFeatureGateUsecase gate;
 
   setUp(() {
     repository = MockSpAccountRepository();
-    usecase = ScanSpWalletUsecase(repository: repository);
+    gate = FakeSpFeatureGateUsecase();
+    usecase = ScanSpWalletUsecase(
+      getSpFeatureGateUsecase: gate,
+      repository: repository,
+    );
   });
+
+  test(
+    'closed capability gate refuses a new scan without touching the account',
+    () async {
+      gate.allowed = false;
+      final result = await usecase.execute();
+      expect((result as Err).failure, isA<SpUnsupportedNetwork>());
+      verifyZeroInteractions(repository);
+    },
+  );
 
   group('ScanSpWalletUsecase', () {
     test('calls scanOnce exactly once on the repository', () async {

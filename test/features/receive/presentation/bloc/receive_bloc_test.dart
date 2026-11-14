@@ -1,16 +1,21 @@
+import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
+import 'package:bb_mobile/features/receive/domain/enums/receive_network_type.dart';
 import 'dart:async';
+import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
+import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet_transaction.dart';
 import 'dart:typed_data';
 
 import 'package:bb_mobile/core/entities/signer_entity.dart' show SignerEntity;
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
-import 'package:bb_mobile/core/utils/result.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
+import 'package:primitives/primitives.dart'
+    show BitcoinNetwork, BitcoinUnit, Err, Ok, Result;
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_transaction_by_address_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/receive_failure.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/convert_receive_amount_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/fetch_receive_note_suggestions_usecase.dart';
-import 'package:bb_mobile/features/receive/domain/usecases/get_receive_address_at_index_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/get_receive_settings_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/get_receive_wallets_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/load_receive_address_label_usecase.dart';
@@ -35,7 +40,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:fake_async/fake_async.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
-import 'package:primitives/primitives.dart' show BitcoinNetwork;
+
+class _MockSettings extends Mock implements GetSettingsUsecase {}
 
 class _MockGetReceiveWalletsUsecase extends Mock
     implements GetReceiveWalletsUsecase {}
@@ -48,9 +54,6 @@ class _MockConvertReceiveAmountUsecase extends Mock
 
 class _MockPrepareReceiveAddressUsecase extends Mock
     implements PrepareReceiveAddressUsecase {}
-
-class _MockGetReceiveAddressAtIndexUsecase extends Mock
-    implements GetReceiveAddressAtIndexUsecase {}
 
 class _MockCreateReceiveOrderSwapUsecase extends Mock
     implements CreateReceiveOrderSwapUsecase {}
@@ -239,6 +242,8 @@ swaps.LnReceiveSwap _boltzReceiveSwap({
         )
         as swaps.LnReceiveSwap;
 
+class _MockTransactions extends Mock implements WalletTransactionRepository {}
+
 void main() {
   late _MockGetReceiveWalletsUsecase getWallets;
   late _MockGetReceiveSettingsUsecase getSettings;
@@ -267,35 +272,39 @@ void main() {
     registerFallbackValue(_testWallet());
   });
 
-  ReceiveBloc buildBloc({Wallet? wallet, bool withPresetWallet = true}) =>
-      ReceiveBloc(
-        getReceiveWalletsUsecase: getWallets,
-        getReceiveSettingsUsecase: getSettings,
-        convertReceiveAmountUsecase: convertSatsToCurrency,
-        prepareReceiveAddressUsecase: getReceiveAddress,
-        getReceiveAddressAtIndexUsecase: _MockGetReceiveAddressAtIndexUsecase(),
-        createReceiveOrderSwapUsecase: createOrderSwap,
-        getReceiveSwapRouteUsecase: getSwapRoute,
-        createBoltzReceiveSwapUsecase: createBoltzSwap,
-        watchSwapUsecase: watchSwap,
-        receiveWithPayjoinUsecase: receiveWithPayjoin,
-        broadcastOriginalTransactionUsecase: broadcastOriginalTransaction,
-        watchPayjoinUsecase: watchPayjoin,
-        watchWalletTransactionByAddressUsecase: watchWalletTransaction,
-        watchReceiveOrderSwapUsecase: watchOrderSwap,
-        loadReceiveAddressLabelUsecase: loadAddressLabel,
-        saveReceiveAddressLabelUsecase: saveAddressLabel,
-        fetchReceiveNoteSuggestionsUsecase:
-            _MockFetchReceiveNoteSuggestionsUsecase(),
-        watchReceivePayjoinEnabledUsecase: watchPayjoinEnabledChanges,
-        watchReceivePayjoinMinAmountUsecase: watchPayjoinMinAmount,
-        getReceivePayjoinPolicyUsecase: getPayjoinPolicy,
-        setReceivePayjoinEnabledUsecase: setPayjoinEnabled,
-        // A preset bitcoin wallet makes _onBitcoinStarted skip the wallet
-        // fetch entirely, so any getWallets stub is dead. Tests that need that
-        // path pass withPresetWallet: false.
-        wallet: withPresetWallet ? (wallet ?? _testWallet()) : null,
-      );
+  ReceiveBloc buildBloc({
+    Wallet? wallet,
+    bool withPresetWallet = true,
+    WatchWalletTransactionByAddressUsecase? observation,
+    GetReceiveSettingsUsecase? settings,
+  }) => ReceiveBloc(
+    getReceiveWalletsUsecase: getWallets,
+    getReceiveSettingsUsecase: settings ?? getSettings,
+    convertReceiveAmountUsecase: convertSatsToCurrency,
+    prepareReceiveAddressUsecase: getReceiveAddress,
+    createReceiveOrderSwapUsecase: createOrderSwap,
+    getReceiveSwapRouteUsecase: getSwapRoute,
+    createBoltzReceiveSwapUsecase: createBoltzSwap,
+    watchSwapUsecase: watchSwap,
+    receiveWithPayjoinUsecase: receiveWithPayjoin,
+    broadcastOriginalTransactionUsecase: broadcastOriginalTransaction,
+    watchPayjoinUsecase: watchPayjoin,
+    watchWalletTransactionByAddressUsecase:
+        observation ?? watchWalletTransaction,
+    watchReceiveOrderSwapUsecase: watchOrderSwap,
+    loadReceiveAddressLabelUsecase: loadAddressLabel,
+    saveReceiveAddressLabelUsecase: saveAddressLabel,
+    fetchReceiveNoteSuggestionsUsecase:
+        _MockFetchReceiveNoteSuggestionsUsecase(),
+    watchReceivePayjoinEnabledUsecase: watchPayjoinEnabledChanges,
+    watchReceivePayjoinMinAmountUsecase: watchPayjoinMinAmount,
+    getReceivePayjoinPolicyUsecase: getPayjoinPolicy,
+    setReceivePayjoinEnabledUsecase: setPayjoinEnabled,
+    // A preset bitcoin wallet makes _onBitcoinStarted skip the wallet
+    // fetch entirely, so any getWallets stub is dead. Tests that need that
+    // path pass withPresetWallet: false.
+    wallet: withPresetWallet ? (wallet ?? _testWallet()) : null,
+  );
 
   setUp(() {
     getWallets = _MockGetReceiveWalletsUsecase();
@@ -349,7 +358,12 @@ void main() {
 
     // Payjoin is enabled by default here so the guard group can create a
     // session; the gated group overrides this stub to disable it.
-    when(() => getSettings.execute()).thenAnswer(
+    when(
+      () => getSettings.execute(
+        mode: any(named: 'mode'),
+        selectedNetwork: any(named: 'selectedNetwork'),
+      ),
+    ).thenAnswer(
       (_) async => const Ok(
         SettingsEntity(
           environment: Environment.mainnet,
@@ -399,6 +413,113 @@ void main() {
     await payjoinEnabledChangeController.close();
     await payjoinMinAmountChangeController.close();
   });
+
+  // Regtest has no swaps: Lightning is refused before any Liquid lookup.
+  for (final mode in [ReceiveNetworkType.lightning]) {
+    for (final preset in [false, true]) {
+      for (final warm in [false, true]) {
+        test(
+          '$mode regtest refusal preset=$preset warm=$warm precedes Liquid lookup',
+          () async {
+            final inner = _MockSettings();
+            when(() => inner.execute()).thenAnswer(
+              (_) async => SettingsEntity(
+                environment: preset ? Environment.mainnet : Environment.regtest,
+                bitcoinUnit: BitcoinUnit.sats,
+                currencyCode: 'USD',
+              ),
+            );
+            final selected = _testWallet(network: Network.bitcoinRegtest);
+            when(
+              () => getWallets.execute(onlyBitcoin: true),
+            ).thenAnswer((_) async => Ok([selected]));
+            final bloc = buildBloc(
+              wallet: selected,
+              withPresetWallet: preset,
+              settings: GetReceiveSettingsUsecase(inner),
+            );
+            addTearDown(bloc.close);
+            if (warm) {
+              final ready = bloc.stream.firstWhere(
+                (s) => s.bitcoinUnit != null && s.payjoinAttemptSettled,
+              );
+              bloc.add(const ReceiveBitcoinStarted(null));
+              await ready;
+            }
+            final refused = bloc.stream.firstWhere(
+              (s) => s.failure is ReceiveUnsupportedNetworkFailure,
+            );
+            bloc.add(
+              mode == ReceiveNetworkType.lightning
+                  ? const ReceiveLightningStarted()
+                  : const ReceiveLiquidStarted(),
+            );
+            await refused;
+            expect(bloc.state.revealedAddressGeneration, isNull);
+            expect(bloc.state.canConfirmAmount, isFalse);
+            for (final event in <ReceiveEvent>[
+              const ReceiveAmountInputChanged('1000'),
+              const ReceiveAmountCurrencyChanged('sats'),
+              const ReceiveAmountConfirmed(),
+            ]) {
+              bloc.add(event);
+              await Future<void>.delayed(Duration.zero);
+              expect(
+                bloc.state.admissionFailure,
+                isA<ReceiveUnsupportedNetworkFailure>(),
+              );
+              expect(
+                bloc.state.failure,
+                isA<ReceiveUnsupportedNetworkFailure>(),
+              );
+              expect(bloc.state.canConfirmAmount, isFalse);
+              expect(bloc.state.creatingSwap, isFalse);
+              expect(bloc.state.confirmedAmountSat, isNull);
+            }
+            verifyZeroInteractions(createOrderSwap);
+            verifyNever(
+              () => getWallets.execute(onlyLiquid: true, onlyDefaults: true),
+            );
+          },
+        );
+      }
+    }
+  }
+
+  test(
+    'Liquid regtest is admitted and reaches the Liquid wallet lookup',
+    () async {
+      final inner = _MockSettings();
+      when(() => inner.execute()).thenAnswer(
+        (_) async => const SettingsEntity(
+          environment: Environment.regtest,
+          bitcoinUnit: BitcoinUnit.sats,
+          currencyCode: 'USD',
+        ),
+      );
+      final selected = _testWallet(network: Network.bitcoinRegtest);
+      when(
+        () => getWallets.execute(onlyLiquid: true, onlyDefaults: true),
+      ).thenAnswer((_) async => const Ok([]));
+      final bloc = buildBloc(
+        wallet: selected,
+        settings: GetReceiveSettingsUsecase(inner),
+      );
+      addTearDown(bloc.close);
+      final settled = bloc.stream.firstWhere((s) => s.failure != null);
+
+      bloc.add(const ReceiveLiquidStarted());
+      await settled;
+
+      expect(bloc.state.type, ReceiveType.liquid);
+      expect(bloc.state.admissionFailure, isNull);
+      // No default Liquid wallet in this catalog: the lookup ran and found none.
+      expect(bloc.state.failure, isA<ReceiveAddressUnavailableFailure>());
+      verify(
+        () => getWallets.execute(onlyLiquid: true, onlyDefaults: true),
+      ).called(1);
+    },
+  );
 
   group('ReceivePayjoinOriginalTxBroadcasted guard', () {
     test(
@@ -780,7 +901,12 @@ void main() {
     });
 
     test('when a startup read fails', () async {
-      when(() => getSettings.execute()).thenAnswer(
+      when(
+        () => getSettings.execute(
+          mode: any(named: 'mode'),
+          selectedNetwork: any(named: 'selectedNetwork'),
+        ),
+      ).thenAnswer(
         (_) async => const Err(ReceiveUnexpectedFailure('prefs unreadable')),
       );
 
@@ -1577,7 +1703,12 @@ void main() {
       bloc.add(const ReceiveBitcoinStarted(null));
       await pumpEventQueue();
 
-      when(() => getSettings.execute()).thenAnswer(
+      when(
+        () => getSettings.execute(
+          mode: any(named: 'mode'),
+          selectedNetwork: any(named: 'selectedNetwork'),
+        ),
+      ).thenAnswer(
         (_) async => const Err(ReceiveUnexpectedFailure('prefs unreadable')),
       );
 
@@ -1614,7 +1745,7 @@ void main() {
   });
 
   test(
-    'ignores a second Lightning confirmation while creation is in flight',
+    'ignores duplicate Lightning confirmation and permits it after reselection',
     () async {
       final creation = Completer<Result<OrderSwapRecord, ReceiveFailure>>();
       when(
@@ -1644,7 +1775,24 @@ void main() {
           note: any(named: 'note'),
         ),
       ).called(1);
+      bloc.add(const ReceiveBitcoinStarted(null));
+      await pumpEventQueue();
+      bloc.add(const ReceiveLightningStarted());
+      await pumpEventQueue();
       creation.complete(const Err(ReceiveSwapUnavailableFailure()));
+      await pumpEventQueue();
+      expect(bloc.state.creatingSwap, isFalse);
+      expect(bloc.state.failure, isNull);
+      bloc.add(const ReceiveAmountInputChanged('1000'));
+      bloc.add(const ReceiveAmountConfirmed());
+      await pumpEventQueue();
+      verify(
+        () => createOrderSwap.execute(
+          wallet: any(named: 'wallet'),
+          amountSat: 1000,
+          note: any(named: 'note'),
+        ),
+      ).called(1);
     },
   );
 
@@ -1874,6 +2022,239 @@ void main() {
     });
   });
 
+  test(
+    'Liquid new address uses the persistent writer and survives reopen',
+    () async {
+      final wallet = _testWallet(network: Network.liquidMainnet);
+      final next = _testAddress().copyWith(index: 1, address: 'liquid-next');
+      var issued = _testAddress();
+      when(
+        () => getReceiveAddress.execute(walletId: wallet.id),
+      ).thenAnswer((_) async => Ok(issued));
+      when(
+        () => getReceiveAddress.execute(walletId: wallet.id, generateNew: true),
+      ).thenAnswer((_) async {
+        issued = next;
+        return Ok(issued);
+      });
+      final bloc = buildBloc(wallet: wallet);
+      bloc.add(const ReceiveLiquidStarted());
+      await Future<void>.delayed(Duration.zero);
+      expect(bloc.state.liquidAddress, issued);
+      bloc.add(const ReceiveNewAddressGenerated());
+      await Future<void>.delayed(Duration.zero);
+      expect(bloc.state.liquidAddress, next);
+      verify(
+        () => getReceiveAddress.execute(walletId: wallet.id, generateNew: true),
+      ).called(1);
+      await bloc.close();
+      final reopened = buildBloc(wallet: wallet);
+      addTearDown(reopened.close);
+      reopened.add(const ReceiveLiquidStarted());
+      await Future<void>.delayed(Duration.zero);
+      expect(reopened.state.liquidAddress, next);
+    },
+  );
+
+  for (final network in [Network.bitcoinMainnet, Network.liquidMainnet]) {
+    test(
+      '$network retry retains new-address intent and drops duplicates',
+      () async {
+        final wallet = _testWallet(network: network);
+        final old = _testAddress();
+        final next = old.copyWith(index: 1, address: 'next-issued');
+        final retry = Completer<Result<WalletAddress, ReceiveFailure>>();
+        var advances = 0;
+        when(
+          () => getReceiveAddress.execute(walletId: wallet.id),
+        ).thenAnswer((_) async => Ok(old));
+        when(
+          () =>
+              getReceiveAddress.execute(walletId: wallet.id, generateNew: true),
+        ).thenAnswer((_) async {
+          if (++advances == 1) {
+            return const Err(ReceiveAddressUnavailableFailure());
+          }
+          return retry.future;
+        });
+        final bloc = buildBloc(wallet: wallet);
+        addTearDown(bloc.close);
+        final start = wallet.isBitcoin
+            ? const ReceiveBitcoinStarted(null)
+            : const ReceiveLiquidStarted();
+        WalletAddress? address() => wallet.isBitcoin
+            ? bloc.state.bitcoinAddress
+            : bloc.state.liquidAddress;
+        bloc.add(start);
+        await pumpEventQueue();
+        expect(address(), old);
+        bloc.add(const ReceiveNewAddressGenerated());
+        await pumpEventQueue();
+        expect(bloc.state.failure, isA<ReceiveAddressUnavailableFailure>());
+        expect(address(), isNull);
+        bloc.add(start);
+        await pumpEventQueue();
+        bloc.add(start);
+        bloc.add(const ReceiveNewAddressGenerated());
+        await pumpEventQueue();
+        retry.complete(Ok(next));
+        await pumpEventQueue();
+        expect(address(), next);
+        expect(bloc.state.wallet?.id, wallet.id);
+        expect(bloc.state.failure, isNull);
+        expect(advances, 2);
+        verify(() => getReceiveAddress.execute(walletId: wallet.id)).called(1);
+      },
+    );
+
+    test('$network initial-open retry reuses the unused address', () async {
+      final wallet = _testWallet(network: network);
+      var attempts = 0;
+      when(() => getReceiveAddress.execute(walletId: wallet.id)).thenAnswer(
+        (_) async => ++attempts == 1
+            ? const Err(ReceiveAddressUnavailableFailure())
+            : Ok(_testAddress()),
+      );
+      final bloc = buildBloc(wallet: wallet);
+      addTearDown(bloc.close);
+      final start = wallet.isBitcoin
+          ? const ReceiveBitcoinStarted(null)
+          : const ReceiveLiquidStarted();
+      bloc.add(start);
+      await pumpEventQueue();
+      expect(bloc.state.failure, isA<ReceiveAddressUnavailableFailure>());
+      bloc.add(start);
+      await pumpEventQueue();
+      expect(
+        wallet.isBitcoin ? bloc.state.bitcoinAddress : bloc.state.liquidAddress,
+        _testAddress(),
+      );
+      expect(bloc.state.failure, isNull);
+      verifyNever(
+        () => getReceiveAddress.execute(walletId: wallet.id, generateNew: true),
+      );
+    });
+  }
+
+  for (final network in [Network.bitcoinMainnet, Network.liquidMainnet]) {
+    for (final succeeds in [true, false]) {
+      test(
+        '$network navigation while advance pending success=$succeeds',
+        () async {
+          final wallet = _testWallet(network: network);
+          final destination = _testWallet(
+            origin: 'destination',
+            network: wallet.isBitcoin
+                ? Network.liquidMainnet
+                : Network.bitcoinMainnet,
+          );
+          final pending = Completer<Result<WalletAddress, ReceiveFailure>>();
+          when(
+            () => getWallets.execute(onlyLiquid: true, onlyDefaults: true),
+          ).thenAnswer((_) async => Ok([destination]));
+          when(
+            () => getWallets.execute(onlyBitcoin: true),
+          ).thenAnswer((_) async => Ok([destination]));
+          when(
+            () => getReceiveAddress.execute(
+              walletId: wallet.id,
+              generateNew: true,
+            ),
+          ).thenAnswer((_) => pending.future);
+          final bloc = buildBloc(wallet: wallet);
+          addTearDown(bloc.close);
+          bloc.add(
+            wallet.isBitcoin
+                ? const ReceiveBitcoinStarted(null)
+                : const ReceiveLiquidStarted(),
+          );
+          await pumpEventQueue();
+          bloc.add(const ReceiveNewAddressGenerated());
+          await pumpEventQueue();
+          bloc.add(
+            wallet.isBitcoin
+                ? const ReceiveLiquidStarted()
+                : const ReceiveBitcoinStarted(null),
+          );
+          await pumpEventQueue();
+          expect(bloc.state.wallet?.id, destination.id);
+          expect(
+            bloc.state.type,
+            wallet.isBitcoin ? ReceiveType.liquid : ReceiveType.bitcoin,
+          );
+          final afterNavigation = bloc.state;
+          pending.complete(
+            succeeds
+                ? Ok(_testAddress().copyWith(index: 1, address: 'late-issued'))
+                : const Err(ReceiveAddressUnavailableFailure()),
+          );
+          await pumpEventQueue();
+          expect(bloc.state, afterNavigation);
+        },
+      );
+    }
+  }
+
+  test('wallet navigation retains current payjoin subscription', () async {
+    final walletA = _testWallet(origin: 'wallet-a');
+    final walletB = _testWallet(origin: 'wallet-b');
+    final pending = Completer<Result<PayjoinReceiverSession, ReceiveFailure>>();
+    final bUpdates =
+        StreamController<Result<PayjoinSession, ReceiveFailure>>.broadcast();
+    final bSession = _receiver(id: 'pj-b', walletId: walletB.id);
+    var advances = 0;
+    when(
+      () => getReceiveAddress.execute(walletId: walletA.id, generateNew: true),
+    ).thenAnswer(
+      (_) async => ++advances == 1
+          ? const Err(ReceiveAddressUnavailableFailure())
+          : Ok(_testAddress().copyWith(index: 1, address: 'new-a')),
+    );
+    when(
+      () => receiveWithPayjoin.execute(walletId: walletA.id, address: 'new-a'),
+    ).thenAnswer((_) => pending.future);
+    when(
+      () => receiveWithPayjoin.execute(
+        walletId: walletB.id,
+        address: any(named: 'address'),
+      ),
+    ).thenAnswer((_) async => Ok(bSession));
+    when(
+      () => watchPayjoin.execute(ids: ['pj-b']),
+    ).thenAnswer((_) => bUpdates.stream);
+    final bloc = buildBloc(withPresetWallet: false);
+    addTearDown(() async {
+      await bloc.close();
+      await bUpdates.close();
+    });
+    bloc.add(ReceiveBitcoinStarted(walletA));
+    await pumpEventQueue();
+    bloc.add(const ReceiveNewAddressGenerated());
+    await pumpEventQueue();
+    expect(bloc.state.failure, isA<ReceiveAddressUnavailableFailure>());
+    bloc.add(ReceiveBitcoinStarted(walletA));
+    await pumpEventQueue();
+    expect(advances, 2);
+    bloc.add(ReceiveBitcoinStarted(walletB));
+    await pumpEventQueue();
+    expect(bloc.state.wallet?.id, walletB.id);
+    expect(bloc.state.payjoin?.id, 'pj-b');
+    expect(bUpdates.hasListener, isTrue);
+    pending.complete(Ok(_receiver(id: 'late-pj-a', walletId: walletA.id)));
+    await pumpEventQueue();
+    expect(bloc.state.wallet?.id, walletB.id);
+    expect(bloc.state.payjoin?.id, 'pj-b');
+    final bUpdate = _receiver(
+      id: 'pj-b',
+      walletId: walletB.id,
+      status: PayjoinStatus.proposed,
+    );
+    bUpdates.add(Ok(bUpdate));
+    await pumpEventQueue();
+    expect(bloc.state.payjoin?.status, PayjoinStatus.proposed);
+    expect(bUpdates.hasListener, isTrue);
+  });
+
   group('preselected-wallet network guard', () {
     // The preselected wallet survives tab switches (the shell's bloc is
     // created once), so a receive entered from a liquid wallet must not
@@ -2027,6 +2408,336 @@ void main() {
       expect(empty.state.isPayjoinToggleable, isFalse);
     });
   });
+  for (final queued in [false, true]) {
+    test(
+      'wallet switch rejects a previous-wallet poll completion (queued=$queued)',
+      () async {
+        final walletA = _testWallet(origin: 'wallet-a');
+        final walletB = _testWallet(origin: 'wallet-b');
+        final aTransactions = StreamController<WalletTransaction>.broadcast(
+          sync: true,
+        );
+        final bPayjoin =
+            Completer<Result<PayjoinReceiverSession, ReceiveFailure>>();
+        when(
+          () => getWallets.execute(onlyBitcoin: true),
+        ).thenAnswer((_) async => Ok([walletA, walletB]));
+        when(
+          () => watchWalletTransaction.execute(
+            walletId: walletA.id,
+            toAddress: any(named: 'toAddress'),
+          ),
+        ).thenAnswer((_) => aTransactions.stream);
+        when(
+          () => receiveWithPayjoin.execute(
+            walletId: walletB.id,
+            address: any(named: 'address'),
+          ),
+        ).thenAnswer((_) => bPayjoin.future);
+        final bloc = buildBloc(withPresetWallet: false);
+        addTearDown(() async {
+          if (!bPayjoin.isCompleted) {
+            bPayjoin.complete(Ok(_receiver(id: 'pj-b', walletId: walletB.id)));
+          }
+          await pumpEventQueue();
+          await bloc.close();
+          await aTransactions.close();
+        });
+
+        // Home -> Receive loads both wallets, allowing the actual dropdown change.
+        bloc.add(const ReceiveBitcoinStarted(null));
+        await pumpEventQueue();
+        expect(bloc.state.wallets, hasLength(2));
+        expect(bloc.state.wallet?.id, walletA.id);
+        expect(aTransactions.hasListener, isTrue);
+        expect(bloc.state.tx, isNull);
+
+        final payment = WalletTransaction(
+          walletId: walletA.id,
+          network: walletA.network,
+          direction: WalletTransactionDirection.incoming,
+          status: WalletTransactionStatus.pending,
+          txId: 'payment-for-a',
+          amountSat: 1000,
+          feeSat: 0,
+          vsize: 100,
+          inputs: const [],
+          outputs: const [],
+          isRbf: false,
+        );
+
+        // A's periodic native poll is already running when the dropdown selects B.
+        // Native work finishes normally after the screen epoch changes; B's funded
+        // Payjoin setup is still awaiting its ordinary asynchronous network result.
+        bloc.add(ReceiveBitcoinStarted(walletB));
+        if (queued) aTransactions.add(payment);
+        await pumpEventQueue();
+        expect(bloc.state.wallet?.id, walletB.id);
+        expect(bloc.state.type, ReceiveType.bitcoin);
+        expect(bloc.state.payjoinAttemptSettled, isFalse);
+        verify(
+          () => receiveWithPayjoin.execute(
+            walletId: walletB.id,
+            address: any(named: 'address'),
+          ),
+        ).called(1);
+
+        // Also exercise a completion arriving after the selection was processed.
+        if (!queued) aTransactions.add(payment);
+        await pumpEventQueue();
+        expect(bloc.state.wallet?.id, walletB.id);
+        expect(
+          bloc.state.tx,
+          isNull,
+          reason:
+              'A must not trigger payment navigation using selected wallet B',
+        );
+        bloc.add(ReceiveBitcoinStarted(walletA));
+        await pumpEventQueue();
+        bPayjoin.complete(Ok(_receiver(id: 'pj-b', walletId: walletB.id)));
+        await pumpEventQueue();
+        expect(bloc.state.wallet?.id, walletA.id);
+        verifyNever(
+          () => watchWalletTransaction.execute(
+            walletId: walletB.id,
+            toAddress: any(named: 'toAddress'),
+          ),
+        );
+        aTransactions.add(payment);
+        await pumpEventQueue();
+        expect(bloc.state.tx, payment);
+      },
+    );
+  }
+  for (final beforeObservation in [false, true]) {
+    test(
+      'reads persisted payment with real watcher (beforeObservation=$beforeObservation)',
+      () async {
+        final wallet = _testWallet();
+        final address = _testAddress(walletId: wallet.id);
+        final revisions = StreamController<WalletRevisionState>.broadcast();
+        final facade = WalletFacade(revisions.stream);
+        final transactions = _MockTransactions();
+        final price = Completer<Result<double, ReceiveFailure>>();
+        final payment = WalletTransaction(
+          walletId: wallet.id,
+          network: wallet.network,
+          direction: WalletTransactionDirection.incoming,
+          status: WalletTransactionStatus.confirmed,
+          txId: 'confirmed-during-receive-preparation',
+          amountSat: 1000,
+          feeSat: 0,
+          vsize: 100,
+          inputs: const [],
+          outputs: const [],
+          isRbf: false,
+        );
+        var persistedPayments = beforeObservation
+            ? [payment]
+            : <WalletTransaction>[];
+        var reads = 0;
+        when(
+          () => transactions.getWalletTransactions(
+            walletId: wallet.id,
+            toAddress: address.address,
+          ),
+        ).thenAnswer((_) async {
+          reads++;
+          return persistedPayments;
+        });
+        final observation = WatchWalletTransactionByAddressUsecase(
+          walletTransactionRepository: transactions,
+          walletFacade: facade,
+        );
+        when(
+          () => getReceiveAddress.execute(walletId: wallet.id),
+        ).thenAnswer((_) async => Ok(address));
+        when(() => getPayjoinPolicy.execute()).thenAnswer(
+          (_) async => const Ok((enabled: false, minimumAmountSat: 10000)),
+        );
+        when(
+          () => convertSatsToCurrency.execute(),
+        ).thenAnswer((_) => price.future);
+        final bloc = buildBloc(wallet: wallet, observation: observation);
+        addTearDown(() async {
+          if (!price.isCompleted) price.complete(const Ok(1.0));
+          await pumpEventQueue();
+          await bloc.close();
+          await revisions.close();
+        });
+        WalletRevisionState revision(int number) => WalletRevisionState(
+          stamp: WalletRevision(
+            key: WalletKey(id: wallet.id, network: BitcoinNetwork.mainnet),
+            generation: 1,
+            revision: number,
+          ),
+          lifecycle: WalletLifecycle.active,
+        );
+
+        bloc.add(ReceiveBitcoinStarted(wallet));
+        await pumpEventQueue();
+        expect(bloc.state.bitcoinAddress, address);
+        expect(bloc.state.qrData, isNotEmpty);
+        expect(bloc.state.payjoinAttemptSettled, isTrue);
+
+        persistedPayments = [payment];
+        revisions.add(revision(2));
+        await pumpEventQueue();
+        price.complete(const Ok(1.0));
+        await pumpEventQueue();
+        expect(revisions.hasListener, isTrue);
+
+        await pumpEventQueue();
+        final paymentAfterQuietPoll = bloc.state.tx;
+        final readsAfterQuietPoll = reads;
+
+        revisions.add(revision(4));
+        await pumpEventQueue();
+        expect(bloc.state.tx, payment);
+        expect(reads, greaterThan(0));
+        expect(
+          paymentAfterQuietPoll,
+          payment,
+          reason:
+              'A confirmed payment persisted during Receive setup must be observed even when subsequent polls are unchanged; reads=$readsAfterQuietPoll',
+        );
+      },
+    );
+  }
+  for (final cancel in [false, true]) {
+    test(
+      'real watcher coalesces in-flight revisions (cancel=$cancel)',
+      () async {
+        final revisions = StreamController<WalletRevisionState>.broadcast();
+        final transactions = _MockTransactions();
+        final first = Completer<List<WalletTransaction>>();
+        final payment = WalletTransaction(
+          walletId: 'w1',
+          network: Network.bitcoinMainnet,
+          direction: WalletTransactionDirection.incoming,
+          status: WalletTransactionStatus.confirmed,
+          txId: 'payment',
+          amountSat: 1000,
+          feeSat: 0,
+          vsize: 100,
+          inputs: const [],
+          outputs: const [],
+          isRbf: false,
+        );
+        var reads = 0;
+        when(
+          () => transactions.getWalletTransactions(
+            walletId: 'w1',
+            toAddress: 'current',
+          ),
+        ).thenAnswer((_) {
+          expect(revisions.hasListener, isTrue);
+          reads++;
+          return reads == 1 ? first.future : Future.value([payment]);
+        });
+        final received = <WalletTransaction>[];
+        final subscription = WatchWalletTransactionByAddressUsecase(
+          walletTransactionRepository: transactions,
+          walletFacade: WalletFacade(revisions.stream),
+        ).execute(walletId: 'w1', toAddress: 'current').listen(received.add);
+        await pumpEventQueue();
+        expect(reads, 1);
+        for (var number = 1; number <= 3; number++) {
+          revisions.add(
+            WalletRevisionState(
+              stamp: WalletRevision(
+                key: WalletKey(id: 'w1', network: BitcoinNetwork.mainnet),
+                generation: 1,
+                revision: number,
+              ),
+              lifecycle: WalletLifecycle.active,
+            ),
+          );
+        }
+        await pumpEventQueue();
+        expect(reads, 1);
+        if (cancel) await subscription.cancel();
+        first.complete([]);
+        await pumpEventQueue();
+        expect(reads, cancel ? 1 : 2);
+        expect(received, cancel ? isEmpty : [payment]);
+        await subscription.cancel();
+        await revisions.close();
+      },
+    );
+  }
+  for (final liquid in [false, true]) {
+    test(
+      'reveal outcome gates initial and new-address sync (liquid=$liquid)',
+      () {
+        fakeAsync((async) {
+          final wallet = _testWallet(
+            network: liquid ? Network.liquidMainnet : Network.bitcoinMainnet,
+          );
+          final initial = Completer<Result<WalletAddress, ReceiveFailure>>();
+          final next = Completer<Result<WalletAddress, ReceiveFailure>>();
+          final label = Completer<Result<String, ReceiveFailure>>();
+          when(
+            () => getReceiveAddress.execute(walletId: wallet.id),
+          ).thenAnswer((_) => initial.future);
+          when(
+            () => getReceiveAddress.execute(
+              walletId: wallet.id,
+              generateNew: true,
+            ),
+          ).thenAnswer((_) => next.future);
+          when(
+            () => loadAddressLabel.execute(any()),
+          ).thenAnswer((_) => label.future);
+          when(() => getPayjoinPolicy.execute()).thenAnswer(
+            (_) async => const Ok((enabled: false, minimumAmountSat: 10000)),
+          );
+          final bloc = buildBloc(wallet: wallet);
+          bloc.add(
+            liquid
+                ? const ReceiveLiquidStarted()
+                : ReceiveBitcoinStarted(wallet),
+          );
+          async.flushMicrotasks();
+          expect(bloc.state.revealedAddressGeneration, isNull);
+          async.elapse(const Duration(minutes: 1));
+          expect(bloc.state.revealedAddressGeneration, isNull);
+          final address = _testAddress(walletId: wallet.id);
+          initial.complete(Ok(address));
+          async.flushMicrotasks();
+          final firstGeneration = bloc.state.revealedAddressGeneration;
+          expect(
+            firstGeneration,
+            isNotNull,
+          ); // No dependency on labels or prices.
+          label.complete(const Ok(''));
+          async.flushMicrotasks();
+          bloc.add(const ReceiveNewAddressGenerated());
+          async.flushMicrotasks();
+          expect(bloc.state.revealedAddressGeneration, isNull);
+          async.elapse(const Duration(minutes: 1));
+          expect(bloc.state.revealedAddressGeneration, isNull);
+          next.complete(
+            Ok(address.copyWith(index: 1, address: 'next-address')),
+          );
+          async.flushMicrotasks();
+          expect(bloc.state.revealedAddressGeneration, isNotNull);
+          expect(bloc.state.revealedAddressGeneration, isNot(firstGeneration));
+          if (liquid) {
+            // Re-entering Liquid reuses its committed address, without becoming stuck.
+            bloc.add(const ReceiveLiquidStarted());
+            async.flushMicrotasks();
+            expect(bloc.state.revealedAddressGeneration, isNotNull);
+            verify(
+              () => getReceiveAddress.execute(walletId: wallet.id),
+            ).called(1);
+          }
+          unawaited(bloc.close());
+          async.flushMicrotasks();
+        });
+      },
+    );
+  }
 }
 
 OrderSwapRecord _receiveOrderSwapRecord() => OrderSwapRecord(

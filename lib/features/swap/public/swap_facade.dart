@@ -1,20 +1,21 @@
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/swap/domain/entities/order_swap_network.dart';
 import 'package:bb_mobile/features/swap/domain/entities/order_swap_quote.dart';
 import 'package:bb_mobile/features/swap/domain/entities/order_swap_record.dart';
+import 'package:bb_mobile/features/swap/domain/entities/order_swap_refresh_batch.dart';
 import 'package:bb_mobile/features/swap/domain/swap_failure.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/create_order_swap_usecase.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/get_order_swap_quote_usecase.dart';
-import 'package:bb_mobile/features/swap/domain/usecases/get_order_swaps_usecase.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/get_order_swap_usecase.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/get_order_swaps_awaiting_labels_usecase.dart';
+import 'package:bb_mobile/features/swap/domain/usecases/get_order_swaps_usecase.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/get_pending_order_swaps_usecase.dart';
 import 'package:bb_mobile/features/swap/domain/entities/swap_route.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/get_swap_app_update_required_usecase.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/get_swap_route_usecase.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/mark_order_swap_broadcast_unknown_usecase.dart';
-import 'package:bb_mobile/features/swap/domain/usecases/mark_order_swap_payin_broadcast_usecase.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/mark_order_swap_labels_applied_usecase.dart';
+import 'package:bb_mobile/features/swap/domain/usecases/mark_order_swap_payin_broadcast_usecase.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/refresh_order_swap_usecase.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/refresh_order_swaps_usecase.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/replace_prepared_order_swap_payin_usecase.dart';
@@ -22,6 +23,10 @@ import 'package:bb_mobile/features/swap/domain/usecases/save_prepared_order_swap
 import 'package:bb_mobile/features/swap/domain/usecases/watch_order_swap_usecase.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/watch_swap_app_update_required_usecase.dart';
 
+export '../domain/entities/order_swap_refresh_batch.dart';
+export '../domain/entities/order_swap_polling.dart';
+export '../domain/swap_sync_port.dart';
+export '../presentation/swap_failure_l10n.dart';
 export 'package:bb_mobile/features/swap/domain/entities/order_swap.dart';
 export 'package:bb_mobile/features/swap/domain/entities/order_swap_network.dart';
 export 'package:bb_mobile/features/swap/domain/entities/order_swap_quote.dart';
@@ -173,6 +178,9 @@ class SwapFacade {
 
   Stream<Result<OrderSwapRecord, SwapFailure>> watchOrder(String localId) =>
       _watchOrder.execute(localId);
+
+  Future<Result<OrderSwapRefreshBatch, SwapFailure>>
+  refreshOrdersWithOutcome() => _refreshOrders.execute();
 
   Future<Result<void, SwapFailure>> refreshOrders() async {
     return switch (await _refreshOrders.execute()) {

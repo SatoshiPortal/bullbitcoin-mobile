@@ -29,6 +29,8 @@ sealed class SellState with _$SellState {
     required Order sellOrder,
     RecipientSelection? payoutRecipient,
     @Default(false) bool isConfirmingPayment,
+    PayjoinSenderSession? pausedPayjoinSession,
+    @Default(false) bool isRetryingPayjoinProposal,
     @Default(false) bool isPolling,
     // Txid of the payin transaction once it is on the wire. Acts as a latch:
     // the send path must never run again for this order (#2522).

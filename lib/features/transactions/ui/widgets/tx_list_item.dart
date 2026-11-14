@@ -1,4 +1,5 @@
 import 'package:boltz_swaps/boltz_swaps.dart';
+import 'package:bb_mobile/core/widgets/text/currency_text.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/lists/tx_list_item.dart' as core;
@@ -29,7 +30,17 @@ class TransactionListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return core.TxListItem(_transactionData(context, _tx));
+    return core.TxListItem(
+      _transactionData(context, _tx),
+      key: ValueKey((
+        _tx.walletTransaction?.walletId,
+        _tx.walletTransaction?.txId,
+        _tx.swap?.id,
+        _tx.orderSwap?.localId,
+        _tx.payjoin?.id,
+        _tx.order?.orderId,
+      )),
+    );
   }
 
   core.TxListItemData _transactionData(
@@ -63,18 +74,22 @@ class TransactionListItem extends StatelessWidget {
       iconBorderColor: transaction.isOngoingSwap
           ? context.appColors.border.withValues(alpha: 0.5)
           : context.appColors.border,
-      amountSat:
-          isOrderType && !showOrderInFiat && orderAmountAndCurrency != null
-          ? orderAmountAndCurrency.$1.toInt()
-          : transaction.swapListAmountSat,
-      fiatAmount:
-          isOrderType && showOrderInFiat && orderAmountAndCurrency != null
-          ? orderAmountAndCurrency.$1.toDouble()
-          : null,
-      fiatCurrency:
-          isOrderType && showOrderInFiat && orderAmountAndCurrency != null
-          ? orderAmountAndCurrency.$2
-          : null,
+      amount: showOrderInFiat && orderAmountAndCurrency != null
+          ? CurrencyText(
+              transaction.swapListAmountSat,
+              showFiat: false,
+              fiatAmount: orderAmountAndCurrency.$1.toDouble(),
+              fiatCurrency: orderAmountAndCurrency.$2,
+              style: context.font.bodyLarge,
+            )
+          : CurrencyText(
+              isOrderType && orderAmountAndCurrency != null
+                  ? orderAmountAndCurrency.$1.toInt()
+                  : transaction.swapListAmountSat,
+              showFiat: false,
+              interactive: true,
+              style: context.font.bodyLarge,
+            ),
       labels: labels.isEmpty ? const [] : [LabelsWidget(labels: labels)],
       networkLabel: isOrderType
           ? transaction.order!.orderTypeLabel

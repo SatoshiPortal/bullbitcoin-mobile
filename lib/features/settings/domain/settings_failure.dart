@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/failures/failure.dart';
+import 'package:primitives/primitives.dart' show Failure, NetworkEnv;
 
 sealed class SettingsFailure extends Failure {
   const SettingsFailure([super.logMessage]);
@@ -26,8 +26,20 @@ final class SettingsExchangeSyncFailure extends SettingsFailure {
   const SettingsExchangeSyncFailure([super.logMessage]);
 }
 
+/// An explicit wallet discovery could not complete.
+final class SettingsWalletSyncFailure extends SettingsFailure {
+  const SettingsWalletSyncFailure();
+}
+
 /// Catch-all. [logMessage] is for logs ONLY and MUST never reach the UI —
 /// the presentation extension returns the shared generic string.
 final class SettingsUnexpectedFailure extends SettingsFailure {
   const SettingsUnexpectedFailure([super.logMessage]);
+}
+
+/// Activation is gated until the catalog and writer support this network.
+final class SettingsNetworkUnavailableFailure extends SettingsFailure {
+  final NetworkEnv network;
+
+  const SettingsNetworkUnavailableFailure(this.network);
 }

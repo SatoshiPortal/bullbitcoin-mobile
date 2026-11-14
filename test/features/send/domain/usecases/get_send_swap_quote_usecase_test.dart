@@ -1,6 +1,6 @@
 import 'package:bb_mobile/core/entities/signer_entity.dart';
-import 'package:bb_mobile/core/utils/result.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:primitives/primitives.dart' show Err, Ok;
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/send/domain/send_failure.dart';
 import 'package:bb_mobile/features/send/domain/usecases/get_send_swap_quote_usecase.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
@@ -16,6 +16,22 @@ void main() {
   setUp(() {
     swapFacade = _MockSwapFacade();
     usecase = GetSendSwapQuoteUsecase(swapFacade);
+  });
+
+  test('regtest refuses before requesting a remote quote', () async {
+    final result = await usecase.execute(
+      wallet: _wallet(Network.bitcoinRegtest),
+      amountSat: BigInt.from(1000),
+    );
+    expect(
+      result,
+      isA<Err>().having(
+        (result) => result.failure,
+        'failure',
+        isA<SendSwapRouteUnavailableFailure>(),
+      ),
+    );
+    verifyZeroInteractions(swapFacade);
   });
 
   test(

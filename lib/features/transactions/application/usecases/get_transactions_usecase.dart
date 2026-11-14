@@ -2,7 +2,7 @@ import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:boltz_swaps/boltz_swaps.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet_transaction.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bull_logger/bull_logger.dart';
@@ -45,11 +45,33 @@ class GetTransactionsUsecase {
     try {
       final settings = await _settingsRepository.fetch();
       final environment = settings.environment;
-      final orderRepository = environment.isTestnet
+      if (environment.networkEnv == NetworkEnv.regtest) {
+        final transactions = await _walletTransactionRepository
+            .getWalletTransactions(
+              walletId: walletId,
+              sync: sync,
+              environment: environment,
+            );
+        return Ok(
+          transactions
+              .map((transaction) => Transaction(walletTransaction: transaction))
+              .toList(),
+        );
+      }
+      final orderRepository = environment.requireHistoricalTestnet()
           ? _testnetExchangeOrderRepository
           : _mainnetExchangeOrderRepository;
 
-      final orders = await orderRepository.getOrders();
+      final orderResult = await orderRepository.getOrders();
+      final orders = switch (orderResult) {
+        Ok(:final value) => value,
+        Err(:final failure) => () {
+          log.warning(
+            'Exchange enrichment unavailable: ${failure.runtimeType}',
+          );
+          return <Order>[];
+        }(),
+      };
       await _labelExchangeOrdersUsecase.execute(orders: orders);
 
       // Labels must exist before wallet transactions are hydrated.
@@ -67,7 +89,7 @@ class GetTransactionsUsecase {
         _payjoinSessions.list(
           PayjoinSessionFilter(
             walletId: walletId,
-            network: environment.isTestnet
+            network: environment.requireHistoricalTestnet()
                 ? BitcoinNetwork.testnet
                 : BitcoinNetwork.mainnet,
           ),

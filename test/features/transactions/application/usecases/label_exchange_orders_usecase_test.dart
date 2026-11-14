@@ -1,11 +1,11 @@
 import 'dart:typed_data';
 
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/list_all_orders_usecase.dart';
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/features/exchange/domain/usecases/list_all_orders_usecase.dart';
+import 'package:primitives/primitives.dart' show Ok, Result;
 import 'package:bb_mobile/core/wallet/domain/entities/transaction_output.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet_transaction.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/features/transactions/application/usecases/label_exchange_orders_usecase.dart';

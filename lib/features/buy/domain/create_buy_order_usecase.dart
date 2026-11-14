@@ -47,7 +47,21 @@ class CreateBuyOrderUsecase {
   }) async {
     try {
       final settings = await _settingsRepository.fetch();
-      final isTestnet = settings.environment.isTestnet;
+      final environment = settings.environment.networkEnv;
+      final exchangeNetwork = switch (environment) {
+        NetworkEnv.mainnet => BitcoinNetwork.mainnet,
+        NetworkEnv.testnet => BitcoinNetwork.testnet,
+        NetworkEnv.regtest => BitcoinNetwork.regtest,
+        NetworkEnv.signet => BitcoinNetwork.signet,
+      };
+      if (!NetworkCapabilities.supports(
+        exchangeNetwork,
+        NetworkCapability.exchange,
+      )) {
+        log.warning('Capability refused feature=buy reason=unsupported');
+        return const Err(BuyUnsupportedNetworkFailure());
+      }
+      final isTestnet = environment == NetworkEnv.testnet;
       final repo = isTestnet
           ? _testnetExchangeOrderRepository
           : _mainnetExchangeOrderRepository;
@@ -144,15 +158,17 @@ class CreateBuyOrderUsecase {
         }
         rethrow;
       }
+    } on ExchangeCredentialUnavailableException {
+      log.warning('Exchange order unavailable: credential read refused');
+      return const Err(BuyUnexpectedFailure());
     } on ApiKeyException catch (e, st) {
-      // Severe: a session that expired mid-flow is not something the user did
-      // wrong, and it is the one failure here worth finding in Sentry.
-      log.severe(
-        message: 'Buy order rejected: not authenticated',
-        error: e,
+      // A missing or expired session is recoverable, including mid-flow.
+      log.warning(
+        'Buy order rejected: not authenticated',
+        error: e.runtimeType,
         trace: st,
       );
-      return Err(BuyUnauthenticatedFailure(e.message));
+      return const Err(BuyUnauthenticatedFailure());
     } on BullBitcoinApiMinAmountException catch (e) {
       // The two amount bounds are expected user input errors, so they are
       // logged at info rather than severe; the bound itself travels in the

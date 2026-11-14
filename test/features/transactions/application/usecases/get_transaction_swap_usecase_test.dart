@@ -1,11 +1,10 @@
 import 'package:boltz_swaps/boltz_swaps.dart';
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/transactions/application/usecases/get_transaction_swap_usecase.dart';
 import 'package:bb_mobile/features/transactions/application/usecases/watch_transaction_swap_usecase.dart';
 import 'package:bb_mobile/features/transactions/domain/transaction_failure.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:bb_mobile/core/failures/failure.dart';
 
 /// The failure an [Err] carries, typed by the [Result]; an [Ok] fails the test.
 F _failureOf<T, F extends Failure>(Result<T, F> result) => switch (result) {
@@ -28,7 +27,7 @@ Swap _swap() => Swap.lnReceive(
   keyIndex: 0,
   type: SwapType.lightningToBitcoin,
   status: SwapStatus.pending,
-  environment: Environment.mainnet,
+  environment: SwapEnvironment.mainnet,
   creationTime: DateTime.utc(2026),
   receiveWalletId: 'w1',
   invoice: 'lnbc1',

@@ -1,7 +1,8 @@
+import 'package:bb_mobile/features/wallet/domain/wallet.dart' as app;
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
-import 'package:bb_mobile/core/utils/result.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
+import 'package:primitives/primitives.dart' show Err, Ok;
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet_transaction.dart';
 import 'package:bb_mobile/features/replace_by_fee/domain/bump_fee_usecase.dart';
 import 'package:bb_mobile/features/replace_by_fee/domain/fee_entity.dart';
 import 'package:bb_mobile/features/replace_by_fee/domain/replace_by_fee_failure.dart';
@@ -153,6 +154,7 @@ void main() {
           walletId: any(named: 'walletId'),
           txid: any(named: 'txid'),
           newFeeRate: any(named: 'newFeeRate'),
+          network: app.Network.bitcoinMainnet,
         ),
       );
     });
@@ -171,6 +173,7 @@ void main() {
           walletId: any(named: 'walletId'),
           txid: any(named: 'txid'),
           newFeeRate: any(named: 'newFeeRate'),
+          network: app.Network.bitcoinMainnet,
         ),
       ).thenAnswer((_) async => const Ok('txid-1'));
 

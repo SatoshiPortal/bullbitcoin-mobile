@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/failures/failure.dart';
+import 'package:primitives/primitives.dart' show Failure;
 
 sealed class SettingsStoreFailure extends Failure {
   const SettingsStoreFailure([super.logMessage]);

@@ -1,0 +1,388 @@
+import 'dart:io';
+
+import 'package:clock/clock.dart';
+
+import 'package:bb_mobile/core/fees/domain/repositories/fees_repository.dart';
+import 'package:bull_recoverbull/bull_recoverbull.dart' as rb;
+import 'package:bb_mobile/core/status/domain/entity/service_status.dart';
+import 'package:bb_mobile/core/status/domain/ports/electrum_connectivity_port.dart';
+import 'package:bull_logger/bull_logger.dart';
+import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
+import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
+import 'package:bull_payjoin/bull_payjoin.dart';
+import 'package:bull_pricer/bull_pricer.dart';
+import 'package:bull_tor/tor.dart';
+import 'package:primitives/primitives.dart' show BitcoinNetwork, Err, Ok;
+
+class CheckAllServiceStatusUsecase {
+  /// Ceiling for the two Tor-backed rows, which can otherwise start a bootstrap
+  /// and hold the whole screen. Generous enough for a warm client to answer and
+  /// for a cold direct bootstrap to usually finish, short enough that a blocked
+  /// network reports `offline` instead of hanging.
+  static const _torStatusTimeout = Duration(seconds: 20);
+
+  final ElectrumConnectivityPort _electrumConnectivityPort;
+  final IndexPriceReader _getIndexPrice;
+  final PayjoinPolicyAccess _payjoinPolicy;
+  final PayjoinDiagnostics _payjoinDiagnostics;
+  final FeesRepository _feesRepository;
+  final WalletRepository _walletRepository;
+  final EnsureTorReadyUsecase _ensureTorReadyUsecase;
+  final Future<rb.Result<bool, rb.RecoverBullFailure>> Function()
+  _checkServerConnection;
+  final SettingsRepository _settingsRepository;
+  final Tor _tor;
+
+  CheckAllServiceStatusUsecase({
+    required this._electrumConnectivityPort,
+    required this._getIndexPrice,
+    required this._payjoinPolicy,
+    required this._payjoinDiagnostics,
+    required this._feesRepository,
+    required this._walletRepository,
+    required this._ensureTorReadyUsecase,
+    required this._checkServerConnection,
+    required this._settingsRepository,
+    required this._tor,
+  });
+
+  Future<AllServicesStatus> execute({
+    required Network network,
+    AllServicesStatus initialStatus = const AllServicesStatus(),
+    void Function(AllServicesStatus status)? onUpdate,
+  }) async {
+    final now = DateTime.now();
+
+    try {
+      var current = initialStatus.copyWith(lastChecked: null);
+
+      Future<void> publish(
+        Future<ServiceStatusInfo> check,
+        AllServicesStatus Function(
+          AllServicesStatus current,
+          ServiceStatusInfo result,
+        )
+        update, {
+        required String serviceName,
+      }) async {
+        late ServiceStatusInfo result;
+        try {
+          result = await check;
+        } on Exception catch (error, trace) {
+          log.severe(
+            message: 'Error checking $serviceName service status',
+            error: error,
+            trace: trace,
+          );
+          result = ServiceStatusInfo(
+            status: ServiceStatus.unknown,
+            name: serviceName,
+            lastChecked: DateTime.now(),
+          );
+        }
+        current = update(current, result);
+        onUpdate?.call(current);
+      }
+
+      await Future.wait([
+        publish(
+          _checkInternetConnection(),
+          (status, result) => status.copyWith(internetConnection: result),
+          serviceName: 'Internet Connection',
+        ),
+        publish(
+          _checkBitcoinElectrumServer(network),
+          (status, result) => status.copyWith(bitcoinElectrum: result),
+          serviceName: 'Bitcoin Electrum',
+        ),
+        publish(
+          _checkLiquidElectrumServer(network),
+          (status, result) => status.copyWith(liquidElectrum: result),
+          serviceName: 'Liquid Electrum',
+        ),
+        publish(
+          _checkPayjoinService(),
+          (status, result) => status.copyWith(payjoin: result),
+          serviceName: 'Payjoin',
+        ),
+        publish(
+          _checkPricerService(network),
+          (status, result) => status.copyWith(pricer: result),
+          serviceName: 'Pricer',
+        ),
+        publish(
+          _checkMempoolService(network),
+          (status, result) => status.copyWith(mempool: result),
+          serviceName: 'Mempool',
+        ),
+        publish(
+          _checkTorConnection(),
+          (status, result) => status.copyWith(tor: result),
+          serviceName: 'Tor',
+        ),
+        publish(
+          _checkRecoverbullConnection(),
+          (status, result) => status.copyWith(recoverbull: result),
+          serviceName: 'Recoverbull',
+        ),
+      ]);
+
+      final completed = current.copyWith(lastChecked: now);
+      onUpdate?.call(completed);
+      return completed;
+    } on Exception catch (e) {
+      log.severe(
+        message: 'Error checking service statuses',
+        error: e,
+        trace: StackTrace.current,
+      );
+      return _createUnknownStatus(now);
+    }
+  }
+
+  Future<ServiceStatusInfo> _checkBitcoinElectrumServer(Network network) async {
+    final isOnline = await _electrumConnectivityPort
+        .checkServersInUseAreOnlineForNetwork(
+          Network.fromEnvironment(
+            environment: network.environment,
+            isLiquid: false,
+          ),
+        );
+
+    return ServiceStatusInfo(
+      status: isOnline ? ServiceStatus.online : ServiceStatus.offline,
+      name: 'Bitcoin Electrum',
+      lastChecked: DateTime.now(),
+    );
+  }
+
+  Future<ServiceStatusInfo> _checkLiquidElectrumServer(Network network) async {
+    if (network == Network.bitcoinRegtest || network == Network.liquidRegtest) {
+      return ServiceStatusInfo(
+        status: ServiceStatus.disabled,
+        name: 'Liquid Electrum',
+        lastChecked: DateTime.now(),
+      );
+    }
+    final isOnline = await _electrumConnectivityPort
+        .checkServersInUseAreOnlineForNetwork(
+          Network.fromEnvironment(
+            environment: network.environment,
+            isLiquid: true,
+          ),
+        );
+
+    return ServiceStatusInfo(
+      status: isOnline ? ServiceStatus.online : ServiceStatus.offline,
+      name: 'Liquid Electrum',
+      lastChecked: DateTime.now(),
+    );
+  }
+
+  Future<ServiceStatusInfo> _checkPayjoinService() async {
+    // When every payjoin switch is off the OHTTP relay is not in use, so
+    //  report `disabled` (not `offline`/red) — probing a relay the user isn't
+    //  relying on and painting the whole status page red for it is
+    //  misleading.
+    final policyResult = await _payjoinPolicy.load();
+    final policy = switch (policyResult) {
+      Ok(:final value) => value,
+      Err() => null,
+    };
+    if (policy == null) {
+      return ServiceStatusInfo(
+        status: ServiceStatus.offline,
+        name: 'Payjoin',
+        lastChecked: DateTime.now(),
+      );
+    }
+    if (!policy.anyEnabled) {
+      return ServiceStatusInfo(
+        status: ServiceStatus.disabled,
+        name: 'Payjoin',
+        lastChecked: DateTime.now(),
+      );
+    }
+
+    final healthResult = await _payjoinDiagnostics.relayHealth();
+    final isHealthy = switch (healthResult) {
+      Ok(:final value) => value == PayjoinRelayHealth.available,
+      Err() => false,
+    };
+
+    return ServiceStatusInfo(
+      status: isHealthy ? ServiceStatus.online : ServiceStatus.offline,
+      name: 'Payjoin',
+      lastChecked: DateTime.now(),
+    );
+  }
+
+  Future<ServiceStatusInfo> _checkPricerService(Network network) async {
+    final price = await _getIndexPrice(
+      network: BitcoinNetwork.mainnet,
+      currency: SupportedCurrency.usd,
+    );
+
+    // A price under a minute old is served without asking the pricer, so an
+    // online pricer is dated by its last real answer. A failure is never
+    // cached: that one is a fresh attempt.
+    return switch (price) {
+      Ok(:final value) => ServiceStatusInfo(
+        status: ServiceStatus.online,
+        name: 'Pricer',
+        lastChecked: value.fetchedAt.toLocal(),
+      ),
+      Err() => ServiceStatusInfo(
+        status: ServiceStatus.offline,
+        name: 'Pricer',
+        lastChecked: clock.now(),
+      ),
+    };
+  }
+
+  Future<ServiceStatusInfo> _checkMempoolService(Network network) async {
+    if (network == Network.bitcoinRegtest || network == Network.liquidRegtest) {
+      return ServiceStatusInfo(
+        status: ServiceStatus.disabled,
+        name: 'Mempool',
+        lastChecked: DateTime.now(),
+      );
+    }
+    // NOTE: Mempool is a Bitcoin only service
+    // Liquid fees are hardcoded it will always return connected!
+    final onlyBitcoinNetwork = network.requireHistoricalTestnet()
+        ? Network.bitcoinTestnet
+        : Network.bitcoinMainnet;
+    await _feesRepository.getNetworkFees(network: onlyBitcoinNetwork);
+
+    return ServiceStatusInfo(
+      status: ServiceStatus.online,
+      name: 'Mempool',
+      lastChecked: DateTime.now(),
+    );
+  }
+
+  Future<ServiceStatusInfo> _checkInternetConnection() async {
+    final result = await InternetAddress.lookup('bullbitcoin.com');
+    final isConnected = result.isNotEmpty && result[0].rawAddress.isNotEmpty;
+
+    return ServiceStatusInfo(
+      status: isConnected ? ServiceStatus.online : ServiceStatus.offline,
+      name: 'Internet Connection',
+      lastChecked: DateTime.now(),
+    );
+  }
+
+  /// `unknown` — not `offline` — when this wallet has no encrypted backup:
+  /// Tor is then unused, so there is nothing to report either way.
+  ///
+  /// For a wallet that does use it, answering means starting the client. That
+  /// is the point of a connectivity screen, and it costs nothing in practice:
+  /// app startup already warms Tor for exactly these wallets, so this adopts
+  /// the running client instead of booting a second one.
+  Future<ServiceStatusInfo> _checkTorConnection() async {
+    final status = ServiceStatusInfo(
+      status: ServiceStatus.unknown,
+      name: 'Tor',
+      lastChecked: DateTime.now(),
+    );
+
+    // An explicitly configured external proxy is authoritative even when this
+    // wallet has no backup requiring embedded Tor. Only the disabled branch
+    // consults wallet usage before probing embedded Tor.
+    final settings = await _settingsRepository.fetch();
+    if (settings.useTorProxy) {
+      final TorProxyEndpoint endpoint;
+      try {
+        endpoint = TorProxyEndpoint(
+          host: InternetAddress.loopbackIPv4.address,
+          port: settings.torProxyPort,
+        );
+      } on ArgumentError {
+        return status.copyWith(status: ServiceStatus.offline);
+      }
+      final external = await _tor.external.verify(endpoint);
+      return status.copyWith(
+        status: external is TorReady
+            ? ServiceStatus.online
+            : ServiceStatus.offline,
+      );
+    }
+    return status.copyWith(status: await _checkEmbeddedTorIfRequired());
+  }
+
+  Future<ServiceStatus> _checkEmbeddedTorIfRequired() async {
+    if (!await _walletRepository.isTorRequired()) return ServiceStatus.unknown;
+    return _checkEmbeddedTorConnection();
+  }
+
+  Future<ServiceStatus> _checkEmbeddedTorConnection() async =>
+      switch (await _ensureTorReadyUsecase.execute().timeout(
+        _torStatusTimeout,
+        onTimeout: () => const TorUninitialized(),
+      )) {
+        TorReady(:final route) when route.source == TorSource.embedded =>
+          ServiceStatus.online,
+        _ => ServiceStatus.offline,
+      };
+
+  Future<ServiceStatusInfo> _checkRecoverbullConnection() async {
+    final status = ServiceStatusInfo(
+      status: ServiceStatus.unknown,
+      name: 'Recoverbull',
+      lastChecked: DateTime.now(),
+    );
+
+    // Delegated rather than reimplemented: this is the same "can we reach the
+    // key server over Tor" question the RecoverBull flow asks, and one answer
+    // for both keeps the screen and the flow from disagreeing.
+    final result = await _checkServerConnection().timeout(
+      _torStatusTimeout,
+      onTimeout: () => const Ok(false),
+    );
+    return status.copyWith(
+      status: switch (result) {
+        Ok(value: true) => ServiceStatus.online,
+        Err(failure: rb.VaultContextChangedFailure()) => ServiceStatus.unknown,
+        _ => ServiceStatus.offline,
+      },
+    );
+  }
+
+  AllServicesStatus _createUnknownStatus(DateTime now) {
+    return AllServicesStatus(
+      internetConnection: ServiceStatusInfo(
+        status: ServiceStatus.unknown,
+        name: 'Internet Connection',
+        lastChecked: now,
+      ),
+      bitcoinElectrum: ServiceStatusInfo(
+        status: ServiceStatus.unknown,
+        name: 'Bitcoin Electrum',
+        lastChecked: now,
+      ),
+      liquidElectrum: ServiceStatusInfo(
+        status: ServiceStatus.unknown,
+        name: 'Liquid Electrum',
+        lastChecked: now,
+      ),
+      payjoin: ServiceStatusInfo(
+        status: ServiceStatus.unknown,
+        name: 'Payjoin',
+        lastChecked: now,
+      ),
+      pricer: ServiceStatusInfo(
+        status: ServiceStatus.unknown,
+        name: 'Pricer',
+        lastChecked: now,
+      ),
+      mempool: ServiceStatusInfo(
+        status: ServiceStatus.unknown,
+        name: 'Mempool',
+        lastChecked: now,
+      ),
+      lastChecked: now,
+    );
+  }
+}

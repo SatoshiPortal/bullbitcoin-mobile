@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/failures/failure.dart';
+import 'package:primitives/primitives.dart' show Failure;
 
 sealed class AutoBuyFailure extends Failure {
   const AutoBuyFailure([super.logMessage]);
@@ -26,4 +26,8 @@ final class AutoBuyStatusUnconfirmedFailure extends AutoBuyFailure {
 
 final class AutoBuyUnexpectedFailure extends AutoBuyFailure {
   const AutoBuyUnexpectedFailure([super.logMessage]);
+}
+
+final class AutoBuyUnsupportedNetworkFailure extends AutoBuyFailure {
+  const AutoBuyUnsupportedNetworkFailure();
 }

@@ -45,7 +45,7 @@ class SecretRepository {
             try {
               return await _describe(e.id, e.model);
             } on FormatException {
-              log.warning('Skipping secret ${e.id}: stored words fail bip39');
+              log.warning('Stored mnemonic invalid reason=validation');
               unreadable.add((
                 id: e.id,
                 failure: const FetchSecretFailure('stored words fail bip39'),
@@ -107,11 +107,16 @@ class SecretRepository {
   /// Fingerprint a candidate mnemonic would have, without storing it.
   Future<Result<Fingerprint, SecretFailure>> idOf({
     required List<String> words,
+    Language language = Language.english,
     String? passphrase,
   }) => boundary(
     () => Isolate.run(
       () => Deriver.fingerprint.fingerprint(
-        Deriver.fingerprint.seed(words, passphrase: passphrase ?? ''),
+        Deriver.fingerprint.seed(
+          words,
+          passphrase: passphrase ?? '',
+          language: language,
+        ),
       ),
     ),
     orElse: InvalidMnemonicFailure.new,
@@ -152,14 +157,17 @@ class SecretRepository {
   /// Stores a mnemonic and returns its description. Mnemonics are the only kind anything writes; [Seed] stays readable for entries that predate that.
   Future<Result<SecretInfo, SecretFailure>> store({
     required List<String> words,
+    Language language = Language.english,
     String? passphrase,
     bool rejectExisting = false,
     Set<Fingerprint>? acceptOnly,
   }) => boundary(() async {
     // Validated as words first — count, wordlist, checksum — so a bad count reads as "invalid mnemonic" like a bad checksum, not as the model's FormatException. Cheap: no seed yet.
-    Deriver.fingerprint.check(words);
+    final normalized = Deriver.fingerprint.normalizeWords(words);
+    Deriver.fingerprint.check(normalized, language: language);
     final model = MnemonicSecretModel(
-      mnemonicWords: words,
+      mnemonicWords: normalized,
+      language: language,
       // Absent and empty are one passphrase to BIP39 and to this package; the
       // disk has always said `null` for it, so a fresh write says the same.
       passphrase: (passphrase == null || passphrase.isEmpty)
@@ -173,35 +181,42 @@ class SecretRepository {
         'the words do not derive to an accepted fingerprint',
       );
     }
-    await _source.storeSecret(
+    // Restoration may keep an equivalent entry in another wordlist: describe
+    // that one, since every later operation reads it, not the candidate.
+    final kept = await _source.storeSecret(
       id: id,
       secret: model,
       seedOf: (m) => Isolate.run(() => _seedOf(m)),
       rejectExisting: rejectExisting,
     );
-    return _describe(id, model);
+    return _describe(id, kept);
   }, orElse: StoreSecretFailure.new);
 
   /// Compares the full seed, not merely the collision-prone fingerprint.
-  Future<Result<bool, SecretFailure>> contains({
+  Future<Result<SecretInfo?, SecretFailure>> find({
     required List<String> words,
+    Language language = Language.english,
     String? passphrase,
   }) {
     final candidate = List<String>.of(words);
     return boundary(() async {
       final seed = await Isolate.run(
-        () => Deriver.fingerprint.seed(candidate, passphrase: passphrase ?? ''),
+        () => Deriver.fingerprint.seed(
+          candidate,
+          passphrase: passphrase ?? '',
+          language: language,
+        ),
       );
       final id = Deriver.fingerprint.fingerprint(seed);
       final stored = await _source.fetchSecret(id);
-      if (stored == null) return false;
+      if (stored == null) return null;
       final existing = await _readOffIsolate(() => _seedOf(stored));
-      if (seed.length != existing.length) return false;
+      if (seed.length != existing.length) return null;
       var difference = 0;
       for (var i = 0; i < seed.length; i++) {
         difference |= seed[i] ^ existing[i];
       }
-      return difference == 0;
+      return difference == 0 ? _describe(id, stored) : null;
     }, orElse: FetchSecretFailure.new);
   }
 
@@ -219,6 +234,7 @@ class SecretRepository {
       Err(:final failure) => Err(failure),
       Ok(:final value) => (await store(
         words: value.words,
+        language: value.language,
         passphrase: passphrase,
       )).map((info) => (info: info, metadata: value.metadata)),
     };
@@ -232,7 +248,7 @@ class SecretRepository {
     () => Isolate.run(() {
       final opened = Backup.recoverbull.open(file: file, backupKey: key);
       return Deriver.fingerprint.fingerprint(
-        Deriver.fingerprint.seed(opened.words),
+        Deriver.fingerprint.seed(opened.words, language: opened.language),
       );
     }),
     orElse: UseSecretFailure.new,
@@ -271,9 +287,13 @@ class SecretRepository {
     switch (model) {
       case BytesSecretModel(:final bytes):
         return SecretInfo.seed(id: id, lengthInBits: bytes.length * 8);
-      case MnemonicSecretModel(:final mnemonicWords, :final passphrase):
+      case MnemonicSecretModel(
+        :final mnemonicWords,
+        :final passphrase,
+        :final language,
+      ):
         try {
-          Deriver.fingerprint.check(mnemonicWords);
+          Deriver.fingerprint.check(mnemonicWords, language: language);
         } on MnemonicException {
           throw const FormatException('stored words are not a BIP39 mnemonic');
         }
@@ -281,6 +301,7 @@ class SecretRepository {
         return SecretInfo.mnemonic(
           id: id,
           wordCount: mnemonicWords.length,
+          language: language,
           hasPassphrase: hasPassphrase,
         );
     }
@@ -345,13 +366,22 @@ class SecretRepository {
     switch (model) {
       case BytesSecretModel(:final bytes):
         return Seed(id: id, seedBytes: Uint8List.fromList(bytes));
-      case MnemonicSecretModel(:final mnemonicWords, :final passphrase):
+      case MnemonicSecretModel(
+        :final mnemonicWords,
+        :final passphrase,
+        :final language,
+      ):
         final pass = passphrase ?? '';
         return Mnemonic(
           id: id,
           words: mnemonicWords,
+          language: language,
           passphrase: pass,
-          seedBytes: Deriver.fingerprint.seed(mnemonicWords, passphrase: pass),
+          seedBytes: Deriver.fingerprint.seed(
+            mnemonicWords,
+            passphrase: pass,
+            language: language,
+          ),
         );
     }
   }
@@ -360,17 +390,33 @@ class SecretRepository {
     BytesSecretModel(:final bytes) => Deriver.fingerprint.fingerprint(
       Uint8List.fromList(bytes),
     ),
-    MnemonicSecretModel(:final mnemonicWords, :final passphrase) =>
+    MnemonicSecretModel(
+      :final mnemonicWords,
+      :final passphrase,
+      :final language,
+    ) =>
       Deriver.fingerprint.fingerprint(
-        Deriver.fingerprint.seed(mnemonicWords, passphrase: passphrase ?? ''),
+        Deriver.fingerprint.seed(
+          mnemonicWords,
+          passphrase: passphrase ?? '',
+          language: language,
+        ),
       ),
   };
 
   /// The full seed a model derives to. For the one comparison a fingerprint is not enough for — see `FlutterSecureStorageDatasource._holdsSameSecret`.
   static Uint8List _seedOf(SecretModel model) => switch (model) {
     BytesSecretModel(:final bytes) => Uint8List.fromList(bytes),
-    MnemonicSecretModel(:final mnemonicWords, :final passphrase) =>
-      Deriver.fingerprint.seed(mnemonicWords, passphrase: passphrase ?? ''),
+    MnemonicSecretModel(
+      :final mnemonicWords,
+      :final passphrase,
+      :final language,
+    ) =>
+      Deriver.fingerprint.seed(
+        mnemonicWords,
+        passphrase: passphrase ?? '',
+        language: language,
+      ),
   };
 }
 

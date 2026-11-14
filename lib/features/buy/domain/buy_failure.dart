@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/failures/failure.dart';
+import 'package:primitives/primitives.dart' show Failure;
 
 sealed class BuyFailure extends Failure {
   const BuyFailure([super.logMessage]);
@@ -58,4 +58,9 @@ final class BuyQuoteUnavailableFailure extends BuyFailure {
 /// deliberately ignores it and returns a generic message.
 final class BuyUnexpectedFailure extends BuyFailure {
   const BuyUnexpectedFailure([super.logMessage]);
+}
+
+/// The selected network cannot use the exchange.
+final class BuyUnsupportedNetworkFailure extends BuyFailure {
+  const BuyUnsupportedNetworkFailure();
 }

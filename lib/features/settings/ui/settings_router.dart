@@ -4,7 +4,7 @@ import 'package:bb_mobile/features/address_view/ui/screens/addresses_screen.dart
 import 'package:bb_mobile/features/all_seed_view/presentation/all_seed_view_cubit.dart';
 import 'package:bb_mobile/features/all_seed_view/ui/all_seed_view_screen.dart';
 import 'package:bb_mobile/features/app_unlock/public/app_unlock_facade.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/features/autoswap/ui/screens/autoswap_settings_screen.dart';
 import 'package:bb_mobile/features/backup_settings/ui/backup_settings_router.dart';
 import 'package:bb_mobile/features/backup_settings/ui/screens/backup_settings_screen.dart';
@@ -46,6 +46,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:boltz_swaps/boltz_swaps.dart';
 import 'package:bull_logs/bull_logs.dart';
+import 'package:bb_mobile/features/settings/presentation/wallet_discovery_cubit.dart';
 
 export 'package:bb_mobile/features/settings/ui/settings_route.dart';
 
@@ -211,7 +212,10 @@ class SettingsRouter {
                 },
               ),
             ],
-            child: WalletDetailsScreen(walletId: walletId),
+            child: BlocProvider(
+              create: (_) => locator<WalletDiscoveryCubit>(),
+              child: WalletDetailsScreen(walletId: walletId),
+            ),
           );
         },
       ),

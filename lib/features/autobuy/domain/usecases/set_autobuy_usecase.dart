@@ -1,7 +1,8 @@
+import 'package:bb_mobile/core/errors/exchange_errors.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/default_wallet.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/get_default_wallets_usecase.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
+import 'package:bb_mobile/features/exchange/domain/usecases/get_default_wallets_usecase.dart';
+import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_user_repository.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/features/autobuy/domain/autobuy_failure.dart';
@@ -26,12 +27,45 @@ class SetAutoBuyUsecase {
 
   @useResult
   Future<Result<void, AutoBuyFailure>> execute({required bool enabled}) async {
+    // The shared settings repository still throws, so this is its boundary.
+    final ExchangeUserRepository userRepository;
+    try {
+      final settings = await _settingsRepository.fetch();
+      if (!NetworkCapabilities.supports(
+        BitcoinNetwork.fromName(settings.activeNetwork.name),
+        NetworkCapability.exchange,
+      )) {
+        return const Err(AutoBuyUnsupportedNetworkFailure());
+      }
+      userRepository = settings.environment.requireHistoricalTestnet()
+          ? _testnetExchangeUserRepository
+          : _mainnetExchangeUserRepository;
+    } on Error {
+      rethrow;
+    } catch (e, st) {
+      // Type only, like every other boundary in this migration.
+      log.severe(
+        message: 'Failed to read settings before updating AutoBuy',
+        error: e.runtimeType,
+        trace: st,
+      );
+      return Err(
+        AutoBuyUnexpectedFailure('settings fetch failed: ${e.runtimeType}'),
+      );
+    }
+
     if (enabled) {
       final DefaultWallets wallets;
       try {
         wallets = await _getDefaultWalletsUsecase.execute();
       } on Error {
         rethrow;
+      } on ApiKeyException catch (e) {
+        log.info('Exchange credential refused: ${e.runtimeType}');
+        return Err(AutoBuyAccountUnavailableFailure('$e'));
+      } on ExchangeCredentialUnavailableException catch (e) {
+        log.info('Exchange credential refused: ${e.runtimeType}');
+        return Err(AutoBuyAccountUnavailableFailure('$e'));
       } catch (e, st) {
         log.severe(
           message: 'Failed to read the default wallets before enabling AutoBuy',
@@ -51,6 +85,9 @@ class SetAutoBuyUsecase {
       summary = await _getExchangeUserSummaryUsecase.execute();
     } on Error {
       rethrow;
+    } on GetExchangeUserSummaryCredentialException catch (e) {
+      log.info('Exchange account credential refused: ${e.runtimeType}');
+      return Err(AutoBuyAccountUnavailableFailure('$e'));
     } on GetExchangeUserSummaryException catch (e, st) {
       log.severe(
         message: 'Failed to load account before updating AutoBuy',
@@ -69,27 +106,6 @@ class SetAutoBuyUsecase {
 
     if (enabled && summary.isFundingRestricted) {
       return const Err(AutoBuyFundingRestrictedFailure());
-    }
-
-    // The shared settings repository still throws, so this is its boundary.
-    final ExchangeUserRepository userRepository;
-    try {
-      final settings = await _settingsRepository.fetch();
-      userRepository = settings.environment.isTestnet
-          ? _testnetExchangeUserRepository
-          : _mainnetExchangeUserRepository;
-    } on Error {
-      rethrow;
-    } catch (e, st) {
-      // Type only, like every other boundary in this migration.
-      log.severe(
-        message: 'Failed to read settings before updating AutoBuy',
-        error: e.runtimeType,
-        trace: st,
-      );
-      return Err(
-        AutoBuyUnexpectedFailure('settings fetch failed: ${e.runtimeType}'),
-      );
     }
 
     final saved = await userRepository.saveUserPreference(

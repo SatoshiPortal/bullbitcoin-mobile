@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/app_startup/domain/app_startup_failure.dart';
 import 'package:bb_mobile/features/app_startup/domain/usecases/check_for_existing_default_wallets_usecase.dart';
 import 'package:bb_mobile/features/app_startup/domain/usecases/initialize_required_tor_usecase.dart';

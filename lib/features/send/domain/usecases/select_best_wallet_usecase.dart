@@ -1,7 +1,7 @@
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/utils/payment_request.dart';
-import 'package:bb_mobile/core/utils/result.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:primitives/primitives.dart' show Err, Ok, Result;
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/send/domain/send_failure.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:meta/meta.dart';
@@ -105,19 +105,23 @@ class SelectBestWalletUsecase {
   ) {
     // Default first
     for (final w in wallets) {
+      final balance = w.balanceSat;
+      if (balance == null) continue;
       if (w.isDefault &&
           w.network == network &&
           w.signer == SignerEntity.local &&
-          w.balanceSat.toInt() > satoshis &&
-          w.balanceSat.toInt() != 0) {
+          balance.toInt() > satoshis &&
+          balance.toInt() != 0) {
         return Ok(w);
       }
     }
 
     // Any wallet with enough funds from the same network
     for (final w in wallets) {
+      final balance = w.balanceSat;
+      if (balance == null) continue;
       if (w.network == network &&
-          w.balanceSat.toInt() > satoshis &&
+          balance.toInt() > satoshis &&
           w.signer == SignerEntity.local) {
         return Ok(w);
       }
@@ -125,7 +129,9 @@ class SelectBestWalletUsecase {
 
     // Any wallet with enough funds
     for (final w in wallets) {
-      if (w.balanceSat.toInt() >= satoshis && w.signer == SignerEntity.local) {
+      final balance = w.balanceSat;
+      if (balance == null) continue;
+      if (balance.toInt() >= satoshis && w.signer == SignerEntity.local) {
         return Ok(w);
       }
     }

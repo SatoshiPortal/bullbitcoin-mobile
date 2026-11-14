@@ -2,12 +2,12 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:bb_mobile/features/exchange/domain/exchange_failure.dart';
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_web_settings_usecase.dart';
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/exchange/ui/widgets/exchange_failure_banner.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';

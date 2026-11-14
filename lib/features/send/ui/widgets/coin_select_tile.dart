@@ -1,13 +1,14 @@
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:primitives/primitives.dart' show BitcoinUnit;
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/address_viewer.dart';
+import 'package:bb_mobile/features/wallet/ui/widgets/address_viewer.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bb_mobile/features/labels/ui/labels_widget.dart';
-import 'package:bull_ui/bull_ui.dart' show BullCheckbox, BullShapesX, BullText;
+import 'package:bull_ui/bull_ui.dart'
+    show BullCheckbox, BullShapesX, BullSpacing, BullText, Gap;
 import 'package:flutter/material.dart';
 
 class CoinSelectTile extends StatelessWidget {
@@ -137,6 +138,7 @@ class CoinSelectTile extends StatelessWidget {
                         ),
                       ),
                       if (utxo is BitcoinWalletUtxo) ...[
+                        const Gap(BullSpacing.xs),
                         BullText(
                           context.loc.sendType,
                           style: context.font.labelMedium?.copyWith(

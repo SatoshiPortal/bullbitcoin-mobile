@@ -17,12 +17,12 @@ dependencies:
   bull_sdk:
     git:
       url: https://github.com/SatoshiPortal/bull_sdk
-      ref: 1b01dc5e962c4c068fc4934b8125b839e2cd3264
+      ref: e538cbc6fe51a9a6ce425d2513e0c1422ca89132
       path: packages/bull_sdk
   boltz_stream:
     git:
       url: https://github.com/SatoshiPortal/bull_sdk
-      ref: 1b01dc5e962c4c068fc4934b8125b839e2cd3264
+      ref: e538cbc6fe51a9a6ce425d2513e0c1422ca89132
       path: packages/boltz-stream
   bolt11_decoder:
     git:

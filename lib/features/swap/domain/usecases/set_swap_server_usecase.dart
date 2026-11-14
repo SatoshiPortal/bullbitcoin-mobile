@@ -2,7 +2,7 @@ import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.
 import 'package:bb_mobile/core/swaps/domain/entity/swap_server.dart';
 import 'package:bb_mobile/core/swaps/domain/repositories/swap_server_setting_repository.dart';
 import 'package:bb_mobile/core/swaps/swap_engine_switcher.dart';
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/swap/domain/swap_failure.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:meta/meta.dart';
@@ -25,7 +25,7 @@ class SetSwapServerUsecase {
   Future<Result<SwapServer, SwapFailure>> execute(String input) async {
     try {
       final isTestnet =
-          (await _settingsRepository.fetch()).environment.isTestnet;
+          !(await _settingsRepository.fetch()).environment.isMainnet;
       final server = SwapServer.parse(input, isTestnet: isTestnet);
       if (server == null) {
         return const Err(
