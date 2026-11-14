@@ -23,6 +23,9 @@ export 'src/domain/payjoin_policy.dart'
 export 'src/domain/payjoin_ports.dart'
     show
         PayjoinWalletPort,
+        PayjoinCodecPort,
+        PayjoinTransaction,
+        PayjoinTransactionOutput,
         PayjoinSpendBlockedException,
         PayjoinBroadcastNotAttemptedException,
         PayjoinBlockchainPort,

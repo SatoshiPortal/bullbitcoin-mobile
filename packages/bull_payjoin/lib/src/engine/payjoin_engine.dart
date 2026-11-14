@@ -7,7 +7,6 @@ import 'package:bull_payjoin/src/data/payjoin_input_pair_model.dart';
 import 'package:bull_payjoin/src/data/payjoin_model.dart';
 import 'package:bull_payjoin/src/data/payjoin_policy_store.dart';
 import 'package:bull_payjoin/src/domain/payjoin_policy.dart';
-import 'package:bull_payjoin/src/engine/bitcoin_tx.dart';
 import 'package:bull_payjoin/src/engine/payjoin.dart';
 import 'package:bull_payjoin/src/engine/payjoin_engine_contract.dart';
 import 'package:bull_payjoin/src/engine/payjoin_engine_exception.dart';
@@ -27,6 +26,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
   final api.PayjoinTransactionPort _transactions;
   final PayjoinPolicyStore _policy;
   final api.PayjoinLabelsPort _labels;
+  final api.PayjoinCodecPort _codec;
   // Shared across receiver sessions so two proposals cannot select the same
   // wallet UTXO before either proposal has been persisted.
   final Lock _utxoSelectionLock;
@@ -106,7 +106,9 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     required api.PayjoinTransactionPort transactions,
     required PayjoinPolicyStore policy,
     required api.PayjoinLabelsPort labels,
+    required api.PayjoinCodecPort codec,
   }) : _wallet = wallet,
+       _codec = codec,
        _blockchain = blockchain,
        _transactions = transactions,
        _policy = policy,
@@ -251,9 +253,9 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
         }
 
         // Extract the spent utxos from the proposal psbt
-        final proposalTx = await BitcoinTx.fromPsbt(psbt);
+        final proposalTx = _codec.decodePsbt(psbt);
         final spentUtxos = proposalTx.inputs
-            .map((input) => (txId: input.txid, vout: input.vout))
+            .map((input) => (txId: input.txId, vout: input.vout))
             .toList();
         return spentUtxos;
       }),
@@ -1343,7 +1345,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
         // are local best-effort work and must never route into the competing
         // original-transaction fallback if either fails.
         try {
-          final broadcastTxId = (await BitcoinTx.fromPsbt(finalizedPsbt)).txid;
+          final broadcastTxId = _codec.decodePsbt(finalizedPsbt).txid;
           await labelCompletedPayjoinSend(
             broadcastTxId,
             walletId: payjoin.walletId,
@@ -1973,7 +1975,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
   /// cleared for display hygiene (see the sender sweep in
   /// [_resumePayjoinsOnStartupUnguarded]): the stored proposal still pins the
   /// payjoin transaction, and the engine's own invariant is that
-  /// `BitcoinTx.fromPsbt(proposalPsbt).txid == txId` (see
+  /// `codec.decodePsbt(proposalPsbt).txid == txId` (see
   /// payjoin_runtime reconstructSender). Returns null when no proposal was ever
   /// exchanged — no payjoin transaction can exist — or the PSBT cannot be
   /// parsed, in which case no broadcast watcher is armed and the fallback
@@ -1982,7 +1984,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     final proposalPsbt = sender.proposalPsbt;
     if (proposalPsbt == null) return null;
     try {
-      return (await BitcoinTx.fromPsbt(proposalPsbt)).txid;
+      return _codec.decodePsbt(proposalPsbt).txid;
     } catch (_) {
       // A corrupt row. The cause is dropped: it may quote the PSBT.
       _log.warning(
@@ -2899,9 +2901,9 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
   ///
   /// Not private (and marked [visibleForTesting]) so it can be exercised
   /// directly: driving it through the full reactive sender pipeline needs a
-  /// real, valid PSBT for BitcoinTx.fromPsbt to parse (FFI-backed — the
-  /// existing payjoin datasource tests document the same offline-fixture
-  /// constraint), which isn't practical to construct in a unit test.
+  /// real, valid PSBT for the codec to decode (the existing payjoin
+  /// datasource tests document the same offline-fixture constraint), which
+  /// isn't practical to construct in a unit test.
   @visibleForTesting
   Future<void> labelCompletedPayjoinSend(
     String txId, {

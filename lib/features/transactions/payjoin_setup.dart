@@ -14,6 +14,7 @@ import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/features/transactions/data/payjoin_blockchain_adapter.dart';
+import 'package:bb_mobile/features/transactions/data/payjoin_codec_adapter.dart';
 import 'package:bb_mobile/features/transactions/data/payjoin_fees_adapter.dart';
 import 'package:bb_mobile/features/transactions/data/payjoin_log_adapter.dart';
 import 'package:bb_mobile/features/transactions/data/payjoin_transaction_adapter.dart';
@@ -54,6 +55,7 @@ abstract final class PayjoinSetup {
         labels: locator<LabelsFacade>().payjoinLabels(),
         legacyData: PayjoinLegacyDataAdapter(database),
         log: const AppPayjoinLogAdapter(),
+        codec: const AppPayjoinCodecAdapter(),
       );
     });
     _registerRoles(locator, runtime.payjoin);

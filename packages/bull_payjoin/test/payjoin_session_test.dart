@@ -1,14 +1,18 @@
 import 'dart:typed_data';
 
 import 'package:bull_payjoin/bull_payjoin.dart';
-import 'package:bull_payjoin/src/engine/bitcoin_tx.dart';
+import 'package:bull_payjoin/src/engine/payjoin_ownership.dart';
 import 'package:primitives/primitives.dart';
 import 'package:test/test.dart';
+import 'support/test_codec.dart';
 
-TxInput _input(String txid, [int vout = 0]) => TxInput(txid: txid, vout: vout);
+Outpoint _input(String txid, [int vout = 0]) => (txId: txid, vout: vout);
 
-TxOutput _output(int script, [int value = 1000]) =>
-    TxOutput(value: value, scriptPubkey: Uint8List.fromList([script]));
+PayjoinTransactionOutput _output(int script, [int value = 1000]) =>
+    PayjoinTransactionOutput(
+      value: Sats.fromInt(value),
+      scriptPubkey: Uint8List.fromList([script]),
+    );
 
 void main() {
   final createdAt = DateTime.utc(2026, 7, 30);
@@ -131,21 +135,26 @@ void main() {
   });
 
   test('derives both parties from the original and proposal', () {
-    final paymentScript = paymentScriptFromBip21(
-      'bitcoin:bc1qar0srrr7xfkvy5l643lydnw9re59gtzzwf5mdq?amount=0.0005',
-      isTestnet: false,
-    );
-    expect(paymentScript, isNotNull);
+    final paymentScript =
+        paymentScriptFromBip21(
+          'bitcoin:bc1qar0srrr7xfkvy5l643lydnw9re59gtzzwf5mdq?amount=0.0005',
+          codec: const TestPayjoinCodec(),
+          isTestnet: false,
+        ) ??
+        fail('the payment address must decode');
 
-    final original = BitcoinTx(
+    final original = PayjoinTransaction(
       txid: 'original',
       inputs: [_input('a'), _input('b', 1)],
       outputs: [
-        TxOutput(value: 50000, scriptPubkey: paymentScript!),
+        PayjoinTransactionOutput(
+          value: Sats.fromInt(50000),
+          scriptPubkey: paymentScript,
+        ),
         _output(2, 40000),
       ],
     );
-    final proposal = BitcoinTx(
+    final proposal = PayjoinTransaction(
       txid: 'proposal',
       inputs: [_input('receiver'), _input('a'), _input('b', 1)],
       outputs: [_output(3, 49000), _output(2, 39500), _output(4, 500)],
@@ -170,7 +179,7 @@ void main() {
   });
 
   test('does not guess when the comparison is ambiguous', () {
-    final original = BitcoinTx(
+    final original = PayjoinTransaction(
       txid: 'original',
       inputs: [_input('sender')],
       outputs: [_output(1, 50000), _output(2, 40000)],
@@ -178,12 +187,12 @@ void main() {
     final paymentScript = Uint8List.fromList([1]);
 
     for (final proposal in [
-      BitcoinTx(
+      PayjoinTransaction(
         txid: 'no receiver input',
         inputs: original.inputs,
         outputs: original.outputs,
       ),
-      BitcoinTx(
+      PayjoinTransaction(
         txid: 'ambiguous sender output',
         inputs: [_input('sender'), _input('receiver')],
         outputs: [_output(2, 39500), _output(2, 500)],

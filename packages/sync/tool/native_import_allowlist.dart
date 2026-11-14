@@ -22,7 +22,6 @@ const nativeImportAllowlist = <String>{
   'lib/features/wallet/data/wallet_metadata_service.dart',
   'lib/features/wallet/data/wallet_native_runtime.dart',
   'lib/features/wallet/data/wallet_repository.dart',
-  'packages/bull_payjoin/lib/src/engine/bitcoin_tx.dart',
   'packages/secrets/lib/src/crypto/derivers/bitcoin_deriver.dart',
   'packages/secrets/lib/src/crypto/derivers/liquid_deriver.dart',
   'packages/secrets/lib/src/crypto/generator.dart',

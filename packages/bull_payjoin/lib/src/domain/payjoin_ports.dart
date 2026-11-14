@@ -36,6 +36,43 @@ abstract interface class PayjoinWalletPort {
   });
 }
 
+/// Decodes Bitcoin data for the protocol, so the package links no wallet library.
+/// Synchronous on purpose: sessions are mapped inside synchronous stream transforms.
+abstract interface class PayjoinCodecPort {
+  /// Throws [FormatException] when [bytes] is not a transaction.
+  PayjoinTransaction decodeTransaction(Uint8List bytes);
+
+  /// The transaction a base64 PSBT carries. Throws [FormatException] when [psbt] is not a PSBT.
+  PayjoinTransaction decodePsbt(String psbt);
+
+  /// The output script [address] pays to, or null when it is not an address of [network].
+  Uint8List? addressScript(String address, BitcoinNetwork network);
+}
+
+/// A decoded transaction: its id, the outpoints it spends and its outputs in order.
+final class PayjoinTransaction {
+  final String txid;
+  final List<Outpoint> inputs;
+  final List<PayjoinTransactionOutput> outputs;
+
+  PayjoinTransaction({
+    required this.txid,
+    required List<Outpoint> inputs,
+    required List<PayjoinTransactionOutput> outputs,
+  }) : inputs = List.unmodifiable(inputs),
+       outputs = List.unmodifiable(outputs);
+}
+
+final class PayjoinTransactionOutput {
+  final Sats value;
+  final Uint8List scriptPubkey;
+
+  PayjoinTransactionOutput({
+    required this.value,
+    required Uint8List scriptPubkey,
+  }) : scriptPubkey = Uint8List.fromList(scriptPubkey).asUnmodifiableView();
+}
+
 abstract interface class PayjoinBlockchainPort {
   Future<void> broadcastTransaction({
     required BitcoinNetwork network,

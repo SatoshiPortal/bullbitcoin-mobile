@@ -7,6 +7,7 @@ import 'dart:typed_data';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:primitives/primitives.dart';
 import 'package:test/test.dart';
+import 'support/test_codec.dart';
 
 base class _WalletPort implements PayjoinWalletPort {
   @override
@@ -134,6 +135,7 @@ void main() {
     PayjoinWalletPort? wallet,
   }) {
     return openPayjoin(
+      codec: const TestPayjoinCodec(),
       databasePath: '${directory.path}/payjoin.sqlite',
       wallet: wallet ?? _WalletPort(),
       blockchain: _BlockchainPort(),
