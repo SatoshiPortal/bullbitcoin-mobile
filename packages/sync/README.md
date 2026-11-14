@@ -25,11 +25,9 @@ Values are mapped from the native wallet once per revision, built into one immut
 
 ## Coin freezes
 
-Sync owns user freezes. `wallet.coins.now` and `.watch()` publish each coin with its `frozen` state, republished on every policy revision without remapping the wallet; until the freezes are known the coins read unavailable, never unfrozen. `wallet.coins.freeze(outpoint)` and `unfreeze(outpoint)` commit to the freeze store and return its `PolicyRevision`; a handle ended by a delete or a re-import is refused. A freeze is global by outpoint: its origin only attributes it for BIP329 export, and an unfreeze removes every attribution. `sync.coins` does the same without a wallet, for BIP329 imports and exports: `freeze(outpoint, origin:)` keeps the origin as given, empty included, and `listFrozen()` returns every attribution. `wallet.unspent()` reads the freezes from the store.
+Sync reads and changes user freezes; the app keeps them in its published `frozen_utxos` table (schema v15) and serves it through the mandatory `FreezeStorePort` given to `Sync.openForeground`. Sync keeps no freeze store or copy of its own and is the table's only writer, from the foreground; the background never reads it. `wallet.coins.now` and `.watch()` publish each coin with its `frozen` state, republished after every change without remapping the wallet; until a first read succeeds the coins read unavailable with the store's failure, never unfrozen. `wallet.coins.freeze(outpoint)` and `unfreeze(outpoint)` commit through the port and return a `PolicyRevision` counted by this isolate; a handle ended by a delete or a re-import is refused. A freeze is global by outpoint: its origin only attributes it for BIP329 export, and an unfreeze removes every attribution. `sync.coins` does the same without a wallet, for BIP329 imports and exports: `freeze(outpoint, origin:)` keeps the origin as given, empty included, and `listFrozen()` returns every attribution. `wallet.unspent()` reads the freezes from the store.
 
-The freeze store replaces the app's published `frozen_utxos` table (schema v15), imported once by the foreground: `Sync.openForeground` takes a `LegacyFreezeSourcePort` and starts the import. Every row is committed with an internal marker in one transaction, then the external witness `freezes.sqlite.provisioned` is written and flushed. Until that witness exists, freeze changes and Bitcoin spends are refused with `SyncFreezeImportRequiredFailure` and each use retries the import; an unreadable app table is a failure, never an empty set. A crash between the commit and the witness replays the import, which checks that the committed rows equal the table before writing the witness.
-
-⚠️ Once witnessed, the app table is never read again: a later unfreeze is never undone. A witness with a missing, unreadable or unmarked store refuses everything with `SyncFreezeStoreLostFailure`; the store is never recreated empty nor imported again, and `sync.coins.recover()` only checks it again. The background never opens the store. The witness sits next to the store: losing the whole `transaction_sync` directory loses both, and the import would then run again. Spend construction checks its effective inputs against `FreezeAuthority.forbiddenInputs()`, or `guard()` to hold the store while it does.
+⚠️ A store that cannot answer is an `Err`, never an empty list. Spend construction checks its effective inputs against `FreezeAuthority.forbiddenInputs()`, or `guard()`, which runs the check inside one transaction of the app database so no freeze commits meanwhile. Drift holds every other statement of that database until the transaction ends, so a guard stays short and never awaits a statement issued outside it.
 
 `bitcoinAddressScript` and `validateAddress` are library functions: no wallet is opened.
 
@@ -100,8 +98,8 @@ These trees are generated from the exports of `lib/sync.dart`; `make sync-api-do
 ```
 lib/src/domain/            values, failures, repositories/, ports/ (no SDK)
 lib/src/data/              paths, store identity, txid parsing, diagnostics, revision reader
-lib/src/data/datasources/  SQLite revision store, spend gate and freeze store, shared by read and write
-lib/src/data/freeze_authority.dart  freeze import, commands and forbidden inputs
+lib/src/data/datasources/  SQLite revision store and spend gate, shared by read and write
+lib/src/data/freeze_authority.dart  freezes through the app's port: reads, commands, forbidden inputs, guard
 lib/src/data/write/        every native store mutation: writer session, lock, spend gate
 lib/src/data/write/datasources/  BDK wallet store, LWK wallet store, BDK Electrum client, parents cache
 lib/src/data/write/sync/   Electrum engine and its Bitcoin and Liquid passes
@@ -114,7 +112,7 @@ Shared code never imports `data/write`, and `data/read` never does. `make native
 
 ## Stores
 
-`<docs>/<hexId>_bdk_dart` and `<docs>/<hexId>` are the published native stores; their paths and content are unchanged (`nativeWalletStoragePath`, UTF-16 hex id). The package's own stores live in `<docs>/transaction_sync/`: `revisions.sqlite` (a `.recovery` marker while quarantined metadata awaits adoption), `spend_gate.sqlite` (a `.provisioned` marker so a lost gate is never recreated empty), `freezes.sqlite` (user freezes, with its `.provisioned` import witness; see Coin freezes) and `locks/`, one lock per native store, named after its path, so two keys resolving to one store share one lock. Each SQLite store is created by one complete `CREATE` with `user_version`; an existing store at another version is refused, not migrated. Unreadable or foreign revision metadata is quarantined by `openForeground()`: only existing native stores are adopted, and no Bitcoin spend is admitted until `completeRecovery()` has invalidated every retained obligation and removed the marker.
+`<docs>/<hexId>_bdk_dart` and `<docs>/<hexId>` are the published native stores; their paths and content are unchanged (`nativeWalletStoragePath`, UTF-16 hex id). The package's own stores live in `<docs>/transaction_sync/`: `revisions.sqlite` (a `.recovery` marker while quarantined metadata awaits adoption), `spend_gate.sqlite` (a `.provisioned` marker so a lost gate is never recreated empty) and `locks/`, one lock per native store, named after its path, so two keys resolving to one store share one lock. Each SQLite store is created by one complete `CREATE` with `user_version`; an existing store at another version is refused, not migrated. Unreadable or foreign revision metadata is quarantined by `openForeground()`: only existing native stores are adopted, and no Bitcoin spend is admitted until `completeRecovery()` has invalidated every retained obligation and removed the marker.
 
 ## Writer
 
