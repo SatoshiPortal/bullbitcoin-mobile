@@ -1,5 +1,4 @@
 import '../public/wallet_facade.dart';
-import 'dart:typed_data';
 
 import 'package:secrets/secrets.dart';
 import 'package:bb_mobile/features/wallet/data/bdk_wallet_datasource.dart';
@@ -66,25 +65,19 @@ final class PayjoinWalletAdapter implements PayjoinWalletPort {
   }
 
   @override
-  Future<bool Function(Uint8List script)> createOwnershipChecker({
+  Future<PayjoinWalletOwnership> captureOwnership({
     required String walletId,
     required BitcoinNetwork network,
   }) async {
     // No key is loaded: sync answers from the exact index at the latest committed revision, never from an older frame.
+    // Outputs already spent are included, so one we owned and spent still answers as ours.
     final metadata = await _loadMetadata(walletId, network);
     final wallet = WalletModel.fromMetadata(metadata);
-    return (await _values.getOwnership(wallet: wallet)).ownsScript;
-  }
-
-  @override
-  Future<bool Function(Outpoint outpoint)> createOutpointOwnershipChecker({
-    required String walletId,
-    required BitcoinNetwork network,
-  }) async {
-    // Same exact index; outputs already spent are included, so one we owned and spent still answers as ours.
-    final metadata = await _loadMetadata(walletId, network);
-    final wallet = WalletModel.fromMetadata(metadata);
-    return (await _values.getOwnership(wallet: wallet)).ownsOutpoint;
+    final ownership = await _values.getOwnership(wallet: wallet);
+    return PayjoinWalletOwnership(
+      ownsScript: ownership.ownsScript,
+      ownsOutpoint: ownership.ownsOutpoint,
+    );
   }
 
   @override

@@ -2116,22 +2116,19 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       final network = payjoin.isTestnet
           ? primitives.BitcoinNetwork.testnet
           : primitives.BitcoinNetwork.mainnet;
-      final isMineSync = await _wallet.createOwnershipChecker(
-        walletId: payjoin.walletId,
-        network: network,
-      );
+      // One capture answers both questions from the same committed state.
       // The input guard asks about outpoints, not scripts: the sender supplies
       // the previous outputs in its PSBT, so a script-keyed answer could be
-      // steered. The output check below is a different question — it is our own
+      // steered. The output check is a different question — it is our own
       // address, so a script check is the right one there.
-      final ownsOutpointSync = await _wallet.createOutpointOwnershipChecker(
+      final ownership = await _wallet.captureOwnership(
         walletId: payjoin.walletId,
         network: network,
       );
       final updatedModel = await _pdkPayjoinDatasource.proposePayjoin(
         receiverModel: freshModel,
-        ownsOutpoint: ownsOutpointSync,
-        hasReceiverOutput: isMineSync,
+        ownsOutpoint: ownership.ownsOutpoint,
+        hasReceiverOutput: ownership.ownsScript,
         inputPairs: inputPairs,
         signPsbt: (psbt) => _wallet.signPsbt(
           walletId: payjoin.walletId,

@@ -1084,22 +1084,15 @@ void main() {
         ],
       );
       when(
-        () => wallet.createOwnershipChecker(
+        () => wallet.captureOwnership(
           walletId: model.walletId,
           network: BitcoinNetwork.testnet,
         ),
       ).thenAnswer(
-        (_) async =>
-            (Uint8List _) => true,
-      );
-      when(
-        () => wallet.createOutpointOwnershipChecker(
-          walletId: model.walletId,
-          network: BitcoinNetwork.testnet,
+        (_) async => PayjoinWalletOwnership(
+          ownsScript: (_) => true,
+          ownsOutpoint: (_) => true,
         ),
-      ).thenAnswer(
-        (_) async =>
-            (Outpoint _) => true,
       );
       when(
         () => pdk.proposePayjoin(

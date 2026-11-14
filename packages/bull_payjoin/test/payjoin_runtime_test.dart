@@ -11,18 +11,13 @@ import 'support/test_codec.dart';
 
 base class _WalletPort implements PayjoinWalletPort {
   @override
-  Future<bool Function(Uint8List script)> createOwnershipChecker({
+  Future<PayjoinWalletOwnership> captureOwnership({
     required String walletId,
     required BitcoinNetwork network,
-  }) async =>
-      (Uint8List _) => false;
-
-  @override
-  Future<bool Function(Outpoint outpoint)> createOutpointOwnershipChecker({
-    required String walletId,
-    required BitcoinNetwork network,
-  }) async =>
-      (Outpoint _) => false;
+  }) async => PayjoinWalletOwnership(
+    ownsScript: (_) => false,
+    ownsOutpoint: (_) => false,
+  );
 
   @override
   Future<String> signPsbt({

@@ -10,12 +10,24 @@ abstract interface class PayjoinWalletPort {
     required String psbt,
   });
 
-  Future<bool Function(Uint8List script)> createOwnershipChecker({
+  /// One exact capture of what this wallet owns, at a single committed state:
+  /// both answers of a proposal come from the same view.
+  Future<PayjoinWalletOwnership> captureOwnership({
     required String walletId,
     required BitcoinNetwork network,
   });
 
-  /// Answers whether an outpoint belongs to this wallet.
+  Future<List<PayjoinUtxo>> spendableUtxos({
+    required String walletId,
+    required BitcoinNetwork network,
+  });
+}
+
+final class PayjoinWalletOwnership {
+  /// Whether an output script belongs to this wallet: the receiver's own output.
+  final bool Function(Uint8List script) ownsScript;
+
+  /// Whether an outpoint belongs to this wallet.
   ///
   /// Deliberately keyed on the outpoint and never on the previous output's
   /// scriptPubKey: in a payjoin proposal that script comes from the sender's
@@ -25,14 +37,11 @@ abstract interface class PayjoinWalletPort {
   ///
   /// Must answer for every output the wallet has ever owned, spent included, so
   /// the receiver's guard has no gap to reason about.
-  Future<bool Function(Outpoint outpoint)> createOutpointOwnershipChecker({
-    required String walletId,
-    required BitcoinNetwork network,
-  });
+  final bool Function(Outpoint outpoint) ownsOutpoint;
 
-  Future<List<PayjoinUtxo>> spendableUtxos({
-    required String walletId,
-    required BitcoinNetwork network,
+  const PayjoinWalletOwnership({
+    required this.ownsScript,
+    required this.ownsOutpoint,
   });
 }
 

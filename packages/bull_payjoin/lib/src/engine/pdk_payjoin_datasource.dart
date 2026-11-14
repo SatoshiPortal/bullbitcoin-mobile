@@ -1281,7 +1281,7 @@ class _IsScriptOwned implements IsScriptOwned {
 ///
 /// The crate hands an OutPoint rather than a script precisely so the answer
 /// cannot be steered by the sender's PSBT — see
-/// PayjoinWalletPort.createOutpointOwnershipChecker.
+/// PayjoinWalletOwnership.ownsOutpoint.
 class _IsInputOwned implements IsInputOwned {
   final bool Function(Outpoint) _fn;
   _IsInputOwned(this._fn);
