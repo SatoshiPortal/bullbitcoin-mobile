@@ -1,12 +1,14 @@
 import 'dart:io';
 
 import 'package:bull_logger/bull_logger.dart';
+import 'package:meta/meta.dart';
 import 'package:sqlite3/sqlite3.dart';
 
 import '../../domain/ports/freeze_store_port.dart';
 import '../../domain/ports/input_reservation_port.dart';
 import '../../domain/ports/reserved_address_port.dart';
 import '../../domain/ports/wallet_catalog_port.dart';
+import '../../domain/ports/wallet_connection_port.dart';
 import '../../domain/ports/wallet_revision_reader_port.dart';
 import '../../domain/repositories/wallet_writer_repository.dart';
 import '../../domain/wallet_revision.dart';
@@ -16,9 +18,13 @@ import 'bitcoin_spend_gate.dart';
 import '../datasources/spend_gate_store_datasource.dart';
 import '../native_store_paths.dart';
 import 'native_wallet_writer_repository.dart';
+import 'native_write_session.dart';
 import '../datasources/revision_store_datasource.dart';
 import '../sqlite_wallet_revision_reader.dart';
 import '../freeze_authority.dart';
+import 'spend/native_spend.dart';
+import 'spend/spend_writer.dart';
+import 'writer_session.dart';
 
 /// What the foreground app uses. Only [openForeground] creates the package
 /// stores; it does so before any sync pass can run.
@@ -36,8 +42,12 @@ final class ForegroundStores {
 
   /// Payjoin's reservations, read to check the inputs of every spend.
   final InputReservationPort inputReservations;
+
+  /// Builds, checks and broadcasts native spends.
+  final SpendWriter spend;
   final RevisionStoreDatasource _store;
   bool _recovering;
+  bool _closed = false;
 
   ForegroundStores._(
     this.documentsDirectory,
@@ -47,6 +57,7 @@ final class ForegroundStores {
     this.spendGate,
     this.freezes,
     this.inputReservations,
+    this.spend,
     this._store,
     this._recovering,
   );
@@ -77,6 +88,8 @@ final class ForegroundStores {
   }
 
   Future<void> close() async {
+    _closed = true;
+    spend.close();
     try {
       await _revisions.close();
     } finally {
@@ -116,6 +129,9 @@ ForegroundStores openForeground({
   required ReservedAddressPort reservedAddresses,
   required FreezeStorePort freezes,
   required InputReservationPort inputReservations,
+  required WalletConnectionPort connections,
+  @visibleForTesting NativeSpendSessions? spendSessions,
+  @visibleForTesting SpendTransport? spendTransport,
 }) {
   final store = _openOrQuarantine(documentsDirectory);
   try {
@@ -135,7 +151,14 @@ ForegroundStores openForeground({
       catalog: catalog,
       reservedAddresses: reservedAddresses,
     );
-    return ForegroundStores._(
+    final gate = BitcoinSpendGate(
+      revisions: store,
+      documentsDirectory: documentsDirectory,
+      catalog: catalog,
+    );
+    final authority = FreezeAuthority(freezes);
+    late final ForegroundStores stores;
+    stores = ForegroundStores._(
       documentsDirectory,
       writer,
       revisions,
@@ -146,16 +169,28 @@ ForegroundStores openForeground({
         revisions: revisions,
         liquidAdmission: writer,
       ),
-      BitcoinSpendGate(
-        revisions: store,
-        documentsDirectory: documentsDirectory,
-        catalog: catalog,
-      ),
-      FreezeAuthority(freezes),
+      gate,
+      authority,
       inputReservations,
+      SpendWriter(
+        session: WriterSession.app(
+          documentsDirectory: documentsDirectory,
+          revisions: store,
+          reader: revisions,
+          sessions: SdkWriteSessions(documentsDirectory),
+          catalog: catalog,
+        ),
+        gate: gate,
+        freezes: authority,
+        reservations: inputReservations,
+        natives: spendSessions ?? SdkSpendSessions(documentsDirectory),
+        send: spendTransport ?? SpendWriter.transport(connections),
+        closed: () => stores._closed,
+      ),
       store,
       File(recoveryMarkerPath(documentsDirectory)).existsSync(),
     );
+    return stores;
   } on Object {
     store.close();
     rethrow;

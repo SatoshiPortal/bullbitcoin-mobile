@@ -245,6 +245,7 @@ final class WriterSession {
     bool deleting = false,
     bool preparing = false,
     bool reconcile = true,
+    bool spend = false,
   }) async {
     final failure = nativeKeyFailure(key);
     if (failure != null) {
@@ -255,6 +256,8 @@ final class WriterSession {
       role: LeaseRole.writer,
       intent: preparing
           ? LeaseIntent.prepareReimport
+          : spend
+          ? LeaseIntent.spend
           : switch (intent) {
               WriteIntent.create => LeaseIntent.create,
               WriteIntent.receive => LeaseIntent.receive,
@@ -296,7 +299,10 @@ final class WriterSession {
       }
       // Only an admitted request invalidates the gate: a stale one is refused
       // above without touching obligations.
+      // A spend build reveals change at most: the transactions the
+      // obligations rest on are unchanged.
       if (key.network is BitcoinNetwork &&
+          !spend &&
           intent != WriteIntent.receive &&
           intent != WriteIntent.sync) {
         _invalidateSpendGate(key);

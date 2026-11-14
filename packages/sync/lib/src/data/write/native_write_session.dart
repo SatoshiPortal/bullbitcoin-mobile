@@ -28,6 +28,39 @@ abstract interface class NativeWriteSessions {
   Future<void> delete(WalletKey key);
 }
 
+/// Opens the LWK store under the writer lock and attests its canonical cache
+/// directory. Throws [NativeStoreMissing] when it is absent, unless [create].
+Future<({LwkWalletStoreDatasource store, String cachePath})> openLiquidStore(
+  String documentsDirectory,
+  LiquidWalletDescriptor descriptor, {
+  bool create = false,
+}) async {
+  final path = nativeWalletStoragePath(documentsDirectory, descriptor.key);
+  if (!create && !Directory(path).existsSync()) {
+    throw const NativeStoreMissing();
+  }
+  final store = await LwkWalletStoreDatasource.open(path, descriptor);
+  try {
+    final canonical = await store.wallet.descriptor();
+    final networkDirectory = switch (descriptor.key.network) {
+      LiquidNetwork.mainnet => 'liquid',
+      LiquidNetwork.testnet => 'liquid-testnet',
+      LiquidNetwork.regtest => 'liquid-regtest',
+      _ => throw const NativeNetworkUnsupported(),
+    };
+    final relative =
+        '$networkDirectory/enc_cache/${liquidDirectoryHash(canonical)}';
+    if (FileSystemEntity.typeSync('$path/$relative', followLinks: false) !=
+        FileSystemEntityType.directory) {
+      throw const NativeStoreMissing();
+    }
+    return (store: store, cachePath: relative);
+  } on Object {
+    store.close();
+    rethrow;
+  }
+}
+
 /// All opens occur after admission and on this isolate. Never cache a wallet
 /// between operations: another isolate may have committed since the last call.
 final class SdkWriteSessions implements NativeWriteSessions {
@@ -49,32 +82,12 @@ final class SdkWriteSessions implements NativeWriteSessions {
         }
         return _BitcoinSession(BdkWalletStoreDatasource.load(path, descriptor));
       case LiquidWalletDescriptor():
-        if (!create && !Directory(path).existsSync()) {
-          throw const NativeStoreMissing();
-        }
-        final store = await LwkWalletStoreDatasource.open(path, descriptor);
-        try {
-          final canonical = await store.wallet.descriptor();
-          final networkDirectory = switch (descriptor.key.network) {
-            LiquidNetwork.mainnet => 'liquid',
-            LiquidNetwork.testnet => 'liquid-testnet',
-            LiquidNetwork.regtest => 'liquid-regtest',
-            _ => throw const NativeNetworkUnsupported(),
-          };
-          final relative =
-              '$networkDirectory/enc_cache/${liquidDirectoryHash(canonical)}';
-          if (FileSystemEntity.typeSync(
-                '$path/$relative',
-                followLinks: false,
-              ) !=
-              FileSystemEntityType.directory) {
-            throw const NativeStoreMissing();
-          }
-          return _LiquidSession(store, relative);
-        } on Object {
-          store.close();
-          rethrow;
-        }
+        final opened = await openLiquidStore(
+          documentsDirectory,
+          descriptor,
+          create: create,
+        );
+        return _LiquidSession(opened.store, opened.cachePath);
     }
   }
 

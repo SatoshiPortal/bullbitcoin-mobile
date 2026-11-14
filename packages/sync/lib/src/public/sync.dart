@@ -13,8 +13,10 @@ import '../data/wallet_projections.dart';
 import '../data/datasources/spend_gate_store_datasource.dart'
     show BitcoinSpendGateUnavailable;
 import '../data/write/sync/electrum_sync.dart';
+import '../data/write/spend/spend_writer.dart';
 import '../data/write/writer_stores.dart' as stores_;
 import '../data/write/writer_stores.dart' show ExistingStores, ForegroundStores;
+import '../domain/bitcoin_spend.dart';
 import '../domain/coin_freezes.dart';
 import '../domain/observed.dart';
 import '../domain/ports/freeze_store_port.dart';
@@ -23,6 +25,7 @@ import '../domain/ports/reserved_address_port.dart';
 import '../domain/ports/wallet_catalog_port.dart';
 import '../domain/ports/wallet_connection_port.dart';
 import '../domain/public_wallet_descriptor.dart';
+import '../domain/spend.dart';
 import '../domain/sync_completion.dart';
 import '../domain/sync_failure.dart';
 import '../domain/sync_reason.dart';
@@ -49,13 +52,15 @@ final class Sync {
   /// [freezes] is the app's freeze store: sync reads and changes it, and
   /// schedules a first read here. Coins read unavailable, never unfrozen,
   /// while it cannot answer. [inputReservations] is mandatory: spends check
-  /// their inputs against both.
+  /// their inputs against both. Spends are broadcast through the servers
+  /// [connections] selects.
   static Sync openForeground({
     required String documentsDirectory,
     required WalletCatalogPort catalog,
     required ReservedAddressPort reservedAddresses,
     required FreezeStorePort freezes,
     required InputReservationPort inputReservations,
+    required WalletConnectionPort connections,
   }) {
     final stores = stores_.openForeground(
       documentsDirectory: documentsDirectory,
@@ -63,6 +68,7 @@ final class Sync {
       reservedAddresses: reservedAddresses,
       freezes: freezes,
       inputReservations: inputReservations,
+      connections: connections,
     );
     stores.freezes.demand();
     return Sync._(
@@ -106,7 +112,7 @@ final class Sync {
   Future<Result<Wallet, SyncFailure>> wallet(WalletKey key) async =>
       switch (await _projections.generation(key)) {
         Ok(value: final generation) => Ok(
-          Wallet._(_projections, key, generation),
+          Wallet._(_projections, _stores.spend, key, generation),
         ),
         Err(:final failure) => Err(failure),
       };
@@ -205,10 +211,14 @@ extension type const SyncCoins._(FreezePolicy _freezes) {
 /// exact committed revision and refuse an older one.
 final class Wallet {
   final WalletProjections _projections;
+  final WalletSpender _spender;
   final WalletKey key;
   final int generation;
 
-  Wallet._(this._projections, this.key, this.generation);
+  Wallet._(this._projections, this._spender, this.key, this.generation);
+
+  /// Native spends: build, bump, consolidate, then broadcast once signed.
+  WalletSpendGroup get spend => WalletSpendGroup._(this);
 
   Observed<WalletBalances> get balances =>
       _projections.observe(key, generation, (frame) => frame.balances);
@@ -304,6 +314,93 @@ extension type const WalletCoinsGroup._(Wallet _wallet) {
     if (await _wallet._current() case Err(:final failure)) return Err(failure);
     return _wallet._projections.freezes.unfreeze([outpoint]);
   }
+}
+
+/// `wallet.spend`: commands of the single writer. Signing stays with the
+/// caller, through `secrets` or a hardware signer, between build and
+/// broadcast; no lock is held meanwhile.
+///
+/// ⚠️ Bitcoin only is guarded from admission to the receipt. Liquid has no
+/// spend guard yet: its receipts say `guarded: false`, and only freezes are
+/// checked at its broadcast.
+extension type const WalletSpendGroup._(Wallet _wallet) {
+  /// Builds once on a native wallet opened for this command, after the
+  /// guard admits the spend, and persists the change it reveals before
+  /// handing the transaction out. Refuses an input that is frozen or
+  /// reserved by another session ([SyncProtectedInputsFailure]).
+  @useResult
+  Future<Result<UnsignedSpend, SyncFailure>> build(SpendRequest request) =>
+      _wallet._spender.build(_wallet.key, _wallet.generation, request);
+
+  /// A BIP125 replacement, built only on an original whose own inputs'
+  /// signatures verify. An input the builder adds faces every protection.
+  @useResult
+  Future<Result<UnsignedSpend, SyncFailure>> bumpFee(BumpFeeRequest request) =>
+      _wallet._spender.bumpFee(_wallet.key, _wallet.generation, request);
+
+  /// Liquid consolidation batches, each checked; empty when the wallet holds
+  /// no more coins than the threshold.
+  @useResult
+  Future<Result<List<UnsignedSpend>, SyncFailure>> consolidate(
+    ConsolidationRequest request,
+  ) => _wallet._spender.consolidate(_wallet.key, _wallet.generation, request);
+
+  /// Broadcasts [spend] after checking its generation and its inputs again,
+  /// reservations included, under the guard. Bitcoin keeps the guard until
+  /// the receipt; a receipt that is not durable keeps refusing spends in
+  /// this process. A chain failure may leave the transaction relayed.
+  @useResult
+  Future<Result<SpendReceipt, SyncFailure>> broadcast(SignedSpend spend) =>
+      _wallet._spender.broadcast(spend);
+
+  /// A [SignedSpend] for a transaction signed in an earlier run, such as a
+  /// Payjoin proposal or a saved payment, for this handle's generation.
+  SignedSpend signed(
+    SignedTransaction transaction, {
+    SpendOwner? owner,
+    String? replacing,
+  }) => signedForGeneration(
+    key: _wallet.key,
+    generation: _wallet.generation,
+    transaction: transaction,
+    owner: owner,
+    replacing: replacing,
+  );
+
+  /// The guard's last verdict, published by [check] and by the spend
+  /// commands. Never a permission: [build] and [broadcast] check again.
+  Observed<WalletValue<BitcoinSpendStatus>> get status =>
+      _wallet._spender.status(_wallet.key);
+
+  /// Asks the guard now, under the writer lock, and publishes its verdict.
+  @useResult
+  Future<Result<BitcoinSpendStatus, SyncFailure>> check({String? replacing}) =>
+      _wallet._spender.check(
+        _wallet.key,
+        _wallet.generation,
+        replacing: replacing,
+      );
+
+  /// Whether the wallet's own inputs of its stored [txid] carry valid
+  /// signatures: a replacement is only built on a valid one.
+  @useResult
+  Future<Result<SignatureCheck, SyncFailure>> originalSignatures(String txid) =>
+      _wallet._spender.originalSignatures(
+        _wallet.key,
+        _wallet.generation,
+        txid,
+      );
+
+  /// [psbt] with this wallet's derivations on what it owns, for a signer
+  /// that learns its paths from the PSBT. Signs nothing.
+  @useResult
+  Future<Result<String, SyncFailure>> annotate(String psbt) =>
+      _wallet._spender.annotate(_wallet.key, _wallet.generation, psbt);
+
+  /// What a Liquid [pset] does to this wallet's L-BTC, unblinded.
+  @useResult
+  Future<Result<LiquidPsetEffect, SyncFailure>> liquidEffect(String pset) =>
+      _wallet._spender.liquidEffect(_wallet.key, _wallet.generation, pset);
 }
 
 /// `wallet.addresses`.
@@ -420,5 +517,71 @@ final class _Cell<T> implements Observed<T> {
 Wallet walletOver(
   WalletProjections projections,
   WalletKey key,
-  int generation,
-) => Wallet._(projections, key, generation);
+  int generation, {
+  WalletSpender? spender,
+}) => Wallet._(projections, spender ?? const _NoSpender(), key, generation);
+
+/// Test wallets hold no native store: every spend command is refused.
+final class _NoSpender implements WalletSpender {
+  const _NoSpender();
+
+  static Future<Result<T, SyncFailure>> _refused<T>() async =>
+      const Err(SyncUnsupportedNetworkFailure());
+
+  @override
+  Future<Result<UnsignedSpend, SyncFailure>> build(
+    WalletKey key,
+    int generation,
+    SpendRequest request,
+  ) => _refused();
+
+  @override
+  Future<Result<UnsignedSpend, SyncFailure>> bumpFee(
+    WalletKey key,
+    int generation,
+    BumpFeeRequest request,
+  ) => _refused();
+
+  @override
+  Future<Result<List<UnsignedSpend>, SyncFailure>> consolidate(
+    WalletKey key,
+    int generation,
+    ConsolidationRequest request,
+  ) => _refused();
+
+  @override
+  Future<Result<SpendReceipt, SyncFailure>> broadcast(SignedSpend spend) =>
+      _refused();
+
+  @override
+  Future<Result<BitcoinSpendStatus, SyncFailure>> check(
+    WalletKey key,
+    int generation, {
+    String? replacing,
+  }) => _refused();
+
+  @override
+  Observed<WalletValue<BitcoinSpendStatus>> status(WalletKey key) =>
+      _Cell(const WalletValue.unavailable(SyncUnsupportedNetworkFailure()));
+
+  @override
+  Future<Result<SignatureCheck, SyncFailure>> originalSignatures(
+    WalletKey key,
+    int generation,
+    String txid,
+  ) => _refused();
+
+  @override
+  Future<Result<String, SyncFailure>> annotate(
+    WalletKey key,
+    int generation,
+    String psbt,
+  ) => _refused();
+
+  @override
+  Future<Result<LiquidPsetEffect, SyncFailure>> liquidEffect(
+    WalletKey key,
+    int generation,
+    String pset,
+  ) => _refused();
+}

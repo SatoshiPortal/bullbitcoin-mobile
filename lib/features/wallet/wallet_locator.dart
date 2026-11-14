@@ -148,6 +148,7 @@ class WalletLocator {
         documentsDirectory: () async =>
             (await getApplicationDocumentsDirectory()).path,
         freezes: FrozenUtxosFreezeStore(sqlite: locator<SqliteDatabase>()),
+        connections: locator<WalletConnectionPort>(),
       ),
     );
     locator.registerLazySingleton<BdkWalletDatasource>(

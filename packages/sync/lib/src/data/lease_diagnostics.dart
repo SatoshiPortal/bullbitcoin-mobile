@@ -13,6 +13,7 @@ enum LeaseIntent {
   repair,
   reconcile,
   prepareReimport,
+  spend,
 }
 
 enum LeaseScope { foreground, compute, headless }

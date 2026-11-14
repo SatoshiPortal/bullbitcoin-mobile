@@ -58,6 +58,7 @@ void main() {
         ),
         documentsDirectory: () async => directory.path,
         freezes: MemoryFreezeStore(),
+        connections: _Offline(),
         onStoresOpened: (stores) {
           if (++attempts == 1) {
             abandoned = stores;
@@ -107,6 +108,7 @@ void main() {
           return directory.path;
         },
         freezes: MemoryFreezeStore(),
+        connections: _Offline(),
       );
       try {
         await runtime.initialize();
@@ -180,6 +182,7 @@ void main() {
         ),
         documentsDirectory: () async => directory.path,
         freezes: MemoryFreezeStore(),
+        connections: _Offline(),
       );
       var runtime = open();
       try {

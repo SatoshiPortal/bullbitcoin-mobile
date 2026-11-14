@@ -35,6 +35,7 @@ Sync freezesOnlySync(String documentsDirectory, {FreezeStorePort? freezes}) =>
       reservedAddresses: const NoReservedAddresses(),
       freezes: freezes ?? MemoryFreezeStore(),
       inputReservations: NoInputReservations(),
+      connections: const NoConnections(),
     );
 
 /// No reservation held: every input is free of external sessions.
@@ -42,4 +43,17 @@ final class NoInputReservations implements InputReservationPort {
   @override
   Future<Result<List<InputReservation>, SyncFailure>> reservations() async =>
       const Ok([]);
+}
+
+/// No server: every operation fails to connect, nothing is sent.
+final class NoConnections implements WalletConnectionPort {
+  const NoConnections();
+
+  @override
+  Future<Result<T, SyncFailure>> run<T>({
+    required Network network,
+    required Future<Result<T, SyncFailure>> Function(WalletConnection)
+    operation,
+    required bool Function(SyncFailure) mayRetry,
+  }) async => const Err(SyncConnectionFailure());
 }
