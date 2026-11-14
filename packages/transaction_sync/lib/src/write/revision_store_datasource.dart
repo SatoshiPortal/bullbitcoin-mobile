@@ -42,14 +42,14 @@ final class RevisionRecord {
 /// All mutations require the wallet lease. Transactions contain only synchronous
 /// SQLite calls, never native IO or an await. Publication of committed states
 /// belongs to [SqliteWalletRevisionReader]; this class only reads and writes rows.
-final class RevisionStore {
+final class RevisionStoreDatasource {
   final Database _db;
 
-  RevisionStore._(this._db);
+  RevisionStoreDatasource._(this._db);
 
   /// Foreground only: creates the complete schema in one step. A store at
   /// another version is refused with [RevisionStoreUnavailable].
-  static RevisionStore openForeground(String path) {
+  static RevisionStoreDatasource openForeground(String path) {
     File(path).parent.createSync(recursive: true);
     final db = sqlite3.open(path);
     try {
@@ -70,7 +70,7 @@ final class RevisionStore {
       if (db.userVersion != revisionStoreVersion) {
         throw const RevisionStoreUnavailable();
       }
-      return RevisionStore._(db);
+      return RevisionStoreDatasource._(db);
     } on Object {
       db.dispose();
       rethrow;
@@ -80,7 +80,7 @@ final class RevisionStore {
   /// Background and worker: opens the store only if it already exists at the
   /// current version, checked on the same connection. Never creates a file,
   /// a table or a migration.
-  static RevisionStore openExisting(String path) {
+  static RevisionStoreDatasource openExisting(String path) {
     Database? db;
     try {
       db = sqlite3.open(path, mode: OpenMode.readWrite);
@@ -90,7 +90,7 @@ final class RevisionStore {
         throw const RevisionStoreUnavailable();
       }
       _configure(db);
-      return RevisionStore._(db);
+      return RevisionStoreDatasource._(db);
     } on SqliteException {
       db?.dispose();
       throw const RevisionStoreUnavailable();

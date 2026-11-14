@@ -7,14 +7,14 @@ import '../domain/ports/wallet_revision_reader_port.dart';
 import '../domain/transaction_sync_failure.dart';
 import '../domain/wallet_key.dart';
 import '../domain/wallet_revision.dart';
-import 'revision_store.dart';
+import 'revision_store_datasource.dart';
 
 /// Domain reads of the revision store plus this isolate's change stream. The
 /// writer publishes each state after its commit; [read] publishes what it
 /// finds, which bridges commits made by a worker or another isolate when the
 /// caller reads again on worker return or resume.
 final class SqliteWalletRevisionReader implements WalletRevisionReaderPort {
-  final RevisionStore _store;
+  final RevisionStoreDatasource _store;
   final _changes = StreamController<WalletRevisionState>.broadcast();
   final _published = <WalletKey, WalletRevisionState>{};
 

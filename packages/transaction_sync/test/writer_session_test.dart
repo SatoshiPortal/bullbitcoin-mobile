@@ -5,7 +5,7 @@ import 'dart:isolate';
 import 'package:primitives/primitives.dart';
 import 'package:test/test.dart';
 import 'package:transaction_sync/src/write/lease_diagnostics.dart';
-import 'package:transaction_sync/src/write/revision_store.dart';
+import 'package:transaction_sync/src/write/revision_store_datasource.dart';
 import 'package:transaction_sync/src/write/sqlite_wallet_revision_reader.dart';
 import 'package:transaction_sync/src/write/writer_lock.dart';
 import 'package:transaction_sync/src/write/writer_session.dart';
@@ -51,7 +51,7 @@ Future<bool> _admittedElsewhere(String directory, WalletKey wallet) =>
 
 void main() {
   late Directory dir;
-  late RevisionStore store;
+  late RevisionStoreDatasource store;
   late SqliteWalletRevisionReader reader;
   late Sessions sessions;
 
@@ -76,7 +76,9 @@ void main() {
 
   setUp(() {
     dir = Directory.systemTemp.createTempSync('writer-session-');
-    store = RevisionStore.openForeground('${dir.path}/revisions.sqlite');
+    store = RevisionStoreDatasource.openForeground(
+      '${dir.path}/revisions.sqlite',
+    );
     reader = SqliteWalletRevisionReader(store);
     sessions = Sessions()..exists = true;
   });

@@ -1,7 +1,7 @@
-import 'package:transaction_sync/src/write/bitcoin_spend_gate_store.dart';
+import 'package:transaction_sync/src/write/spend_gate_store_datasource.dart';
 import 'package:transaction_sync/src/write/native_store_paths.dart';
 import 'package:transaction_sync/src/write/native_wallet_writer_repository.dart';
-import 'package:transaction_sync/src/write/revision_store.dart';
+import 'package:transaction_sync/src/write/revision_store_datasource.dart';
 import 'package:transaction_sync/src/write/sqlite_wallet_revision_reader.dart';
 import 'package:transaction_sync/src/write/writer_sync_operation.dart';
 import 'package:transaction_sync/src/write/lease_diagnostics.dart';
@@ -60,10 +60,10 @@ void main() {
       'adoption preserves native high water through store loss; interrupted=$interrupted',
       () async {
         final dir = Directory.systemTemp.createTempSync('bdk-adoption-');
-        final revisions = RevisionStore.openForeground(
+        final revisions = RevisionStoreDatasource.openForeground(
           '${dir.path}/revisions.sqlite',
         );
-        BitcoinSpendGateStore.provision(spendGateStorePath(dir.path));
+        SpendGateStoreDatasource.provision(spendGateStorePath(dir.path));
         final sessions = SdkWriteSessions(dir.path);
         final writer = NativeWalletWriterRepository(
           revisions: revisions,
@@ -123,8 +123,8 @@ void main() {
   test('real BDK interrupted create, reserved skip, reopen and delete', () async {
     final directory = Directory.systemTemp.createTempSync('native-bdk-writer-');
     final metadataPath = '${directory.path}/revisions.sqlite';
-    var revisions = RevisionStore.openForeground(metadataPath);
-    BitcoinSpendGateStore.provision(spendGateStorePath(directory.path));
+    var revisions = RevisionStoreDatasource.openForeground(metadataPath);
+    SpendGateStoreDatasource.provision(spendGateStorePath(directory.path));
     final reserved = _Reserved();
     NativeWalletWriterRepository writer() => NativeWalletWriterRepository(
       revisions: revisions,
@@ -150,7 +150,7 @@ void main() {
       final next = await writer().receive(_key, expectedGeneration: 1) as Ok;
       expect((next.value as ReceiveAddressIssued).index, 1);
       revisions.close();
-      revisions = RevisionStore.openForeground(metadataPath);
+      revisions = RevisionStoreDatasource.openForeground(metadataPath);
       final reopened =
           await writer().receive(_key, expectedGeneration: 1) as Ok;
       expect(

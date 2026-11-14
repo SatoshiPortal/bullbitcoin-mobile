@@ -1,7 +1,7 @@
 import 'package:transaction_sync/src/read/persisted_wallet_readiness.dart';
 import 'package:transaction_sync/src/write/native_store_paths.dart';
 import 'package:transaction_sync/src/write/native_wallet_writer_repository.dart';
-import 'package:transaction_sync/src/write/revision_store.dart';
+import 'package:transaction_sync/src/write/revision_store_datasource.dart';
 import 'package:transaction_sync/src/write/sqlite_wallet_revision_reader.dart';
 import 'dart:io';
 
@@ -22,7 +22,7 @@ void main() {
 
   test('writer attests the canonical Liquid cache for a production reader', () async {
     final root = Directory.systemTemp.createTempSync('writer-readiness-');
-    final revisions = RevisionStore.openForeground(
+    final revisions = RevisionStoreDatasource.openForeground(
       revisionStorePath(root.path),
     );
     final key = WalletKey(id: 'fixture', network: LiquidNetwork.testnet);

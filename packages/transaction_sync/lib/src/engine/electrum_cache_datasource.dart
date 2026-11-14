@@ -5,7 +5,7 @@ import 'package:bull_sdk/bdk.dart' as bdk;
 import 'package:sqlite3/sqlite3.dart';
 
 /// What a prefill handed the client, for the sync log.
-typedef BdkElectrumCachePrefill = ({
+typedef ElectrumCachePrefill = ({
   int transactions,
   int parents,
   int anchors,
@@ -14,7 +14,7 @@ typedef BdkElectrumCachePrefill = ({
 });
 
 /// Parents downloaded and stored after a scan, for the sync log.
-typedef BdkElectrumCacheParents = ({int stored, bool failed});
+typedef ElectrumCacheParents = ({int stored, bool failed});
 
 /// Lets a fresh Electrum client skip downloads the device already holds: the
 /// wallet's transactions and confirmation anchors come from the BDK wallet,
@@ -23,20 +23,20 @@ typedef BdkElectrumCacheParents = ({int stored, bool failed});
 /// Only public chain data is cached. The server still answers every script
 /// history and header request, so discovery and reorg handling are unchanged.
 /// Every method is best effort: a cache failure only costs the downloads.
-final class BdkElectrumCache {
+final class ElectrumCacheDatasource {
   final Database _db;
 
   /// Whether [open] had to delete an unreadable sidecar.
   final bool rebuilt;
 
-  BdkElectrumCache._(this._db, {required this.rebuilt});
+  ElectrumCacheDatasource._(this._db, {required this.rebuilt});
 
   static String pathFor(String walletDatabasePath) =>
       '$walletDatabasePath.parents.sqlite';
 
   /// Opens the sidecar of [walletDatabasePath], rebuilding it when it is
   /// unreadable. Returns null when it cannot be used at all.
-  static BdkElectrumCache? open(String walletDatabasePath) {
+  static ElectrumCacheDatasource? open(String walletDatabasePath) {
     final path = pathFor(walletDatabasePath);
     for (var attempt = 0; attempt < 2; attempt++) {
       Database? db;
@@ -47,7 +47,7 @@ final class BdkElectrumCache {
           'CREATE TABLE IF NOT EXISTS parent_transaction '
           '(txid TEXT PRIMARY KEY NOT NULL, raw BLOB NOT NULL) WITHOUT ROWID',
         );
-        return BdkElectrumCache._(db, rebuilt: attempt > 0);
+        return ElectrumCacheDatasource._(db, rebuilt: attempt > 0);
       } catch (_) {
         db?.dispose();
         _deleteFiles(path);
@@ -60,8 +60,8 @@ final class BdkElectrumCache {
   static String describe({
     required bool opened,
     required bool rebuilt,
-    BdkElectrumCachePrefill? prefill,
-    BdkElectrumCacheParents? parents,
+    ElectrumCachePrefill? prefill,
+    ElectrumCacheParents? parents,
   }) {
     final state = !opened
         ? 'unavailable'
@@ -84,10 +84,7 @@ final class BdkElectrumCache {
 
   /// Seeds [client] before a scan. Only direct anchors are passed: a
   /// transitive one carries a descendant's block, not the transaction's.
-  BdkElectrumCachePrefill prefill(
-    bdk.ElectrumClient client,
-    bdk.Wallet wallet,
-  ) {
+  ElectrumCachePrefill prefill(bdk.ElectrumClient client, bdk.Wallet wallet) {
     final parents = <bdk.Transaction>[];
     var canonical = <bdk.CanonicalTx>[];
     final anchors = <bdk.TxAnchor>[];
@@ -145,7 +142,7 @@ final class BdkElectrumCache {
 
   /// Stores the parents of the wallet's transactions after a scan. [client]
   /// must be the one that scanned with prevouts: it answers from its cache.
-  BdkElectrumCacheParents rememberParents(
+  ElectrumCacheParents rememberParents(
     bdk.ElectrumClient client,
     bdk.Wallet wallet,
   ) {

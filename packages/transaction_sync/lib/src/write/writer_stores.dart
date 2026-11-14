@@ -11,10 +11,10 @@ import '../domain/wallet_revision.dart';
 import '../read/persisted_wallet_readiness.dart';
 import '../read/wallet_snapshot_reader.dart';
 import 'bitcoin_spend_gate.dart';
-import 'bitcoin_spend_gate_store.dart';
+import 'spend_gate_store_datasource.dart';
 import 'native_store_paths.dart';
 import 'native_wallet_writer_repository.dart';
-import 'revision_store.dart';
+import 'revision_store_datasource.dart';
 import 'sqlite_wallet_revision_reader.dart';
 
 /// What the foreground app uses. Only [openForeground] creates the package
@@ -25,7 +25,7 @@ final class ForegroundStores {
   final SqliteWalletRevisionReader _revisions;
   final WalletSnapshotReader reader;
   final BitcoinSpendGate spendGate;
-  final RevisionStore _store;
+  final RevisionStoreDatasource _store;
   bool _recovering;
 
   ForegroundStores._(
@@ -51,7 +51,7 @@ final class ForegroundStores {
   /// Invalidates every retained spend observation, then lifts the recovery
   /// barrier. In that order, so no obligation survives unverified.
   void completeRecovery() {
-    final gates = BitcoinSpendGateStore.openExisting(
+    final gates = SpendGateStoreDatasource.openExisting(
       spendGateStorePath(documentsDirectory),
     );
     try {
@@ -75,7 +75,7 @@ final class ForegroundStores {
 /// What background code may use: it never creates nor migrates a store.
 final class ExistingStores {
   final SqliteWalletRevisionReader _revisions;
-  final RevisionStore _store;
+  final RevisionStoreDatasource _store;
 
   ExistingStores._(this._revisions, this._store);
 
@@ -100,7 +100,9 @@ ForegroundStores openForeground({
   final store = _openOrQuarantine(documentsDirectory);
   try {
     try {
-      BitcoinSpendGateStore.provision(spendGateStorePath(documentsDirectory));
+      SpendGateStoreDatasource.provision(
+        spendGateStorePath(documentsDirectory),
+      );
     } on BitcoinSpendGateUnavailable {
       // Bitcoin spends and writes then fail closed; Liquid and reads go on.
       log.warning('Bitcoin spend gate unavailable category=storage');
@@ -141,16 +143,16 @@ ForegroundStores openForeground({
 /// Throws [RevisionStoreUnavailable] unless the foreground created the store
 /// at the current version.
 ExistingStores openExisting(String documentsDirectory) {
-  final store = RevisionStore.openExisting(
+  final store = RevisionStoreDatasource.openExisting(
     revisionStorePath(documentsDirectory),
   );
   return ExistingStores._(SqliteWalletRevisionReader(store), store);
 }
 
-RevisionStore _openOrQuarantine(String documentsDirectory) {
+RevisionStoreDatasource _openOrQuarantine(String documentsDirectory) {
   final path = revisionStorePath(documentsDirectory);
   try {
-    return RevisionStore.openForeground(path);
+    return RevisionStoreDatasource.openForeground(path);
   } on Object catch (error) {
     // A locked, unwritable or full disk is not corruption. Preserve it intact.
     final damaged =
@@ -170,5 +172,5 @@ RevisionStore _openOrQuarantine(String documentsDirectory) {
     if (file.existsSync()) file.renameSync('$path$sidecar$suffix');
   }
   log.warning('Wallet revision metadata quarantined category=corrupt');
-  return RevisionStore.openForeground(path);
+  return RevisionStoreDatasource.openForeground(path);
 }

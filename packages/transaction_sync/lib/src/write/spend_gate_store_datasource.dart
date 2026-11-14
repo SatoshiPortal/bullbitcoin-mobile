@@ -7,13 +7,13 @@ import 'store_identity.dart';
 
 /// Recovery metadata only; the native wallet remains the transaction authority.
 /// Every operation runs under the wallet writer lease. Never quarantine this DB.
-final class BitcoinSpendGateStore {
+final class SpendGateStoreDatasource {
   final Database _db;
 
-  BitcoinSpendGateStore._(this._db);
+  SpendGateStoreDatasource._(this._db);
 
   /// Opens the provisioned store at its version; never creates it.
-  static BitcoinSpendGateStore openExisting(String path) {
+  static SpendGateStoreDatasource openExisting(String path) {
     Database? db;
     try {
       db = sqlite3.open(path, mode: OpenMode.readWrite);
@@ -22,7 +22,7 @@ final class BitcoinSpendGateStore {
       if (db.userVersion != _version) {
         throw const BitcoinSpendGateUnavailable();
       }
-      return BitcoinSpendGateStore._(db);
+      return SpendGateStoreDatasource._(db);
     } on Exception {
       db?.dispose();
       // Do not let revision-store recovery quarantine the wrong database.

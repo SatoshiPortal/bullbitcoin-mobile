@@ -10,10 +10,10 @@ import 'package:sqlite3/sqlite3.dart';
 import 'package:transaction_sync/transaction_sync.dart';
 import 'package:transaction_sync/write.dart';
 import 'package:transaction_sync/src/write/native_write_session.dart';
-import 'package:transaction_sync/src/write/bitcoin_spend_gate_store.dart';
+import 'package:transaction_sync/src/write/spend_gate_store_datasource.dart';
 import 'package:transaction_sync/src/write/native_store_paths.dart';
 import 'package:transaction_sync/src/write/native_wallet_writer_repository.dart';
-import 'package:transaction_sync/src/write/revision_store.dart';
+import 'package:transaction_sync/src/write/revision_store_datasource.dart';
 import 'package:transaction_sync/src/write/sqlite_wallet_revision_reader.dart';
 import 'package:transaction_sync/src/write/writer_sync_operation.dart';
 import 'package:transaction_sync/src/write/writer_diagnostics.dart';
@@ -182,7 +182,7 @@ class _Reporter implements LoggerReporter {
 
 void main() {
   late Directory dir;
-  late RevisionStore store;
+  late RevisionStoreDatasource store;
   late SqliteWalletRevisionReader reader;
   late Sessions sessions;
   late Reserved reserved;
@@ -190,9 +190,11 @@ void main() {
   late WriterSession session;
   setUp(() async {
     dir = Directory.systemTemp.createTempSync('writer-test-');
-    store = RevisionStore.openForeground('${dir.path}/metadata.sqlite');
+    store = RevisionStoreDatasource.openForeground(
+      '${dir.path}/metadata.sqlite',
+    );
     reader = SqliteWalletRevisionReader(store);
-    BitcoinSpendGateStore.provision(spendGateStorePath(dir.path));
+    SpendGateStoreDatasource.provision(spendGateStorePath(dir.path));
     sessions = Sessions();
     reserved = Reserved();
     writer = NativeWalletWriterRepository.withSessions(
@@ -615,7 +617,9 @@ void main() {
   );
 
   test('missing adoption leaves no load intent or revision', () async {
-    final empty = RevisionStore.openForeground('${dir.path}/empty.sqlite');
+    final empty = RevisionStoreDatasource.openForeground(
+      '${dir.path}/empty.sqlite',
+    );
     final adopter = NativeWalletWriterRepository.withSessions(
       documentsDirectory: dir.path,
       revisions: empty,
@@ -763,7 +767,9 @@ void main() {
       store.begin(key, WriteIntent.receive, candidate: 7);
       await reader.close();
       store.close();
-      store = RevisionStore.openForeground('${dir.path}/metadata.sqlite');
+      store = RevisionStoreDatasource.openForeground(
+        '${dir.path}/metadata.sqlite',
+      );
       reader = SqliteWalletRevisionReader(store);
       writer = NativeWalletWriterRepository.withSessions(
         documentsDirectory: dir.path,
@@ -863,7 +869,7 @@ void main() {
       internalDescriptor: 'wpkh(public/1)',
     );
     final catalog = _Both(bitcoin);
-    NativeWalletWriterRepository writing(RevisionStore revisions) =>
+    NativeWalletWriterRepository writing(RevisionStoreDatasource revisions) =>
         NativeWalletWriterRepository.withSessions(
           documentsDirectory: dir.path,
           revisions: revisions,
@@ -872,18 +878,20 @@ void main() {
           reservedAddresses: reserved,
           sessions: sessions,
         );
-    WriterSession syncing(RevisionStore revisions) => WriterSession.app(
-      documentsDirectory: dir.path,
-      revisions: revisions,
-      reader: SqliteWalletRevisionReader(revisions),
-      sessions: sessions,
-      catalog: catalog,
-    );
-    BitcoinSpendGate gate(RevisionStore revisions) => BitcoinSpendGate(
-      revisions: revisions,
-      documentsDirectory: dir.path,
-      catalog: catalog,
-    );
+    WriterSession syncing(RevisionStoreDatasource revisions) =>
+        WriterSession.app(
+          documentsDirectory: dir.path,
+          revisions: revisions,
+          reader: SqliteWalletRevisionReader(revisions),
+          sessions: sessions,
+          catalog: catalog,
+        );
+    BitcoinSpendGate gate(RevisionStoreDatasource revisions) =>
+        BitcoinSpendGate(
+          revisions: revisions,
+          documentsDirectory: dir.path,
+          catalog: catalog,
+        );
     expect(
       await writing(store).create(bitcoin.key, expectedGeneration: 0),
       isA<Ok>(),
@@ -894,7 +902,9 @@ void main() {
     ).writeAsStringSync('damaged' * 1000, flush: true);
 
     // Every sync pass reopens the metadata, for Liquid wallets too.
-    final reopened = RevisionStore.openExisting('${dir.path}/metadata.sqlite');
+    final reopened = RevisionStoreDatasource.openExisting(
+      '${dir.path}/metadata.sqlite',
+    );
     addTearDown(reopened.close);
     expect(
       await syncing(
@@ -922,7 +932,9 @@ void main() {
     expect(await reader.read(key), isA<Ok>());
     final observed = <WalletRevisionState>[];
     final subscription = reader.watch(key).listen(observed.add);
-    final other = RevisionStore.openExisting('${dir.path}/metadata.sqlite');
+    final other = RevisionStoreDatasource.openExisting(
+      '${dir.path}/metadata.sqlite',
+    );
     try {
       other.begin(key, WriteIntent.sync);
       other.finish(key);

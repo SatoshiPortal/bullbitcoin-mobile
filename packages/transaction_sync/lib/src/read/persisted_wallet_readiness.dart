@@ -3,13 +3,13 @@ import 'package:primitives/primitives.dart';
 import '../domain/transaction_sync_failure.dart';
 import '../domain/public_wallet_descriptor.dart';
 import '../domain/wallet_revision.dart';
-import '../write/revision_store.dart';
+import '../write/revision_store_datasource.dart';
 import '../write/store_identity.dart';
 import '../domain/ports/wallet_read_readiness_port.dart';
 
 /// Read-only verification of the proof committed by the writer, under admission.
 final class PersistedWalletReadiness implements WalletReadReadinessPort {
-  final RevisionStore _revisions;
+  final RevisionStoreDatasource _revisions;
 
   const PersistedWalletReadiness(this._revisions);
 

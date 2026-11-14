@@ -9,11 +9,11 @@ import '../domain/public_wallet_descriptor.dart';
 import '../domain/transaction_sync_failure.dart';
 import '../domain/wallet_key.dart';
 import '../domain/wallet_revision.dart';
-import 'bitcoin_spend_gate_store.dart';
+import 'spend_gate_store_datasource.dart';
 import 'lease_diagnostics.dart';
 import 'native_store_paths.dart';
 import 'native_write_session.dart';
-import 'revision_store.dart';
+import 'revision_store_datasource.dart';
 import 'sqlite_wallet_revision_reader.dart';
 import 'store_identity.dart';
 import 'writer_diagnostics.dart';
@@ -30,7 +30,7 @@ import 'writer_sync_operation.dart';
 /// ([WriterSession.worker]). Invoke inside the isolate doing native IO.
 final class WriterSession {
   final String documentsDirectory;
-  final RevisionStore revisions;
+  final RevisionStoreDatasource revisions;
   final SqliteWalletRevisionReader reader;
   final NativeWriteSessions sessions;
   final Future<Result<PublicWalletDescriptor, TransactionSyncFailure>> Function(
@@ -152,7 +152,7 @@ final class WriterSession {
     final record = active(key, expectedGeneration);
     final descriptor = await this.descriptor(key);
     if (preflight != null) value(await preflight());
-    BitcoinSpendGateStore? gates;
+    SpendGateStoreDatasource? gates;
     if (key.network is BitcoinNetwork) {
       gates = openSpendGate();
       try {
@@ -484,9 +484,10 @@ final class WriterSession {
   }
 
   /// The foreground provisioned the spend gate; it is never created here.
-  BitcoinSpendGateStore openSpendGate() => BitcoinSpendGateStore.openExisting(
-    spendGateStorePath(documentsDirectory),
-  );
+  SpendGateStoreDatasource openSpendGate() =>
+      SpendGateStoreDatasource.openExisting(
+        spendGateStorePath(documentsDirectory),
+      );
 
   /// Recovery cannot silently forget protection when native metadata changes.
   void _invalidateSpendGate(WalletKey key) {

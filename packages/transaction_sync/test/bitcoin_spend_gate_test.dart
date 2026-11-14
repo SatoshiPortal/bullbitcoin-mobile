@@ -5,9 +5,9 @@ import 'package:primitives/primitives.dart';
 import 'package:sqlite3/sqlite3.dart';
 import 'package:transaction_sync/transaction_sync.dart';
 import 'package:transaction_sync/write.dart';
-import 'package:transaction_sync/src/write/bitcoin_spend_gate_store.dart';
+import 'package:transaction_sync/src/write/spend_gate_store_datasource.dart';
 import 'package:transaction_sync/src/write/native_store_paths.dart';
-import 'package:transaction_sync/src/write/revision_store.dart';
+import 'package:transaction_sync/src/write/revision_store_datasource.dart';
 import 'package:transaction_sync/src/write/writer_lock.dart';
 
 final class _Reserved implements ReservedAddressPort {
@@ -33,7 +33,7 @@ final class _Catalog implements WalletCatalogPort {
 void main() {
   late Directory dir;
   late ForegroundStores stores;
-  late RevisionStore revisions;
+  late RevisionStoreDatasource revisions;
   late BitcoinSpendGate gate;
   late BitcoinWalletDescriptor wallet;
   late BitcoinWalletDescriptor other;
@@ -58,7 +58,9 @@ void main() {
       catalog: _Catalog([wallet, other]),
       reservedAddresses: _Reserved(),
     );
-    revisions = RevisionStore.openExisting(revisionStorePath(dir.path));
+    revisions = RevisionStoreDatasource.openExisting(
+      revisionStorePath(dir.path),
+    );
     for (final descriptor in [wallet, other]) {
       revisions.begin(descriptor.key, WriteIntent.create);
       revisions.finish(descriptor.key, initializedDescriptor: descriptor);
@@ -85,7 +87,9 @@ void main() {
       await accepted();
       expect(await gate.check(wallet.key), BitcoinSpendStatus.pending);
       expect(await gate.check(other.key), BitcoinSpendStatus.ready);
-      final restarted = RevisionStore.openExisting(revisionStorePath(dir.path));
+      final restarted = RevisionStoreDatasource.openExisting(
+        revisionStorePath(dir.path),
+      );
       try {
         final restored = BitcoinSpendGate(
           revisions: restarted,
@@ -107,7 +111,7 @@ void main() {
         await gate.check(wallet.key, replacing: txid),
         BitcoinSpendStatus.replacementPending,
       );
-      final store = BitcoinSpendGateStore.openExisting(
+      final store = SpendGateStoreDatasource.openExisting(
         spendGateStorePath(dir.path),
       );
       try {
@@ -157,7 +161,7 @@ void main() {
 
   test('a settled spend is retained and blocks again after a reset', () async {
     await accepted();
-    final store = BitcoinSpendGateStore.openExisting(
+    final store = SpendGateStoreDatasource.openExisting(
       spendGateStorePath(dir.path),
     );
     try {
@@ -189,7 +193,7 @@ void main() {
 
   test('revision quarantine marker keeps spend admission closed', () async {
     await accepted();
-    final store = BitcoinSpendGateStore.openExisting(
+    final store = SpendGateStoreDatasource.openExisting(
       spendGateStorePath(dir.path),
     );
     store.observed(wallet, 1, {txid});
@@ -205,7 +209,7 @@ void main() {
 
   test('generation reset never orphans an accepted obligation', () async {
     await accepted();
-    final store = BitcoinSpendGateStore.openExisting(
+    final store = SpendGateStoreDatasource.openExisting(
       spendGateStorePath(dir.path),
     );
     try {
@@ -265,7 +269,7 @@ void main() {
     );
     try {
       expect(
-        () => BitcoinSpendGateStore.openExisting(gateFile.path),
+        () => SpendGateStoreDatasource.openExisting(gateFile.path),
         throwsA(isA<BitcoinSpendGateUnavailable>()),
       );
       expect(gateFile.existsSync(), isFalse);

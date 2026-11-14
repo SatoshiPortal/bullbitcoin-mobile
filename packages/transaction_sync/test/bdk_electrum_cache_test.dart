@@ -1,8 +1,8 @@
 import 'package:transaction_sync/src/read/persisted_wallet_readiness.dart';
-import 'package:transaction_sync/src/write/bitcoin_spend_gate_store.dart';
+import 'package:transaction_sync/src/write/spend_gate_store_datasource.dart';
 import 'package:transaction_sync/src/write/native_store_paths.dart';
 import 'package:transaction_sync/src/write/native_wallet_writer_repository.dart';
-import 'package:transaction_sync/src/write/revision_store.dart';
+import 'package:transaction_sync/src/write/revision_store_datasource.dart';
 import 'package:transaction_sync/src/write/sqlite_wallet_revision_reader.dart';
 import 'support/connections.dart';
 import 'support/regtest_wallet.dart';
@@ -12,7 +12,7 @@ import 'package:transaction_sync/src/write/writer_lock.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:primitives/primitives.dart';
 import 'package:transaction_sync/transaction_sync.dart';
-import 'package:transaction_sync/src/data/bdk_electrum_cache.dart';
+import 'package:transaction_sync/src/engine/electrum_cache_datasource.dart';
 import 'dart:io';
 import 'dart:typed_data';
 
@@ -125,7 +125,7 @@ Map<String, String> _observe(bdk.Wallet wallet, Map<String, String> ids) => {
 /// through the cache.
 void _scan(ElectrumFixture fixture, String path, {required bool cached}) {
   final open = _Wallet.open(path);
-  final cache = cached ? BdkElectrumCache.open(path) : null;
+  final cache = cached ? ElectrumCacheDatasource.open(path) : null;
   final client = bdk.ElectrumClient(
     url: fixture.url,
     socks5: null,
@@ -319,7 +319,7 @@ void main() {
       });
       addTearDown(isolated.close);
       sync = foregroundSync(dir.path, FixtureConnections([isolated.url]));
-      final revisions = RevisionStore.openForeground(
+      final revisions = RevisionStoreDatasource.openForeground(
         revisionStorePath(dir.path),
       );
       try {
@@ -405,7 +405,7 @@ void main() {
         });
         addTearDown(isolated.close);
         sync = foregroundSync(dir.path, FixtureConnections([isolated.url]));
-        final revisions = RevisionStore.openForeground(
+        final revisions = RevisionStoreDatasource.openForeground(
           revisionStorePath(dir.path),
         );
         final writer = NativeWalletWriterRepository(
@@ -668,7 +668,7 @@ void main() {
       test('chained send diagnostic: broadcast visible=$visible', () async {
         await fixture.load('S10-no-change', 0);
         completed(await sync.execute(descriptor));
-        final revisions = RevisionStore.openForeground(
+        final revisions = RevisionStoreDatasource.openForeground(
           revisionStorePath(dir.path),
         );
         addTearDown(revisions.close);
@@ -805,7 +805,7 @@ void main() {
           expect(await gate.check(descriptor.key), BitcoinSpendStatus.pending);
           // Restart reads durable state, not a Cubit flag. No second build is
           // admitted until a subsequent successful pass observes the payment.
-          final restartedRevisions = RevisionStore.openExisting(
+          final restartedRevisions = RevisionStoreDatasource.openExisting(
             revisionStorePath(dir.path),
           );
           final restarted = BitcoinSpendGate(
@@ -870,7 +870,7 @@ void main() {
         expect(await gate.check(descriptor.key), BitcoinSpendStatus.pending);
 
         bool settled(String txid) {
-          final store = BitcoinSpendGateStore.openExisting(
+          final store = SpendGateStoreDatasource.openExisting(
             spendGateStorePath(dir.path),
           );
           try {
@@ -951,7 +951,7 @@ void main() {
       test('discovery spend evidence: broadcast seen $scenario', () async {
         await fixture.load('S10-no-change', 0);
         completed(await sync.execute(descriptor));
-        final revisions = RevisionStore.openForeground(
+        final revisions = RevisionStoreDatasource.openForeground(
           revisionStorePath(dir.path),
         );
         addTearDown(revisions.close);
@@ -1124,7 +1124,7 @@ void main() {
           changed.revision?.revision,
           greaterThan(initial.revision?.revision ?? 0),
         );
-        final revisions = RevisionStore.openForeground(
+        final revisions = RevisionStoreDatasource.openForeground(
           revisionStorePath(dir.path),
         );
         try {
@@ -1148,7 +1148,7 @@ void main() {
     test('successful sync publishes an initialized durable revision', () async {
       await fixture.load(electrumFixtureScenarios.first, 0);
       completed(await sync.execute(descriptor));
-      final revisions = RevisionStore.openForeground(
+      final revisions = RevisionStoreDatasource.openForeground(
         revisionStorePath(dir.path),
       );
       try {
@@ -1174,7 +1174,9 @@ void main() {
     test('corrupted prefill sidecar does not change sync outcome', () async {
       await fixture.load('S1-reorg-reconfirmed', 0);
       completed(await sync.execute(descriptor));
-      File(BdkElectrumCache.pathFor(path)).writeAsStringSync('bad cache');
+      File(
+        ElectrumCacheDatasource.pathFor(path),
+      ).writeAsStringSync('bad cache');
       final phase = await fixture.load('S1-reorg-reconfirmed', 1);
       completed(await sync.execute(descriptor));
       final reopened = _Wallet.open(path);
@@ -1226,7 +1228,7 @@ void main() {
     tearDown(() => dir.deleteSync(recursive: true));
 
     Set<String> storedTxids() {
-      final db = sqlite3.open(BdkElectrumCache.pathFor(path));
+      final db = sqlite3.open(ElectrumCacheDatasource.pathFor(path));
       try {
         return {
           for (final row in db.select('SELECT txid FROM parent_transaction'))
@@ -1248,7 +1250,7 @@ void main() {
     test('drops a stored parent whose bytes do not hash to its txid', () async {
       final phase = await fixture.load('S10-no-change', 0);
       _scan(fixture, path, cached: true);
-      final db = sqlite3.open(BdkElectrumCache.pathFor(path));
+      final db = sqlite3.open(ElectrumCacheDatasource.pathFor(path));
       db.execute('UPDATE parent_transaction SET raw = ?', [
         Uint8List.fromList([1, 2, 3]),
       ]);
@@ -1258,16 +1260,18 @@ void main() {
 
       // The bad row was dropped by the prefill and fetched again.
       expect(storedTxids(), {phase.ids['P']});
-      final check = sqlite3.open(BdkElectrumCache.pathFor(path));
+      final check = sqlite3.open(ElectrumCacheDatasource.pathFor(path));
       addTearDown(check.dispose);
       final raw = check.select('SELECT raw FROM parent_transaction').single;
       expect((raw['raw'] as Uint8List).length, greaterThan(3));
     });
 
     test('an unreadable sidecar is rebuilt', () {
-      File(BdkElectrumCache.pathFor(path)).writeAsStringSync('not sqlite');
+      File(
+        ElectrumCacheDatasource.pathFor(path),
+      ).writeAsStringSync('not sqlite');
 
-      final cache = BdkElectrumCache.open(path);
+      final cache = ElectrumCacheDatasource.open(path);
       addTearDown(() => cache?.close());
 
       expect(cache, isNotNull);
@@ -1276,7 +1280,7 @@ void main() {
     });
 
     test('a readable sidecar is not reported as rebuilt', () {
-      final cache = BdkElectrumCache.open(path);
+      final cache = ElectrumCacheDatasource.open(path);
       addTearDown(() => cache?.close());
 
       expect(cache?.rebuilt, isFalse);
@@ -1291,7 +1295,7 @@ void main() {
         failed: false,
       );
       expect(
-        BdkElectrumCache.describe(
+        ElectrumCacheDatasource.describe(
           opened: true,
           rebuilt: false,
           prefill: prefill,
@@ -1301,11 +1305,11 @@ void main() {
         'dropped_parents=0 stored_parents=4',
       );
       expect(
-        BdkElectrumCache.describe(opened: false, rebuilt: false),
+        ElectrumCacheDatasource.describe(opened: false, rebuilt: false),
         startsWith('cache=unavailable '),
       );
       expect(
-        BdkElectrumCache.describe(
+        ElectrumCacheDatasource.describe(
           opened: true,
           rebuilt: true,
           prefill: prefill,
@@ -1313,7 +1317,7 @@ void main() {
         startsWith('cache=rebuilt '),
       );
       expect(
-        BdkElectrumCache.describe(
+        ElectrumCacheDatasource.describe(
           opened: true,
           rebuilt: false,
           prefill: (
@@ -1331,11 +1335,11 @@ void main() {
     test('delete removes the sidecar', () async {
       await fixture.load('S10-no-change', 0);
       _scan(fixture, path, cached: true);
-      expect(File(BdkElectrumCache.pathFor(path)).existsSync(), isTrue);
+      expect(File(ElectrumCacheDatasource.pathFor(path)).existsSync(), isTrue);
 
-      BdkElectrumCache.delete(path);
+      ElectrumCacheDatasource.delete(path);
 
-      expect(File(BdkElectrumCache.pathFor(path)).existsSync(), isFalse);
+      expect(File(ElectrumCacheDatasource.pathFor(path)).existsSync(), isFalse);
     });
   });
 }

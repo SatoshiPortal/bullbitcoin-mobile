@@ -14,14 +14,14 @@ import '../domain/wallet_key.dart';
 import '../domain/wallet_revision.dart';
 import 'lease_diagnostics.dart';
 import 'native_write_session.dart';
-import 'revision_store.dart';
+import 'revision_store_datasource.dart';
 import 'sqlite_wallet_revision_reader.dart';
 import 'writer_lock.dart';
 import 'writer_session.dart';
 
 /// The app's lifecycle writer: each operation runs through [WriterSession],
 /// which resolves descriptors from the catalog. Invoke inside the isolate
-/// doing native IO. The caller owns the shared RevisionStore and subscribes
+/// doing native IO. The caller owns the shared RevisionStoreDatasource and subscribes
 /// before reading. No method times out native work.
 final class NativeWalletWriterRepository
     implements WalletWriterRepository, ReadAdmissionPort {
@@ -31,7 +31,7 @@ final class NativeWalletWriterRepository
 
   NativeWalletWriterRepository({
     required String documentsDirectory,
-    required RevisionStore revisions,
+    required RevisionStoreDatasource revisions,
     required SqliteWalletRevisionReader reader,
     required WalletCatalogPort catalog,
     required ReservedAddressPort reservedAddresses,
@@ -49,7 +49,7 @@ final class NativeWalletWriterRepository
   @visibleForTesting
   NativeWalletWriterRepository.withSessions({
     required String documentsDirectory,
-    required RevisionStore revisions,
+    required RevisionStoreDatasource revisions,
     required SqliteWalletRevisionReader reader,
     required WalletCatalogPort catalog,
     required ReservedAddressPort reservedAddresses,
@@ -66,7 +66,7 @@ final class NativeWalletWriterRepository
          leaseScope: leaseScope,
        );
 
-  RevisionStore get revisions => _session.revisions;
+  RevisionStoreDatasource get revisions => _session.revisions;
 
   /// Re-import reserves the next generation before publishing a new catalog
   /// row, so startup cannot mistake it for the row of an interrupted deletion.

@@ -4,7 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 import 'package:sqlite3/sqlite3.dart';
 import 'package:transaction_sync/transaction_sync.dart';
-import 'package:transaction_sync/src/write/revision_store.dart';
+import 'package:transaction_sync/src/write/revision_store_datasource.dart';
 import 'package:transaction_sync/src/write/sqlite_wallet_revision_reader.dart';
 
 void main() {
@@ -13,12 +13,12 @@ void main() {
     () async {
       final directory = Directory.systemTemp.createTempSync('revision-open-');
       final path = '${directory.path}/revisions.sqlite';
-      final initial = RevisionStore.openForeground(path);
+      final initial = RevisionStoreDatasource.openForeground(path);
       final writer = sqlite3.open(path);
-      RevisionStore? reader;
+      RevisionStoreDatasource? reader;
       try {
         writer.execute('BEGIN IMMEDIATE');
-        reader = RevisionStore.openExisting(path);
+        reader = RevisionStoreDatasource.openExisting(path);
         expect(reader, isNotNull);
       } finally {
         writer.dispose();
@@ -36,7 +36,7 @@ void main() {
         'revision-concurrent-',
       );
       final path = '${directory.path}/revisions.sqlite';
-      final store = RevisionStore.openForeground(path);
+      final store = RevisionStoreDatasource.openForeground(path);
       final reader = SqliteWalletRevisionReader(store);
       final key = WalletKey(id: 'fixture', network: BitcoinNetwork.testnet);
       final observer = sqlite3.open(path);
@@ -81,7 +81,7 @@ void main() {
     () async {
       final directory = Directory.systemTemp.createTempSync('revision-schema-');
       final path = '${directory.path}/revisions.sqlite';
-      final store = RevisionStore.openForeground(path);
+      final store = RevisionStoreDatasource.openForeground(path);
       final reader = SqliteWalletRevisionReader(store);
       final key = WalletKey(id: 'fixture', network: BitcoinNetwork.testnet);
       final observer = sqlite3.open(path);

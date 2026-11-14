@@ -7,9 +7,9 @@ import '../domain/public_wallet_descriptor.dart';
 import '../domain/ports/wallet_catalog_port.dart';
 import '../domain/wallet_key.dart';
 import '../domain/wallet_revision.dart';
-import 'bitcoin_spend_gate_store.dart';
+import 'spend_gate_store_datasource.dart';
 import 'native_store_paths.dart';
-import 'revision_store.dart';
+import 'revision_store_datasource.dart';
 import 'writer_lock.dart';
 import 'lease_diagnostics.dart';
 
@@ -17,7 +17,7 @@ import 'lease_diagnostics.dart';
 /// Only durable receipts survive restart; a post-accept storage failure blocks
 /// this process and is retried on the next admission, never reported as rejection.
 final class BitcoinSpendGate {
-  final RevisionStore revisions;
+  final RevisionStoreDatasource revisions;
   final String documentsDirectory;
   final WalletCatalogPort catalog;
   static final _pending =
@@ -63,7 +63,7 @@ final class BitcoinSpendGate {
       );
     }
     final lock = (acquired as Ok<WriterLock, TransactionSyncFailure>).value;
-    BitcoinSpendGateStore? store;
+    SpendGateStoreDatasource? store;
     try {
       // Quarantined metadata: no spend until every wallet has been adopted.
       if (File(recoveryMarkerPath(documentsDirectory)).existsSync()) {
@@ -83,7 +83,7 @@ final class BitcoinSpendGate {
       final descriptor =
           (found as Ok<PublicWalletDescriptor, TransactionSyncFailure>).value;
       final path = spendGateStorePath(documentsDirectory);
-      store = BitcoinSpendGateStore.openExisting(path);
+      store = SpendGateStoreDatasource.openExisting(path);
       final pendingKey = (path, key);
       final pending = _pending[pendingKey];
       if (pending != null) {
@@ -140,7 +140,7 @@ final class BitcoinSpendRefused extends BitcoinSpendAdmissionResult {
 
 final class BitcoinSpendAdmission extends BitcoinSpendAdmissionResult {
   final WriterLock _lock;
-  final BitcoinSpendGateStore _store;
+  final SpendGateStoreDatasource _store;
   final PublicWalletDescriptor _descriptor;
   final WalletRevision revision;
   final (String, WalletKey) _pendingKey;

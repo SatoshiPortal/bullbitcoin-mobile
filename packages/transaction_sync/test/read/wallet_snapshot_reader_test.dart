@@ -1,8 +1,8 @@
-import 'package:transaction_sync/src/write/bitcoin_spend_gate_store.dart';
+import 'package:transaction_sync/src/write/spend_gate_store_datasource.dart';
 import 'package:transaction_sync/src/read/persisted_wallet_readiness.dart';
 import 'package:transaction_sync/src/write/native_store_paths.dart';
 import 'package:transaction_sync/src/write/native_wallet_writer_repository.dart';
-import 'package:transaction_sync/src/write/revision_store.dart';
+import 'package:transaction_sync/src/write/revision_store_datasource.dart';
 import 'package:transaction_sync/src/write/sqlite_wallet_revision_reader.dart';
 import 'package:flutter/foundation.dart';
 import 'package:transaction_sync/diagnostics.dart';
@@ -130,10 +130,10 @@ void main() {
     'native reader logs hydrate and cache leases with caller context',
     () async {
       create();
-      final store = RevisionStore.openForeground(
+      final store = RevisionStoreDatasource.openForeground(
         revisionStorePath(documents.path),
       );
-      BitcoinSpendGateStore.provision(spendGateStorePath(documents.path));
+      SpendGateStoreDatasource.provision(spendGateStorePath(documents.path));
       final writer = NativeWalletWriterRepository(
         revisions: store,
         reader: SqliteWalletRevisionReader(store),
@@ -203,10 +203,10 @@ void main() {
 
   test('writer adopts the previously revealed receive index', () async {
     create(revealed: 12);
-    final revisions = RevisionStore.openForeground(
+    final revisions = RevisionStoreDatasource.openForeground(
       revisionStorePath(documents.path),
     );
-    BitcoinSpendGateStore.provision(spendGateStorePath(documents.path));
+    SpendGateStoreDatasource.provision(spendGateStorePath(documents.path));
     final writer = NativeWalletWriterRepository(
       revisions: revisions,
       reader: SqliteWalletRevisionReader(revisions),

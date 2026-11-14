@@ -1,5 +1,5 @@
 import 'package:transaction_sync/src/write/native_store_paths.dart';
-import 'package:transaction_sync/src/write/revision_store.dart';
+import 'package:transaction_sync/src/write/revision_store_datasource.dart';
 import 'dart:io';
 
 import 'package:bull_sdk/bull_sdk.dart' show BullSdk;
@@ -55,7 +55,7 @@ void main() {
         fixture.url,
       ], socks5: '127.0.0.1:1');
       final sync = foregroundSync(dir.path, connections);
-      final metadata = RevisionStore.openForeground(
+      final metadata = RevisionStoreDatasource.openForeground(
         revisionStorePath(dir.path),
       );
       metadata.close();

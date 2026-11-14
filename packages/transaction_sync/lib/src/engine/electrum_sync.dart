@@ -13,7 +13,7 @@ import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
 
 import '../write/native_write_session.dart';
-import '../write/revision_store.dart';
+import '../write/revision_store_datasource.dart';
 import '../write/native_store_paths.dart';
 import '../write/sqlite_wallet_revision_reader.dart';
 import '../write/writer_session.dart';
@@ -26,7 +26,7 @@ import '../domain/transaction_sync_failure.dart';
 import '../domain/public_wallet_descriptor.dart';
 import '../domain/ports/wallet_connection_port.dart';
 import '../domain/wallet_key.dart';
-import 'bdk_electrum_cache.dart';
+import 'electrum_cache_datasource.dart';
 import 'payment_observation.dart';
 
 /// One Electrum operation inside the writer lease. Headless callers cannot provision or reconcile.
@@ -328,10 +328,12 @@ Future<_Attempt> _performSync(_SyncParams params) async {
     probe?.dispose();
   }
   if (params.descriptor is LiquidWalletDescriptor) await BullSdk.init();
-  final RevisionStore revisions;
+  final RevisionStoreDatasource revisions;
   try {
     // The foreground created the store before any pass; the worker only opens it.
-    revisions = RevisionStore.openExisting(revisionStorePath(params.root));
+    revisions = RevisionStoreDatasource.openExisting(
+      revisionStorePath(params.root),
+    );
   } on RevisionStoreUnavailable {
     return const _Attempt(
       Err(TransactionSyncStorageFailure()),
@@ -614,7 +616,7 @@ Future<_Attempt> _performNativeSync(
   bdk.Wallet? wallet;
   bdk.Descriptor? external;
   bdk.Descriptor? internal;
-  BdkElectrumCache? cache;
+  ElectrumCacheDatasource? cache;
   var retryable = true;
   TransactionSyncFailure failure = const TransactionSyncConnectionFailure();
   try {
@@ -659,7 +661,7 @@ Future<_Attempt> _performNativeSync(
         : height == 0
         ? SyncMode.initialScan
         : SyncMode.revealedScripts;
-    cache = BdkElectrumCache.open(path);
+    cache = ElectrumCacheDatasource.open(path);
     final prefill = cache?.prefill(client, wallet);
     final batchSize = (connection.stopGap ~/ 4).clamp(50, 1000);
     // Every pass covers the revealed scripts: the pinned bdk_chain full scan
@@ -709,7 +711,7 @@ Future<_Attempt> _performNativeSync(
     return _Attempt(
       Ok(SyncCompletion(mode, watch.elapsed, incomingTxids: incoming)),
       retryable: false,
-      cacheDiagnostics: BdkElectrumCache.describe(
+      cacheDiagnostics: ElectrumCacheDatasource.describe(
         opened: cache != null,
         rebuilt: cache?.rebuilt ?? false,
         prefill: prefill,

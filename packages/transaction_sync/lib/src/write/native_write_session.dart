@@ -299,7 +299,7 @@ final class _LiquidSession implements NativeWriteSession {
 
   @override
   Future<void> revealAndPersist(int index) async {
-    // This SDK has no persisted reveal API. RevisionStore's issued high-water
+    // This SDK has no persisted reveal API. RevisionStoreDatasource's issued high-water
     // is authoritative and must be passed to the engine's stopAtIndex.
     await _wallet.address(index: index);
   }

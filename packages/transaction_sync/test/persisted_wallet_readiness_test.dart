@@ -4,7 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 import 'package:transaction_sync/transaction_sync.dart';
 import 'package:transaction_sync/src/read/persisted_wallet_readiness.dart';
-import 'package:transaction_sync/src/write/revision_store.dart';
+import 'package:transaction_sync/src/write/revision_store_datasource.dart';
 import 'package:transaction_sync/src/write/store_identity.dart';
 
 void main() {
@@ -19,7 +19,7 @@ void main() {
     'readiness requires the committed exact descriptor and revision',
     () async {
       final dir = Directory.systemTemp.createTempSync('readiness-');
-      final store = RevisionStore.openForeground(
+      final store = RevisionStoreDatasource.openForeground(
         '${dir.path}/revisions.sqlite',
       );
       final key = WalletKey(id: 'fixture', network: BitcoinNetwork.testnet);
