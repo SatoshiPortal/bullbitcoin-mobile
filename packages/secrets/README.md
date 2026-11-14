@@ -22,8 +22,8 @@ Secrets
 |-- preview
 |   `-- bitcoinDescriptors(words:, [language: Language.english], [passphrase:], network:, scriptTypes:) -> Map<ScriptType, ({String external, String internal})>
 |-- recoverbull
-|   |-- restore(vault:, key:, [passphrase:]) -> RestoredVault
-|   `-- fingerprint(vault:, key:) -> Fingerprint
+|   |-- restore(vault:, key:, [passphrase:], [allowUnverified: false]) -> RestoredVault
+|   `-- fingerprint(vault:, key:, [passphrase:]) -> Fingerprint
 `-- databaseKeys(module:)
     |-- getOrCreate(name:) -> DatabaseKey
     |-- get(name:) -> DatabaseKey
@@ -49,12 +49,13 @@ Secret
 |-- backup
 |   `-- recoverbull([metadata: const {}]) -> ({VaultKey key, EncryptedVault vault})
 |-- verify
+|   |-- passphrase(candidate) -> bool
 |   |-- mnemonic(words) -> bool
 |   `-- seed(hex) -> bool
 |-- silentPayments
 |   `-- account(name:, network:, blindbitUrl:, electrumUrl:, dataDir:, dustLimit:, fetchConcurrencyFactor:, matchConcurrencyFactor:, [headerCheckpoint:]) -> SpAccount
 `-- widgets
-    |-- mnemonicView([key:], failureBuilder:, [style:], [passphraseLabel:], [passphraseLabelStyle:], [placeholder: const SizedBox.shrink()], [wordBuilder:], [layoutBuilder:]) -> MnemonicView
+    |-- mnemonicView([key:], failureBuilder:, [style:], [passphraseLabel:], [passphraseLabelStyle:], [showPassphrase: false], [placeholder: const SizedBox.shrink()], [wordBuilder:], [layoutBuilder:]) -> MnemonicView
     `-- mnemonicChallenge([key:], tileBuilder:, layoutBuilder:, onSolved:, onMistake:, failureBuilder:, [onProgress:], [style:], [placeholder: const SizedBox.shrink()]) -> MnemonicChallenge
 ```
 
