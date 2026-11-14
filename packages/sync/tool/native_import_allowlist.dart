@@ -3,8 +3,6 @@
 /// listed here uses them, and when a listed file no longer does: entries are
 /// only ever removed, never added or renamed into a wider power.
 const nativeImportAllowlist = <String>{
-  'lib/features/wallet/data/wallet_metadata_service.dart',
-  'lib/features/wallet/data/wallet_repository.dart',
   'packages/secrets/lib/src/crypto/derivers/bitcoin_deriver.dart',
   'packages/secrets/lib/src/crypto/derivers/liquid_deriver.dart',
   'packages/secrets/lib/src/crypto/generator.dart',
