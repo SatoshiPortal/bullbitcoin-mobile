@@ -24,9 +24,11 @@ class PayjoinSenders extends Table {
   BoolColumn get isCompleted => boolean()();
   BoolColumn get isAborted => boolean()();
   // A payment of this session may be on the network without a recorded
-  // outcome: one of its transactions went to broadcast or was observed. Such
-  // a session is never expired from a later negative lookup. Senders that
-  // were unfinished when schema 3 arrived are assumed to hold it.
+  // outcome: one of its transactions went to broadcast or was observed, or
+  // the sender's original was delivered to the receiver, who can broadcast
+  // it at any time (BIP 77). Such a session is never expired from a later
+  // negative lookup. Senders that were unfinished when schema 3 arrived are
+  // assumed to hold it.
   BoolColumn get hasNetworkEvidence =>
       boolean().withDefault(const Constant(false))();
 

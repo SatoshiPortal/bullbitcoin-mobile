@@ -113,13 +113,26 @@ build-runner-watch:
 
 translations:
 	@echo "🌐 Generating translations files"
+	@$(MAKE) novlang-translations
 	@fvm flutter gen-l10n
 	@$(MAKE) recoverbull-translations
 	@$(MAKE) bull-ui-translations
+	@$(MAKE) novlang-bridge
 
 .PHONY: bull-ui-translations
 bull-ui-translations:
 	@(cd packages/bull_ui && fvm flutter gen-l10n)
+
+.PHONY: novlang-translations
+novlang-translations:
+	@(cd packages/novlang && fvm flutter gen-l10n)
+
+# Generates lib/generated/novlang from the novlang manifest and the gen-l10n
+# output of the root catalogue. `dart <file>` on purpose: `dart run` would run
+# the app's native build hooks.
+.PHONY: novlang-bridge
+novlang-bridge:
+	@fvm dart tools/novlang_bridge.dart
 
 .PHONY: recoverbull-translations
 recoverbull-translations:

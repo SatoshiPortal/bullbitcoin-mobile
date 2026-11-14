@@ -168,9 +168,11 @@ jobs:
     if: ${{ !cancelled() && needs.classification.result == 'success' && needs.action-pins.result == 'success' && needs.readiness.result == 'success' && needs.classification.outputs.run_app_checks == 'true' }}
     name: Static checks and unit tests
     runs-on: ubuntu-24.04
-    # A normal run takes 22-29 min (build_runner and unit tests dominate), so
-    # 30 min cancelled healthy runs on a slow runner.
-    timeout-minutes: 45
+    # Measured 2026-11-14 on develop: ~18 min of setup (free disk, Flutter,
+    # build_runner), ~3 min of static checks, then the unit suites alone pass
+    # 27 min (the app suite is ~22 min of that), so 45 min cancelled healthy
+    # runs with every test still green.
+    timeout-minutes: 75
     steps:
       - name: Checkout Repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1

@@ -201,7 +201,7 @@
       }
     }
   },
-  "autoswapAlwaysBlockEnabledInfo": "เมื่อเปิดใช้งาน, ถ่ายโอนอัตโนมัติที่มีค่าธรรมเนียมข้างต้นจะถูกบล็อก",
+  "autoswapAlwaysBlockEnabledInfo": "เมื่อเปิดใช้งาน Auto Swap ที่มีค่าธรรมเนียมสูงกว่าขีดจำกัดที่ตั้งไว้จะถูกบล็อกเสมอ",
   "@autoswapAlwaysBlockEnabledInfo": {
     "description": "Info text when always block is enabled"
   },
@@ -222,7 +222,7 @@
   "@transactionLabelPreimage": {
     "description": "Label for preimage in Lightning swap details"
   },
-  "coreSwapsChainCanCoop": "การโอนเงินจะเสร็จสมบูรณ์.",
+  "coreSwapsChainCanCoop": "Swap จะเสร็จสมบูรณ์ในอีกไม่ช้า",
   "@coreSwapsChainCanCoop": {
     "description": "Status message for chain swap that can complete cooperatively"
   },
@@ -295,11 +295,11 @@
   "@replaceByFeeErrorNoFeeRateSelected": {
     "description": "Error message when no fee rate is selected"
   },
-  "transactionSwapDescChainPending": "การถ่ายโอนของคุณถูกสร้างขึ้น แต่ยังไม่ได้เริ่มต้น.",
+  "transactionSwapDescChainPending": "Swap ของคุณถูกสร้างขึ้นแล้ว แต่ยังไม่ได้เริ่มต้น",
   "@transactionSwapDescChainPending": {
     "description": "Description for pending chain swap"
   },
-  "coreScreensTransferFeeLabel": "ค่าธรรมเนียม",
+  "coreScreensTransferFeeLabel": "ค่าธรรมเนียม Swap",
   "@coreScreensTransferFeeLabel": {
     "description": "Label for transfer fee field"
   },
@@ -327,7 +327,7 @@
   "@autoswapUpdateSettingsError": {
     "description": "Error message when updating settings fails"
   },
-  "transactionStatusTransferFailed": "โอน",
+  "transactionStatusTransferFailed": "Swap ล้มเหลว",
   "@transactionStatusTransferFailed": {
     "description": "Status label for failed transfers"
   },
@@ -387,7 +387,7 @@
   "@hwKrux": {
     "description": "Name of Krux hardware wallet"
   },
-  "transactionFilterTransfer": "การโอนเงิน",
+  "transactionFilterTransfer": "Swap",
   "@transactionFilterTransfer": {
     "description": "Filter option to show only transfer/swap transactions"
   },
@@ -630,7 +630,7 @@
   "@payPayoutAmount": {
     "description": "Label for amount user receives"
   },
-  "autoswapMaxBalanceInfo": "เมื่อยอดเงินของกระเป๋าสตางค์เกินจํานวนสองจํานวนนี้ ถ่ายโอนอัตโนมัติจะลดลง",
+  "autoswapMaxBalanceInfo": "เมื่อยอดคงเหลือในกระเป๋าเงินเกินสองเท่าของจำนวนนี้ Auto Swap จะทำงานเพื่อลดยอดคงเหลือให้เหลือเท่ากับระดับนี้",
   "@autoswapMaxBalanceInfo": {
     "description": "Info tooltip for max balance field"
   },
@@ -638,7 +638,7 @@
   "@payPhone": {
     "description": "Label for phone details"
   },
-  "transactionDetailLabelTransferStatus": "การโอนเงิน",
+  "transactionDetailLabelTransferStatus": "สถานะ Swap",
   "@transactionDetailLabelTransferStatus": {
     "description": "Label for transfer status"
   },
@@ -830,7 +830,7 @@
   "@allSeedViewIUnderstandButton": {
     "description": "Button label to acknowledge security warning"
   },
-  "coreScreensExternalTransfer": "การถ่ายโอนภายนอก",
+  "coreScreensExternalTransfer": "Swap ภายนอก",
   "@coreScreensExternalTransfer": {
     "description": "Title for external transfer action"
   },
@@ -842,7 +842,7 @@
   "@ledgerHelpStep3": {
     "description": "Third troubleshooting step for Ledger connection issues"
   },
-  "coreSwapsChainFailedRefunding": "โอนเงินได้ทันที.",
+  "coreSwapsChainFailedRefunding": "Swap จะได้รับการคืนเงินในไม่ช้า",
   "@coreSwapsChainFailedRefunding": {
     "description": "Status message for failed chain swap that will be refunded"
   },
@@ -942,7 +942,7 @@
   "@exchangeAuthLoginFailed": {
     "description": "Login failure dialog title"
   },
-  "transactionSwapDescChainFailed": "มีปัญหากับการโอนเงินของคุณ โปรดติดต่อหากเงินจะส่งคืนภายใน 24 ชั่วโมง.",
+  "transactionSwapDescChainFailed": "เกิดปัญหากับ Swap ของคุณ โปรดติดต่อฝ่ายสนับสนุนหากยังไม่ได้รับเงินคืนภายใน 24 ชั่วโมง",
   "@transactionSwapDescChainFailed": {
     "description": "Description for failed chain swap"
   },
@@ -1158,7 +1158,7 @@
   "@sendChange": {
     "description": "Label for change output in a transaction"
   },
-  "coreScreensInternalTransfer": "โอนภายใน",
+  "coreScreensInternalTransfer": "Swap ภายใน",
   "@coreScreensInternalTransfer": {
     "description": "Title for internal transfer action"
   },
@@ -1360,7 +1360,7 @@
   "@autoswapWarningOkButton": {
     "description": "OK button label in the autoswap warning bottom sheet"
   },
-  "swapTitle": "โอนภายใน",
+  "swapTitle": "Swap ภายใน",
   "@swapTitle": {
     "description": "AppBar title for swap/internal transfer screen"
   },
@@ -1432,7 +1432,7 @@
   "@dcaSetupInsufficientBalance": {
     "description": "Insufficient balance error title"
   },
-  "swapTransferRefundedMessage": "การโอนเงินที่ประสบความสําเร็จ.",
+  "swapTransferRefundedMessage": "คืนเงิน Swap เรียบร้อยแล้ว",
   "@swapTransferRefundedMessage": {
     "description": "Refund completion message"
   },
@@ -1476,7 +1476,7 @@
   "@exchangeReferralsMissionLink": {
     "description": "Link to the Bull Bitcoin mission page"
   },
-  "swapTransferPendingMessage": "ถ่ายโอนในความคืบหน้า การทําธุรกรรม Bitcoin สามารถฝากเงินได้ คุณสามารถคืนบ้านและรอ.",
+  "swapTransferPendingMessage": "Swap กำลังดำเนินการ ธุรกรรม Bitcoin อาจใช้เวลายืนยันสักครู่ คุณสามารถกลับไปหน้าหลักแล้วรอได้",
   "@swapTransferPendingMessage": {
     "description": "Message shown during pending swap"
   },
@@ -1536,7 +1536,7 @@
   "@buyContinue": {
     "description": "Button to continue to next step"
   },
-  "swapTransferTitle": "การโอนเงิน",
+  "swapTransferTitle": "Swap",
   "@swapTransferTitle": {
     "description": "AppBar title on the main swap page"
   },
@@ -1622,7 +1622,7 @@
   "@payCalculating": {
     "description": "Text shown while calculating fees"
   },
-  "transactionDetailLabelTransferId": "การโอนเงิน",
+  "transactionDetailLabelTransferId": "ID Swap",
   "@transactionDetailLabelTransferId": {
     "description": "Label for transfer ID"
   },
@@ -1929,7 +1929,7 @@
   "@featureComingSoonTitle": {
     "description": "Title for coming soon bottom sheet"
   },
-  "swapProgressRefundInProgress": "การโอนเงิน",
+  "swapProgressRefundInProgress": "กำลังคืนเงิน Swap",
   "@swapProgressRefundInProgress": {
     "description": "Refund in progress status"
   },
@@ -2046,7 +2046,7 @@
   "@broadcastSignedTxScanQR": {
     "description": "Instruction to scan signed PSBT QR code"
   },
-  "transactionStatusTransferInProgress": "การโอนเงิน",
+  "transactionStatusTransferInProgress": "Swap กำลังดำเนินการ",
   "@transactionStatusTransferInProgress": {
     "description": "Status label for transfers in progress"
   },
@@ -2144,7 +2144,7 @@
   "@ledgerWalletTypeLegacy": {
     "description": "Display name for Legacy wallet type (BIP44)"
   },
-  "transactionDetailTransferProgress": "การบันทึก",
+  "transactionDetailTransferProgress": "ความคืบหน้าของ Swap",
   "@transactionDetailTransferProgress": {
     "description": "Title for ongoing transfer details"
   },
@@ -2186,7 +2186,7 @@
       }
     }
   },
-  "swapTransferFrom": "การโอนเงิน",
+  "swapTransferFrom": "Swap จาก",
   "@swapTransferFrom": {
     "description": "Label for source wallet dropdown"
   },
@@ -2284,7 +2284,7 @@
   "@coldcardStep12": {
     "description": "Coldcard instruction to return to app"
   },
-  "autoswapAlwaysBlockDisabledInfo": "เมื่อปิดการใช้งาน, คุณจะได้รับตัวเลือกที่จะอนุญาตให้อนุญาตให้โอนอัตโนมัติเนื่องจากค่าธรรมเนียมสูง",
+  "autoswapAlwaysBlockDisabledInfo": "เมื่อปิดใช้งาน คุณจะได้รับตัวเลือกให้อนุญาต Auto Swap ที่ถูกบล็อกเนื่องจากค่าธรรมเนียมสูง",
   "@autoswapAlwaysBlockDisabledInfo": {
     "description": "Info text when always block is disabled"
   },
@@ -2457,7 +2457,7 @@
   "@confirmButton": {
     "description": "Button label to confirm action"
   },
-  "transactionSwapInfoClaimableTransfer": "ถ่ายโอนจะเสร็จสมบูรณ์ภายในไม่กี่วินาที หากคุณไม่สามารถพยายามแจ้งคําแนะนําโดยคลิกที่ \"เรียกคืนโอน\" ปุ่ม.",
+  "transactionSwapInfoClaimableTransfer": "Swap จะเสร็จสมบูรณ์โดยอัตโนมัติภายในไม่กี่วินาที หากไม่สำเร็จ คุณสามารถลองเคลมด้วยตนเองได้โดยกดปุ่ม\"ลองเคลม Swap อีกครั้ง\"",
   "@transactionSwapInfoClaimableTransfer": {
     "description": "Additional info for claimable transfers"
   },
@@ -2517,7 +2517,7 @@
   "@transactionDetailLabelRefunded": {
     "description": "Label for refunded status"
   },
-  "swapValidationSelectFromWallet": "เลือกกระเป๋าสตางค์เพื่อถ่ายโอนจาก",
+  "swapValidationSelectFromWallet": "โปรดเลือกกระเป๋าเงินต้นทางที่จะSwap จาก",
   "@swapValidationSelectFromWallet": {
     "description": "Validation error when no source wallet selected"
   },
@@ -2657,7 +2657,7 @@
   "@exchangeBitcoinWalletsDescription": {
     "description": "Description text on the default bitcoin wallets screen"
   },
-  "swapTransferRefundInProgressTitle": "การโอนเงิน",
+  "swapTransferRefundInProgressTitle": "กำลังคืนเงิน Swap",
   "@swapTransferRefundInProgressTitle": {
     "description": "Title when swap is being refunded"
   },
@@ -3117,7 +3117,7 @@
   "@exchangeDcaCancelDialogMessage": {
     "description": "Message explaining the consequences of canceling DCA"
   },
-  "transactionSwapDescChainExpired": "การโอนเงินนี้ เงินทุนของคุณจะถูกส่งคืนโดยอัตโนมัติ.",
+  "transactionSwapDescChainExpired": "Swap นี้หมดอายุแล้ว เงินของคุณจะถูกคืนเข้ากระเป๋าเงินโดยอัตโนมัติ",
   "@transactionSwapDescChainExpired": {
     "description": "Description for expired chain swap"
   },
@@ -3201,7 +3201,7 @@
   "@backupWalletHowToDecideBackupEncryptedVault": {
     "description": "Explanation of encrypted vault benefits and risks in decision help modal"
   },
-  "coreSwapsChainCompletedRefunded": "การโอนเงิน.",
+  "coreSwapsChainCompletedRefunded": "Swap ได้รับการคืนเงินแล้ว",
   "@coreSwapsChainCompletedRefunded": {
     "description": "Status message for chain swap completed via refund"
   },
@@ -3261,7 +3261,7 @@
   "@exchangeFileUploadSelectFilesHint": {
     "description": "Hint text for selecting files"
   },
-  "swapTransferRefundedTitle": "การโอนเงิน",
+  "swapTransferRefundedTitle": "คืนเงิน Swap แล้ว",
   "@swapTransferRefundedTitle": {
     "description": "Title when swap has been refunded"
   },
@@ -3329,7 +3329,7 @@
   "@fundExchangeMethodOnlineBillPayment": {
     "description": "Payment method: Online Bill Payment (Canada)"
   },
-  "coreScreensTransferIdLabel": "การโอนเงิน",
+  "coreScreensTransferIdLabel": "ID Swap",
   "@coreScreensTransferIdLabel": {
     "description": "Label for transfer ID field"
   },
@@ -3431,7 +3431,7 @@
   "@exchangeLandingFeature1": {
     "description": "First feature bullet point"
   },
-  "swapTransferTo": "การโอนเงิน",
+  "swapTransferTo": "Swap ไปยัง",
   "@swapTransferTo": {
     "description": "Label for destination wallet dropdown"
   },
@@ -3622,7 +3622,7 @@
   "@bitboxActionImportWalletProcessing": {
     "description": "Processing text for import wallet"
   },
-  "swapConfirmTransferTitle": "ยืนยันการโอนเงิน",
+  "swapConfirmTransferTitle": "ยืนยัน Swap",
   "@swapConfirmTransferTitle": {
     "description": "AppBar title on the confirmation page"
   },
@@ -3654,7 +3654,7 @@
   "@electrumServerOffline": {
     "description": "Status text for offline servers"
   },
-  "sendTransferFee": "ค่าธรรมเนียม",
+  "sendTransferFee": "ค่าธรรมเนียม Swap",
   "@sendTransferFee": {
     "description": "Label for total swap transfer fee"
   },
@@ -3682,7 +3682,7 @@
   "@importColdcardInstructionsStep6": {
     "description": "ImportColdcardQ: Sixth instruction step"
   },
-  "swapValidationSelectToWallet": "เลือกกระเป๋าสตางค์เพื่อถ่ายโอน",
+  "swapValidationSelectToWallet": "โปรดเลือกกระเป๋าเงินปลายทางที่จะSwap ไป",
   "@swapValidationSelectToWallet": {
     "description": "Validation error when no destination wallet selected"
   },
@@ -3862,7 +3862,7 @@
   "@exchangeAccountTitle": {
     "description": "Title for the exchange account section"
   },
-  "swapProgressCompleted": "การโอนเงิน",
+  "swapProgressCompleted": "Swap เสร็จสมบูรณ์",
   "@swapProgressCompleted": {
     "description": "Completed transfer status"
   },
@@ -3887,7 +3887,7 @@
   "@autoswapWarningCardTitle": {
     "description": "Title text shown on the autoswap warning card on home screen"
   },
-  "coreSwapsChainCompletedSuccess": "ถ่ายโอนเสร็จสมบูรณ์.",
+  "coreSwapsChainCompletedSuccess": "Swap เสร็จสมบูรณ์เรียบร้อยแล้ว",
   "@coreSwapsChainCompletedSuccess": {
     "description": "Status message for successfully completed chain swap"
   },
@@ -4073,7 +4073,7 @@
   "@exchangeHomeWithdrawButton": {
     "description": "Button label for withdrawing funds from the exchange"
   },
-  "transactionListOngoingTransfersTitle": "การโอนเงิน",
+  "transactionListOngoingTransfersTitle": "Swap ที่กำลังดำเนินการ",
   "@transactionListOngoingTransfersTitle": {
     "description": "Title for ongoing transfers section"
   },
@@ -4109,7 +4109,7 @@
   "@settingsCurrencyTitle": {
     "description": "Title for the currency settings section in the settings menu"
   },
-  "transactionSwapDescChainClaimable": "การทําธุรกรรมที่ได้รับการยืนยัน ตอนนี้ตอนนี้อ้างว่าเงินเพื่อถ่ายโอนของคุณ.",
+  "transactionSwapDescChainClaimable": "ธุรกรรมล็อกเงินได้รับการยืนยันแล้ว ขณะนี้คุณกำลังเคลมเงินเพื่อให้ Swap ของคุณเสร็จสมบูรณ์",
   "@transactionSwapDescChainClaimable": {
     "description": "Description for claimable chain swap"
   },
@@ -4186,7 +4186,7 @@
   "@coldcardStep7": {
     "description": "Coldcard troubleshooting tip 2"
   },
-  "transactionSwapDescChainRefundable": "การโอนเงินจะคืนเงิน เงินทุนของคุณจะได้รับคืนไปยังกระเป๋าสตางค์ของคุณโดยอัตโนมัติ.",
+  "transactionSwapDescChainRefundable": "Swap จะได้รับการคืนเงิน เงินของคุณจะถูกคืนเข้ากระเป๋าเงินโดยอัตโนมัติ",
   "@transactionSwapDescChainRefundable": {
     "description": "Description for refundable chain swap"
   },
@@ -4226,7 +4226,7 @@
   "@replaceByFeeBroadcastButton": {
     "description": "Button to broadcast the replacement transaction"
   },
-  "swapExternalTransferLabel": "การถ่ายโอนภายนอก",
+  "swapExternalTransferLabel": "Swap ภายนอก",
   "@swapExternalTransferLabel": {
     "description": "Label for external transfer toggle"
   },
@@ -4416,7 +4416,7 @@
   "@tryAgainButton": {
     "description": "Default button text for error state"
   },
-  "swapConfirmTitle": "ยืนยันการโอนเงิน",
+  "swapConfirmTitle": "ยืนยัน Swap",
   "@swapConfirmTitle": {
     "description": "AppBar title for swap confirmation screen"
   },
@@ -4616,7 +4616,7 @@
   "@dcaSelectFrequencyLabel": {
     "description": "Label above frequency selection radio buttons"
   },
-  "transactionSwapDescChainCompleted": "การถ่ายโอนของคุณเสร็จสมบูรณ์! เงินทุนควรอยู่ในกระเป๋าสตางค์ของคุณ.",
+  "transactionSwapDescChainCompleted": "Swap ของคุณเสร็จสมบูรณ์เรียบร้อยแล้ว! ตอนนี้เงินควรอยู่ในกระเป๋าเงินของคุณแล้ว",
   "@transactionSwapDescChainCompleted": {
     "description": "Description for completed chain swap"
   },
@@ -4722,7 +4722,7 @@
   "@exchangeSettingsReferralsTitle": {
     "description": "Title for the referrals section in exchange settings"
   },
-  "autoswapAlwaysBlockInfoEnabled": "เมื่อเปิดใช้งาน, ถ่ายโอนอัตโนมัติที่มีค่าธรรมเนียมข้างต้นจะถูกบล็อก",
+  "autoswapAlwaysBlockInfoEnabled": "เมื่อเปิดใช้งาน Auto Swap ที่มีค่าธรรมเนียมสูงกว่าขีดจำกัดที่ตั้งไว้จะถูกบล็อกเสมอ",
   "@autoswapAlwaysBlockInfoEnabled": {
     "description": "Help text when always block is enabled"
   },
@@ -4999,7 +4999,7 @@
   "@exchangeKycRemoveLimits": {
     "description": "KYC card subtitle"
   },
-  "autoswapMaxBalanceInfoText": "เมื่อยอดเงินของกระเป๋าสตางค์เกินจํานวนสองจํานวนนี้ ถ่ายโอนอัตโนมัติจะลดลง",
+  "autoswapMaxBalanceInfoText": "เมื่อยอดคงเหลือในกระเป๋าเงินเกินสองเท่าของจำนวนนี้ Auto Swap จะทำงานเพื่อลดยอดคงเหลือให้เหลือเท่ากับระดับนี้",
   "@autoswapMaxBalanceInfoText": {
     "description": "Help text explaining how the max balance threshold works"
   },
@@ -5056,7 +5056,7 @@
   "@importQrDeviceSpecterStep4": {
     "description": "Specter instruction step 4"
   },
-  "coreSwapsChainPending": "ถ่ายโอนไม่ได้เริ่มต้น.",
+  "coreSwapsChainPending": "Swap ยังไม่ได้เริ่มต้น",
   "@coreSwapsChainPending": {
     "description": "Status message for pending chain swap"
   },
@@ -5191,7 +5191,7 @@
   "@connectHardwareWalletJade": {
     "description": "Blockstream Jade hardware wallet option"
   },
-  "coreSwapsChainRefundable": "การโอนเงินพร้อมคืน.",
+  "coreSwapsChainRefundable": "Swap พร้อมคืนเงินแล้ว",
   "@coreSwapsChainRefundable": {
     "description": "Status message for refundable chain swap"
   },
@@ -5203,7 +5203,7 @@
   "@transactionFeesTotalDeducted": {
     "description": "Fee deduction explanation for sending swaps"
   },
-  "autoswapMaxFee": "ค่าบริการสูงสุด",
+  "autoswapMaxFee": "ค่าธรรมเนียม Swap สูงสุด",
   "@autoswapMaxFee": {
     "description": "Field label for max fee threshold"
   },
@@ -5382,7 +5382,7 @@
   "@kruxStep13": {
     "description": "Krux instruction to return to app"
   },
-  "transactionSwapInfoRefundableTransfer": "การโอนเงินนี้จะถูกคืนเงินภายในไม่กี่วินาที หากไม่สามารถพยายามคืนเงินด้วยตนเองโดยคลิกที่ \"คืนค่าการโอนเงิน\".",
+  "transactionSwapInfoRefundableTransfer": "Swap นี้จะได้รับการคืนเงินโดยอัตโนมัติภายในไม่กี่วินาที หากไม่สำเร็จ คุณสามารถลองขอคืนเงินด้วยตนเองได้โดยกดปุ่ม\"ลองคืนเงิน Swap อีกครั้ง\"",
   "@transactionSwapInfoRefundableTransfer": {
     "description": "Additional info for refundable transfers"
   },
@@ -5415,7 +5415,7 @@
   "@receiveBoltzSwapFee": {
     "description": "Label for the Boltz swap service fee in a receive transaction"
   },
-  "swapInfoBanner": "โอน Bitcoin ได้อย่างราบรื่นระหว่างกระเป๋าสตางค์ของคุณ มีเงินในการชําระเงินทันทีสําหรับวัน.",
+  "swapInfoBanner": "Swap Bitcoin ระหว่างกระเป๋าเงินของคุณได้อย่างราบรื่น เก็บเงินไว้ในกระเป๋าเงินชำระเงินทันทีเฉพาะสำหรับการใช้จ่ายประจำวันเท่านั้น",
   "@swapInfoBanner": {
     "description": "Info banner on swap amount screen"
   },
@@ -5511,7 +5511,7 @@
   "@dcaWalletLightningSubtitle": {
     "description": "Subtitle/description for Lightning wallet option"
   },
-  "swapTransferRefundInProgressMessage": "มีข้อผิดพลาดกับการถ่ายโอน การคืนเงินของคุณอยู่ในความคืบหน้า.",
+  "swapTransferRefundInProgressMessage": "เกิดข้อผิดพลาดกับ Swap กำลังดำเนินการคืนเงินให้คุณ",
   "@swapTransferRefundInProgressMessage": {
     "description": "Message during refund process"
   },
@@ -5785,7 +5785,7 @@
   "@confirmButtonLabel": {
     "description": "Button label to confirm and execute the transaction"
   },
-  "autoswapMaxFeeInfo": "หากโอนค่าธรรมเนียมรวมข้างต้นกําหนดอัตราอัตโนมัติจะถูกบล็อก",
+  "autoswapMaxFeeInfo": "หากค่าธรรมเนียม Swap รวมสูงกว่าเปอร์เซ็นต์ที่ตั้งไว้ Auto Swap จะถูกบล็อก",
   "@autoswapMaxFeeInfo": {
     "description": "Info tooltip for max fee field"
   },
@@ -5793,7 +5793,7 @@
   "@importQrDevicePassportStep9": {
     "description": "Passport instruction step 9"
   },
-  "swapProgressRefundedMessage": "การโอนเงินได้รับการคืนเงิน.",
+  "swapProgressRefundedMessage": "คืนเงิน Swap เรียบร้อยแล้ว",
   "@swapProgressRefundedMessage": {
     "description": "Refunded transfer message"
   },
@@ -5801,7 +5801,7 @@
   "@sendEconomyFee": {
     "description": "Lowest fee tier"
   },
-  "coreSwapsChainFailed": "โอน.",
+  "coreSwapsChainFailed": "Swap ล้มเหลว",
   "@coreSwapsChainFailed": {
     "description": "Status message for failed chain swap"
   },
@@ -5891,7 +5891,7 @@
   "@sellCopBalance": {
     "description": "Display text for COP balance payout method"
   },
-  "receiveTransferFee": "ค่าธรรมเนียม",
+  "receiveTransferFee": "ค่าธรรมเนียม Swap",
   "@receiveTransferFee": {
     "description": "Label for the transfer fee in a receive transaction"
   },
@@ -5915,11 +5915,11 @@
   "@importQrDeviceSuccess": {
     "description": "Success message after import"
   },
-  "autoswapEnable": "เปิดใช้งานการถ่ายโอนข้อมูลอัตโนมัติ",
+  "autoswapEnable": "เปิดใช้งาน Auto Swap",
   "@autoswapEnable": {
     "description": "Toggle label to enable auto transfer"
   },
-  "transactionStatusTransferCompleted": "การโอนเงิน",
+  "transactionStatusTransferCompleted": "Swap เสร็จสมบูรณ์",
   "@transactionStatusTransferCompleted": {
     "description": "Status label for completed transfers"
   },
@@ -6053,7 +6053,7 @@
   "@exportVaultButton": {
     "description": "Button label to export vault"
   },
-  "coreSwapsChainPaid": "รอให้ผู้ให้บริการการชําระเงินเพื่อรับการยืนยัน นี้อาจใช้เวลาในขณะที่เสร็จสมบูรณ์.",
+  "coreSwapsChainPaid": "กำลังรอการยืนยันการชำระเงินจากผู้ให้บริการ Swap ซึ่งอาจใช้เวลาสักครู่",
   "@coreSwapsChainPaid": {
     "description": "Status message for paid chain swap"
   },
@@ -6115,7 +6115,7 @@
   "@exchangeFileUploadAddMoreFiles": {
     "description": "Button label to add more files"
   },
-  "transactionSwapDescChainDefault": "การถ่ายโอนของคุณอยู่ในความคืบหน้า กระบวนการนี้ใช้โดยอัตโนมัติและอาจใช้เวลา.",
+  "transactionSwapDescChainDefault": "Swap ของคุณกำลังดำเนินการ ขั้นตอนนี้เป็นแบบอัตโนมัติและอาจใช้เวลาสักครู่จึงจะเสร็จสมบูรณ์",
   "@transactionSwapDescChainDefault": {
     "description": "Default description for chain swap"
   },
@@ -6123,7 +6123,7 @@
   "@onboardingBullBitcoin": {
     "description": "Brand name displayed in onboarding"
   },
-  "coreSwapsChainClaimable": "โอนเงินได้.",
+  "coreSwapsChainClaimable": "Swap พร้อมให้เคลมแล้ว",
   "@coreSwapsChainClaimable": {
     "description": "Status message for claimable chain swap"
   },
@@ -6272,7 +6272,7 @@
   "@backupWalletGoogleDrivePrivacyMessage4": {
     "description": "Fourth part of privacy message (bold)"
   },
-  "swapTransferCompletedTitle": "การโอนเงิน",
+  "swapTransferCompletedTitle": "Swap เสร็จสมบูรณ์",
   "@swapTransferCompletedTitle": {
     "description": "Title when swap completes successfully"
   },
@@ -6450,7 +6450,7 @@
   "@buyUpgradeKYC": {
     "description": "Button to increase verification tier"
   },
-  "autoswapEnableToggleLabel": "เปิดใช้งานการถ่ายโอนข้อมูลอัตโนมัติ",
+  "autoswapEnableToggleLabel": "เปิดใช้งาน Auto Swap",
   "@autoswapEnableToggleLabel": {
     "description": "Label for the main toggle switch to enable/disable auto transfer feature"
   },
@@ -6680,7 +6680,7 @@
   "@buyInsufficientBalanceTitle": {
     "description": "Title for insufficient balance error"
   },
-  "swapProgressPending": "โอน",
+  "swapProgressPending": "Swap รอดำเนินการ",
   "@swapProgressPending": {
     "description": "Pending transfer status"
   },
@@ -6847,7 +6847,7 @@
   "@keystoneStep7": {
     "description": "Keystone troubleshooting tip 3"
   },
-  "coreSwapsChainExpired": "วันหมดอายุ",
+  "coreSwapsChainExpired": "Swap หมดอายุ",
   "@coreSwapsChainExpired": {
     "description": "Status message for expired chain swap"
   },
@@ -7096,7 +7096,7 @@
   "@payWalletNotSynced": {
     "description": "Error when wallet sync is incomplete"
   },
-  "transactionSwapInfoChainDelay": "การโอนเงินอาจใช้เวลาบางอย่างเนื่องจากการยืนยัน blockchain.",
+  "transactionSwapInfoChainDelay": "Swap ออนเชนอาจใช้เวลาสักครู่จึงจะเสร็จสมบูรณ์ เนื่องจากเวลาในการยืนยันของบล็อกเชน",
   "@transactionSwapInfoChainDelay": {
     "description": "Additional info about chain transfer delays"
   },
@@ -7208,7 +7208,7 @@
   "@psbtInstructions": {
     "description": "Button text to show device-specific signing instructions"
   },
-  "swapProgressCompletedMessage": "ดูคุณรอ! การถ่ายโอนเสร็จสมบูรณ์.",
+  "swapProgressCompletedMessage": "ว้าว คุณรอจนเสร็จ! Swap เสร็จสมบูรณ์เรียบร้อยแล้ว",
   "@swapProgressCompletedMessage": {
     "description": "Completed transfer message"
   },
@@ -7216,7 +7216,7 @@
   "@sellCalculating": {
     "description": "Text shown while calculating fees"
   },
-  "swapInternalTransferTitle": "โอนภายใน",
+  "swapInternalTransferTitle": "Swap ภายใน",
   "@swapInternalTransferTitle": {
     "description": "AppBar title on the amount entry page"
   },
@@ -7501,7 +7501,7 @@
   "@electrumAddFailedError": {
     "description": "Error message when adding custom server fails"
   },
-  "transactionDetailLabelTransferFees": "ค่าธรรมเนียม",
+  "transactionDetailLabelTransferFees": "ค่าธรรมเนียม Swap",
   "@transactionDetailLabelTransferFees": {
     "description": "Label for transfer fees"
   },
@@ -7745,7 +7745,7 @@
   "@swapMaxButton": {
     "description": "Button to use maximum available balance"
   },
-  "transactionSwapStatusTransferStatus": "การโอนเงิน",
+  "transactionSwapStatusTransferStatus": "สถานะ Swap",
   "@transactionSwapStatusTransferStatus": {
     "description": "Header for transfer status section"
   },
@@ -7871,7 +7871,7 @@
   "@ledgerWalletTypeSelectTitle": {
     "description": "Title for wallet type selection modal"
   },
-  "swapTransferCompletedMessage": "ดูคุณรอ! ถ่ายโอนได้เสร็จสิ้น.",
+  "swapTransferCompletedMessage": "ว้าว คุณรอจนเสร็จ! Swap เสร็จสมบูรณ์เรียบร้อยแล้ว",
   "@swapTransferCompletedMessage": {
     "description": "Success message after transfer completion"
   },
@@ -8366,7 +8366,7 @@
   "@systemLabelSelfSpend": {
     "description": "System label for self-spend transactions"
   },
-  "swapProgressRefundMessage": "มีข้อผิดพลาดกับการถ่ายโอน การคืนเงินของคุณอยู่ในความคืบหน้า.",
+  "swapProgressRefundMessage": "เกิดข้อผิดพลาดกับ Swap กำลังดำเนินการคืนเงินให้คุณ",
   "@swapProgressRefundMessage": {
     "description": "Refund in progress message"
   },
@@ -8495,7 +8495,7 @@
   "@fundExchangeLabelIban": {
     "description": "Label for IBAN account number field"
   },
-  "swapDoNotUninstallWarning": "อย่าถอนการติดตั้งแอปจนกว่าจะโอนเสร็จสมบูรณ์!",
+  "swapDoNotUninstallWarning": "อย่าถอนการติดตั้งแอปจนกว่า Swap จะเสร็จสมบูรณ์!",
   "@swapDoNotUninstallWarning": {
     "description": "Warning message during pending transfer"
   },
@@ -8658,7 +8658,7 @@
   "@bitboxErrorConnectionTypeNotInitialized": {
     "description": "Error when connection type is not initialized"
   },
-  "transactionListOngoingTransfersDescription": "การโอนเงินเหล่านี้อยู่ในความคืบหน้า เงินทุนของคุณมีความปลอดภัยและสามารถใช้งานได้เมื่อโอน.",
+  "transactionListOngoingTransfersDescription": "Swap เหล่านี้กำลังดำเนินการอยู่ เงินของคุณปลอดภัยและจะพร้อมใช้งานเมื่อ Swap เสร็จสมบูรณ์",
   "@transactionListOngoingTransfersDescription": {
     "description": "Description for ongoing transfers section"
   },
@@ -8686,7 +8686,7 @@
   "@paySwapFailed": {
     "description": "Error message when swap fails"
   },
-  "autoswapMaxFeeLabel": "ค่าบริการสูงสุด",
+  "autoswapMaxFeeLabel": "ค่าธรรมเนียม Swap สูงสุด",
   "@autoswapMaxFeeLabel": {
     "description": "Label for fee threshold percentage input field"
   },
@@ -8784,7 +8784,7 @@
   "@bitboxActionSignTransactionSuccessSubtext": {
     "description": "Success subtext for sign transaction"
   },
-  "transactionStatusTransferExpired": "วันหมดอายุ",
+  "transactionStatusTransferExpired": "Swap หมดอายุ",
   "@transactionStatusTransferExpired": {
     "description": "Status label for expired transfers"
   },
@@ -8846,7 +8846,7 @@
   "@settingsScreenTitle": {
     "description": "The title of the settings screen"
   },
-  "transactionDetailLabelTransferFee": "ค่าธรรมเนียม",
+  "transactionDetailLabelTransferFee": "ค่าธรรมเนียม Swap",
   "@transactionDetailLabelTransferFee": {
     "description": "Label for transfer fee (Boltz fee)"
   },
@@ -8939,7 +8939,7 @@
   "@fundExchangeCrIbanUsdDescriptionEnd": {
     "description": "End of description for CR IBAN USD transfer"
   },
-  "swapProgressTitle": "โอนภายใน",
+  "swapProgressTitle": "Swap ภายใน",
   "@swapProgressTitle": {
     "description": "AppBar title for swap progress screen"
   },
@@ -9009,7 +9009,7 @@
   "@backupWalletImportanceWarning": {
     "description": "Warning message emphasizing the importance of creating a backup"
   },
-  "autoswapMaxFeeInfoText": "หากโอนค่าธรรมเนียมรวมข้างต้นกําหนดอัตราอัตโนมัติจะถูกบล็อก",
+  "autoswapMaxFeeInfoText": "หากค่าธรรมเนียม Swap รวมสูงกว่าเปอร์เซ็นต์ที่ตั้งไว้ Auto Swap จะถูกบล็อก",
   "@autoswapMaxFeeInfoText": {
     "description": "Help text explaining how the max fee threshold works"
   },
@@ -9098,7 +9098,7 @@
   "@fundExchangeCrIbanCrcLabelRecipientName": {
     "description": "Label for recipient name in CR IBAN CRC transfer"
   },
-  "swapTransferPendingTitle": "โอน",
+  "swapTransferPendingTitle": "Swap รอดำเนินการ",
   "@swapTransferPendingTitle": {
     "description": "Title during pending swap status"
   },
@@ -9207,7 +9207,7 @@
   "@sellSendPaymentPayoutRecipient": {
     "description": "Field label for payout recipient"
   },
-  "swapInfoDescription": "โอน Bitcoin ได้อย่างราบรื่นระหว่างกระเป๋าสตางค์ของคุณ มีเงินในการชําระเงินทันทีสําหรับวัน.",
+  "swapInfoDescription": "Swap Bitcoin ระหว่างกระเป๋าเงินของคุณได้อย่างราบรื่น เก็บเงินไว้ในกระเป๋าเงินชำระเงินทันทีเฉพาะสำหรับการใช้จ่ายประจำวันเท่านั้น",
   "@swapInfoDescription": {
     "description": "Information banner text on amount page"
   },
@@ -9386,7 +9386,7 @@
   "@autoswapRecipientWalletLabel": {
     "description": "Label for wallet selection dropdown"
   },
-  "coreScreensConfirmTransfer": "ยืนยันการโอนเงิน",
+  "coreScreensConfirmTransfer": "ยืนยัน Swap",
   "@coreScreensConfirmTransfer": {
     "description": "Title for confirm transfer action"
   },
@@ -9443,7 +9443,7 @@
   "@bitcoinSettingsBip85EntropiesTitle": {
     "description": "Title for the BIP85 deterministic entropies section in Bitcoin settings"
   },
-  "swapTransferAmount": "การโอนเงิน",
+  "swapTransferAmount": "จำนวนเงินที่Swap",
   "@swapTransferAmount": {
     "description": "Label for amount input field"
   },
@@ -9605,7 +9605,7 @@
   "@sendSwapAmount": {
     "description": "Label for amount being swapped"
   },
-  "autoswapTitle": "การตั้งค่าอัตโนมัติ",
+  "autoswapTitle": "การตั้งค่า Auto Swap",
   "@autoswapTitle": {
     "description": "Header title for auto transfer settings bottom sheet"
   },
@@ -9638,7 +9638,7 @@
   "@receiveLiquidNetwork": {
     "description": "Liquid Network option"
   },
-  "autoswapSettingsTitle": "การตั้งค่าอัตโนมัติ",
+  "autoswapSettingsTitle": "การตั้งค่า Auto Swap",
   "@autoswapSettingsTitle": {
     "description": "Main header/title of the auto swap settings bottom sheet"
   },
@@ -9853,7 +9853,7 @@
   "@transactionSwapDescLnReceiveClaimable": {
     "description": "Description for claimable Lightning receive swap"
   },
-  "swapProgressPendingMessage": "ถ่ายโอนในความคืบหน้า การทําธุรกรรม Bitcoin สามารถฝากเงินได้ คุณสามารถคืนบ้านและรอ.",
+  "swapProgressPendingMessage": "Swap กำลังดำเนินการ ธุรกรรม Bitcoin อาจใช้เวลายืนยันสักครู่ คุณสามารถกลับไปหน้าหลักแล้วรอได้",
   "@swapProgressPendingMessage": {
     "description": "Pending transfer message"
   },
@@ -9974,7 +9974,7 @@
   "@backupSettingsEncryptedVault": {
     "description": "Label for encrypted vault backup status row"
   },
-  "autoswapAlwaysBlockInfoDisabled": "เมื่อปิดการใช้งาน, คุณจะได้รับตัวเลือกที่จะอนุญาตให้อนุญาตให้โอนอัตโนมัติเนื่องจากค่าธรรมเนียมสูง",
+  "autoswapAlwaysBlockInfoDisabled": "เมื่อปิดใช้งาน คุณจะได้รับตัวเลือกให้อนุญาต Auto Swap ที่ถูกบล็อกเนื่องจากค่าธรรมเนียมสูง",
   "@autoswapAlwaysBlockInfoDisabled": {
     "description": "Help text when always block is disabled"
   },
@@ -10163,7 +10163,7 @@
       }
     }
   },
-  "swapProgressRefunded": "การโอนเงิน",
+  "swapProgressRefunded": "คืนเงิน Swap แล้ว",
   "@swapProgressRefunded": {
     "description": "Refunded transfer status"
   },
@@ -10331,7 +10331,7 @@
   "wizardJourneyTip2": "ลองสำรองข้อมูลห้องนิรภัยที่เข้ารหัส",
   "wizardJourneyTip3": "เชื่อมต่อกับโหนด Bitcoin ของคุณเอง",
   "wizardJourneyTip4": "เชื่อมต่อกับเอ็กซ์พลอเรอร์ Mempool ของคุณเอง",
-  "wizardJourneyTip5": "โอนระหว่าง Bitcoin และ Liquid โดยไม่ต้องทำ KYC",
+  "wizardJourneyTip5": "Swap ระหว่าง Bitcoin และ Liquid โดยไม่ต้อง KYC",
   "wizardJourneyTip6": "ปรับแต่งการตั้งค่า autoswap ของคุณ",
   "wizardJourneyTip7": "สลับระหว่าง Bitcoin (BTC) และ Satoshis (sats)",
   "wizardJourneyTip8": "สร้างธุรกรรม air-gap สำหรับกระเป๋าเงินฮาร์ดแวร์ของคุณ",
@@ -10379,7 +10379,7 @@
   "homeActionBuy": "ซื้อ",
   "homeActionSell": "ขาย",
   "homeActionPay": "จ่าย",
-  "homeActionTransfer": "โอน",
+  "homeActionTransfer": "Swap",
   "backupCardTitle": "ปกป้องบิตคอยน์ของคุณ",
   "backupCardSubtitle": "สำรองข้อมูลกระเป๋าเงินของคุณตอนนี้",
   "mempoolCustomServerNoSsl": "ไม่มี SSL",
@@ -11284,9 +11284,13 @@
   "sellPayoutSepaDescription": "รายการถอนจะแสดงว่าผู้ส่งคือ Leonod",
   "sellPayoutTitle": "เลือกผู้รับเงิน",
   "sellPayoutNewBadge": "ใหม่",
+  "coreScreensOutputsExceedInputs": "เอาต์พุตมากกว่าอินพุต: ธุรกรรมนี้ไม่ถูกต้องและเครือข่ายจะปฏิเสธ",
+  "swapUnderReviewTitle": "Swap อยู่ระหว่างการตรวจสอบ",
+  "swapUnderReviewDescription": "Swap นี้ต้องได้รับการตรวจสอบด้วยตนเอง โปรดติดต่อฝ่ายสนับสนุนเพื่อขอความช่วยเหลือ หากคุณยังไม่มีบัญชีฝ่ายสนับสนุน เพียงสร้างบัญชีขึ้นมา โดยไม่จำเป็นต้องทำ KYC",
+  "swapUnderReviewSupportMessage": "Swap อยู่ระหว่างการตรวจสอบ\nOrder ID: {orderId}\nRequest ID: {requestId}\nหมายเลขคำสั่งซื้อ: {orderNumber}",
+  "bitcoinSettingsAutoTransferTitle": "Auto Swap",
   "broadcastSignedTxErrorAlreadyInChain": "ธุรกรรมนี้อยู่ในบล็อกเชนแล้ว ไม่มีอะไรต้องเผยแพร่อีก",
   "broadcastSignedTxErrorRejected": "เครือข่ายปฏิเสธธุรกรรมนี้ ธุรกรรมอาจลงนามไม่ครบ ไม่ถูกต้อง หรือขัดแย้งกับการชำระเงินอื่น",
   "broadcastSignedTxErrorOutcomeUnknown": "ไม่สามารถยืนยันได้ว่าธุรกรรมของคุณถูกเผยแพร่แล้ว โปรดตรวจสอบใน Block Explorer ก่อนลองอีกครั้ง",
-  "broadcastSignedTxErrorNetworkNotEnabled": "การเผยแพร่บนเครือข่ายนี้ไม่ได้เปิดใช้งานในการตั้งค่าปัจจุบัน",
-  "coreScreensOutputsExceedInputs": "เอาต์พุตมากกว่าอินพุต: ธุรกรรมนี้ไม่ถูกต้องและเครือข่ายจะปฏิเสธ"
+  "broadcastSignedTxErrorNetworkNotEnabled": "การเผยแพร่บนเครือข่ายนี้ไม่ได้เปิดใช้งานในการตั้งค่าปัจจุบัน"
 }
