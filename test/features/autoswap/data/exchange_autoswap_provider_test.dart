@@ -293,7 +293,7 @@ void main() {
         environment: OrderSwapEnvironment.testnet,
         sourceWalletId: 'liquid-wallet',
         destinationWalletId: 'bitcoin-wallet',
-        note: 'Auto-Transfer',
+        note: LabelSystem.autoSwap.label,
         quotedCounterpartAmountSat: any(named: 'quotedCounterpartAmountSat'),
       ),
     ).thenAnswer((_) async => Ok(record));
@@ -335,7 +335,7 @@ void main() {
           id: 1,
           transactionId: 'txid',
           origin: 'liquid-wallet',
-          label: 'Auto-Transfer',
+          label: LabelSystem.autoSwap.label,
         ),
       ),
     );
@@ -388,7 +388,7 @@ void main() {
           id: 1,
           transactionId: 'txid',
           origin: 'liquid-wallet',
-          label: 'Auto-Transfer',
+          label: LabelSystem.autoSwap.label,
         ),
       ),
     );
@@ -486,7 +486,7 @@ void main() {
           id: 1,
           transactionId: 'txid',
           origin: 'liquid-wallet',
-          label: 'Auto-Transfer',
+          label: LabelSystem.autoSwap.label,
         ),
       ),
     );
@@ -618,7 +618,7 @@ void main() {
           environment: OrderSwapEnvironment.testnet,
           sourceWalletId: 'liquid-wallet',
           destinationWalletId: 'bitcoin-wallet',
-          note: 'Auto-Transfer',
+          note: LabelSystem.autoSwap.label,
           quotedCounterpartAmountSat: any(named: 'quotedCounterpartAmountSat'),
         ),
       ).thenAnswer((_) async => remaining.removeAt(0));
@@ -650,7 +650,7 @@ void main() {
           environment: OrderSwapEnvironment.testnet,
           sourceWalletId: 'liquid-wallet',
           destinationWalletId: 'bitcoin-wallet',
-          note: 'Auto-Transfer',
+          note: LabelSystem.autoSwap.label,
           quotedCounterpartAmountSat: any(named: 'quotedCounterpartAmountSat'),
         ),
       ).called(2);
@@ -694,7 +694,7 @@ void main() {
           environment: OrderSwapEnvironment.testnet,
           sourceWalletId: 'liquid-wallet',
           destinationWalletId: 'bitcoin-wallet',
-          note: 'Auto-Transfer',
+          note: LabelSystem.autoSwap.label,
           quotedCounterpartAmountSat: any(named: 'quotedCounterpartAmountSat'),
         ),
       ).called(1);
@@ -718,7 +718,7 @@ void main() {
           environment: OrderSwapEnvironment.testnet,
           sourceWalletId: 'liquid-wallet',
           destinationWalletId: 'bitcoin-wallet',
-          note: 'Auto-Transfer',
+          note: LabelSystem.autoSwap.label,
           quotedCounterpartAmountSat: any(named: 'quotedCounterpartAmountSat'),
         ),
       ).called(1);

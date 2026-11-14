@@ -10,10 +10,8 @@ class LabelText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    String displayLabel = label;
-    if (LabelSystem.isSystemLabel(label)) {
-      displayLabel = LabelSystem.fromLabel(label).toTranslatedLabel(context);
-    }
+    final system = LabelSystem.displayedAs(label);
+    final displayLabel = system?.toTranslatedLabel(context) ?? label;
     return LayoutBuilder(
       builder: (context, constraints) {
         final textPainter = TextPainter(
