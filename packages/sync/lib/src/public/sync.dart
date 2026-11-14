@@ -226,9 +226,15 @@ final class Wallet {
   /// Loads every value at the latest committed revision, from local stores
   /// only (no network; see sync for that), and returns the revision
   /// published. A busy writer can leave it stale: the values then say so.
+  /// The freezes are read too when none are known yet, so coins are ready,
+  /// or unavailable with the reason, once this returns.
   @useResult
-  Future<Result<WalletRevision, SyncFailure>> load() =>
-      _projections.load(key, generation);
+  Future<Result<WalletRevision, SyncFailure>> load() async {
+    final loaded = await _projections.load(key, generation);
+    final freezes = _projections.freezes;
+    if (freezes.snapshot == null) await freezes.read();
+    return loaded;
+  }
 
   /// The exact ownership index at the latest committed revision: scripts and
   /// outpoints, spent ones included. Busy when only an older revision or a
