@@ -3,8 +3,6 @@
 /// listed here uses them, and when a listed file no longer does: entries are
 /// only ever removed, never added or renamed into a wider power.
 const nativeImportAllowlist = <String>{
-  'lib/features/electrum_settings/data/server_status_adapter.dart',
-  'lib/features/fees/data/regtest_fees_datasource.dart',
   'lib/features/replace_by_fee/domain/bump_fee_usecase.dart',
   'lib/features/wallet/data/bdk_wallet_datasource.dart',
   'lib/features/wallet/data/lwk_wallet_datasource.dart',
