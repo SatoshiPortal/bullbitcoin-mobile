@@ -12,7 +12,7 @@ import 'package:meta/meta.dart';
 
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/features/wallet/data/bdk_wallet_datasource.dart';
-import 'package:bb_mobile/core/wallet/data/datasources/frozen_wallet_utxo_datasource.dart';
+import 'package:bb_mobile/features/wallet/data/sync_freezes_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/mappers/wallet_utxo_mapper.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
@@ -37,7 +37,7 @@ class BitcoinWalletRepository implements BitcoinSendPort {
   _requireSpend;
   final BdkWalletDatasource _bdkWallet;
   final SyncWalletValuesDatasource _values;
-  final FrozenWalletUtxoDatasource _frozenUtxos;
+  final SyncFreezesDatasource _frozenUtxos;
 
   BitcoinWalletRepository({
     required this._walletMetadataDatasource,
@@ -45,10 +45,10 @@ class BitcoinWalletRepository implements BitcoinSendPort {
     required this._requireSpend,
     required BdkWalletDatasource bdkWalletDatasource,
     required SyncWalletValuesDatasource walletValuesDatasource,
-    required FrozenWalletUtxoDatasource frozenWalletUtxoDatasource,
+    required SyncFreezesDatasource freezesDatasource,
   }) : _bdkWallet = bdkWalletDatasource,
        _values = walletValuesDatasource,
-       _frozenUtxos = frozenWalletUtxoDatasource;
+       _frozenUtxos = freezesDatasource;
 
   @override
   @useResult
@@ -108,7 +108,7 @@ class BitcoinWalletRepository implements BitcoinSendPort {
       //    exclusion list at all;
       //  * used to strip `selected`, so a frozen coin can't be forced in
       //    as a mandatory input either (the addUtxos override above).
-      final frozenRows = await _frozenUtxos.getAllFrozen();
+      final frozenRows = await _frozenUtxos.getFrozenOutpoints();
       final unspendableKeys = {
         for (final row in frozenRows) '${row.txId}:${row.vout}',
         for (final outpoint

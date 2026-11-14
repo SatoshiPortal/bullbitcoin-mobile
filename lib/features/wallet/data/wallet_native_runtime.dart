@@ -391,6 +391,9 @@ final class WalletNativeRuntime implements WalletNativeLifecycle {
     return wallet;
   }
 
+  /// The foreground [Sync], for freezes. Opens it on first use.
+  Future<Sync> foreground() async => (await _services).sync;
+
   /// Builders only, until spends move into sync.
   Future<bdk.Wallet> bitcoin(WalletModel model) async =>
       _borrow<bdk.Wallet>(model);

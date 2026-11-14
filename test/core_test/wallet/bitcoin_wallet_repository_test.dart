@@ -35,7 +35,7 @@ import 'package:secrets/secrets.dart';
 import 'package:secrets/testing.dart';
 import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart';
 import 'package:bb_mobile/features/wallet/data/bdk_wallet_datasource.dart';
-import 'package:bb_mobile/core/wallet/data/datasources/frozen_wallet_utxo_datasource.dart';
+import 'package:bb_mobile/features/wallet/data/sync_freezes_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_model.dart';
@@ -54,7 +54,7 @@ class _MockBdkWalletDatasource extends Mock implements BdkWalletDatasource {}
 class _MockValues extends Mock implements SyncWalletValuesDatasource {}
 
 class _MockFrozenWalletUtxoDatasource extends Mock
-    implements FrozenWalletUtxoDatasource {}
+    implements SyncFreezesDatasource {}
 
 // Encodes as a bitcoin testnet BIP84 origin so
 // WalletMetadataModelExtension.isBitcoin decodes to true.
@@ -128,14 +128,16 @@ void main() {
       secrets: Secrets(scratchDirectory: () async => '/tmp'),
       bdkWalletDatasource: bdkDatasource,
       walletValuesDatasource: values,
-      frozenWalletUtxoDatasource: frozenDatasource,
+      freezesDatasource: frozenDatasource,
     );
 
     when(
       () => metadataDatasource.fetch(_walletId),
     ).thenAnswer((_) async => metadata);
     // Frozen store is empty by default; individual tests override it.
-    when(() => frozenDatasource.getAllFrozen()).thenAnswer((_) async => []);
+    when(
+      () => frozenDatasource.getFrozenOutpoints(),
+    ).thenAnswer((_) async => {});
     when(
       () => bdkDatasource.buildPsbt(
         wallet: any(named: 'wallet'),
@@ -241,9 +243,9 @@ void main() {
   group('D7 — frozen store is read live at build time', () {
     test('a coin frozen in the store rejects the selection even when '
         'the caller passes NO unspendable list', () async {
-      when(() => frozenDatasource.getAllFrozen()).thenAnswer(
-        (_) async => [(walletId: _walletId, txId: 'tx-frozen', vout: 0)],
-      );
+      when(
+        () => frozenDatasource.getFrozenOutpoints(),
+      ).thenAnswer((_) async => {(txId: 'tx-frozen', vout: 0)});
 
       await expectLater(
         buildPsbt(
@@ -274,9 +276,9 @@ void main() {
 
     test('frozen outpoints are merged into the unspendable list passed down, '
         'so automatic selection cannot pick them either', () async {
-      when(() => frozenDatasource.getAllFrozen()).thenAnswer(
-        (_) async => [(walletId: _walletId, txId: 'tx-frozen', vout: 0)],
-      );
+      when(
+        () => frozenDatasource.getFrozenOutpoints(),
+      ).thenAnswer((_) async => {(txId: 'tx-frozen', vout: 0)});
 
       await buildPsbt(unspendable: const [(txId: 'tx-caller', vout: 3)]);
 
@@ -294,9 +296,9 @@ void main() {
     test(
       'duplicate outpoints (frozen AND caller-supplied) are deduped',
       () async {
-        when(() => frozenDatasource.getAllFrozen()).thenAnswer(
-          (_) async => [(walletId: _walletId, txId: 'tx-both', vout: 0)],
-        );
+        when(
+          () => frozenDatasource.getFrozenOutpoints(),
+        ).thenAnswer((_) async => {(txId: 'tx-both', vout: 0)});
 
         await buildPsbt(unspendable: const [(txId: 'tx-both', vout: 0)]);
 
@@ -350,9 +352,9 @@ void main() {
     });
 
     test('selected-only build rejects a live-frozen selected coin', () async {
-      when(() => frozenDatasource.getAllFrozen()).thenAnswer(
-        (_) async => [(walletId: _walletId, txId: 'tx-frozen', vout: 0)],
-      );
+      when(
+        () => frozenDatasource.getFrozenOutpoints(),
+      ).thenAnswer((_) async => {(txId: 'tx-frozen', vout: 0)});
 
       await expectLater(
         buildPsbt(

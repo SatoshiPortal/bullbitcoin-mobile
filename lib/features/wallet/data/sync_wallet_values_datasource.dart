@@ -57,6 +57,15 @@ class SyncWalletValuesDatasource {
     for (final coin in _data((await _wallet(wallet)).coins.now)) _utxo(coin),
   ];
 
+  /// The coins with their frozen state, as sync publishes them. Throws
+  /// while the freezes are unknown: a coin never reads as unfrozen.
+  Future<List<({WalletUtxoModel model, bool frozen})>> getCoins({
+    required WalletModel wallet,
+  }) async => [
+    for (final coin in _data((await _wallet(wallet)).coins.now))
+      (model: _utxo(coin), frozen: coin.frozen),
+  ];
+
   /// Number of L-BTC coins, the count that matters for LWK's input limit.
   Future<int> getLbtcUtxoCount({required WalletModel wallet}) async =>
       _data((await _wallet(wallet)).coins.now).length;

@@ -9,7 +9,7 @@ import 'package:secrets/testing.dart';
 import 'package:primitives/primitives.dart' hide Network;
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart';
-import 'package:bb_mobile/core/wallet/data/datasources/frozen_wallet_utxo_datasource.dart';
+import 'package:bb_mobile/features/wallet/data/sync_freezes_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/lwk_wallet_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
@@ -27,8 +27,7 @@ class _MockLwkDatasource extends Mock implements LwkWalletDatasource {}
 
 class _MockValues extends Mock implements SyncWalletValuesDatasource {}
 
-class _MockFrozenDatasource extends Mock
-    implements FrozenWalletUtxoDatasource {}
+class _MockFrozenDatasource extends Mock implements SyncFreezesDatasource {}
 
 void main() {
   const walletId = 'elwpkh([73c5da0a/84h/1h/0h])';
@@ -65,7 +64,7 @@ void main() {
       secrets: Secrets(scratchDirectory: () async => scratch.path),
       lwkWalletDatasource: lwk,
       walletValuesDatasource: values,
-      frozenWalletUtxoDatasource: frozen,
+      freezesDatasource: frozen,
       // The address check needs lwk's native library; these tests cover
       // selection, so they accept every address.
       validateAddress: (_, _) async => const Ok(null),
@@ -85,7 +84,7 @@ void main() {
         isDefault: false,
       ),
     );
-    when(() => frozen.getAllFrozen()).thenAnswer((_) async => []);
+    when(() => frozen.getFrozenOutpoints()).thenAnswer((_) async => {});
     when(() => values.getExactUtxos(wallet: any(named: 'wallet'))).thenAnswer(
       (_) async => [
         for (final coin in [first, second])
@@ -144,9 +143,9 @@ void main() {
   });
 
   test('excludes frozen coins from automatic sends', () async {
-    when(() => frozen.getAllFrozen()).thenAnswer(
-      (_) async => [(walletId: walletId, txId: first.txId, vout: first.vout)],
-    );
+    when(
+      () => frozen.getFrozenOutpoints(),
+    ).thenAnswer((_) async => {(txId: first.txId, vout: first.vout)});
     await build();
     expect(builtInputs(), {second});
   });
@@ -175,9 +174,9 @@ void main() {
   }
 
   test('rejects a selected coin frozen after it was selected', () async {
-    when(() => frozen.getAllFrozen()).thenAnswer(
-      (_) async => [(walletId: walletId, txId: first.txId, vout: first.vout)],
-    );
+    when(
+      () => frozen.getFrozenOutpoints(),
+    ).thenAnswer((_) async => {(txId: first.txId, vout: first.vout)});
     expect(
       (await build(selected: {first, second}) as Err<String, WalletFailure>)
           .failure,
@@ -186,9 +185,9 @@ void main() {
   });
 
   test('does not sign a PSET that spends a newly frozen coin', () async {
-    when(() => frozen.getAllFrozen()).thenAnswer(
-      (_) async => [(walletId: walletId, txId: first.txId, vout: first.vout)],
-    );
+    when(
+      () => frozen.getFrozenOutpoints(),
+    ).thenAnswer((_) async => {(txId: first.txId, vout: first.vout)});
     when(() => lwk.getPsetInputs('pset')).thenReturn({first});
     await expectLater(
       repository.signPset(pset: 'pset', walletId: walletId),
@@ -198,11 +197,10 @@ void main() {
   });
 
   test('rejects automatic sends when all coins are frozen', () async {
-    when(() => frozen.getAllFrozen()).thenAnswer(
-      (_) async => [
-        for (final coin in [first, second])
-          (walletId: walletId, txId: coin.txId, vout: coin.vout),
-      ],
+    when(() => frozen.getFrozenOutpoints()).thenAnswer(
+      (_) async => {
+        for (final coin in [first, second]) (txId: coin.txId, vout: coin.vout),
+      },
     );
     expect(
       (await build() as Err<String, WalletFailure>).failure,

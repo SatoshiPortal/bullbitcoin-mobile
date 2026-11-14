@@ -4,7 +4,7 @@ import 'package:secrets/secrets.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/features/wallet/data/bdk_wallet_datasource.dart';
-import 'package:bb_mobile/core/wallet/data/datasources/frozen_wallet_utxo_datasource.dart';
+import 'package:bb_mobile/features/wallet/data/sync_freezes_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/lwk_wallet_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/bitcoin_wallet_repository.dart';
@@ -37,8 +37,10 @@ class WalletLocator {
       () => WalletMetadataDatasource(sqlite: locator<SqliteDatabase>()),
     );
 
-    locator.registerLazySingleton<FrozenWalletUtxoDatasource>(
-      () => FrozenWalletUtxoDatasource(db: locator<SqliteDatabase>()),
+    locator.registerLazySingleton<SyncFreezesDatasource>(
+      () => SyncFreezesDatasource(
+        sync: () => locator<WalletNativeRuntime>().foreground(),
+      ),
     );
   }
 
@@ -50,7 +52,7 @@ class WalletLocator {
         bdkWalletDatasource: locator<BdkWalletDatasource>(),
         walletValuesDatasource: locator<SyncWalletValuesDatasource>(),
         secrets: locator<Secrets>(),
-        frozenWalletUtxoDatasource: locator<FrozenWalletUtxoDatasource>(),
+        freezesDatasource: locator<SyncFreezesDatasource>(),
       ),
     );
 
@@ -60,7 +62,7 @@ class WalletLocator {
         secrets: locator<Secrets>(),
         lwkWalletDatasource: locator<LwkWalletDatasource>(),
         walletValuesDatasource: locator<SyncWalletValuesDatasource>(),
-        frozenWalletUtxoDatasource: locator<FrozenWalletUtxoDatasource>(),
+        freezesDatasource: locator<SyncFreezesDatasource>(),
       ),
     );
 
@@ -68,7 +70,7 @@ class WalletLocator {
       () => WalletUtxoRepositoryImpl(
         walletMetadataDatasource: locator<WalletMetadataDatasource>(),
         walletValuesDatasource: locator<SyncWalletValuesDatasource>(),
-        frozenWalletUtxoDatasource: locator<FrozenWalletUtxoDatasource>(),
+        freezesDatasource: locator<SyncFreezesDatasource>(),
         labelsFacade: locator<LabelsFacade>(),
       ),
     );

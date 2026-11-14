@@ -8,7 +8,7 @@ import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart
 import 'package:bb_mobile/features/wallet/domain/network_x.dart';
 import 'package:secrets/secrets.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_model.dart';
-import 'package:bb_mobile/core/wallet/data/datasources/frozen_wallet_utxo_datasource.dart';
+import 'package:bb_mobile/features/wallet/data/sync_freezes_datasource.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:primitives/primitives.dart';
 import 'package:meta/meta.dart';
@@ -22,7 +22,7 @@ class LiquidWalletRepository implements LiquidSendPort {
   final Secrets _secrets;
   final LwkWalletDatasource _lwkWallet;
   final SyncWalletValuesDatasource _values;
-  final FrozenWalletUtxoDatasource _frozenWalletUtxoDatasource;
+  final SyncFreezesDatasource _freezes;
 
   final Future<Result<void, SyncFailure>> Function(
     String address,
@@ -35,11 +35,12 @@ class LiquidWalletRepository implements LiquidSendPort {
     required this._secrets,
     required LwkWalletDatasource lwkWalletDatasource,
     required SyncWalletValuesDatasource walletValuesDatasource,
-    required this._frozenWalletUtxoDatasource,
+    required SyncFreezesDatasource freezesDatasource,
     Future<Result<void, SyncFailure>> Function(String address, Network network)?
     validateAddress,
   }) : _lwkWallet = lwkWalletDatasource,
        _values = walletValuesDatasource,
+       _freezes = freezesDatasource,
        _validateAddress = validateAddress ?? sync_read.validateAddress;
 
   @override
@@ -196,10 +197,8 @@ class LiquidWalletRepository implements LiquidSendPort {
     };
   }
 
-  Future<Set<Outpoint>> _frozenOutpoints() async => {
-    for (final utxo in await _frozenWalletUtxoDatasource.getAllFrozen())
-      (txId: utxo.txId, vout: utxo.vout),
-  };
+  /// Read from sync's store at call time; throws when it cannot answer.
+  Future<Set<Outpoint>> _frozenOutpoints() => _freezes.getFrozenOutpoints();
 
   Future<int> getAmountSentToAddress({
     required String pset,

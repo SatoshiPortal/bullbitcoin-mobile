@@ -1,13 +1,12 @@
 import 'package:primitives/primitives.dart'
-    show BitcoinTransactionRecipient, Err, Ok;
+    show BitcoinTransactionRecipient, Err, Ok, Result;
 import 'dart:io';
 
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:secrets/secrets.dart';
 import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
-import 'package:bb_mobile/core/storage/sqlite_database.dart';
-import 'package:bb_mobile/core/wallet/data/datasources/frozen_wallet_utxo_datasource.dart';
+import 'package:bb_mobile/features/wallet/data/sync_freezes_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_address_repository.dart';
@@ -17,8 +16,7 @@ import 'package:bb_mobile/features/wallet/domain/usecases/prepare_bitcoin_send_u
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/init.dart';
 import 'package:bull_sdk/bdk.dart' as bdk;
-import 'package:drift/drift.dart' show driftRuntimeOptions;
-import 'package:drift/native.dart';
+import 'package:sync/sync.dart' as sync;
 import 'package:flutter_test/flutter_test.dart';
 
 import 'developer_network.dart';
@@ -27,7 +25,7 @@ import 'developer_network.dart';
 //
 // Covers the §7.1 acceptance criteria:
 //   1. Freeze persists across restart — freeze an outpoint, re-init the
-//      locator/SqliteDatabase, the outpoint is still frozen. Funds-free: this
+//      freeze store, the outpoint is still frozen. Funds-free: this
 //      is the load-bearing persistence guarantee and runs anywhere.
 //   2. A frozen coin is never spent — freeze a real wallet outpoint, have
 //      PrepareBitcoinSendUsecase build a PSBT, assert the frozen outpoint is
@@ -42,7 +40,7 @@ Future<void> main({bool isInitialized = false}) async {
   TestWidgetsFlutterBinding.ensureInitialized();
   if (!isInitialized) await Bull.init();
 
-  final frozenDatasource = locator<FrozenWalletUtxoDatasource>();
+  final frozenDatasource = locator<SyncFreezesDatasource>();
   final utxoRepository = locator<WalletUtxoRepository>();
 
   group('Coins / freeze persistence (funds-free)', () {
@@ -53,53 +51,36 @@ Future<void> main({bool isInitialized = false}) async {
     );
 
     Future<void> clear() async {
-      await frozenDatasource.unfreezeOutpoints(
-        walletId: walletId,
-        outpoints: [outpoint],
-      );
+      await frozenDatasource.unfreeze([outpoint]);
     }
 
     setUp(clear);
     tearDown(clear);
 
-    test('freeze is durable across a database restart', () async {
-      // Use a dedicated on-disk database, fully isolated from the locator's
-      // shared SqliteDatabase singleton. Closing that singleton (the previous
-      // approach) killed the connection for every other test in the aggregated
-      // integration run. Here: write through one handle, close it, then reopen
-      // a SECOND handle on the SAME file — a fresh connection only sees
-      // committed-to-disk rows, which is exactly what "survives a restart"
-      // means.
-      // This test deliberately opens a second SqliteDatabase on the same file
-      // to simulate a restart, on top of the locator's existing singleton.
-      // Drift's "multiple databases" warning targets instances SHARING a
-      // QueryExecutor (a real race) — not our case: `before` and `after` use
-      // separate NativeDatabase executors and never overlap. Silence the
-      // debug-only false positive for the duration of this test only, so the
-      // warning still guards genuine misuse in the rest of the run.
-      final previousWarnFlag =
-          driftRuntimeOptions.dontWarnAboutMultipleDatabases;
-      driftRuntimeOptions.dontWarnAboutMultipleDatabases = true;
-      addTearDown(
-        () => driftRuntimeOptions.dontWarnAboutMultipleDatabases =
-            previousWarnFlag,
-      );
-
+    test('freeze is durable across a restart', () async {
+      // A dedicated documents directory, isolated from the app's own Sync:
+      // freeze through one Sync, close it, then reopen a second one on the
+      // same files, which only sees what was committed to disk.
       final dir = await Directory.systemTemp.createTemp('coins_restart');
       addTearDown(() => dir.delete(recursive: true));
-      final dbFile = File('${dir.path}/restart.sqlite');
+      sync.Sync open() => sync.Sync.openForeground(
+        documentsDirectory: dir.path,
+        catalog: const _NoCatalog(),
+        reservedAddresses: const _NoReserved(),
+        legacyFreezes: const _NoLegacyFreezes(),
+      );
 
-      final before = SqliteDatabase(NativeDatabase(dbFile));
-      await FrozenWalletUtxoDatasource(
-        db: before,
-      ).freezeOutpoints(walletId: walletId, outpoints: [outpoint]);
+      final before = open();
+      await SyncFreezesDatasource(
+        sync: () async => before,
+      ).freezeAttributed([sync.FrozenOutpoint(outpoint, origin: walletId)]);
       await before.close();
 
-      final after = SqliteDatabase(NativeDatabase(dbFile));
+      final after = open();
       addTearDown(after.close);
-      final afterRestart = await FrozenWalletUtxoDatasource(
-        db: after,
-      ).getFrozenOutpoints(walletId: walletId);
+      final afterRestart = await SyncFreezesDatasource(
+        sync: () async => after,
+      ).getFrozenOutpoints();
 
       expect(
         afterRestart,
@@ -109,15 +90,13 @@ Future<void> main({bool isInitialized = false}) async {
     });
 
     test('unfreeze removes the freeze row', () async {
-      await utxoRepository.freezeUtxos(
-        walletId: walletId,
-        outpoints: [outpoint],
-      );
+      await frozenDatasource.freezeAttributed([
+        sync.FrozenOutpoint(outpoint, origin: walletId),
+      ]);
       await utxoRepository.unfreezeUtxos(
         walletId: walletId,
         outpoints: [outpoint],
       );
-
       // Freeze is matched by outpoint across all wallets — the global set must
       // no longer carry it after unfreeze.
       final remaining = await utxoRepository.getAllFrozenOutpoints();
@@ -337,4 +316,35 @@ Future<void> main({bool isInitialized = false}) async {
         ? false
         : 'requires funded testnet wallet (set TEST_ALICE_MNEMONIC)',
   );
+}
+
+final class _NoLegacyFreezes implements sync.LegacyFreezeSourcePort {
+  const _NoLegacyFreezes();
+
+  @override
+  Future<Result<List<sync.FrozenOutpoint>, sync.SyncFailure>> readAll() async =>
+      const Ok([]);
+}
+
+final class _NoCatalog implements sync.WalletCatalogPort {
+  const _NoCatalog();
+
+  @override
+  Future<Result<sync.PublicWalletDescriptor, sync.SyncFailure>> find(
+    sync.WalletKey key,
+  ) async => const Err(sync.SyncNotFoundFailure());
+
+  @override
+  Future<Result<List<sync.PublicWalletDescriptor>, sync.SyncFailure>>
+  list() async => const Ok([]);
+}
+
+final class _NoReserved implements sync.ReservedAddressPort {
+  const _NoReserved();
+
+  @override
+  Future<Result<bool, sync.SyncFailure>> isReserved(
+    sync.WalletKey key,
+    String address,
+  ) async => const Ok(false);
 }

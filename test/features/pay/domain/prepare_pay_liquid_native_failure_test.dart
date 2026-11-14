@@ -3,7 +3,7 @@ import 'dart:io';
 
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart';
-import 'package:bb_mobile/core/wallet/data/datasources/frozen_wallet_utxo_datasource.dart';
+import 'package:bb_mobile/features/wallet/data/sync_freezes_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/lwk_wallet_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
@@ -20,7 +20,7 @@ import 'package:secrets/secrets.dart';
 
 class _Metadata extends Mock implements WalletMetadataDatasource {}
 
-class _Frozen extends Mock implements FrozenWalletUtxoDatasource {}
+class _Frozen extends Mock implements SyncFreezesDatasource {}
 
 class _Sdk extends Mock implements BullSdkApi {}
 
@@ -64,7 +64,7 @@ void main() {
         isDefault: false,
       ),
     );
-    when(() => frozen.getAllFrozen()).thenAnswer((_) async => []);
+    when(() => frozen.getFrozenOutpoints()).thenAnswer((_) async => {});
     // Only the native call is substituted: the reader capability and real
     // LwkWalletDatasource must propagate its failure through the repository.
     when(
@@ -88,7 +88,7 @@ void main() {
       walletValuesDatasource: SyncWalletValuesDatasource(
         load: (_) async => throw StateError('no value read expected'),
       ),
-      frozenWalletUtxoDatasource: frozen,
+      freezesDatasource: frozen,
     );
   });
 

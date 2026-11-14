@@ -1,5 +1,7 @@
 import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
-import 'package:bb_mobile/core/wallet/data/datasources/frozen_wallet_utxo_datasource.dart';
+import 'package:bb_mobile/features/wallet/data/sync_freezes_datasource.dart';
+import 'package:bb_mobile/features/wallet/domain/network_x.dart';
+import 'package:sync/sync.dart' show WalletKey;
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/mappers/wallet_utxo_mapper.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
@@ -14,14 +16,15 @@ class WalletUtxoRepositoryImpl implements WalletUtxoRepository {
   final WalletMetadataDatasource _walletMetadataDatasource;
   final LabelsFacade _labelsFacade;
   final SyncWalletValuesDatasource _values;
-  final FrozenWalletUtxoDatasource _frozenWalletUtxoDatasource;
+  final SyncFreezesDatasource _freezes;
 
   WalletUtxoRepositoryImpl({
     required this._walletMetadataDatasource,
     required this._labelsFacade,
     required SyncWalletValuesDatasource walletValuesDatasource,
-    required this._frozenWalletUtxoDatasource,
-  }) : _values = walletValuesDatasource;
+    required SyncFreezesDatasource freezesDatasource,
+  }) : _values = walletValuesDatasource,
+       _freezes = freezesDatasource;
 
   @override
   Future<List<WalletUtxo>> getWalletUtxos({required String walletId}) async {
@@ -44,28 +47,18 @@ class WalletUtxoRepositoryImpl implements WalletUtxoRepository {
             id: metadata.id,
           );
 
-    final utxoModels = await _values.getUtxos(wallet: walletModel);
-    // `isFrozen` is matched by outpoint against the global frozen set (an
-    // outpoint is globally unique, so it belongs to one wallet anyway). Frozen
-    // rows for coins this wallet doesn't hold simply never match. Materialise
-    // as a Set for O(1) membership — Outpoint is a record, so it has structural
-    // equality/hashCode and keys the set directly.
-    final frozenOutpoints = (await _frozenWalletUtxoDatasource.getAllFrozen())
-        .map((row) => (txId: row.txId, vout: row.vout))
-        .toSet();
+    // Sync publishes each coin with its frozen state: a freeze is global by
+    // outpoint, whichever wallet or import froze it.
+    final coins = await _values.getCoins(wallet: walletModel);
 
     final utxos = await Future.wait(
-      utxoModels.map((model) async {
+      coins.map((coin) async {
+        final model = coin.model;
         // Get labels for the UTXO if any
         final labelModels = await _labelsFacade.fetchByReference(
           model.labelRef,
         );
         final txLabels = await _labelsFacade.fetchByReference(model.txId);
-        // Check if the UTXO is frozen
-        final isFrozen = frozenOutpoints.contains((
-          txId: model.txId,
-          vout: model.vout,
-        ));
         // Get the possible address labels for the UTXO
         List<Label> addressLabels;
         switch (model) {
@@ -90,7 +83,7 @@ class WalletUtxoRepositoryImpl implements WalletUtxoRepository {
           labels: labelModels,
           txLabels: txLabels,
           addressLabels: addressLabels,
-          isFrozen: isFrozen,
+          isFrozen: coin.frozen,
         );
       }).toList(),
     );
@@ -102,10 +95,14 @@ class WalletUtxoRepositoryImpl implements WalletUtxoRepository {
   Future<void> freezeUtxos({
     required String walletId,
     required List<Outpoint> outpoints,
-  }) {
-    return _frozenWalletUtxoDatasource.freezeOutpoints(
-      walletId: walletId,
-      outpoints: outpoints,
+  }) async {
+    final metadata = await _walletMetadataDatasource.fetch(walletId);
+    if (metadata == null) {
+      throw Exception('Wallet metadata not found for walletId: $walletId');
+    }
+    await _freezes.freeze(
+      WalletKey(id: metadata.id, network: metadata.network.shared),
+      outpoints,
     );
   }
 
@@ -113,16 +110,9 @@ class WalletUtxoRepositoryImpl implements WalletUtxoRepository {
   Future<void> unfreezeUtxos({
     required String walletId,
     required List<Outpoint> outpoints,
-  }) {
-    return _frozenWalletUtxoDatasource.unfreezeOutpoints(
-      walletId: walletId,
-      outpoints: outpoints,
-    );
-  }
+  }) => _freezes.unfreeze(outpoints);
 
   @override
-  Future<List<Outpoint>> getAllFrozenOutpoints() async {
-    final rows = await _frozenWalletUtxoDatasource.getAllFrozen();
-    return rows.map((row) => (txId: row.txId, vout: row.vout)).toList();
-  }
+  Future<List<Outpoint>> getAllFrozenOutpoints() async =>
+      (await _freezes.getFrozenOutpoints()).toList();
 }
