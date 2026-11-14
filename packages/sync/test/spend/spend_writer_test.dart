@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 import 'package:sync/src/data/datasources/revision_store_datasource.dart';
+import 'package:sync/src/data/datasources/spend_gate_store_datasource.dart';
 import 'package:sync/src/data/native_store_paths.dart';
 import 'package:sync/src/data/write/spend/native_spend.dart';
 import 'package:sync/sync.dart';
@@ -779,5 +780,56 @@ void main() {
         expect(transport.sent, hasLength(1));
       },
     );
+  });
+
+  group('status', () {
+    Future<WalletValue<BitcoinSpendStatus>> published(
+      WalletKey key,
+      BitcoinSpendStatus status,
+    ) => stores.spend
+        .status(key)
+        .watch()
+        .firstWhere((value) => value.data == status)
+        .timeout(const Duration(seconds: 5));
+
+    test('is published on first demand, without a check', () async {
+      final key = bitcoin.key;
+      final value = await published(key, BitcoinSpendStatus.ready);
+      expect(value.revision, revisions.record(key)?.state.stamp);
+      expect(stores.spend.status(key).now.data, BitcoinSpendStatus.ready);
+    });
+
+    test('a sync that observes the pending spend republishes it ready, '
+        'without a check', () async {
+      final key = bitcoin.key;
+      final unsigned = ok(
+        await stores.spend.build(key, generation(key), pay()),
+      );
+      final receipt = ok(
+        await stores.spend.broadcast(
+          unsigned.signed(
+            SignedBitcoinTransaction(_transaction(unsigned.inputs)),
+          ),
+        ),
+      );
+      expect(stores.spend.status(key).now.data, BitcoinSpendStatus.pending);
+
+      // A worker pass observes the spend and commits a revision; the
+      // foreground reads it on the worker's return.
+      final gate = SpendGateStoreDatasource.openExisting(
+        spendGateStorePath(dir.path),
+      );
+      try {
+        gate.observed(bitcoin, generation(key), {receipt.txid});
+      } finally {
+        gate.close();
+      }
+      revisions.begin(key, WriteIntent.sync);
+      revisions.finish(key);
+      final ready = published(key, BitcoinSpendStatus.ready);
+      ok(await stores.revisions.read(key));
+      expect((await ready).revision, revisions.record(key)?.state.stamp);
+      expect(stores.spend.status(key).now.data, BitcoinSpendStatus.ready);
+    });
   });
 }
