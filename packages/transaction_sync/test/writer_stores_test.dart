@@ -121,6 +121,43 @@ void main() {
     },
   );
 
+  test(
+    'a develop store without user_version is quarantined, not fatal',
+    () async {
+      // The exact layout written by 48d7ecf01, which never set user_version.
+      final path = revisionStorePath(dir.path);
+      File(path).parent.createSync(recursive: true);
+      final db = sqlite3.open(path);
+      db.execute('''CREATE TABLE revisions (
+        wallet TEXT NOT NULL, network TEXT NOT NULL,
+        generation INTEGER NOT NULL, revision INTEGER NOT NULL,
+        lifecycle TEXT NOT NULL, intent TEXT, candidate INTEGER,
+        issued INTEGER, needs_sync INTEGER NOT NULL DEFAULT 0,
+        initialized_schema INTEGER NOT NULL DEFAULT 0,
+        PRIMARY KEY(wallet, network))''');
+      db.execute('ALTER TABLE revisions ADD COLUMN descriptor_hash TEXT');
+      db.execute('ALTER TABLE revisions ADD COLUMN liquid_cache_path TEXT');
+      db.execute(
+        'ALTER TABLE revisions ADD COLUMN sync_failed INTEGER NOT NULL DEFAULT 0',
+      );
+      db.dispose();
+
+      final stores = foreground();
+      try {
+        expect(stores.recoveredMetadata, isTrue);
+        expect(File(recoveryMarkerPath(dir.path)).existsSync(), isTrue);
+        expect(userVersion(path), 1);
+        final key = WalletKey(id: 'w', network: BitcoinNetwork.testnet);
+        expect(
+          await stores.spendGate.check(key),
+          BitcoinSpendStatus.unavailable,
+        );
+      } finally {
+        await stores.close();
+      }
+    },
+  );
+
   test('two keys resolving to one native store share one lock', () {
     final mainnet = WalletKey(id: 'same', network: BitcoinNetwork.mainnet);
     final testnet = WalletKey(id: 'same', network: BitcoinNetwork.testnet);
