@@ -150,15 +150,62 @@ void main() {
         isA<Err<bool, AppStartupFailure>>().having(
           (r) => r.failure,
           'failure',
-          isA<AppStartupMissingDefaultSecretFailure>().having(
-            (f) => f.logMessage,
-            'logMessage',
-            fingerprint,
-          ),
+          isA<AppStartupMissingDefaultSecretFailure>()
+              .having((f) => f.logMessage, 'logMessage', fingerprint)
+              .having((f) => f.walletId, 'walletId', 'origin-bitcoinMainnet'),
         ),
       );
     },
     timeout: const Timeout(Duration(seconds: 30)),
+  );
+
+  test(
+    'a missing Liquid secret identifies the Bitcoin default in its environment',
+    () async {
+      when(
+        () => wallets.getWallets(
+          onlyDefaults: any(named: 'onlyDefaults'),
+          environment: any(named: 'environment'),
+        ),
+      ).thenAnswer(
+        (_) async => Ok<List<Wallet>, WalletFailure>([
+          wallet(Network.liquidMainnet),
+          wallet(Network.bitcoinMainnet),
+        ]),
+      );
+      final usecase = usecaseOn(FakeSecureStoragePlatform());
+      final result = await usecase.execute();
+      expect(
+        (result as Err).failure,
+        isA<AppStartupMissingDefaultSecretFailure>().having(
+          (failure) => failure.walletId,
+          'walletId',
+          'origin-bitcoinMainnet',
+        ),
+      );
+    },
+  );
+
+  test(
+    'a Liquid default without a matching Bitcoin default fails closed',
+    () async {
+      when(
+        () => wallets.getWallets(
+          onlyDefaults: any(named: 'onlyDefaults'),
+          environment: any(named: 'environment'),
+        ),
+      ).thenAnswer(
+        (_) async => Ok<List<Wallet>, WalletFailure>([
+          wallet(Network.liquidMainnet).copyWith(masterFingerprint: 'deadbeef'),
+          wallet(Network.bitcoinMainnet),
+        ]),
+      );
+      final usecase = usecaseOn(FakeSecureStoragePlatform());
+      expect(
+        (await usecase.execute() as Err).failure,
+        isA<AppStartupWalletCheckFailure>(),
+      );
+    },
   );
 
   test('an unreadable seed is neither of those', () async {

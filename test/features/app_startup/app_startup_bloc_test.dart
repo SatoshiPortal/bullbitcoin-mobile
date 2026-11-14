@@ -251,8 +251,12 @@ void main() {
 
     Future<AppStartupBloc> missingSecret() async {
       when(() => checkDefaultWallets.execute()).thenAnswer(
-        (_) async =>
-            const Err(AppStartupMissingDefaultSecretFailure('73c5da0a')),
+        (_) async => const Err(
+          AppStartupMissingDefaultSecretFailure(
+            '73c5da0a',
+            walletId: 'wallet-id',
+          ),
+        ),
       );
       final bloc = buildBloc();
       addTearDown(bloc.close);
@@ -268,6 +272,7 @@ void main() {
         when(
           () => restoreSecret.execute(
             expectedFingerprint: '73c5da0a',
+            expectedWalletId: 'wallet-id',
             words: words,
           ),
         ).thenAnswer((_) async => const Ok(null));
@@ -290,6 +295,7 @@ void main() {
       when(
         () => restoreSecret.execute(
           expectedFingerprint: any(named: 'expectedFingerprint'),
+          expectedWalletId: any(named: 'expectedWalletId'),
           words: any(named: 'words'),
         ),
       ).thenAnswer((_) async => const Err(AppStartupRestoreMismatchFailure()));
@@ -310,6 +316,7 @@ void main() {
       verifyNever(
         () => restoreSecret.execute(
           expectedFingerprint: any(named: 'expectedFingerprint'),
+          expectedWalletId: any(named: 'expectedWalletId'),
           words: any(named: 'words'),
         ),
       );
