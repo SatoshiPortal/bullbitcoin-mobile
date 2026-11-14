@@ -46,11 +46,14 @@ Future<void> prepareBackgroundWalletStores(GetIt locator) async {
   }
 }
 
+/// Opens only what the foreground created, never creating nor migrating it:
+/// without its queue, the task is deferred to a later run.
 Future<BackgroundTaskHandler> setupBackgroundWalletTask(
   BackgroundTaskResources resources,
   Directory documents,
-  Stopwatch clock,
-) async {
+  Stopwatch clock, {
+  required BackgroundSyncIntervalRepository intervals,
+}) async {
   if (!await SqliteDatabase.isAtCurrentSchema()) {
     log.fine('Background wallet task deferred: schema not current');
     return () async => const BackgroundTaskExecutionResult.success();
@@ -85,12 +88,14 @@ Future<BackgroundTaskHandler> setupBackgroundWalletTask(
     return () async => const BackgroundTaskExecutionResult.success();
   }
   resources.onClose(stores.close);
-  final queue = SqliteWalletSyncJobQueue(
-    databasePath: p.join(
-      documents.path,
-      'wallet_transaction_sync_queue.sqlite',
-    ),
-  );
+  final WalletSyncJobQueueRepository queue;
+  switch (openBackgroundWalletSyncQueue(documents.path)) {
+    case Ok(:final value):
+      queue = value;
+    case Err():
+      log.fine('Background wallet task deferred: queue unavailable');
+      return () async => const BackgroundTaskExecutionResult.success();
+  }
   resources.onClose(queue.close);
   final notifications = await PaymentNotifications.initializeBackground(
     documents.path,
@@ -107,30 +112,34 @@ Future<BackgroundTaskHandler> setupBackgroundWalletTask(
     documentsDirectory: () async => documents.path,
     readRevision: stores.revisions.read,
   );
-  final handler = WalletTransactionSyncBackgroundTask(
-    writer: BackgroundWalletSyncImpl(
+  final usecase = RunWalletSyncJobsUsecase(
+    wallets: BackgroundWalletSyncImpl(
       catalog,
       sync,
-      notifications == null
-          ? null
-          : WalletPaymentObserver.foreground(
-              () async => notifications,
-              isForeground: () => false,
-            ),
+      collectIncoming: notifications != null,
     ),
     revisions: stores.revisions,
     keys: descriptors.map((descriptor) => descriptor.key),
     queue: queue,
+    intervals: intervals,
     announcements: notifications == null
         ? null
         : WalletPaymentObserver.background(
             () async => notifications,
             copy: PaymentNotifications.copy(preferences.language),
           ),
+    logger: LoggerBackgroundTaskLogger(log),
     runBudget: backgroundRunBudget,
   );
-  return () => handler.executeAll(clock: clock);
+  return () => usecase.execute(clock: clock);
 }
+
+/// The queue the foreground created; a missing, older or newer one is refused.
+Result<WalletSyncJobQueueRepository, BackgroundTasksFailure>
+openBackgroundWalletSyncQueue(String documents) =>
+    SqliteWalletSyncJobQueueRepository.openExisting(
+      p.join(documents, _queueFilename),
+    );
 
 final class _CatalogStartupFailure implements Exception {
   const _CatalogStartupFailure();

@@ -2,14 +2,18 @@ import 'package:background_tasks/background_tasks.dart';
 import 'package:primitives/primitives.dart';
 import 'package:transaction_sync/transaction_sync.dart';
 
-import 'wallet_payment_observer.dart';
-
-final class BackgroundWalletSyncImpl implements BackgroundWalletSync {
+final class BackgroundWalletSyncImpl implements BackgroundWalletSyncPort {
   final WalletCatalogPort _catalog;
   final ElectrumSync _sync;
-  final WalletPaymentObserver? _observer;
 
-  const BackgroundWalletSyncImpl(this._catalog, this._sync, this._observer);
+  /// Collects the incoming history only when it can be announced.
+  final bool _collectIncoming;
+
+  const BackgroundWalletSyncImpl(
+    this._catalog,
+    this._sync, {
+    required this._collectIncoming,
+  });
 
   @override
   Future<Result<BackgroundSyncOutcome, BackgroundSyncFailure>> synchronize(
@@ -25,8 +29,7 @@ final class BackgroundWalletSyncImpl implements BackgroundWalletSync {
       headless: true,
       reason: SyncReason.background,
       allowInitialScan: allowInitialScan,
-      collectIncoming: _observer != null,
-      onCompletion: _observer?.recordCompletion,
+      collectIncoming: _collectIncoming,
     );
     return switch (result) {
       Ok(

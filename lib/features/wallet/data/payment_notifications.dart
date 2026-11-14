@@ -32,33 +32,32 @@ final class PaymentNotifications {
     ),
   );
 
-  /// Notification storage and the platform plugin are optional to native sync.
+  /// Notification storage and the platform plugin are optional to native
+  /// sync. The store is never created nor migrated here: a missing, older or
+  /// newer store leaves this run without notifications.
   static Future<NotificationsFacade?> initializeBackground(
     String documents,
     Language? language,
     BackgroundTaskResources resources,
   ) async {
-    SqliteNotificationOutbox? outbox;
-    var retained = false;
-    try {
-      outbox = openOutbox(documents);
-      final notifications = create(outbox, language);
-      if (await notifications.initialize() case Err()) {
-        log.warning(
-          'Background notifications unavailable category=initialization',
-        );
+    final NotificationStoreRepository outbox;
+    switch (openExistingNotificationStore(p.join(documents, outboxFilename))) {
+      case Ok(:final value):
+        outbox = value;
+      case Err():
+        log.warning('Background notifications unavailable category=storage');
         return null;
-      }
-      resources.onClose(outbox.dispose);
-      retained = true;
-      log.fine('Background notifications ready');
-      return notifications;
-    } on Exception {
-      log.warning('Background notifications unavailable category=storage');
-      return null;
-    } finally {
-      if (!retained) outbox?.dispose();
     }
+    resources.onClose(outbox.close);
+    final notifications = create(outbox, language);
+    if (await notifications.initialize() case Err()) {
+      log.warning(
+        'Background notifications unavailable category=initialization',
+      );
+      return null;
+    }
+    log.fine('Background notifications ready');
+    return notifications;
   }
 
   /// The localized text of an announcement of [count] new payments.

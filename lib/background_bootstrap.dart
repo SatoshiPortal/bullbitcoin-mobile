@@ -17,17 +17,23 @@ Future<BackgroundTaskRunner> bootstrapBackgroundRunner(
   final documents = await getApplicationDocumentsDirectory();
   await initializeLogging(directory: documents, background: true);
   final logger = LoggerBackgroundTaskLogger(log);
+  const intervals = SharedPreferencesBackgroundSyncIntervalRepository();
   return BackgroundTaskRunner.forTask(
     task: task,
     logger: logger,
-    intervals: const SharedPreferencesBackgroundSyncIntervalRepository(),
+    intervals: intervals,
     tasks: {
       BackgroundTask.logsPrune: (resources) async => () async {
         await log.prune();
         return const BackgroundTaskExecutionResult.success();
       },
       BackgroundTask.walletsSync: (resources) async {
-        return setupBackgroundWalletTask(resources, documents, clock);
+        return setupBackgroundWalletTask(
+          resources,
+          documents,
+          clock,
+          intervals: intervals,
+        );
       },
     },
   );

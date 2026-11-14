@@ -400,7 +400,7 @@ void main() {
         documentsDirectory: () async => directory.path,
         readRevision: (_) async => const Err(TransactionSyncNotFoundFailure()),
       ),
-      null,
+      collectIncoming: false,
     );
     // The policy fixture returns no committed revision, so the adapter rejects it.
     expect(
