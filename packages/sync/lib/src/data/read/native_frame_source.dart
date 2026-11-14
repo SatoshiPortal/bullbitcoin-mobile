@@ -7,6 +7,7 @@ import '../../domain/sync_failure.dart';
 import '../../domain/wallet_key.dart';
 import '../../domain/wallet_values.dart';
 import '../wallet_projections.dart';
+import '../write/datasources/native_store_errors.dart';
 import 'wallet_frame_mapper.dart';
 import 'wallet_snapshot_reader.dart';
 
@@ -55,8 +56,8 @@ final class NativeFrameSource implements FrameSource {
             frame: WalletFrame(data, stale: snapshot.stale),
             admitted: admitted,
           ));
-        } on Exception {
-          return const Err(SyncNeedsRepairFailure());
+        } on Exception catch (error) {
+          return Err(mappingFailure(error));
         }
     }
   }
@@ -82,9 +83,15 @@ final class NativeFrameSource implements FrameSource {
             final lwk.Wallet _ => const Err(SyncUnsupportedNetworkFailure()),
             _ => const Err(SyncInvalidCatalogFailure()),
           };
-        } on Exception {
-          return const Err(SyncNeedsRepairFailure());
+        } on Exception catch (error) {
+          return Err(mappingFailure(error));
         }
     }
   }
 }
+
+/// A native failure while mapping a hydrated wallet: repair only after LWK's
+/// status conflict, storage otherwise.
+SyncFailure mappingFailure(Exception error) => isLiquidStatusConflict(error)
+    ? const SyncNeedsRepairFailure()
+    : const SyncStorageFailure();

@@ -14,6 +14,7 @@ import '../../domain/public_wallet_descriptor.dart';
 import '../../domain/ports/wallet_catalog_port.dart';
 import '../../domain/wallet_key.dart';
 import '../native_store_paths.dart';
+import '../write/datasources/native_store_errors.dart';
 import '../../domain/wallet_revision.dart';
 import '../../domain/ports/read_admission_port.dart';
 import '../../domain/ports/wallet_revision_reader_port.dart';
@@ -317,7 +318,13 @@ final class WalletSnapshotReader {
       if (e is Error) {
         rethrow;
       }
-      return const Err(SyncNeedsRepairFailure());
+      // Only LWK's status conflict calls for a repair; any other native
+      // failure is a storage one, which repair would not fix.
+      return Err(
+        isLiquidStatusConflict(e)
+            ? const SyncNeedsRepairFailure()
+            : const SyncStorageFailure(),
+      );
     } finally {
       try {
         final rejected = unpublished;
