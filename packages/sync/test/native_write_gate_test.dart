@@ -380,6 +380,61 @@ class BitcoinSigner {
     return checkNativeImports((result as ResolvedUnitResult).unit, path);
   }
 
+  test('red-green: generated-looking paths are still checked', () async {
+    // A helper named or placed like generated code imports BDK and
+    // persists; the app calls an ordinary function of it.
+    final repository = Directory('${fixture.path}/repository');
+    void write(String path, String source) => File('${repository.path}/$path')
+      ..createSync(recursive: true)
+      ..writeAsStringSync(source);
+    // The app's analysis options exclude generated parts; the gate must
+    // still inspect them.
+    write('analysis_options.yaml', '''
+analyzer:
+  exclude:
+    - lib/**/*.g.dart
+''');
+    write('lib/generated/native_bridge.dart', '''
+import 'package:bull_sdk/bdk.dart' as bdk;
+bool owns(Object wallet) => wallet is bdk.Wallet;
+''');
+    write('lib/wallet_store.g.dart', '''
+import 'package:bull_sdk/bdk.dart' as bdk;
+void save(bdk.Wallet wallet, bdk.Persister store) =>
+    wallet.persist(persister: store);
+''');
+    write('lib/app.dart', '''
+import 'generated/native_bridge.dart';
+import 'wallet_store.g.dart';
+bool check(Object wallet) => owns(wallet);
+final store = save;
+''');
+    final report = await checkNativeWrites(repository.path);
+    expect(
+      report.violations,
+      contains(
+        'lib/generated/native_bridge.dart: '
+        'BDK/LWK outside sync (native import ratchet)',
+      ),
+    );
+    expect(
+      report.violations,
+      contains(
+        'lib/wallet_store.g.dart: '
+        'BDK/LWK outside sync (native import ratchet)',
+      ),
+    );
+    expect(
+      report.violations,
+      contains(
+        allOf(
+          startsWith('lib/wallet_store.g.dart'),
+          contains('Wallet.persist'),
+        ),
+      ),
+    );
+  });
+
   group('native import ratchet', () {
     const direct = "import 'package:bull_sdk/bdk.dart' as bdk; bdk.Network? n;";
     const bridged = "import 'bridge.dart' as sdk; sdk.Network? n;";
