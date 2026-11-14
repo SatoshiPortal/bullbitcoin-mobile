@@ -4,7 +4,7 @@ import 'package:primitives/primitives.dart';
 import 'package:sqlite3/sqlite3.dart';
 
 import '../domain/ports/wallet_revision_reader_port.dart';
-import '../domain/transaction_sync_failure.dart';
+import '../domain/sync_failure.dart';
 import '../domain/wallet_key.dart';
 import '../domain/wallet_revision.dart';
 import 'datasources/revision_store_datasource.dart';
@@ -21,19 +21,17 @@ final class SqliteWalletRevisionReader implements WalletRevisionReaderPort {
   SqliteWalletRevisionReader(this._store);
 
   @override
-  Future<Result<WalletRevisionState, TransactionSyncFailure>> read(
-    WalletKey key,
-  ) async {
+  Future<Result<WalletRevisionState, SyncFailure>> read(WalletKey key) async {
     try {
       final value = _store.record(key);
-      if (value == null) return const Err(TransactionSyncNotFoundFailure());
+      if (value == null) return const Err(SyncNotFoundFailure());
       publish(value.state);
       return Ok(value.state);
     } on SqliteException catch (error) {
       return Err(
         error.resultCode == 5
-            ? const TransactionSyncBusyFailure()
-            : const TransactionSyncStorageFailure(),
+            ? const SyncBusyFailure()
+            : const SyncStorageFailure(),
       );
     }
   }

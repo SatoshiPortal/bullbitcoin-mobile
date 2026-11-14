@@ -20,7 +20,7 @@ final class _HeldSync implements WriterSyncOperation {
   final started = Completer<void>();
   final finish = Completer<void>();
   @override
-  Future<Result<void, TransactionSyncFailure>> execute(
+  Future<Result<void, SyncFailure>> execute(
     PublicWalletDescriptor descriptor, {
     required int? issuedReceiveIndex,
   }) async {
@@ -94,7 +94,7 @@ void main() {
       expectedGeneration: 0,
       existingOnly: true,
     );
-    expect(adopted, isA<Ok<WriterOutcome, TransactionSyncFailure>>());
+    expect(adopted, isA<Ok<WriterOutcome, SyncFailure>>());
     expect(store.record(key)?.state.lifecycle, WalletLifecycle.active);
     expect(store.record(key)?.intent, isNull);
   });
@@ -118,10 +118,10 @@ void main() {
         operation: Sync((_) {}),
         adopt: true,
       ),
-      isA<Err<WriterOutcome, TransactionSyncFailure>>().having(
+      isA<Err<WriterOutcome, SyncFailure>>().having(
         (result) => result.failure,
         'failure',
-        isA<TransactionSyncNotFoundFailure>(),
+        isA<SyncNotFoundFailure>(),
       ),
     );
     expect(store.record(key), isNull);
@@ -133,7 +133,7 @@ void main() {
       operation: Sync((_) => synced = true),
       adopt: true,
     );
-    expect(result, isA<Ok<WriterOutcome, TransactionSyncFailure>>());
+    expect(result, isA<Ok<WriterOutcome, SyncFailure>>());
     expect(synced, isTrue);
     expect(store.record(key)?.state.lifecycle, WalletLifecycle.active);
     expect(store.record(key)?.intent, isNull);
@@ -176,8 +176,8 @@ void main() {
       reconcile: false,
     );
     expect(
-      (result as Err<WriterOutcome, TransactionSyncFailure>).failure,
-      isA<TransactionSyncBusyFailure>(),
+      (result as Err<WriterOutcome, SyncFailure>).failure,
+      isA<SyncBusyFailure>(),
     );
     expect(store.record(key)?.intent, WriteIntent.receive);
     expect(sessions.revealed, isEmpty);
@@ -196,8 +196,8 @@ void main() {
       given: other,
     ).sync(key, expectedGeneration: 1, operation: Sync((_) => ran = true));
     expect(
-      (result as Err<WriterOutcome, TransactionSyncFailure>).failure,
-      isA<TransactionSyncInvalidCatalogFailure>(),
+      (result as Err<WriterOutcome, SyncFailure>).failure,
+      isA<SyncInvalidCatalogFailure>(),
     );
     expect(ran, isFalse);
   });
@@ -232,10 +232,10 @@ void main() {
     // The app entry waits its bounded time, then reports busy.
     expect(
       await app().create(key, expectedGeneration: 1),
-      isA<Err<WriterOutcome, TransactionSyncFailure>>().having(
+      isA<Err<WriterOutcome, SyncFailure>>().having(
         (result) => result.failure,
         'failure',
-        isA<TransactionSyncBusyFailure>(),
+        isA<SyncBusyFailure>(),
       ),
     );
     held.finish.complete();

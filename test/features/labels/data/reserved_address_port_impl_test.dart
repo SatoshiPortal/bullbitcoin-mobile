@@ -42,23 +42,18 @@ void main() {
           ),
         ];
         final result = await port.isReserved(key, 'address');
-        expect(
-          (result as Ok<bool, TransactionSyncFailure>).value,
-          name != 'my address',
-        );
+        expect((result as Ok<bool, SyncFailure>).value, name != 'my address');
         expect(labels.reference, 'address');
       }
       labels.labels = [];
       expect(
-        (await port.isReserved(key, 'address')
-                as Ok<bool, TransactionSyncFailure>)
-            .value,
+        (await port.isReserved(key, 'address') as Ok<bool, SyncFailure>).value,
         isFalse,
       );
       labels.fail = true;
       expect(
         await port.isReserved(key, 'address'),
-        isA<Err<bool, TransactionSyncFailure>>(),
+        isA<Err<bool, SyncFailure>>(),
       );
     },
   );

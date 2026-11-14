@@ -519,10 +519,9 @@ final class _Revisions implements WalletRevisionReaderPort {
   WalletKey? unavailable;
   bool pending = true;
   @override
-  Future<Result<WalletRevisionState, TransactionSyncFailure>> read(
-    WalletKey key,
-  ) async => key == unavailable && !pending
-      ? const Err(TransactionSyncNotFoundFailure())
+  Future<Result<WalletRevisionState, SyncFailure>> read(WalletKey key) async =>
+      key == unavailable && !pending
+      ? const Err(SyncNotFoundFailure())
       : Ok(
           WalletRevisionState(
             stamp: WalletRevision(key: key, generation: 1, revision: revision),

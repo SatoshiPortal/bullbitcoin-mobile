@@ -1,6 +1,6 @@
 import 'package:primitives/primitives.dart';
 
-import 'transaction_sync_failure.dart';
+import 'sync_failure.dart';
 import 'wallet_key.dart';
 import 'wallet_revision.dart';
 
@@ -30,7 +30,7 @@ final class SyncCompletion {
 
 final class SyncFinished {
   final WalletKey key;
-  final Result<SyncCompletion, TransactionSyncFailure> result;
+  final Result<SyncCompletion, SyncFailure> result;
 
   const SyncFinished(this.key, this.result);
 }

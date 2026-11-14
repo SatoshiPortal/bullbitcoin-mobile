@@ -49,8 +49,8 @@ void main() {
     final command = iterator.current as SendPort;
     final watch = Stopwatch()..start();
     final blocked = WriterLock.acquire(directory.path, _key);
-    expect(blocked, isA<Err<WriterLock, TransactionSyncFailure>>());
-    expect((blocked as Err).failure, isA<TransactionSyncBusyFailure>());
+    expect(blocked, isA<Err<WriterLock, SyncFailure>>());
+    expect((blocked as Err).failure, isA<SyncBusyFailure>());
     expect(watch.elapsed, lessThan(const Duration(seconds: 1)));
     command.send('release');
     expect(await iterator.moveNext(), isTrue);
@@ -82,7 +82,7 @@ void main() {
       isolate.kill(priority: Isolate.immediate);
       await exited.first;
       final blocked = WriterLock.acquire(directory.path, _key) as Err;
-      expect(blocked.failure, isA<TransactionSyncBusyFailure>());
+      expect(blocked.failure, isA<SyncBusyFailure>());
       messages.close();
       exited.close();
     },
@@ -113,6 +113,6 @@ void main() {
       ),
     );
     if (result case Ok(:final value)) addTearDown(value.release);
-    expect(result, isA<Ok<WriterLock, TransactionSyncFailure>>());
+    expect(result, isA<Ok<WriterLock, SyncFailure>>());
   });
 }

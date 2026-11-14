@@ -25,7 +25,7 @@ import 'package:sync/sync.dart'
     show
         ReservedAddressPort,
         SyncReason,
-        TransactionSyncNotFoundFailure,
+        SyncNotFoundFailure,
         WalletConnectionPort;
 import 'package:sync/write.dart' show ElectrumSync;
 import 'package:bb_mobile/features/wallet/data/wallet_catalog_port_impl.dart';
@@ -224,7 +224,7 @@ void main() {
       sync: ElectrumSync(
         connections: _Connections(),
         documentsDirectory: () async => directory.path,
-        readRevision: (_) async => const Err(TransactionSyncNotFoundFailure()),
+        readRevision: (_) async => const Err(SyncNotFoundFailure()),
       ),
       documentsDirectory: () async => directory.path,
     );

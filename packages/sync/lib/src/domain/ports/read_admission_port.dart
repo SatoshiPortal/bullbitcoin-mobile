@@ -1,7 +1,7 @@
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
 
-import '../transaction_sync_failure.dart';
+import '../sync_failure.dart';
 import '../wallet_key.dart';
 import '../wallet_revision.dart';
 
@@ -15,5 +15,5 @@ abstract interface class ReadLease {
 
 abstract interface class ReadAdmissionPort {
   @useResult
-  Future<Result<ReadLease, TransactionSyncFailure>> acquire(WalletKey key);
+  Future<Result<ReadLease, SyncFailure>> acquire(WalletKey key);
 }

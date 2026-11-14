@@ -115,9 +115,7 @@ final class _Writer implements BackgroundWalletSyncPort {
 
 final class _Revisions implements WalletRevisionReaderPort {
   @override
-  Future<Result<WalletRevisionState, TransactionSyncFailure>> read(
-    WalletKey key,
-  ) async =>
+  Future<Result<WalletRevisionState, SyncFailure>> read(WalletKey key) async =>
       Ok(WalletRevisionState(stamp: stamp, lifecycle: WalletLifecycle.active));
   @override
   Stream<WalletRevisionState> watch(WalletKey key) => const Stream.empty();

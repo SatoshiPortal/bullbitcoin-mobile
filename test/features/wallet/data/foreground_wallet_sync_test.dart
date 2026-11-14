@@ -54,17 +54,15 @@ class _Bdk extends Mock implements BdkWalletDatasource {}
 class _Lwk extends Mock implements LwkWalletDatasource {}
 
 final class _Policy implements WalletConnectionPort {
-  TransactionSyncFailure? failure;
+  SyncFailure? failure;
   int calls = 0;
   Future<void>? gate;
   @override
-  Future<Result<T, TransactionSyncFailure>> run<T>({
+  Future<Result<T, SyncFailure>> run<T>({
     required Network network,
-    required Future<Result<T, TransactionSyncFailure>> Function(
-      WalletConnection,
-    )
+    required Future<Result<T, SyncFailure>> Function(WalletConnection)
     operation,
-    required bool Function(TransactionSyncFailure) mayRetry,
+    required bool Function(SyncFailure) mayRetry,
   }) async {
     calls++;
     await gate;
@@ -122,7 +120,7 @@ void main() {
       ElectrumSync(
         connections: policy,
         documentsDirectory: () async => directory.path,
-        readRevision: (_) async => const Err(TransactionSyncNotFoundFailure()),
+        readRevision: (_) async => const Err(SyncNotFoundFailure()),
       ),
     );
     repository = WalletRepository(
@@ -140,7 +138,7 @@ void main() {
   tearDown(() => directory.deleteSync(recursive: true));
 
   test('busy finishes without reporting an Electrum outage', () async {
-    policy.failure = const TransactionSyncBusyFailure();
+    policy.failure = const SyncBusyFailure();
     final results = <Object>[];
     final finished = <String>[];
     final resultSubscription = bridge.results.listen(results.add);
@@ -153,7 +151,7 @@ void main() {
       await pumpEventQueue();
       expect(results, isEmpty);
       expect(finished, [id]);
-      policy.failure = const TransactionSyncInitialScanRequiredFailure();
+      policy.failure = const SyncInitialScanRequiredFailure();
       await expectLater(
         bridge.synchronize(row, allowInitialScan: false),
         throwsA(isA<WalletSnapshotException>()),
@@ -161,7 +159,7 @@ void main() {
       await pumpEventQueue();
       expect(results, isEmpty);
       expect(finished, [id, id]);
-      policy.failure = const TransactionSyncConnectionFailure();
+      policy.failure = const SyncConnectionFailure();
       await expectLater(
         bridge.synchronize(row),
         throwsA(isA<WalletSnapshotException>()),
@@ -358,14 +356,14 @@ void main() {
             (await repository.getWallet(id) as Ok<Wallet, WalletFailure>).value;
         final usecase = SyncWalletUsecase(walletRepository: repository);
         await usecase.execute(wallet, reason: reason);
-        policy.failure = const TransactionSyncConnectionFailure();
+        policy.failure = const SyncConnectionFailure();
         await expectLater(
           usecase.execute(wallet, reason: reason),
           throwsA(
             isA<WalletSnapshotException>().having(
               (error) => error.failure,
               'failure',
-              isA<TransactionSyncConnectionFailure>(),
+              isA<SyncConnectionFailure>(),
             ),
           ),
         );
@@ -399,7 +397,7 @@ void main() {
       ElectrumSync(
         connections: policy,
         documentsDirectory: () async => directory.path,
-        readRevision: (_) async => const Err(TransactionSyncNotFoundFailure()),
+        readRevision: (_) async => const Err(SyncNotFoundFailure()),
       ),
       collectIncoming: false,
     );
@@ -482,14 +480,14 @@ void main() {
   test(
     'unavailable repair preserves its category without legacy reader healing',
     () async {
-      policy.failure = const TransactionSyncNeedsRepairFailure();
+      policy.failure = const SyncNeedsRepairFailure();
       await expectLater(
         bridge.synchronize(row),
         throwsA(
           isA<WalletSnapshotException>().having(
             (error) => error.failure,
             'failure',
-            isA<TransactionSyncNeedsRepairFailure>(),
+            isA<SyncNeedsRepairFailure>(),
           ),
         ),
       );
@@ -503,7 +501,7 @@ void main() {
       final sync = ElectrumSync(
         connections: _ThrowingPolicy(),
         documentsDirectory: () async => directory.path,
-        readRevision: (_) async => const Err(TransactionSyncNotFoundFailure()),
+        readRevision: (_) async => const Err(SyncNotFoundFailure()),
       );
       final descriptor = BitcoinWalletDescriptor(
         key: WalletKey(id: id, network: BitcoinNetwork.testnet),
@@ -514,7 +512,7 @@ void main() {
       );
       final finished = sync.finished.first;
       final result = await sync.execute(descriptor);
-      expect(result, isA<Err<SyncCompletion, TransactionSyncFailure>>());
+      expect(result, isA<Err<SyncCompletion, SyncFailure>>());
       expect((await finished).result, same(result));
       expect(sync.isSyncing(), isFalse);
       expect(await sync.execute(descriptor), isA<Err>());
@@ -528,7 +526,7 @@ void main() {
   );
 
   test('writer busy fails through the real foreground usecase', () async {
-    policy.failure = const TransactionSyncBusyFailure();
+    policy.failure = const SyncBusyFailure();
     final finished = bridge.finished.first;
     final wallet =
         (await repository.getWallet(id) as Ok<Wallet, WalletFailure>).value;
@@ -540,7 +538,7 @@ void main() {
         isA<WalletSnapshotException>().having(
           (error) => error.failure,
           'failure',
-          isA<TransactionSyncBusyFailure>(),
+          isA<SyncBusyFailure>(),
         ),
       ),
     );
@@ -575,7 +573,7 @@ void main() {
       await log.flush();
       directory.deleteSync(recursive: true);
     });
-    policy.failure = const TransactionSyncConnectionFailure();
+    policy.failure = const SyncConnectionFailure();
     final connection = await repository.getWallet(id, sync: true);
     expect(connection, isA<Err<Wallet, WalletFailure>>());
     if (connection case Err(:final failure)) {
@@ -589,7 +587,7 @@ void main() {
       (await log.readLogs()).where((row) => row.contains('WARNING')),
       hasLength(1),
     );
-    policy.failure = const TransactionSyncStorageFailure();
+    policy.failure = const SyncStorageFailure();
     final storage = await repository.getWallet(id, sync: true);
     if (storage case Err(:final failure)) {
       expect(failure, isA<WalletStorageFailure>());
@@ -683,13 +681,11 @@ void main() {
 
 final class _ThrowingPolicy implements WalletConnectionPort {
   @override
-  Future<Result<T, TransactionSyncFailure>> run<T>({
+  Future<Result<T, SyncFailure>> run<T>({
     required Network network,
-    required Future<Result<T, TransactionSyncFailure>> Function(
-      WalletConnection,
-    )
+    required Future<Result<T, SyncFailure>> Function(WalletConnection)
     operation,
-    required bool Function(TransactionSyncFailure) mayRetry,
+    required bool Function(SyncFailure) mayRetry,
   }) async {
     throw const FormatException('sensitive error detail');
   }

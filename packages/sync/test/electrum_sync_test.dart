@@ -14,13 +14,11 @@ final class _ThrowingPort implements WalletConnectionPort {
   _ThrowingPort(this.thrown);
 
   @override
-  Future<Result<T, TransactionSyncFailure>> run<T>({
+  Future<Result<T, SyncFailure>> run<T>({
     required Network network,
-    required Future<Result<T, TransactionSyncFailure>> Function(
-      WalletConnection,
-    )
+    required Future<Result<T, SyncFailure>> Function(WalletConnection)
     operation,
-    required bool Function(TransactionSyncFailure) mayRetry,
+    required bool Function(SyncFailure) mayRetry,
   }) async {
     calls++;
     await release.future;
@@ -40,7 +38,7 @@ void main() {
   ElectrumSync engine(WalletConnectionPort port) => ElectrumSync(
     connections: port,
     documentsDirectory: () async => '/nonexistent',
-    readRevision: (_) async => const Err(TransactionSyncNotFoundFailure()),
+    readRevision: (_) async => const Err(SyncNotFoundFailure()),
   );
 
   for (final (name, thrown) in [
@@ -79,8 +77,8 @@ void main() {
     final pass = sync.execute(descriptor);
     port.release.complete();
     expect(
-      (await pass as Err<SyncCompletion, TransactionSyncFailure>).failure,
-      isA<TransactionSyncStorageFailure>(),
+      (await pass as Err<SyncCompletion, SyncFailure>).failure,
+      isA<SyncStorageFailure>(),
     );
     expect(sync.isSyncing(), isFalse);
   });

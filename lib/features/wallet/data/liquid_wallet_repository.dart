@@ -1,5 +1,5 @@
 import 'package:sync/read.dart' as sync_read show validateAddress;
-import 'package:sync/sync.dart' show TransactionSyncFailure;
+import 'package:sync/sync.dart' show SyncFailure;
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/features/wallet/data/lwk_wallet_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
@@ -22,7 +22,7 @@ class LiquidWalletRepository implements LiquidSendPort {
   final LwkWalletDatasource _lwkWallet;
   final FrozenWalletUtxoDatasource _frozenWalletUtxoDatasource;
 
-  final Future<Result<void, TransactionSyncFailure>> Function(
+  final Future<Result<void, SyncFailure>> Function(
     String address,
     Network network,
   )
@@ -33,10 +33,7 @@ class LiquidWalletRepository implements LiquidSendPort {
     required this._secrets,
     required LwkWalletDatasource lwkWalletDatasource,
     required this._frozenWalletUtxoDatasource,
-    Future<Result<void, TransactionSyncFailure>> Function(
-      String address,
-      Network network,
-    )?
+    Future<Result<void, SyncFailure>> Function(String address, Network network)?
     validateAddress,
   }) : _lwkWallet = lwkWalletDatasource,
        _validateAddress = validateAddress ?? sync_read.validateAddress;

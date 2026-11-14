@@ -30,35 +30,35 @@ final descriptor = LiquidWalletDescriptor(
 
 class Catalog implements WalletCatalogPort {
   @override
-  Future<Result<PublicWalletDescriptor, TransactionSyncFailure>> find(
+  Future<Result<PublicWalletDescriptor, SyncFailure>> find(
     WalletKey key,
   ) async => Ok(descriptor);
   @override
-  Future<Result<List<PublicWalletDescriptor>, TransactionSyncFailure>>
-  list() async => Ok([descriptor]);
+  Future<Result<List<PublicWalletDescriptor>, SyncFailure>> list() async =>
+      Ok([descriptor]);
 }
 
 class _Both implements WalletCatalogPort {
   final PublicWalletDescriptor bitcoin;
   _Both(this.bitcoin);
   @override
-  Future<Result<PublicWalletDescriptor, TransactionSyncFailure>> find(
+  Future<Result<PublicWalletDescriptor, SyncFailure>> find(
     WalletKey wanted,
   ) async => Ok(wanted == bitcoin.key ? bitcoin : descriptor);
   @override
-  Future<Result<List<PublicWalletDescriptor>, TransactionSyncFailure>>
-  list() async => Ok([descriptor, bitcoin]);
+  Future<Result<List<PublicWalletDescriptor>, SyncFailure>> list() async =>
+      Ok([descriptor, bitcoin]);
 }
 
 class Reserved implements ReservedAddressPort {
   final indices = <int>{};
   bool fail = false;
   @override
-  Future<Result<bool, TransactionSyncFailure>> isReserved(
+  Future<Result<bool, SyncFailure>> isReserved(
     WalletKey key,
     String address,
   ) async => fail
-      ? const Err(TransactionSyncStorageFailure())
+      ? const Err(SyncStorageFailure())
       : Ok(indices.contains(int.parse(address)));
 }
 
@@ -119,7 +119,7 @@ class Sync implements WriterSyncOperation {
   final void Function(int?) action;
   Sync(this.action);
   @override
-  Future<Result<void, TransactionSyncFailure>> execute(
+  Future<Result<void, SyncFailure>> execute(
     PublicWalletDescriptor descriptor, {
     required int? issuedReceiveIndex,
   }) async {
@@ -133,18 +133,18 @@ class FailedSync implements WriterSyncOperation, WriterSyncMutation {
   final bool mayHaveMutated;
   FailedSync(this.mayHaveMutated);
   @override
-  Future<Result<void, TransactionSyncFailure>> execute(
+  Future<Result<void, SyncFailure>> execute(
     PublicWalletDescriptor descriptor, {
     required int? issuedReceiveIndex,
-  }) async => const Err(TransactionSyncConnectionFailure());
+  }) async => const Err(SyncConnectionFailure());
 }
 
 class RepairSync implements WriterSyncOperation {
   @override
-  Future<Result<void, TransactionSyncFailure>> execute(
+  Future<Result<void, SyncFailure>> execute(
     PublicWalletDescriptor descriptor, {
     required int? issuedReceiveIndex,
-  }) async => const Err(TransactionSyncNeedsRepairFailure());
+  }) async => const Err(SyncNeedsRepairFailure());
 }
 
 class UnchangedSync extends Sync implements WriterSyncChanges {
@@ -287,7 +287,7 @@ void main() {
                 isA<Err>().having(
                   (r) => r.failure,
                   'failure',
-                  isA<TransactionSyncBusyFailure>(),
+                  isA<SyncBusyFailure>(),
                 ),
               );
               expect(elapsedMs, inInclusiveRange(1000, 1199));
@@ -344,7 +344,7 @@ void main() {
           isA<Err>().having(
             (r) => r.failure,
             'failure',
-            isA<TransactionSyncStorageFailure>(),
+            isA<SyncStorageFailure>(),
           ),
         );
       }
@@ -433,7 +433,7 @@ void main() {
       );
       final admission = await writer.acquire(key);
       expect(admission, isA<Ok>());
-      final lease = (admission as Ok<ReadLease, TransactionSyncFailure>).value;
+      final lease = (admission as Ok<ReadLease, SyncFailure>).value;
       try {
         expect(
           await session.sync(
@@ -441,10 +441,10 @@ void main() {
             expectedGeneration: 1,
             operation: Sync((_) {}),
           ),
-          isA<Err<WriterOutcome, TransactionSyncFailure>>().having(
+          isA<Err<WriterOutcome, SyncFailure>>().having(
             (result) => result.failure,
             'failure',
-            isA<TransactionSyncBusyFailure>(),
+            isA<SyncBusyFailure>(),
           ),
         );
       } finally {
@@ -496,7 +496,7 @@ void main() {
           expectedGeneration: 1,
           existingOnly: true,
         );
-        expect(result, isA<Ok<WriterOutcome, TransactionSyncFailure>>());
+        expect(result, isA<Ok<WriterOutcome, SyncFailure>>());
         expect((result as Ok).value, isA<WriterUnchanged>());
         expect(store.record(key)?.state.stamp, before);
         expect(store.record(key)?.intent, isNull);
@@ -521,9 +521,8 @@ void main() {
       );
       expect(
         result,
-        isA<Err<WriterOutcome, TransactionSyncFailure>>().having(
-          (result) =>
-              (result.failure as TransactionSyncNeedsRepairFailure).revision,
+        isA<Err<WriterOutcome, SyncFailure>>().having(
+          (result) => (result.failure as SyncNeedsRepairFailure).revision,
           'writer stamp',
           before,
         ),
@@ -541,7 +540,7 @@ void main() {
       reconcile: false,
       operation: Sync((_) => fail('must not sync')),
     );
-    expect(result, isA<Err<WriterOutcome, TransactionSyncFailure>>());
+    expect(result, isA<Err<WriterOutcome, SyncFailure>>());
     expect(sessions.opens, opens);
     expect(store.record(key)?.intent, before?.intent);
     expect(store.record(key)?.state.stamp, before?.state.stamp);
@@ -553,11 +552,10 @@ void main() {
       key,
       expectedGeneration: 1,
       reconcile: false,
-      preflight: () async =>
-          const Err(TransactionSyncInitialScanRequiredFailure()),
+      preflight: () async => const Err(SyncInitialScanRequiredFailure()),
       operation: Sync((_) => fail('must not sync')),
     );
-    expect(result, isA<Err<WriterOutcome, TransactionSyncFailure>>());
+    expect(result, isA<Err<WriterOutcome, SyncFailure>>());
     expect(store.record(key)?.intent, isNull);
     expect(store.record(key)?.state.stamp, before);
   });
@@ -649,9 +647,9 @@ void main() {
         expectedGeneration: 1,
         operation: UnchangedSync(),
       );
-      expect(unchanged, isA<Ok<WriterOutcome, TransactionSyncFailure>>());
+      expect(unchanged, isA<Ok<WriterOutcome, SyncFailure>>());
       expect(
-        (unchanged as Ok<WriterOutcome, TransactionSyncFailure>).value,
+        (unchanged as Ok<WriterOutcome, SyncFailure>).value,
         isA<WriterUnchanged>(),
       );
       expect(store.record(key)?.state.stamp, before);
@@ -672,7 +670,7 @@ void main() {
         operation: UnchangedSync(),
       );
       expect(
-        (recovered as Ok<WriterOutcome, TransactionSyncFailure>).value,
+        (recovered as Ok<WriterOutcome, SyncFailure>).value,
         isA<WriterCommitted>(),
       );
       expect(store.record(key)?.state.syncFailed, isFalse);
@@ -921,10 +919,10 @@ void main() {
       await syncing(
         reopened,
       ).sync(bitcoin.key, expectedGeneration: 1, operation: Sync((_) {})),
-      isA<Err<WriterOutcome, TransactionSyncFailure>>().having(
+      isA<Err<WriterOutcome, SyncFailure>>().having(
         (result) => result.failure,
         'failure',
-        isA<TransactionSyncStorageFailure>(),
+        isA<SyncStorageFailure>(),
       ),
     );
   });

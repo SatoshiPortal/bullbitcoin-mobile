@@ -1,6 +1,6 @@
 import 'package:bb_mobile/features/wallet/domain/usecases/read_wallet_usecase.dart';
 import 'package:sync/read.dart';
-import 'package:sync/sync.dart' show SyncReason, TransactionSyncBusyFailure;
+import 'package:sync/sync.dart' show SyncReason, SyncBusyFailure;
 import 'package:bb_mobile/features/wallet/domain/wallet_failure_log_code.dart';
 import 'dart:async';
 import 'package:bb_mobile/features/wallet/domain/wallet_discovery_failure.dart';
@@ -446,8 +446,7 @@ class SyncCoordinator {
 
   void _settle(_SyncPass pass, Object? error) {
     final busy =
-        error is WalletSnapshotException &&
-        error.failure is TransactionSyncBusyFailure;
+        error is WalletSnapshotException && error.failure is SyncBusyFailure;
     final walletId = pass.walletId;
     if (walletId != null && pass.isActive == null) {
       _manualPasses.remove(walletId);

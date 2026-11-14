@@ -101,7 +101,7 @@ void main() {
           var attempts = 0;
           when(() => native.receive(row, advance: false)).thenAnswer((_) async {
             if (++attempts < 3) {
-              throw const WalletSnapshotException(TransactionSyncBusyFailure());
+              throw const WalletSnapshotException(SyncBusyFailure());
             }
             return (address: issuedAddress, index: 7);
           });
@@ -133,9 +133,9 @@ void main() {
       );
 
       test('persistent busy is bounded', () async {
-        when(() => native.receive(row, advance: false)).thenThrow(
-          const WalletSnapshotException(TransactionSyncBusyFailure()),
-        );
+        when(
+          () => native.receive(row, advance: false),
+        ).thenThrow(const WalletSnapshotException(SyncBusyFailure()));
         final prepare = PrepareReceiveAddressUsecase(
           GetReceiveAddressUsecase(walletAddressRepository: repository),
         );
@@ -155,9 +155,7 @@ void main() {
       });
 
       test('other failures are not retried', () async {
-        const error = WalletSnapshotException(
-          TransactionSyncNeedsRepairFailure(),
-        );
+        const error = WalletSnapshotException(SyncNeedsRepairFailure());
         when(() => native.receive(row, advance: false)).thenThrow(error);
         await expectLater(
           repository.getLastRevealedReceiveAddress(walletId: origin),
@@ -171,7 +169,7 @@ void main() {
         when(
           () => native.receive(row, advance: true),
         ).thenAnswer((_) async => (address: issuedAddress, index: 8));
-        const error = WalletSnapshotException(TransactionSyncBusyFailure());
+        const error = WalletSnapshotException(SyncBusyFailure());
         when(() => labels.fetchByReference(any())).thenThrow(error);
         await expectLater(
           repository.generateNewReceiveAddress(walletId: origin),

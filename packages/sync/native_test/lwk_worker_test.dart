@@ -61,9 +61,9 @@ void main() {
       metadata.close();
       // The Bitcoin fixture deliberately cannot serve Liquid headers. The error must occur inside sync_, after successful worker initialization.
       final result = await sync.execute(liquid);
-      expect(result, isA<Err<SyncCompletion, TransactionSyncFailure>>());
+      expect(result, isA<Err<SyncCompletion, SyncFailure>>());
       if (result case Err(:final failure)) {
-        expect(failure, isA<TransactionSyncConnectionFailure>());
+        expect(failure, isA<SyncConnectionFailure>());
       }
       expect(connections.attempts, 2);
     },

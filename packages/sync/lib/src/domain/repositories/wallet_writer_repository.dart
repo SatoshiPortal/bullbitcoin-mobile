@@ -1,7 +1,7 @@
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
 
-import '../transaction_sync_failure.dart';
+import '../sync_failure.dart';
 import '../wallet_key.dart';
 import '../wallet_revision.dart';
 
@@ -11,14 +11,14 @@ import '../wallet_revision.dart';
 abstract interface class WalletWriterRepository {
   /// Reserves the next generation of a deleted wallet before re-import.
   @useResult
-  Future<Result<WriterOutcome, TransactionSyncFailure>> prepareReimport(
+  Future<Result<WriterOutcome, SyncFailure>> prepareReimport(
     WalletKey key, {
     required int expectedGeneration,
   });
 
   /// Creates the store, or adopts an existing one with [existingOnly].
   @useResult
-  Future<Result<WriterOutcome, TransactionSyncFailure>> create(
+  Future<Result<WriterOutcome, SyncFailure>> create(
     WalletKey key, {
     required int expectedGeneration,
     bool existingOnly = false,
@@ -26,21 +26,21 @@ abstract interface class WalletWriterRepository {
 
   /// Issues a receive address that is neither reserved nor used.
   @useResult
-  Future<Result<ReceiveAddressIssued, TransactionSyncFailure>> receive(
+  Future<Result<ReceiveAddressIssued, SyncFailure>> receive(
     WalletKey key, {
     required int expectedGeneration,
     bool advance = false,
   });
 
   @useResult
-  Future<Result<WriterOutcome, TransactionSyncFailure>> delete(
+  Future<Result<WriterOutcome, SyncFailure>> delete(
     WalletKey key, {
     required int expectedGeneration,
   });
 
   /// Rebuilds a Liquid store after the precise LWK status conflict.
   @useResult
-  Future<Result<WriterOutcome, TransactionSyncFailure>> repair(
+  Future<Result<WriterOutcome, SyncFailure>> repair(
     WalletKey key, {
     required int expectedGeneration,
   });

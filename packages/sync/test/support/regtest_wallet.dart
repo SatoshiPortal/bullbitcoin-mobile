@@ -49,20 +49,19 @@ final class SingleWalletCatalog implements WalletCatalogPort {
   SingleWalletCatalog(this.descriptor);
 
   @override
-  Future<Result<PublicWalletDescriptor, TransactionSyncFailure>> find(
+  Future<Result<PublicWalletDescriptor, SyncFailure>> find(
     WalletKey key,
-  ) async => key == descriptor.key
-      ? Ok(descriptor)
-      : const Err(TransactionSyncNotFoundFailure());
+  ) async =>
+      key == descriptor.key ? Ok(descriptor) : const Err(SyncNotFoundFailure());
 
   @override
-  Future<Result<List<PublicWalletDescriptor>, TransactionSyncFailure>>
-  list() async => Ok([descriptor]);
+  Future<Result<List<PublicWalletDescriptor>, SyncFailure>> list() async =>
+      Ok([descriptor]);
 }
 
 final class NoReservedAddresses implements ReservedAddressPort {
   @override
-  Future<Result<bool, TransactionSyncFailure>> isReserved(
+  Future<Result<bool, SyncFailure>> isReserved(
     WalletKey key,
     String address,
   ) async => const Ok(false);

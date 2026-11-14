@@ -22,10 +22,7 @@ final class ForegroundWalletSync {
       // reaches finished so callers clear their syncing state.
       .where(
         (event) => switch (event.result) {
-          Err(
-            failure: TransactionSyncBusyFailure() ||
-                TransactionSyncInitialScanRequiredFailure(),
-          ) =>
+          Err(failure: SyncBusyFailure() || SyncInitialScanRequiredFailure()) =>
             false,
           _ => true,
         },
@@ -33,7 +30,7 @@ final class ForegroundWalletSync {
       .map(
         (event) => ElectrumSyncResult(
           isLiquid: event.key.network is LiquidNetwork,
-          success: event.result is Ok<SyncCompletion, TransactionSyncFailure>,
+          success: event.result is Ok<SyncCompletion, SyncFailure>,
         ),
       );
 
@@ -59,7 +56,7 @@ final class ForegroundWalletSync {
         );
         final native = _native;
         if (result case Err(
-          failure: TransactionSyncNeedsRepairFailure(),
+          failure: SyncNeedsRepairFailure(),
         ) when native != null) {
           await native.repair(value.key);
           result = await _sync.execute(

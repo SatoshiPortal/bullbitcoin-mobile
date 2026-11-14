@@ -60,8 +60,7 @@ void main() {
           2,
         );
         expect(
-          (await reader.read(key)
-                  as Ok<WalletRevisionState, TransactionSyncFailure>)
+          (await reader.read(key) as Ok<WalletRevisionState, SyncFailure>)
               .value
               .stamp
               .revision,
@@ -105,8 +104,7 @@ void main() {
               : writerSchemaVersion;
           expect(committed.initializedSchema, expected);
           expect(
-            (await reader.read(key)
-                    as Ok<WalletRevisionState, TransactionSyncFailure>)
+            (await reader.read(key) as Ok<WalletRevisionState, SyncFailure>)
                 .value
                 .initializedSchema,
             expected,

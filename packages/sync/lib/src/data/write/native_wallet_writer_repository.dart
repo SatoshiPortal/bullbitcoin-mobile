@@ -9,7 +9,7 @@ import '../../domain/ports/read_admission_port.dart';
 import '../../domain/ports/reserved_address_port.dart';
 import '../../domain/ports/wallet_catalog_port.dart';
 import '../../domain/repositories/wallet_writer_repository.dart';
-import '../../domain/transaction_sync_failure.dart';
+import '../../domain/sync_failure.dart';
 import '../../domain/wallet_key.dart';
 import '../../domain/wallet_revision.dart';
 import '../lease_diagnostics.dart';
@@ -73,7 +73,7 @@ final class NativeWalletWriterRepository
   /// row, so startup cannot mistake it for the row of an interrupted deletion.
   @override
   @useResult
-  Future<Result<WriterOutcome, TransactionSyncFailure>> prepareReimport(
+  Future<Result<WriterOutcome, SyncFailure>> prepareReimport(
     WalletKey key, {
     required int expectedGeneration,
   }) => _session.run(key, expectedGeneration, WriteIntent.create, () async {
@@ -81,16 +81,16 @@ final class NativeWalletWriterRepository
     _session.expectGeneration(old, expectedGeneration);
     if (old == null || old.state.lifecycle != WalletLifecycle.deleted) {
       LeaseDiagnostics.current?.busy(LeaseBusySource.lifecycleGate);
-      throw const WriterRefusal(TransactionSyncBusyFailure());
+      throw const WriterRefusal(SyncBusyFailure());
     }
     switch (await _catalog.find(key)) {
-      case Err(failure: TransactionSyncNotFoundFailure()):
+      case Err(failure: SyncNotFoundFailure()):
         break;
       case Err(:final failure):
         throw WriterRefusal(failure);
       case Ok():
         LeaseDiagnostics.current?.busy(LeaseBusySource.lifecycleGate);
-        throw const WriterRefusal(TransactionSyncBusyFailure());
+        throw const WriterRefusal(SyncBusyFailure());
     }
     revisions.begin(key, WriteIntent.create);
     final prepared = revisions.record(key);
@@ -100,7 +100,7 @@ final class NativeWalletWriterRepository
 
   @override
   @useResult
-  Future<Result<WriterOutcome, TransactionSyncFailure>> create(
+  Future<Result<WriterOutcome, SyncFailure>> create(
     WalletKey key, {
     required int expectedGeneration,
     bool existingOnly = false,
@@ -112,14 +112,14 @@ final class NativeWalletWriterRepository
 
   @override
   @useResult
-  Future<Result<ReceiveAddressIssued, TransactionSyncFailure>> receive(
+  Future<Result<ReceiveAddressIssued, SyncFailure>> receive(
     WalletKey key, {
     required int expectedGeneration,
     bool advance = false,
   }) => _session.run(key, expectedGeneration, WriteIntent.receive, () async {
     final record = _session.active(key, expectedGeneration);
     if (record.needsSync) {
-      throw const WriterRefusal(TransactionSyncNeedsRepairFailure());
+      throw const WriterRefusal(SyncNeedsRepairFailure());
     }
     final descriptor = await _session.descriptor(key);
     revisions.begin(key, WriteIntent.receive);
@@ -146,7 +146,7 @@ final class NativeWalletWriterRepository
         }
         index++;
       }
-      throw const WriterRefusal(TransactionSyncStorageFailure());
+      throw const WriterRefusal(SyncStorageFailure());
     } finally {
       session.close();
     }
@@ -154,7 +154,7 @@ final class NativeWalletWriterRepository
 
   @override
   @useResult
-  Future<Result<WriterOutcome, TransactionSyncFailure>> delete(
+  Future<Result<WriterOutcome, SyncFailure>> delete(
     WalletKey key, {
     required int expectedGeneration,
   }) => _session.run(key, expectedGeneration, WriteIntent.delete, () async {
@@ -172,13 +172,13 @@ final class NativeWalletWriterRepository
   /// It keeps issued metadata and requires a successful sync before receive.
   @override
   @useResult
-  Future<Result<WriterOutcome, TransactionSyncFailure>> repair(
+  Future<Result<WriterOutcome, SyncFailure>> repair(
     WalletKey key, {
     required int expectedGeneration,
   }) => _session.run(key, expectedGeneration, WriteIntent.repair, () async {
     final record = _session.active(key, expectedGeneration);
     if (key.network is! LiquidNetwork) {
-      throw const WriterRefusal(TransactionSyncUnsupportedNetworkFailure());
+      throw const WriterRefusal(SyncUnsupportedNetworkFailure());
     }
     final descriptor = await _session.descriptor(key);
     revisions.begin(key, WriteIntent.load);
@@ -212,9 +212,7 @@ final class NativeWalletWriterRepository
 
   @override
   @useResult
-  Future<Result<ReadLease, TransactionSyncFailure>> acquire(
-    WalletKey key,
-  ) async {
+  Future<Result<ReadLease, SyncFailure>> acquire(WalletKey key) async {
     final failure = nativeKeyFailure(key);
     if (failure != null) return Err(failure);
     final trace =
@@ -233,11 +231,11 @@ final class NativeWalletWriterRepository
     if (acquisition case Err(:final failure)) {
       return Err(failure);
     }
-    final lock = (acquisition as Ok<WriterLock, TransactionSyncFailure>).value;
+    final lock = (acquisition as Ok<WriterLock, SyncFailure>).value;
     try {
       final record = revisions.record(key);
       if (record == null || record.state.lifecycle == WalletLifecycle.deleted) {
-        throw const WriterRefusal(TransactionSyncNotFoundFailure());
+        throw const WriterRefusal(SyncNotFoundFailure());
       }
       if (record.state.lifecycle != WalletLifecycle.active ||
           record.state.initializedSchema != writerSchemaVersion) {
@@ -246,10 +244,10 @@ final class NativeWalletWriterRepository
               ? LeaseBusySource.lifecycleGate
               : LeaseBusySource.schemaGate,
         );
-        throw const WriterRefusal(TransactionSyncBusyFailure());
+        throw const WriterRefusal(SyncBusyFailure());
       }
       if (record.needsSync) {
-        throw const WriterRefusal(TransactionSyncNeedsRepairFailure());
+        throw const WriterRefusal(SyncNeedsRepairFailure());
       }
       return Ok(_ReadLease(lock, record.state.stamp));
     } on Object catch (error) {

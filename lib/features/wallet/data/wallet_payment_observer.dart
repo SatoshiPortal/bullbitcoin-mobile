@@ -29,7 +29,7 @@ final class WalletPaymentObserver implements PaymentAnnouncementPort {
 
   /// A sync completion of the foreground engine. Only a visible app records
   /// it: what the user could see is never announced later.
-  Future<Result<void, TransactionSyncFailure>> recordCompletion(
+  Future<Result<void, SyncFailure>> recordCompletion(
     SyncCompletion completion,
   ) async {
     // Capture before ANY await, including opening the durable store.
@@ -37,7 +37,7 @@ final class WalletPaymentObserver implements PaymentAnnouncementPort {
     final incoming = completion.incomingTxids;
     if (!visible || incoming == null) return const Ok(null);
     final revision = completion.revision;
-    if (revision == null) return const Err(TransactionSyncStorageFailure());
+    if (revision == null) return const Err(SyncStorageFailure());
     try {
       final notifications = await _notifications();
       final recorded = await notifications.recordForeground(
@@ -45,7 +45,7 @@ final class WalletPaymentObserver implements PaymentAnnouncementPort {
       );
       if (recorded is Err) {
         log.warning('Payment observation persistence failed');
-        return const Err(TransactionSyncStorageFailure());
+        return const Err(SyncStorageFailure());
       }
       log.fine(
         'Payment observation recorded foreground=true incoming=${incoming.length} revision=${revision.revision}',
@@ -53,7 +53,7 @@ final class WalletPaymentObserver implements PaymentAnnouncementPort {
       return const Ok(null);
     } on Exception {
       log.warning('Payment observation storage unavailable');
-      return const Err(TransactionSyncStorageFailure());
+      return const Err(SyncStorageFailure());
     }
   }
 

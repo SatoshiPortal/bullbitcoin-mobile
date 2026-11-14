@@ -72,7 +72,7 @@ void main() {
       );
       expect(
         (await writer.create(key, expectedGeneration: 1) as Err).failure,
-        isA<TransactionSyncInvalidCatalogFailure>(),
+        isA<SyncInvalidCatalogFailure>(),
       );
       expect(
         await fingerprint(Directory(nativeWalletStoragePath(root.path, key))),
@@ -139,13 +139,9 @@ void main() {
       );
       final before = await fingerprint(documents);
       final result = await reader.liquid(descriptor);
-      expect(
-        result,
-        isA<Ok<WalletReadSnapshot<lwk.Wallet>, TransactionSyncFailure>>(),
-      );
+      expect(result, isA<Ok<WalletReadSnapshot<lwk.Wallet>, SyncFailure>>());
       final snapshot =
-          (result as Ok<WalletReadSnapshot<lwk.Wallet>, TransactionSyncFailure>)
-              .value;
+          (result as Ok<WalletReadSnapshot<lwk.Wallet>, SyncFailure>).value;
       expect(
         (await snapshot.wallet.address(index: 0)).confidential,
         address.confidential,
@@ -195,7 +191,7 @@ void main() {
       await Link('${store.path}/000000000000').create(outside.path);
       expect(
         (await reader.liquid(descriptor) as Err).failure,
-        isA<TransactionSyncNeedsRepairFailure>(),
+        isA<SyncNeedsRepairFailure>(),
       );
       expect(await outside.readAsString(), 'not an update');
       expect(admission.released, admission.acquired);
@@ -203,22 +199,20 @@ void main() {
       await Directory(source).delete(recursive: true);
       expect(
         (await reader.liquid(descriptor) as Err).failure,
-        isA<TransactionSyncNotFoundFailure>(),
+        isA<SyncNotFoundFailure>(),
       );
       expect(await Directory(source).exists(), isFalse);
       expect(admission.released, admission.acquired);
       await Directory(source).create();
       expect(
         (await reader.liquid(descriptor) as Err).failure,
-        isA<TransactionSyncNotFoundFailure>(),
+        isA<SyncNotFoundFailure>(),
       );
       expect(await Directory(source).list().toList(), isEmpty);
       readiness.schemaVersion = null;
       final stale = await reader.liquid(descriptor);
       expect(
-        (stale as Ok<WalletReadSnapshot<lwk.Wallet>, TransactionSyncFailure>)
-            .value
-            .stale,
+        (stale as Ok<WalletReadSnapshot<lwk.Wallet>, SyncFailure>).value.stale,
         isTrue,
       );
       // A reader with no previous snapshot must return Busy without hydration.
@@ -231,7 +225,7 @@ void main() {
       );
       expect(
         (await uninitialized.liquid(descriptor) as Err).failure,
-        isA<TransactionSyncBusyFailure>(),
+        isA<SyncBusyFailure>(),
       );
       expect(await Directory(source).list().toList(), isEmpty);
     },
@@ -244,9 +238,7 @@ final class FakeAdmission implements ReadAdmissionPort {
   int released = 0;
   FakeAdmission(this.revisions);
   @override
-  Future<Result<ReadLease, TransactionSyncFailure>> acquire(
-    WalletKey key,
-  ) async {
+  Future<Result<ReadLease, SyncFailure>> acquire(WalletKey key) async {
     acquired++;
     return Ok(
       FakeLease(revisions.state.stamp, () {
@@ -269,17 +261,17 @@ final class _Catalog implements WalletCatalogPort {
   PublicWalletDescriptor descriptor;
   _Catalog(this.descriptor);
   @override
-  Future<Result<PublicWalletDescriptor, TransactionSyncFailure>> find(
+  Future<Result<PublicWalletDescriptor, SyncFailure>> find(
     WalletKey key,
   ) async => Ok(descriptor);
   @override
-  Future<Result<List<PublicWalletDescriptor>, TransactionSyncFailure>>
-  list() async => Ok([descriptor]);
+  Future<Result<List<PublicWalletDescriptor>, SyncFailure>> list() async =>
+      Ok([descriptor]);
 }
 
 final class _Reserved implements ReservedAddressPort {
   @override
-  Future<Result<bool, TransactionSyncFailure>> isReserved(
+  Future<Result<bool, SyncFailure>> isReserved(
     WalletKey key,
     String address,
   ) async => const Ok(false);

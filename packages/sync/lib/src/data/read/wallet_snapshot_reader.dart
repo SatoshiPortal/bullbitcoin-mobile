@@ -8,7 +8,7 @@ import 'package:bull_logger/bull_logger.dart';
 
 import '../../domain/ports/wallet_read_readiness_port.dart';
 
-import '../../domain/transaction_sync_failure.dart';
+import '../../domain/sync_failure.dart';
 import '../../domain/native_network_policy.dart';
 import '../../domain/public_wallet_descriptor.dart';
 import '../../domain/ports/wallet_catalog_port.dart';
@@ -61,7 +61,7 @@ final class WalletSnapshotReader {
   }
 
   /// Looks up the canonical descriptor without importing application models.
-  Future<Result<WalletReadSnapshot<Object>, TransactionSyncFailure>> read(
+  Future<Result<WalletReadSnapshot<Object>, SyncFailure>> read(
     WalletKey key,
     WalletCatalogPort catalog,
   ) async {
@@ -70,7 +70,7 @@ final class WalletSnapshotReader {
         return Err(failure);
       case Ok(:final value):
         if (value.key != key) {
-          return const Err(TransactionSyncInvalidCatalogFailure());
+          return const Err(SyncInvalidCatalogFailure());
         }
         return switch (value) {
           BitcoinWalletDescriptor() => bitcoin(value),
@@ -85,22 +85,19 @@ final class WalletSnapshotReader {
     WalletCatalogPort catalog,
   ) async => switch (await read(key, catalog)) {
     Ok(:final value) when value.wallet is T => value.wallet as T,
-    Ok() => throw const WalletSnapshotException(
-      TransactionSyncInvalidCatalogFailure(),
-    ),
+    Ok() => throw const WalletSnapshotException(SyncInvalidCatalogFailure()),
     Err(:final failure) => throw WalletSnapshotException(failure),
   };
 
-  Future<Result<WalletReadSnapshot<bdk.Wallet>, TransactionSyncFailure>>
-  bitcoin(BitcoinWalletDescriptor descriptor) =>
-      _read<bdk.Wallet>(descriptor, (ready) => _bitcoin(descriptor));
+  Future<Result<WalletReadSnapshot<bdk.Wallet>, SyncFailure>> bitcoin(
+    BitcoinWalletDescriptor descriptor,
+  ) => _read<bdk.Wallet>(descriptor, (ready) => _bitcoin(descriptor));
 
-  Future<Result<WalletReadSnapshot<lwk.Wallet>, TransactionSyncFailure>> liquid(
+  Future<Result<WalletReadSnapshot<lwk.Wallet>, SyncFailure>> liquid(
     LiquidWalletDescriptor descriptor,
   ) => _read<lwk.Wallet>(descriptor, (ready) => _liquid(descriptor, ready));
 
-  Future<Result<WalletReadSnapshot<T>, TransactionSyncFailure>>
-  _read<T extends Object>(
+  Future<Result<WalletReadSnapshot<T>, SyncFailure>> _read<T extends Object>(
     PublicWalletDescriptor descriptor,
     Future<T> Function(WalletReadReady) hydrate,
   ) async {
@@ -148,7 +145,7 @@ final class WalletSnapshotReader {
     }
   }
 
-  Future<Result<WalletReadSnapshot<T>, TransactionSyncFailure>>
+  Future<Result<WalletReadSnapshot<T>, SyncFailure>>
   _readAdmitted<T extends Object>(
     PublicWalletDescriptor descriptor,
     Future<T> Function(WalletReadReady) hydrate,
@@ -157,17 +154,16 @@ final class WalletSnapshotReader {
     final trace = LeaseDiagnostics.current;
     final stateResult = await revisions.read(key);
     if (stateResult case Err(:final failure)) {
-      if (failure is TransactionSyncBusyFailure) {
+      if (failure is SyncBusyFailure) {
         trace?.busy(LeaseBusySource.revisionRead);
       }
       _cache.remove(key);
       return Err(failure);
     }
-    final state =
-        (stateResult as Ok<WalletRevisionState, TransactionSyncFailure>).value;
+    final state = (stateResult as Ok<WalletRevisionState, SyncFailure>).value;
     if (state.stamp.key != key || state.lifecycle == WalletLifecycle.deleted) {
       _cache.remove(key);
-      return const Err(TransactionSyncNotFoundFailure());
+      return const Err(SyncNotFoundFailure());
     }
     final cached = _cache[key];
     if (cached != null &&
@@ -177,20 +173,20 @@ final class WalletSnapshotReader {
     WalletReadSnapshot<T>? current;
     final entry = _cache[key];
     if (entry != null && entry.descriptor != _descriptorIdentity(descriptor)) {
-      return const Err(TransactionSyncInvalidCatalogFailure());
+      return const Err(SyncInvalidCatalogFailure());
     }
     final candidate = entry?.snapshot;
     if (candidate != null && candidate.wallet is T) {
       current = WalletReadSnapshot(candidate.wallet as T, candidate.revision);
     }
-    Future<Result<WalletReadSnapshot<T>, TransactionSyncFailure>> busy([
+    Future<Result<WalletReadSnapshot<T>, SyncFailure>> busy([
       LeaseBusySource? source,
     ]) async {
       if (trace != null) trace.read = LeaseRead.stale;
       if (source != null) trace?.busy(source);
       final snapshot = current;
       if (snapshot == null) {
-        return const Err(TransactionSyncBusyFailure());
+        return const Err(SyncBusyFailure());
       }
       final latest = await revisions.read(key);
       if (latest case Ok(value: final value)
@@ -202,7 +198,7 @@ final class WalletSnapshotReader {
         );
       }
       _cache.remove(key);
-      return const Err(TransactionSyncBusyFailure());
+      return const Err(SyncBusyFailure());
     }
 
     if (state.lifecycle == WalletLifecycle.pendingWrite ||
@@ -219,7 +215,7 @@ final class WalletSnapshotReader {
     try {
       {
         switch (await liquidAdmission.acquire(key)) {
-          case Err(failure: TransactionSyncBusyFailure()):
+          case Err(failure: SyncBusyFailure()):
             return busy();
           case Err(:final failure):
             return Err(failure);
@@ -237,15 +233,14 @@ final class WalletSnapshotReader {
         requiredSchemaVersion,
       );
       if (readyResult case Err(:final failure)) {
-        if (failure is TransactionSyncBusyFailure) {
+        if (failure is SyncBusyFailure) {
           // Readiness owns the exact gate diagnostic.
           return busy();
         }
         _cache.remove(key);
         return Err(failure);
       }
-      final ready =
-          (readyResult as Ok<WalletReadReady, TransactionSyncFailure>).value;
+      final ready = (readyResult as Ok<WalletReadReady, SyncFailure>).value;
       if (ready.revision != stamp ||
           ready.schemaVersion != requiredSchemaVersion) {
         return busy(
@@ -298,17 +293,17 @@ final class WalletSnapshotReader {
       }
       return busy(LeaseBusySource.revisionRead);
     } on _ReadFailure catch (e) {
-      if (e.failure is TransactionSyncBusyFailure) {
+      if (e.failure is SyncBusyFailure) {
         return busy(LeaseBusySource.schemaGate);
       }
       return Err(e.failure);
     } on FileSystemException {
-      return const Err(TransactionSyncStorageFailure());
+      return const Err(SyncStorageFailure());
     } catch (e) {
       if (e is Error) {
         rethrow;
       }
-      return const Err(TransactionSyncNeedsRepairFailure());
+      return const Err(SyncNeedsRepairFailure());
     } finally {
       try {
         final rejected = unpublished;
@@ -331,10 +326,10 @@ final class WalletSnapshotReader {
   Future<void> _require(String path, FileSystemEntityType type) async {
     final actual = await FileSystemEntity.type(path, followLinks: false);
     if (actual == FileSystemEntityType.notFound) {
-      throw const _ReadFailure(TransactionSyncNotFoundFailure());
+      throw const _ReadFailure(SyncNotFoundFailure());
     }
     if (actual != type) {
-      throw const _ReadFailure(TransactionSyncNeedsRepairFailure());
+      throw const _ReadFailure(SyncNeedsRepairFailure());
     }
   }
 
@@ -343,7 +338,7 @@ final class WalletSnapshotReader {
     if (network != BitcoinNetwork.mainnet &&
         network != BitcoinNetwork.testnet &&
         network != BitcoinNetwork.regtest) {
-      throw const _ReadFailure(TransactionSyncUnsupportedNetworkFailure());
+      throw const _ReadFailure(SyncUnsupportedNetworkFailure());
     }
     final source = nativeWalletStoragePath(documentsDirectory, descriptor.key);
     await _require(source, FileSystemEntityType.file);
@@ -370,13 +365,11 @@ final class WalletSnapshotReader {
         BitcoinNetwork.mainnet => bdk.Network.bitcoin,
         BitcoinNetwork.testnet => bdk.Network.testnet,
         BitcoinNetwork.regtest => bdk.Network.regtest,
-        _ => throw const _ReadFailure(
-          TransactionSyncUnsupportedNetworkFailure(),
-        ),
+        _ => throw const _ReadFailure(SyncUnsupportedNetworkFailure()),
       };
       if (wallet.network() != expected) {
         wallet.dispose();
-        throw const _ReadFailure(TransactionSyncInvalidCatalogFailure());
+        throw const _ReadFailure(SyncInvalidCatalogFailure());
       }
       return wallet;
     } finally {
@@ -394,7 +387,7 @@ final class WalletSnapshotReader {
       LiquidNetwork.mainnet => lwk.LiquidNetwork.mainnet,
       LiquidNetwork.testnet => lwk.LiquidNetwork.testnet,
       LiquidNetwork.regtest => lwk.LiquidNetwork.regtest,
-      _ => throw const _ReadFailure(TransactionSyncUnsupportedNetworkFailure()),
+      _ => throw const _ReadFailure(SyncUnsupportedNetworkFailure()),
     };
     final source = nativeWalletStoragePath(documentsDirectory, descriptor.key);
     await _require(source, FileSystemEntityType.directory);
@@ -405,7 +398,7 @@ final class WalletSnapshotReader {
         !RegExp(
           r'^[a-zA-Z0-9_-]+/enc_cache/[a-fA-F0-9]+$',
         ).hasMatch(relative)) {
-      throw const _ReadFailure(TransactionSyncBusyFailure());
+      throw const _ReadFailure(SyncBusyFailure());
     }
     var checked = source;
     for (final segment in relative.split('/')) {
@@ -426,14 +419,14 @@ final class WalletSnapshotReader {
 }
 
 final class _ReadFailure implements Exception {
-  final TransactionSyncFailure failure;
+  final SyncFailure failure;
   const _ReadFailure(this.failure);
 }
 
 /// Transitional exception for legacy datasources whose APIs still throw.
 /// Result-based consumers should propagate the reader's failure directly.
 final class WalletSnapshotException implements Exception {
-  final TransactionSyncFailure failure;
+  final SyncFailure failure;
 
   const WalletSnapshotException(this.failure);
 

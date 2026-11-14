@@ -9,7 +9,7 @@ final class ReservedAddressPortImpl implements ReservedAddressPort {
   ReservedAddressPortImpl(this._labels);
 
   @override
-  Future<Result<bool, TransactionSyncFailure>> isReserved(
+  Future<Result<bool, SyncFailure>> isReserved(
     WalletKey key,
     String address,
   ) async {
@@ -19,7 +19,7 @@ final class ReservedAddressPortImpl implements ReservedAddressPort {
       final labels = await _labels.fetchByReference(address);
       return Ok(labels.any((label) => LabelSystem.isSystemLabel(label.label)));
     } on Exception {
-      return const Err(TransactionSyncStorageFailure());
+      return const Err(SyncStorageFailure());
     }
   }
 }

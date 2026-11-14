@@ -2,22 +2,22 @@ import 'package:bull_sdk/bdk.dart' as bdk;
 import 'package:bull_sdk/lwk.dart' as lwk;
 import 'package:primitives/primitives.dart';
 
-import '../../domain/transaction_sync_failure.dart';
+import '../../domain/sync_failure.dart';
 
 /// Consumer authorization against the captured wallet network, not URI parsing.
 /// Testnet and regtest Base58 encodings are ambiguous; regtest accepts only its
 /// distinct witness HRP. Historical testnet Base58 behavior is unchanged.
-Future<Result<void, TransactionSyncFailure>> validateAddress(
+Future<Result<void, SyncFailure>> validateAddress(
   String address,
   Network network,
 ) async {
   switch (network) {
     case BitcoinNetwork.signet:
-      return const Err(TransactionSyncUnsupportedNetworkFailure());
+      return const Err(SyncUnsupportedNetworkFailure());
     case BitcoinNetwork():
       if (network == BitcoinNetwork.regtest &&
           !address.toLowerCase().startsWith('bcrt1')) {
-        return const Err(TransactionSyncInvalidAddressFailure());
+        return const Err(SyncInvalidAddressFailure());
       }
       final expected = switch (network) {
         BitcoinNetwork.mainnet => bdk.Network.bitcoin,
@@ -30,12 +30,12 @@ Future<Result<void, TransactionSyncFailure>> validateAddress(
         try {
           return parsed.isValidForNetwork(network: expected)
               ? const Ok(null)
-              : const Err(TransactionSyncInvalidAddressFailure());
+              : const Err(SyncInvalidAddressFailure());
         } finally {
           parsed.dispose();
         }
       } on Exception {
-        return const Err(TransactionSyncInvalidAddressFailure());
+        return const Err(SyncInvalidAddressFailure());
       }
     case LiquidNetwork():
       final expected = switch (network) {
@@ -46,9 +46,9 @@ Future<Result<void, TransactionSyncFailure>> validateAddress(
       try {
         return await lwk.Address.validate(addressString: address) == expected
             ? const Ok(null)
-            : const Err(TransactionSyncInvalidAddressFailure());
+            : const Err(SyncInvalidAddressFailure());
       } on Exception {
-        return const Err(TransactionSyncInvalidAddressFailure());
+        return const Err(SyncInvalidAddressFailure());
       }
   }
 }

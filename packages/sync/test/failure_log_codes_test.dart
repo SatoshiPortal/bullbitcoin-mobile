@@ -12,18 +12,18 @@ void main() {
       await log.flush();
       directory.deleteSync(recursive: true);
     });
-    const failures = <TransactionSyncFailure>[
-      TransactionSyncBusyFailure(),
-      TransactionSyncNotFoundFailure(),
-      TransactionSyncUnsupportedNetworkFailure(),
-      TransactionSyncUnauthorizedNetworkFailure(),
-      TransactionSyncInvalidCatalogFailure(),
-      TransactionSyncStorageFailure(),
-      TransactionSyncConnectionFailure(),
-      TransactionSyncNeedsRepairFailure(),
-      TransactionSyncRestartRequiredFailure(),
-      TransactionSyncInitialScanRequiredFailure(),
-      TransactionSyncInvalidAddressFailure(),
+    const failures = <SyncFailure>[
+      SyncBusyFailure(),
+      SyncNotFoundFailure(),
+      SyncUnsupportedNetworkFailure(),
+      SyncUnauthorizedNetworkFailure(),
+      SyncInvalidCatalogFailure(),
+      SyncStorageFailure(),
+      SyncConnectionFailure(),
+      SyncNeedsRepairFailure(),
+      SyncRestartRequiredFailure(),
+      SyncInitialScanRequiredFailure(),
+      SyncInvalidAddressFailure(),
     ];
     for (final failure in failures) {
       log.warning('Wallet sync unavailable category=${failure.logCode}');

@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:primitives/primitives.dart';
 import '../../domain/bitcoin_spend.dart';
-import '../../domain/transaction_sync_failure.dart';
+import '../../domain/sync_failure.dart';
 import '../../domain/public_wallet_descriptor.dart';
 import '../../domain/ports/wallet_catalog_port.dart';
 import '../../domain/wallet_key.dart';
@@ -57,12 +57,12 @@ final class BitcoinSpendGate {
     if (acquired case Err(:final failure)) {
       // Contention says nothing about the wallet's payments.
       return BitcoinSpendRefused(
-        failure is TransactionSyncBusyFailure
+        failure is SyncBusyFailure
             ? BitcoinSpendStatus.busy
             : BitcoinSpendStatus.unavailable,
       );
     }
-    final lock = (acquired as Ok<WriterLock, TransactionSyncFailure>).value;
+    final lock = (acquired as Ok<WriterLock, SyncFailure>).value;
     SpendGateStoreDatasource? store;
     try {
       // Quarantined metadata: no spend until every wallet has been adopted.
@@ -81,7 +81,7 @@ final class BitcoinSpendGate {
       final found = await catalog.find(key);
       if (found case Err()) throw const BitcoinSpendGateUnavailable();
       final descriptor =
-          (found as Ok<PublicWalletDescriptor, TransactionSyncFailure>).value;
+          (found as Ok<PublicWalletDescriptor, SyncFailure>).value;
       final path = spendGateStorePath(documentsDirectory);
       store = SpendGateStoreDatasource.openExisting(path);
       final pendingKey = (path, key);

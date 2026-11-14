@@ -1,5 +1,5 @@
 import 'package:sync/read.dart';
-import 'package:sync/sync.dart' show TransactionSyncBusyFailure;
+import 'package:sync/sync.dart' show SyncBusyFailure;
 import 'package:bb_mobile/features/wallet/data/sync_coordinator.dart';
 import 'package:bb_mobile/features/wallet/domain/sync_kind.dart';
 import 'package:bb_mobile/features/wallet/domain/sync_trigger.dart';
@@ -36,9 +36,7 @@ void main() {
     test('busy round preserves classification, mixed=$mixed', () async {
       when(() => coordinator.sync(trigger: any(named: 'trigger'))).thenThrow(
         SyncCoordinatorException({
-          SyncKind.bitcoin: const WalletSnapshotException(
-            TransactionSyncBusyFailure(),
-          ),
+          SyncKind.bitcoin: const WalletSnapshotException(SyncBusyFailure()),
           if (mixed) SyncKind.liquid: Exception('connection'),
         }),
       );

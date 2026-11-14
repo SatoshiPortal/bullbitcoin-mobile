@@ -60,9 +60,7 @@ void main() {
         final issued = await writer.receive(key, expectedGeneration: 1);
         expect(issued, isA<Ok>());
         final address =
-            (issued as Ok<ReceiveAddressIssued, TransactionSyncFailure>)
-                .value
-                .address;
+            (issued as Ok<ReceiveAddressIssued, SyncFailure>).value.address;
         expect(address.startsWith('bcrt1'), isTrue);
         final request = await http.postUrl(
           Uri.parse(
@@ -88,11 +86,7 @@ void main() {
           final loaded = await reader().bitcoin(descriptor);
           expect(loaded, isA<Ok>());
           final wallet =
-              (loaded
-                      as Ok<
-                        WalletReadSnapshot<bdk.Wallet>,
-                        TransactionSyncFailure
-                      >)
+              (loaded as Ok<WalletReadSnapshot<bdk.Wallet>, SyncFailure>)
                   .value
                   .wallet;
           expect(wallet.network(), bdk.Network.regtest);
@@ -120,12 +114,7 @@ void main() {
         final reopened = await reader().bitcoin(descriptor);
         expect(reopened, isA<Ok>());
         final snapshot =
-            (reopened
-                    as Ok<
-                      WalletReadSnapshot<bdk.Wallet>,
-                      TransactionSyncFailure
-                    >)
-                .value;
+            (reopened as Ok<WalletReadSnapshot<bdk.Wallet>, SyncFailure>).value;
         expect(snapshot.wallet.transactions(), isNotEmpty);
         expect(snapshot.stale, isFalse);
         final transactionId = _sendToSelf(snapshot.wallet, address);
@@ -135,11 +124,7 @@ void main() {
           final result = await reader().bitcoin(descriptor);
           expect(result, isA<Ok>());
           final wallet =
-              (result
-                      as Ok<
-                        WalletReadSnapshot<bdk.Wallet>,
-                        TransactionSyncFailure
-                      >)
+              (result as Ok<WalletReadSnapshot<bdk.Wallet>, SyncFailure>)
                   .value
                   .wallet;
           for (final tx in wallet.transactions()) {

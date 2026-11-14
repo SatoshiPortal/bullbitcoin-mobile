@@ -19,7 +19,7 @@ class _Metadata extends Mock implements WalletMetadataDatasource {}
 
 class _Reserved implements ReservedAddressPort {
   @override
-  Future<Result<bool, TransactionSyncFailure>> isReserved(
+  Future<Result<bool, SyncFailure>> isReserved(
     WalletKey key,
     String address,
   ) async => const Ok(false);
@@ -27,13 +27,11 @@ class _Reserved implements ReservedAddressPort {
 
 class _Offline implements WalletConnectionPort {
   @override
-  Future<Result<T, TransactionSyncFailure>> run<T>({
+  Future<Result<T, SyncFailure>> run<T>({
     required Network network,
-    required Future<Result<T, TransactionSyncFailure>> Function(
-      WalletConnection,
-    )
+    required Future<Result<T, SyncFailure>> Function(WalletConnection)
     operation,
-    required bool Function(TransactionSyncFailure) mayRetry,
+    required bool Function(SyncFailure) mayRetry,
   }) => throw StateError('Provisioning must be offline');
 }
 
@@ -54,8 +52,7 @@ void main() {
         sync: ElectrumSync(
           connections: _Offline(),
           documentsDirectory: () async => directory.path,
-          readRevision: (_) async =>
-              const Err(TransactionSyncNotFoundFailure()),
+          readRevision: (_) async => const Err(SyncNotFoundFailure()),
         ),
         documentsDirectory: () async => directory.path,
         onStoresOpened: (stores) {
@@ -99,8 +96,7 @@ void main() {
         sync: ElectrumSync(
           connections: _Offline(),
           documentsDirectory: () async => directory.path,
-          readRevision: (_) async =>
-              const Err(TransactionSyncNotFoundFailure()),
+          readRevision: (_) async => const Err(SyncNotFoundFailure()),
         ),
         documentsDirectory: () async {
           if (++attempts == 1) throw const FileSystemException('unavailable');
@@ -174,8 +170,7 @@ void main() {
         sync: ElectrumSync(
           connections: _Offline(),
           documentsDirectory: () async => directory.path,
-          readRevision: (_) async =>
-              const Err(TransactionSyncNotFoundFailure()),
+          readRevision: (_) async => const Err(SyncNotFoundFailure()),
         ),
         documentsDirectory: () async => directory.path,
       );
@@ -225,7 +220,7 @@ void main() {
         ).thenAnswer((_) async => rows[missing.id]);
         final missingKey =
             (WalletCatalogPortImpl.descriptorFromMetadata(missing)
-                    as Ok<PublicWalletDescriptor, TransactionSyncFailure>)
+                    as Ok<PublicWalletDescriptor, SyncFailure>)
                 .value
                 .key;
         final missingStore = File(
@@ -252,7 +247,7 @@ void main() {
         expect(missingStore.existsSync(), isFalse);
         final healthyKey =
             (WalletCatalogPortImpl.descriptorFromMetadata(row)
-                    as Ok<PublicWalletDescriptor, TransactionSyncFailure>)
+                    as Ok<PublicWalletDescriptor, SyncFailure>)
                 .value
                 .key;
         final beforeReads = await runtime.readRevision(healthyKey) as Ok;

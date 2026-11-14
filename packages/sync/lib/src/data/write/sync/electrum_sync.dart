@@ -20,7 +20,7 @@ import '../../../domain/native_network_policy.dart';
 import '../../../domain/sync_completion.dart';
 import '../../../domain/sync_reason.dart';
 import '../../../domain/wallet_revision.dart';
-import '../../../domain/transaction_sync_failure.dart';
+import '../../../domain/sync_failure.dart';
 import '../../../domain/public_wallet_descriptor.dart';
 import '../../../domain/ports/wallet_connection_port.dart';
 import '../../../domain/wallet_key.dart';
@@ -33,16 +33,13 @@ import 'payment_observation.dart';
 /// One Electrum operation inside the writer lease. Headless callers cannot provision or reconcile.
 final class ElectrumSync {
   final WalletConnectionPort _connections;
-  final Future<Result<WalletRevisionState, TransactionSyncFailure>> Function(
-    WalletKey,
-  )
+  final Future<Result<WalletRevisionState, SyncFailure>> Function(WalletKey)
   _readRevision;
-  final Future<Result<void, TransactionSyncFailure>> Function(SyncCompletion)?
+  final Future<Result<void, SyncFailure>> Function(SyncCompletion)?
   _onCompletion;
   final bool _collectIncoming;
   final Future<String> Function() _documentsDirectory;
-  final _active =
-      <WalletKey, Future<Result<SyncCompletion, TransactionSyncFailure>>>{};
+  final _active = <WalletKey, Future<Result<SyncCompletion, SyncFailure>>>{};
   final _failures = <WalletKey, String>{};
   int _runSequence = 0;
   final _started = StreamController<WalletKey>.broadcast();
@@ -72,15 +69,14 @@ final class ElectrumSync {
   /// storage failure. Anything else thrown, a programmer [Error] above all,
   /// completes this future, and every caller joined to it, with that error.
   @useResult
-  Future<Result<SyncCompletion, TransactionSyncFailure>> execute(
+  Future<Result<SyncCompletion, SyncFailure>> execute(
     PublicWalletDescriptor descriptor, {
     bool discover = false,
     SyncReason reason = SyncReason.auto,
     bool headless = false,
     bool allowInitialScan = true,
     bool? collectIncoming,
-    Future<Result<void, TransactionSyncFailure>> Function(SyncCompletion)?
-    onCompletion,
+    Future<Result<void, SyncFailure>> Function(SyncCompletion)? onCompletion,
   }) {
     final failure = nativeDescriptorFailure(descriptor);
     if (failure != null) return Future.value(Err(failure));
@@ -89,8 +85,7 @@ final class ElectrumSync {
     // Joined requests keep the existing pass's reason; each queued discovery owns its reason.
     if (previous != null && !discover) return previous;
     // A discovery request must not disappear behind a routine sync. Queue it after the current operation; all native access still happens in workers.
-    final completer =
-        Completer<Result<SyncCompletion, TransactionSyncFailure>>();
+    final completer = Completer<Result<SyncCompletion, SyncFailure>>();
     _active[key] = completer.future;
     unawaited(() async {
       try {
@@ -132,7 +127,7 @@ final class ElectrumSync {
             if (previousFailure != failure.logCode) {
               final message =
                   'Electrum sync failed $context category=${failure.logCode} elapsed_ms=${watch.elapsedMilliseconds} $connectionSummary';
-              if (failure is TransactionSyncStorageFailure) {
+              if (failure is SyncStorageFailure) {
                 log.severe(
                   message: message,
                   error: 'storage',
@@ -146,9 +141,7 @@ final class ElectrumSync {
         _finished.add(SyncFinished(key, result));
         completer.complete(result);
       } on Exception {
-        const result = Err<SyncCompletion, TransactionSyncFailure>(
-          TransactionSyncStorageFailure(),
-        );
+        const result = Err<SyncCompletion, SyncFailure>(SyncStorageFailure());
         completer.complete(result);
         _unexpected(key, reason);
         _finished.add(SyncFinished(key, result));
@@ -157,9 +150,7 @@ final class ElectrumSync {
         // itself, and indicators still learn that the pass ended.
         completer.completeError(error, trace);
         _unexpected(key, reason);
-        _finished.add(
-          SyncFinished(key, const Err(TransactionSyncStorageFailure())),
-        );
+        _finished.add(SyncFinished(key, const Err(SyncStorageFailure())));
       } finally {
         if (identical(_active[key], completer.future)) {
           unawaited(_active.remove(key));
@@ -181,16 +172,14 @@ final class ElectrumSync {
     _failures[key] = 'storage';
   }
 
-  Future<Result<SyncCompletion, TransactionSyncFailure>> _run(
+  Future<Result<SyncCompletion, SyncFailure>> _run(
     PublicWalletDescriptor descriptor, {
     required int runId,
     required bool discover,
     required bool headless,
     required bool allowInitialScan,
     required bool collectIncoming,
-    required Future<Result<void, TransactionSyncFailure>> Function(
-      SyncCompletion,
-    )?
+    required Future<Result<void, SyncFailure>> Function(SyncCompletion)?
     onCompletion,
     required void Function(WalletConnection) onConnection,
     required void Function(String) onCache,
@@ -199,7 +188,7 @@ final class ElectrumSync {
     try {
       root = await _documentsDirectory();
     } on Exception {
-      return const Err(TransactionSyncStorageFailure());
+      return const Err(SyncStorageFailure());
     }
     // The caller's reader: this class never opens, let alone creates, a store.
     final state = await _readRevision(descriptor.key);
@@ -207,10 +196,10 @@ final class ElectrumSync {
     switch (state) {
       case Ok(:final value):
         generation = value.stamp.generation;
-      case Err(failure: TransactionSyncNotFoundFailure()):
+      case Err(failure: SyncNotFoundFailure()):
         generation = 0;
       case Err(:final failure):
-        if (failure is TransactionSyncBusyFailure) {
+        if (failure is SyncBusyFailure) {
           LeaseDiagnostics(
             role: LeaseRole.writer,
             intent: LeaseIntent.sync,
@@ -274,7 +263,7 @@ Future<SyncPassOutcome> _performSync(SyncParams params) async {
   final failure = nativeDescriptorFailure(params.descriptor);
   if (failure != null) {
     return SyncPassOutcome(
-      Err<SyncCompletion, TransactionSyncFailure>(failure),
+      Err<SyncCompletion, SyncFailure>(failure),
       retryable: false,
     );
   }
@@ -286,9 +275,7 @@ Future<SyncPassOutcome> _performSync(SyncParams params) async {
       : File(path).existsSync();
   if (!exists) {
     return SyncPassOutcome(
-      const Err<SyncCompletion, TransactionSyncFailure>(
-        TransactionSyncNotFoundFailure(),
-      ),
+      const Err<SyncCompletion, SyncFailure>(SyncNotFoundFailure()),
       retryable: false,
     );
   }
@@ -302,9 +289,7 @@ Future<SyncPassOutcome> _performSync(SyncParams params) async {
     probe.ping();
   } on Exception {
     return SyncPassOutcome(
-      const Err<SyncCompletion, TransactionSyncFailure>(
-        TransactionSyncConnectionFailure(),
-      ),
+      const Err<SyncCompletion, SyncFailure>(SyncConnectionFailure()),
       retryable: true,
     );
   } finally {
@@ -318,7 +303,7 @@ Future<SyncPassOutcome> _performSync(SyncParams params) async {
       revisionStorePath(params.root),
     );
   } on RevisionStoreUnavailable {
-    return SyncPassOutcome.failed(TransactionSyncStorageFailure());
+    return SyncPassOutcome.failed(SyncStorageFailure());
   }
   final reader = SqliteWalletRevisionReader(revisions);
   final writer = WriterSession.worker(
@@ -341,15 +326,13 @@ Future<SyncPassOutcome> _performSync(SyncParams params) async {
       value: final state,
     ) when state.lifecycle == WalletLifecycle.deleted) {
       return SyncPassOutcome(
-        const Err<SyncCompletion, TransactionSyncFailure>(
-          TransactionSyncNotFoundFailure(),
-        ),
+        const Err<SyncCompletion, SyncFailure>(SyncNotFoundFailure()),
         retryable: false,
       );
     }
     final adopt =
         current is Err ||
-        (current as Ok<WalletRevisionState, TransactionSyncFailure>)
+        (current as Ok<WalletRevisionState, SyncFailure>)
                 .value
                 .initializedSchema !=
             writerSchemaVersion;
@@ -361,14 +344,11 @@ Future<SyncPassOutcome> _performSync(SyncParams params) async {
           scope: LeaseScope.headless,
           sink: (level, message) => params.diagnostics.send((level, message)),
         ).busy(switch (current) {
-          Err(failure: TransactionSyncBusyFailure()) =>
-            LeaseBusySource.revisionRead,
+          Err(failure: SyncBusyFailure()) => LeaseBusySource.revisionRead,
           _ => LeaseBusySource.schemaGate,
         });
         return SyncPassOutcome(
-          const Err<SyncCompletion, TransactionSyncFailure>(
-            TransactionSyncBusyFailure(),
-          ),
+          const Err<SyncCompletion, SyncFailure>(SyncBusyFailure()),
           retryable: false,
         );
       }
@@ -387,16 +367,14 @@ Future<SyncPassOutcome> _performSync(SyncParams params) async {
     );
     return switch (result) {
       Err(:final failure) => SyncPassOutcome(
-        Err<SyncCompletion, TransactionSyncFailure>(failure),
+        Err<SyncCompletion, SyncFailure>(failure),
         retryable: false,
       ),
       Ok(:final value) => SyncPassOutcome(
         operation.result?.map(
               (completion) => completion.committed(value.revision),
             ) ??
-            const Err<SyncCompletion, TransactionSyncFailure>(
-              TransactionSyncStorageFailure(),
-            ),
+            const Err<SyncCompletion, SyncFailure>(SyncStorageFailure()),
         retryable: false,
         cacheDiagnostics: operation.cacheDiagnostics,
       ),
@@ -434,11 +412,11 @@ final class _NativeSyncOperation
   @override
   bool hasChanges = true;
   final SyncParams params;
-  Result<SyncCompletion, TransactionSyncFailure>? result;
+  Result<SyncCompletion, SyncFailure>? result;
   String? cacheDiagnostics;
   _NativeSyncOperation(this.params);
   @override
-  Future<Result<void, TransactionSyncFailure>> execute(
+  Future<Result<void, SyncFailure>> execute(
     PublicWalletDescriptor descriptor, {
     required int? issuedReceiveIndex,
   }) async {

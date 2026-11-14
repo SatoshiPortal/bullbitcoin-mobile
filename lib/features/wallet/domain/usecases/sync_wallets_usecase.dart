@@ -1,5 +1,5 @@
 import 'package:sync/read.dart';
-import 'package:sync/sync.dart' show TransactionSyncBusyFailure;
+import 'package:sync/sync.dart' show SyncBusyFailure;
 import 'package:bb_mobile/features/wallet/data/sync_coordinator.dart';
 import 'package:bb_mobile/features/wallet/domain/sync_trigger.dart';
 import 'package:primitives/primitives.dart' show Err, Ok, Result;
@@ -28,7 +28,7 @@ class SyncWalletsUsecase {
           e.failures.values.every(
             (failure) =>
                 failure is WalletSnapshotException &&
-                failure.failure is TransactionSyncBusyFailure,
+                failure.failure is SyncBusyFailure,
           )) {
         return const Err(WalletSyncBusyFailure());
       }

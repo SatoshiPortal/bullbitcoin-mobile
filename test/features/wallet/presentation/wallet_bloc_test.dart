@@ -1,6 +1,6 @@
 import 'package:bb_mobile/features/wallet/domain/usecases/read_wallet_usecase.dart';
 import 'package:sync/read.dart';
-import 'package:sync/sync.dart' show TransactionSyncBusyFailure;
+import 'package:sync/sync.dart' show SyncBusyFailure;
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/home_errors.dart';
 import 'package:bb_mobile/generated/l10n/localization.dart';
@@ -427,9 +427,7 @@ void main() {
             discover: any(named: 'discover'),
             reason: any(named: 'reason'),
           ),
-        ).thenThrow(
-          const WalletSnapshotException(TransactionSyncBusyFailure()),
-        );
+        ).thenThrow(const WalletSnapshotException(SyncBusyFailure()));
         final coordinator = SyncCoordinator(
           getWalletsUsecase: getWallets,
           syncWalletUsecase: single,

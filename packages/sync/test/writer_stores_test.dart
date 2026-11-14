@@ -15,23 +15,23 @@ final class _Catalog implements WalletCatalogPort {
   _Catalog([this.wallets = const []]);
 
   @override
-  Future<Result<PublicWalletDescriptor, TransactionSyncFailure>> find(
+  Future<Result<PublicWalletDescriptor, SyncFailure>> find(
     WalletKey key,
   ) async {
     for (final wallet in wallets) {
       if (wallet.key == key) return Ok(wallet);
     }
-    return const Err(TransactionSyncNotFoundFailure());
+    return const Err(SyncNotFoundFailure());
   }
 
   @override
-  Future<Result<List<PublicWalletDescriptor>, TransactionSyncFailure>>
-  list() async => Ok(wallets);
+  Future<Result<List<PublicWalletDescriptor>, SyncFailure>> list() async =>
+      Ok(wallets);
 }
 
 final class _Reserved implements ReservedAddressPort {
   @override
-  Future<Result<bool, TransactionSyncFailure>> isReserved(
+  Future<Result<bool, SyncFailure>> isReserved(
     WalletKey key,
     String address,
   ) async => const Ok(false);
@@ -205,9 +205,7 @@ void main() {
         );
         final read = await stores.revisions.read(liquid);
         expect(
-          (read as Ok<WalletRevisionState, TransactionSyncFailure>)
-              .value
-              .lifecycle,
+          (read as Ok<WalletRevisionState, SyncFailure>).value.lifecycle,
           WalletLifecycle.active,
         );
         expect(stores.recoveredMetadata, isFalse);
@@ -230,17 +228,15 @@ void main() {
       (writerLockPath(dir.path, testnet) as Ok).value,
     );
     final held =
-        WriterLock.acquire(dir.path, mainnet)
-            as Ok<WriterLock, TransactionSyncFailure>;
+        WriterLock.acquire(dir.path, mainnet) as Ok<WriterLock, SyncFailure>;
     try {
       expect(
         (WriterLock.acquire(dir.path, testnet) as Err).failure,
-        isA<TransactionSyncBusyFailure>(),
+        isA<SyncBusyFailure>(),
       );
       // A different native store keeps its own lock.
       final other =
-          WriterLock.acquire(dir.path, liquid)
-              as Ok<WriterLock, TransactionSyncFailure>;
+          WriterLock.acquire(dir.path, liquid) as Ok<WriterLock, SyncFailure>;
       other.value.release();
     } finally {
       held.value.release();
@@ -251,7 +247,7 @@ void main() {
     final signet = WalletKey(id: 'w', network: BitcoinNetwork.signet);
     expect(
       (WriterLock.acquire(dir.path, signet) as Err).failure,
-      isA<TransactionSyncUnsupportedNetworkFailure>(),
+      isA<SyncUnsupportedNetworkFailure>(),
     );
     expect(dir.listSync(), isEmpty);
   });

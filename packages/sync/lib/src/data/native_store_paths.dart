@@ -1,7 +1,7 @@
 import 'package:primitives/primitives.dart';
 
 import '../domain/native_network_policy.dart';
-import '../domain/transaction_sync_failure.dart';
+import '../domain/sync_failure.dart';
 import '../domain/wallet_key.dart';
 
 /// Legacy native location, without IO or normalization of the supplied root.
@@ -49,7 +49,7 @@ String spendGateStorePath(String documentsDirectory) =>
 /// The lock is named after the native store it protects, so two keys that
 /// resolve to the same store share one lock. An unsupported key is refused
 /// before any path is derived.
-Result<String, TransactionSyncFailure> writerLockPath(
+Result<String, SyncFailure> writerLockPath(
   String documentsDirectory,
   WalletKey key,
 ) {

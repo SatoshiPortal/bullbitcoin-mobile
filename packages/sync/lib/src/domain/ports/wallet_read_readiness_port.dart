@@ -1,6 +1,6 @@
 import 'package:primitives/primitives.dart';
 
-import '../transaction_sync_failure.dart';
+import '../sync_failure.dart';
 import '../public_wallet_descriptor.dart';
 import '../wallet_revision.dart';
 
@@ -25,7 +25,7 @@ final class WalletReadReady {
 /// supplied descriptor matches the initialized store; reject a mismatch.
 /// No production fallback is provided. Liquid calls this while holding its lease.
 abstract interface class WalletReadReadinessPort {
-  Future<Result<WalletReadReady, TransactionSyncFailure>> check(
+  Future<Result<WalletReadReady, SyncFailure>> check(
     PublicWalletDescriptor descriptor,
     WalletRevision expected,
     int requiredSchemaVersion,

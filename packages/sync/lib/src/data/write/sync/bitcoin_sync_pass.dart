@@ -6,7 +6,7 @@ import 'package:primitives/primitives.dart';
 
 import '../../../domain/public_wallet_descriptor.dart';
 import '../../../domain/sync_completion.dart';
-import '../../../domain/transaction_sync_failure.dart';
+import '../../../domain/sync_failure.dart';
 import '../../native_store_paths.dart';
 import '../datasources/bdk_electrum_datasource.dart';
 import '../datasources/bdk_wallet_store_datasource.dart';
@@ -31,30 +31,26 @@ Future<SyncPassOutcome> bitcoinSyncPass(
   final connection = params.connection;
   final path = nativeWalletStoragePath(params.root, descriptor.key);
   if (BdkWalletStoreDatasource.network(descriptor.key.network) == null) {
-    return SyncPassOutcome.failed(
-      const TransactionSyncUnsupportedNetworkFailure(),
-    );
+    return SyncPassOutcome.failed(const SyncUnsupportedNetworkFailure());
   }
   if (!File(path).existsSync()) {
-    return SyncPassOutcome.failed(TransactionSyncNotFoundFailure());
+    return SyncPassOutcome.failed(SyncNotFoundFailure());
   }
   BdkElectrumDatasource? electrum;
   BdkWalletStoreDatasource? store;
   ElectrumCacheDatasource? cache;
   var retryable = true;
-  TransactionSyncFailure failure = const TransactionSyncConnectionFailure();
+  SyncFailure failure = const SyncConnectionFailure();
   try {
     electrum = BdkElectrumDatasource.connect(connection);
     // Even opening a persister can initialize tables. Fallback is deliberately
     // limited to connection establishment, before any native store is opened.
     retryable = false;
-    failure = const TransactionSyncStorageFailure();
+    failure = const SyncStorageFailure();
     try {
       store = BdkWalletStoreDatasource.load(path, descriptor);
     } on NativeNetworkUnsupported {
-      return SyncPassOutcome.failed(
-        const TransactionSyncInvalidCatalogFailure(),
-      );
+      return SyncPassOutcome.failed(const SyncInvalidCatalogFailure());
     }
     final wallet = store.wallet;
     final checkpoint = wallet.latestCheckpoint();
@@ -76,9 +72,9 @@ Future<SyncPassOutcome> bitcoinSyncPass(
     final before = wallet.staged();
     final cleanStage = before == null;
     before?.dispose();
-    failure = const TransactionSyncConnectionFailure();
+    failure = const SyncConnectionFailure();
     final revealed = electrum.syncRevealedScripts(wallet, batchSize: batchSize);
-    failure = const TransactionSyncStorageFailure();
+    failure = const SyncStorageFailure();
     try {
       markMutation();
       wallet.applyUpdate(update: revealed);
@@ -86,13 +82,13 @@ Future<SyncPassOutcome> bitcoinSyncPass(
       revealed.dispose();
     }
     if (mode != SyncMode.revealedScripts) {
-      failure = const TransactionSyncConnectionFailure();
+      failure = const SyncConnectionFailure();
       final scanned = electrum.fullScan(
         wallet,
         stopGap: connection.stopGap,
         batchSize: batchSize,
       );
-      failure = const TransactionSyncStorageFailure();
+      failure = const SyncStorageFailure();
       try {
         wallet.applyUpdate(update: scanned);
       } finally {
@@ -134,9 +130,7 @@ Future<SyncPassOutcome> bitcoinSyncPass(
 
 /// Runs under the writer lock, BEFORE recording an intent. A deferred initial
 /// scan must leave no pending write and must never initialize an absent store.
-Future<Result<void, TransactionSyncFailure>> checkInitialScan(
-  SyncParams params,
-) async {
+Future<Result<void, SyncFailure>> checkInitialScan(SyncParams params) async {
   final descriptor = params.descriptor;
   if (descriptor is! BitcoinWalletDescriptor) return const Ok(null);
   final path = nativeWalletStoragePath(params.root, descriptor.key);
@@ -146,17 +140,17 @@ Future<Result<void, TransactionSyncFailure>> checkInitialScan(
     final checkpoint = store.wallet.latestCheckpoint();
     try {
       return checkpoint.height == 0
-          ? const Err(TransactionSyncInitialScanRequiredFailure())
+          ? const Err(SyncInitialScanRequiredFailure())
           : const Ok(null);
     } finally {
       checkpoint.hash.dispose();
     }
   } on NativeStoreMissing {
-    return const Err(TransactionSyncNotFoundFailure());
+    return const Err(SyncNotFoundFailure());
   } on NativeNetworkUnsupported {
-    return const Err(TransactionSyncInvalidCatalogFailure());
+    return const Err(SyncInvalidCatalogFailure());
   } on Exception {
-    return const Err(TransactionSyncStorageFailure());
+    return const Err(SyncStorageFailure());
   } finally {
     store?.close();
   }

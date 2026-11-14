@@ -1,6 +1,6 @@
 import 'package:primitives/primitives.dart';
 import 'package:meta/meta.dart';
-import '../../domain/transaction_sync_failure.dart';
+import '../../domain/sync_failure.dart';
 import '../../domain/public_wallet_descriptor.dart';
 
 /// Integration seam for lane A. Called in the isolate holding the lock, with
@@ -15,7 +15,7 @@ import '../../domain/public_wallet_descriptor.dart';
 /// sync receipt or foreground payment-seen provenance.
 abstract interface class WriterSyncOperation {
   @useResult
-  Future<Result<void, TransactionSyncFailure>> execute(
+  Future<Result<void, SyncFailure>> execute(
     PublicWalletDescriptor descriptor, {
     required int? issuedReceiveIndex,
   });

@@ -40,7 +40,7 @@ final class WalletNativeRuntime implements WalletNativeLifecycle {
   final ElectrumSync _sync;
   final Future<String> Function() _documentsDirectory;
   final _changes = StreamController<WalletRevisionState>.broadcast();
-  final _unavailable = <WalletKey, TransactionSyncFailure>{};
+  final _unavailable = <WalletKey, SyncFailure>{};
   Future<_NativeServices>? _opening;
   Future<void>? _initialization;
   Type? _initializationFailure;
@@ -57,7 +57,7 @@ final class WalletNativeRuntime implements WalletNativeLifecycle {
 
   Stream<WalletRevisionState> get changes => _changes.stream;
 
-  Future<Result<WalletRevisionState, TransactionSyncFailure>> readRevision(
+  Future<Result<WalletRevisionState, SyncFailure>> readRevision(
     WalletKey key,
   ) async => (await _services).stores.revisions.read(key);
 
@@ -147,7 +147,7 @@ final class WalletNativeRuntime implements WalletNativeLifecycle {
           expectedGeneration: state?.stamp.generation ?? 0,
           existingOnly: services.stores.recoveredMetadata || existing,
         );
-        if (result case Err(failure: TransactionSyncNeedsRepairFailure())) {
+        if (result case Err(failure: SyncNeedsRepairFailure())) {
           result = await services.writer.repair(
             descriptor.key,
             expectedGeneration: state?.stamp.generation ?? 0,
@@ -168,7 +168,7 @@ final class WalletNativeRuntime implements WalletNativeLifecycle {
       } catch (error) {
         _unavailable[descriptor.key] = error is WalletSnapshotException
             ? error.failure
-            : const TransactionSyncStorageFailure();
+            : const SyncStorageFailure();
         log.warning(
           'Native wallet unavailable network=${descriptor.key.network} category=${error is WalletSnapshotException ? error.failure.logCode : 'storage'}',
         );
@@ -190,7 +190,7 @@ final class WalletNativeRuntime implements WalletNativeLifecycle {
     WalletKey key,
   ) async => switch (await services.stores.revisions.read(key)) {
     Ok(:final value) => value,
-    Err(failure: TransactionSyncNotFoundFailure()) => null,
+    Err(failure: SyncNotFoundFailure()) => null,
     Err(:final failure) => throw WalletSnapshotException(failure),
   };
 
@@ -271,7 +271,7 @@ final class WalletNativeRuntime implements WalletNativeLifecycle {
     );
     final state = await _state(await _services, descriptor.key);
     if (state?.lifecycle == WalletLifecycle.deleted) {
-      throw const WalletSnapshotException(TransactionSyncNotFoundFailure());
+      throw const WalletSnapshotException(SyncNotFoundFailure());
     }
     return state?.issuedReceiveIndex;
   }
@@ -442,11 +442,10 @@ final class WalletNativeRuntime implements WalletNativeLifecycle {
     await _changes.close();
   }
 
-  static T _value<T>(Result<T, TransactionSyncFailure> result) =>
-      switch (result) {
-        Ok(:final value) => value,
-        Err(:final failure) => throw WalletSnapshotException(failure),
-      };
+  static T _value<T>(Result<T, SyncFailure> result) => switch (result) {
+    Ok(:final value) => value,
+    Err(:final failure) => throw WalletSnapshotException(failure),
+  };
 }
 
 final class _NativeServices {

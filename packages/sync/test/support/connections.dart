@@ -16,13 +16,11 @@ final class FixtureConnections implements WalletConnectionPort {
   FixtureConnections(this.urls, {this.socks5});
 
   @override
-  Future<Result<T, TransactionSyncFailure>> run<T>({
+  Future<Result<T, SyncFailure>> run<T>({
     required Network network,
-    required Future<Result<T, TransactionSyncFailure>> Function(
-      WalletConnection,
-    )
+    required Future<Result<T, SyncFailure>> Function(WalletConnection)
     operation,
-    required bool Function(TransactionSyncFailure) mayRetry,
+    required bool Function(SyncFailure) mayRetry,
   }) async {
     routeActive = true;
     try {
@@ -41,7 +39,7 @@ final class FixtureConnections implements WalletConnectionPort {
         if (result case Err(:final failure) when mayRetry(failure)) continue;
         return result;
       }
-      return const Err(TransactionSyncConnectionFailure());
+      return const Err(SyncConnectionFailure());
     } finally {
       routeActive = false;
     }

@@ -29,7 +29,7 @@ void main() {
               final result = await validateAddress(native.toString(), selected);
               expect(result is Ok, source.key == selected);
               if (result case Err(:final failure)) {
-                expect(failure, isA<TransactionSyncInvalidAddressFailure>());
+                expect(failure, isA<SyncInvalidAddressFailure>());
               }
             }
           } finally {

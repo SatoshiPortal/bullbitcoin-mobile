@@ -22,7 +22,7 @@ void main() {
       for (final network in <Network>[BitcoinNetwork.signet]) {
         expect(
           nativeKeyFailure(WalletKey(id: 'wallet:regtest', network: network)),
-          isA<TransactionSyncUnsupportedNetworkFailure>(),
+          isA<SyncUnsupportedNetworkFailure>(),
         );
       }
       expect(
@@ -35,19 +35,19 @@ void main() {
         nativeKeyFailure(
           WalletKey(id: 'origin', network: LiquidNetwork.regtest),
         ),
-        isA<TransactionSyncInvalidCatalogFailure>(),
+        isA<SyncInvalidCatalogFailure>(),
       );
       expect(
         nativeKeyFailure(
           WalletKey(id: 'origin', network: BitcoinNetwork.regtest),
         ),
-        isA<TransactionSyncInvalidCatalogFailure>(),
+        isA<SyncInvalidCatalogFailure>(),
       );
       expect(
         nativeKeyFailure(
           WalletKey(id: ':regtest', network: BitcoinNetwork.regtest),
         ),
-        isA<TransactionSyncInvalidCatalogFailure>(),
+        isA<SyncInvalidCatalogFailure>(),
       );
     },
   );
@@ -83,7 +83,7 @@ void main() {
         final result = await writer().receive(key, expectedGeneration: 1);
         expect(result, isA<Ok>());
         final received =
-            (result as Ok<ReceiveAddressIssued, TransactionSyncFailure>).value;
+            (result as Ok<ReceiveAddressIssued, SyncFailure>).value;
         expect(received.address.startsWith('bcrt1'), isTrue);
         final reader = WalletSnapshotReader(
           documentsDirectory: directory.path,
@@ -95,8 +95,7 @@ void main() {
         final snapshot = await reader.bitcoin(descriptor);
         expect(snapshot, isA<Ok>());
         expect(
-          (snapshot
-                  as Ok<WalletReadSnapshot<bdk.Wallet>, TransactionSyncFailure>)
+          (snapshot as Ok<WalletReadSnapshot<bdk.Wallet>, SyncFailure>)
               .value
               .wallet
               .network(),
@@ -107,9 +106,7 @@ void main() {
         final reopened = await writer().receive(key, expectedGeneration: 1);
         expect(reopened, isA<Ok>());
         expect(
-          (reopened as Ok<ReceiveAddressIssued, TransactionSyncFailure>)
-              .value
-              .address,
+          (reopened as Ok<ReceiveAddressIssued, SyncFailure>).value.address,
           received.address,
         );
         expect(historical.readAsStringSync(), 'untouched historical store');
@@ -161,11 +158,8 @@ void main() {
             descriptor.key,
             expectedGeneration: 0,
           );
-          expect(result, isA<Err<WriterOutcome, TransactionSyncFailure>>());
-          expect(
-            (result as Err).failure,
-            isA<TransactionSyncInvalidCatalogFailure>(),
-          );
+          expect(result, isA<Err<WriterOutcome, SyncFailure>>());
+          expect((result as Err).failure, isA<SyncInvalidCatalogFailure>());
           expect(revisions.record(descriptor.key), isNull);
           expect(
             File(

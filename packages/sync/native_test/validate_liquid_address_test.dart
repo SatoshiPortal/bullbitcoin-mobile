@@ -34,7 +34,7 @@ void main() {
           reason: '${address.standard} from ${source.key} on $selected',
         );
         if (result case Err(:final failure)) {
-          expect(failure, isA<TransactionSyncInvalidAddressFailure>());
+          expect(failure, isA<SyncInvalidAddressFailure>());
         }
       }
     }
@@ -48,7 +48,7 @@ void main() {
     expect(address.standard, startsWith('ert1'));
     expect(
       await validateAddress(address.standard, LiquidNetwork.regtest),
-      isA<Ok<void, TransactionSyncFailure>>(),
+      isA<Ok<void, SyncFailure>>(),
     );
   });
 
@@ -57,7 +57,7 @@ void main() {
       for (final address in ['not an address', 'ert1regtest', 'el1regtest']) {
         expect(
           await validateAddress(address, network),
-          isA<Err<void, TransactionSyncFailure>>(),
+          isA<Err<void, SyncFailure>>(),
           reason: '$address on $network',
         );
       }

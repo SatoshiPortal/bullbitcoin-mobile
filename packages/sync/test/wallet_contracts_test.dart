@@ -107,9 +107,6 @@ void main() {
       () => ReceiveAddressIssued(revision, address: '', index: 0),
       throwsArgumentError,
     );
-    expect(
-      const TransactionSyncBusyFailure().toString(),
-      'TransactionSyncBusyFailure',
-    );
+    expect(const SyncBusyFailure().toString(), 'SyncBusyFailure');
   });
 }

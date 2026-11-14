@@ -65,10 +65,10 @@ void main() {
       );
       expect(
         result,
-        isA<Err<int, TransactionSyncFailure>>().having(
+        isA<Err<int, SyncFailure>>().having(
           (result) => result.failure,
           'failure',
-          isA<TransactionSyncUnauthorizedNetworkFailure>(),
+          isA<SyncUnauthorizedNetworkFailure>(),
         ),
       );
       expect(operations, 0);
@@ -96,7 +96,7 @@ void main() {
         return const Ok(7);
       },
     );
-    expect(result, isA<Ok<int, TransactionSyncFailure>>());
+    expect(result, isA<Ok<int, SyncFailure>>());
     expect(servers.selected, ElectrumServerNetwork.liquidTestnet);
     expect(servers.open, isFalse);
   });
@@ -111,7 +111,7 @@ void main() {
         return const Ok(1);
       },
     );
-    expect(result, isA<Ok<int, TransactionSyncFailure>>());
+    expect(result, isA<Ok<int, SyncFailure>>());
     expect(servers.selected, ElectrumServerNetwork.bitcoinRegtest);
   });
 
@@ -123,7 +123,7 @@ void main() {
       mayRetry: (_) => false,
       operation: (_) async => const Ok(1),
     );
-    expect(result, isA<Ok<int, TransactionSyncFailure>>());
+    expect(result, isA<Ok<int, SyncFailure>>());
   });
 
   test('unsupported networks never enter the legacy policy', () async {
@@ -135,10 +135,10 @@ void main() {
     );
     expect(
       result,
-      isA<Err<int, TransactionSyncFailure>>().having(
+      isA<Err<int, SyncFailure>>().having(
         (e) => e.failure,
         'failure',
-        isA<TransactionSyncUnsupportedNetworkFailure>(),
+        isA<SyncUnsupportedNetworkFailure>(),
       ),
     );
     expect(servers.attempts, 0);
@@ -152,13 +152,13 @@ void main() {
         final result = await WalletConnectionPolicyImpl(servers).run<int>(
           network: BitcoinNetwork.mainnet,
           mayRetry: (_) => retry,
-          operation: (_) async => const Err(TransactionSyncBusyFailure()),
+          operation: (_) async => const Err(SyncBusyFailure()),
         );
         expect(servers.attempts, retry ? 2 : 1);
-        expect(result, isA<Err<int, TransactionSyncFailure>>());
+        expect(result, isA<Err<int, SyncFailure>>());
         expect(
-          (result as Err<int, TransactionSyncFailure>).failure,
-          isA<TransactionSyncBusyFailure>(),
+          (result as Err<int, SyncFailure>).failure,
+          isA<SyncBusyFailure>(),
         );
       }
     },
@@ -168,21 +168,16 @@ void main() {
     'exhausted fallback preserves the last distinct caller failure',
     () async {
       final servers = _Servers();
-      const lastFailure = TransactionSyncStorageFailure();
+      const lastFailure = SyncStorageFailure();
       final result = await WalletConnectionPolicyImpl(servers).run<int>(
         network: BitcoinNetwork.mainnet,
         mayRetry: (_) => true,
         operation: (_) async => Err(
-          servers.attempts == 1
-              ? const TransactionSyncConnectionFailure()
-              : lastFailure,
+          servers.attempts == 1 ? const SyncConnectionFailure() : lastFailure,
         ),
       );
       expect(servers.attempts, 2);
-      expect(
-        (result as Err<int, TransactionSyncFailure>).failure,
-        same(lastFailure),
-      );
+      expect((result as Err<int, SyncFailure>).failure, same(lastFailure));
       expect(servers.open, isFalse);
     },
   );
@@ -196,15 +191,15 @@ void main() {
         mayRetry: (_) => true,
         operation: (_) async {
           if (servers.attempts == 1) {
-            return const Err(TransactionSyncBusyFailure());
+            return const Err(SyncBusyFailure());
           }
           throw Exception('connection failed');
         },
       );
       expect(servers.attempts, 2);
       expect(
-        (result as Err<int, TransactionSyncFailure>).failure,
-        isA<TransactionSyncConnectionFailure>(),
+        (result as Err<int, SyncFailure>).failure,
+        isA<SyncConnectionFailure>(),
       );
       expect(servers.open, isFalse);
     },

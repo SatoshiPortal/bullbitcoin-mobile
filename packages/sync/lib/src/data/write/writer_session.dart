@@ -6,7 +6,7 @@ import 'package:sqlite3/sqlite3.dart';
 import '../../domain/native_network_policy.dart';
 import '../../domain/ports/wallet_catalog_port.dart';
 import '../../domain/public_wallet_descriptor.dart';
-import '../../domain/transaction_sync_failure.dart';
+import '../../domain/sync_failure.dart';
 import '../../domain/wallet_key.dart';
 import '../../domain/wallet_revision.dart';
 import '../datasources/spend_gate_store_datasource.dart';
@@ -34,9 +34,7 @@ final class WriterSession {
   final RevisionStoreDatasource revisions;
   final SqliteWalletRevisionReader reader;
   final NativeWriteSessions sessions;
-  final Future<Result<PublicWalletDescriptor, TransactionSyncFailure>> Function(
-    WalletKey,
-  )
+  final Future<Result<PublicWalletDescriptor, SyncFailure>> Function(WalletKey)
   _resolve;
   final WriterDiagnosticSink diagnostics;
   final bool reportFailures;
@@ -65,10 +63,10 @@ final class WriterSession {
   }) : reportFailures = false,
        _resolve = ((key) async => key == descriptor.key
            ? Ok(descriptor)
-           : const Err(TransactionSyncNotFoundFailure()));
+           : const Err(SyncNotFoundFailure()));
 
   /// Creates a store, or adopts an existing one with [existingOnly].
-  Future<Result<WriterOutcome, TransactionSyncFailure>> create(
+  Future<Result<WriterOutcome, SyncFailure>> create(
     WalletKey key, {
     required int expectedGeneration,
     bool existingOnly = false,
@@ -156,13 +154,13 @@ final class WriterSession {
 
   /// With [adopt], first adopts the existing native store as
   /// `create(existingOnly: true)` would, under the same lock acquisition.
-  Future<Result<WriterOutcome, TransactionSyncFailure>> sync(
+  Future<Result<WriterOutcome, SyncFailure>> sync(
     WalletKey key, {
     required int expectedGeneration,
     required WriterSyncOperation operation,
     bool reconcile = true,
     bool adopt = false,
-    Future<Result<void, TransactionSyncFailure>> Function()? preflight,
+    Future<Result<void, SyncFailure>> Function()? preflight,
   }) => run(key, expectedGeneration, WriteIntent.sync, () async {
     if (adopt) {
       // Adoption may mutate the native store: invalidate first, as create does.
@@ -186,7 +184,7 @@ final class WriterSession {
       }
     }
     revisions.begin(key, WriteIntent.sync);
-    late Result<void, TransactionSyncFailure> result;
+    late Result<void, SyncFailure> result;
     try {
       result = await operation.execute(
         descriptor,
@@ -196,7 +194,7 @@ final class WriterSession {
       if (isLiquidStatusConflict(error)) revisions.requireRepair(key);
       rethrow;
     }
-    if (result case Err(failure: TransactionSyncNeedsRepairFailure())) {
+    if (result case Err(failure: SyncNeedsRepairFailure())) {
       revisions.requireRepair(key);
     } else if (result is Err) {
       if (operation case WriterSyncMutation(mayHaveMutated: false)) {
@@ -207,7 +205,7 @@ final class WriterSession {
         final stamp = finish(key, syncFailed: true);
         diagnostics(
           WriterLogLevel.fine,
-          'Writer revision invalidated generation=${stamp.generation} revision=${stamp.revision} reason=${(result as Err<void, TransactionSyncFailure>).failure.logCode}',
+          'Writer revision invalidated generation=${stamp.generation} revision=${stamp.revision} reason=${(result as Err<void, SyncFailure>).failure.logCode}',
         );
       }
     }
@@ -238,7 +236,7 @@ final class WriterSession {
 
   /// Runs [operation] under one writer lock acquisition, after resuming any
   /// interrupted intent. Throw [WriterRefusal] to return a typed failure.
-  Future<Result<T, TransactionSyncFailure>> run<T>(
+  Future<Result<T, SyncFailure>> run<T>(
     WalletKey key,
     int expectedGeneration,
     WriteIntent intent,
@@ -277,7 +275,7 @@ final class WriterSession {
       _reportFailure(key, failure);
       return Err(failure);
     }
-    final lock = (acquisition as Ok<WriterLock, TransactionSyncFailure>).value;
+    final lock = (acquisition as Ok<WriterLock, SyncFailure>).value;
     final watch = Stopwatch()..start();
     try {
       final admitted = revisions.record(key);
@@ -294,7 +292,7 @@ final class WriterSession {
               ? LeaseBusySource.schemaGate
               : LeaseBusySource.lifecycleGate,
         );
-        throw const WriterRefusal(TransactionSyncBusyFailure());
+        throw const WriterRefusal(SyncBusyFailure());
       }
       // Only an admitted request invalidates the gate: a stale one is refused
       // above without touching obligations.
@@ -327,10 +325,8 @@ final class WriterSession {
         trace.busy(LeaseBusySource.revisionRead);
       }
       final mapped = mapFailure(error);
-      final failure = mapped is TransactionSyncNeedsRepairFailure
-          ? TransactionSyncNeedsRepairFailure(
-              revisions.record(key)?.state.stamp,
-            )
+      final failure = mapped is SyncNeedsRepairFailure
+          ? SyncNeedsRepairFailure(revisions.record(key)?.state.stamp)
           : mapped;
       _reportFailure(key, failure);
       return Err(failure);
@@ -364,7 +360,7 @@ final class WriterSession {
     }
     if (record.intent == WriteIntent.repair) {
       if (!allowRepairIntent) {
-        throw const WriterRefusal(TransactionSyncNeedsRepairFailure());
+        throw const WriterRefusal(SyncNeedsRepairFailure());
       }
       final cachePath = await rebuild(descriptor, record.issued);
       finish(
@@ -533,7 +529,7 @@ final class WriterSession {
   Future<PublicWalletDescriptor> descriptor(WalletKey key) async {
     final descriptor = value(await _resolve(key));
     if (descriptor.key != key) {
-      throw const WriterRefusal(TransactionSyncInvalidCatalogFailure());
+      throw const WriterRefusal(SyncInvalidCatalogFailure());
     }
     final failure = nativeDescriptorFailure(descriptor);
     if (failure != null) throw WriterRefusal(failure);
@@ -542,7 +538,7 @@ final class WriterSession {
     if (record?.state.lifecycle != WalletLifecycle.deleted &&
         previousHash != null &&
         previousHash != descriptorDigest(descriptor)) {
-      throw const WriterRefusal(TransactionSyncInvalidCatalogFailure());
+      throw const WriterRefusal(SyncInvalidCatalogFailure());
     }
     return descriptor;
   }
@@ -551,21 +547,21 @@ final class WriterSession {
     final record = revisions.record(key);
     expectGeneration(record, generation);
     if (record == null || record.state.lifecycle != WalletLifecycle.active) {
-      throw const WriterRefusal(TransactionSyncNotFoundFailure());
+      throw const WriterRefusal(SyncNotFoundFailure());
     }
     return record;
   }
 
   void expectGeneration(RevisionRecord? record, int generation) {
     if ((record?.state.stamp.generation ?? 0) != generation) {
-      throw const WriterRefusal(TransactionSyncNotFoundFailure());
+      throw const WriterRefusal(SyncNotFoundFailure());
     }
   }
 
-  void _reportFailure(WalletKey key, TransactionSyncFailure failure) {
+  void _reportFailure(WalletKey key, SyncFailure failure) {
     if (!reportFailures || _failures[key] == failure.runtimeType) return;
     _failures[key] = failure.runtimeType;
-    if (failure is TransactionSyncStorageFailure) {
+    if (failure is SyncStorageFailure) {
       diagnostics(
         WriterLogLevel.severe,
         'Wallet writer unexpected storage failure category=${failure.logCode}',
@@ -578,34 +574,33 @@ final class WriterSession {
     }
   }
 
-  static T value<T>(Result<T, TransactionSyncFailure> result) =>
-      switch (result) {
-        Ok(:final value) => value,
-        Err(:final failure) => throw WriterRefusal(failure),
-      };
+  static T value<T>(Result<T, SyncFailure> result) => switch (result) {
+    Ok(:final value) => value,
+    Err(:final failure) => throw WriterRefusal(failure),
+  };
 
   /// Only an [Exception] becomes a typed failure. Callers let anything else
   /// thrown, a programmer [Error] above all, propagate with its trace.
-  static TransactionSyncFailure mapFailure(Exception error) {
+  static SyncFailure mapFailure(Exception error) {
     if (error is WriterRefusal) return error.failure;
     if (error is NativeStoreMissing) {
-      return const TransactionSyncNotFoundFailure();
+      return const SyncNotFoundFailure();
     }
     if (error is NativeNetworkUnsupported) {
-      return const TransactionSyncUnsupportedNetworkFailure();
+      return const SyncUnsupportedNetworkFailure();
     }
     if (error is SqliteException && error.resultCode == 5) {
-      return const TransactionSyncBusyFailure();
+      return const SyncBusyFailure();
     }
     if (isLiquidStatusConflict(error)) {
-      return const TransactionSyncNeedsRepairFailure();
+      return const SyncNeedsRepairFailure();
     }
-    return const TransactionSyncStorageFailure();
+    return const SyncStorageFailure();
   }
 }
 
 /// Thrown inside [WriterSession.run] to end the operation with [failure].
 final class WriterRefusal implements Exception {
-  final TransactionSyncFailure failure;
+  final SyncFailure failure;
   const WriterRefusal(this.failure);
 }

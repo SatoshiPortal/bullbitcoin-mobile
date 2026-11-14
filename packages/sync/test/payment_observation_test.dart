@@ -23,7 +23,7 @@ void main() {
   test('recording programmer errors reach the reporting boundary', () async {
     await expectLater(
       recordPaymentObservation(
-        const Ok<int, TransactionSyncFailure>(1),
+        const Ok<int, SyncFailure>(1),
         (_) async => throw StateError('private'),
       ),
       throwsStateError,
@@ -51,12 +51,11 @@ void main() {
         Duration.zero,
         incomingTxids: {},
       ).committed(stamp);
-      for (final callback
-          in <Future<Result<void, TransactionSyncFailure>> Function()>[
-            () async => const Err(TransactionSyncStorageFailure()),
-            () async => throw const FileSystemException('private'),
-          ]) {
-        final result = Ok<SyncCompletion, TransactionSyncFailure>(completion);
+      for (final callback in <Future<Result<void, SyncFailure>> Function()>[
+        () async => const Err(SyncStorageFailure()),
+        () async => throw const FileSystemException('private'),
+      ]) {
+        final result = Ok<SyncCompletion, SyncFailure>(completion);
         expect(
           await recordPaymentObservation(result, (_) => callback()),
           same(result),

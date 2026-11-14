@@ -7,10 +7,7 @@ import 'dart:async';
 import 'package:bb_mobile/features/wallet/data/wallet_native_runtime.dart';
 import 'package:sync/read.dart';
 import 'package:sync/sync.dart'
-    show
-        SyncReason,
-        TransactionSyncStorageFailure,
-        TransactionSyncInvalidCatalogFailure;
+    show SyncReason, SyncStorageFailure, SyncInvalidCatalogFailure;
 
 import 'package:bb_mobile/core/electrum/domain/errors/electrum_fallback_exception.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_sync_result.dart';
@@ -449,10 +446,8 @@ class WalletRepository implements SeedReferencePort, WalletReaderRepository {
     if (e is WalletFailure) return e;
     if (e is WalletSnapshotException) {
       return switch (e.failure) {
-        TransactionSyncStorageFailure() ||
-        TransactionSyncInvalidCatalogFailure() => WalletStorageFailure(
-          '$operation: ${e.failure.logCode}',
-        ),
+        SyncStorageFailure() || SyncInvalidCatalogFailure() =>
+          WalletStorageFailure('$operation: ${e.failure.logCode}'),
         _ => WalletSyncFailure('$operation: ${e.failure.logCode}'),
       };
     }

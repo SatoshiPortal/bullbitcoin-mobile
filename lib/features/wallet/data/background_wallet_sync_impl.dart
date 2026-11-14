@@ -25,7 +25,7 @@ final class BackgroundWalletSyncImpl implements BackgroundWalletSyncPort {
     final descriptor = await _catalog.find(key);
     if (descriptor case Err(:final failure)) return Err(_failure(failure));
     final result = await _sync.execute(
-      (descriptor as Ok<PublicWalletDescriptor, TransactionSyncFailure>).value,
+      (descriptor as Ok<PublicWalletDescriptor, SyncFailure>).value,
       discover: discover,
       headless: true,
       reason: SyncReason.background,
@@ -55,43 +55,34 @@ final class BackgroundWalletSyncImpl implements BackgroundWalletSyncPort {
     };
   }
 
-  BackgroundSyncFailure _failure(
-    TransactionSyncFailure failure,
-  ) => switch (failure) {
-    TransactionSyncInvalidAddressFailure() =>
-      const BackgroundSyncUnavailableFailure(
-        BackgroundSyncUnavailableReason.address,
-      ),
-    TransactionSyncBusyFailure() => const BackgroundSyncBusyFailure(),
-    TransactionSyncUnsupportedNetworkFailure() =>
+  BackgroundSyncFailure _failure(SyncFailure failure) => switch (failure) {
+    SyncInvalidAddressFailure() => const BackgroundSyncUnavailableFailure(
+      BackgroundSyncUnavailableReason.address,
+    ),
+    SyncBusyFailure() => const BackgroundSyncBusyFailure(),
+    SyncUnsupportedNetworkFailure() =>
       const BackgroundSyncUnsupportedNetworkFailure(),
-    TransactionSyncUnauthorizedNetworkFailure() =>
+    SyncUnauthorizedNetworkFailure() =>
       const BackgroundSyncUnauthorizedNetworkFailure(),
-    TransactionSyncInitialScanRequiredFailure() =>
+    SyncInitialScanRequiredFailure() =>
       const BackgroundSyncInitialScanRequiredFailure(),
-    TransactionSyncNeedsRepairFailure(
-      revision: final WalletRevision revision,
-    ) =>
+    SyncNeedsRepairFailure(revision: final WalletRevision revision) =>
       BackgroundSyncNeedsRepairFailure(revision),
-    TransactionSyncConnectionFailure() =>
-      const BackgroundSyncConnectionFailure(),
-    TransactionSyncStorageFailure() => const BackgroundSyncUnavailableFailure(
+    SyncConnectionFailure() => const BackgroundSyncConnectionFailure(),
+    SyncStorageFailure() => const BackgroundSyncUnavailableFailure(
       BackgroundSyncUnavailableReason.storage,
     ),
-    TransactionSyncInvalidCatalogFailure() =>
-      const BackgroundSyncUnavailableFailure(
-        BackgroundSyncUnavailableReason.catalog,
-      ),
-    TransactionSyncNotFoundFailure() => const BackgroundSyncUnavailableFailure(
+    SyncInvalidCatalogFailure() => const BackgroundSyncUnavailableFailure(
+      BackgroundSyncUnavailableReason.catalog,
+    ),
+    SyncNotFoundFailure() => const BackgroundSyncUnavailableFailure(
       BackgroundSyncUnavailableReason.missing,
     ),
-    TransactionSyncNeedsRepairFailure() =>
-      const BackgroundSyncUnavailableFailure(
-        BackgroundSyncUnavailableReason.repair,
-      ),
-    TransactionSyncRestartRequiredFailure() =>
-      const BackgroundSyncUnavailableFailure(
-        BackgroundSyncUnavailableReason.restart,
-      ),
+    SyncNeedsRepairFailure() => const BackgroundSyncUnavailableFailure(
+      BackgroundSyncUnavailableReason.repair,
+    ),
+    SyncRestartRequiredFailure() => const BackgroundSyncUnavailableFailure(
+      BackgroundSyncUnavailableReason.restart,
+    ),
   };
 }

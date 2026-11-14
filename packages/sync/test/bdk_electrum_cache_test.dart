@@ -247,14 +247,13 @@ void main() {
     });
     tearDown(() => dir.deleteSync(recursive: true));
 
-    SyncCompletion completed(
-      Result<SyncCompletion, TransactionSyncFailure> result,
-    ) => switch (result) {
-      Ok(:final value) => value,
-      Err(:final failure) => throw StateError(
-        'Unexpected ${failure.runtimeType}',
-      ),
-    };
+    SyncCompletion completed(Result<SyncCompletion, SyncFailure> result) =>
+        switch (result) {
+          Ok(:final value) => value,
+          Err(:final failure) => throw StateError(
+            'Unexpected ${failure.runtimeType}',
+          ),
+        };
 
     for (final scenario in electrumFixtureScenarios) {
       test('first scan then routine/discovery parity: $scenario', () async {
@@ -434,14 +433,9 @@ void main() {
               expectedGeneration: 1,
               advance: index > 0,
             );
+            expect(issued, isA<Ok<ReceiveAddressIssued, SyncFailure>>());
             expect(
-              issued,
-              isA<Ok<ReceiveAddressIssued, TransactionSyncFailure>>(),
-            );
-            expect(
-              (issued as Ok<ReceiveAddressIssued, TransactionSyncFailure>)
-                  .value
-                  .index,
+              (issued as Ok<ReceiveAddressIssued, SyncFailure>).value.index,
               index,
             );
           }
@@ -565,12 +559,12 @@ void main() {
       final worker = ElectrumSync(
         connections: FixtureConnections([fixture.url]),
         documentsDirectory: () async => elsewhere.path,
-        readRevision: (_) async => const Err(TransactionSyncNotFoundFailure()),
+        readRevision: (_) async => const Err(SyncNotFoundFailure()),
       );
       final result = await worker.execute(descriptor);
       expect(
-        (result as Err<SyncCompletion, TransactionSyncFailure>).failure,
-        isA<TransactionSyncStorageFailure>(),
+        (result as Err<SyncCompletion, SyncFailure>).failure,
+        isA<SyncStorageFailure>(),
       );
       expect(
         Directory('${elsewhere.path}/transaction_sync').existsSync(),
@@ -584,7 +578,7 @@ void main() {
       sync = foregroundSync(dir.path, connections);
       expect(
         await sync.execute(descriptor),
-        isA<Err<SyncCompletion, TransactionSyncFailure>>(),
+        isA<Err<SyncCompletion, SyncFailure>>(),
       );
       expect(connections.attempts, 1);
       expect(File(path).readAsStringSync(), 'corrupted native wallet');
@@ -602,9 +596,9 @@ void main() {
       sync = foregroundSync(dir.path, connections);
       try {
         final result = await sync.execute(descriptor);
-        expect(result, isA<Err<SyncCompletion, TransactionSyncFailure>>());
+        expect(result, isA<Err<SyncCompletion, SyncFailure>>());
         if (result case Err(:final failure)) {
-          expect(failure, isA<TransactionSyncStorageFailure>());
+          expect(failure, isA<SyncStorageFailure>());
         }
         expect(connections.attempts, 1);
         expect(
@@ -638,9 +632,9 @@ void main() {
         sync = foregroundSync(dir.path, connections);
         await fixture.requests();
         final result = await sync.execute(liquid);
-        expect(result, isA<Err<SyncCompletion, TransactionSyncFailure>>());
+        expect(result, isA<Err<SyncCompletion, SyncFailure>>());
         if (result case Err(:final failure)) {
-          expect(failure, isA<TransactionSyncNotFoundFailure>());
+          expect(failure, isA<SyncNotFoundFailure>());
         }
         expect((await fixture.requests()).counts, isEmpty);
       },
@@ -651,12 +645,12 @@ void main() {
       () async {
         final acquisition =
             WriterLock.acquire((dir.path), descriptor.key)
-                as Ok<WriterLock, TransactionSyncFailure>;
+                as Ok<WriterLock, SyncFailure>;
         try {
           final finished = sync.finished.first;
           final result = await sync.execute(descriptor);
-          expect(result, isA<Err<SyncCompletion, TransactionSyncFailure>>());
-          expect((result as Err).failure, isA<TransactionSyncBusyFailure>());
+          expect(result, isA<Err<SyncCompletion, SyncFailure>>());
+          expect((result as Err).failure, isA<SyncBusyFailure>());
           expect((await finished).result, same(result));
           final reopened = _Wallet.open(path);
           expect(reopened.wallet.latestCheckpoint().height, 0);
@@ -1076,7 +1070,7 @@ void main() {
         }
         final result = await sync.execute(descriptor, discover: true);
         if (scenario == 'scanFails') {
-          expect(result, isA<Err<SyncCompletion, TransactionSyncFailure>>());
+          expect(result, isA<Err<SyncCompletion, SyncFailure>>());
           // The failed pass publishes no success: the writer conservatively
           // invalidates the revision, and nothing it fetched was persisted.
           final after = await read();
@@ -1134,12 +1128,8 @@ void main() {
           final result = await SqliteWalletRevisionReader(
             revisions,
           ).read(descriptor.key);
-          expect(
-            result,
-            isA<Ok<WalletRevisionState, TransactionSyncFailure>>(),
-          );
-          final state =
-              (result as Ok<WalletRevisionState, TransactionSyncFailure>).value;
+          expect(result, isA<Ok<WalletRevisionState, SyncFailure>>());
+          final state = (result as Ok<WalletRevisionState, SyncFailure>).value;
           expect(state.stamp, changed.revision);
           expect(state.syncFailed, isFalse);
         } finally {
@@ -1168,7 +1158,7 @@ void main() {
       try {
         final state =
             (await SqliteWalletRevisionReader(revisions).read(descriptor.key)
-                    as Ok<WalletRevisionState, TransactionSyncFailure>)
+                    as Ok<WalletRevisionState, SyncFailure>)
                 .value;
         expect(state.lifecycle, WalletLifecycle.active);
         expect(state.initializedSchema, writerSchemaVersion);
@@ -1181,7 +1171,7 @@ void main() {
     test('missing native store is not created', () async {
       File(path).deleteSync();
       final result = await sync.execute(descriptor);
-      expect(result, isA<Err<SyncCompletion, TransactionSyncFailure>>());
+      expect(result, isA<Err<SyncCompletion, SyncFailure>>());
       expect(File(path).existsSync(), isFalse);
     });
 

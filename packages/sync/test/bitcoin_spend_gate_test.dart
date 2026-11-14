@@ -12,7 +12,7 @@ import 'package:sync/src/data/write/writer_lock.dart';
 
 final class _Reserved implements ReservedAddressPort {
   @override
-  Future<Result<bool, TransactionSyncFailure>> isReserved(
+  Future<Result<bool, SyncFailure>> isReserved(
     WalletKey key,
     String address,
   ) async => const Ok(false);
@@ -22,12 +22,12 @@ final class _Catalog implements WalletCatalogPort {
   final List<PublicWalletDescriptor> wallets;
   _Catalog(this.wallets);
   @override
-  Future<Result<PublicWalletDescriptor, TransactionSyncFailure>> find(
+  Future<Result<PublicWalletDescriptor, SyncFailure>> find(
     WalletKey key,
   ) async => Ok(wallets.singleWhere((wallet) => wallet.key == key));
   @override
-  Future<Result<List<PublicWalletDescriptor>, TransactionSyncFailure>>
-  list() async => Ok(wallets);
+  Future<Result<List<PublicWalletDescriptor>, SyncFailure>> list() async =>
+      Ok(wallets);
 }
 
 void main() {
@@ -195,8 +195,8 @@ void main() {
       () => stores.writer.delete(wallet.key, expectedGeneration: 0),
     ]) {
       expect(
-        (await stale() as Err<WriterOutcome, TransactionSyncFailure>).failure,
-        isA<TransactionSyncNotFoundFailure>(),
+        (await stale() as Err<WriterOutcome, SyncFailure>).failure,
+        isA<SyncNotFoundFailure>(),
       );
       expect(await gate.check(wallet.key), BitcoinSpendStatus.ready);
     }
@@ -204,8 +204,7 @@ void main() {
 
   test('writer contention is busy, not an unobserved payment', () async {
     final held =
-        WriterLock.acquire(dir.path, wallet.key)
-            as Ok<WriterLock, TransactionSyncFailure>;
+        WriterLock.acquire(dir.path, wallet.key) as Ok<WriterLock, SyncFailure>;
     try {
       expect(await gate.check(wallet.key), BitcoinSpendStatus.busy);
     } finally {

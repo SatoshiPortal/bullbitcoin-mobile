@@ -5,7 +5,7 @@ import 'package:primitives/primitives.dart';
 import '../../../domain/ports/wallet_connection_port.dart';
 import '../../../domain/public_wallet_descriptor.dart';
 import '../../../domain/sync_completion.dart';
-import '../../../domain/transaction_sync_failure.dart';
+import '../../../domain/sync_failure.dart';
 import '../../writer_diagnostics.dart';
 
 /// What the foreground hands the compute worker for one pass.
@@ -40,7 +40,7 @@ final class SyncParams {
 
 /// What a pass returns to the worker, and the worker to the foreground.
 final class SyncPassOutcome {
-  final Result<SyncCompletion, TransactionSyncFailure> result;
+  final Result<SyncCompletion, SyncFailure> result;
 
   /// Only a failure before any native store was opened may try another server.
   final bool retryable;
@@ -54,7 +54,7 @@ final class SyncPassOutcome {
     this.cacheDiagnostics,
   });
 
-  SyncPassOutcome.failed(TransactionSyncFailure failure)
+  SyncPassOutcome.failed(SyncFailure failure)
     : result = Err(failure),
       retryable = false,
       cacheDiagnostics = null;

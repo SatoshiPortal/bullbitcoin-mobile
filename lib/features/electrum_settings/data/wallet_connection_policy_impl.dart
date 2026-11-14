@@ -13,13 +13,11 @@ final class WalletConnectionPolicyImpl implements WalletConnectionPort {
   WalletConnectionPolicyImpl(this._servers);
 
   @override
-  Future<Result<T, TransactionSyncFailure>> run<T>({
+  Future<Result<T, SyncFailure>> run<T>({
     required Network network,
-    required Future<Result<T, TransactionSyncFailure>> Function(
-      WalletConnection,
-    )
+    required Future<Result<T, SyncFailure>> Function(WalletConnection)
     operation,
-    required bool Function(TransactionSyncFailure) mayRetry,
+    required bool Function(SyncFailure) mayRetry,
   }) async {
     final serverNetwork = switch (network) {
       BitcoinNetwork.mainnet => ElectrumServerNetwork.bitcoinMainnet,
@@ -32,9 +30,9 @@ final class WalletConnectionPolicyImpl implements WalletConnectionPort {
     };
     if (serverNetwork == null) {
       log.config('Wallet connection unavailable network=$network');
-      return const Err(TransactionSyncUnsupportedNetworkFailure());
+      return const Err(SyncUnsupportedNetworkFailure());
     }
-    TransactionSyncFailure? lastFailure;
+    SyncFailure? lastFailure;
     try {
       return await _servers.runWithFallback(
         network: serverNetwork,
@@ -59,13 +57,13 @@ final class WalletConnectionPolicyImpl implements WalletConnectionPort {
         },
       );
     } on ElectrumNetworkUnauthorizedException {
-      return const Err(TransactionSyncUnauthorizedNetworkFailure());
+      return const Err(SyncUnauthorizedNetworkFailure());
     } on AllElectrumServersFailedException {
       // Exhaustion wraps retryable callback failures; preserve the last one.
-      return Err(lastFailure ?? const TransactionSyncConnectionFailure());
+      return Err(lastFailure ?? const SyncConnectionFailure());
     } on Exception {
       // No URL, proxy, descriptor or foreign diagnostic escapes this boundary.
-      return const Err(TransactionSyncConnectionFailure());
+      return const Err(SyncConnectionFailure());
     }
   }
 }

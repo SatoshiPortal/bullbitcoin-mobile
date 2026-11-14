@@ -91,7 +91,7 @@ void main() {
       hasLength(1),
     );
     expect(rows.join(), isNot(contains('[REDACTED]')));
-    expect(rows.join(), isNot(contains('TransactionSync')));
+    expect(rows.join(), isNot(contains('Failure')));
   });
 
   void create({int revealed = 0}) {
@@ -225,7 +225,7 @@ void main() {
       );
       final first =
           await writer.receive(descriptor.key, expectedGeneration: 0)
-              as Ok<ReceiveAddressIssued, TransactionSyncFailure>;
+              as Ok<ReceiveAddressIssued, SyncFailure>;
       expect(first.value.index, 12);
       final reopened = NativeWalletWriterRepository(
         revisions: revisions,
@@ -236,7 +236,7 @@ void main() {
       );
       final again =
           await reopened.receive(descriptor.key, expectedGeneration: 0)
-              as Ok<ReceiveAddressIssued, TransactionSyncFailure>;
+              as Ok<ReceiveAddressIssued, SyncFailure>;
       expect(again.value.address, first.value.address);
       expect(again.value.index, 12);
       final next =
@@ -245,11 +245,11 @@ void main() {
                 expectedGeneration: 0,
                 advance: true,
               )
-              as Ok<ReceiveAddressIssued, TransactionSyncFailure>;
+              as Ok<ReceiveAddressIssued, SyncFailure>;
       expect(next.value.index, 13);
       final same =
           await reopened.receive(descriptor.key, expectedGeneration: 0)
-              as Ok<ReceiveAddressIssued, TransactionSyncFailure>;
+              as Ok<ReceiveAddressIssued, SyncFailure>;
       expect(same.value.address, next.value.address);
     } finally {
       revisions.close();
@@ -262,14 +262,10 @@ void main() {
       create();
       final before = await fingerprint(documents);
       final first = await reader.bitcoin(descriptor);
-      expect(
-        first,
-        isA<Ok<WalletReadSnapshot<bdk.Wallet>, TransactionSyncFailure>>(),
-      );
-      final wallet =
-          (first as Ok<WalletReadSnapshot<bdk.Wallet>, TransactionSyncFailure>)
-              .value
-              .wallet;
+      expect(first, isA<Ok<WalletReadSnapshot<bdk.Wallet>, SyncFailure>>());
+      final wallet = (first as Ok<WalletReadSnapshot<bdk.Wallet>, SyncFailure>)
+          .value
+          .wallet;
       // The loaded handle exposes the persisted derivation state.
       expect(
         wallet.nextDerivationIndex(keychain: bdk.KeychainKind.external_),
@@ -277,7 +273,7 @@ void main() {
       );
       final second = await reader.bitcoin(descriptor);
       expect(
-        (second as Ok<WalletReadSnapshot<bdk.Wallet>, TransactionSyncFailure>)
+        (second as Ok<WalletReadSnapshot<bdk.Wallet>, SyncFailure>)
             .value
             .wallet,
         same(wallet),
@@ -289,9 +285,7 @@ void main() {
       );
       final stale = await reader.bitcoin(descriptor);
       expect(
-        (stale as Ok<WalletReadSnapshot<bdk.Wallet>, TransactionSyncFailure>)
-            .value
-            .stale,
+        (stale as Ok<WalletReadSnapshot<bdk.Wallet>, SyncFailure>).value.stale,
         isTrue,
       );
       revisions.state = WalletRevisionState(
@@ -300,7 +294,7 @@ void main() {
       );
       expect(
         await reader.bitcoin(descriptor),
-        isA<Err<WalletReadSnapshot<bdk.Wallet>, TransactionSyncFailure>>(),
+        isA<Err<WalletReadSnapshot<bdk.Wallet>, SyncFailure>>(),
       );
     },
   );
@@ -328,7 +322,7 @@ void main() {
 
   test('missing store is typed and creates nothing', () async {
     final result = await reader.bitcoin(descriptor);
-    expect((result as Err).failure, isA<TransactionSyncNotFoundFailure>());
+    expect((result as Err).failure, isA<SyncNotFoundFailure>());
     expect(await documents.list().toList(), isEmpty);
   });
 
@@ -338,7 +332,7 @@ void main() {
     ).writeAsString('not a wallet');
     final before = await fingerprint(documents);
     final result = await reader.bitcoin(descriptor);
-    expect((result as Err).failure, isA<TransactionSyncNeedsRepairFailure>());
+    expect((result as Err).failure, isA<SyncNeedsRepairFailure>());
     expect(await fingerprint(documents), before);
   });
 
@@ -349,7 +343,7 @@ void main() {
       final before = await fingerprint(documents);
       expect(
         (await reader.bitcoin(descriptor) as Err).failure,
-        isA<TransactionSyncBusyFailure>(),
+        isA<SyncBusyFailure>(),
       );
       expect(await fingerprint(documents), before);
     }
@@ -361,7 +355,7 @@ void main() {
       create();
       final first =
           await reader.bitcoin(descriptor)
-              as Ok<WalletReadSnapshot<bdk.Wallet>, TransactionSyncFailure>;
+              as Ok<WalletReadSnapshot<bdk.Wallet>, SyncFailure>;
       revisions.state = WalletRevisionState(
         stamp: WalletRevision(key: descriptor.key, generation: 0, revision: 1),
         lifecycle: WalletLifecycle.active,
@@ -397,7 +391,7 @@ void main() {
     create();
     final first =
         await reader.bitcoin(descriptor)
-            as Ok<WalletReadSnapshot<bdk.Wallet>, TransactionSyncFailure>;
+            as Ok<WalletReadSnapshot<bdk.Wallet>, SyncFailure>;
     revisions.state = WalletRevisionState(
       stamp: revisions.state.stamp,
       lifecycle: WalletLifecycle.active,
@@ -406,7 +400,7 @@ void main() {
     );
     final next =
         await reader.bitcoin(descriptor)
-            as Ok<WalletReadSnapshot<bdk.Wallet>, TransactionSyncFailure>;
+            as Ok<WalletReadSnapshot<bdk.Wallet>, SyncFailure>;
     expect(next.value.wallet, same(first.value.wallet));
     expect(next.value.stale, isTrue);
   });
@@ -460,7 +454,7 @@ void main() {
     };
     expect(
       (await reader.bitcoin(descriptor) as Err).failure,
-      isA<TransactionSyncBusyFailure>(),
+      isA<SyncBusyFailure>(),
     );
     expect(await reader.bitcoin(descriptor), isA<Ok>());
   });
@@ -491,9 +485,7 @@ final class FakeRevisions implements WalletRevisionReaderPort {
         initializedSchema: 1,
       );
   @override
-  Future<Result<WalletRevisionState, TransactionSyncFailure>> read(
-    WalletKey key,
-  ) async {
+  Future<Result<WalletRevisionState, SyncFailure>> read(WalletKey key) async {
     beforeRead?.call();
     return Ok(state);
   }
@@ -508,10 +500,8 @@ final class FakeAdmission implements ReadAdmissionPort {
   bool active = false;
   FakeAdmission(this.revisions);
   @override
-  Future<Result<ReadLease, TransactionSyncFailure>> acquire(
-    WalletKey key,
-  ) async {
-    if (busy) return const Err(TransactionSyncBusyFailure());
+  Future<Result<ReadLease, SyncFailure>> acquire(WalletKey key) async {
+    if (busy) return const Err(SyncBusyFailure());
     active = true;
     return Ok(_FakeLease(revisions.state.stamp, () => active = false));
   }
@@ -533,18 +523,18 @@ final class FakeReadiness implements WalletReadReadinessPort {
   void Function()? onCheck;
 
   @override
-  Future<Result<WalletReadReady, TransactionSyncFailure>> check(
+  Future<Result<WalletReadReady, SyncFailure>> check(
     PublicWalletDescriptor descriptor,
     WalletRevision expected,
     int requiredSchemaVersion,
   ) async {
     onCheck?.call();
     if (!identical(descriptor, initializedDescriptor)) {
-      return const Err(TransactionSyncInvalidCatalogFailure());
+      return const Err(SyncInvalidCatalogFailure());
     }
     final version = schemaVersion;
     if (version == null) {
-      return const Err(TransactionSyncBusyFailure());
+      return const Err(SyncBusyFailure());
     }
     return Ok(
       WalletReadReady(
@@ -560,17 +550,17 @@ final class _Catalog implements WalletCatalogPort {
   final PublicWalletDescriptor descriptor;
   _Catalog(this.descriptor);
   @override
-  Future<Result<PublicWalletDescriptor, TransactionSyncFailure>> find(
+  Future<Result<PublicWalletDescriptor, SyncFailure>> find(
     WalletKey key,
   ) async => Ok(descriptor);
   @override
-  Future<Result<List<PublicWalletDescriptor>, TransactionSyncFailure>>
-  list() async => Ok([descriptor]);
+  Future<Result<List<PublicWalletDescriptor>, SyncFailure>> list() async =>
+      Ok([descriptor]);
 }
 
 final class _Reserved implements ReservedAddressPort {
   @override
-  Future<Result<bool, TransactionSyncFailure>> isReserved(
+  Future<Result<bool, SyncFailure>> isReserved(
     WalletKey key,
     String address,
   ) async => const Ok(false);

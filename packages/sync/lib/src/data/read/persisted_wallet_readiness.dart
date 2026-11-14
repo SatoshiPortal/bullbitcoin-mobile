@@ -1,6 +1,6 @@
 import '../lease_diagnostics.dart';
 import 'package:primitives/primitives.dart';
-import '../../domain/transaction_sync_failure.dart';
+import '../../domain/sync_failure.dart';
 import '../../domain/public_wallet_descriptor.dart';
 import '../../domain/wallet_revision.dart';
 import '../datasources/revision_store_datasource.dart';
@@ -14,14 +14,14 @@ final class PersistedWalletReadiness implements WalletReadReadinessPort {
   const PersistedWalletReadiness(this._revisions);
 
   @override
-  Future<Result<WalletReadReady, TransactionSyncFailure>> check(
+  Future<Result<WalletReadReady, SyncFailure>> check(
     PublicWalletDescriptor descriptor,
     WalletRevision expected,
     int requiredSchemaVersion,
   ) async {
     final record = _revisions.record(descriptor.key);
     if (record == null || record.state.lifecycle == WalletLifecycle.deleted) {
-      return const Err(TransactionSyncNotFoundFailure());
+      return const Err(SyncNotFoundFailure());
     }
     if (record.intent != null ||
         record.state.stamp != expected ||
@@ -34,16 +34,16 @@ final class PersistedWalletReadiness implements WalletReadReadinessPort {
             ? LeaseBusySource.revisionRead
             : LeaseBusySource.schemaGate,
       );
-      return const Err(TransactionSyncBusyFailure());
+      return const Err(SyncBusyFailure());
     }
-    if (record.needsSync) return const Err(TransactionSyncNeedsRepairFailure());
+    if (record.needsSync) return const Err(SyncNeedsRepairFailure());
     if (record.descriptorHash != descriptorDigest(descriptor)) {
-      return const Err(TransactionSyncInvalidCatalogFailure());
+      return const Err(SyncInvalidCatalogFailure());
     }
     if (descriptor is LiquidWalletDescriptor &&
         record.liquidCachePath == null) {
       LeaseDiagnostics.current?.busy(LeaseBusySource.schemaGate);
-      return const Err(TransactionSyncBusyFailure());
+      return const Err(SyncBusyFailure());
     }
     return Ok(
       WalletReadReady(

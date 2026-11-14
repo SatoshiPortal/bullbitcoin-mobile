@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:primitives/primitives.dart';
 
-import '../../../domain/transaction_sync_failure.dart';
+import '../../../domain/sync_failure.dart';
 
 /// Missing observations must never be treated as an empty payment history.
 Future<T?> collectPaymentObservation<T>(
@@ -19,9 +19,9 @@ Future<T?> collectPaymentObservation<T>(
 }
 
 /// Observation persistence cannot change an already committed sync outcome.
-Future<Result<T, TransactionSyncFailure>> recordPaymentObservation<T>(
-  Result<T, TransactionSyncFailure> result,
-  Future<Result<void, TransactionSyncFailure>> Function(T) record,
+Future<Result<T, SyncFailure>> recordPaymentObservation<T>(
+  Result<T, SyncFailure> result,
+  Future<Result<void, SyncFailure>> Function(T) record,
 ) async {
   if (result case Ok(:final value)) {
     try {

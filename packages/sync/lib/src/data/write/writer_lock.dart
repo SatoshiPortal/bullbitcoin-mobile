@@ -4,7 +4,7 @@ import 'dart:math' as math;
 
 import 'package:primitives/primitives.dart';
 import 'package:sqlite3/sqlite3.dart';
-import '../../domain/transaction_sync_failure.dart';
+import '../../domain/sync_failure.dart';
 import '../../domain/wallet_key.dart';
 import '../native_store_paths.dart';
 
@@ -24,7 +24,7 @@ final class WriterLock {
 
   WriterLock._(this._db, this._diagnostics);
 
-  static Result<WriterLock, TransactionSyncFailure> acquire(
+  static Result<WriterLock, SyncFailure> acquire(
     String documentsDirectory,
     WalletKey key, {
     LeaseDiagnostics? diagnostics,
@@ -38,8 +38,8 @@ final class WriterLock {
     var busySource = LeaseBusySource.leaseOpen;
     Database? db;
     try {
-      db = _open((path as Ok<String, TransactionSyncFailure>).value);
-      if (db == null) return const Err(TransactionSyncStorageFailure());
+      db = _open((path as Ok<String, SyncFailure>).value);
+      if (db == null) return const Err(SyncStorageFailure());
       busySource = LeaseBusySource.leaseBegin;
       db.execute('BEGIN IMMEDIATE');
       final lock = WriterLock._(db, trace);
@@ -50,17 +50,17 @@ final class WriterLock {
       if (error.resultCode == 5) trace.busy(busySource);
       return Err(
         error.resultCode == 5
-            ? const TransactionSyncBusyFailure()
-            : const TransactionSyncStorageFailure(),
+            ? const SyncBusyFailure()
+            : const SyncStorageFailure(),
       );
     } on FileSystemException {
       db?.dispose();
-      return const Err(TransactionSyncStorageFailure());
+      return const Err(SyncStorageFailure());
     }
   }
 
   /// Writer-only admission. Readers use [acquire] and never wait.
-  static Future<Result<WriterLock, TransactionSyncFailure>> acquireWriter(
+  static Future<Result<WriterLock, SyncFailure>> acquireWriter(
     String documentsDirectory,
     WalletKey key, {
     required LeaseDiagnostics diagnostics,
@@ -71,8 +71,8 @@ final class WriterLock {
     var busySource = LeaseBusySource.leaseOpen;
     final waited = Stopwatch();
     try {
-      db = _open((path as Ok<String, TransactionSyncFailure>).value);
-      if (db == null) return const Err(TransactionSyncStorageFailure());
+      db = _open((path as Ok<String, SyncFailure>).value);
+      if (db == null) return const Err(SyncStorageFailure());
       final connection = db;
       busySource = LeaseBusySource.leaseBegin;
       waited.start();
@@ -90,7 +90,7 @@ final class WriterLock {
         final remaining = writerWaitLimit - waited.elapsed;
         if (remaining <= Duration.zero) {
           diagnostics.busy(busySource, waitedMs: waited.elapsedMilliseconds);
-          return const Err(TransactionSyncBusyFailure());
+          return const Err(SyncBusyFailure());
         }
         final delay = Duration(milliseconds: _retryStepsMs[step]);
         await Future<void>.delayed(delay < remaining ? delay : remaining);
@@ -103,11 +103,11 @@ final class WriterLock {
       }
       return Err(
         error.resultCode == 5
-            ? const TransactionSyncBusyFailure()
-            : const TransactionSyncStorageFailure(),
+            ? const SyncBusyFailure()
+            : const SyncStorageFailure(),
       );
     } on FileSystemException {
-      return const Err(TransactionSyncStorageFailure());
+      return const Err(SyncStorageFailure());
     } finally {
       db?.dispose();
     }

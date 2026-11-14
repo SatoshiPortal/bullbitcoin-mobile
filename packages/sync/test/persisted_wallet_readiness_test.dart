@@ -45,7 +45,7 @@ void main() {
           (await readiness.check(descriptor, unproven, writerSchemaVersion)
                   as Err)
               .failure,
-          isA<TransactionSyncBusyFailure>(),
+          isA<SyncBusyFailure>(),
         );
         store.begin(key, WriteIntent.load);
         final stamp = store
@@ -58,32 +58,32 @@ void main() {
         expect(
           (await readiness.check(other, stamp, writerSchemaVersion) as Err)
               .failure,
-          isA<TransactionSyncInvalidCatalogFailure>(),
+          isA<SyncInvalidCatalogFailure>(),
         );
         expect(
           (await readiness.check(descriptor, unproven, writerSchemaVersion)
                   as Err)
               .failure,
-          isA<TransactionSyncBusyFailure>(),
+          isA<SyncBusyFailure>(),
         );
         expect(
           (await readiness.check(descriptor, stamp, writerSchemaVersion + 1)
                   as Err)
               .failure,
-          isA<TransactionSyncBusyFailure>(),
+          isA<SyncBusyFailure>(),
         );
         store.begin(key, WriteIntent.sync);
         expect(
           (await readiness.check(descriptor, stamp, writerSchemaVersion) as Err)
               .failure,
-          isA<TransactionSyncBusyFailure>(),
+          isA<SyncBusyFailure>(),
         );
         final uncertain = store.finish(key, needsSync: true).stamp;
         expect(
           (await readiness.check(descriptor, uncertain, writerSchemaVersion)
                   as Err)
               .failure,
-          isA<TransactionSyncNeedsRepairFailure>(),
+          isA<SyncNeedsRepairFailure>(),
         );
         store.begin(key, WriteIntent.delete);
         final deleted = store.finish(key).stamp;
@@ -91,7 +91,7 @@ void main() {
           (await readiness.check(descriptor, deleted, writerSchemaVersion)
                   as Err)
               .failure,
-          isA<TransactionSyncNotFoundFailure>(),
+          isA<SyncNotFoundFailure>(),
         );
         expect(store.record(key)?.descriptorHash, isNull);
         expect(store.record(key)?.liquidCachePath, isNull);

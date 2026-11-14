@@ -29,18 +29,18 @@ final _descriptor = BitcoinWalletDescriptor(
 
 class _Catalog implements WalletCatalogPort {
   @override
-  Future<Result<PublicWalletDescriptor, TransactionSyncFailure>> find(
+  Future<Result<PublicWalletDescriptor, SyncFailure>> find(
     WalletKey key,
   ) async => Ok(_descriptor);
   @override
-  Future<Result<List<PublicWalletDescriptor>, TransactionSyncFailure>>
-  list() async => Ok([_descriptor]);
+  Future<Result<List<PublicWalletDescriptor>, SyncFailure>> list() async =>
+      Ok([_descriptor]);
 }
 
 class _Reserved implements ReservedAddressPort {
   String? reserved;
   @override
-  Future<Result<bool, TransactionSyncFailure>> isReserved(
+  Future<Result<bool, SyncFailure>> isReserved(
     WalletKey key,
     String address,
   ) async => Ok(address == reserved);
@@ -48,7 +48,7 @@ class _Reserved implements ReservedAddressPort {
 
 class _Sync implements WriterSyncOperation {
   @override
-  Future<Result<void, TransactionSyncFailure>> execute(
+  Future<Result<void, SyncFailure>> execute(
     PublicWalletDescriptor descriptor, {
     required int? issuedReceiveIndex,
   }) async => const Ok(null);

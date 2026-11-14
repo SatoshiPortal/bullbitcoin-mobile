@@ -91,9 +91,9 @@ void main() {
       final result = WalletCatalogPortImpl.descriptorFromMetadata(
         _row(id, 'bitcoinRegtest'),
       );
-      expect(result, isA<Ok<PublicWalletDescriptor, TransactionSyncFailure>>());
+      expect(result, isA<Ok<PublicWalletDescriptor, SyncFailure>>());
       final descriptor =
-          (result as Ok<PublicWalletDescriptor, TransactionSyncFailure>).value;
+          (result as Ok<PublicWalletDescriptor, SyncFailure>).value;
       expect(descriptor.key.network, BitcoinNetwork.regtest);
       expect(descriptor.origin, origin);
     },
@@ -108,7 +108,7 @@ void main() {
       ]) {
         expect(
           WalletCatalogPortImpl.descriptorFromMetadata(row),
-          isA<Err<PublicWalletDescriptor, TransactionSyncFailure>>(),
+          isA<Err<PublicWalletDescriptor, SyncFailure>>(),
         );
         // A row remains usable for cross-network custody reference checks.
         expect(row.seedFingerprint?.hex, 'aabbccdd');

@@ -16,17 +16,17 @@ class _Catalog implements WalletCatalogPort {
   PublicWalletDescriptor descriptor;
   _Catalog(this.descriptor);
   @override
-  Future<p.Result<PublicWalletDescriptor, TransactionSyncFailure>> find(
+  Future<p.Result<PublicWalletDescriptor, SyncFailure>> find(
     WalletKey key,
   ) async => p.Ok(descriptor);
   @override
-  Future<p.Result<List<PublicWalletDescriptor>, TransactionSyncFailure>>
-  list() async => p.Ok([descriptor]);
+  Future<p.Result<List<PublicWalletDescriptor>, SyncFailure>> list() async =>
+      p.Ok([descriptor]);
 }
 
 class _Reserved implements ReservedAddressPort {
   @override
-  Future<p.Result<bool, TransactionSyncFailure>> isReserved(
+  Future<p.Result<bool, SyncFailure>> isReserved(
     WalletKey key,
     String address,
   ) async => const p.Ok(false);
@@ -59,7 +59,7 @@ void main() {
           );
           final descriptor =
               (WalletCatalogPortImpl.descriptorFromMetadata(metadata)
-                      as p.Ok<PublicWalletDescriptor, TransactionSyncFailure>)
+                      as p.Ok<PublicWalletDescriptor, SyncFailure>)
                   .value;
           final catalog = _Catalog(descriptor);
           final opened = stores = openForeground(
@@ -91,7 +91,7 @@ void main() {
           );
           expect(
             await opened.revisions.read(descriptor.key),
-            isA<p.Ok<WalletRevisionState, TransactionSyncFailure>>().having(
+            isA<p.Ok<WalletRevisionState, SyncFailure>>().having(
               (result) => result.value.lifecycle,
               'lifecycle',
               WalletLifecycle.active,

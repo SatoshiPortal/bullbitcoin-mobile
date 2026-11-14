@@ -61,7 +61,7 @@ void main() {
       final reader = _Revisions()..lifecycle = WalletLifecycle.pendingWrite;
       expect(
         await readWalletSyncJobs([reader.key], reader),
-        isA<Ok<WalletSyncJobSelection, TransactionSyncFailure>>().having(
+        isA<Ok<WalletSyncJobSelection, SyncFailure>>().having(
           (r) => r.value.unavailable,
           'unavailable',
           [reader.key],
@@ -70,9 +70,7 @@ void main() {
       reader.lifecycle = WalletLifecycle.deleted;
       final jobs = await readWalletSyncJobs([reader.key], reader);
       expect(
-        (jobs as Ok<WalletSyncJobSelection, TransactionSyncFailure>)
-            .value
-            .ready,
+        (jobs as Ok<WalletSyncJobSelection, SyncFailure>).value.ready,
         isEmpty,
       );
     },
@@ -87,9 +85,8 @@ final class _Revisions implements WalletRevisionReaderPort {
   var lifecycle = WalletLifecycle.active;
 
   @override
-  Future<Result<WalletRevisionState, TransactionSyncFailure>> read(
-    WalletKey key,
-  ) async => available
+  Future<Result<WalletRevisionState, SyncFailure>> read(WalletKey key) async =>
+      available
       ? Ok(
           WalletRevisionState(
             stamp: WalletRevision(
@@ -100,7 +97,7 @@ final class _Revisions implements WalletRevisionReaderPort {
             lifecycle: lifecycle,
           ),
         )
-      : const Err(TransactionSyncStorageFailure());
+      : const Err(SyncStorageFailure());
 
   @override
   Stream<WalletRevisionState> watch(WalletKey key) => const Stream.empty();

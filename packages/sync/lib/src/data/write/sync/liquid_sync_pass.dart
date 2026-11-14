@@ -5,7 +5,7 @@ import 'package:primitives/primitives.dart';
 
 import '../../../domain/public_wallet_descriptor.dart';
 import '../../../domain/sync_completion.dart';
-import '../../../domain/transaction_sync_failure.dart';
+import '../../../domain/sync_failure.dart';
 import '../../native_store_paths.dart';
 import '../datasources/lwk_wallet_store_datasource.dart';
 import '../datasources/native_store_errors.dart';
@@ -24,20 +24,18 @@ Future<SyncPassOutcome> liquidSyncPass(
   final watch = Stopwatch()..start();
   final path = nativeWalletStoragePath(params.root, descriptor.key);
   if (!Directory(path).existsSync()) {
-    return SyncPassOutcome.failed(TransactionSyncNotFoundFailure());
+    return SyncPassOutcome.failed(SyncNotFoundFailure());
   }
   if (LwkWalletStoreDatasource.network(descriptor.key.network) == null) {
-    return SyncPassOutcome.failed(
-      const TransactionSyncUnsupportedNetworkFailure(),
-    );
+    return SyncPassOutcome.failed(const SyncUnsupportedNetworkFailure());
   }
   LwkWalletStoreDatasource? store;
-  TransactionSyncFailure failure = const TransactionSyncStorageFailure();
+  SyncFailure failure = const SyncStorageFailure();
   try {
     // LWK init may mutate its cache. Never fallback once it has been called.
     markMutation();
     store = await LwkWalletStoreDatasource.open(path, descriptor);
-    failure = const TransactionSyncConnectionFailure();
+    failure = const SyncConnectionFailure();
     await store.sync(params.connection, stopAtIndex: issuedReceiveIndex);
     final synced = store;
     final incoming = params.collectIncoming
@@ -54,9 +52,7 @@ Future<SyncPassOutcome> liquidSyncPass(
     );
   } on lwk.LwkError catch (error) {
     return SyncPassOutcome.failed(
-      isLiquidStatusConflict(error)
-          ? const TransactionSyncNeedsRepairFailure()
-          : failure,
+      isLiquidStatusConflict(error) ? const SyncNeedsRepairFailure() : failure,
     );
   } on Exception {
     return SyncPassOutcome.failed(failure);

@@ -1,0 +1,68 @@
+import 'package:primitives/primitives.dart';
+import 'wallet_revision.dart';
+
+/// Recoverable outcomes. No foreign exception, descriptor or endpoint is kept.
+sealed class SyncFailure extends Failure {
+  const SyncFailure();
+
+  /// Fixed support-log codes survive identifier redaction and carry no data.
+  String get logCode => switch (this) {
+    SyncBusyFailure() => 'busy',
+    SyncNotFoundFailure() => 'not_found',
+    SyncUnsupportedNetworkFailure() => 'unsupported_network',
+    SyncUnauthorizedNetworkFailure() => 'authorization',
+    SyncInvalidCatalogFailure() => 'invalid_catalog',
+    SyncStorageFailure() => 'storage',
+    SyncConnectionFailure() => 'connection',
+    SyncNeedsRepairFailure() => 'needs_repair',
+    SyncRestartRequiredFailure() => 'restart_required',
+    SyncInitialScanRequiredFailure() => 'initial_scan_required',
+    SyncInvalidAddressFailure() => 'invalid_address',
+  };
+}
+
+final class SyncBusyFailure extends SyncFailure {
+  const SyncBusyFailure();
+}
+
+final class SyncNotFoundFailure extends SyncFailure {
+  const SyncNotFoundFailure();
+}
+
+final class SyncUnsupportedNetworkFailure extends SyncFailure {
+  const SyncUnsupportedNetworkFailure();
+}
+
+/// The network is supported, but its use currently lacks authorization.
+final class SyncUnauthorizedNetworkFailure extends SyncFailure {
+  const SyncUnauthorizedNetworkFailure();
+}
+
+final class SyncInvalidCatalogFailure extends SyncFailure {
+  const SyncInvalidCatalogFailure();
+}
+
+final class SyncStorageFailure extends SyncFailure {
+  const SyncStorageFailure();
+}
+
+final class SyncConnectionFailure extends SyncFailure {
+  const SyncConnectionFailure();
+}
+
+final class SyncNeedsRepairFailure extends SyncFailure {
+  final WalletRevision? revision;
+  const SyncNeedsRepairFailure([this.revision]);
+}
+
+final class SyncRestartRequiredFailure extends SyncFailure {
+  const SyncRestartRequiredFailure();
+}
+
+final class SyncInitialScanRequiredFailure extends SyncFailure {
+  const SyncInitialScanRequiredFailure();
+}
+
+final class SyncInvalidAddressFailure extends SyncFailure {
+  const SyncInvalidAddressFailure();
+}

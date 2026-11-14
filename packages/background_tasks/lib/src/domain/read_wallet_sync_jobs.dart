@@ -13,8 +13,7 @@ final class WalletSyncJobSelection {
       unavailable = List.unmodifiable(unavailable);
 }
 
-Future<Result<WalletSyncJobSelection, TransactionSyncFailure>>
-readWalletSyncJobs(
+Future<Result<WalletSyncJobSelection, SyncFailure>> readWalletSyncJobs(
   Iterable<WalletKey> keys,
   WalletRevisionReaderPort revisions,
 ) async {
@@ -22,16 +21,13 @@ readWalletSyncJobs(
   final unavailable = <WalletKey>[];
   for (final key in keys) {
     switch (await revisions.read(key)) {
-      case Err(
-        failure: TransactionSyncNotFoundFailure() ||
-            TransactionSyncBusyFailure(),
-      ):
+      case Err(failure: SyncNotFoundFailure() || SyncBusyFailure()):
         unavailable.add(key);
       case Err(:final failure):
         return Err(failure);
       case Ok(:final value):
         if (value.stamp.key != key) {
-          return const Err(TransactionSyncInvalidCatalogFailure());
+          return const Err(SyncInvalidCatalogFailure());
         }
         switch (value.lifecycle) {
           case WalletLifecycle.active:
