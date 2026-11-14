@@ -19,6 +19,8 @@ import 'package:swaps/swaps.dart'
     show
         CreateChainSwapUsecase,
         GetSwapLimitsAndFeesUsecase,
+        DropPendingSwapLockupUsecase,
+        RecordPendingSwapLockupUsecase,
         RecordSwapLockupUsecase,
         WatchSwapUsecase;
 import 'package:bb_mobile/features/send/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
@@ -217,6 +219,12 @@ class _MockRecordSwapLockupUsecase extends Mock
 
 class _MockWatchSwapUsecase extends Mock implements WatchSwapUsecase {}
 
+class _MockRecordPendingSwapLockupUsecase extends Mock
+    implements RecordPendingSwapLockupUsecase {}
+
+class _MockDropPendingSwapLockupUsecase extends Mock
+    implements DropPendingSwapLockupUsecase {}
+
 class _TestSendCubit extends SendCubit {
   _TestSendCubit({
     required super.labelsFacade,
@@ -268,6 +276,8 @@ class _TestSendCubit extends SendCubit {
     required super.getSendSwapRouteUsecase,
     required super.createBoltzSendSwapUsecase,
     required super.recordSwapLockupUsecase,
+    required super.recordPendingSwapLockupUsecase,
+    required super.dropPendingSwapLockupUsecase,
     required super.watchSwapUsecase,
     required super.getSwapLimitsAndFeesUsecase,
     required super.createChainSwapUsecase,
@@ -384,6 +394,8 @@ void main() {
       getSendSwapRouteUsecase: _MockGetSendSwapRouteUsecase(),
       createBoltzSendSwapUsecase: _MockCreateBoltzSendSwapUsecase(),
       recordSwapLockupUsecase: _MockRecordSwapLockupUsecase(),
+      recordPendingSwapLockupUsecase: _MockRecordPendingSwapLockupUsecase(),
+      dropPendingSwapLockupUsecase: _MockDropPendingSwapLockupUsecase(),
       watchSwapUsecase: _MockWatchSwapUsecase(),
       getSwapLimitsAndFeesUsecase: _MockGetSwapLimitsAndFeesUsecase(),
       createChainSwapUsecase: _MockCreateChainSwapUsecase(),

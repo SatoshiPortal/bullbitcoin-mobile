@@ -1,3 +1,5 @@
+import 'package:bb_mobile/core/blockchain/data/datasources/bdk_bitcoin_blockchain_datasource.dart';
+import 'package:bb_mobile/core/blockchain/data/datasources/lwk_liquid_blockchain_datasource.dart';
 import 'package:bb_mobile/core/electrum/domain/ports/electrum_servers_port.dart';
 import 'package:bb_mobile/core/fees/domain/repositories/fees_repository.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
@@ -135,6 +137,11 @@ class SwapsLocator {
       boltz: datasource,
       isTestnet: isTestnet,
       electrum: AppElectrumRunner(locator<ElectrumServersPort>()),
+      lockupChain: AppLockupChain(
+        locator<ElectrumServersPort>(),
+        locator<BdkBitcoinBlockchainDatasource>(),
+        locator<LwkLiquidBlockchainDatasource>(),
+      ),
       newAddressFor: (walletId) async =>
           (await addresses.generateNewReceiveAddress(
             walletId: walletId,
@@ -237,6 +244,12 @@ class SwapsLocator {
         swapRepository: locator<SwapRepository>(),
         swapWatcher: locator<SwapWatcher>(),
       ),
+    );
+    locator.registerFactory<RecordPendingSwapLockupUsecase>(
+      () => RecordPendingSwapLockupUsecase(locator<SwapRepository>()),
+    );
+    locator.registerFactory<DropPendingSwapLockupUsecase>(
+      () => DropPendingSwapLockupUsecase(locator<SwapRepository>()),
     );
     locator.registerFactory<LogSwapCensusUsecase>(
       () => LogSwapCensusUsecase(swapRepository: locator<SwapRepository>()),

@@ -28,6 +28,8 @@ export 'src/domain/usecases/get_swap_usecase.dart';
 export 'src/domain/usecases/get_swaps_usecase.dart';
 export 'src/domain/usecases/log_swap_census_usecase.dart';
 export 'src/domain/usecases/record_swap_lockup_usecase.dart';
+export 'src/domain/usecases/record_pending_swap_lockup_usecase.dart';
+export 'src/domain/usecases/drop_pending_swap_lockup_usecase.dart';
 export 'src/domain/usecases/rescue_swap_usecase.dart';
 export 'src/domain/usecases/restore_swaps_usecase.dart';
 export 'src/domain/usecases/retry_swap_usecase.dart';
@@ -39,6 +41,12 @@ export 'src/util.dart'
     show
         ElectrumConnection,
         ElectrumRunner,
+        LockupAccepted,
+        LockupAlreadyInChain,
+        LockupBroadcast,
+        LockupChain,
+        LockupOutcomeUnknown,
+        LockupRejected,
         SwapWalletInfo,
         SwapWalletTx,
         SwapsException;

@@ -80,6 +80,20 @@ class SwitchableSwapRepository implements SwapRepository {
   );
 
   @override
+  Future<Swap> recordPendingLockup({
+    required String swapId,
+    required String signedTx,
+  }) => current.recordPendingLockup(swapId: swapId, signedTx: signedTx);
+
+  @override
+  Future<void> dropPendingLockup(String swapId) =>
+      current.dropPendingLockup(swapId);
+
+  @override
+  Future<Swap> resolvePendingLockup(Swap swap) =>
+      current.resolvePendingLockup(swap);
+
+  @override
   Future<LnReceiveSwap> createLightningReceive({
     required String walletId,
     required int amountSat,

@@ -86,9 +86,11 @@ import 'package:swaps/swaps.dart'
     show
         ChainSwap,
         CreateChainSwapUsecase,
+        DropPendingSwapLockupUsecase,
         GetSwapLimitsAndFeesUsecase,
         LnReceiveSwap,
         LnSendSwap,
+        RecordPendingSwapLockupUsecase,
         RecordSwapLockupUsecase,
         Swap,
         SwapStatus,
@@ -163,6 +165,8 @@ class SendCubit extends Cubit<SendState>
     required this._getSendSwapRouteUsecase,
     required this._createBoltzSendSwapUsecase,
     required this._recordSwapLockupUsecase,
+    required this._recordPendingSwapLockupUsecase,
+    required this._dropPendingSwapLockupUsecase,
     required this._watchSwapUsecase,
     Future<PaymentRequest> Function(String)? parsePaymentRequest,
   }) : _parsePaymentRequest = parsePaymentRequest ?? PaymentRequest.parse,
@@ -250,6 +254,8 @@ class SendCubit extends Cubit<SendState>
   final GetSendSwapRouteUsecase _getSendSwapRouteUsecase;
   final CreateBoltzSendSwapUsecase _createBoltzSendSwapUsecase;
   final RecordSwapLockupUsecase _recordSwapLockupUsecase;
+  final RecordPendingSwapLockupUsecase _recordPendingSwapLockupUsecase;
+  final DropPendingSwapLockupUsecase _dropPendingSwapLockupUsecase;
   final WatchSwapUsecase _watchSwapUsecase;
 
   SpRecipient? _spRecipient;
@@ -2896,6 +2902,19 @@ class SendCubit extends Cubit<SendState>
   // type the dummies in Step 2a must be updated to match, otherwise Step 3b
   // will fire.
   Future<bool> createTransaction() async {
+    // A lockup whose broadcast is still being confirmed may already be on
+    // chain: building another payment to the same swap could fund it twice.
+    if (state.boltzSendSwap?.hasPendingLockup ?? false) {
+      emit(
+        state.copyWith(
+          failure: const SendTransactionConfirmationFailure(
+            isBroadcastFailure: true,
+            logMessage: 'swap lockup still being confirmed',
+          ),
+        ),
+      );
+      return false;
+    }
     _invalidateSignedTransaction();
     final generation = _transactionGeneration;
     bool isStale() => generation != _transactionGeneration;
@@ -3575,6 +3594,51 @@ class SendCubit extends Cubit<SendState>
     }
   }
 
+  /// Stores the signed lockup on its Boltz swap before broadcasting. Without
+  /// it a broadcast whose outcome is unknown could not be settled safely, so
+  /// nothing is broadcast when it cannot be stored.
+  Future<bool> _storePendingLockup(
+    Swap swap, {
+    required bool fromLiquid,
+    required bool isPsbt,
+  }) async {
+    final signedLockup = fromLiquid
+        ? state.signedLiquidTx
+        : (isPsbt ? state.signedBitcoinPsbt : null);
+    final stored = signedLockup == null
+        ? null
+        : await _recordPendingSwapLockupUsecase.execute(
+            swapId: swap.id,
+            signedTx: signedLockup,
+          );
+    if (isClosed) return false;
+    switch (stored) {
+      case Ok(value: final LnSendSwap pending):
+        emit(state.copyWith(lightningSwap: pending));
+        return true;
+      case Ok(value: final ChainSwap pending):
+        emit(state.copyWith(chainSwap: pending));
+        return true;
+      case Ok(value: LnReceiveSwap()) || Err() || null:
+        emit(
+          state.copyWith(
+            failure: const SendTransactionConfirmationFailure(
+              logMessage: 'swap lockup not stored before broadcast',
+            ),
+            broadcastingTransaction: false,
+          ),
+        );
+        return false;
+    }
+  }
+
+  /// The lockup was never relayed: forget it so the swap reads as unfunded.
+  Future<void> _forgetUnsentLockup() async {
+    final swap = state.boltzSendSwap;
+    if (swap == null) return;
+    final _ = await _dropPendingSwapLockupUsecase.execute(swap.id);
+  }
+
   Future<void> broadcastTransaction({bool isPsbt = true}) async {
     try {
       if (state.txId != null || state.broadcastingTransaction) {
@@ -3644,6 +3708,15 @@ class SendCubit extends Cubit<SendState>
             );
             return;
         }
+      }
+
+      if (boltzSwap != null &&
+          !await _storePendingLockup(
+            boltzSwap,
+            fromLiquid: wallet.network.isLiquid,
+            isPsbt: isPsbt,
+          )) {
+        return;
       }
 
       final String txId;
@@ -3746,6 +3819,7 @@ class SendCubit extends Cubit<SendState>
         );
       }
     } on WalletSpendBlockedException catch (e) {
+      await _forgetUnsentLockup();
       if (!isClosed) {
         emit(
           state.copyWith(
@@ -3757,9 +3831,12 @@ class SendCubit extends Cubit<SendState>
         );
       }
     } on BroadcastTransactionException catch (e) {
-      log.warning(
-        'send_broadcast_failed category=${BroadcastFailureCategory.of(e).name}',
-      );
+      final category = BroadcastFailureCategory.of(e);
+      log.warning('send_broadcast_failed category=${category.name}');
+      if (category == BroadcastFailureCategory.rejected ||
+          category == BroadcastFailureCategory.authorization) {
+        await _forgetUnsentLockup();
+      }
       if (!isClosed) {
         emit(
           state.copyWith(

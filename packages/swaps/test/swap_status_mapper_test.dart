@@ -95,4 +95,39 @@ void main() {
 
     expect(mapping, isA<SwapUnchanged>());
   });
+
+  group('with our signed lockup stored', () {
+    LnSendSwapModel pendingSubmarine({String? pendingTxid}) =>
+        submarine().copyWith(
+          pendingLockupTx: 'signed-pset',
+          pendingLockupTxid: pendingTxid,
+        );
+
+    test('Boltz\'s lockup txid is only a candidate, never the record', () {
+      final mapping = mapper.map(
+        swap: pendingSubmarine(),
+        boltzStatus: boltz.SwapStatus.txnMempool,
+        transactionId: 'boltz-saw-lockup',
+        now: now,
+      );
+
+      final updated = (mapping as SwapUpdated).swap as LnSendSwapModel;
+      expect(updated.sendTxid, isNull);
+      expect(updated.pendingLockupTxid, 'boltz-saw-lockup');
+      expect(updated.pendingLockupTx, 'signed-pset');
+    });
+
+    test('our own txid is never replaced by Boltz\'s', () {
+      final mapping = mapper.map(
+        swap: pendingSubmarine(pendingTxid: 'our-txid'),
+        boltzStatus: boltz.SwapStatus.txnMempool,
+        transactionId: 'boltz-saw-other',
+        now: now,
+      );
+
+      final updated = (mapping as SwapUpdated).swap as LnSendSwapModel;
+      expect(updated.sendTxid, isNull);
+      expect(updated.pendingLockupTxid, 'our-txid');
+    });
+  });
 }

@@ -51,6 +51,9 @@ void main() {
     when(
       () => repo.reconcileLockupTxid(any()),
     ).thenAnswer((inv) async => inv.positionalArguments[0] as Swap);
+    when(
+      () => repo.resolvePendingLockup(any()),
+    ).thenAnswer((inv) async => inv.positionalArguments[0] as Swap);
     watcher = SwapWatcher(repo: repo);
   });
 

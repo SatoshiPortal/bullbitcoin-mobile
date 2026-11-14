@@ -19,7 +19,9 @@ import 'package:bb_mobile/features/autoswap/presentation/autoswap_settings_cubit
 import 'package:swaps/swaps.dart'
     show
         CreateChainSwapUsecase,
+        DropPendingSwapLockupUsecase,
         GetSwapLimitsAndFeesUsecase,
+        RecordPendingSwapLockupUsecase,
         RecordSwapLockupUsecase;
 import 'package:get_it/get_it.dart';
 
@@ -37,6 +39,8 @@ class AutoSwapLocator {
         locator<GetSwapLimitsAndFeesUsecase>(),
         locator<CreateChainSwapUsecase>(),
         locator<RecordSwapLockupUsecase>(),
+        locator<RecordPendingSwapLockupUsecase>(),
+        locator<DropPendingSwapLockupUsecase>(),
         locator<WalletRepository>(),
         locator<SettingsRepository>(),
         locator<LiquidWalletRepository>(),

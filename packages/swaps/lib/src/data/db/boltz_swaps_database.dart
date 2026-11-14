@@ -37,6 +37,8 @@ class Swaps extends Table {
   BoolColumn get wasDirectPayment =>
       boolean().withDefault(const Constant(false))();
   BoolColumn get recovered => boolean().withDefault(const Constant(false))();
+  TextColumn get pendingLockupTx => text().nullable()();
+  TextColumn get pendingLockupTxid => text().nullable()();
 
   @override
   Set<Column> get primaryKey => {id};
@@ -63,7 +65,29 @@ class BoltzSwapsDatabase extends _$BoltzSwapsDatabase {
   BoltzSwapsDatabase(super.executor);
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
+
+  @override
+  MigrationStrategy get migration => MigrationStrategy(
+    onUpgrade: (migrator, from, to) async {
+      if (from < 2) {
+        // Guarded: a re-run of this step (another connection upgraded
+        // first) must leave the table unchanged.
+        final existing = {
+          for (final row in await customSelect(
+            "PRAGMA table_info('swaps')",
+          ).get())
+            row.read<String>('name'),
+        };
+        if (!existing.contains('pending_lockup_tx')) {
+          await migrator.addColumn(swaps, swaps.pendingLockupTx);
+        }
+        if (!existing.contains('pending_lockup_txid')) {
+          await migrator.addColumn(swaps, swaps.pendingLockupTxid);
+        }
+      }
+    },
+  );
 
   Future<bool> dataMigrationDone(String migrationName) async =>
       await (select(

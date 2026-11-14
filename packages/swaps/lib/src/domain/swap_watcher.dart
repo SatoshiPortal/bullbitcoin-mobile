@@ -151,6 +151,7 @@ class SwapWatcher {
       // the refund path (expired/failed below) and getOngoingSwaps both
       // require sendTxid. Recover it from chain (Boltz-free) so ordinary
       // driving can refund it without a manual restore. No-op otherwise.
+      swap = await _repo.resolvePendingLockup(swap);
       swap = await _repo.reconcileLockupTxid(swap);
       switch (swap.nextAction) {
         case SwapAction.claim:

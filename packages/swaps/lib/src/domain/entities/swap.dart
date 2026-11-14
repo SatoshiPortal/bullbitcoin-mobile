@@ -211,6 +211,12 @@ sealed class Swap with _$Swap {
     required String paymentAddress,
     required int paymentAmount,
     String? sendTxid,
+    // Our signed lockup, stored before it is broadcast so a broadcast whose
+    // outcome is unknown is settled by checking for (or rebroadcasting) this
+    // exact transaction — never by building a second one. [pendingLockupTxid]
+    // is known up front for Bitcoin; for Liquid it is learned on broadcast.
+    String? pendingLockupTx,
+    String? pendingLockupTxid,
     String? preimage,
     String? refundAddress,
     String? refundTxid,
@@ -230,6 +236,12 @@ sealed class Swap with _$Swap {
     required String paymentAddress,
     required int paymentAmount,
     String? sendTxid,
+    // Our signed lockup, stored before it is broadcast so a broadcast whose
+    // outcome is unknown is settled by checking for (or rebroadcasting) this
+    // exact transaction — never by building a second one. [pendingLockupTxid]
+    // is known up front for Bitcoin; for Liquid it is learned on broadcast.
+    String? pendingLockupTx,
+    String? pendingLockupTxid,
     String? receiveWalletId,
     String? receiveAddress,
     String? receiveTxid,
@@ -245,6 +257,16 @@ sealed class Swap with _$Swap {
   bool get isLnReceiveSwap => this is LnReceiveSwap;
   bool get isLnSendSwap => this is LnSendSwap;
   bool get isChainSwap => this is ChainSwap;
+
+  /// Our signed lockup is stored but its broadcast is not yet confirmed.
+  bool get hasPendingLockup => switch (this) {
+    LnSendSwap(:final sendTxid, :final pendingLockupTx) ||
+    ChainSwap(
+      :final sendTxid,
+      :final pendingLockupTx,
+    ) => sendTxid == null && pendingLockupTx != null,
+    LnReceiveSwap() => false,
+  };
 
   /// What must happen next to the funds this swap holds. Funds locked with
   /// no claim or refund recorded must be claimed or refunded; Boltz never

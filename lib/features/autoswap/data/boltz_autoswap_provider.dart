@@ -12,11 +12,15 @@ import 'package:bb_mobile/features/autoswap/domain/autoswap_failure.dart';
 import 'package:bb_mobile/features/autoswap/domain/autoswap_provider_port.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bull_logger/bull_logger.dart';
+import 'package:bb_mobile/core/errors/send_errors.dart';
+import 'package:bb_mobile/features/send/domain/broadcast_failure.dart';
 
 class BoltzAutoswapProvider implements AutoswapProviderPort {
   final GetSwapLimitsAndFeesUsecase _getSwapLimitsAndFees;
   final CreateChainSwapUsecase _createChainSwap;
   final RecordSwapLockupUsecase _recordSwapLockup;
+  final RecordPendingSwapLockupUsecase _recordPendingLockup;
+  final DropPendingSwapLockupUsecase _dropPendingLockup;
   final WalletRepository _walletRepository;
   final SettingsRepository _settingsRepository;
   final LiquidWalletRepository _liquidWalletRepository;
@@ -28,6 +32,8 @@ class BoltzAutoswapProvider implements AutoswapProviderPort {
     this._getSwapLimitsAndFees,
     this._createChainSwap,
     this._recordSwapLockup,
+    this._recordPendingLockup,
+    this._dropPendingLockup,
     this._walletRepository,
     this._settingsRepository,
     this._liquidWalletRepository,
@@ -174,10 +180,26 @@ class BoltzAutoswapProvider implements AutoswapProviderPort {
         walletId: liquidWallet.id,
         pset: pset,
       );
-      final txid = await _broadcastLiquidTransaction.execute(
-        signed,
-        isTestnet: environment.requireHistoricalTestnet(),
-      );
+      // Stored before the broadcast so an unclear outcome is settled from
+      // this exact transaction and the swap can never be funded twice.
+      if (await _recordPendingLockup.execute(swapId: swap.id, signedTx: signed)
+          case Err(:final failure)) {
+        return Err(AutoswapExecutionFailure(failure.runtimeType.toString()));
+      }
+      final String txid;
+      try {
+        txid = await _broadcastLiquidTransaction.execute(
+          signed,
+          isTestnet: environment.requireHistoricalTestnet(),
+        );
+      } on BroadcastTransactionException catch (e) {
+        final category = BroadcastFailureCategory.of(e);
+        if (category == BroadcastFailureCategory.rejected ||
+            category == BroadcastFailureCategory.authorization) {
+          final _ = await _dropPendingLockup.execute(swap.id);
+        }
+        rethrow;
+      }
       final recorded = await _recordSwapLockup.execute(
         swapId: swap.id,
         txid: txid,

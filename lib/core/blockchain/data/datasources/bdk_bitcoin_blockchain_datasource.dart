@@ -108,6 +108,50 @@ class BdkBitcoinBlockchainDatasource {
     });
   }
 
+  /// The raw bytes the server holds for [txId] (mempool or block), or null on
+  /// its explicit "unknown transaction" reply. One `blockchain.transaction.get`
+  /// round trip; the bytes are not parsed, so this also serves Liquid
+  /// servers, which speak the same protocol. Any other failure throws.
+  Future<Uint8List?> fetchRawTransaction(
+    String txId, {
+    required ElectrumConnection connection,
+  }) {
+    final url = connection.url;
+    final socks5 = connection.socks5?.isNotEmpty == true
+        ? connection.socks5
+        : null;
+    final timeout = connection.effectiveTimeout.clamp(0, 255);
+    final retry = connection.retry.clamp(0, 255);
+    final validateDomain = connection.validateDomain;
+    return Isolate.run(() {
+      bdk.ElectrumClient buildClient() => bdk.ElectrumClient(
+        url: url,
+        socks5: socks5,
+        timeout: timeout,
+        retry: retry,
+        validateDomain: validateDomain,
+      );
+
+      late final bdk.ElectrumClient client;
+      try {
+        client = buildClient();
+      } on bdk.CouldNotCreateConnectionElectrumException catch (error) {
+        if (!error.errorMessage.contains('Failed to install CryptoProvider')) {
+          rethrow;
+        }
+        client = buildClient();
+      }
+      try {
+        return client.transactionGetRaw(txid: bdk.Txid.fromString(hex: txId));
+      } on bdk.ProtocolElectrumException catch (error) {
+        if (isUnknownTransactionReply(error.errorMessage)) return null;
+        throw UnrecognizedElectrumReplyException(error.errorMessage);
+      } finally {
+        client.dispose();
+      }
+    });
+  }
+
   /// Recognizes the "unknown transaction" replies of the Electrum servers we
   /// ship: electrs and esplora answer `missing transaction`, Fulcrum relays
   /// bitcoind's `No such mempool or blockchain transaction`.

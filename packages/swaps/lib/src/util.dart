@@ -137,6 +137,59 @@ abstract class ElectrumRunner {
   });
 }
 
+/// What our own chain backend answered to a lockup broadcast.
+sealed class LockupBroadcast {
+  const LockupBroadcast();
+}
+
+final class LockupAccepted extends LockupBroadcast {
+  final String txid;
+
+  const LockupAccepted(this.txid);
+}
+
+/// The transaction is already in a block.
+final class LockupAlreadyInChain extends LockupBroadcast {
+  const LockupAlreadyInChain();
+}
+
+/// The node refused the transaction (invalid, conflicting, underpaying).
+final class LockupRejected extends LockupBroadcast {
+  const LockupRejected();
+}
+
+/// No answer we can rely on: it may or may not have been relayed.
+final class LockupOutcomeUnknown extends LockupBroadcast {
+  const LockupOutcomeUnknown();
+}
+
+/// The user's own chain backend (their Electrum servers), used to settle a
+/// lockup whose broadcast outcome is unknown. Never a third-party explorer.
+abstract class LockupChain {
+  /// The txid of our signed lockup before it is broadcast. Null when it
+  /// cannot be computed locally (Liquid).
+  Future<String?> txidOf({required String signedTx, required bool isLiquid});
+
+  /// Whether the servers hold our signed lockup [signedTx] under [txid], in
+  /// the mempool or a block: one Electrum lookup, never a wallet sync. False
+  /// when the server does not know [txid] or holds a different transaction
+  /// under it.
+  Future<bool> isKnown({
+    required String txid,
+    required String signedTx,
+    required bool isLiquid,
+    required bool isTestnet,
+  });
+
+  /// Broadcasts our already-signed lockup: a finalized PSBT (base64) on
+  /// Bitcoin, a signed PSET on Liquid.
+  Future<LockupBroadcast> broadcast({
+    required String signedTx,
+    required bool isLiquid,
+    required bool isTestnet,
+  });
+}
+
 class SwapsException implements Exception {
   final String message;
 

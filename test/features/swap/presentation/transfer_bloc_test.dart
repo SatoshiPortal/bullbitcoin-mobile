@@ -1,5 +1,6 @@
 import '../../../frozen_outpoints_fixture.dart';
 import 'package:bb_mobile/core/utils/payment_request.dart';
+import 'package:bb_mobile/features/send/domain/broadcast_failure.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart'
     show OrderSwapQuote;
 import 'package:bb_mobile/features/send/public/send_facade.dart';
@@ -154,6 +155,12 @@ class _MockCreateChainSwap extends Mock implements CreateChainSwapUsecase {}
 
 class _MockRecordLockup extends Mock implements RecordSwapLockupUsecase {}
 
+class _MockRecordPendingLockup extends Mock
+    implements RecordPendingSwapLockupUsecase {}
+
+class _MockDropPendingLockup extends Mock
+    implements DropPendingSwapLockupUsecase {}
+
 class _MockWatchSwap extends Mock implements WatchSwapUsecase {}
 
 Matcher _paysTo(String address, {int? amountSat}) =>
@@ -209,6 +216,8 @@ void main() {
   late _MockGetLimitsAndFees getLimitsAndFees;
   late _MockCreateChainSwap createChainSwap;
   late _MockRecordLockup recordLockup;
+  late _MockRecordPendingLockup recordPendingLockup;
+  late _MockDropPendingLockup dropPendingLockup;
   late _MockWatchSwap watchSwap;
   late _MockDetectBitcoin detectBitcoin;
   late OrderSwapRecord prepared;
@@ -254,6 +263,8 @@ void main() {
     getSwapLimitsAndFeesUsecase: getLimitsAndFees,
     createChainSwapUsecase: createChainSwap,
     recordSwapLockupUsecase: recordLockup,
+    recordPendingSwapLockupUsecase: recordPendingLockup,
+    dropPendingSwapLockupUsecase: dropPendingLockup,
     watchSwapUsecase: watchSwap,
   );
 
@@ -294,6 +305,17 @@ void main() {
     getLimitsAndFees = _MockGetLimitsAndFees();
     createChainSwap = _MockCreateChainSwap();
     recordLockup = _MockRecordLockup();
+    recordPendingLockup = _MockRecordPendingLockup();
+    dropPendingLockup = _MockDropPendingLockup();
+    when(
+      () => dropPendingLockup.execute(any()),
+    ).thenAnswer((_) async => const Ok(null));
+    when(
+      () => recordPendingLockup.execute(
+        swapId: any(named: 'swapId'),
+        signedTx: any(named: 'signedTx'),
+      ),
+    ).thenAnswer((_) async => Ok(_swap()));
     watchSwap = _MockWatchSwap();
     detectBitcoin = _MockDetectBitcoin();
     prepared = _prepared();
@@ -2668,6 +2690,124 @@ void main() {
           lockupFeeSat: 1200,
         ),
       ).called(1);
+    });
+
+    group('with the lockup stored before broadcasting', () {
+      TransferState confirming({ChainSwap? swap}) => crossChain().copyWith(
+        swap: swap ?? _swap(),
+        signedPsbt: 'lockup-signed',
+        bitcoinAbsoluteFeesSat: 1200,
+      );
+
+      void stubBroadcast(Future<String> Function() answer) => when(
+        () => broadcastBitcoin.execute(
+          'lockup-signed',
+          isPsbt: true,
+          network: any(named: 'network'),
+          walletId: any(named: 'walletId'),
+        ),
+      ).thenAnswer((_) => answer());
+
+      test('stores the signed lockup, then broadcasts it', () async {
+        stubBroadcast(() async => 'lockup-txid');
+        when(
+          () => recordLockup.execute(
+            swapId: any(named: 'swapId'),
+            txid: any(named: 'txid'),
+            lockupFeeSat: any(named: 'lockupFeeSat'),
+          ),
+        ).thenAnswer((_) async => Ok(_swap()));
+        bloc.emit(confirming());
+
+        bloc.add(const TransferEvent.confirmed());
+        await pumpEventQueue();
+
+        verifyInOrder([
+          () => recordPendingLockup.execute(
+            swapId: 'swap-1',
+            signedTx: 'lockup-signed',
+          ),
+          () => broadcastBitcoin.execute(
+            'lockup-signed',
+            isPsbt: true,
+            network: any(named: 'network'),
+            walletId: any(named: 'walletId'),
+          ),
+        ]);
+      });
+
+      test('broadcasts nothing when the lockup cannot be stored', () async {
+        when(
+          () => recordPendingLockup.execute(
+            swapId: any(named: 'swapId'),
+            signedTx: any(named: 'signedTx'),
+          ),
+        ).thenAnswer((_) async => const Err(SwapsUnexpectedFailure('store')));
+        bloc.emit(confirming());
+
+        bloc.add(const TransferEvent.confirmed());
+        await pumpEventQueue();
+
+        verifyNever(
+          () => broadcastBitcoin.execute(
+            any(),
+            isPsbt: any(named: 'isPsbt'),
+            network: any(named: 'network'),
+            walletId: any(named: 'walletId'),
+          ),
+        );
+        expect(bloc.state.swapFailure, isA<SwapInvalidStateFailure>());
+      });
+
+      test('a broadcast the node rejected forgets the lockup', () async {
+        stubBroadcast(
+          () async => throw CategorizedBroadcastException(
+            BroadcastFailureCategory.rejected,
+          ),
+        );
+        bloc.emit(confirming());
+
+        bloc.add(const TransferEvent.confirmed());
+        await pumpEventQueue();
+
+        verify(() => dropPendingLockup.execute('swap-1')).called(1);
+      });
+
+      test('an unclear broadcast keeps the lockup', () async {
+        stubBroadcast(
+          () async => throw CategorizedBroadcastException(
+            BroadcastFailureCategory.connection,
+          ),
+        );
+        bloc.emit(confirming());
+
+        bloc.add(const TransferEvent.confirmed());
+        await pumpEventQueue();
+
+        verifyNever(() => dropPendingLockup.execute(any()));
+      });
+
+      test('a lockup still being confirmed refuses a rebuild', () async {
+        bloc.emit(
+          confirming(
+            swap: _swap().copyWith(pendingLockupTx: 'lockup-signed'),
+          ).copyWith(amount: '1000'),
+        );
+
+        bloc.add(const TransferEvent.replaceByFeeChanged(false));
+        await pumpEventQueue();
+
+        expect(bloc.state.swapFailure, isA<SwapLockupPendingFailure>());
+        verifyNever(
+          () => prepareBitcoin.execute(
+            walletId: any(named: 'walletId'),
+            recipients: any(named: 'recipients'),
+            networkFee: any(named: 'networkFee'),
+            selectedInputs: any(named: 'selectedInputs'),
+            replaceByFee: any(named: 'replaceByFee'),
+          ),
+        );
+      });
     });
 
     test('watched Boltz updates move the in-progress swap', () async {

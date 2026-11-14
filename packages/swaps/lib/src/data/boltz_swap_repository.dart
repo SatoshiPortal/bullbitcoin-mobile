@@ -58,6 +58,7 @@ class BoltzSwapRepository implements SwapRepository {
   final FastestFee _fastestFee;
   final WalletsList _wallets;
   final SwapMasterKeySource _swapMasterKeySource;
+  final LockupChain _lockupChain;
 
   /// Serializes swap creation so two concurrent creations can never compute
   /// the same key index from a stale table scan.
@@ -73,6 +74,7 @@ class BoltzSwapRepository implements SwapRepository {
     required this._fastestFee,
     required this._wallets,
     required this._swapMasterKeySource,
+    required this._lockupChain,
   });
 
   Future<T> _withCreationLock<T>(Future<T> Function() action) {
@@ -482,9 +484,23 @@ class BoltzSwapRepository implements SwapRepository {
     // check the status before updating it
     // it is possible that the stream updates the status before this method
     // we don't want a status ahead of paid to be updated back to paid
+    // Boltz honours only the first transaction to a lockup address, so the
+    // first recorded lockup is never replaced by a later one.
+    final recorded = switch (swap) {
+      LnSendSwap(:final sendTxid) || ChainSwap(:final sendTxid) => sendTxid,
+      LnReceiveSwap() => null,
+    };
+    if (recorded != null && recorded != txid) {
+      swapsLog.warning(
+        'SWAPS: $swapId already records lockup $recorded; ignoring $txid',
+      );
+    }
+    final lockupTxid = recorded ?? txid;
     final updatedSwap = switch (swap) {
       LnSendSwap() => swap.copyWith(
-        sendTxid: txid,
+        sendTxid: lockupTxid,
+        pendingLockupTx: null,
+        pendingLockupTxid: null,
         status: swap.status == SwapStatus.pending
             ? SwapStatus.paid
             : swap.status,
@@ -493,7 +509,9 @@ class BoltzSwapRepository implements SwapRepository {
             : swap.fees,
       ),
       ChainSwap() => swap.copyWith(
-        sendTxid: txid,
+        sendTxid: lockupTxid,
+        pendingLockupTx: null,
+        pendingLockupTxid: null,
         status: swap.status == SwapStatus.pending
             ? SwapStatus.paid
             : swap.status,
@@ -506,6 +524,167 @@ class BoltzSwapRepository implements SwapRepository {
 
     await _boltz.storage.store(SwapModel.fromEntity(updatedSwap));
   });
+
+  @override
+  Future<Swap> recordPendingLockup({
+    required String swapId,
+    required String signedTx,
+  }) => _boltz.storage.mutate(swapId, () async {
+    final model = await _boltz.storage.fetch(swapId);
+    if (model == null) throw SwapsException('swap $swapId not found');
+    final swap = model.toEntity();
+    final (lockup, pending) = switch (swap) {
+      LnSendSwap(:final sendTxid, :final pendingLockupTx) ||
+      ChainSwap(
+        :final sendTxid,
+        :final pendingLockupTx,
+      ) => (sendTxid, pendingLockupTx),
+      LnReceiveSwap() => throw SwapsException(
+        'reverse swap $swapId has no lockup of ours',
+      ),
+    };
+    if (lockup != null) {
+      throw SwapsException('swap $swapId already records a lockup');
+    }
+    if (pending == signedTx) return swap;
+    if (pending != null) {
+      throw SwapsException('swap $swapId already has a lockup being confirmed');
+    }
+    final txid = await _lockupChain.txidOf(
+      signedTx: signedTx,
+      isLiquid: switch (swap) {
+        LnSendSwap() => swap.type == SwapType.liquidToLightning,
+        ChainSwap() => swap.type == SwapType.liquidToBitcoin,
+        LnReceiveSwap() => false,
+      },
+    );
+    final updated = switch (swap) {
+      LnSendSwap() => swap.copyWith(
+        pendingLockupTx: signedTx,
+        pendingLockupTxid: txid,
+      ),
+      ChainSwap() => swap.copyWith(
+        pendingLockupTx: signedTx,
+        pendingLockupTxid: txid,
+      ),
+      LnReceiveSwap() => swap,
+    };
+    await _boltz.storage.store(SwapModel.fromEntity(updated));
+    return updated;
+  });
+
+  @override
+  Future<void> dropPendingLockup(String swapId) =>
+      _boltz.storage.mutate(swapId, () async {
+        final model = await _boltz.storage.fetch(swapId);
+        if (model == null) return;
+        final updated = switch (model.toEntity()) {
+          final LnSendSwap swap => swap.copyWith(
+            pendingLockupTx: null,
+            pendingLockupTxid: null,
+          ),
+          final ChainSwap swap => swap.copyWith(
+            pendingLockupTx: null,
+            pendingLockupTxid: null,
+          ),
+          final LnReceiveSwap swap => swap,
+        };
+        await _boltz.storage.store(SwapModel.fromEntity(updated));
+      });
+
+  /// Settles a lockup whose broadcast outcome is unknown, from the user's own
+  /// servers: a known txid is recorded; otherwise the identical signed
+  /// transaction is rebroadcast, which can never create a second lockup. A
+  /// swap that already failed is never funded fresh on Bitcoin, where the
+  /// lookup can prove whether the lockup went out; on Liquid, which has no
+  /// lookup, it is rebroadcast anyway — either it was out already, or the
+  /// refund returns it. Boltz's own status events record the lockup too (see
+  /// [SwapStatusMapper]).
+  @override
+  Future<Swap> resolvePendingLockup(Swap swap) async {
+    final (pendingTx, pendingTxid, lockupTxid, isLiquid) = switch (swap) {
+      LnSendSwap(
+        :final pendingLockupTx,
+        :final pendingLockupTxid,
+        :final sendTxid,
+      ) =>
+        (
+          pendingLockupTx,
+          pendingLockupTxid,
+          sendTxid,
+          swap.type == SwapType.liquidToLightning,
+        ),
+      ChainSwap(
+        :final pendingLockupTx,
+        :final pendingLockupTxid,
+        :final sendTxid,
+      ) =>
+        (
+          pendingLockupTx,
+          pendingLockupTxid,
+          sendTxid,
+          swap.type == SwapType.liquidToBitcoin,
+        ),
+      LnReceiveSwap() => (null, null, null, false),
+    };
+    if (pendingTx == null || lockupTxid != null) return swap;
+    try {
+      Future<bool> known(String txid) => _lockupChain.isKnown(
+        txid: txid,
+        signedTx: pendingTx,
+        isLiquid: isLiquid,
+        isTestnet: _isTestnet,
+      );
+
+      Future<Swap> record(String txid) async {
+        await updatePaidSendSwap(swapId: swap.id, txid: txid);
+        swapsLog.fine('SWAPS: ${swap.id} pending lockup confirmed $txid');
+        return getSwap(swapId: swap.id);
+      }
+
+      Future<Swap> drop(String reason) async {
+        await dropPendingLockup(swap.id);
+        swapsLog.fine('SWAPS: ${swap.id} pending lockup dropped ($reason)');
+        return getSwap(swapId: swap.id);
+      }
+
+      if (pendingTxid != null) {
+        if (await known(pendingTxid)) return await record(pendingTxid);
+        // On Bitcoin the txid is our own: unknown means it never went out,
+        // and a swap that already failed is not funded fresh. A Liquid txid
+        // is only a candidate, so its absence proves nothing.
+        if (!isLiquid && swap.status.hasFailed) {
+          return await drop('never broadcast; swap ${swap.status.name}');
+        }
+      }
+
+      switch (await _lockupChain.broadcast(
+        signedTx: pendingTx,
+        isLiquid: isLiquid,
+        isTestnet: _isTestnet,
+      )) {
+        case LockupAccepted(:final txid):
+          return await record(txid);
+        case LockupAlreadyInChain():
+          if (pendingTxid != null && await known(pendingTxid)) {
+            return await record(pendingTxid);
+          }
+          return swap;
+        case LockupRejected():
+          if (pendingTxid != null && await known(pendingTxid)) {
+            return await record(pendingTxid);
+          }
+          return await drop('rejected by the node');
+        case LockupOutcomeUnknown():
+          return swap;
+      }
+    } catch (e) {
+      swapsLog.warning(
+        'SWAPS: ${swap.id} pending lockup not settled (${e.runtimeType})',
+      );
+      return swap;
+    }
+  }
 
   Future<Swap> updateSendSwapLockupFees({
     required String swapId,
@@ -793,10 +972,12 @@ class BoltzSwapRepository implements SwapRepository {
     final allSwaps = allSwapModels
         .map((swapModel) => swapModel.toEntity())
         .toList();
-    // Still in flight, or holding funds that must be claimed or refunded.
+    // Still in flight, holding a lockup whose broadcast is being confirmed,
+    // or holding funds that must be claimed or refunded.
     bool needsWatching(Swap swap) =>
         swap.status == SwapStatus.pending ||
         swap.status == SwapStatus.paid ||
+        swap.hasPendingLockup ||
         swap.nextAction != SwapAction.none;
 
     return allSwaps

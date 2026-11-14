@@ -99,6 +99,12 @@ final class SwapServerBusyFailure extends SwapInvalidStateFailure {
   const SwapServerBusyFailure();
 }
 
+/// A lockup for this swap was broadcast but is not yet confirmed: the swap
+/// cannot be rebuilt until it is settled.
+final class SwapLockupPendingFailure extends SwapInvalidStateFailure {
+  const SwapLockupPendingFailure();
+}
+
 /// Spending is invalid in the source wallet's current admission state.
 final class SwapSpendBlockedFailure extends SwapInvalidStateFailure {
   final BitcoinSpendStatus status;

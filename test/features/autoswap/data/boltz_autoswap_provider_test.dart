@@ -26,6 +26,12 @@ class _MockCreateChainSwap extends Mock implements CreateChainSwapUsecase {}
 
 class _MockRecordSwapLockup extends Mock implements RecordSwapLockupUsecase {}
 
+class _MockRecordPendingLockup extends Mock
+    implements RecordPendingSwapLockupUsecase {}
+
+class _MockDropPendingLockup extends Mock
+    implements DropPendingSwapLockupUsecase {}
+
 class _MockWalletRepository extends Mock implements WalletRepository {}
 
 class _MockSettingsRepository extends Mock implements SettingsRepository {}
@@ -58,6 +64,8 @@ void main() {
   late _MockGetSwapLimitsAndFees getLimitsAndFees;
   late _MockCreateChainSwap createChainSwap;
   late _MockRecordSwapLockup recordLockup;
+  late _MockRecordPendingLockup recordPendingLockup;
+  late _MockDropPendingLockup dropPendingLockup;
   late _MockWalletRepository walletRepository;
   late _MockSettingsRepository settingsRepository;
   late _MockLiquidWalletRepository liquidWalletRepository;
@@ -87,6 +95,31 @@ void main() {
     getLimitsAndFees = _MockGetSwapLimitsAndFees();
     createChainSwap = _MockCreateChainSwap();
     recordLockup = _MockRecordSwapLockup();
+    recordPendingLockup = _MockRecordPendingLockup();
+    dropPendingLockup = _MockDropPendingLockup();
+    when(
+      () => recordPendingLockup.execute(
+        swapId: any(named: 'swapId'),
+        signedTx: any(named: 'signedTx'),
+      ),
+    ).thenAnswer(
+      (_) async => Ok(
+        Swap.chain(
+          id: 'pending',
+          keyIndex: 0,
+          type: SwapType.liquidToBitcoin,
+          status: SwapStatus.pending,
+          environment: swaps.Environment.testnet,
+          creationTime: DateTime.utc(2026),
+          sendWalletId: 'liquid-wallet',
+          paymentAddress: 'tlq1payin',
+          paymentAmount: 1_000,
+        ),
+      ),
+    );
+    when(
+      () => dropPendingLockup.execute(any()),
+    ).thenAnswer((_) async => const Ok(null));
     walletRepository = _MockWalletRepository();
     settingsRepository = _MockSettingsRepository();
     liquidWalletRepository = _MockLiquidWalletRepository();
@@ -97,6 +130,8 @@ void main() {
       getLimitsAndFees,
       createChainSwap,
       recordLockup,
+      recordPendingLockup,
+      dropPendingLockup,
       walletRepository,
       settingsRepository,
       liquidWalletRepository,
@@ -274,6 +309,34 @@ void main() {
       ).called(1);
     },
   );
+
+  test('stores the signed lockup before broadcasting it', () async {
+    await provider.execute(settings);
+
+    verifyInOrder([
+      () => recordPendingLockup.execute(
+        swapId: 'swap-id',
+        signedTx: 'signed-pset',
+      ),
+      () => broadcastLiquid.execute('signed-pset', isTestnet: true),
+    ]);
+  });
+
+  test('broadcasts nothing when the lockup cannot be stored', () async {
+    when(
+      () => recordPendingLockup.execute(
+        swapId: any(named: 'swapId'),
+        signedTx: any(named: 'signedTx'),
+      ),
+    ).thenAnswer((_) async => const Err(SwapsUnexpectedFailure()));
+
+    final result = await provider.execute(settings);
+
+    expect((result as Err).failure, isA<AutoswapExecutionFailure>());
+    verifyNever(
+      () => broadcastLiquid.execute(any(), isTestnet: any(named: 'isTestnet')),
+    );
+  });
 
   test('Boltz unreachable is reported before anything is created', () async {
     when(

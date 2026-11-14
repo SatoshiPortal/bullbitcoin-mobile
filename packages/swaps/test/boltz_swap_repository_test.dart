@@ -43,8 +43,42 @@ class _PassthroughElectrum implements ElectrumRunner {
   }) async => custom;
 }
 
+class _FakeLockupChain implements LockupChain {
+  String? txid = 'computed-txid';
+  bool known = false;
+
+  @override
+  Future<String?> txidOf({
+    required String signedTx,
+    required bool isLiquid,
+  }) async => txid;
+
+  LockupBroadcast outcome = const LockupOutcomeUnknown();
+  final broadcasts = <String>[];
+
+  @override
+  Future<bool> isKnown({
+    required String txid,
+    required String signedTx,
+    required bool isLiquid,
+    required bool isTestnet,
+  }) async => known;
+
+  @override
+  Future<LockupBroadcast> broadcast({
+    required String signedTx,
+    required bool isLiquid,
+    required bool isTestnet,
+  }) async {
+    broadcasts.add(signedTx);
+    return outcome;
+  }
+}
+
 void main() {
   late _MockBoltzDatasource boltz;
+  late _FakeLockupChain lockupChain;
+  final stores = <SwapModel>[];
   late _MockSwapStorage storage;
   final walletTxs = <String, SwapWalletTx>{};
 
@@ -55,9 +89,12 @@ void main() {
     String? sendTxid = 'lockup-txid',
     String? refundAddress = 'lq1refund',
     int? claimFees,
+    String? pendingLockupTx,
+    String? pendingLockupTxid,
+    SwapType type = SwapType.liquidToBitcoin,
   }) => SwapModel.chain(
     id: 'D5gdAL9UI29W',
-    type: SwapType.liquidToBitcoin.name,
+    type: type.name,
     status: status,
     keyIndex: 0,
     creationTime: DateTime(2026, 7).millisecondsSinceEpoch,
@@ -70,6 +107,8 @@ void main() {
     refundTxid: refundTxid,
     refundAddress: refundAddress,
     claimFees: claimFees,
+    pendingLockupTx: pendingLockupTx,
+    pendingLockupTxid: pendingLockupTxid,
   );
 
   BoltzSwapRepository repo({
@@ -80,6 +119,7 @@ void main() {
     boltz: boltz,
     isTestnet: false,
     electrum: _PassthroughElectrum(custom: customElectrum),
+    lockupChain: lockupChain,
     newAddressFor: (walletId) async => 'addr-of-$walletId',
     walletTx: (txid, {required walletId}) async => walletTxs[txid],
     walletTxs: (walletId, {bool sync = false}) async =>
@@ -120,11 +160,15 @@ void main() {
 
   setUp(() {
     boltz = _MockBoltzDatasource();
+    lockupChain = _FakeLockupChain();
     storage = _MockSwapStorage();
     walletTxs.clear();
     when(() => boltz.storage).thenReturn(storage);
     when(() => storage.fetch(any())).thenAnswer((_) async => chainModel());
-    when(() => storage.store(any())).thenAnswer((_) async {});
+    stores.clear();
+    when(() => storage.store(any())).thenAnswer((inv) async {
+      stores.add(inv.positionalArguments.first as SwapModel);
+    });
     // The per-swap write lock is a pass-through here: run the closure.
     when(() => storage.mutate<Swap>(any(), any())).thenAnswer(
       (inv) => (inv.positionalArguments[1] as Future<Swap> Function())(),
@@ -189,6 +233,138 @@ void main() {
         throwsA(isA<SwapsException>()),
       );
       verifyNever(() => storage.store(any()));
+    });
+  });
+
+  group('pending lockup', () {
+    SwapModel pending({
+      String status = 'pending',
+      String? txid = 'pend-txid',
+      SwapType type = SwapType.bitcoinToLiquid,
+    }) => chainModel(
+      status: status,
+      sendTxid: null,
+      pendingLockupTx: 'signed-pset',
+      pendingLockupTxid: txid,
+      type: type,
+    );
+
+    ChainSwapModel stored() => stores.last as ChainSwapModel;
+
+    Future<void> resolve(SwapModel model) async {
+      when(() => storage.fetch(any())).thenAnswer((_) async => model);
+      await repo().resolvePendingLockup(model.toEntity());
+    }
+
+    test('a txid our servers know is recorded without a rebroadcast', () async {
+      lockupChain.known = true;
+
+      await resolve(pending());
+
+      expect(stored().sendTxid, 'pend-txid');
+      expect(stored().pendingLockupTx, isNull);
+      expect(lockupChain.broadcasts, isEmpty);
+    });
+
+    test(
+      'a failed swap is never funded fresh when the lockup never went out',
+      () async {
+        lockupChain.known = false;
+
+        await resolve(pending(status: 'expired'));
+
+        expect(stored().sendTxid, isNull);
+        expect(stored().pendingLockupTx, isNull);
+        expect(lockupChain.broadcasts, isEmpty);
+      },
+    );
+
+    test(
+      'an unseen lockup is rebroadcast as the identical transaction',
+      () async {
+        lockupChain
+          ..known = false
+          ..outcome = const LockupAccepted('pend-txid');
+
+        await resolve(pending());
+
+        expect(lockupChain.broadcasts, ['signed-pset']);
+        expect(stored().sendTxid, 'pend-txid');
+      },
+    );
+
+    test('a node rejection drops the pending lockup', () async {
+      lockupChain
+        ..known = false
+        ..outcome = const LockupRejected();
+
+      await resolve(pending());
+
+      expect(stored().pendingLockupTx, isNull);
+      expect(stored().sendTxid, isNull);
+    });
+
+    test('an unclear answer keeps it pending', () async {
+      lockupChain.outcome = const LockupOutcomeUnknown();
+
+      await resolve(pending());
+
+      verifyNever(() => storage.store(any()));
+    });
+
+    test('a Liquid lockup already in chain waits for its txid', () async {
+      lockupChain.outcome = const LockupAlreadyInChain();
+
+      await resolve(pending(txid: null, type: SwapType.liquidToBitcoin));
+
+      verifyNever(() => storage.store(any()));
+    });
+
+    test('a Liquid candidate our server confirms is recorded', () async {
+      lockupChain.known = true;
+
+      await resolve(pending(type: SwapType.liquidToBitcoin));
+
+      expect(stored().sendTxid, 'pend-txid');
+      expect(lockupChain.broadcasts, isEmpty);
+    });
+
+    test('an unconfirmed Liquid candidate is not proof of absence', () async {
+      lockupChain
+        ..known = false
+        ..outcome = const LockupOutcomeUnknown();
+
+      await resolve(pending(status: 'expired', type: SwapType.liquidToBitcoin));
+
+      expect(lockupChain.broadcasts, ['signed-pset']);
+      verifyNever(() => storage.store(any()));
+    });
+
+    test('a swap that records a lockup refuses another', () async {
+      when(() => storage.fetch(any())).thenAnswer((_) async => chainModel());
+
+      await expectLater(
+        repo().recordPendingLockup(swapId: 'D5gdAL9UI29W', signedTx: 'other'),
+        throwsA(isA<SwapsException>()),
+      );
+    });
+
+    test('a lockup being confirmed refuses a different one', () async {
+      when(() => storage.fetch(any())).thenAnswer((_) async => pending());
+
+      await expectLater(
+        repo().recordPendingLockup(swapId: 'D5gdAL9UI29W', signedTx: 'other'),
+        throwsA(isA<SwapsException>()),
+      );
+    });
+
+    test('the first recorded lockup is never replaced', () async {
+      await repo().markLockupBroadcast(
+        swapId: 'D5gdAL9UI29W',
+        txid: 'second-lockup',
+      );
+
+      expect(stored().sendTxid, 'lockup-txid');
     });
   });
 
@@ -566,6 +742,7 @@ void main() {
           boltz: boltz,
           isTestnet: false,
           electrum: _PassthroughElectrum(),
+          lockupChain: lockupChain,
           newAddressFor: (w) async => 'a',
           walletTx: (t, {required walletId}) async => null,
           walletTxs: (walletId, {bool sync = false}) async {

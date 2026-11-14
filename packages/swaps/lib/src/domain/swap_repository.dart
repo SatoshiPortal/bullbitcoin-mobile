@@ -40,6 +40,22 @@ abstract class SwapRepository {
     int? lockupFeeSat,
   });
 
+  /// Stores our signed lockup BEFORE it is broadcast, with its txid when it
+  /// can be computed up front. Refuses a swap that already records a lockup
+  /// or holds a different one being confirmed, so a swap can never be funded
+  /// twice. Returns the swap as stored.
+  Future<Swap> recordPendingLockup({
+    required String swapId,
+    required String signedTx,
+  });
+
+  /// Forgets a pending lockup the node definitely refused.
+  Future<void> dropPendingLockup(String swapId);
+
+  /// Settles a pending lockup from the user's own servers; returns the swap
+  /// as stored afterwards.
+  Future<Swap> resolvePendingLockup(Swap swap);
+
   Future<LnReceiveSwap> createLightningReceive({
     required String walletId,
     required int amountSat,

@@ -20,6 +20,7 @@ import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/features/fees/domain/get_network_fees_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:swaps/swaps.dart';
+import 'package:bb_mobile/features/send/domain/broadcast_failure.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/verify_chain_swap_amount_send_usecase.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
@@ -107,6 +108,8 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
     required this._getSwapLimitsAndFeesUsecase,
     required this._createChainSwapUsecase,
     required this._recordSwapLockupUsecase,
+    required this._recordPendingSwapLockupUsecase,
+    required this._dropPendingSwapLockupUsecase,
     required this._watchSwapUsecase,
   }) : super(const TransferState()) {
     on<TransferStarted>(_onStarted);
@@ -171,6 +174,8 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
   final GetSwapLimitsAndFeesUsecase _getSwapLimitsAndFeesUsecase;
   final CreateChainSwapUsecase _createChainSwapUsecase;
   final RecordSwapLockupUsecase _recordSwapLockupUsecase;
+  final RecordPendingSwapLockupUsecase _recordPendingSwapLockupUsecase;
+  final DropPendingSwapLockupUsecase _dropPendingSwapLockupUsecase;
   final WatchSwapUsecase _watchSwapUsecase;
   StreamSubscription<Swap>? _boltzSwapSubscription;
   int _transactionGeneration = 0;
@@ -1820,6 +1825,12 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
   ) async {
     if (stateToUse.fromWallet == null) return;
     if (!stateToUse.shouldShowAdvancedOptions) return;
+    // A lockup whose broadcast is still being confirmed may already be on
+    // chain: rebuilding against the same swap could fund it twice.
+    if (stateToUse.swap?.hasPendingLockup ?? false) {
+      emit(state.copyWith(swapFailure: const SwapLockupPendingFailure()));
+      return;
+    }
     if (stateToUse.signedPsbt.isEmpty &&
         stateToUse.swap == null &&
         !stateToUse.isSameChainTransfer) {
@@ -2252,14 +2263,46 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
             return;
           }
         }
-        txId = fromWallet.isLiquid
-            ? await _broadcastLiquidTxUsecase.execute(signedPsbt)
-            : await _broadcastBitcoinTxUsecase.execute(
-                signedPsbt,
-                isPsbt: true,
-                network: fromWallet.network,
-                walletId: fromWallet.id,
-              );
+        // Stored before the broadcast so an unclear outcome is settled from
+        // this exact transaction and the swap can never be funded twice.
+        switch (await _recordPendingSwapLockupUsecase.execute(
+          swapId: swap.id,
+          signedTx: signedPsbt,
+        )) {
+          case Ok(value: final ChainSwap pending):
+            emit(state.copyWith(swap: pending));
+          case Ok():
+            break;
+          case Err():
+            emit(
+              state.copyWith(
+                swapFailure: const SwapInvalidStateFailure(
+                  'lockup not stored before broadcast',
+                ),
+              ),
+            );
+            return;
+        }
+        try {
+          txId = fromWallet.isLiquid
+              ? await _broadcastLiquidTxUsecase.execute(signedPsbt)
+              : await _broadcastBitcoinTxUsecase.execute(
+                  signedPsbt,
+                  isPsbt: true,
+                  network: fromWallet.network,
+                  walletId: fromWallet.id,
+                );
+        } on WalletSpendBlockedException {
+          final _ = await _dropPendingSwapLockupUsecase.execute(swap.id);
+          rethrow;
+        } on BroadcastTransactionException catch (e) {
+          final category = BroadcastFailureCategory.of(e);
+          if (category == BroadcastFailureCategory.rejected ||
+              category == BroadcastFailureCategory.authorization) {
+            final _ = await _dropPendingSwapLockupUsecase.execute(swap.id);
+          }
+          rethrow;
+        }
         final recorded = await _recordSwapLockupUsecase.execute(
           swapId: swap.id,
           txid: txId,

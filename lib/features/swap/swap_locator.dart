@@ -386,6 +386,9 @@ class SwapLocator {
         getSwapLimitsAndFeesUsecase: locator<GetSwapLimitsAndFeesUsecase>(),
         createChainSwapUsecase: locator<CreateChainSwapUsecase>(),
         recordSwapLockupUsecase: locator<RecordSwapLockupUsecase>(),
+        recordPendingSwapLockupUsecase:
+            locator<RecordPendingSwapLockupUsecase>(),
+        dropPendingSwapLockupUsecase: locator<DropPendingSwapLockupUsecase>(),
         watchSwapUsecase: locator<WatchSwapUsecase>(),
       ),
     );

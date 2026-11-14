@@ -1,7 +1,14 @@
 import 'package:bb_mobile/core/electrum/domain/ports/electrum_servers_port.dart';
 import 'package:bb_mobile/features/electrum_settings/domain/electrum_server_network.dart';
 import 'package:bb_mobile/features/swap/domain/swap_network_policy.dart';
+import 'package:bb_mobile/core/blockchain/data/datasources/bdk_bitcoin_blockchain_datasource.dart';
+import 'package:bb_mobile/core/blockchain/data/datasources/lwk_liquid_blockchain_datasource.dart';
 import 'package:bb_mobile/core/errors/bull_exception.dart';
+import 'package:bull_sdk/bdk.dart' as bdk;
+import 'package:bull_sdk/lwk.dart' as lwk;
+import 'package:bb_mobile/features/send/data/broadcast_failure_mapper.dart';
+import 'package:bb_mobile/features/send/domain/broadcast_failure.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart' as wallet;
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_value_storage_datasource.dart';
 import 'package:primitives/primitives.dart';
@@ -108,6 +115,99 @@ class AppElectrumRunner implements swaps.ElectrumRunner {
       );
     } on Exception {
       return true;
+    }
+  }
+
+  ElectrumServerNetwork _network({
+    required bool isLiquid,
+    required bool isTestnet,
+  }) => ElectrumServerNetwork.fromNetworkEnv(
+    isTestnet ? NetworkEnv.testnet : NetworkEnv.mainnet,
+    isLiquid: isLiquid,
+  );
+}
+
+/// The user's own Electrum servers settling a lockup whose broadcast outcome
+/// is unknown: the same custom-if-set-else-defaults selection as every other
+/// wallet call, never a third-party explorer.
+class AppLockupChain implements swaps.LockupChain {
+  final ElectrumServersPort _port;
+  final BdkBitcoinBlockchainDatasource _bitcoin;
+  final LwkLiquidBlockchainDatasource _liquid;
+
+  AppLockupChain(this._port, this._bitcoin, this._liquid);
+
+  @override
+  Future<String?> txidOf({
+    required String signedTx,
+    required bool isLiquid,
+  }) async {
+    if (isLiquid) return null;
+    return bdk.Psbt(psbtBase64: signedTx).extractTx().computeTxid().toString();
+  }
+
+  @override
+  Future<bool> isKnown({
+    required String txid,
+    required String signedTx,
+    required bool isLiquid,
+    required bool isTestnet,
+  }) async {
+    if (!isLiquid) {
+      return _port.runWithFallback(
+        network: _network(isLiquid: false, isTestnet: isTestnet),
+        operation: (connection) =>
+            _bitcoin.isTransactionKnown(txid, connection: connection),
+      );
+    }
+    // No Liquid txid can be computed here, so a candidate txid (the node's
+    // broadcast reply, or Boltz's event) counts only when the server's bytes
+    // under it are exactly our signed lockup.
+    final held = await _port.runWithFallback(
+      network: _network(isLiquid: true, isTestnet: isTestnet),
+      operation: (connection) =>
+          _bitcoin.fetchRawTransaction(txid, connection: connection),
+    );
+    if (held == null) return false;
+    final ours = await lwk.extractTxBytes(pset: signedTx);
+    return _sameBytes(held, ours);
+  }
+
+  static bool _sameBytes(List<int> a, List<int> b) {
+    if (a.length != b.length) return false;
+    for (var i = 0; i < a.length; i++) {
+      if (a[i] != b[i]) return false;
+    }
+    return true;
+  }
+
+  @override
+  Future<swaps.LockupBroadcast> broadcast({
+    required String signedTx,
+    required bool isLiquid,
+    required bool isTestnet,
+  }) async {
+    try {
+      final txid = await _port.runWithFallback<String>(
+        network: _network(isLiquid: isLiquid, isTestnet: isTestnet),
+        operation: (connection) => isLiquid
+            ? _liquid.broadcastTransaction(
+                signedPset: signedTx,
+                network: isTestnet
+                    ? wallet.Network.liquidTestnet
+                    : wallet.Network.liquidMainnet,
+                electrumServerUrl: connection.url,
+              )
+            : _bitcoin.broadcastPsbt(signedTx, connection: connection),
+      );
+      return swaps.LockupAccepted(txid);
+    } catch (e) {
+      return switch (mapBroadcastFailure(e)) {
+        BroadcastFailureCategory.rejected => const swaps.LockupRejected(),
+        BroadcastFailureCategory.alreadyInChain =>
+          const swaps.LockupAlreadyInChain(),
+        _ => const swaps.LockupOutcomeUnknown(),
+      };
     }
   }
 

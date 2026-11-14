@@ -323,6 +323,9 @@ class SendLocator {
         getSendSwapRouteUsecase: locator<GetSendSwapRouteUsecase>(),
         createBoltzSendSwapUsecase: locator<CreateBoltzSendSwapUsecase>(),
         recordSwapLockupUsecase: locator<RecordSwapLockupUsecase>(),
+        recordPendingSwapLockupUsecase:
+            locator<RecordPendingSwapLockupUsecase>(),
+        dropPendingSwapLockupUsecase: locator<DropPendingSwapLockupUsecase>(),
         getSwapLimitsAndFeesUsecase: locator<GetSwapLimitsAndFeesUsecase>(),
         createChainSwapUsecase: locator<CreateChainSwapUsecase>(),
         watchSwapUsecase: locator<WatchSwapUsecase>(),

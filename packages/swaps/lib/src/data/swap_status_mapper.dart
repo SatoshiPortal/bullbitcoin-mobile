@@ -58,8 +58,14 @@ class SwapStatusMapper {
       // evidence: without it a locked swap reads as never funded and is
       // never refunded.
       final learnedLockup = _sendTxid(swap) == null ? _sendTxid(updated) : null;
-      if (learnedLockup == null) return const SwapUnchanged();
-      return SwapUpdated(_withSendTxid(swap, learnedLockup));
+      if (learnedLockup != null) {
+        return SwapUpdated(_withSendTxid(swap, learnedLockup));
+      }
+      final candidate = _pendingTxid(updated);
+      if (candidate != null && candidate != _pendingTxid(swap)) {
+        return SwapUpdated(_withPendingTxid(swap, candidate));
+      }
+      return const SwapUnchanged();
     }
 
     if (updated == swap) return const SwapUnchanged();
@@ -237,14 +243,14 @@ class SwapStatusMapper {
           // and store) — without it the row would read as "no funds moved"
           // and be excluded from refund, watch and rescue forever.
           case LnSendSwapModel():
-            return swap.copyWith(
-              status: swap_entity.SwapStatus.paid.name,
-              sendTxid: swap.sendTxid ?? transactionId,
+            return _recordEventLockup(
+              swap.copyWith(status: swap_entity.SwapStatus.paid.name),
+              transactionId,
             );
           case ChainSwapModel():
-            return swap.copyWith(
-              status: swap_entity.SwapStatus.paid.name,
-              sendTxid: swap.sendTxid ?? transactionId,
+            return _recordEventLockup(
+              swap.copyWith(status: swap_entity.SwapStatus.paid.name),
+              transactionId,
             );
         }
 
@@ -253,14 +259,14 @@ class SwapStatusMapper {
           case LnReceiveSwapModel():
             return swap.copyWith(status: swap_entity.SwapStatus.claimable.name);
           case LnSendSwapModel():
-            return swap.copyWith(
-              status: swap_entity.SwapStatus.paid.name,
-              sendTxid: swap.sendTxid ?? transactionId,
+            return _recordEventLockup(
+              swap.copyWith(status: swap_entity.SwapStatus.paid.name),
+              transactionId,
             );
           case ChainSwapModel():
-            return swap.copyWith(
-              status: swap_entity.SwapStatus.paid.name,
-              sendTxid: swap.sendTxid ?? transactionId,
+            return _recordEventLockup(
+              swap.copyWith(status: swap_entity.SwapStatus.paid.name),
+              transactionId,
             );
         }
 
@@ -401,8 +407,53 @@ class SwapStatusMapper {
   };
 
   SwapModel _withSendTxid(SwapModel swap, String sendTxid) => switch (swap) {
-    LnSendSwapModel() => swap.copyWith(sendTxid: sendTxid),
-    ChainSwapModel() => swap.copyWith(sendTxid: sendTxid),
+    LnSendSwapModel() => swap.copyWith(
+      sendTxid: sendTxid,
+      pendingLockupTx: null,
+      pendingLockupTxid: null,
+    ),
+    ChainSwapModel() => swap.copyWith(
+      sendTxid: sendTxid,
+      pendingLockupTx: null,
+      pendingLockupTxid: null,
+    ),
+    LnReceiveSwapModel() => swap,
+  };
+
+  /// Boltz reported our lockup on chain: the app-recorded txid stays
+  /// authoritative; the event's is taken only when none was recorded (app
+  /// killed between broadcast and store, or a broadcast whose outcome was
+  /// unknown), and settles a pending lockup either way.
+  SwapModel _recordEventLockup(SwapModel swap, String? transactionId) {
+    final recorded = _sendTxid(swap);
+    if (recorded != null || transactionId == null) return swap;
+    // With our signed lockup stored, Boltz's txid is only a candidate for
+    // the watcher to confirm against the user's own Electrum server — never
+    // recorded on Boltz's word. Our own txid (Bitcoin) always wins.
+    return switch (swap) {
+      LnSendSwapModel(:final pendingLockupTx, :final pendingLockupTxid)
+          when pendingLockupTx != null =>
+        pendingLockupTxid != null
+            ? swap
+            : swap.copyWith(pendingLockupTxid: transactionId),
+      ChainSwapModel(:final pendingLockupTx, :final pendingLockupTxid)
+          when pendingLockupTx != null =>
+        pendingLockupTxid != null
+            ? swap
+            : swap.copyWith(pendingLockupTxid: transactionId),
+      _ => _withSendTxid(swap, transactionId),
+    };
+  }
+
+  String? _pendingTxid(SwapModel swap) => switch (swap) {
+    LnSendSwapModel(:final pendingLockupTxid) => pendingLockupTxid,
+    ChainSwapModel(:final pendingLockupTxid) => pendingLockupTxid,
+    LnReceiveSwapModel() => null,
+  };
+
+  SwapModel _withPendingTxid(SwapModel swap, String txid) => switch (swap) {
+    LnSendSwapModel() => swap.copyWith(pendingLockupTxid: txid),
+    ChainSwapModel() => swap.copyWith(pendingLockupTxid: txid),
     LnReceiveSwapModel() => swap,
   };
 

@@ -77,6 +77,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:primitives/primitives.dart' hide Network, ScriptType;
+import 'package:bb_mobile/features/send/domain/broadcast_failure.dart';
 import 'package:bb_mobile/features/send/presentation/send_wallet_view.dart';
 import 'package:bb_mobile/features/send/presentation/send_mode.dart';
 
@@ -244,6 +245,12 @@ class _MockCreateBoltzSendSwapUsecase extends Mock
 class _MockRecordSwapLockupUsecase extends Mock
     implements boltz.RecordSwapLockupUsecase {}
 
+class _MockRecordPendingSwapLockupUsecase extends Mock
+    implements boltz.RecordPendingSwapLockupUsecase {}
+
+class _MockDropPendingSwapLockupUsecase extends Mock
+    implements boltz.DropPendingSwapLockupUsecase {}
+
 class _MockWatchSwapUsecase extends Mock implements boltz.WatchSwapUsecase {}
 
 class _TestableSendCubit extends SendCubit {
@@ -302,6 +309,8 @@ class _TestableSendCubit extends SendCubit {
     required super.getSendSwapRouteUsecase,
     required super.createBoltzSendSwapUsecase,
     required super.recordSwapLockupUsecase,
+    required super.recordPendingSwapLockupUsecase,
+    required super.dropPendingSwapLockupUsecase,
     required super.watchSwapUsecase,
     required super.getSwapLimitsAndFeesUsecase,
     required super.createChainSwapUsecase,
@@ -489,6 +498,8 @@ void main() {
   late _MockGetSendSwapRouteUsecase getSendSwapRouteUsecase;
   late _MockCreateBoltzSendSwapUsecase createBoltzSendSwapUsecase;
   late _MockRecordSwapLockupUsecase recordSwapLockupUsecase;
+  late _MockRecordPendingSwapLockupUsecase recordPendingLockup;
+  late _MockDropPendingSwapLockupUsecase dropPendingLockup;
   late _MockWatchSwapUsecase watchSwapUsecase;
 
   late StreamController<PayjoinSession> payjoinEvents;
@@ -571,6 +582,8 @@ void main() {
     getSendSwapRouteUsecase: getSendSwapRouteUsecase,
     createBoltzSendSwapUsecase: createBoltzSendSwapUsecase,
     recordSwapLockupUsecase: recordSwapLockupUsecase,
+    recordPendingSwapLockupUsecase: recordPendingLockup,
+    dropPendingSwapLockupUsecase: dropPendingLockup,
     watchSwapUsecase: watchSwapUsecase,
     getSwapLimitsAndFeesUsecase: getSwapLimitsAndFeesUsecase,
     createChainSwapUsecase: createChainSwapUsecase,
@@ -699,6 +712,11 @@ void main() {
     getSendSwapRouteUsecase = _MockGetSendSwapRouteUsecase();
     createBoltzSendSwapUsecase = _MockCreateBoltzSendSwapUsecase();
     recordSwapLockupUsecase = _MockRecordSwapLockupUsecase();
+    recordPendingLockup = _MockRecordPendingSwapLockupUsecase();
+    dropPendingLockup = _MockDropPendingSwapLockupUsecase();
+    when(
+      () => dropPendingLockup.execute(any()),
+    ).thenAnswer((_) async => const Ok(null));
     watchSwapUsecase = _MockWatchSwapUsecase();
     when(
       () => getSendSwapRouteUsecase.execute(),
@@ -7157,6 +7175,128 @@ void main() {
       },
     );
 
+    SendState sendingLockup({boltz.LnSendSwap? swap}) => SendState(
+      step: SendStep.sending,
+      sendType: SendType.lightning,
+      selectedWallet: SendWalletBitcoin(_bitcoinLocalWallet()),
+      paymentRequest: invoice,
+      lightningSwap: swap ?? boltzSwap(),
+      signedBitcoinPsbt: 'lockup-signed',
+      bitcoinAbsoluteFeesSat: 300,
+    );
+
+    void stubLockupBroadcast(Future<String> Function() answer) => when(
+      () => broadcastBitcoinTxUsecase.execute(
+        'lockup-signed',
+        isPsbt: any(named: 'isPsbt'),
+        network: any(named: 'network'),
+        walletId: any(named: 'walletId'),
+      ),
+    ).thenAnswer((_) => answer());
+
+    void stubStoredLockup(Result<boltz.Swap, boltz.SwapsFailure> result) =>
+        when(
+          () => recordPendingLockup.execute(
+            swapId: 'boltzSend001',
+            signedTx: 'lockup-signed',
+          ),
+        ).thenAnswer((_) async => result);
+
+    test('stores the signed lockup before broadcasting it', () async {
+      final cubit = buildCubit();
+      addTearDown(cubit.close);
+      stubStoredLockup(Ok(boltzSwap()));
+      stubLockupBroadcast(() async => 'lockup-txid');
+      when(
+        () => recordSwapLockupUsecase.execute(
+          swapId: any(named: 'swapId'),
+          txid: any(named: 'txid'),
+          lockupFeeSat: any(named: 'lockupFeeSat'),
+        ),
+      ).thenAnswer((_) async => Ok(boltzSwap()));
+      cubit.setStateForTest(sendingLockup());
+
+      await cubit.broadcastTransaction();
+
+      verifyInOrder([
+        () => recordPendingLockup.execute(
+          swapId: 'boltzSend001',
+          signedTx: 'lockup-signed',
+        ),
+        () => broadcastBitcoinTxUsecase.execute(
+          'lockup-signed',
+          isPsbt: any(named: 'isPsbt'),
+          network: any(named: 'network'),
+          walletId: any(named: 'walletId'),
+        ),
+      ]);
+    });
+
+    test('broadcasts nothing when the lockup cannot be stored', () async {
+      final cubit = buildCubit();
+      addTearDown(cubit.close);
+      stubStoredLockup(const Err(boltz.SwapsUnexpectedFailure('store')));
+      cubit.setStateForTest(sendingLockup());
+
+      await cubit.broadcastTransaction();
+
+      verifyNever(
+        () => broadcastBitcoinTxUsecase.execute(
+          any(),
+          isPsbt: any(named: 'isPsbt'),
+          network: any(named: 'network'),
+          walletId: any(named: 'walletId'),
+        ),
+      );
+      expect(cubit.state.failure, isA<SendTransactionConfirmationFailure>());
+    });
+
+    test('a broadcast the node rejected forgets the lockup', () async {
+      final cubit = buildCubit();
+      addTearDown(cubit.close);
+      stubStoredLockup(Ok(boltzSwap()));
+      stubLockupBroadcast(
+        () async => throw CategorizedBroadcastException(
+          BroadcastFailureCategory.rejected,
+        ),
+      );
+      cubit.setStateForTest(sendingLockup());
+
+      await cubit.broadcastTransaction();
+
+      verify(() => dropPendingLockup.execute('boltzSend001')).called(1);
+    });
+
+    test('a broadcast with an unclear outcome keeps the lockup', () async {
+      final cubit = buildCubit();
+      addTearDown(cubit.close);
+      stubStoredLockup(Ok(boltzSwap()));
+      stubLockupBroadcast(
+        () async => throw CategorizedBroadcastException(
+          BroadcastFailureCategory.connection,
+        ),
+      );
+      cubit.setStateForTest(sendingLockup());
+
+      await cubit.broadcastTransaction();
+
+      verifyNever(() => dropPendingLockup.execute(any()));
+      expect(cubit.state.hasBroadcastFailure, isTrue);
+    });
+
+    test('a lockup still being confirmed refuses a rebuild', () async {
+      final cubit = buildCubit();
+      addTearDown(cubit.close);
+      cubit.setStateForTest(
+        sendingLockup(
+          swap: boltzSwap().copyWith(pendingLockupTx: 'lockup-signed'),
+        ),
+      );
+
+      expect(await cubit.createTransaction(), isFalse);
+      expect(cubit.state.hasBroadcastFailure, isTrue);
+    });
+
     test('broadcast records the lockup on the swap', () async {
       final cubit = buildCubit();
       addTearDown(cubit.close);
@@ -7176,6 +7316,12 @@ void main() {
           lockupFeeSat: 300,
         ),
       ).thenAnswer((_) async => Ok(funded));
+      when(
+        () => recordPendingLockup.execute(
+          swapId: 'boltzSend001',
+          signedTx: 'lockup-signed',
+        ),
+      ).thenAnswer((_) async => Ok(boltzSwap()));
       cubit.setStateForTest(
         SendState(
           step: SendStep.sending,
@@ -7521,6 +7667,12 @@ void main() {
           lockupFeeSat: 300,
         ),
       ).thenAnswer((_) async => Ok(funded));
+      when(
+        () => recordPendingLockup.execute(
+          swapId: 'boltzChain01',
+          signedTx: 'chain-signed',
+        ),
+      ).thenAnswer((_) async => Ok(chainSwap()));
       cubit.setStateForTest(
         crossChainState().copyWith(
           step: SendStep.sending,
