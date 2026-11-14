@@ -198,6 +198,9 @@ class _VerifyMnemonicScreenState extends State<VerifyMnemonicScreen>
             }
           },
           builder: (context, state) {
+            // Selection can arrive before the privacy gate mounts this
+            // consumer, so its listener may not have seen that transition.
+            _syncSecret(state.selectedWallet?.masterFingerprint);
             final walletName = state.selectedWallet?.isDefault ?? false
                 ? context.loc.testBackupDefaultWallets
                 : state.selectedWallet?.displayLabel(context) ?? '';
