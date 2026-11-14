@@ -4,12 +4,21 @@ import 'package:bb_mobile/features/fees/domain/get_network_fees_usecase.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/replace_by_fee/domain/bump_fee_usecase.dart';
 import 'package:bb_mobile/features/replace_by_fee/domain/replace_by_fee_failure.dart';
-import 'package:bull_sdk/bdk.dart' as bdk;
+import 'package:sync/sync.dart'
+    show
+        BitcoinSpendStatus,
+        SignatureCheck,
+        SyncBusyFailure,
+        SyncFailure,
+        SyncFeeRateTooLowFailure,
+        SyncOriginalSignaturesFailure,
+        SyncSpendBlockedFailure,
+        UnsignedSpend,
+        WalletKey,
+        WalletRevision;
 import 'package:bb_mobile/features/send/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/features/wallet/data/bitcoin_wallet_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/manipulated_transaction_exception.dart';
 import 'package:bb_mobile/core/wallet/domain/transaction_signature_status.dart';
-import 'package:bb_mobile/core/wallet/domain/unverifiable_transaction_exception.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -43,59 +52,94 @@ void main() {
   });
 
   group('execute', () {
-    test('returns Ok with txid on success', () async {
+    final unsigned = UnsignedSpend(
+      revision: WalletRevision(
+        key: WalletKey(id: 'w1', network: BitcoinNetwork.mainnet),
+        generation: 1,
+        revision: 3,
+      ),
+      encoded: 'unsigned-psbt',
+      inputs: const [],
+      replacing: 'old-txid',
+    );
+
+    void bumpAnswers(Result<UnsignedSpend, SyncFailure> built) => when(
+      () => walletRepository.bumpFee(
+        walletId: any(named: 'walletId'),
+        txid: any(named: 'txid'),
+        newFeeRate: any(named: 'newFeeRate'),
+      ),
+    ).thenAnswer((_) async => built);
+
+    Future<Result<String, ReplaceByFeeFailure>> bump() => usecase.execute(
+      walletId: 'w1',
+      txid: 'old-txid',
+      newFeeRate: const RelativeFee(1250),
+      network: app.Network.bitcoinMainnet,
+    );
+
+    test('builds in sync, signs, then broadcasts what was built', () async {
+      bumpAnswers(Ok(unsigned));
       when(
-        () => walletRepository.bumpFee(
-          walletId: any(named: 'walletId'),
-          txid: any(named: 'txid'),
-          newFeeRate: any(named: 'newFeeRate'),
-        ),
+        () => walletRepository.signPsbt('unsigned-psbt', walletId: 'w1'),
       ).thenAnswer((_) async => 'signed-psbt');
       when(
         () => broadcastUsecase.execute(
-          walletId: any(named: 'walletId'),
           'signed-psbt',
           isPsbt: true,
           network: app.Network.bitcoinMainnet,
+          walletId: 'w1',
+          built: unsigned,
         ),
       ).thenAnswer((_) async => 'new-txid');
 
-      final result = await usecase.execute(
-        walletId: 'w1',
-        txid: 'old-txid',
-        newFeeRate: const RelativeFee(1250),
-        network: app.Network.bitcoinMainnet,
-      );
+      final result = await bump();
 
-      expect(result, isA<Ok<String, ReplaceByFeeFailure>>());
-      expect((result as Ok).value, 'new-txid');
+      expect((result as Ok<String, ReplaceByFeeFailure>).value, 'new-txid');
     });
 
-    test(
-      'returns Err(ReplaceByFeeFeeRateTooLowFailure) on FeeRateTooLowCreateTxException — no raw leak',
-      () async {
-        when(
-          () => walletRepository.bumpFee(
+    for (final (failure, matcher) in <(SyncFailure, Matcher)>[
+      (
+        const SyncFeeRateTooLowFailure(),
+        isA<ReplaceByFeeFeeRateTooLowFailure>(),
+      ),
+      (
+        const SyncOriginalSignaturesFailure(SignatureCheck.invalid),
+        isA<ReplaceByFeeManipulatedTransactionFailure>(),
+      ),
+      (
+        const SyncOriginalSignaturesFailure(SignatureCheck.unverifiable),
+        isA<ReplaceByFeeUnverifiableTransactionFailure>(),
+      ),
+      (
+        const SyncSpendBlockedFailure(BitcoinSpendStatus.replacementPending),
+        isA<ReplaceByFeeSpendBlockedFailure>().having(
+          (failure) => failure.replacementPending,
+          'replacementPending',
+          isTrue,
+        ),
+      ),
+      (
+        const SyncBusyFailure(),
+        isA<ReplaceByFeeSpendBlockedFailure>().having(
+          (failure) => failure.busy,
+          'busy',
+          isTrue,
+        ),
+      ),
+    ]) {
+      test('maps ${failure.logCode} and signs nothing', () async {
+        bumpAnswers(Err(failure));
+
+        expect((await bump() as Err).failure, matcher);
+        verifyNever(
+          () => walletRepository.signPsbt(
+            any(),
             walletId: any(named: 'walletId'),
-            txid: any(named: 'txid'),
-            newFeeRate: any(named: 'newFeeRate'),
           ),
-        ).thenThrow(bdk.FeeRateTooLowCreateTxException('fee too low'));
-
-        final result = await usecase.execute(
-          walletId: 'w1',
-          txid: 'old-txid',
-          newFeeRate: const RelativeFee(250),
-          network: app.Network.bitcoinMainnet,
         );
-
-        expect(result, isA<Err<String, ReplaceByFeeFailure>>());
-        expect(
-          (result as Err).failure,
-          isA<ReplaceByFeeFeeRateTooLowFailure>(),
-        );
-      },
-    );
+      });
+    }
 
     test(
       'returns Err(ReplaceByFeeUnexpectedFailure) on unexpected exception — raw message in logMessage only',
@@ -106,74 +150,13 @@ void main() {
             txid: any(named: 'txid'),
             newFeeRate: any(named: 'newFeeRate'),
           ),
-        ).thenThrow(Exception('internal bdk error'));
+        ).thenThrow(Exception('internal sync error'));
 
-        final result = await usecase.execute(
-          walletId: 'w1',
-          txid: 'old-txid',
-          newFeeRate: const RelativeFee(1250),
-          network: app.Network.bitcoinMainnet,
-        );
-
-        expect(result, isA<Err<String, ReplaceByFeeFailure>>());
-        final failure = (result as Err).failure;
+        final failure = (await bump() as Err).failure;
         expect(failure, isA<ReplaceByFeeUnexpectedFailure>());
-        // Raw reason is in logMessage (logs only), not surfaced as a typed variant
         expect(
           (failure as ReplaceByFeeUnexpectedFailure).logMessage,
-          contains('internal bdk error'),
-        );
-      },
-    );
-
-    test(
-      'returns Err(ReplaceByFeeManipulatedTransactionFailure) on ManipulatedTransactionException',
-      () async {
-        when(
-          () => walletRepository.bumpFee(
-            walletId: any(named: 'walletId'),
-            txid: any(named: 'txid'),
-            newFeeRate: any(named: 'newFeeRate'),
-          ),
-        ).thenThrow(ManipulatedTransactionException('forged tx'));
-
-        final result = await usecase.execute(
-          walletId: 'w1',
-          txid: 'old-txid',
-          newFeeRate: const RelativeFee(1250),
-          network: app.Network.bitcoinMainnet,
-        );
-
-        expect(result, isA<Err<String, ReplaceByFeeFailure>>());
-        expect(
-          (result as Err).failure,
-          isA<ReplaceByFeeManipulatedTransactionFailure>(),
-        );
-      },
-    );
-
-    test(
-      'returns Err(ReplaceByFeeUnverifiableTransactionFailure) on UnverifiableTransactionException',
-      () async {
-        when(
-          () => walletRepository.bumpFee(
-            walletId: any(named: 'walletId'),
-            txid: any(named: 'txid'),
-            newFeeRate: any(named: 'newFeeRate'),
-          ),
-        ).thenThrow(UnverifiableTransactionException('prevouts missing'));
-
-        final result = await usecase.execute(
-          walletId: 'w1',
-          txid: 'old-txid',
-          newFeeRate: const RelativeFee(1250),
-          network: app.Network.bitcoinMainnet,
-        );
-
-        expect(result, isA<Err<String, ReplaceByFeeFailure>>());
-        expect(
-          (result as Err).failure,
-          isA<ReplaceByFeeUnverifiableTransactionFailure>(),
+          contains('internal sync error'),
         );
       },
     );

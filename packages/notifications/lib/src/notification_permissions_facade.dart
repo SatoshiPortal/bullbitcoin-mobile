@@ -1,12 +1,12 @@
 import 'package:primitives/primitives.dart';
 
-import 'domain/notification_permission_gateway.dart';
+import 'domain/ports/notification_permission_port.dart';
 import 'domain/notifications_failure.dart';
 
 /// Notification permission only: needs no outbox, so it also serves the
 /// startup wizard before the app is initialized.
 final class NotificationPermissionsFacade {
-  final NotificationPermissionGateway gateway;
+  final NotificationPermissionPort gateway;
 
   const NotificationPermissionsFacade({required this.gateway});
 

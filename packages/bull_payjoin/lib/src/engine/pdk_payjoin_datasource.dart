@@ -8,8 +8,8 @@ import 'dart:typed_data';
 import 'package:bull_payjoin/src/data/payjoin_input_pair_model.dart';
 import 'package:bull_payjoin/src/data/payjoin_model.dart';
 import 'package:bull_payjoin/src/domain/payjoin_ports.dart'
-    show PayjoinLogCode, PayjoinLogRole;
-import 'package:bull_payjoin/src/engine/bitcoin_tx.dart';
+    show PayjoinCodecPort, PayjoinLogCode, PayjoinLogRole;
+import 'package:bull_payjoin/src/engine/payjoin_ownership.dart';
 import 'package:bull_payjoin/src/engine/directory_poller.dart';
 import 'package:bull_payjoin/src/engine/payjoin.dart' show Payjoin;
 import 'package:bull_payjoin/src/engine/payjoin_constants.dart';
@@ -40,6 +40,7 @@ class PdkPayjoinDatasource {
   final Random _random;
   final Dio _dio;
   final logger.PayjoinLogger _log;
+  final PayjoinCodecPort _codec;
   final OhttpKeysFetcher _fetchOhttpKeys;
   final StreamController<PayjoinReceiverModel> _payjoinRequestedController;
   final StreamController<PayjoinSenderModel> _proposalSentController;
@@ -91,6 +92,7 @@ class PdkPayjoinDatasource {
     Random? random,
     required this._dio,
     required this._log,
+    required this._codec,
     OhttpKeysFetcher ohttpKeysFetcher = fetchOhttpKeys,
     this._now = DateTime.now,
   }) : _servers = servers ?? PayjoinConstants.serverUrls,
@@ -426,7 +428,7 @@ class PdkPayjoinDatasource {
               sender: persister.toJson(),
               walletId: walletId,
               originalPsbt: originalPsbt,
-              originalTxId: (await BitcoinTx.fromPsbt(originalPsbt)).txid,
+              originalTxId: _codec.decodePsbt(originalPsbt).txid,
               amountSat: amountSat,
               createdAt: DateTime.now().millisecondsSinceEpoch ~/ 1000,
               expireAfterSec: expirySec,
@@ -526,7 +528,7 @@ class PdkPayjoinDatasource {
     final updatedModel = receiverModel.copyWith(
       receiver: persister.toJson(),
       proposalPsbt: proposalPsbt,
-      txId: (await BitcoinTx.fromPsbt(proposalPsbt)).txid,
+      txId: _codec.decodePsbt(proposalPsbt).txid,
     );
 
     _log.fine(
@@ -998,8 +1000,10 @@ class PdkPayjoinDatasource {
         persister: persister,
       );
       final originalTxBytes = maybeInputsOwned.extractTxToScheduleBroadcast();
-      final originalTx = await BitcoinTx.fromBytes(originalTxBytes);
-      final amountSat = await originalTx.getAmountReceived(
+      final originalTx = _codec.decodeTransaction(originalTxBytes);
+      final amountSat = amountReceived(
+        originalTx,
+        codec: _codec,
         address: receiverModel.address,
         isTestnet: receiverModel.isTestnet,
       );
@@ -1085,7 +1089,7 @@ class PdkPayjoinDatasource {
         return const DirectoryPollResult(DirectoryPollOutcome.empty);
       }
 
-      final txId = (await BitcoinTx.fromPsbt(proposalPsbt)).txid;
+      final txId = _codec.decodePsbt(proposalPsbt).txid;
       _pollRecovered(senderModel, PayjoinLogRole.sender);
       return DirectoryPollResult.found(
         senderModel.copyWith(
@@ -1277,7 +1281,7 @@ class _IsScriptOwned implements IsScriptOwned {
 ///
 /// The crate hands an OutPoint rather than a script precisely so the answer
 /// cannot be steered by the sender's PSBT — see
-/// PayjoinWalletPort.createOutpointOwnershipChecker.
+/// PayjoinWalletOwnership.ownsOutpoint.
 class _IsInputOwned implements IsInputOwned {
   final bool Function(Outpoint) _fn;
   _IsInputOwned(this._fn);

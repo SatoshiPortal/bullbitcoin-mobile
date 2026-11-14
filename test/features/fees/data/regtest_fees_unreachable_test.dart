@@ -1,0 +1,53 @@
+import 'dart:io';
+
+import 'package:bb_mobile/core/electrum/data/electrum_socket_connector.dart';
+import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_connection.dart';
+import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_status.dart';
+import 'package:bb_mobile/features/electrum_settings/data/server_status_adapter.dart';
+import 'package:bb_mobile/features/electrum_settings/domain/electrum_server_network.dart';
+import 'package:bb_mobile/features/fees/data/regtest_fees_datasource.dart';
+import 'package:flutter_test/flutter_test.dart';
+
+/// A loopback URL nothing listens on.
+Future<String> _closedUrl() async {
+  final socket = await ServerSocket.bind(InternetAddress.loopbackIPv4, 0);
+  final port = socket.port;
+  await socket.close();
+  return 'tcp://127.0.0.1:$port';
+}
+
+// Sync reports these failures as values; the app's owners must turn them into
+// what their callers expect, never into an Error.
+void main() {
+  test('regtest fees from an unreachable server throw an Exception, so the '
+      'next server is tried', () async {
+    final connection = ElectrumConnection(
+      url: await _closedUrl(),
+      retry: 0,
+      timeout: 2,
+      stopGap: 20,
+      validateDomain: false,
+      isCustom: true,
+    );
+    await expectLater(
+      const RegtestFeesDatasource().fetch(connection),
+      throwsA(isA<Exception>()),
+    );
+  });
+
+  test(
+    'the Bitcoin probe of an unreachable server reports it offline',
+    () async {
+      final adapter = ServerStatusAdapter(const ElectrumSocketConnector());
+      expect(
+        await adapter.checkElectrum(
+          url: await _closedUrl(),
+          network: ElectrumServerNetwork.bitcoinRegtest,
+          validateDomain: false,
+          timeout: 2,
+        ),
+        ElectrumServerStatus.offline,
+      );
+    },
+  );
+}

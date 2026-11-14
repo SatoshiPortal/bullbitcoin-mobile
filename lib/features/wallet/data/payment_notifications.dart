@@ -12,62 +12,65 @@ final class PaymentNotifications {
   static const channelId = 'bull_wallet_payments';
   static const outboxFilename = 'notification_outbox.sqlite';
 
-  static SqliteNotificationOutbox openOutbox(String documents) =>
-      SqliteNotificationOutbox(databasePath: p.join(documents, outboxFilename));
-
   static AppLocalizations localization(Language? language) =>
       lookupAppLocalizations(language?.locale ?? const Locale('en'));
 
   static NotificationsFacade create(
-    SqliteNotificationOutbox outbox,
+    NotificationStoreRepository outbox,
     Language? language,
-  ) => NotificationsFacade(
-    outbox: outbox,
-    gateway: FlutterLocalNotificationGateway(
-      channelId: channelId,
-      // A tap opens the app; no authenticated destination consumer is wired.
-      emitDestinations: false,
-      channelName: localization(language).receivePaymentReceived,
-      androidIconResource: 'ic_launcher_foreground',
-    ),
-  );
+  ) => NotificationsFacade(outbox: outbox, gateway: gateway(language));
 
-  /// Notification storage and the platform plugin are optional to native sync.
+  /// The payment channel. A tap opens the app: no notification carries a
+  /// destination.
+  static LocalNotificationPort gateway(Language? language) =>
+      localNotifications(
+        channelId: channelId,
+        channelName: localization(language).receivePaymentReceived,
+        androidIconResource: 'ic_launcher_foreground',
+      );
+
+  /// Notification storage and the platform plugin are optional to native
+  /// sync. The store is never created nor migrated here: a missing, older or
+  /// newer store leaves this run without notifications.
   static Future<NotificationsFacade?> initializeBackground(
     String documents,
     Language? language,
     BackgroundTaskResources resources,
   ) async {
-    SqliteNotificationOutbox? outbox;
-    var retained = false;
-    try {
-      outbox = openOutbox(documents);
-      final notifications = create(outbox, language);
-      if (await notifications.initialize() case Err()) {
-        log.warning(
-          'Background notifications unavailable category=initialization',
-        );
+    final NotificationStoreRepository outbox;
+    switch (openExistingNotificationStore(p.join(documents, outboxFilename))) {
+      case Ok(:final value):
+        outbox = value;
+      case Err():
+        log.warning('Background notifications unavailable category=storage');
         return null;
-      }
-      resources.onClose(outbox.dispose);
-      retained = true;
-      log.fine('Background notifications ready');
-      return notifications;
-    } on Exception {
-      log.warning('Background notifications unavailable category=storage');
-      return null;
-    } finally {
-      if (!retained) outbox?.dispose();
     }
+    resources.onClose(outbox.close);
+    final notifications = create(outbox, language);
+    if (await notifications.initialize() case Err()) {
+      log.warning(
+        'Background notifications unavailable category=initialization',
+      );
+      return null;
+    }
+    log.fine('Background notifications ready');
+    return notifications;
   }
 
-  static NotificationCopyBuilder copy(Language? language) {
+  /// The localized text of an announcement of [count] new payments.
+  static ({String title, String body}) Function(int count) copy(
+    Language? language,
+  ) {
     final localized = localization(language);
-    return (count, chain) => (
+    return (count) => (
       title: localized.receivePaymentReceived,
       body: localized.backgroundPaymentCount(count),
     );
   }
+}
+
+final class PaymentNotificationStoreUnavailable implements Exception {
+  const PaymentNotificationStoreUnavailable();
 }
 
 /// One app-owned outbox, with retry after transient startup failures.
@@ -75,7 +78,7 @@ final class PaymentNotificationStore {
   final Future<String> Function() _documents;
   final Future<Language?> Function() _language;
   Future<NotificationsFacade>? _opening;
-  SqliteNotificationOutbox? _outbox;
+  NotificationStoreRepository? _outbox;
 
   PaymentNotificationStore(this._documents, this._language);
 
@@ -95,7 +98,13 @@ final class PaymentNotificationStore {
   Future<NotificationsFacade> _open() async {
     final documents = await _documents();
     final language = await _language();
-    final outbox = PaymentNotifications.openOutbox(documents);
+    // The foreground is the only creator of the store.
+    final outbox = switch (openForegroundNotificationStore(
+      p.join(documents, PaymentNotifications.outboxFilename),
+    )) {
+      Ok(:final value) => value,
+      Err() => throw const PaymentNotificationStoreUnavailable(),
+    };
     _outbox = outbox;
     return PaymentNotifications.create(outbox, language);
   }
@@ -104,7 +113,7 @@ final class PaymentNotificationStore {
     try {
       await _opening;
     } finally {
-      _outbox?.dispose();
+      await _outbox?.close();
       _outbox = null;
       _opening = null;
     }

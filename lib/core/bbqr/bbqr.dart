@@ -4,9 +4,10 @@ import 'package:bb_mobile/core/bbqr/bbqr_options.dart';
 import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/utils/bitcoin_tx.dart';
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bull_sdk/bdk.dart' as bdk;
 import 'package:convert/convert.dart';
 import 'package:bull_sdk/bbqr.dart' as bbqr;
+import 'package:primitives/primitives.dart' show Err, Ok;
+import 'package:sync/sync.dart' show canonicalBitcoinPsbt;
 
 enum TxFormat { psbt, hex }
 
@@ -99,10 +100,10 @@ class Bbqr {
   }
 
   static Future<List<String>> splitPsbt(String psbt) async {
-    // check if the PSBT is valid, will throw if not
-    final parsedPsbt = bdk.Psbt(psbtBase64: psbt);
-    final validPstb = parsedPsbt.serialize();
-    final psbtBytes = base64.decode(validPstb);
+    final psbtBytes = switch (canonicalBitcoinPsbt(psbt)) {
+      Ok(:final value) => base64.decode(value),
+      Err() => throw const FormatException('PSBT rejected by the decoder'),
+    };
 
     // The more we split the easier it is to scan the QR code.
     var minSplitNumber = BigInt.from(psbtBytes.length ~/ 1000);

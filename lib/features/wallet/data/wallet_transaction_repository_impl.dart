@@ -1,7 +1,6 @@
+import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
-import 'package:bb_mobile/features/wallet/data/bdk_wallet_datasource.dart';
-import 'package:bb_mobile/features/wallet/data/lwk_wallet_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/mappers/transaction_input_mapper.dart';
 import 'package:bb_mobile/core/wallet/data/mappers/transaction_output_mapper.dart';
@@ -15,17 +14,15 @@ import 'package:bb_mobile/features/labels/labels_facade.dart';
 class WalletTransactionRepositoryImpl implements WalletTransactionRepository {
   final WalletMetadataDatasource _walletMetadataDatasource;
   final LabelsFacade _labelsFacade;
-  final BdkWalletDatasource _bdkWalletTransactionDatasource;
-  final LwkWalletDatasource _lwkWalletTransactionDatasource;
+  final SyncWalletValuesDatasource _values;
   final Future<void> Function(WalletMetadataModel) _synchronize;
 
   WalletTransactionRepositoryImpl({
     required this._walletMetadataDatasource,
     required this._labelsFacade,
-    required this._bdkWalletTransactionDatasource,
-    required this._lwkWalletTransactionDatasource,
+    required SyncWalletValuesDatasource walletValuesDatasource,
     required this._synchronize,
-  });
+  }) : _values = walletValuesDatasource;
 
   @override
   Future<List<WalletTransaction>> getWalletTransactions({
@@ -72,15 +69,10 @@ class WalletTransactionRepositoryImpl implements WalletTransactionRepository {
   }) async {
     final walletTransactionLists = await Future.wait(
       walletModels.map((walletModel) async {
-        final walletTransactionModels = walletModel is PublicBdkWalletModel
-            ? await _bdkWalletTransactionDatasource.getTransactions(
-                wallet: walletModel,
-                toAddress: toAddress,
-              )
-            : await _lwkWalletTransactionDatasource.getTransactions(
-                wallet: walletModel,
-                toAddress: toAddress,
-              );
+        final walletTransactionModels = await _values.getTransactions(
+          wallet: walletModel,
+          toAddress: toAddress,
+        );
 
         if (txId != null) {
           walletTransactionModels.retainWhere(

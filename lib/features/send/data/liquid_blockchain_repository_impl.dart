@@ -1,35 +1,38 @@
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/core/blockchain/data/datasources/lwk_liquid_blockchain_datasource.dart';
 import 'package:bb_mobile/core/blockchain/domain/repositories/liquid_blockchain_repository.dart';
-import 'package:bb_mobile/core/electrum/domain/ports/electrum_servers_port.dart';
-import 'package:bb_mobile/features/electrum_settings/domain/electrum_server_network.dart';
+import 'package:bb_mobile/features/send/data/broadcast_failure_mapper.dart';
+import 'package:bb_mobile/features/send/domain/broadcast_failure.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
+import 'package:primitives/primitives.dart' show Err, LiquidNetwork, Ok;
+import 'package:sync/sync.dart'
+    show WalletConnectionPort, broadcastLiquidTransaction;
 
+/// Broadcasts through sync, on the servers [WalletConnectionPort] selects.
 class LiquidBlockchainRepositoryImpl implements LiquidBlockchainRepository {
-  final LwkLiquidBlockchainDatasource _blockchain;
-  final ElectrumServersPort _serversPort;
+  final WalletConnectionPort _connections;
 
-  const LiquidBlockchainRepositoryImpl({
-    required LwkLiquidBlockchainDatasource blockchainDatasource,
-    required this._serversPort,
-  }) : _blockchain = blockchainDatasource;
+  const LiquidBlockchainRepositoryImpl({required this._connections});
 
+  /// Throws [CategorizedBroadcastException] when the broadcast fails.
   @override
   Future<String> broadcastTransaction({
     required String signedPset,
     required Network network,
-  }) {
-    return _serversPort.runWithFallback<String>(
+  }) async {
+    final result = await broadcastLiquidTransaction(
+      signedPset,
       network: switch (network) {
-        Network.liquidMainnet => ElectrumServerNetwork.liquidMainnet,
-        Network.liquidTestnet => ElectrumServerNetwork.liquidTestnet,
-        Network.liquidRegtest => ElectrumServerNetwork.liquidRegtest,
+        Network.liquidMainnet => LiquidNetwork.mainnet,
+        Network.liquidTestnet => LiquidNetwork.testnet,
+        Network.liquidRegtest => LiquidNetwork.regtest,
         _ => throw const UnsupportedNetworkException(),
       },
-      operation: (connection) => _blockchain.broadcastTransaction(
-        signedPset: signedPset,
-        network: network,
-        electrumServerUrl: connection.url,
-      ),
+      connections: _connections,
     );
+    return switch (result) {
+      Ok(:final value) => value,
+      Err(:final failure) => throw CategorizedBroadcastException(
+        broadcastFailureCategory(failure),
+      ),
+    };
   }
 }

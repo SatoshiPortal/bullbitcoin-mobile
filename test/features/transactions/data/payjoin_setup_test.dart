@@ -4,7 +4,10 @@ import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:primitives/primitives.dart';
 import 'package:secrets/secrets.dart';
+import 'package:sync/sync.dart'
+    show InputReservation, InputReservationPort, SyncFailure;
 
 class _Database extends Mock implements SqliteDatabase {}
 
@@ -42,4 +45,23 @@ void main() {
       },
     );
   }
+
+  test('sync reads no reservation while Payjoin storage cannot open', () async {
+    final locator = GetIt.asNewInstance();
+    addTearDown(locator.reset);
+    locator.registerLazySingleton<Secrets>(
+      () => throw StateError('storage unavailable'),
+    );
+    PayjoinSetup.setup(
+      locator,
+      _Database(),
+      'unused.sqlite',
+      startRecovery: false,
+    );
+
+    final result = await locator<InputReservationPort>().reservations();
+
+    expect(result, isA<Err<List<InputReservation>, SyncFailure>>());
+    await locator<PayjoinLifecycle>().dispose();
+  });
 }

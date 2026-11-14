@@ -2,11 +2,8 @@ import 'dart:async';
 
 import 'package:bb_mobile/features/wallet/data/broadcast_observation_follow_up.dart';
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart'
-    show
-        BitcoinBroadcastReceipt,
-        BitcoinSpendStatus,
-        WalletSpendBlockedFailure,
-        WalletSpendFailure;
+    show BitcoinSpendStatus, SignedPset, SignedPsbt, SpendReceipt, SyncFailure;
+import 'package:sync/sync.dart' show SyncSpendBlockedFailure;
 import 'package:fake_async/fake_async.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
@@ -201,28 +198,34 @@ void main() {
   });
 
   group('wrap', () {
-    test('an accepted broadcast starts the follow-up, unchanged', () {
+    test('an accepted Bitcoin broadcast starts the follow-up, unchanged', () {
       fakeAsync((fake) {
         final h = _Harness(fake);
         var broadcasts = 0;
-        const receipt = BitcoinBroadcastReceipt('txid', durable: true);
-        final wrapped = h.followUp.wrap((walletId, network, send) async {
+        const receipt = SpendReceipt('txid', durable: true, guarded: true);
+        final wrapped = h.followUp.wrap((
+          walletId,
+          transaction, {
+          required network,
+          built,
+          owner,
+          replacing,
+        }) async {
           broadcasts++;
-          await send();
-          return const Ok<BitcoinBroadcastReceipt, WalletSpendFailure>(receipt);
+          return const Ok<SpendReceipt, SyncFailure>(receipt);
         });
-        Result<BitcoinBroadcastReceipt, WalletSpendFailure>? result;
+        Result<SpendReceipt, SyncFailure>? result;
         unawaited(
           wrapped(
             _wallet,
-            BitcoinNetwork.testnet,
-            () async => 'txid',
+            const SignedPsbt('psbt'),
+            network: BitcoinNetwork.testnet,
           ).then((value) => result = value),
         );
         fake.elapse(const Duration(minutes: 5));
         expect(
           result,
-          isA<Ok<BitcoinBroadcastReceipt, WalletSpendFailure>>().having(
+          isA<Ok<SpendReceipt, SyncFailure>>().having(
             (ok) => ok.value,
             'receipt',
             same(receipt),
@@ -237,22 +240,55 @@ void main() {
       fakeAsync((fake) {
         final h = _Harness(fake);
         final wrapped = h.followUp.wrap(
-          (walletId, network, send) async =>
-              const Err<BitcoinBroadcastReceipt, WalletSpendFailure>(
-                WalletSpendBlockedFailure(BitcoinSpendStatus.pending),
-              ),
+          (
+            walletId,
+            transaction, {
+            required network,
+            built,
+            owner,
+            replacing,
+          }) async => const Err<SpendReceipt, SyncFailure>(
+            SyncSpendBlockedFailure(BitcoinSpendStatus.pending),
+          ),
         );
-        Result<BitcoinBroadcastReceipt, WalletSpendFailure>? result;
+        Result<SpendReceipt, SyncFailure>? result;
         unawaited(
           wrapped(
             _wallet,
-            BitcoinNetwork.testnet,
-            () async => 'txid',
+            const SignedPsbt('psbt'),
+            network: BitcoinNetwork.testnet,
           ).then((value) => result = value),
         );
         fake.elapse(const Duration(minutes: 5));
         expect(result, isA<Err>());
         expect(h.statuses, isEmpty);
+        expect(h.polls, isEmpty);
+      });
+    });
+
+    test('Liquid has no guard to wait for: nothing starts', () {
+      fakeAsync((fake) {
+        final h = _Harness(fake);
+        final wrapped = h.followUp.wrap(
+          (
+            walletId,
+            transaction, {
+            required network,
+            built,
+            owner,
+            replacing,
+          }) async => const Ok<SpendReceipt, SyncFailure>(
+            SpendReceipt('txid', durable: false, guarded: false),
+          ),
+        );
+        unawaited(
+          wrapped(
+            _wallet,
+            const SignedPset('pset'),
+            network: LiquidNetwork.testnet,
+          ),
+        );
+        fake.elapse(const Duration(minutes: 5));
         expect(h.polls, isEmpty);
       });
     });
