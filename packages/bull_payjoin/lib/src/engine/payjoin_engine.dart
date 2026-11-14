@@ -395,7 +395,12 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       // the original on its own. Both are no-ops when already armed. A row
       // that is not this attempt's (a retry whose replacement failed leaves
       // the expired one) is left alone.
-      final stored = await _localPayjoinDatasource.fetchSender(bip21);
+      PayjoinSenderModel? stored;
+      try {
+        stored = await _localPayjoinDatasource.fetchSender(bip21);
+      } catch (_) {
+        stored = null;
+      }
       if (stored != null &&
           !stored.isExpired &&
           !stored.isCompleted &&
@@ -409,7 +414,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
         );
         _pdkPayjoinDatasource.startListeningForProposal(stored);
         _log.fine(
-          code: api.PayjoinLogCode.sessionResumed,
+          code: api.PayjoinLogCode.senderKeptAfterPostFailure,
           role: api.PayjoinLogRole.sender,
           sessionRef: stored.toEntity().logRef,
         );
