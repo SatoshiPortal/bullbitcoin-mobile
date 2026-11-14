@@ -13,6 +13,7 @@ import '../../domain/transaction_sync_failure.dart';
 import '../../domain/wallet_key.dart';
 import '../../domain/wallet_revision.dart';
 import '../lease_diagnostics.dart';
+import 'datasources/native_store_errors.dart';
 import 'native_write_session.dart';
 import '../datasources/revision_store_datasource.dart';
 import '../sqlite_wallet_revision_reader.dart';

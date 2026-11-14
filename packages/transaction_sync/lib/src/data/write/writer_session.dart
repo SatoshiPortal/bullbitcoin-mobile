@@ -12,6 +12,7 @@ import '../../domain/wallet_revision.dart';
 import '../datasources/spend_gate_store_datasource.dart';
 import '../lease_diagnostics.dart';
 import '../native_store_paths.dart';
+import 'datasources/native_store_errors.dart';
 import 'native_write_session.dart';
 import '../datasources/revision_store_datasource.dart';
 import '../sqlite_wallet_revision_reader.dart';

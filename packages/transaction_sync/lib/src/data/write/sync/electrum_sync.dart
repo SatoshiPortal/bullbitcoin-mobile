@@ -5,9 +5,7 @@ import 'dart:isolate';
 import '../../writer_diagnostics.dart';
 
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bull_sdk/bdk.dart' as bdk;
 import 'package:bull_sdk/bull_sdk.dart' show BullSdk;
-import 'package:bull_sdk/lwk.dart' as lwk;
 import 'package:flutter/foundation.dart';
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
@@ -26,7 +24,10 @@ import '../../../domain/transaction_sync_failure.dart';
 import '../../../domain/public_wallet_descriptor.dart';
 import '../../../domain/ports/wallet_connection_port.dart';
 import '../../../domain/wallet_key.dart';
-import '../datasources/electrum_cache_datasource.dart';
+import '../datasources/bdk_electrum_datasource.dart';
+import 'bitcoin_sync_pass.dart';
+import 'liquid_sync_pass.dart';
+import 'sync_pass.dart';
 import 'payment_observation.dart';
 
 /// One Electrum operation inside the writer lease. Headless callers cannot provision or reconcile.
@@ -190,7 +191,6 @@ final class ElectrumSync {
         return Err(failure);
     }
     var retryable = false;
-    var warnedLiquidProxy = false;
     final events = ReceivePort();
     final subscription = events.listen((message) {
       if (message case (WriterLogLevel level, String text)) {
@@ -204,18 +204,10 @@ final class ElectrumSync {
         network: descriptor.key.network,
         mayRetry: (_) => retryable,
         operation: (connection) async {
-          if (descriptor is LiquidWalletDescriptor &&
-              connection.socks5?.isNotEmpty == true &&
-              !warnedLiquidProxy) {
-            warnedLiquidProxy = true;
-            log.warning(
-              'Liquid sync cannot honor SOCKS setting; connecting directly',
-            );
-          }
           onConnection(connection);
           final attempt = await compute(
             _performSync,
-            _SyncParams(
+            SyncParams(
               descriptor,
               root,
               connection,
@@ -248,50 +240,11 @@ final class ElectrumSync {
   }
 }
 
-final class _SyncParams {
-  final PublicWalletDescriptor descriptor;
-  final String root;
-  final WalletConnection connection;
-  final bool discover;
-  final int generation;
-  final SendPort diagnostics;
-  final bool headless;
-  final bool allowInitialScan;
-  final bool observePayments;
-  final int runId;
-
-  const _SyncParams(
-    this.descriptor,
-    this.root,
-    this.connection,
-    this.discover,
-    this.generation,
-    this.diagnostics,
-    this.headless,
-    this.allowInitialScan,
-    this.observePayments,
-    this.runId,
-  );
-
-  void observationWarning(String message) =>
-      diagnostics.send((WriterLogLevel.warning, message));
-}
-
-final class _Attempt {
-  final Result<SyncCompletion, TransactionSyncFailure> result;
-  final bool retryable;
-
-  /// Cache counts for the sync log line; never part of the public completion.
-  final String? cacheDiagnostics;
-
-  const _Attempt(this.result, {required this.retryable, this.cacheDiagnostics});
-}
-
-Future<_Attempt> _performSync(_SyncParams params) async {
+Future<SyncPassOutcome> _performSync(SyncParams params) async {
   final key = params.descriptor.key;
   final failure = nativeDescriptorFailure(params.descriptor);
   if (failure != null) {
-    return _Attempt(
+    return SyncPassOutcome(
       Err<SyncCompletion, TransactionSyncFailure>(failure),
       retryable: false,
     );
@@ -303,22 +256,23 @@ Future<_Attempt> _performSync(_SyncParams params) async {
       ? Directory(path).existsSync()
       : File(path).existsSync();
   if (!exists) {
-    return _Attempt(
+    return SyncPassOutcome(
       const Err<SyncCompletion, TransactionSyncFailure>(
         TransactionSyncNotFoundFailure(),
       ),
       retryable: false,
     );
   }
-  bdk.ElectrumClient? probe;
+  BdkElectrumDatasource? probe;
   try {
-    probe = _connect(
+    // ⚠️ Liquid probes directly, like the LWK sync that follows: no Tor.
+    probe = BdkElectrumDatasource.connect(
       params.connection,
       direct: params.descriptor is LiquidWalletDescriptor,
     );
     probe.ping();
   } on Exception {
-    return _Attempt(
+    return SyncPassOutcome(
       const Err<SyncCompletion, TransactionSyncFailure>(
         TransactionSyncConnectionFailure(),
       ),
@@ -335,10 +289,7 @@ Future<_Attempt> _performSync(_SyncParams params) async {
       revisionStorePath(params.root),
     );
   } on RevisionStoreUnavailable {
-    return const _Attempt(
-      Err(TransactionSyncStorageFailure()),
-      retryable: false,
-    );
+    return SyncPassOutcome.failed(TransactionSyncStorageFailure());
   }
   final reader = SqliteWalletRevisionReader(revisions);
   final writer = WriterSession.worker(
@@ -360,7 +311,7 @@ Future<_Attempt> _performSync(_SyncParams params) async {
     if (current case Ok(
       value: final state,
     ) when state.lifecycle == WalletLifecycle.deleted) {
-      return _Attempt(
+      return SyncPassOutcome(
         const Err<SyncCompletion, TransactionSyncFailure>(
           TransactionSyncNotFoundFailure(),
         ),
@@ -383,7 +334,7 @@ Future<_Attempt> _performSync(_SyncParams params) async {
             LeaseBusySource.revisionRead,
           _ => LeaseBusySource.schemaGate,
         });
-        return _Attempt(
+        return SyncPassOutcome(
           const Err<SyncCompletion, TransactionSyncFailure>(
             TransactionSyncBusyFailure(),
           ),
@@ -396,7 +347,7 @@ Future<_Attempt> _performSync(_SyncParams params) async {
         existingOnly: true,
       );
       if (initialized case Err(:final failure)) {
-        return _Attempt(
+        return SyncPassOutcome(
           Err<SyncCompletion, TransactionSyncFailure>(failure),
           retryable: false,
         );
@@ -410,14 +361,14 @@ Future<_Attempt> _performSync(_SyncParams params) async {
       reconcile: !params.headless,
       preflight: params.allowInitialScan
           ? null
-          : () => _checkInitialScan(params),
+          : () => checkInitialScan(params),
     );
     return switch (result) {
-      Err(:final failure) => _Attempt(
+      Err(:final failure) => SyncPassOutcome(
         Err<SyncCompletion, TransactionSyncFailure>(failure),
         retryable: false,
       ),
-      Ok(:final value) => _Attempt(
+      Ok(:final value) => SyncPassOutcome(
         operation.result?.map(
               (completion) => completion.committed(value.revision),
             ) ??
@@ -460,7 +411,7 @@ final class _NativeSyncOperation
   bool mayHaveMutated = false;
   @override
   bool hasChanges = true;
-  final _SyncParams params;
+  final SyncParams params;
   Result<SyncCompletion, TransactionSyncFailure>? result;
   String? cacheDiagnostics;
   _NativeSyncOperation(this.params);
@@ -469,538 +420,33 @@ final class _NativeSyncOperation
     PublicWalletDescriptor descriptor, {
     required int? issuedReceiveIndex,
   }) async {
-    final attempt = await _performNativeSync(
-      params,
-      issuedReceiveIndex,
-      () => mayHaveMutated = true,
-      (changed) => hasChanges = changed,
-      _trackedSpends,
-      (evidence) {
-        observedSpendTransactions = evidence.observed;
-        spendTransactionInputs = evidence.inputs;
-        settledSpendTransactions = evidence.settled;
-      },
-    );
+    void reportSpendEvidence(SpendEvidence evidence) {
+      observedSpendTransactions = evidence.observed;
+      spendTransactionInputs = evidence.inputs;
+      settledSpendTransactions = evidence.settled;
+    }
+
+    final attempt = switch (descriptor) {
+      LiquidWalletDescriptor() => await liquidSyncPass(
+        params,
+        descriptor,
+        issuedReceiveIndex,
+        markMutation: () => mayHaveMutated = true,
+      ),
+      BitcoinWalletDescriptor() => await bitcoinSyncPass(
+        params,
+        descriptor,
+        trackedSpends: _trackedSpends,
+        markMutation: () => mayHaveMutated = true,
+        reportChanges: (changed) => hasChanges = changed,
+        reportSpendEvidence: reportSpendEvidence,
+      ),
+    };
     result = attempt.result;
     cacheDiagnostics = attempt.cacheDiagnostics;
     return switch (attempt.result) {
       Ok() => const Ok(null),
       Err(:final failure) => Err(failure),
     };
-  }
-}
-
-Future<_Attempt> _performNativeSync(
-  _SyncParams params,
-  int? issuedReceiveIndex,
-  void Function() markMutation,
-  void Function(bool) reportChanges,
-  Map<String, Set<String>> trackedSpends,
-  void Function(_SpendEvidence) reportSpendEvidence,
-) async {
-  final watch = Stopwatch()..start();
-  final descriptor = params.descriptor;
-  final connection = params.connection;
-  final path = nativeWalletStoragePath(params.root, descriptor.key);
-  if (descriptor is LiquidWalletDescriptor) {
-    if (!Directory(path).existsSync()) {
-      return _Attempt(
-        const Err<SyncCompletion, TransactionSyncFailure>(
-          TransactionSyncNotFoundFailure(),
-        ),
-        retryable: false,
-      );
-    }
-    final network = switch (descriptor.key.network) {
-      LiquidNetwork.mainnet => lwk.LiquidNetwork.mainnet,
-      LiquidNetwork.testnet => lwk.LiquidNetwork.testnet,
-      LiquidNetwork.regtest => lwk.LiquidNetwork.regtest,
-      _ => null,
-    };
-    if (network == null) {
-      return _Attempt(
-        const Err<SyncCompletion, TransactionSyncFailure>(
-          TransactionSyncUnsupportedNetworkFailure(),
-        ),
-        retryable: false,
-      );
-    }
-    lwk.Wallet? wallet;
-    TransactionSyncFailure failure = const TransactionSyncStorageFailure();
-    try {
-      // LWK init may mutate its cache. Never fallback once it has been called.
-      markMutation();
-      wallet = await lwk.Wallet.init(
-        network: network,
-        dbpath: path,
-        descriptor: lwk.Descriptor(
-          ctDescriptor: descriptor.combinedCtDescriptor,
-        ),
-      );
-      failure = const TransactionSyncConnectionFailure();
-      await wallet.sync_(
-        electrumUrl: connection.url,
-        validateDomain: connection.validateDomain,
-        timeout: connection.timeout.inSeconds,
-        stopAtIndex: issuedReceiveIndex,
-      );
-      final syncedWallet = wallet;
-      final incoming = params.observePayments
-          ? await collectPaymentObservation(
-              () async => {
-                for (final tx in await syncedWallet.txs())
-                  if (tx.kind == 'incoming') tx.txid,
-              },
-              warning: params.observationWarning,
-            )
-          : null;
-      return _Attempt(
-        Ok<SyncCompletion, TransactionSyncFailure>(
-          SyncCompletion(
-            SyncMode.liquid,
-            watch.elapsed,
-            incomingTxids: incoming,
-          ),
-        ),
-        retryable: false,
-      );
-    } on lwk.LwkError catch (error) {
-      return _Attempt(
-        Err<SyncCompletion, TransactionSyncFailure>(
-          error.msg.contains('UpdateOnDifferentStatus')
-              ? const TransactionSyncNeedsRepairFailure()
-              : failure,
-        ),
-        retryable: false,
-      );
-    } on Exception {
-      return _Attempt(
-        Err<SyncCompletion, TransactionSyncFailure>(failure),
-        retryable: false,
-      );
-    } finally {
-      wallet?.dispose();
-    }
-  }
-  if (descriptor is! BitcoinWalletDescriptor) {
-    return _Attempt(
-      const Err<SyncCompletion, TransactionSyncFailure>(
-        TransactionSyncInvalidCatalogFailure(),
-      ),
-      retryable: false,
-    );
-  }
-  final kind = switch (descriptor.key.network) {
-    BitcoinNetwork.mainnet => bdk.NetworkKind.main,
-    BitcoinNetwork.testnet || BitcoinNetwork.regtest => bdk.NetworkKind.test,
-    _ => null,
-  };
-  if (kind == null) {
-    return _Attempt(
-      const Err<SyncCompletion, TransactionSyncFailure>(
-        TransactionSyncUnsupportedNetworkFailure(),
-      ),
-      retryable: false,
-    );
-  }
-  if (!File(path).existsSync()) {
-    return _Attempt(
-      const Err<SyncCompletion, TransactionSyncFailure>(
-        TransactionSyncNotFoundFailure(),
-      ),
-      retryable: false,
-    );
-  }
-  bdk.ElectrumClient? client;
-  bdk.Persister? persister;
-  bdk.Wallet? wallet;
-  bdk.Descriptor? external;
-  bdk.Descriptor? internal;
-  ElectrumCacheDatasource? cache;
-  var retryable = true;
-  TransactionSyncFailure failure = const TransactionSyncConnectionFailure();
-  try {
-    client = _connect(connection);
-    // Even opening a persister can initialize tables. Fallback is deliberately limited to connection establishment, before any native store is opened.
-    retryable = false;
-    failure = const TransactionSyncStorageFailure();
-    external = bdk.Descriptor(
-      descriptor: descriptor.externalDescriptor,
-      networkKind: kind,
-    );
-    internal = bdk.Descriptor(
-      descriptor: descriptor.internalDescriptor,
-      networkKind: kind,
-    );
-    persister = bdk.Persister.newSqlite(path: path);
-    wallet = bdk.Wallet.load(
-      descriptor: external,
-      changeDescriptor: internal,
-      persister: persister,
-      lookahead: 25,
-    );
-    final expected = switch (descriptor.key.network) {
-      BitcoinNetwork.mainnet => bdk.Network.bitcoin,
-      BitcoinNetwork.testnet => bdk.Network.testnet,
-      BitcoinNetwork.regtest => bdk.Network.regtest,
-      _ => null,
-    };
-    if (wallet.network() != expected) {
-      return _Attempt(
-        const Err<SyncCompletion, TransactionSyncFailure>(
-          TransactionSyncInvalidCatalogFailure(),
-        ),
-        retryable: false,
-      );
-    }
-    final checkpoint = wallet.latestCheckpoint();
-    final height = checkpoint.height;
-    checkpoint.hash.dispose();
-    final mode = params.discover
-        ? SyncMode.discovery
-        : height == 0
-        ? SyncMode.initialScan
-        : SyncMode.revealedScripts;
-    cache = ElectrumCacheDatasource.open(path);
-    final prefill = cache?.prefill(client, wallet);
-    final batchSize = (connection.stopGap ~/ 4).clamp(50, 1000);
-    // Every pass covers the revealed scripts: the pinned bdk_chain full scan
-    // counts the stop gap from index 0 and can miss a revealed script beyond
-    // last-used + stop gap. Scan passes then add the unrevealed gap window.
-    failure = const TransactionSyncStorageFailure();
-    final before = wallet.staged();
-    final cleanStage = before == null;
-    before?.dispose();
-    failure = const TransactionSyncConnectionFailure();
-    final revealed = _syncRevealedScripts(client, wallet, batchSize);
-    failure = const TransactionSyncStorageFailure();
-    try {
-      markMutation();
-      wallet.applyUpdate(update: revealed);
-    } finally {
-      revealed.dispose();
-    }
-    if (mode != SyncMode.revealedScripts) {
-      failure = const TransactionSyncConnectionFailure();
-      final scanned = _fullScan(
-        client,
-        wallet,
-        stopGap: connection.stopGap,
-        batchSize: batchSize,
-      );
-      failure = const TransactionSyncStorageFailure();
-      try {
-        wallet.applyUpdate(update: scanned);
-      } finally {
-        scanned.dispose();
-      }
-    }
-    // Spend evidence reads this pass's staged deltas from both updates and the
-    // final canonical state, and is reported only once the pass persisted.
-    final evidence = cleanStage ? _spendEvidence(wallet, trackedSpends) : null;
-    reportChanges(wallet.persist(persister: persister));
-    if (evidence != null) reportSpendEvidence(evidence);
-    final parents = cache?.rememberParents(client, wallet);
-    final syncedWallet = wallet;
-    final incoming = params.observePayments
-        ? await collectPaymentObservation(
-            () => _bitcoinIncoming(syncedWallet),
-            warning: params.observationWarning,
-          )
-        : null;
-    return _Attempt(
-      Ok(SyncCompletion(mode, watch.elapsed, incomingTxids: incoming)),
-      retryable: false,
-      cacheDiagnostics: ElectrumCacheDatasource.describe(
-        opened: cache != null,
-        rebuilt: cache?.rebuilt ?? false,
-        prefill: prefill,
-        parents: parents,
-      ),
-    );
-  } on Exception {
-    return _Attempt(
-      Err<SyncCompletion, TransactionSyncFailure>(failure),
-      retryable: retryable,
-    );
-  } finally {
-    cache?.close();
-    wallet?.dispose();
-    persister?.dispose();
-    internal?.dispose();
-    external?.dispose();
-    client?.dispose();
-  }
-}
-
-bdk.Update _syncRevealedScripts(
-  bdk.ElectrumClient client,
-  bdk.Wallet wallet,
-  int batchSize,
-) {
-  final builder = wallet.startSyncWithRevealedSpks();
-  bdk.SyncRequest? request;
-  try {
-    request = builder.build();
-    return client.sync_(
-      request: request,
-      batchSize: batchSize,
-      fetchPrevTxouts: true,
-    );
-  } finally {
-    request?.dispose();
-    builder.dispose();
-  }
-}
-
-bdk.Update _fullScan(
-  bdk.ElectrumClient client,
-  bdk.Wallet wallet, {
-  required int stopGap,
-  required int batchSize,
-}) {
-  final builder = wallet.startFullScan();
-  bdk.FullScanRequest? request;
-  try {
-    request = builder.build();
-    return client.fullScan(
-      request: request,
-      stopGap: stopGap,
-      batchSize: batchSize,
-      fetchPrevTxouts: true,
-    );
-  } finally {
-    request?.dispose();
-    builder.dispose();
-  }
-}
-
-bdk.ElectrumClient _connect(
-  WalletConnection connection, {
-  bool direct = false,
-}) {
-  bdk.ElectrumClient build() => bdk.ElectrumClient(
-    url: electrumClientUrl(connection.url),
-    socks5: !direct && connection.socks5?.isNotEmpty == true
-        ? connection.socks5
-        : null,
-    timeout: connection.timeout.inSeconds.clamp(0, 255),
-    retry: connection.retry.clamp(0, 255),
-    validateDomain: connection.validateDomain,
-  );
-  try {
-    return build();
-  } on bdk.CouldNotCreateConnectionElectrumException catch (error) {
-    if (error.errorMessage.contains('Failed to install CryptoProvider')) {
-      return build();
-    }
-    rethrow;
-  }
-}
-
-Set<String> _bitcoinIncoming(bdk.Wallet wallet) {
-  final incoming = <String>{};
-  for (final tx in wallet.transactions()) {
-    try {
-      final amounts = wallet.sentAndReceived(tx: tx.transaction);
-      try {
-        if (amounts.received.toSat() > amounts.sent.toSat()) {
-          final id = tx.transaction.computeTxid();
-          try {
-            incoming.add(id.toString());
-          } finally {
-            id.dispose();
-          }
-        }
-      } finally {
-        amounts.received.dispose();
-        amounts.sent.dispose();
-      }
-    } finally {
-      tx.transaction.dispose();
-      if (tx.chainPosition case bdk.ConfirmedChainPosition(
-        :final confirmationBlockTime,
-        :final transitively,
-      )) {
-        confirmationBlockTime.blockId.hash.dispose();
-        transitively?.dispose();
-      }
-    }
-  }
-  return incoming;
-}
-
-// Runs under the writer lock, BEFORE recording an intent. A deferred initial
-// scan must leave no pending write and must never initialize an absent store.
-Future<Result<void, TransactionSyncFailure>> _checkInitialScan(
-  _SyncParams params,
-) async {
-  final descriptor = params.descriptor;
-  if (descriptor is! BitcoinWalletDescriptor) return const Ok(null);
-  final path = nativeWalletStoragePath(params.root, descriptor.key);
-  if (!File(path).existsSync()) {
-    return const Err(TransactionSyncNotFoundFailure());
-  }
-  final kind = descriptor.key.network == BitcoinNetwork.mainnet
-      ? bdk.NetworkKind.main
-      : bdk.NetworkKind.test;
-  final external = bdk.Descriptor(
-    descriptor: descriptor.externalDescriptor,
-    networkKind: kind,
-  );
-  final internal = bdk.Descriptor(
-    descriptor: descriptor.internalDescriptor,
-    networkKind: kind,
-  );
-  bdk.Persister? persister;
-  bdk.Wallet? wallet;
-  try {
-    persister = bdk.Persister.newSqlite(path: path);
-    wallet = bdk.Wallet.load(
-      descriptor: external,
-      changeDescriptor: internal,
-      persister: persister,
-      lookahead: 25,
-    );
-    final expected = switch (descriptor.key.network) {
-      BitcoinNetwork.mainnet => bdk.Network.bitcoin,
-      BitcoinNetwork.testnet => bdk.Network.testnet,
-      BitcoinNetwork.regtest => bdk.Network.regtest,
-      _ => null,
-    };
-    if (wallet.network() != expected) {
-      return const Err(TransactionSyncInvalidCatalogFailure());
-    }
-    final checkpoint = wallet.latestCheckpoint();
-    try {
-      return checkpoint.height == 0
-          ? const Err(TransactionSyncInitialScanRequiredFailure())
-          : const Ok(null);
-    } finally {
-      checkpoint.hash.dispose();
-    }
-  } on Exception {
-    return const Err(TransactionSyncStorageFailure());
-  } finally {
-    wallet?.dispose();
-    persister?.dispose();
-    internal.dispose();
-    external.dispose();
-  }
-}
-
-/// BDK requires an explicit transport; Liquid catalog URLs use LWK's host:port.
-@visibleForTesting
-String electrumClientUrl(String url) =>
-    url.contains('://') ? url : 'ssl://$url';
-
-typedef _SpendEvidence = ({
-  Set<String> observed,
-  Map<String, Set<String>> inputs,
-  Set<String> settled,
-});
-
-String _outpoint(bdk.OutPoint outpoint) => '${outpoint.txid}:${outpoint.vout}';
-
-/// Returns the outpoints [tx] spends and frees its native handles.
-Set<String> _takeInputs(bdk.CanonicalTx tx) {
-  final inputs = <String>{};
-  for (final input in tx.transaction.input()) {
-    inputs.add(_outpoint(input.previousOutput));
-    input.previousOutput.txid.dispose();
-    input.scriptSig.dispose();
-  }
-  tx.transaction.dispose();
-  if (tx.chainPosition case bdk.ConfirmedChainPosition(
-    :final confirmationBlockTime,
-    :final transitively,
-  )) {
-    confirmationBlockTime.blockId.hash.dispose();
-    transitively?.dispose();
-  }
-  return inputs;
-}
-
-/// No local insertion is performed. Only advancing server deltas can prove
-/// unconfirmed visibility; canonical confirmation is separate chain evidence.
-/// A tracked spend that left the canonical set is settled, for this pass
-/// only, when a canonical transaction spends one of its recorded inputs and
-/// is confirmed, or is itself a tracked spend observed in this pass. An
-/// eviction is one endpoint's omission: like any absence, it settles nothing.
-_SpendEvidence _spendEvidence(
-  bdk.Wallet wallet,
-  Map<String, Set<String>> tracked,
-) {
-  final observed = <String>{};
-  final inputs = <String, Set<String>>{};
-  final settled = <String>{};
-  if (tracked.isEmpty) {
-    return (observed: observed, inputs: inputs, settled: settled);
-  }
-  final staged = wallet.staged();
-  final positive = <String>{};
-  try {
-    final graph = staged?.txGraphChangeset();
-    if (graph != null) {
-      positive.addAll(graph.lastSeen.keys.map((id) => id.toString()));
-      positive.addAll(graph.anchors.map((anchor) => anchor.txid.toString()));
-      for (final tx in graph.txs) {
-        tx.dispose();
-      }
-      for (final entry in graph.txouts.entries) {
-        entry.key.dispose();
-        entry.value.scriptPubkey.dispose();
-        entry.value.value.dispose();
-      }
-      for (final id in {
-        ...graph.lastSeen.keys,
-        ...graph.firstSeen.keys,
-        ...graph.lastEvicted.keys,
-      }) {
-        id.dispose();
-      }
-      for (final anchor in graph.anchors) {
-        anchor.txid.dispose();
-        anchor.confirmationBlockTime.blockId.hash.dispose();
-      }
-    }
-    final displaced = <String>{};
-    for (final id in tracked.keys) {
-      final txid = bdk.Txid.fromString(hex: id);
-      try {
-        final tx = wallet.getTx(txid: txid);
-        if (tx == null) {
-          if (tracked[id]?.isNotEmpty ?? false) displaced.add(id);
-          continue;
-        }
-        if (positive.contains(id) ||
-            tx.chainPosition is bdk.ConfirmedChainPosition) {
-          observed.add(id);
-        }
-        final spent = _takeInputs(tx);
-        if (tracked[id]?.isEmpty ?? true) inputs[id] = spent;
-      } finally {
-        txid.dispose();
-      }
-    }
-    if (displaced.isNotEmpty) {
-      // Outpoints spent by a confirmed transaction, or by a tracked
-      // replacement this pass observed.
-      final spent = <String>{};
-      for (final tx in wallet.transactions()) {
-        final id = tx.transaction.computeTxid();
-        final confirmed = tx.chainPosition is bdk.ConfirmedChainPosition;
-        final proof = confirmed || observed.contains(id.toString());
-        id.dispose();
-        final outpoints = _takeInputs(tx);
-        if (proof) spent.addAll(outpoints);
-      }
-      settled.addAll(
-        displaced.where((id) => tracked[id]?.any(spent.contains) ?? false),
-      );
-    }
-    return (observed: observed, inputs: inputs, settled: settled);
-  } finally {
-    staged?.dispose();
   }
 }

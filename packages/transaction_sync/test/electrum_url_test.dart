@@ -1,5 +1,5 @@
 import 'package:test/test.dart';
-import 'package:transaction_sync/src/data/write/sync/electrum_sync.dart';
+import 'package:transaction_sync/src/data/write/datasources/bdk_electrum_datasource.dart';
 
 void main() {
   test('LWK host:port URLs use TLS for the BDK probe', () {

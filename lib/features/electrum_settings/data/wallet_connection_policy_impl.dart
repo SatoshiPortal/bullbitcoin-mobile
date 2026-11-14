@@ -47,6 +47,7 @@ final class WalletConnectionPolicyImpl implements WalletConnectionPort {
               retry: connection.retry,
               stopGap: connection.stopGap,
               validateDomain: connection.validateDomain,
+              // ⚠️ Liquid never goes through Tor: LWK has no SOCKS option.
               socks5: network is LiquidNetwork ? null : connection.socks5,
             ),
           );

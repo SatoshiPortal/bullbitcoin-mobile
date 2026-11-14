@@ -1,3 +1,5 @@
+import 'package:transaction_sync/src/data/write/datasources/bdk_electrum_datasource.dart';
+import 'package:transaction_sync/src/data/write/sync/bitcoin_sync_pass.dart';
 import 'package:transaction_sync/src/data/read/persisted_wallet_readiness.dart';
 import 'package:transaction_sync/src/data/datasources/spend_gate_store_datasource.dart';
 import 'package:transaction_sync/src/data/native_store_paths.dart';
@@ -133,6 +135,7 @@ void _scan(ElectrumFixture fixture, String path, {required bool cached}) {
     retry: 0,
     validateDomain: false,
   );
+  final electrum = BdkElectrumDatasource(client);
   try {
     open.wallet.revealAddressesTo(
       keychain: bdk.KeychainKind.external_,
@@ -142,7 +145,7 @@ void _scan(ElectrumFixture fixture, String path, {required bool cached}) {
       keychain: bdk.KeychainKind.internal,
       index: 0,
     );
-    cache?.prefill(client, open.wallet);
+    if (cache != null) prefillFromCache(cache, electrum, open.wallet);
     final update = client.fullScan(
       request: open.wallet.startFullScan().build(),
       stopGap: 20,
@@ -151,7 +154,7 @@ void _scan(ElectrumFixture fixture, String path, {required bool cached}) {
     );
     open.wallet.applyUpdate(update: update);
     open.wallet.persist(persister: open.persister);
-    cache?.rememberParents(client, open.wallet);
+    if (cache != null) rememberParents(cache, electrum, open.wallet);
   } finally {
     client.dispose();
     cache?.close();

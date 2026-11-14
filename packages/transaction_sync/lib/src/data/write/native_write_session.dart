@@ -7,6 +7,9 @@ import 'package:primitives/primitives.dart';
 import '../../domain/public_wallet_descriptor.dart';
 import '../../domain/wallet_key.dart';
 import '../native_store_paths.dart';
+import 'datasources/bdk_wallet_store_datasource.dart';
+import 'datasources/lwk_wallet_store_datasource.dart';
+import 'datasources/native_store_errors.dart';
 
 /// Internal testing seam. Never export native handles through the public API.
 abstract interface class NativeWriteSession {
@@ -40,74 +43,18 @@ final class SdkWriteSessions implements NativeWriteSessions {
     final path = nativeWalletStoragePath(documentsDirectory, descriptor.key);
     switch (descriptor) {
       case BitcoinWalletDescriptor():
-        final exists = File(path).existsSync();
-        if (!create && !exists) throw const NativeStoreMissing();
-        final network = switch (descriptor.key.network) {
-          BitcoinNetwork.mainnet => bdk.Network.bitcoin,
-          BitcoinNetwork.testnet => bdk.Network.testnet,
-          BitcoinNetwork.regtest => bdk.Network.regtest,
-          _ => throw const NativeNetworkUnsupported(),
-        };
-        if (!exists) {
-          // Publish a closed database: a killed create may leave a valid
-          // SQLite persister with no wallet. Only staging may be discarded.
-          final staging = '$path.creating';
-          _deleteSqlite(staging);
-          _createBitcoin(staging, descriptor, network);
-          File(staging).renameSync(path);
+        if (!File(path).existsSync()) {
+          if (!create) throw const NativeStoreMissing();
+          BdkWalletStoreDatasource.create(path, descriptor);
         }
-        final kind = network == bdk.Network.bitcoin
-            ? bdk.NetworkKind.main
-            : bdk.NetworkKind.test;
-        final external = bdk.Descriptor(
-          descriptor: descriptor.externalDescriptor,
-          networkKind: kind,
-        );
-        bdk.Descriptor? internal;
-        bdk.Persister? persister;
-        try {
-          internal = bdk.Descriptor(
-            descriptor: descriptor.internalDescriptor,
-            networkKind: kind,
-          );
-          persister = bdk.Persister.newSqlite(path: path);
-          final wallet = bdk.Wallet.load(
-            descriptor: external,
-            changeDescriptor: internal,
-            persister: persister,
-            lookahead: 25,
-          );
-          if (wallet.network() != network) {
-            wallet.dispose();
-            throw const NativeNetworkUnsupported();
-          }
-          return _BitcoinSession(wallet, persister);
-        } on Object {
-          persister?.dispose();
-          rethrow;
-        } finally {
-          external.dispose();
-          internal?.dispose();
-        }
+        return _BitcoinSession(BdkWalletStoreDatasource.load(path, descriptor));
       case LiquidWalletDescriptor():
         if (!create && !Directory(path).existsSync()) {
           throw const NativeStoreMissing();
         }
-        final network = switch (descriptor.key.network) {
-          LiquidNetwork.mainnet => lwk.LiquidNetwork.mainnet,
-          LiquidNetwork.testnet => lwk.LiquidNetwork.testnet,
-          LiquidNetwork.regtest => lwk.LiquidNetwork.regtest,
-          _ => throw const NativeNetworkUnsupported(),
-        };
-        final wallet = await lwk.Wallet.init(
-          network: network,
-          dbpath: path,
-          descriptor: lwk.Descriptor(
-            ctDescriptor: descriptor.combinedCtDescriptor,
-          ),
-        );
+        final store = await LwkWalletStoreDatasource.open(path, descriptor);
         try {
-          final canonical = await wallet.descriptor();
+          final canonical = await store.wallet.descriptor();
           final networkDirectory = switch (descriptor.key.network) {
             LiquidNetwork.mainnet => 'liquid',
             LiquidNetwork.testnet => 'liquid-testnet',
@@ -123,55 +70,11 @@ final class SdkWriteSessions implements NativeWriteSessions {
               FileSystemEntityType.directory) {
             throw const NativeStoreMissing();
           }
-          return _LiquidSession(wallet, relative);
+          return _LiquidSession(store, relative);
         } on Object {
-          wallet.dispose();
+          store.close();
           rethrow;
         }
-    }
-  }
-
-  void _createBitcoin(
-    String path,
-    BitcoinWalletDescriptor descriptor,
-    bdk.Network network,
-  ) {
-    final kind = network == bdk.Network.bitcoin
-        ? bdk.NetworkKind.main
-        : bdk.NetworkKind.test;
-    final external = bdk.Descriptor(
-      descriptor: descriptor.externalDescriptor,
-      networkKind: kind,
-    );
-    bdk.Descriptor? internal;
-    bdk.Persister? persister;
-    bdk.Wallet? wallet;
-    try {
-      internal = bdk.Descriptor(
-        descriptor: descriptor.internalDescriptor,
-        networkKind: kind,
-      );
-      persister = bdk.Persister.newSqlite(path: path);
-      wallet = bdk.Wallet(
-        descriptor: external,
-        changeDescriptor: internal,
-        network: network,
-        persister: persister,
-        lookahead: 25,
-      );
-      wallet.persist(persister: persister);
-    } finally {
-      wallet?.dispose();
-      persister?.dispose();
-      external.dispose();
-      internal?.dispose();
-    }
-  }
-
-  void _deleteSqlite(String path) {
-    for (final suffix in ['', '-journal', '-wal', '-shm']) {
-      final file = File('$path$suffix');
-      if (file.existsSync()) file.deleteSync();
     }
   }
 
@@ -184,34 +87,20 @@ final class SdkWriteSessions implements NativeWriteSessions {
     // hydration during deletion, without cross-library SQLite lock assumptions.
     switch (key.network) {
       case BitcoinNetwork():
-        // The parents sidecar is lane A's disposable cache.
-        for (final base in [path, '$path.creating', '$path.parents.sqlite']) {
-          _deleteSqlite(base);
-        }
+        BdkWalletStoreDatasource.delete(path);
       case LiquidNetwork():
-        final directory = Directory(path);
-        if (directory.existsSync()) directory.deleteSync(recursive: true);
+        LwkWalletStoreDatasource.delete(path);
     }
   }
 }
 
-final class NativeStoreMissing implements Exception {
-  const NativeStoreMissing();
-}
-
-final class NativeNetworkUnsupported implements Exception {
-  const NativeNetworkUnsupported();
-}
-
-bool isLiquidStatusConflict(Object error) =>
-    error is lwk.LwkError && error.msg.contains('UpdateOnDifferentStatus');
-
 final class _BitcoinSession implements NativeWriteSession {
-  final bdk.Wallet _wallet;
-  final bdk.Persister _persister;
+  final BdkWalletStoreDatasource _store;
   Set<int>? _unused;
 
-  _BitcoinSession(this._wallet, this._persister);
+  _BitcoinSession(this._store);
+
+  bdk.Wallet get _wallet => _store.wallet;
 
   @override
   Future<int> firstUnusedIndex() async =>
@@ -258,23 +147,22 @@ final class _BitcoinSession implements NativeWriteSession {
     for (final info in revealed) {
       info.address.dispose();
     }
-    _wallet.persist(persister: _persister);
+    _store.persist();
   }
 
   @override
-  void close() {
-    _wallet.dispose();
-    _persister.dispose();
-  }
+  void close() => _store.close();
 }
 
 final class _LiquidSession implements NativeWriteSession {
-  final lwk.Wallet _wallet;
+  final LwkWalletStoreDatasource _store;
   Set<String>? _used;
 
   final String cachePath;
 
-  _LiquidSession(this._wallet, this.cachePath);
+  _LiquidSession(this._store, this.cachePath);
+
+  lwk.Wallet get _wallet => _store.wallet;
 
   @override
   Future<int> firstUnusedIndex() async {
@@ -305,14 +193,14 @@ final class _LiquidSession implements NativeWriteSession {
   }
 
   @override
-  void close() => _wallet.dispose();
+  void close() => _store.close();
 }
 
 /// Only the SDK session can attest its canonical cache. Test sessions do not
 /// provide a path and therefore cannot authorize production Liquid readers.
 extension NativeWriteSessionIdentity on NativeWriteSession {
   Future<int?> lastIssuedIndex() async => switch (this) {
-    _BitcoinSession(:final _wallet) => _wallet.derivationIndex(
+    _BitcoinSession(:final _store) => _store.wallet.derivationIndex(
       keychain: bdk.KeychainKind.external_,
     ),
     _LiquidSession() => await firstUnusedIndex(),
