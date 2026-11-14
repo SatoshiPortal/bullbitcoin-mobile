@@ -121,6 +121,8 @@ final class WalletProjections {
     int generation,
   ) async {
     if (_closed) return const Err(SyncClosedFailure());
+    // A delete or re-import seen while this load runs invalidates it.
+    final epoch = slot.epoch;
     final state = await _revisions.read(key);
     if (_closed) return const Err(SyncClosedFailure());
     switch (state) {
@@ -152,11 +154,26 @@ final class WalletProjections {
         // load would accept a cache the writer has since moved past.
         final settled = await _revisions.read(key);
         if (_closed) return const Err(SyncClosedFailure());
+        // Nothing is published for a generation a delete or a re-import has
+        // ended, even when the mapping started before it.
+        if (slot.epoch != epoch) return const Err(SyncNotFoundFailure());
+        final WalletRevisionState committed;
+        switch (settled) {
+          case Err(:final failure):
+            if (failure is SyncNotFoundFailure) _fail(slot, failure);
+            return Err(failure);
+          case Ok(:final value)
+              when value.lifecycle == WalletLifecycle.deleted ||
+                  value.stamp.generation != frame.revision.generation:
+            _fail(slot, const SyncNotFoundFailure());
+            return const Err(SyncNotFoundFailure());
+          case Ok(:final value):
+            committed = value;
+        }
         final exact =
             admitted &&
-            settled is Ok<WalletRevisionState, SyncFailure> &&
-            settled.value.lifecycle == WalletLifecycle.active &&
-            settled.value.stamp == frame.revision;
+            committed.lifecycle == WalletLifecycle.active &&
+            committed.stamp == frame.revision;
         if (!identical(frame, slot.frame)) _publish(slot, frame);
         if (frame.revision.generation != generation) {
           return const Err(SyncNotFoundFailure());
@@ -189,6 +206,7 @@ final class WalletProjections {
   }
 
   void _fail(_Slot slot, SyncFailure failure) {
+    slot.epoch++;
     slot.frame = null;
     slot.failure = failure;
     slot.derived.clear();
@@ -304,6 +322,9 @@ final class WalletProjections {
 
 final class _Slot {
   WalletFrame? frame;
+
+  /// Advanced by every invalidation; a load publishes only if it is unchanged.
+  int epoch = 0;
   SyncFailure? failure;
   Future<void> tail = Future.value();
   final derived = <(Keychain, int), DerivedAddress>{};
