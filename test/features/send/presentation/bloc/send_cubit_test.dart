@@ -7008,6 +7008,39 @@ void main() {
       verifyNoExchangeQuote();
     });
 
+    test('going back from confirm drops the swap and its watch', () async {
+      final cubit = buildCubit();
+      addTearDown(cubit.close);
+      stubRoute(SwapRoute.boltz);
+      stubCreate(Ok(boltzSwap()));
+      stubLockupBuild();
+      cubit.setStateForTest(lightningAmountState());
+      await cubit.onAmountConfirmed();
+      expect(cubit.state.lightningSwap, isNotNull);
+
+      cubit.backClicked();
+
+      expect(cubit.state.lightningSwap, isNull);
+      expect(cubit.state.boltzLockupAddress, isNull);
+    });
+
+    test('a new recipient drops the swap before anything is built', () async {
+      final cubit = buildCubit();
+      addTearDown(cubit.close);
+      stubRoute(SwapRoute.boltz);
+      stubCreate(Ok(boltzSwap()));
+      stubLockupBuild();
+      cubit.setStateForTest(lightningAmountState());
+      await cubit.onAmountConfirmed();
+      cubit.backClicked();
+      cubit.backClicked();
+
+      await cubit.onChangedText('bc1qnewrecipientaddress');
+
+      expect(cubit.state.lightningSwap, isNull);
+      expect(cubit.state.boltzLockupAddress, isNull);
+    });
+
     test('Boltz unavailable without the opt-in surfaces a failure', () async {
       final cubit = buildCubit();
       addTearDown(cubit.close);

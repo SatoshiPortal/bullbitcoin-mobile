@@ -382,14 +382,26 @@ class SendCubit extends Cubit<SendState>
   int _startNewPaymentRequestInput() {
     final generation = ++_paymentRequestInputGeneration;
     _invalidateSignedTransaction();
+    _dropBoltzSwap();
     if (state.loadingBestWallet || state.creatingSwap) {
       emit(state.copyWith(loadingBestWallet: false, creatingSwap: false));
     }
     return generation;
   }
 
+  /// A Boltz swap belongs to the recipient, wallet and amount it was created
+  /// for: once any of them changes, its lockup must never be paid. Going
+  /// forward again reuses the pending swap of the same invoice, or creates a
+  /// new one.
+  void _dropBoltzSwap() {
+    if (state.lightningSwap == null && state.chainSwap == null) return;
+    unawaited(_stopWatchingBoltzSwap());
+    emit(state.copyWith(lightningSwap: null, chainSwap: null));
+  }
+
   void backClicked() {
     _invalidateSignedTransaction();
+    if (state.step != SendStep.address) _dropBoltzSwap();
     if (state.step == SendStep.address) {
       emit(
         state.copyWith(step: SendStep.address, amountConfirmedClicked: false),
@@ -873,12 +885,12 @@ class SendCubit extends Cubit<SendState>
         lightningInvoice: null,
         lightningOrder: null,
         lightningQuote: null,
-        chainSwap: null,
         loadingBestWallet: false,
         creatingSwap: false,
         failure: null,
       ),
     );
+    _dropBoltzSwap();
     _invalidateSignedTransaction();
     clearBitcoinFeePreviews();
     _scheduleRecipientPreview();
@@ -1490,7 +1502,7 @@ class SendCubit extends Cubit<SendState>
         case _BoltzChainSendOutcome.stopped:
           return false;
         case _BoltzChainSendOutcome.useExchange:
-          break;
+          _dropBoltzSwap();
       }
       final quoteResult = await _getSendCrossChainQuoteUsecase.execute(
         wallet: wallet,
@@ -4540,7 +4552,10 @@ class SendCubit extends Cubit<SendState>
     final walletGeneration = ++_selectedWalletGeneration;
     final previousSubscription = _selectedWalletSyncingSubscription;
     _selectedWalletSyncingSubscription = null;
-    if (walletChanged) _invalidateSignedTransaction();
+    if (walletChanged) {
+      _invalidateSignedTransaction();
+      _dropBoltzSwap();
+    }
     emit(
       state.copyWith(
         selectedWallet: SendWalletBitcoin(wallet),
