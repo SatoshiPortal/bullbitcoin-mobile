@@ -62,7 +62,8 @@ final class AppPayjoinBlockchainAdapter implements PayjoinBlockchainPort {
         throw const PayjoinSpendBlockedException();
       case Err(failure: SyncBusyFailure()):
         throw const PayjoinSpendBlockedException(busy: true);
-      // Refused before any server was contacted, or no server reachable.
+      // Refused before any server was contacted, or no server reachable
+      // before the send: a connection lost after it is an unknown outcome.
       case Err(failure: SyncConnectionFailure()) ||
           Err(failure: SyncProtectedInputsFailure()) ||
           Err(failure: SyncNotFoundFailure()) ||

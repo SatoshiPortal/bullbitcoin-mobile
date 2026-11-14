@@ -5,14 +5,13 @@ import 'package:bull_sdk/lwk.dart' as lwk;
 
 import '../../domain/sync_failure.dart';
 
-/// Reduces a native broadcast error to a closed vocabulary; the server's text
-/// never leaves this function. Anything not recognized here is an unknown
-/// outcome: the transaction may have been relayed.
+/// Reduces a native broadcast error, raised once the client is connected,
+/// to a closed vocabulary; the server's text never leaves this function. Only
+/// a server reply can be a cause: a connection lost during or after the send
+/// is an unknown outcome, since the transaction may have been relayed. A
+/// connection that could not be made before the send is classified by the
+/// caller.
 SyncFailure bitcoinBroadcastFailure(Object error) => switch (error) {
-  bdk.IoExceptionElectrumException() ||
-  bdk.SharedIoExceptionElectrumException() ||
-  bdk.CouldNotCreateConnectionElectrumException() =>
-    const SyncConnectionFailure(),
   bdk.ProtocolElectrumException(:final errorMessage) => _bitcoinReply(
     errorMessage,
   ),
