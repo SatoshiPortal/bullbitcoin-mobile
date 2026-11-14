@@ -42,18 +42,23 @@ void main() {
     readRevision: (_) async => const Err(TransactionSyncNotFoundFailure()),
   );
 
-  test('a programmer error reaches every waiting caller', () async {
-    final port = _ThrowingPort(StateError('bug'));
-    final sync = engine(port);
-    final finished = sync.finished.first;
-    final first = sync.execute(descriptor);
-    final joined = sync.execute(descriptor);
-    port.release.complete();
-    await expectLater(first, throwsA(isA<StateError>()));
-    await expectLater(joined, throwsA(isA<StateError>()));
-    expect((await finished).key, descriptor.key);
-    expect(sync.isSyncing(), isFalse);
-  });
+  for (final (name, thrown) in [
+    ('a programmer error', StateError('bug')),
+    ('an object neither Exception nor Error', #sentinel),
+  ]) {
+    test('$name reaches every waiting caller', () async {
+      final port = _ThrowingPort(thrown);
+      final sync = engine(port);
+      final finished = sync.finished.first;
+      final first = sync.execute(descriptor);
+      final joined = sync.execute(descriptor);
+      port.release.complete();
+      await expectLater(first, throwsA(same(thrown)));
+      await expectLater(joined, throwsA(same(thrown)));
+      expect((await finished).key, descriptor.key);
+      expect(sync.isSyncing(), isFalse);
+    });
+  }
 
   test('a discovery queued behind a failed pass still runs', () async {
     final port = _ThrowingPort(StateError('bug'));

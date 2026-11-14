@@ -158,6 +158,27 @@ void main() {
     expect(ran, isFalse);
   });
 
+  test('an object neither Exception nor Error escapes the session', () async {
+    expect(await app().create(key, expectedGeneration: 0), isA<Ok>());
+    const sentinel = #sentinel;
+    Object? thrown;
+    StackTrace? trace;
+    try {
+      await worker().sync(
+        key,
+        expectedGeneration: 1,
+        operation: Sync((_) => throw sentinel),
+      );
+    } catch (error, stack) {
+      thrown = error;
+      trace = stack;
+    }
+    expect(thrown, same(sentinel));
+    // Rethrown with the trace of the throwing operation, not a new one.
+    expect(trace.toString(), contains('writer_session_test.dart'));
+    expect(await _admittedElsewhere(dir.path, key), isTrue);
+  });
+
   test('another isolate is excluded until the native step completes', () async {
     expect(await app().create(key, expectedGeneration: 0), isA<Ok>());
     final held = _HeldSync();
