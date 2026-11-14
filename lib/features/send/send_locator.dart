@@ -31,7 +31,8 @@ import 'package:bb_mobile/features/send/domain/usecases/create_send_cross_chain_
 import 'package:bb_mobile/features/send/domain/usecases/create_send_swap_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/detect_bitcoin_string_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/get_send_exchange_rate_usecase.dart';
-import 'package:bb_mobile/features/send/domain/usecases/get_payjoin_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/broadcast_payjoin_original_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/get_adoptable_payjoin_sender_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/get_send_payjoin_enabled_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/verify_exchange_payin_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/get_send_swap_quote_usecase.dart';
@@ -89,8 +90,11 @@ class SendLocator {
     locator.registerFactory<WatchPayjoinUsecase>(
       () => WatchPayjoinUsecase(locator<PayjoinSessions>()),
     );
-    locator.registerFactory<GetPayjoinUsecase>(
-      () => GetPayjoinUsecase(locator<PayjoinSessions>()),
+    locator.registerFactory<GetAdoptablePayjoinSenderUsecase>(
+      () => GetAdoptablePayjoinSenderUsecase(locator<PayjoinSessions>()),
+    );
+    locator.registerFactory<BroadcastPayjoinOriginalUsecase>(
+      () => BroadcastPayjoinOriginalUsecase(locator<PayjoinSender>()),
     );
     locator.registerFactory<DetectBitcoinStringUsecase>(
       () => DetectBitcoinStringUsecase(settings: locator<GetSettingsUsecase>()),
@@ -293,7 +297,10 @@ class SendLocator {
         updatePaidSendSwapUsecase: locator<UpdatePaidSendSwapUsecase>(),
         sendWithPayjoinUsecase: locator<SendWithPayjoinUsecase>(),
         watchPayjoinUsecase: locator<WatchPayjoinUsecase>(),
-        getPayjoinUsecase: locator<GetPayjoinUsecase>(),
+        getAdoptablePayjoinSenderUsecase:
+            locator<GetAdoptablePayjoinSenderUsecase>(),
+        broadcastPayjoinOriginalUsecase:
+            locator<BroadcastPayjoinOriginalUsecase>(),
         retryPayjoinProposalUsecase: locator<RetryPayjoinProposalUsecase>(),
         watchFinishedWalletSyncsUsecase:
             locator<WatchFinishedWalletSyncsUsecase>(),
