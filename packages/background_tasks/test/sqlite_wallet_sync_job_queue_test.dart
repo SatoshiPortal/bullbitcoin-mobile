@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:background_tasks/background_tasks.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
+import 'package:sqlite3/sqlite3.dart';
 import 'package:transaction_sync/transaction_sync.dart';
 
 void main() {
@@ -418,6 +419,88 @@ void main() {
       isEmpty,
     );
     await current.close();
+  });
+  test('a storage failure is not reported as a lost claim', () async {
+    final current = queue();
+    addTearDown(current.close);
+    final claim = (await current.claim([
+      _registration(0),
+    ], chain: WalletSyncChain.bitcoin)).single;
+    final database = sqlite3.open(path);
+    addTearDown(database.dispose);
+    database.execute('DROP TABLE wallet_sync_jobs');
+
+    expect(
+      await current.completeSuccess(claim),
+      isA<Err<void, BackgroundTasksFailure>>().having(
+        (r) => r.failure,
+        'failure',
+        isA<BackgroundTasksStorageFailure>(),
+      ),
+    );
+  });
+
+  group('openExisting', () {
+    Matcher refused(Matcher failure) =>
+        isA<Err<SqliteWalletSyncJobQueueRepository, BackgroundTasksFailure>>()
+            .having((r) => r.failure, 'failure', failure);
+
+    test('opens the queue the foreground created, with its jobs', () async {
+      final created = queue();
+      expect(
+        await created.claim([_registration(0)], chain: WalletSyncChain.bitcoin),
+        hasLength(1),
+      );
+      await created.close();
+      clock.advance(const Duration(minutes: 11));
+
+      final existing = SqliteWalletSyncJobQueueRepository.openExisting(
+        path,
+        clock: clock.call,
+      );
+      expect(
+        existing,
+        isA<Ok<SqliteWalletSyncJobQueueRepository, BackgroundTasksFailure>>(),
+      );
+      if (existing case Ok(:final value)) {
+        addTearDown(value.close);
+        // The expired lease of the first run is reclaimed, not recreated.
+        final claims = await value.claim([
+          _registration(0),
+        ], chain: WalletSyncChain.bitcoin);
+        expect(claims, hasLength(1));
+      }
+    });
+
+    test('never creates a missing queue', () {
+      expect(
+        SqliteWalletSyncJobQueueRepository.openExisting(path),
+        refused(isA<BackgroundTasksStoreUnavailableFailure>()),
+      );
+      expect(File(path).existsSync(), isFalse);
+    });
+
+    for (final version in [0, 2]) {
+      test('refuses version $version without changing it', () {
+        final database = sqlite3.open(path);
+        addTearDown(database.dispose);
+        database.execute('PRAGMA user_version = $version');
+        database.execute('CREATE TABLE unknown (id INTEGER)');
+
+        expect(
+          SqliteWalletSyncJobQueueRepository.openExisting(path),
+          refused(isA<BackgroundTasksStoreVersionFailure>()),
+        );
+        expect(
+          SqliteWalletSyncJobQueueRepository.openForeground(path),
+          refused(isA<BackgroundTasksStoreVersionFailure>()),
+        );
+        expect(
+          database.select('PRAGMA user_version').single['user_version'],
+          version,
+        );
+      });
+    }
   });
 }
 
