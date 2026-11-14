@@ -7,6 +7,7 @@ import 'package:sync/src/data/datasources/revision_store_datasource.dart';
 import 'package:sync/src/data/datasources/spend_gate_store_datasource.dart';
 import 'package:sync/src/data/native_store_paths.dart';
 import 'package:sync/src/data/write/spend/native_spend.dart';
+import 'package:sync/src/data/write/writer_lock.dart';
 import 'package:sync/sync.dart';
 import 'package:sync/testing.dart' show MemoryFreezeStore;
 import 'package:sync/write.dart';
@@ -791,6 +792,38 @@ void main() {
         .watch()
         .firstWhere((value) => value.data == status)
         .timeout(const Duration(seconds: 5));
+
+    test('closing while the guard is asked raises nothing', () async {
+      final other = Directory.systemTemp.createTempSync('spend-close-');
+      final closing = openForeground(
+        documentsDirectory: other.path,
+        catalog: _Catalog([bitcoin]),
+        reservedAddresses: _Reserved(),
+        freezes: MemoryFreezeStore(),
+        inputReservations: _Reservations(),
+        connections: FixtureConnections(const []),
+        spendSessions: _Natives(),
+        spendTransport: _Transport().send,
+      );
+      final metadata = RevisionStoreDatasource.openExisting(
+        revisionStorePath(other.path),
+      );
+      try {
+        metadata.begin(bitcoin.key, WriteIntent.create);
+        metadata.finish(bitcoin.key, initializedDescriptor: bitcoin);
+        // Another writer holds the wallet: the guard's request waits.
+        final held = WriterLock.acquire(other.path, bitcoin.key);
+        final readiness = closing.spend.readiness(bitcoin.key);
+        await Future<void>.delayed(const Duration(milliseconds: 50));
+        await closing.close();
+        if (held case Ok(:final value)) value.release();
+        await Future<void>.delayed(WriterLock.writerWaitLimit);
+        expect(readiness.now.status, ValueStatus.closed);
+      } finally {
+        metadata.close();
+        other.deleteSync(recursive: true);
+      }
+    });
 
     test('is published on first demand, without a check', () async {
       final key = bitcoin.key;
