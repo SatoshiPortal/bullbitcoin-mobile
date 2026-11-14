@@ -96,8 +96,8 @@ class DatabaseSeeds {
           const AutoSwapRow(
             id: 1,
             enabled: true,
-            balanceThresholdSats: 500000,
-            triggerBalanceSats: 1000000,
+            balanceThresholdSats: 250000,
+            triggerBalanceSats: 500000,
             feeThresholdPercent: 1.0,
             blockTillNextExecution: false,
             alwaysBlock: false,
@@ -110,8 +110,8 @@ class DatabaseSeeds {
           const AutoSwapRow(
             id: 2,
             enabled: true,
-            balanceThresholdSats: 500000,
-            triggerBalanceSats: 1000000,
+            balanceThresholdSats: 250000,
+            triggerBalanceSats: 500000,
             feeThresholdPercent: 1.0,
             blockTillNextExecution: false,
             alwaysBlock: false,

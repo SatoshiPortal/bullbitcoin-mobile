@@ -8,8 +8,8 @@ part 'auto_swap_model.freezed.dart';
 sealed class AutoSwapModel with _$AutoSwapModel {
   const factory AutoSwapModel({
     @Default(true) bool enabled,
-    @Default(1000000) int balanceThresholdSats,
-    @Default(2000000) int triggerBalanceSats,
+    @Default(250000) int balanceThresholdSats,
+    @Default(500000) int triggerBalanceSats,
     @Default(3.0) double feeThresholdPercent,
     @Default(false) bool blockTillNextExecution,
     @Default(false) bool alwaysBlock,
