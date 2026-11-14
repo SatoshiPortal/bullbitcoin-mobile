@@ -107,6 +107,7 @@ class _MnemonicWidgetState extends State<MnemonicWidget>
   List<String> _seenTexts = [];
   String passphrase = '';
   bool _showPassphrase = false;
+  bool _passphraseCleared = false;
   int _passphraseGeneration = 0;
   String label = '';
 
@@ -150,6 +151,7 @@ class _MnemonicWidgetState extends State<MnemonicWidget>
   }
 
   void onSubmit() {
+    if (_passphraseCleared && passphrase.isEmpty) return;
     setState(() {
       _failure = null;
       _needsLanguageChoice = false;
@@ -373,6 +375,7 @@ class _MnemonicWidgetState extends State<MnemonicWidget>
     if (state != AppLifecycleState.resumed && passphrase.isNotEmpty) {
       setState(() {
         passphrase = '';
+        _passphraseCleared = true;
         _passphraseGeneration++;
       });
     }
@@ -454,6 +457,10 @@ class _MnemonicWidgetState extends State<MnemonicWidget>
                         child: Text(context.loc.passphraseOption),
                       ),
                     if (_showPassphrase) ...[
+                      BullText(
+                        context.loc.passphraseOptionHelp,
+                        style: context.font.bodyMedium,
+                      ),
                       BullSecretTextInput(
                         key: ValueKey(_passphraseGeneration),
                         label: context.loc.passphraseLabel,
@@ -462,6 +469,17 @@ class _MnemonicWidgetState extends State<MnemonicWidget>
                         showLabel: context.loc.passphraseShow,
                         hideLabel: context.loc.passphraseHide,
                       ),
+                      if (_passphraseCleared && passphrase.isEmpty) ...[
+                        BullText(
+                          context.loc.passphraseClearedNotice,
+                          style: context.font.bodyMedium,
+                        ),
+                        TextButton(
+                          onPressed: () =>
+                              setState(() => _passphraseCleared = false),
+                          child: Text(context.loc.continueWithoutPassphrase),
+                        ),
+                      ],
                       if (passphrase != passphrase.trim())
                         BullText(
                           context.loc.passphraseWhitespaceWarning,

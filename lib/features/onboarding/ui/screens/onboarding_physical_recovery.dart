@@ -49,6 +49,12 @@ class _OnboardingPhysicalRecoveryState extends State<OnboardingPhysicalRecovery>
 
   Future<void> _submit(Mnemonic mnemonic) async {
     if (_scanning) return;
+    if (mnemonic.passphrase.isEmpty) {
+      context.read<OnboardingBloc>().add(
+        OnboardingRecoverWalletClicked(mnemonic: mnemonic),
+      );
+      return;
+    }
     final attempt = ++_attempt;
     while (true) {
       setState(() => _scanning = true);

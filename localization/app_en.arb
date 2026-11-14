@@ -15227,5 +15227,21 @@
   "onboardingContinueWithoutChecking": "Continue without checking",
   "@onboardingContinueWithoutChecking": {
     "description": "Continue recovering a wallet when the history scan failed."
+  },
+  "passphraseClearedNotice": "For your privacy, your passphrase was cleared. Enter it again or choose to continue without one.",
+  "@passphraseClearedNotice": {
+    "description": "Recovery notice after clearing a transient passphrase."
+  },
+  "continueWithoutPassphrase": "Continue without a passphrase",
+  "@continueWithoutPassphrase": {
+    "description": "Explicitly allow recovery without re-entering the cleared passphrase."
+  },
+  "passphraseWordsIncompleteWarning": "These words alone cannot restore this wallet. Keep your passphrase separately.",
+  "@passphraseWordsIncompleteWarning": {
+    "description": "Protected wallet recovery requires the separately kept passphrase."
+  },
+  "passphraseOptionHelp": "Only if this wallet was created with one. Otherwise leave empty.",
+  "@passphraseOptionHelp": {
+    "description": "Advanced passphrase field help during recovery."
   }
 }

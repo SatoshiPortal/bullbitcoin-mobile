@@ -10,6 +10,7 @@ import 'package:bb_mobile/features/test_wallet_backup/presentation/bloc/test_wal
 import 'package:bb_mobile/features/test_wallet_backup/presentation/test_wallet_backup_failure_l10n.dart';
 import 'package:bb_mobile/features/test_wallet_backup/ui/app_bar_widget.dart';
 import 'package:bb_mobile/features/test_wallet_backup/ui/screens/verify_mnemonic_screen.dart';
+import 'package:bb_mobile/features/app_unlock/public/app_unlock_facade.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -18,7 +19,11 @@ import 'package:bull_ui/bull_ui.dart'
 import 'package:secrets/secrets.dart' show Secret, SecretExtension;
 
 class ShowMnemonicScreen extends StatefulWidget {
-  const ShowMnemonicScreen({super.key});
+  final AppUnlockFacade appUnlockFacade;
+  const ShowMnemonicScreen({
+    super.key,
+    this.appUnlockFacade = const AppUnlockFacade(),
+  });
 
   @override
   State<ShowMnemonicScreen> createState() => _ShowMnemonicScreenState();
@@ -61,8 +66,12 @@ class _ShowMnemonicScreenState extends State<ShowMnemonicScreen>
               ),
               body: Column(
                 children: [
-                  const Expanded(
-                    child: SingleChildScrollView(child: _MnemonicDisplay()),
+                  Expanded(
+                    child: SingleChildScrollView(
+                      child: _MnemonicDisplay(
+                        appUnlockFacade: widget.appUnlockFacade,
+                      ),
+                    ),
                   ),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -99,7 +108,8 @@ class _ShowMnemonicScreenState extends State<ShowMnemonicScreen>
 /// calls back only to style one word at a time. Nothing here — and nothing in
 /// the bloc — ever holds the phrase.
 class _MnemonicDisplay extends StatefulWidget {
-  const _MnemonicDisplay();
+  final AppUnlockFacade appUnlockFacade;
+  const _MnemonicDisplay({required this.appUnlockFacade});
 
   @override
   State<_MnemonicDisplay> createState() => _MnemonicDisplayState();
@@ -109,6 +119,7 @@ class _MnemonicDisplayState extends State<_MnemonicDisplay>
     with WidgetsBindingObserver {
   String? _fingerprint;
   bool _showPassphrase = false;
+  int _revealGeneration = 0;
   Future<Result<Secret, TestWalletBackupFailure>>? _secret;
 
   @override
@@ -125,8 +136,9 @@ class _MnemonicDisplayState extends State<_MnemonicDisplay>
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state != AppLifecycleState.resumed && _showPassphrase) {
-      setState(() => _showPassphrase = false);
+    if (state != AppLifecycleState.resumed) {
+      _revealGeneration++;
+      if (_showPassphrase) setState(() => _showPassphrase = false);
     }
   }
 
@@ -139,12 +151,44 @@ class _MnemonicDisplayState extends State<_MnemonicDisplay>
         .selectedWallet
         ?.masterFingerprint;
     if (fingerprint != _fingerprint) {
+      _revealGeneration++;
       _fingerprint = fingerprint;
       _showPassphrase = false;
       _secret = fingerprint == null
           ? null
           : context.read<TestWalletBackupBloc>().loadSelectedWalletSecret();
     }
+  }
+
+  Future<void> _togglePassphrase() async {
+    if (_showPassphrase) {
+      setState(() => _showPassphrase = false);
+      return;
+    }
+    final generation = ++_revealGeneration;
+    final fingerprint = _fingerprint;
+    final accepted = await Navigator.of(context).push<bool>(
+      MaterialPageRoute(
+        builder: (gateContext) =>
+            widget.appUnlockFacade.buildReauthenticationGate(
+              canPop: true,
+              onSuccess: (_) => Navigator.of(gateContext).pop(true),
+            ),
+      ),
+    );
+    if (!mounted ||
+        accepted != true ||
+        generation != _revealGeneration ||
+        fingerprint != _fingerprint ||
+        fingerprint !=
+            context
+                .read<TestWalletBackupBloc>()
+                .state
+                .selectedWallet
+                ?.masterFingerprint) {
+      return;
+    }
+    setState(() => _showPassphrase = true);
   }
 
   @override
@@ -261,16 +305,17 @@ class _MnemonicDisplayState extends State<_MnemonicDisplay>
                         ],
                       ),
                     ),
-                    if (secret.info.hasPassphrase)
+                    if (secret.info.hasPassphrase) ...[
+                      Text(context.loc.passphraseWordsIncompleteWarning),
                       TextButton(
-                        onPressed: () =>
-                            setState(() => _showPassphrase = !_showPassphrase),
+                        onPressed: _togglePassphrase,
                         child: Text(
                           _showPassphrase
                               ? context.loc.passphraseHide
                               : context.loc.passphraseShow,
                         ),
                       ),
+                    ],
                   ],
                 );
               },

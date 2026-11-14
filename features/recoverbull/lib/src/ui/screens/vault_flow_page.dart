@@ -243,11 +243,16 @@ class _VaultFlowPageState extends State<VaultFlowPage> with PrivacyScreen {
         );
       }
     }
-    if (mounted &&
-        _protected == true &&
-        privacyGeneration == _privacyGeneration &&
-        cubit.state.failure is VaultPassphraseRequiredFailure) {
+    if (!mounted ||
+        _protected != true ||
+        privacyGeneration != _privacyGeneration) {
+      return;
+    }
+    if (cubit.state.failure is VaultPassphraseRequiredFailure) {
       setState(() => _passphraseRequested = true);
+    } else {
+      _recoveryKey = null;
+      _recoverySettings = null;
     }
   }
 
@@ -289,10 +294,12 @@ class _VaultFlowPageState extends State<VaultFlowPage> with PrivacyScreen {
     }
     if (cubit.state.failure is VaultPassphraseRequiredFailure) {
       setState(() => _inputError = context.loc.recoverbullPassphraseMismatch);
-    }
-    if (cubit.state.completion != null) {
-      _recoveryKey = null;
-      _recoverySettings = null;
+    } else {
+      setState(() {
+        _passphraseRequested = false;
+        _recoveryKey = null;
+        _recoverySettings = null;
+      });
     }
   }
 

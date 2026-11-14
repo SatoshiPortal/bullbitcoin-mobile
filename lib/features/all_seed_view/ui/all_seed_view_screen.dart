@@ -38,6 +38,7 @@ class _AllSeedViewScreenState extends State<AllSeedViewScreen>
   /// and the OS flag (Codex, 2026-09-17).
   late Future<bool> _privacyFuture = enableScreenPrivacy();
   final Set<String> _shownPassphrases = {};
+  int _revealGeneration = 0;
 
   @override
   void initState() {
@@ -47,9 +48,36 @@ class _AllSeedViewScreenState extends State<AllSeedViewScreen>
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state != AppLifecycleState.resumed && _shownPassphrases.isNotEmpty) {
-      setState(_shownPassphrases.clear);
+    if (state != AppLifecycleState.resumed) {
+      _revealGeneration++;
+      if (_shownPassphrases.isNotEmpty) setState(_shownPassphrases.clear);
     }
+  }
+
+  Future<void> _togglePassphrase(Secret seed) async {
+    final id = seed.id.hex;
+    if (_shownPassphrases.contains(id)) {
+      setState(() => _shownPassphrases.remove(id));
+      return;
+    }
+    final generation = ++_revealGeneration;
+    final accepted = await Navigator.of(context).push<bool>(
+      MaterialPageRoute(
+        builder: (gateContext) =>
+            widget.appUnlockFacade.buildReauthenticationGate(
+              canPop: true,
+              onSuccess: (_) => Navigator.of(gateContext).pop(true),
+            ),
+      ),
+    );
+    if (!mounted || accepted != true || generation != _revealGeneration) return;
+    final state = context.read<AllSeedViewCubit>().state;
+    if (!state.isUnlocked ||
+        !state.seedsVisible ||
+        !state.allSeeds.any((current) => current.id == seed.id)) {
+      return;
+    }
+    setState(() => _shownPassphrases.add(id));
   }
 
   @override
@@ -524,19 +552,17 @@ class _AllSeedViewScreenState extends State<AllSeedViewScreen>
                           ],
                         ),
                       ),
-                      if (seed.info.hasPassphrase)
+                      if (seed.info.hasPassphrase) ...[
+                        Text(context.loc.passphraseWordsIncompleteWarning),
                         TextButton(
-                          onPressed: () => setState(() {
-                            if (!_shownPassphrases.add(seed.id.hex)) {
-                              _shownPassphrases.remove(seed.id.hex);
-                            }
-                          }),
+                          onPressed: () => _togglePassphrase(seed),
                           child: Text(
                             _shownPassphrases.contains(seed.id.hex)
                                 ? context.loc.passphraseHide
                                 : context.loc.passphraseShow,
                           ),
                         ),
+                      ],
                     ],
                   ),
                 ),
