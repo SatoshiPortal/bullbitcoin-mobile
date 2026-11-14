@@ -101,6 +101,11 @@ final class _UnavailablePayjoinSessions implements PayjoinSessions {
   Stream<Result<PayjoinSession, PayjoinFailure>> watch({
     Set<String>? sessionIds,
   }) => Stream.value(Err(_failure));
+
+  @override
+  Future<Result<String?, PayjoinFailure>> visibleTransaction(
+    String sessionId,
+  ) async => Err(_failure);
 }
 
 final class _UnavailablePayjoinPolicy implements PayjoinPolicyAccess {

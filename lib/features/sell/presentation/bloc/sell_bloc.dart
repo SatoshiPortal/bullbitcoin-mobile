@@ -20,6 +20,7 @@ import 'package:bb_mobile/features/sell/domain/broadcast_sell_payin_usecase.dart
 import 'package:bb_mobile/features/sell/domain/calculate_sell_liquid_fees_usecase.dart';
 import 'package:bb_mobile/features/sell/domain/create_sell_order_usecase.dart';
 import 'package:bb_mobile/features/sell/domain/get_payjoin_usecase.dart';
+import 'package:bb_mobile/features/sell/domain/get_visible_payjoin_transaction_usecase.dart';
 import 'package:bb_mobile/features/sell/domain/label_completed_sell_order_usecase.dart';
 import 'package:bb_mobile/features/sell/domain/load_sell_context_usecase.dart';
 import 'package:bb_mobile/features/sell/domain/load_sell_wallet_utxos_usecase.dart';
@@ -60,6 +61,7 @@ class SellBloc extends Bloc<SellEvent, SellState>
     required this._sendWithPayjoinUsecase,
     required this._watchPayjoinUsecase,
     required this._getPayjoinUsecase,
+    required this._getVisiblePayjoinTransactionUsecase,
     required this._retryPayjoinProposalUsecase,
     required this._calculateSellLiquidFeesUsecase,
     required this._loadSellWalletUtxosUsecase,
@@ -112,6 +114,8 @@ class SellBloc extends Bloc<SellEvent, SellState>
   final SendWithPayjoinUsecase _sendWithPayjoinUsecase;
   final WatchPayjoinUsecase _watchPayjoinUsecase;
   final GetPayjoinUsecase _getPayjoinUsecase;
+  final GetVisiblePayjoinTransactionUsecase
+  _getVisiblePayjoinTransactionUsecase;
   final RetryPayjoinProposalUsecase _retryPayjoinProposalUsecase;
   final CalculateSellLiquidFeesUsecase _calculateSellLiquidFeesUsecase;
   final LoadSellWalletUtxosUsecase _loadSellWalletUtxosUsecase;
@@ -1193,8 +1197,32 @@ class SellBloc extends Bloc<SellEvent, SellState>
     }
 
     if (session.isExpired) {
+      // `expired` carries no broadcast outcome: the fallback broadcast may
+      // have reached the network and failed only its bookkeeping. Latch such
+      // a transaction instead of re-arming Confirm on the inputs the expiry
+      // just released, which would pay the order a second time.
+      final visibleTxId = await _getVisiblePayjoinTransactionUsecase.execute(
+        session.id,
+      );
+      final rearmed = _currentPaymentState;
+      if (rearmed == null || rearmed.sellOrder.orderId != sessionOrderId) {
+        return;
+      }
+      if (visibleTxId != null) {
+        log.warning(
+          'Sell Payjoin session ${session.logRef} expired but its transaction '
+          'is visible; latching it instead of re-arming Confirm',
+        );
+        _latchBroadcast(emit, visibleTxId);
+        try {
+          await _completeAfterBroadcast(emit);
+        } catch (error) {
+          log.severe(error: error, trace: StackTrace.current);
+        }
+        return;
+      }
       emit(
-        current.copyWith(
+        rearmed.copyWith(
           isConfirmingPayment: false,
           error: null,
           pausedPayjoinSession: null,

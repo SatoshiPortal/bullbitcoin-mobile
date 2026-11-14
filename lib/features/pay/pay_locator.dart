@@ -16,6 +16,7 @@ import 'package:bb_mobile/features/pay/domain/get_pay_exchange_rate_usecase.dart
 import 'package:bb_mobile/features/pay/domain/get_pay_order_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/get_pay_payin_address_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/get_payjoin_usecase.dart';
+import 'package:bb_mobile/features/pay/domain/get_visible_payjoin_transaction_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/load_pay_network_fees_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/load_pay_user_summary_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/load_pay_wallet_utxos_usecase.dart';
@@ -56,6 +57,9 @@ class PayLocator {
     );
     locator.registerFactory<GetPayjoinUsecase>(
       () => GetPayjoinUsecase(locator<PayjoinSessions>()),
+    );
+    locator.registerFactory<GetVisiblePayjoinTransactionUsecase>(
+      () => GetVisiblePayjoinTransactionUsecase(locator<PayjoinSessions>()),
     );
     locator.registerFactory<PlacePayOrderUsecase>(
       () => PlacePayOrderUsecase(
@@ -174,6 +178,8 @@ class PayLocator {
         sendWithPayjoinUsecase: locator<SendWithPayjoinUsecase>(),
         watchPayjoinUsecase: locator<WatchPayjoinUsecase>(),
         getPayjoinUsecase: locator<GetPayjoinUsecase>(),
+        getVisiblePayjoinTransactionUsecase:
+            locator<GetVisiblePayjoinTransactionUsecase>(),
         retryPayjoinProposalUsecase: locator<RetryPayjoinProposalUsecase>(),
         previewBitcoinFeeUsecase: locator<PreviewBitcoinFeeUsecase>(),
         previewBitcoinFeePresetsUsecase:

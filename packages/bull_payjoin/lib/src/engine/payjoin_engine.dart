@@ -469,6 +469,19 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       !_isWaitingForSender(payjoin) &&
       await _visibleCompetingTransaction(payjoin) == null;
 
+  /// The session's spend the network already knows (the original or the
+  /// payjoin transaction), or null when neither is visible. Lets a caller
+  /// that saw the session expire tell "nothing was broadcast" from "the
+  /// fallback broadcast reached the network but its outcome was not
+  /// recorded" before it offers the payment again.
+  Future<String?> visibleCompetingTransaction(String payjoinId) async {
+    final freshModel =
+        await _localPayjoinDatasource.fetchReceiver(payjoinId) ??
+        await _localPayjoinDatasource.fetchSender(payjoinId);
+    if (freshModel == null) return null;
+    return _visibleCompetingTransaction(freshModel.toEntity());
+  }
+
   /// The first of the session's competing spends the network already knows,
   /// or null when neither is visible.
   ///

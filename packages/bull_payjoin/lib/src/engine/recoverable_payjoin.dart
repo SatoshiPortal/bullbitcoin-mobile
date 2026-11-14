@@ -247,6 +247,14 @@ final class _RecoverablePayjoinSessions implements PayjoinSessions {
     await _owner._readyForRoleCall();
     return _owner._delegate.sessions.reservedOutpoints();
   }
+
+  @override
+  Future<Result<String?, PayjoinFailure>> visibleTransaction(
+    String sessionId,
+  ) async {
+    await _owner._readyForRoleCall();
+    return _owner._delegate.sessions.visibleTransaction(sessionId);
+  }
 }
 
 final class _RecoverablePayjoinPolicy implements PayjoinPolicyAccess {

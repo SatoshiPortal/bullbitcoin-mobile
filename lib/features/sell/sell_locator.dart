@@ -19,6 +19,7 @@ import 'package:bb_mobile/features/sell/domain/broadcast_sell_payin_usecase.dart
 import 'package:bb_mobile/features/sell/domain/calculate_sell_liquid_fees_usecase.dart';
 import 'package:bb_mobile/features/sell/domain/create_sell_order_usecase.dart';
 import 'package:bb_mobile/features/sell/domain/get_payjoin_usecase.dart';
+import 'package:bb_mobile/features/sell/domain/get_visible_payjoin_transaction_usecase.dart';
 import 'package:bb_mobile/features/sell/domain/get_sell_confidential_sepa_availability_usecase_v2.dart';
 import 'package:bb_mobile/features/sell/domain/label_completed_sell_order_usecase.dart';
 import 'package:bb_mobile/features/sell/domain/load_sell_context_usecase.dart';
@@ -53,6 +54,9 @@ class SellLocator {
     );
     locator.registerFactory<GetPayjoinUsecase>(
       () => GetPayjoinUsecase(locator<PayjoinSessions>()),
+    );
+    locator.registerFactory<GetVisiblePayjoinTransactionUsecase>(
+      () => GetVisiblePayjoinTransactionUsecase(locator<PayjoinSessions>()),
     );
     locator.registerFactory<SendWithPayjoinUsecase>(
       () => SendWithPayjoinUsecase(locator<PayjoinSender>()),
@@ -161,6 +165,8 @@ class SellLocator {
         sendWithPayjoinUsecase: locator<SendWithPayjoinUsecase>(),
         watchPayjoinUsecase: locator<WatchPayjoinUsecase>(),
         getPayjoinUsecase: locator<GetPayjoinUsecase>(),
+        getVisiblePayjoinTransactionUsecase:
+            locator<GetVisiblePayjoinTransactionUsecase>(),
         retryPayjoinProposalUsecase: locator<RetryPayjoinProposalUsecase>(),
         calculateSellLiquidFeesUsecase:
             locator<CalculateSellLiquidFeesUsecase>(),
