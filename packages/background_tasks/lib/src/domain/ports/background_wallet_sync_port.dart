@@ -4,7 +4,7 @@ import 'package:transaction_sync/transaction_sync.dart';
 
 /// Consumer contract. Integration binds this to the single native writer.
 /// Implementations never release native ownership on a scheduling timeout.
-abstract interface class BackgroundWalletSync {
+abstract interface class BackgroundWalletSyncPort {
   @useResult
   Future<Result<BackgroundSyncOutcome, BackgroundSyncFailure>> synchronize(
     WalletKey key, {

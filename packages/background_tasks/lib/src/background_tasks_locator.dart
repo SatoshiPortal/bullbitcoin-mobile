@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'background_task.dart';
+import 'domain/background_task.dart';
 import 'domain/background_sync_interval.dart';
 import 'domain/repositories/background_sync_interval_repository.dart';
 import 'background_task_logger.dart';

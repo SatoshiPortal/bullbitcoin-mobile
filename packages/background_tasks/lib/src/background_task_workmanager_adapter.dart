@@ -2,7 +2,7 @@ import 'package:bull_logger/bull_logger.dart';
 import 'package:workmanager/workmanager.dart';
 
 import 'background_task_runner.dart';
-import 'background_task.dart';
+import 'domain/background_task.dart';
 
 typedef BackgroundTaskBootstrap =
     Future<BackgroundTaskRunner> Function(BackgroundTask task);

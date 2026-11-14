@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:background_tasks/src/domain/repositories/background_sync_interval_repository.dart';
-import 'package:background_tasks/src/background_task.dart';
+import 'package:background_tasks/src/domain/background_task.dart';
 import 'package:background_tasks/src/background_task_workmanager_adapter.dart';
 import 'package:bull_logger/bull_logger.dart' show log;
 

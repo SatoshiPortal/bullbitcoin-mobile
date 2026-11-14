@@ -1,6 +1,6 @@
 import 'background_task_logger.dart';
-import 'background_task.dart';
-import 'background_task_execution_result.dart';
+import 'domain/background_task.dart';
+import 'domain/background_task_execution_result.dart';
 
 typedef BackgroundTaskHandler =
     Future<BackgroundTaskExecutionResult> Function();

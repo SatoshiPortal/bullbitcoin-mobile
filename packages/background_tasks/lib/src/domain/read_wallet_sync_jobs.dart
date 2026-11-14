@@ -1,10 +1,8 @@
-import 'dart:collection';
-
 import 'package:primitives/primitives.dart';
 import 'package:transaction_sync/transaction_sync.dart';
 
 /// Catalog membership is independent of whether a wallet is ready to sync.
-final class WalletSyncJobSelection extends IterableBase<WalletRevision> {
+final class WalletSyncJobSelection {
   final List<WalletRevision> ready;
   final List<WalletKey> unavailable;
 
@@ -13,9 +11,6 @@ final class WalletSyncJobSelection extends IterableBase<WalletRevision> {
     Iterable<WalletKey> unavailable,
   ) : ready = List.unmodifiable(ready),
       unavailable = List.unmodifiable(unavailable);
-
-  @override
-  Iterator<WalletRevision> get iterator => ready.iterator;
 }
 
 Future<Result<WalletSyncJobSelection, TransactionSyncFailure>>
