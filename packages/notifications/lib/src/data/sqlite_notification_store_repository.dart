@@ -135,9 +135,10 @@ final class SqliteNotificationStoreRepository
       'INSERT OR IGNORE INTO topics (topic_id, initialized_at) VALUES (?, ?)',
       [observation.topicId, _nowMs()],
     );
-    // Rule P, awaiting Azad's decision. Today a pending aggregate stays until
-    // it is delivered. Option P1 would add, here and in this transaction:
-    //   DELETE FROM outbox WHERE topic_id = ? AND state = 'pending'
+    // Rule P2: keep a pending aggregate until delivery, even if the app has
+    // shown its payments. A sync is not a consultation. Deleting pending
+    // aggregates here could also remove one created in the background after
+    // this foreground observation's snapshot.
   });
 
   @override

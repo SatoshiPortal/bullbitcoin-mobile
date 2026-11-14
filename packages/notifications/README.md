@@ -16,7 +16,7 @@ An `Observation` carries one topic and event identities, never text. The package
 - `recordForeground` stores what a foreground sync saw and initializes its topic. Those events are never announced.
 - `recordBackground` ignores a topic the foreground never observed. Otherwise the events it stored for the first time become one pending aggregate, built by the caller, in the same transaction.
 
-A pending aggregate stays until it is delivered, even if the app shows its payments in the meantime (rule P, undecided; the single query option P1 would add is marked in `recordForeground`).
+Rule P2 is the selected policy: a pending aggregate stays until it is delivered, even if the app shows its payments in the meantime. A sync is not a consultation. Deleting pending aggregates during a foreground observation could also remove an aggregate created in the background after that observation's snapshot.
 
 `openForegroundNotificationStore` creates the store. `openExistingNotificationStore` never creates or migrates it, and refuses a missing, older or newer store.
 
