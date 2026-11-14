@@ -171,6 +171,7 @@ class WalletLocator {
       () => ElectrumSync(
         readRevision: (key) => locator<WalletNativeRuntime>().readRevision(key),
         connections: locator<WalletConnectionPort>(),
+        collectIncoming: backgroundSyncAvailable,
         onCompletion: backgroundSyncAvailable
             ? locator<WalletPaymentObserver>().record
             : null,

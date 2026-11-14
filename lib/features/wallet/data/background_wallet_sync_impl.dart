@@ -25,6 +25,7 @@ final class BackgroundWalletSyncImpl implements BackgroundWalletSync {
       headless: true,
       reason: SyncReason.background,
       allowInitialScan: allowInitialScan,
+      collectIncoming: _observer != null,
       onCompletion: _observer?.record,
     );
     return switch (result) {

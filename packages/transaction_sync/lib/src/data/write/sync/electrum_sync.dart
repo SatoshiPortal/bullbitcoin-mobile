@@ -39,6 +39,7 @@ final class ElectrumSync {
   _readRevision;
   final Future<Result<void, TransactionSyncFailure>> Function(SyncCompletion)?
   _onCompletion;
+  final bool _collectIncoming;
   final Future<String> Function() _documentsDirectory;
   final _active =
       <WalletKey, Future<Result<SyncCompletion, TransactionSyncFailure>>>{};
@@ -52,6 +53,7 @@ final class ElectrumSync {
     required this._documentsDirectory,
     required this._readRevision,
     this._onCompletion,
+    this._collectIncoming = false,
   });
 
   Stream<WalletKey> get started => _started.stream;
@@ -61,6 +63,11 @@ final class ElectrumSync {
       ? _active.isNotEmpty
       : _active.keys.any((key) => key.id == walletId);
 
+  /// [collectIncoming] (default: the engine's setting) asks for the wallet's
+  /// incoming payment ids in [SyncCompletion.incomingTxids]: `null` there
+  /// means they were not collected, an empty set an empty history.
+  /// [onCompletion] receives a completion only when they were collected.
+  ///
   /// Recoverable outcomes are a [Result]; an unexpected [Exception] becomes a
   /// storage failure. Anything else thrown, a programmer [Error] above all,
   /// completes this future, and every caller joined to it, with that error.
@@ -71,6 +78,7 @@ final class ElectrumSync {
     SyncReason reason = SyncReason.auto,
     bool headless = false,
     bool allowInitialScan = true,
+    bool? collectIncoming,
     Future<Result<void, TransactionSyncFailure>> Function(SyncCompletion)?
     onCompletion,
   }) {
@@ -104,6 +112,7 @@ final class ElectrumSync {
           discover: discover,
           headless: headless,
           allowInitialScan: allowInitialScan,
+          collectIncoming: collectIncoming ?? _collectIncoming,
           onCompletion: onCompletion ?? _onCompletion,
           onCache: (summary) => cacheSummary = summary,
           onConnection: (connection) {
@@ -178,6 +187,7 @@ final class ElectrumSync {
     required bool discover,
     required bool headless,
     required bool allowInitialScan,
+    required bool collectIncoming,
     required Future<Result<void, TransactionSyncFailure>> Function(
       SyncCompletion,
     )?
@@ -235,7 +245,7 @@ final class ElectrumSync {
               events.sendPort,
               headless,
               allowInitialScan,
-              onCompletion != null,
+              collectIncoming,
               runId,
             ),
           );
