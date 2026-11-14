@@ -209,4 +209,55 @@ void main() {
       );
     }
   });
+
+  group('amount received', () {
+    const codec = TestPayjoinCodec();
+    const address = 'bc1qar0srrr7xfkvy5l643lydnw9re59gtzzwf5mdq';
+    final script =
+        codec.addressScript(address, BitcoinNetwork.mainnet) ??
+        fail('the fixture address must decode');
+    final transaction = PayjoinTransaction(
+      txid: 'original',
+      inputs: [_input('sender')],
+      outputs: [
+        PayjoinTransactionOutput(
+          value: Sats.fromInt(1000),
+          scriptPubkey: script,
+        ),
+        PayjoinTransactionOutput(
+          value: Sats.zero,
+          scriptPubkey: Uint8List.fromList([0x6a]),
+        ),
+        _output(2, 40000),
+        PayjoinTransactionOutput(
+          value: Sats.fromInt(500),
+          scriptPubkey: script,
+        ),
+      ],
+    );
+
+    test('sums every output paying the address, whatever the others', () {
+      expect(
+        amountReceived(
+          transaction,
+          codec: codec,
+          address: address,
+          isTestnet: false,
+        ),
+        1500,
+      );
+    });
+
+    test('is zero when the address is not of the session network', () {
+      expect(
+        amountReceived(
+          transaction,
+          codec: codec,
+          address: address,
+          isTestnet: true,
+        ),
+        0,
+      );
+    });
+  });
 }
