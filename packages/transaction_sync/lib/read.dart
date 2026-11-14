@@ -1,4 +1,5 @@
-/// Native reader hydration. Wire writer readiness/revision/admission before use.
+/// Native reader hydration. The reader lends shared bdk/lwk wallet handles:
+/// callers must not mutate, persist or dispose them.
 library;
 
 export 'src/data/read/wallet_snapshot_reader.dart'

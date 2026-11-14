@@ -1,4 +1,5 @@
-/// Native wallet synchronization and contracts. No native handles escape.
+/// Domain values and contracts of native wallet synchronization. Nothing
+/// here holds a native handle; read.dart lends them, see its documentation.
 library;
 
 export 'src/domain/wallet_key.dart';
