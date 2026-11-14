@@ -48,8 +48,8 @@ abstract interface class FreezePolicy {
 ///
 /// Every read and change goes to the store; this only remembers the outpoints
 /// last read, numbered by a [PolicyRevision] of this isolate, so coins are
-/// republished without reloading a wallet. Reads and changes run one after
-/// the other here; [guard] holds the store itself.
+/// republished without reloading a wallet. Reads, changes and [guard] run
+/// one after the other here.
 final class FreezeAuthority implements FreezePolicy {
   final FreezeStorePort _store;
   final _changes = StreamController<void>.broadcast(sync: true);
@@ -102,16 +102,21 @@ final class FreezeAuthority implements FreezePolicy {
         Err(:final failure) => Err(failure),
       };
 
-  /// Runs [body] with the forbidden inputs while no freeze change can commit:
-  /// the check and its effect see one policy.
+  /// Runs [body] with the forbidden inputs read now, in the queue freezes
+  /// and unfreezes go through: none commits until [body] returns. Sync is
+  /// the table's only writer, from the foreground, so this queue suffices.
+  /// [body] must not call this authority, which would wait for itself. An
+  /// exception of [body] propagates as it is.
   Future<Result<T, SyncFailure>> guard<T>(
     FutureOr<T> Function(Set<Outpoint> forbidden) body,
-  ) async {
-    if (_closed) return const Err(SyncClosedFailure());
-    return _store.guard(
-      (rows) async => body({for (final row in rows) row.outpoint}),
-    );
-  }
+  ) => _serial(() async {
+    switch (await _store.readAll()) {
+      case Ok(:final value):
+        return Ok(await body({for (final row in value) row.outpoint}));
+      case Err(:final failure):
+        return Err(failure);
+    }
+  });
 
   @override
   Future<Result<PolicyRevision, SyncFailure>> freeze(

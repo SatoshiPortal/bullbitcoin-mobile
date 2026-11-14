@@ -17,13 +17,4 @@ abstract interface class FreezeStorePort {
 
   /// Removes every row of each outpoint, whatever its origin, in one commit.
   Future<Result<void, SyncFailure>> unfreeze(List<Outpoint> outpoints);
-
-  /// Reads every row and runs [body] with them inside one transaction: no
-  /// [freeze] or [unfreeze] commits until [body] returns, so a check and its
-  /// effect see one set of freezes. An exception thrown by [body] is
-  /// rethrown once the transaction is rolled back; only the store failing is
-  /// an [Err].
-  Future<Result<T, SyncFailure>> guard<T>(
-    Future<T> Function(List<FrozenOutpoint> rows) body,
-  );
 }

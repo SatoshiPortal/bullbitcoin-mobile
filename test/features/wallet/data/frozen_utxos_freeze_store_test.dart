@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:io';
 
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
@@ -102,7 +101,6 @@ void main() {
     final corrupt = SqliteDatabase(NativeDatabase(file));
     try {
       final broken = FrozenUtxosFreezeStore(sqlite: corrupt);
-      var ran = false;
       expect(
         await broken.readAll(),
         isA<Err<List<FrozenOutpoint>, SyncFailure>>(),
@@ -115,56 +113,8 @@ void main() {
         await broken.unfreeze([(txId: a, vout: 0)]),
         isA<Err<void, SyncFailure>>(),
       );
-      expect(
-        await broken.guard((rows) async => ran = true),
-        isA<Err<bool, SyncFailure>>(),
-      );
-      expect(ran, isFalse);
     } finally {
       await corrupt.close();
     }
-  });
-
-  group('guard', () {
-    test('no freeze commits until its body returns', () async {
-      await insert('one', a, 0);
-      final entered = Completer<void>();
-      final release = Completer<void>();
-      final guarded = store.guard((rows) async {
-        entered.complete();
-        await release.future;
-        return rows;
-      });
-      await entered.future;
-      var committed = false;
-      final freezing = store
-          .freeze([row(b, 1, 'one')])
-          .whenComplete(() => committed = true);
-      await Future<void>.delayed(const Duration(milliseconds: 50));
-
-      expect(committed, isFalse);
-      release.complete();
-      expect(ok(await guarded), [row(a, 0, 'one')]);
-      ok(await freezing);
-      expect(await table(), {row(a, 0, 'one'), row(b, 1, 'one')});
-    });
-
-    test('its body reads the database inside the transaction', () async {
-      await insert('one', a, 0);
-
-      final seen = ok(await store.guard((rows) async => store.readAll()));
-
-      expect(ok(seen), [row(a, 0, 'one')]);
-    });
-
-    test('an exception of its body is rethrown, not a failure', () async {
-      await expectLater(
-        store.guard<void>((rows) async => throw const FormatException('body')),
-        throwsA(isA<FormatException>()),
-      );
-      // The store is still usable.
-      ok(await store.freeze([row(a, 0, 'one')]));
-      expect(await table(), {row(a, 0, 'one')});
-    });
   });
 }

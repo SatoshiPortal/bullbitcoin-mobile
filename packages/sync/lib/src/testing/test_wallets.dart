@@ -150,10 +150,8 @@ final class _Source implements FrameSource {
 /// An in-memory [FreezeStorePort]. For tests only.
 ///
 /// [failure], while set, fails every operation, as an unreadable store does.
-/// [guard] holds back [freeze] and [unfreeze] until its body returns.
 final class MemoryFreezeStore implements FreezeStorePort {
   final _rows = <FrozenOutpoint>{};
-  Future<void> _held = Future.value();
   SyncFailure? failure;
 
   MemoryFreezeStore([Iterable<FrozenOutpoint> rows = const []]) {
@@ -169,30 +167,13 @@ final class MemoryFreezeStore implements FreezeStorePort {
 
   @override
   Future<Result<void, SyncFailure>> freeze(List<FrozenOutpoint> rows) =>
-      _after(() => _answer(() => _rows.addAll(rows)));
+      _answer(() => _rows.addAll(rows));
 
   @override
   Future<Result<void, SyncFailure>> unfreeze(List<Outpoint> outpoints) =>
-      _after(
-        () => _answer(
-          () => _rows.removeWhere((row) => outpoints.contains(row.outpoint)),
-        ),
+      _answer(
+        () => _rows.removeWhere((row) => outpoints.contains(row.outpoint)),
       );
-
-  @override
-  Future<Result<T, SyncFailure>> guard<T>(
-    Future<T> Function(List<FrozenOutpoint> rows) body,
-  ) => _after(() async {
-    final failure = this.failure;
-    if (failure != null) return Err(failure);
-    return Ok(await body(_rows.toList()));
-  });
-
-  Future<R> _after<R>(Future<R> Function() body) async {
-    final run = _held.then((_) => body());
-    _held = run.then<void>((_) {}, onError: (Object _, StackTrace _) {});
-    return run;
-  }
 
   Future<Result<T, SyncFailure>> _answer<T>(T Function() body) async {
     final failure = this.failure;

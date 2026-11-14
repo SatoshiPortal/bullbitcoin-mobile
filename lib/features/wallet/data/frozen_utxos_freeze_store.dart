@@ -5,7 +5,7 @@ import 'package:sync/sync.dart';
 
 /// User freezes, kept in the published `frozen_utxos` table (schema v15).
 /// Sync reads and changes them through this store from the foreground; no
-/// other code writes the table.
+/// other code writes the table, so sync's own queue orders every change.
 ///
 /// A database that cannot be opened, read or written is an [Err], never an
 /// empty list. Opening it runs its migrations first, so a fresh install reads
@@ -58,37 +58,6 @@ class FrozenUtxosFreezeStore implements FreezeStorePort {
       });
       return const Ok(null);
     } on Exception {
-      return const Err(SyncStorageFailure());
-    }
-  }
-
-  /// Drift runs this database's statements made outside the transaction
-  /// only once it ends, so no freeze of this app commits meanwhile. ⚠️ The
-  /// whole app database waits too: [body] stays short, and never awaits a
-  /// statement issued outside its own zone, which would wait for it forever.
-  @override
-  Future<Result<T, SyncFailure>> guard<T>(
-    Future<T> Function(List<FrozenOutpoint> rows) body,
-  ) async {
-    // Set only when [body] throws, so its exception is rethrown as it is
-    // rather than taken for a storage failure.
-    (Object, StackTrace)? thrown;
-    try {
-      return Ok(
-        await _sqlite.transaction(() async {
-          final rows = await _rows();
-          try {
-            return await body(rows);
-          } on Object catch (error, trace) {
-            thrown = (error, trace);
-            rethrow;
-          }
-        }),
-      );
-    } on Exception {
-      if (thrown case (final error, final trace)) {
-        Error.throwWithStackTrace(error, trace);
-      }
       return const Err(SyncStorageFailure());
     }
   }
