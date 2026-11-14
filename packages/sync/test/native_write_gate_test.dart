@@ -491,4 +491,13 @@ final store = save;
       expect(staleNativeImportEntries(nativeImportAllowlist), isEmpty);
     });
   });
+
+  test('outside sync, only secrets may use BDK or LWK', () {
+    expect(
+      nativeImportAllowlist.where(
+        (path) => !path.startsWith('packages/secrets/'),
+      ),
+      isEmpty,
+    );
+  });
 }
