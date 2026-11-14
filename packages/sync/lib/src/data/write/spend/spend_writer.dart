@@ -125,6 +125,7 @@ final class SpendWriter implements WalletSpender {
   final SpendTransport _send;
   final bool Function() _closed;
   final Map<WalletKey, _StatusCell> _statuses = {};
+  late final StreamSubscription<WalletRevisionState> _changes;
 
   SpendWriter({
     required this._session,
@@ -134,7 +135,14 @@ final class SpendWriter implements WalletSpender {
     required this._natives,
     required this._send,
     required this._closed,
-  });
+  }) {
+    // A new revision may settle or create an obligation: ask the guard again
+    // for every wallet whose status was asked for.
+    _changes = _session.reader.changes.listen((state) {
+      final cell = _statuses[state.stamp.key];
+      if (cell != null) _refresh(state.stamp.key, cell);
+    });
+  }
 
   /// Broadcasts through the servers [connections] selects.
   static SpendTransport transport(WalletConnectionPort connections) =>
@@ -553,12 +561,54 @@ final class SpendWriter implements WalletSpender {
   }
 
   @override
-  Observed<WalletValue<BitcoinSpendStatus>> status(WalletKey key) =>
-      _statuses.putIfAbsent(key, _StatusCell.new);
+  Observed<WalletValue<BitcoinSpendStatus>> status(WalletKey key) => _cell(key);
+
+  /// The first demand schedules the guard's verdict; `now` never asks it.
+  _StatusCell _cell(WalletKey key) => _statuses.putIfAbsent(key, () {
+    late final _StatusCell cell;
+    cell = _StatusCell(() => _refresh(key, cell));
+    _refresh(key, cell);
+    return cell;
+  });
+
+  /// Asks the guard outside `now`, one request per wallet at a time, and
+  /// publishes its verdict unless a command published a newer one meanwhile.
+  void _refresh(WalletKey key, _StatusCell cell) {
+    if (_closed() || cell.closed) return;
+    if (cell.refreshing) {
+      cell.again = true;
+      return;
+    }
+    cell.refreshing = true;
+    unawaited(
+      Future.microtask(() async {
+        try {
+          do {
+            cell.again = false;
+            final published = cell.publications;
+            if (key.network is! BitcoinNetwork) {
+              cell.set(
+                const WalletValue<BitcoinSpendStatus>.unavailable(
+                  SyncUnsupportedNetworkFailure(),
+                ),
+              );
+              return;
+            }
+            final status = await _gate.check(key);
+            if (_closed() || cell.closed) return;
+            if (cell.publications == published) _publish(key, status);
+          } while (cell.again);
+        } finally {
+          cell.refreshing = false;
+        }
+      }),
+    );
+  }
 
   void _publish(WalletKey key, BitcoinSpendStatus status) {
     final stamp = _revisions.record(key)?.state.stamp;
-    final cell = _statuses.putIfAbsent(key, _StatusCell.new);
+    final cell = _cell(key);
+    cell.publications++;
     cell.set(
       stamp == null
           ? WalletValue<BitcoinSpendStatus>.unavailable(
@@ -705,6 +755,7 @@ final class SpendWriter implements WalletSpender {
   }
 
   void close() {
+    unawaited(_changes.cancel());
     for (final cell in _statuses.values) {
       cell.close();
     }
@@ -717,6 +768,19 @@ final class _StatusCell implements Observed<WalletValue<BitcoinSpendStatus>> {
   final _changes = StreamController<WalletValue<BitcoinSpendStatus>>.broadcast(
     sync: true,
   );
+
+  /// Schedules the guard's verdict; never runs it inline.
+  final void Function() _demand;
+
+  /// Counts the verdicts published, so an older request never overwrites
+  /// one a command published meanwhile.
+  int publications = 0;
+  bool refreshing = false;
+  bool again = false;
+
+  _StatusCell(this._demand);
+
+  bool get closed => _changes.isClosed;
 
   void set(WalletValue<BitcoinSpendStatus> value) {
     if (value.samePublication(_value) && value.revision == _value.revision) {
@@ -751,6 +815,7 @@ final class _StatusCell implements Observed<WalletValue<BitcoinSpendStatus>> {
           controller.add,
           onDone: controller.close,
         );
+        if (_value.status == ValueStatus.notLoaded && !refreshing) _demand();
       },
       onCancel: () => subscription?.cancel(),
     );
