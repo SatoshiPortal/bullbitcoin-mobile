@@ -85,12 +85,19 @@ class ExchangeRouter {
       pageBuilder: (context, state) {
         return NoTransitionPage(
           key: state.pageKey,
-          child: ExchangeHomeScreen(
-            homeCards: config.buildHomeCards(),
-            onHomeRefresh: config.onHomeRefresh,
-            onOpenSettings: () => config.onOpenSettings(context),
-            onAction: (action) => config.onAction(context, action),
-            onExit: () => config.onExit(context),
+          // Redirects run only on navigation: a session that ends while Trade
+          // is open must still lead to sign-in.
+          child: ExchangeSessionListener(
+            listenWhen: (wasLoggedIn, isLoggedIn) => wasLoggedIn && !isLoggedIn,
+            listener: (context, _) =>
+                context.goNamed(ExchangeRoute.exchangeLanding.name),
+            child: ExchangeHomeScreen(
+              homeCards: config.buildHomeCards(),
+              onHomeRefresh: config.onHomeRefresh,
+              onOpenSettings: () => config.onOpenSettings(context),
+              onAction: (action) => config.onAction(context, action),
+              onExit: () => config.onExit(context),
+            ),
           ),
         );
       },
