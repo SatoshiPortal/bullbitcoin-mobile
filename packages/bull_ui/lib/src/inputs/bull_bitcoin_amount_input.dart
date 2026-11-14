@@ -305,9 +305,13 @@ class _BitcoinEditingFormatter extends TextInputFormatter {
     final formatted = BullAmountInputFormatter(
       unit.code,
     ).formatEditUpdate(oldValue, newValue);
-    final normalized = unit == BitcoinUnit.btc
+    var normalized = unit == BitcoinUnit.btc
         ? newValue.text.replaceAll(',', '.')
         : newValue.text;
+    // The shared formatter completes a leading separator: ".01" is "0.01".
+    if (unit == BitcoinUnit.btc && normalized.startsWith('.')) {
+      normalized = '0$normalized';
+    }
     return formatted.text == normalized ? formatted : oldValue;
   }
 }
