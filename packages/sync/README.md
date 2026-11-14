@@ -61,8 +61,8 @@ Each asynchronous `Future<Result<T, SyncFailure>>` is shown as `T`. Other return
 
 ```text
 Sync
-|-- static openForeground(documentsDirectory:, catalog:, reservedAddresses:, freezes:, inputReservations:, connections:) -> Sync
-|-- static openExisting(documentsDirectory:, catalog:, connections:) -> HeadlessSync
+|-- static foreground(documentsDirectory:, catalog:, reservedAddresses:, freezes:, inputReservations:, connections:) -> Sync
+|-- static background(documentsDirectory:, catalog:, connections:) -> BackgroundSync
 |-- wallet(key) -> Wallet
 |-- changes
 |   `-- watch() -> Stream<WalletRevisionState>
@@ -80,13 +80,13 @@ Sync
 Wallet
 |-- key -> WalletKey
 |-- generation -> int
-|-- spend
+|-- tx
 |   |-- build(request) -> UnsignedSpend
-|   |-- bumpFee(request) -> UnsignedSpend
+|   |-- bump(request) -> UnsignedSpend
 |   |-- consolidate(request) -> List<UnsignedSpend>
 |   |-- broadcast(spend) -> SpendReceipt
 |   |-- signed(transaction, [owner:], [replacing:]) -> SignedSpend
-|   |-- status -> Observed<WalletValue<BitcoinSpendStatus>>
+|   |-- readiness -> Observed<WalletValue<BitcoinSpendStatus>>
 |   |-- check([replacing:]) -> BitcoinSpendStatus
 |   |-- originalSignatures(txid) -> SignatureCheck
 |   |-- annotate(psbt) -> String
@@ -97,9 +97,9 @@ Wallet
 |   |-- watch() -> Stream<WalletValue<CoinList>>
 |   |-- freeze(outpoint) -> PolicyRevision
 |   `-- unfreeze(outpoint) -> PolicyRevision
-|-- transactions -> Observed<WalletValue<ChainTransactionList>>
+|-- history -> Observed<WalletValue<ChainTransactionList>>
 |-- addresses
-|   |-- current -> Observed<WalletValue<AddressBook>>
+|   |-- book -> Observed<WalletValue<AddressBook>>
 |   |-- at(index, [keychain: Keychain.external]) -> Observed<WalletValue<DerivedAddress>>
 |   `-- owns
 |       |-- script(script) -> Observed<WalletValue<Ownership>>
@@ -110,8 +110,9 @@ Wallet
 ```
 
 ```text
-HeadlessSync
+BackgroundSync
 |-- refresh(key, [collectIncoming: false]) -> SyncCompletion
+|-- revision(key) -> BackgroundRevision
 `-- close() -> Future<void>
 ```
 
