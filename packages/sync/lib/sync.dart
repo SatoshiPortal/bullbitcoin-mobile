@@ -33,3 +33,21 @@ export 'src/domain/ports/wallet_connection_port.dart';
 export 'src/domain/ports/wallet_read_readiness_port.dart';
 export 'src/domain/ports/wallet_revision_reader_port.dart';
 export 'src/data/read/address_script.dart' show bitcoinAddressScript;
+export 'src/domain/decoded_transactions.dart';
+export 'src/data/codec/bitcoin_codec.dart'
+    show
+        bitcoinScriptAddress,
+        canonicalBitcoinPsbt,
+        decodeBitcoinPsbt,
+        decodeBitcoinTransaction,
+        finalizeBitcoinPsbts,
+        maxBitcoinTransactionBytes,
+        maxEncodedBitcoinPsbtLength,
+        parseBitcoinAddress;
+export 'src/data/codec/liquid_codec.dart'
+    show
+        decodeLiquidPset,
+        decodeLiquidTransaction,
+        liquidAddressNetwork,
+        maxEncodedLiquidPsetLength,
+        maxLiquidTransactionBytes;

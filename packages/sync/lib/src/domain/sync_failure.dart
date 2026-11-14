@@ -19,6 +19,8 @@ sealed class SyncFailure extends Failure {
     SyncInitialScanRequiredFailure() => 'initial_scan_required',
     SyncInvalidAddressFailure() => 'invalid_address',
     SyncClosedFailure() => 'closed',
+    SyncInvalidTransactionFailure() => 'invalid_transaction',
+    SyncNotFinalizableFailure() => 'not_finalizable',
   };
 }
 
@@ -71,4 +73,21 @@ final class SyncInvalidAddressFailure extends SyncFailure {
 /// The owning [Sync] was closed; its wallet handles refuse every operation.
 final class SyncClosedFailure extends SyncFailure {
   const SyncClosedFailure();
+}
+
+/// A failure of the wallet-free chain functions: decoding, finalization,
+/// broadcast and lookups. A wallet sync never returns one.
+sealed class SyncChainFailure extends SyncFailure {
+  const SyncChainFailure();
+}
+
+/// Bytes, a PSBT or a PSET that do not decode, exceed the decoder's bound or
+/// do not describe the expected transaction.
+final class SyncInvalidTransactionFailure extends SyncChainFailure {
+  const SyncInvalidTransactionFailure();
+}
+
+/// A signer's PSBT, combined with the one it was given, cannot be finalized.
+final class SyncNotFinalizableFailure extends SyncChainFailure {
+  const SyncNotFinalizableFailure();
 }
