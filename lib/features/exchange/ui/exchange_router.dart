@@ -90,6 +90,7 @@ class ExchangeRouter {
             onHomeRefresh: config.onHomeRefresh,
             onOpenSettings: () => config.onOpenSettings(context),
             onAction: (action) => config.onAction(context, action),
+            onExit: () => config.onExit(context),
           ),
         );
       },
