@@ -43,11 +43,8 @@ Future<NativeWriteReport> checkNativeWrites(String rootPath) async {
   final importers = <String>{};
   for (final path in files) {
     final relative = path.substring(root.length + 1);
-    final result = await collection
-        .contextFor(path)
-        .currentSession
-        .getResolvedUnit(path);
-    if (result is! ResolvedUnitResult) {
+    final result = await resolveProductionUnit(collection, path);
+    if (result == null) {
       violations.add('$relative: unresolved unit');
       continue;
     }
@@ -68,6 +65,26 @@ Future<NativeWriteReport> checkNativeWrites(String rootPath) async {
   return NativeWriteReport(files.length, violations.toSet().toList()..sort());
 }
 
+/// Resolves [path], including a file the analysis options exclude, such as
+/// generated code: the session of the context whose root contains it still
+/// resolves it. Null (failing closed) when no context contains it.
+Future<ResolvedUnitResult?> resolveProductionUnit(
+  AnalysisContextCollection collection,
+  String path,
+) async {
+  final containing = collection.contexts
+      .where((context) => path.startsWith('${context.contextRoot.root.path}/'))
+      .toList();
+  if (containing.isEmpty) return null;
+  containing.sort(
+    (a, b) => b.contextRoot.root.path.length - a.contextRoot.root.path.length,
+  );
+  final result = await containing.first.currentSession.getResolvedUnit(path);
+  return result is ResolvedUnitResult ? result : null;
+}
+
+/// Every Dart file under a `lib/` of the app and its workspace members,
+/// generated code included: nothing compiled into the app is exempt.
 List<String> productionDartFiles(String root) {
   final roots = <Directory>[Directory('$root/lib')];
   for (final group in ['packages', 'features']) {
@@ -86,17 +103,7 @@ List<String> productionDartFiles(String root) {
           recursive: true,
           followLinks: false,
         ))
-          if (file is File &&
-              file.path.endsWith('.dart') &&
-              !RegExp(
-                r'\.(g|freezed|gr|config|mocks|steps)\.dart$',
-              ).hasMatch(file.path) &&
-              !file.path
-                  .split(Platform.pathSeparator)
-                  .any(
-                    (part) => ['generated', 'vendor', 'build'].contains(part),
-                  ))
-            file.path,
+          if (file is File && file.path.endsWith('.dart')) file.path,
   ]..sort();
 }
 
