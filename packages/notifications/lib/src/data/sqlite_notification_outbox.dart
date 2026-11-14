@@ -7,7 +7,6 @@ import 'package:primitives/primitives.dart';
 import 'package:sqlite3/sqlite3.dart';
 
 import '../domain/local_notification.dart';
-import '../domain/notification_destination.dart';
 import '../domain/notification_outbox_port.dart';
 import '../domain/notification_reconcile_result.dart';
 import '../domain/notifications_failure.dart';
@@ -55,16 +54,10 @@ final class SqliteNotificationOutbox implements NotificationOutboxPort {
     _database.execute('''
       CREATE TABLE IF NOT EXISTS notification_outbox (
         event_id TEXT PRIMARY KEY, title TEXT NOT NULL, body TEXT NOT NULL,
-        destination TEXT NOT NULL, created_at INTEGER NOT NULL,
+        created_at INTEGER NOT NULL,
         status TEXT NOT NULL CHECK(status IN ('pending','delivering','delivered')),
         claim_token TEXT, lease_until INTEGER, platform_id INTEGER NOT NULL UNIQUE,
         topic_id TEXT, seen_at INTEGER
-      )
-    ''');
-    _database.execute('''
-      CREATE TABLE IF NOT EXISTS notification_responses (
-        id INTEGER PRIMARY KEY AUTOINCREMENT, payload TEXT NOT NULL,
-        consumed INTEGER NOT NULL DEFAULT 0
       )
     ''');
     _database.execute('''
@@ -108,13 +101,12 @@ final class SqliteNotificationOutbox implements NotificationOutboxPort {
           final platformId = _allocatePlatformId(event.eventId);
           _database.execute(
             '''INSERT INTO notification_outbox
-            (event_id,title,body,destination,created_at,status,platform_id,topic_id)
-            VALUES (?,?,?,?,?,'delivered',?,?)''',
+            (event_id,title,body,created_at,status,platform_id,topic_id)
+            VALUES (?,?,?,?,'delivered',?,?)''',
             [
               event.eventId,
               event.title,
               event.body,
-              event.destination.wireValue,
               event.createdAt.toUtc().millisecondsSinceEpoch,
               platformId,
               observation.topicId,
@@ -133,13 +125,12 @@ final class SqliteNotificationOutbox implements NotificationOutboxPort {
           final platformId = _allocatePlatformId(event.eventId);
           _database.execute(
             '''INSERT INTO notification_outbox
-            (event_id,title,body,destination,created_at,status,platform_id)
-            VALUES (?,?,?,?,?,'pending',?)''',
+            (event_id,title,body,created_at,status,platform_id)
+            VALUES (?,?,?,?,'pending',?)''',
             [
               event.eventId,
               event.title,
               event.body,
-              event.destination.wireValue,
               event.createdAt.toUtc().millisecondsSinceEpoch,
               platformId,
             ],
@@ -195,12 +186,11 @@ final class SqliteNotificationOutbox implements NotificationOutboxPort {
             continue;
           }
           _database.execute(
-            "INSERT INTO notification_outbox (event_id,title,body,destination,created_at,status,platform_id,topic_id) VALUES (?,?,?,?,?,'delivered',?,?)",
+            "INSERT INTO notification_outbox (event_id,title,body,created_at,status,platform_id,topic_id) VALUES (?,?,?,?,'delivered',?,?)",
             [
               event.eventId,
               event.title,
               event.body,
-              event.destination.wireValue,
               event.createdAt.toUtc().millisecondsSinceEpoch,
               _allocatePlatformId(event.eventId),
               topicId,
@@ -225,13 +215,12 @@ final class SqliteNotificationOutbox implements NotificationOutboxPort {
         }
         _database.execute(
           '''INSERT INTO notification_outbox
-          (event_id,title,body,destination,created_at,status,platform_id,topic_id,seen_at)
-          VALUES (?,?,?,?,?,'delivered',?,?,?)''',
+          (event_id,title,body,created_at,status,platform_id,topic_id,seen_at)
+          VALUES (?,?,?,?,'delivered',?,?,?)''',
           [
             event.eventId,
             event.title,
             event.body,
-            event.destination.wireValue,
             event.createdAt.toUtc().millisecondsSinceEpoch,
             _allocatePlatformId(event.eventId),
             topicId,
@@ -312,10 +301,6 @@ final class SqliteNotificationOutbox implements NotificationOutboxPort {
         [current.millisecondsSinceEpoch],
       );
       for (final row in rows) {
-        final destination = NotificationDestination.fromWire(
-          row['destination'] as String,
-        );
-        if (destination == null) continue;
         final token = _claimToken();
         _database.execute(
           "UPDATE notification_outbox SET status='delivering', claim_token=?, lease_until=? WHERE event_id=? AND (status='pending' OR (status='delivering' AND lease_until <= ?))",
@@ -329,7 +314,6 @@ final class SqliteNotificationOutbox implements NotificationOutboxPort {
               eventId: row['event_id'] as String,
               title: row['title'] as String,
               body: row['body'] as String,
-              destination: destination,
               createdAt: DateTime.fromMillisecondsSinceEpoch(
                 row['created_at'] as int,
                 isUtc: true,
@@ -379,45 +363,6 @@ final class SqliteNotificationOutbox implements NotificationOutboxPort {
       }
       return const Ok(null);
     } on SqliteException catch (_) {
-      return const Err(NotificationsStorageFailure());
-    }
-  }
-
-  @override
-  Result<void, NotificationsFailure> persistResponse(String payload) {
-    try {
-      _database.execute(
-        'INSERT INTO notification_responses(payload) VALUES (?)',
-        [payload],
-      );
-      return const Ok(null);
-    } on SqliteException catch (_) {
-      return const Err(NotificationsStorageFailure());
-    }
-  }
-
-  @override
-  Future<Result<String?, NotificationsFailure>> consumeResponse() async {
-    try {
-      _database.execute('BEGIN IMMEDIATE');
-      final rows = _database.select(
-        'SELECT id,payload FROM notification_responses WHERE consumed=0 ORDER BY id LIMIT 1',
-      );
-      if (rows.isEmpty) {
-        _database.execute('COMMIT');
-        return const Ok(null);
-      }
-      final row = rows.single;
-      _database.execute(
-        'UPDATE notification_responses SET consumed=1 WHERE id=?',
-        [row['id']],
-      );
-      _database.execute('COMMIT');
-      return Ok(row['payload'] as String);
-    } on SqliteException catch (_) {
-      try {
-        _database.execute('ROLLBACK');
-      } on SqliteException catch (_) {}
       return const Err(NotificationsStorageFailure());
     }
   }

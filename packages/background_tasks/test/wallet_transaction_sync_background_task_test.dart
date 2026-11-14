@@ -417,9 +417,8 @@ final class _Revisions implements WalletRevisionReaderPort {
 final class _Gateway implements LocalNotificationGateway {
   final List<LocalNotification> shown = [];
   @override
-  Future<Result<void, NotificationsFailure>> initialize(
-    NotificationResponseCallback onResponse,
-  ) async => const Ok(null);
+  Future<Result<void, NotificationsFailure>> initialize() async =>
+      const Ok(null);
   @override
   Future<Result<bool, NotificationsFailure>> isEnabled() async =>
       const Ok(true);

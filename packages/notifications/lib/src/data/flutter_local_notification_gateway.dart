@@ -4,7 +4,6 @@ import 'package:primitives/primitives.dart';
 import '../domain/local_notification.dart';
 import '../domain/local_notification_gateway.dart';
 import '../domain/notifications_failure.dart';
-import '../domain/notification_payload_codec.dart';
 import 'flutter_notification_permission_gateway.dart';
 
 final class FlutterLocalNotificationGateway
@@ -16,17 +15,17 @@ final class FlutterLocalNotificationGateway
   final String channelName;
   final String? channelDescription;
   final String androidIconResource;
-  final NotificationPayloadCodec _codec;
-  final bool emitDestinations;
 
+  /// A tap opens the app: no notification carries a destination payload.
   FlutterLocalNotificationGateway({
     required this.channelId,
     required this.channelName,
     required this.androidIconResource,
     this.channelDescription,
-    this.emitDestinations = true,
-    this._codec = const NotificationPayloadCodec(),
-  }) : _plugin = FlutterLocalNotificationsPlugin(),
+    // Phase A only: lib/features/wallet still passes false; removed with it.
+    bool emitDestinations = false,
+  }) : assert(!emitDestinations, 'Notifications carry no destination'),
+       _plugin = FlutterLocalNotificationsPlugin(),
        _permissions = FlutterNotificationPermissionGateway(
          channelId: channelId,
        );
@@ -44,9 +43,7 @@ final class FlutterLocalNotificationGateway
       _permissions.openSystemSettings();
 
   @override
-  Future<Result<void, NotificationsFailure>> initialize(
-    NotificationResponseCallback onResponse,
-  ) async {
+  Future<Result<void, NotificationsFailure>> initialize() async {
     try {
       final initialized = await _plugin.initialize(
         settings: InitializationSettings(
@@ -57,19 +54,10 @@ final class FlutterLocalNotificationGateway
             requestSoundPermission: false,
           ),
         ),
-        onDidReceiveNotificationResponse: emitDestinations
-            ? (response) => onResponse(response.payload ?? '')
-            : null,
       );
-      if (initialized != true) return const Err(NotificationsGatewayFailure());
-      if (!emitDestinations) return const Ok(null);
-      final launch = await _plugin.getNotificationAppLaunchDetails();
-      final payload = launch?.notificationResponse?.payload;
-      if (launch?.didNotificationLaunchApp == true && payload != null) {
-        final persisted = onResponse(payload);
-        if (persisted case Err(:final failure)) return Err(failure);
-      }
-      return const Ok(null);
+      return initialized == true
+          ? const Ok(null)
+          : const Err(NotificationsGatewayFailure());
     } on Exception catch (_) {
       return const Err(NotificationsGatewayFailure());
     }
@@ -93,9 +81,6 @@ final class FlutterLocalNotificationGateway
           ),
           iOS: DarwinNotificationDetails(),
         ),
-        payload: emitDestinations
-            ? _codec.encode(notification.destination)
-            : null,
       );
       return const Ok(null);
     } on Exception catch (_) {

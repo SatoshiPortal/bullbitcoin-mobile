@@ -28,7 +28,6 @@ void main() {
           eventId: 'payment',
           title: 'Payment received',
           body: 'One payment',
-          destination: NotificationDestination.walletHome,
           createdAt: DateTime.utc(2026),
         ),
         platformId: 1,

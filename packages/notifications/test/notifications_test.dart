@@ -13,8 +13,6 @@ final class FakeGateway implements LocalNotificationGateway {
   Result<bool, NotificationsFailure> permissionResult = const Ok(true);
   int permissionRequestCount = 0;
   int settingsOpenCount = 0;
-  NotificationResponseCallback? responseCallback;
-  bool invokeLaunch = false;
 
   @override
   Future<Result<bool, NotificationsFailure>> requestPermission() async {
@@ -32,12 +30,8 @@ final class FakeGateway implements LocalNotificationGateway {
   }
 
   @override
-  Future<Result<void, NotificationsFailure>> initialize(
-    NotificationResponseCallback onResponse,
-  ) async {
-    responseCallback = onResponse;
-    return invokeLaunch ? onResponse('launch-payload') : const Ok(null);
-  }
+  Future<Result<void, NotificationsFailure>> initialize() async =>
+      const Ok(null);
 
   @override
   Future<Result<void, NotificationsFailure>> show(
@@ -49,57 +43,10 @@ final class FakeGateway implements LocalNotificationGateway {
   }
 }
 
-final class FailingResponseOutbox implements NotificationOutboxPort {
-  bool fail = true;
-  final List<String> responses = [];
-  @override
-  Future<Result<void, NotificationsFailure>> recordObserved(
-    String topicId,
-    List<LocalNotification> observedEvents, {
-    List<LocalNotification> baselineEvents = const [],
-    bool onlyNew = false,
-  }) async => const Ok(null);
-  @override
-  Future<Result<bool, NotificationsFailure>> isSeen(String eventId) async =>
-      const Ok(false);
-  @override
-  Future<Result<NotificationReconcileResult, NotificationsFailure>>
-  reconcileTopicsAndEnqueue(
-    List<NotificationTopicObservation> observations,
-    LocalNotification Function(List<LocalNotification> newEvents)
-    aggregateEvent,
-  ) async => const Ok(NotificationReconcileResult(pendingCount: 0));
-  @override
-  Future<Result<List<ClaimedNotification>, NotificationsFailure>> claimPending({
-    DateTime? now,
-  }) async => const Ok([]);
-  @override
-  Future<Result<void, NotificationsFailure>> markDelivered(
-    String eventId,
-    String claimToken,
-  ) async => const Ok(null);
-  @override
-  Future<Result<void, NotificationsFailure>> release(
-    String eventId,
-    String claimToken,
-  ) async => const Ok(null);
-  @override
-  Result<void, NotificationsFailure> persistResponse(String payload) {
-    if (fail) return const Err(NotificationsStorageFailure());
-    responses.add(payload);
-    return const Ok(null);
-  }
-
-  @override
-  Future<Result<String?, NotificationsFailure>> consumeResponse() async =>
-      Ok(responses.isEmpty ? null : responses.removeAt(0));
-}
-
 LocalNotification event(String id) => LocalNotification(
   eventId: id,
   title: 'Title',
   body: 'Body',
-  destination: NotificationDestination.walletHome,
   createdAt: DateTime.utc(2026, 9, 2),
 );
 
@@ -354,13 +301,6 @@ void main() {
     },
   );
 
-  test('event IDs map deterministically to 31-bit platform IDs', () {
-    final first = NotificationsFacade.hashCandidateFor('first');
-    expect(first, inInclusiveRange(0, 0x7fffffff));
-    expect(first, NotificationsFacade.hashCandidateFor('first'));
-    expect(first, isNot(NotificationsFacade.hashCandidateFor('second')));
-  });
-
   test(
     'permission request delegates success and refusal to the gateway',
     () async {
@@ -429,41 +369,6 @@ void main() {
   });
 
   test(
-    'failed response is retained and retried after storage recovers',
-    () async {
-      final gateway = FakeGateway();
-      final responseOutbox = FailingResponseOutbox();
-      final facade = NotificationsFacade(
-        gateway: gateway,
-        outbox: responseOutbox,
-      );
-      expect(await facade.initialize(), isA<Ok>());
-      final payload = NotificationsFacade.encodeDestination(
-        NotificationDestination.walletHome,
-      );
-      final callback = gateway.responseCallback;
-      expect(callback, isNotNull);
-      if (callback == null) return;
-      expect(callback(payload), isA<Err>());
-      responseOutbox.fail = false;
-      expect(await facade.retryUnpersistedResponses(), isA<Ok>());
-      expect(
-        (await facade.consumePendingDestination() as Ok).value,
-        NotificationDestination.walletHome,
-      );
-    },
-  );
-
-  test('launch persistence failure is returned by initialize', () async {
-    final gateway = FakeGateway()..invokeLaunch = true;
-    final failing = NotificationsFacade(
-      gateway: gateway,
-      outbox: FailingResponseOutbox(),
-    );
-    expect(await failing.initialize(), isA<Err>());
-  });
-
-  test(
     'successful delivery marks delivered and retry uses the same ID',
     () async {
       final gateway = FakeGateway();
@@ -471,9 +376,7 @@ void main() {
       await pending(outbox, 'retryable');
       expect(await facade.deliverPending(), isA<Ok>());
       expect(await facade.deliverPending(), isA<Ok>());
-      expect(gateway.shownIds, [
-        NotificationsFacade.hashCandidateFor('retryable'),
-      ]);
+      expect(gateway.shownIds, hasLength(1));
 
       await pending(outbox, 'crash-window');
       final claimed = await outbox.claimPending(
@@ -484,10 +387,8 @@ void main() {
       );
       expect((claimed as Ok).value.single.notification.eventId, 'crash-window');
       expect(
-        NotificationsFacade.hashCandidateFor(
-          (recovered as Ok).value.single.notification.eventId,
-        ),
-        NotificationsFacade.hashCandidateFor('crash-window'),
+        (recovered as Ok).value.single.platformId,
+        (claimed as Ok).value.single.platformId,
       );
     },
   );
@@ -542,38 +443,4 @@ void main() {
     gateway.fail = false;
     expect(await facade.deliverPending(), isA<Ok>());
   });
-
-  test('destination payload is stable and rejects unknown values', () {
-    final payload = NotificationsFacade.encodeDestination(
-      NotificationDestination.walletHome,
-    );
-    final decoded = NotificationsFacade.decodeDestination(payload);
-    expect((decoded as Ok).value, NotificationDestination.walletHome);
-    expect(
-      NotificationsFacade.decodeDestination('{"destination":"future"}'),
-      isA<Err>(),
-    );
-  });
-
-  test(
-    'pending destination is consumed once after reopening the database',
-    () async {
-      final payload = NotificationsFacade.encodeDestination(
-        NotificationDestination.walletHome,
-      );
-      outbox.persistResponse(payload);
-      outbox.dispose();
-      outbox = SqliteNotificationOutbox(
-        databasePath: '${directory.path}/notifications.sqlite',
-      );
-      final facade = NotificationsFacade(
-        gateway: FakeGateway(),
-        outbox: outbox,
-      );
-      final consumed = await facade.consumePendingDestination();
-      expect((consumed as Ok).value, NotificationDestination.walletHome);
-      final empty = await facade.consumePendingDestination();
-      expect((empty as Ok).value, isNull);
-    },
-  );
 }

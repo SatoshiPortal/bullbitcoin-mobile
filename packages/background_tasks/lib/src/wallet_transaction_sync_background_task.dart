@@ -270,7 +270,6 @@ final class WalletTransactionSyncBackgroundTask {
                         .toString(),
                     title: text.title,
                     body: text.body,
-                    destination: NotificationDestination.walletHome,
                     createdAt: value.completedAt,
                   );
                 },

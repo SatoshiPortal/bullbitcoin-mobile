@@ -1,51 +1,21 @@
 import 'package:bull_logger/bull_logger.dart';
-import 'dart:convert';
-import 'dart:typed_data';
-
-import 'package:crypto/crypto.dart';
 import 'package:primitives/primitives.dart';
 
 import 'domain/local_notification.dart';
 import 'domain/local_notification_gateway.dart';
-import 'domain/notification_destination.dart';
 import 'domain/notification_outbox_port.dart';
 import 'domain/notifications_failure.dart';
-import 'domain/notification_payload_codec.dart';
 import 'domain/notification_reconcile_result.dart';
 
 final class NotificationsFacade {
   final LocalNotificationGateway gateway;
   final NotificationOutboxPort outbox;
-  final List<String> _unpersistedResponses = [];
   bool? _allowed;
 
   NotificationsFacade({required this.gateway, required this.outbox});
 
   Future<Result<void, NotificationsFailure>> initialize() =>
-      gateway.initialize((payload) {
-        final persisted = outbox.persistResponse(payload);
-        if (persisted case Err()) _unpersistedResponses.add(payload);
-        return persisted;
-      });
-
-  Future<Result<void, NotificationsFailure>> retryUnpersistedResponses() async {
-    NotificationsFailure? firstFailure;
-    final remaining = <String>[];
-    for (final payload in _unpersistedResponses) {
-      final persisted = outbox.persistResponse(payload);
-      switch (persisted) {
-        case Ok():
-          break;
-        case Err(:final failure):
-          firstFailure ??= failure;
-          remaining.add(payload);
-      }
-    }
-    _unpersistedResponses
-      ..clear()
-      ..addAll(remaining);
-    return firstFailure == null ? const Ok(null) : Err(firstFailure);
-  }
+      gateway.initialize();
 
   /// Records discoveries from a sync completed in foreground, never a read.
   /// On first completion, baselineEvents initializes history without marking
@@ -162,29 +132,4 @@ final class NotificationsFacade {
     }
     return const Ok(null);
   }
-
-  Future<Result<NotificationDestination?, NotificationsFailure>>
-  consumePendingDestination() async {
-    final response = await outbox.consumeResponse();
-    switch (response) {
-      case Err(:final failure):
-        return Err(failure);
-      case Ok(:final value):
-        if (value == null) return const Ok(null);
-        return decodeDestination(value).map((destination) => destination);
-    }
-  }
-
-  static int hashCandidateFor(String eventId) {
-    final digest = sha256.convert(utf8.encode(eventId)).bytes;
-    final value = ByteData.sublistView(Uint8List.fromList(digest)).getUint32(0);
-    return value & 0x7fffffff;
-  }
-
-  static String encodeDestination(NotificationDestination destination) =>
-      const NotificationPayloadCodec().encode(destination);
-
-  static Result<NotificationDestination, NotificationsFailure>
-  decodeDestination(String payload) =>
-      const NotificationPayloadCodec().decode(payload);
 }

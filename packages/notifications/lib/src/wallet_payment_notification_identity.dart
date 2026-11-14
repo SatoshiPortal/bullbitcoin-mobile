@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:crypto/crypto.dart';
 import 'package:primitives/primitives.dart';
 import 'domain/local_notification.dart';
-import 'domain/notification_destination.dart';
 import 'package:transaction_sync/transaction_sync.dart';
 
 /// Names a wallet's payment topic and its events. The background task and
@@ -30,7 +29,6 @@ final class WalletPaymentNotificationIdentity {
     eventId: eventId(key, txid),
     title: '',
     body: '',
-    destination: NotificationDestination.walletHome,
     createdAt: observedAt,
   );
 

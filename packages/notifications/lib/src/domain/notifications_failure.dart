@@ -21,11 +21,3 @@ final class NotificationsPermissionDeniedFailure extends NotificationsFailure {
 final class NotificationsClaimLostFailure extends NotificationsFailure {
   const NotificationsClaimLostFailure();
 }
-
-final class UnknownNotificationDestinationFailure extends NotificationsFailure {
-  const UnknownNotificationDestinationFailure();
-}
-
-final class InvalidNotificationPayloadFailure extends NotificationsFailure {
-  const InvalidNotificationPayloadFailure();
-}

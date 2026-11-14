@@ -68,10 +68,4 @@ abstract interface class NotificationOutboxPort {
     String eventId,
     String claimToken,
   );
-
-  @useResult
-  Result<void, NotificationsFailure> persistResponse(String payload);
-
-  @useResult
-  Future<Result<String?, NotificationsFailure>> consumeResponse();
 }

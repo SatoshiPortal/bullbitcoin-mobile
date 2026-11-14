@@ -33,6 +33,5 @@ void main() {
       WalletPaymentNotificationIdentity.eventId(key(), 'private-txid'),
     );
     expect(event.eventId, matches(RegExp(r'^[a-f0-9]{64}$')));
-    expect(event.destination, NotificationDestination.walletHome);
   });
 }
