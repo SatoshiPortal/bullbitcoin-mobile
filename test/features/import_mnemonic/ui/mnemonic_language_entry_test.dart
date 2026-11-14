@@ -209,6 +209,9 @@ void main() {
     await fill(tester, words);
     await pick(tester, bip39.Language.japanese);
     const passphrase = 'Cafe\u0301 日本語';
+    await tester.ensureVisible(find.text('I have a passphrase'));
+    await tester.tap(find.text('I have a passphrase'));
+    await tester.pumpAndSettle();
     tester
         .widget<BullSecretTextInput>(find.byType(BullSecretTextInput))
         .onChanged(passphrase);

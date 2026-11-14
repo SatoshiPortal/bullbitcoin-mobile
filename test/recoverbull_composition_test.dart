@@ -6,6 +6,8 @@ import 'package:bb_mobile/core/settings/settings_locator.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/wallet/wallet_locator.dart';
 import 'package:bb_mobile/locator.dart';
+import 'package:bb_mobile/features/wallet/wallet_locator.dart'
+    as feature_wallet;
 import 'package:bull_recoverbull/bull_recoverbull.dart';
 // Substitute only the native Tor backend; keep its repository and owner wiring.
 // ignore: implementation_imports
@@ -66,6 +68,7 @@ void main() {
       await WalletLocator.registerDatasources(services);
       WalletLocator.registerRepositories(services);
       WalletLocator.registerUsecases(services);
+      feature_wallet.WalletLocator.setup(services);
 
       expect(services.isRegistered<EmbeddedTor>(), isFalse);
       await AppLocator.setupRecoverBull(

@@ -1,12 +1,13 @@
 import 'package:primitives/primitives.dart'
     show BitcoinUnit, Err, Fingerprint, Ok;
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
-import 'package:bb_mobile/core/settings/data/settings_repository.dart';
+import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/create_default_wallets_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/create_default_wallets_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
+import 'package:bb_mobile/features/wallet/domain/default_wallet_failure.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:secrets/secrets.dart' as s;
@@ -85,7 +86,7 @@ void main() {
     final received = <s.Secret>[];
     stubCreation(received);
 
-    expect(await create.execute(secret: secret), hasLength(2));
+    expect((await create.execute(secret: secret) as Ok).value, hasLength(2));
     expect(received.map((r) => r.id), [secret.id, secret.id]);
     for (final network in [Network.bitcoinMainnet, Network.liquidMainnet]) {
       verify(
@@ -99,6 +100,40 @@ void main() {
       ).called(1);
     }
   });
+
+  test('both default wallets retain the supplied passphrase secret', () async {
+    final protected =
+        (await secrets.import(words: words, passphrase: 'synthetic-passphrase')
+                as Ok<s.Secret, s.SecretFailure>)
+            .value;
+    final received = <s.Secret>[];
+    stubCreation(received);
+    expect((await create.execute(secret: protected) as Ok).value, hasLength(2));
+    expect(received.map((secret) => secret.id), [protected.id, protected.id]);
+    expect(received.every((secret) => secret.info.hasPassphrase), isTrue);
+  });
+
+  test(
+    'words and passphrase import and reuse the same protected secret',
+    () async {
+      final received = <s.Secret>[];
+      stubCreation(received);
+      for (var i = 0; i < 2; i++) {
+        final result = await create.execute(
+          mnemonicWords: words,
+          passphrase: 'synthetic-passphrase',
+        );
+        expect((result as Ok).value, hasLength(2));
+      }
+      expect(received, hasLength(4));
+      expect(received.every((secret) => secret.info.hasPassphrase), isTrue);
+      expect(
+        received.every((secret) => secret.id == received.first.id),
+        isTrue,
+      );
+      expect(received.first.id, isNot(stored.id));
+    },
+  );
 
   test(
     'words resolving to a stored non-English duplicate use that entry',
@@ -122,12 +157,28 @@ void main() {
       final received = <s.Secret>[];
       stubCreation(received);
 
-      expect(await create.execute(mnemonicWords: shared), hasLength(2));
+      expect(
+        (await create.execute(mnemonicWords: shared) as Ok).value,
+        hasLength(2),
+      );
       expect(received.map((r) => r.id), [french.id, french.id]);
       expect(received.first.info.language, bip39.Language.french);
       expect(storage.entries, persisted);
     },
   );
+
+  test('a passphrase without words is rejected before wallet access', () async {
+    await expectLater(
+      create.execute(passphrase: 'synthetic-passphrase'),
+      throwsArgumentError,
+    );
+    await expectLater(
+      create.execute(secret: stored, passphrase: 'synthetic-passphrase'),
+      throwsArgumentError,
+    );
+    verifyZeroInteractions(settings);
+    verifyZeroInteractions(wallets);
+  });
 
   test('a seed-only secret is refused as needing a mnemonic', () async {
     // BIP32 test vector 1: seed 000102…0f, master fingerprint 3442193e.
@@ -139,21 +190,9 @@ void main() {
                 as Ok<s.Secret, s.SecretFailure>)
             .value;
     expect(seedOnly.info.language, isNull);
-    await expectLater(
-      create.execute(secret: seedOnly),
-      throwsA(
-        isA<CreateDefaultWalletsException>()
-            .having(
-              (e) => e.runtimeType,
-              'exact exception type',
-              CreateDefaultWalletsException,
-            )
-            .having(
-              (e) => e.message,
-              'message',
-              'Default wallets require a mnemonic, not a raw seed',
-            ),
-      ),
+    expect(
+      (await create.execute(secret: seedOnly) as Err).failure,
+      isA<DefaultWalletMnemonicRequiredFailure>(),
     );
     verifyZeroInteractions(wallets);
     verifyZeroInteractions(settings);
@@ -192,9 +231,9 @@ void main() {
               : liquid;
         });
 
-        await expectLater(
-          create.execute(mnemonicWords: words),
-          throwsA(isA<CreateDefaultWalletsException>()),
+        expect(
+          (await create.execute(mnemonicWords: words) as Err).failure,
+          isA<DefaultWalletCreationFailure>(),
         );
         final persisted = Map<String, String>.of(storage.entries);
         expect(persisted, contains('seed_${stored.id.hex}'));
@@ -202,7 +241,10 @@ void main() {
           verify(() => wallets.deleteWallet(walletId: 'bitcoin')).called(1);
         }
 
-        expect(await create.execute(mnemonicWords: words), [bitcoin, liquid]);
+        expect((await create.execute(mnemonicWords: words) as Ok).value, [
+          bitcoin,
+          liquid,
+        ]);
         expect(storage.entries, persisted);
         expect(
           await secrets.import(words: words),
@@ -228,9 +270,9 @@ void main() {
       ),
     ).thenThrow(Exception('temporary wallet creation failure'));
 
-    await expectLater(
-      create.execute(mnemonicWords: words),
-      throwsA(isA<CreateDefaultWalletsException>()),
+    expect(
+      (await create.execute(mnemonicWords: words) as Err).failure,
+      isA<DefaultWalletCreationFailure>(),
     );
     verify(
       () => wallets.createWallet(
@@ -244,24 +286,6 @@ void main() {
     expect(storage.entries, persisted);
   });
 
-  test(
-    'a supplied passphrase secret is refused before wallet access',
-    () async {
-      final protected =
-          (await secrets.import(words: words, passphrase: 'test passphrase')
-                  as Ok<s.Secret, s.SecretFailure>)
-              .value;
-      final persisted = Map<String, String>.of(storage.entries);
-
-      await expectLater(
-        create.execute(secret: protected),
-        throwsA(isA<ArgumentError>()),
-      );
-      verifyZeroInteractions(settings);
-      verifyZeroInteractions(wallets);
-      expect(storage.entries, persisted);
-    },
-  );
   for (final partial in [false, true]) {
     for (final useHandle in [false, true]) {
       test(
@@ -284,12 +308,14 @@ void main() {
           );
           final before = Map<String, String>.of(storage.entries);
           final reads = storage.reads;
-          await expectLater(
-            create.execute(
-              secret: useHandle ? stored : null,
-              mnemonicWords: useHandle ? null : words,
-            ),
-            throwsA(isA<CreateDefaultWalletsException>()),
+          expect(
+            (await create.execute(
+                      secret: useHandle ? stored : null,
+                      mnemonicWords: useHandle ? null : words,
+                    )
+                    as Err)
+                .failure,
+            isA<DefaultWalletAlreadyExistsFailure>(),
           );
           expect(storage.entries, before);
           expect(storage.reads, reads);
@@ -321,7 +347,7 @@ void main() {
       (_) async => Ok<List<Wallet>, WalletFailure>([bitcoin, liquid]),
     );
     final reads = storage.reads;
-    expect(await create.execute(), [bitcoin, liquid]);
+    expect((await create.execute() as Ok).value, [bitcoin, liquid]);
     expect(storage.reads, reads);
   });
 
@@ -338,9 +364,9 @@ void main() {
       ).thenAnswer((_) async => Ok<List<Wallet>, WalletFailure>([bitcoin]));
       final before = Map<String, String>.of(storage.entries);
       final reads = storage.reads;
-      await expectLater(
-        create.execute(),
-        throwsA(isA<CreateDefaultWalletsException>()),
+      expect(
+        (await create.execute() as Err).failure,
+        isA<DefaultWalletAlreadyExistsFailure>(),
       );
       expect(storage.entries, before);
       expect(storage.reads, reads);

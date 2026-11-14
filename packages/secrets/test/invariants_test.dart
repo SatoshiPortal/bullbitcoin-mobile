@@ -314,7 +314,9 @@ import 'package:bip39_mnemonic/bip39_mnemonic.dart'
       'FetchSecretFailure',
       'StoreSecretFailure', 'TrashSecretFailure', 'KeystoreLockedFailure',
       'DatabaseKeyCorruptFailure', 'MnemonicRequiredFailure',
-      'InvalidMnemonicFailure', 'InvalidVaultFailure',
+      'InvalidMnemonicFailure',
+      'InvalidVaultFailure',
+      'VaultIdentityMismatchFailure',
       'UnsupportedNetworkFailure', 'FingerprintMismatchFailure',
       'UseSecretFailure',
     };
@@ -387,6 +389,7 @@ import 'package:bip39_mnemonic/bip39_mnemonic.dart'
       'signPsbt': 'derived',
       'signPset': 'derived',
       'verifyWords': 'derived',
+      'verifyPassphrase': 'derived',
       'verifySeed': 'derived',
       // material by design: children this feature was asked to create, for use elsewhere
       'bip85Hex': 'material',

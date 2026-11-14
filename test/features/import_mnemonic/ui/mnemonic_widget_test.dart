@@ -542,10 +542,45 @@ void main() {
       handle.dispose();
     });
 
+    testWidgets('passphrase entry is initially collapsed', (tester) async {
+      await pumpWidget(tester, allowPassphrase: true, onSubmit: (_) {});
+      expect(passphraseField(), findsNothing);
+      await tester.ensureVisible(find.text('I have a passphrase'));
+      await tester.tap(find.text('I have a passphrase'));
+      await tester.pumpAndSettle();
+      expect(passphraseField(), findsOneWidget);
+      await tester.enterText(passphraseField(), '  Mixed Case ');
+      await tester.pump();
+      expect(
+        find.text('Leading or trailing spaces are part of your passphrase.'),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('clears the typed passphrase when the app pauses', (
+      tester,
+    ) async {
+      await pumpWidget(tester, allowPassphrase: true, onSubmit: (_) {});
+      await tester.ensureVisible(find.text('I have a passphrase'));
+      await tester.tap(find.text('I have a passphrase'));
+      await tester.pumpAndSettle();
+      await tester.enterText(passphraseField(), 'secret');
+      tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.inactive);
+      await tester.pump();
+      expect(
+        tester.widget<TextField>(passphraseField()).controller?.text,
+        isEmpty,
+      );
+      tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
+    });
+
     testWidgets('the passphrase field takes the value exactly as typed', (
       tester,
     ) async {
       await pumpWidget(tester, allowPassphrase: true, onSubmit: (_) {});
+      await tester.ensureVisible(find.text('I have a passphrase'));
+      await tester.tap(find.text('I have a passphrase'));
+      await tester.pumpAndSettle();
 
       final field = fieldByHint(tester, 'Optional Passphrase');
 
@@ -564,6 +599,9 @@ void main() {
 
     testWidgets('the passphrase is obscured until revealed', (tester) async {
       await pumpWidget(tester, allowPassphrase: true, onSubmit: (_) {});
+      await tester.ensureVisible(find.text('I have a passphrase'));
+      await tester.tap(find.text('I have a passphrase'));
+      await tester.pumpAndSettle();
 
       expect(fieldByHint(tester, 'Optional Passphrase').obscureText, isTrue);
 
@@ -579,6 +617,9 @@ void main() {
     ) async {
       final handle = tester.ensureSemantics();
       await pumpWidget(tester, allowPassphrase: true, onSubmit: (_) {});
+      await tester.ensureVisible(find.text('I have a passphrase'));
+      await tester.tap(find.text('I have a passphrase'));
+      await tester.pumpAndSettle();
       await tester.enterText(passphraseField(), secretPassphrase);
       await tester.pump();
 
@@ -592,6 +633,9 @@ void main() {
 
     testWidgets('the passphrase cannot be selected or copied', (tester) async {
       await pumpWidget(tester, allowPassphrase: true, onSubmit: (_) {});
+      await tester.ensureVisible(find.text('I have a passphrase'));
+      await tester.tap(find.text('I have a passphrase'));
+      await tester.pumpAndSettle();
       await tester.enterText(passphraseField(), secretPassphrase);
       await tester.ensureVisible(passphraseField());
       await tester.pumpAndSettle();
