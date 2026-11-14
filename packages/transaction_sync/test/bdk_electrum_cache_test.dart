@@ -322,7 +322,7 @@ void main() {
       );
       final revisions = RevisionStore(writerMetadataPath(dir.path));
       try {
-        final writer = NativeWalletWriter(
+        final writer = NativeWalletWriterRepository(
           lockDirectory: writerLockDirectory(dir.path),
           revisions: revisions,
           documentsDirectory: dir.path,
@@ -408,7 +408,7 @@ void main() {
           documentsDirectory: () async => dir.path,
         );
         final revisions = RevisionStore(writerMetadataPath(dir.path));
-        final writer = NativeWalletWriter(
+        final writer = NativeWalletWriterRepository(
           lockDirectory: writerLockDirectory(dir.path),
           revisions: revisions,
           documentsDirectory: dir.path,
@@ -658,7 +658,7 @@ void main() {
         completed(await sync.execute(descriptor));
         final revisions = RevisionStore(writerMetadataPath(dir.path));
         addTearDown(revisions.close);
-        final writer = NativeWalletWriter(
+        final writer = NativeWalletWriterRepository(
           lockDirectory: writerLockDirectory(dir.path),
           revisions: revisions,
           documentsDirectory: dir.path,
@@ -938,7 +938,7 @@ void main() {
         completed(await sync.execute(descriptor));
         final revisions = RevisionStore(writerMetadataPath(dir.path));
         addTearDown(revisions.close);
-        final writer = NativeWalletWriter(
+        final writer = NativeWalletWriterRepository(
           lockDirectory: writerLockDirectory(dir.path),
           revisions: revisions,
           documentsDirectory: dir.path,

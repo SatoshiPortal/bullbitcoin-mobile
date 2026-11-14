@@ -7,6 +7,7 @@ export 'src/domain/sync_completion.dart';
 export 'src/domain/transaction_sync_failure.dart';
 export 'src/domain/wallet_revision.dart';
 export 'src/domain/public_wallet_descriptor.dart';
+export 'src/domain/repositories/wallet_writer_repository.dart';
 export 'src/domain/ports/read_admission_port.dart';
 export 'src/domain/ports/reserved_address_port.dart';
 export 'src/domain/ports/wallet_catalog_port.dart';

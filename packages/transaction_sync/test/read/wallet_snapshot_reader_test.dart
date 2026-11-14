@@ -126,7 +126,7 @@ void main() {
     () async {
       create();
       final store = RevisionStore(writerMetadataPath(documents.path));
-      final writer = NativeWalletWriter(
+      final writer = NativeWalletWriterRepository(
         lockDirectory: writerLockDirectory(documents.path),
         revisions: store,
         documentsDirectory: documents.path,
@@ -196,7 +196,7 @@ void main() {
   test('writer adopts the previously revealed receive index', () async {
     create(revealed: 12);
     final revisions = RevisionStore(writerMetadataPath(documents.path));
-    final writer = NativeWalletWriter(
+    final writer = NativeWalletWriterRepository(
       lockDirectory: writerLockDirectory(documents.path),
       revisions: revisions,
       documentsDirectory: documents.path,
@@ -216,7 +216,7 @@ void main() {
           await writer.receive(descriptor.key, expectedGeneration: 0)
               as Ok<ReceiveAddressIssued, TransactionSyncFailure>;
       expect(first.value.index, 12);
-      final reopened = NativeWalletWriter(
+      final reopened = NativeWalletWriterRepository(
         lockDirectory: writerLockDirectory(documents.path),
         revisions: revisions,
         documentsDirectory: documents.path,

@@ -62,7 +62,7 @@ void main() {
                       as p.Ok<PublicWalletDescriptor, TransactionSyncFailure>)
                   .value;
           final catalog = _Catalog(descriptor);
-          final writer = NativeWalletWriter(
+          final writer = NativeWalletWriterRepository(
             lockDirectory: '${directory.path}/locks',
             revisions: revisions,
             documentsDirectory: directory.path,

@@ -59,7 +59,7 @@ void main() {
         final dir = Directory.systemTemp.createTempSync('bdk-adoption-');
         final revisions = RevisionStore('${dir.path}/revisions.sqlite');
         final sessions = SdkWriteSessions(dir.path);
-        final writer = NativeWalletWriter(
+        final writer = NativeWalletWriterRepository(
           lockDirectory: '${dir.path}/locks',
           revisions: revisions,
           documentsDirectory: dir.path,
@@ -118,7 +118,7 @@ void main() {
     final metadataPath = '${directory.path}/revisions.sqlite';
     var revisions = RevisionStore(metadataPath);
     final reserved = _Reserved();
-    NativeWalletWriter writer() => NativeWalletWriter(
+    NativeWalletWriterRepository writer() => NativeWalletWriterRepository(
       lockDirectory: '${directory.path}/locks',
       revisions: revisions,
       documentsDirectory: directory.path,

@@ -97,7 +97,7 @@ final class WalletNativeRuntime implements WalletNativeLifecycle {
       subscription = revisions.changes.listen(_changes.add);
       // Inject a failure after acquiring resources to verify cleanup in tests.
       _onRevisionStoreOpened?.call(revisions);
-      final writer = NativeWalletWriter(
+      final writer = NativeWalletWriterRepository(
         lockDirectory: writerLockDirectory(documents),
         revisions: revisions,
         documentsDirectory: documents,
@@ -500,7 +500,7 @@ final class _NativeServices {
   bool recoveredMetadata;
   final RevisionStore revisions;
   final StreamSubscription<WalletRevisionState> subscription;
-  final NativeWalletWriter writer;
+  final WalletWriterRepository writer;
   final WalletSnapshotReader reader;
   _NativeServices(
     this.documents,

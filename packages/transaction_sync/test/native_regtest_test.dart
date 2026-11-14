@@ -56,7 +56,7 @@ void main() {
       final catalog = SingleWalletCatalog(descriptor);
       final metadataPath = writerMetadataPath(directory.path);
       var revisions = RevisionStore(metadataPath);
-      NativeWalletWriter writer() => NativeWalletWriter(
+      NativeWalletWriterRepository writer() => NativeWalletWriterRepository(
         lockDirectory: writerLockDirectory(directory.path),
         revisions: revisions,
         documentsDirectory: directory.path,
@@ -140,7 +140,7 @@ void main() {
               : original.internalDescriptor,
         );
         final revisions = RevisionStore(writerMetadataPath(directory.path));
-        final writer = NativeWalletWriter(
+        final writer = NativeWalletWriterRepository(
           lockDirectory: writerLockDirectory(directory.path),
           revisions: revisions,
           documentsDirectory: directory.path,

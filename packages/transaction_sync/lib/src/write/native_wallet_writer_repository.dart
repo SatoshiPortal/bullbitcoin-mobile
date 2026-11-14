@@ -8,6 +8,7 @@ import '../domain/native_network_policy.dart';
 import '../domain/ports/read_admission_port.dart';
 import '../domain/ports/reserved_address_port.dart';
 import '../domain/ports/wallet_catalog_port.dart';
+import '../domain/repositories/wallet_writer_repository.dart';
 import '../domain/transaction_sync_failure.dart';
 import '../domain/wallet_key.dart';
 import '../domain/wallet_revision.dart';
@@ -21,12 +22,13 @@ import 'writer_session.dart';
 /// which resolves descriptors from the catalog. Invoke inside the isolate
 /// doing native IO. The caller owns the shared RevisionStore and subscribes
 /// before reading. No method times out native work.
-final class NativeWalletWriter implements ReadAdmissionPort {
+final class NativeWalletWriterRepository
+    implements WalletWriterRepository, ReadAdmissionPort {
   final WriterSession _session;
   final WalletCatalogPort _catalog;
   final ReservedAddressPort _reserved;
 
-  NativeWalletWriter({
+  NativeWalletWriterRepository({
     required String lockDirectory,
     required RevisionStore revisions,
     required String documentsDirectory,
@@ -43,7 +45,7 @@ final class NativeWalletWriter implements ReadAdmissionPort {
        );
 
   @visibleForTesting
-  NativeWalletWriter.withSessions({
+  NativeWalletWriterRepository.withSessions({
     required String lockDirectory,
     required RevisionStore revisions,
     required WalletCatalogPort catalog,
@@ -64,6 +66,7 @@ final class NativeWalletWriter implements ReadAdmissionPort {
 
   /// Re-import reserves the next generation before publishing a new catalog
   /// row, so startup cannot mistake it for the row of an interrupted deletion.
+  @override
   @useResult
   Future<Result<WriterOutcome, TransactionSyncFailure>> prepareReimport(
     WalletKey key, {
@@ -90,6 +93,7 @@ final class NativeWalletWriter implements ReadAdmissionPort {
     return WriterUnchanged(prepared.state.stamp);
   }, preparing: true);
 
+  @override
   @useResult
   Future<Result<WriterOutcome, TransactionSyncFailure>> create(
     WalletKey key, {
@@ -101,6 +105,7 @@ final class NativeWalletWriter implements ReadAdmissionPort {
     existingOnly: existingOnly,
   );
 
+  @override
   @useResult
   Future<Result<ReceiveAddressIssued, TransactionSyncFailure>> receive(
     WalletKey key, {
@@ -142,6 +147,7 @@ final class NativeWalletWriter implements ReadAdmissionPort {
     }
   });
 
+  @override
   @useResult
   Future<Result<WriterOutcome, TransactionSyncFailure>> delete(
     WalletKey key, {
@@ -159,6 +165,7 @@ final class NativeWalletWriter implements ReadAdmissionPort {
 
   /// Repair is explicit and only erases a store after the precise LWK conflict.
   /// It keeps issued metadata and requires a successful sync before receive.
+  @override
   @useResult
   Future<Result<WriterOutcome, TransactionSyncFailure>> repair(
     WalletKey key, {

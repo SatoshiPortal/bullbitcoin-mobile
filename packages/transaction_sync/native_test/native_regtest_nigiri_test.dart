@@ -21,7 +21,7 @@ void main() {
       final key = descriptor.key;
       final catalog = SingleWalletCatalog(descriptor);
       final revisions = RevisionStore(writerMetadataPath(directory.path));
-      final writer = NativeWalletWriter(
+      final writer = NativeWalletWriterRepository(
         lockDirectory: writerLockDirectory(directory.path),
         revisions: revisions,
         documentsDirectory: directory.path,

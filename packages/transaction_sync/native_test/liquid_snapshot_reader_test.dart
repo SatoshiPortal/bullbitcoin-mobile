@@ -32,7 +32,7 @@ void main() {
       combinedCtDescriptor: native.ctDescriptor,
     );
     final catalog = _Catalog(descriptor);
-    final writer = NativeWalletWriter(
+    final writer = NativeWalletWriterRepository(
       lockDirectory: writerLockDirectory(root.path),
       revisions: revisions,
       documentsDirectory: root.path,

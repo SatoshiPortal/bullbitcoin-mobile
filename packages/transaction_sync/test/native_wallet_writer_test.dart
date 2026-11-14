@@ -180,14 +180,14 @@ void main() {
   late RevisionStore store;
   late Sessions sessions;
   late Reserved reserved;
-  late NativeWalletWriter writer;
+  late NativeWalletWriterRepository writer;
   late WriterSession session;
   setUp(() async {
     dir = Directory.systemTemp.createTempSync('writer-test-');
     store = RevisionStore('${dir.path}/metadata.sqlite');
     sessions = Sessions();
     reserved = Reserved();
-    writer = NativeWalletWriter.withSessions(
+    writer = NativeWalletWriterRepository.withSessions(
       lockDirectory: '${dir.path}/locks',
       revisions: store,
       catalog: Catalog(),
@@ -604,7 +604,7 @@ void main() {
 
   test('missing adoption leaves no load intent or revision', () async {
     final empty = RevisionStore('${dir.path}/empty.sqlite');
-    final adopter = NativeWalletWriter.withSessions(
+    final adopter = NativeWalletWriterRepository.withSessions(
       lockDirectory: '${dir.path}/locks',
       revisions: empty,
       catalog: Catalog(),
@@ -750,7 +750,7 @@ void main() {
       store.begin(key, WriteIntent.receive, candidate: 7);
       await store.close();
       store = RevisionStore('${dir.path}/metadata.sqlite');
-      writer = NativeWalletWriter.withSessions(
+      writer = NativeWalletWriterRepository.withSessions(
         lockDirectory: '${dir.path}/locks',
         revisions: store,
         catalog: Catalog(),
@@ -847,8 +847,8 @@ void main() {
       internalDescriptor: 'wpkh(public/1)',
     );
     final catalog = _Both(bitcoin);
-    NativeWalletWriter writing(RevisionStore revisions) =>
-        NativeWalletWriter.withSessions(
+    NativeWalletWriterRepository writing(RevisionStore revisions) =>
+        NativeWalletWriterRepository.withSessions(
           lockDirectory: '${dir.path}/locks',
           revisions: revisions,
           catalog: catalog,
