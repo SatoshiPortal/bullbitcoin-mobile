@@ -20,7 +20,6 @@ import 'package:swaps/swaps.dart'
     show
         CreateChainSwapUsecase,
         GetSwapLimitsAndFeesUsecase,
-        GetSwapsUsecase,
         RecordSwapLockupUsecase;
 import 'package:get_it/get_it.dart';
 
@@ -35,7 +34,6 @@ class AutoSwapLocator {
   static void registerProviders(GetIt locator) {
     locator.registerLazySingleton<BoltzAutoswapProvider>(
       () => BoltzAutoswapProvider(
-        locator<GetSwapsUsecase>(),
         locator<GetSwapLimitsAndFeesUsecase>(),
         locator<CreateChainSwapUsecase>(),
         locator<RecordSwapLockupUsecase>(),

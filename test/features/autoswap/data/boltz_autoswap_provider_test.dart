@@ -19,8 +19,6 @@ import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
-class _MockGetSwaps extends Mock implements GetSwapsUsecase {}
-
 class _MockGetSwapLimitsAndFees extends Mock
     implements GetSwapLimitsAndFeesUsecase {}
 
@@ -57,7 +55,6 @@ Wallet _wallet({required bool liquid}) => Wallet(
 );
 
 void main() {
-  late _MockGetSwaps getSwaps;
   late _MockGetSwapLimitsAndFees getLimitsAndFees;
   late _MockCreateChainSwap createChainSwap;
   late _MockRecordSwapLockup recordLockup;
@@ -87,7 +84,6 @@ void main() {
   });
 
   setUp(() {
-    getSwaps = _MockGetSwaps();
     getLimitsAndFees = _MockGetSwapLimitsAndFees();
     createChainSwap = _MockCreateChainSwap();
     recordLockup = _MockRecordSwapLockup();
@@ -98,7 +94,6 @@ void main() {
     broadcastLiquid = _MockBroadcastLiquid();
     labelsFacade = _MockLabelsFacade();
     provider = BoltzAutoswapProvider(
-      getSwaps,
       getLimitsAndFees,
       createChainSwap,
       recordLockup,
@@ -122,9 +117,6 @@ void main() {
     ).thenAnswer(
       (_) async => Ok([_wallet(liquid: true), _wallet(liquid: false)]),
     );
-    when(
-      () => getSwaps.execute(walletId: 'liquid-wallet'),
-    ).thenAnswer((_) async => []);
     when(() => getReceiveAddress.execute(walletId: 'liquid-wallet')).thenAnswer(
       (_) async => WalletAddress(
         walletId: 'liquid-wallet',
@@ -326,28 +318,4 @@ void main() {
       );
     },
   );
-
-  test('an unfunded swap in flight blocks a second one', () async {
-    when(() => getSwaps.execute(walletId: 'liquid-wallet')).thenAnswer(
-      (_) async => [
-        Swap.chain(
-          id: 'pending',
-          keyIndex: 0,
-          type: SwapType.liquidToBitcoin,
-          status: SwapStatus.pending,
-          environment: swaps.Environment.testnet,
-          creationTime: DateTime.utc(2026),
-          sendWalletId: 'liquid-wallet',
-          paymentAddress: 'tlq1payin',
-          paymentAmount: 1_000,
-          receiveWalletId: 'bitcoin-wallet',
-        ),
-      ],
-    );
-
-    final result = await provider.execute(settings);
-
-    expect((result as Err).failure, isA<AutoswapPendingFailure>());
-    verifyNever(() => getLimitsAndFees.execute(any()));
-  });
 }

@@ -14,7 +14,6 @@ import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bull_logger/bull_logger.dart';
 
 class BoltzAutoswapProvider implements AutoswapProviderPort {
-  final GetSwapsUsecase _getSwaps;
   final GetSwapLimitsAndFeesUsecase _getSwapLimitsAndFees;
   final CreateChainSwapUsecase _createChainSwap;
   final RecordSwapLockupUsecase _recordSwapLockup;
@@ -26,7 +25,6 @@ class BoltzAutoswapProvider implements AutoswapProviderPort {
   final LabelsFacade _labelsFacade;
 
   const BoltzAutoswapProvider(
-    this._getSwaps,
     this._getSwapLimitsAndFees,
     this._createChainSwap,
     this._recordSwapLockup,
@@ -64,21 +62,6 @@ class BoltzAutoswapProvider implements AutoswapProviderPort {
       }
       if (liquidWallet.isHardwareWallet) {
         return const Err(AutoswapUnsupportedWalletFailure());
-      }
-
-      final existing = (await _getSwaps.execute(walletId: liquidWallet.id))
-          .whereType<ChainSwap>()
-          .where(
-            (swap) =>
-                swap.type == SwapType.liquidToBitcoin &&
-                swap.sendWalletId == liquidWallet.id &&
-                !swap.status.isTerminal,
-          )
-          .firstOrNull;
-      if (existing != null) {
-        return existing.sendTxid == null
-            ? const Err(AutoswapPendingFailure())
-            : Ok(existing.id);
       }
 
       final balanceSat = liquidWallet.balanceSat?.toInt();
