@@ -4,8 +4,6 @@
 /// only ever removed, never added or renamed into a wider power.
 const nativeImportAllowlist = <String>{
   'lib/core/bbqr/bbqr.dart',
-  'lib/core/blockchain/data/datasources/bdk_bitcoin_blockchain_datasource.dart',
-  'lib/core/blockchain/data/datasources/lwk_liquid_blockchain_datasource.dart',
   'lib/core/ledger/data/datasources/ledger_device_datasource.dart',
   'lib/core/utils/bitcoin_tx.dart',
   'lib/core/utils/payment_request.dart',
@@ -15,7 +13,6 @@ const nativeImportAllowlist = <String>{
   'lib/features/psbt_flow/data/psbt_qr_encoder_adapter.dart',
   'lib/features/replace_by_fee/domain/bump_fee_usecase.dart',
   'lib/features/sell/domain/read_sell_payin_txid_usecase.dart',
-  'lib/features/send/data/broadcast_failure_mapper.dart',
   'lib/features/wallet/data/bdk_wallet_datasource.dart',
   'lib/features/wallet/data/lwk_wallet_datasource.dart',
   'lib/features/wallet/data/transaction_mapper.dart',
