@@ -99,6 +99,50 @@ void main() {
     expect(store.record(key)?.intent, isNull);
   });
 
+  test('the worker adopts and syncs under one lock acquisition', () async {
+    final events = <String>[];
+    WriterSession traced() => WriterSession.worker(
+      documentsDirectory: dir.path,
+      revisions: store,
+      reader: reader,
+      sessions: sessions,
+      descriptor: descriptor,
+      diagnostics: (_, message) => events.add(message),
+      leaseScope: LeaseScope.compute,
+    );
+    // A stale generation is refused before adoption.
+    expect(
+      await traced().sync(
+        key,
+        expectedGeneration: 1,
+        operation: Sync((_) {}),
+        adopt: true,
+      ),
+      isA<Err<WriterOutcome, TransactionSyncFailure>>().having(
+        (result) => result.failure,
+        'failure',
+        isA<TransactionSyncNotFoundFailure>(),
+      ),
+    );
+    expect(store.record(key), isNull);
+    events.clear();
+    var synced = false;
+    final result = await traced().sync(
+      key,
+      expectedGeneration: 0,
+      operation: Sync((_) => synced = true),
+      adopt: true,
+    );
+    expect(result, isA<Ok<WriterOutcome, TransactionSyncFailure>>());
+    expect(synced, isTrue);
+    expect(store.record(key)?.state.lifecycle, WalletLifecycle.active);
+    expect(store.record(key)?.intent, isNull);
+    expect(
+      events.where((event) => event.startsWith('event=lease_acquire')),
+      hasLength(1),
+    );
+  });
+
   test('a foreground worker sync resumes every interrupted intent', () async {
     expect(await app().create(key, expectedGeneration: 0), isA<Ok>());
     for (final (intent, candidate) in [
