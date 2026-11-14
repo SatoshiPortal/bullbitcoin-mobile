@@ -245,6 +245,47 @@ void main() {
     });
   });
 
+  group('broadcastBitcoinTransactionTo', () {
+    test('one server accepting returns the local txid', () async {
+      final server = await _WireServer.start({
+        'blockchain.transaction.broadcast': _Result('ff' * 32),
+      });
+      final result = await broadcastBitcoinTransactionTo(
+        server.connection,
+        _bytes(_transactionHex()),
+      );
+      expect((result as Ok<String, SyncFailure>).value, txid);
+    });
+
+    test('one server rejecting is a rejection, with no fallback', () async {
+      final server = await _WireServer.start({
+        'blockchain.transaction.broadcast': const _Error(-26, 'conflict'),
+      });
+      expect(
+        _err(
+          await broadcastBitcoinTransactionTo(
+            server.connection,
+            _bytes(_transactionHex()),
+          ),
+        ),
+        isA<SyncBroadcastRejectedFailure>(),
+      );
+      expect(
+        server.calls.where((c) => c == 'blockchain.transaction.broadcast'),
+        hasLength(1),
+      );
+    });
+
+    test('undecodable bytes reach no server', () async {
+      final server = await _WireServer.start(const {});
+      expect(
+        _err(await broadcastBitcoinTransactionTo(server.connection, const [0])),
+        isA<SyncInvalidTransactionFailure>(),
+      );
+      expect(server.calls, isEmpty);
+    });
+  });
+
   group('bitcoinTransactionKnown', () {
     test('a matching transaction is visible', () async {
       final server = await _WireServer.start({
