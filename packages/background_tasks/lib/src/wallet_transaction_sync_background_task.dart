@@ -12,7 +12,10 @@ import 'background_task_execution_result.dart';
 import 'background_task_logger.dart';
 import 'background_wallet_sync.dart';
 import 'read_wallet_sync_jobs.dart';
-import 'sqlite_wallet_sync_job_queue.dart';
+import 'domain/background_tasks_failure.dart';
+import 'domain/repositories/wallet_sync_job_queue_repository.dart';
+import 'domain/wallet_sync_chain.dart';
+import 'domain/wallet_sync_job_claim.dart';
 
 typedef NotificationCopy = ({String title, String body});
 typedef NotificationCopyBuilder =
@@ -24,7 +27,7 @@ final class WalletTransactionSyncBackgroundTask {
   final BackgroundWalletSync writer;
   final WalletRevisionReaderPort revisions;
   final List<WalletKey> keys;
-  final WalletSyncJobQueue queue;
+  final WalletSyncJobQueueRepository queue;
   final NotificationsFacade? notifications;
   final NotificationCopyBuilder copy;
   final int maxJobsPerChain;
@@ -123,13 +126,23 @@ final class WalletTransactionSyncBackgroundTask {
         }
       }
       if (spent()) break;
-      final claims = await queue.reconcileAndClaim(
+      final List<WalletSyncJobClaim> claims;
+      switch (await queue.reconcileAndClaim(
         jobs.ready,
         unavailable: jobs.unavailable,
         chain: chain,
         maxJobs: 1,
         excluding: handled,
-      );
+      )) {
+        case Err():
+          _log(
+            BackgroundLogLevel.warning,
+            'Background admission failed reason=queue_storage',
+          );
+          return const BackgroundTaskExecutionResult.retry();
+        case Ok(:final value):
+          claims = value;
+      }
       if (claims.isEmpty) break;
       final claim = claims.single;
       final bool stop;
@@ -137,11 +150,11 @@ final class WalletTransactionSyncBackgroundTask {
         stop = await _optedOut(admission) || spent();
       } catch (_) {
         // A failed preference read must not leave a claim without a writer.
-        await queue.release(claim);
+        await _release(claim);
         rethrow;
       }
       if (stop) {
-        await queue.release(claim);
+        await _release(claim);
         break;
       }
       handled.add(claim.key);
@@ -155,15 +168,16 @@ final class WalletTransactionSyncBackgroundTask {
       Future<void>? renewing;
       Future<void> renew() async {
         try {
-          if (!await queue.renew(claim)) leaseLost = true;
-        } on Exception {
-          if (!leaseLost) {
+          final renewed = await queue.renew(claim);
+          if (renewed case Err(
+            failure: BackgroundTasksStorageFailure(),
+          ) when !leaseLost) {
             _log(
               BackgroundLogLevel.warning,
               'Background lease renewal failed reason=storage',
             );
           }
-          leaseLost = true;
+          if (renewed case Err()) leaseLost = true;
         } finally {
           renewing = null;
         }
@@ -190,11 +204,12 @@ final class WalletTransactionSyncBackgroundTask {
             if (revision.key != claim.key) {
               throw StateError('Writer returned a foreign revision');
             }
-            if (!await queue.completeFailure(
-              claim,
-              permanent: true,
-              failedRevision: revision,
-            )) {
+            if (await queue.completeFailure(
+                  claim,
+                  permanent: true,
+                  failedRevision: revision,
+                )
+                case Err()) {
               leaseLost = true;
             }
           case Err(
@@ -207,7 +222,8 @@ final class WalletTransactionSyncBackgroundTask {
               BackgroundLogLevel.fine,
               'Background job deferred: category=${refused is BackgroundSyncUnauthorizedNetworkFailure ? 'authorization' : 'unsupported_network'}',
             );
-            if (!await queue.completeFailure(claim, permanent: true)) {
+            if (await queue.completeFailure(claim, permanent: true)
+                case Err()) {
               leaseLost = true;
             }
           case Err(failure: BackgroundSyncInitialScanRequiredFailure()):
@@ -216,7 +232,7 @@ final class WalletTransactionSyncBackgroundTask {
               BackgroundLogLevel.fine,
               'Background job deferred: category=initial_scan',
             );
-            if (!await queue.completeSuccess(claim)) leaseLost = true;
+            if (await queue.completeSuccess(claim) case Err()) leaseLost = true;
           case Err(:final failure):
             _log(
               BackgroundLogLevel.fine,
@@ -227,7 +243,8 @@ final class WalletTransactionSyncBackgroundTask {
                   : 'connection'}',
             );
             retry = true;
-            if (!await queue.completeFailure(claim, permanent: false)) {
+            if (await queue.completeFailure(claim, permanent: false)
+                case Err()) {
               leaseLost = true;
             }
           case Ok(:final value):
@@ -241,7 +258,9 @@ final class WalletTransactionSyncBackgroundTask {
             );
             final incoming = value.incomingTxids;
             if (incoming == null || notifications == null) {
-              if (!await queue.completeSuccess(claim)) leaseLost = true;
+              if (await queue.completeSuccess(claim) case Err()) {
+                leaseLost = true;
+              }
               break;
             }
             // Observations are best effort after native commit; later history
@@ -276,7 +295,7 @@ final class WalletTransactionSyncBackgroundTask {
                 'Background observation failed: category=notification_persistence',
               );
             }
-            if (!await queue.completeSuccess(claim)) {
+            if (await queue.completeSuccess(claim) case Err()) {
               leaseLost = true;
             }
         }
@@ -287,7 +306,7 @@ final class WalletTransactionSyncBackgroundTask {
           'Background job retry: category=operation_exception',
         );
         retry = true;
-        if (!await queue.completeFailure(claim, permanent: false)) {
+        if (await queue.completeFailure(claim, permanent: false) case Err()) {
           leaseLost = true;
         }
       } finally {
@@ -329,6 +348,12 @@ final class WalletTransactionSyncBackgroundTask {
     return retry
         ? const BackgroundTaskExecutionResult.retry()
         : const BackgroundTaskExecutionResult.success();
+  }
+
+  Future<void> _release(WalletSyncJobClaim claim) async {
+    if (await queue.release(claim) case Err()) {
+      _log(BackgroundLogLevel.warning, 'Background claim release failed');
+    }
   }
 
   Future<bool> _optedOut(_RunAdmission admission) async {

@@ -19,14 +19,17 @@ void main() {
 
   tearDown(() => directory.delete(recursive: true));
 
-  SqliteWalletSyncJobQueue queue({BackgroundTaskLogger? sink}) =>
-      SqliteWalletSyncJobQueue(
-        databasePath: path,
+  WalletSyncJobQueueRepository queue({BackgroundTaskLogger? sink}) =>
+      switch (SqliteWalletSyncJobQueueRepository.openForeground(
+        path,
         clock: clock.call,
         leaseDuration: const Duration(minutes: 10),
         retryBase: const Duration(minutes: 1),
         logSink: sink ?? _Sink(),
-      );
+      )) {
+        Ok(:final value) => value,
+        Err(:final failure) => fail('$failure'),
+      };
 
   test(
     'overdue retry runs despite two repeatedly successful wallets',
@@ -34,30 +37,27 @@ void main() {
       final current = queue();
       addTearDown(current.close);
       final jobs = List.generate(3, _registration);
-      final initial = await current.reconcileAndClaim(
-        jobs,
-        chain: WalletSyncChain.bitcoin,
-      );
+      final initial = await current.claim(jobs, chain: WalletSyncChain.bitcoin);
       for (final claim in initial) {
-        await current.completeSuccess(claim);
+        await current.succeeded(claim);
       }
-      final failed = (await current.reconcileAndClaim(
+      final failed = (await current.claim(
         jobs,
         chain: WalletSyncChain.bitcoin,
       )).single;
       expect(failed.key.id, 'wallet-2');
-      await current.completeFailure(failed, permanent: false);
+      await current.failed(failed, permanent: false);
       var retried = false;
       for (var run = 0; run < 3; run++) {
         clock.advance(const Duration(hours: 1));
-        final claims = await current.reconcileAndClaim(
+        final claims = await current.claim(
           jobs,
           chain: WalletSyncChain.bitcoin,
         );
         expect(claims.length, lessThanOrEqualTo(2));
         for (final claim in claims) {
           retried |= claim.key == failed.key;
-          await current.completeSuccess(claim);
+          await current.succeeded(claim);
         }
       }
       expect(retried, isTrue);
@@ -70,13 +70,13 @@ void main() {
 
     for (var run = 0; run < 4; run++) {
       final current = queue();
-      final claims = await current.reconcileAndClaim(
+      final claims = await current.claim(
         registrations,
         chain: WalletSyncChain.bitcoin,
       );
       seen.addAll(claims.map((claim) => claim.key.id));
       for (final claim in claims) {
-        expect(await current.completeSuccess(claim), isTrue);
+        expect(await current.succeeded(claim), isTrue);
       }
       await current.close();
       clock.advance(const Duration(microseconds: 1));
@@ -97,21 +97,21 @@ void main() {
     'never-synced wallets precede successful wallets ordered oldest first',
     () async {
       final current = queue();
-      final first = (await current.reconcileAndClaim([
+      final first = (await current.claim([
         _registration(0),
       ], chain: WalletSyncChain.bitcoin)).single;
-      expect(await current.completeSuccess(first), isTrue);
+      expect(await current.succeeded(first), isTrue);
       clock.advance(const Duration(minutes: 1));
 
-      final neverSynced = await current.reconcileAndClaim([
+      final neverSynced = await current.claim([
         _registration(0),
         _registration(1),
       ], chain: WalletSyncChain.bitcoin);
       expect(neverSynced.map((claim) => claim.key.id), ['wallet-1']);
-      expect(await current.completeSuccess(neverSynced.single), isTrue);
+      expect(await current.succeeded(neverSynced.single), isTrue);
       clock.advance(const Duration(minutes: 1));
 
-      final oldestFirst = await current.reconcileAndClaim([
+      final oldestFirst = await current.claim([
         _registration(0),
         _registration(1),
       ], chain: WalletSyncChain.bitcoin);
@@ -127,35 +127,32 @@ void main() {
     'retry backoff survives reopen without starving an eligible wallet',
     () async {
       var current = queue();
-      final successful = (await current.reconcileAndClaim([
+      final successful = (await current.claim([
         _registration(0),
       ], chain: WalletSyncChain.bitcoin)).single;
-      expect(await current.completeSuccess(successful), isTrue);
+      expect(await current.succeeded(successful), isTrue);
       clock.advance(const Duration(minutes: 1));
 
-      final newWallet = (await current.reconcileAndClaim([
+      final newWallet = (await current.claim([
         _registration(0),
         _registration(1),
       ], chain: WalletSyncChain.bitcoin)).single;
       expect(newWallet.key.id, 'wallet-1');
-      expect(
-        await current.completeFailure(newWallet, permanent: false),
-        isTrue,
-      );
+      expect(await current.failed(newWallet, permanent: false), isTrue);
       await current.close();
       current = queue();
 
-      final duringBackoff = await current.reconcileAndClaim([
+      final duringBackoff = await current.claim([
         _registration(0),
         _registration(1),
       ], chain: WalletSyncChain.bitcoin);
       expect(duringBackoff.map((claim) => claim.key.id), ['wallet-0']);
-      expect(await current.completeSuccess(duringBackoff.single), isTrue);
+      expect(await current.succeeded(duringBackoff.single), isTrue);
       clock.advance(const Duration(minutes: 1));
 
       // An attempted wallet no longer keeps the synced ones out of the run,
       // and goes after them: one that keeps failing cannot starve the others.
-      final retry = await current.reconcileAndClaim([
+      final retry = await current.claim([
         _registration(0),
         _registration(1),
       ], chain: WalletSyncChain.bitcoin);
@@ -166,31 +163,31 @@ void main() {
 
   test('a released claim is claimable again without a penalty', () async {
     final current = queue();
-    final claim = (await current.reconcileAndClaim([
+    final claim = (await current.claim([
       _registration(0),
     ], chain: WalletSyncChain.bitcoin)).single;
 
-    expect(await current.release(claim), isTrue);
+    expect(await current.released(claim), isTrue);
 
     // Immediately, without waiting for the lease or a backoff.
-    final again = await current.reconcileAndClaim([
+    final again = await current.claim([
       _registration(0),
     ], chain: WalletSyncChain.bitcoin);
     expect(again.map((claim) => claim.key.id), ['wallet-0']);
-    expect(await current.release(claim), isFalse);
+    expect(await current.released(claim), isFalse);
     await current.close();
   });
 
   test('a wallet whose worker never completes stops starving others', () async {
     final current = queue();
-    Future<List<String>> claim() async => (await current.reconcileAndClaim([
+    Future<List<String>> claim() async => (await current.claim([
       _registration(0),
       _registration(1),
     ], chain: WalletSyncChain.bitcoin)).map((claim) => claim.key.id).toList();
-    final synced = (await current.reconcileAndClaim([
+    final synced = (await current.claim([
       _registration(0),
     ], chain: WalletSyncChain.bitcoin)).single;
-    expect(await current.completeSuccess(synced), isTrue);
+    expect(await current.succeeded(synced), isTrue);
     clock.advance(const Duration(minutes: 1));
 
     // The never-synced wallet is claimed alone; its worker dies without
@@ -214,18 +211,16 @@ void main() {
     'permanent failure remains disabled until its revision changes',
     () async {
       final current = queue();
-      final claim = (await current.reconcileAndClaim([
+      final claim = (await current.claim([
         _registration(0),
       ], chain: WalletSyncChain.bitcoin)).single;
-      expect(await current.completeFailure(claim, permanent: true), isTrue);
+      expect(await current.failed(claim, permanent: true), isTrue);
 
       expect(
-        await current.reconcileAndClaim([
-          _registration(0),
-        ], chain: WalletSyncChain.bitcoin),
+        await current.claim([_registration(0)], chain: WalletSyncChain.bitcoin),
         isEmpty,
       );
-      final changed = await current.reconcileAndClaim([
+      final changed = await current.claim([
         _registration(0, revision: 2),
       ], chain: WalletSyncChain.bitcoin);
       expect(changed.map((claim) => claim.key.id), ['wallet-0']);
@@ -235,19 +230,19 @@ void main() {
 
   test('generation change re-enables repair failure after reopen', () async {
     var current = queue();
-    final claim = (await current.reconcileAndClaim([
+    final claim = (await current.claim([
       _registration(0, revision: 8),
     ], chain: WalletSyncChain.bitcoin)).single;
-    await current.completeFailure(claim, permanent: true);
+    await current.failed(claim, permanent: true);
     await current.close();
     current = queue();
     expect(
-      await current.reconcileAndClaim([
+      await current.claim([
         _registration(0, revision: 8),
       ], chain: WalletSyncChain.bitcoin),
       isEmpty,
     );
-    final repaired = await current.reconcileAndClaim([
+    final repaired = await current.claim([
       _registration(0, generation: 2),
     ], chain: WalletSyncChain.bitcoin);
     expect(repaired.single.key.id, 'wallet-0');
@@ -261,28 +256,24 @@ void main() {
       final second = queue();
       final registration = _registration(0);
       final results = await Future.wait([
-        first.reconcileAndClaim([registration], chain: WalletSyncChain.bitcoin),
-        second.reconcileAndClaim([
-          registration,
-        ], chain: WalletSyncChain.bitcoin),
+        first.claim([registration], chain: WalletSyncChain.bitcoin),
+        second.claim([registration], chain: WalletSyncChain.bitcoin),
       ]);
       final claims = results.expand((result) => result).toList();
       expect(claims, hasLength(1));
       expect(
-        await second.reconcileAndClaim([
-          registration,
-        ], chain: WalletSyncChain.bitcoin),
+        await second.claim([registration], chain: WalletSyncChain.bitcoin),
         isEmpty,
       );
 
       clock.advance(const Duration(minutes: 11));
-      final replacement = (await second.reconcileAndClaim([
+      final replacement = (await second.claim([
         registration,
       ], chain: WalletSyncChain.bitcoin)).single;
       expect(replacement.leaseToken, isNot(claims.single.leaseToken));
-      expect(await first.completeSuccess(claims.single), isFalse);
-      expect(await second.completeSuccess(claims.single), isFalse);
-      expect(await second.completeSuccess(replacement), isTrue);
+      expect(await first.succeeded(claims.single), isFalse);
+      expect(await second.succeeded(claims.single), isFalse);
+      expect(await second.succeeded(replacement), isTrue);
       await first.close();
       await second.close();
     },
@@ -293,25 +284,25 @@ void main() {
     () async {
       final owner = queue();
       final updater = queue();
-      final original = (await owner.reconcileAndClaim([
+      final original = (await owner.claim([
         _registration(0),
       ], chain: WalletSyncChain.bitcoin)).single;
 
       expect(
-        await updater.reconcileAndClaim([
+        await updater.claim([
           _registration(0, revision: 2),
         ], chain: WalletSyncChain.bitcoin),
         isEmpty,
       );
-      expect(await owner.renew(original), isTrue);
+      expect(await owner.renewed(original), isTrue);
       clock.advance(const Duration(minutes: 11));
 
-      final replacement = (await updater.reconcileAndClaim([
+      final replacement = (await updater.claim([
         _registration(0, revision: 2),
       ], chain: WalletSyncChain.bitcoin)).single;
       expect(replacement.leaseToken, isNot(original.leaseToken));
-      expect(await owner.completeSuccess(original), isFalse);
-      expect(await updater.completeSuccess(replacement), isTrue);
+      expect(await owner.succeeded(original), isFalse);
+      expect(await updater.succeeded(replacement), isTrue);
       await owner.close();
       await updater.close();
     },
@@ -322,19 +313,16 @@ void main() {
     () async {
       final owner = queue();
       final reconciler = queue();
-      final claim = (await owner.reconcileAndClaim([
+      final claim = (await owner.claim([
         _registration(0),
       ], chain: WalletSyncChain.bitcoin)).single;
 
       expect(
-        await reconciler.reconcileAndClaim(
-          const [],
-          chain: WalletSyncChain.bitcoin,
-        ),
+        await reconciler.claim(const [], chain: WalletSyncChain.bitcoin),
         isEmpty,
       );
-      expect(await owner.completeSuccess(claim), isTrue);
-      final recreated = await reconciler.reconcileAndClaim([
+      expect(await owner.succeeded(claim), isTrue);
+      final recreated = await reconciler.claim([
         _registration(0),
       ], chain: WalletSyncChain.bitcoin);
       expect(recreated.map((entry) => entry.key.id), ['wallet-0']);
@@ -350,7 +338,7 @@ void main() {
       final sink = _Sink(messages);
       final current = queue(sink: sink);
       const walletId = 'never-persist-or-log-this-wallet';
-      final claims = await current.reconcileAndClaim([
+      final claims = await current.claim([
         WalletRevision(
           key: WalletKey(id: walletId, network: BitcoinNetwork.testnet),
           generation: 1,
@@ -377,9 +365,7 @@ void main() {
   test('logging failures cannot alter queue behavior', () async {
     final current = queue(sink: _ThrowingSink());
     expect(
-      await current.reconcileAndClaim([
-        _registration(0),
-      ], chain: WalletSyncChain.bitcoin),
+      await current.claim([_registration(0)], chain: WalletSyncChain.bitcoin),
       hasLength(1),
     );
     await current.close();
@@ -392,7 +378,7 @@ void main() {
       // claim is never completed and its lease expires.
       final current = queue();
       final registrations = [_registration(0), _registration(1)];
-      final first = await current.reconcileAndClaim(
+      final first = await current.claim(
         registrations,
         chain: WalletSyncChain.bitcoin,
         maxJobs: 1,
@@ -400,7 +386,7 @@ void main() {
       expect(first.single.key.id, 'wallet-0');
       clock.advance(const Duration(minutes: 11));
 
-      final next = await current.reconcileAndClaim(
+      final next = await current.claim(
         registrations,
         chain: WalletSyncChain.bitcoin,
         maxJobs: 1,
@@ -415,15 +401,15 @@ void main() {
     // sync it twice.
     final current = queue();
     final registrations = [_registration(0)];
-    final first = await current.reconcileAndClaim(
+    final first = await current.claim(
       registrations,
       chain: WalletSyncChain.bitcoin,
       maxJobs: 1,
     );
-    expect(await current.completeSuccess(first.single), isTrue);
+    expect(await current.succeeded(first.single), isTrue);
 
     expect(
-      await current.reconcileAndClaim(
+      await current.claim(
         registrations,
         chain: WalletSyncChain.bitcoin,
         maxJobs: 1,
@@ -434,6 +420,44 @@ void main() {
     await current.close();
   });
 }
+
+/// Claims unwrapped; completions as true, or false when the claim was lost.
+extension on WalletSyncJobQueueRepository {
+  Future<List<WalletSyncJobClaim>> claim(
+    Iterable<WalletRevision> jobs, {
+    required WalletSyncChain chain,
+    int maxJobs = 2,
+    Iterable<WalletKey> excluding = const [],
+  }) async => switch (await reconcileAndClaim(
+    jobs,
+    chain: chain,
+    maxJobs: maxJobs,
+    excluding: excluding,
+  )) {
+    Ok(:final value) => value,
+    Err(:final failure) => fail('$failure'),
+  };
+
+  Future<bool> succeeded(WalletSyncJobClaim claim) async =>
+      _held(await completeSuccess(claim));
+
+  Future<bool> failed(
+    WalletSyncJobClaim claim, {
+    required bool permanent,
+  }) async => _held(await completeFailure(claim, permanent: permanent));
+
+  Future<bool> released(WalletSyncJobClaim claim) async =>
+      _held(await release(claim));
+
+  Future<bool> renewed(WalletSyncJobClaim claim) async =>
+      _held(await renew(claim));
+}
+
+bool _held(Result<void, BackgroundTasksFailure> result) => switch (result) {
+  Ok() => true,
+  Err(failure: BackgroundTasksClaimLostFailure()) => false,
+  Err(:final failure) => fail('$failure'),
+};
 
 WalletRevision _registration(
   int index, {

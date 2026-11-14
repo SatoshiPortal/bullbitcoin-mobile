@@ -14,7 +14,7 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   late Directory directory;
   late SqliteNotificationOutbox outbox;
-  late SqliteWalletSyncJobQueue queue;
+  late WalletSyncJobQueueRepository queue;
   late _Writer writer;
   late _Revisions revisions;
   late _Gateway gateway;
@@ -59,7 +59,11 @@ void main() {
     directory = Directory.systemTemp.createTempSync('background-task-');
     log = Logger.replace(directory: directory);
     outbox = SqliteNotificationOutbox(databasePath: '${directory.path}/outbox');
-    queue = SqliteWalletSyncJobQueue(databasePath: '${directory.path}/queue');
+    queue = _ok(
+      SqliteWalletSyncJobQueueRepository.openForeground(
+        '${directory.path}/queue',
+      ),
+    );
     writer = _Writer();
     logs = _Logs();
     revisions = _Revisions();
@@ -144,10 +148,15 @@ void main() {
     test(
       'unavailable wallet does not block healthy wallet (pending=$pending)',
       () async {
-        final disabled = (await queue.reconcileAndClaim([
-          stamp(1),
-        ], chain: WalletSyncChain.bitcoin)).single;
-        await queue.completeFailure(disabled, permanent: true);
+        final disabled = (_ok(
+          await queue.reconcileAndClaim([
+            stamp(1),
+          ], chain: WalletSyncChain.bitcoin),
+        )).single;
+        expect(
+          await queue.completeFailure(disabled, permanent: true),
+          isA<Ok>(),
+        );
         revisions.unavailable = key;
         revisions.pending = pending;
         writer.operation = () async => Ok(
@@ -161,9 +170,11 @@ void main() {
         expect(writer.allowInitialScan, [false]);
         revisions.unavailable = null;
         // A temporary read failure must not erase the permanent retry state.
-        final claims = await queue.reconcileAndClaim([
-          stamp(1),
-        ], chain: WalletSyncChain.bitcoin);
+        final claims = _ok(
+          await queue.reconcileAndClaim([
+            stamp(1),
+          ], chain: WalletSyncChain.bitcoin),
+        );
         expect(claims, isEmpty);
       },
     );
@@ -173,15 +184,17 @@ void main() {
     'unavailable unseen wallet cannot block a previously synced wallet',
     () async {
       final healthy = WalletRevision(key: second, generation: 1, revision: 1);
-      final claims = await queue.reconcileAndClaim([
-        stamp(1),
-        healthy,
-      ], chain: WalletSyncChain.bitcoin);
+      final claims = _ok(
+        await queue.reconcileAndClaim([
+          stamp(1),
+          healthy,
+        ], chain: WalletSyncChain.bitcoin),
+      );
       for (final claim in claims) {
         if (claim.key == key) {
-          await queue.release(claim);
+          expect(await queue.release(claim), isA<Ok>());
         } else {
-          await queue.completeSuccess(claim);
+          expect(await queue.completeSuccess(claim), isA<Ok>());
         }
       }
       revisions.unavailable = key;
@@ -294,14 +307,18 @@ void main() {
           ),
         );
       }
-      final competing = SqliteWalletSyncJobQueue(
-        databasePath: '${directory.path}/queue',
-        clock: () => DateTime.now().toUtc().add(const Duration(hours: 1)),
+      final competing = _ok(
+        SqliteWalletSyncJobQueueRepository.openExisting(
+          '${directory.path}/queue',
+          clock: () => DateTime.now().toUtc().add(const Duration(hours: 1)),
+        ),
       );
       try {
-        final claims = await competing.reconcileAndClaim([
-          stamp(1),
-        ], chain: WalletSyncChain.bitcoin);
+        final claims = _ok(
+          await competing.reconcileAndClaim([
+            stamp(1),
+          ], chain: WalletSyncChain.bitcoin),
+        );
         expect(claims, hasLength(1));
       } finally {
         await competing.close();
@@ -449,3 +466,8 @@ final class _Logs implements BackgroundTaskLogger {
     LoggerBackgroundTaskLogger(log).write(level, message);
   }
 }
+
+T _ok<T>(Result<T, BackgroundTasksFailure> result) => switch (result) {
+  Ok(:final value) => value,
+  Err(:final failure) => fail('$failure'),
+};

@@ -1,7 +1,8 @@
 import 'package:background_tasks/background_tasks.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
-import 'package:sqlite3/sqlite3.dart';
+import 'dart:io';
+
 import 'package:transaction_sync/transaction_sync.dart';
 
 void main() {
@@ -9,27 +10,35 @@ void main() {
     test(
       'reader stamp re-enables repair failure (generation=$changeGeneration)',
       () async {
-        final database = sqlite3.openInMemory();
-        final queue = SqliteWalletSyncJobQueue(database: database);
+        final directory = Directory.systemTemp.createTempSync('read_jobs_');
+        final queue = switch (SqliteWalletSyncJobQueueRepository.openForeground(
+          '${directory.path}/queue.sqlite',
+        )) {
+          Ok(:final value) => value,
+          Err(:final failure) => fail('$failure'),
+        };
         addTearDown(() async {
           await queue.close();
-          database.dispose();
+          directory.deleteSync(recursive: true);
         });
         final reader = _Revisions();
         Future<List<WalletSyncJobClaim>> claim() async {
           final jobs = await readWalletSyncJobs([reader.key], reader);
           return switch (jobs) {
-            Ok(:final value) => queue.reconcileAndClaim(
+            Ok(:final value) => switch (await queue.reconcileAndClaim(
               value.ready,
               unavailable: value.unavailable,
               chain: WalletSyncChain.bitcoin,
-            ),
+            )) {
+              Ok(:final value) => value,
+              Err(:final failure) => fail('$failure'),
+            },
             Err() => <WalletSyncJobClaim>[],
           };
         }
 
         final failed = (await claim()).single;
-        await queue.completeFailure(failed, permanent: true);
+        expect(await queue.completeFailure(failed, permanent: true), isA<Ok>());
         expect(await claim(), isEmpty);
         reader.available = false;
         expect(await claim(), isEmpty);
