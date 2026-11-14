@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/network_x.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/app_startup/domain/app_startup_failure.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:meta/meta.dart';
@@ -22,6 +23,7 @@ class RestoreMissingDefaultSecretUsecase {
   @useResult
   Future<Result<void, AppStartupFailure>> execute({
     required String expectedFingerprint,
+    String? expectedWalletId,
     required List<String> words,
     String passphrase = '',
   }) async {
@@ -33,7 +35,12 @@ class RestoreMissingDefaultSecretUsecase {
     // Fingerprints are only 32 bits. Match the full public descriptors before
     // allowing any write, including when restoring another local wallet.
     final Set<Fingerprint> accepted;
-    switch (await _matchingFingerprints(words, passphrase)) {
+    switch (await _matchingFingerprints(
+      words,
+      passphrase,
+      expected,
+      expectedWalletId,
+    )) {
       case Ok(:final value):
         accepted = value;
       case Err(:final failure):
@@ -72,6 +79,8 @@ class RestoreMissingDefaultSecretUsecase {
   Future<Result<Set<Fingerprint>, AppStartupFailure>> _matchingFingerprints(
     List<String> words,
     String passphrase,
+    Fingerprint expected,
+    String? expectedWalletId,
   ) async {
     final wallets = switch (await _walletRepository.getWallets()) {
       Ok(:final value) => value,
@@ -80,41 +89,59 @@ class RestoreMissingDefaultSecretUsecase {
     if (wallets == null) {
       return const Err(AppStartupRestoreFailure('wallet metadata unavailable'));
     }
+    final bitcoin = wallets
+        .where((w) => w.signsLocally && w.isBitcoin)
+        .toList();
+    final defaults = bitcoin
+        .where(
+          (wallet) =>
+              wallet.isDefault &&
+              Fingerprint.tryParse(wallet.masterFingerprint) == expected &&
+              (expectedWalletId == null || wallet.id == expectedWalletId),
+        )
+        .toList();
+    if (defaults.length > 1 ||
+        (expectedWalletId != null && defaults.length != 1)) {
+      return const Err(
+        AppStartupRestoreFailure('default wallet ambiguous or missing'),
+      );
+    }
+    // A secondary sharing the expected fingerprint cannot authorize it or
+    // veto its actual default. Another known wallet may still be restored
+    // when its fingerprint differs from the requested default.
+    final List<Wallet> candidates = [
+      ...defaults,
+      ...bitcoin.where(
+        (wallet) => Fingerprint.tryParse(wallet.masterFingerprint) != expected,
+      ),
+    ];
     final accepted = <Fingerprint>{};
-    final mismatched = <Fingerprint>{};
-    for (final wallet in wallets.where((w) => w.signsLocally && w.isBitcoin)) {
+    for (final wallet in candidates) {
       final fingerprint = Fingerprint.tryParse(wallet.masterFingerprint);
       if (fingerprint == null) continue;
-      final type = wallet.scriptType.shared;
-      final preview = await _secrets.preview.bitcoinDescriptors(
+      final result = await _secrets.preview.matchesBitcoinDescriptors(
         words: words,
         passphrase: passphrase,
         network: wallet.network.bitcoin,
-        scriptTypes: {type},
+        scriptType: wallet.scriptType.shared,
+        expected: (
+          external: wallet.externalPublicDescriptor,
+          internal: wallet.internalPublicDescriptor,
+        ),
       );
-      switch (preview) {
+      switch (result) {
         case Err(failure: InvalidMnemonicFailure()):
           return const Err(AppStartupRestoreMismatchFailure('invalid words'));
         case Err():
           return const Err(
             AppStartupRestoreFailure('descriptor preview failed'),
           );
-        case Ok(:final value):
-          final descriptors = value[type];
-          if (descriptors != null &&
-              _withoutChecksum(descriptors.external) ==
-                  _withoutChecksum(wallet.externalPublicDescriptor) &&
-              _withoutChecksum(descriptors.internal) ==
-                  _withoutChecksum(wallet.internalPublicDescriptor)) {
-            accepted.add(fingerprint);
-          } else {
-            mismatched.add(fingerprint);
-          }
+        case Ok(value: true):
+          accepted.add(fingerprint);
+        case Ok(value: false):
+          break;
       }
     }
-    return Ok(accepted.difference(mismatched));
+    return Ok(accepted);
   }
-
-  static String _withoutChecksum(String descriptor) =>
-      descriptor.split('#').first;
 }

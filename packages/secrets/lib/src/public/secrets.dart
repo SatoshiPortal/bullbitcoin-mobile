@@ -169,6 +169,34 @@ final class Secrets {
     scriptTypes: scriptTypes,
   );
 
+  /// Compares both full public descriptors after BDK canonicalization. Invalid
+  /// expected descriptors or checksums do not match. No keystore is accessed.
+  @internal
+  @useResult
+  Future<Result<bool, SecretFailure>> matchesBitcoinDescriptors({
+    required List<String> words,
+    Language language = Language.english,
+    String? passphrase,
+    required BitcoinNetwork network,
+    required ScriptType scriptType,
+    required Descriptors expected,
+  }) async =>
+      (await previewBitcoinDescriptors(
+        words: words,
+        language: language,
+        passphrase: passphrase,
+        network: network,
+        scriptTypes: {scriptType},
+      )).map((descriptors) {
+        final actual = descriptors[scriptType];
+        return actual != null &&
+            Deriver.bitcoin.matchesPublicDescriptors(
+              actual: actual,
+              expected: expected,
+              network: network,
+            );
+      });
+
   // ----------------------------------------------------------------- restore
 
   /// RecoverBull vault restoration and stateless backup verification.
@@ -280,6 +308,24 @@ extension type const SecretPreview._(Secrets _secrets) {
     passphrase: passphrase,
     network: network,
     scriptTypes: scriptTypes,
+  );
+
+  /// Compares full public descriptors without accessing the keystore.
+  @useResult
+  Future<Result<bool, SecretFailure>> matchesBitcoinDescriptors({
+    required List<String> words,
+    Language language = Language.english,
+    String? passphrase,
+    required BitcoinNetwork network,
+    required ScriptType scriptType,
+    required Descriptors expected,
+  }) => _secrets.matchesBitcoinDescriptors(
+    words: words,
+    language: language,
+    passphrase: passphrase,
+    network: network,
+    scriptType: scriptType,
+    expected: expected,
   );
 }
 

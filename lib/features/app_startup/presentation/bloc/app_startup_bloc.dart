@@ -60,6 +60,7 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState>
     }
     final result = await _restoreMissingDefaultSecretUsecase.execute(
       expectedFingerprint: failure.masterFingerprint,
+      expectedWalletId: failure.walletId,
       words: words,
       passphrase: passphrase,
     );

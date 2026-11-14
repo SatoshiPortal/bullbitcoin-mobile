@@ -150,8 +150,25 @@ class CheckForExistingDefaultWalletsUsecase {
             error: 'SecretNotFoundFailure',
             trace: StackTrace.current,
           );
+          final bitcoinDefaults = defaultWallets
+              .where(
+                (candidate) =>
+                    candidate.isBitcoin &&
+                    candidate.masterFingerprint == wallet.masterFingerprint,
+              )
+              .toList();
+          if (bitcoinDefaults.length != 1) {
+            return const Err(
+              AppStartupWalletCheckFailure(
+                'matching Bitcoin default unavailable or ambiguous',
+              ),
+            );
+          }
           return Err(
-            AppStartupMissingDefaultSecretFailure(wallet.masterFingerprint),
+            AppStartupMissingDefaultSecretFailure(
+              wallet.masterFingerprint,
+              walletId: bitcoinDefaults.single.id,
+            ),
           );
         case Err(:final failure):
           log.severe(
