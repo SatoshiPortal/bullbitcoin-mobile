@@ -1148,6 +1148,17 @@ void main() {
       },
     );
 
+    test('incoming payments are collected only on request', () async {
+      await fixture.load(electrumFixtureScenarios.first, 0);
+      expect(completed(await sync.execute(descriptor)).incomingTxids, isNull);
+      expect(
+        completed(
+          await sync.execute(descriptor, collectIncoming: true),
+        ).incomingTxids,
+        isNotNull,
+      );
+    });
+
     test('successful sync publishes an initialized durable revision', () async {
       await fixture.load(electrumFixtureScenarios.first, 0);
       completed(await sync.execute(descriptor));
