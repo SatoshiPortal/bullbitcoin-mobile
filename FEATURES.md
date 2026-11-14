@@ -98,6 +98,7 @@ graph TB
 
     IMPORT_MNEMONIC --> WALLETS
     ONBOARDING --> IMPORT_MNEMONIC
+    ONBOARDING --> WALLETS
     APP_STARTUP --> IMPORT_MNEMONIC
 
     %% Feature-to-feature dependencies (extracted from draw.io diagram)
@@ -120,6 +121,7 @@ graph TB
     WALLETS --> RECOVERBULL
     STATUS --> RECOVERBULL
     BACKUPS --> RECOVERBULL
+    BACKUPS --> SECRETS
     BACKUPS --> TOR
     BACKUPS --> WALLETS
     BTC_PRICE --> SETTINGS

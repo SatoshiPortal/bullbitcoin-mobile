@@ -225,34 +225,93 @@ class SecretRepository {
     required String file,
     required String key,
     String? passphrase,
+    bool allowUnverified = false,
   }) async {
     final opened = await boundary(
       () async => Backup.recoverbull.open(file: file, backupKey: key),
       orElse: StoreSecretFailure.new,
     );
-    return switch (opened) {
-      Err(:final failure) => Err(failure),
-      Ok(:final value) => (await store(
-        words: value.words,
-        language: value.language,
-        passphrase: passphrase,
-      )).map((info) => (info: info, metadata: value.metadata)),
-    };
+    switch (opened) {
+      case Err(:final failure):
+        return Err(failure);
+      case Ok(:final value):
+        final verified = await _verifyVault(
+          file: file,
+          key: key,
+          words: value.words,
+          language: value.language,
+          passphrase: passphrase ?? '',
+        );
+        if (verified case Err(:final failure)) {
+          if (failure is! VaultIdentityMismatchFailure ||
+              !allowUnverified ||
+              (passphrase != null && passphrase.isNotEmpty)) {
+            return Err(failure);
+          }
+        }
+        return (await store(
+          words: value.words,
+          language: value.language,
+          passphrase: passphrase,
+        )).map((info) => (info: info, metadata: value.metadata));
+    }
   }
 
   /// Inspects a RecoverBull vault without reading or writing the keystore. Only its validated mnemonic determines the fingerprint; metadata is not trusted for it.
   Future<Result<Fingerprint, SecretFailure>> inspect({
     required String file,
     required String key,
-  }) => boundary(
-    () => Isolate.run(() {
-      final opened = Backup.recoverbull.open(file: file, backupKey: key);
-      return Deriver.fingerprint.fingerprint(
-        Deriver.fingerprint.seed(opened.words, language: opened.language),
+    String? passphrase,
+  }) async {
+    final opened = await boundary(
+      () async => Backup.recoverbull.open(file: file, backupKey: key),
+      orElse: UseSecretFailure.new,
+    );
+    return switch (opened) {
+      Err(:final failure) => Err(failure),
+      Ok(:final value) => _verifyVault(
+        file: file,
+        key: key,
+        words: value.words,
+        language: value.language,
+        passphrase: passphrase ?? '',
+      ),
+    };
+  }
+
+  Future<Result<Fingerprint, SecretFailure>> _verifyVault({
+    required String file,
+    required String key,
+    required List<String> words,
+    required Language language,
+    required String passphrase,
+  }) => boundary(() async {
+    final path = Backup.recoverbull.derivationPath(file);
+    return Isolate.run(() {
+      final seed = Deriver.fingerprint.seed(
+        words,
+        language: language,
+        passphrase: passphrase,
       );
-    }),
-    orElse: UseSecretFailure.new,
-  );
+      try {
+        final id = Deriver.fingerprint.fingerprint(seed);
+        final root = Deriver.bip85.root(Seed(id: id, seedBytes: seed));
+        final derived = Backup.recoverbull.backupKey(
+          masterXprv: root,
+          path: path,
+        );
+        final expected = key.toLowerCase().replaceFirst(RegExp(r'^0x'), '');
+        var difference = derived.length ^ expected.length;
+        for (var i = 0; i < derived.length && i < expected.length; i++) {
+          difference |= derived.codeUnitAt(i) ^ expected.codeUnitAt(i);
+        }
+        if (difference != 0) throw const VaultIdentityMismatchException();
+        return id;
+      } finally {
+        seed.fillRange(0, seed.length, 0);
+      }
+    });
+  }, orElse: UseSecretFailure.new);
 
   Future<Result<void, SecretFailure>> trash(Fingerprint id) =>
       boundary(() => _source.trashSecret(id), orElse: TrashSecretFailure.new);

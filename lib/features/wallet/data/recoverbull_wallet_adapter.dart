@@ -1,6 +1,6 @@
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/create_default_wallets_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/create_default_wallets_usecase.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bull_recoverbull/bull_recoverbull.dart';
 import 'package:secrets/secrets.dart' show Secrets, KeystoreLockedFailure;
@@ -33,9 +33,22 @@ final class RecoverBullWalletAdapter implements RecoverBullWalletPort {
           if (value.isEmpty) return const Ok(null);
           if (value.length != 1) return const Err(VaultContextChangedFailure());
           final wallet = value.single;
+          final description = await _secrets.fetch(
+            Fingerprint(wallet.masterFingerprint),
+          );
+          final bool hasPassphrase;
+          switch (description) {
+            case Ok(:final value):
+              hasPassphrase = value.info.hasPassphrase;
+            case Err(failure: KeystoreLockedFailure()):
+              return const Err(VaultKeystoreLockedFailure());
+            case Err():
+              return const Err(VaultStorageFailure());
+          }
           return Ok(
             VaultContext(
               fingerprint: Fingerprint(wallet.masterFingerprint),
+              hasPassphrase: hasPassphrase,
               network: wallet.network.isTestnet
                   ? BitcoinNetwork.testnet
                   : BitcoinNetwork.mainnet,
@@ -65,7 +78,12 @@ final class RecoverBullWalletAdapter implements RecoverBullWalletPort {
         case Err():
           return const Err(VaultStorageFailure());
         case Ok(:final value):
-          final created = await _create.execute(secret: value);
+          final result = await _create.execute(secret: value);
+          if (result case Err()) return const Err(VaultStorageFailure());
+          final created = switch (result) {
+            Ok(:final value) => value,
+            Err() => const <Never>[],
+          };
           final bitcoin = created
               .where((wallet) => wallet.network.isBitcoin)
               .toList();

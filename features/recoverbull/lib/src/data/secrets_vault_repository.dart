@@ -41,7 +41,7 @@ final class SecretsVaultRepository implements VaultRepository {
       case Ok(:final value):
         secret = value;
     }
-    if (!secret.info.isMnemonic || secret.info.hasPassphrase) {
+    if (!secret.info.isMnemonic) {
       return const Err(VaultUnsupportedSecretFailure());
     }
     final result = await secret.backup.recoverbull(
@@ -63,11 +63,13 @@ final class SecretsVaultRepository implements VaultRepository {
   @override
   Future<Result<Fingerprint, RecoverBullFailure>> fingerprint(
     EncryptedVault vault,
-    custody.VaultKey key,
-  ) async =>
+    custody.VaultKey key, {
+    String passphrase = '',
+  }) async =>
       (await _secrets.recoverbull.fingerprint(
             vault: custody.EncryptedVault(json: encode(vault)),
             key: key,
+            passphrase: passphrase,
           ))
           .map((fingerprint) {
             log.fine('recoverbull vault inspected');
@@ -78,11 +80,15 @@ final class SecretsVaultRepository implements VaultRepository {
   @override
   Future<Result<Fingerprint, RecoverBullFailure>> restore(
     EncryptedVault vault,
-    custody.VaultKey key,
-  ) async =>
+    custody.VaultKey key, {
+    String passphrase = '',
+    bool allowUnverified = false,
+  }) async =>
       (await _secrets.recoverbull.restore(
             vault: custody.EncryptedVault(json: encode(vault)),
             key: key,
+            passphrase: passphrase,
+            allowUnverified: allowUnverified,
           ))
           .map((restored) {
             log.fine('recoverbull vault imported');
@@ -96,6 +102,8 @@ final class SecretsVaultRepository implements VaultRepository {
         custody.SecretNotFoundFailure() => const VaultSecretMissingFailure(),
         custody.FetchSecretFailure() ||
         custody.StoreSecretFailure() => const VaultStorageFailure(),
+        custody.VaultIdentityMismatchFailure() =>
+          const VaultPassphraseRequiredFailure(),
         custody.InvalidVaultFailure() => const VaultInvalidFailure(),
         custody.MnemonicRequiredFailure() =>
           const VaultUnsupportedSecretFailure(),

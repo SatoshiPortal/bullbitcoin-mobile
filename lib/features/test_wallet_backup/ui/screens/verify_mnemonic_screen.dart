@@ -12,6 +12,7 @@ import 'package:bull_ui/bull_ui.dart'
     show
         BullButton,
         BullScreenPrivacyGate,
+        BullSecretTextInput,
         BullShapesX,
         BullSnackBar,
         BullText,
@@ -30,7 +31,7 @@ class VerifyMnemonicScreen extends StatefulWidget {
 }
 
 class _VerifyMnemonicScreenState extends State<VerifyMnemonicScreen>
-    with PrivacyScreen {
+    with PrivacyScreen, WidgetsBindingObserver {
   String? _fingerprint;
   Future<Result<Secret, TestWalletBackupFailure>>? _secret;
 
@@ -44,8 +45,31 @@ class _VerifyMnemonicScreenState extends State<VerifyMnemonicScreen>
   /// is why this screen no longer has a `_mnemonic` field.
   int _placed = 0;
   int _total = 0;
+  Secret? _passphraseSecret;
+  String _passphrase = '';
+  String? _passphraseError;
+  bool _verifying = false;
+  int _passphraseGeneration = 0;
 
   late Future<bool> _privacyFuture = enableScreenPrivacy();
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state != AppLifecycleState.resumed && _passphraseSecret != null) {
+      setState(() {
+        _passphrase = '';
+        _passphraseError = null;
+        _verifying = false;
+        _passphraseGeneration++;
+      });
+    }
+  }
 
   @override
   void didChangeDependencies() {
@@ -70,12 +94,57 @@ class _VerifyMnemonicScreenState extends State<VerifyMnemonicScreen>
     _unavailable = null;
     _placed = 0;
     _total = 0;
+    _passphraseSecret = null;
+    _passphrase = '';
+    _passphraseError = null;
+    _verifying = false;
+    _passphraseGeneration++;
     _secret = context.read<TestWalletBackupBloc>().loadSelectedWalletSecret();
     return true;
   }
 
+  void _solved(Secret secret) {
+    if (!secret.info.hasPassphrase) {
+      context.read<TestWalletBackupBloc>().add(const VerifyPhysicalBackup());
+      return;
+    }
+    setState(() => _passphraseSecret = secret);
+  }
+
+  Future<void> _verifyPassphrase() async {
+    final secret = _passphraseSecret;
+    if (secret == null || _verifying) return;
+    setState(() {
+      _verifying = true;
+      _passphraseError = null;
+    });
+    final generation = _passphraseGeneration;
+    final result = await context.read<TestWalletBackupBloc>().verifyPassphrase(
+      secret,
+      _passphrase,
+    );
+    if (!mounted ||
+        _passphraseSecret != secret ||
+        generation != _passphraseGeneration) {
+      return;
+    }
+    setState(() {
+      _verifying = false;
+      _passphraseError = switch (result) {
+        Ok(value: false) => context.loc.passphraseIncorrect,
+        Err(:final failure) => failure.toTranslated(context),
+        _ => null,
+      };
+    });
+    if (result case Ok(value: true)) {
+      _passphrase = '';
+      context.read<TestWalletBackupBloc>().add(const VerifyPhysicalBackup());
+    }
+  }
+
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     unawaited(disableScreenPrivacy());
     super.dispose();
   }
@@ -181,22 +250,56 @@ class _VerifyMnemonicScreenState extends State<VerifyMnemonicScreen>
                           ),
                         ),
                       const Gap(16),
-                      _Challenge(
-                        // Keyed by wallet: a FutureBuilder handed a new future
-                        // keeps the previous snapshot's data until it resolves,
-                        // which would draw the previous wallet's words under
-                        // the newly selected one.
-                        key: ValueKey<String?>(_fingerprint),
-                        secret: _secret,
-                        unavailable: _unavailable,
-                        onProgress: (placed, total) {
-                          if (!mounted) return;
-                          setState(() {
-                            _placed = placed;
-                            _total = total;
-                          });
-                        },
-                      ),
+                      if (_passphraseSecret != null) ...[
+                        BullText(
+                          context.loc.passphraseBackupPrompt,
+                          style: context.font.bodyMedium,
+                        ),
+                        const Gap(16),
+                        BullSecretTextInput(
+                          key: ValueKey(_passphraseGeneration),
+                          label: context.loc.passphraseLabel,
+                          showLabel: context.loc.passphraseShow,
+                          hideLabel: context.loc.passphraseHide,
+                          onChanged: (value) =>
+                              setState(() => _passphrase = value),
+                        ),
+                        if (_passphrase != _passphrase.trim())
+                          BullText(
+                            context.loc.passphraseWhitespaceWarning,
+                            style: context.font.bodyMedium,
+                          ),
+                        if (_passphraseError case final error?)
+                          BullText(
+                            error,
+                            style: context.font.bodyMedium,
+                            color: context.appColors.error,
+                          ),
+                        const Gap(16),
+                        BullButton.small(
+                          label: context.loc.continueButton,
+                          onPressed: _verifyPassphrase,
+                          bgColor: context.appColors.secondary,
+                          textColor: context.appColors.onSecondary,
+                        ),
+                      ] else
+                        _Challenge(
+                          // Keyed by wallet: a FutureBuilder handed a new future
+                          // keeps the previous snapshot's data until it resolves,
+                          // which would draw the previous wallet's words under
+                          // the newly selected one.
+                          key: ValueKey<String?>(_fingerprint),
+                          secret: _secret,
+                          unavailable: _unavailable,
+                          onSolved: _solved,
+                          onProgress: (placed, total) {
+                            if (!mounted) return;
+                            setState(() {
+                              _placed = placed;
+                              _total = total;
+                            });
+                          },
+                        ),
                     ],
                   ),
                 ),
@@ -218,11 +321,13 @@ class _Challenge extends StatelessWidget {
     required this.secret,
     required this.unavailable,
     required this.onProgress,
+    required this.onSolved,
   });
 
   final Future<Result<Secret, TestWalletBackupFailure>>? secret;
   final TestWalletBackupFailure? unavailable;
   final void Function(int placed, int total) onProgress;
+  final void Function(Secret) onSolved;
 
   @override
   Widget build(BuildContext context) {
@@ -285,9 +390,7 @@ class _Challenge extends StatelessWidget {
             ],
           ),
           onProgress: onProgress,
-          onSolved: () => context.read<TestWalletBackupBloc>().add(
-            const VerifyPhysicalBackup(),
-          ),
+          onSolved: () => onSolved(value),
           onMistake: () => BullSnackBar.show(
             context,
             message: context.loc.testBackupErrorIncorrectOrder,

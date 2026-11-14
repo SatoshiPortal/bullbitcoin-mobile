@@ -32,6 +32,8 @@ Future<Result<T, SecretFailure>> boundary<T>(
     return Err(DatabaseKeyCorruptFailure(e.message));
   } on FingerprintMismatchException catch (e) {
     return Err(FingerprintMismatchFailure(e.message));
+  } on VaultIdentityMismatchException {
+    return const Err(VaultIdentityMismatchFailure());
   } on FingerprintConflictException catch (e) {
     return Err(StoreSecretFailure(e.message));
   } on InvalidVault catch (e) {

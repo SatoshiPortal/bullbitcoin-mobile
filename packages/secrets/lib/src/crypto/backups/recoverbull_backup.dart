@@ -56,6 +56,26 @@ final class RecoverBullBackup {
     return convert.hex.encode(derived.sublist(0, 32));
   }
 
+  /// Validates the historical and current path spellings in a vault file.
+  String derivationPath(String file) {
+    final Object? decoded;
+    try {
+      decoded = json.decode(file);
+    } on FormatException {
+      throw const InvalidVault('file is not a RecoverBull vault');
+    }
+    final path = decoded is Map<String, dynamic> ? decoded[_kPath] : null;
+    if (path is! String ||
+        !RegExp(r"^(?:m/)?1608'/0'/[0-9]+'?$").hasMatch(path)) {
+      throw const InvalidVault('vault derivation path is invalid');
+    }
+    final index = int.tryParse(path.split('/').last.replaceAll("'", ''));
+    if (index == null || index > 0x7fffffff) {
+      throw const InvalidVault('vault derivation path is invalid');
+    }
+    return path;
+  }
+
   /// Seals [words] together with [metadata] under [backupKey].
   ///
   /// [metadata] is whatever the caller wants restored alongside the

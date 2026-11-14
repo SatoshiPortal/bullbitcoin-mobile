@@ -19,6 +19,7 @@ export 'package:secrets/src/domain/domain.dart'
         FingerprintMismatchFailure,
         InvalidMnemonicFailure,
         InvalidVaultFailure,
+        VaultIdentityMismatchFailure,
         KeystoreLockedFailure,
         MnemonicRequiredFailure,
         SecretFailure,

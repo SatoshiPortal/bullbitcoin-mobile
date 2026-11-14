@@ -105,9 +105,30 @@ class _MnemonicDisplay extends StatefulWidget {
   State<_MnemonicDisplay> createState() => _MnemonicDisplayState();
 }
 
-class _MnemonicDisplayState extends State<_MnemonicDisplay> {
+class _MnemonicDisplayState extends State<_MnemonicDisplay>
+    with WidgetsBindingObserver {
   String? _fingerprint;
+  bool _showPassphrase = false;
   Future<Result<Secret, TestWalletBackupFailure>>? _secret;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state != AppLifecycleState.resumed && _showPassphrase) {
+      setState(() => _showPassphrase = false);
+    }
+  }
 
   @override
   void didChangeDependencies() {
@@ -119,6 +140,7 @@ class _MnemonicDisplayState extends State<_MnemonicDisplay> {
         ?.masterFingerprint;
     if (fingerprint != _fingerprint) {
       _fingerprint = fingerprint;
+      _showPassphrase = false;
       _secret = fingerprint == null
           ? null
           : context.read<TestWalletBackupBloc>().loadSelectedWalletSecret();
@@ -199,40 +221,57 @@ class _MnemonicDisplayState extends State<_MnemonicDisplay> {
                 if (secret == null) {
                   return const Center(child: CircularProgressIndicator());
                 }
-                return secret.widgets.mnemonicView(
-                  placeholder: const Center(child: CircularProgressIndicator()),
-                  failureBuilder: (context, failure, retry) =>
-                      _DisplayError(onRetry: retry),
-                  passphraseLabel: context.loc.testBackupPassphrase,
-                  passphraseLabelStyle: context.font.labelMedium?.copyWith(
-                    fontWeight: .w700,
-                    color: context.appColors.onSurface,
-                    letterSpacing: 0,
-                    fontSize: 14,
-                  ),
-                  style: context.font.bodyLarge?.copyWith(
-                    fontWeight: .w700,
-                    fontSize: 14,
-                    color: context.appColors.secondary,
-                  ),
-                  wordBuilder: (context, number, word) =>
-                      _RecoveryPhraseWord(number: number, word: word),
-                  // Two columns, numbered down each: the widgets come back
-                  // in order and carry no word this layer can read.
-                  layoutBuilder: (context, words) => Column(
-                    children: [
-                      for (var i = 0; i < (words.length + 1) ~/ 2; i++)
-                        Row(
-                          children: [
-                            words[i],
-                            if (i + (words.length + 1) ~/ 2 < words.length)
-                              words[i + (words.length + 1) ~/ 2]
-                            else
-                              const Expanded(child: SizedBox()),
-                          ],
+                return Column(
+                  children: [
+                    secret.widgets.mnemonicView(
+                      showPassphrase: _showPassphrase,
+                      placeholder: const Center(
+                        child: CircularProgressIndicator(),
+                      ),
+                      failureBuilder: (context, failure, retry) =>
+                          _DisplayError(onRetry: retry),
+                      passphraseLabel: context.loc.testBackupPassphrase,
+                      passphraseLabelStyle: context.font.labelMedium?.copyWith(
+                        fontWeight: .w700,
+                        color: context.appColors.onSurface,
+                        letterSpacing: 0,
+                        fontSize: 14,
+                      ),
+                      style: context.font.bodyLarge?.copyWith(
+                        fontWeight: .w700,
+                        fontSize: 14,
+                        color: context.appColors.secondary,
+                      ),
+                      wordBuilder: (context, number, word) =>
+                          _RecoveryPhraseWord(number: number, word: word),
+                      // Two columns, numbered down each: the widgets come back
+                      // in order and carry no word this layer can read.
+                      layoutBuilder: (context, words) => Column(
+                        children: [
+                          for (var i = 0; i < (words.length + 1) ~/ 2; i++)
+                            Row(
+                              children: [
+                                words[i],
+                                if (i + (words.length + 1) ~/ 2 < words.length)
+                                  words[i + (words.length + 1) ~/ 2]
+                                else
+                                  const Expanded(child: SizedBox()),
+                              ],
+                            ),
+                        ],
+                      ),
+                    ),
+                    if (secret.info.hasPassphrase)
+                      TextButton(
+                        onPressed: () =>
+                            setState(() => _showPassphrase = !_showPassphrase),
+                        child: Text(
+                          _showPassphrase
+                              ? context.loc.passphraseHide
+                              : context.loc.passphraseShow,
                         ),
-                    ],
-                  ),
+                      ),
+                  ],
                 );
               },
             ),

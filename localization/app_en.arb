@@ -3893,10 +3893,6 @@
   "@backupInstruction4": {
     "description": "Fourth backup instruction about not making digital copies"
   },
-  "backupInstruction5": "Your backup is not protected by passphrase. Add a passphrase to your backup later by creating a new wallet.",
-  "@backupInstruction5": {
-    "description": "Fifth backup instruction about passphrase protection"
-  },
   "backupButton": "Backup",
   "@backupButton": {
     "description": "Button label to start backup process"
@@ -7249,10 +7245,6 @@
   "backupWalletInstructionNoDigitalCopies": "Do not make digital copies of your backup. Write it down on a piece of paper, or engraved in metal.",
   "@backupWalletInstructionNoDigitalCopies": {
     "description": "Instruction to avoid digital copies and use physical medium"
-  },
-  "backupWalletInstructionNoPassphrase": "Your backup is not protected by passphrase. Add a passphrase to your backup later by creating a new wallet.",
-  "@backupWalletInstructionNoPassphrase": {
-    "description": "Information about passphrase protection option"
   },
   "backupWalletBackupButton": "Backup",
   "@backupWalletBackupButton": {
@@ -15207,5 +15199,33 @@
   "coreScreensOutputsExceedInputs": "Outputs exceed inputs: this transaction is invalid and the network will reject it.",
   "@coreScreensOutputsExceedInputs": {
     "description": "Transaction review alert when a Bitcoin transaction's outputs exceed its inputs"
+  },
+  "passphraseOption": "I have a passphrase",
+  "@passphraseOption": {},
+  "passphraseWhitespaceWarning": "Leading or trailing spaces are part of your passphrase.",
+  "@passphraseWhitespaceWarning": {},
+  "passphraseBackupPrompt": "Enter your passphrase to verify your backup.",
+  "@passphraseBackupPrompt": {},
+  "passphraseIncorrect": "Incorrect passphrase.",
+  "@passphraseIncorrect": {},
+  "emptyWalletTitle": "This wallet looks empty",
+  "@emptyWalletTitle": {},
+  "emptyWalletMessage": "This wallet looks empty. The passphrase may be wrong.",
+  "@emptyWalletMessage": {},
+  "correct": "Correct",
+  "@correct": {},
+  "emptyWalletBitcoinOnly": "No Bitcoin transaction history was found. Liquid has not been checked.",
+  "@emptyWalletBitcoinOnly": {},
+  "onboardingScanUnavailableTitle": "Could not check Bitcoin transaction history.",
+  "@onboardingScanUnavailableTitle": {
+    "description": "Title shown when the pre-recovery Bitcoin history scan fails."
+  },
+  "onboardingScanUnavailableMessage": "Your Bitcoin history could not be checked. You can retry or continue without checking.",
+  "@onboardingScanUnavailableMessage": {
+    "description": "Explains the choices when the pre-recovery Bitcoin history scan fails."
+  },
+  "onboardingContinueWithoutChecking": "Continue without checking",
+  "@onboardingContinueWithoutChecking": {
+    "description": "Continue recovering a wallet when the history scan failed."
   }
 }

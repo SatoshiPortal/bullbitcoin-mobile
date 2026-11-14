@@ -7,7 +7,9 @@ import 'package:screen_privacy/screen_privacy.dart';
 import 'package:secrets/secrets.dart' show VaultKey;
 
 import '../../domain/entities/drive_file_metadata.dart';
+import '../../domain/entities/backup_settings.dart';
 import '../../domain/common_passwords.dart';
+import '../../domain/recoverbull_failure.dart';
 import '../../domain/entities/recoverbull_flow.dart';
 import '../../domain/entities/vault_provider.dart';
 import '../../domain/entities/vault_recovery.dart';
@@ -51,6 +53,13 @@ class _VaultFlowPageState extends State<VaultFlowPage> with PrivacyScreen {
   int _privacyGeneration = 0;
   String? _inputError;
   VaultKey? _key;
+  VaultKey? _recoveryKey;
+  BackupSettings? _recoverySettings;
+  String _passphrase = '';
+  bool _passphraseRequested = false;
+  bool _confirmWithout = false;
+  bool _passphraseBackupAccepted = false;
+  int _passphraseAttempt = 0;
   late final AppLifecycleListener _lifecycle;
 
   @override
@@ -69,6 +78,12 @@ class _VaultFlowPageState extends State<VaultFlowPage> with PrivacyScreen {
               _protected = null;
               _protection = Completer<bool>().future;
               _key = null;
+              _recoveryKey = null;
+              _recoverySettings = null;
+              _passphrase = '';
+              _passphraseRequested = false;
+              _confirmWithout = false;
+              _passphraseAttempt++;
             });
           }
         }
@@ -110,6 +125,9 @@ class _VaultFlowPageState extends State<VaultFlowPage> with PrivacyScreen {
     _password.clear();
     _confirmation.clear();
     _key = null;
+    _recoveryKey = null;
+    _recoverySettings = null;
+    _passphrase = '';
     _password.dispose();
     _confirmation.dispose();
     _server.dispose();
@@ -146,6 +164,12 @@ class _VaultFlowPageState extends State<VaultFlowPage> with PrivacyScreen {
       return;
     }
     if (widget.flow == RecoverBullFlow.secureVault) {
+      if (presentation.defaultHasPassphrase && !_passphraseBackupAccepted) {
+        setState(
+          () => _inputError = context.loc.recoverbullPassphraseAcknowledgement,
+        );
+        return;
+      }
       if (input.length < 6) {
         setState(() => _inputError = context.loc.recoverbullPasswordTooShort);
         return;
@@ -175,7 +199,7 @@ class _VaultFlowPageState extends State<VaultFlowPage> with PrivacyScreen {
     if (_manual) {
       try {
         manualKey = VaultKey(input);
-      } on ArgumentError {
+      } on FormatException {
         setState(
           () => _inputError = context.loc.recoverbullErrorInvalidCredentials,
         );
@@ -186,9 +210,15 @@ class _VaultFlowPageState extends State<VaultFlowPage> with PrivacyScreen {
     _password.clear();
     _confirmation.clear();
     if (manualKey != null) {
+      _recoveryKey = manualKey;
+      _recoverySettings = null;
       await cubit.manual(manualKey, network);
     } else if (widget.flow == RecoverBullFlow.secureVault) {
-      await cubit.create(_provider, input);
+      await cubit.create(
+        _provider,
+        input,
+        passphraseWarningAccepted: _passphraseBackupAccepted,
+      );
     } else if (widget.flow == RecoverBullFlow.viewVaultKey) {
       final key = await cubit.reveal(input);
       if (mounted &&
@@ -197,9 +227,133 @@ class _VaultFlowPageState extends State<VaultFlowPage> with PrivacyScreen {
         setState(() => _key = key);
       }
     } else {
-      await cubit.verify(input, network);
+      final recovered = await cubit.verificationKey(input);
+      if (!mounted ||
+          _protected != true ||
+          privacyGeneration != _privacyGeneration) {
+        return;
+      }
+      _recoveryKey = recovered?.key;
+      _recoverySettings = recovered?.settings;
+      if (recovered != null) {
+        await cubit.manual(
+          recovered.key,
+          network,
+          capturedSettings: recovered.settings,
+        );
+      }
+    }
+    if (mounted &&
+        _protected == true &&
+        privacyGeneration == _privacyGeneration &&
+        cubit.state.failure is VaultPassphraseRequiredFailure) {
+      setState(() => _passphraseRequested = true);
     }
   }
+
+  Future<void> _submitPassphrase(
+    VaultFlowPresentation presentation, {
+    bool without = false,
+  }) async {
+    final key = _recoveryKey;
+    final cubit = presentation.cubit;
+    if (key == null || _protected != true || cubit.state.busy) return;
+    final BitcoinNetwork? network;
+    if (widget.flow == RecoverBullFlow.recoverVault) {
+      switch (presentation.network) {
+        case Ok(:final value):
+          network = value;
+        case Err():
+          return;
+      }
+    } else {
+      network = null;
+    }
+    final candidate = without ? '' : _passphrase;
+    final generation = _privacyGeneration;
+    setState(() {
+      _passphrase = '';
+      _passphraseAttempt++;
+      _inputError = null;
+      _confirmWithout = false;
+    });
+    await cubit.manual(
+      key,
+      network,
+      passphrase: candidate,
+      allowUnverified: without,
+      capturedSettings: _recoverySettings,
+    );
+    if (!mounted || _protected != true || generation != _privacyGeneration) {
+      return;
+    }
+    if (cubit.state.failure is VaultPassphraseRequiredFailure) {
+      setState(() => _inputError = context.loc.recoverbullPassphraseMismatch);
+    }
+    if (cubit.state.completion != null) {
+      _recoveryKey = null;
+      _recoverySettings = null;
+    }
+  }
+
+  Widget _passphraseBody(
+    VaultFlowPresentation presentation,
+    VaultFlowState state,
+  ) => BullScreenPrivacyGate(
+    protection: _protection,
+    unavailableMessage: context.loc.recoverbullUnexpectedError,
+    retryLabel: context.loc.recoverbullRetry,
+    onRetry: _acquirePrivacy,
+    builder: (_) => Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        _text(context.loc.recoverbullPassphraseRequired),
+        _text(context.loc.recoverbullPassphraseNotVaultPassword),
+        BullSecretTextInput(
+          key: ValueKey(_passphraseAttempt),
+          label: context.loc.recoverbullPassphraseRequired,
+          onChanged: (value) => setState(() => _passphrase = value),
+          showLabel: context.loc.recoverbullPassphraseShow,
+          hideLabel: context.loc.recoverbullPassphraseHide,
+        ),
+        if (_passphrase.trim() != _passphrase)
+          _text(context.loc.recoverbullPassphraseWhitespace),
+        if (_inputError case final error?)
+          Semantics(liveRegion: true, child: _text(error)),
+        if (state.failure != null &&
+            state.failure is! VaultPassphraseRequiredFailure)
+          _text(
+            state.failure?.toTranslated(context) ??
+                context.loc.recoverbullGenericFailure,
+          ),
+        _button(
+          context.loc.recoverbullPassphraseVerify,
+          () => _submitPassphrase(presentation),
+          disabled: state.busy,
+        ),
+        if (widget.flow == RecoverBullFlow.recoverVault) ...[
+          _button(
+            context.loc.recoverbullContinueWithoutPassphrase,
+            () => setState(() => _confirmWithout = true),
+            disabled: state.busy,
+          ),
+          if (_confirmWithout) ...[
+            _text(context.loc.recoverbullContinueWithoutPassphraseWarning),
+            _button(
+              context.loc.recoverbullConfirm,
+              () => _submitPassphrase(presentation, without: true),
+              disabled: state.busy,
+            ),
+            _button(
+              context.loc.recoverbullSettingsCancel,
+              () => setState(() => _confirmWithout = false),
+              disabled: state.busy,
+            ),
+          ],
+        ],
+      ],
+    ),
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -242,6 +396,9 @@ class _VaultFlowPageState extends State<VaultFlowPage> with PrivacyScreen {
     final cubit = presentation.cubit;
     final settings = state.settings;
     final completion = state.completion;
+    if (_passphraseRequested && _recoveryKey != null && completion == null) {
+      return _passphraseBody(presentation, state);
+    }
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -326,6 +483,26 @@ class _VaultFlowPageState extends State<VaultFlowPage> with PrivacyScreen {
             ),
           ] else if (widget.flow != RecoverBullFlow.settings) ...[
             if (widget.flow == RecoverBullFlow.secureVault) ...[
+              if (presentation.defaultHasPassphrase) ...[
+                _text(context.loc.recoverbullVaultPassphraseNotIncluded),
+                Row(
+                  children: [
+                    BullCheckbox(
+                      checked: _passphraseBackupAccepted,
+                      onChanged: state.busy
+                          ? null
+                          : (value) => setState(
+                              () => _passphraseBackupAccepted = value,
+                            ),
+                    ),
+                    Expanded(
+                      child: _text(
+                        context.loc.recoverbullPassphraseAcknowledgement,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
               _text(context.loc.recoverbullSelectVaultProvider),
               _button(
                 context.loc.recoverbullSelectGoogleDrive,
@@ -475,6 +652,9 @@ class _VaultFlowPageState extends State<VaultFlowPage> with PrivacyScreen {
                         () => _submit(presentation),
                         disabled:
                             state.busy ||
+                            (widget.flow == RecoverBullFlow.secureVault &&
+                                presentation.defaultHasPassphrase &&
+                                !_passphraseBackupAccepted) ||
                             (!_manual && settings?.permissionGranted != true),
                       ),
                     ],

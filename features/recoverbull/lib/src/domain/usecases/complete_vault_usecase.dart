@@ -35,8 +35,27 @@ final class CompleteVaultUsecase {
     required BitcoinNetwork? recoveryNetwork,
     required bool Function() cancelled,
     BackupSettings? capturedSettings,
+    String passphrase = '',
+    bool allowUnverified = false,
   }) async {
     if (cancelled()) return const Err(VaultCancelledFailure());
+    // A retained server key belongs to the settings under which it was fetched.
+    // Re-check on every local passphrase attempt before reading or storing a seed.
+    if (capturedSettings != null) {
+      final metadata = _metadata;
+      if (metadata == null) return const Err(VaultContextChangedFailure());
+      switch (await metadata.settings()) {
+        case Err(:final failure):
+          return Err(failure);
+        case Ok(:final value):
+          if (!value.permissionGranted ||
+              value.server != capturedSettings.server ||
+              value.generation != capturedSettings.generation) {
+            return const Err(VaultContextChangedFailure());
+          }
+      }
+      if (cancelled()) return const Err(VaultCancelledFailure());
+    }
     final VaultContext? context;
     VaultRecovery? recovery;
     if (recoveryNetwork != null) {
@@ -45,15 +64,23 @@ final class CompleteVaultUsecase {
         key: key,
         network: recoveryNetwork,
         cancelled: cancelled,
+        passphrase: passphrase,
+        allowUnverified: allowUnverified,
       )) {
         case Err(:final failure):
           return Err(failure);
         case Ok(:final value):
           recovery = value;
-          context = value is VaultRecovered ? value.context : null;
+          context = value is VaultRecovered && !allowUnverified
+              ? value.context
+              : null;
       }
     } else {
-      switch (await _test.execute(vault: vault, key: key)) {
+      switch (await _test.execute(
+        vault: vault,
+        key: key,
+        passphrase: passphrase,
+      )) {
         case Err(:final failure):
           return Err(failure);
         case Ok(:final value):

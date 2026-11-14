@@ -1,4 +1,7 @@
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/create_default_wallets_usecase.dart';
+import 'package:bb_mobile/features/wallet/public/default_wallets_facade.dart';
+import 'package:secrets/secrets.dart';
 import 'package:bull_recoverbull/bull_recoverbull.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bull_tor/tor.dart';
@@ -30,6 +33,16 @@ import 'package:get_it/get_it.dart';
 
 class WalletLocator {
   static void setup(GetIt locator) {
+    locator.registerFactory<CreateDefaultWalletsUsecase>(
+      () => CreateDefaultWalletsUsecase(
+        secrets: locator<Secrets>(),
+        settingsRepository: locator<SettingsRepository>(),
+        walletRepository: locator<WalletRepository>(),
+      ),
+    );
+    locator.registerFactory<DefaultWalletsFacade>(
+      () => DefaultWalletsFacade(locator<CreateDefaultWalletsUsecase>()),
+    );
     locator.registerFactory<CheckBackupNeededUsecase>(
       () => CheckBackupNeededUsecase(
         walletRepository: locator<WalletRepository>(),

@@ -88,7 +88,8 @@ class MnemonicWidget extends StatefulWidget {
 /// updates itself, and only the widgets actually listening to that controller
 /// rebuild. This state rebuilds on the rare events only — length change and
 /// submit error.
-class _MnemonicWidgetState extends State<MnemonicWidget> {
+class _MnemonicWidgetState extends State<MnemonicWidget>
+    with WidgetsBindingObserver {
   MnemonicEntryFailure? _failure;
   late bip39.MnemonicLength length;
   late bip39.Language _language;
@@ -105,6 +106,8 @@ class _MnemonicWidgetState extends State<MnemonicWidget> {
   /// count as an edit. References to the controllers' own strings, no copy.
   List<String> _seenTexts = [];
   String passphrase = '';
+  bool _showPassphrase = false;
+  int _passphraseGeneration = 0;
   String label = '';
 
   List<String> get _words => _controllers
@@ -114,6 +117,7 @@ class _MnemonicWidgetState extends State<MnemonicWidget> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     length = widget.initialLength;
     _language = widget.englishOnly ? bip39.Language.english : widget.language;
     _controllers = _newControllers(length.words);
@@ -236,7 +240,7 @@ class _MnemonicWidgetState extends State<MnemonicWidget> {
   }
 
   // No setState: the inputs keep their own text, and nothing else displays it.
-  void updatePassphrase(String value) => passphrase = value;
+  void updatePassphrase(String value) => setState(() => passphrase = value);
 
   void updateLabel(String value) => label = value;
 
@@ -365,7 +369,18 @@ class _MnemonicWidgetState extends State<MnemonicWidget> {
   }
 
   @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state != AppLifecycleState.resumed && passphrase.isNotEmpty) {
+      setState(() {
+        passphrase = '';
+        _passphraseGeneration++;
+      });
+    }
+  }
+
+  @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     for (final controller in _controllers) {
       controller.dispose();
     }
@@ -433,14 +448,26 @@ class _MnemonicWidgetState extends State<MnemonicWidget> {
 
                   if (widget.allowPassphrase) ...[
                     const Gap(16),
-                    // Key material typed on the system keyboard: request IME privacy, disable copying and omit the value from the Flutter semantics tree.
-                    BullSecretTextInput(
-                      label: context.loc.passphraseLabel,
-                      hint: context.loc.optionalPassphraseHint,
-                      onChanged: updatePassphrase,
-                      showLabel: context.loc.passphraseShow,
-                      hideLabel: context.loc.passphraseHide,
-                    ),
+                    if (!_showPassphrase)
+                      TextButton(
+                        onPressed: () => setState(() => _showPassphrase = true),
+                        child: Text(context.loc.passphraseOption),
+                      ),
+                    if (_showPassphrase) ...[
+                      BullSecretTextInput(
+                        key: ValueKey(_passphraseGeneration),
+                        label: context.loc.passphraseLabel,
+                        hint: context.loc.optionalPassphraseHint,
+                        onChanged: updatePassphrase,
+                        showLabel: context.loc.passphraseShow,
+                        hideLabel: context.loc.passphraseHide,
+                      ),
+                      if (passphrase != passphrase.trim())
+                        BullText(
+                          context.loc.passphraseWhitespaceWarning,
+                          style: context.font.bodyMedium,
+                        ),
+                    ],
                   ],
 
                   if (widget.allowLabel) ...[

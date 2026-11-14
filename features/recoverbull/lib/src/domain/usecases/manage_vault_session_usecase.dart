@@ -45,6 +45,7 @@ final class ManageVaultSessionUsecase {
   Future<Result<VaultCompletion, RecoverBullFailure>> create({
     required VaultProvider provider,
     required String password,
+    bool passphraseWarningAccepted = false,
   }) {
     if (hasPendingProviderSave) {
       return Future.value(const Err(VaultContextChangedFailure()));
@@ -55,6 +56,7 @@ final class ManageVaultSessionUsecase {
         server: server,
         provider: provider,
         password: password,
+        passphraseWarningAccepted: passphraseWarningAccepted,
       ),
     );
   }
@@ -79,6 +81,8 @@ final class ManageVaultSessionUsecase {
     required EncryptedVault vault,
     required String password,
     required BitcoinNetwork? recoveryNetwork,
+    String passphrase = '',
+    bool allowUnverified = false,
   }) => _run((server, settings) async {
     final fetched = await _fetch.execute(
       settings: settings,
@@ -100,9 +104,29 @@ final class ManageVaultSessionUsecase {
           recoveryNetwork: recoveryNetwork,
           cancelled: () => _closed,
           capturedSettings: settings,
+          passphrase: passphrase,
+          allowUnverified: allowUnverified,
         );
     }
   });
+
+  /// The screen retains this operation-scoped key and its settings only while
+  /// protected. Retrying the passphrase never fetches the server key again.
+  Future<Result<({VaultKey key, BackupSettings settings}), RecoverBullFailure>>
+  verificationKey({required EncryptedVault vault, required String password}) =>
+      _run((server, settings) async {
+        final fetched = await _fetch.execute(
+          settings: settings,
+          server: server,
+          vault: vault,
+          password: password,
+        );
+        if (_closed) return const Err(VaultCancelledFailure());
+        if (!await _current(settings)) {
+          return const Err(VaultContextChangedFailure());
+        }
+        return fetched.map((value) => (key: value.key, settings: settings));
+      });
 
   Future<Result<VaultKey, RecoverBullFailure>> reveal({
     required EncryptedVault vault,

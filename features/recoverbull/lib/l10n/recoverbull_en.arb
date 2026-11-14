@@ -855,5 +855,16 @@
         "type": "int"
       }
     }
-  }
+  },
+  "recoverbullVaultPassphraseNotIncluded": "Your passphrase is not included in this backup. You must enter it when restoring. If you forget it, your funds are lost. No one can recover it.",
+  "recoverbullPassphraseAcknowledgement": "I wrote it down and keep it separately",
+  "recoverbullPassphraseRequired": "Passphrase required",
+  "recoverbullPassphraseNotVaultPassword": "It is not in the vault. This is not your vault password.",
+  "recoverbullPassphraseMismatch": "Not the right wallet. This passphrase does not match your backup.",
+  "recoverbullPassphraseShow": "Show passphrase",
+  "recoverbullPassphraseHide": "Hide passphrase",
+  "recoverbullPassphraseWhitespace": "Leading or trailing spaces are part of your passphrase.",
+  "recoverbullContinueWithoutPassphrase": "Continue without",
+  "recoverbullContinueWithoutPassphraseWarning": "Open a different wallet? It is probably empty. This does not recover the wallet in your backup.",
+  "recoverbullPassphraseVerify": "Verify"
 }

@@ -14,7 +14,7 @@ The grouped interface is the only public spelling: `secret.derive.xpub`, `secret
 
 `list` returns `List<SecretEntry>`. The sealed family has two alternatives: `Secret` for a usable entry and `UnreadableSecret` carrying the failure and a fingerprint when recoverable. This preserves individual unreadable entries without making a usable handle's properties nullable. A global read failure returns an `Err`, not an empty list.
 
-`verify.mnemonic(words)` compares stored words alone and requires a mnemonic entry. `verify.seed(hex)` compares the full seed bytes, derived with the stored passphrase for mnemonic entries and read directly for seed-only entries. A mismatch is `Ok(false)`; inability to perform the comparison is a failure. No stored material leaves either method.
+`verify.mnemonic(words)` compares stored words alone and requires a mnemonic entry. `verify.passphrase(candidate)` compares BIP39 NFKD-normalized passphrases without exposing the stored value. `verify.seed(hex)` compares the full seed bytes, derived with the stored passphrase for mnemonic entries and read directly for seed-only entries. A mismatch is `Ok(false)`; inability to perform the comparison is a failure. No stored material leaves either method.
 
 The identifier is `primitives.Fingerprint`: eight lowercase hex characters validated at construction. Networks, script types, xpub formats, `Result` and `Failure` come from `primitives` too. Applications import that canonical vocabulary rather than a duplicate set of types.
 
@@ -28,11 +28,11 @@ Run `make secrets-api-docs` after changing the public API and include the README
 
 ## Passphrase
 
-Account xpub derivation, Bitcoin signing, Liquid descriptors and signatures, BIP85 and the swap key honour a BIP39 passphrase. Every existing Liquid wallet is a passphrase-less default, so its keys are those lwk's word-based signer derived. A RecoverBull vault contains the words and a `mnemonicLanguage` field (including English), without the passphrase; its encryption key derives from the original secret, including its passphrase.
+Account xpub derivation, Bitcoin signing, Liquid descriptors and signatures, BIP85 and the swap key honour a BIP39 passphrase. Legacy passphrase-less Liquid defaults keep the keys lwk's word-based signer derived. A RecoverBull vault contains the words and a `mnemonicLanguage` field (including English), without the passphrase; its encryption key derives from the original secret, including its passphrase.
 
-These methods return their values directly. Silent Payments derives from the full BIP39 seed and honours the language and passphrase. The application continues to use its default Bitcoin wallet; allowing a passphrase on that default remains a separate recovery change. `secrets.recoverbull.restore(vault:, key:, passphrase:)` accepts the passphrase separately; the vault cannot verify whether the supplied passphrase is correct. Without one, it restores the passphrase-less wallet.
+These methods return their values directly. Silent Payments derives from the full BIP39 seed and honours the language and passphrase. The application restores passphrase defaults without exposing seed material. `secrets.recoverbull.restore(vault:, key:, passphrase:)` accepts the passphrase separately and verifies its derived BIP85 key against the key that opened the vault before writing. An explicitly requested unverified empty-passphrase sibling is not a certified backup.
 
-**Default wallets never have a passphrase.** The app generates or imports their words without one. A restored `Secret` handle is also rejected by `CreateDefaultWalletsUsecase` if it carries a passphrase, before any wallet is created. Liquid, RecoverBull recovery, BIP85, swaps and the physical backup check rely on this invariant. Passphrase-protected Bitcoin wallets are imported non-default wallets.
+The app controls which wallets are defaults. Recovery of a passphrase-protected default must retain the passphrase independently of the vault and check it before creating or certifying wallets.
 
 The bound lwk and Boltz APIs accept the full BIP39 seed, including the passphrase (`SwSigner::from_seed_with_network` for Liquid). An empty passphrase produces the same seed as the previous word-based signer's `mnemonic.to_seed("")`, preserving its keys for identical input. A non-empty passphrase deliberately derives a different wallet. Device vectors compare exact Liquid descriptors as well as the passphrase-separated results.
 
@@ -54,7 +54,7 @@ Every new RecoverBull vault records its wordlist in the reserved `mnemonicLangua
 
 `secret.backup.recoverbull(metadata:)` returns `({EncryptedVault vault, VaultKey key})`. The vault exposes its encoded document through `json`; its derivation path is read from that document, never supplied as a second source of truth. It never contains the key. Both values redact their default string representation; their record does too. Keep the recovery key apart from the vault.
 
-`secrets.recoverbull.restore(vault:, key:)` decrypts and stores the words in the language the vault records internally, returning a `Secret` and the caller's metadata. Unlike direct import, restoration is idempotent when the same secret is already present; it returns the existing handle without overwriting the entry. `secrets.recoverbull.fingerprint(vault:, key:)` instead computes the passphrase-less fingerprint without any keystore read or write. Inspection does not trust a fingerprint from metadata and never imports a temporary secret. RecoverBull presentation keeps a verification status, not a decrypted vault.
+`secrets.recoverbull.restore(vault:, key:)` decrypts and stores the words in the language the vault records internally, returning a `Secret` and the caller's metadata. Unlike direct import, restoration is idempotent when the same secret is already present; it returns the existing handle without overwriting the entry. `secrets.recoverbull.fingerprint(vault:, key:, passphrase:)` verifies the candidate against the key and returns its fingerprint without any keystore read or write. Inspection does not trust a fingerprint from metadata and never imports a temporary secret. RecoverBull presentation keeps a verification status, not a decrypted vault.
 
 ## Database keys
 
