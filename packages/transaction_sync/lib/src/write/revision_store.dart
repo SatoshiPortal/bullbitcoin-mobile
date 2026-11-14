@@ -6,7 +6,10 @@ import 'bitcoin_spend_gate_store.dart';
 import 'package:primitives/primitives.dart';
 import 'package:meta/meta.dart';
 import 'package:sqlite3/sqlite3.dart';
-import '../../transaction_sync.dart';
+import '../domain/transaction_sync_failure.dart';
+import '../domain/wallet_catalog_port.dart';
+import '../domain/wallet_key.dart';
+import '../domain/wallet_revision.dart';
 
 /// Bump whenever the pinned native SDK or native store layout changes.
 /// Version 1: bull_sdk f4ee00bf61a810d034a397a41a2e40cd7903aa51, legacy BDK/LWK paths.

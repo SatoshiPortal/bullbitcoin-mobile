@@ -12,7 +12,10 @@ import 'package:flutter/foundation.dart';
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
 
-import '../../write.dart';
+import '../write/native_wallet_writer.dart';
+import '../write/revision_store.dart';
+import '../write/writer_paths.dart';
+import '../write/writer_sync_operation.dart';
 import '../domain/native_network_policy.dart';
 import '../domain/sync_reason.dart';
 import '../domain/wallet_revision.dart';

@@ -1,5 +1,8 @@
 import 'package:primitives/primitives.dart';
-import '../../transaction_sync.dart';
+import '../domain/transaction_sync_failure.dart';
+import '../domain/wallet_catalog_port.dart';
+import '../domain/wallet_key.dart';
+import '../domain/wallet_revision.dart';
 import 'bitcoin_spend_gate_store.dart';
 import 'revision_store.dart';
 import 'writer_lock.dart';

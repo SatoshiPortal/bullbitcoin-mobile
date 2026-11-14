@@ -1,7 +1,8 @@
 import 'dart:io';
 
 import 'package:sqlite3/sqlite3.dart';
-import '../../transaction_sync.dart';
+import '../domain/wallet_catalog_port.dart';
+import '../domain/wallet_key.dart';
 import 'store_identity.dart';
 
 /// Recovery metadata only; the native wallet remains the transaction authority.
