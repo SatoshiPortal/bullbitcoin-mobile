@@ -47,8 +47,9 @@ final class RevisionStoreDatasource {
 
   RevisionStoreDatasource._(this._db);
 
-  /// Foreground only: creates the complete schema in one step. A store at
-  /// another version is refused with [RevisionStoreUnavailable].
+  /// Foreground only: creates the complete schema in one step in a blank file.
+  /// A store at another version, or holding tables without a version, is
+  /// refused with [RevisionStoreUnavailable].
   static RevisionStoreDatasource openForeground(String path) {
     File(path).parent.createSync(recursive: true);
     final db = sqlite3.open(path);
@@ -58,6 +59,11 @@ final class RevisionStoreDatasource {
         db.execute('BEGIN IMMEDIATE');
         try {
           if (db.userVersion == 0) {
+            // Version 0 with tables is an unversioned develop layout, not a
+            // blank file: refuse it so the caller quarantines it.
+            if (db.select('SELECT 1 FROM sqlite_master LIMIT 1').isNotEmpty) {
+              throw const RevisionStoreUnavailable();
+            }
             db.execute(_schema);
             db.userVersion = revisionStoreVersion;
           }
