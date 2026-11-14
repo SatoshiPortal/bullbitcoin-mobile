@@ -1,7 +1,7 @@
 import 'package:bull_logger/bull_logger.dart';
 import 'package:notifications/notifications.dart';
 import 'package:primitives/primitives.dart';
-import 'package:transaction_sync/transaction_sync.dart';
+import 'package:sync/sync.dart';
 
 /// Records actual sync completions. Snapshot readers never use this owner.
 final class WalletPaymentObserver {

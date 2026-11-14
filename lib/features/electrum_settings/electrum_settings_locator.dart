@@ -1,6 +1,6 @@
 import 'package:bb_mobile/features/electrum_settings/data/wallet_connection_policy_impl.dart';
 import 'package:bb_mobile/core/electrum/domain/ports/electrum_servers_port.dart';
-import 'package:transaction_sync/transaction_sync.dart';
+import 'package:sync/sync.dart';
 import 'package:bb_mobile/features/electrum_settings/domain/usecases/add_custom_server_usecase.dart';
 import 'package:bb_mobile/features/electrum_settings/domain/usecases/delete_custom_server_usecase.dart';
 import 'package:bb_mobile/features/electrum_settings/domain/usecases/load_electrum_server_data_usecase.dart';
@@ -15,7 +15,7 @@ import 'package:get_it/get_it.dart';
 
 class ElectrumSettingsLocator {
   static void setup(GetIt locator) {
-    locator.registerLazySingleton<WalletConnectionPolicy>(
+    locator.registerLazySingleton<WalletConnectionPort>(
       () => WalletConnectionPolicyImpl(locator<ElectrumServersPort>()),
     );
     locator.registerFactory<HasActiveCustomBitcoinOnionServerUsecase>(

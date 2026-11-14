@@ -18,7 +18,7 @@ void main() {
           'lib/features/wallet/wallet_locator.dart',
         ).readAsStringSync();
         final writer = File(
-          'packages/transaction_sync/lib/src/write/native_write_session.dart',
+          'packages/sync/lib/src/data/write/native_write_session.dart',
         ).readAsStringSync();
         expect(sqlite, contains('getApplicationDocumentsDirectory'));
         expect(initialization, contains('getApplicationDocumentsDirectory'));
@@ -56,7 +56,7 @@ void main() {
         'lib/features/electrum_settings/background_setup.dart',
       ].map((path) => File(path).readAsStringSync()).join('\n');
       expect(source, contains('await getApplicationDocumentsDirectory()'));
-      expect(source, contains('writerMetadataPath(documents.path)'));
+      expect(source, contains('openExisting(documents.path)'));
       expect(
         source,
         matches(

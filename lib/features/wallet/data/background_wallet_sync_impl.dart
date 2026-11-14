@@ -1,6 +1,7 @@
 import 'package:background_tasks/background_tasks.dart';
 import 'package:primitives/primitives.dart';
-import 'package:transaction_sync/transaction_sync.dart';
+import 'package:sync/sync.dart';
+import 'package:sync/write.dart';
 
 import 'wallet_payment_observer.dart';
 
@@ -25,6 +26,7 @@ final class BackgroundWalletSyncImpl implements BackgroundWalletSync {
       headless: true,
       reason: SyncReason.background,
       allowInitialScan: allowInitialScan,
+      collectIncoming: _observer != null,
       onCompletion: _observer?.record,
     );
     return switch (result) {
@@ -58,8 +60,10 @@ final class BackgroundWalletSyncImpl implements BackgroundWalletSync {
         BackgroundSyncUnavailableReason.address,
       ),
     TransactionSyncBusyFailure() => const BackgroundSyncBusyFailure(),
-    TransactionSyncUnsupportedNetworkFailure(:final authorization) =>
-      BackgroundSyncUnsupportedNetworkFailure(authorization: authorization),
+    TransactionSyncUnsupportedNetworkFailure() =>
+      const BackgroundSyncUnsupportedNetworkFailure(),
+    TransactionSyncUnauthorizedNetworkFailure() =>
+      const BackgroundSyncUnauthorizedNetworkFailure(),
     TransactionSyncInitialScanRequiredFailure() =>
       const BackgroundSyncInitialScanRequiredFailure(),
     TransactionSyncNeedsRepairFailure(

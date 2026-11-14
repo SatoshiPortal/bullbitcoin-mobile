@@ -31,7 +31,8 @@ import 'package:bb_mobile/features/wallet/data/foreground_wallet_sync.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_catalog_port_impl.dart';
-import 'package:transaction_sync/transaction_sync.dart';
+import 'package:sync/sync.dart';
+import 'package:sync/write.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bull_tor/tor.dart';
 import 'package:bb_mobile/features/sp/public/sp_facade.dart';
@@ -170,7 +171,8 @@ class WalletLocator {
     locator.registerLazySingleton<ElectrumSync>(
       () => ElectrumSync(
         readRevision: (key) => locator<WalletNativeRuntime>().readRevision(key),
-        connections: locator<WalletConnectionPolicy>(),
+        connections: locator<WalletConnectionPort>(),
+        collectIncoming: backgroundSyncAvailable,
         onCompletion: backgroundSyncAvailable
             ? locator<WalletPaymentObserver>().record
             : null,

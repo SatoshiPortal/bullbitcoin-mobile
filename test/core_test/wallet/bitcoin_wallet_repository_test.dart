@@ -1,5 +1,4 @@
-import 'package:transaction_sync/transaction_sync.dart'
-    show WalletRevision, WalletKey;
+import 'package:sync/sync.dart' show WalletRevision, WalletKey;
 import 'package:bull_sdk/bdk.dart' as bdk;
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';

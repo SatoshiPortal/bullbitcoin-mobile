@@ -1,4 +1,4 @@
-import 'package:transaction_sync/diagnostics.dart';
+import 'package:sync/diagnostics.dart';
 import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bull_logger/bull_logger.dart';

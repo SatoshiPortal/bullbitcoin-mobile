@@ -2,7 +2,7 @@ import 'package:background_tasks/background_tasks.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 import 'package:sqlite3/sqlite3.dart';
-import 'package:transaction_sync/transaction_sync.dart';
+import 'package:sync/sync.dart';
 
 void main() {
   for (final changeGeneration in [false, true]) {
@@ -69,7 +69,7 @@ void main() {
   );
 }
 
-final class _Revisions implements WalletRevisionReader {
+final class _Revisions implements WalletRevisionReaderPort {
   final key = WalletKey(id: 'wallet', network: BitcoinNetwork.testnet);
   var generation = 1;
   var revision = 1;

@@ -1,6 +1,6 @@
 import 'package:bb_mobile/features/wallet/domain/usecases/read_wallet_usecase.dart';
-import 'package:transaction_sync/read.dart';
-import 'package:transaction_sync/transaction_sync.dart'
+import 'package:sync/read.dart';
+import 'package:sync/sync.dart'
     show
         SyncReason,
         TransactionSyncBusyFailure,

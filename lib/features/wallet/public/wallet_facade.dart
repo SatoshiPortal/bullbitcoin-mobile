@@ -1,21 +1,23 @@
-import 'package:transaction_sync/write.dart'
-    show BitcoinSpendStatus, BitcoinBroadcastReceipt;
 import '../domain/wallet_spend_failure.dart';
 export '../domain/wallet_spend_failure.dart';
-export 'package:transaction_sync/write.dart'
-    show BitcoinSpendStatus, BitcoinBroadcastReceipt;
 export 'package:bb_mobile/features/wallet/domain/seed_reference_port.dart'
     show SeedReferences;
 export '../domain/wallet.dart' show Network;
 export '../domain/network_x.dart' show NetworkX;
-import 'package:transaction_sync/transaction_sync.dart';
+import 'package:sync/sync.dart';
 import 'package:primitives/primitives.dart' show Result, Err, BitcoinNetwork;
 import '../domain/wallet_discovery_failure.dart';
 export 'package:primitives/primitives.dart' show Result;
 export '../domain/wallet_discovery_failure.dart';
 
-export 'package:transaction_sync/transaction_sync.dart'
-    show WalletRevisionState, WalletRevision, WalletKey, WalletLifecycle;
+export 'package:sync/sync.dart'
+    show
+        BitcoinBroadcastReceipt,
+        BitcoinSpendStatus,
+        WalletRevisionState,
+        WalletRevision,
+        WalletKey,
+        WalletLifecycle;
 export '../wallet_sync_locator.dart' show SyncLocator, initializeWalletRuntime;
 export '../background_setup.dart'
     show setupBackgroundWalletTask, paymentNotificationChannelId;

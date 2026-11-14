@@ -5,7 +5,7 @@ import 'package:bull_logger/bull_logger.dart' show log;
 import 'package:crypto/crypto.dart';
 import 'package:notifications/notifications.dart';
 import 'package:primitives/primitives.dart';
-import 'package:transaction_sync/transaction_sync.dart';
+import 'package:sync/sync.dart';
 
 import 'background_sync_interval.dart';
 import 'background_task_execution_result.dart';
@@ -22,7 +22,7 @@ typedef NotificationCopyBuilder =
 /// injected port. No Secrets, native handles, widgets or application locator.
 final class WalletTransactionSyncBackgroundTask {
   final BackgroundWalletSync writer;
-  final WalletRevisionReader revisions;
+  final WalletRevisionReaderPort revisions;
   final List<WalletKey> keys;
   final WalletSyncJobQueue queue;
   final NotificationsFacade? notifications;
@@ -198,14 +198,14 @@ final class WalletTransactionSyncBackgroundTask {
               leaseLost = true;
             }
           case Err(
-            failure: BackgroundSyncUnsupportedNetworkFailure(
-              :final authorization,
-            ),
+            failure: final refused &&
+                (BackgroundSyncUnsupportedNetworkFailure() ||
+                    BackgroundSyncUnauthorizedNetworkFailure()),
           ):
             outcome = 'deferred';
             _log(
               BackgroundLogLevel.fine,
-              'Background job deferred: category=${authorization ? 'authorization' : 'unsupported_network'}',
+              'Background job deferred: category=${refused is BackgroundSyncUnauthorizedNetworkFailure ? 'authorization' : 'unsupported_network'}',
             );
             if (!await queue.completeFailure(claim, permanent: true)) {
               leaseLost = true;

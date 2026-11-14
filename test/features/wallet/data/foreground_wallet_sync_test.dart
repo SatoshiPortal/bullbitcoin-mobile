@@ -1,6 +1,6 @@
 import 'package:bb_mobile/features/wallet/data/background_wallet_sync_impl.dart';
 import 'dart:async';
-import 'package:transaction_sync/read.dart';
+import 'package:sync/read.dart';
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart'
     show SeedReferences;
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
@@ -32,7 +32,8 @@ import 'package:bb_mobile/features/wallet/data/foreground_wallet_sync.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';
-import 'package:transaction_sync/transaction_sync.dart';
+import 'package:sync/sync.dart';
+import 'package:sync/write.dart';
 
 class _Swaps extends Mock implements BoltzSwapRepository {}
 
@@ -52,7 +53,7 @@ class _Bdk extends Mock implements BdkWalletDatasource {}
 
 class _Lwk extends Mock implements LwkWalletDatasource {}
 
-final class _Policy implements WalletConnectionPolicy {
+final class _Policy implements WalletConnectionPort {
   TransactionSyncFailure? failure;
   int calls = 0;
   Future<void>? gate;
@@ -121,6 +122,7 @@ void main() {
       ElectrumSync(
         connections: policy,
         documentsDirectory: () async => directory.path,
+        readRevision: (_) async => const Err(TransactionSyncNotFoundFailure()),
       ),
     );
     repository = WalletRepository(
@@ -397,6 +399,7 @@ void main() {
       ElectrumSync(
         connections: policy,
         documentsDirectory: () async => directory.path,
+        readRevision: (_) async => const Err(TransactionSyncNotFoundFailure()),
       ),
       null,
     );
@@ -500,6 +503,7 @@ void main() {
       final sync = ElectrumSync(
         connections: _ThrowingPolicy(),
         documentsDirectory: () async => directory.path,
+        readRevision: (_) async => const Err(TransactionSyncNotFoundFailure()),
       );
       final descriptor = BitcoinWalletDescriptor(
         key: WalletKey(id: id, network: BitcoinNetwork.testnet),
@@ -677,7 +681,7 @@ void main() {
   );
 }
 
-final class _ThrowingPolicy implements WalletConnectionPolicy {
+final class _ThrowingPolicy implements WalletConnectionPort {
   @override
   Future<Result<T, TransactionSyncFailure>> run<T>({
     required Network network,
@@ -687,6 +691,6 @@ final class _ThrowingPolicy implements WalletConnectionPolicy {
     operation,
     required bool Function(TransactionSyncFailure) mayRetry,
   }) async {
-    throw StateError('sensitive error detail');
+    throw const FormatException('sensitive error detail');
   }
 }

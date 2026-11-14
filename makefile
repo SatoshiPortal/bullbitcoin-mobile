@@ -68,7 +68,7 @@ custody-check:
 
 # Native stores have exactly one writer; readers and signers have scoped exceptions.
 native-write-check:
-	@fvm dart packages/transaction_sync/tool/native_write_gate.dart
+	@fvm dart packages/sync/tool/native_write_gate.dart
 
 # CI-only import/dependency/internal-seal policy, shared with PR custody review.
 # Node is confined to these explicit CI targets, outside `make checks`.

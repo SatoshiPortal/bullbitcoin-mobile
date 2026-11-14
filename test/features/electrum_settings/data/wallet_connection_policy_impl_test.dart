@@ -6,7 +6,7 @@ import 'package:bb_mobile/features/electrum_settings/domain/electrum_server_netw
 import 'package:bb_mobile/features/electrum_settings/data/wallet_connection_policy_impl.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
-import 'package:transaction_sync/transaction_sync.dart';
+import 'package:sync/sync.dart';
 
 final class _Servers extends ElectrumServersPort {
   ElectrumServerNetwork? selected;
@@ -68,7 +68,7 @@ void main() {
         isA<Err<int, TransactionSyncFailure>>().having(
           (result) => result.failure,
           'failure',
-          isA<TransactionSyncUnsupportedNetworkFailure>(),
+          isA<TransactionSyncUnauthorizedNetworkFailure>(),
         ),
       );
       expect(operations, 0);

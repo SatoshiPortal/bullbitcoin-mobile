@@ -1,6 +1,6 @@
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
-import 'package:transaction_sync/transaction_sync.dart';
+import 'package:sync/sync.dart';
 
 /// Consumer contract. Integration binds this to the single native writer.
 /// Implementations never release native ownership on a scheduling timeout.
@@ -50,8 +50,13 @@ final class BackgroundSyncConnectionFailure extends BackgroundSyncFailure {
 
 final class BackgroundSyncUnsupportedNetworkFailure
     extends BackgroundSyncFailure {
-  final bool authorization;
-  const BackgroundSyncUnsupportedNetworkFailure({this.authorization = false});
+  const BackgroundSyncUnsupportedNetworkFailure();
+}
+
+/// The network is supported, but its use currently lacks authorization.
+final class BackgroundSyncUnauthorizedNetworkFailure
+    extends BackgroundSyncFailure {
+  const BackgroundSyncUnauthorizedNetworkFailure();
 }
 
 final class BackgroundSyncInitialScanRequiredFailure

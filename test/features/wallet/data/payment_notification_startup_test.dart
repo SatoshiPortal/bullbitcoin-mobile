@@ -7,7 +7,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
-import 'package:transaction_sync/transaction_sync.dart';
+import 'package:sync/sync.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -97,7 +97,7 @@ final class _Writer implements BackgroundWalletSync {
   }
 }
 
-final class _Revisions implements WalletRevisionReader {
+final class _Revisions implements WalletRevisionReaderPort {
   @override
   Future<Result<WalletRevisionState, TransactionSyncFailure>> read(
     WalletKey key,

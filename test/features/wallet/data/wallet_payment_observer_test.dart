@@ -5,7 +5,7 @@ import 'dart:io';
 import 'package:bb_mobile/features/wallet/data/wallet_payment_observer.dart';
 import 'package:notifications/notifications.dart';
 import 'package:primitives/primitives.dart';
-import 'package:transaction_sync/transaction_sync.dart';
+import 'package:sync/sync.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 class Gateway implements LocalNotificationGateway {

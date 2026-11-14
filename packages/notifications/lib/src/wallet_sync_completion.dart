@@ -1,4 +1,4 @@
-import 'package:transaction_sync/transaction_sync.dart';
+import 'package:sync/sync.dart';
 
 /// A real sync completion, never a snapshot reload. The writer captures
 /// foreground visibility at completion, before awaiting outbox persistence.

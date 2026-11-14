@@ -4,7 +4,7 @@ import 'package:crypto/crypto.dart';
 import 'package:primitives/primitives.dart';
 import 'domain/local_notification.dart';
 import 'domain/notification_destination.dart';
-import 'package:transaction_sync/transaction_sync.dart';
+import 'package:sync/sync.dart';
 
 /// Names a wallet's payment topic and its events. The background task and
 /// the foreground observation must agree on these, or a payment seen in the

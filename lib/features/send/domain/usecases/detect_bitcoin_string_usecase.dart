@@ -3,7 +3,7 @@ import 'package:bb_mobile/core/utils/payment_request.dart';
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
 import 'package:bip21_uri/bip21_uri.dart';
 import 'package:primitives/primitives.dart' as primitives;
-import 'package:transaction_sync/read.dart' as native;
+import 'package:sync/read.dart' as native;
 
 /// Validates the captured concrete environment before legacy parsing can
 /// collapse it into a testnet boolean. No raw input enters diagnostics.

@@ -8,7 +8,7 @@ import 'package:background_tasks/background_tasks.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:notifications/notifications.dart';
 import 'package:primitives/primitives.dart';
-import 'package:transaction_sync/transaction_sync.dart';
+import 'package:sync/sync.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -393,7 +393,7 @@ final class _Writer implements BackgroundWalletSync {
   }
 }
 
-final class _Revisions implements WalletRevisionReader {
+final class _Revisions implements WalletRevisionReaderPort {
   int revision = 1;
   WalletKey? unavailable;
   bool pending = true;

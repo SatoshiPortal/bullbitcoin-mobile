@@ -20,9 +20,14 @@ import 'package:bull_logger/bull_logger.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:secrets/secrets.dart';
-import 'package:primitives/primitives.dart' show Ok;
-import 'package:transaction_sync/transaction_sync.dart'
-    show WalletConnectionPolicy, ReservedAddressPort, ElectrumSync, SyncReason;
+import 'package:primitives/primitives.dart' show Err, Ok;
+import 'package:sync/sync.dart'
+    show
+        ReservedAddressPort,
+        SyncReason,
+        TransactionSyncNotFoundFailure,
+        WalletConnectionPort;
+import 'package:sync/write.dart' show ElectrumSync;
 import 'package:bb_mobile/features/wallet/data/wallet_catalog_port_impl.dart';
 
 import 'package:secrets/testing.dart';
@@ -35,7 +40,7 @@ class _Bitcoin extends Mock implements BdkWalletDatasource {}
 
 class _Liquid extends Mock implements LwkWalletDatasource {}
 
-class _Connections extends Mock implements WalletConnectionPolicy {}
+class _Connections extends Mock implements WalletConnectionPort {}
 
 class _Reserved extends Mock implements ReservedAddressPort {}
 
@@ -219,6 +224,7 @@ void main() {
       sync: ElectrumSync(
         connections: _Connections(),
         documentsDirectory: () async => directory.path,
+        readRevision: (_) async => const Err(TransactionSyncNotFoundFailure()),
       ),
       documentsDirectory: () async => directory.path,
     );

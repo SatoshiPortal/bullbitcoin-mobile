@@ -5,8 +5,8 @@ import 'package:bb_mobile/features/wallet/data/wallet_metadata_service.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart' as p;
-import 'package:transaction_sync/transaction_sync.dart';
-import 'package:transaction_sync/write.dart';
+import 'package:sync/sync.dart';
+import 'package:sync/write.dart';
 
 // Published BIP84 test account, shared with wallet_identity_pins_test.dart.
 const _vpub =
@@ -50,7 +50,7 @@ void main() {
         final directory = Directory.systemTemp.createTempSync(
           'watch-only-native-',
         );
-        final revisions = RevisionStore('${directory.path}/revisions.sqlite');
+        ForegroundStores? stores;
         try {
           final metadata = await WalletMetadataService.deriveFromXpub(
             xpub: _vpub,
@@ -62,13 +62,12 @@ void main() {
                       as p.Ok<PublicWalletDescriptor, TransactionSyncFailure>)
                   .value;
           final catalog = _Catalog(descriptor);
-          final writer = NativeWalletWriter(
-            lockDirectory: '${directory.path}/locks',
-            revisions: revisions,
+          final opened = stores = openForeground(
             documentsDirectory: directory.path,
             catalog: catalog,
             reservedAddresses: _Reserved(),
           );
+          final writer = opened.writer;
           if (interrupted) {
             catalog.descriptor = BitcoinWalletDescriptor(
               key: descriptor.key,
@@ -91,7 +90,7 @@ void main() {
             isA<p.Ok>(),
           );
           expect(
-            await revisions.read(descriptor.key),
+            await opened.revisions.read(descriptor.key),
             isA<p.Ok<WalletRevisionState, TransactionSyncFailure>>().having(
               (result) => result.value.lifecycle,
               'lifecycle',
@@ -103,7 +102,7 @@ void main() {
             isA<p.Ok>(),
           );
         } finally {
-          await revisions.close();
+          await stores?.close();
           directory.deleteSync(recursive: true);
         }
       },
