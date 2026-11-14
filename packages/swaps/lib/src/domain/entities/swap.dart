@@ -43,6 +43,9 @@ extension SwapTypeX on SwapType {
       this == SwapType.bitcoinToLiquid || this == SwapType.liquidToBitcoin;
 }
 
+/// The resolution a swap's funds are waiting on. See [Swap.nextAction].
+enum SwapAction { none, claim, refund, coopSign }
+
 enum SwapStatus {
   pending,
   paid,
@@ -53,6 +56,13 @@ enum SwapStatus {
   refunded,
   expired,
   failed;
+
+  /// Boltz gave up on the swap: it failed, expired, or Boltz refunded its
+  /// own lockup. Any lockup of ours still needs refunding.
+  bool get hasFailed =>
+      this == SwapStatus.failed ||
+      this == SwapStatus.expired ||
+      this == SwapStatus.refunded;
 
   /// Done states: no further watcher action will ever run for this swap.
   bool get isTerminal =>
@@ -235,6 +245,50 @@ sealed class Swap with _$Swap {
   bool get isLnReceiveSwap => this is LnReceiveSwap;
   bool get isLnSendSwap => this is LnSendSwap;
   bool get isChainSwap => this is ChainSwap;
+
+  /// What must happen next to the funds this swap holds. Funds locked with
+  /// no claim or refund recorded must be claimed or refunded; Boltz never
+  /// reports our own resolution, so only our recorded txids close a swap.
+  /// Whose lockup it is decides which: Boltz's lockup (a reverse swap, the
+  /// server side of a chain swap) is claimed; ours (a submarine swap, the
+  /// user side of a chain swap) is refunded once the swap failed or
+  /// expired. A refund broadcast before the timelock is refused and retried.
+  /// Without a lockup nothing is held and nothing is done.
+  SwapAction get nextAction => switch (this) {
+    LnReceiveSwap(:final status, :final receiveTxid, :final wasDirectPayment) =>
+      receiveTxid == null &&
+              !wasDirectPayment &&
+              (status == SwapStatus.claimable ||
+                  status == SwapStatus.canCoop ||
+                  status == SwapStatus.completed)
+          ? SwapAction.claim
+          : SwapAction.none,
+    LnSendSwap(:final status, :final sendTxid, :final refundTxid) =>
+      refundTxid != null
+          ? SwapAction.none
+          : status == SwapStatus.canCoop
+          ? SwapAction.coopSign
+          : status == SwapStatus.refundable ||
+                sendTxid != null && status.hasFailed
+          ? SwapAction.refund
+          : SwapAction.none,
+    ChainSwap(
+      :final status,
+      :final sendTxid,
+      :final receiveTxid,
+      :final refundTxid,
+    ) =>
+      receiveTxid != null || refundTxid != null
+          ? SwapAction.none
+          : status == SwapStatus.claimable ||
+                status == SwapStatus.canCoop ||
+                status == SwapStatus.completed
+          ? SwapAction.claim
+          : status == SwapStatus.refundable ||
+                sendTxid != null && status.hasFailed
+          ? SwapAction.refund
+          : SwapAction.none,
+  };
 
   bool get requiresAction => switch (this) {
     LnReceiveSwap(:final status) => status == SwapStatus.claimable,

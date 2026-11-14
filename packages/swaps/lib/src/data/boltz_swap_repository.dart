@@ -793,39 +793,11 @@ class BoltzSwapRepository implements SwapRepository {
     final allSwaps = allSwapModels
         .map((swapModel) => swapModel.toEntity())
         .toList();
-    bool needsWatching(Swap swap) {
-      switch (swap.status) {
-        case SwapStatus.pending:
-        case SwapStatus.paid:
-        case SwapStatus.canCoop:
-        case SwapStatus.claimable:
-        case SwapStatus.refundable:
-          return true;
-        case SwapStatus.completed:
-          // Completed without a recorded claim tx means the claim never
-          // happened (unless it was an MRH direct payment with no lockup).
-          if (swap is LnReceiveSwap) {
-            return swap.receiveTxid == null && !swap.wasDirectPayment;
-          }
-          if (swap is ChainSwap) {
-            return swap.receiveTxid == null && swap.refundTxid == null;
-          }
-          return false;
-        case SwapStatus.expired:
-        case SwapStatus.failed:
-          // Funds locked and never refunded: keep watching so the swap can
-          // become refundable instead of stranding the funds.
-          if (swap is LnSendSwap) {
-            return swap.sendTxid != null && swap.refundTxid == null;
-          }
-          if (swap is ChainSwap) {
-            return swap.sendTxid != null && swap.refundTxid == null;
-          }
-          return false;
-        case SwapStatus.refunded:
-          return false;
-      }
-    }
+    // Still in flight, or holding funds that must be claimed or refunded.
+    bool needsWatching(Swap swap) =>
+        swap.status == SwapStatus.pending ||
+        swap.status == SwapStatus.paid ||
+        swap.nextAction != SwapAction.none;
 
     return allSwaps
         .where(
@@ -869,7 +841,7 @@ class BoltzSwapRepository implements SwapRepository {
         RestoredSwap(
           id: s.id,
           kind: _restoredKind(s.kind),
-          status: _restoreStatusToSwapStatus(s.status),
+          status: _restoreStatusToSwapStatus(s.status, kind: s.kind),
           recoverable: _restoredRecoverable(s),
           amountSat: s.amount.toInt(),
           createdAt: DateTime.fromMillisecondsSinceEpoch(
@@ -919,7 +891,10 @@ class BoltzSwapRepository implements SwapRepository {
   // Coarse mapping of the raw boltz status to the app's status for list display.
   // The rescue flow reconciles the precise per-type state (e.g. a chain
   // `transaction.claimed` where the user's own claim is still pending).
-  SwapStatus _restoreStatusToSwapStatus(String boltzStatus) {
+  SwapStatus _restoreStatusToSwapStatus(
+    String boltzStatus, {
+    required boltz.SwapType kind,
+  }) {
     switch (boltzStatus) {
       case 'transaction.claimed':
       case 'invoice.settled':
@@ -936,8 +911,13 @@ class BoltzSwapRepository implements SwapRepository {
       case 'invoice.failedToPay':
       case 'swap.error':
         return SwapStatus.failed;
+      // Boltz's lockup on a reverse swap, but OUR lockup on a submarine or
+      // chain swap: funds in flight, nothing for us to claim.
       case 'transaction.mempool':
       case 'transaction.confirmed':
+        return kind == boltz.SwapType.reverse
+            ? SwapStatus.claimable
+            : SwapStatus.paid;
       case 'transaction.server.mempool':
       case 'transaction.server.confirmed':
         return SwapStatus.claimable;

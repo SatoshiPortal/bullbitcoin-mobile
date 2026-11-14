@@ -68,4 +68,31 @@ void main() {
     final outcome = (failure as SwapUpdated).swap as LnSendSwapModel;
     expect(outcome.status, SwapStatus.refundable.name);
   });
+
+  test('a stale status is refused but the lockup txid it carries is kept', () {
+    final mapping = mapper.map(
+      swap: submarine(status: SwapStatus.refundable.name),
+      boltzStatus: boltz.SwapStatus.txnMempool,
+      transactionId: 'boltz-saw-lockup',
+      now: now,
+    );
+
+    final updated = (mapping as SwapUpdated).swap as LnSendSwapModel;
+    expect(updated.status, SwapStatus.refundable.name);
+    expect(updated.sendTxid, 'boltz-saw-lockup');
+  });
+
+  test('a stale status with nothing new stays unchanged', () {
+    final mapping = mapper.map(
+      swap: submarine(
+        status: SwapStatus.refundable.name,
+        sendTxid: 'app-recorded',
+      ),
+      boltzStatus: boltz.SwapStatus.txnMempool,
+      transactionId: 'boltz-saw-lockup',
+      now: now,
+    );
+
+    expect(mapping, isA<SwapUnchanged>());
+  });
 }

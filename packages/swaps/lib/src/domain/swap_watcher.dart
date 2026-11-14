@@ -152,58 +152,17 @@ class SwapWatcher {
       // require sendTxid. Recover it from chain (Boltz-free) so ordinary
       // driving can refund it without a manual restore. No-op otherwise.
       swap = await _repo.reconcileLockupTxid(swap);
-      switch (swap.status) {
-        case SwapStatus.claimable:
+      switch (swap.nextAction) {
+        case SwapAction.claim:
           await _repo.claim(swap);
           _clearRetries(swap.id);
-        case SwapStatus.refundable:
+        case SwapAction.refund:
           await _repo.refund(swap);
           _clearRetries(swap.id);
-        case SwapStatus.canCoop:
-          // Only submarine swaps have a coop close; for a receive-side swap
-          // parked here (restore maps claim.pending to canCoop) the pending
-          // action is OUR claim — coopSign would silently no-op and strand
-          // the row.
-          if (swap is LnSendSwap) {
-            await _repo.coopSign(swap);
-          } else {
-            await _repo.claim(swap);
-          }
+        case SwapAction.coopSign:
+          await _repo.coopSign(swap);
           _clearRetries(swap.id);
-        case SwapStatus.completed:
-          // Completed without a recorded claim means the claim never
-          // happened (MRH direct payments excepted) — re-claim.
-          final needsReclaim = switch (swap) {
-            LnReceiveSwap(:final receiveTxid, :final wasDirectPayment) =>
-              receiveTxid == null && !wasDirectPayment,
-            ChainSwap(:final receiveTxid, :final refundTxid) =>
-              receiveTxid == null && refundTxid == null,
-            LnSendSwap() => false,
-          };
-          if (needsReclaim) {
-            await _repo.claim(swap);
-            _clearRetries(swap.id);
-          }
-        case SwapStatus.expired:
-        case SwapStatus.failed:
-          // Funds locked with no refund recorded: drive the refund directly
-          // instead of waiting for Boltz to flip the status to refundable —
-          // with the API down that flip never comes, while the refund itself
-          // is Boltz-free. Premature attempts fail non-final and back off.
-          final refundNeeded = switch (swap) {
-            LnSendSwap(:final sendTxid, :final refundTxid) =>
-              sendTxid != null && refundTxid == null,
-            ChainSwap(:final sendTxid, :final refundTxid, :final receiveTxid) =>
-              sendTxid != null && refundTxid == null && receiveTxid == null,
-            LnReceiveSwap() => false,
-          };
-          if (refundNeeded) {
-            await _repo.refund(swap);
-            _clearRetries(swap.id);
-          }
-        case SwapStatus.pending:
-        case SwapStatus.paid:
-        case SwapStatus.refunded:
+        case SwapAction.none:
           break;
       }
     } catch (e) {

@@ -76,7 +76,7 @@ void main() {
   });
 
   test('acts per status: canCoop coop-signs submarine, claims chain, '
-      'refunded does nothing', () async {
+      'a refunded swap with a recorded refund does nothing', () async {
     await watcher.processSwap(
       Swap.lnSend(
         id: 'submarine-cancoop',
@@ -99,9 +99,16 @@ void main() {
     await watcher.processSwap(chainSwap(SwapStatus.canCoop));
     verify(() => repo.claim(any())).called(1);
 
-    await watcher.processSwap(chainSwap(SwapStatus.refunded));
+    await watcher.processSwap(
+      chainSwap(SwapStatus.refunded, refundTxid: 'refund-done'),
+    );
     verifyNever(() => repo.claim(any()));
     verifyNever(() => repo.refund(any()));
+  });
+
+  test('refunds our lockup after Boltz refunded its own', () async {
+    await watcher.processSwap(chainSwap(SwapStatus.refunded));
+    verify(() => repo.refund(any())).called(1);
   });
 
   test('drives the refund of failed/expired swaps with locked funds', () async {

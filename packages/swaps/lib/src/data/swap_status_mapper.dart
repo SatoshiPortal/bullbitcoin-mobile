@@ -54,7 +54,12 @@ class SwapStatusMapper {
     final targetStatus = _localStatus(updated);
     if (targetStatus != localStatus &&
         !isAllowedTransition(from: localStatus, to: targetStatus, swap: swap)) {
-      return const SwapUnchanged();
+      // A stale status never wins, but the lockup txid it carries is
+      // evidence: without it a locked swap reads as never funded and is
+      // never refunded.
+      final learnedLockup = _sendTxid(swap) == null ? _sendTxid(updated) : null;
+      if (learnedLockup == null) return const SwapUnchanged();
+      return SwapUpdated(_withSendTxid(swap, learnedLockup));
     }
 
     if (updated == swap) return const SwapUnchanged();
@@ -393,6 +398,12 @@ class SwapStatusMapper {
     LnReceiveSwapModel() => null,
     LnSendSwapModel(:final sendTxid) => sendTxid,
     ChainSwapModel(:final sendTxid) => sendTxid,
+  };
+
+  SwapModel _withSendTxid(SwapModel swap, String sendTxid) => switch (swap) {
+    LnSendSwapModel() => swap.copyWith(sendTxid: sendTxid),
+    ChainSwapModel() => swap.copyWith(sendTxid: sendTxid),
+    LnReceiveSwapModel() => swap,
   };
 
   String? _refundTxid(SwapModel swap) => switch (swap) {

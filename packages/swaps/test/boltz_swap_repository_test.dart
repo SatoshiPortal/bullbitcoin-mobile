@@ -842,6 +842,35 @@ void main() {
 
     setUpAll(() => registerFallbackValue(masterKey));
 
+    test('our lockup in flight is paid, never claimable', () async {
+      for (final kind in [frb.SwapType.submarine, frb.SwapType.chain]) {
+        for (final status in ['transaction.mempool', 'transaction.confirmed']) {
+          stubSummaries(summary(kind: kind, status: status));
+
+          final restored = await repo().restoreSwaps(isTestnet: false);
+
+          expect(
+            restored.single.status,
+            SwapStatus.paid,
+            reason: '$kind $status',
+          );
+        }
+      }
+    });
+
+    test(
+      'a reverse swap with Boltz\'s lockup in flight is claimable',
+      () async {
+        stubSummaries(
+          summary(kind: frb.SwapType.reverse, status: 'transaction.mempool'),
+        );
+
+        final restored = await repo().restoreSwaps(isTestnet: false);
+
+        expect(restored.single.status, SwapStatus.claimable);
+      },
+    );
+
     test('trusts a positive boltz verdict', () async {
       stubSummaries(summary(recoverable: true));
 
