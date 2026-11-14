@@ -6,6 +6,7 @@ import 'package:bb_mobile/features/import_mnemonic/ui/widgets/mnemonic_keyboard.
 import 'package:bb_mobile/generated/l10n/localization.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:flutter/material.dart';
+import 'package:bull_ui/bull_ui.dart' show BullSecretTextInput;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:unorm_dart/unorm_dart.dart';
 
@@ -14,6 +15,7 @@ Future<void> host(
   required void Function(Mnemonic) onSubmit,
   bip39.Language language = bip39.Language.english,
   bool englishOnly = false,
+  bool allowPassphrase = false,
 }) => tester.pumpWidget(
   MaterialApp(
     theme: AppTheme.themeData(AppThemeType.light),
@@ -26,7 +28,7 @@ Future<void> host(
         englishOnly: englishOnly,
         allowAutoFillWords: false,
         allowLabel: false,
-        allowPassphrase: false,
+        allowPassphrase: allowPassphrase,
         submitLabel: 'Submit',
         onSubmit: onSubmit,
       ),
@@ -112,44 +114,127 @@ void main() {
     await log.flush();
     await logDirectory.delete(recursive: true);
   });
-  testWidgets('import picker offers only the six Latin wordlists', (
-    tester,
-  ) async {
+  testWidgets('import picker offers every BIP39 wordlist', (tester) async {
     await host(tester, onSubmit: (_) {});
     final picker = tester.widget<DropdownButton<bip39.Language>>(
       find.byKey(const Key('mnemonicLanguagePicker')),
     );
-    expect(picker.items?.map((item) => item.value), [
-      bip39.Language.english,
-      bip39.Language.spanish,
-      bip39.Language.french,
-      bip39.Language.italian,
-      bip39.Language.czech,
-      bip39.Language.portuguese,
-    ]);
-    await fill(
-      tester,
-      bip39.Mnemonic(List.filled(16, 0), bip39.Language.japanese).words,
-    );
-    final loc = AppLocalizations.of(
-      tester.element(find.byType(MnemonicWidget)),
-    );
     expect(
-      find.text(
-        loc.mnemonicLanguageSuggestion(loc.mnemonicLanguageName('japanese')),
-      ),
-      findsNothing,
+      picker.items?.map((item) => item.value).toSet(),
+      bip39.Language.values.toSet(),
     );
-    picker.onChanged?.call(bip39.Language.japanese);
-    await tester.pumpAndSettle();
+    await pick(tester, bip39.Language.japanese);
     expect(
       tester
           .widget<DropdownButton<bip39.Language>>(
             find.byKey(const Key('mnemonicLanguagePicker')),
           )
           .value,
-      bip39.Language.english,
+      bip39.Language.japanese,
     );
+  });
+
+  testWidgets(
+    'stale keyboard callbacks cannot write after language or focus changes',
+    (tester) async {
+      await host(tester, onSubmit: (_) {});
+      await focusFirstField(tester);
+      final oldKeyboard = tester.widget<MnemonicKeyboard>(
+        find.byType(MnemonicKeyboard),
+      );
+      await pick(tester, bip39.Language.french);
+      await focusFirstField(tester);
+      oldKeyboard.onLetter('a');
+      await tester.pump();
+      expect(fieldText(tester, 0), isEmpty);
+
+      final currentKeyboard = tester.widget<MnemonicKeyboard>(
+        find.byType(MnemonicKeyboard),
+      );
+      final second = find.byType(TextField).at(1);
+      await tester.ensureVisible(second);
+      await tester.tap(second);
+      await tester.pumpAndSettle();
+      currentKeyboard.onLetter('a');
+      await tester.pump();
+      expect(fieldText(tester, 0), isEmpty);
+      expect(fieldText(tester, 1), isEmpty);
+    },
+  );
+
+  testWidgets('shared Chinese phrase requires a renewed explicit choice', (
+    tester,
+  ) async {
+    Mnemonic? submitted;
+    await host(tester, onSubmit: (value) => submitted = value);
+    final words = bip39.Mnemonic(
+      List.filled(16, 0),
+      bip39.Language.simplifiedChinese,
+    ).words;
+    await fill(tester, words);
+    await submit(tester);
+    expect(submitted, isNull);
+    await pick(tester, bip39.Language.traditionalChinese);
+    await submit(tester);
+    expect(submitted?.language, bip39.Language.traditionalChinese);
+    submitted = null;
+    await fill(tester, [words.first]);
+    await fill(tester, words);
+    // A text edit must invalidate the previous choice.
+    final first = tester
+        .widgetList<TextField>(find.byType(TextField))
+        .first
+        .controller;
+    if (first == null) fail('first mnemonic field has no controller');
+    first.text = '';
+    first.text = words.first;
+    await tester.pumpAndSettle();
+    await submit(tester);
+    expect(submitted, isNull);
+  });
+
+  testWidgets('non-Latin import preserves a Unicode passphrase', (
+    tester,
+  ) async {
+    Mnemonic? submitted;
+    await host(
+      tester,
+      allowPassphrase: true,
+      onSubmit: (value) => submitted = value,
+    );
+    final words = bip39.Mnemonic(
+      List.filled(16, 0),
+      bip39.Language.japanese,
+    ).words;
+    await fill(tester, words);
+    await pick(tester, bip39.Language.japanese);
+    const passphrase = 'Cafe\u0301 日本語';
+    tester
+        .widget<BullSecretTextInput>(find.byType(BullSecretTextInput))
+        .onChanged(passphrase);
+    await submit(tester);
+    expect(submitted?.language, bip39.Language.japanese);
+    expect(submitted?.passphrase, passphrase);
+  });
+
+  testWidgets('stale suggestion cannot write after the prefix changes', (
+    tester,
+  ) async {
+    await host(tester, onSubmit: (_) {});
+    await focusFirstField(tester);
+    final firstHint = find
+        .ancestor(of: find.text('abandon').last, matching: find.byType(InkWell))
+        .first;
+    final oldTap = tester.widget<InkWell>(firstHint).onTap;
+    if (oldTap == null) fail('suggestion has no tap callback');
+    final keyboard = tester.widget<MnemonicKeyboard>(
+      find.byType(MnemonicKeyboard),
+    );
+    keyboard.onLetter('b');
+    await tester.pumpAndSettle();
+    oldTap();
+    await tester.pump();
+    expect(fieldText(tester, 0), 'b');
   });
 
   for (final (language, word) in [
@@ -312,6 +397,10 @@ void main() {
     bip39.Language.italian,
     bip39.Language.czech,
     bip39.Language.portuguese,
+    bip39.Language.japanese,
+    bip39.Language.korean,
+    bip39.Language.simplifiedChinese,
+    bip39.Language.traditionalChinese,
   ]) {
     testWidgets('${language.name} imports after explicit picker selection', (
       tester,

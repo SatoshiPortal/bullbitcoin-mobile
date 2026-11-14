@@ -471,14 +471,20 @@ final swap = boltz.SwapMasterKey.createFromSeed;
     expect(violations.join(), contains('#SwapMasterKey.createFromSeed'));
   });
 
-  test('Silent Payments accounts built from words are checked', () async {
-    final violations = await inspect('bwk_constructors', '''
+  test(
+    'Silent Payments accounts built from words or seed are checked',
+    () async {
+      final violations = await inspect('bwk_constructors', '''
 import 'package:bull_sdk/bwk.dart';
 final first = SpAccount.createFromMnemonic;
 final second = SpAccount.createFromMnemonicWithScanRuntime;
+final third = SpAccount.createFromSeed;
+final fourth = SpAccount.createFromSeedWithScanRuntime;
+final fifth = deriveSpAddressFromSeed;
 ''');
-    expect(violations, hasLength(2));
-  });
+      expect(violations, hasLength(5));
+    },
+  );
 
   test(
     'the bridge starts only with its own handler: no tracing handler, no mock',

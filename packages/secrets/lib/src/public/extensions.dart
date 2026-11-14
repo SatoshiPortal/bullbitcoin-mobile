@@ -42,7 +42,7 @@ extension SecretExtension on Secret {
 
   /// The Silent Payments (BIP352) account.
   ///
-  /// ⚠️ Hands the stored words to bwk. See [Secret.silentPaymentsAccount].
+  /// The full BIP39 seed reaches bwk inside the package. See [Secret.silentPaymentsAccount].
   SecretSilentPayments get silentPayments => SecretSilentPayments._(this);
 
   /// The sealed widgets: the words on screen, never in the caller's hands.
@@ -176,10 +176,7 @@ extension type const SecretBackup._(Secret _secret) {
 
 /// The Silent Payments account, opened inside the package.
 extension type const SecretSilentPayments._(Secret _secret) {
-  /// Opens the bwk account, which scans and signs while it lives.
-  ///
-  /// ⚠️ bwk receives the stored words, and a secret with a passphrase is
-  /// refused. See [Secret.silentPaymentsAccount].
+  /// Opens the bwk account, which scans and signs while it lives. See [Secret.silentPaymentsAccount].
   @useResult
   Future<Result<SpAccount, SecretFailure>> account({
     required String name,

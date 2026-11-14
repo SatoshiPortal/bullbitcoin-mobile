@@ -196,11 +196,9 @@ final class Secret extends SecretEntry {
 
   // ------------------------------------------------------- silent payments
 
-  /// Opens this secret's Silent Payments account (BIP352, account 0) in bwk, which scans and signs for it while the returned account lives. The caller owns it and disposes it when the session ends.
+  /// Opens this secret's Silent Payments account (BIP352, account 0) in bwk, which scans and signs for it while the returned account lives. The caller owns it and calls `dispose()` then `release()` when the session ends.
   ///
-  /// ⚠️ **The words reach bwk.** bwk-dart opens an account from a mnemonic only, and its returned account retains keys after this call; they never reach the app, and the account holds the keys until it is disposed.
-  ///
-  /// ⚠️ **A passphrase cannot be honoured** — bwk derives from the words alone — so a secret that has one is refused with `PassphraseUnsupportedFailure` rather than opening the passphrase-less sibling's wallet.
+  /// The full BIP39 seed, including the stored language and passphrase, reaches bwk inside this package. The returned native account retains signing capability until disposed and released. The temporary Dart copy is wiped after the call; erasure of all bridge and native copies cannot be guaranteed.
   @internal
   Future<Result<SpAccount, SecretFailure>> silentPaymentsAccount({
     required String name,

@@ -25,7 +25,7 @@ class BwkSpAccountDatasource {
   /// on a worker isolate so the key derivation, the sqlite open and the header
   /// store open do not freeze the UI isolate.
   ///
-  /// The account is opened by `package:secrets`, which hands the words to bwk
+  /// The account is opened by `package:secrets`, which hands the BIP39 seed to bwk
   /// itself: this layer never holds them. Throws the package's failure type as
   /// a [SpAccountOpenException], fixed text only.
   Future<void> createFromSecret({
@@ -61,6 +61,7 @@ class BwkSpAccountDatasource {
     final account = _account;
     if (account == null) return;
     await account.dispose();
+    await account.release();
     _account = null;
     _simulations.clear();
   }

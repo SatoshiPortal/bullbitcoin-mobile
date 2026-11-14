@@ -97,8 +97,7 @@ final class SecretsVaultRepository implements VaultRepository {
         custody.FetchSecretFailure() ||
         custody.StoreSecretFailure() => const VaultStorageFailure(),
         custody.InvalidVaultFailure() => const VaultInvalidFailure(),
-        custody.MnemonicRequiredFailure() ||
-        custody.PassphraseUnsupportedFailure() =>
+        custody.MnemonicRequiredFailure() =>
           const VaultUnsupportedSecretFailure(),
         _ => const RecoverBullUnexpectedFailure(),
       };

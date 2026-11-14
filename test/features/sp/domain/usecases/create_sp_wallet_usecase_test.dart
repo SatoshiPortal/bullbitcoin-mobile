@@ -241,14 +241,14 @@ void main() {
       verify(() => secretUsecase.execute(BitcoinNetwork.testnet)).called(1);
     });
 
-    test('forwards a passphrase refusal and never creates', () async {
+    test('forwards a secret lookup failure and never creates', () async {
       when(
         () => secretUsecase.execute(any()),
-      ).thenAnswer((_) async => const Err(SpPassphraseUnsupported()));
+      ).thenAnswer((_) async => const Err(SpUnexpected()));
 
       final result = await run();
 
-      expect((result as Err).failure, isA<SpPassphraseUnsupported>());
+      expect((result as Err).failure, isA<SpUnexpected>());
       expect(accountRepo.createCount, 0);
     });
 
