@@ -239,6 +239,17 @@ void main() {
         selectedInputs: any(named: 'selectedInputs'),
       ),
     ).thenAnswer((_) async => []);
+    when(
+      () => getReceiveAddress.execute(walletId: any(named: 'walletId')),
+    ).thenAnswer(
+      (_) async => WalletAddress(
+        walletId: 'wallet-2',
+        index: 0,
+        address: 'destination',
+        createdAt: DateTime.utc(2026),
+        updatedAt: DateTime.utc(2026),
+      ),
+    );
 
     bloc = TransferBloc(
       getSettingsUsecase: getSettings,
@@ -1171,6 +1182,88 @@ void main() {
     expect(bloc.state.signedPsbt, isEmpty);
     expect(bloc.state.isCreatingSwap, isFalse);
     expect(bloc.state.continueClicked, isFalse);
+  });
+
+  test(
+    'send-to-external changes drop the receive address of the previous transfer',
+    () async {
+      bloc.emit(
+        TransferState(
+          fromWallet: _wallet(),
+          toWallet: _destinationWallet(),
+          sendToExternal: true,
+          externalAddress: 'tb1qexternal',
+          receiveAddress: 'tb1qexternal',
+        ),
+      );
+
+      bloc.add(const TransferEvent.sendToExternalToggled(false));
+      await pumpEventQueue();
+
+      expect(bloc.state.sendToExternal, isFalse);
+      expect(bloc.state.receiveAddress, isNull);
+    },
+  );
+
+  test('a same-chain transfer pays the current destination wallet, never a '
+      'receive address left by an earlier transfer', () async {
+    when(() => getReceiveAddress.execute(walletId: 'wallet-2')).thenAnswer(
+      (_) async => WalletAddress(
+        walletId: 'wallet-2',
+        index: 0,
+        address: 'tb1qwallet2',
+        createdAt: DateTime.utc(2026),
+        updatedAt: DateTime.utc(2026),
+      ),
+    );
+    when(
+      () => prepareBitcoin.execute(
+        walletId: 'wallet-1',
+        recipients: any(named: 'recipients'),
+        networkFee: any(named: 'networkFee'),
+        selectedInputs: any(named: 'selectedInputs'),
+        replaceByFee: true,
+      ),
+    ).thenAnswer(
+      (_) async => Ok((
+        unsignedPsbt: 'unsigned-psbt',
+        txSize: 100,
+        isToSelf: true,
+        recipientAmountsSat: [Sats.fromInt(1000)],
+      )),
+    );
+    when(
+      () => signBitcoin.execute(walletId: 'wallet-1', psbt: 'unsigned-psbt'),
+    ).thenAnswer((_) async => (signedPsbt: 'signed-psbt', txSize: 100));
+    when(
+      () => calculateBitcoin.execute(psbt: 'signed-psbt'),
+    ).thenAnswer((_) async => 250);
+    bloc.emit(
+      TransferState(
+        fromWallet: _wallet(balanceSat: BigInt.from(100000)),
+        toWallet: _destinationWallet(),
+        receiveAddress: 'tb1qexternal',
+        bitcoinUnit: BitcoinUnit.sats,
+        bitcoinNetworkFees: _feeOptions(),
+      ),
+    );
+
+    bloc.add(const TransferEvent.swapCreated('1000'));
+    await bloc.stream.firstWhere((state) => state.signedPsbt.isNotEmpty);
+
+    final recipients =
+        verify(
+              () => prepareBitcoin.execute(
+                walletId: 'wallet-1',
+                recipients: captureAny(named: 'recipients'),
+                networkFee: any(named: 'networkFee'),
+                selectedInputs: any(named: 'selectedInputs'),
+                replaceByFee: true,
+              ),
+            ).captured.single
+            as List<BitcoinTransactionRecipient>;
+    expect(recipients.single.address, 'tb1qwallet2');
+    expect(bloc.state.receiveAddress, 'tb1qwallet2');
   });
 
   test('receive-exact-amount changes invalidate transaction work', () async {

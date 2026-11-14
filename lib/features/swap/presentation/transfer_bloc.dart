@@ -624,24 +624,33 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
       }
 
       final bitcoinWalletId = state.fromWallet!.id;
-      String receiveAddress = state.receiveAddress ?? '';
-      if (receiveAddress.isEmpty && state.toWallet != null) {
-        try {
-          final address = await _getReceiveAddressUsecase.execute(
-            walletId: state.toWallet!.id,
-          );
-          if (generation != _transactionGeneration) return;
-          receiveAddress = address.address;
-        } catch (e) {
-          emit(
-            state.copyWith(
-              swapCreationException: SwapCreationException(
-                'receive_address_lookup_failed',
-              ),
+      final toWallet = state.toWallet;
+      if (toWallet == null) {
+        emit(
+          state.copyWith(
+            swapCreationException: SwapCreationException(
+              'receive_address_unavailable',
             ),
-          );
-          return;
-        }
+          ),
+        );
+        return;
+      }
+      final String receiveAddress;
+      try {
+        final address = await _getReceiveAddressUsecase.execute(
+          walletId: toWallet.id,
+        );
+        if (generation != _transactionGeneration) return;
+        receiveAddress = address.address;
+      } catch (e) {
+        emit(
+          state.copyWith(
+            swapCreationException: SwapCreationException(
+              'receive_address_lookup_failed',
+            ),
+          ),
+        );
+        return;
       }
       if (receiveAddress.isEmpty) {
         emit(
@@ -1701,8 +1710,9 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
   /// Recipient + amount for preview builds — derived from the active
   /// transfer context. Two flows have a usable shape:
   /// - chain swap (state.swap set): use the swap's payment address/amount;
-  /// - same-chain transfer: use the user-supplied receive address and the
-  ///   input amount, mirroring what _rebuildTransactionWithState builds.
+  /// - same-chain transfer: use the destination wallet's receive address
+  ///   resolved by the last build and the input amount, mirroring what
+  ///   _rebuildTransactionWithState builds.
   /// Returns null when neither is ready.
   ({String address, int amountSat})? _previewBitcoinShape() {
     final swap = state.swap;
@@ -1739,7 +1749,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
   /// transfer, not merely an old fee/PSBT preview.
   void _invalidateTransactionContract(Emitter<TransferState> emit) {
     _clearBitcoinFeePreviews(emit);
-    emit(state.copyWith(swap: null, orderSwap: null));
+    emit(state.copyWith(swap: null, orderSwap: null, receiveAddress: null));
   }
 
   /// Belt-and-suspenders relay-floor re-assert, mirroring
