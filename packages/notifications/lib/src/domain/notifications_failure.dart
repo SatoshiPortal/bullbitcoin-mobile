@@ -18,6 +18,13 @@ final class NotificationsPermissionDeniedFailure extends NotificationsFailure {
   const NotificationsPermissionDeniedFailure();
 }
 
+/// The OS did not say whether it shows the app's notifications: pending ones
+/// stay pending for a later attempt.
+final class NotificationsPermissionUndeterminedFailure
+    extends NotificationsFailure {
+  const NotificationsPermissionUndeterminedFailure();
+}
+
 final class NotificationsClaimLostFailure extends NotificationsFailure {
   const NotificationsClaimLostFailure();
 }

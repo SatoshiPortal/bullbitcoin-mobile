@@ -46,7 +46,10 @@ final class FlutterNotificationPermissionGateway
         case TargetPlatform.windows:
           granted = true;
       }
-      return Ok(granted ?? true);
+      // The plugin may not answer; only the OS decides, never a default.
+      return granted == null
+          ? const Err(NotificationsPermissionUndeterminedFailure())
+          : Ok(granted);
     } on Exception catch (_) {
       return const Err(NotificationsGatewayFailure());
     }
@@ -90,7 +93,10 @@ final class FlutterNotificationPermissionGateway
         case TargetPlatform.windows:
           enabled = true;
       }
-      return Ok(enabled ?? true);
+      // The plugin may not answer; only the OS decides, never a default.
+      return enabled == null
+          ? const Err(NotificationsPermissionUndeterminedFailure())
+          : Ok(enabled);
     } on Exception catch (_) {
       return const Err(NotificationsGatewayFailure());
     }
