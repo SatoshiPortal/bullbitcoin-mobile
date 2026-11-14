@@ -8,6 +8,4 @@ export 'src/data/write/writer_stores.dart'
 export 'src/data/datasources/revision_store_datasource.dart'
     show RevisionStoreUnavailable;
 export 'src/data/native_store_paths.dart' show nativeWalletStoragePath;
-export 'src/domain/bitcoin_spend.dart';
 export 'src/data/write/bitcoin_spend_gate.dart';
-export 'src/data/bitcoin_transaction_id.dart';

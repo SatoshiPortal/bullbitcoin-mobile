@@ -1,4 +1,4 @@
-import 'package:transaction_sync/write.dart'
+import 'package:transaction_sync/transaction_sync.dart'
     show bitcoinPsbtTransactionId, bitcoinRawTransactionId;
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'dart:typed_data';
