@@ -2293,11 +2293,18 @@ class BoltzSwapRepository implements SwapRepository {
 
   @override
   Future<Swap> rescue(RestoredSwap restored, {required String walletId}) async {
+    final wallets = await _wallets(isTestnet: _isTestnet);
+    final selected = wallets.where((w) => w.id == walletId).firstOrNull;
+    if (selected == null || selected.isLiquid != restored.actsOnLiquid) {
+      throw SwapsException(
+        'rescue wallet is not on the '
+        '${restored.actsOnLiquid ? 'Liquid' : 'Bitcoin'} side of this swap',
+      );
+    }
     await _ensureMasterKey();
     final btcElectrumUrl = await _electrumUrl(isLiquid: false);
     final lbtcElectrumUrl = await _electrumUrl(isLiquid: true);
 
-    final wallets = await _wallets(isTestnet: _isTestnet);
     String? defaultIdForLiquid(bool wantLiquid) {
       for (final w in wallets) {
         if (w.isDefault && w.isLiquid == wantLiquid) return w.id;

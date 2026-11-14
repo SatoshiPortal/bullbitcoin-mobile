@@ -4,6 +4,7 @@ import 'package:boltz_swaps/src/data/boltz_api.dart';
 import 'package:boltz_swaps/src/data/models/swap_master_key_model.dart';
 import 'package:boltz_swaps/src/data/boltz_swap_repository.dart';
 import 'package:boltz_swaps/src/domain/entities/derived_swap_master_key.dart';
+import 'package:boltz_swaps/src/domain/entities/restored_swap.dart';
 import 'package:boltz_swaps/src/domain/entities/swap.dart';
 import 'package:boltz_swaps/src/data/models/swap_model.dart';
 import 'package:boltz_swaps/src/data/swap_storage.dart';
@@ -69,32 +70,35 @@ void main() {
     refundAddress: refundAddress,
   );
 
-  BoltzSwapRepository repo({int fastest = 50, bool customElectrum = false}) =>
-      BoltzSwapRepository(
-        boltz: boltz,
-        isTestnet: false,
-        electrum: _PassthroughElectrum(custom: customElectrum),
-        newAddressFor: (walletId) async => 'addr-of-$walletId',
-        walletTx: (txid, {required walletId}) async => walletTxs[txid],
-        walletTxs: (walletId, {bool sync = false}) async =>
-            walletTxs.values.toList(),
-        fastestFee:
-            ({
-              required int txSize,
-              required bool isLiquid,
-              required bool isTestnet,
-            }) async => fastest,
-        wallets: ({required bool isTestnet}) async => const [],
-        swapMasterKeySource: ({required bool isTestnet}) async =>
-            const DerivedSwapMasterKey(
-              walletFingerprint: 'f00dbabe',
-              xprv: 'xprv',
-              xpub: 'xpub',
-              mnemonic: 'ab cd',
-              fingerprint: 'cafe0001',
-              isTestnet: false,
-            ),
-      );
+  BoltzSwapRepository repo({
+    int fastest = 50,
+    bool customElectrum = false,
+    List<SwapWalletInfo> wallets = const [],
+  }) => BoltzSwapRepository(
+    boltz: boltz,
+    isTestnet: false,
+    electrum: _PassthroughElectrum(custom: customElectrum),
+    newAddressFor: (walletId) async => 'addr-of-$walletId',
+    walletTx: (txid, {required walletId}) async => walletTxs[txid],
+    walletTxs: (walletId, {bool sync = false}) async =>
+        walletTxs.values.toList(),
+    fastestFee:
+        ({
+          required int txSize,
+          required bool isLiquid,
+          required bool isTestnet,
+        }) async => fastest,
+    wallets: ({required bool isTestnet}) async => wallets,
+    swapMasterKeySource: ({required bool isTestnet}) async =>
+        const DerivedSwapMasterKey(
+          walletFingerprint: 'f00dbabe',
+          xprv: 'xprv',
+          xpub: 'xpub',
+          mnemonic: 'ab cd',
+          fingerprint: 'cafe0001',
+          isTestnet: false,
+        ),
+  );
 
   Swap chainSwap({
     String status = 'refundable',
@@ -149,6 +153,39 @@ void main() {
     Future<void> voidWrite() async {}
     registerFallbackValue(swapWrite);
     registerFallbackValue(voidWrite);
+  });
+
+  group('rescue', () {
+    final claimToLiquid = RestoredSwap(
+      id: 'restored-1',
+      kind: RestoredSwapKind.crossChain,
+      status: SwapStatus.pending,
+      recoverable: true,
+      amountSat: 100000,
+      createdAt: DateTime(2026, 7),
+      fromAsset: 'BTC',
+      toAsset: 'L-BTC',
+    );
+    const wallets = [
+      SwapWalletInfo(id: 'w-btc', isLiquid: false, isDefault: true),
+      SwapWalletInfo(id: 'w-liquid', isLiquid: true, isDefault: true),
+    ];
+
+    test('refuses a wallet on the other side of the swap', () async {
+      await expectLater(
+        repo(wallets: wallets).rescue(claimToLiquid, walletId: 'w-btc'),
+        throwsA(isA<SwapsException>()),
+      );
+      verifyNever(() => storage.store(any()));
+    });
+
+    test('refuses a wallet it does not know', () async {
+      await expectLater(
+        repo(wallets: wallets).rescue(claimToLiquid, walletId: 'w-gone'),
+        throwsA(isA<SwapsException>()),
+      );
+      verifyNever(() => storage.store(any()));
+    });
   });
 
   group('refund', () {
