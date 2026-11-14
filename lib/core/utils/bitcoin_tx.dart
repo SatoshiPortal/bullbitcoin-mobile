@@ -65,7 +65,7 @@ class BitcoinTx {
     try {
       final psbt = bdk.Psbt(psbtBase64: psbtBase64);
       final txBytes = psbt.extractTx().serialize();
-      return fromBytes(txBytes);
+      return await fromBytes(txBytes);
     } catch (_) {
       final psbt = Psbt.fromBase64(psbtBase64);
       final txBytes = PsbtBuilder.fromPsbt(psbt).finalizeAll().toBytes();

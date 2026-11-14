@@ -1,11 +1,13 @@
 import 'dart:async';
 import 'dart:io';
+
 import 'store_identity.dart';
 import 'bitcoin_spend_gate_store.dart';
 
 import 'package:primitives/primitives.dart';
 import 'package:meta/meta.dart';
 import 'package:sqlite3/sqlite3.dart';
+
 import '../../transaction_sync.dart';
 
 /// Bump whenever the pinned native SDK or native store layout changes.
@@ -144,7 +146,7 @@ final class RevisionStore implements WalletRevisionReader {
       db.execute('COMMIT');
       return db;
     } on Exception {
-      db.dispose();
+      db.close();
       rethrow;
     }
   }
@@ -399,7 +401,7 @@ final class RevisionStore implements WalletRevisionReader {
       _changes.stream.where((state) => state.stamp.key == key);
 
   Future<void> close() async {
-    _db.dispose();
+    _db.close();
     await _changes.close();
   }
 }

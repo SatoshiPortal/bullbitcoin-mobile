@@ -1,5 +1,5 @@
 import 'package:bull_logs/public/logs_facade.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:bull_ui/bull_ui.dart';
 import 'package:bull_logs/generated/l10n/logs_localizations.dart';
 

@@ -6,7 +6,7 @@ import 'package:bb_mobile/features/recipients/presentation/recipients_failure_l1
 import 'package:bb_mobile/features/recipients/presentation/virtual_iban_onboarding_cubit.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bull_ui/bull_ui.dart';
-import 'package:flutter/material.dart' show MaterialPageRoute;
+import 'package:material_ui/material_ui.dart' show MaterialPageRoute;
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 /// Where the user started Confidential SEPA, which decides the wording once
@@ -37,9 +37,9 @@ class VirtualIbanOnboardingScreen extends StatelessWidget {
     return Navigator.of(context).push<RecipientType>(
       MaterialPageRoute(
         builder: (onboardingContext) => VirtualIbanOnboardingScreen(
-          onActivated: () => Navigator.of(
-            onboardingContext,
-          ).pop(RecipientType.confidentialSepaEur),
+          onActivated: () =>
+              Navigator.of(onboardingContext)
+                  .pop(RecipientType.confidentialSepaEur),
           onUseRegularSepa: () =>
               Navigator.of(onboardingContext).pop(RecipientType.sepaEur),
         ),

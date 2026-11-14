@@ -10,7 +10,7 @@ import 'package:bb_mobile/features/fund_exchange/domain/value_objects/funding_me
 import 'package:bb_mobile/features/fund_exchange/presentation/bloc/fund_exchange_bloc.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/widgets/fund_exchange_error_text.dart';
 import 'package:bb_mobile/features/fund_exchange/domain/fund_exchange_failure.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
@@ -118,7 +118,6 @@ class _FundExchangeCopBankTransferInputScreenState
         body: SafeArea(
           child: BBKeyboardActions(
             disableScroll: true,
-            focusNodes: [_amountNode],
             child: Padding(
               padding: const EdgeInsets.all(16.0),
               child: Form(

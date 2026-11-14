@@ -4,16 +4,16 @@
 
 | Tool | Version | Install |
 |---|---|---|
-| Rust | stable (rustup) | `rustup toolchain install stable` |
-| Flutter | 3.44.9 via fvm (pinned in `.fvmrc`) | `fvm install` in repo root |
-| Dart | bundled with Flutter (SDK 3.12.2, per `pubspec.yaml`) | comes with Flutter |
-| Java | >= 17 (JDK 21 matches `android.jvmTarget`) | system package manager or [SDKMAN](https://sdkman.io) |
-| Android SDK | `compileSdk` 36 | Android Studio SDK Manager |
+| Rust | 1.100.0 for SatoshiPortal hooks; 1.85.1 for official Payjoin | `rustup toolchain install 1.100.0 1.85.1 --profile minimal` |
+| Flutter | 3.50.0 via fvm (pinned in `.fvmrc`) | `fvm install` in repo root |
+| Dart | bundled with Flutter (SDK 3.14.0, per `pubspec.yaml`) | comes with Flutter |
+| Java | JDK 21 (matches `android.jvmTarget`) | system package manager or [SDKMAN](https://sdkman.io) |
+| Android SDK | `compileSdk` 37 (SDK platform 37.0) | Android Studio SDK Manager |
 | Android NDK | `29.0.14206865` (see `android/gradle.properties`) | Android Studio SDK Manager |
 
-The bwk bindings the SP feature calls come from the `bull_sdk` package (see `pubspec.yaml`), not a local crate. Its native Rust library (`rust_lib_bull_sdk`) is compiled by the `rust_builder` plugin during the Android/iOS build, which is why the Rust toolchain and Android targets above are required.
+The bwk bindings the SP feature calls come from the `bull_sdk` package (see `pubspec.yaml`), not a local crate. Its native Rust library (`rust_lib_bull_sdk`) is compiled by Native Assets hooks during the Android/iOS build, which is why the pinned Rust toolchains and platform targets are required. The accepted wrappers use Flutter Rust Bridge 2.13 and hooks 2; BDK uses UniFFI through its own Native Assets hook.
 
-`bull_sdk` is pinned in `dependency_overrides` to a fork (`github.com/pythcoiner/bull_sdk`) that carries SP support not yet upstream: a restartable electrum listener and `Account::broadcast` for eager spend marking. Drop that override once those changes land in the upstream bull_sdk.
+`bull_sdk` is pinned directly to an accepted SatoshiPortal commit in the workspace manifests. `make deps` enforces the shared lockfile. Official hosted Payjoin selects Rust 1.85.1 explicitly; `RUSTUP_TOOLCHAIN=1.100.0` does not override that explicit selection. The makefile exports the SatoshiPortal compiler pin and disables implicit Rust toolchain installation.
 
 Run `make fvm-check` to install the pinned Flutter, then `make deps` to fetch dependencies before starting.
 
@@ -22,9 +22,9 @@ Run `make fvm-check` to install the pinned Flutter, then `make deps` to fetch de
 | Variable | Required? | Default / fallback | Used by |
 |---|---|---|---|
 | `ANDROID_HOME` | Yes | none, must be set and point to a real dir | Android Gradle build, NDK lookup |
-| `ANDROID_NDK_HOME` | No | derived from `$ANDROID_HOME/ndk/<latest>` | `rust_builder` Rust cross-compile to Android |
+| `ANDROID_NDK_HOME` | No | derived from `$ANDROID_HOME/ndk/<latest>` | Native Assets Rust cross-compile to Android |
 | `JAVA_HOME` | No | derived from `java` on PATH | Gradle (only when not on PATH) |
-| `PATH` | Yes, must contain `fvm` (or `flutter`) and `~/.cargo/bin` | system-default + shell rc | every Flutter/cargo command |
+| `PATH` | Yes, must contain `fvm` and `~/.cargo/bin` | system-default + shell rc | every Flutter/cargo command |
 
 **`ANDROID_HOME`** - if unset or pointing to a non-existent directory, Gradle falls back to scanning common locations and usually fails with a confusing `SDK location not found` error during the Android build step. Set it to the directory containing `platforms/`, `platform-tools/`, and `ndk/`.
 
@@ -32,7 +32,7 @@ Run `make fvm-check` to install the pinned Flutter, then `make deps` to fetch de
 
 **`JAVA_HOME`** - Gradle can usually locate Java from PATH, but when multiple JDKs are installed the wrong one may be picked. Setting `JAVA_HOME` explicitly avoids version mismatches. Leave unset if only one JDK is installed and it reports the expected major version.
 
-**`PATH`** - must include the `fvm` binary (or plain `flutter`) and `~/.cargo/bin`. Missing entries surface immediately as `command not found` for `fvm`, `flutter`, or `cargo`.
+**`PATH`** - must include the `fvm` binary and `~/.cargo/bin`. Missing entries surface immediately as `command not found` for `fvm` or `cargo`.
 
 ## 3. Verifying a Change
 

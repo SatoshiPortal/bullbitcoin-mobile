@@ -2,7 +2,7 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/full_screen_scanner_page.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:bull_ui/bull_ui.dart' show BullButton, Gap;
 
 class OpenTheCameraWidget extends StatelessWidget {
@@ -47,9 +47,12 @@ class OpenTheCameraWidget extends StatelessWidget {
                     pageBuilder: (context, _, _) => FullScreenScannerPage(
                       onScannedPaymentRequest: onScannedPaymentRequest,
                     ),
-                    transitionsBuilder:
-                        (context, animation, secondaryAnimation, child) =>
-                            child,
+                    transitionsBuilder: (
+                      context,
+                      animation,
+                      secondaryAnimation,
+                      child,
+                    ) => child,
                   ),
                 );
               },

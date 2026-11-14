@@ -1,5 +1,5 @@
-import 'package:bb_mobile/generated/l10n/localization.dart';
-import 'package:flutter/material.dart';
+import 'package:bb_mobile/localizations.dart';
+import 'package:material_ui/material_ui.dart';
 
 extension BuildContextX on BuildContext {
   // Avoid having to type `Theme.of(context)` everywhere,

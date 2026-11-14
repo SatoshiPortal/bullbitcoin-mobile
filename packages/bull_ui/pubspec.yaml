@@ -5,10 +5,12 @@ version: 0.0.1
 resolution: workspace
 
 environment:
-  sdk: "3.12.2"
-  flutter: "3.44.9"
+  sdk: ">=3.14.0 <4.0.0"
+  flutter: ">=3.50.0"
 
 dependencies:
+  material_ui: ^1.11.0
+  cupertino_ui: ^1.1.6
   flutter:
     sdk: flutter
   flutter_localizations:
@@ -16,8 +18,8 @@ dependencies:
   primitives:
   intl: any
   auto_size_text: ^3.0.0
-  custom_sliding_segmented_control: ^1.8.5
-  shimmer: ^3.0.0
+  custom_sliding_segmented_control: ^2.0.0
+  shimmer: ^4.0.0
 
 dev_dependencies:
   flutter_test:

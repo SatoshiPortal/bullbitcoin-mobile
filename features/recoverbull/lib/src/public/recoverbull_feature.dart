@@ -1,6 +1,6 @@
+import 'package:material_ui/material_ui.dart';
 import 'package:secrets/secrets.dart';
 import 'package:bull_tor/tor.dart';
-import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../generated/l10n/recoverbull_localizations.dart';
@@ -27,8 +27,10 @@ final class RecoverBullFeature {
 
   const RecoverBullFeature._(this.facade, [this._runtime]);
 
-  static const localizationsDelegates =
-      RecoverBullLocalizations.localizationsDelegates;
+  static const localizationsDelegates = <LocalizationsDelegate<dynamic>>[
+    RecoverBullLocalizations.delegate,
+    ...GlobalMaterialLocalizations.delegates,
+  ];
 
   static Future<RecoverBullFeature> mount({
     required String databasePath,

@@ -5,7 +5,7 @@ import 'package:bb_mobile/core/widgets/inputs/bb_keyboard_actions.dart';
 import 'package:bb_mobile/features/electrum_settings/interface_adapters/presenters/bloc/electrum_settings_bloc.dart';
 import 'package:bb_mobile/features/electrum_settings/presentation/electrum_settings_failure_l10n.dart';
 import 'package:bb_mobile/features/tor_settings/public/tor_settings_facade.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
     show
@@ -123,8 +123,6 @@ class _SetAdvancedOptionsBottomSheetState
       },
       child: SafeArea(
         child: BBKeyboardActions(
-          isDialog: true,
-          focusNodes: [_stopGapNode, _timeoutNode, _retryNode],
           child: Form(
             key: _formKey,
             autovalidateMode: AutovalidateMode.onUserInteraction,

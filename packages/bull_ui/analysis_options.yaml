@@ -1,3 +1,8 @@
+analyzer:
+  exclude:
+    # Flutter-generated delegates still reference deprecated SDK design exports.
+    - lib/generated/**
+    - build/**
 include: package:lints/recommended.yaml
 
 linter:

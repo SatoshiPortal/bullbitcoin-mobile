@@ -1,6 +1,8 @@
 import 'package:bb_mobile/features/wallet/domain/network_x.dart';
+
 import 'dart:async';
 import 'dart:io';
+
 import 'package:meta/meta.dart';
 import 'package:sqlite3/sqlite3.dart' show SqliteException;
 
@@ -338,7 +340,7 @@ final class WalletNativeRuntime implements WalletNativeLifecycle {
     String? replacing,
   }) async {
     try {
-      return (await _spendGate).check(
+      return await (await _spendGate).check(
         await _spendKey(walletId),
         replacing: replacing,
       );
@@ -442,9 +444,8 @@ final class WalletNativeRuntime implements WalletNativeLifecycle {
     if (state case Ok(:final value) when catalogChanged) {
       _changes.add(value);
     }
-    if (state case Ok(
-      value: final value,
-    ) when value.lifecycle == WalletLifecycle.active) {
+    if (state case Ok(value: final value)
+        when value.lifecycle == WalletLifecycle.active) {
       _unavailable.remove(key);
     }
   }

@@ -1,6 +1,6 @@
 import 'package:bull_ui/src/data_display/bull_text.dart';
 import 'package:bull_ui/src/theme/bull_theme.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Numeric dial pad for PIN / amount entry.
 ///
@@ -46,10 +46,8 @@ class BullDialPad extends StatelessWidget {
           child: Center(
             child: BullText(
               num,
-              style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                fontSize: 20,
-                fontWeight: FontWeight.w500,
-              ),
+              style: Theme.of(context).textTheme.headlineMedium
+                  ?.copyWith(fontSize: 20, fontWeight: FontWeight.w500),
               color: enabled ? colors.onSurface : colors.textMuted,
             ),
           ),

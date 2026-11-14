@@ -10,7 +10,7 @@ import 'package:bb_mobile/features/withdraw/domain/withdraw_failure.dart';
 import 'package:bb_mobile/features/withdraw/presentation/withdraw_bloc.dart';
 import 'package:bb_mobile/features/withdraw/presentation/withdraw_failure_l10n.dart';
 import 'package:bb_mobile/features/withdraw/ui/widgets/withdraw_amount_input_fields.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart' show BullScrollableColumn, Gap;
 import 'package:go_router/go_router.dart';
@@ -80,7 +80,6 @@ class _WithdrawAmountScreenState extends State<WithdrawAmountScreen> {
     return SafeArea(
       child: BBKeyboardActions(
         disableScroll: true,
-        focusNodes: [_amountNode],
         child: Form(
           key: _formKey,
           child: BullScrollableColumn(

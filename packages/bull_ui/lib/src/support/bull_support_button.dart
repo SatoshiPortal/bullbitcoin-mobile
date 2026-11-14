@@ -4,7 +4,7 @@ import 'package:bull_ui/src/layout/gap.dart';
 import 'package:bull_ui/src/support/bull_support_scope.dart';
 import 'package:bull_ui/src/theme/bull_icon.dart';
 import 'package:bull_ui/src/theme/bull_theme.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 enum _BullSupportButtonVariant { big, icon, text, tile }
 

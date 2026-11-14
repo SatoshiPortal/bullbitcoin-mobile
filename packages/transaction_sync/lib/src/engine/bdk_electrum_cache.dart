@@ -49,7 +49,7 @@ final class BdkElectrumCache {
         );
         return BdkElectrumCache._(db, rebuilt: attempt > 0);
       } catch (_) {
-        db?.dispose();
+        db?.close();
         _deleteFiles(path);
       }
     }
@@ -205,7 +205,7 @@ final class BdkElectrumCache {
           rethrow;
         }
       } finally {
-        insert.dispose();
+        insert.close();
       }
     } catch (_) {
       // The next scan downloads the parents again and retries.
@@ -215,7 +215,7 @@ final class BdkElectrumCache {
     }
   }
 
-  void close() => _db.dispose();
+  void close() => _db.close();
 
   /// Adds to [parents] the stored parents whose bytes still hash to their
   /// txid, drops the others and returns how many were dropped.

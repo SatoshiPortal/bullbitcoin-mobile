@@ -5,15 +5,14 @@ import 'package:bb_mobile/features/wallet/ui/widgets/address_viewer.dart';
 import 'package:bb_mobile/features/default_wallets/presentation/default_wallets_cubit.dart';
 import 'package:bb_mobile/features/default_wallets/presentation/default_wallets_state.dart';
 import 'package:bull_ui/bull_ui.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-typedef DefaultWalletsFooterBuilder =
-    Widget Function(
-      BuildContext context,
-      DefaultWallets wallets,
-      ({bool isLoading, bool isSaving, bool isEditing}) status,
-    );
+typedef DefaultWalletsFooterBuilder = Widget Function(
+  BuildContext context,
+  DefaultWallets wallets,
+  ({bool isLoading, bool isSaving, bool isEditing}) status,
+);
 
 class DefaultWalletsEditor extends StatelessWidget {
   final bool? showDescription;

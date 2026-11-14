@@ -194,6 +194,18 @@ jobs:
           large-packages: true
           swap-storage: false
 
+      - name: Install pinned Rust toolchains
+        run: |
+          rustup toolchain install 1.100.0 --profile minimal
+          rustup component add --toolchain 1.100.0 clippy rustfmt
+          # Official hosted Payjoin explicitly selects Rust 1.85.1.
+          rustup toolchain install 1.85.1 --profile minimal
+          rustup component add --toolchain 1.85.1 clippy rustfmt
+          rustup run 1.100.0 rustc --version | grep -F 'rustc 1.100.0'
+          rustup run 1.85.1 rustc --version | grep -F 'rustc 1.85.1'
+          echo RUSTUP_AUTO_INSTALL=0 >> "$GITHUB_ENV"
+          echo RUSTUP_TOOLCHAIN=1.100.0 >> "$GITHUB_ENV"
+
       # The gates below reference steps.setup.outcome — if this `id` is ever
       # renamed, the expression silently evaluates to '' and every check
       # SKIPS (job goes green with nothing run). Keep id and gates in sync.
@@ -232,6 +244,10 @@ jobs:
         if: ${{ !cancelled() && steps.setup.outcome == 'success' }}
         run: make format-check
 
+      - name: Rust compiler pin verifier regressions
+        if: ${{ !cancelled() && steps.setup.outcome == 'success' }}
+        run: make rustc-pins-test
+
       # Default success() gate on purpose: if any static check above is red,
       # skip the tests — the PR needs another push anyway.
       - name: Unit tests must pass
@@ -262,19 +278,24 @@ jobs:
           sudo rm -rf /usr/local/lib/android /opt/hostedtoolcache /usr/share/dotnet /opt/ghc || true
           df -h /
 
-      # cargokit builds the FRB crates via `rustup run stable cargo`; the
-      # leaner arm64 partner image may lack rustup (the x64 image ships it).
-      # Idempotent: installs rustup if absent, then ensures the stable
-      # toolchain exists either way (newer rustup does not auto-install
-      # toolchains on `rustup run`).
-      - name: Ensure rustup + stable toolchain
+      # Native Assets hooks use the pinned 1.100.0 toolchain. The arm64
+      # runner may lack rustup, so add it to this step's PATH before installing.
+      - name: Install pinned Rust toolchains
         run: |
           if ! command -v rustup >/dev/null 2>&1; then
-            curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --profile minimal --default-toolchain stable
+            curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --profile minimal --default-toolchain 1.100.0
+            export PATH="$HOME/.cargo/bin:$PATH"
             echo "$HOME/.cargo/bin" >> "$GITHUB_PATH"
-          else
-            rustup toolchain install stable --profile minimal
           fi
+          rustup toolchain install 1.100.0 --profile minimal
+          rustup component add --toolchain 1.100.0 clippy rustfmt
+          # Official hosted Payjoin explicitly selects Rust 1.85.1.
+          rustup toolchain install 1.85.1 --profile minimal
+          rustup component add --toolchain 1.85.1 clippy rustfmt
+          rustup run 1.100.0 rustc --version | grep -F 'rustc 1.100.0'
+          rustup run 1.85.1 rustc --version | grep -F 'rustc 1.85.1'
+          echo RUSTUP_AUTO_INSTALL=0 >> "$GITHUB_ENV"
+          echo RUSTUP_TOOLCHAIN=1.100.0 >> "$GITHUB_ENV"
 
       - name: Flutter setup
         uses: ./.github/actions/flutter-setup
@@ -284,8 +305,8 @@ jobs:
       # Compiler cache for the FRB Rust crates (the dominant cost of the app
       # build), backed by the GitHub Actions cache. Pinned to a commit SHA:
       # third-party action on a runner that holds PR test secrets.
-      # RUSTC_WRAPPER is exported at the test step below; cargokit's cargo
-      # inherits it from the environment.
+      # Native Assets filters RUSTC_WRAPPER and SCCACHE_* from hook environments;
+      # remote cache use by the new Rust hooks still needs validation.
       - name: Setup sccache
         uses: Mozilla-Actions/sccache-action@9e7fa8a12102821edf02ca5dbea1acd0f89a2696 # v0.0.10
 

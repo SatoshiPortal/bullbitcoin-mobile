@@ -5,7 +5,7 @@ import 'package:bb_mobile/features/tor_settings/ui/widgets/tor_connection_status
 import 'package:bb_mobile/features/tor_settings/ui/widgets/tor_port_input_bottom_sheet.dart';
 import 'package:bull_ui/bull_ui.dart'
     show BullDropdown, BullInfoCard, BullSettingsEntryItem, BullSnackBar, Gap;
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_tor/tor.dart';
 import 'package:url_launcher/url_launcher.dart';

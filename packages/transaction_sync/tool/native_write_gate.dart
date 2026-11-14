@@ -79,9 +79,8 @@ List<String> productionDartFiles(String root) {
         ))
           if (file is File &&
               file.path.endsWith('.dart') &&
-              !RegExp(
-                r'\.(g|freezed|gr|config|mocks|steps)\.dart$',
-              ).hasMatch(file.path) &&
+              !RegExp(r'\.(g|freezed|gr|config|mocks|steps)\.dart$')
+                  .hasMatch(file.path) &&
               !file.path
                   .split(Platform.pathSeparator)
                   .any(
@@ -191,10 +190,10 @@ class _NativeWriteVisitor extends RecursiveAstVisitor<void> {
         return false;
       }
       final arguments = invocation.argumentList.arguments
-          .whereType<NamedExpression>()
-          .where((arg) => arg.name.label.name == 'dbpath');
+          .whereType<NamedArgument>()
+          .where((arg) => arg.name.lexeme == 'dbpath');
       return arguments.length == 1 &&
-          proof.temporaryPath(arguments.single.expression);
+          proof.temporaryPath(arguments.single.argumentExpression);
     }
     if (method.name.lexeme == 'sweepStale' &&
         element.library?.uri.toString() == 'dart:io' &&
@@ -337,11 +336,11 @@ class _MemoryOnlyProof extends RecursiveAstVisitor<void> {
   }
 
   bool _hasMemoryPersister(ArgumentList list) {
-    final args = list.arguments.whereType<NamedExpression>().where(
-      (arg) => arg.name.label.name == 'persister',
+    final args = list.arguments.whereType<NamedArgument>().where(
+      (arg) => arg.name.lexeme == 'persister',
     );
     if (args.length != 1) return false;
-    final value = args.single.expression;
+    final value = args.single.argumentExpression;
     if (value is SimpleIdentifier) {
       return memoryPersisters.contains(value.element);
     }
@@ -480,11 +479,11 @@ class _SignerMemoryProof extends RecursiveAstVisitor<void> {
   }
 
   bool _memoryArgument(ArgumentList arguments) {
-    final values = arguments.arguments.whereType<NamedExpression>().where(
-      (arg) => arg.name.label.name == 'persister',
+    final values = arguments.arguments.whereType<NamedArgument>().where(
+      (arg) => arg.name.lexeme == 'persister',
     );
     if (values.length != 1) return false;
-    final value = values.single.expression;
+    final value = values.single.argumentExpression;
     return value is SimpleIdentifier &&
         memory.contains(value.element) &&
         assignments[value.element] == 1;

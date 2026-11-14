@@ -10,7 +10,7 @@ import 'package:bb_mobile/features/receive/presentation/receive_navigation.dart'
 import 'package:bb_mobile/features/receive/domain/receive_failure.dart';
 import 'package:bb_mobile/features/receive/presentation/receive_failure_l10n.dart';
 import 'package:bb_mobile/features/receive/ui/widgets/receive_amount_input.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart' show BullBorderedTile, Gap;
 import 'package:go_router/go_router.dart';
@@ -52,7 +52,6 @@ class _ReceiveAmountScreenState extends State<ReceiveAmountScreen> {
         behavior: .translucent,
         child: BBKeyboardActions(
           disableScroll: true,
-          focusNodes: [_amountNode],
           child: Column(
             crossAxisAlignment: .stretch,
             children: [

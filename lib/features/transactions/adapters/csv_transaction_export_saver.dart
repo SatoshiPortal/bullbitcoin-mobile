@@ -22,7 +22,7 @@ class CsvTransactionExportSaver implements TransactionExportSaver {
     final filename = 'bull_transactions_$timestamp.csv';
 
     try {
-      final result = await FilePicker.platform.saveFile(
+      final result = await FilePicker.saveFile(
         bytes: utf8.encode(csv),
         fileName: filename,
       );

@@ -1,5 +1,5 @@
 import 'package:bull_ui/src/theme/bull_theme.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// A thin themed [Scaffold] whose background comes from the injected
 /// [BullTheme]. No generic scaffold exists in `lib/core/widgets`, so this is a

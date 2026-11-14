@@ -1,6 +1,6 @@
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bull_ui/bull_ui.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Outcome of the announcement dismiss dialog.
 enum AnnouncementDismissChoice {
@@ -51,9 +51,9 @@ class _AnnouncementDismissDialogBody extends StatelessWidget {
             Expanded(
               child: BullButton.small(
                 label: context.loc.announcementDismissConfirmRead,
-                onPressed: () => Navigator.of(
-                  dialogContext,
-                ).pop(AnnouncementDismissChoice.read),
+                onPressed: () =>
+                    Navigator.of(dialogContext)
+                        .pop(AnnouncementDismissChoice.read),
                 bgColor: colors.surface,
                 textColor: colors.text,
                 outlined: true,
@@ -64,9 +64,9 @@ class _AnnouncementDismissDialogBody extends StatelessWidget {
             Expanded(
               child: BullButton.small(
                 label: context.loc.announcementDismissConfirmAction,
-                onPressed: () => Navigator.of(
-                  dialogContext,
-                ).pop(AnnouncementDismissChoice.dismiss),
+                onPressed: () =>
+                    Navigator.of(dialogContext)
+                        .pop(AnnouncementDismissChoice.dismiss),
                 bgColor: colors.error,
                 textColor: colors.onError,
               ),

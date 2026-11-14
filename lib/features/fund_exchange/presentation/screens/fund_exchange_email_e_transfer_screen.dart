@@ -5,7 +5,7 @@ import 'package:bb_mobile/features/fund_exchange/presentation/bloc/fund_exchange
 import 'package:bb_mobile/features/fund_exchange/presentation/widgets/fund_exchange_detail.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/widgets/fund_exchange_details_error_card.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/widgets/fund_exchange_done_bottom_navigation_bar.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart' show Gap;
 

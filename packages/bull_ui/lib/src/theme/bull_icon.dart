@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// The curated icon set `bull_ui` exposes. Feature code references these
 /// instead of Material `Icons` directly, e.g. `BullIcon(BullIcons.acUnit)`.

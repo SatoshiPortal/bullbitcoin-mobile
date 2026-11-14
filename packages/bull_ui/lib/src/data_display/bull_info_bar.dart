@@ -1,7 +1,7 @@
 import 'package:bull_ui/src/theme/bull_shapes.dart';
 import 'package:bull_ui/src/theme/bull_icon.dart';
 import 'package:bull_ui/src/theme/bull_theme.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Tone of a [BullInfoBar].
 enum BullInfoTone {
@@ -67,9 +67,8 @@ class BullInfoBar extends StatelessWidget {
                       Expanded(
                         child: Text(
                           message,
-                          style: Theme.of(
-                            context,
-                          ).textTheme.bodySmall?.copyWith(color: colors.text),
+                          style: Theme.of(context).textTheme.bodySmall
+                              ?.copyWith(color: colors.text),
                         ),
                       ),
                     ],

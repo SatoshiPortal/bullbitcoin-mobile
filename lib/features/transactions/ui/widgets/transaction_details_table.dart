@@ -12,7 +12,7 @@ import 'package:bb_mobile/features/transactions/presentation/blocs/transaction_d
 import 'package:bb_mobile/features/transactions/presentation/order_payment_method_l10n.dart';
 import 'package:bb_mobile/features/transactions/presentation/order_swap_status_l10n.dart';
 import 'package:bb_mobile/features/transactions/ui/widgets/labels_table_item.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
     show BullDetailsTable, BullDetailsTableItem, BullText, Gap;
@@ -208,9 +208,8 @@ class TransactionDetailsTable extends StatelessWidget {
           if (walletTransaction.confirmationTime != null)
             BullDetailsTableItem(
               label: context.loc.transactionDetailLabelConfirmationTime,
-              displayValue: DateFormat(
-                'MMM d, y, h:mm a',
-              ).format(walletTransaction.confirmationTime!),
+              displayValue: DateFormat('MMM d, y, h:mm a')
+                  .format(walletTransaction.confirmationTime!),
             ),
         ],
         if (orderSwap != null) ...[
@@ -365,16 +364,14 @@ class TransactionDetailsTable extends StatelessWidget {
                 ),
                 BullDetailsTableItem(
                   label: context.loc.transactionDetailLabelCreatedAt,
-                  displayValue: DateFormat(
-                    'MMM d, y, h:mm a',
-                  ).format(order.createdAt.toLocal()),
+                  displayValue: DateFormat('MMM d, y, h:mm a')
+                      .format(order.createdAt.toLocal()),
                 ),
                 if (order.completedAt != null)
                   BullDetailsTableItem(
                     label: context.loc.transactionDetailLabelCompletedAt,
-                    displayValue: DateFormat(
-                      'MMM d, y, h:mm a',
-                    ).format(order.completedAt!.toLocal()),
+                    displayValue: DateFormat('MMM d, y, h:mm a')
+                        .format(order.completedAt!.toLocal()),
                   ),
               ];
             } else if (order is SellOrder) {
@@ -435,16 +432,14 @@ class TransactionDetailsTable extends StatelessWidget {
                 ),
                 BullDetailsTableItem(
                   label: context.loc.transactionDetailLabelCreatedAt,
-                  displayValue: DateFormat(
-                    'MMM d, y, h:mm a',
-                  ).format(order.createdAt.toLocal()),
+                  displayValue: DateFormat('MMM d, y, h:mm a')
+                      .format(order.createdAt.toLocal()),
                 ),
                 if (order.completedAt != null)
                   BullDetailsTableItem(
                     label: context.loc.transactionDetailLabelCompletedAt,
-                    displayValue: DateFormat(
-                      'MMM d, y, h:mm a',
-                    ).format(order.completedAt!.toLocal()),
+                    displayValue: DateFormat('MMM d, y, h:mm a')
+                        .format(order.completedAt!.toLocal()),
                   ),
               ];
             } else if (order is FiatPaymentOrder) {
@@ -520,16 +515,14 @@ class TransactionDetailsTable extends StatelessWidget {
                 ),
                 BullDetailsTableItem(
                   label: context.loc.transactionDetailLabelCreatedAt,
-                  displayValue: DateFormat(
-                    'MMM d, y, h:mm a',
-                  ).format(order.createdAt.toLocal()),
+                  displayValue: DateFormat('MMM d, y, h:mm a')
+                      .format(order.createdAt.toLocal()),
                 ),
                 if (order.completedAt != null)
                   BullDetailsTableItem(
                     label: context.loc.transactionDetailLabelCompletedAt,
-                    displayValue: DateFormat(
-                      'MMM d, y, h:mm a',
-                    ).format(order.completedAt!.toLocal()),
+                    displayValue: DateFormat('MMM d, y, h:mm a')
+                        .format(order.completedAt!.toLocal()),
                   ),
               ];
             } else if (order is FundingOrder) {
@@ -575,16 +568,14 @@ class TransactionDetailsTable extends StatelessWidget {
                 ),
                 BullDetailsTableItem(
                   label: context.loc.transactionDetailLabelCreatedAt,
-                  displayValue: DateFormat(
-                    'MMM d, y, h:mm a',
-                  ).format(order.createdAt.toLocal()),
+                  displayValue: DateFormat('MMM d, y, h:mm a')
+                      .format(order.createdAt.toLocal()),
                 ),
                 if (order.completedAt != null)
                   BullDetailsTableItem(
                     label: context.loc.transactionDetailLabelCompletedAt,
-                    displayValue: DateFormat(
-                      'MMM d, y, h:mm a',
-                    ).format(order.completedAt!.toLocal()),
+                    displayValue: DateFormat('MMM d, y, h:mm a')
+                        .format(order.completedAt!.toLocal()),
                   ),
               ];
             } else if (order is WithdrawOrder) {
@@ -637,16 +628,14 @@ class TransactionDetailsTable extends StatelessWidget {
                 ),
                 BullDetailsTableItem(
                   label: context.loc.transactionDetailLabelCreatedAt,
-                  displayValue: DateFormat(
-                    'MMM d, y, h:mm a',
-                  ).format(order.createdAt.toLocal()),
+                  displayValue: DateFormat('MMM d, y, h:mm a')
+                      .format(order.createdAt.toLocal()),
                 ),
                 if (order.completedAt != null)
                   BullDetailsTableItem(
                     label: context.loc.transactionDetailLabelCompletedAt,
-                    displayValue: DateFormat(
-                      'MMM d, y, h:mm a',
-                    ).format(order.completedAt!.toLocal()),
+                    displayValue: DateFormat('MMM d, y, h:mm a')
+                        .format(order.completedAt!.toLocal()),
                   ),
               ];
             } else if (order is RewardOrder) {
@@ -732,16 +721,14 @@ class TransactionDetailsTable extends StatelessWidget {
                 ),
                 BullDetailsTableItem(
                   label: context.loc.transactionDetailLabelCreatedAt,
-                  displayValue: DateFormat(
-                    'MMM d, y, h:mm a',
-                  ).format(order.createdAt.toLocal()),
+                  displayValue: DateFormat('MMM d, y, h:mm a')
+                      .format(order.createdAt.toLocal()),
                 ),
                 if (order.completedAt != null)
                   BullDetailsTableItem(
                     label: context.loc.transactionDetailLabelCompletedAt,
-                    displayValue: DateFormat(
-                      'MMM d, y, h:mm a',
-                    ).format(order.completedAt!.toLocal()),
+                    displayValue: DateFormat('MMM d, y, h:mm a')
+                        .format(order.completedAt!.toLocal()),
                   ),
               ];
             } else if (order is RefundOrder) {
@@ -827,16 +814,14 @@ class TransactionDetailsTable extends StatelessWidget {
                 ),
                 BullDetailsTableItem(
                   label: context.loc.transactionDetailLabelCreatedAt,
-                  displayValue: DateFormat(
-                    'MMM d, y, h:mm a',
-                  ).format(order.createdAt.toLocal()),
+                  displayValue: DateFormat('MMM d, y, h:mm a')
+                      .format(order.createdAt.toLocal()),
                 ),
                 if (order.completedAt != null)
                   BullDetailsTableItem(
                     label: context.loc.transactionDetailLabelCompletedAt,
-                    displayValue: DateFormat(
-                      'MMM d, y, h:mm a',
-                    ).format(order.completedAt!.toLocal()),
+                    displayValue: DateFormat('MMM d, y, h:mm a')
+                        .format(order.completedAt!.toLocal()),
                   ),
               ];
             } else if (order is BalanceAdjustmentOrder) {
@@ -889,16 +874,14 @@ class TransactionDetailsTable extends StatelessWidget {
                 ),
                 BullDetailsTableItem(
                   label: context.loc.transactionDetailLabelCreatedAt,
-                  displayValue: DateFormat(
-                    'MMM d, y, h:mm a',
-                  ).format(order.createdAt.toLocal()),
+                  displayValue: DateFormat('MMM d, y, h:mm a')
+                      .format(order.createdAt.toLocal()),
                 ),
                 if (order.completedAt != null)
                   BullDetailsTableItem(
                     label: context.loc.transactionDetailLabelCompletedAt,
-                    displayValue: DateFormat(
-                      'MMM d, y, h:mm a',
-                    ).format(order.completedAt!.toLocal()),
+                    displayValue: DateFormat('MMM d, y, h:mm a')
+                        .format(order.completedAt!.toLocal()),
                   ),
               ];
             } else {
@@ -1186,16 +1169,14 @@ class TransactionDetailsTable extends StatelessWidget {
             ),
           BullDetailsTableItem(
             label: context.loc.transactionDetailLabelCreatedAt,
-            displayValue: DateFormat(
-              'MMM d, y, h:mm a',
-            ).format(swap.creationTime),
+            displayValue: DateFormat('MMM d, y, h:mm a')
+                .format(swap.creationTime),
           ),
           if (swap.completionTime != null)
             BullDetailsTableItem(
               label: context.loc.transactionDetailLabelCompletedAt,
-              displayValue: DateFormat(
-                'MMM d, y, h:mm a',
-              ).format(swap.completionTime!),
+              displayValue: DateFormat('MMM d, y, h:mm a')
+                  .format(swap.completionTime!),
             ),
         ],
         if (payjoin != null) ...[
@@ -1221,9 +1202,8 @@ class TransactionDetailsTable extends StatelessWidget {
           ),
           BullDetailsTableItem(
             label: context.loc.transactionDetailLabelPayjoinCreationTime,
-            displayValue: DateFormat(
-              'MMM d, y, h:mm a',
-            ).format(payjoin.createdAt),
+            displayValue: DateFormat('MMM d, y, h:mm a')
+                .format(payjoin.createdAt),
           ),
           if (transaction.payjoinFeeContributionSat case final feeContribution?)
             BullDetailsTableItem(
