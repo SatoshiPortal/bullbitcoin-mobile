@@ -20,7 +20,8 @@ Secrets
 |-- exists(id) -> bool
 |-- contains(words:, [language: Language.english], [passphrase:]) -> bool
 |-- preview
-|   `-- bitcoinDescriptors(words:, [language: Language.english], [passphrase:], network:, scriptTypes:) -> Map<ScriptType, ({String external, String internal})>
+|   |-- bitcoinDescriptors(words:, [language: Language.english], [passphrase:], network:, scriptTypes:) -> Map<ScriptType, ({String external, String internal})>
+|   `-- matchesBitcoinDescriptors(words:, [language: Language.english], [passphrase:], network:, scriptType:, expected:) -> bool
 |-- recoverbull
 |   |-- restore(vault:, key:, [passphrase:], [allowUnverified: false]) -> RestoredVault
 |   `-- fingerprint(vault:, key:, [passphrase:]) -> Fingerprint
