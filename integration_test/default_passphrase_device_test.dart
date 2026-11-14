@@ -1,6 +1,10 @@
 import 'dart:math';
 
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/features/app_unlock/public/app_unlock_facade.dart';
+import 'package:bb_mobile/features/app_unlock/presentation/bloc/app_unlock_bloc.dart';
+import 'package:bb_mobile/features/app_unlock/ui/pin_code_unlock_screen.dart';
+import 'package:bb_mobile/features/test_wallet_backup/ui/screens/show_mnemonic_screen.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/features/onboarding/presentation/bloc/onboarding_bloc.dart';
 import 'package:bb_mobile/features/onboarding/ui/screens/onboarding_physical_recovery.dart';
@@ -68,6 +72,21 @@ final class _DeviceWallets extends Fake implements rb.RecoverBullWalletPort {
     restores++;
     return Ok(requested);
   }
+}
+
+// Keep the actual PIN input route open without starting automatic unlock.
+// This isolates its real go_router Back callback, including on a no-PIN app.
+final class _DeviceCancelUnlock extends AppUnlockFacade {
+  const _DeviceCancelUnlock();
+
+  @override
+  Widget buildReauthenticationGate({
+    required ValueChanged<AppUnlockGrant> onSuccess,
+    bool canPop = false,
+  }) => BlocProvider(
+    create: (_) => locator<AppUnlockBloc>(),
+    child: PinCodeUnlockInputScreen(canPop: canPop),
+  );
 }
 
 VaultFlowPresentation _vaultPresentation(
@@ -566,4 +585,60 @@ void main() {
     },
     timeout: const Timeout(Duration(minutes: 4)),
   );
+  testWidgets('reauthentication Back only closes the Navigator gate', (
+    tester,
+  ) async {
+    final bloc = TestWalletBackupBloc(
+      completeBackupVerificationUsecase:
+          locator<CompleteBackupVerificationUsecase>(),
+      loadWalletsForNetworkUsecase: locator<LoadWalletsForNetworkUsecase>(),
+      getSecretFromFingerprintUsecase:
+          locator<GetSecretFromFingerprintUsecase>(),
+    )..add(const LoadWallets());
+    final router = GoRouter(
+      routes: [
+        GoRoute(
+          path: '/',
+          builder: (_, _) => BlocProvider.value(
+            value: bloc,
+            child: const ShowMnemonicScreen(
+              appUnlockFacade: _DeviceCancelUnlock(),
+            ),
+          ),
+        ),
+      ],
+    );
+    try {
+      await tester.pumpWidget(
+        MaterialApp.router(
+          locale: const Locale('en'),
+          theme: AppTheme.themeData(AppThemeType.light),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          routerConfig: router,
+        ),
+      );
+      await _waitFor(
+        tester,
+        () => find.text('Show passphrase').evaluate().isNotEmpty,
+      );
+      await tester.ensureVisible(find.text('Show passphrase'));
+      await tester.tap(find.text('Show passphrase'));
+      await tester.pumpAndSettle();
+      expect(find.byType(PinCodeUnlockInputScreen), findsOneWidget);
+      // Invoke the actual top bar callback, which calls context.pop().
+      tester.widget<BullTopBar>(find.byType(BullTopBar)).onBack?.call();
+      await tester.pumpAndSettle();
+      expect(find.byType(PinCodeUnlockInputScreen), findsNothing);
+      expect(find.byType(ShowMnemonicScreen), findsOneWidget);
+      expect(
+        tester.widget<MnemonicView>(find.byType(MnemonicView)).showPassphrase,
+        isFalse,
+      );
+    } finally {
+      await tester.pumpWidget(const SizedBox.shrink());
+      router.dispose();
+      await bloc.close();
+    }
+  });
 }
