@@ -1,4 +1,5 @@
 import '../../../frozen_outpoints_fixture.dart';
+import 'package:bb_mobile/core/utils/payment_request.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart'
     show OrderSwapQuote;
 import 'package:bb_mobile/features/send/public/send_facade.dart';
@@ -209,6 +210,7 @@ void main() {
   late _MockCreateChainSwap createChainSwap;
   late _MockRecordLockup recordLockup;
   late _MockWatchSwap watchSwap;
+  late _MockDetectBitcoin detectBitcoin;
   late OrderSwapRecord prepared;
   late TransferBloc bloc;
 
@@ -241,7 +243,7 @@ void main() {
     markOrderSwapBroadcastUnknownUsecase: markUnknown,
     markOrderSwapPayinBroadcastUsecase: markBroadcast,
     watchOrderSwapUsecase: watchOrder,
-    detectBitcoinStringUsecase: _MockDetectBitcoin(),
+    detectBitcoinStringUsecase: detectBitcoin,
     getReceiveAddressUsecase: getReceiveAddress,
     getWalletUtxosUsecase: getUtxos,
     getSwapExchangeRateUsecase: getExchangeRate,
@@ -293,6 +295,7 @@ void main() {
     createChainSwap = _MockCreateChainSwap();
     recordLockup = _MockRecordLockup();
     watchSwap = _MockWatchSwap();
+    detectBitcoin = _MockDetectBitcoin();
     prepared = _prepared();
     when(
       () => getSwapRoute.execute(),
@@ -2283,6 +2286,100 @@ void main() {
           outNetwork: any(named: 'outNetwork'),
         ),
       );
+    });
+
+    group('to an external address', () {
+      TransferState external({String? error}) => crossChain().copyWith(
+        sendToExternal: true,
+        externalAddress: 'destination',
+        externalAddressError: error,
+      );
+
+      void stubDetected(PaymentRequest request) => when(
+        () => detectBitcoin.execute(data: 'destination'),
+      ).thenAnswer((_) async => request);
+
+      void verifyNoSwap() => verifyNever(
+        () => createChainSwap.execute(
+          sendWalletId: any(named: 'sendWalletId'),
+          amountSat: any(named: 'amountSat'),
+          fromLiquid: any(named: 'fromLiquid'),
+          receiveWalletId: any(named: 'receiveWalletId'),
+          externalRecipientAddress: any(named: 'externalRecipientAddress'),
+        ),
+      );
+
+      setUp(() {
+        when(
+          () => getSwapRoute.execute(),
+        ).thenAnswer((_) async => SwapRoute.boltz);
+      });
+
+      test('an address the screen flagged never gets a swap', () async {
+        stubDetected(
+          const PaymentRequest.liquid(address: 'destination', isTestnet: true),
+        );
+        bloc.emit(external(error: 'Please enter a valid Liquid address'));
+
+        bloc.add(const TransferEvent.swapCreated('1000'));
+        await bloc.stream.firstWhere((state) => !state.isCreatingSwap);
+
+        expect(bloc.state.swap, isNull);
+        verifyNoSwap();
+      });
+
+      test('an address on the source chain never gets a swap', () async {
+        stubDetected(
+          const PaymentRequest.bitcoin(address: 'destination', isTestnet: true),
+        );
+        bloc.emit(external());
+
+        bloc.add(const TransferEvent.swapCreated('1000'));
+        await bloc.stream.firstWhere((state) => !state.isCreatingSwap);
+
+        expect(bloc.state.swap, isNull);
+        verifyNoSwap();
+      });
+
+      test('an address on the other network never gets a swap', () async {
+        stubDetected(
+          const PaymentRequest.liquid(address: 'destination', isTestnet: false),
+        );
+        bloc.emit(external());
+
+        bloc.add(const TransferEvent.swapCreated('1000'));
+        await bloc.stream.firstWhere((state) => !state.isCreatingSwap);
+
+        expect(bloc.state.swap, isNull);
+        verifyNoSwap();
+      });
+
+      test('a destination-chain address creates the swap to it', () async {
+        stubDetected(
+          const PaymentRequest.liquid(address: 'destination', isTestnet: true),
+        );
+        when(
+          () => createChainSwap.execute(
+            sendWalletId: 'wallet-1',
+            amountSat: any(named: 'amountSat'),
+            fromLiquid: false,
+            externalRecipientAddress: 'destination',
+          ),
+        ).thenAnswer((_) async => const Err(SwapsBoltzRejectedFailure('x')));
+        bloc.emit(external());
+
+        bloc.add(const TransferEvent.swapCreated('1000'));
+        await bloc.stream.firstWhere((state) => !state.isCreatingSwap);
+
+        verify(
+          () => createChainSwap.execute(
+            sendWalletId: 'wallet-1',
+            amountSat: any(named: 'amountSat'),
+            fromLiquid: false,
+            externalRecipientAddress: 'destination',
+          ),
+        ).called(1);
+      });
     });
 
     test('Boltz unavailable without the opt-in surfaces a failure', () async {

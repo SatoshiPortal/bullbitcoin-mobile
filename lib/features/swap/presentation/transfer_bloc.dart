@@ -780,6 +780,15 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
     if (externalRecipient != null && externalRecipient.isEmpty) {
       throw SwapCreationException('destination_address_required');
     }
+    if (externalRecipient != null &&
+        (state.externalAddressError != null ||
+            !await _receivesOnDestinationChain(
+              fromWallet,
+              externalRecipient,
+            ))) {
+      throw SwapCreationException('destination_address_invalid');
+    }
+    if (generation != _transactionGeneration) return null;
     final swapType = fromWallet.isLiquid
         ? SwapType.liquidToBitcoin
         : SwapType.bitcoinToLiquid;
@@ -2373,6 +2382,29 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
   /// address of the same network at the fee the lockup is built with.
   /// Otherwise the drained lockup falls a few sats short of the swap amount
   /// and [VerifyChainSwapAmountSendUsecase] rejects it.
+  /// Whether [address] can receive the claim of a chain swap from
+  /// [fromWallet]: the other chain, on the same network.
+  Future<bool> _receivesOnDestinationChain(
+    Wallet fromWallet,
+    String address,
+  ) async {
+    try {
+      final request = await _detectBitcoinStringUsecase.execute(data: address);
+      final onDestinationChain = switch (request) {
+        Bip21PaymentRequest(:final network) =>
+          fromWallet.isLiquid ? network.isBitcoin : network.isLiquid,
+        _ =>
+          fromWallet.isLiquid
+              ? request.isBitcoinAddress
+              : request.isLiquidAddress,
+      };
+      return onDestinationChain &&
+          request.isTestnet != fromWallet.network.isMainnet;
+    } on Exception {
+      return false;
+    }
+  }
+
   Future<int?> _boltzMaxAmountSat(
     Wallet fromWallet, {
     required NetworkFee networkFee,
