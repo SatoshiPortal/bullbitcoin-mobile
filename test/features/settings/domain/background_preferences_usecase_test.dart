@@ -78,6 +78,8 @@ void main() {
                 NotificationPermissionsFacade(gateway: Permissions()),
                 () => applyBackgroundTaskSchedule(
                   dispatcher: () {},
+                  intervals:
+                      const SharedPreferencesBackgroundSyncIntervalRepository(),
                   scheduler: scheduler,
                   desktopScheduler: scheduler,
                   enabled: true,
@@ -99,7 +101,8 @@ void main() {
           store.release.complete();
           await Future.wait([choice, permission]);
           expect(
-            await const SharedPreferencesBackgroundSyncIntervalStore().read(),
+            await const SharedPreferencesBackgroundSyncIntervalRepository()
+                .read(),
             latest,
           );
           expect(scheduler.registered, latest != BackgroundSyncInterval.off);
@@ -121,10 +124,11 @@ void main() {
     final permissions = DelayedPermissions();
     final scheduler = Scheduler();
     final repository = BackgroundPreferencesRepositoryImpl(
-      const SharedPreferencesBackgroundSyncIntervalStore(),
+      const SharedPreferencesBackgroundSyncIntervalRepository(),
       NotificationPermissionsFacade(gateway: permissions),
       () => applyBackgroundTaskSchedule(
         dispatcher: () {},
+        intervals: const SharedPreferencesBackgroundSyncIntervalRepository(),
         scheduler: scheduler,
         desktopScheduler: scheduler,
         enabled: true,
@@ -146,7 +150,7 @@ void main() {
     permissions.release.complete();
     await Future.wait([initial, queued]);
     expect(
-      await const SharedPreferencesBackgroundSyncIntervalStore().read(),
+      await const SharedPreferencesBackgroundSyncIntervalRepository().read(),
       BackgroundSyncInterval.off,
     );
     expect(scheduler.registered, isFalse);
@@ -155,12 +159,13 @@ void main() {
   test('Off completes while an older schedule initializes', () async {
     final scheduler = Scheduler()..holdInitialization = true;
     final repository = BackgroundPreferencesRepositoryImpl(
-      const SharedPreferencesBackgroundSyncIntervalStore(),
+      const SharedPreferencesBackgroundSyncIntervalRepository(),
       NotificationPermissionsFacade(
         gateway: DelayedPermissions()..holdRead = false,
       ),
       () => applyBackgroundTaskSchedule(
         dispatcher: () {},
+        intervals: const SharedPreferencesBackgroundSyncIntervalRepository(),
         scheduler: scheduler,
         desktopScheduler: scheduler,
         enabled: true,
@@ -181,7 +186,7 @@ void main() {
     scheduler.release.complete();
     await pending;
     expect(
-      await const SharedPreferencesBackgroundSyncIntervalStore().read(),
+      await const SharedPreferencesBackgroundSyncIntervalRepository().read(),
       BackgroundSyncInterval.off,
     );
     expect(scheduler.registered, isFalse);
@@ -192,10 +197,11 @@ void main() {
     () async {
       final scheduler = Scheduler()..holdRegistration = true;
       final repository = BackgroundPreferencesRepositoryImpl(
-        const SharedPreferencesBackgroundSyncIntervalStore(),
+        const SharedPreferencesBackgroundSyncIntervalRepository(),
         NotificationPermissionsFacade(gateway: Permissions()),
         () => applyBackgroundTaskSchedule(
           dispatcher: () {},
+          intervals: const SharedPreferencesBackgroundSyncIntervalRepository(),
           scheduler: scheduler,
           desktopScheduler: scheduler,
           enabled: true,
@@ -222,10 +228,11 @@ void main() {
     });
     final scheduler = Scheduler()..failCancellation = true;
     final repository = BackgroundPreferencesRepositoryImpl(
-      const SharedPreferencesBackgroundSyncIntervalStore(),
+      const SharedPreferencesBackgroundSyncIntervalRepository(),
       NotificationPermissionsFacade(gateway: Permissions()),
       () => applyBackgroundTaskSchedule(
         dispatcher: () {},
+        intervals: const SharedPreferencesBackgroundSyncIntervalRepository(),
         scheduler: scheduler,
         desktopScheduler: scheduler,
         enabled: true,
@@ -236,7 +243,7 @@ void main() {
       isA<Err>(),
     );
     expect(
-      await const SharedPreferencesBackgroundSyncIntervalStore().read(),
+      await const SharedPreferencesBackgroundSyncIntervalRepository().read(),
       BackgroundSyncInterval.off,
     );
     expect(scheduler.registered, isTrue);
@@ -429,7 +436,7 @@ class DelayedPermissions extends Permissions {
   }
 }
 
-class DelayedStore implements BackgroundSyncIntervalStore {
+class DelayedStore implements BackgroundSyncIntervalRepository {
   final entered = Completer<void>();
   final release = Completer<void>();
   final writes = <BackgroundSyncInterval>[];
@@ -437,7 +444,7 @@ class DelayedStore implements BackgroundSyncIntervalStore {
   @override
   Future<BackgroundSyncInterval> read() async => selected;
   @override
-  Future<Result<void, BackgroundSyncIntervalFailure>> write(
+  Future<Result<void, BackgroundTasksFailure>> write(
     BackgroundSyncInterval value,
   ) async {
     writes.add(value);
@@ -450,16 +457,16 @@ class DelayedStore implements BackgroundSyncIntervalStore {
   }
 }
 
-class DelayedPersistentStore implements BackgroundSyncIntervalStore {
+class DelayedPersistentStore implements BackgroundSyncIntervalRepository {
   final entered = Completer<void>();
   final release = Completer<void>();
-  final _store = const SharedPreferencesBackgroundSyncIntervalStore();
+  final _store = const SharedPreferencesBackgroundSyncIntervalRepository();
 
   @override
   Future<BackgroundSyncInterval> read() => _store.read();
 
   @override
-  Future<Result<void, BackgroundSyncIntervalFailure>> write(
+  Future<Result<void, BackgroundTasksFailure>> write(
     BackgroundSyncInterval value,
   ) async {
     if (!entered.isCompleted) {

@@ -11,7 +11,7 @@ void main() {
     'persisted Off acknowledges wallet callback before building its graph',
     () async {
       expect(
-        await const SharedPreferencesBackgroundSyncIntervalStore().write(
+        await const SharedPreferencesBackgroundSyncIntervalRepository().write(
           BackgroundSyncInterval.off,
         ),
         isA<Ok>(),
@@ -20,6 +20,7 @@ void main() {
       final runner = await BackgroundTasksLocator.setup(
         task: BackgroundTask.walletsSync,
         logger: logger,
+        intervals: const SharedPreferencesBackgroundSyncIntervalRepository(),
         tasks: {
           BackgroundTask.walletsSync: (_) async =>
               fail('wallet graph opened after opt-out'),
@@ -58,6 +59,7 @@ void main() {
       (task) => BackgroundTasksLocator.setup(
         task: task,
         logger: _Logger(),
+        intervals: const SharedPreferencesBackgroundSyncIntervalRepository(),
         tasks: {
           BackgroundTask.walletsSync: (_) async {
             fail('wallet graph opened for log pruning');
@@ -84,6 +86,7 @@ void main() {
       BackgroundTasksLocator.setup(
         task: BackgroundTask.walletsSync,
         logger: _Logger(),
+        intervals: const SharedPreferencesBackgroundSyncIntervalRepository(),
         tasks: {
           BackgroundTask.walletsSync: (resources) async {
             resources.onClose(() => events.add('catalog'));

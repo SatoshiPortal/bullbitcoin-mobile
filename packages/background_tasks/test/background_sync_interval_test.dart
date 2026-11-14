@@ -21,7 +21,7 @@ void main() {
   setUp(() => SharedPreferences.setMockInitialValues({}));
 
   test('an unset or unknown interval reads as one hour', () async {
-    const store = SharedPreferencesBackgroundSyncIntervalStore();
+    const store = SharedPreferencesBackgroundSyncIntervalRepository();
     expect(await store.read(), BackgroundSyncInterval.hour1);
 
     SharedPreferences.setMockInitialValues({
@@ -31,7 +31,7 @@ void main() {
   });
 
   test('reread observes Off written outside the isolate cache', () async {
-    const store = SharedPreferencesBackgroundSyncIntervalStore();
+    const store = SharedPreferencesBackgroundSyncIntervalRepository();
     expect(await store.read(), BackgroundSyncInterval.hour1);
     await SharedPreferencesStorePlatform.instance.setValue(
       'String',
@@ -42,7 +42,7 @@ void main() {
   });
 
   test('a chosen interval survives a reread', () async {
-    const store = SharedPreferencesBackgroundSyncIntervalStore();
+    const store = SharedPreferencesBackgroundSyncIntervalRepository();
     expect(await store.write(BackgroundSyncInterval.minutes15), isA<Ok>());
     expect(await store.read(), BackgroundSyncInterval.minutes15);
     expect(await store.write(BackgroundSyncInterval.off), isA<Ok>());
@@ -55,10 +55,10 @@ void main() {
       'failed preference write returns a typed failure (throws=$throws)',
       () async {
         SharedPreferencesStorePlatform.instance = _FailingStore(throws: throws);
-        const store = SharedPreferencesBackgroundSyncIntervalStore();
+        const store = SharedPreferencesBackgroundSyncIntervalRepository();
         expect(
           await store.write(BackgroundSyncInterval.off),
-          isA<Err<void, BackgroundSyncIntervalFailure>>(),
+          isA<Err<void, BackgroundTasksFailure>>(),
         );
       },
     );

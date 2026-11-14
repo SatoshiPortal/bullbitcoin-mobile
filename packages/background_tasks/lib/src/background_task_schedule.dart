@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:background_tasks/src/background_sync_interval.dart';
+import 'package:background_tasks/src/domain/repositories/background_sync_interval_repository.dart';
 import 'package:background_tasks/src/background_task.dart';
 import 'package:background_tasks/src/background_task_workmanager_adapter.dart';
 import 'package:bull_logger/bull_logger.dart' show log;
@@ -28,6 +28,7 @@ int _scheduleGeneration = 0;
 /// the work in the app itself where there is no headless engine.
 Future<void> applyBackgroundTaskSchedule({
   required BackgroundTaskDispatcher dispatcher,
+  required BackgroundSyncIntervalRepository intervals,
   bool enabled = false,
   BackgroundTaskScheduler? scheduler,
   required BackgroundTaskScheduler desktopScheduler,
@@ -44,8 +45,7 @@ Future<void> applyBackgroundTaskSchedule({
   try {
     await previous;
     if (generation != _scheduleGeneration) return;
-    final interval = await const SharedPreferencesBackgroundSyncIntervalStore()
-        .read();
+    final interval = await intervals.read();
     for (final obsolete in [
       BackgroundTask.swapsSync,
       BackgroundTask.bitcoinSync,

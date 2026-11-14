@@ -81,7 +81,7 @@ void main() {
     'persisted Off prevents a surviving callback from admitting work',
     () async {
       expect(
-        await const SharedPreferencesBackgroundSyncIntervalStore().write(
+        await const SharedPreferencesBackgroundSyncIntervalRepository().write(
           BackgroundSyncInterval.off,
         ),
         isA<Ok>(),
@@ -125,7 +125,7 @@ void main() {
       ).executeAll().then((_) => finished = true);
       await started.future;
       expect(
-        await const SharedPreferencesBackgroundSyncIntervalStore().write(
+        await const SharedPreferencesBackgroundSyncIntervalRepository().write(
           BackgroundSyncInterval.off,
         ),
         isA<Ok>(),

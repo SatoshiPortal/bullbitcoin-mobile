@@ -13,6 +13,7 @@ final _desktopScheduler = TimerBackgroundTaskScheduler(
 
 Future<void> configureBackgroundTasks() => applyBackgroundTaskSchedule(
   dispatcher: backgroundTasksHandler,
+  intervals: const SharedPreferencesBackgroundSyncIntervalRepository(),
   desktopScheduler: _desktopScheduler,
   enabled: backgroundSyncAvailable,
 );

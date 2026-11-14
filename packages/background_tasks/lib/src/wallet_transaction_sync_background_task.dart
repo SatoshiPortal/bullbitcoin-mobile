@@ -7,7 +7,9 @@ import 'package:notifications/notifications.dart';
 import 'package:primitives/primitives.dart';
 import 'package:transaction_sync/transaction_sync.dart';
 
-import 'background_sync_interval.dart';
+import 'data/shared_preferences_background_sync_interval_repository.dart';
+import 'domain/background_sync_interval.dart';
+import 'domain/repositories/background_sync_interval_repository.dart';
 import 'background_task_execution_result.dart';
 import 'background_task_logger.dart';
 import 'background_wallet_sync.dart';
@@ -33,6 +35,7 @@ final class WalletTransactionSyncBackgroundTask {
   final int maxJobsPerChain;
   final Duration? runBudget;
   final Duration renewalInterval;
+  final BackgroundSyncIntervalRepository intervals;
   final BackgroundTaskLogger _sink;
 
   WalletTransactionSyncBackgroundTask({
@@ -46,6 +49,8 @@ final class WalletTransactionSyncBackgroundTask {
     BackgroundTaskLogger? logSink,
     this.runBudget,
     this.renewalInterval = const Duration(minutes: 5),
+    // Until phase B, lib/features/wallet constructs this task without it.
+    this.intervals = const SharedPreferencesBackgroundSyncIntervalRepository(),
   }) : keys = List.unmodifiable(keys),
        _sink = logSink ?? LoggerBackgroundTaskLogger(log) {
     final budget = runBudget;
@@ -357,8 +362,7 @@ final class WalletTransactionSyncBackgroundTask {
   }
 
   Future<bool> _optedOut(_RunAdmission admission) async {
-    if (await const SharedPreferencesBackgroundSyncIntervalStore().read() !=
-        BackgroundSyncInterval.off) {
+    if (await intervals.read() != BackgroundSyncInterval.off) {
       return false;
     }
     admission.stopped = true;

@@ -24,3 +24,8 @@ final class BackgroundTasksStoreVersionFailure extends BackgroundTasksFailure {
   final int version;
   const BackgroundTasksStoreVersionFailure(this.version);
 }
+
+/// The platform could not save the chosen interval.
+final class BackgroundSyncIntervalFailure extends BackgroundTasksFailure {
+  const BackgroundSyncIntervalFailure();
+}

@@ -1,7 +1,8 @@
 import 'dart:async';
 
 import 'background_task.dart';
-import 'background_sync_interval.dart';
+import 'domain/background_sync_interval.dart';
+import 'domain/repositories/background_sync_interval_repository.dart';
 import 'background_task_logger.dart';
 import 'background_task_runner.dart';
 
@@ -44,6 +45,7 @@ final class BackgroundTasksLocator {
   static Future<BackgroundTaskRunner> setup({
     required BackgroundTask task,
     required BackgroundTaskLogger logger,
+    required BackgroundSyncIntervalRepository intervals,
     required Map<BackgroundTask, BackgroundTaskSetup> tasks,
   }) async {
     final resources = BackgroundTaskResources();
@@ -52,8 +54,7 @@ final class BackgroundTasksLocator {
       final handlers = <BackgroundTask, BackgroundTaskHandler>{};
       final optedOut =
           task == BackgroundTask.walletsSync &&
-          await const SharedPreferencesBackgroundSyncIntervalStore().read() ==
-              BackgroundSyncInterval.off;
+          await intervals.read() == BackgroundSyncInterval.off;
       if (optedOut) {
         logger.write(
           BackgroundLogLevel.fine,

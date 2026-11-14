@@ -41,6 +41,7 @@ void main() {
       final scheduler = Scheduler();
       await applyBackgroundTaskSchedule(
         dispatcher: () {},
+        intervals: const SharedPreferencesBackgroundSyncIntervalRepository(),
         desktopScheduler: scheduler,
         scheduler: scheduler,
       );
@@ -56,6 +57,7 @@ void main() {
     await expectLater(
       applyBackgroundTaskSchedule(
         dispatcher: () {},
+        intervals: const SharedPreferencesBackgroundSyncIntervalRepository(),
         desktopScheduler: scheduler,
         scheduler: scheduler,
       ),
@@ -70,6 +72,7 @@ void main() {
       final scheduler = Scheduler();
       await applyBackgroundTaskSchedule(
         dispatcher: () {},
+        intervals: const SharedPreferencesBackgroundSyncIntervalRepository(),
         desktopScheduler: scheduler,
         scheduler: scheduler,
         enabled: true,

@@ -20,6 +20,7 @@ Future<BackgroundTaskRunner> bootstrapBackgroundRunner(
   return BackgroundTasksLocator.setup(
     task: task,
     logger: logger,
+    intervals: const SharedPreferencesBackgroundSyncIntervalRepository(),
     tasks: {
       BackgroundTask.logsPrune: (resources) async => () async {
         await log.prune();

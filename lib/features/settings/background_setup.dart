@@ -12,7 +12,7 @@ void setupBackgroundPreferences(
 }) {
   final backgroundPreferences = BackgroundPreferencesUsecase(
     BackgroundPreferencesRepositoryImpl(
-      const SharedPreferencesBackgroundSyncIntervalStore(),
+      const SharedPreferencesBackgroundSyncIntervalRepository(),
       NotificationPermissionsFacade(
         gateway: notificationPermissions(channelId: notificationChannelId),
       ),

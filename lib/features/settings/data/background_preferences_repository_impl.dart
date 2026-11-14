@@ -8,7 +8,7 @@ import '../domain/repositories/background_preferences_repository.dart';
 
 final class BackgroundPreferencesRepositoryImpl
     implements BackgroundPreferencesRepository {
-  final BackgroundSyncIntervalStore _intervals;
+  final BackgroundSyncIntervalRepository _intervals;
   final NotificationPermissionsFacade _permissions;
   final Future<void> Function() _schedule;
 
