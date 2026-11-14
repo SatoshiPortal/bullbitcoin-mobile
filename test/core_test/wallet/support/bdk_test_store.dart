@@ -1,9 +1,8 @@
 import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
 import 'package:sync/testing.dart';
-import 'package:bb_mobile/features/wallet/data/bdk_wallet_datasource.dart'
-    show NetworkX;
 import 'dart:io';
 import 'package:bb_mobile/features/wallet/data/models/wallet_model.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart' show Network;
 import 'package:bull_sdk/bdk.dart' as bdk;
 import 'package:path_provider/path_provider.dart';
 
@@ -48,7 +47,11 @@ abstract final class BdkTestStore {
           : bdk.Wallet(
               descriptor: external,
               changeDescriptor: internal,
-              network: model.network.bdkNetwork,
+              network: model.network.isMainnet
+                  ? bdk.Network.bitcoin
+                  : model.network == Network.bitcoinRegtest
+                  ? bdk.Network.regtest
+                  : bdk.Network.testnet,
               persister: persister,
               lookahead: 25,
             );

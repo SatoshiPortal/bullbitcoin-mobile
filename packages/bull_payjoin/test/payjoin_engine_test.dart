@@ -506,6 +506,7 @@ void main() {
       when(
         () => blockchain.broadcastPsbt(
           walletId: any(named: 'walletId'),
+          sessionId: any(named: 'sessionId'),
           network: any(named: 'network'),
           psbt: any(named: 'psbt'),
         ),
@@ -529,6 +530,7 @@ void main() {
       when(
         () => blockchain.broadcastPsbt(
           walletId: any(named: 'walletId'),
+          sessionId: any(named: 'sessionId'),
           network: any(named: 'network'),
           psbt: any(named: 'psbt'),
         ),
@@ -572,6 +574,7 @@ void main() {
         when(
           () => blockchain.broadcastPsbt(
             walletId: any(named: 'walletId'),
+            sessionId: any(named: 'sessionId'),
             network: any(named: 'network'),
             psbt: any(named: 'psbt'),
           ),
@@ -604,6 +607,7 @@ void main() {
     when(
       () => blockchain.broadcastPsbt(
         walletId: any(named: 'walletId'),
+        sessionId: any(named: 'sessionId'),
         network: any(named: 'network'),
         psbt: any(named: 'psbt'),
       ),
@@ -1411,6 +1415,7 @@ void main() {
       when(
         () => blockchain.broadcastPsbt(
           walletId: any(named: 'walletId'),
+          sessionId: any(named: 'sessionId'),
           network: any(named: 'network'),
           psbt: any(named: 'psbt'),
         ),
@@ -1426,6 +1431,7 @@ void main() {
     void originalFailsWith(Object error) => when(
       () => blockchain.broadcastPsbt(
         walletId: any(named: 'walletId'),
+        sessionId: any(named: 'sessionId'),
         network: any(named: 'network'),
         psbt: any(named: 'psbt'),
       ),
@@ -1452,6 +1458,7 @@ void main() {
       verify(
         () => blockchain.broadcastPsbt(
           walletId: any(named: 'walletId'),
+          sessionId: any(named: 'sessionId'),
           network: any(named: 'network'),
           psbt: any(named: 'psbt'),
         ),
@@ -1483,6 +1490,7 @@ void main() {
     List<String> sentPsbts() => verify(
       () => blockchain.broadcastPsbt(
         walletId: any(named: 'walletId'),
+        sessionId: any(named: 'sessionId'),
         network: any(named: 'network'),
         psbt: captureAny(named: 'psbt'),
       ),
@@ -1558,6 +1566,7 @@ void main() {
       verify(
         () => blockchain.broadcastPsbt(
           walletId: any(named: 'walletId'),
+          sessionId: any(named: 'sessionId'),
           network: any(named: 'network'),
           psbt: any(named: 'psbt'),
         ),
@@ -1584,6 +1593,7 @@ void main() {
       when(
         () => blockchain.broadcastPsbt(
           walletId: any(named: 'walletId'),
+          sessionId: any(named: 'sessionId'),
           network: any(named: 'network'),
           psbt: any(named: 'psbt'),
         ),
@@ -1611,6 +1621,7 @@ void main() {
         when(
           () => blockchain.broadcastPsbt(
             walletId: any(named: 'walletId'),
+            sessionId: any(named: 'sessionId'),
             network: any(named: 'network'),
             psbt: any(named: 'psbt'),
           ),
@@ -1671,6 +1682,7 @@ void main() {
         verifyNever(
           () => blockchain.broadcastPsbt(
             walletId: any(named: 'walletId'),
+            sessionId: any(named: 'sessionId'),
             network: any(named: 'network'),
             psbt: any(named: 'psbt'),
           ),
@@ -1701,6 +1713,7 @@ void main() {
           verifyNever(
             () => blockchain.broadcastPsbt(
               walletId: any(named: 'walletId'),
+              sessionId: any(named: 'sessionId'),
               network: any(named: 'network'),
               psbt: any(named: 'psbt'),
             ),
@@ -1726,6 +1739,7 @@ void main() {
       verifyNever(
         () => blockchain.broadcastPsbt(
           walletId: any(named: 'walletId'),
+          sessionId: any(named: 'sessionId'),
           network: any(named: 'network'),
           psbt: any(named: 'psbt'),
         ),
@@ -1743,6 +1757,7 @@ void main() {
       verifyNever(
         () => blockchain.broadcastPsbt(
           walletId: any(named: 'walletId'),
+          sessionId: any(named: 'sessionId'),
           network: any(named: 'network'),
           psbt: any(named: 'psbt'),
         ),
@@ -2026,6 +2041,7 @@ void main() {
       when(
         () => blockchain.broadcastPsbt(
           walletId: any(named: 'walletId'),
+          sessionId: any(named: 'sessionId'),
           network: any(named: 'network'),
           psbt: any(named: 'psbt'),
         ),
@@ -2050,6 +2066,7 @@ void main() {
       verify(
         () => blockchain.broadcastPsbt(
           walletId: live.walletId,
+          sessionId: any(named: 'sessionId'),
           network: BitcoinNetwork.testnet,
           psbt: oneInputPsbt,
         ),
@@ -2095,6 +2112,7 @@ void main() {
       when(
         () => blockchain.broadcastPsbt(
           walletId: any(named: 'walletId'),
+          sessionId: any(named: 'sessionId'),
           network: any(named: 'network'),
           psbt: any(named: 'psbt'),
         ),
@@ -2421,6 +2439,7 @@ void main() {
           when(
             () => blockchain.broadcastPsbt(
               walletId: any(named: 'walletId'),
+              sessionId: any(named: 'sessionId'),
               network: any(named: 'network'),
               psbt: any(named: 'psbt'),
             ),
@@ -2443,6 +2462,7 @@ void main() {
           when(
             () => blockchain.broadcastPsbt(
               walletId: any(named: 'walletId'),
+              sessionId: any(named: 'sessionId'),
               network: any(named: 'network'),
               psbt: any(named: 'psbt'),
             ),
@@ -2476,6 +2496,7 @@ void main() {
         when(
           () => blockchain.broadcastPsbt(
             walletId: any(named: 'walletId'),
+            sessionId: any(named: 'sessionId'),
             network: any(named: 'network'),
             psbt: any(named: 'psbt'),
           ),
@@ -2509,6 +2530,7 @@ void main() {
           when(
             () => blockchain.broadcastPsbt(
               walletId: any(named: 'walletId'),
+              sessionId: any(named: 'sessionId'),
               network: any(named: 'network'),
               psbt: any(named: 'psbt'),
             ),
@@ -2719,6 +2741,7 @@ void main() {
       when(
         () => blockchain.broadcastPsbt(
           walletId: any(named: 'walletId'),
+          sessionId: any(named: 'sessionId'),
           network: any(named: 'network'),
           psbt: any(named: 'psbt'),
         ),
@@ -2779,6 +2802,7 @@ void main() {
     when(
       () => blockchain.broadcastPsbt(
         walletId: any(named: 'walletId'),
+        sessionId: any(named: 'sessionId'),
         network: any(named: 'network'),
         psbt: any(named: 'psbt'),
       ),
@@ -2808,6 +2832,7 @@ void main() {
     verifyNever(
       () => blockchain.broadcastPsbt(
         walletId: any(named: 'walletId'),
+        sessionId: any(named: 'sessionId'),
         network: any(named: 'network'),
         psbt: live.originalPsbt,
       ),
@@ -2868,6 +2893,7 @@ void main() {
         when(
           () => blockchain.broadcastPsbt(
             walletId: any(named: 'walletId'),
+            sessionId: any(named: 'sessionId'),
             network: any(named: 'network'),
             psbt: any(named: 'psbt'),
           ),
@@ -2884,6 +2910,7 @@ void main() {
         final captured = verify(
           () => blockchain.broadcastPsbt(
             walletId: any(named: 'walletId'),
+            sessionId: any(named: 'sessionId'),
             network: any(named: 'network'),
             psbt: captureAny(named: 'psbt'),
           ),

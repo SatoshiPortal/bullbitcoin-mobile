@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:bull_sdk/bdk.dart' as bdk;
 import 'package:bull_sdk/bull_sdk.dart' as bull_sdk;
 import 'package:bull_sdk/lwk.dart' as lwk;
+import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
 
 import '../../../domain/public_wallet_descriptor.dart';
@@ -261,7 +262,28 @@ final class _BitcoinSpend implements NativeBitcoinSpend {
       throw const SpendRefusal(SyncSpendRefusedFailure());
     }
     try {
-      return BuiltTransaction(psbt.serialize(), decodeNativePsbt(psbt).inputs);
+      final decoded = decodeNativePsbt(psbt);
+      // A remainder the fee consumed, or below the destination's dust limit
+      // once the fixed payees are paid, is a shortfall.
+      final remainder = request.recipients.indexWhere(
+        (recipient) => recipient.amountSat == null,
+      );
+      if (remainder >= 0) {
+        final target = _hex(scripts[remainder].toBytes());
+        var paid = 0;
+        for (final output in decoded.outputs) {
+          if (_hex(output.scriptPubkey) == target) paid += output.valueSat;
+        }
+        for (var index = 0; index < request.recipients.length; index++) {
+          if (_hex(scripts[index].toBytes()) == target) {
+            paid -= request.recipients[index].amountSat ?? 0;
+          }
+        }
+        if (paid <= 0) {
+          throw const SpendRefusal(SyncInsufficientFundsFailure());
+        }
+      }
+      return BuiltTransaction(psbt.serialize(), decoded.inputs);
     } finally {
       psbt.dispose();
     }
@@ -463,6 +485,12 @@ final class _BitcoinSpend implements NativeBitcoinSpend {
   @override
   void close() => _store.close();
 }
+
+/// A Liquid spend over [wallet], for package tests: the LWK library is not
+/// built for unit tests.
+@visibleForTesting
+NativeLiquidSpend liquidSpendOver(lwk.Wallet wallet) =>
+    _LiquidSpend(wallet, () {});
 
 /// LWK reports a shortfall only as text.
 const _lwkInsufficientFunds = 'InsufficientFunds';

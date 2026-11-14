@@ -88,8 +88,11 @@ abstract interface class PayjoinBlockchainPort {
     required Uint8List transaction,
   });
 
+  /// Broadcasts a sender's [psbt] for its session [sessionId], which alone
+  /// may spend the inputs it reserved.
   Future<void> broadcastPsbt({
     required String walletId,
+    required String sessionId,
     required BitcoinNetwork network,
     required String psbt,
   });

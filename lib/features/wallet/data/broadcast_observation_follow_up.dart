@@ -4,16 +4,24 @@ import 'package:bull_logger/bull_logger.dart';
 import 'package:clock/clock.dart';
 import 'package:primitives/primitives.dart';
 import 'package:sync/sync.dart'
-    show BitcoinBroadcastReceipt, BitcoinSpendStatus;
+    show
+        BitcoinSpendStatus,
+        SignedBitcoinTransaction,
+        SignedPsbt,
+        SignedTransaction,
+        SpendOwner,
+        SpendReceipt,
+        SyncFailure,
+        UnsignedSpend;
 
-import '../domain/wallet_spend_failure.dart';
-
-typedef BroadcastBitcoin =
-    Future<Result<BitcoinBroadcastReceipt, WalletSpendFailure>> Function(
+typedef BroadcastSpend =
+    Future<Result<SpendReceipt, SyncFailure>> Function(
       String walletId,
-      BitcoinNetwork network,
-      Future<String> Function() broadcast,
-    );
+      SignedTransaction transaction, {
+      UnsignedSpend? built,
+      SpendOwner? owner,
+      String? replacing,
+    });
 
 /// After an accepted Bitcoin broadcast, the spend gate stays closed until a
 /// sync pass observes the payment. The pass started right after the broadcast
@@ -46,12 +54,23 @@ final class BroadcastObservationFollowUp {
     required this._pollWallet,
   });
 
-  /// [broadcast] with the follow-up started on success only. The result is
+  /// [broadcast] with the follow-up started after an accepted Bitcoin
+  /// broadcast only: Liquid has no guard to wait for. The result is
   /// returned unchanged.
-  BroadcastBitcoin wrap(BroadcastBitcoin broadcast) =>
-      (walletId, network, send) async {
-        final result = await broadcast(walletId, network, send);
-        if (result is Ok) start(walletId);
+  BroadcastSpend wrap(BroadcastSpend broadcast) =>
+      (walletId, transaction, {built, owner, replacing}) async {
+        final result = await broadcast(
+          walletId,
+          transaction,
+          built: built,
+          owner: owner,
+          replacing: replacing,
+        );
+        if (result is Ok &&
+            (transaction is SignedPsbt ||
+                transaction is SignedBitcoinTransaction)) {
+          start(walletId);
+        }
         return result;
       };
 

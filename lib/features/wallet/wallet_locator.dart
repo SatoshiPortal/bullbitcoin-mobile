@@ -116,8 +116,8 @@ class WalletLocator {
       () => WalletFacade(
         locator<WalletNativeRuntime>().changes,
         spendStatus: locator<WalletNativeRuntime>().spendStatus,
-        broadcastBitcoin: locator<BroadcastObservationFollowUp>().wrap(
-          locator<WalletNativeRuntime>().broadcastBitcoin,
+        broadcastSpend: locator<BroadcastObservationFollowUp>().wrap(
+          locator<WalletNativeRuntime>().broadcast,
         ),
         protectObservedSpend:
             locator<WalletNativeRuntime>().protectObservedSpend,
@@ -152,14 +152,10 @@ class WalletLocator {
       ),
     );
     locator.registerLazySingleton<BdkWalletDatasource>(
-      () => BdkWalletDatasource(
-        readWallet: locator<WalletNativeRuntime>().bitcoin,
-      ),
+      () => BdkWalletDatasource(wallet: locator<WalletNativeRuntime>().wallet),
     );
     locator.registerLazySingleton<LwkWalletDatasource>(
-      () => LwkWalletDatasource(
-        readWallet: locator<WalletNativeRuntime>().liquid,
-      ),
+      () => LwkWalletDatasource(wallet: locator<WalletNativeRuntime>().wallet),
     );
     locator.registerLazySingleton<SyncWalletValuesDatasource>(
       () => SyncWalletValuesDatasource(

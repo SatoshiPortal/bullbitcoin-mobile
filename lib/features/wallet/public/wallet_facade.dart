@@ -1,24 +1,32 @@
-import '../domain/wallet_spend_failure.dart';
 export '../domain/wallet_spend_failure.dart';
 export 'package:bb_mobile/features/wallet/domain/seed_reference_port.dart'
     show SeedReferences;
 export '../domain/wallet.dart' show Network;
 export '../domain/network_x.dart' show NetworkX;
 import 'package:sync/sync.dart';
-import 'package:primitives/primitives.dart' show Result, Err, BitcoinNetwork;
+import '../data/broadcast_observation_follow_up.dart' show BroadcastSpend;
+import 'package:primitives/primitives.dart' show Result, Err;
 import '../domain/wallet_discovery_failure.dart';
 export 'package:primitives/primitives.dart' show Result;
 export '../domain/wallet_discovery_failure.dart';
 
 export 'package:sync/sync.dart'
     show
-        BitcoinBroadcastReceipt,
         BitcoinSpendStatus,
+        SignedBitcoinTransaction,
+        SignedPset,
+        SignedPsbt,
+        SignedTransaction,
+        SpendOwner,
+        SpendReceipt,
+        SyncFailure,
+        UnsignedSpend,
         WalletRevisionState,
         WalletRevision,
         WalletKey,
         WalletLifecycle;
 export '../wallet_sync_locator.dart' show SyncLocator, initializeWalletRuntime;
+export '../data/broadcast_observation_follow_up.dart' show BroadcastSpend;
 export '../background_setup.dart'
     show
         setupBackgroundWalletTask,
@@ -29,12 +37,7 @@ export '../background_setup.dart'
 final class WalletFacade {
   final Future<BitcoinSpendStatus> Function(String, {String? replacing})?
   _spendStatus;
-  final Future<Result<BitcoinBroadcastReceipt, WalletSpendFailure>> Function(
-    String,
-    BitcoinNetwork,
-    Future<String> Function(),
-  )?
-  _broadcastBitcoin;
+  final BroadcastSpend? _broadcastSpend;
   final Future<bool> Function(String, String)? _protectObservedSpend;
   final Stream<WalletRevisionState> _revisions;
   final Future<Result<void, WalletDiscoveryFailure>> Function(String)?
@@ -47,7 +50,7 @@ final class WalletFacade {
   const WalletFacade(
     this._revisions, {
     this._spendStatus,
-    this._broadcastBitcoin,
+    this._broadcastSpend,
     this._protectObservedSpend,
     this._discoverWallet,
     this._pollWallet,
@@ -63,13 +66,26 @@ final class WalletFacade {
       _spendStatus?.call(walletId, replacing: replacing) ??
       BitcoinSpendStatus.unavailable;
 
-  Future<Result<BitcoinBroadcastReceipt, WalletSpendFailure>> broadcastBitcoin(
+  /// Broadcasts a signed transaction of [walletId] through `wallet.spend`,
+  /// which checks its generation and inputs again under the guard. [built]
+  /// carries the generation it was built at.
+  Future<Result<SpendReceipt, SyncFailure>> broadcastSpend(
     String walletId,
-    BitcoinNetwork network,
-    Future<String> Function() broadcast,
-  ) async =>
-      _broadcastBitcoin?.call(walletId, network, broadcast) ??
-      const Err(WalletSpendBlockedFailure(BitcoinSpendStatus.unavailable));
+    SignedTransaction transaction, {
+    UnsignedSpend? built,
+    SpendOwner? owner,
+    String? replacing,
+  }) async {
+    final broadcast = _broadcastSpend;
+    if (broadcast == null) return const Err(SyncUnsupportedNetworkFailure());
+    return broadcast(
+      walletId,
+      transaction,
+      built: built,
+      owner: owner,
+      replacing: replacing,
+    );
+  }
 
   Future<bool> protectObservedSpend(String walletId, String txid) async =>
       _protectObservedSpend?.call(walletId, txid) ?? false;

@@ -6,7 +6,7 @@ import 'package:bb_mobile/core/electrum/domain/ports/electrum_servers_port.dart'
 import 'package:bb_mobile/core/fees/domain/repositories/fees_repository.dart';
 import 'package:bb_mobile/core/storage/payjoin_legacy_data_adapter.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
-import 'package:bb_mobile/features/wallet/data/bdk_wallet_datasource.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_native_runtime.dart';
 import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/payjoin_wallet_adapter.dart';
@@ -36,10 +36,10 @@ abstract final class PayjoinSetup {
         databasePath: databasePath,
         wallet: PayjoinWalletAdapter(
           locator<Secrets>(),
-          locator<BdkWalletDatasource>(),
+          locator<WalletNativeRuntime>().wallet,
+          locator<WalletNativeRuntime>().spendStatus,
           locator<SyncWalletValuesDatasource>(),
           locator<WalletMetadataDatasource>(),
-          locator<WalletFacade>(),
         ),
         blockchain: AppPayjoinBlockchainAdapter(
           locator<BdkBitcoinBlockchainDatasource>(),

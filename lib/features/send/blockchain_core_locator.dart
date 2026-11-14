@@ -52,6 +52,7 @@ class BlockchainLocator {
 
     locator.registerFactory<BroadcastLiquidTransactionUsecase>(
       () => BroadcastLiquidTransactionUsecase(
+        wallet: locator<WalletFacade>(),
         liquidBlockchainRepository: locator<LiquidBlockchainRepository>(),
         settingsRepository: locator<SettingsRepository>(),
       ),

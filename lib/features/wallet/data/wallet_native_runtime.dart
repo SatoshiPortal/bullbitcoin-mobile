@@ -5,10 +5,7 @@ import 'package:meta/meta.dart';
 
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
-import 'package:bb_mobile/features/wallet/data/models/wallet_model.dart';
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bull_sdk/bdk.dart' as bdk;
-import 'package:bull_sdk/lwk.dart' as lwk;
 import 'package:primitives/primitives.dart';
 import 'package:sync/read.dart';
 import 'package:sync/sync.dart' hide Wallet;
@@ -297,75 +294,61 @@ final class WalletNativeRuntime implements WalletNativeLifecycle {
     return WalletKey(id: walletId, network: metadata.network.shared);
   }
 
+  /// [walletId]'s handle on its current generation, without loading values.
+  /// Throws [WalletSnapshotException] when the wallet is unavailable.
+  Future<sync.Wallet> wallet(String walletId) async {
+    await initialize();
+    final metadata = await _metadata.fetch(walletId);
+    if (metadata == null) {
+      throw const WalletSnapshotException(SyncNotFoundFailure());
+    }
+    final key = WalletKey(id: walletId, network: metadata.network.shared);
+    final failure = _unavailable[key];
+    if (failure != null) throw WalletSnapshotException(failure);
+    return _value(await (await _services).sync.wallet(key));
+  }
+
+  /// The Bitcoin guard's verdict, asked now under the writer lock.
   Future<BitcoinSpendStatus> spendStatus(
     String walletId, {
     String? replacing,
   }) async {
     try {
-      return (await _spendGate).check(
-        await _spendKey(walletId),
-        replacing: replacing,
-      );
+      return switch (await (await wallet(
+        walletId,
+      )).spend.check(replacing: replacing)) {
+        Ok(:final value) => value,
+        Err(failure: SyncBusyFailure()) => BitcoinSpendStatus.busy,
+        Err() => BitcoinSpendStatus.unavailable,
+      };
     } on Exception {
       return BitcoinSpendStatus.unavailable;
     }
   }
 
-  Future<WalletRevision> requireSpend(
-    String walletId, {
+  /// Broadcasts [transaction] for [walletId] through `wallet.spend`, which
+  /// checks its generation and inputs again under the guard. [built] carries
+  /// the generation it was built at; without it, the current one is used.
+  Future<Result<SpendReceipt, SyncFailure>> broadcast(
+    String walletId,
+    SignedTransaction transaction, {
+    UnsignedSpend? built,
+    SpendOwner? owner,
     String? replacing,
   }) async {
-    final admission = await (await _spendGate).acquire(
-      await _spendKey(walletId),
-      replacing: replacing,
+    final sync.Wallet handle;
+    try {
+      handle = await wallet(walletId);
+    } on WalletSnapshotException catch (error) {
+      return Err(error.failure);
+    }
+    if (built != null && built.key != handle.key) {
+      return const Err(SyncNotFoundFailure());
+    }
+    return handle.spend.broadcast(
+      built?.signed(transaction) ??
+          handle.spend.signed(transaction, owner: owner, replacing: replacing),
     );
-    if (admission case BitcoinSpendRefused(:final status)) {
-      throw WalletSpendBlockedException(status);
-    }
-    final lease = admission as BitcoinSpendAdmission;
-    try {
-      return lease.revision;
-    } finally {
-      lease.close();
-    }
-  }
-
-  Future<Result<BitcoinBroadcastReceipt, WalletSpendFailure>> broadcastBitcoin(
-    String walletId,
-    BitcoinNetwork network,
-    Future<String> Function() broadcast,
-  ) async {
-    final key = await _spendKey(walletId);
-    if (key.network != network) {
-      return const Err(
-        WalletSpendBlockedFailure(BitcoinSpendStatus.unavailable),
-      );
-    }
-    final admission = await (await _spendGate).acquire(key);
-    if (admission case BitcoinSpendRefused(:final status)) {
-      return Err(WalletSpendBlockedFailure(status));
-    }
-    final lease = admission as BitcoinSpendAdmission;
-    var accepted = false;
-    try {
-      final txid = await broadcast();
-      accepted = true;
-      final receipt = lease.accepted(txid);
-      if (!receipt.durable) {
-        log.warning(
-          'Bitcoin accepted spend recording pending category=storage',
-        );
-      }
-      if (receipt.durable) log.fine('Bitcoin accepted spend recorded');
-      return Ok(receipt);
-    } finally {
-      try {
-        lease.close();
-      } on Exception {
-        if (!accepted) rethrow;
-        log.warning('Bitcoin accepted spend cleanup pending category=storage');
-      }
-    }
   }
 
   /// Called before a Payjoin terminal transition releases owned-input guards.
@@ -399,20 +382,6 @@ final class WalletNativeRuntime implements WalletNativeLifecycle {
 
   /// The foreground [Sync], for freezes. Opens it on first use.
   Future<Sync> foreground() async => (await _services).sync;
-
-  /// Builders only, until spends move into sync.
-  Future<bdk.Wallet> bitcoin(WalletModel model) async =>
-      _borrow<bdk.Wallet>(model);
-  Future<lwk.Wallet> liquid(WalletModel model) async =>
-      _borrow<lwk.Wallet>(model);
-
-  Future<T> _borrow<T extends Object>(WalletModel model) async {
-    await initialize();
-    final key = WalletKey(id: model.id, network: model.network.shared);
-    final failure = _unavailable[key];
-    if (failure != null) throw WalletSnapshotException(failure);
-    return (await _services).stores.reader.borrowedHandle<T>(key, _catalog);
-  }
 
   /// Called after every worker outcome, including interrupted/failed writes.
   Future<void> refresh(WalletKey key, {bool catalogChanged = false}) async {

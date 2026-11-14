@@ -47,12 +47,10 @@ class WalletLocator {
   static void registerRepositories(GetIt locator) {
     locator.registerLazySingleton<BitcoinWalletRepository>(
       () => BitcoinWalletRepository(
-        requireSpend: locator<WalletNativeRuntime>().requireSpend,
         walletMetadataDatasource: locator<WalletMetadataDatasource>(),
         bdkWalletDatasource: locator<BdkWalletDatasource>(),
         walletValuesDatasource: locator<SyncWalletValuesDatasource>(),
         secrets: locator<Secrets>(),
-        freezesDatasource: locator<SyncFreezesDatasource>(),
       ),
     );
 

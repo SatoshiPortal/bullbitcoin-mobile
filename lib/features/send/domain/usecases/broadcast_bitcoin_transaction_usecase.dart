@@ -1,5 +1,11 @@
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
 import 'package:primitives/primitives.dart' show Ok, Err;
+import 'package:sync/sync.dart'
+    show
+        SyncBusyFailure,
+        SyncNotFoundFailure,
+        SyncProtectedInputsFailure,
+        SyncSpendBlockedFailure;
 import 'package:bb_mobile/core/utils/bitcoin_tx.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_utxo_repository.dart';
 import 'package:bb_mobile/features/send/data/bitcoin_blockchain_repository.dart';
@@ -27,11 +33,16 @@ class BroadcastBitcoinTransactionUsecase {
     isLiquid: false,
   );
 
+  /// Broadcasts [transaction]. With [walletId], `wallet.spend` checks the
+  /// generation, the freezes and the reservations again under the guard, and
+  /// keeps the guard until the receipt; [built] is the spend this
+  /// transaction signs, when this run built it.
   Future<String> execute(
     String transaction, {
     required bool isPsbt,
     required Network network,
     String? walletId,
+    UnsignedSpend? built,
   }) async {
     // Imported broadcasts have no wallet spend gate, but still pass through
     // the common frozen-input guard before any backend access.
@@ -42,16 +53,44 @@ class BroadcastBitcoinTransactionUsecase {
     if (wallet == null) {
       throw const WalletSpendBlockedException(BitcoinSpendStatus.unavailable);
     }
-    final result = await wallet.broadcastBitcoin(
+    await _authorize(network);
+    final result = await wallet.broadcastSpend(
       walletId,
-      network.bitcoin,
-      () => _broadcast(transaction, isPsbt: isPsbt, network: network),
+      isPsbt
+          ? SignedPsbt(transaction)
+          : SignedBitcoinTransaction(hex.decode(transaction)),
+      built: built,
     );
     return switch (result) {
       Ok(:final value) => value.txid,
-      Err(failure: WalletSpendBlockedFailure(:final status)) =>
+      Err(failure: SyncSpendBlockedFailure(:final status)) =>
         throw WalletSpendBlockedException(status),
+      Err(failure: SyncBusyFailure()) =>
+        throw const WalletSpendBlockedException(BitcoinSpendStatus.busy),
+      // A generation the wallet left behind: delete or re-import.
+      Err(failure: SyncNotFoundFailure()) =>
+        throw const WalletSpendBlockedException(BitcoinSpendStatus.unavailable),
+      // A frozen or reserved input: refused before any server is contacted.
+      Err(failure: SyncProtectedInputsFailure()) =>
+        throw CategorizedBroadcastException(BroadcastFailureCategory.rejected),
+      Err(:final failure) => throw CategorizedBroadcastException(
+        broadcastFailureCategory(failure),
+      ),
     };
+  }
+
+  /// Test networks broadcast only for a superuser in dev mode.
+  Future<void> _authorize(Network network) async {
+    if (network.isMainnet) return;
+    final settings = await _settingsRepository.fetch();
+    if (settings.isSuperuser != true || settings.isDevModeEnabled != true) {
+      log.warning(
+        'Broadcast refused network=${network.name} category=authorization',
+      );
+      throw CategorizedBroadcastException(
+        BroadcastFailureCategory.authorization,
+      );
+    }
   }
 
   Future<String> _broadcast(
@@ -61,17 +100,7 @@ class BroadcastBitcoinTransactionUsecase {
   }) async {
     try {
       await _requireNoFrozenInput(transaction, isPsbt: isPsbt);
-      if (!network.isMainnet) {
-        final settings = await _settingsRepository.fetch();
-        if (settings.isSuperuser != true || settings.isDevModeEnabled != true) {
-          log.warning(
-            'Broadcast refused network=${network.name} category=authorization',
-          );
-          throw CategorizedBroadcastException(
-            BroadcastFailureCategory.authorization,
-          );
-        }
-      }
+      await _authorize(network);
       if (isPsbt) {
         return await _bitcoinBlockchain.broadcastPsbt(
           transaction,

@@ -1,5 +1,4 @@
 import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
-import 'package:bb_mobile/features/wallet/data/bdk_wallet_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/payjoin_wallet_adapter.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
@@ -8,8 +7,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';
 import 'package:secrets/secrets.dart';
-
-class _Wallet extends Mock implements BdkWalletDatasource {}
 
 class _Values extends Mock implements SyncWalletValuesDatasource {}
 
@@ -22,13 +19,10 @@ void main() {
   PayjoinWalletAdapter adapter(BitcoinSpendStatus Function(int) status) =>
       PayjoinWalletAdapter(
         Secrets(scratchDirectory: () async => '/tmp'),
-        _Wallet(),
+        (_) async => throw StateError('no wallet handle expected'),
+        (_) async => status(++checks),
         _Values(),
         metadata,
-        WalletFacade(
-          const Stream.empty(),
-          spendStatus: (_, {replacing}) async => status(++checks),
-        ),
       );
 
   Future<void> utxos(PayjoinWalletAdapter adapter) => adapter.spendableUtxos(

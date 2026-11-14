@@ -37,6 +37,7 @@ final class _BlockchainPort implements PayjoinBlockchainPort {
   @override
   Future<void> broadcastPsbt({
     required String walletId,
+    required String sessionId,
     required BitcoinNetwork network,
     required String psbt,
   }) async {}

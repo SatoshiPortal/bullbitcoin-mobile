@@ -17,6 +17,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';
 import 'package:secrets/secrets.dart';
+import 'package:sync/read.dart' show WalletSnapshotException;
+import 'package:sync/sync.dart' show SyncStorageFailure;
 
 class _Metadata extends Mock implements WalletMetadataDatasource {}
 
@@ -28,12 +30,10 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   const walletId = 'elwpkh([73c5da0a/84h/1h/0h])';
   const channel = MethodChannel('plugins.flutter.io/path_provider');
-  const nativeFailure = lwk.LwkError(msg: 'cache read failed');
   late LiquidWalletRepository repository;
   final sdk = _Sdk();
 
   setUpAll(() {
-    registerFallbackValue(const lwk.Descriptor(ctDescriptor: 'descriptor'));
     BullSdk.initMock(api: sdk);
   });
 
@@ -65,24 +65,14 @@ void main() {
       ),
     );
     when(() => frozen.getFrozenOutpoints()).thenAnswer((_) async => {});
-    // Only the native call is substituted: the reader capability and real
-    // LwkWalletDatasource must propagate its failure through the repository.
-    when(
-      () => sdk.lwkApiWalletWalletInit(
-        network: lwk.LiquidNetwork.testnet,
-        dbpath: any(named: 'dbpath'),
-        descriptor: any(named: 'descriptor'),
-      ),
-    ).thenAnswer((_) async => throw nativeFailure);
     repository = LiquidWalletRepository(
       walletMetadataDatasource: metadata,
       secrets: Secrets(scratchDirectory: () async => Directory.systemTemp.path),
+      // Sync cannot open the wallet: the real LwkWalletDatasource must
+      // propagate its failure through the repository.
       lwkWalletDatasource: LwkWalletDatasource(
-        readWallet: (_) => lwk.Wallet.init(
-          network: lwk.LiquidNetwork.testnet,
-          dbpath: Directory.systemTemp.path,
-          descriptor: const lwk.Descriptor(ctDescriptor: 'descriptor'),
-        ),
+        wallet: (_) async =>
+            throw const WalletSnapshotException(SyncStorageFailure()),
       ),
       // No coin is read: nothing is frozen and no input is selected.
       walletValuesDatasource: SyncWalletValuesDatasource(
