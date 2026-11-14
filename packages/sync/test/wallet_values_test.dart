@@ -76,7 +76,7 @@ void main() {
     final events = [
       first.balances.watch().listen((_) {}),
       second.coins.watch().listen((_) {}),
-      first.addresses.current.watch().listen((_) {}),
+      first.addresses.book.watch().listen((_) {}),
     ];
     await loaded(first);
     await loaded(second);

@@ -405,8 +405,9 @@ extension type const WalletSpendGroup._(Wallet _wallet) {
 
 /// `wallet.addresses`.
 extension type const WalletAddressGroup._(Wallet _wallet) {
-  /// The receive and change indexes reached, with their addresses.
-  Observed<WalletAddresses> get current => _wallet._projections.observe(
+  /// The address book: the receive and change indexes reached, with their
+  /// addresses.
+  Observed<WalletAddresses> get book => _wallet._projections.observe(
     _wallet.key,
     _wallet.generation,
     (frame) => frame.addresses,

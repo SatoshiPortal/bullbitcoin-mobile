@@ -121,7 +121,7 @@ class SyncWalletValuesDatasource {
     required WalletModel wallet,
     bool isChange = false,
   }) async {
-    final book = _data((await _wallet(wallet)).addresses.current.now);
+    final book = _data((await _wallet(wallet)).addresses.book.now);
     if (!isChange) return book.receiveIndex;
     final change = book.changeIndex;
     if (change == null) {
@@ -174,7 +174,7 @@ class SyncWalletValuesDatasource {
     final handle = await _wallet(wallet);
     // Both values come from one frame: no await between the two reads.
     final transactions = _data(handle.transactions.now);
-    final book = _data(handle.addresses.current.now);
+    final book = _data(handle.addresses.book.now);
     final filter = toAddress != null && toAddress.isNotEmpty ? toAddress : null;
     final result = switch (wallet) {
       PublicBdkWalletModel() => _bitcoinHistory(
