@@ -2,7 +2,8 @@
 /// [Sync], whose [Wallet] handles publish balances, coins, transactions and
 /// addresses as [Observed] values; [Sync.openExisting] returns the narrow
 /// [HeadlessSync] for background refreshes. Nothing here holds a native
-/// handle; read.dart still lends them to the transaction builders.
+/// handle; read.dart still lends them to the transaction builders. The codec
+/// and chain functions work without a wallet.
 library;
 
 export 'src/public/sync.dart'
@@ -39,3 +40,25 @@ export 'src/domain/ports/wallet_connection_port.dart';
 export 'src/domain/ports/wallet_read_readiness_port.dart';
 export 'src/domain/ports/wallet_revision_reader_port.dart';
 export 'src/data/read/address_script.dart' show bitcoinAddressScript;
+export 'src/domain/decoded_transactions.dart';
+export 'src/data/codec/bitcoin_codec.dart'
+    show
+        bitcoinScriptAddress,
+        canonicalBitcoinPsbt,
+        finalizeBitcoinPsbts,
+        parseBitcoinAddress;
+export 'src/data/codec/liquid_codec.dart'
+    show
+        decodeLiquidPset,
+        decodeLiquidTransaction,
+        liquidAddressNetwork,
+        maxEncodedLiquidPsetLength,
+        maxLiquidTransactionBytes;
+export 'src/data/chain/electrum_chain.dart'
+    show
+        bitcoinTransactionKnown,
+        broadcastBitcoinTransaction,
+        broadcastBitcoinTransactionTo,
+        broadcastLiquidTransaction,
+        estimateBitcoinFees,
+        probeBitcoinServer;

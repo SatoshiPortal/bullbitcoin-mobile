@@ -12,7 +12,8 @@ import 'package:bb_mobile/features/broadcast_signed_tx/domain/verify_broadcast_s
 import 'package:bb_mobile/features/broadcast_signed_tx/presentation/broadcast_signed_tx_state.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/type.dart';
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bull_sdk/bdk.dart' as bdk;
+import 'package:sync/sync.dart'
+    show SyncNotFinalizableFailure, finalizeBitcoinPsbts;
 import 'package:bitcoin_base/bitcoin_base.dart';
 import 'package:convert/convert.dart';
 import 'package:crypto/crypto.dart';
@@ -47,26 +48,29 @@ class BroadcastSignedTxCubit extends Cubit<BroadcastSignedTxState> {
         try {
           finalTx = builder.finalizeAll().toHex();
         } catch (e) {
-          if (state.unsignedPsbt == null) {
+          final unsignedPsbt = state.unsignedPsbt;
+          if (unsignedPsbt == null) {
             rethrow;
           }
 
           // Seedsigner doesn't return the original input data, so here we try to add inputs data from the unsigned tx
-
-          final psbt = bdk.Psbt(psbtBase64: state.unsignedPsbt!);
-          final signedPsbt = bdk.Psbt(psbtBase64: payload);
-
-          final tx = psbt.combine(other: signedPsbt);
-          final finalized = tx.finalize();
-          if (!finalized.couldFinalize) {
-            log.warning(
-              'Could not finalize the combined PSBT',
-              error: finalized.errors,
-            );
-            emit(state.copyWith(failure: const PsbtFinalizationFailure()));
-            return;
+          switch (finalizeBitcoinPsbts(
+            unsignedBase64: unsignedPsbt,
+            signedBase64: payload,
+          )) {
+            case Ok(:final value):
+              finalTx = hex.encode(value.bytes);
+            case Err(failure: SyncNotFinalizableFailure()):
+              log.warning('Could not finalize the combined PSBT');
+              emit(state.copyWith(failure: const PsbtFinalizationFailure()));
+              return;
+            case Err(:final failure):
+              log.warning(
+                'Scanned PSBT is unreadable category=${failure.logCode}',
+              );
+              emit(state.copyWith(failure: const InvalidTransactionFailure()));
+              return;
           }
-          finalTx = hex.encode(finalized.psbt.extractTx().serialize());
         }
         if (!await _verifyAgainstOriginal(finalTx)) return;
 

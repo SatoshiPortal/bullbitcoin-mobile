@@ -1,60 +1,57 @@
-import 'package:sync/sync.dart'
-    show bitcoinPsbtTransactionId, bitcoinRawTransactionId;
+import 'package:bb_mobile/features/send/data/broadcast_failure_mapper.dart';
+import 'package:bb_mobile/features/send/domain/broadcast_failure.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'dart:typed_data';
+import 'package:primitives/primitives.dart' show BitcoinNetwork, Err, Ok;
+import 'package:sync/sync.dart'
+    show
+        SyncInvalidTransactionFailure,
+        WalletConnectionPort,
+        broadcastBitcoinTransaction,
+        decodeBitcoinPsbt;
 
-import 'package:bb_mobile/core/blockchain/data/datasources/bdk_bitcoin_blockchain_datasource.dart';
-import 'package:bb_mobile/core/electrum/domain/ports/electrum_servers_port.dart';
-import 'package:bb_mobile/features/electrum_settings/domain/electrum_server_network.dart';
-
-/// Thin repository over [BdkBitcoinBlockchainDatasource]. Its only job is to
-/// route broadcast operations through [ElectrumServersPort.runWithFallback]
-/// so callers cannot fetch a server list themselves — the privacy / fallback
-/// rule lives in one place.
+/// Broadcasts through sync, on the servers [WalletConnectionPort] selects: the
+/// privacy and fallback rule lives in that port alone.
 class BitcoinBlockchainRepository {
-  final BdkBitcoinBlockchainDatasource _blockchain;
-  final ElectrumServersPort _serversPort;
+  final WalletConnectionPort _connections;
 
-  const BitcoinBlockchainRepository({
-    required BdkBitcoinBlockchainDatasource blockchainDatasource,
-    required this._serversPort,
-  }) : _blockchain = blockchainDatasource;
+  const BitcoinBlockchainRepository({required this._connections});
 
+  /// Throws [CategorizedBroadcastException] when the broadcast fails.
   Future<String> broadcastPsbt(
     String finalizedPsbt, {
     required Network network,
-  }) async {
-    final txid = bitcoinPsbtTransactionId(finalizedPsbt);
-    await _serversPort.runWithFallback<String>(
-      network: switch (network) {
-        Network.bitcoinMainnet => ElectrumServerNetwork.bitcoinMainnet,
-        Network.bitcoinTestnet => ElectrumServerNetwork.bitcoinTestnet,
-        Network.bitcoinRegtest => ElectrumServerNetwork.bitcoinRegtest,
-        _ => throw const UnsupportedNetworkException(),
-      },
-      operation: (connection) =>
-          _blockchain.broadcastPsbt(finalizedPsbt, connection: connection),
-    );
-    return txid;
+  }) {
+    final List<int> transaction;
+    try {
+      transaction = decodeBitcoinPsbt(finalizedPsbt).bytes;
+    } on FormatException {
+      throw CategorizedBroadcastException(
+        broadcastFailureCategory(const SyncInvalidTransactionFailure()),
+      );
+    }
+    return broadcastTransaction(transaction, network: network);
   }
 
+  /// Throws [CategorizedBroadcastException] when the broadcast fails.
   Future<String> broadcastTransaction(
     List<int> transaction, {
     required Network network,
   }) async {
-    final txid = bitcoinRawTransactionId(transaction);
-    await _serversPort.runWithFallback<String>(
+    final result = await broadcastBitcoinTransaction(
+      transaction,
       network: switch (network) {
-        Network.bitcoinMainnet => ElectrumServerNetwork.bitcoinMainnet,
-        Network.bitcoinTestnet => ElectrumServerNetwork.bitcoinTestnet,
-        Network.bitcoinRegtest => ElectrumServerNetwork.bitcoinRegtest,
+        Network.bitcoinMainnet => BitcoinNetwork.mainnet,
+        Network.bitcoinTestnet => BitcoinNetwork.testnet,
+        Network.bitcoinRegtest => BitcoinNetwork.regtest,
         _ => throw const UnsupportedNetworkException(),
       },
-      operation: (connection) => _blockchain.broadcastTransaction(
-        Uint8List.fromList(transaction),
-        connection: connection,
-      ),
+      connections: _connections,
     );
-    return txid;
+    return switch (result) {
+      Ok(:final value) => value,
+      Err(:final failure) => throw CategorizedBroadcastException(
+        broadcastFailureCategory(failure),
+      ),
+    };
   }
 }

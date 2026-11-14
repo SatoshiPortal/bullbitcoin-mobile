@@ -1,32 +1,35 @@
-import 'dart:isolate';
-
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_connection.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
-import 'package:bull_sdk/bdk.dart' as bdk;
+import 'package:primitives/primitives.dart' show Err, Ok;
+import 'package:sync/sync.dart' show WalletConnection, estimateBitcoinFees;
 
 /// Uses only the selected regtest Electrum connection; no public fee service.
 class RegtestFeesDatasource {
   const RegtestFeesDatasource();
 
-  Future<FeeOptions> fetch(ElectrumConnection connection) => Isolate.run(() {
-    final client = bdk.ElectrumClient(
-      url: connection.url,
-      socks5: connection.socks5,
-      timeout: connection.effectiveTimeout.clamp(0, 255),
-      retry: connection.retry.clamp(0, 255),
-      validateDomain: connection.validateDomain,
+  /// Throws when the server has no estimate, so the next server is tried.
+  Future<FeeOptions> fetch(ElectrumConnection connection) async {
+    final estimates = switch (await estimateBitcoinFees(
+      WalletConnection(
+        url: connection.url,
+        timeout: Duration(seconds: connection.effectiveTimeout),
+        retry: connection.retry,
+        stopGap: connection.stopGap,
+        validateDomain: connection.validateDomain,
+        socks5: connection.socks5,
+      ),
+      targets: const [1, 3, 6],
+    )) {
+      Ok(:final value) => value,
+      Err() => throw const FormatException('Fee estimates unavailable'),
+    };
+    return FeeOptions(
+      minRelay: const RelativeFee(NetworkFeeRelayPolicy.minRelaySatPerKwu),
+      fastest: fromEstimate(estimates[0]),
+      economic: fromEstimate(estimates[1]),
+      slow: fromEstimate(estimates[2]),
     );
-    try {
-      return FeeOptions(
-        minRelay: const RelativeFee(NetworkFeeRelayPolicy.minRelaySatPerKwu),
-        fastest: fromEstimate(client.estimateFee(number: 1)),
-        economic: fromEstimate(client.estimateFee(number: 3)),
-        slow: fromEstimate(client.estimateFee(number: 6)),
-      );
-    } finally {
-      client.dispose();
-    }
-  });
+  }
 
   /// Electrum blockchain.estimatefee returns BTC/kB, or -1 if unavailable.
   /// https://electrum-protocol.readthedocs.io/en/latest/protocol-methods.html#blockchain-estimatefee

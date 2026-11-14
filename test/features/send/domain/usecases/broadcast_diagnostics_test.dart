@@ -3,8 +3,16 @@ import 'package:bb_mobile/features/send/public/send_facade.dart';
 import 'package:primitives/primitives.dart' hide Network;
 import 'dart:io';
 
-import 'package:bb_mobile/core/blockchain/domain/repositories/liquid_blockchain_repository.dart';
-import 'package:bb_mobile/core/electrum/domain/errors/electrum_fallback_exception.dart';
+import 'package:bb_mobile/features/send/data/liquid_blockchain_repository_impl.dart';
+import 'package:primitives/primitives.dart' as primitives show Network;
+import 'package:sync/sync.dart'
+    show
+        SyncBroadcastRejectedFailure,
+        SyncConnectionFailure,
+        SyncFailure,
+        SyncOutcomeUnknownFailure,
+        WalletConnection,
+        WalletConnectionPort;
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/features/send/data/bitcoin_blockchain_repository.dart';
@@ -13,15 +21,30 @@ import 'package:bb_mobile/features/send/domain/usecases/broadcast_liquid_transac
 import 'package:bb_mobile/features/sell/domain/broadcast_sell_payin_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/broadcast_pay_payin_usecase.dart';
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
-import 'package:bull_sdk/bdk.dart' as bdk;
-import 'package:bull_sdk/lwk.dart' as lwk;
 import 'package:bull_logger/bull_logger.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
 class _Bitcoin extends Mock implements BitcoinBlockchainRepository {}
 
-class _Liquid extends Mock implements LiquidBlockchainRepository {}
+/// A port whose every server failed with [failure].
+final class _Failing implements WalletConnectionPort {
+  final SyncFailure failure;
+  var runs = 0;
+
+  _Failing(this.failure);
+
+  @override
+  Future<Result<T, SyncFailure>> run<T>({
+    required primitives.Network network,
+    required Future<Result<T, SyncFailure>> Function(WalletConnection)
+    operation,
+    required bool Function(SyncFailure) mayRetry,
+  }) async {
+    runs++;
+    return Err(failure);
+  }
+}
 
 class _Settings extends Mock implements SettingsRepository {}
 
@@ -84,135 +107,114 @@ void main() {
     );
   });
 
-  const foreign = 'tcp://private-electrum.invalid:50001 foreign-rejection';
   for (final feature in ['sell', 'pay']) {
     for (final chain in ['bitcoin', 'liquid']) {
       for (final category in ['rejected', 'connection', 'unexpected']) {
-        test('$feature $chain preserves $category through Send and fallback', () async {
-          final directory = await Directory.systemTemp.createTemp('payin-log-');
-          final reporter = _Reporter();
-          log = Logger.replace(directory: directory, reporter: reporter);
-          addTearDown(() async {
+        test(
+          '$feature $chain preserves $category through Send and fallback',
+          () async {
+            final directory = await Directory.systemTemp.createTemp(
+              'payin-log-',
+            );
+            final reporter = _Reporter();
+            log = Logger.replace(directory: directory, reporter: reporter);
+            addTearDown(() async {
+              await log.flush();
+              log = Logger.replace(directory: Directory.current);
+              await directory.delete(recursive: true);
+            });
+            final settings = _Settings();
+            when(settings.fetch).thenAnswer(
+              (_) async => const SettingsEntity(
+                environment: Environment.mainnet,
+                bitcoinUnit: BitcoinUnit.sats,
+                currencyCode: 'USD',
+              ),
+            );
+            // What sync reports once every server failed; the native causes and
+            // their text never leave sync.
+            final connections = _Failing(switch (category) {
+              'rejected' => const SyncBroadcastRejectedFailure(),
+              'connection' => const SyncConnectionFailure(),
+              _ => const SyncOutcomeUnknownFailure(),
+            });
+            final bitcoin = BitcoinBlockchainRepository(
+              connections: connections,
+            );
+            final liquid = LiquidBlockchainRepositoryImpl(
+              connections: connections,
+            );
+            final btc = BroadcastBitcoinTransactionUsecase(
+              wallet: WalletFacade(
+                const Stream.empty(),
+                broadcastBitcoin: (_, _, broadcast) async => Ok(
+                  BitcoinBroadcastReceipt(await broadcast(), durable: true),
+                ),
+              ),
+              bitcoinBlockchainRepository: bitcoin,
+              walletUtxoRepository: EmptyFrozenOutpoints(),
+              settingsRepository: settings,
+            );
+            final lbtc = BroadcastLiquidTransactionUsecase(
+              liquidBlockchainRepository: liquid,
+              settingsRepository: settings,
+            );
+            const wallet = WalletFacade(Stream.empty());
+            if (feature == 'sell') {
+              final usecase = BroadcastSellPayinUsecase(
+                wallet: wallet,
+                send: SendFacade(bitcoin: btc.execute, liquid: lbtc.execute),
+              );
+              if (chain == 'bitcoin') {
+                expect(
+                  await usecase.bitcoin(
+                    _signedPublicTest,
+                    walletId: 'source',
+                    isPsbt: true,
+                    network: Network.bitcoinMainnet,
+                  ),
+                  isA<Err>(),
+                );
+              } else {
+                expect(
+                  await usecase.liquid(_signedPublicTest, walletId: 'source'),
+                  isA<Err>(),
+                );
+              }
+            } else {
+              final usecase = BroadcastPayPayinUsecase(
+                wallet: wallet,
+                send: SendFacade(bitcoin: btc.execute, liquid: lbtc.execute),
+              );
+              if (chain == 'bitcoin') {
+                expect(
+                  await usecase.bitcoin(
+                    _signedPublicTest,
+                    walletId: 'source',
+                    isPsbt: true,
+                    network: Network.bitcoinMainnet,
+                  ),
+                  isA<Err>(),
+                );
+              } else {
+                expect(
+                  await usecase.liquid(_signedPublicTest, walletId: 'source'),
+                  isA<Err>(),
+                );
+              }
+            }
             await log.flush();
-            log = Logger.replace(directory: Directory.current);
-            await directory.delete(recursive: true);
-          });
-          final bitcoin = _Bitcoin();
-          final liquid = _Liquid();
-          final settings = _Settings();
-          when(settings.fetch).thenAnswer(
-            (_) async => const SettingsEntity(
-              environment: Environment.mainnet,
-              bitcoinUnit: BitcoinUnit.sats,
-              currencyCode: 'USD',
-            ),
-          );
-          final Object cause = switch ((chain, category)) {
-            ('bitcoin', 'rejected') => bdk.ProtocolElectrumException(
-              '{"code":2,"message":"sendrawtransaction RPC error -26: $foreign"}',
-            ),
-            ('bitcoin', 'connection') => bdk.IoExceptionElectrumException(
-              foreign,
-            ),
-            ('liquid', 'rejected') => const lwk.LwkError(
-              msg:
-                  'ClientError(Protocol(Object {"code": Number(-26), "message": String("$foreign")}))',
-            ),
-            ('liquid', 'connection') => const lwk.LwkError(
-              msg:
-                  'ClientError(IOError(Custom { kind: TimedOut, error: "$foreign" }))',
-            ),
-            _ => Exception(foreign),
-          };
-          final error = AllElectrumServersFailedException([
-            ElectrumServerAttempt(url: foreign, isCustom: true, error: cause),
-          ]);
-          when(
-            () => bitcoin.broadcastPsbt(
-              _signedPublicTest,
-              network: Network.bitcoinMainnet,
-            ),
-          ).thenAnswer(
-            (_) => Future.error(error, StackTrace.fromString(foreign)),
-          );
-          when(
-            () => liquid.broadcastTransaction(
-              signedPset: _signedPublicTest,
-              network: Network.liquidMainnet,
-            ),
-          ).thenAnswer(
-            (_) => Future.error(error, StackTrace.fromString(foreign)),
-          );
-          final btc = BroadcastBitcoinTransactionUsecase(
-            wallet: WalletFacade(
-              const Stream.empty(),
-              broadcastBitcoin: (_, _, broadcast) async =>
-                  Ok(BitcoinBroadcastReceipt(await broadcast(), durable: true)),
-            ),
-            bitcoinBlockchainRepository: bitcoin,
-            walletUtxoRepository: EmptyFrozenOutpoints(),
-            settingsRepository: settings,
-          );
-          final lbtc = BroadcastLiquidTransactionUsecase(
-            liquidBlockchainRepository: liquid,
-            settingsRepository: settings,
-          );
-          const wallet = WalletFacade(Stream.empty());
-          if (feature == 'sell') {
-            final usecase = BroadcastSellPayinUsecase(
-              wallet: wallet,
-              send: SendFacade(bitcoin: btc.execute, liquid: lbtc.execute),
+            final disk = await log.logsFile.readAsString();
+            expect(
+              disk,
+              contains(
+                '\tWARNING\t${feature}_payin_broadcast_failed chain=$chain category=$category\t',
+              ),
             );
-            if (chain == 'bitcoin') {
-              expect(
-                await usecase.bitcoin(
-                  _signedPublicTest,
-                  walletId: 'source',
-                  isPsbt: true,
-                  network: Network.bitcoinMainnet,
-                ),
-                isA<Err>(),
-              );
-            } else {
-              expect(
-                await usecase.liquid(_signedPublicTest, walletId: 'source'),
-                isA<Err>(),
-              );
-            }
-          } else {
-            final usecase = BroadcastPayPayinUsecase(
-              wallet: wallet,
-              send: SendFacade(bitcoin: btc.execute, liquid: lbtc.execute),
-            );
-            if (chain == 'bitcoin') {
-              expect(
-                await usecase.bitcoin(
-                  _signedPublicTest,
-                  walletId: 'source',
-                  isPsbt: true,
-                  network: Network.bitcoinMainnet,
-                ),
-                isA<Err>(),
-              );
-            } else {
-              expect(
-                await usecase.liquid(_signedPublicTest, walletId: 'source'),
-                isA<Err>(),
-              );
-            }
-          }
-          await log.flush();
-          final disk = await log.logsFile.readAsString();
-          expect(
-            disk,
-            contains(
-              '\tWARNING\t${feature}_payin_broadcast_failed chain=$chain category=$category\t',
-            ),
-          );
-          expect(disk, isNot(contains('private-electrum.invalid')));
-          expect(disk, isNot(contains('foreign-rejection')));
-          verifyZeroInteractions(reporter);
-        });
+            expect(connections.runs, 1);
+            verifyZeroInteractions(reporter);
+          },
+        );
       }
     }
   }

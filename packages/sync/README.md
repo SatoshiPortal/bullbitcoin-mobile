@@ -29,9 +29,10 @@ Sync reads and changes user freezes; the app keeps them in its published `frozen
 
 ⚠️ A store that cannot answer is an `Err`, never an empty list. Spend construction checks its effective inputs against `FreezeAuthority.forbiddenInputs()`, or `guard()`, which reads the freezes and runs the check in the queue every freeze and unfreeze goes through, so none commits meanwhile: sync is the table's only writer, from the foreground, so that queue suffices. A failed read never runs the check.
 
-`bitcoinAddressScript` and `validateAddress` are library functions: no wallet is opened.
+Library functions open no wallet and create no store:
 
-`decodeBitcoinTransaction` and `decodeBitcoinPsbt` are library functions too, synchronous for Payjoin's session mapping: they return a transaction's id, spent outpoints and outputs, and a malformed input is a `FormatException`.
+- Codecs. `decodeBitcoinTransaction` and `decodeBitcoinPsbt` are synchronous for Payjoin's stream transforms and throw a `FormatException` on refusal; `canonicalBitcoinPsbt`, `finalizeBitcoinPsbts` (combine a signer's trimmed reply with the PSBT it was given, then finalize), `parseBitcoinAddress`, `bitcoinScriptAddress`, `bitcoinAddressScript`, `decodeLiquidTransaction`, `decodeLiquidPset`, `liquidAddressNetwork` and `validateAddress` return a `SyncChainFailure` or another `SyncFailure`. Input is bounded before it reaches a native parser, and a Liquid amount the transaction keeps confidential stays `null`, never zero.
+- Chain access. `broadcastBitcoinTransaction` and `broadcastLiquidTransaction` go through the servers the owner's `WalletConnectionPort` selects; `broadcastBitcoinTransactionTo`, `bitcoinTransactionKnown`, `probeBitcoinServer` and `estimateBitcoinFees` take the one `WalletConnection` a caller running its own fallback hands them. Native errors and the servers' replies are reduced here to rejected, already in chain, connection or unknown outcome, never kept as text. Across servers a single cause is reported only when every server agreed: a retry after an uncertain attempt is never read as a rejection, and nothing is retried once the servers are exhausted. These functions do not admit a spend: a wallet broadcast still goes through the Bitcoin spend gate in its caller, and Liquid has none.
 
 `Sync.openForeground` requires an `InputReservationPort`. Payjoin owns its input reservations and serves each with its session, wallet, network and state; sync reads them to check the inputs of a spend. A failed read is an `Err`, never an empty list.
 
@@ -96,7 +97,9 @@ These trees are generated from the exports of `lib/sync.dart`; `make sync-api-do
 
 ```
 lib/src/domain/            values, failures, repositories/, ports/ (no SDK)
-lib/src/data/              paths, store identity, txid parsing, diagnostics, revision reader
+lib/src/data/              paths, store identity, txid parsing, Bitcoin decoder, diagnostics, revision reader
+lib/src/data/codec/        wallet-free PSBT, address and Liquid codecs
+lib/src/data/chain/        Electrum broadcasts, lookups, probes and fee estimates; broadcast reply classification
 lib/src/data/datasources/  SQLite revision store and spend gate, shared by read and write
 lib/src/data/freeze_authority.dart  freezes through the app's port: reads, commands, forbidden inputs, guard
 lib/src/data/write/        every native store mutation: writer session, lock, spend gate
@@ -144,3 +147,5 @@ fvm flutter test --no-pub native_test/native_regtest_nigiri_test.dart
 The defaults are the local development Electrum port 50000 and faucet port 3000. Override with `--dart-define=NIGIRI_ELECTRUM=...` and `--dart-define=NIGIRI_FAUCET=...`. Ordinary unit checks do not require this service. This native test does not validate app navigation, wallet import or mobile lifecycle behavior.
 
 `read.dart` also publishes `validateAddress(address, network)` for payment consumers. It validates against captured concrete network context (Liquid mainnet, testnet and regtest each accept only their own addresses), rejects signet, and limits Bitcoin regtest destinations to the distinct bcrt1 witness encoding. Bitcoin testnet Base58 remains accepted; address bytes cannot distinguish its provenance from regtest. This is destination authorization, not URI parsing or an Electrum genesis check. Liquid validation goes through LWK, so its cases are in the native suite: `LD_LIBRARY_PATH="$BULL_SDK_LIB_DIR" fvm flutter test native_test/validate_liquid_address_test.dart`.
+
+The Liquid codecs' refusals of hostile input through the real LWK parser are in `native_test/liquid_codec_test.dart`, run the same way; the unit suite covers their mapping with a fake binding.
