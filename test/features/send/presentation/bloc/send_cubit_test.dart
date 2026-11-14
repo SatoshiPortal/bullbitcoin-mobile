@@ -54,7 +54,6 @@ import 'package:bb_mobile/features/send/domain/usecases/validate_coin_control_pa
 import 'package:bb_mobile/features/send/domain/usecases/watch_send_swap_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/create_boltz_send_swap_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/get_send_swap_route_usecase.dart';
-import 'package:bb_mobile/features/swap/public/swap_facade.dart' show SwapRoute;
 import 'package:boltz_swaps/boltz_swaps.dart' as boltz;
 import 'package:bb_mobile/core/utils/payment_request.dart';
 import 'package:bb_mobile/features/send/domain/usecases/prepare_sp_payment_for_send_usecase.dart';
@@ -85,8 +84,6 @@ class _MockDetectBitcoinStringUsecase extends Mock
     implements DetectBitcoinStringUsecase {}
 
 class _MockGetSettingsUsecase extends Mock implements GetSettingsUsecase {}
-
-class _MockChainSwap extends Mock implements ChainSwap {}
 
 class _MockGetSendExchangeRateUsecase extends Mock
     implements GetSendExchangeRateUsecase {}
@@ -419,6 +416,15 @@ PayjoinSenderSession _sender({
   expiresAt: DateTime(2026).add(const Duration(minutes: 1)),
   transactionId: txId,
 );
+
+Matcher _paysTo(String address, {int? amountSat}) =>
+    predicate<List<BitcoinTransactionRecipient>>(
+      (recipients) =>
+          recipients.length == 1 &&
+          recipients.single.address == address &&
+          recipients.single.amountSat ==
+              (amountSat == null ? null : Sats.fromInt(amountSat)),
+    );
 
 void main() {
   late _MockLabelsFacade labelsFacade;
@@ -2192,9 +2198,20 @@ void main() {
       'builds added recipients after leaving an earlier chain swap',
       () async {
         final wallet = _bitcoinLocalWallet();
-        final staleSwap = _MockChainSwap();
-        when(() => staleSwap.paymentAddress).thenReturn('bc1qstaleswap');
-        when(() => staleSwap.paymentAmount).thenReturn(50000);
+        final staleSwap =
+            boltz.Swap.chain(
+                  id: 'stale',
+                  keyIndex: 0,
+                  type: boltz.SwapType.bitcoinToLiquid,
+                  status: boltz.SwapStatus.pending,
+                  environment: boltz.Environment.mainnet,
+                  creationTime: DateTime.utc(2026),
+                  sendWalletId: wallet.id,
+                  paymentAddress: 'bc1qstaleswap',
+                  paymentAmount: 50000,
+                  receiveWalletId: 'liquid-wallet',
+                )
+                as boltz.ChainSwap;
         stubMultiRecipientBuild(wallet);
         when(
           () => signBitcoinTxUsecase.execute(
@@ -5920,16 +5937,21 @@ void main() {
       when(
         () => prepareBitcoinSendUsecase.execute(
           walletId: 'w1',
-          address: 'bc1plockup',
+          recipients: any(
+            named: 'recipients',
+            that: _paysTo('bc1plockup', amountSat: 50500),
+          ),
           networkFee: any(named: 'networkFee'),
-          amountSat: 50500,
-          drain: false,
           selectedInputs: any(named: 'selectedInputs'),
           replaceByFee: any(named: 'replaceByFee'),
         ),
       ).thenAnswer(
-        (_) async =>
-            (unsignedPsbt: 'lockup-unsigned', txSize: 150, isToSelf: false),
+        (_) async => Ok((
+          unsignedPsbt: 'lockup-unsigned',
+          txSize: 150,
+          isToSelf: false,
+          recipientAmountsSat: [Sats.fromInt(50500)],
+        )),
       );
       when(
         () => calculateBitcoinAbsoluteFeesUsecase.execute(
@@ -6259,16 +6281,21 @@ void main() {
       when(
         () => prepareBitcoinSendUsecase.execute(
           walletId: 'w1',
-          address: 'bc1pchainlockup',
+          recipients: any(
+            named: 'recipients',
+            that: _paysTo('bc1pchainlockup', amountSat: 50600),
+          ),
           networkFee: any(named: 'networkFee'),
-          amountSat: 50600,
-          drain: false,
           selectedInputs: any(named: 'selectedInputs'),
           replaceByFee: any(named: 'replaceByFee'),
         ),
       ).thenAnswer(
-        (_) async =>
-            (unsignedPsbt: 'chain-unsigned', txSize: 150, isToSelf: false),
+        (_) async => Ok((
+          unsignedPsbt: 'chain-unsigned',
+          txSize: 150,
+          isToSelf: false,
+          recipientAmountsSat: [Sats.fromInt(50600)],
+        )),
       );
       when(
         () => calculateBitcoinAbsoluteFeesUsecase.execute(

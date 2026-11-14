@@ -829,7 +829,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
       if (selectedFee is! RelativeFee) {
         throw BuildTransactionException('network_fees_unavailable');
       }
-      final unsignedPset = await _prepareLiquidSendUsecase.execute(
+      final preparation = await _prepareLiquidSendUsecase.execute(
         walletId: fromWallet.id,
         address: swap.paymentAddress,
         amountSat: isMaxSend ? null : swap.paymentAmount,
@@ -837,6 +837,16 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
         drain: isMaxSend,
       );
       if (generation != _transactionGeneration) return null;
+      final String unsignedPset;
+      switch (preparation) {
+        case Ok(:final value):
+          unsignedPset = value;
+        case Err(:final failure):
+          throw failure is SendInsufficientBalanceFailure ||
+                  failure is SendInsufficientFundsForFeesFailure
+              ? InsufficientFundsSwapException()
+              : BuildTransactionException('liquid_transaction_build_failed');
+      }
       await _verifyChainSwapAmountSendUsecase.execute(
         psbtOrPset: unsignedPset,
         swap: swap,
@@ -858,18 +868,35 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
       if (selectedFee == null) {
         throw BuildTransactionException('network_fees_unavailable');
       }
-      final unsigned = await _prepareBitcoinSendUsecase.execute(
+      final preparation = await _prepareBitcoinSendUsecase.execute(
         walletId: fromWallet.id,
-        address: swap.paymentAddress,
-        amountSat: isMaxSend ? null : swap.paymentAmount,
+        recipients: [
+          if (isMaxSend)
+            BitcoinTransactionRecipient.remainder(address: swap.paymentAddress)
+          else
+            BitcoinTransactionRecipient.fixed(
+              address: swap.paymentAddress,
+              amountSat: Sats.fromInt(swap.paymentAmount),
+            ),
+        ],
         networkFee: selectedFee,
-        drain: isMaxSend,
         selectedInputs: state.selectedUtxos.isEmpty
             ? null
             : state.selectedUtxos,
         replaceByFee: state.replaceByFee,
       );
       if (generation != _transactionGeneration) return null;
+      final PreparedBitcoinSend unsigned;
+      switch (preparation) {
+        case Ok(:final value):
+          unsigned = value;
+        case Err(:final failure):
+          throw failure is WalletInsufficientFundsFailure ||
+                  failure is WalletNoSpendableInputsFailure ||
+                  failure is WalletSelectedInputsUnavailableFailure
+              ? InsufficientFundsSwapException()
+              : BuildTransactionException('bitcoin_transaction_build_failed');
+      }
       await _verifyChainSwapAmountSendUsecase.execute(
         psbtOrPset: unsigned.unsignedPsbt,
         swap: swap,

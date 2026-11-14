@@ -144,6 +144,15 @@ class _MockRecordLockup extends Mock implements RecordSwapLockupUsecase {}
 
 class _MockWatchSwap extends Mock implements WatchSwapUsecase {}
 
+Matcher _paysTo(String address, {int? amountSat}) =>
+    predicate<List<BitcoinTransactionRecipient>>(
+      (recipients) =>
+          recipients.length == 1 &&
+          recipients.single.address == address &&
+          recipients.single.amountSat ==
+              (amountSat == null ? null : Sats.fromInt(amountSat)),
+    );
+
 void main() {
   setUpAll(() {
     registerFallbackValue(const RelativeFee(250));
@@ -176,7 +185,6 @@ void main() {
   late _MockSignBitcoin signBitcoin;
   late _MockReplacePrepared replacePrepared;
   late _MockVerifyChain verifyChain;
-  late _MockGetQuote getQuote;
   late _MockGetSwapRoute getSwapRoute;
   late _MockGetLimitsAndFees getLimitsAndFees;
   late _MockCreateChainSwap createChainSwap;
@@ -210,7 +218,6 @@ void main() {
     signBitcoin = _MockSignBitcoin();
     replacePrepared = _MockReplacePrepared();
     verifyChain = _MockVerifyChain();
-    getQuote = _MockGetQuote();
     getSwapRoute = _MockGetSwapRoute();
     getLimitsAndFees = _MockGetLimitsAndFees();
     createChainSwap = _MockCreateChainSwap();
@@ -1695,15 +1702,20 @@ void main() {
       when(
         () => prepareBitcoin.execute(
           walletId: 'wallet-1',
-          address: 'payin-address',
-          amountSat: 1000,
+          recipients: any(
+            named: 'recipients',
+            that: _paysTo('payin-address', amountSat: 1000),
+          ),
           networkFee: any(named: 'networkFee'),
-          drain: false,
           replaceByFee: true,
         ),
       ).thenAnswer(
-        (_) async =>
-            (unsignedPsbt: 'lockup-unsigned', txSize: 100, isToSelf: false),
+        (_) async => Ok((
+          unsignedPsbt: 'lockup-unsigned',
+          txSize: 100,
+          isToSelf: false,
+          recipientAmountsSat: [Sats.fromInt(1000)],
+        )),
       );
       when(
         () => verifyChain.execute(
@@ -1880,14 +1892,22 @@ void main() {
       when(
         () => prepareBitcoin.execute(
           walletId: 'wallet-1',
-          address:
+          recipients: any(
+            named: 'recipients',
+            that: _paysTo(
               'tb1p0e9sutev5p0whwkdqdzy6gw03m6g66zuullc4erh80u7qezneskqjfymf6',
+            ),
+          ),
           networkFee: any(named: 'networkFee'),
-          drain: true,
           selectedInputs: any(named: 'selectedInputs'),
         ),
       ).thenAnswer(
-        (_) async => (unsignedPsbt: 'max-psbt', txSize: 120, isToSelf: false),
+        (_) async => Ok((
+          unsignedPsbt: 'max-psbt',
+          txSize: 120,
+          isToSelf: false,
+          recipientAmountsSat: const <Sats>[],
+        )),
       );
       when(
         () => calculateBitcoin.execute(psbt: 'max-psbt'),

@@ -1274,10 +1274,7 @@ class SendCubit extends Cubit<SendState>
           return;
         }
         emit(state.copyWith(creatingSwap: true));
-        if (await _sendLightningViaBoltz(
-          wallet: wallet,
-          invoice: invoice,
-        )) {
+        if (await _sendLightningViaBoltz(wallet: wallet, invoice: invoice)) {
           return;
         }
         if (isStale()) return;
