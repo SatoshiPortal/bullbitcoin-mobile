@@ -28,11 +28,13 @@ void main() {
         ),
         alreadyInChain,
       ),
-      (bdk.IoExceptionElectrumException('private.invalid'), connection),
-      (bdk.SharedIoExceptionElectrumException('private.invalid'), connection),
+      // Raised once the client is connected, during or after the send: the
+      // server may have relayed the transaction.
+      (bdk.IoExceptionElectrumException('private.invalid'), unknown),
+      (bdk.SharedIoExceptionElectrumException('private.invalid'), unknown),
       (
         bdk.CouldNotCreateConnectionElectrumException('private.invalid'),
-        connection,
+        unknown,
       ),
       (bdk.AllAttemptsErroredElectrumException(), unknown),
       (bdk.ProtocolElectrumException('{"code":-26.0}'), unknown),
