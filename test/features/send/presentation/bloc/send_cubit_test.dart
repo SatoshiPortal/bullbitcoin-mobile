@@ -7121,6 +7121,42 @@ void main() {
       );
     });
 
+    test(
+      'an amountless invoice goes to the exchange with the typed amount',
+      () async {
+        final cubit = buildCubit();
+        addTearDown(cubit.close);
+        stubRoute(SwapRoute.boltz);
+        stubExchangeQuoteFailure();
+        cubit.setStateForTest(
+          lightningAmountState().copyWith(
+            paymentRequest: const PaymentRequest.bolt11(
+              invoice: 'lnbc1-amountless',
+              amountSat: 0,
+              paymentHash: 'hash',
+              expiresAt: 0,
+              isTestnet: false,
+            ),
+          ),
+        );
+
+        await cubit.onAmountConfirmed();
+
+        verifyNever(
+          () => createBoltzSendSwapUsecase.execute(
+            wallet: any(named: 'wallet'),
+            invoice: any(named: 'invoice'),
+          ),
+        );
+        verify(
+          () => getSendSwapQuoteUsecase.execute(
+            wallet: any(named: 'wallet'),
+            amountSat: BigInt.from(50000),
+          ),
+        ).called(1);
+      },
+    );
+
     test('broadcast records the lockup on the swap', () async {
       final cubit = buildCubit();
       addTearDown(cubit.close);

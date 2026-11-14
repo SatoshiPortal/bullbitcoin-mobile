@@ -2235,6 +2235,9 @@ class SendCubit extends Cubit<SendState>
     required Wallet wallet,
     required Bolt11PaymentRequest invoice,
   }) async {
+    // A submarine swap pays the amount written in the invoice; an amountless
+    // invoice can only be paid by the exchange, with the amount typed here.
+    if (invoice.amountSat <= 0) return false;
     final inputGeneration = _paymentRequestInputGeneration;
     final route = await _getSendSwapRouteUsecase.execute();
     if (!route.startsWithBoltz) return false;
