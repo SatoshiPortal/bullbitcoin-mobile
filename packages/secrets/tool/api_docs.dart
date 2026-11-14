@@ -66,10 +66,15 @@ String replaceApiTrees(String markdown, String trees) {
   );
 }
 
+/// [failure] is the failure type whose `Future<Result<T, failure>>` reads as
+/// `T`; [statics] lists the roots whose static members are entry points.
 Future<String> generateApiTrees({
   required String libraryPath,
   required String sdkPath,
   List<String> roots = const ['Secrets', 'Secret'],
+  String failure = 'SecretFailure',
+  String target = 'secrets-api-docs',
+  Set<String> statics = const {},
 }) async {
   final path = File(libraryPath).resolveSymbolicLinksSync();
   final collection = AnalysisContextCollection(
@@ -113,11 +118,12 @@ Future<String> generateApiTrees({
     }
 
     await validate(result.element);
-    final renderer = _ApiRenderer(exported, roots);
+    final renderer = _ApiRenderer(exported, roots, failure, statics);
+    final library = 'lib/${File(path).uri.pathSegments.last}';
     return [
-      'Generated from `lib/secrets.dart`; update with `make secrets-api-docs`.',
+      'Generated from `$library`; update with `make $target`.',
       '',
-      'Each asynchronous `Future<Result<T, SecretFailure>>` is shown as `T`. Other returns are unchanged. `name:` denotes a required named argument; brackets denote optional arguments and show explicit defaults. Constructors, static members, Object methods and internal members are omitted. Synchronous capability groups are expanded; data and widget values remain leaves.',
+      'Each asynchronous `Future<Result<T, $failure>>` is shown as `T`. Other returns are unchanged. `name:` denotes a required named argument; brackets denote optional arguments and show explicit defaults. Constructors, ${statics.isEmpty ? 'static members, ' : 'static members other than the entry points marked `static`, '}Object methods and internal members are omitted. Synchronous capability groups are expanded; data and widget values remain leaves.',
       for (final root in roots) ...[
         '',
         '```text',
@@ -133,8 +139,10 @@ Future<String> generateApiTrees({
 class _ApiRenderer {
   final Map<String, Element> exported;
   final List<String> roots;
+  final String failure;
+  final Set<String> statics;
 
-  _ApiRenderer(this.exported, this.roots);
+  _ApiRenderer(this.exported, this.roots, this.failure, this.statics);
 
   String render(String name) {
     final root = exported[name];
@@ -164,8 +172,9 @@ class _ApiRenderer {
       final parameters = member is GetterElement
           ? ''
           : '(${member.formalParameters.map(_parameter).join(', ')})';
+      final static = member.isStatic ? 'static ' : '';
       output.write(
-        '\n$prefix${last ? '`--' : '|--'} ${member.displayName}$parameters',
+        '\n$prefix${last ? '`--' : '|--'} $static${member.displayName}$parameters',
       );
       if (branch) {
         _append(output, returnType, '$prefix${last ? '    ' : '|   '}', {
@@ -173,7 +182,7 @@ class _ApiRenderer {
           returnType.element,
         });
       } else {
-        output.write(' -> ${_returnType(returnType, exported)}');
+        output.write(' -> ${_returnType(returnType, exported, failure)}');
       }
     }
   }
@@ -222,7 +231,9 @@ class _ApiRenderer {
             ),
           );
       for (final member in candidates) {
-        if (member.isStatic ||
+        if ((member.isStatic &&
+                !(statics.contains(type.element.name) &&
+                    member is MethodElement)) ||
             !_visible(member) ||
             _objectMembers.contains(member.displayName)) {
           continue;
@@ -282,13 +293,17 @@ String _parameter(FormalParameterElement parameter) {
   return parameter.isOptional ? '[$text]' : text;
 }
 
-String _returnType(DartType type, Map<String, Element> exported) {
+String _returnType(
+  DartType type,
+  Map<String, Element> exported,
+  String failure,
+) {
   if (type is InterfaceType && type.isDartAsyncFuture) {
     final result = type.typeArguments.single;
     if (result is InterfaceType &&
         result.element.name == 'Result' &&
         result.typeArguments.length == 2 &&
-        result.typeArguments.last.element?.name == 'SecretFailure') {
+        result.typeArguments.last.element?.name == failure) {
       type = result.typeArguments.first;
     }
   }
