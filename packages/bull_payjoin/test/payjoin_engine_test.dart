@@ -3053,4 +3053,45 @@ void main() {
       },
     );
   });
+
+  group('input reservations', () {
+    test('name the session, wallet and network holding each input', () async {
+      await local.storeReceiver(receiver(proposalPsbt: oneInputPsbt));
+      final sender = expiredSender(
+        uri: 'bitcoin:tb1qother?pj=https://payjo.in',
+      );
+      await local.storeSender(sender);
+
+      final reservations = await engine.getInputReservations();
+
+      expect(reservations, hasLength(2));
+      final byRole = {for (final held in reservations) held.role: held};
+      final recipient = byRole[PayjoinParty.recipient];
+      expect(recipient?.sessionId, 'receiver-1');
+      expect(recipient?.status, PayjoinStatus.proposed);
+      final paying = byRole[PayjoinParty.sender];
+      expect(paying?.sessionId, sender.id);
+      expect(paying?.status, PayjoinStatus.requested);
+      for (final held in reservations) {
+        expect(held.outpoint, (txId: '11' * 32, vout: 0));
+        expect(held.walletId, 'wallet-1');
+        expect(held.network, BitcoinNetwork.testnet);
+      }
+      expect(await engine.getUtxosFrozenByOngoingPayjoins(), [
+        for (final held in reservations) held.outpoint,
+      ]);
+    });
+
+    test('a receiver without a proposal holds nothing yet', () async {
+      await local.storeReceiver(receiver());
+
+      expect(await engine.getInputReservations(), isEmpty);
+    });
+
+    test('an undecodable session is a failure, never no reservation', () async {
+      await local.storeSender(sender());
+
+      expect(engine.getInputReservations(), throwsFormatException);
+    });
+  });
 }
