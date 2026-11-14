@@ -1148,11 +1148,17 @@ class BoltzDatasource {
     required String swapId,
     required String claimAddress,
     bool isCooperative = true,
+    ElectrumConnection? electrum,
   }) async {
     final chainSwap = await _boltzStore.fetchChainSwap(swapId);
+    final override = _electrumOverride(electrum);
+    // The claim tx spends Boltz's lockup on the RECEIVING chain.
+    final claimOnLiquid = chainSwap.direction == ChainSwapDirection.btcToLbtc;
     final size = await chainSwap.claimTxSize(
       outAddress: claimAddress,
       tryCooperate: isCooperative,
+      btcElectrumSettings: claimOnLiquid ? null : override,
+      lbtcElectrumSettings: claimOnLiquid ? override : null,
     );
     return size.toInt();
   }

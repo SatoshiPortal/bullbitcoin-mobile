@@ -188,6 +188,44 @@ void main() {
     });
   });
 
+  group('claim', () {
+    test('sizes a chain claim against the user\'s electrum', () async {
+      when(
+        () => boltz.getChainClaimTxSize(
+          swapId: any(named: 'swapId'),
+          claimAddress: any(named: 'claimAddress'),
+          isCooperative: any(named: 'isCooperative'),
+          electrum: any(named: 'electrum'),
+        ),
+      ).thenAnswer((_) async => 200);
+      when(
+        () => boltz.claimLbtcToBtcChainSwap(
+          swapId: any(named: 'swapId'),
+          claimBitcoinAddress: any(named: 'claimBitcoinAddress'),
+          absoluteFees: any(named: 'absoluteFees'),
+          tryCooperate: any(named: 'tryCooperate'),
+          electrum: any(named: 'electrum'),
+        ),
+      ).thenThrow(Exception('broadcast failed'));
+
+      await expectLater(
+        repo().claim(
+          chainSwap(status: 'claimable', sendTxid: 'lockup-txid'),
+          scriptPathOnly: true,
+        ),
+        throwsA(isA<SwapsException>()),
+      );
+      verify(
+        () => boltz.getChainClaimTxSize(
+          swapId: any(named: 'swapId'),
+          claimAddress: any(named: 'claimAddress'),
+          isCooperative: any(named: 'isCooperative'),
+          electrum: _PassthroughElectrum.connection,
+        ),
+      ).called(1);
+    });
+  });
+
   group('refund', () {
     test('broadcasts and settles with fee floored and capped', () async {
       when(

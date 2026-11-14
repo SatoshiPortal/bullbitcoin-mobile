@@ -767,6 +767,7 @@ class BoltzSwapRepository implements SwapRepository {
           swapId: swapId,
           claimAddress: claimAddressForChainSwaps!,
           isCooperative: isCooperative,
+          electrum: electrum,
         );
       case SwapType.bitcoinToLightning:
       case SwapType.liquidToLightning:
