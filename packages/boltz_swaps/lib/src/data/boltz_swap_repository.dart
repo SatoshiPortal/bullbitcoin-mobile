@@ -2117,22 +2117,27 @@ class BoltzSwapRepository implements SwapRepository {
       };
       if (walletId == null) return null;
 
-      final network = switch (swap) {
-        ChainSwap() => Network.fromEnvironment(
-          isTestnet: _isTestnet,
-          isLiquid: isClaim
+      final isLiquid = switch (swap) {
+        ChainSwap() =>
+          isClaim
               ? swap.type == SwapType.bitcoinToLiquid
               : swap.type == SwapType.liquidToBitcoin,
-        ),
-        LnReceiveSwap() => Network.fromEnvironment(
-          isTestnet: _isTestnet,
-          isLiquid: swap.type == SwapType.lightningToLiquid,
-        ),
-        LnSendSwap() => Network.fromEnvironment(
-          isTestnet: _isTestnet,
-          isLiquid: swap.type == SwapType.liquidToLightning,
-        ),
+        LnReceiveSwap() => swap.type == SwapType.lightningToLiquid,
+        LnSendSwap() => swap.type == SwapType.liquidToLightning,
       };
+      if (await _electrum.usesCustomServers(
+        isLiquid: isLiquid,
+        isTestnet: _isTestnet,
+      )) {
+        swapsLog.fine(
+          'SWAPS: ${swap.id} outspend lookup skipped — custom electrum',
+        );
+        return null;
+      }
+      final network = Network.fromEnvironment(
+        isTestnet: _isTestnet,
+        isLiquid: isLiquid,
+      );
       final direction = swap is ChainSwap
           ? (swap.type == SwapType.liquidToBitcoin
                 ? outspend.SwapDirection.liquidToBitcoin

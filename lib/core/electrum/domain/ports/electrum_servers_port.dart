@@ -38,4 +38,9 @@ abstract class ElectrumServersPort {
     required Future<T> Function(ElectrumConnection connection) operation,
     bool Function(Object error)? isTransient,
   });
+
+  /// Whether the user configured their own servers for [network]. A caller
+  /// about to reach a third-party service (an explorer) instead of Electrum
+  /// must not do so when this is true. The servers themselves stay private.
+  Future<bool> hasCustomServers({required ElectrumServerNetwork network});
 }

@@ -86,10 +86,7 @@ class AppElectrumRunner implements swaps.ElectrumRunner {
     required Future<T> Function(swaps.ElectrumConnection connection) operation,
     bool Function(Object error)? isTransient,
   }) => _port.runWithFallback(
-    network: ElectrumServerNetwork.fromNetworkEnv(
-      isTestnet ? NetworkEnv.testnet : NetworkEnv.mainnet,
-      isLiquid: isLiquid,
-    ),
+    network: _network(isLiquid: isLiquid, isTestnet: isTestnet),
     isTransient: isTransient,
     operation: (connection) => operation(
       swaps.ElectrumConnection(
@@ -98,6 +95,28 @@ class AppElectrumRunner implements swaps.ElectrumRunner {
         timeout: connection.timeout,
       ),
     ),
+  );
+
+  @override
+  Future<bool> usesCustomServers({
+    required bool isLiquid,
+    required bool isTestnet,
+  }) async {
+    try {
+      return await _port.hasCustomServers(
+        network: _network(isLiquid: isLiquid, isTestnet: isTestnet),
+      );
+    } on Exception {
+      return true;
+    }
+  }
+
+  ElectrumServerNetwork _network({
+    required bool isLiquid,
+    required bool isTestnet,
+  }) => ElectrumServerNetwork.fromNetworkEnv(
+    isTestnet ? NetworkEnv.testnet : NetworkEnv.mainnet,
+    isLiquid: isLiquid,
   );
 }
 

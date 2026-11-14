@@ -37,6 +37,11 @@ class _FakeConnection extends ElectrumConnection {
 }
 
 class _FakeServersPort implements ElectrumServersPort {
+  @override
+  Future<bool> hasCustomServers({
+    required ElectrumServerNetwork network,
+  }) async => false;
+
   final networks = <ElectrumServerNetwork>[];
   final connection = _FakeConnection();
 

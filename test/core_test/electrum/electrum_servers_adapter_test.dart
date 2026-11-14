@@ -1,5 +1,6 @@
 import 'package:bb_mobile/features/electrum_settings/data/electrum_servers_adapter.dart';
 import 'package:bb_mobile/features/electrum_settings/domain/electrum_server.dart';
+import 'package:bb_mobile/features/electrum_settings/domain/electrum_failure.dart';
 import 'package:bb_mobile/core/electrum/domain/entities/electrum_settings.dart';
 import 'package:bb_mobile/core/electrum/domain/errors/electrum_fallback_exception.dart';
 import 'package:bb_mobile/core/electrum/domain/ports/electrum_tor_session_port.dart';
@@ -576,6 +577,28 @@ void main() {
         operation: (connection) async => reached.add(connection.url),
       );
       expect(reached, ['ssl://a.example:50002']);
+    });
+  });
+
+  group('hasCustomServers', () {
+    test('is true only when custom servers exist', () async {
+      when(() => serverRepo.fetchCustomServers(network: _network)).thenAnswer(
+        (_) async => Ok([_server('ssl://mine:50002', isCustom: true)]),
+      );
+      when(
+        () => serverRepo.fetchCustomServers(network: _liquidNetwork),
+      ).thenAnswer((_) async => const Ok([]));
+
+      expect(await adapter.hasCustomServers(network: _network), isTrue);
+      expect(await adapter.hasCustomServers(network: _liquidNetwork), isFalse);
+    });
+
+    test('answers true when the servers cannot be read', () async {
+      when(
+        () => serverRepo.fetchCustomServers(network: _network),
+      ).thenAnswer((_) async => const Err(ElectrumLoadFailure()));
+
+      expect(await adapter.hasCustomServers(network: _network), isTrue);
     });
   });
 }

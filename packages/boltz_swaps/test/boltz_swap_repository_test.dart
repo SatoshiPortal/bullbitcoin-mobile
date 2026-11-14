@@ -17,6 +17,10 @@ class _MockBoltzDatasource extends Mock implements BoltzDatasource {}
 class _MockSwapStorage extends Mock implements SwapStorage {}
 
 class _PassthroughElectrum implements ElectrumRunner {
+  final bool custom;
+
+  _PassthroughElectrum({this.custom = false});
+
   static const connection = ElectrumConnection(
     url: 'ssl://working.electrum:50002',
     validateDomain: true,
@@ -30,6 +34,12 @@ class _PassthroughElectrum implements ElectrumRunner {
     required Future<T> Function(ElectrumConnection connection) operation,
     bool Function(Object error)? isTransient,
   }) => operation(connection);
+
+  @override
+  Future<bool> usesCustomServers({
+    required bool isLiquid,
+    required bool isTestnet,
+  }) async => custom;
 }
 
 void main() {
@@ -59,31 +69,32 @@ void main() {
     refundAddress: refundAddress,
   );
 
-  BoltzSwapRepository repo({int fastest = 50}) => BoltzSwapRepository(
-    boltz: boltz,
-    isTestnet: false,
-    electrum: _PassthroughElectrum(),
-    newAddressFor: (walletId) async => 'addr-of-$walletId',
-    walletTx: (txid, {required walletId}) async => walletTxs[txid],
-    walletTxs: (walletId, {bool sync = false}) async =>
-        walletTxs.values.toList(),
-    fastestFee:
-        ({
-          required int txSize,
-          required bool isLiquid,
-          required bool isTestnet,
-        }) async => fastest,
-    wallets: ({required bool isTestnet}) async => const [],
-    swapMasterKeySource: ({required bool isTestnet}) async =>
-        const DerivedSwapMasterKey(
-          walletFingerprint: 'f00dbabe',
-          xprv: 'xprv',
-          xpub: 'xpub',
-          mnemonic: 'ab cd',
-          fingerprint: 'cafe0001',
-          isTestnet: false,
-        ),
-  );
+  BoltzSwapRepository repo({int fastest = 50, bool customElectrum = false}) =>
+      BoltzSwapRepository(
+        boltz: boltz,
+        isTestnet: false,
+        electrum: _PassthroughElectrum(custom: customElectrum),
+        newAddressFor: (walletId) async => 'addr-of-$walletId',
+        walletTx: (txid, {required walletId}) async => walletTxs[txid],
+        walletTxs: (walletId, {bool sync = false}) async =>
+            walletTxs.values.toList(),
+        fastestFee:
+            ({
+              required int txSize,
+              required bool isLiquid,
+              required bool isTestnet,
+            }) async => fastest,
+        wallets: ({required bool isTestnet}) async => const [],
+        swapMasterKeySource: ({required bool isTestnet}) async =>
+            const DerivedSwapMasterKey(
+              walletFingerprint: 'f00dbabe',
+              xprv: 'xprv',
+              xpub: 'xpub',
+              mnemonic: 'ab cd',
+              fingerprint: 'cafe0001',
+              isTestnet: false,
+            ),
+      );
 
   Swap chainSwap({
     String status = 'refundable',
@@ -215,6 +226,32 @@ void main() {
 
       await expectLater(
         repo().refund(chainSwap()),
+        throwsA(isA<SwapsException>()),
+      );
+      verifyNever(
+        () => boltz.checkLockupOutspends(
+          swapId: any(named: 'swapId'),
+          swapType: any(named: 'swapType'),
+          network: any(named: 'network'),
+          swapDirection: any(named: 'swapDirection'),
+          isClaim: any(named: 'isClaim'),
+        ),
+      );
+    });
+
+    test('custom electrum never asks a third-party explorer', () async {
+      when(
+        () => boltz.refundLbtcToBtcChainSwap(
+          swapId: any(named: 'swapId'),
+          refundLiquidAddress: any(named: 'refundLiquidAddress'),
+          absoluteFees: any(named: 'absoluteFees'),
+          tryCooperate: any(named: 'tryCooperate'),
+          electrum: any(named: 'electrum'),
+        ),
+      ).thenThrow(Exception('broadcast failed'));
+
+      await expectLater(
+        repo(customElectrum: true).refund(chainSwap()),
         throwsA(isA<SwapsException>()),
       );
       verifyNever(

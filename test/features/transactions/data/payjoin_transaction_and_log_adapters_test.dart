@@ -33,6 +33,11 @@ class _MockWallet extends Mock implements Wallet {}
 /// One server; like the real runner, a transient failure ends up wrapped and
 /// a permanent one is rethrown as is.
 class _FakeServers implements ElectrumServersPort {
+  @override
+  Future<bool> hasCustomServers({
+    required ElectrumServerNetwork network,
+  }) async => false;
+
   ElectrumServerNetwork? network;
 
   @override

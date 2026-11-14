@@ -126,6 +126,15 @@ abstract class ElectrumRunner {
     required Future<T> Function(ElectrumConnection connection) operation,
     bool Function(Object error)? isTransient,
   });
+
+  /// Whether the user configured their own servers for this network. A
+  /// lookup that would leave the user's servers (a third-party explorer)
+  /// must not run when this is true. Implementations answer true when they
+  /// cannot tell.
+  Future<bool> usesCustomServers({
+    required bool isLiquid,
+    required bool isTestnet,
+  });
 }
 
 class SwapsException implements Exception {
