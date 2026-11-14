@@ -7,10 +7,9 @@ import 'package:primitives/primitives.dart'
     show BitcoinTransactionRecipient, BitcoinUnit, Err, Ok, Result, Sats;
 import 'dart:async';
 
+import 'package:bb_mobile/features/send/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/broadcast_liquid_transaction_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
-
-import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
-import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_liquid_transaction_usecase.dart';
 import 'package:bb_mobile/core/errors/send_errors.dart';
 import 'package:bb_mobile/core/wallet/domain/insufficient_funds_exception.dart';
 import 'package:bb_mobile/core/wallet/domain/no_spendable_utxo_exception.dart';
@@ -18,26 +17,26 @@ import 'package:bb_mobile/core/wallet/domain/consolidation_required_exception.da
 import 'package:bb_mobile/core/wallet/domain/usecases/check_liquid_consolidation_usecase.dart';
 import 'package:bb_mobile/core/fees/domain/fee_preview_cache.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
-import 'package:bb_mobile/core/fees/domain/get_network_fees_usecase.dart';
+import 'package:bb_mobile/features/fees/domain/get_network_fees_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/verify_chain_swap_amount_send_usecase.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/utils/payment_request.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_utxos_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/get_receive_address_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/get_receive_address_usecase.dart';
 import 'package:bb_mobile/core/widgets/fees/fee_modal_controller.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/calculate_bitcoin_absolute_fees_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/calculate_liquid_absolute_fees_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/detect_bitcoin_string_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/prepare_bitcoin_send_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/prepare_bitcoin_send_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/validate_bitcoin_selection_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/prepare_liquid_send_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_presets_usecase.dart';
@@ -45,6 +44,7 @@ import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_usec
 import 'package:bb_mobile/features/send/domain/usecases/sign_bitcoin_tx_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/sign_liquid_tx_usecase.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/get_swap_exchange_rate_usecase.dart';
+import 'package:bb_mobile/features/swap/domain/usecases/check_swap_spend_admission_usecase.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/create_order_swap_usecase.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/get_order_swap_quote_usecase.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/get_pending_order_swaps_usecase.dart';
@@ -56,6 +56,8 @@ import 'package:bb_mobile/features/swap/domain/usecases/save_prepared_order_swap
 import 'package:bb_mobile/features/swap/domain/usecases/watch_order_swap_usecase.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:bb_mobile/features/swap/presentation/transfer_confirm_error.dart';
+import 'package:bb_mobile/features/wallet/public/wallet_facade.dart'
+    show WalletSpendBlockedException;
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -86,6 +88,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
     required this._getOrderSwapQuoteUsecase,
     required this._getPendingOrderSwapsUsecase,
     required this._createOrderSwapUsecase,
+    required this._checkSwapSpendAdmissionUsecase,
     required this._savePreparedOrderSwapPayinUsecase,
     required this._replacePreparedOrderSwapPayinUsecase,
     required this._refreshOrderSwapUsecase,
@@ -139,6 +142,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
   final GetOrderSwapQuoteUsecase _getOrderSwapQuoteUsecase;
   final GetPendingOrderSwapsUsecase _getPendingOrderSwapsUsecase;
   final CreateOrderSwapUsecase _createOrderSwapUsecase;
+  final CheckSwapSpendAdmissionUsecase _checkSwapSpendAdmissionUsecase;
   final SavePreparedOrderSwapPayinUsecase _savePreparedOrderSwapPayinUsecase;
   final ReplacePreparedOrderSwapPayinUsecase
   _replacePreparedOrderSwapPayinUsecase;
@@ -294,7 +298,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
     final pending =
         (pendingResult as Ok<List<OrderSwapRecord>, SwapFailure>).value;
     final record = pending.where((candidate) {
-      final expectedEnvironment = fromWallet.network.isTestnet
+      final expectedEnvironment = fromWallet.network.requireHistoricalTestnet()
           ? OrderSwapEnvironment.testnet
           : OrderSwapEnvironment.mainnet;
       final expectedInNetwork = fromWallet.isLiquid
@@ -535,8 +539,8 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
 
       // Insufficient balance is surfaced as an inline form error on the
       // amount field (see SwapAmountInput); stop here so no swap is created.
-      final balanceSat = state.fromWallet?.balanceSat.toInt() ?? 0;
-      if (inputAmountSat > balanceSat) {
+      final balanceSat = state.fromWallet?.balanceSat?.toInt();
+      if (balanceSat == null || inputAmountSat > balanceSat) {
         return;
       }
 
@@ -644,6 +648,15 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
           amount: event.amount,
         ),
       );
+    } on WalletSpendBlockedException catch (e) {
+      if (generation != _transactionGeneration) return;
+      emit(
+        state.copyWith(
+          signedPsbt: '',
+          swapCreationException: null,
+          swapFailure: SwapSpendBlockedFailure(e.status),
+        ),
+      );
     } on ConsolidationRequiredException {
       if (generation != _transactionGeneration) return;
       emit(state.copyWith(consolidationRequired: true));
@@ -678,7 +691,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
     if (fromWallet.isHardwareWallet) {
       throw SwapCreationException('hardware_wallet_swap_unavailable');
     }
-    final orderEnvironment = fromWallet.network.isTestnet
+    final orderEnvironment = fromWallet.network.requireHistoricalTestnet()
         ? OrderSwapEnvironment.testnet
         : OrderSwapEnvironment.mainnet;
 
@@ -724,8 +737,23 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
     final availableAmountSat = state.selectedUtxos.isEmpty
         ? fromWallet.balanceSat
         : BigInt.from(state.selectedUtxoTotalSat);
+    if (availableAmountSat == null) {
+      emit(state.copyWith(swapFailure: const SwapUnexpectedFailure()));
+      return;
+    }
     if (quote.inAmountSat > availableAmountSat) {
       throw InsufficientFundsSwapException();
+    }
+
+    if (!fromWallet.isLiquid) {
+      final admission = await _checkSwapSpendAdmissionUsecase.execute(
+        fromWallet.id,
+      );
+      if (generation != _transactionGeneration) return;
+      if (admission case Err(:final failure)) {
+        emit(state.copyWith(swapFailure: failure));
+        return;
+      }
     }
 
     final createResult = await _createOrderSwapUsecase.execute(
@@ -760,7 +788,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
                   ? SwapType.liquidToBitcoin
                   : SwapType.bitcoinToLiquid,
               status: SwapStatus.pending,
-              environment: fromWallet.network.isTestnet
+              environment: fromWallet.network.requireHistoricalTestnet()
                   ? Environment.testnet
                   : Environment.mainnet,
               creationTime: created.createdAt,
@@ -1499,7 +1527,13 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
     }
 
     final generation = ++_transactionGeneration;
-    emit(stateToUse.copyWith(signedPsbt: '', buildTransactionException: null));
+    emit(
+      stateToUse.copyWith(
+        signedPsbt: '',
+        buildTransactionException: null,
+        swapFailure: null,
+      ),
+    );
 
     try {
       final fromWallet = stateToUse.fromWallet!;
@@ -1762,6 +1796,15 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
           ),
         );
       }
+    } on WalletSpendBlockedException catch (e) {
+      if (generation != _transactionGeneration) return;
+      emit(
+        state.copyWith(
+          signedPsbt: '',
+          buildTransactionException: null,
+          swapFailure: SwapSpendBlockedFailure(e.status),
+        ),
+      );
     } catch (e) {
       if (generation != _transactionGeneration) return;
       log.severe(
@@ -1809,9 +1852,12 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
       if (signedPsbt.isEmpty) return;
 
       final fromWallet = state.fromWallet;
-      if (fromWallet != null &&
-          !fromWallet.isLiquid &&
-          state.selectedUtxos.isNotEmpty) {
+      if (fromWallet == null) {
+        emit(state.copyWith(swapFailure: const SwapInvalidStateFailure()));
+        return;
+      }
+      final toWallet = state.toWallet;
+      if (!fromWallet.isLiquid && state.selectedUtxos.isNotEmpty) {
         await _validateBitcoinSelectionUsecase.execute(
           walletId: fromWallet.id,
           selectedInputs: state.selectedUtxos,
@@ -1837,6 +1883,17 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
             return;
           }
         }
+        if (!fromWallet.isLiquid) {
+          final admission = await _checkSwapSpendAdmissionUsecase.execute(
+            fromWallet.id,
+          );
+          if (admission case Err(:final failure)) {
+            emit(state.copyWith(swapFailure: failure));
+            return;
+          }
+        }
+        // Admission can change after this pre-check. The gated broadcast is
+        // authoritative; a refusal there must preserve broadcast uncertainty.
         final broadcastStartResult = await _markOrderSwapBroadcastUnknownUsecase
             .execute(orderSwap.localId);
         if (broadcastStartResult case Err(:final failure)) {
@@ -1845,14 +1902,23 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
         }
         final broadcasting =
             (broadcastStartResult as Ok<OrderSwapRecord, SwapFailure>).value;
-        if (state.fromWallet?.isLiquid == true) {
-          txId = await _broadcastLiquidTxUsecase.execute(
-            broadcasting.signedPayinTransaction!,
-          );
+        // Persisted uncertainty remains conservative even if admission refuses:
+        // an earlier submission may still be awaiting observation.
+        emit(state.copyWith(orderSwap: broadcasting));
+        final signedPayin = broadcasting.signedPayinTransaction;
+        final payinIsPsbt = broadcasting.payinIsPsbt;
+        if (signedPayin == null || payinIsPsbt == null) {
+          emit(state.copyWith(swapFailure: const SwapInvalidStateFailure()));
+          return;
+        }
+        if (fromWallet.isLiquid) {
+          txId = await _broadcastLiquidTxUsecase.execute(signedPayin);
         } else {
           txId = await _broadcastBitcoinTxUsecase.execute(
-            broadcasting.signedPayinTransaction!,
-            isPsbt: broadcasting.payinIsPsbt!,
+            signedPayin,
+            isPsbt: payinIsPsbt,
+            network: fromWallet.network,
+            walletId: fromWallet.id,
           );
         }
         final broadcastResult = await _markOrderSwapPayinBroadcastUsecase
@@ -1871,23 +1937,32 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
             txId: txId,
           ),
         );
-        unawaited(_syncWalletAfterBroadcast(state.fromWallet!.id));
+        unawaited(_syncWalletAfterBroadcast(fromWallet.id));
         return;
       } else if (state.isSameChainTransfer) {
         txId = await _broadcastBitcoinTxUsecase.execute(
           signedPsbt,
           isPsbt: true,
+          network: fromWallet.network,
+          walletId: fromWallet.id,
         );
         unawaited(
           _syncWalletsAfterBroadcast([
-            if (state.fromWallet != null) state.fromWallet!.id,
-            if (state.toWallet != null) state.toWallet!.id,
+            fromWallet.id,
+            if (toWallet != null) toWallet.id,
           ]),
         );
       } else {
         return;
       }
       emit(state.copyWith(txId: txId));
+    } on WalletSpendBlockedException catch (e) {
+      emit(
+        state.copyWith(
+          confirmTransactionException: null,
+          swapFailure: SwapSpendBlockedFailure(e.status),
+        ),
+      );
     } on NoSpendableUtxoException {
       _emitSelectionUnavailable(emit);
     } on InsufficientFundsException {
@@ -1948,7 +2023,9 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
 
   Future<int?> getMaxAmountSat(Wallet fromWallet) async {
     try {
-      if (fromWallet.balanceSat <= BigInt.zero) return 0;
+      final knownBalance = fromWallet.balanceSat;
+      if (knownBalance == null) return null;
+      if (knownBalance <= BigInt.zero) return 0;
       final networkFee = fromWallet.isLiquid
           ? state.liquidNetworkFees!.fastest
           : state.bitcoinNetworkFees!.fastest;
@@ -2010,7 +2087,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
         (sum, utxo) => sum + utxo.amountSat.toInt(),
       );
       final balanceSat = state.selectedUtxos.isEmpty
-          ? fromWallet.balanceSat.toInt()
+          ? knownBalance.toInt()
           : selectedBalanceSat;
       final maxAmountSat = balanceSat - absoluteFees;
       return maxAmountSat < 0 ? 0 : maxAmountSat;

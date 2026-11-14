@@ -35,6 +35,11 @@ final class _UnavailablePayjoinSender implements PayjoinSender {
   const _UnavailablePayjoinSender(this._failure);
 
   @override
+  Future<Result<PayjoinSession, PayjoinFailure>> retryProposal(
+    String sessionId,
+  ) async => Err(_failure);
+
+  @override
   Future<Result<PayjoinSession, PayjoinFailure>> broadcastOriginal(
     String sessionId,
   ) async => Err(_failure);

@@ -40,6 +40,7 @@ class _ReceiveAmountScreenState extends State<ReceiveAmountScreen> {
           // Only listen on confirmed amount changes
           previous.confirmedAmountSat != current.confirmedAmountSat &&
           // Only listen when the entered amount is valid
+          current.canConfirmAmount &&
           !current.hasAmountInputFailure &&
           // Prevent using the amount from a previous receive type
           previous.type == current.type,
@@ -149,7 +150,9 @@ class _ReceiveFailureMessage extends StatelessWidget {
     // An invalid amount is already reported inline under the amount field
     // (see ReceiveAmountInput), so it must not be repeated here.
     final failure = context.select<ReceiveBloc, ReceiveFailure?>(
-      (bloc) => bloc.state.hasAmountInputFailure ? null : bloc.state.failure,
+      (bloc) =>
+          bloc.state.admissionFailure ??
+          (bloc.state.hasAmountInputFailure ? null : bloc.state.failure),
     );
     if (failure == null) return const SizedBox.shrink();
 
@@ -172,7 +175,8 @@ class ReceiveAmountContinueButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final creatingSwap = context.watch<ReceiveBloc>().state.creatingSwap;
+    final state = context.watch<ReceiveBloc>().state;
+    final creatingSwap = state.creatingSwap;
     final hasAmountInputFailure = context
         .watch<ReceiveBloc>()
         .state
@@ -194,6 +198,7 @@ class ReceiveAmountContinueButton extends StatelessWidget {
         label: context.loc.receiveContinue,
         onPressed: () {
           final bloc = context.read<ReceiveBloc>();
+          if (!bloc.state.canConfirmAmount) return;
           if (canReuseConfirmedReceiveDetails(bloc.state)) {
             // If an amount was already confirmed previously and the user didn't
             // change it, we don't need to confirm it again.
@@ -202,7 +207,8 @@ class ReceiveAmountContinueButton extends StatelessWidget {
             bloc.add(const ReceiveAmountConfirmed());
           }
         },
-        disabled: creatingSwap || hasAmountInputFailure,
+        disabled:
+            !state.canConfirmAmount || creatingSwap || hasAmountInputFailure,
         bgColor: context.appColors.secondary,
         textColor: context.appColors.onSecondary,
       ),

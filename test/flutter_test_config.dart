@@ -3,6 +3,8 @@ import 'dart:io';
 
 import 'package:bull_logger/bull_logger.dart';
 
+import '../tools/testing/sqlite_test_timing.dart';
+
 /// Auto-loaded by `flutter test`. Runs once per test binary process,
 /// before any test in `test/` executes.
 ///
@@ -17,5 +19,6 @@ import 'package:bull_logger/bull_logger.dart';
 Future<void> testExecutable(FutureOr<void> Function() testMain) async {
   final logDir = Directory.systemTemp.createTempSync('bull_mobile_test_logs');
   log = Logger.replace(directory: logDir);
+  await configureSqliteTestTiming();
   await testMain();
 }

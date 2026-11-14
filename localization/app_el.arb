@@ -11284,5 +11284,9 @@
   "swapUnderReviewTitle": "Ανταλλαγή υπό έλεγχο",
   "swapUnderReviewDescription": "Αυτή η ανταλλαγή απαιτεί χειροκίνητο έλεγχο. Επικοινωνήστε με την υποστήριξη για βοήθεια. Εάν δεν έχετε λογαριασμό υποστήριξης, χρειάζεται μόνο να δημιουργήσετε έναν· δεν απαιτείται KYC.",
   "swapUnderReviewSupportMessage": "Ανταλλαγή υπό έλεγχο\nOrder ID: {orderId}\nRequest ID: {requestId}\nOrder number: {orderNumber}",
-  "bitcoinSettingsAutoTransferTitle": "Αυτόματη ανταλλαγή"
+  "bitcoinSettingsAutoTransferTitle": "Αυτόματη ανταλλαγή",
+  "broadcastSignedTxErrorAlreadyInChain": "Αυτή η συναλλαγή βρίσκεται ήδη στο blockchain. Δεν υπάρχει τίποτα άλλο προς μετάδοση.",
+  "broadcastSignedTxErrorRejected": "Το δίκτυο απέρριψε αυτή τη συναλλαγή. Μπορεί να μην είναι πλήρως υπογεγραμμένη, να είναι άκυρη ή να συγκρούεται με άλλη πληρωμή.",
+  "broadcastSignedTxErrorOutcomeUnknown": "Δεν μπορέσαμε να επιβεβαιώσουμε ότι η συναλλαγή σας μεταδόθηκε. Ελέγξτε σε έναν block explorer πριν δοκιμάσετε ξανά.",
+  "broadcastSignedTxErrorNetworkNotEnabled": "Η μετάδοση σε αυτό το δίκτυο δεν είναι ενεργοποιημένη στις τρέχουσες ρυθμίσεις."
 }

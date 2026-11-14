@@ -15207,5 +15207,109 @@
   "coreScreensOutputsExceedInputs": "Outputs exceed inputs: this transaction is invalid and the network will reject it.",
   "@coreScreensOutputsExceedInputs": {
     "description": "Transaction review alert when a Bitcoin transaction's outputs exceed its inputs"
+  },
+  "walletDiscoveryButton": "Scan for missing transactions",
+  "@walletDiscoveryButton": {
+    "description": "Button requesting a full discovery scan of this wallet"
+  },
+  "walletDiscoverySucceeded": "Wallet scan complete",
+  "@walletDiscoverySucceeded": {
+    "description": "Confirmation after a manual wallet discovery scan"
+  },
+  "walletDiscoveryFailed": "Unable to complete the wallet scan. Please try again.",
+  "@walletDiscoveryFailed": {
+    "description": "Recoverable failure of a manual wallet discovery scan"
+  },
+  "backgroundSyncTitle": "Background synchronization",
+  "@backgroundSyncTitle": {},
+  "backgroundSyncDescription": "Check for incoming payments while the app is closed. Your system may delay checks.",
+  "@backgroundSyncDescription": {},
+  "backgroundSyncOff": "Off",
+  "@backgroundSyncOff": {},
+  "backgroundSyncMinutes": "Every {count} minutes",
+  "@backgroundSyncMinutes": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "backgroundSyncHours": "{count, plural, =1{Every hour} other{Every {count} hours}}",
+  "@backgroundSyncHours": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "backgroundNotificationsTitle": "Payment notifications",
+  "@backgroundNotificationsTitle": {},
+  "backgroundNotificationsAllowed": "Allowed by system settings",
+  "@backgroundNotificationsAllowed": {},
+  "backgroundNotificationsDenied": "Not allowed by system settings",
+  "@backgroundNotificationsDenied": {},
+  "backgroundNotificationsRequest": "Allow notifications",
+  "@backgroundNotificationsRequest": {},
+  "backgroundNotificationsSettings": "Open notification settings",
+  "@backgroundNotificationsSettings": {},
+  "backgroundPaymentCount": "{count, plural, =1{You received a payment} other{You received {count} payments}}",
+  "@backgroundPaymentCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "electrumRegtest": "Regtest",
+  "@electrumRegtest": {
+    "description": "Local regression test network for developers"
+  },
+  "networkFeatureUnavailable": "This feature is unavailable on the selected network.",
+  "@networkFeatureUnavailable": {
+    "description": "Refusal when a service does not support the active network"
+  },
+  "networkSelectorTitle": "Network",
+  "@networkSelectorTitle": {
+    "description": "Developer-only choice of mainnet, testnet or regtest"
+  },
+  "networkWalletSetupTitle": "No wallets on this network",
+  "@networkWalletSetupTitle": {
+    "description": "Empty-network wallet setup heading"
+  },
+  "networkWalletReuseSecret": "Reuse an existing wallet secret",
+  "@networkWalletReuseSecret": {
+    "description": "Create wallets on the selected network with an existing secret"
+  },
+  "walletSpendAwaitingObservation": "Spending is unavailable until this wallet is synced and has seen its previous payments on the network. Refresh the wallet or use Scan for missing transactions, then try again.",
+  "@walletSpendAwaitingObservation": {
+    "description": "Bitcoin wallet spend gate. No timeout releases a payment: a sync must see it, or prove it can no longer confirm. A payment no sync ever sees keeps the wallet blocked, so the text promises no end."
+  },
+  "walletSpendReplacementUnavailable": "Fee bumping is unavailable until this wallet sees the payment on the network. Refresh the wallet, then try again.",
+  "@walletSpendReplacementUnavailable": {
+    "description": "RBF is refused only while the tracked Bitcoin broadcast it replaces has not been observed by a sync."
+  },
+  "sendPayjoinSpendPaused": "This Payjoin payment is paused because the wallet cannot safely continue. Its inputs remain reserved. Refresh the wallet or use Scan for missing transactions, then retry this proposal while it is still valid. If it has expired, check the payment in Transactions before taking further action.",
+  "@sendPayjoinSpendPaused": {
+    "description": "A retained Payjoin proposal cannot proceed; keep reservations and retry the same proposal only."
+  },
+  "walletSpendBusy": "The wallet is busy. Try again in a moment.",
+  "@walletSpendBusy": {
+    "description": "Bitcoin spend refused only because another wallet operation, usually a sync, holds the wallet. Retrying shortly works; it says nothing about previous payments."
+  },
+  "broadcastSignedTxErrorAlreadyInChain": "This transaction is already in the blockchain. There is nothing left to broadcast.",
+  "@broadcastSignedTxErrorAlreadyInChain": {
+    "description": "Broadcast Transaction error when the node reports the transaction is already confirmed (bitcoind -27)"
+  },
+  "broadcastSignedTxErrorRejected": "The network rejected this transaction. It may be incompletely signed, invalid, or in conflict with another payment.",
+  "@broadcastSignedTxErrorRejected": {
+    "description": "Broadcast Transaction error when the node rejects the transaction (bitcoind -26)"
+  },
+  "broadcastSignedTxErrorOutcomeUnknown": "We couldn't confirm that your transaction was broadcast. Check a block explorer before trying again.",
+  "@broadcastSignedTxErrorOutcomeUnknown": {
+    "description": "Broadcast Transaction error when the failure does not show whether the transaction reached the network"
+  },
+  "broadcastSignedTxErrorNetworkNotEnabled": "Broadcasting on this network is not enabled in the current settings.",
+  "@broadcastSignedTxErrorNetworkNotEnabled": {
+    "description": "Broadcast Transaction error when the app refuses locally to broadcast on a network the settings do not enable"
   }
 }

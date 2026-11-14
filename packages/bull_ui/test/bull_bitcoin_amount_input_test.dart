@@ -142,6 +142,26 @@ void main() {
     await tester.pump();
     expect(controller.text, '1');
   });
+
+  testWidgets('a BTC amount can start with the decimal separator', (
+    tester,
+  ) async {
+    final controller = TextEditingController();
+    addTearDown(controller.dispose);
+    await tester.pumpWidget(
+      wrapInput(
+        BullBitcoinAmountInput(
+          canonicalUnit: BitcoinUnit.btc,
+          amountController: controller,
+          amountEquivalent: '',
+        ),
+      ),
+    );
+    await tester.enterText(find.byType(TextField), '.01');
+    await tester.pump();
+    expect(find.text('0.01'), findsOneWidget);
+    expect(controller.text, '0.01');
+  });
   testWidgets('focused draft and selection survive global changes until blur', (
     tester,
   ) async {

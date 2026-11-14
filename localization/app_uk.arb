@@ -4619,5 +4619,9 @@
   "swapUnderReviewTitle": "Обмін на перевірці",
   "swapUnderReviewDescription": "Цей обмін потребує ручної перевірки. Зверніться до підтримки по допомогу. Якщо у вас немає облікового запису підтримки, достатньо його створити; KYC не потрібен.",
   "swapUnderReviewSupportMessage": "Обмін на перевірці\nOrder ID: {orderId}\nRequest ID: {requestId}\nOrder number: {orderNumber}",
-  "bitcoinSettingsAutoTransferTitle": "Автообмін"
+  "bitcoinSettingsAutoTransferTitle": "Автообмін",
+  "broadcastSignedTxErrorAlreadyInChain": "Ця транзакція вже в блокчейні. Транслювати більше нічого.",
+  "broadcastSignedTxErrorRejected": "Мережа відхилила цю транзакцію. Можливо, її підписано не повністю, вона недійсна або конфліктує з іншим платежем.",
+  "broadcastSignedTxErrorOutcomeUnknown": "Не вдалося підтвердити, що транзакцію було трансльовано. Перевірте її в оглядачі блоків, перш ніж повторити спробу.",
+  "broadcastSignedTxErrorNetworkNotEnabled": "Трансляцію в цій мережі не ввімкнено в поточних налаштуваннях."
 }

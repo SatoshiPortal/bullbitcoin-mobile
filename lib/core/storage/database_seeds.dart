@@ -1,6 +1,6 @@
+import 'package:bb_mobile/features/electrum_settings/domain/electrum_server_network.dart';
+import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:primitives/primitives.dart' show BitcoinUnit;
-import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_network.dart';
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bull_logger/bull_logger.dart';
@@ -44,14 +44,25 @@ class DatabaseSeeds {
     for (final (url, isTestnet, isLiquid, priority) in serversData) {
       final server = ElectrumServerRow(
         url: url,
-        isTestnet: isTestnet,
-        isLiquid: isLiquid,
+        network: isLiquid
+            ? (isTestnet ? 'liquidTestnet' : 'liquidMainnet')
+            : (isTestnet ? 'bitcoinTestnet' : 'bitcoinMainnet'),
         priority: priority,
         isCustom: false,
       );
 
       await db.into(db.electrumServers).insertOnConflictUpdate(server);
     }
+    await db
+        .into(db.electrumServers)
+        .insertOnConflictUpdate(
+          const ElectrumServerRow(
+            url: 'tcp://127.0.0.1:50000',
+            network: 'bitcoinRegtest',
+            priority: 0,
+            isCustom: false,
+          ),
+        );
   }
 
   static Future<void> seedDefaultElectrumSettings(SqliteDatabase db) async {
@@ -61,6 +72,8 @@ class DatabaseSeeds {
       ElectrumServerNetwork.liquidMainnet,
       ElectrumServerNetwork.liquidTestnet,
     ];
+
+    networks.add(ElectrumServerNetwork.bitcoinRegtest);
 
     for (final network in networks) {
       final settings = ElectrumSettingsRow(

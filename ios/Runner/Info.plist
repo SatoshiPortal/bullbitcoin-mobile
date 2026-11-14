@@ -89,6 +89,7 @@
 		</array>
 		<key>BGTaskSchedulerPermittedIdentifiers</key>
 		<array>
+			<string>com.bullbitcoin.mobile.wallets-sync-id</string>
 			<string>com.bullbitcoin.mobile.bitcoin-sync-id</string>
 			<string>com.bullbitcoin.mobile.liquid-sync-id</string>
 			<string>com.bullbitcoin.mobile.logs-prune-id</string>

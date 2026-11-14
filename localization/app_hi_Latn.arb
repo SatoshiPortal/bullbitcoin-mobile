@@ -11594,5 +11594,9 @@
   "swapUnderReviewTitle": "Swap under review",
   "swapUnderReviewDescription": "Is swap ki manual review ki zaroorat hai. Madad ke liye support se sampark karo. Agar aapke paas support account nahi hai, toh bas ek bana lo; KYC ki zaroorat nahi hai.",
   "swapUnderReviewSupportMessage": "Swap under review\nOrder ID: {orderId}\nRequest ID: {requestId}\nOrder number: {orderNumber}",
-  "bitcoinSettingsAutoTransferTitle": "Auto Swap"
+  "bitcoinSettingsAutoTransferTitle": "Auto Swap",
+  "broadcastSignedTxErrorAlreadyInChain": "Yeh transaction pehle se hi blockchain mein hai. Broadcast karne ke liye kuch bhi baaki nahin hai.",
+  "broadcastSignedTxErrorRejected": "Network ne is transaction ko reject kar diya. Yeh adhoora signed, invalid, ya kisi doosre payment se conflict mein ho sakta hai.",
+  "broadcastSignedTxErrorOutcomeUnknown": "Hum confirm nahin kar sake ki aapka transaction broadcast hua. Dobara try karne se pehle kisi block explorer mein check karein.",
+  "broadcastSignedTxErrorNetworkNotEnabled": "Maujooda settings mein is network par broadcast enabled nahin hai."
 }

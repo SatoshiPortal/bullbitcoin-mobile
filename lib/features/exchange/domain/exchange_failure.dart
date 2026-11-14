@@ -77,3 +77,8 @@ final class ExchangeNetworkFailure extends ExchangeFailure {
 final class ExchangeUnexpectedFailure extends ExchangeFailure {
   const ExchangeUnexpectedFailure([super.logMessage]);
 }
+
+/// This environment has no supported exchange backend.
+final class ExchangeUnsupportedNetworkFailure extends ExchangeFailure {
+  const ExchangeUnsupportedNetworkFailure();
+}

@@ -37,6 +37,17 @@ void main() {
   });
 
   group('ReceiveWithPayjoinUsecase', () {
+    test('regtest is refused before creating a receiver session', () async {
+      final receiver = _MockPayjoinReceiver();
+      final result = await ReceiveWithPayjoinUsecase(receiver).execute(
+        walletId: 'regtest-wallet',
+        network: BitcoinNetwork.regtest,
+        address: 'bcrt1unused',
+      );
+      expect((result as Err).failure, isA<ReceivePayjoinUnavailableFailure>());
+      verifyZeroInteractions(receiver);
+    });
+
     test('returns the session on success', () async {
       final receiver = _MockPayjoinReceiver();
       final session = _session();

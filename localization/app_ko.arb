@@ -11284,5 +11284,9 @@
   "swapUnderReviewTitle": "검토 중인 스왑",
   "swapUnderReviewDescription": "이 스왑은 수동 검토가 필요합니다. 지원팀에 문의하세요. 지원 계정이 없다면 계정만 만들면 되며 KYC는 필요하지 않습니다.",
   "swapUnderReviewSupportMessage": "검토 중인 스왑\n주문 ID: {orderId}\n요청 ID: {requestId}\n주문 번호: {orderNumber}",
-  "bitcoinSettingsAutoTransferTitle": "자동 스왑"
+  "bitcoinSettingsAutoTransferTitle": "자동 스왑",
+  "broadcastSignedTxErrorAlreadyInChain": "이 거래는 이미 블록체인에 있습니다. 더 이상 브로드캐스트할 것이 없습니다.",
+  "broadcastSignedTxErrorRejected": "네트워크가 이 거래를 거부했습니다. 서명이 완전하지 않거나, 유효하지 않거나, 다른 결제와 충돌할 수 있습니다.",
+  "broadcastSignedTxErrorOutcomeUnknown": "거래가 브로드캐스트되었는지 확인할 수 없습니다. 다시 시도하기 전에 블록 탐색기에서 확인하세요.",
+  "broadcastSignedTxErrorNetworkNotEnabled": "현재 설정에서는 이 네트워크에서 브로드캐스트가 활성화되어 있지 않습니다."
 }

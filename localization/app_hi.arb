@@ -11471,5 +11471,9 @@
   "swapUnderReviewTitle": "समीक्षा के अधीन स्वैप",
   "swapUnderReviewDescription": "इस स्वैप की मैन्युअल समीक्षा आवश्यक है। सहायता के लिए सपोर्ट से संपर्क करें। यदि आपके पास सपोर्ट खाता नहीं है, तो आपको बस एक बनाना है; KYC आवश्यक नहीं है।",
   "swapUnderReviewSupportMessage": "समीक्षा के अधीन स्वैप\nऑर्डर ID: {orderId}\nअनुरोध ID: {requestId}\nऑर्डर संख्या: {orderNumber}",
-  "bitcoinSettingsAutoTransferTitle": "ऑटो स्वैप"
+  "bitcoinSettingsAutoTransferTitle": "ऑटो स्वैप",
+  "broadcastSignedTxErrorAlreadyInChain": "यह लेनदेन पहले से ही ब्लॉकचेन में है। प्रसारित करने के लिए कुछ भी बाकी नहीं है।",
+  "broadcastSignedTxErrorRejected": "नेटवर्क ने इस लेनदेन को अस्वीकार कर दिया। यह अधूरा हस्ताक्षरित, अमान्य, या किसी अन्य भुगतान से टकराव में हो सकता है।",
+  "broadcastSignedTxErrorOutcomeUnknown": "हम पुष्टि नहीं कर सके कि आपका लेनदेन प्रसारित हुआ। दोबारा कोशिश करने से पहले किसी ब्लॉक एक्सप्लोरर में जाँच करें।",
+  "broadcastSignedTxErrorNetworkNotEnabled": "मौजूदा सेटिंग्स में इस नेटवर्क पर प्रसारण सक्षम नहीं है।"
 }

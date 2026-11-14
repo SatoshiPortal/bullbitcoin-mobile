@@ -9403,5 +9403,9 @@
   "swapUnderReviewTitle": "Обменът се проверява",
   "swapUnderReviewDescription": "Този обмен изисква ръчна проверка. Свържете се с поддръжката за съдействие. Ако нямате акаунт за поддръжка, трябва само да създадете такъв; KYC не се изисква.",
   "swapUnderReviewSupportMessage": "Обменът се проверява\nID на поръчката: {orderId}\nID на заявката: {requestId}\nНомер на поръчката: {orderNumber}",
-  "bitcoinSettingsAutoTransferTitle": "Автоматичен обмен"
+  "bitcoinSettingsAutoTransferTitle": "Автоматичен обмен",
+  "broadcastSignedTxErrorAlreadyInChain": "Тази транзакция вече е в блокчейна. Няма какво повече да се излъчва.",
+  "broadcastSignedTxErrorRejected": "Мрежата отхвърли тази транзакция. Възможно е да не е напълно подписана, да е невалидна или да е в конфликт с друго плащане.",
+  "broadcastSignedTxErrorOutcomeUnknown": "Не успяхме да потвърдим, че транзакцията ви е излъчена. Проверете в блок експлорър, преди да опитате отново.",
+  "broadcastSignedTxErrorNetworkNotEnabled": "Излъчването в тази мрежа не е разрешено в текущите настройки."
 }

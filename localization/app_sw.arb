@@ -3525,5 +3525,9 @@
   "swapUnderReviewTitle": "Swap iko chini ya mapitio",
   "swapUnderReviewDescription": "Swap hii inahitaji mapitio ya mikono. Wasiliana na usaidizi kwa msaada. Ikiwa huna akaunti ya usaidizi, unahitaji tu kuunda moja; KYC haihitajiki.",
   "swapUnderReviewSupportMessage": "Swap iko chini ya mapitio\nID ya agizo: {orderId}\nID ya ombi: {requestId}\nNambari ya agizo: {orderNumber}",
-  "bitcoinSettingsAutoTransferTitle": "Auto Swap"
+  "bitcoinSettingsAutoTransferTitle": "Auto Swap",
+  "broadcastSignedTxErrorAlreadyInChain": "Muamala huu tayari uko kwenye blockchain. Hakuna kitu kingine cha kutangaza.",
+  "broadcastSignedTxErrorRejected": "Mtandao umekataa muamala huu. Huenda haujasainiwa kikamilifu, si halali, au unakinzana na malipo mengine.",
+  "broadcastSignedTxErrorOutcomeUnknown": "Hatukuweza kuthibitisha kwamba muamala wako ulitangazwa. Angalia kwenye kichunguzi cha bloku kabla ya kujaribu tena.",
+  "broadcastSignedTxErrorNetworkNotEnabled": "Kutangaza kwenye mtandao huu hakujawezeshwa katika mipangilio ya sasa."
 }

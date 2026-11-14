@@ -11284,5 +11284,9 @@
   "swapUnderReviewTitle": "Swap je v kontrole",
   "swapUnderReviewDescription": "Tento swap vyžaduje ruční kontrolu. Obraťte se na podporu. Pokud nemáte účet podpory, stačí si jej vytvořit; KYC není vyžadováno.",
   "swapUnderReviewSupportMessage": "Swap je v kontrole\nID objednávky: {orderId}\nID požadavku: {requestId}\nČíslo objednávky: {orderNumber}",
-  "bitcoinSettingsAutoTransferTitle": "Automatický swap"
+  "bitcoinSettingsAutoTransferTitle": "Automatický swap",
+  "broadcastSignedTxErrorAlreadyInChain": "Tato transakce už je v blockchainu. Není co dalšího vysílat.",
+  "broadcastSignedTxErrorRejected": "Síť tuto transakci odmítla. Možná není úplně podepsaná, je neplatná nebo je v konfliktu s jinou platbou.",
+  "broadcastSignedTxErrorOutcomeUnknown": "Nepodařilo se ověřit, že byla vaše transakce odvysílána. Než to zkusíte znovu, zkontrolujte ji v blokovém průzkumníku.",
+  "broadcastSignedTxErrorNetworkNotEnabled": "Vysílání v této síti není v aktuálním nastavení povoleno."
 }

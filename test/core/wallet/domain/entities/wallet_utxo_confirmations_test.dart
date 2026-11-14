@@ -1,6 +1,6 @@
 import 'dart:typed_data';
 
-import 'package:bb_mobile/core/wallet/data/datasources/bdk_wallet_datasource.dart'
+import 'package:bb_mobile/features/wallet/data/bdk_wallet_datasource.dart'
     show confirmationsFromTip;
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:flutter_test/flutter_test.dart';

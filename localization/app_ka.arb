@@ -3636,5 +3636,9 @@
   "swapUnderReviewTitle": "სვაპი განხილვის პროცესშია",
   "swapUnderReviewDescription": "ამ სვაპს ხელით განხილვა სჭირდება. დაუკავშირდით მხარდაჭერას. თუ მხარდაჭერის ანგარიში არ გაქვთ, საკმარისია შექმნათ — KYC საჭირო არ არის.",
   "swapUnderReviewSupportMessage": "სვაპი განხილვის პროცესშია\nორდერის ID: {orderId}\nმოთხოვნის ID: {requestId}\nორდერის ნომერი: {orderNumber}",
-  "bitcoinSettingsAutoTransferTitle": "ავტომატური სვაპი"
+  "bitcoinSettingsAutoTransferTitle": "ავტომატური სვაპი",
+  "broadcastSignedTxErrorAlreadyInChain": "ეს ტრანზაქცია უკვე ბლოკჩეინშია. გასავრცელებელი აღარაფერი დარჩა.",
+  "broadcastSignedTxErrorRejected": "ქსელმა ეს ტრანზაქცია უარყო. შესაძლოა ის ბოლომდე არ არის ხელმოწერილი, არასწორია ან სხვა გადახდასთან კონფლიქტშია.",
+  "broadcastSignedTxErrorOutcomeUnknown": "ვერ დავადასტურეთ, რომ თქვენი ტრანზაქცია გავრცელდა. ხელახლა ცდამდე შეამოწმეთ ბლოკების მიმოხილველში.",
+  "broadcastSignedTxErrorNetworkNotEnabled": "ამ ქსელში გავრცელება მიმდინარე პარამეტრებში ჩართული არ არის."
 }

@@ -1,7 +1,7 @@
 import 'package:bb_mobile/core/electrum/domain/entities/electrum_settings.dart';
-import 'package:bb_mobile/core/electrum/domain/errors/electrum_failure.dart';
-import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_environment.dart';
-import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_network.dart';
+import 'package:bb_mobile/features/electrum_settings/domain/electrum_failure.dart';
+import 'package:bb_mobile/features/electrum_settings/domain/electrum_environment.dart';
+import 'package:bb_mobile/features/electrum_settings/domain/electrum_server_network.dart';
 import 'package:primitives/primitives.dart';
 import 'package:meta/meta.dart';
 

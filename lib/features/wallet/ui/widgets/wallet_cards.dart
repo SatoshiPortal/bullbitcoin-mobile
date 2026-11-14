@@ -1,6 +1,6 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/widgets/cards/wallet_card.dart';
 import 'package:bb_mobile/features/sp/public/sp_facade.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
@@ -24,7 +24,7 @@ class WalletCards extends StatelessWidget {
   final String? fiatCurrency;
 
   static Color cardDetails(BuildContext context, Wallet wallet) {
-    final isTestnet = wallet.isTestnet;
+    final isTestnet = !wallet.network.isMainnet;
     final isLiquid = wallet.isLiquid;
     final watchOrSignsRemotely = wallet.isWatchOnly || wallet.signsRemotely;
 
@@ -70,15 +70,22 @@ class WalletCards extends StatelessWidget {
         children: [
           for (final (index, w) in wallets.indexed) ...[
             if (index > 0) const Gap(8),
-            WalletCard(
-              tagColor: cardDetails(context, w),
-              title: w.displayLabel(context),
-              description: w.walletTypeString,
-              balanceSat: w.balanceSat.toInt(),
-              isSyncing: syncStatus[w.id] ?? false,
-              fiatCurrency: fiatCurrency,
-              onTap: () => onTap?.call(w),
-            ),
+            if (w.balanceSat case final balance?)
+              WalletCard(
+                tagColor: cardDetails(context, w),
+                title: w.displayLabel(context),
+                description: w.walletTypeString,
+                balanceSat: balance.toInt(),
+                isSyncing: syncStatus[w.id] ?? false,
+                fiatCurrency: fiatCurrency,
+                onTap: () => onTap?.call(w),
+              )
+            else
+              ListTile(
+                title: Text(w.displayLabel(context)),
+                subtitle: Text(context.loc.walletLoadFailed),
+                onTap: () => onTap?.call(w),
+              ),
           ],
           if (showSpWallet) ...[
             WalletCard(

@@ -1,5 +1,9 @@
+import 'package:transaction_sync/transaction_sync.dart'
+    show WalletRevision, WalletKey;
+import 'package:bull_sdk/bdk.dart' as bdk;
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
-import 'package:primitives/primitives.dart';
+import 'package:primitives/primitives.dart' hide Network;
 // Unit tests for the repository-boundary guarantees of
 // `BitcoinWalletRepository.buildPsbt`:
 //
@@ -30,14 +34,14 @@ import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:secrets/secrets.dart';
 import 'package:secrets/testing.dart';
 import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart';
-import 'package:bb_mobile/core/wallet/data/datasources/bdk_wallet_datasource.dart';
+import 'package:bb_mobile/features/wallet/data/bdk_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/frozen_wallet_utxo_datasource.dart';
-import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasource.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
+import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
+import 'package:bb_mobile/features/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/bitcoin_transaction_recipient_model.dart';
-import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_model.dart';
-import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_utxo_model.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/bitcoin_wallet_repository.dart';
+import 'package:bb_mobile/features/wallet/data/bitcoin_wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -64,6 +68,19 @@ WalletUtxo _utxo({required String txId, required int vout}) =>
       address: 'tb1-test-address',
     );
 
+String _destination([bdk.Network network = bdk.Network.testnet, int fill = 1]) {
+  final script = bdk.Script(
+    rawOutputScript: Uint8List.fromList([0, 20, ...List.filled(20, fill)]),
+  );
+  final address = bdk.Address.fromScript(script: script, network: network);
+  try {
+    return address.toString();
+  } finally {
+    address.dispose();
+    script.dispose();
+  }
+}
+
 void main() {
   late _MockWalletMetadataDatasource metadataDatasource;
   late _MockBdkWalletDatasource bdkDatasource;
@@ -71,6 +88,7 @@ void main() {
   late BitcoinWalletRepository repository;
 
   const metadata = WalletMetadataModel(
+    networkCode: 'bitcoinTestnet',
     id: _walletId,
     masterFingerprint: '73c5da0a',
     xpubFingerprint: 'deadbeef',
@@ -84,14 +102,7 @@ void main() {
   );
 
   setUpAll(() {
-    registerFallbackValue(
-      const WalletModel.publicBdk(
-        id: _walletId,
-        externalDescriptor: 'wpkh(external)',
-        internalDescriptor: 'wpkh(internal)',
-        isTestnet: true,
-      ),
-    );
+    registerFallbackValue(WalletModel.fromMetadata(metadata));
     registerFallbackValue(const NetworkFee.relativeSatPerKwu(1000));
     registerFallbackValue(<BitcoinTransactionRecipientModel>[]);
     registerFallbackValue(<String>[]);
@@ -103,6 +114,11 @@ void main() {
     bdkDatasource = _MockBdkWalletDatasource();
     frozenDatasource = _MockFrozenWalletUtxoDatasource();
     repository = BitcoinWalletRepository(
+      requireSpend: (_, {replacing}) async => WalletRevision(
+        key: WalletKey(id: 'fixture', network: BitcoinNetwork.testnet),
+        generation: 1,
+        revision: 1,
+      ),
       walletMetadataDatasource: metadataDatasource,
       // `Secrets` is final: the seam is the keystore below it, installed in `setUp`. No secret is stored — these cases never reach one.
       secrets: Secrets(scratchDirectory: () async => '/tmp'),
@@ -127,6 +143,33 @@ void main() {
       ),
     ).thenAnswer((_) async => 'psbt');
   });
+
+  test(
+    'rejects a destination from another network before native building',
+    () async {
+      await expectLater(
+        repository.buildPsbt(
+          walletId: _walletId,
+          recipients: [
+            BitcoinTransactionRecipient.fixed(
+              address: _destination(bdk.Network.bitcoin),
+              amountSat: Sats.fromInt(10000),
+            ),
+          ],
+          networkFee: const NetworkFee.relativeSatPerKwu(1000),
+        ),
+        completion(
+          isA<Err<String, WalletFailure>>().having(
+            (result) => result.failure,
+            'failure',
+            isA<WalletAddressNetworkMismatchFailure>(),
+          ),
+        ),
+      );
+      verifyZeroInteractions(bdkDatasource);
+      verifyZeroInteractions(frozenDatasource);
+    },
+  );
 
   List<WalletUtxoModel>? capturedSelected() =>
       verify(
@@ -179,7 +222,7 @@ void main() {
     walletId: _walletId,
     recipients: [
       BitcoinTransactionRecipient.fixed(
-        address: 'tb1-destination',
+        address: _destination(),
         amountSat: Sats.fromInt(25000),
       ),
     ],
@@ -384,15 +427,17 @@ void main() {
   });
 
   test('maps fixed and remainder recipients into datasource models', () async {
+    final fixed = _destination();
+    final remaining = _destination(bdk.Network.testnet, 2);
     expect(
       await repository.buildPsbt(
         walletId: _walletId,
         recipients: [
           BitcoinTransactionRecipient.fixed(
-            address: 'tb1qfixed',
+            address: fixed,
             amountSat: Sats.fromInt(25000),
           ),
-          BitcoinTransactionRecipient.remainder(address: 'tb1qremaining'),
+          BitcoinTransactionRecipient.remainder(address: remaining),
         ],
         networkFee: const NetworkFee.relativeSatPerKwu(1000),
       ),
@@ -413,15 +458,19 @@ void main() {
             ).captured.single
             as List<BitcoinTransactionRecipientModel>;
     expect(recipients, hasLength(2));
-    expect(recipients[0].address, 'tb1qfixed');
+    expect(recipients[0].address, fixed);
     expect(recipients[0].amountSat, 25000);
-    expect(recipients[1].address, 'tb1qremaining');
+    expect(recipients[1].address, remaining);
     expect(recipients[1].amountSat, isNull);
   });
 
   test('maps final datasource amounts back into Sats', () async {
     when(
-      () => bdkDatasource.getRecipientAmounts('psbt', any(), isTestnet: true),
+      () => bdkDatasource.getRecipientAmounts(
+        'psbt',
+        any(),
+        network: Network.bitcoinTestnet,
+      ),
     ).thenAnswer((_) async => [25000, 74000]);
     final recipients = [
       BitcoinTransactionRecipient.fixed(
@@ -443,7 +492,7 @@ void main() {
               () => bdkDatasource.getRecipientAmounts(
                 'psbt',
                 captureAny(),
-                isTestnet: true,
+                network: Network.bitcoinTestnet,
               ),
             ).captured.single
             as List<BitcoinTransactionRecipientModel>;

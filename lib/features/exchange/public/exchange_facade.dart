@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_web_settings_usecase.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/exchange/domain/exchange_failure.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_account_usecase.dart';
@@ -22,13 +23,23 @@ export '../ui/widgets/exchange_amount_input_field.dart'
 export 'exchange_account.dart' show ExchangeAccount;
 
 class ExchangeFacade {
+  final GetExchangeWebSettingsUsecase _getExchangeWebSettingsUsecase;
   final GetExchangeAccountUsecase _getExchangeAccountUsecase;
   final SaveExchangePreferencesUsecase _saveExchangePreferencesUsecase;
 
   const ExchangeFacade({
+    required this._getExchangeWebSettingsUsecase,
     required this._getExchangeAccountUsecase,
     required this._saveExchangePreferencesUsecase,
   });
+
+  Future<bool> networkUnavailable() async {
+    final result = await _getExchangeWebSettingsUsecase.execute();
+    return switch (result) {
+      Err(failure: ExchangeUnsupportedNetworkFailure()) => true,
+      _ => false,
+    };
+  }
 
   @useResult
   Future<Result<ExchangeAccount, ExchangeFailure>> getAccount() async {

@@ -11288,5 +11288,9 @@
   "swapUnderReviewTitle": "Swap อยู่ระหว่างการตรวจสอบ",
   "swapUnderReviewDescription": "Swap นี้ต้องได้รับการตรวจสอบด้วยตนเอง โปรดติดต่อฝ่ายสนับสนุนเพื่อขอความช่วยเหลือ หากคุณยังไม่มีบัญชีฝ่ายสนับสนุน เพียงสร้างบัญชีขึ้นมา โดยไม่จำเป็นต้องทำ KYC",
   "swapUnderReviewSupportMessage": "Swap อยู่ระหว่างการตรวจสอบ\nOrder ID: {orderId}\nRequest ID: {requestId}\nหมายเลขคำสั่งซื้อ: {orderNumber}",
-  "bitcoinSettingsAutoTransferTitle": "Auto Swap"
+  "bitcoinSettingsAutoTransferTitle": "Auto Swap",
+  "broadcastSignedTxErrorAlreadyInChain": "ธุรกรรมนี้อยู่ในบล็อกเชนแล้ว ไม่มีอะไรต้องเผยแพร่อีก",
+  "broadcastSignedTxErrorRejected": "เครือข่ายปฏิเสธธุรกรรมนี้ ธุรกรรมอาจลงนามไม่ครบ ไม่ถูกต้อง หรือขัดแย้งกับการชำระเงินอื่น",
+  "broadcastSignedTxErrorOutcomeUnknown": "ไม่สามารถยืนยันได้ว่าธุรกรรมของคุณถูกเผยแพร่แล้ว โปรดตรวจสอบใน Block Explorer ก่อนลองอีกครั้ง",
+  "broadcastSignedTxErrorNetworkNotEnabled": "การเผยแพร่บนเครือข่ายนี้ไม่ได้เปิดใช้งานในการตั้งค่าปัจจุบัน"
 }

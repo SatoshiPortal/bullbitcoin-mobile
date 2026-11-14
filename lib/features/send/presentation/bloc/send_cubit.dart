@@ -1,3 +1,9 @@
+import 'package:bb_mobile/features/send/domain/usecases/retry_payjoin_proposal_usecase.dart';
+import 'package:bb_mobile/features/wallet/public/wallet_facade.dart'
+    show BitcoinSpendStatus, WalletSpendBlockedException;
+import 'package:bb_mobile/features/send/domain/broadcast_failure.dart';
+import 'package:bb_mobile/features/wallet/domain/network_x.dart';
+import 'package:bb_mobile/features/send/domain/usecases/watch_wallet_revisions_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/prepare_send_bitcoin_transaction_usecase.dart';
 import 'package:bull_pricer/bull_pricer.dart';
 import 'package:primitives/primitives.dart'
@@ -11,13 +17,13 @@ import 'package:primitives/primitives.dart'
         Sats;
 import 'dart:async';
 
-import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
-import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_liquid_transaction_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/broadcast_liquid_transaction_usecase.dart';
 import 'package:bb_mobile/core/errors/send_errors.dart'
     show BroadcastTransactionException;
 import 'package:bb_mobile/core/fees/domain/fee_preview_cache.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
-import 'package:bb_mobile/core/fees/domain/get_network_fees_usecase.dart';
+import 'package:bb_mobile/features/fees/domain/get_network_fees_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/consolidation_required_exception.dart';
 import 'package:bb_mobile/core/wallet/domain/insufficient_funds_exception.dart';
@@ -27,13 +33,12 @@ import 'package:bb_mobile/core/swaps/domain/usecases/verify_chain_swap_amount_se
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/utils/payment_request.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet_transaction.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_utxos_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/prepare_bitcoin_send_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_transaction_by_tx_id_usecase.dart';
 import 'package:bb_mobile/core/widgets/fees/fee_modal_controller.dart';
@@ -47,6 +52,7 @@ import 'package:bb_mobile/features/send/domain/usecases/get_send_exchange_rate_u
 import 'package:bb_mobile/features/send/domain/usecases/get_send_swap_quote_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/detect_bitcoin_string_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/get_send_payjoin_enabled_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/prepare_bitcoin_send_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/validate_bitcoin_selection_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/prepare_liquid_send_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/prepare_sp_payment_for_send_usecase.dart';
@@ -86,6 +92,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class SendCubit extends Cubit<SendState>
     implements FeeModalActions, FeeModalViewState {
   SendCubit({
+    WatchWalletRevisionsUsecase? watchWalletRevisionsUsecase,
     this._wallet,
     this.mode = const SendModeBitcoin(),
     Set<Outpoint> initialSweepOutpoints = const {},
@@ -102,6 +109,7 @@ class SendCubit extends Cubit<SendState>
     required this._prepareLiquidSendUsecase,
     required this._sendWithPayjoinUsecase,
     required this._watchPayjoinUsecase,
+    required this._retryPayjoinProposalUsecase,
     required this._getWalletsUsecase,
     required this._getWalletUsecase,
     required this._createSendSwapUsecase,
@@ -153,7 +161,11 @@ class SendCubit extends Cubit<SendState>
                initialSweepOutpoints.isNotEmpty ||
                initialSelectedOutpoints.isNotEmpty,
          ),
-       );
+       ) {
+    _revisionsSubscription = watchWalletRevisionsUsecase?.execute().listen(
+      _onWalletRevision,
+    );
+  }
 
   /// Distinct user-defined labels for the suggestion chips in the label
   /// bottom sheet. Wraps [LabelsFacade.fetchDistinctLabels] so widgets
@@ -192,6 +204,7 @@ class SendCubit extends Cubit<SendState>
   final BroadcastBitcoinTransactionUsecase _broadcastBitcoinTxUsecase;
   final SendWithPayjoinUsecase _sendWithPayjoinUsecase;
   final WatchPayjoinUsecase _watchPayjoinUsecase;
+  final RetryPayjoinProposalUsecase _retryPayjoinProposalUsecase;
   final UpdatePaidSendSwapUsecase _updatePaidSendSwapUsecase;
   final CalculateLiquidAbsoluteFeesUsecase _calculateLiquidAbsoluteFeesUsecase;
 
@@ -224,6 +237,8 @@ class SendCubit extends Cubit<SendState>
   StreamSubscription<Result<OrderSwapRecord, SendFailure>>?
   _orderSwapSubscription;
   StreamSubscription<Wallet>? _selectedWalletSyncingSubscription;
+  StreamSubscription<String>? _revisionsSubscription;
+  int _revisionRead = 0;
   StreamSubscription<WalletTransaction>? _txSubscription;
   StreamSubscription<PayjoinSession>? _payjoinSubscription;
   ({int generation, Future<PaymentRequest> future})?
@@ -250,10 +265,40 @@ class SendCubit extends Cubit<SendState>
     await (
       _orderSwapSubscription?.cancel() ?? Future.value(),
       _selectedWalletSyncingSubscription?.cancel() ?? Future.value(),
+      _revisionsSubscription?.cancel() ?? Future.value(),
       _txSubscription?.cancel() ?? Future.value(),
       _payjoinSubscription?.cancel() ?? Future.value(),
     ).wait;
     return super.close();
+  }
+
+  Future<void> _onWalletRevision(String walletId) async {
+    final selected = state.selectedWallet;
+    if (isClosed || selected is! SendWalletBitcoin || selected.id != walletId) {
+      return;
+    }
+    final version = ++_revisionRead;
+    try {
+      final wallet = await _getWalletUsecase.execute(walletId);
+      if (isClosed ||
+          version != _revisionRead ||
+          state.selectedWallet?.id != walletId) {
+        return;
+      }
+      clearBitcoinFeePreviews();
+      emit(
+        state.copyWith(
+          selectedWallet: wallet == null ? null : SendWalletBitcoin(wallet),
+          utxos: const [],
+          selectedUtxos: wallet == null ? const [] : state.selectedUtxos,
+        ),
+      );
+      if (wallet != null) await loadUtxos();
+    } on Exception catch (error) {
+      log.warning(
+        'Send wallet revision read unavailable category=${error.runtimeType}',
+      );
+    }
   }
 
   /// LWK and the RBF builder are rate-only at the SDK boundary. When the user
@@ -470,6 +515,34 @@ class SendCubit extends Cubit<SendState>
     if (state.selectedInputsUnavailable) return;
     _startNewPaymentRequestInput();
     clearFailure();
+    final raw = scannedRawPaymentRequest.trim().toLowerCase();
+    if (paymentRequest == null ||
+        raw.startsWith('bcrt1') ||
+        raw.startsWith('bitcoin:bcrt1') ||
+        raw.startsWith('el1') ||
+        raw.startsWith('ert1')) {
+      try {
+        paymentRequest = await _detectBitcoinStringUsecase.execute(
+          data: scannedRawPaymentRequest,
+        );
+      } on Exception {
+        // An unreadable scan still replaces the previous recipient: a stale
+        // MAX/remainder state must not survive it.
+        emit(
+          state.copyWith(
+            failure: const SendInvalidPaymentRequestFailure(),
+            paymentRequest: null,
+            recipientDrafts: _primaryRecipientDrafts(
+              paymentRequest: null,
+              address: scannedRawPaymentRequest.trim(),
+              isValid: false,
+            ),
+            sendMax: state.isSweep,
+          ),
+        );
+        return;
+      }
+    }
     final sanitizedText = scannedRawPaymentRequest.trim().replaceAll(
       RegExp(r'^["\"]+|["\"]+$'),
       '',
@@ -595,9 +668,10 @@ class SendCubit extends Cubit<SendState>
   }) {
     final existing = state.recipientDrafts;
     final policy = const BitcoinRecipientListPolicy();
+    final selectedIsMainnet = state.selectedWallet?.network.isMainnet;
     final existingNetworkIsTestnet =
         policy.networkIsTestnet(state.paymentRequest) ??
-        state.selectedWallet?.network.isTestnet;
+        (selectedIsMainnet == null ? null : !selectedIsMainnet);
     final canKeepAdditional = policy.shouldRetainAdditionalRecipients(
       recipientCount: existing.length,
       nextRequest: paymentRequest,
@@ -1875,7 +1949,13 @@ class SendCubit extends Cubit<SendState>
         state.sendType == SendType.bitcoin) {
       transactionCreated = await createTransaction();
     }
-    if (!transactionCreated) {
+    // A regtest node without fee estimates still reaches the confirmation
+    // screen below, where the user picks a custom fee.
+    final regtestFeesUnavailable =
+        state.failure is SendFeesUnavailableFailure &&
+        state.selectedWallet?.network == Network.bitcoinRegtest &&
+        state.sendType == SendType.bitcoin;
+    if (!transactionCreated && !regtestFeesUnavailable) {
       if (state.amountConfirmedClicked) {
         emit(state.copyWith(amountConfirmedClicked: false));
       }
@@ -1906,7 +1986,20 @@ class SendCubit extends Cubit<SendState>
       );
       return;
     }
-    // Any failure keeps the user here.
+    // Regtest nodes may have no fee estimate yet. Keep the explicit failure
+    // and unsigned state, but expose the existing custom-fee control on the
+    // confirmation screen. A build still needs a user-selected valid fee.
+    if (state.failure is SendFeesUnavailableFailure &&
+        state.selectedWallet?.network == Network.bitcoinRegtest &&
+        state.sendType == SendType.bitcoin &&
+        state.inputAmountSat > 0 &&
+        await hasBalance()) {
+      emit(
+        state.copyWith(step: SendStep.confirm, amountConfirmedClicked: false),
+      );
+      return;
+    }
+    // Any other failure keeps the user here.
     if (state.failure == null) {
       emit(
         state.copyWith(
@@ -2106,14 +2199,31 @@ class SendCubit extends Cubit<SendState>
   }
 
   Future<void> loadFees({int? inputGeneration}) async {
-    if (state.selectedWallet == null) return;
+    final wallet = state.selectedWallet;
+    if (wallet == null) return;
+    final environment = wallet.network.environment;
     bool isStale() =>
-        inputGeneration != null &&
-        inputGeneration != _paymentRequestInputGeneration;
+        (inputGeneration != null &&
+            inputGeneration != _paymentRequestInputGeneration) ||
+        state.selectedWallet?.network != wallet.network;
     try {
-      final bitcoinFees = await _getNetworkFeesUsecase.execute(isLiquid: false);
+      final bitcoinFees = await _getNetworkFeesUsecase.execute(
+        isLiquid: false,
+        network: Network.fromEnvironment(
+          environment: environment,
+          isLiquid: false,
+        ),
+      );
       if (isStale()) return;
-      final liquidFees = await _getNetworkFeesUsecase.execute(isLiquid: true);
+      final liquidFees = wallet.network == Network.bitcoinRegtest
+          ? null
+          : await _getNetworkFeesUsecase.execute(
+              isLiquid: true,
+              network: Network.fromEnvironment(
+                environment: environment,
+                isLiquid: true,
+              ),
+            );
       if (isStale()) return;
       final ratesChanged =
           state.bitcoinFeesList != bitcoinFees ||
@@ -2141,14 +2251,14 @@ class SendCubit extends Cubit<SendState>
         clearBitcoinFeePreviews();
         _scheduleRecipientPreview();
       }
-    } catch (e, st) {
+    } catch (e) {
       if (isStale()) return;
-      log.severe(
-        message: 'Failed to load the network fee rates',
-        error: e,
-        trace: st,
+      log.warning('Network fee rates unavailable', error: e.runtimeType);
+      emit(
+        state.copyWith(
+          failure: SendFeesUnavailableFailure(e.runtimeType.toString()),
+        ),
       );
-      emit(state.copyWith(failure: SendFeesUnavailableFailure(e.toString())));
     }
   }
 
@@ -2475,12 +2585,19 @@ class SendCubit extends Cubit<SendState>
     final generation = _transactionGeneration;
     bool isStale() => generation != _transactionGeneration;
     try {
-      if (state.bitcoinFeesList == null || state.liquidFeesList == null) {
+      bool hasSelectedFee() {
+        if (state.selectedFeeOption == FeeSelection.custom) {
+          return state.customFee != null;
+        }
+        return (state.selectedWallet?.isLiquid ?? false)
+            ? state.liquidFeesList != null
+            : state.bitcoinFeesList != null;
+      }
+
+      if (!hasSelectedFee()) {
         await loadFees();
         if (isStale()) return false;
-        if (state.bitcoinFeesList == null || state.liquidFeesList == null) {
-          return false;
-        }
+        if (!hasSelectedFee()) return false;
       }
       if (isStale()) return false;
       final wallet = state.selectedWallet;
@@ -2732,15 +2849,7 @@ class SendCubit extends Cubit<SendState>
           );
           if (isStale()) return false;
         }
-        log.info(
-          '[create-tx] build recipients=${recipients.length} '
-          'rate=${selectedFee is RelativeFee ? selectedFee.satPerVbyte : selectedFee.value} '
-          'drain=$drain selectedInputs=${state.selectedUtxos.length} '
-          'rbf=${state.replaceByFee} '
-          'lightningOrder=${state.lightningOrder != null} '
-          'chainSwap=${state.chainSwap != null} '
-          'cacheHit=$canUseCache',
-        );
+        log.fine('[create-tx] building cacheHit=$canUseCache');
         final preparationResult =
             canUseCache && cachedPsbt != null && cachedTxSize != null
             ? Ok<PreparedBitcoinSend, SendFailure>((
@@ -2801,11 +2910,7 @@ class SendCubit extends Cubit<SendState>
           }
         }
         if (isStale()) return false;
-        log.info(
-          '[create-tx] built vsize=${txPreparation.txSize} '
-          'realFee=$builtFee sats '
-          '(impliedRate=${txPreparation.txSize > 0 ? (builtFee / txPreparation.txSize).toStringAsFixed(4) : "n/a"} sat/vB)',
-        );
+        log.fine('[create-tx] transaction prepared');
 
         // Belt-and-suspenders relay-floor re-assert. The commit gate in
         // finalizeArmedCustomFee checks an ABSOLUTE custom fee against the
@@ -2821,11 +2926,7 @@ class SendCubit extends Cubit<SendState>
         );
         if (!clearsRelay) {
           if (isStale()) return false;
-          log.warning(
-            '[create-tx] ABORT — built fee $builtFee sats at '
-            '${txPreparation.txSize} vbytes is below the relay floor '
-            '(${state.bitcoinFeesList?.minRelay.satPerVbyte ?? NetworkFeeRelayPolicy.minRelaySatPerVbyte} sat/vB)',
-          );
+          log.warning('[create-tx] built fee below relay floor');
           emit(
             state.copyWith(
               failure: SendFeeBelowRelayFloorFailure(
@@ -2946,6 +3047,17 @@ class SendCubit extends Cubit<SendState>
     } catch (e) {
       if (isStale()) return false;
       _invalidateSignedTransaction();
+      if (e is WalletSpendBlockedException) {
+        emit(
+          state.copyWith(
+            failure: SendSpendBlockedFailure(
+              busy: e.status == BitcoinSpendStatus.busy,
+            ),
+            buildingTransaction: false,
+          ),
+        );
+        return false;
+      }
       log.severe(error: e, trace: StackTrace.current);
       if (e is ConsolidationRequiredException) {
         emit(
@@ -3038,7 +3150,9 @@ class SendCubit extends Cubit<SendState>
     if (wallet == null || unsignedPsbt == null) {
       emit(
         state.copyWith(
-          failure: const SendTransactionConfirmationFailure(),
+          failure: SendTransactionConfirmationFailure(
+            logMessage: wallet == null ? 'No wallet selected' : null,
+          ),
           signingTransaction: false,
         ),
       );
@@ -3071,7 +3185,7 @@ class SendCubit extends Cubit<SendState>
           final paymentRequest = state.paymentRequest! as Bip21PaymentRequest;
           final payjoinResult = await _sendWithPayjoinUsecase.execute(
             walletId: wallet.id,
-            isTestnet: wallet.network.isTestnet,
+            network: wallet.network.bitcoin,
             bip21: paymentRequest.uri,
             unsignedOriginalPsbt: unsignedPsbt,
             amountSat: state.confirmedAmountSat!,
@@ -3221,6 +3335,7 @@ class SendCubit extends Cubit<SendState>
       if (wallet.network.isLiquid) {
         txId = await _broadcastLiquidTxUsecase.execute(
           persistedPayin ?? state.signedLiquidTx!,
+          network: wallet.network,
         );
       } else {
         // Payjoin sends are already broadcast asynchronously by the repository
@@ -3231,6 +3346,8 @@ class SendCubit extends Cubit<SendState>
         txId = await _broadcastBitcoinTxUsecase.execute(
           persistedPayin ??
               (isPsbt ? state.signedBitcoinPsbt! : state.signedBitcoinTx!),
+          network: wallet.network,
+          walletId: wallet.id,
           isPsbt: persistedPayinIsPsbt ?? isPsbt,
         );
       }
@@ -3286,10 +3403,14 @@ class SendCubit extends Cubit<SendState>
       }
 
       unawaited(
-        _getWalletUsecase.execute(wallet.id, sync: true).catchError((e) {
-          log.warning('Failed to sync wallet after broadcast: $e');
-          return null;
-        }),
+        _getWalletUsecase
+            .execute(wallet.id, sync: true)
+            .then<void>((_) {})
+            .catchError((Object _) {
+              log.warning(
+                'send_post_broadcast_refresh_failed category=unexpected',
+              );
+            }),
       );
     } on GetWalletException catch (e) {
       if (!isClosed) {
@@ -3300,8 +3421,21 @@ class SendCubit extends Cubit<SendState>
           ),
         );
       }
+    } on WalletSpendBlockedException catch (e) {
+      if (!isClosed) {
+        emit(
+          state.copyWith(
+            failure: SendSpendBlockedFailure(
+              busy: e.status == BitcoinSpendStatus.busy,
+            ),
+            broadcastingTransaction: false,
+          ),
+        );
+      }
     } on BroadcastTransactionException catch (e) {
-      log.warning('Failed to broadcast transaction: ${e.message}');
+      log.warning(
+        'send_broadcast_failed category=${BroadcastFailureCategory.of(e).name}',
+      );
       if (!isClosed) {
         emit(
           state.copyWith(
@@ -3313,17 +3447,13 @@ class SendCubit extends Cubit<SendState>
           ),
         );
       }
-    } catch (e, st) {
-      log.warning(
-        'Unexpected broadcast transaction error',
-        error: e,
-        trace: st,
-      );
+    } catch (_) {
+      log.warning('send_broadcast_failed category=unexpected');
       if (!isClosed) {
         emit(
           state.copyWith(
-            failure: SendTransactionConfirmationFailure(
-              logMessage: e.toString(),
+            failure: const SendTransactionConfirmationFailure(
+              logMessage: 'send_broadcast_failed',
             ),
             broadcastingTransaction: false,
           ),
@@ -3440,7 +3570,7 @@ class SendCubit extends Cubit<SendState>
           state.copyWith(
             paymentRequest: PaymentRequest.bitcoin(
               address: rawPaymentRequest,
-              isTestnet: network.isTestnet,
+              isTestnet: network.requireHistoricalTestnet(),
             ),
             sendType: SendType.bitcoin,
             step: SendStep.amount,
@@ -3657,10 +3787,14 @@ class SendCubit extends Cubit<SendState>
         }
         _watchWalletTransactionByTxId(walletId: wallet.id, txId: txId);
       }
-    } catch (e) {
+    } catch (_) {
       if (isStale()) return;
       emit(state.copyWith(step: SendStep.confirm));
-      log.severe(error: e, trace: StackTrace.current);
+      log.severe(
+        message: 'send_confirmation_failed category=unexpected',
+        error: Exception('send_confirmation_failed'),
+        trace: StackTrace.current,
+      );
     }
   }
 
@@ -3731,11 +3865,13 @@ class SendCubit extends Cubit<SendState>
             unawaited(
               _getWalletUsecase
                   .execute(state.selectedWallet!.id, sync: true)
-                  .catchError((Object e) {
+                  .then<void>((_) {})
+                  .catchError((Object _) {
                     // Fire-and-forget refresh: without this the throw becomes
                     // an unhandled zone error, matching the sibling syncs.
-                    log.warning('Failed to sync wallet after transfer: $e');
-                    return null;
+                    log.warning(
+                      'send_post_transfer_refresh_failed category=unexpected',
+                    );
                   }),
             );
           }
@@ -3744,6 +3880,39 @@ class SendCubit extends Cubit<SendState>
           emit(state.copyWith(failure: failure));
       }
     });
+  }
+
+  Future<void> retryPayjoinProposal() async {
+    final sender = state.payjoinSender;
+    // Cubit calls have no event transformer: admit synchronously and drop
+    // duplicate taps until the pending retry settles.
+    if (isClosed ||
+        state.isRetryingPayjoinProposal ||
+        sender == null ||
+        !sender.canRetryProposal) {
+      return;
+    }
+    emit(state.copyWith(isRetryingPayjoinProposal: true));
+    try {
+      final result = await _retryPayjoinProposalUsecase.execute(sender.id);
+      final latest = state.payjoinSender;
+      if (isClosed ||
+          latest == null ||
+          latest.id != sender.id ||
+          !latest.isOngoing) {
+        return;
+      }
+      switch (result) {
+        case Err(:final failure):
+          // The subscription owns session transitions. A late retry failure
+          // must not replace a newer observation, even for the same session.
+          if (identical(latest, sender)) emit(state.copyWith(failure: failure));
+        case Ok():
+          break;
+      }
+    } finally {
+      if (!isClosed) emit(state.copyWith(isRetryingPayjoinProposal: false));
+    }
   }
 
   /// Watches the sender side of an in-flight payjoin and resolves the send
@@ -3795,6 +3964,7 @@ class SendCubit extends Cubit<SendState>
             emit(
               state.copyWith(
                 payjoinSender: payjoin,
+                failure: null,
                 // Prefer the payjoin txid; fall back to the original tx that
                 //  was broadcast when the negotiation didn't complete.
                 txId: payjoin.txId ?? payjoin.originalTxId,
@@ -3804,10 +3974,14 @@ class SendCubit extends Cubit<SendState>
             _payjoinSubscription?.cancel();
             if (walletId != null) {
               unawaited(
-                _getWalletUsecase.execute(walletId, sync: true).catchError((e) {
-                  log.warning('Failed to sync wallet after payjoin: $e');
-                  return null;
-                }),
+                _getWalletUsecase
+                    .execute(walletId, sync: true)
+                    .then<void>((_) {})
+                    .catchError((Object _) {
+                      log.warning(
+                        'send_post_payjoin_refresh_failed category=unexpected',
+                      );
+                    }),
               );
             }
             // broadcastTransaction never reaches its own label-store call for
@@ -3858,7 +4032,14 @@ class SendCubit extends Cubit<SendState>
               ),
             );
           } else {
-            emit(state.copyWith(payjoinSender: payjoin));
+            emit(
+              state.copyWith(
+                payjoinSender: payjoin,
+                failure: payjoin.spendFailure == null
+                    ? null
+                    : const SendPayjoinPausedFailure(),
+              ),
+            );
           }
         });
   }

@@ -1,0 +1,74 @@
+import 'package:bb_mobile/features/electrum_settings/domain/electrum_network_unauthorized_exception.dart';
+import 'package:bull_logger/bull_logger.dart';
+import 'package:bb_mobile/core/electrum/domain/errors/electrum_fallback_exception.dart';
+import 'package:bb_mobile/core/electrum/domain/ports/electrum_servers_port.dart';
+import 'package:bb_mobile/features/electrum_settings/domain/electrum_server_network.dart';
+import 'package:primitives/primitives.dart';
+import 'package:transaction_sync/transaction_sync.dart';
+
+/// Reuses the existing privacy policy, fallback loop and scoped Tor lifetime.
+final class WalletConnectionPolicyImpl implements WalletConnectionPolicy {
+  final ElectrumServersPort _servers;
+
+  WalletConnectionPolicyImpl(this._servers);
+
+  @override
+  Future<Result<T, TransactionSyncFailure>> run<T>({
+    required Network network,
+    required Future<Result<T, TransactionSyncFailure>> Function(
+      WalletConnection,
+    )
+    operation,
+    required bool Function(TransactionSyncFailure) mayRetry,
+  }) async {
+    final serverNetwork = switch (network) {
+      BitcoinNetwork.mainnet => ElectrumServerNetwork.bitcoinMainnet,
+      BitcoinNetwork.testnet => ElectrumServerNetwork.bitcoinTestnet,
+      BitcoinNetwork.regtest => ElectrumServerNetwork.bitcoinRegtest,
+      LiquidNetwork.mainnet => ElectrumServerNetwork.liquidMainnet,
+      LiquidNetwork.testnet => ElectrumServerNetwork.liquidTestnet,
+      LiquidNetwork.regtest => ElectrumServerNetwork.liquidRegtest,
+      BitcoinNetwork.signet => null,
+    };
+    if (serverNetwork == null) {
+      log.config('Wallet connection unavailable network=$network');
+      return const Err(TransactionSyncUnsupportedNetworkFailure());
+    }
+    TransactionSyncFailure? lastFailure;
+    try {
+      return await _servers.runWithFallback(
+        network: serverNetwork,
+        isTransient: (error) => error is _RetryableFailure,
+        operation: (connection) async {
+          final result = await operation(
+            WalletConnection(
+              url: connection.url,
+              timeout: Duration(seconds: connection.effectiveTimeout),
+              retry: connection.retry,
+              stopGap: connection.stopGap,
+              validateDomain: connection.validateDomain,
+              socks5: network is LiquidNetwork ? null : connection.socks5,
+            ),
+          );
+          if (result case Err(:final failure) when mayRetry(failure)) {
+            lastFailure = failure;
+            throw _RetryableFailure();
+          }
+          return result;
+        },
+      );
+    } on ElectrumNetworkUnauthorizedException {
+      return const Err(
+        TransactionSyncUnsupportedNetworkFailure(authorization: true),
+      );
+    } on AllElectrumServersFailedException {
+      // Exhaustion wraps retryable callback failures; preserve the last one.
+      return Err(lastFailure ?? const TransactionSyncConnectionFailure());
+    } on Exception {
+      // No URL, proxy, descriptor or foreign diagnostic escapes this boundary.
+      return const Err(TransactionSyncConnectionFailure());
+    }
+  }
+}
+
+final class _RetryableFailure implements Exception {}

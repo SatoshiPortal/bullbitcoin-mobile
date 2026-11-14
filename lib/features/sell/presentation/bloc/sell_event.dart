@@ -26,6 +26,8 @@ sealed class SellEvent with _$SellEvent {
   // back, so a second copy on the event could only ever disagree (#2521).
   const factory SellEvent.sendPaymentConfirmed() = SellSendPaymentConfirmed;
   const factory SellEvent.pollOrderStatus() = SellPollOrderStatus;
+  const factory SellEvent.payjoinProposalRetryRequested() =
+      SellPayjoinProposalRetryRequested;
   const factory SellEvent.payjoinToggled(bool enabled) = SellPayjoinToggled;
   const factory SellEvent.payjoinSessionUpdated(PayjoinSession session) =
       SellPayjoinSessionUpdated;

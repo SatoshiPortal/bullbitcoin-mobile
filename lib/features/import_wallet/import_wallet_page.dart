@@ -1,3 +1,5 @@
+import 'package:bb_mobile/features/settings/public/settings_facade.dart';
+import 'package:primitives/primitives.dart' show NetworkCapability;
 import 'dart:io' show Platform;
 
 import 'package:bb_mobile/core/entities/signer_device_entity.dart';
@@ -46,76 +48,91 @@ class ImportWalletPage extends StatelessWidget {
                 onTap: () =>
                     context.pushNamed(ImportWatchOnlyWalletRoutes.import.name),
               ),
-              const Gap(24),
-              BullText(
-                context.loc.importWalletSectionHardware,
-                style: context.font.titleMedium,
-              ),
-              const Gap(12),
-              BullTabMenuVerticalButton(
-                title: context.loc.importWalletColdcardQ,
-                onTap: () =>
-                    context.pushNamed(ImportColdcardRoute.importColdcardQ.name),
-              ),
-              const Gap(16),
-              BullTabMenuVerticalButton(
-                title: context.loc.importWalletColdcardMk4,
-                onTap: () => context.pushNamed(
-                  ImportColdcardRoute.importColdcardMk4.name,
-                ),
-              ),
-              const Gap(16),
-              BullTabMenuVerticalButton(
-                title: context.loc.importWalletSeedSigner,
-                onTap: () => context.pushNamed(
-                  ImportQrDeviceRoute.importSeedSigner.name,
-                ),
-              ),
-              const Gap(16),
-              BullTabMenuVerticalButton(
-                title: context.loc.importWalletSpecter,
-                onTap: () =>
-                    context.pushNamed(ImportQrDeviceRoute.importSpecter.name),
-              ),
-              const Gap(16),
-              BullTabMenuVerticalButton(
-                title: context.loc.importWalletKrux,
-                onTap: () =>
-                    context.pushNamed(ImportQrDeviceRoute.importKrux.name),
-              ),
-              const Gap(16),
-              BullTabMenuVerticalButton(
-                title: context.loc.importWalletJade,
-                onTap: () =>
-                    context.pushNamed(ImportQrDeviceRoute.importJade.name),
-              ),
-              const Gap(16),
-              BullTabMenuVerticalButton(
-                title: context.loc.importWalletPassport,
-                onTap: () =>
-                    context.pushNamed(ImportQrDeviceRoute.importPassport.name),
-              ),
-              const Gap(16),
-              BullTabMenuVerticalButton(
-                title: context.loc.importWalletKeystone,
-                onTap: () =>
-                    context.pushNamed(ImportQrDeviceRoute.importKeystone.name),
-              ),
-              const Gap(16),
-              BullTabMenuVerticalButton(
-                title: context.loc.importWalletLedger,
-                onTap: () => context.pushNamed(LedgerRoute.importLedger.name),
-              ),
-              const Gap(16),
-              BullTabMenuVerticalButton(
-                title: Platform.isAndroid
-                    ? context.loc.importWalletBitBox
-                    : context.loc.importWalletBitBoxNova,
-                onTap: () => context.pushNamed(
-                  BitBoxRoute.importBitBox.name,
-                  extra: const BitBoxRouteParams(
-                    requestedDeviceType: SignerDeviceEntity.bitbox02,
-                  ),
+              NetworkCapabilityVisibility(
+                capability: NetworkCapability.hardwareWallet,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    const Gap(24),
+                    BullText(
+                      context.loc.importWalletSectionHardware,
+                      style: context.font.titleMedium,
+                    ),
+                    const Gap(12),
+                    BullTabMenuVerticalButton(
+                      title: context.loc.importWalletColdcardQ,
+                      onTap: () => context.pushNamed(
+                        ImportColdcardRoute.importColdcardQ.name,
+                      ),
+                    ),
+                    const Gap(16),
+                    BullTabMenuVerticalButton(
+                      title: context.loc.importWalletColdcardMk4,
+                      onTap: () => context.pushNamed(
+                        ImportColdcardRoute.importColdcardMk4.name,
+                      ),
+                    ),
+                    const Gap(16),
+                    BullTabMenuVerticalButton(
+                      title: context.loc.importWalletSeedSigner,
+                      onTap: () => context.pushNamed(
+                        ImportQrDeviceRoute.importSeedSigner.name,
+                      ),
+                    ),
+                    const Gap(16),
+                    BullTabMenuVerticalButton(
+                      title: context.loc.importWalletSpecter,
+                      onTap: () => context.pushNamed(
+                        ImportQrDeviceRoute.importSpecter.name,
+                      ),
+                    ),
+                    const Gap(16),
+                    BullTabMenuVerticalButton(
+                      title: context.loc.importWalletKrux,
+                      onTap: () => context.pushNamed(
+                        ImportQrDeviceRoute.importKrux.name,
+                      ),
+                    ),
+                    const Gap(16),
+                    BullTabMenuVerticalButton(
+                      title: context.loc.importWalletJade,
+                      onTap: () => context.pushNamed(
+                        ImportQrDeviceRoute.importJade.name,
+                      ),
+                    ),
+                    const Gap(16),
+                    BullTabMenuVerticalButton(
+                      title: context.loc.importWalletPassport,
+                      onTap: () => context.pushNamed(
+                        ImportQrDeviceRoute.importPassport.name,
+                      ),
+                    ),
+                    const Gap(16),
+                    BullTabMenuVerticalButton(
+                      title: context.loc.importWalletKeystone,
+                      onTap: () => context.pushNamed(
+                        ImportQrDeviceRoute.importKeystone.name,
+                      ),
+                    ),
+                    const Gap(16),
+                    BullTabMenuVerticalButton(
+                      title: context.loc.importWalletLedger,
+                      onTap: () =>
+                          context.pushNamed(LedgerRoute.importLedger.name),
+                    ),
+                    const Gap(16),
+                    BullTabMenuVerticalButton(
+                      title: Platform.isAndroid
+                          ? context.loc.importWalletBitBox
+                          : context.loc.importWalletBitBoxNova,
+                      onTap: () => context.pushNamed(
+                        BitBoxRoute.importBitBox.name,
+                        extra: const BitBoxRouteParams(
+                          requestedDeviceType: SignerDeviceEntity.bitbox02,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ],

@@ -53,3 +53,8 @@ final class WithdrawConfidentialSepaNotActivatedFailure
 final class WithdrawUnexpectedFailure extends WithdrawFailure {
   const WithdrawUnexpectedFailure([super.logMessage]);
 }
+
+/// The selected network has no exchange withdrawal service.
+final class WithdrawUnsupportedNetworkFailure extends WithdrawFailure {
+  const WithdrawUnsupportedNetworkFailure();
+}

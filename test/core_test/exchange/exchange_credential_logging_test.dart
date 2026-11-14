@@ -3,8 +3,8 @@ import 'dart:io';
 
 import 'package:bb_mobile/core/exchange/data/repository/exchange_order_stats_repository_impl.dart';
 import 'package:bb_mobile/core/exchange/data/repository/exchange_kyc_repository_impl.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/get_order_stats_usecase.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/upload_kyc_document_usecase.dart';
+import 'package:bb_mobile/features/exchange/domain/usecases/get_order_stats_usecase.dart';
+import 'package:bb_mobile/features/exchange/domain/usecases/upload_kyc_document_usecase.dart';
 import 'package:bb_mobile/features/exchange_settings/domain/usecases/get_exchange_statistics_usecase.dart';
 import 'package:bb_mobile/features/exchange_settings/domain/usecases/upload_exchange_document_usecase.dart';
 import 'package:bb_mobile/features/exchange_settings/domain/document_picker_port.dart';
@@ -13,7 +13,7 @@ import 'package:bb_mobile/core/exchange/data/datasources/bullbitcoin_api_datasou
 import 'package:bb_mobile/core/exchange/data/http/exchange_authentication_interceptor.dart';
 import 'package:bb_mobile/core/exchange/data/repository/exchange_order_repository_impl.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/features/buy/domain/refresh_buy_order_usecase.dart';
 import 'package:bb_mobile/features/buy/domain/buy_failure.dart';
 import 'package:dio/dio.dart';

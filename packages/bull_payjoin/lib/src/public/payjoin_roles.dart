@@ -6,6 +6,12 @@ import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
 
 abstract interface class PayjoinSender {
+  /// Retry the same retained proposal; never creates another payment.
+  @useResult
+  Future<Result<PayjoinSession, PayjoinFailure>> retryProposal(
+    String sessionId,
+  );
+
   @useResult
   Future<Result<PayjoinSenderSession, PayjoinFailure>> start(
     StartPayjoinSender request,

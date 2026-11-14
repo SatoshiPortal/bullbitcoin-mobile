@@ -1,0 +1,68 @@
+import 'package:bb_mobile/core/electrum/domain/ports/electrum_servers_port.dart';
+import 'package:bb_mobile/core/electrum/domain/ports/server_status_port.dart';
+import 'package:bb_mobile/features/electrum_settings/domain/electrum_server_network.dart';
+import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_status.dart';
+import 'package:bb_mobile/core/status/domain/ports/electrum_connectivity_port.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
+import 'package:bull_tor/tor.dart';
+
+class ElectrumConnectivityAdapter implements ElectrumConnectivityPort {
+  final ElectrumServersPort _electrumServersPort;
+  final ServerStatusPort _serverStatusPort;
+
+  ElectrumConnectivityAdapter({
+    required this._electrumServersPort,
+    required this._serverStatusPort,
+  });
+
+  @override
+  Future<bool> checkServersInUseAreOnlineForNetwork(Network network) async {
+    final serverNetwork = switch (network) {
+      Network.bitcoinMainnet => ElectrumServerNetwork.bitcoinMainnet,
+      Network.bitcoinTestnet => ElectrumServerNetwork.bitcoinTestnet,
+      Network.bitcoinRegtest => ElectrumServerNetwork.bitcoinRegtest,
+      Network.liquidMainnet => ElectrumServerNetwork.liquidMainnet,
+      Network.liquidTestnet => ElectrumServerNetwork.liquidTestnet,
+      Network.liquidRegtest => ElectrumServerNetwork.liquidRegtest,
+    };
+
+    try {
+      return await _electrumServersPort.runWithFallback<bool>(
+        network: serverNetwork,
+        operation: (connection) async {
+          // An empty string is "no proxy", not a malformed one: settings persist
+          // `''` in practice, and treating it as malformed marked every server
+          // offline.
+          final socks5 = connection.socks5?.trim();
+          final proxyEndpoint = switch (socks5) {
+            null || '' => null,
+            final proxy =>
+              TorProxyEndpoint.tryParse(proxy) ??
+                  (throw const _ElectrumServerOfflineException()),
+          };
+          final status = await _serverStatusPort.checkElectrum(
+            url: connection.url,
+            network: serverNetwork,
+            // The user's own setting, so "online" here means the sync can
+            // actually reach the server too.
+            validateDomain: connection.validateDomain,
+            // The configured clearnet timeout is seeded at 5s. Onion routes
+            // raise it to the shared 30s minimum used by the real BDK sync.
+            timeout: connection.effectiveTimeout,
+            retry: connection.retry,
+            proxyEndpoint: proxyEndpoint,
+          );
+          if (status == ElectrumServerStatus.online) return true;
+          throw const _ElectrumServerOfflineException();
+        },
+        isTransient: (error) => error is _ElectrumServerOfflineException,
+      );
+    } on Exception {
+      return false;
+    }
+  }
+}
+
+final class _ElectrumServerOfflineException implements Exception {
+  const _ElectrumServerOfflineException();
+}

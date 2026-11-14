@@ -1,7 +1,7 @@
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_notification_repository.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_api_key_repository.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_user_repository.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/send_support_chat_message_usecase.dart';
+import 'package:bb_mobile/features/exchange/domain/usecases/send_support_chat_message_usecase.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart'
     as settings_contract;
@@ -27,6 +27,7 @@ class ExchangeLocator {
 
     locator.registerLazySingleton<ExchangeFacade>(
       () => ExchangeFacade(
+        getExchangeWebSettingsUsecase: locator<GetExchangeWebSettingsUsecase>(),
         getExchangeAccountUsecase: locator<GetExchangeAccountUsecase>(),
         saveExchangePreferencesUsecase:
             locator<SaveExchangePreferencesUsecase>(),
@@ -106,12 +107,14 @@ class ExchangeLocator {
 
     locator.registerFactory<RequestExchangeAccountDeletionUsecase>(
       () => RequestExchangeAccountDeletionUsecase(
+        settingsRepository: locator<settings_contract.SettingsRepository>(),
         sendSupportChatMessageUsecase: locator<SendSupportChatMessageUsecase>(),
       ),
     );
 
     locator.registerFactory<WatchExchangeNotificationsUsecase>(
       () => WatchExchangeNotificationsUsecase(
+        settingsRepository: locator<settings_contract.SettingsRepository>(),
         exchangeNotificationRepository:
             locator<ExchangeNotificationRepository>(),
       ),

@@ -12,6 +12,7 @@ const _rawReason =
     'bc1qsecret, xprv9s21ZrQH143K3';
 
 final _everyFailure = <PayFailure>[
+  const PayPayjoinPausedFailure(),
   const PayUnauthenticatedFailure(_rawReason),
   const PayBelowMinAmountFailure(
     minAmount: 10,

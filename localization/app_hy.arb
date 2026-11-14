@@ -3513,5 +3513,9 @@
   "swapUnderReviewTitle": "Փոխանակումը ստուգման փուլում է",
   "swapUnderReviewDescription": "Այս փոխանակումը պահանջում է ձեռքով ստուգում։ Օգնության համար դիմեք աջակցությանը։ Եթե աջակցության հաշիվ չունեք, պարզապես ստեղծեք այն. KYC չի պահանջվում։",
   "swapUnderReviewSupportMessage": "Փոխանակումը ստուգման փուլում է\nOrder ID: {orderId}\nRequest ID: {requestId}\nOrder number: {orderNumber}",
-  "bitcoinSettingsAutoTransferTitle": "Ինքնաշխատ փոխանակում"
+  "bitcoinSettingsAutoTransferTitle": "Ինքնաշխատ փոխանակում",
+  "broadcastSignedTxErrorAlreadyInChain": "Այս գործարքն արդեն բլոկչեյնում է։ Հեռարձակելու այլևս ոչինչ չկա։",
+  "broadcastSignedTxErrorRejected": "Ցանցը մերժեց այս գործարքը։ Այն կարող է ամբողջությամբ ստորագրված չլինել, անվավեր լինել կամ հակասել մեկ այլ վճարման։",
+  "broadcastSignedTxErrorOutcomeUnknown": "Չհաջողվեց հաստատել, որ ձեր գործարքը հեռարձակվել է։ Նորից փորձելուց առաջ ստուգեք բլոկների դիտարկիչում։",
+  "broadcastSignedTxErrorNetworkNotEnabled": "Այս ցանցում հեռարձակումը միացված չէ ընթացիկ կարգավորումներում։"
 }

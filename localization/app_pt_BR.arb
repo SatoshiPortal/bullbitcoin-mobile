@@ -11296,5 +11296,9 @@
   "swapUnderReviewTitle": "Swap em análise",
   "swapUnderReviewDescription": "Este swap requer uma análise manual. Entre em contato com o suporte para obter ajuda. Se você não tiver uma conta de suporte, basta criar uma; o KYC não é necessário.",
   "swapUnderReviewSupportMessage": "Swap em análise\nID do pedido: {orderId}\nID da solicitação: {requestId}\nNúmero do pedido: {orderNumber}",
-  "bitcoinSettingsAutoTransferTitle": "Auto Swap"
+  "bitcoinSettingsAutoTransferTitle": "Auto Swap",
+  "broadcastSignedTxErrorAlreadyInChain": "Esta transação já está na blockchain. Não há mais nada para transmitir.",
+  "broadcastSignedTxErrorRejected": "A rede rejeitou esta transação. Ela pode não estar totalmente assinada, ser inválida ou estar em conflito com outro pagamento.",
+  "broadcastSignedTxErrorOutcomeUnknown": "Não foi possível confirmar que sua transação foi transmitida. Verifique em um explorador de blocos antes de tentar novamente.",
+  "broadcastSignedTxErrorNetworkNotEnabled": "A transmissão nesta rede não está ativada nas configurações atuais."
 }

@@ -1,17 +1,18 @@
-import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
-import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_liquid_transaction_usecase.dart';
+import 'package:bb_mobile/features/sell/domain/retry_payjoin_proposal_usecase.dart';
+import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
+import 'package:bb_mobile/features/send/public/send_facade.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/get_order_usercase.dart';
-import 'package:bb_mobile/core/fees/domain/get_network_fees_usecase.dart';
+import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
+import 'package:bb_mobile/features/exchange/domain/usecases/get_order_usercase.dart';
+import 'package:bb_mobile/features/fees/domain/get_network_fees_usecase.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/bitcoin_wallet_repository.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/liquid_wallet_repository.dart';
+import 'package:bb_mobile/features/wallet/data/bitcoin_wallet_repository.dart';
+import 'package:bb_mobile/features/wallet/data/liquid_wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/calculate_bitcoin_absolute_fees_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_address_at_index_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_utxos_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/prepare_bitcoin_send_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/prepare_bitcoin_send_usecase.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/features/recipients/public/recipients_facade.dart';
 import 'package:bb_mobile/features/sell/domain/broadcast_sell_payin_usecase.dart';
@@ -47,6 +48,9 @@ class SellLocator {
     locator.registerFactory<WatchPayjoinUsecase>(
       () => WatchPayjoinUsecase(locator<PayjoinSessions>()),
     );
+    locator.registerFactory<RetryPayjoinProposalUsecase>(
+      () => RetryPayjoinProposalUsecase(locator<PayjoinSender>()),
+    );
     locator.registerFactory<GetPayjoinUsecase>(
       () => GetPayjoinUsecase(locator<PayjoinSessions>()),
     );
@@ -78,10 +82,8 @@ class SellLocator {
     );
     locator.registerFactory<BroadcastSellPayinUsecase>(
       () => BroadcastSellPayinUsecase(
-        broadcastBitcoinTransactionUsecase:
-            locator<BroadcastBitcoinTransactionUsecase>(),
-        broadcastLiquidTransactionUsecase:
-            locator<BroadcastLiquidTransactionUsecase>(),
+        wallet: locator<WalletFacade>(),
+        send: locator<SendFacade>(),
       ),
     );
     locator.registerFactory<LoadSellContextUsecase>(
@@ -104,6 +106,7 @@ class SellLocator {
     );
     locator.registerFactory<CreateSellOrderUsecase>(
       () => CreateSellOrderUsecase(
+        wallet: locator<WalletFacade>(),
         mainnetExchangeOrderRepository: locator<ExchangeOrderRepository>(
           instanceName: 'mainnetExchangeOrderRepository',
         ),
@@ -158,6 +161,7 @@ class SellLocator {
         sendWithPayjoinUsecase: locator<SendWithPayjoinUsecase>(),
         watchPayjoinUsecase: locator<WatchPayjoinUsecase>(),
         getPayjoinUsecase: locator<GetPayjoinUsecase>(),
+        retryPayjoinProposalUsecase: locator<RetryPayjoinProposalUsecase>(),
         calculateSellLiquidFeesUsecase:
             locator<CalculateSellLiquidFeesUsecase>(),
         loadSellWalletUtxosUsecase: locator<LoadSellWalletUtxosUsecase>(),

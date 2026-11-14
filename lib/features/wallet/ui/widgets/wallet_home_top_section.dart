@@ -1,3 +1,5 @@
+import 'package:bb_mobile/features/settings/public/settings_facade.dart';
+import 'package:primitives/primitives.dart' show NetworkCapability;
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/cards/action_card.dart';
@@ -48,7 +50,10 @@ class WalletHomeTopSection extends StatelessWidget {
             right: 0,
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 13.0),
-              child: ActionCard(),
+              child: NetworkCapabilityVisibility(
+                capability: NetworkCapability.exchange,
+                child: ActionCard(),
+              ),
             ),
           ),
         ],
@@ -156,6 +161,7 @@ class _BtcTotalAmt extends StatelessWidget {
     }
 
     final btcTotal = walletState.totalBalance();
+    if (btcTotal == null) return Text(context.loc.walletLoadFailed);
 
     return CurrencyText(
       btcTotal,
@@ -177,8 +183,10 @@ class _FiatAmt extends StatelessWidget {
         walletState.status == WalletStatus.initial ||
         walletState.status == WalletStatus.loading;
 
+    final total = walletState.totalBalance();
+    if (total == null) return Text(context.loc.walletLoadFailed);
     return HomeFiatBalance(
-      balanceSat: walletState.totalBalance(),
+      balanceSat: total,
       showBalanceLoading: showBalanceLoading,
     );
   }

@@ -5,12 +5,12 @@ import 'dart:typed_data';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/transaction_output.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet_transaction.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:bb_mobile/features/transactions/application/usecases/get_transaction_order_swaps_usecase.dart';
 import 'package:bb_mobile/features/transactions/application/usecases/get_transactions_usecase.dart';
@@ -155,6 +155,36 @@ void main() {
       labelExchangeOrdersUsecase: labelExchangeOrdersUsecase,
       getTransactionOrderSwapsUsecase: getOrderSwaps,
     );
+  });
+
+  test('regtest history reads only its concrete wallet transactions', () async {
+    when(settingsRepository.fetch).thenAnswer(
+      (_) async => const SettingsEntity(
+        environment: Environment.regtest,
+        bitcoinUnit: BitcoinUnit.sats,
+        currencyCode: 'USD',
+      ),
+    );
+    final walletTx = _walletTransaction(
+      txId: 'regtest-tx',
+      walletId: 'regtest-wallet',
+      isIncoming: true,
+    ).copyWith(network: Network.bitcoinRegtest);
+    when(
+      () => walletTransactionRepository.getWalletTransactions(
+        walletId: 'regtest-wallet',
+        sync: false,
+        environment: Environment.regtest,
+      ),
+    ).thenAnswer((_) async => [walletTx]);
+    final rows = unwrap(await usecase.execute(walletId: 'regtest-wallet'));
+    expect(rows.single.walletTransaction, walletTx);
+    expect(rows.single.supportsPublicExplorer, false);
+    verifyZeroInteractions(mainnetOrderRepository);
+    verifyZeroInteractions(testnetOrderRepository);
+    verifyZeroInteractions(payjoinSessions);
+    verifyZeroInteractions(boltzSwapRepository);
+    verifyZeroInteractions(getOrderSwaps);
   });
 
   test(

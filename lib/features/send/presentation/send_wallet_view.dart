@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/entities/signer_device_entity.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:flutter/widgets.dart';
 
 /// What the shared send screens read off the wallet a payment is sent from.
@@ -14,7 +14,7 @@ sealed class SendWalletView {
 
   String get id;
   Network get network;
-  BigInt get balanceSat;
+  BigInt? get balanceSat;
   ScriptType? get scriptType;
   SignerDeviceEntity? get signerDevice;
   String? get derivationPath;
@@ -45,7 +45,7 @@ final class SendWalletBitcoin extends SendWalletView {
   @override
   Network get network => wallet.network;
   @override
-  BigInt get balanceSat => wallet.balanceSat;
+  BigInt? get balanceSat => wallet.balanceSat;
   @override
   ScriptType? get scriptType => wallet.scriptType;
   @override

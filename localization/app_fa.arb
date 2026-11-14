@@ -11284,5 +11284,9 @@
   "swapUnderReviewTitle": "مبادله در حال بررسی",
   "swapUnderReviewDescription": "این مبادله به بررسی دستی نیاز دارد. برای دریافت کمک با پشتیبانی تماس بگیرید. اگر حساب پشتیبانی ندارید، فقط کافی است یکی بسازید؛ KYC لازم نیست.",
   "swapUnderReviewSupportMessage": "مبادله در حال بررسی\nOrder ID: {orderId}\nRequest ID: {requestId}\nOrder number: {orderNumber}",
-  "bitcoinSettingsAutoTransferTitle": "مبادله خودکار"
+  "bitcoinSettingsAutoTransferTitle": "مبادله خودکار",
+  "broadcastSignedTxErrorAlreadyInChain": "این تراکنش از قبل در بلاک‌چین ثبت شده است. چیزی برای انتشار باقی نمانده است.",
+  "broadcastSignedTxErrorRejected": "شبکه این تراکنش را رد کرد. ممکن است به‌طور کامل امضا نشده، نامعتبر یا در تعارض با پرداخت دیگری باشد.",
+  "broadcastSignedTxErrorOutcomeUnknown": "نتوانستیم تأیید کنیم که تراکنش شما منتشر شده است. پیش از تلاش دوباره، آن را در یک کاوشگر بلاک بررسی کنید.",
+  "broadcastSignedTxErrorNetworkNotEnabled": "انتشار در این شبکه در تنظیمات فعلی فعال نیست."
 }

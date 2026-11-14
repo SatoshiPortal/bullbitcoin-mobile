@@ -53,8 +53,7 @@ class _Screen extends StatelessWidget {
         // Wait for the chain sync (bitcoin + liquid + swaps) to actually
         // finish before reloading the local tx list.
         await context.read<WalletBloc>().refresh();
-        if (!context.mounted) return;
-        await context.read<TransactionsCubit>().loadTxs();
+        // The global history reloads from the coordinator's completion signal.
       },
       slivers: [
         const SliverToBoxAdapter(child: TxsFilterRow()),

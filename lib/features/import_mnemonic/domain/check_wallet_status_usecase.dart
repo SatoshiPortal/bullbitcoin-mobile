@@ -1,15 +1,15 @@
+import 'package:bb_mobile/features/wallet/domain/network_x.dart';
 import 'dart:async';
 
 import 'package:bb_mobile/core/electrum/domain/errors/electrum_fallback_exception.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/network_x.dart';
 import 'package:primitives/primitives.dart' as primitives;
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:secrets/secrets.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/bitcoin_wallet_repository.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
+import 'package:bb_mobile/features/wallet/data/bitcoin_wallet_repository.dart';
 import 'package:bb_mobile/core/electrum/domain/ports/electrum_servers_port.dart';
-import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_network.dart';
+import 'package:bb_mobile/features/electrum_settings/domain/electrum_server_network.dart';
 import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 
@@ -37,20 +37,28 @@ class CheckWalletStatusUsecase {
     required String passphrase,
     required Set<ScriptType> scriptTypes,
   }) async {
-    final bool isTestnet;
+    final Network network;
     final Map<primitives.ScriptType, Descriptors> descriptors;
     try {
       final settings = await _settingsRepository.fetch();
-      isTestnet = settings.environment.isTestnet;
+      network = Network.fromEnvironment(
+        environment: settings.environment.networkEnv,
+        isLiquid: false,
+      );
 
       descriptors = switch (await _secrets.preview.bitcoinDescriptors(
         words: words,
         language: language,
         passphrase: passphrase,
-        network: isTestnet
-            ? primitives.BitcoinNetwork.testnet
-            : primitives.BitcoinNetwork.mainnet,
-        scriptTypes: {for (final scriptType in scriptTypes) scriptType.shared},
+        network: network.bitcoin,
+        scriptTypes: {
+          for (final scriptType in scriptTypes)
+            switch (scriptType) {
+              ScriptType.bip84 => primitives.ScriptType.bip84,
+              ScriptType.bip49 => primitives.ScriptType.bip49,
+              ScriptType.bip44 => primitives.ScriptType.bip44,
+            },
+        },
       )) {
         primitives.Ok(:final value) => value,
         // Only the failure's type travels: its message may describe the words.
@@ -81,34 +89,35 @@ class CheckWalletStatusUsecase {
           primitives.ScriptType.bip49 => ScriptType.bip49,
           primitives.ScriptType.bip44 => ScriptType.bip44,
         }: _handled(
-          _scan(
-            descriptors: pair,
-            isTestnet: isTestnet,
-            scriptType: scriptType,
-          ),
+          _scan(descriptors: pair, network: network, scriptType: scriptType),
         ),
     };
   }
 
   Future<({BigInt satoshis, int transactions})> _scan({
     required Descriptors descriptors,
-    required bool isTestnet,
+    required Network network,
     required primitives.ScriptType scriptType,
   }) async {
     final timer = Stopwatch()..start();
     final context =
-        'network=${isTestnet ? 'testnet' : 'mainnet'} script=${scriptType.name}';
+        'network=${network.bitcoin.env.name} script=${scriptType.name}';
     log.fine('Import scan started $context');
     try {
+      if (network == Network.bitcoinRegtest &&
+          scriptType != primitives.ScriptType.bip84) {
+        throw const UnsupportedNetworkException();
+      }
       final result = await _serversPort
           .runWithFallback<({BigInt satoshis, int transactions})>(
-            network: isTestnet
-                ? ElectrumServerNetwork.bitcoinTestnet
-                : ElectrumServerNetwork.bitcoinMainnet,
+            network: ElectrumServerNetwork.fromNetworkEnv(
+              network.bitcoin.env,
+              isLiquid: false,
+            ),
             operation: (connection) => _bitcoinWalletRepository.dryScan(
               externalDescriptor: descriptors.external,
               internalDescriptor: descriptors.internal,
-              isTestnet: isTestnet,
+              network: network,
               electrumServer: connection,
             ),
           );
@@ -120,6 +129,7 @@ class CheckWalletStatusUsecase {
       final reason = switch (e) {
         TimeoutException() => 'timeout',
         ElectrumFallbackException() => 'server_unavailable',
+        UnsupportedNetworkException() => 'unsupported',
         _ => 'unexpected',
       };
       log.warning(

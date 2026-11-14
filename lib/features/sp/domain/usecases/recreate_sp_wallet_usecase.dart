@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/sp/domain/usecases/get_sp_feature_gate_usecase.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/features/sp/domain/repositories/sp_account_repository.dart';
 import 'package:bb_mobile/features/sp/domain/ports/sp_account_files_port.dart';
@@ -13,6 +14,7 @@ import 'package:meta/meta.dart';
 import 'package:secrets/secrets.dart' show Secret;
 
 class RecreateSpWalletUsecase {
+  final GetSpFeatureGateUsecase _getSpFeatureGateUsecase;
   final GetSpSecretUsecase _getSpSecretUsecase;
   final SpAccountRepository _repository;
   final SpAccountFilesPort _files;
@@ -21,6 +23,7 @@ class RecreateSpWalletUsecase {
   final SpSessionGuard _guard;
 
   RecreateSpWalletUsecase({
+    required this._getSpFeatureGateUsecase,
     required this._getSpSecretUsecase,
     required this._repository,
     required this._files,
@@ -42,6 +45,15 @@ class RecreateSpWalletUsecase {
     // Outer boundary: any Exception from the secret/dispose/backup/discardBackup
     // work becomes an Err so execute() is total.
     try {
+      if (!await _getSpFeatureGateUsecase.execute()) {
+        return const Err(SpUnsupportedNetwork());
+      }
+      if (!NetworkCapabilities.supports(
+        network,
+        NetworkCapability.silentPayments,
+      )) {
+        return const Err(SpUnsupportedNetwork());
+      }
       final Secret secret;
       switch (await _getSpSecretUsecase.execute(network)) {
         case Ok(:final value):

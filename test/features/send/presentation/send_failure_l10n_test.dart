@@ -19,6 +19,7 @@ const _rawReason = 'BdkException: secret-detail xprv9s21ZrQH143K3';
 /// is that each arm resolves to a real, non-empty `.arb` value and that no arm
 /// echoes the raw reason — that is what this table locks in.
 final _everyFailure = <SendFailure>[
+  const SendPayjoinPausedFailure(),
   const SendInvalidPaymentRequestFailure(logMessage: _rawReason),
   const SendInvalidPaymentRequestFailure(
     isUnsupportedQr: true,

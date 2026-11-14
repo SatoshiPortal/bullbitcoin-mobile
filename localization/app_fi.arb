@@ -4610,5 +4610,9 @@
   "swapUnderReviewTitle": "Swap tarkistettavana",
   "swapUnderReviewDescription": "Tämä swap vaatii manuaalisen tarkistuksen. Ota yhteyttä tukeen saadaksesi apua. Jos sinulla ei ole tukitiliä, sinun tarvitsee vain luoda sellainen; KYC ei ole pakollinen.",
   "swapUnderReviewSupportMessage": "Swap tarkistettavana\nOrder ID: {orderId}\nRequest ID: {requestId}\nOrder number: {orderNumber}",
-  "bitcoinSettingsAutoTransferTitle": "Automaattinen swap"
+  "bitcoinSettingsAutoTransferTitle": "Automaattinen swap",
+  "broadcastSignedTxErrorAlreadyInChain": "Tämä transaktio on jo lohkoketjussa. Lähetettävää ei ole enää.",
+  "broadcastSignedTxErrorRejected": "Verkko hylkäsi tämän transaktion. Se voi olla puutteellisesti allekirjoitettu, virheellinen tai ristiriidassa toisen maksun kanssa.",
+  "broadcastSignedTxErrorOutcomeUnknown": "Emme voineet vahvistaa, että transaktiosi lähetettiin. Tarkista lohkoselaimesta ennen kuin yrität uudelleen.",
+  "broadcastSignedTxErrorNetworkNotEnabled": "Lähettäminen tässä verkossa ei ole käytössä nykyisissä asetuksissa."
 }

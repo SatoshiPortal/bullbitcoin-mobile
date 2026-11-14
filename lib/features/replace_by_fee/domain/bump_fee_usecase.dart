@@ -1,9 +1,12 @@
-import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
+import 'package:bb_mobile/features/wallet/public/wallet_facade.dart'
+    show WalletSpendBlockedException, BitcoinSpendStatus;
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
+import 'package:bb_mobile/features/send/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
-import 'package:bb_mobile/core/fees/domain/get_network_fees_usecase.dart';
+import 'package:bb_mobile/features/fees/domain/get_network_fees_usecase.dart';
 import 'package:bull_logger/bull_logger.dart';
-import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/bitcoin_wallet_repository.dart';
+import 'package:primitives/primitives.dart' hide Network;
+import 'package:bb_mobile/features/wallet/data/bitcoin_wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/manipulated_transaction_exception.dart';
 import 'package:bb_mobile/core/wallet/domain/transaction_signature_status.dart';
 import 'package:bb_mobile/core/wallet/domain/unverifiable_transaction_exception.dart';
@@ -68,6 +71,7 @@ class BumpFeeUsecase {
     required String walletId,
     required String txid,
     required RelativeFee newFeeRate,
+    required Network network,
   }) async {
     try {
       final psbt = await _bitcoinWalletRepository.bumpFee(
@@ -78,8 +82,17 @@ class BumpFeeUsecase {
       final broadcastedTxid = await _broadcastBitcoinTransactionUsecase.execute(
         psbt,
         isPsbt: true,
+        network: network,
+        walletId: walletId,
       );
       return Ok(broadcastedTxid);
+    } on WalletSpendBlockedException catch (e) {
+      return Err(
+        ReplaceByFeeSpendBlockedFailure(
+          replacementPending: e.status == BitcoinSpendStatus.replacementPending,
+          busy: e.status == BitcoinSpendStatus.busy,
+        ),
+      );
     } on ManipulatedTransactionException catch (e, st) {
       log.severe(
         message: 'Refused to bump a transaction with invalid signatures',

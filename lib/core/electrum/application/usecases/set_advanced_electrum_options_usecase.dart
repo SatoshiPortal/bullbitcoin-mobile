@@ -1,6 +1,6 @@
 import 'package:bb_mobile/core/electrum/application/dtos/requests/set_advanced_electrum_options_request.dart';
 import 'package:bb_mobile/core/electrum/domain/entities/electrum_settings.dart';
-import 'package:bb_mobile/core/electrum/domain/errors/electrum_failure.dart';
+import 'package:bb_mobile/features/electrum_settings/domain/electrum_failure.dart';
 import 'package:bb_mobile/core/electrum/domain/errors/electrum_settings_exception.dart';
 import 'package:bb_mobile/core/electrum/domain/repositories/electrum_settings_repository.dart';
 import 'package:bull_logger/bull_logger.dart';

@@ -11287,5 +11287,9 @@
   "swapUnderReviewTitle": "المبادلة قيد المراجعة",
   "swapUnderReviewDescription": "تتطلب هذه المبادلة مراجعة يدوية. تواصل مع الدعم للحصول على المساعدة. إذا لم يكن لديك حساب دعم، فعليك فقط إنشاء حساب؛ لا يلزم KYC.",
   "swapUnderReviewSupportMessage": "المبادلة قيد المراجعة\nمعرّف الطلبية: {orderId}\nمعرّف الطلب: {requestId}\nرقم الطلبية: {orderNumber}",
-  "bitcoinSettingsAutoTransferTitle": "المبادلة التلقائية"
+  "bitcoinSettingsAutoTransferTitle": "المبادلة التلقائية",
+  "broadcastSignedTxErrorAlreadyInChain": "هذه المعاملة موجودة بالفعل في سلسلة الكتل. لم يتبقَّ شيء لبثه.",
+  "broadcastSignedTxErrorRejected": "رفضت الشبكة هذه المعاملة. قد تكون غير مكتملة التوقيع أو غير صالحة أو متعارضة مع دفعة أخرى.",
+  "broadcastSignedTxErrorOutcomeUnknown": "لم نتمكن من التأكد من بث معاملتك. تحقق من مستكشف الكتل قبل المحاولة مرة أخرى.",
+  "broadcastSignedTxErrorNetworkNotEnabled": "البث على هذه الشبكة غير مفعّل في الإعدادات الحالية."
 }

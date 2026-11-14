@@ -23,6 +23,18 @@ void main() {
 
   group('encode — freeze projected onto spendable', () {
     test(
+      'regtest exports the derivation origin without its internal suffix',
+      () {
+        final encoded = codec.encode(
+          const [],
+          frozen: [(walletId: '$walletId:regtest', txId: txId, vout: 0)],
+        );
+        expect(lines(encoded).single['origin'], bip329Origin);
+        expect(encoded, isNot(contains(':regtest')));
+      },
+    );
+
+    test(
       'frozen-but-unlabeled coin → bare output record (spendable:false)',
       () {
         final jsonl = codec.encode(

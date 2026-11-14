@@ -47,7 +47,21 @@ class CreateBuyOrderUsecase {
   }) async {
     try {
       final settings = await _settingsRepository.fetch();
-      final isTestnet = settings.environment.isTestnet;
+      final environment = settings.environment.networkEnv;
+      final exchangeNetwork = switch (environment) {
+        NetworkEnv.mainnet => BitcoinNetwork.mainnet,
+        NetworkEnv.testnet => BitcoinNetwork.testnet,
+        NetworkEnv.regtest => BitcoinNetwork.regtest,
+        NetworkEnv.signet => BitcoinNetwork.signet,
+      };
+      if (!NetworkCapabilities.supports(
+        exchangeNetwork,
+        NetworkCapability.exchange,
+      )) {
+        log.warning('Capability refused feature=buy reason=unsupported');
+        return const Err(BuyUnsupportedNetworkFailure());
+      }
+      final isTestnet = environment == NetworkEnv.testnet;
       final repo = isTestnet
           ? _testnetExchangeOrderRepository
           : _mainnetExchangeOrderRepository;

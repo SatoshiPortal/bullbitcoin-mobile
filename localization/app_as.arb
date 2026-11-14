@@ -8660,5 +8660,9 @@
   "swapUnderReviewTitle": "Swap পৰ্যালোচনাধীন",
   "swapUnderReviewDescription": "এই Swap ৰ বাবে হাতে-কলমে পৰ্যালোচনাৰ প্ৰয়োজন। সহায়তাৰ বাবে সহায়তা দলৰ সৈতে যোগাযোগ কৰক। আপোনাৰ সহায়তা একাউন্ট নাথাকিলে, আপুনি কেৱল এটা সৃষ্টি কৰিলেই হ'ব; KYC প্ৰয়োজন নাই।",
   "swapUnderReviewSupportMessage": "Swap পৰ্যালোচনাধীন\nঅৰ্ডাৰ আইডি: {orderId}\nৰিকুৱেষ্ট আইডি: {requestId}\nঅৰ্ডাৰ নম্বৰ: {orderNumber}",
-  "bitcoinSettingsAutoTransferTitle": "স্বয়ংক্ৰিয় Swap"
+  "bitcoinSettingsAutoTransferTitle": "স্বয়ংক্ৰিয় Swap",
+  "broadcastSignedTxErrorAlreadyInChain": "এই লেনদেনটো ইতিমধ্যে ব্লকচেইনত আছে। সম্প্ৰচাৰ কৰিবলৈ একো বাকী নাই।",
+  "broadcastSignedTxErrorRejected": "নেটৱৰ্কে এই লেনদেনটো নাকচ কৰিলে। ই হয়তো সম্পূৰ্ণভাৱে স্বাক্ষৰিত নহয়, অবৈধ, বা আন এটা পৰিশোধৰ সৈতে সংঘাতত আছে।",
+  "broadcastSignedTxErrorOutcomeUnknown": "আপোনাৰ লেনদেন সম্প্ৰচাৰ হৈছে নে নাই নিশ্চিত কৰিব পৰা নগ'ল। পুনৰ চেষ্টা কৰাৰ আগতে এটা ব্লক এক্সপ্ল'ৰাৰত পৰীক্ষা কৰক।",
+  "broadcastSignedTxErrorNetworkNotEnabled": "বৰ্তমানৰ ছেটিংছত এই নেটৱৰ্কত সম্প্ৰচাৰ সক্ৰিয় কৰা হোৱা নাই।"
 }
