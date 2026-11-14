@@ -369,6 +369,122 @@ void main() {
       expect(writer.allowInitialScan, [false]);
     },
   );
+
+  for (final (failure, optOut, category, retried) in [
+    (const BackgroundTasksStorageFailure(), false, 'queue_storage', true),
+    (const BackgroundTasksClaimLostFailure(), false, 'claim_lost', false),
+    // Opt-out still wins: the user stopped background work.
+    (const BackgroundTasksStorageFailure(), true, 'queue_storage', false),
+  ]) {
+    test(
+      'a ${failure.runtimeType} release after admission retries=$retried (optOut=$optOut)',
+      () async {
+        writer.operation = () async => Ok(outcome());
+        final clock = _Clock();
+        final failing = _FailingRelease(queue, failure, () async {
+          if (optOut) {
+            expect(
+              await const SharedPreferencesBackgroundSyncIntervalRepository()
+                  .write(BackgroundSyncInterval.off),
+              isA<Ok>(),
+            );
+          } else {
+            clock.elapsedValue = const Duration(seconds: 10);
+          }
+        });
+
+        final result = await RunWalletSyncJobsUsecase(
+          wallets: writer,
+          revisions: revisions,
+          keys: [key],
+          queue: failing,
+          intervals: const SharedPreferencesBackgroundSyncIntervalRepository(),
+          announcements: announcements,
+          logger: logs,
+          runBudget: const Duration(seconds: 10),
+        ).execute(clock: clock);
+
+        expect(result.shouldRetry, retried);
+        expect(failing.released, 1);
+        expect(writer.allowInitialScan, isEmpty);
+        expect(
+          logs.entries,
+          contains((
+            BackgroundLogLevel.warning,
+            'Background claim release failed: category=$category',
+          )),
+        );
+      },
+    );
+  }
+}
+
+/// Delegates to the real queue, runs [_afterClaim] once a claim is granted,
+/// and fails every release with [_failure].
+final class _FailingRelease implements WalletSyncJobQueueRepository {
+  final WalletSyncJobQueueRepository _queue;
+  final BackgroundTasksFailure _failure;
+  final Future<void> Function() _afterClaim;
+  int released = 0;
+
+  _FailingRelease(this._queue, this._failure, this._afterClaim);
+
+  @override
+  Duration get leaseDuration => _queue.leaseDuration;
+
+  @override
+  Future<Result<List<WalletSyncJobClaim>, BackgroundTasksFailure>>
+  reconcileAndClaim(
+    Iterable<WalletRevision> jobs, {
+    required WalletSyncChain chain,
+    int maxJobs = 2,
+    Iterable<WalletKey> excluding = const [],
+    Iterable<WalletKey> unavailable = const [],
+  }) async {
+    final claimed = await _queue.reconcileAndClaim(
+      jobs,
+      chain: chain,
+      maxJobs: maxJobs,
+      excluding: excluding,
+      unavailable: unavailable,
+    );
+    if (claimed case Ok(:final value) when value.isNotEmpty) {
+      await _afterClaim();
+    }
+    return claimed;
+  }
+
+  @override
+  Future<Result<void, BackgroundTasksFailure>> release(
+    WalletSyncJobClaim claim,
+  ) async {
+    released++;
+    return Err(_failure);
+  }
+
+  @override
+  Future<Result<void, BackgroundTasksFailure>> renew(
+    WalletSyncJobClaim claim,
+  ) => _queue.renew(claim);
+
+  @override
+  Future<Result<void, BackgroundTasksFailure>> completeSuccess(
+    WalletSyncJobClaim claim,
+  ) => _queue.completeSuccess(claim);
+
+  @override
+  Future<Result<void, BackgroundTasksFailure>> completeFailure(
+    WalletSyncJobClaim claim, {
+    required bool permanent,
+    WalletRevision? failedRevision,
+  }) => _queue.completeFailure(
+    claim,
+    permanent: permanent,
+    failedRevision: failedRevision,
+  );
+
+  @override
+  Future<void> close() => _queue.close();
 }
 
 final class _Clock implements Stopwatch {
