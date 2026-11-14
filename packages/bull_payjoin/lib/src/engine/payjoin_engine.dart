@@ -386,6 +386,27 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       },
     );
 
+    // The POST handed the receiver a fully signed, broadcastable original.
+    // BIP 77 lets the receiver broadcast it at any point and gives the sender
+    // no way to revoke it, so from here this payment can exist without this
+    // device ever reaching the bitcoin network: record it as network
+    // evidence. Expiry then keeps the row reserved and replays this same
+    // original (_processExpiredPayjoinInner, _holdUnresolvedOriginal) instead
+    // of releasing its inputs to a rebuild that would not conflict with the
+    // receiver's copy. Best effort: a failed write is logged and leaves the
+    // row as it was; the POST is not undone by it.
+    try {
+      await _recordSenderNetworkEvidence(model.id);
+    } catch (e, st) {
+      _log.warning(
+        code: api.PayjoinLogCode.storageFailure,
+        role: api.PayjoinLogRole.sender,
+        sessionRef: model.toEntity().logRef,
+        error: e,
+        trace: st,
+      );
+    }
+
     // The datasource returned the session in its post-POST state
     // (PollingForProposal); the write-ahead persist above stored the
     // pre-POST one. Bring the row to the live state so a resume replays
@@ -1745,12 +1766,14 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       //  but not recorded). The session stays unfinished and reserved, and is
       //  not sent again in this run.
       //
-      //  No evidence: the port proved nothing reached the network. Persist the
-      //  expiry so the session becomes terminal on our side. Two things
+      //  No evidence: the port proved nothing reached the network, and the
+      //  original never reached the receiver either (a delivered original is
+      //  recorded as evidence at creation, see createPayjoinSender). Persist
+      //  the expiry so the session becomes terminal on our side. Two things
       //  follow, and they are inseparable. It releases this session's inputs —
       //  the freeze reads `onlyUnfinished`, so an unfinished row locks those
       //  coins out of every send in the app, not just this order, for a
-      //  payment we could not even hand to the network. And because they are
+      //  payment nobody can put on the network. And because they are
       //  released the user can rebuild the payment on other coins, which is
       //  exactly why this original is never sent again once expired (see the
       //  sender sweep in _resumePayjoinsOnStartupUnguarded): the two would not

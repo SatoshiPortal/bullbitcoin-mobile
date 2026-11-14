@@ -981,6 +981,64 @@ void main() {
     expect((await local.fetchSender(posted.id))?.sender, posted.sender);
   });
 
+  test('a delivered original is recorded as network evidence', () async {
+    final prePost = sender().copyWith(sender: '["pre-post"]');
+    final posted = prePost.copyWith(sender: '["posted"]');
+    stubCreateSender(prePost, posted);
+
+    await engine.createPayjoinSender(
+      walletId: posted.walletId,
+      isTestnet: true,
+      bip21: posted.id,
+      originalPsbt: posted.originalPsbt,
+      amountSat: posted.amountSat,
+      networkFeesSatPerVb: 1,
+    );
+
+    // The receiver now holds a signed, broadcastable original that this
+    // device cannot revoke: the row must never be released on expiry.
+    expect((await local.fetchSender(posted.id))?.hasNetworkEvidence, isTrue);
+  });
+
+  test('a post that failed after the write-ahead leaves no evidence', () async {
+    final prePost = sender().copyWith(sender: '["pre-post"]');
+    when(
+      () => pdk.createSender(
+        walletId: any(named: 'walletId'),
+        isTestnet: any(named: 'isTestnet'),
+        bip21: any(named: 'bip21'),
+        originalPsbt: any(named: 'originalPsbt'),
+        networkFeesSatPerVb: any(named: 'networkFeesSatPerVb'),
+        amountSat: any(named: 'amountSat'),
+        expireAfterSec: any(named: 'expireAfterSec'),
+        persistBeforePost: any(named: 'persistBeforePost'),
+      ),
+    ).thenAnswer((inv) async {
+      final persist =
+          inv.namedArguments[#persistBeforePost]
+              as Future<void> Function(PayjoinSenderModel);
+      await persist(prePost);
+      throw SendCreationException('relay down');
+    });
+
+    await expectLater(
+      engine.createPayjoinSender(
+        walletId: prePost.walletId,
+        isTestnet: true,
+        bip21: prePost.id,
+        originalPsbt: prePost.originalPsbt,
+        amountSat: prePost.amountSat,
+        networkFeesSatPerVb: 1,
+      ),
+      throwsA(isA<SendCreationException>()),
+    );
+
+    // Nobody but this device holds the original: expiry may still release it.
+    final row = await local.fetchSender(prePost.id);
+    expect(row, isNotNull);
+    expect(row?.hasNetworkEvidence, isFalse);
+  });
+
   test('a new sender replaces any poll a resume armed meanwhile', () async {
     final prePost = sender().copyWith(sender: '["pre-post"]');
     final posted = prePost.copyWith(sender: '["posted"]');
@@ -1459,6 +1517,28 @@ void main() {
           psbt: any(named: 'psbt'),
         ),
       ).called(1);
+    });
+
+    test('stays reserved when its original was delivered to the receiver '
+        'and the fallback provably sent nothing', () async {
+      final model = expiredSender().copyWith(hasNetworkEvidence: true);
+      await local.storeSender(model);
+      originalFailsWith(const PayjoinBroadcastNotAttemptedException());
+
+      await engine.resumePayjoinsOnStartup();
+
+      // The receiver holds a signed original it may broadcast at any time
+      // (BIP 77): releasing these inputs would let a rebuilt payment confirm
+      // alongside it.
+      final row = await local.fetchSender(model.id);
+      expect(row?.hasNetworkEvidence, isTrue);
+      expect(row?.isExpired, isFalse);
+      expect(row?.isAborted, isFalse);
+      expect(await engine.getUtxosFrozenByOngoingPayjoins(), hasLength(1));
+      expect(
+        engine.proposalSpendFailure(model.id),
+        isA<PayjoinSpendBlockedFailure>(),
+      );
     });
 
     test('stays reserved when the fallback failed with an unknown '
