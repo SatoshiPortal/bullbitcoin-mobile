@@ -11,6 +11,8 @@ import 'package:transaction_sync/transaction_sync.dart';
 import 'package:transaction_sync/write.dart';
 import 'package:transaction_sync/src/write/native_write_session.dart';
 import 'package:transaction_sync/src/write/revision_store.dart';
+import 'package:transaction_sync/src/write/writer_diagnostics.dart';
+import 'package:transaction_sync/src/write/writer_session.dart';
 
 final key = WalletKey(id: 'test', network: LiquidNetwork.testnet);
 final descriptor = LiquidWalletDescriptor(
@@ -179,6 +181,7 @@ void main() {
   late Sessions sessions;
   late Reserved reserved;
   late NativeWalletWriter writer;
+  late WriterSession session;
   setUp(() async {
     dir = Directory.systemTemp.createTempSync('writer-test-');
     store = RevisionStore('${dir.path}/metadata.sqlite');
@@ -190,6 +193,12 @@ void main() {
       catalog: Catalog(),
       reservedAddresses: reserved,
       sessions: sessions,
+    );
+    session = WriterSession.app(
+      lockDirectory: '${dir.path}/locks',
+      revisions: store,
+      sessions: sessions,
+      catalog: Catalog(),
     );
     expect(await writer.create(key, expectedGeneration: 0), isA<Ok>());
   });
@@ -351,7 +360,7 @@ void main() {
   test('connection failure category survives persisted redaction', () async {
     await initializeLogging(directory: dir);
     expect(
-      await writer.sync(
+      await session.sync(
         key,
         expectedGeneration: 1,
         operation: FailedSync(true),
@@ -366,13 +375,13 @@ void main() {
 
   test('worker writer leaves terminal failure to the engine', () async {
     await initializeLogging(directory: dir);
-    final worker = NativeWalletWriter.withSessions(
+    final worker = WriterSession.worker(
       lockDirectory: '${dir.path}/locks',
       revisions: store,
-      catalog: Catalog(),
-      reservedAddresses: reserved,
       sessions: sessions,
-      reportFailures: false,
+      descriptor: descriptor,
+      diagnostics: persistWriterDiagnostic,
+      leaseScope: LeaseScope.compute,
     );
     expect(
       await worker.sync(
@@ -400,7 +409,7 @@ void main() {
     'failed sync releases the writer; hydration can briefly contend',
     () async {
       expect(
-        await writer.sync(
+        await session.sync(
           key,
           expectedGeneration: 1,
           operation: FailedSync(false),
@@ -412,7 +421,7 @@ void main() {
       final lease = (admission as Ok<ReadLease, TransactionSyncFailure>).value;
       try {
         expect(
-          await writer.sync(
+          await session.sync(
             key,
             expectedGeneration: 1,
             operation: Sync((_) {}),
@@ -427,7 +436,7 @@ void main() {
         await lease.release();
       }
       expect(
-        await writer.sync(key, expectedGeneration: 1, operation: Sync((_) {})),
+        await session.sync(key, expectedGeneration: 1, operation: Sync((_) {})),
         isA<Ok>(),
       );
     },
@@ -435,7 +444,7 @@ void main() {
 
   test('headless retries syncFailed without reconciliation', () async {
     expect(
-      await writer.sync(
+      await session.sync(
         key,
         expectedGeneration: 1,
         operation: FailedSync(true),
@@ -447,7 +456,7 @@ void main() {
     final opens = sessions.opens;
     var ran = false;
     expect(
-      await writer.sync(
+      await session.sync(
         key,
         expectedGeneration: 1,
         reconcile: false,
@@ -490,7 +499,7 @@ void main() {
     'repair failure carries the stamp observed while holding the lease',
     () async {
       final before = store.record(key)?.state.stamp;
-      final result = await writer.sync(
+      final result = await session.sync(
         key,
         expectedGeneration: 1,
         operation: RepairSync(),
@@ -511,7 +520,7 @@ void main() {
     store.begin(key, WriteIntent.sync);
     final before = store.record(key);
     final opens = sessions.opens;
-    final result = await writer.sync(
+    final result = await session.sync(
       key,
       expectedGeneration: 1,
       reconcile: false,
@@ -525,7 +534,7 @@ void main() {
 
   test('initial scan rejection precedes durable intent', () async {
     final before = store.record(key)?.state.stamp;
-    final result = await writer.sync(
+    final result = await session.sync(
       key,
       expectedGeneration: 1,
       reconcile: false,
@@ -617,7 +626,7 @@ void main() {
     'unchanged successful sync preserves revision but publishes recovery',
     () async {
       final before = store.record(key)?.state.stamp;
-      final unchanged = await writer.sync(
+      final unchanged = await session.sync(
         key,
         expectedGeneration: 1,
         operation: UnchangedSync(),
@@ -631,7 +640,7 @@ void main() {
       expect(store.record(key)?.state.syncFailed, isFalse);
       expect(store.record(key)?.intent, isNull);
       expect(
-        await writer.sync(
+        await session.sync(
           key,
           expectedGeneration: 1,
           operation: FailedSync(false),
@@ -639,7 +648,7 @@ void main() {
         isA<Err>(),
       );
       expect(store.record(key)?.state.syncFailed, isTrue);
-      final recovered = await writer.sync(
+      final recovered = await session.sync(
         key,
         expectedGeneration: 1,
         operation: UnchangedSync(),
@@ -660,7 +669,7 @@ void main() {
     test('failed sync clears intent with mutation=$mutated', () async {
       final before = store.record(key)?.state.stamp.revision;
       expect(
-        await writer.sync(
+        await session.sync(
           key,
           expectedGeneration: 1,
           operation: FailedSync(mutated),
@@ -798,7 +807,7 @@ void main() {
       expect(store.record(key)?.issued, 3);
       expect(store.record(key)?.needsSync, isTrue);
       expect(await writer.receive(key, expectedGeneration: 1), isA<Err>());
-      final result = await writer.sync(
+      final result = await session.sync(
         key,
         expectedGeneration: 1,
         operation: Sync((issued) {
@@ -846,6 +855,12 @@ void main() {
           reservedAddresses: reserved,
           sessions: sessions,
         );
+    WriterSession syncing(RevisionStore revisions) => WriterSession.app(
+      lockDirectory: '${dir.path}/locks',
+      revisions: revisions,
+      sessions: sessions,
+      catalog: catalog,
+    );
     BitcoinSpendGate gate(RevisionStore revisions) => BitcoinSpendGate(
       revisions: revisions,
       lockDirectory: '${dir.path}/locks',
@@ -862,7 +877,7 @@ void main() {
     final reopened = RevisionStore('${dir.path}/metadata.sqlite');
     addTearDown(reopened.close);
     expect(
-      await writing(
+      await syncing(
         reopened,
       ).sync(key, expectedGeneration: 1, operation: Sync((_) {})),
       isA<Ok>(),
@@ -872,7 +887,7 @@ void main() {
       BitcoinSpendStatus.unavailable,
     );
     expect(
-      await writing(
+      await syncing(
         reopened,
       ).sync(bitcoin.key, expectedGeneration: 1, operation: Sync((_) {})),
       isA<Err<WriterOutcome, TransactionSyncFailure>>().having(

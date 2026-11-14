@@ -1,4 +1,7 @@
+import 'package:transaction_sync/src/write/lease_diagnostics.dart';
 import 'package:transaction_sync/src/write/native_write_session.dart';
+import 'package:transaction_sync/src/write/writer_diagnostics.dart';
+import 'package:transaction_sync/src/write/writer_session.dart';
 import 'dart:io';
 
 import 'package:primitives/primitives.dart';
@@ -88,7 +91,14 @@ void main() {
             isA<Ok>(),
           );
           expect(
-            await writer.sync(_key, expectedGeneration: 0, operation: _Sync()),
+            await WriterSession.worker(
+              lockDirectory: '${dir.path}/locks',
+              revisions: revisions,
+              sessions: sessions,
+              descriptor: _descriptor,
+              diagnostics: persistWriterDiagnostic,
+              leaseScope: LeaseScope.compute,
+            ).sync(_key, expectedGeneration: 0, operation: _Sync()),
             isA<Ok>(),
           );
           final result = await writer.receive(_key, expectedGeneration: 0);

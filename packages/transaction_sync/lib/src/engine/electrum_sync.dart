@@ -12,18 +12,17 @@ import 'package:flutter/foundation.dart';
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
 
-import '../write/native_wallet_writer.dart';
+import '../write/native_write_session.dart';
 import '../write/revision_store.dart';
 import '../write/writer_paths.dart';
+import '../write/writer_session.dart';
 import '../write/writer_sync_operation.dart';
 import '../domain/native_network_policy.dart';
 import '../domain/sync_completion.dart';
 import '../domain/sync_reason.dart';
 import '../domain/wallet_revision.dart';
-import '../domain/ports/reserved_address_port.dart';
 import '../domain/transaction_sync_failure.dart';
 import '../domain/public_wallet_descriptor.dart';
-import '../domain/ports/wallet_catalog_port.dart';
 import '../domain/ports/wallet_connection_port.dart';
 import '../domain/wallet_key.dart';
 import 'bdk_electrum_cache.dart';
@@ -342,13 +341,11 @@ Future<_Attempt> _performSync(_SyncParams params) async {
     writerMetadataPath(params.root),
     existingOnly: params.headless,
   );
-  final writer = NativeWalletWriter(
+  final writer = WriterSession.worker(
     lockDirectory: writerLockDirectory(params.root),
     revisions: revisions,
-    documentsDirectory: params.root,
-    catalog: _DescriptorCatalog(params.descriptor),
-    reservedAddresses: _NoReceiveReservations(),
-    reportFailures: false,
+    sessions: SdkWriteSessions(params.root),
+    descriptor: params.descriptor,
     leaseScope: params.headless ? LeaseScope.headless : LeaseScope.compute,
     diagnostics: (level, message) => params.diagnostics.send((
       level,
@@ -489,28 +486,6 @@ final class _NativeSyncOperation
       Err(:final failure) => Err(failure),
     };
   }
-}
-
-final class _DescriptorCatalog implements WalletCatalogPort {
-  final PublicWalletDescriptor descriptor;
-  _DescriptorCatalog(this.descriptor);
-  @override
-  Future<Result<PublicWalletDescriptor, TransactionSyncFailure>> find(
-    WalletKey key,
-  ) async => key == descriptor.key
-      ? Ok(descriptor)
-      : const Err(TransactionSyncNotFoundFailure());
-  @override
-  Future<Result<List<PublicWalletDescriptor>, TransactionSyncFailure>>
-  list() async => Ok([descriptor]);
-}
-
-final class _NoReceiveReservations implements ReservedAddressPort {
-  @override
-  Future<Result<bool, TransactionSyncFailure>> isReserved(
-    WalletKey key,
-    String address,
-  ) => throw StateError('Sync cannot issue receive addresses');
 }
 
 Future<_Attempt> _performNativeSync(
