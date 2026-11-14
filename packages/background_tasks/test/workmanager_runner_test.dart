@@ -17,7 +17,7 @@ void main() {
         isA<Ok>(),
       );
       final logger = _Logger();
-      final runner = await BackgroundTasksLocator.setup(
+      final runner = await BackgroundTaskRunner.forTask(
         task: BackgroundTask.walletsSync,
         logger: logger,
         intervals: const SharedPreferencesBackgroundSyncIntervalRepository(),
@@ -56,7 +56,7 @@ void main() {
     final events = <String>[];
     final result = await mapBackgroundTaskResult(
       BackgroundTask.logsPrune.id,
-      (task) => BackgroundTasksLocator.setup(
+      (task) => BackgroundTaskRunner.forTask(
         task: task,
         logger: _Logger(),
         intervals: const SharedPreferencesBackgroundSyncIntervalRepository(),
@@ -83,7 +83,7 @@ void main() {
     final events = <String>[];
     final startupFailure = Exception('startup');
     await expectLater(
-      BackgroundTasksLocator.setup(
+      BackgroundTaskRunner.forTask(
         task: BackgroundTask.walletsSync,
         logger: _Logger(),
         intervals: const SharedPreferencesBackgroundSyncIntervalRepository(),
@@ -115,7 +115,7 @@ void main() {
   });
 }
 
-final class _Logger implements BackgroundTaskLogger {
+final class _Logger implements BackgroundTaskLoggerPort {
   final messages = <String>[];
   @override
   void write(BackgroundLogLevel level, String message) => messages.add(message);

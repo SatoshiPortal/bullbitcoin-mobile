@@ -2,7 +2,7 @@ import 'package:background_tasks/background_tasks.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class Scheduler implements BackgroundTaskScheduler {
+class Scheduler implements BackgroundTaskSchedulerPort {
   bool failInitialization = false;
   bool initialized = false;
   final cancelled = <String>[];
@@ -42,7 +42,6 @@ void main() {
       await applyBackgroundTaskSchedule(
         dispatcher: () {},
         intervals: const SharedPreferencesBackgroundSyncIntervalRepository(),
-        desktopScheduler: scheduler,
         scheduler: scheduler,
       );
       expect(scheduler.registered, isEmpty);
@@ -58,7 +57,6 @@ void main() {
       applyBackgroundTaskSchedule(
         dispatcher: () {},
         intervals: const SharedPreferencesBackgroundSyncIntervalRepository(),
-        desktopScheduler: scheduler,
         scheduler: scheduler,
       ),
       throwsStateError,
@@ -73,7 +71,6 @@ void main() {
       await applyBackgroundTaskSchedule(
         dispatcher: () {},
         intervals: const SharedPreferencesBackgroundSyncIntervalRepository(),
-        desktopScheduler: scheduler,
         scheduler: scheduler,
         enabled: true,
       );

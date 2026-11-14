@@ -81,7 +81,6 @@ void main() {
                   intervals:
                       const SharedPreferencesBackgroundSyncIntervalRepository(),
                   scheduler: scheduler,
-                  desktopScheduler: scheduler,
                   enabled: true,
                 ),
               ),
@@ -130,7 +129,6 @@ void main() {
         dispatcher: () {},
         intervals: const SharedPreferencesBackgroundSyncIntervalRepository(),
         scheduler: scheduler,
-        desktopScheduler: scheduler,
         enabled: true,
       ),
     );
@@ -167,7 +165,6 @@ void main() {
         dispatcher: () {},
         intervals: const SharedPreferencesBackgroundSyncIntervalRepository(),
         scheduler: scheduler,
-        desktopScheduler: scheduler,
         enabled: true,
       ),
     );
@@ -203,7 +200,6 @@ void main() {
           dispatcher: () {},
           intervals: const SharedPreferencesBackgroundSyncIntervalRepository(),
           scheduler: scheduler,
-          desktopScheduler: scheduler,
           enabled: true,
         ),
       );
@@ -234,7 +230,6 @@ void main() {
         dispatcher: () {},
         intervals: const SharedPreferencesBackgroundSyncIntervalRepository(),
         scheduler: scheduler,
-        desktopScheduler: scheduler,
         enabled: true,
       ),
     );
@@ -364,7 +359,7 @@ void main() {
   );
 }
 
-class Scheduler implements BackgroundTaskScheduler {
+class Scheduler implements BackgroundTaskSchedulerPort {
   Duration? frequency;
   bool registered = true;
   bool failCancellation = false;

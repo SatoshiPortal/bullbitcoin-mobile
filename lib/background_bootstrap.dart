@@ -17,7 +17,7 @@ Future<BackgroundTaskRunner> bootstrapBackgroundRunner(
   final documents = await getApplicationDocumentsDirectory();
   await initializeLogging(directory: documents, background: true);
   final logger = LoggerBackgroundTaskLogger(log);
-  return BackgroundTasksLocator.setup(
+  return BackgroundTaskRunner.forTask(
     task: task,
     logger: logger,
     intervals: const SharedPreferencesBackgroundSyncIntervalRepository(),

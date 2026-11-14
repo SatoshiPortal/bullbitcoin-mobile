@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:primitives/primitives.dart';
 import 'package:transaction_sync/transaction_sync.dart';
 
-import '../background_task_logger.dart';
+import 'ports/background_task_logger_port.dart';
 import 'background_sync_interval.dart';
 import 'background_task_execution_result.dart';
 import 'background_tasks_failure.dart';
@@ -27,7 +27,7 @@ final class RunWalletSyncJobsUsecase {
 
   /// Null when notifications are unavailable for this run.
   final PaymentAnnouncementPort? _announcements;
-  final BackgroundTaskLogger _logger;
+  final BackgroundTaskLoggerPort _logger;
   final int maxJobsPerChain;
   final Duration? runBudget;
   final Duration renewalInterval;

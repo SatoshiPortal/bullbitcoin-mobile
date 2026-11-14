@@ -1,19 +1,46 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:background_tasks/src/domain/repositories/background_sync_interval_repository.dart';
-import 'package:background_tasks/src/domain/background_task.dart';
-import 'package:background_tasks/src/background_task_workmanager_adapter.dart';
 import 'package:bull_logger/bull_logger.dart' show log;
+import 'package:workmanager/workmanager.dart';
 
-/// Admit one background wallet at a time. Native exclusion belongs to the writer.
-const backgroundWalletSyncConcurrency = 1;
+import '../domain/background_task.dart';
+import '../domain/ports/background_task_scheduler_port.dart';
+import '../domain/repositories/background_sync_interval_repository.dart';
 
-/// iOS ends a refresh task after about 30 s, Android a worker after 10 min;
-/// the budget leaves room for startup and for delivering notifications.
-final backgroundRunBudget = Platform.isIOS
-    ? const Duration(seconds: 20)
-    : const Duration(minutes: 8);
+final class WorkmanagerScheduler implements BackgroundTaskSchedulerPort {
+  final Workmanager _workmanager;
+
+  WorkmanagerScheduler() : _workmanager = Workmanager();
+
+  @override
+  Future<void> initialize(BackgroundTaskDispatcher dispatcher) =>
+      _workmanager.initialize(dispatcher);
+
+  @override
+  Future<void> cancelByUniqueName(String uniqueName) =>
+      _workmanager.cancelByUniqueName(uniqueName);
+
+  @override
+  Future<void> registerPeriodic({
+    required String uniqueName,
+    required String taskName,
+    required Duration frequency,
+    required bool requiresNetwork,
+    Duration? initialDelay,
+  }) => _workmanager.registerPeriodicTask(
+    uniqueName,
+    taskName,
+    frequency: frequency,
+    initialDelay: initialDelay,
+    constraints: requiresNetwork
+        ? Constraints(networkType: NetworkType.connected)
+        : null,
+    // UPDATE applies a new interval to work already scheduled on the device;
+    // KEEP would leave it on the interval it was first registered with.
+    existingWorkPolicy: ExistingPeriodicWorkPolicy.update,
+  );
+}
 
 // Serialize OS mutations across settings screens and startup. Initialization is
 // outside this queue so an obsolete suspended initialization cannot hold Off.
@@ -21,24 +48,23 @@ Future<void> _pendingSchedule = Future.value();
 int _scheduleGeneration = 0;
 
 /// Schedules the periodic background tasks at the interval the user chose,
-/// and removes the obsolete swap task. Called at startup and whenever the
+/// and removes the obsolete ones. Called at startup and whenever the
 /// interval changes; UPDATE keeps an unchanged schedule's timing.
 ///
-/// [dispatcher] is the host's headless entry point; [desktopScheduler] runs
-/// the work in the app itself where there is no headless engine.
+/// [dispatcher] is the host's headless entry point. Without an injected
+/// [scheduler], only Android and iOS schedule: desktop has no WorkManager
+/// and never had a schedule to cancel.
 Future<void> applyBackgroundTaskSchedule({
   required BackgroundTaskDispatcher dispatcher,
   required BackgroundSyncIntervalRepository intervals,
   bool enabled = false,
-  BackgroundTaskScheduler? scheduler,
-  required BackgroundTaskScheduler desktopScheduler,
+  BackgroundTaskSchedulerPort? scheduler,
 }) async {
   final generation = ++_scheduleGeneration;
   final mobile = Platform.isAndroid || Platform.isIOS;
-  final adapter = BackgroundTaskWorkmanagerAdapter(
-    scheduler: scheduler ?? (mobile ? null : desktopScheduler),
-  );
-  await adapter.initialize(dispatcher);
+  if (scheduler == null && !mobile) return;
+  final platform = scheduler ?? WorkmanagerScheduler();
+  await platform.initialize(dispatcher);
   final previous = _pendingSchedule;
   final finished = Completer<void>();
   _pendingSchedule = finished.future;
@@ -51,19 +77,19 @@ Future<void> applyBackgroundTaskSchedule({
       BackgroundTask.bitcoinSync,
       BackgroundTask.liquidSync,
     ]) {
-      await adapter.cancelByUniqueName(obsolete.id);
+      await platform.cancelByUniqueName(obsolete.id);
     }
     if (!enabled) {
-      await adapter.cancelByUniqueName(BackgroundTask.walletsSync.id);
-      await adapter.cancelByUniqueName(BackgroundTask.logsPrune.id);
+      await platform.cancelByUniqueName(BackgroundTask.walletsSync.id);
+      await platform.cancelByUniqueName(BackgroundTask.logsPrune.id);
       log.config('Background scheduling disabled by rollout gate');
       return;
     }
     final frequency = interval.frequency;
     if (frequency == null) {
-      await adapter.cancelByUniqueName(BackgroundTask.walletsSync.id);
+      await platform.cancelByUniqueName(BackgroundTask.walletsSync.id);
     } else {
-      await adapter.registerPeriodicTask(
+      await platform.registerPeriodic(
         uniqueName: BackgroundTask.walletsSync.id,
         taskName: BackgroundTask.walletsSync.name,
         requiresNetwork: true,
@@ -76,9 +102,10 @@ Future<void> applyBackgroundTaskSchedule({
       );
     }
     if (mobile) {
-      await adapter.registerPeriodicTask(
+      await platform.registerPeriodic(
         uniqueName: BackgroundTask.logsPrune.id,
         taskName: BackgroundTask.logsPrune.name,
+        requiresNetwork: false,
         frequency: const Duration(days: 1),
       );
     }

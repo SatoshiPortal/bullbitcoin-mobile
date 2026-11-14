@@ -2,7 +2,8 @@ import 'package:bull_logger/bull_logger.dart' show log;
 import 'package:notifications/notifications.dart';
 import 'package:transaction_sync/transaction_sync.dart';
 
-import 'background_task_logger.dart';
+import 'data/logger_background_task_logger.dart';
+import 'domain/ports/background_task_logger_port.dart';
 import 'data/notifications_payment_announcement.dart';
 import 'data/shared_preferences_background_sync_interval_repository.dart';
 import 'domain/background_task_execution_result.dart';
@@ -25,7 +26,7 @@ final class WalletTransactionSyncBackgroundTask {
     required WalletSyncJobQueueRepository queue,
     required NotificationsFacade? notifications,
     required NotificationCopyBuilder copy,
-    BackgroundTaskLogger? logSink,
+    BackgroundTaskLoggerPort? logSink,
     Duration? runBudget,
   }) : _usecase = RunWalletSyncJobsUsecase(
          wallets: writer,

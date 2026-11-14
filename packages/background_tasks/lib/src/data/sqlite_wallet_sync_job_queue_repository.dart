@@ -8,7 +8,8 @@ import 'package:primitives/primitives.dart';
 import 'package:sqlite3/sqlite3.dart';
 import 'package:transaction_sync/transaction_sync.dart';
 
-import '../background_task_logger.dart';
+import '../domain/ports/background_task_logger_port.dart';
+import 'logger_background_task_logger.dart';
 import '../domain/background_tasks_failure.dart';
 import '../domain/repositories/wallet_sync_job_queue_repository.dart';
 import '../domain/wallet_sync_chain.dart';
@@ -28,7 +29,7 @@ final class SqliteWalletSyncJobQueueRepository
   final Duration leaseDuration;
   final Duration retryBase;
   final Duration retryMaximum;
-  final BackgroundTaskLogger _sink;
+  final BackgroundTaskLoggerPort _sink;
   bool _closed = false;
 
   SqliteWalletSyncJobQueueRepository._(
@@ -37,7 +38,7 @@ final class SqliteWalletSyncJobQueueRepository
     required this.leaseDuration,
     required this.retryBase,
     required this.retryMaximum,
-    BackgroundTaskLogger? logSink,
+    BackgroundTaskLoggerPort? logSink,
   }) : now = clock ?? _utcNow,
        _sink = logSink ?? LoggerBackgroundTaskLogger(log) {
     if (leaseDuration <= Duration.zero ||
@@ -58,7 +59,7 @@ final class SqliteWalletSyncJobQueueRepository
     Duration leaseDuration = const Duration(minutes: 30),
     Duration retryBase = const Duration(minutes: 5),
     Duration retryMaximum = const Duration(hours: 6),
-    BackgroundTaskLogger? logSink,
+    BackgroundTaskLoggerPort? logSink,
   }) => _open(path, create: true).map(
     (database) => SqliteWalletSyncJobQueueRepository._(
       database,
@@ -79,7 +80,7 @@ final class SqliteWalletSyncJobQueueRepository
     Duration leaseDuration = const Duration(minutes: 30),
     Duration retryBase = const Duration(minutes: 5),
     Duration retryMaximum = const Duration(hours: 6),
-    BackgroundTaskLogger? logSink,
+    BackgroundTaskLoggerPort? logSink,
   }) => _open(path, create: false).map(
     (database) => SqliteWalletSyncJobQueueRepository._(
       database,

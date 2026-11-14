@@ -20,7 +20,7 @@ void main() {
 
   tearDown(() => directory.delete(recursive: true));
 
-  WalletSyncJobQueueRepository queue({BackgroundTaskLogger? sink}) =>
+  WalletSyncJobQueueRepository queue({BackgroundTaskLoggerPort? sink}) =>
       switch (SqliteWalletSyncJobQueueRepository.openForeground(
         path,
         clock: clock.call,
@@ -562,7 +562,7 @@ final class _FakeClock {
   void advance(Duration duration) => value = value.add(duration);
 }
 
-final class _Sink implements BackgroundTaskLogger {
+final class _Sink implements BackgroundTaskLoggerPort {
   final levels = <BackgroundLogLevel>[];
   final List<String>? messages;
 
@@ -578,7 +578,7 @@ final class _Sink implements BackgroundTaskLogger {
   }
 }
 
-final class _ThrowingSink implements BackgroundTaskLogger {
+final class _ThrowingSink implements BackgroundTaskLoggerPort {
   @override
   Future<void> flush() async {}
   @override

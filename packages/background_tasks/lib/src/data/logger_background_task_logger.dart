@@ -1,13 +1,8 @@
 import 'package:bull_logger/bull_logger.dart';
 
-enum BackgroundLogLevel { fine, warning }
+import '../domain/ports/background_task_logger_port.dart';
 
-abstract interface class BackgroundTaskLogger {
-  void write(BackgroundLogLevel level, String message);
-  Future<void> flush();
-}
-
-final class LoggerBackgroundTaskLogger implements BackgroundTaskLogger {
+final class LoggerBackgroundTaskLogger implements BackgroundTaskLoggerPort {
   final Logger logger;
   const LoggerBackgroundTaskLogger(this.logger);
 

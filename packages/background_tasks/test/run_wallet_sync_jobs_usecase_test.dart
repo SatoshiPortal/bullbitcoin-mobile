@@ -494,7 +494,7 @@ final class _Announcements implements PaymentAnnouncementPort {
       delivery;
 }
 
-final class _Logs implements BackgroundTaskLogger {
+final class _Logs implements BackgroundTaskLoggerPort {
   final List<(BackgroundLogLevel, String)> entries = [];
 
   @override
