@@ -72,7 +72,18 @@ final class WriterSession {
     WalletKey key, {
     required int expectedGeneration,
     bool existingOnly = false,
-  }) => run(key, expectedGeneration, WriteIntent.create, () async {
+  }) => run(
+    key,
+    expectedGeneration,
+    WriteIntent.create,
+    () => _create(key, expectedGeneration, existingOnly: existingOnly),
+  );
+
+  Future<WriterOutcome> _create(
+    WalletKey key,
+    int expectedGeneration, {
+    required bool existingOnly,
+  }) async {
     final old = revisions.record(key);
     expectGeneration(old, expectedGeneration);
     final descriptor = await this.descriptor(key);
@@ -141,15 +152,23 @@ final class WriterSession {
     } finally {
       session.close();
     }
-  });
+  }
 
+  /// With [adopt], first adopts the existing native store as
+  /// `create(existingOnly: true)` would, under the same lock acquisition.
   Future<Result<WriterOutcome, TransactionSyncFailure>> sync(
     WalletKey key, {
     required int expectedGeneration,
     required WriterSyncOperation operation,
     bool reconcile = true,
+    bool adopt = false,
     Future<Result<void, TransactionSyncFailure>> Function()? preflight,
   }) => run(key, expectedGeneration, WriteIntent.sync, () async {
+    if (adopt) {
+      // Adoption may mutate the native store: invalidate first, as create does.
+      _invalidateSpendGate(key);
+      await _create(key, expectedGeneration, existingOnly: true);
+    }
     final record = active(key, expectedGeneration);
     final descriptor = await this.descriptor(key);
     if (preflight != null) value(await preflight());
