@@ -2,13 +2,13 @@ import 'package:bull_logger/bull_logger.dart';
 import 'package:primitives/primitives.dart';
 
 import 'domain/local_notification.dart';
-import 'domain/local_notification_gateway.dart';
+import 'domain/ports/local_notification_port.dart';
 import 'domain/notifications_failure.dart';
 import 'domain/observation.dart';
 import 'domain/repositories/notification_store_repository.dart';
 
 final class NotificationsFacade {
-  final LocalNotificationGateway gateway;
+  final LocalNotificationPort gateway;
   final NotificationStoreRepository outbox;
   bool? _allowed;
 

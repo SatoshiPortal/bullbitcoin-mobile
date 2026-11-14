@@ -402,7 +402,7 @@ class Scheduler implements BackgroundTaskScheduler {
   }
 }
 
-class Permissions implements NotificationPermissionGateway {
+class Permissions implements NotificationPermissionPort {
   @override
   Future<Result<bool, NotificationsFailure>> isEnabled() async =>
       const Ok(false);

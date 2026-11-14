@@ -3,14 +3,14 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:primitives/primitives.dart';
 
-import '../domain/notification_permission_gateway.dart';
+import '../domain/ports/notification_permission_port.dart';
 import '../domain/notifications_failure.dart';
 
 /// Requests and status go through flutter_local_notifications, which needs no
 /// plugin initialization for them; permission_handler only opens the
 /// settings page, the one call that needs no iOS permission flag.
 final class FlutterNotificationPermissionGateway
-    implements NotificationPermissionGateway {
+    implements NotificationPermissionPort {
   final FlutterLocalNotificationsPlugin _plugin;
 
   final String channelId;

@@ -5,7 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:notifications/notifications.dart';
 import 'package:primitives/primitives.dart';
 
-final class FakeGateway implements LocalNotificationGateway {
+final class FakeGateway implements LocalNotificationPort {
   final List<int> shownIds = [];
   bool fail = false;
   bool enabled = true;
@@ -63,16 +63,16 @@ Future<void> pending(NotificationStoreRepository outbox, String id) async {
 
 void main() {
   late Directory directory;
-  late SqliteNotificationStoreRepository outbox;
+  late NotificationStoreRepository outbox;
 
   setUp(() {
     directory = Directory.systemTemp.createTempSync('notifications_test_');
     log = Logger.replace(directory: directory);
     outbox =
-        (SqliteNotificationStoreRepository.openForeground(
+        (openForegroundNotificationStore(
                   '${directory.path}/notifications.sqlite',
                 )
-                as Ok<SqliteNotificationStoreRepository, NotificationsFailure>)
+                as Ok<NotificationStoreRepository, NotificationsFailure>)
             .value;
   });
 

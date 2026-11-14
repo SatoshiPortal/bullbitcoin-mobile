@@ -414,7 +414,7 @@ final class _Revisions implements WalletRevisionReaderPort {
   Stream<WalletRevisionState> watch(WalletKey key) => const Stream.empty();
 }
 
-final class _Gateway implements LocalNotificationGateway {
+final class _Gateway implements LocalNotificationPort {
   final List<LocalNotification> shown = [];
   @override
   Future<Result<void, NotificationsFailure>> initialize() async =>

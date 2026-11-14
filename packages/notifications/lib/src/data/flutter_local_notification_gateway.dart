@@ -2,12 +2,11 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:primitives/primitives.dart';
 
 import '../domain/local_notification.dart';
-import '../domain/local_notification_gateway.dart';
+import '../domain/ports/local_notification_port.dart';
 import '../domain/notifications_failure.dart';
 import 'flutter_notification_permission_gateway.dart';
 
-final class FlutterLocalNotificationGateway
-    implements LocalNotificationGateway {
+final class FlutterLocalNotificationGateway implements LocalNotificationPort {
   final FlutterLocalNotificationsPlugin _plugin;
   final FlutterNotificationPermissionGateway _permissions;
 

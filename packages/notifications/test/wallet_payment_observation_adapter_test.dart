@@ -13,11 +13,8 @@ void main() {
       final directory = Directory.systemTemp.createTempSync('observation-');
       final path = '${directory.path}/outbox';
       final outbox =
-          (SqliteNotificationStoreRepository.openForeground(path)
-                  as Ok<
-                    SqliteNotificationStoreRepository,
-                    NotificationsFailure
-                  >)
+          (openForegroundNotificationStore(path)
+                  as Ok<NotificationStoreRepository, NotificationsFailure>)
               .value;
       final facade = NotificationsFacade(
         gateway: FakeGateway(),

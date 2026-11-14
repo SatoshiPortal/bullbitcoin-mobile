@@ -14,9 +14,7 @@ void setupBackgroundPreferences(
     BackgroundPreferencesRepositoryImpl(
       const SharedPreferencesBackgroundSyncIntervalStore(),
       NotificationPermissionsFacade(
-        gateway: FlutterNotificationPermissionGateway(
-          channelId: notificationChannelId,
-        ),
+        gateway: notificationPermissions(channelId: notificationChannelId),
       ),
       configureBackgroundTasks,
     ),

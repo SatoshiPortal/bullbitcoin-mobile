@@ -8,7 +8,7 @@ import 'package:primitives/primitives.dart';
 import 'package:transaction_sync/transaction_sync.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-class Gateway implements LocalNotificationGateway {
+class Gateway implements LocalNotificationPort {
   @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
