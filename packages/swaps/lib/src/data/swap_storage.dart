@@ -175,15 +175,11 @@ class SwapStorage {
   // key material is network-independent, so a per-network counter would
   // reuse child keys.
   Future<int?> getSwapKeyIndex(String swapMasterKeyFingerprint) async {
-    try {
-      final value = await _secrets.read(
-        '${_Keys.swapKeyIndex}$swapMasterKeyFingerprint',
-      );
-      if (value == null) return null;
-      return int.tryParse(value);
-    } catch (_) {
-      return null;
-    }
+    final value = await _secrets.read(
+      '${_Keys.swapKeyIndex}$swapMasterKeyFingerprint',
+    );
+    if (value == null) return null;
+    return int.tryParse(value);
   }
 
   Future<void> setSwapKeyIndex(

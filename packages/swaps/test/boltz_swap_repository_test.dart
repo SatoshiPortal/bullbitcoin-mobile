@@ -1259,6 +1259,31 @@ void main() {
       expect(index, 9);
       verify(() => storage.setSwapKeyIndex('f00dbabe', 11)).called(1);
     });
+
+    test(
+      'an unreadable counter refuses the swap instead of reseeding',
+      () async {
+        stubCreation(storedCounter: null, localTop: 7);
+        when(
+          () => storage.getSwapKeyIndex(any()),
+        ).thenThrow(Exception('keychain locked'));
+
+        final created = await repo(wallets: chainWallets)
+            .createBitcoinToLiquidSwap(
+              sendWalletId: 'w-btc',
+              amountSat: 30000,
+              destination: const ToWallet('w-liquid'),
+            );
+
+        expect(created, isA<Err<ChainSwap, SwapsFailure>>());
+        verifyNever(
+          () => boltz.restoreSwapIndex(
+            swapMasterKey: any(named: 'swapMasterKey'),
+          ),
+        );
+        verifyNever(() => storage.setSwapKeyIndex(any(), any()));
+      },
+    );
   });
 
   group('reconcileLockupTxid (crash-window backfill)', () {
