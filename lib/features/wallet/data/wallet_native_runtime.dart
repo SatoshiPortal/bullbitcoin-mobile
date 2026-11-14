@@ -328,9 +328,12 @@ final class WalletNativeRuntime implements WalletNativeLifecycle {
   /// Broadcasts [transaction] for [walletId] through `wallet.tx`, which
   /// checks its generation and inputs again under the guard. [built] carries
   /// the generation it was built at; without it, the current one is used.
+  /// A wallet of another [network] than the one expected is refused before
+  /// any admission or server.
   Future<Result<SpendReceipt, SyncFailure>> broadcast(
     String walletId,
     SignedTransaction transaction, {
+    required Network network,
     UnsignedSpend? built,
     SpendOwner? owner,
     String? replacing,
@@ -343,6 +346,10 @@ final class WalletNativeRuntime implements WalletNativeLifecycle {
     }
     if (built != null && built.key != handle.key) {
       return const Err(SyncNotFoundFailure());
+    }
+    // Never admitted nor sent on a network the caller did not expect.
+    if (handle.key.network != network) {
+      return const Err(SyncSpendBlockedFailure(BitcoinSpendStatus.unavailable));
     }
     return handle.tx.broadcast(
       built?.signed(transaction) ??

@@ -68,8 +68,11 @@ void main() {
         settingsRepository: settings,
         wallet: WalletFacade(
           const Stream.empty(),
-          broadcastSpend: (_, _, {built, owner, replacing}) async =>
-              const Err(SyncSpendBlockedFailure(BitcoinSpendStatus.pending)),
+          broadcastSpend:
+              (_, _, {required network, built, owner, replacing}) async =>
+                  const Err(
+                    SyncSpendBlockedFailure(BitcoinSpendStatus.pending),
+                  ),
         ),
       );
       await expectLater(
@@ -93,9 +96,11 @@ void main() {
       settingsRepository: _Settings(),
       wallet: WalletFacade(
         const Stream.empty(),
-        broadcastSpend: (_, _, {built, owner, replacing}) async => const Ok(
-          SpendReceipt('accepted-txid', durable: false, guarded: true),
-        ),
+        broadcastSpend:
+            (_, _, {required network, built, owner, replacing}) async =>
+                const Ok(
+                  SpendReceipt('accepted-txid', durable: false, guarded: true),
+                ),
       ),
     );
     expect(
@@ -152,8 +157,9 @@ void main() {
                 const Stream.empty(),
                 // Sync broadcasts a wallet's spend and reports the same
                 // failure the servers gave.
-                broadcastSpend: (_, _, {built, owner, replacing}) async =>
-                    Err(failure),
+                broadcastSpend:
+                    (_, _, {required network, built, owner, replacing}) async =>
+                        Err(failure),
               ),
               bitcoinBlockchainRepository: bitcoin,
               walletUtxoRepository: EmptyFrozenOutpoints(),

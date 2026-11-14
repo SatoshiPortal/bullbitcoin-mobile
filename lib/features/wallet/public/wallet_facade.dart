@@ -5,6 +5,7 @@ export '../domain/wallet.dart' show Network;
 export '../domain/network_x.dart' show NetworkX;
 import 'package:sync/sync.dart';
 import '../data/broadcast_observation_follow_up.dart' show BroadcastSpend;
+import 'package:primitives/primitives.dart' as primitives show Network;
 import 'package:primitives/primitives.dart' show Result, Err;
 import '../domain/wallet_discovery_failure.dart';
 export 'package:primitives/primitives.dart' show Result;
@@ -68,10 +69,12 @@ final class WalletFacade {
 
   /// Broadcasts a signed transaction of [walletId] through `wallet.tx`,
   /// which checks its generation and inputs again under the guard. [built]
-  /// carries the generation it was built at.
+  /// carries the generation it was built at. A wallet of another [network]
+  /// is refused before any admission or server.
   Future<Result<SpendReceipt, SyncFailure>> broadcastSpend(
     String walletId,
     SignedTransaction transaction, {
+    required primitives.Network network,
     UnsignedSpend? built,
     SpendOwner? owner,
     String? replacing,
@@ -81,6 +84,7 @@ final class WalletFacade {
     return broadcast(
       walletId,
       transaction,
+      network: network,
       built: built,
       owner: owner,
       replacing: replacing,

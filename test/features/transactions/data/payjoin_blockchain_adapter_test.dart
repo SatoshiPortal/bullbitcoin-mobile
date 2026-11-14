@@ -42,7 +42,14 @@ void main() {
         WalletFacade(
           const Stream.empty(),
           broadcastSpend:
-              (walletId, transaction, {built, owner, replacing}) async {
+              (
+                walletId,
+                transaction, {
+                required network,
+                built,
+                owner,
+                replacing,
+              }) async {
                 expect(walletId, 'wallet-1');
                 expect((transaction as SignedPsbt).psbt, 'psbt');
                 // The session alone may spend the inputs it reserved.

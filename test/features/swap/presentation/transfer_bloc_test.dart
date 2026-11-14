@@ -285,11 +285,19 @@ void main() {
         var broadcasts = 0;
         final wallet = WalletFacade(
           const Stream.empty(),
-          broadcastSpend: (id, transaction, {built, owner, replacing}) async {
-            expect(id, 'wallet-1');
-            broadcasts++;
-            return Ok(SpendReceipt('a' * 64, durable: true, guarded: true));
-          },
+          broadcastSpend:
+              (
+                id,
+                transaction, {
+                required network,
+                built,
+                owner,
+                replacing,
+              }) async {
+                expect(id, 'wallet-1');
+                broadcasts++;
+                return Ok(SpendReceipt('a' * 64, durable: true, guarded: true));
+              },
         );
         await bloc.close();
         bloc = buildBloc(

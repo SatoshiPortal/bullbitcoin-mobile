@@ -51,6 +51,7 @@ final class AppPayjoinBlockchainAdapter implements PayjoinBlockchainPort {
     final result = await _wallet.broadcastSpend(
       walletId,
       SignedPsbt(psbt),
+      network: network,
       owner: SpendOwner(protocol: 'payjoin', session: sessionId),
     );
     switch (result) {

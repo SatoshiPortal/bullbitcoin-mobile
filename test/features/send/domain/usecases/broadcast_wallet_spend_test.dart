@@ -38,10 +38,22 @@ final class _Spends {
 
   WalletFacade get facade => WalletFacade(
     const Stream.empty(),
-    broadcastSpend: (walletId, transaction, {built, owner, replacing}) async {
-      calls.add((walletId: walletId, transaction: transaction, built: built));
-      return reply;
-    },
+    broadcastSpend:
+        (
+          walletId,
+          transaction, {
+          required network,
+          built,
+          owner,
+          replacing,
+        }) async {
+          calls.add((
+            walletId: walletId,
+            transaction: transaction,
+            built: built,
+          ));
+          return reply;
+        },
   );
 }
 

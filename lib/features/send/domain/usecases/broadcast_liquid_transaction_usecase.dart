@@ -1,6 +1,6 @@
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart'
-    show SignedPset, WalletFacade;
+    show NetworkX, SignedPset, WalletFacade;
 import 'package:primitives/primitives.dart' show Err, Ok;
 import 'package:sync/sync.dart' show SyncProtectedInputsFailure;
 import 'package:bull_logger/bull_logger.dart';
@@ -56,6 +56,7 @@ class BroadcastLiquidTransactionUsecase {
         return switch (await wallet.broadcastSpend(
           walletId,
           SignedPset(signedPset),
+          network: network.shared,
         )) {
           Ok(:final value) => value.txid,
           Err(failure: SyncProtectedInputsFailure()) =>

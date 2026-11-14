@@ -206,6 +206,7 @@ void main() {
         final wrapped = h.followUp.wrap((
           walletId,
           transaction, {
+          required network,
           built,
           owner,
           replacing,
@@ -218,6 +219,7 @@ void main() {
           wrapped(
             _wallet,
             const SignedPsbt('psbt'),
+            network: BitcoinNetwork.testnet,
           ).then((value) => result = value),
         );
         fake.elapse(const Duration(minutes: 5));
@@ -238,16 +240,23 @@ void main() {
       fakeAsync((fake) {
         final h = _Harness(fake);
         final wrapped = h.followUp.wrap(
-          (walletId, transaction, {built, owner, replacing}) async =>
-              const Err<SpendReceipt, SyncFailure>(
-                SyncSpendBlockedFailure(BitcoinSpendStatus.pending),
-              ),
+          (
+            walletId,
+            transaction, {
+            required network,
+            built,
+            owner,
+            replacing,
+          }) async => const Err<SpendReceipt, SyncFailure>(
+            SyncSpendBlockedFailure(BitcoinSpendStatus.pending),
+          ),
         );
         Result<SpendReceipt, SyncFailure>? result;
         unawaited(
           wrapped(
             _wallet,
             const SignedPsbt('psbt'),
+            network: BitcoinNetwork.testnet,
           ).then((value) => result = value),
         );
         fake.elapse(const Duration(minutes: 5));
@@ -261,12 +270,24 @@ void main() {
       fakeAsync((fake) {
         final h = _Harness(fake);
         final wrapped = h.followUp.wrap(
-          (walletId, transaction, {built, owner, replacing}) async =>
-              const Ok<SpendReceipt, SyncFailure>(
-                SpendReceipt('txid', durable: false, guarded: false),
-              ),
+          (
+            walletId,
+            transaction, {
+            required network,
+            built,
+            owner,
+            replacing,
+          }) async => const Ok<SpendReceipt, SyncFailure>(
+            SpendReceipt('txid', durable: false, guarded: false),
+          ),
         );
-        unawaited(wrapped(_wallet, const SignedPset('pset')));
+        unawaited(
+          wrapped(
+            _wallet,
+            const SignedPset('pset'),
+            network: LiquidNetwork.testnet,
+          ),
+        );
         fake.elapse(const Duration(minutes: 5));
         expect(h.polls, isEmpty);
       });

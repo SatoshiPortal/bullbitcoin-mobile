@@ -18,6 +18,7 @@ typedef BroadcastSpend =
     Future<Result<SpendReceipt, SyncFailure>> Function(
       String walletId,
       SignedTransaction transaction, {
+      required Network network,
       UnsignedSpend? built,
       SpendOwner? owner,
       String? replacing,
@@ -58,10 +59,18 @@ final class BroadcastObservationFollowUp {
   /// broadcast only: Liquid has no guard to wait for. The result is
   /// returned unchanged.
   BroadcastSpend wrap(BroadcastSpend broadcast) =>
-      (walletId, transaction, {built, owner, replacing}) async {
+      (
+        walletId,
+        transaction, {
+        required network,
+        built,
+        owner,
+        replacing,
+      }) async {
         final result = await broadcast(
           walletId,
           transaction,
+          network: network,
           built: built,
           owner: owner,
           replacing: replacing,

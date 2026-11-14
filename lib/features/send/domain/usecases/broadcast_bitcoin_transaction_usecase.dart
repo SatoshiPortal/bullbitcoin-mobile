@@ -59,6 +59,7 @@ class BroadcastBitcoinTransactionUsecase {
       isPsbt
           ? SignedPsbt(transaction)
           : SignedBitcoinTransaction(hex.decode(transaction)),
+      network: network.shared,
       built: built,
     );
     return switch (result) {
