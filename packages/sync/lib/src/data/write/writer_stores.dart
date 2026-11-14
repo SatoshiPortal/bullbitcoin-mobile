@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:sqlite3/sqlite3.dart';
 
+import '../../domain/ports/input_reservation_port.dart';
 import '../../domain/ports/reserved_address_port.dart';
 import '../../domain/ports/wallet_catalog_port.dart';
 import '../../domain/ports/wallet_revision_reader_port.dart';
@@ -25,6 +26,9 @@ final class ForegroundStores {
   final SqliteWalletRevisionReader _revisions;
   final WalletSnapshotReader reader;
   final BitcoinSpendGate spendGate;
+
+  /// Payjoin's reservations, read to check the inputs of every spend.
+  final InputReservationPort inputReservations;
   final RevisionStoreDatasource _store;
   bool _recovering;
 
@@ -34,6 +38,7 @@ final class ForegroundStores {
     this._revisions,
     this.reader,
     this.spendGate,
+    this.inputReservations,
     this._store,
     this._recovering,
   );
@@ -96,6 +101,7 @@ ForegroundStores openForeground({
   required String documentsDirectory,
   required WalletCatalogPort catalog,
   required ReservedAddressPort reservedAddresses,
+  required InputReservationPort inputReservations,
 }) {
   final store = _openOrQuarantine(documentsDirectory);
   try {
@@ -131,6 +137,7 @@ ForegroundStores openForeground({
         documentsDirectory: documentsDirectory,
         catalog: catalog,
       ),
+      inputReservations,
       store,
       File(recoveryMarkerPath(documentsDirectory)).existsSync(),
     );

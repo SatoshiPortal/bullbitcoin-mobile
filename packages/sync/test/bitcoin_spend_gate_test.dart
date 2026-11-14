@@ -57,6 +57,7 @@ void main() {
       documentsDirectory: dir.path,
       catalog: _Catalog([wallet, other]),
       reservedAddresses: _Reserved(),
+      inputReservations: _NoInputReservations(),
     );
     revisions = RevisionStoreDatasource.openExisting(
       revisionStorePath(dir.path),
@@ -288,6 +289,7 @@ void main() {
       documentsDirectory: dir.path,
       catalog: _Catalog([wallet, other]),
       reservedAddresses: _Reserved(),
+      inputReservations: _NoInputReservations(),
     );
     try {
       expect(
@@ -303,4 +305,10 @@ void main() {
       await reopened.close();
     }
   });
+}
+
+final class _NoInputReservations implements InputReservationPort {
+  @override
+  Future<Result<List<InputReservation>, SyncFailure>> reservations() async =>
+      const Ok([]);
 }

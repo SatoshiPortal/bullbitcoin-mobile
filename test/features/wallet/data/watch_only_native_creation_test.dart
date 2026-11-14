@@ -66,6 +66,7 @@ void main() {
             documentsDirectory: directory.path,
             catalog: catalog,
             reservedAddresses: _Reserved(),
+            inputReservations: _NoInputReservations(),
           );
           final writer = opened.writer;
           if (interrupted) {
@@ -108,4 +109,10 @@ void main() {
       },
     );
   }
+}
+
+final class _NoInputReservations implements InputReservationPort {
+  @override
+  Future<p.Result<List<InputReservation>, SyncFailure>> reservations() async =>
+      const p.Ok([]);
 }

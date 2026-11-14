@@ -16,11 +16,13 @@ import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/features/transactions/data/payjoin_blockchain_adapter.dart';
 import 'package:bb_mobile/features/transactions/data/payjoin_codec_adapter.dart';
 import 'package:bb_mobile/features/transactions/data/payjoin_fees_adapter.dart';
+import 'package:bb_mobile/features/transactions/data/payjoin_input_reservation_adapter.dart';
 import 'package:bb_mobile/features/transactions/data/payjoin_log_adapter.dart';
 import 'package:bb_mobile/features/transactions/data/payjoin_transaction_adapter.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:get_it/get_it.dart';
 import 'package:secrets/secrets.dart';
+import 'package:sync/sync.dart' show InputReservationPort;
 
 abstract final class PayjoinSetup {
   static void setup(
@@ -83,5 +85,9 @@ abstract final class PayjoinSetup {
     locator.registerSingleton<PayjoinSessions>(payjoin.sessions);
     locator.registerSingleton<PayjoinPolicyAccess>(payjoin.policy);
     locator.registerSingleton<PayjoinDiagnostics>(payjoin.diagnostics);
+    // Sync reads the reservations through the owner's own sessions role.
+    locator.registerSingleton<InputReservationPort>(
+      PayjoinInputReservationAdapter(payjoin.sessions),
+    );
   }
 }

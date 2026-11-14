@@ -15,6 +15,7 @@ import '../data/write/sync/electrum_sync.dart';
 import '../data/write/writer_stores.dart' as stores_;
 import '../data/write/writer_stores.dart' show ExistingStores, ForegroundStores;
 import '../domain/observed.dart';
+import '../domain/ports/input_reservation_port.dart';
 import '../domain/ports/reserved_address_port.dart';
 import '../domain/ports/wallet_catalog_port.dart';
 import '../domain/ports/wallet_connection_port.dart';
@@ -41,15 +42,18 @@ final class Sync {
 
   /// Opens or creates the package stores, quarantining unreadable revision
   /// metadata, before any sync pass can run. Throws when storage is unusable.
+  /// [inputReservations] is mandatory: spends check their inputs against it.
   static Sync openForeground({
     required String documentsDirectory,
     required WalletCatalogPort catalog,
     required ReservedAddressPort reservedAddresses,
+    required InputReservationPort inputReservations,
   }) {
     final stores = stores_.openForeground(
       documentsDirectory: documentsDirectory,
       catalog: catalog,
       reservedAddresses: reservedAddresses,
+      inputReservations: inputReservations,
     );
     return Sync._(
       stores,
