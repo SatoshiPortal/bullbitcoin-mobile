@@ -436,6 +436,19 @@ void main() {
       await subscription.cancel();
     });
 
+    test('coins carry their freezes as soon as a load returns', () async {
+      final authority = open(LegacyFreezes([row('a', 0, 'coins')]));
+      final wallet = walletOver(projectionsOver(authority), key, 0);
+
+      ok(await wallet.load());
+
+      expect(wallet.coins.now.status, ValueStatus.ready);
+      expect(
+        [for (final c in wallet.coins.now.data ?? CoinList(const [])) c.frozen],
+        [true, false],
+      );
+    });
+
     test('a wallet freeze is attributed to the wallet', () async {
       final authority = open(LegacyFreezes());
       final wallet = walletOver(projectionsOver(authority), key, 0);
