@@ -13,6 +13,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 import 'package:transaction_sync/read.dart';
 import 'package:transaction_sync/transaction_sync.dart';
+import 'package:transaction_sync/write.dart';
 
 import '../test/support/connections.dart';
 import '../test/support/regtest_wallet.dart';

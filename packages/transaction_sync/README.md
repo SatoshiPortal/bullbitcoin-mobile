@@ -4,8 +4,8 @@ The single writer of the native BDK and LWK wallet stores: revisions, a cross-is
 
 ## Public surface
 
-- `transaction_sync.dart` is neutral: domain values (`WalletKey`, revisions, `SyncCompletion`, `BitcoinSpendStatus`, `BitcoinBroadcastReceipt`, failures), the transaction id helpers, the `WalletWriterRepository` contract, the `*Port` interfaces the app implements, and `ElectrumSync`.
-- `write.dart` builds everything. The foreground calls `openForeground()`, which creates the revision store and the spend gate before any pass, and gets the writer repository, the revision reader, the snapshot reader, the spend gate, `recoveredMetadata` and `completeRecovery()`. Background code calls `openExisting()`, which never creates or migrates a store. No datasource is exported.
+- `transaction_sync.dart` is neutral: domain values (`WalletKey`, revisions, `SyncCompletion`, `BitcoinSpendStatus`, `BitcoinBroadcastReceipt`, failures), the transaction id helpers, the `WalletWriterRepository` contract and the `*Port` interfaces the app implements.
+- `write.dart` builds everything. The foreground calls `openForeground()`, which creates the revision store and the spend gate before any pass, and gets the writer repository, the revision reader, the snapshot reader, the spend gate, `recoveredMetadata` and `completeRecovery()`. Background code calls `openExisting()`, which never creates or migrates a store. It also exports `ElectrumSync`, the sync engine. No datasource is exported.
 - `read.dart` publishes `WalletSnapshotReader`, which lends native handles: `WalletReadSnapshot.wallet` and `borrowedHandle` return the shared `bdk.Wallet` or `lwk.Wallet` itself. Callers must not mutate, persist or dispose it. It also publishes `validateAddress`.
 - `diagnostics.dart` publishes the identifier-free lease diagnostic context.
 

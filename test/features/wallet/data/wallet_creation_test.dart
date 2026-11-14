@@ -23,11 +23,11 @@ import 'package:secrets/secrets.dart';
 import 'package:primitives/primitives.dart' show Err, Ok;
 import 'package:transaction_sync/transaction_sync.dart'
     show
-        ElectrumSync,
         ReservedAddressPort,
         SyncReason,
         TransactionSyncNotFoundFailure,
         WalletConnectionPort;
+import 'package:transaction_sync/write.dart' show ElectrumSync;
 import 'package:bb_mobile/features/wallet/data/wallet_catalog_port_impl.dart';
 
 import 'package:secrets/testing.dart';

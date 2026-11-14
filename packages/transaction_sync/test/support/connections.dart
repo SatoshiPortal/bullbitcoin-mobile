@@ -5,6 +5,7 @@ import 'package:transaction_sync/src/data/native_store_paths.dart';
 import 'package:transaction_sync/src/data/datasources/revision_store_datasource.dart';
 import 'package:transaction_sync/src/data/sqlite_wallet_revision_reader.dart';
 import 'package:transaction_sync/transaction_sync.dart';
+import 'package:transaction_sync/write.dart';
 
 final class FixtureConnections implements WalletConnectionPort {
   final List<String> urls;

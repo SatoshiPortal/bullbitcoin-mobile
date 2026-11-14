@@ -15,7 +15,6 @@ import 'package:bull_tor/tor_adapter.dart';
 import 'package:get_it/get_it.dart';
 import 'package:path/path.dart' as p;
 import 'package:primitives/primitives.dart';
-import 'package:transaction_sync/transaction_sync.dart';
 import 'package:transaction_sync/write.dart';
 import 'package:bb_mobile/features/electrum_settings/public/electrum_settings_facade.dart';
 

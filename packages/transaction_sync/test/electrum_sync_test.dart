@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:primitives/primitives.dart';
 import 'package:test/test.dart';
 import 'package:transaction_sync/transaction_sync.dart';
+import 'package:transaction_sync/write.dart';
 
 /// Holds every pass at the connection until [release], then throws [thrown].
 final class _ThrowingPort implements WalletConnectionPort {
