@@ -174,7 +174,7 @@ final class WalletProjections {
             admitted &&
             committed.lifecycle == WalletLifecycle.active &&
             committed.stamp == frame.revision;
-        if (!identical(frame, slot.frame)) _publish(slot, frame);
+        if (!identical(frame, slot.frame)) _publish(key, slot, frame);
         if (frame.revision.generation != generation) {
           return const Err(SyncNotFoundFailure());
         }
@@ -195,14 +195,20 @@ final class WalletProjections {
     Err(:final failure) => Err(failure),
   };
 
-  void _publish(_Slot slot, WalletFrame frame) {
-    if (slot.frame?.revision.generation != frame.revision.generation) {
+  void _publish(WalletKey key, _Slot slot, WalletFrame frame) {
+    final generation = frame.revision.generation;
+    if (slot.frame?.revision.generation != generation) {
       slot.derived.clear();
       slot.deriveFailures.clear();
     }
     slot.frame = frame;
     slot.failure = null;
     slot.notify();
+    // Serve the addresses requested before this generation had a frame.
+    slot.requested.removeWhere((request) => request.$1 < generation);
+    for (final (requested, keychain, index) in slot.requested.toList()) {
+      if (requested == generation) _derive(key, generation, keychain, index);
+    }
   }
 
   void _fail(_Slot slot, SyncFailure failure) {
@@ -275,7 +281,13 @@ final class WalletProjections {
     int index,
     Keychain keychain,
   ) {
-    void schedule() => _derive(key, generation, keychain, index);
+    void schedule() {
+      // Remembered, so a request made before the first load is served once
+      // a frame is published, without a hydration per subscriber.
+      _slot(key).requested.add((generation, keychain, index));
+      _derive(key, generation, keychain, index);
+    }
+
     final projection = _Projection<DerivedAddress>(
       this,
       _slot(key),
@@ -330,6 +342,10 @@ final class _Slot {
   final derived = <(Keychain, int), DerivedAddress>{};
   final deriveFailures = <(Keychain, int), SyncFailure>{};
   final deriving = <(Keychain, int)>{};
+
+  /// Addresses requested by generation, derived once that generation has a
+  /// published frame.
+  final requested = <(int, Keychain, int)>{};
   final listeners = <_Listener>{};
 
   void notify() {
