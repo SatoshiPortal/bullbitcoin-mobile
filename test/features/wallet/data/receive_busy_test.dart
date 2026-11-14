@@ -17,7 +17,6 @@ import 'package:bb_mobile/features/wallet/data/wallet_address_repository.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_native_runtime.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:sync/read.dart';
 import 'package:sync/sync.dart';
 
 class _Metadata extends Mock implements WalletMetadataDatasource {}

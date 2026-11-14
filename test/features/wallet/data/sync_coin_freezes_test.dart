@@ -16,7 +16,7 @@ import 'package:bb_mobile/features/wallet/domain/wallet.dart'
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';
-import 'package:sync/read.dart' show WalletSnapshotException;
+import 'package:sync/sync.dart' show WalletSnapshotException;
 import 'package:sync/sync.dart' as sync;
 import 'package:sync/testing.dart';
 

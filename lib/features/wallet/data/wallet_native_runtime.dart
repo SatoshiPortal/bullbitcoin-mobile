@@ -7,7 +7,6 @@ import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:primitives/primitives.dart';
-import 'package:sync/read.dart';
 import 'package:sync/sync.dart' hide Wallet;
 import 'package:sync/sync.dart' as sync show Wallet;
 import 'package:sync/write.dart';

@@ -1,6 +1,6 @@
 import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
-import 'package:sync/read.dart' as sync_read show validateAddress;
-import 'package:sync/read.dart' show WalletSnapshotException;
+import 'package:sync/sync.dart' as sync_read show validateAddress;
+import 'package:sync/sync.dart' show WalletSnapshotException;
 import 'package:sync/sync.dart'
     show
         SyncConsolidationRequiredFailure,

@@ -11,7 +11,7 @@ import 'package:sync/sync.dart'
         SyncSpendBlockedFailure,
         UnsignedSpend;
 import '../domain/wallet_spend_failure.dart';
-import 'package:sync/read.dart' show validateAddress;
+import 'package:sync/sync.dart' show validateAddress;
 import 'package:bb_mobile/core/wallet/data/models/bitcoin_transaction_recipient_model.dart';
 import 'dart:typed_data';
 

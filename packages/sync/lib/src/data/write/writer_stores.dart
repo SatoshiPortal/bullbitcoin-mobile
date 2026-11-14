@@ -32,6 +32,9 @@ final class ForegroundStores {
   final String documentsDirectory;
   final WalletWriterRepository writer;
   final SqliteWalletRevisionReader _revisions;
+
+  /// Hydrates native handles for sync's own projections; never lent out.
+  @internal
   final WalletSnapshotReader reader;
   final BitcoinSpendGate spendGate;
 

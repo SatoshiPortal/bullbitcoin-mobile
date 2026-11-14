@@ -17,7 +17,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';
 import 'package:secrets/secrets.dart';
-import 'package:sync/read.dart' show WalletSnapshotException;
+import 'package:sync/sync.dart' show WalletSnapshotException;
 import 'package:sync/sync.dart' show SyncStorageFailure;
 
 class _Metadata extends Mock implements WalletMetadataDatasource {}

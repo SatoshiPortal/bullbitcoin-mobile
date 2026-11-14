@@ -9,7 +9,7 @@ import 'package:bb_mobile/features/wallet/domain/network_x.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:flutter/foundation.dart';
 import 'package:primitives/primitives.dart' show Err, Ok, Result;
-import 'package:sync/read.dart' show WalletSnapshotException;
+import 'package:sync/sync.dart' show WalletSnapshotException;
 import 'package:sync/sync.dart' as sync;
 
 /// [walletId]'s sync handle on its current generation.

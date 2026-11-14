@@ -9,7 +9,7 @@ import 'package:sync/src/data/sqlite_wallet_revision_reader.dart';
 import 'support/connections.dart';
 import 'support/regtest_wallet.dart';
 import 'package:sync/write.dart';
-import 'package:sync/read.dart';
+import 'package:sync/src/data/read/wallet_snapshot_reader.dart';
 import 'package:sync/src/data/write/writer_lock.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:primitives/primitives.dart';

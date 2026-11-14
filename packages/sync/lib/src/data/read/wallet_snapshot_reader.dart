@@ -92,16 +92,6 @@ final class WalletSnapshotReader {
     }
   }
 
-  /// Bridge for legacy throwing datasource APIs; new consumers use [read].
-  Future<T> borrowedHandle<T extends Object>(
-    WalletKey key,
-    WalletCatalogPort catalog,
-  ) async => switch (await read(key, catalog)) {
-    Ok(:final value) when value.wallet is T => value.wallet as T,
-    Ok() => throw const WalletSnapshotException(SyncInvalidCatalogFailure()),
-    Err(:final failure) => throw WalletSnapshotException(failure),
-  };
-
   Future<Result<WalletReadSnapshot<bdk.Wallet>, SyncFailure>> bitcoin(
     BitcoinWalletDescriptor descriptor,
   ) => _read<bdk.Wallet>(descriptor, (ready) => _bitcoin(descriptor));
@@ -444,8 +434,8 @@ final class _ReadFailure implements Exception {
   const _ReadFailure(this.failure);
 }
 
-/// Transitional exception for legacy datasources whose APIs still throw.
-/// Result-based consumers should propagate the reader's failure directly.
+/// A [SyncFailure] thrown by the app's throwing datasource APIs. Result-based
+/// consumers propagate the failure directly.
 final class WalletSnapshotException implements Exception {
   final SyncFailure failure;
 

@@ -1,5 +1,4 @@
 import 'package:primitives/primitives.dart';
-import 'package:sync/read.dart' show WalletSnapshotException;
 import 'package:sync/sync.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_utxo_repository.dart';

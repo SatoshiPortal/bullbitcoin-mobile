@@ -1,9 +1,10 @@
 /// The single owner of native wallet state. [Sync.openForeground] returns
 /// [Sync], whose [Wallet] handles publish balances, coins, transactions and
-/// addresses as [Observed] values; [Sync.openExisting] returns the narrow
-/// [HeadlessSync] for background refreshes. Nothing here holds a native
-/// handle; read.dart still lends them to the transaction builders. The codec
-/// and chain functions work without a wallet.
+/// addresses as [Observed] values and build, check and broadcast spends;
+/// [Sync.openExisting] returns the narrow [HeadlessSync] for background
+/// refreshes. Nothing here holds or lends a native handle: outside this
+/// package, only `secrets` uses BDK and LWK. The codec and chain functions
+/// work without a wallet.
 library;
 
 export 'src/public/sync.dart'
@@ -42,6 +43,8 @@ export 'src/domain/ports/wallet_connection_port.dart';
 export 'src/domain/ports/wallet_read_readiness_port.dart';
 export 'src/domain/ports/wallet_revision_reader_port.dart';
 export 'src/data/read/address_script.dart' show bitcoinAddressScript;
+export 'src/data/read/validate_address.dart' show validateAddress;
+export 'src/data/read/wallet_snapshot_reader.dart' show WalletSnapshotException;
 export 'src/domain/decoded_transactions.dart';
 export 'src/data/codec/bitcoin_codec.dart'
     show

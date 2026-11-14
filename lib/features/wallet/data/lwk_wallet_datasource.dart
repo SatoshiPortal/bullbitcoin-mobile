@@ -3,7 +3,7 @@ import 'package:bb_mobile/features/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/features/wallet/data/bdk_wallet_datasource.dart'
     show SpendWallet;
 import 'package:primitives/primitives.dart' show Err, Ok, Outpoint, Result;
-import 'package:sync/read.dart' show WalletSnapshotException;
+import 'package:sync/sync.dart' show WalletSnapshotException;
 import 'package:sync/sync.dart' as sync;
 
 /// Liquid spends through `wallet.spend`, and the PSET facts the app reads.
