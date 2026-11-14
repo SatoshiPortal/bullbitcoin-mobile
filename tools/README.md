@@ -57,4 +57,12 @@ After any write command (`add`, `set`, `set-meta`, `rename`, `delete`), run
 the key set or a generated string. Run `fvm dart run tools/arb.dart help` for the
 full reference.
 
+`arb.dart` only reads `localization/app_*.arb`. The store-vocabulary overrides
+live in `packages/novlang/lib/l10n/novlang_<lang>.arb` and are validated by
+`cd packages/novlang && fvm flutter test` (manifest keys, the 27 languages,
+placeholders, no word the store forbids). `tools/novlang_bridge.dart` generates
+the override classes from the manifest; `make translations` runs it, or run
+`fvm dart tools/novlang_bridge.dart` after `gen-l10n` (use `dart <file>`, not
+`dart run`, which would build the app's native hooks).
+
 > First run is slow (cold package build hooks); subsequent runs are sub-second.

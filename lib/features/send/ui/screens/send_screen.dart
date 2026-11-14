@@ -1748,7 +1748,11 @@ class _SwapFeeBreakdownState extends State<_SwapFeeBreakdown> {
                     context.loc.sendServerNetworkFees,
                     fees.serverNetworkFees!,
                   ),
-                _feeRow(context, 'Transfer Fee', fees.boltzFee ?? 0),
+                _feeRow(
+                  context,
+                  context.loc.sendTransferFee,
+                  fees.boltzFee ?? 0,
+                ),
                 const Gap(4),
               ],
             ),

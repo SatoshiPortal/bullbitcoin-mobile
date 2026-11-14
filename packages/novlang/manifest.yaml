@@ -1,0 +1,268 @@
+# Novlang manifest: the words a store forces, and the catalogue keys that carry them.
+#
+# The catalogue words are the real words. Each entry names a catalogue key whose
+# text is replaced by an override (`<catalogue>__<key>_<store>` in
+# lib/l10n/novlang_<lang>.arb) when the store policy applies. The superuser
+# always sees the catalogue text.
+#
+# Deliberately NOT listed: bank, Interac, E-Transfer, SEPA, SPEI, NFC and PSBT
+# wording (fiat rails and transport, not our swaps), search keywords, the legal
+# disclosures, and RecoverBull server-communication text.
+version: 1
+stores:
+  apple:
+    source: App Store vocabulary decided by the product owner (2026-11-13)
+    # Lowercase substrings an override must never contain: `all` applies to
+    # every language, the other keys to one language (and its regional
+    # variants). Latin-script languages list their own words for swap and
+    # exchange; the others are covered by `all` (a Latin loanword).
+    blacklist:
+      all: [swap, exchange]
+      fr: [échang]
+      es: [intercambi, cambio]
+      de: [tausch, börse]
+      pt: [troca, câmbio]
+      it: [scambi, cambio]
+    replacements:
+      swap: transfer
+      exchange: account
+      exchange rate: rate
+  google:
+    source: Play policy does not restrict wording for non-custodial wallets
+    blacklist:
+      all: []
+    replacements: {}
+catalogues:
+  app: the root catalogue (localization/app_<lang>.arb)
+entries:
+  - {catalogue: app, key: swapRestoreTitle, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: swapRestoreActionable, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: swapRestoreNoSwaps, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: swapRestoreAllSection, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: swapRestoreFailed, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: swapRescueTitle, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: swapRescueIdLabel, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: swapRescueSuccess, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: coreSwapsLnReceivePending, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: coreSwapsLnReceiveClaimable, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: coreSwapsLnReceiveRefundable, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: coreSwapsLnReceiveCanCoop, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: coreSwapsLnReceiveCompleted, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: coreSwapsLnReceiveExpired, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: coreSwapsLnReceiveFailed, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: coreSwapsLnSendPending, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: coreSwapsLnSendClaimable, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: coreSwapsLnSendRefundable, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: coreSwapsLnSendCanCoop, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: coreSwapsLnSendCompletedRefunded, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: coreSwapsLnSendCompletedSuccess, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: coreSwapsLnSendExpired, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: coreSwapsLnSendFailedRefunding, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: coreSwapsLnSendFailed, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: coreSwapsChainPending, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: coreSwapsChainPaid, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: coreSwapsChainClaimable, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: coreSwapsChainRefundable, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: coreSwapsChainCanCoop, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: coreSwapsChainCompletedRefunded, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: coreSwapsChainCompletedSuccess, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: coreSwapsChainExpired, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: coreSwapsChainFailedRefunding, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: coreSwapsChainFailed, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: settingsExchangeSettingsTitle, store: apple, word: exchange, euphemism: account}
+  - {catalogue: app, key: exchangeTestnetBasicAuthTitle, store: apple, word: exchange, euphemism: account}
+  - {catalogue: app, key: exchangeTestnetBasicAuthDescription, store: apple, word: exchange, euphemism: account}
+  - {catalogue: app, key: exchangeAccountTitle, store: apple, word: exchange, euphemism: account}
+  - {catalogue: app, key: exchangeAccountSettingsTitle, store: apple, word: exchange, euphemism: account}
+  - {catalogue: app, key: walletDeletionErrorOngoingSwaps, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: onboardingSplashDescription, store: apple, word: exchange, euphemism: account}
+  - {catalogue: app, key: sendSlowPaymentWarningDescription, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: receiveSwapID, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: receiveBoltzSwapFee, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: receiveSwapId, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: receiveTransferFee, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: sellExchangeRate, store: apple, word: exchange rate, euphemism: rate}
+  - {catalogue: app, key: payExchangeRate, store: apple, word: exchange rate, euphemism: rate}
+  - {catalogue: app, key: transactionDetailTransferProgress, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: transactionDetailSwapProgress, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: transactionFilterTransfer, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: transactionStatusTransferCompleted, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: transactionStatusTransferInProgress, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: transactionStatusTransferFailed, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: transactionStatusSwapFailed, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: transactionStatusTransferExpired, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: transactionStatusSwapExpired, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: transactionSwapStatusTransferStatus, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: transactionSwapStatusSwapStatus, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: transactionSwapDescLnReceivePending, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: transactionSwapDescLnReceiveClaimable, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: transactionSwapDescLnReceiveCompleted, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: transactionSwapDescLnReceiveFailed, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: transactionSwapDescLnReceiveExpired, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: transactionSwapDescLnReceiveDefault, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: transactionSwapDescLnSendPending, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: transactionSwapDescLnSendCompleted, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: transactionSwapDescLnSendFailed, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: transactionSwapDescLnSendExpired, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: transactionSwapDescLnSendDefault, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: transactionSwapDescChainPending, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: transactionSwapDescChainClaimable, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: transactionSwapDescChainRefundable, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: transactionSwapDescChainCompleted, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: transactionSwapDescChainFailed, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: transactionSwapDescChainExpired, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: transactionSwapDescChainDefault, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: transactionSwapInfoChainDelay, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: transactionSwapInfoClaimableTransfer, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: transactionSwapInfoClaimableSwap, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: transactionSwapInfoRefundableTransfer, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: transactionSwapInfoRefundableSwap, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: transactionListOngoingTransfersTitle, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: transactionListOngoingTransfersDescription, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: transactionSwapDoNotUninstall, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: transactionDetailLabelExchangeRate, store: apple, word: exchange rate, euphemism: rate}
+  - {catalogue: app, key: transactionDetailLabelTransferId, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: transactionDetailLabelSwapId, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: transactionDetailLabelTransferStatus, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: transactionDetailLabelSwapStatus, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: transactionDetailLabelTransferFees, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: transactionDetailLabelSwapFees, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: transactionDetailLabelTransferFee, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: swapInternalTransferTitle, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: swapConfirmTransferTitle, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: swapInfoDescription, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: swapTransferFrom, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: swapTransferTo, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: swapTransferAmount, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: swapTransferPendingTitle, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: swapTransferPendingMessage, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: swapTransferCompletedTitle, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: swapTransferCompletedMessage, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: swapTransferRefundInProgressTitle, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: swapTransferRefundInProgressMessage, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: swapTransferRefundedTitle, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: swapTransferRefundedMessage, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: swapErrorBalanceTooLow, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: swapErrorAmountExceedsMaximum, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: swapErrorAmountBelowMinimum, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: swapErrorAmountAboveMaximum, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: swapTransferTitle, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: swapExternalTransferLabel, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: swapValidationSelectFromWallet, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: swapValidationSelectToWallet, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: swapDoNotUninstallWarning, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: autoswapSettingsTitle, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: autoswapEnableToggleLabel, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: autoswapMaxBalanceInfoText, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: autoswapBaseBalanceInfoText, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: autoswapTriggerAtBalanceInfoText, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: autoswapMaxFeeLabel, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: autoswapMaxFeeInfoText, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: autoswapAlwaysBlockInfoEnabled, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: autoswapAlwaysBlockInfoDisabled, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: autoswapWarningCardTitle, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: autoswapActiveCardTitle, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: autoswapWarningDescription, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: autoswapWarningTitle, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: autoswapWarningExplanation, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: autoswapWarningSettingsLink, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: autoswapInfoTitle, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: autoswapInfoRemindLater, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: autoswapInfoConsentMessage, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: autoswapLoadSettingsError, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: autoswapUpdateSettingsError, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: confirmLogoutMessage, store: apple, word: exchange, euphemism: account}
+  - {catalogue: app, key: notLoggedInMessage, store: apple, word: exchange, euphemism: account}
+  - {catalogue: app, key: paySwapFee, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: payRequiresSwap, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: paySwapInProgress, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: paySwapCompleted, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: paySwapFailed, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: sendSubmarineSwap, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: sendInitiatingSwap, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: sendSwapDetails, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: sendSwapAmount, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: sendSwapFeeEstimate, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: sendConfirmSwap, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: sendSwapCancelled, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: sendSwapTimeout, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: sendSwapId, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: sendTransferFee, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: sendSwapInProgressInvoice, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: sendSwapInProgressBitcoin, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: sendSwapRefundInProgress, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: sendSwapFailed, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: sendSwapRefundCompleted, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: sendSwapInitiated, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: sendErrorSwapCreationFailed, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: sendErrorHardwareWalletCannotSwap, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: sendErrorInsufficientBalanceForSwap, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: sendErrorAmountBelowSwapLimits, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: sendErrorAmountAboveSwapLimits, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: sendErrorAmountBelowMinimum, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: sendErrorAmountAboveMaximum, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: sendErrorSwapFeesNotLoaded, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: sendErrorBalanceTooLowForMinimum, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: sendErrorAmountExceedsMaximum, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: sendErrorLiquidWalletRequired, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: sendErrorBitcoinWalletRequired, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: sendTypeSwap, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: sellRateExpired, store: apple, word: exchange rate, euphemism: rate}
+  - {catalogue: app, key: sellUpdatingRate, store: apple, word: exchange rate, euphemism: rate}
+  - {catalogue: app, key: exportTransactionsDescription, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: exchangeLandingConnect, store: apple, word: exchange, euphemism: account}
+  - {catalogue: app, key: exchangeLandingLoginToUseSupport, store: apple, word: exchange, euphemism: account}
+  - {catalogue: app, key: sellSendPaymentExchangeRate, store: apple, word: exchange rate, euphemism: rate}
+  - {catalogue: app, key: swapTitle, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: swapInfoBanner, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: swapConfirmTitle, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: swapProgressTitle, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: swapProgressPending, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: swapProgressPendingMessage, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: swapProgressCompleted, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: swapProgressCompletedMessage, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: swapProgressRefundInProgress, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: swapProgressRefundMessage, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: swapProgressRefunded, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: swapProgressRefundedMessage, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: autoswapTitle, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: autoswapEnable, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: autoswapMaxBalanceInfo, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: autoswapMaxFee, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: autoswapMaxFeeInfo, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: autoswapAlwaysBlockEnabledInfo, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: autoswapAlwaysBlockDisabledInfo, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: exchangeLandingConnectAccount, store: apple, word: exchange, euphemism: account}
+  - {catalogue: app, key: exchangeLandingRecommendedExchange, store: apple, word: exchange, euphemism: account}
+  - {catalogue: app, key: exchangeGoToWebsiteButton, store: apple, word: exchange, euphemism: account}
+  - {catalogue: app, key: exchangeSupportChatWalletIssuesInfo, store: apple, word: exchange, euphemism: account}
+  - {catalogue: app, key: navigationTabExchange, store: apple, word: exchange, euphemism: account}
+  - {catalogue: app, key: coreScreensExternalTransfer, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: coreScreensInternalTransfer, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: coreScreensConfirmTransfer, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: coreScreensTransferIdLabel, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: coreScreensTransferFeeLabel, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: systemLabelSwaps, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: systemLabelAutoSwap, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: logoutConfirmationDescription, store: apple, word: exchange, euphemism: account}
+  - {catalogue: app, key: wizardJourneyTip5, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: wizardJourneyTip6, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: transactionSwapOpenWithin24h, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: homeActionTransfer, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: bitcoinPriceExchangeRateUnavailable, store: apple, word: exchange rate, euphemism: rate}
+  - {catalogue: app, key: announcementAutoswapTitle, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: announcementAutoswapDescription, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: swapUnderReviewTitle, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: swapUnderReviewDescription, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: swapUnderReviewSupportMessage, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: announcementAppUpdateRequiredDescription, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: swapErrorRouteUnavailableGeneric, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: settingsExchangeTitle, store: apple, word: exchange, euphemism: account}
+  - {catalogue: app, key: bitcoinSettingsAutoTransferTitle, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: autoBuyInfoMessage, store: apple, word: exchange rate, euphemism: rate}
+  - {catalogue: app, key: limitOrdersBackToExchange, store: apple, word: exchange, euphemism: account}
+  - {catalogue: app, key: settingsPayjoinExchangeSection, store: apple, word: exchange, euphemism: account}
+  - {catalogue: app, key: exchangePaymentSentPastDeadline, store: apple, word: exchange, euphemism: account}
+  - {catalogue: app, key: allSeedViewSwapMnemonicTitle, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: allSeedViewDeleteSwapMnemonicTitle, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: allSeedViewDeleteSwapMnemonicMessage, store: apple, word: swap, euphemism: transfer}

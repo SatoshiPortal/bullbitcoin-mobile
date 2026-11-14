@@ -107,11 +107,9 @@ void main() {
       );
     });
 
-    test('uses a name the app reserves', () async {
-      // This used to throw LabelValidationException, which is not a
-      // LabelsImportException — so it fell past the typed handler into the
-      // catch-all and read "Oops something went wrong", the exact outcome
-      // this change exists to remove.
+    test('names the app reserves are skipped, not rejected', () async {
+      // The app exports its own markers, so its export must import back: the
+      // marker is ignored and nothing is reported as imported.
       final reserved = jsonEncode({
         'type': 'tx',
         'ref': 'a' * 64,
@@ -120,13 +118,7 @@ void main() {
 
       final result = await import(reserved);
 
-      switch (result) {
-        case Ok():
-          fail('a reserved label name must not be reported as imported');
-        case Err(:final failure):
-          expect(failure, isA<LabelsFileReservedNameFailure>());
-          expect(failure, isNot(isA<LabelUnexpectedFailure>()));
-      }
+      expect((result as Ok<int, LabelFailure>).value, 0);
     });
 
     test('carries an entry the app cannot accept', () async {

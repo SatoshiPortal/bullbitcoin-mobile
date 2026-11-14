@@ -1,0 +1,25 @@
+name: novlang
+description: Store-constrained vocabulary for the app. Overrides only the user-visible words a store forces, selected by platform and superuser mode.
+publish_to: "none"
+version: 0.1.0
+resolution: workspace
+
+environment:
+  sdk: "3.12.2"
+  flutter: "3.44.9"
+
+flutter:
+  generate: true
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  intl: any
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  lints: ^6.1.0
+  yaml: ^3.1.3
