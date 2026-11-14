@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/swaps/switchable_swap_repository.dart';
-import 'package:boltz_swaps/boltz_swaps.dart' show SwapWatcher;
+import 'package:swaps/swaps.dart' show SwapWatcher;
 import 'package:bull_logger/bull_logger.dart';
 
 /// Rebuilds the swap engine when the network or the Boltz server changes,

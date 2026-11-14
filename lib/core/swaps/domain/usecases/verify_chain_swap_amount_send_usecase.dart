@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/errors/send_errors.dart';
-import 'package:boltz_swaps/boltz_swaps.dart';
+import 'package:swaps/swaps.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 

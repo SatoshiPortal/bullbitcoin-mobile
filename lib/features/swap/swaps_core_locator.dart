@@ -23,12 +23,12 @@ import 'package:bb_mobile/core/wallet/data/repositories/wallet_address_repositor
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart' as wallet;
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
-import 'package:boltz_swaps/boltz_swaps.dart';
+import 'package:swaps/swaps.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:get_it/get_it.dart';
 import 'package:secrets/secrets.dart';
 
-/// Wires the self-contained `boltz_swaps` engine package to the app: storage
+/// Wires the self-contained `swaps` engine package to the app: storage
 /// backends, wallet/fee/electrum callbacks, the watcher, and the usecases
 /// blocs consume. This is the only place the app knows how the engine is
 /// assembled.

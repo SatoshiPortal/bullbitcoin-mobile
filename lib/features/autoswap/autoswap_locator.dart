@@ -16,7 +16,7 @@ import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/features/autoswap/domain/usecases/load_autoswap_settings_usecase.dart';
 import 'package:bb_mobile/features/autoswap/domain/usecases/save_autoswap_settings_usecase.dart';
 import 'package:bb_mobile/features/autoswap/presentation/autoswap_settings_cubit.dart';
-import 'package:boltz_swaps/boltz_swaps.dart'
+import 'package:swaps/swaps.dart'
     show
         CreateChainSwapUsecase,
         GetSwapLimitsAndFeesUsecase,

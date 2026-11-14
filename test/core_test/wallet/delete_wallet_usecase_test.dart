@@ -1,4 +1,4 @@
-import 'package:boltz_swaps/boltz_swaps.dart';
+import 'package:swaps/swaps.dart';
 import 'dart:io';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart'

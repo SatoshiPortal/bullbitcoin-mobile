@@ -1,5 +1,5 @@
 import 'package:bb_mobile/features/send/domain/send_failure.dart';
-import 'package:boltz_swaps/boltz_swaps.dart';
+import 'package:swaps/swaps.dart';
 
 extension BoltzSwapFailureToSendFailure on SwapsFailure {
   SendFailure toSendFailure({required int amountSat}) => switch (this) {

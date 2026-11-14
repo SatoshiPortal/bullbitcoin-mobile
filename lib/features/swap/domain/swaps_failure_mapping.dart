@@ -1,5 +1,5 @@
 import 'package:bb_mobile/features/swap/domain/swap_failure.dart';
-import 'package:boltz_swaps/boltz_swaps.dart';
+import 'package:swaps/swaps.dart';
 
 extension SwapsFailureToSwapFailure on SwapsFailure {
   SwapFailure toSwapFailure({required int amountSat}) => switch (this) {

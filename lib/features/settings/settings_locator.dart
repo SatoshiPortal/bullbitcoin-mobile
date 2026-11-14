@@ -27,7 +27,7 @@ import 'package:bb_mobile/features/settings/domain/usecases/watch_payjoin_policy
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/swap_restore_cubit.dart';
 import 'package:bb_mobile/features/settings/public/settings_facade.dart';
-import 'package:boltz_swaps/boltz_swaps.dart';
+import 'package:swaps/swaps.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:get_it/get_it.dart';
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';

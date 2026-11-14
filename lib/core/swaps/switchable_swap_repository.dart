@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:boltz_swaps/boltz_swaps.dart';
+import 'package:swaps/swaps.dart';
 
 /// One network's engine: the Boltz connection and the repository on it.
 typedef SwapEngineParts = ({

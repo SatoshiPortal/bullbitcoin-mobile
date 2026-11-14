@@ -1,5 +1,5 @@
 import 'package:bb_mobile/features/receive/domain/receive_failure.dart';
-import 'package:boltz_swaps/boltz_swaps.dart';
+import 'package:swaps/swaps.dart';
 
 extension BoltzSwapFailureToReceiveFailure on SwapsFailure {
   ReceiveFailure toReceiveFailure({required int amountSat}) => switch (this) {

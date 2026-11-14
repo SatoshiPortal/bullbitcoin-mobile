@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:bb_mobile/core/swaps/swap_engine_switcher.dart';
-import 'package:boltz_swaps/boltz_swaps.dart';
+import 'package:swaps/swaps.dart';
 
 /// Logs a census of every stored swap, then starts the swap watcher: the only
 /// driver that claims, refunds and coop-signs ongoing swaps, and the switcher

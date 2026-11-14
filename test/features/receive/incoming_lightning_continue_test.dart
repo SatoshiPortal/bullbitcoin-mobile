@@ -41,7 +41,7 @@ import 'package:bb_mobile/router.dart';
 import 'package:go_router/go_router.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/create_boltz_receive_swap_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/get_receive_swap_route_usecase.dart';
-import 'package:boltz_swaps/boltz_swaps.dart' as swaps;
+import 'package:swaps/swaps.dart' as swaps;
 
 class _MockSettings extends Mock implements GetSettingsUsecase {}
 

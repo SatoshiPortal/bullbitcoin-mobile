@@ -5,7 +5,7 @@ import 'package:bb_mobile/core/swaps/swap_engine_switcher.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/swap/domain/swap_failure.dart';
 import 'package:bull_logger/bull_logger.dart';
-import 'package:boltz_swaps/boltz_swaps.dart' show SwapRepository;
+import 'package:swaps/swaps.dart' show SwapRepository;
 import 'package:meta/meta.dart';
 
 /// Stores the Boltz backend typed by the user for the network the app is on

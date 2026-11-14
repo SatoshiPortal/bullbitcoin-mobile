@@ -1,7 +1,7 @@
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/storage/tables/swaps_table.dart';
 import 'package:bull_logger/bull_logger.dart';
-import 'package:boltz_swaps/boltz_swaps.dart' hide SwapDirection;
+import 'package:swaps/swaps.dart' hide SwapDirection;
 
 /// One-shot copy of the app database's `swaps` table into the engine's own
 /// [BoltzSwapsDatabase]. The copy and its completion marker commit in one

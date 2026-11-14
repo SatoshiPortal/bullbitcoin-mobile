@@ -4,7 +4,7 @@ import 'package:primitives/primitives.dart'
 import 'package:bb_mobile/features/wallet/domain/network_x.dart';
 import 'dart:async';
 
-import 'package:boltz_swaps/boltz_swaps.dart';
+import 'package:swaps/swaps.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/constants.dart';

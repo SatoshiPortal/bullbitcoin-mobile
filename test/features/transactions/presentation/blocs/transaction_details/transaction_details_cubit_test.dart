@@ -25,7 +25,7 @@ import 'package:bb_mobile/features/transactions/application/usecases/get_transac
 import 'package:bb_mobile/features/transactions/application/usecases/get_transaction_wallet_usecase.dart';
 import 'package:bb_mobile/features/transactions/application/usecases/save_transaction_note_usecase.dart';
 import 'package:bb_mobile/features/transactions/application/usecases/watch_transaction_swap_usecase.dart';
-import 'package:boltz_swaps/boltz_swaps.dart';
+import 'package:swaps/swaps.dart';
 import 'package:bb_mobile/features/transactions/domain/transaction_failure.dart';
 import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transaction_details/transaction_details_cubit.dart';

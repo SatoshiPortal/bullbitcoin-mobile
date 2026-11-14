@@ -1,6 +1,6 @@
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:boltz_swaps/boltz_swaps.dart';
+import 'package:swaps/swaps.dart';
 import 'package:meta/meta.dart';
 
 /// Creates the Boltz reverse swap whose invoice pays [amountSat] into

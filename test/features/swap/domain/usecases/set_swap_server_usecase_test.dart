@@ -6,7 +6,7 @@ import 'package:bb_mobile/core/swaps/swap_engine_switcher.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/swap/domain/swap_failure.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/set_swap_server_usecase.dart';
-import 'package:boltz_swaps/boltz_swaps.dart' hide Environment;
+import 'package:swaps/swaps.dart' hide Environment;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 

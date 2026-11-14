@@ -1,4 +1,4 @@
-import 'package:boltz_swaps/boltz_swaps.dart';
+import 'package:swaps/swaps.dart';
 
 /// A developer's pin on the swap provider. Ignored outside dev mode.
 enum SwapRouteOverride { auto, boltzOnly, exchangeOnly }

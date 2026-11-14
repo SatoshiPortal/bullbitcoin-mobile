@@ -1,7 +1,7 @@
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/storage/tables/swaps_table.dart';
 import 'package:bb_mobile/core/swaps/boltz_swaps_db_migration.dart';
-import 'package:boltz_swaps/boltz_swaps.dart' hide SwapDirection;
+import 'package:swaps/swaps.dart' hide SwapDirection;
 import 'package:drift/drift.dart' hide isNull, isNotNull;
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';

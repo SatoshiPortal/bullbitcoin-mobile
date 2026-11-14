@@ -1,4 +1,4 @@
-import 'package:boltz_swaps/boltz_swaps.dart';
+import 'package:swaps/swaps.dart';
 import 'package:primitives/primitives.dart' show Ok, Err;
 import 'package:flutter_bloc/flutter_bloc.dart';
 

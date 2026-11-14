@@ -61,7 +61,7 @@ import 'package:bb_mobile/features/send/domain/usecases/validate_coin_control_pa
 import 'package:bb_mobile/features/send/domain/usecases/watch_send_swap_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/create_boltz_send_swap_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/get_send_swap_route_usecase.dart';
-import 'package:boltz_swaps/boltz_swaps.dart' as boltz;
+import 'package:swaps/swaps.dart' as boltz;
 import 'package:bb_mobile/core/utils/payment_request.dart';
 import 'package:bb_mobile/features/send/domain/usecases/prepare_sp_payment_for_send_usecase.dart';
 import 'package:bb_mobile/features/send/domain/sp_send_wallet.dart';
