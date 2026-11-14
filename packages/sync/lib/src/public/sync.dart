@@ -318,3 +318,11 @@ final class _Cell<T> implements Observed<T> {
     return controller.stream;
   }
 }
+
+/// Package tests build handles over a fake frame source; not exported.
+@visibleForTesting
+Wallet walletOver(
+  WalletProjections projections,
+  WalletKey key,
+  int generation,
+) => Wallet._(projections, key, generation);
