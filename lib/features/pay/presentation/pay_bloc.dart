@@ -956,10 +956,11 @@ class PayBloc extends Bloc<PayEvent, PayState>
     }
 
     if (session.isExpired) {
-      // `expired` carries no broadcast outcome: the fallback broadcast may
-      // have reached the network and failed only its bookkeeping. Latch such
-      // a transaction instead of re-arming Confirm on the inputs the expiry
-      // just released, which would pay the order a second time.
+      // `expired` means the engine proved its own fallback sent nothing, but
+      // the receiver may broadcast the original on its own (BIP78 invites it
+      // to) and a fresh lookup can see a transaction a lagging sync did not.
+      // Latch such a transaction instead of re-arming Confirm on the inputs
+      // the expiry just released, which would pay the order a second time.
       final visibleTxId = await _getVisiblePayjoinTransactionUsecase.execute(
         session.id,
       );

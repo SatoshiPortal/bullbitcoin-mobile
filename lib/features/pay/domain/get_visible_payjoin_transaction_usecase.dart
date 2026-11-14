@@ -1,3 +1,4 @@
+import 'package:bull_logger/bull_logger.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:primitives/primitives.dart';
 
@@ -17,10 +18,15 @@ class GetVisiblePayjoinTransactionUsecase {
   const GetVisiblePayjoinTransactionUsecase(this._sessions);
 
   Future<String?> execute(String sessionId) async {
-    final result = await _sessions.visibleTransaction(sessionId);
-    return switch (result) {
-      Ok(:final value) => value,
-      Err() => null,
-    };
+    switch (await _sessions.visibleTransaction(sessionId)) {
+      case Ok(:final value):
+        return value;
+      case Err(:final failure):
+        log.warning(
+          'Could not check the Payjoin transaction visibility',
+          error: '${failure.runtimeType}: ${failure.logMessage ?? "-"}',
+        );
+        return null;
+    }
   }
 }

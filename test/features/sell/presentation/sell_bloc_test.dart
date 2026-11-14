@@ -271,7 +271,7 @@ void main() {
     getVisiblePayjoinTransaction = _MockGetVisiblePayjoinTransaction();
     when(
       () => getVisiblePayjoinTransaction.execute(any()),
-    ).thenAnswer((_) async => null);
+    ).thenAnswer((_) async => const Ok<String?, SellFailure>(null));
     retryPayjoin = _MockRetryPayjoin();
     when(
       () => getPayjoin.execute(any()),
@@ -781,9 +781,10 @@ void main() {
           // `expired` records no broadcast outcome. When the fallback did
           // reach the network, the chain holds the original and Confirm
           // must not be offered again on the released inputs.
-          when(
-            () => getVisiblePayjoinTransaction.execute(bip21),
-          ).thenAnswer((_) async => visible ? expectedTxid : null);
+          when(() => getVisiblePayjoinTransaction.execute(bip21)).thenAnswer(
+            (_) async =>
+                Ok<String?, SellFailure>(visible ? expectedTxid : null),
+          );
 
           bloc.add(const SellEvent.sendPaymentConfirmed());
           final resolved = await bloc.stream.firstWhere(
