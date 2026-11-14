@@ -15547,9 +15547,5 @@
   "passphraseHide": "Hide passphrase",
   "@passphraseHide": {
     "description": "Accessible name of the button that hides the typed passphrase"
-  },
-  "coreScreensOutputsExceedInputs": "Outputs exceed inputs: this transaction is invalid and the network will reject it.",
-  "@coreScreensOutputsExceedInputs": {
-    "description": "Transaction review alert when a Bitcoin transaction's outputs exceed its inputs"
   }
 }
