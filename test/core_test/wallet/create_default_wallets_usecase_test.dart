@@ -258,6 +258,86 @@ void main() {
     );
   }
 
+  test(
+    'a Liquid StateError rolls back Bitcoin and allows a consistent retry',
+    () async {
+      final protected =
+          (await secrets.import(
+                    words: words,
+                    passphrase: 'synthetic-passphrase',
+                  )
+                  as Ok<s.Secret, s.SecretFailure>)
+              .value;
+      final bitcoin = _Wallet();
+      final liquid = _Wallet();
+      when(() => bitcoin.id).thenReturn('bitcoin');
+      when(() => bitcoin.network).thenReturn(Network.bitcoinMainnet);
+      when(() => liquid.network).thenReturn(Network.liquidMainnet);
+      final persisted = <Wallet>[];
+      final received = <s.Secret>[];
+      var failLiquid = true;
+      when(
+        () => wallets.getWallets(
+          onlyDefaults: true,
+          environment: Environment.mainnet,
+        ),
+      ).thenAnswer(
+        (_) async => Ok<List<Wallet>, WalletFailure>(List.of(persisted)),
+      );
+      when(
+        () => wallets.createWallet(
+          secret: any(named: 'secret'),
+          network: any(named: 'network'),
+          scriptType: ScriptType.bip84,
+          isDefault: true,
+          birthday: null,
+        ),
+      ).thenAnswer((invocation) async {
+        received.add(invocation.namedArguments[#secret] as s.Secret);
+        final network = invocation.namedArguments[#network] as Network;
+        if (network == Network.liquidMainnet && failLiquid) {
+          failLiquid = false;
+          throw StateError('synthetic failure');
+        }
+        final wallet = network == Network.bitcoinMainnet ? bitcoin : liquid;
+        persisted.add(wallet);
+        return wallet;
+      });
+      when(() => wallets.deleteWallet(walletId: 'bitcoin')).thenAnswer((
+        _,
+      ) async {
+        persisted.remove(bitcoin);
+        return const Ok<void, WalletFailure>(null);
+      });
+
+      expect(
+        (await create.execute(secret: protected) as Err).failure,
+        isA<DefaultWalletCreationFailure>(),
+      );
+      expect(persisted, isEmpty);
+      verify(() => wallets.deleteWallet(walletId: 'bitcoin')).called(1);
+
+      expect((await create.execute(secret: protected) as Ok).value, [
+        bitcoin,
+        liquid,
+      ]);
+      expect(persisted, [bitcoin, liquid]);
+      expect(received.every((secret) => secret.id == protected.id), isTrue);
+    },
+  );
+
+  test(
+    'a settings StateError returns a typed failure before wallet access',
+    () async {
+      when(() => settings.fetch()).thenThrow(StateError('synthetic failure'));
+      expect(
+        (await create.execute(secret: stored) as Err).failure,
+        isA<DefaultWalletUnexpectedFailure>(),
+      );
+      verifyZeroInteractions(wallets);
+    },
+  );
+
   test('failure preserves a secret that predates restoration', () async {
     final persisted = Map<String, String>.of(storage.entries);
     when(
