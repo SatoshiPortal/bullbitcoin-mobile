@@ -3,10 +3,6 @@
 /// listed here uses them, and when a listed file no longer does: entries are
 /// only ever removed, never added or renamed into a wider power.
 const nativeImportAllowlist = <String>{
-  'lib/core/bbqr/bbqr.dart',
-  'lib/core/ledger/data/datasources/ledger_device_datasource.dart',
-  'lib/core/utils/bitcoin_tx.dart',
-  'lib/core/utils/payment_request.dart',
   'lib/features/broadcast_signed_tx/presentation/broadcast_signed_tx_cubit.dart',
   'lib/features/electrum_settings/data/server_status_adapter.dart',
   'lib/features/fees/data/regtest_fees_datasource.dart',
