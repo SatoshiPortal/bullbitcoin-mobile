@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart'
     show Signer;
@@ -342,7 +343,97 @@ void main() {
       }
     },
   );
+
+  test('a broadcast expected on another network is refused, unsent', () async {
+    final directory = Directory.systemTemp.createTempSync('runtime-net-');
+    final mnemonic = bdk.Mnemonic.fromString(
+      mnemonic:
+          'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about',
+    );
+    final secret = bdk.DescriptorSecretKey(
+      networkKind: bdk.NetworkKind.main,
+      mnemonic: mnemonic,
+      password: null,
+    );
+    String derive(bdk.KeychainKind chain) {
+      final descriptor = bdk.Descriptor.newBip84(
+        secretKey: secret,
+        keychainKind: chain,
+        networkKind: bdk.NetworkKind.main,
+      );
+      try {
+        return descriptor.toString();
+      } finally {
+        descriptor.dispose();
+      }
+    }
+
+    final row = WalletMetadataModel(
+      networkCode: 'bitcoinMainnet',
+      id: 'wpkh([aabbccdd/84h/0h/0h])',
+      masterFingerprint: 'aabbccdd',
+      xpubFingerprint: 'aabbccdd',
+      isEncryptedVaultTested: false,
+      isPhysicalBackupTested: false,
+      xpub: 'public',
+      externalPublicDescriptor: derive(bdk.KeychainKind.external_),
+      internalPublicDescriptor: derive(bdk.KeychainKind.internal),
+      signer: Signer.none,
+      isDefault: false,
+    );
+    secret.dispose();
+    mnemonic.dispose();
+    final metadata = _Metadata();
+    when(() => metadata.fetchAll()).thenAnswer((_) async => [row]);
+    when(() => metadata.fetch(row.id)).thenAnswer((_) async => row);
+    // Any server contact throws: the refusal must come before transport.
+    final runtime = WalletNativeRuntime(
+      catalog: WalletCatalogPortImpl(metadata),
+      reserved: _Reserved(),
+      inputReservations: _NoInputReservations(),
+      metadata: metadata,
+      sync: ElectrumSync(
+        connections: _Offline(),
+        documentsDirectory: () async => directory.path,
+        readRevision: (_) async => const Err(SyncNotFoundFailure()),
+      ),
+      documentsDirectory: () async => directory.path,
+      freezes: MemoryFreezeStore(),
+      connections: _Offline(),
+    );
+    try {
+      await runtime.create(row);
+      final result = await runtime.broadcast(
+        row.id,
+        SignedBitcoinTransaction(_transaction()),
+        network: BitcoinNetwork.testnet,
+      );
+      expect(
+        result,
+        isA<Err<SpendReceipt, SyncFailure>>().having(
+          (err) => err.failure,
+          'failure',
+          isA<SyncSpendBlockedFailure>().having(
+            (blocked) => blocked.status,
+            'status',
+            BitcoinSpendStatus.unavailable,
+          ),
+        ),
+      );
+    } finally {
+      await runtime.close();
+      directory.deleteSync(recursive: true);
+    }
+  });
 }
+
+/// A one-input, one-output transaction in its consensus serialization.
+Uint8List _transaction() => Uint8List.fromList([
+  2, 0, 0, 0, 1, //
+  ...List.filled(32, 0xaa), 0, 0, 0, 0, 0, 0xfd, 0xff, 0xff, 0xff, //
+  1, 0x10, 0x27, 0, 0, 0, 0, 0, 0, 22, 0, 20, ...List.filled(20, 7), //
+  0, 0, 0, 0,
+]);
 
 final class _NoInputReservations implements InputReservationPort {
   @override

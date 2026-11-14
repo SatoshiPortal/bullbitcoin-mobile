@@ -30,7 +30,12 @@ class _Settings extends Mock implements SettingsRepository {}
 final class _Spends {
   final calls =
       <
-        ({String walletId, SignedTransaction transaction, UnsignedSpend? built})
+        ({
+          String walletId,
+          SignedTransaction transaction,
+          UnsignedSpend? built,
+          Object network,
+        })
       >[];
   Result<SpendReceipt, SyncFailure> reply = const Ok(
     SpendReceipt('txid', durable: true, guarded: true),
@@ -51,6 +56,7 @@ final class _Spends {
             walletId: walletId,
             transaction: transaction,
             built: built,
+            network: network,
           ));
           return reply;
         },
@@ -115,6 +121,8 @@ void main() {
     expect(call.walletId, 'source');
     expect((call.transaction as SignedPsbt).psbt, 'signed');
     expect(call.built, same(built));
+    // Sync refuses a wallet of another network before admission.
+    expect(call.network, BitcoinNetwork.mainnet);
     verifyZeroInteractions(bitcoin);
   });
 

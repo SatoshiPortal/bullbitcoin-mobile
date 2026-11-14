@@ -52,6 +52,7 @@ void main() {
               }) async {
                 expect(walletId, 'wallet-1');
                 expect((transaction as SignedPsbt).psbt, 'psbt');
+                expect(network, BitcoinNetwork.testnet);
                 // The session alone may spend the inputs it reserved.
                 expect(
                   owner,
