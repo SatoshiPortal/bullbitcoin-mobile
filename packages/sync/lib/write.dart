@@ -10,3 +10,4 @@ export 'src/data/datasources/revision_store_datasource.dart'
 export 'src/data/native_store_paths.dart' show nativeWalletStoragePath;
 export 'src/data/write/bitcoin_spend_gate.dart';
 export 'src/data/write/sync/electrum_sync.dart' show ElectrumSync;
+export 'src/public/sync.dart' show SyncForegroundStores;

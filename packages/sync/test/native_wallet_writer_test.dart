@@ -8,7 +8,7 @@ import 'package:bull_sdk/lwk.dart' as lwk;
 import 'package:primitives/primitives.dart';
 import 'package:test/test.dart';
 import 'package:sqlite3/sqlite3.dart';
-import 'package:sync/sync.dart';
+import 'package:sync/sync.dart' hide Sync;
 import 'package:sync/write.dart';
 import 'package:sync/src/data/write/native_write_session.dart';
 import 'package:sync/src/data/datasources/spend_gate_store_datasource.dart';

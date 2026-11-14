@@ -10,7 +10,7 @@ import 'package:sync/src/data/sqlite_wallet_revision_reader.dart';
 import 'package:sync/src/data/write/writer_lock.dart';
 import 'package:sync/src/data/write/writer_session.dart';
 import 'package:sync/src/data/write/writer_sync_operation.dart';
-import 'package:sync/sync.dart';
+import 'package:sync/sync.dart' hide Sync;
 
 import 'native_wallet_writer_test.dart'
     show Catalog, Sessions, Sync, descriptor, key;

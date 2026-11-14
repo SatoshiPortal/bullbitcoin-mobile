@@ -1,6 +1,21 @@
-/// Domain values and contracts of native wallet synchronization. Nothing
-/// here holds a native handle; read.dart lends them, see its documentation.
+/// The single owner of native wallet state. [Sync.openForeground] returns
+/// [Sync], whose [Wallet] handles publish balances, coins, transactions and
+/// addresses as [Observed] values; [Sync.openExisting] returns the narrow
+/// [HeadlessSync] for background refreshes. Nothing here holds a native
+/// handle; read.dart still lends them to the transaction builders.
 library;
+
+export 'src/public/sync.dart'
+    show
+        HeadlessSync,
+        Sync,
+        SyncChanges,
+        SyncRecovery,
+        Wallet,
+        WalletAddressGroup,
+        WalletOwnsGroup;
+export 'src/domain/observed.dart';
+export 'src/domain/wallet_values.dart';
 
 export 'src/domain/wallet_key.dart';
 export 'src/domain/sync_reason.dart';

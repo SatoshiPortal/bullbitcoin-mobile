@@ -81,7 +81,8 @@ final class BackgroundWalletSyncImpl implements BackgroundWalletSyncPort {
     SyncNeedsRepairFailure() => const BackgroundSyncUnavailableFailure(
       BackgroundSyncUnavailableReason.repair,
     ),
-    SyncRestartRequiredFailure() => const BackgroundSyncUnavailableFailure(
+    SyncRestartRequiredFailure() ||
+    SyncClosedFailure() => const BackgroundSyncUnavailableFailure(
       BackgroundSyncUnavailableReason.restart,
     ),
   };

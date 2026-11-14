@@ -18,6 +18,7 @@ sealed class SyncFailure extends Failure {
     SyncRestartRequiredFailure() => 'restart_required',
     SyncInitialScanRequiredFailure() => 'initial_scan_required',
     SyncInvalidAddressFailure() => 'invalid_address',
+    SyncClosedFailure() => 'closed',
   };
 }
 
@@ -65,4 +66,9 @@ final class SyncInitialScanRequiredFailure extends SyncFailure {
 
 final class SyncInvalidAddressFailure extends SyncFailure {
   const SyncInvalidAddressFailure();
+}
+
+/// The owning [Sync] was closed; its wallet handles refuse every operation.
+final class SyncClosedFailure extends SyncFailure {
+  const SyncClosedFailure();
 }

@@ -32,7 +32,7 @@ import 'package:bb_mobile/features/wallet/data/foreground_wallet_sync.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';
-import 'package:sync/sync.dart';
+import 'package:sync/sync.dart' hide Wallet;
 import 'package:sync/write.dart';
 
 class _Swaps extends Mock implements BoltzSwapRepository {}
