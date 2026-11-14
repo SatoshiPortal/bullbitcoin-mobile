@@ -94,7 +94,7 @@ The repository is the data **seam** and the single source of truth for one data 
 
 **The boundary rule — this one never bends.** A repository's **public signatures — returns *and* params — use only domain types**: entities, value objects, `Result<Entity, …>`. Wire models, library types (a BDK `LocalUtxo`, an LWK type, a Drift row), JSON `Map`s and DTOs **never cross the repository boundary** — they live and die inside `data/`. This is *why* entity and model stay separate (see "Entity vs. model" below); it is not abstraction for its own sake. *(Legacy leak to converge: `WalletAddressRepository` takes a `WalletModel` param — a `data/` model in a `domain/` contract; new code passes an id or an entity instead.)*
 
-- **Owns:** combining its datasources, caching, and **mapping wire model ↔ domain entity**; the single source of truth for one type. Real example: `WalletUtxoRepositoryImpl` injects four datasources (metadata, BDK, LWK, frozen-utxo) plus the labels facade, picks BDK-vs-LWK from wallet metadata, maps `WalletUtxoModel → WalletUtxo`, and returns `List<WalletUtxo>`.
+- **Owns:** combining its datasources, caching, and **mapping wire model ↔ domain entity**; the single source of truth for one type. Real example: `WalletUtxoRepositoryImpl` injects its datasources (metadata, sync wallet values, sync freezes) plus the labels facade, picks BDK-vs-LWK from wallet metadata, maps `WalletUtxoModel → WalletUtxo`, and returns `List<WalletUtxo>`.
 - **Never:** orchestrate a user goal across **other repositories**, or sequence a multi-step workflow — that is a use-case.
 - **Smell:** a repository importing another repository; a "god repository" of unrelated methods; data-shaping leaking up into a use-case.
 
@@ -154,7 +154,7 @@ ui  ── user opens a screen that lists coins
              │     impl merges datasources, maps model → entity     [impl: data/]
              ├─ datasource  WalletMetadataDatasource              → WalletMetadataModel
              ├─ datasource  BdkWalletDatasource / LwkWalletDatasource → WalletUtxoModel
-             └─ datasource  FrozenWalletUtxoDatasource            → frozen utxo ids
+             └─ datasource  SyncFreezesDatasource                 → frozen outpoints (sync)
 ```
 
 Calls flow **down**; data flows **up**, transformed once per boundary: **wire model** (datasource) → **domain entity** (repository) → **UI state** (bloc). Each downward arrow is a call into a narrower contract; each upward return crosses exactly one boundary and changes type exactly once. The bloc never sees a `*Model`; the datasource never sees an entity.
