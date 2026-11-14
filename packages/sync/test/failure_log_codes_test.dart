@@ -27,6 +27,10 @@ void main() {
       SyncClosedFailure(),
       SyncInvalidTransactionFailure(),
       SyncNotFinalizableFailure(),
+      SyncBroadcastRejectedFailure(),
+      SyncAlreadyInChainFailure(),
+      SyncOutcomeUnknownFailure(),
+      SyncUnrecognizedReplyFailure(),
     ];
     for (final failure in failures) {
       log.warning('Wallet sync unavailable category=${failure.logCode}');
@@ -51,6 +55,10 @@ void main() {
       'closed',
       'invalid_transaction',
       'not_finalizable',
+      'rejected',
+      'already_in_chain',
+      'outcome_unknown',
+      'unrecognized_reply',
     });
     expect(lines.join(), isNot(contains('[REDACTED]')));
   });
