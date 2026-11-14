@@ -288,6 +288,12 @@ void main() {
         (stale as Ok<WalletReadSnapshot<bdk.Wallet>, SyncFailure>).value.stale,
         isTrue,
       );
+      // Hydrated, then served from cache under the lease: both admitted. The
+      // cache served while the writer holds the wallet is not.
+      expect(
+        [first.value.admitted, second.value.admitted, stale.value.admitted],
+        [isTrue, isTrue, isFalse],
+      );
       revisions.state = WalletRevisionState(
         stamp: WalletRevision(key: descriptor.key, generation: 1, revision: 0),
         lifecycle: WalletLifecycle.pendingWrite,
@@ -317,6 +323,7 @@ void main() {
       admission.busy = true;
       final result = await reader.bitcoin(descriptor) as Ok;
       expect((result.value as WalletReadSnapshot).stale, isTrue);
+      expect((result.value as WalletReadSnapshot).admitted, isFalse);
     },
   );
 
@@ -379,6 +386,7 @@ void main() {
       expect(raced, isA<Ok>());
       if (raced case Ok(:final value)) {
         expect(value.stale, isTrue);
+        expect(value.admitted, isFalse);
         expect(value.wallet, same(first.value.wallet));
         expect(value.revision, first.value.revision);
       }
@@ -403,6 +411,8 @@ void main() {
             as Ok<WalletReadSnapshot<bdk.Wallet>, SyncFailure>;
     expect(next.value.wallet, same(first.value.wallet));
     expect(next.value.stale, isTrue);
+    // A failed sync is stale, yet still the committed revision.
+    expect(next.value.admitted, isTrue);
   });
 
   test('lease releases even when unpublished native disposal throws', () async {
