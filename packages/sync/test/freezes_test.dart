@@ -145,6 +145,29 @@ void main() {
       ok(await freezing);
       expect(store.rows, {row('a', 0, 'w'), row('b', 1, 'w')});
     });
+    test('a failed read never runs the guard body', () async {
+      final store = MemoryFreezeStore()..failure = const SyncStorageFailure();
+      final authority = open(store);
+      var ran = false;
+
+      final guarded = await authority.guard((forbidden) => ran = true);
+
+      expect(err(guarded), isA<SyncStorageFailure>());
+      expect(ran, isFalse);
+    });
+
+    test('an exception of the guard body propagates; freezes go on', () async {
+      final store = MemoryFreezeStore();
+      final authority = open(store);
+
+      await expectLater(
+        authority.guard<void>((forbidden) => throw const FormatException('x')),
+        throwsA(isA<FormatException>()),
+      );
+
+      ok(await authority.freeze([row('a', 0, 'w')]));
+      expect(store.rows, {row('a', 0, 'w')});
+    });
   });
 
   group('wallet coins', () {
