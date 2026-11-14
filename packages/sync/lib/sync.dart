@@ -2,7 +2,8 @@
 /// [Sync], whose [Wallet] handles publish balances, coins, transactions and
 /// addresses as [Observed] values; [Sync.openExisting] returns the narrow
 /// [HeadlessSync] for background refreshes. Nothing here holds a native
-/// handle; read.dart still lends them to the transaction builders.
+/// handle; read.dart still lends them to the transaction builders. The codec
+/// and chain functions work without a wallet.
 library;
 
 export 'src/public/sync.dart'
