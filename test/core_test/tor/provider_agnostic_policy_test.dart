@@ -43,9 +43,8 @@ void main() {
 
     expect(Directory('packages/bull_tor/android').existsSync(), isFalse);
     expect(
-      File(
-        'lib/features/tor_settings/ui/widgets/tor_proxy_widget.dart',
-      ).readAsStringSync(),
+      File('lib/features/tor_settings/ui/widgets/tor_proxy_widget.dart')
+          .readAsStringSync(),
       isNot(contains('canLaunchUrl')),
     );
   });

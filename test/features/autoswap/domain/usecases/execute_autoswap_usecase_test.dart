@@ -41,9 +41,8 @@ void main() {
   });
 
   test('does not call the provider while consent is pending', () async {
-    when(
-      () => getSettings.execute(),
-    ).thenAnswer((_) async => valid.copyWith(showWarning: true));
+    when(() => getSettings.execute())
+        .thenAnswer((_) async => valid.copyWith(showWarning: true));
 
     final result = await usecase.execute();
 
@@ -52,9 +51,8 @@ void main() {
   });
 
   test('does not call the provider with invalid settings', () async {
-    when(
-      () => getSettings.execute(),
-    ).thenAnswer((_) async => valid.copyWith(recipientWalletId: null));
+    when(() => getSettings.execute())
+        .thenAnswer((_) async => valid.copyWith(recipientWalletId: null));
 
     final result = await usecase.execute();
 

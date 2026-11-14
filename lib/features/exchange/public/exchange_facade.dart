@@ -7,6 +7,7 @@ import 'package:bb_mobile/features/exchange/public/exchange_account.dart';
 import 'package:meta/meta.dart';
 
 export 'package:primitives/primitives.dart' show Err, Ok, Result;
+
 export '../domain/exchange_failure.dart';
 export '../exchange_locator.dart' show ExchangeLocator;
 export '../presentation/exchange_failure_l10n.dart' show ExchangeFailureL10n;

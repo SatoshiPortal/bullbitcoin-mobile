@@ -12,9 +12,11 @@ const _novlangArbDir = 'lib/l10n';
 Map<String, dynamic> _arb(String path) =>
     jsonDecode(File(path).readAsStringSync()) as Map<String, dynamic>;
 
-Set<String> _placeholders(String message) => RegExp(
-  r'\{([A-Za-z_]\w*)\s*[,}]',
-).allMatches(message).map((m) => m.group(1)!).toSet();
+Set<String> _placeholders(String message) =>
+    RegExp(r'\{([A-Za-z_]\w*)\s*[,}]')
+        .allMatches(message)
+        .map((m) => m.group(1)!)
+        .toSet();
 
 String _overrideKey(Map<dynamic, dynamic> e) =>
     '${e['catalogue']}__${e['key']}_${e['store']}';
@@ -48,9 +50,11 @@ void main() {
         reason: 'missing novlang_$locale.arb',
       );
     }
-    final novlangFiles = Directory(
-      _novlangArbDir,
-    ).listSync().whereType<File>().where((f) => f.path.endsWith('.arb')).length;
+    final novlangFiles = Directory(_novlangArbDir)
+        .listSync()
+        .whereType<File>()
+        .where((f) => f.path.endsWith('.arb'))
+        .length;
     expect(novlangFiles, locales.length);
   });
 

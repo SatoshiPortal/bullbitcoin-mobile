@@ -95,9 +95,8 @@ void main() {
 
     test('forwards a use case failure unchanged', () async {
       const failure = SpSessionBusy('inner lock held');
-      when(
-        () => getSpWallet.execute(),
-      ).thenAnswer((_) async => const Err<SpWallet?, SpFailure>(failure));
+      when(() => getSpWallet.execute())
+          .thenAnswer((_) async => const Err<SpWallet?, SpFailure>(failure));
 
       final result = await facade.refresh();
 

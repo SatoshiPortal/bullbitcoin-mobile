@@ -237,9 +237,8 @@ void main() {
       });
       expect(
         jsonEncode(
-          SecretModel.fromJson(
-            jsonDecode(raw) as Map<String, dynamic>,
-          ).toJson(),
+          SecretModel.fromJson(jsonDecode(raw) as Map<String, dynamic>)
+              .toJson(),
         ),
         raw,
       );

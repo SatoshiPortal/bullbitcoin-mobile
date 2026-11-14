@@ -74,8 +74,7 @@ void main() {
     (Exception('{"code":-26}'), BroadcastFailureCategory.unexpected),
     (
       const lwk.LwkError(
-        msg:
-            'ClientError(Protocol(Object {"code": Number(2), "message": String("sendrawtransaction RPC error -26: refused")}))',
+        msg: 'ClientError(Protocol(Object {"code": Number(2), "message": String("sendrawtransaction RPC error -26: refused")}))',
       ),
       BroadcastFailureCategory.rejected,
     ),
@@ -85,8 +84,7 @@ void main() {
     ),
     (
       const lwk.LwkError(
-        msg:
-            'ClientError(Protocol(Object {"code": Number(-25), "message": String("Number(-26)")}))',
+        msg: 'ClientError(Protocol(Object {"code": Number(-25), "message": String("Number(-26)")}))',
       ),
       BroadcastFailureCategory.unexpected,
     ),

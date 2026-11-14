@@ -42,33 +42,29 @@ void main() {
       return const Ok<void, PayjoinFailure>(null);
     });
     when(() => lifecycle.dispose()).thenAnswer((_) async {});
-    when(
-      () => sessions.reservedOutpoints(),
-    ).thenAnswer((_) async => const Ok(<Outpoint>{}));
+    when(() => sessions.reservedOutpoints())
+        .thenAnswer((_) async => const Ok(<Outpoint>{}));
   });
 
-  test(
-    'a role call issued before startup finished waits for the open',
-    () async {
-      final opening = Completer<Result<PayjoinLifecycle, PayjoinFailure>>();
-      final runtime = RecoverablePayjoin(() => opening.future);
-      addTearDown(() {
-        if (!resumed.isCompleted) resumed.complete();
-        return runtime.dispose();
-      });
-      unawaited(runtime.resume());
+  test('a role call issued before startup finished waits for the open', () async {
+    final opening = Completer<Result<PayjoinLifecycle, PayjoinFailure>>();
+    final runtime = RecoverablePayjoin(() => opening.future);
+    addTearDown(() {
+      if (!resumed.isCompleted) resumed.complete();
+      return runtime.dispose();
+    });
+    unawaited(runtime.resume());
 
-      final reserved = runtime.payjoin.sessions.reservedOutpoints();
-      opening.complete(Ok(lifecycle));
+    final reserved = runtime.payjoin.sessions.reservedOutpoints();
+    opening.complete(Ok(lifecycle));
 
-      // Answering with the fail-closed Err here would strand every Bitcoin send:
-      // PrepareBitcoinSendUsecase turns it into a build failure.
-      expect(await reserved, isA<Ok<Set<Outpoint>, PayjoinFailure>>());
-      // And the answer came from the open alone — the slow session resume is
-      // still in flight.
-      expect(resumed.isCompleted, isFalse);
-    },
-  );
+    // Answering with the fail-closed Err here would strand every Bitcoin send:
+    // PrepareBitcoinSendUsecase turns it into a build failure.
+    expect(await reserved, isA<Ok<Set<Outpoint>, PayjoinFailure>>());
+    // And the answer came from the open alone — the slow session resume is
+    // still in flight.
+    expect(resumed.isCompleted, isFalse);
+  });
 
   test('roles stay fail-closed while the storage cannot be opened', () async {
     final runtime = RecoverablePayjoin(

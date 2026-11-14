@@ -207,9 +207,9 @@ import 'package:bip39_mnemonic/bip39_mnemonic.dart'
           );
         }
       }
-      final imports = RegExp(
-        r"import 'package:([a-z_0-9]+)",
-      ).allMatches(code(file.readAsStringSync())).map((m) => m.group(1)!);
+      final imports = RegExp(r"import 'package:([a-z_0-9]+)")
+          .allMatches(code(file.readAsStringSync()))
+          .map((m) => m.group(1)!);
       for (final dep in imports) {
         // Prefix match: `flutter_secure_storage_darwin` and its four federated
         // siblings are the keystore too, and belong where it does.
@@ -354,9 +354,8 @@ import 'package:bip39_mnemonic/bip39_mnemonic.dart'
     final sealed = code(read('lib/src/widgets/painted_text.dart'));
 
     expect(
-      RegExp(
-        r'Function\(BuildContext context, int number, Widget word\)',
-      ).hasMatch(view),
+      RegExp(r'Function\(BuildContext context, int number, Widget word\)')
+          .hasMatch(view),
       isTrue,
       reason: 'wordBuilder must receive the word as a widget',
     );
@@ -469,8 +468,7 @@ import 'package:bip39_mnemonic/bip39_mnemonic.dart'
     expect(
       operations.keys.toSet(),
       inventory.keys.toSet(),
-      reason:
-          'every public member of Secret is an operation and belongs in the inventory above, with its verdict — whatever it returns',
+      reason: 'every public member of Secret is an operation and belongs in the inventory above, with its verdict — whatever it returns',
     );
     for (final MapEntry(key: name, value: type) in operations.entries) {
       expect(

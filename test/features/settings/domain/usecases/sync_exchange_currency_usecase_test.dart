@@ -89,9 +89,8 @@ void main() {
     });
 
     test('writes the full preference set with the new currency', () async {
-      when(
-        () => mainnetUsers.getUserSummary(),
-      ).thenAnswer((_) async => const Ok(userSummary));
+      when(() => mainnetUsers.getUserSummary())
+          .thenAnswer((_) async => const Ok(userSummary));
       when(
         () => mainnetUsers.saveUserPreference(
           language: any(named: 'language'),
@@ -117,9 +116,8 @@ void main() {
     });
 
     test('an exchange already on the chosen currency is left alone', () async {
-      when(
-        () => mainnetUsers.getUserSummary(),
-      ).thenAnswer((_) async => const Ok(userSummary));
+      when(() => mainnetUsers.getUserSummary())
+          .thenAnswer((_) async => const Ok(userSummary));
 
       final result = await usecase.execute('CAD');
 
@@ -161,9 +159,8 @@ void main() {
     });
 
     test('a failed preference write is reported', () async {
-      when(
-        () => mainnetUsers.getUserSummary(),
-      ).thenAnswer((_) async => const Ok(userSummary));
+      when(() => mainnetUsers.getUserSummary())
+          .thenAnswer((_) async => const Ok(userSummary));
       when(
         () => mainnetUsers.saveUserPreference(
           language: any(named: 'language'),

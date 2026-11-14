@@ -7,8 +7,10 @@ import 'package:transaction_sync/transaction_sync.dart'
         TransactionSyncConnectionFailure;
 import 'package:bb_mobile/features/wallet/domain/wallet_discovery_failure.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet_failure_log_code.dart';
+
 import 'dart:async';
 import 'dart:io';
+
 import 'package:primitives/primitives.dart' hide Network;
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 
@@ -96,50 +98,44 @@ void main() {
 
   tearDown(() => coordinator.dispose());
 
-  test(
-    'regtest syncs Liquid, skips SP and swaps, and logs their configuration once',
-    () async {
-      final directory = await Directory.systemTemp.createTemp(
-        'network-sync-logs-',
-      );
-      final reporter = _Reporter();
-      log = Logger.replace(directory: directory, reporter: reporter);
-      addTearDown(() async {
-        await log.flush();
-        await directory.delete(recursive: true);
-      });
-      network = NetworkEnv.regtest;
-      when(
-        () => getWallets.execute(onlyBitcoin: true),
-      ).thenAnswer((_) async => const Ok(<Wallet>[]));
-      when(
-        () => getWallets.execute(onlyLiquid: true),
-      ).thenAnswer((_) async => const Ok(<Wallet>[]));
-      var spRuns = 0;
-      spCallback = () async {
-        spRuns++;
-      };
-      await coordinator.sync(trigger: SyncTrigger.user);
-      await coordinator.sync();
-      await coordinator.sync(
-        only: {SyncKind.liquid, SyncKind.sp, SyncKind.swaps},
-      );
-      // Liquid regtest is supported since lwk-dart#99; SP and swaps are not.
-      verify(() => getWallets.execute(onlyLiquid: true)).called(greaterThan(0));
-      verifyNever(syncSwaps.call);
-      expect(spRuns, 0);
-      final lines = await log.readLogs();
-      expect(lines.where((line) => line.contains('kind=sp')), hasLength(1));
-      expect(lines.join(), isNot(contains('WARNING')));
-      expect(reporter.errors, isEmpty);
-      network = NetworkEnv.testnet;
-      when(
-        () => getWallets.execute(onlyLiquid: true),
-      ).thenAnswer((_) async => const Ok(<Wallet>[]));
-      await coordinator.sync();
-      expect(spRuns, 1);
-    },
-  );
+  test('regtest syncs Liquid, skips SP and swaps, and logs their configuration once', () async {
+    final directory = await Directory.systemTemp.createTemp(
+      'network-sync-logs-',
+    );
+    final reporter = _Reporter();
+    log = Logger.replace(directory: directory, reporter: reporter);
+    addTearDown(() async {
+      await log.flush();
+      await directory.delete(recursive: true);
+    });
+    network = NetworkEnv.regtest;
+    when(() => getWallets.execute(onlyBitcoin: true))
+        .thenAnswer((_) async => const Ok(<Wallet>[]));
+    when(() => getWallets.execute(onlyLiquid: true))
+        .thenAnswer((_) async => const Ok(<Wallet>[]));
+    var spRuns = 0;
+    spCallback = () async {
+      spRuns++;
+    };
+    await coordinator.sync(trigger: SyncTrigger.user);
+    await coordinator.sync();
+    await coordinator.sync(
+      only: {SyncKind.liquid, SyncKind.sp, SyncKind.swaps},
+    );
+    // Liquid regtest is supported since lwk-dart#99; SP and swaps are not.
+    verify(() => getWallets.execute(onlyLiquid: true)).called(greaterThan(0));
+    verifyNever(syncSwaps.call);
+    expect(spRuns, 0);
+    final lines = await log.readLogs();
+    expect(lines.where((line) => line.contains('kind=sp')), hasLength(1));
+    expect(lines.join(), isNot(contains('WARNING')));
+    expect(reporter.errors, isEmpty);
+    network = NetworkEnv.testnet;
+    when(() => getWallets.execute(onlyLiquid: true))
+        .thenAnswer((_) async => const Ok(<Wallet>[]));
+    await coordinator.sync();
+    expect(spRuns, 1);
+  });
 
   // Each kind's work is gated behind a Completer so the test controls exactly
   // when bitcoin / liquid / sp finish. The wallet list is empty, so no real
@@ -186,9 +182,8 @@ void main() {
 
   test('the first automatic sync and a pull both discover', () async {
     final wallet = _Wallet();
-    when(
-      () => getWallets.execute(onlyBitcoin: true),
-    ).thenAnswer((_) async => Ok([wallet]));
+    when(() => getWallets.execute(onlyBitcoin: true))
+        .thenAnswer((_) async => Ok([wallet]));
     when(
       () => syncWallet.execute(
         wallet,
@@ -209,9 +204,8 @@ void main() {
   test('a pull joins an in-flight automatic discovery pass', () async {
     final wallet = _Wallet();
     final gate = Completer<void>();
-    when(
-      () => getWallets.execute(onlyBitcoin: true),
-    ).thenAnswer((_) async => Ok([wallet]));
+    when(() => getWallets.execute(onlyBitcoin: true))
+        .thenAnswer((_) async => Ok([wallet]));
     when(
       () => syncWallet.execute(
         wallet,
@@ -248,116 +242,104 @@ void main() {
   _Wallet manualWallet(String id, {bool liquid = false}) {
     final wallet = _Wallet();
     when(() => wallet.id).thenReturn(id);
-    when(
-      () => wallet.network,
-    ).thenReturn(liquid ? Network.liquidMainnet : Network.bitcoinMainnet);
+    when(() => wallet.network)
+        .thenReturn(liquid ? Network.liquidMainnet : Network.bitcoinMainnet);
     when(() => wallet.isBitcoin).thenReturn(!liquid);
     when(() => wallet.isLiquid).thenReturn(liquid);
     return wallet;
   }
 
-  test(
-    'Receive polling targets one wallet with auto provenance and no throttle',
-    () async {
-      final directory = Directory.systemTemp.createTempSync(
-        'receive-poll-logs-',
-      );
-      final reporter = _Reporter();
-      log = Logger.replace(directory: directory, reporter: reporter);
-      addTearDown(() async {
-        await log.flush();
-        directory.deleteSync(recursive: true);
-      });
-      final a = manualWallet('a');
-      final b = manualWallet('b');
-      when(() => readWallet.execute('a')).thenAnswer((_) async => Ok(a));
-      when(() => getWallets.execute()).thenAnswer((_) async => Ok([a, b]));
-      when(
-        () => getWallets.execute(onlyBitcoin: true),
-      ).thenAnswer((_) async => Ok([a]));
-      when(
-        () => syncWallet.execute(
-          a,
-          discover: false,
-          allowInitialScan: any(named: 'allowInitialScan'),
-          reason: SyncReason.auto,
-        ),
-      ).thenAnswer((_) async {});
-      when(
-        () => syncWallet.execute(
-          a,
-          discover: true,
-          allowInitialScan: true,
-          reason: SyncReason.auto,
-        ),
-      ).thenAnswer((_) async {});
-      // A just-completed global pass must not swallow the next periodic tick.
-      await coordinator.sync(only: {SyncKind.bitcoin});
-      await coordinator.pollWallet('a', isActive: () => true);
-      await coordinator.pollWallet('a', isActive: () => true);
-      // The first global pass discovers and keeps bootstrap.
-      verify(
-        () => syncWallet.execute(
-          a,
-          discover: true,
-          allowInitialScan: true,
-          reason: SyncReason.auto,
-        ),
-      ).called(1);
-      // Both Receive ticks stay on revealed scripts and reject bootstrap.
-      verify(
-        () => syncWallet.execute(
-          a,
-          discover: false,
-          allowInitialScan: false,
-          reason: SyncReason.auto,
-        ),
-      ).called(2);
-      verifyNever(
-        () => syncWallet.execute(
-          b,
-          discover: any(named: 'discover'),
-          allowInitialScan: any(named: 'allowInitialScan'),
-          reason: any(named: 'reason'),
-        ),
-      );
-      when(
-        () => syncWallet.execute(
-          a,
-          discover: false,
-          allowInitialScan: any(named: 'allowInitialScan'),
-          reason: SyncReason.auto,
-        ),
-      ).thenThrow(const WalletSnapshotException(TransactionSyncBusyFailure()));
-      await coordinator.pollWallet('a', isActive: () => true);
-      final lines = (await log.readLogs()).join();
-      expect(
-        lines,
-        contains(
-          'Sync pass finished kind=bitcoin reason=auto outcome=settled wallets=1',
-        ),
-      );
-      expect(
-        lines,
-        contains('reason=auto outcome=busy wallets=1 category=busy'),
-      );
-      expect(lines, isNot(contains('discovery')));
-      expect(reporter.errors, isEmpty);
-    },
-  );
+  test('Receive polling targets one wallet with auto provenance and no throttle', () async {
+    final directory = Directory.systemTemp.createTempSync('receive-poll-logs-');
+    final reporter = _Reporter();
+    log = Logger.replace(directory: directory, reporter: reporter);
+    addTearDown(() async {
+      await log.flush();
+      directory.deleteSync(recursive: true);
+    });
+    final a = manualWallet('a');
+    final b = manualWallet('b');
+    when(() => readWallet.execute('a')).thenAnswer((_) async => Ok(a));
+    when(() => getWallets.execute()).thenAnswer((_) async => Ok([a, b]));
+    when(() => getWallets.execute(onlyBitcoin: true))
+        .thenAnswer((_) async => Ok([a]));
+    when(
+      () => syncWallet.execute(
+        a,
+        discover: false,
+        allowInitialScan: any(named: 'allowInitialScan'),
+        reason: SyncReason.auto,
+      ),
+    ).thenAnswer((_) async {});
+    when(
+      () => syncWallet.execute(
+        a,
+        discover: true,
+        allowInitialScan: true,
+        reason: SyncReason.auto,
+      ),
+    ).thenAnswer((_) async {});
+    // A just-completed global pass must not swallow the next periodic tick.
+    await coordinator.sync(only: {SyncKind.bitcoin});
+    await coordinator.pollWallet('a', isActive: () => true);
+    await coordinator.pollWallet('a', isActive: () => true);
+    // The first global pass discovers and keeps bootstrap.
+    verify(
+      () => syncWallet.execute(
+        a,
+        discover: true,
+        allowInitialScan: true,
+        reason: SyncReason.auto,
+      ),
+    ).called(1);
+    // Both Receive ticks stay on revealed scripts and reject bootstrap.
+    verify(
+      () => syncWallet.execute(
+        a,
+        discover: false,
+        allowInitialScan: false,
+        reason: SyncReason.auto,
+      ),
+    ).called(2);
+    verifyNever(
+      () => syncWallet.execute(
+        b,
+        discover: any(named: 'discover'),
+        allowInitialScan: any(named: 'allowInitialScan'),
+        reason: any(named: 'reason'),
+      ),
+    );
+    when(
+      () => syncWallet.execute(
+        a,
+        discover: false,
+        allowInitialScan: any(named: 'allowInitialScan'),
+        reason: SyncReason.auto,
+      ),
+    ).thenThrow(const WalletSnapshotException(TransactionSyncBusyFailure()));
+    await coordinator.pollWallet('a', isActive: () => true);
+    final lines = (await log.readLogs()).join();
+    expect(
+      lines,
+      contains(
+        'Sync pass finished kind=bitcoin reason=auto outcome=settled wallets=1',
+      ),
+    );
+    expect(lines, contains('reason=auto outcome=busy wallets=1 category=busy'));
+    expect(lines, isNot(contains('discovery')));
+    expect(reporter.errors, isEmpty);
+  });
 
   for (final cancel in ['never', 'beforeJoin', 'afterJoin']) {
     test('Receive waits for covered passes (cancel=$cancel)', () async {
       final a = manualWallet('a');
       final liquid = manualWallet('liquid', liquid: true);
       when(() => readWallet.execute('a')).thenAnswer((_) async => Ok(a));
-      when(
-        () => readWallet.execute('liquid'),
-      ).thenAnswer((_) async => Ok(liquid));
+      when(() => readWallet.execute('liquid'))
+          .thenAnswer((_) async => Ok(liquid));
       when(() => getWallets.execute()).thenAnswer((_) async => Ok([a, liquid]));
-      when(
-        () => getWallets.execute(onlyBitcoin: true),
-      ).thenAnswer((_) async => Ok([a]));
+      when(() => getWallets.execute(onlyBitcoin: true))
+          .thenAnswer((_) async => Ok([a]));
       final held = Completer<void>();
       when(
         () => syncWallet.execute(
@@ -449,52 +431,49 @@ void main() {
     },
   );
 
-  test(
-    'Receive polling awaits a running targeted pass and rejects an inactive network',
-    () async {
-      final a = manualWallet('a');
-      when(() => readWallet.execute('a')).thenAnswer((_) async => Ok(a));
-      final held = Completer<void>();
-      when(
-        () => syncWallet.execute(
-          a,
-          discover: false,
-          allowInitialScan: any(named: 'allowInitialScan'),
-          reason: SyncReason.auto,
-        ),
-      ).thenAnswer((_) => held.future);
-      final first = coordinator.pollWallet('a', isActive: () => true);
-      await Future<void>.delayed(Duration.zero);
-      var joinedEnded = false;
-      final joined = coordinator
-          .pollWallet('a', isActive: () => true)
-          .then((_) => joinedEnded = true);
-      await Future<void>.delayed(Duration.zero);
-      expect(joinedEnded, isFalse);
-      verify(
-        () => syncWallet.execute(
-          a,
-          discover: false,
-          allowInitialScan: any(named: 'allowInitialScan'),
-          reason: SyncReason.auto,
-        ),
-      ).called(1);
-      held.complete();
-      await Future.wait([first, joined]);
-      expect(joinedEnded, isTrue);
-      network = NetworkEnv.testnet;
-      await coordinator.pollWallet('a', isActive: () => true);
-      verifyNever(
-        () => syncWallet.execute(
-          a,
-          discover: false,
-          allowInitialScan: any(named: 'allowInitialScan'),
-          reason: SyncReason.auto,
-        ),
-      );
-      verifyZeroInteractions(getWallets);
-    },
-  );
+  test('Receive polling awaits a running targeted pass and rejects an inactive network', () async {
+    final a = manualWallet('a');
+    when(() => readWallet.execute('a')).thenAnswer((_) async => Ok(a));
+    final held = Completer<void>();
+    when(
+      () => syncWallet.execute(
+        a,
+        discover: false,
+        allowInitialScan: any(named: 'allowInitialScan'),
+        reason: SyncReason.auto,
+      ),
+    ).thenAnswer((_) => held.future);
+    final first = coordinator.pollWallet('a', isActive: () => true);
+    await Future<void>.delayed(Duration.zero);
+    var joinedEnded = false;
+    final joined = coordinator
+        .pollWallet('a', isActive: () => true)
+        .then((_) => joinedEnded = true);
+    await Future<void>.delayed(Duration.zero);
+    expect(joinedEnded, isFalse);
+    verify(
+      () => syncWallet.execute(
+        a,
+        discover: false,
+        allowInitialScan: any(named: 'allowInitialScan'),
+        reason: SyncReason.auto,
+      ),
+    ).called(1);
+    held.complete();
+    await Future.wait([first, joined]);
+    expect(joinedEnded, isTrue);
+    network = NetworkEnv.testnet;
+    await coordinator.pollWallet('a', isActive: () => true);
+    verifyNever(
+      () => syncWallet.execute(
+        a,
+        discover: false,
+        allowInitialScan: any(named: 'allowInitialScan'),
+        reason: SyncReason.auto,
+      ),
+    );
+    verifyZeroInteractions(getWallets);
+  });
 
   test(
     'pass summary preserves the native connection failure category',
@@ -506,9 +485,8 @@ void main() {
         directory.deleteSync(recursive: true);
       });
       final wallet = manualWallet('connection-wallet');
-      when(
-        () => getWallets.execute(onlyBitcoin: true),
-      ).thenAnswer((_) async => Ok([wallet]));
+      when(() => getWallets.execute(onlyBitcoin: true))
+          .thenAnswer((_) async => Ok([wallet]));
       when(
         () => syncWallet.execute(
           wallet,
@@ -540,9 +518,8 @@ void main() {
       });
       final wallet = manualWallet('busy-wallet');
       when(() => getWallets.execute()).thenAnswer((_) async => Ok([wallet]));
-      when(
-        () => getWallets.execute(onlyBitcoin: true),
-      ).thenAnswer((_) async => Ok([wallet]));
+      when(() => getWallets.execute(onlyBitcoin: true))
+          .thenAnswer((_) async => Ok([wallet]));
       when(
         () => syncWallet.execute(
           wallet,
@@ -589,9 +566,8 @@ void main() {
         final routineGate = Completer<void>();
         final manualGate = Completer<void>();
         when(() => getWallets.execute()).thenAnswer((_) async => Ok([a, b]));
-        when(
-          () => getWallets.execute(onlyBitcoin: true),
-        ).thenAnswer((_) async => Ok([a]));
+        when(() => getWallets.execute(onlyBitcoin: true))
+            .thenAnswer((_) async => Ok([a]));
         when(
           () => syncWallet.execute(a, discover: true, reason: SyncReason.auto),
         ).thenAnswer((_) => routineGate.future);
@@ -650,9 +626,8 @@ void main() {
     () async {
       final wallet = manualWallet('liquid', liquid: true);
       when(() => getWallets.execute()).thenAnswer((_) async => Ok([wallet]));
-      when(
-        () => getWallets.execute(onlyLiquid: true),
-      ).thenAnswer((_) async => Ok([wallet]));
+      when(() => getWallets.execute(onlyLiquid: true))
+          .thenAnswer((_) async => Ok([wallet]));
       when(
         () => syncWallet.execute(
           wallet,
@@ -825,12 +800,10 @@ void main() {
   test('automatic re-sync within the throttle window is skipped; '
       'a user sync bypasses it', () async {
     // No gating: each kind completes immediately so _lastSuccessAt is set.
-    when(
-      () => getWallets.execute(onlyBitcoin: true),
-    ).thenAnswer((_) async => Ok(<Wallet>[]));
-    when(
-      () => getWallets.execute(onlyLiquid: true),
-    ).thenAnswer((_) async => Ok(<Wallet>[]));
+    when(() => getWallets.execute(onlyBitcoin: true))
+        .thenAnswer((_) async => Ok(<Wallet>[]));
+    when(() => getWallets.execute(onlyLiquid: true))
+        .thenAnswer((_) async => Ok(<Wallet>[]));
     await coordinator.sync(trigger: SyncTrigger.automatic);
     // Immediately again (well within the 2s window); every kind is throttled.
     await coordinator.sync(trigger: SyncTrigger.automatic);
@@ -858,9 +831,8 @@ void main() {
           WalletStorageFailure('SqliteException(11): disk image is malformed'),
         ),
       );
-      when(
-        () => getWallets.execute(onlyLiquid: true),
-      ).thenAnswer((_) async => Ok(<Wallet>[]));
+      when(() => getWallets.execute(onlyLiquid: true))
+          .thenAnswer((_) async => Ok(<Wallet>[]));
 
       await expectLater(
         coordinator.sync(trigger: SyncTrigger.automatic),
@@ -912,12 +884,10 @@ void main() {
   });
 
   test('does not sync swaps while the app is paused', () async {
-    when(
-      () => getWallets.execute(onlyBitcoin: true),
-    ).thenAnswer((_) async => Ok(<Wallet>[]));
-    when(
-      () => getWallets.execute(onlyLiquid: true),
-    ).thenAnswer((_) async => Ok(<Wallet>[]));
+    when(() => getWallets.execute(onlyBitcoin: true))
+        .thenAnswer((_) async => Ok(<Wallet>[]));
+    when(() => getWallets.execute(onlyLiquid: true))
+        .thenAnswer((_) async => Ok(<Wallet>[]));
     for (final state in [
       AppLifecycleState.inactive,
       AppLifecycleState.hidden,
@@ -942,12 +912,10 @@ void main() {
 
   group('SyncKind.sp', () {
     test('sync() invokes the registered syncSp once', () async {
-      when(
-        () => getWallets.execute(onlyBitcoin: true),
-      ).thenAnswer((_) async => Ok(<Wallet>[]));
-      when(
-        () => getWallets.execute(onlyLiquid: true),
-      ).thenAnswer((_) async => Ok(<Wallet>[]));
+      when(() => getWallets.execute(onlyBitcoin: true))
+          .thenAnswer((_) async => Ok(<Wallet>[]));
+      when(() => getWallets.execute(onlyLiquid: true))
+          .thenAnswer((_) async => Ok(<Wallet>[]));
       when(syncSwaps.call).thenAnswer((_) async {});
       var spCalls = 0;
       spCallback = () async => spCalls++;
@@ -959,12 +927,10 @@ void main() {
 
     test('a syncSp throw does not sink bitcoin/liquid and '
         'surfaces as the sp failure', () async {
-      when(
-        () => getWallets.execute(onlyBitcoin: true),
-      ).thenAnswer((_) async => Ok(<Wallet>[]));
-      when(
-        () => getWallets.execute(onlyLiquid: true),
-      ).thenAnswer((_) async => Ok(<Wallet>[]));
+      when(() => getWallets.execute(onlyBitcoin: true))
+          .thenAnswer((_) async => Ok(<Wallet>[]));
+      when(() => getWallets.execute(onlyLiquid: true))
+          .thenAnswer((_) async => Ok(<Wallet>[]));
       when(syncSwaps.call).thenAnswer((_) async {});
       spCallback = () async => throw Exception('sp boom');
 
@@ -986,12 +952,10 @@ void main() {
 
     test('sp is throttled like the others: an automatic re-sync within the '
         'window is skipped; a user sync bypasses it', () async {
-      when(
-        () => getWallets.execute(onlyBitcoin: true),
-      ).thenAnswer((_) async => Ok(<Wallet>[]));
-      when(
-        () => getWallets.execute(onlyLiquid: true),
-      ).thenAnswer((_) async => Ok(<Wallet>[]));
+      when(() => getWallets.execute(onlyBitcoin: true))
+          .thenAnswer((_) async => Ok(<Wallet>[]));
+      when(() => getWallets.execute(onlyLiquid: true))
+          .thenAnswer((_) async => Ok(<Wallet>[]));
       when(syncSwaps.call).thenAnswer((_) async {});
       var spCalls = 0;
       spCallback = () async => spCalls++;
@@ -1005,12 +969,10 @@ void main() {
     });
 
     test('a user sync leaves sp out unless asked for it', () async {
-      when(
-        () => getWallets.execute(onlyBitcoin: true),
-      ).thenAnswer((_) async => Ok(<Wallet>[]));
-      when(
-        () => getWallets.execute(onlyLiquid: true),
-      ).thenAnswer((_) async => Ok(<Wallet>[]));
+      when(() => getWallets.execute(onlyBitcoin: true))
+          .thenAnswer((_) async => Ok(<Wallet>[]));
+      when(() => getWallets.execute(onlyLiquid: true))
+          .thenAnswer((_) async => Ok(<Wallet>[]));
       var spCalls = 0;
       spCallback = () async => spCalls++;
 
@@ -1051,9 +1013,8 @@ void main() {
       'coalesced callers persist one pass and throttling stays silent',
       () async {
         final gate = Completer<List<Wallet>>();
-        when(
-          () => getWallets.execute(onlyBitcoin: true),
-        ).thenAnswer((_) async => Ok(await gate.future));
+        when(() => getWallets.execute(onlyBitcoin: true))
+            .thenAnswer((_) async => Ok(await gate.future));
         final first = coordinator.sync(only: {SyncKind.bitcoin});
         final second = coordinator.sync(only: {SyncKind.bitcoin});
         await Future<void>.delayed(Duration.zero);
@@ -1079,12 +1040,10 @@ void main() {
         final bitcoin = manualWallet('bitcoin');
         final liquid = manualWallet('liquid', liquid: true);
         final gate = Completer<void>();
-        when(
-          () => getWallets.execute(onlyBitcoin: true),
-        ).thenAnswer((_) async => Ok([bitcoin]));
-        when(
-          () => getWallets.execute(onlyLiquid: true),
-        ).thenAnswer((_) async => Ok([liquid]));
+        when(() => getWallets.execute(onlyBitcoin: true))
+            .thenAnswer((_) async => Ok([bitcoin]));
+        when(() => getWallets.execute(onlyLiquid: true))
+            .thenAnswer((_) async => Ok([liquid]));
         when(
           () => syncWallet.execute(
             bitcoin,
@@ -1136,12 +1095,10 @@ void main() {
     );
 
     void walletsRead(WalletFailure failure) {
-      when(
-        () => getWallets.execute(onlyBitcoin: true),
-      ).thenAnswer((_) async => Err<List<Wallet>, WalletFailure>(failure));
-      when(
-        () => getWallets.execute(onlyLiquid: true),
-      ).thenAnswer((_) async => Err<List<Wallet>, WalletFailure>(failure));
+      when(() => getWallets.execute(onlyBitcoin: true))
+          .thenAnswer((_) async => Err<List<Wallet>, WalletFailure>(failure));
+      when(() => getWallets.execute(onlyLiquid: true))
+          .thenAnswer((_) async => Err<List<Wallet>, WalletFailure>(failure));
     }
 
     test('no wallet yet still fails the sync but is not reported', () async {
@@ -1184,9 +1141,8 @@ void main() {
         now: () => clock,
       );
       wallet = _Wallet();
-      when(
-        () => getWallets.execute(onlyBitcoin: true),
-      ).thenAnswer((_) async => Ok([wallet]));
+      when(() => getWallets.execute(onlyBitcoin: true))
+          .thenAnswer((_) async => Ok([wallet]));
       when(
         () => syncWallet.execute(
           wallet,
@@ -1241,9 +1197,8 @@ void main() {
         final routine = bitcoin();
         await pumpEventQueue();
         var pulled = false;
-        final pull = bitcoin(
-          trigger: SyncTrigger.user,
-        ).then((_) => pulled = true);
+        final pull = bitcoin(trigger: SyncTrigger.user)
+            .then((_) => pulled = true);
         await pumpEventQueue();
         expect(pulled, isFalse);
         gate.complete();
@@ -1316,9 +1271,8 @@ void main() {
 
     test('Liquid passes never discover', () async {
       final liquid = _Wallet();
-      when(
-        () => getWallets.execute(onlyLiquid: true),
-      ).thenAnswer((_) async => Ok([liquid]));
+      when(() => getWallets.execute(onlyLiquid: true))
+          .thenAnswer((_) async => Ok([liquid]));
       when(
         () => syncWallet.execute(
           liquid,

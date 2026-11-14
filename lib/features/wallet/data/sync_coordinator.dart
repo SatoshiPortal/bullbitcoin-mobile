@@ -3,9 +3,13 @@ import 'package:transaction_sync/read.dart';
 import 'package:transaction_sync/transaction_sync.dart'
     show SyncReason, TransactionSyncBusyFailure;
 import 'package:bb_mobile/features/wallet/domain/wallet_failure_log_code.dart';
+
 import 'dart:async';
+
 import 'package:bb_mobile/features/wallet/domain/wallet_discovery_failure.dart';
+
 import 'dart:collection';
+
 import 'package:primitives/primitives.dart' as network;
 
 import 'package:bb_mobile/features/wallet/domain/sync_outcome.dart';

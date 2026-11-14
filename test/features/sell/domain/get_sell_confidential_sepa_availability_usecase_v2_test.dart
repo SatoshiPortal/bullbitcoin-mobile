@@ -12,9 +12,8 @@ void main() {
     final recipients = _MockRecipients();
     final usecase = GetSellConfidentialSepaAvailabilityUsecaseV2(recipients);
     for (final availability in ConfidentialSepaAvailability.values) {
-      when(
-        recipients.getConfidentialSepaAvailability,
-      ).thenAnswer((_) async => Ok(availability));
+      when(recipients.getConfidentialSepaAvailability)
+          .thenAnswer((_) async => Ok(availability));
       final result = await usecase.execute();
       expect(
         (result as Ok<ConfidentialSepaAvailability, SellFailure>).value,
@@ -30,9 +29,8 @@ void main() {
       const RecipientsNetworkFailure(),
       const RecipientsUnexpectedFailure(),
     ]) {
-      when(
-        recipients.getConfidentialSepaAvailability,
-      ).thenAnswer((_) async => Err(failure));
+      when(recipients.getConfidentialSepaAvailability)
+          .thenAnswer((_) async => Err(failure));
       final result = await usecase.execute();
       expect(
         (result as Err<ConfidentialSepaAvailability, SellFailure>).failure,

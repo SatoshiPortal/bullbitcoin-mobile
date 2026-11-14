@@ -9,6 +9,7 @@ import 'package:bb_mobile/features/fund_exchange/domain/value_objects/funding_in
 import 'package:bb_mobile/features/fund_exchange/domain/value_objects/funding_method.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
+
 import '../result_helpers.dart';
 
 const _rawReason =

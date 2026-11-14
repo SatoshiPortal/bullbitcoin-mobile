@@ -1,4 +1,5 @@
 import 'package:bull_logs/src/domain/log_entry.dart';
+
 import '../log_filter.dart';
 
 class FilterLogsUsecase {

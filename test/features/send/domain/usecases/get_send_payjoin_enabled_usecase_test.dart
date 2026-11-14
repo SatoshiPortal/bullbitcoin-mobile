@@ -11,9 +11,9 @@ void main() {
 
   setUp(() => policy = _MockPayjoinPolicy());
 
-  void stubPolicy(PayjoinPolicy value) => when(
-    policy.load,
-  ).thenAnswer((_) async => Ok<PayjoinPolicy, PayjoinFailure>(value));
+  void stubPolicy(PayjoinPolicy value) =>
+      when(policy.load)
+          .thenAnswer((_) async => Ok<PayjoinPolicy, PayjoinFailure>(value));
 
   test('on by default', () async {
     stubPolicy(PayjoinPolicy.defaults());

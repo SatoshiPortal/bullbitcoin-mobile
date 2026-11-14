@@ -29,9 +29,8 @@ void main() {
   });
 
   test('loads an Exchange order by its local record id', () async {
-    when(
-      () => swapFacade.getOrder('local-1'),
-    ).thenAnswer((_) async => Ok(_record()));
+    when(() => swapFacade.getOrder('local-1'))
+        .thenAnswer((_) async => Ok(_record()));
 
     final result = await usecase.execute('local-1');
 

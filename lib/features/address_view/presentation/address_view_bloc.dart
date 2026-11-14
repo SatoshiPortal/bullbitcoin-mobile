@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:bb_mobile/features/address_view/domain/usecases/watch_wallet_revisions_usecase.dart';
 import 'package:primitives/primitives.dart';

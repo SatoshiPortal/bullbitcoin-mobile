@@ -97,20 +97,16 @@ void main() {
     revokeSpWalletUsecase = _MockRevokeSpWalletUsecase();
     checkSpWalletSetupUsecase = _MockCheckSpWalletSetupUsecase();
 
-    when(
-      () => setIsDevModeUsecase.execute(any()),
-    ).thenAnswer((_) async => const Ok(null));
-    when(
-      () => revokeSpWalletUsecase.execute(),
-    ).thenAnswer((_) async => const Ok(null));
-    when(
-      () => checkSpWalletSetupUsecase.execute(),
-    ).thenAnswer((_) async => Ok(false));
+    when(() => setIsDevModeUsecase.execute(any()))
+        .thenAnswer((_) async => const Ok(null));
+    when(() => revokeSpWalletUsecase.execute())
+        .thenAnswer((_) async => const Ok(null));
+    when(() => checkSpWalletSetupUsecase.execute())
+        .thenAnswer((_) async => Ok(false));
 
     final watchPayjoinPolicyUsecase = _MockWatchPayjoinPolicyUsecase();
-    when(
-      () => watchPayjoinPolicyUsecase.execute(),
-    ).thenAnswer((_) => const Stream<PayjoinPolicy>.empty());
+    when(() => watchPayjoinPolicyUsecase.execute())
+        .thenAnswer((_) => const Stream<PayjoinPolicy>.empty());
 
     cubit = SettingsCubit(
       getSettingsUsecase: _MockGetSettingsUsecase(),
@@ -196,9 +192,8 @@ void main() {
     test(
       'dev-mode toggle-off keeps dev mode enabled when revoke fails',
       () async {
-        when(
-          () => revokeSpWalletUsecase.execute(),
-        ).thenAnswer((_) async => const Err(SpUnexpected('file locked')));
+        when(() => revokeSpWalletUsecase.execute())
+            .thenAnswer((_) async => const Err(SpUnexpected('file locked')));
         cubit.emit(
           cubit.state.copyWith(
             storedSettings: _settings(isDevModeEnabled: true),

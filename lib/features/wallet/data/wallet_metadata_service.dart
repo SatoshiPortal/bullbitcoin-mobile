@@ -51,9 +51,8 @@ class WalletMetadataService {
     String account,
   })
   decodeOrigin({required String origin}) {
-    final match = RegExp(
-      r'\[([a-fA-F0-9]+)/(\d+h)/(\d+h)/(\d+h)\]',
-    ).firstMatch(origin);
+    final match = RegExp(r'\[([a-fA-F0-9]+)/(\d+h)/(\d+h)/(\d+h)\]')
+        .firstMatch(origin);
 
     if (match == null) throw 'Invalid origin format';
 
@@ -107,9 +106,9 @@ class WalletMetadataService {
   /// deliberately remains unattributed between testnet and regtest here.
   static String canonicalBip329Origin(String keyOrigin) {
     final derivation = parseOrigin(origin: keyOrigin);
-    final coinType = RegExp(
-      r'\[[a-fA-F0-9]+/\d+h/(\d+h)/\d+h\]',
-    ).firstMatch(keyOrigin)?.group(1);
+    final coinType = RegExp(r'\[[a-fA-F0-9]+/\d+h/(\d+h)/\d+h\]')
+        .firstMatch(keyOrigin)
+        ?.group(1);
     if (coinType != '0h' && coinType != '1h' && coinType != '1776h') {
       throw const FormatException('Unsupported derivation coin type');
     }
@@ -151,9 +150,8 @@ class WalletMetadataService {
   static ({String fingerprint, ScriptType script, String account}) parseOrigin({
     required String origin,
   }) {
-    final match = RegExp(
-      r'\[([a-fA-F0-9]+)/(\d+h)/(\d+h)/(\d+h)\]',
-    ).firstMatch(origin);
+    final match = RegExp(r'\[([a-fA-F0-9]+)/(\d+h)/(\d+h)/(\d+h)\]')
+        .firstMatch(origin);
     final fingerprint = match?.group(1);
     final purpose = match?.group(2);
     final account = match?.group(4);

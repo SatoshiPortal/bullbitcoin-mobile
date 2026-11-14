@@ -17,9 +17,8 @@ void main() {
   setUp(() {
     payjoinSessions = _MockPayjoinSessions();
     usecase = ResolveSelectedInputsUsecase(payjoinSessions);
-    when(
-      () => payjoinSessions.reservedOutpoints(),
-    ).thenAnswer((_) async => const Ok(<Outpoint>{}));
+    when(() => payjoinSessions.reservedOutpoints())
+        .thenAnswer((_) async => const Ok(<Outpoint>{}));
   });
 
   test('resolves exactly the requested spendable coins', () async {

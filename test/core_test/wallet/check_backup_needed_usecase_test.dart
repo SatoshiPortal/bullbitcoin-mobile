@@ -105,9 +105,8 @@ void main() {
   });
 
   test('sanitizes a throwing settings read', () async {
-    when(
-      settingsRepository.fetch,
-    ).thenThrow(Exception('SqliteException(13): disk image is malformed'));
+    when(settingsRepository.fetch)
+        .thenThrow(Exception('SqliteException(13): disk image is malformed'));
 
     final result = await usecase.execute();
 

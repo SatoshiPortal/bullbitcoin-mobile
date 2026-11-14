@@ -1,6 +1,8 @@
 import '../settings_failure.dart';
+
 import 'package:primitives/primitives.dart';
 import 'package:background_tasks/background_tasks.dart';
+
 import '../repositories/background_preferences_repository.dart';
 
 /// All permission requests originate in an explicit settings action.

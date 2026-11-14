@@ -209,17 +209,15 @@ void main() {
         ),
       );
       final vault = ok(
-        await (await secretIn(
-          source,
-        )).backup.recoverbull(metadata: const {'isPhysicalBackupTested': true}),
+        await (await secretIn(source)).backup
+            .recoverbull(metadata: const {'isPhysicalBackupTested': true}),
       );
 
       // A fresh device: nothing stored yet.
       final target = FakeSecureStoragePlatform();
       final restored = ok(
-        await secretsWith(
-          target,
-        ).recoverbull.restore(vault: vault.vault, key: vault.key),
+        await secretsWith(target).recoverbull
+            .restore(vault: vault.vault, key: vault.key),
       );
 
       // Same wallet, filed under the same fingerprint.
@@ -240,9 +238,8 @@ void main() {
       final vault = ok(await (await secretIn(source)).backup.recoverbull());
 
       final target = FakeSecureStoragePlatform();
-      final result = await secretsWith(
-        target,
-      ).recoverbull.restore(vault: vault.vault, key: VaultKey('f' * 64));
+      final result = await secretsWith(target).recoverbull
+          .restore(vault: vault.vault, key: VaultKey('f' * 64));
 
       // Its own failure, not a storage one: the UI can say "wrong key"
       // rather than "could not save".
@@ -413,14 +410,9 @@ void main() {
     // Two real vault files, taken from the app's own integration fixtures: one written by the pre-package path, one by the current one. They are the reason the format is frozen — a change here orphans a wallet whose only copy is that file.
     //
     // Their mnemonic is the public BIP39 vector for entropy ffffffff…ffff, not a user's.
-    final vectors =
-        (jsonDecode(
-                  File(
-                    'test/fixtures/recoverbull_vaults.json',
-                  ).readAsStringSync(),
-                )
-                as List)
-            .cast<Map<String, dynamic>>();
+    final vectors = (jsonDecode(
+      File('test/fixtures/recoverbull_vaults.json').readAsStringSync(),
+    ) as List).cast<Map<String, dynamic>>();
 
     const vaultWords = [
       'zoo',
@@ -476,16 +468,14 @@ void main() {
       test('$label — the file opens and restores its words', () async {
         final storage = FakeSecureStoragePlatform();
         final secrets = secretsWith(storage);
-        final plaintext =
-            jsonDecode(
-                  utf8.decode(
-                    RecoverBull.restoreBackup(
-                      backup: BullBackup.fromJson(vector['file'] as String),
-                      backupKey: convert.hex.decode(vector['key'] as String),
-                    ),
-                  ),
-                )
-                as Map<String, dynamic>;
+        final plaintext = jsonDecode(
+          utf8.decode(
+            RecoverBull.restoreBackup(
+              backup: BullBackup.fromJson(vector['file'] as String),
+              backupKey: convert.hex.decode(vector['key'] as String),
+            ),
+          ),
+        ) as Map<String, dynamic>;
         expect(plaintext.containsKey('mnemonicLanguage'), isFalse);
 
         final restored = ok(

@@ -1,6 +1,8 @@
 import '../../../../frozen_outpoints_fixture.dart';
+
 import 'package:bb_mobile/features/send/public/send_facade.dart';
 import 'package:primitives/primitives.dart' hide Network;
+
 import 'dart:io';
 
 import 'package:bb_mobile/core/blockchain/domain/repositories/liquid_blockchain_repository.dart';

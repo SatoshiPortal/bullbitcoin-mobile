@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:analyzer/dart/analysis/analysis_context_collection.dart';
 import 'package:analyzer/dart/analysis/results.dart';
 import 'package:test/test.dart';
+
 import '../tool/native_write_gate.dart';
 
 void main() {
@@ -11,9 +12,8 @@ void main() {
   late AnalysisContextCollection collection;
   setUpAll(() {
     var root = Directory.current;
-    while (!File(
-      '${root.path}/packages/transaction_sync/pubspec.yaml',
-    ).existsSync()) {
+    while (!File('${root.path}/packages/transaction_sync/pubspec.yaml')
+        .existsSync()) {
       if (root.path == root.parent.path) throw StateError('No repository');
       root = root.parent;
     }
@@ -28,9 +28,8 @@ void main() {
     File('${fixture.path}/.dart_tool/package_config.json')
       ..createSync(recursive: true)
       ..writeAsStringSync(jsonEncode(config));
-    File(
-      '${fixture.path}/bridge.dart',
-    ).writeAsStringSync("export 'package:bull_sdk/bdk.dart';");
+    File('${fixture.path}/bridge.dart')
+        .writeAsStringSync("export 'package:bull_sdk/bdk.dart';");
     collection = AnalysisContextCollection(
       includedPaths: [fixture.path],
       sdkPath: dartSdkPath(root.path),
@@ -164,9 +163,7 @@ void _performDryScan(bdk.Wallet wallet, bdk.Persister disk) {
   test(
     'memory decoy cannot authorize a shorthand persistent wallet load',
     () async {
-      final violations = await inspect(
-        'shorthand_decoy',
-        """
+      final violations = await inspect('shorthand_decoy', """
 import 'package:bull_sdk/bdk.dart' as bdk;
 void _performDryScan(bdk.Descriptor descriptor, bdk.Persister diskStore) {
   final decoy = bdk.Persister.newInMemory();
@@ -174,9 +171,7 @@ void _performDryScan(bdk.Descriptor descriptor, bdk.Persister diskStore) {
       persister: diskStore, lookahead: 25);
   decoy.dispose();
 }
-""",
-        path: 'lib/features/wallet/data/bdk_wallet_datasource.dart',
-      );
+""", path: 'lib/features/wallet/data/bdk_wallet_datasource.dart');
       expect(violations, contains(contains('Wallet.load')));
     },
   );

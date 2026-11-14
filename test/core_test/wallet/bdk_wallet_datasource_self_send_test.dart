@@ -1,4 +1,5 @@
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
+
 // Regression test for a send-to-self recorded with the whole value of the
 // utxos it consumed instead of the amount paid. `sentAndReceived.sent` is the
 // sum of our own inputs, so when we own every output it is what coin
@@ -15,6 +16,7 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'support/bdk_test_store.dart';
+
 import 'package:bb_mobile/features/wallet/data/bdk_wallet_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_transaction_model.dart';
@@ -139,14 +141,12 @@ void main() {
       networkKind: bdk.NetworkKind.test,
     );
 
-    walletModel =
-        WalletModel.publicBdk(
-              id: 'bdk-self-send-test',
-              externalDescriptor: external.toString(),
-              internalDescriptor: internal.toString(),
-              network: Network.bitcoinTestnet,
-            )
-            as PublicBdkWalletModel;
+    walletModel = WalletModel.publicBdk(
+      id: 'bdk-self-send-test',
+      externalDescriptor: external.toString(),
+      internalDescriptor: internal.toString(),
+      network: Network.bitcoinTestnet,
+    ) as PublicBdkWalletModel;
 
     final wallet = await BdkTestStore.createWallet(walletModel);
 

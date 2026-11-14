@@ -1,4 +1,5 @@
 import 'dart:io';
+
 import 'package:flutter_test/flutter_test.dart';
 
 // Security audit reproducer for https://github.com/SatoshiPortal/bullbitcoin-mobile/issues/2612
@@ -9,9 +10,8 @@ void main() {
 
   group('Security audit #2612 startup background tasks', () {
     test('disabled background tasks are not registered natively', () {
-      final appDelegate = File(
-        'ios/Runner/AppDelegate.swift',
-      ).readAsStringSync();
+      final appDelegate = File('ios/Runner/AppDelegate.swift')
+          .readAsStringSync();
       expect(
         appDelegate,
         isNot(contains('WorkmanagerPlugin.registerPeriodicTask')),

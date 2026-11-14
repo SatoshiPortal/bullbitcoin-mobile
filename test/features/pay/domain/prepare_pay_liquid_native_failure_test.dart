@@ -40,9 +40,8 @@ void main() {
     final metadata = _Metadata();
     final frozen = _Frozen();
     reset(sdk);
-    when(
-      () => sdk.lwkApiTypesAddressValidate(addressString: 'recipient'),
-    ).thenAnswer((_) async => lwk.LiquidNetwork.testnet);
+    when(() => sdk.lwkApiTypesAddressValidate(addressString: 'recipient'))
+        .thenAnswer((_) async => lwk.LiquidNetwork.testnet);
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMethodCallHandler(
           channel,

@@ -75,21 +75,18 @@ void main() {
       getWallets,
       repository,
     );
-    when(
-      () => repository.getRate(any()),
-    ).thenAnswer((_) async => Ok(limitOrderRate()));
-    when(
-      () => defaultWallets.getDefaultWallets(),
-    ).thenAnswer((_) async => _wallets);
+    when(() => repository.getRate(any()))
+        .thenAnswer((_) async => Ok(limitOrderRate()));
+    when(() => defaultWallets.getDefaultWallets())
+        .thenAnswer((_) async => _wallets);
     when(() => getWallets.execute()).thenAnswer((_) async => Ok([]));
   });
 
   test(
     'includes the in-app bitcoin and liquid wallets in the context',
     () async {
-      when(
-        () => getUserSummary.execute(),
-      ).thenAnswer((_) async => userSummary());
+      when(() => getUserSummary.execute())
+          .thenAnswer((_) async => userSummary());
       when(() => getWallets.execute()).thenAnswer(
         (_) async => Ok([
           _wallet('w-btc', Network.bitcoinMainnet),
@@ -169,17 +166,15 @@ void main() {
 
   test('forwards a rate failure untouched', () async {
     when(() => getUserSummary.execute()).thenAnswer((_) async => userSummary());
-    when(
-      () => repository.getRate(any()),
-    ).thenAnswer((_) async => const Err(LimitOrdersLoadFailure('rate')));
+    when(() => repository.getRate(any()))
+        .thenAnswer((_) async => const Err(LimitOrdersLoadFailure('rate')));
 
     expect(failureOf(await usecase.execute()), isA<LimitOrdersLoadFailure>());
   });
 
   test('maps an unavailable account to a typed failure', () async {
-    when(
-      () => getUserSummary.execute(),
-    ).thenThrow(GetExchangeUserSummaryException('account request failed'));
+    when(() => getUserSummary.execute())
+        .thenThrow(GetExchangeUserSummaryException('account request failed'));
 
     expect(
       failureOf(await usecase.execute()),
@@ -189,9 +184,8 @@ void main() {
 
   test('maps an unreadable default wallet list to the catch-all', () async {
     when(() => getUserSummary.execute()).thenAnswer((_) async => userSummary());
-    when(
-      () => defaultWallets.getDefaultWallets(),
-    ).thenThrow(Exception('recipient request failed'));
+    when(() => defaultWallets.getDefaultWallets())
+        .thenThrow(Exception('recipient request failed'));
 
     expect(
       failureOf(await usecase.execute()),
@@ -199,26 +193,23 @@ void main() {
     );
   });
 
-  test(
-    'fetches default and app wallets concurrently with the user summary, and the rate after it',
-    () async {
-      final summary = Completer<UserSummary>();
-      when(() => getUserSummary.execute()).thenAnswer((_) => summary.future);
+  test('fetches default and app wallets concurrently with the user summary, and the rate after it', () async {
+    final summary = Completer<UserSummary>();
+    when(() => getUserSummary.execute()).thenAnswer((_) => summary.future);
 
-      final result = usecase.execute();
-      await Future<void>.delayed(Duration.zero);
+    final result = usecase.execute();
+    await Future<void>.delayed(Duration.zero);
 
-      verify(() => defaultWallets.getDefaultWallets()).called(1);
-      verify(() => getWallets.execute()).called(1);
-      verifyNever(() => repository.getRate(any()));
+    verify(() => defaultWallets.getDefaultWallets()).called(1);
+    verify(() => getWallets.execute()).called(1);
+    verifyNever(() => repository.getRate(any()));
 
-      summary.complete(userSummary());
-      expect(
-        await result,
-        isA<Ok<LimitOrderCreationContext, LimitOrdersFailure>>(),
-      );
-    },
-  );
+    summary.complete(userSummary());
+    expect(
+      await result,
+      isA<Ok<LimitOrderCreationContext, LimitOrdersFailure>>(),
+    );
+  });
 
   test('does not convert programmer errors into recoverable failures', () {
     when(() => getUserSummary.execute()).thenThrow(StateError('bug'));

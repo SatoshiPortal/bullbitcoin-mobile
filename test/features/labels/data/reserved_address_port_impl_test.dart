@@ -50,9 +50,10 @@ void main() {
       }
       labels.labels = [];
       expect(
-        (await port.isReserved(key, 'address')
-                as Ok<bool, TransactionSyncFailure>)
-            .value,
+        (await port.isReserved(
+          key,
+          'address',
+        ) as Ok<bool, TransactionSyncFailure>).value,
         isFalse,
       );
       labels.fail = true;

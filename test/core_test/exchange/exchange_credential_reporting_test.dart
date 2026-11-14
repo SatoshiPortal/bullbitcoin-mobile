@@ -23,6 +23,7 @@ import 'package:bb_mobile/features/limit_orders/domain/usecases/load_limit_order
 import 'package:bull_logger/bull_logger.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+
 import '../../features/limit_orders/limit_order_fixtures.dart'
     show userSummary, limitOrderRate;
 
@@ -99,9 +100,8 @@ void main() {
         );
         final defaults = _Defaults();
         final wallets = _GetWallets();
-        when(
-          defaults.getDefaultWallets,
-        ).thenAnswer((_) async => const DefaultWallets());
+        when(defaults.getDefaultWallets)
+            .thenAnswer((_) async => const DefaultWallets());
         when(wallets.execute).thenAnswer((_) async => const Ok([]));
         final pending = switch (name) {
           'limit orders' => LoadLimitOrderCreationUsecase(
@@ -254,9 +254,8 @@ void main() {
         final wallets = _GetWallets();
         final read = _ReadDefaults();
         final rates = _Rates();
-        when(
-          () => rates.getRate(any()),
-        ).thenAnswer((_) async => Ok(limitOrderRate()));
+        when(() => rates.getRate(any()))
+            .thenAnswer((_) async => Ok(limitOrderRate()));
         when(defaults.getDefaultWallets).thenThrow(refusal);
         when(read.execute).thenThrow(refusal);
         when(wallets.execute).thenAnswer((_) async => const Ok([]));

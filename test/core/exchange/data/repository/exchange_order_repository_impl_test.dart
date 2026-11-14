@@ -27,9 +27,8 @@ void main() {
   });
 
   void stubOrders(List<Map<String, dynamic>> json) {
-    when(
-      () => api.listOrderSummaries(),
-    ).thenAnswer((_) async => json.map(OrderModel.fromJson).toList());
+    when(() => api.listOrderSummaries())
+        .thenAnswer((_) async => json.map(OrderModel.fromJson).toList());
   }
 
   group('getOrders', () {
@@ -137,9 +136,8 @@ void main() {
     });
 
     test('confirmWithdrawOrder', () async {
-      when(
-        () => api.confirmOrder(orderId: any(named: 'orderId')),
-      ).thenAnswer((_) async => throw StateError('datasource blew up'));
+      when(() => api.confirmOrder(orderId: any(named: 'orderId')))
+          .thenAnswer((_) async => throw StateError('datasource blew up'));
 
       StackTrace? trace;
       try {

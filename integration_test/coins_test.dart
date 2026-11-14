@@ -1,5 +1,6 @@
 import 'package:primitives/primitives.dart'
     show BitcoinTransactionRecipient, Err, Ok;
+
 import 'dart:io';
 
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
@@ -90,16 +91,14 @@ Future<void> main({bool isInitialized = false}) async {
       final dbFile = File('${dir.path}/restart.sqlite');
 
       final before = SqliteDatabase(NativeDatabase(dbFile));
-      await FrozenWalletUtxoDatasource(
-        db: before,
-      ).freezeOutpoints(walletId: walletId, outpoints: [outpoint]);
+      await FrozenWalletUtxoDatasource(db: before)
+          .freezeOutpoints(walletId: walletId, outpoints: [outpoint]);
       await before.close();
 
       final after = SqliteDatabase(NativeDatabase(dbFile));
       addTearDown(after.close);
-      final afterRestart = await FrozenWalletUtxoDatasource(
-        db: after,
-      ).getFrozenOutpoints(walletId: walletId);
+      final afterRestart = await FrozenWalletUtxoDatasource(db: after)
+          .getFrozenOutpoints(walletId: walletId);
 
       expect(
         afterRestart,
@@ -229,9 +228,9 @@ Future<void> main({bool isInitialized = false}) async {
           ),
         };
 
-        final inputs = bdk.Psbt(
-          psbtBase64: prepared.unsignedPsbt,
-        ).extractTx().input();
+        final inputs = bdk.Psbt(psbtBase64: prepared.unsignedPsbt)
+            .extractTx()
+            .input();
         expect(inputs, hasLength(1));
         expect(inputs.single.previousOutput.txid.toString(), selected.txId);
         expect(inputs.single.previousOutput.vout, selected.vout);

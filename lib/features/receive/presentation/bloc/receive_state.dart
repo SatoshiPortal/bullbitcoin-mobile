@@ -467,29 +467,28 @@ abstract class ReceiveState with _$ReceiveState {
     final order = record.order!;
     final feeSat = order.payinAmountSat - order.payoutAmountSat;
     return Swap.lnReceive(
-          id: order.orderId,
-          keyIndex: 0,
-          type: SwapType.lightningToLiquid,
-          status: switch (record.localStatus) {
-            OrderSwapLocalStatus.payoutInProgress => SwapStatus.paid,
-            OrderSwapLocalStatus.completed => SwapStatus.completed,
-            OrderSwapLocalStatus.refunded => SwapStatus.refunded,
-            OrderSwapLocalStatus.expired => SwapStatus.expired,
-            OrderSwapLocalStatus.failed => SwapStatus.failed,
-            _ => SwapStatus.pending,
-          },
-          environment: record.environment == OrderSwapEnvironment.testnet
-              ? Environment.testnet
-              : Environment.mainnet,
-          creationTime: record.createdAt,
-          receiveWalletId: record.destinationWalletId!,
-          invoice: order.lightningInvoice!,
-          receiveAddress: record.destination,
-          receiveTxid: order.liquidTransactionId,
-          fees: SwapFees(boltzFee: feeSat.toInt()),
-          completionTime: order.completedAt,
-        )
-        as LnReceiveSwap;
+      id: order.orderId,
+      keyIndex: 0,
+      type: SwapType.lightningToLiquid,
+      status: switch (record.localStatus) {
+        OrderSwapLocalStatus.payoutInProgress => SwapStatus.paid,
+        OrderSwapLocalStatus.completed => SwapStatus.completed,
+        OrderSwapLocalStatus.refunded => SwapStatus.refunded,
+        OrderSwapLocalStatus.expired => SwapStatus.expired,
+        OrderSwapLocalStatus.failed => SwapStatus.failed,
+        _ => SwapStatus.pending,
+      },
+      environment: record.environment == OrderSwapEnvironment.testnet
+          ? Environment.testnet
+          : Environment.mainnet,
+      creationTime: record.createdAt,
+      receiveWalletId: record.destinationWalletId!,
+      invoice: order.lightningInvoice!,
+      receiveAddress: record.destination,
+      receiveTxid: order.liquidTransactionId,
+      fees: SwapFees(boltzFee: feeSat.toInt()),
+      completionTime: order.completedAt,
+    ) as LnReceiveSwap;
   }
 
   String get address => switch (type) {

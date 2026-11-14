@@ -39,9 +39,8 @@ void main() {
   });
 
   test('reports an active, unrestricted account', () async {
-    when(
-      () => getUserSummary.execute(),
-    ).thenAnswer((_) async => _summary(autoBuyActive: true));
+    when(() => getUserSummary.execute())
+        .thenAnswer((_) async => _summary(autoBuyActive: true));
 
     final status =
         (await usecase.execute() as Ok<AutoBuyStatus, AutoBuyFailure>).value;
@@ -66,9 +65,8 @@ void main() {
   });
 
   test('maps an unavailable account to a typed failure', () async {
-    when(
-      () => getUserSummary.execute(),
-    ).thenThrow(GetExchangeUserSummaryException('account request failed'));
+    when(() => getUserSummary.execute())
+        .thenThrow(GetExchangeUserSummaryException('account request failed'));
 
     final result = await usecase.execute();
 
@@ -79,9 +77,8 @@ void main() {
   });
 
   test('maps an unclassified account error to the catch-all', () async {
-    when(
-      () => getUserSummary.execute(),
-    ).thenThrow(Exception('something nobody classified'));
+    when(() => getUserSummary.execute())
+        .thenThrow(Exception('something nobody classified'));
 
     final result = await usecase.execute();
 

@@ -8,6 +8,7 @@ import 'package:transaction_sync/read.dart';
 import 'package:transaction_sync/write.dart';
 
 import 'support/regtest_wallet.dart';
+
 import 'package:transaction_sync/src/domain/native_network_policy.dart';
 
 void main() {
@@ -159,9 +160,8 @@ void main() {
           );
           expect(revisions.record(descriptor.key), isNull);
           expect(
-            File(
-              nativeWalletStoragePath(directory.path, descriptor.key),
-            ).existsSync(),
+            File(nativeWalletStoragePath(directory.path, descriptor.key))
+                .existsSync(),
             isFalse,
           );
         } finally {

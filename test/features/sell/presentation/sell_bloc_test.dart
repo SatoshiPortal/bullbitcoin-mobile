@@ -1,5 +1,6 @@
 import 'package:bb_mobile/features/sell/domain/retry_payjoin_proposal_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart' as app;
+
 import 'dart:async';
 import 'dart:io';
 
@@ -258,20 +259,17 @@ void main() {
     loadSellContext = _MockLoadSellContext();
     sendWithPayjoin = _MockSendWithPayjoin();
     watchPayjoin = _MockWatchPayjoin();
-    when(
-      () => watchPayjoin.execute(any()),
-    ).thenAnswer((_) => const Stream.empty());
+    when(() => watchPayjoin.execute(any()))
+        .thenAnswer((_) => const Stream.empty());
     getPayjoin = _MockGetPayjoin();
     retryPayjoin = _MockRetryPayjoin();
-    when(
-      () => getPayjoin.execute(any()),
-    ).thenAnswer((_) async => const Ok<PayjoinSession?, SellFailure>(null));
+    when(() => getPayjoin.execute(any()))
+        .thenAnswer((_) async => const Ok<PayjoinSession?, SellFailure>(null));
     refreshSellOrder = _MockRefreshSellOrder();
     labelsFacade = _MockLabelsFacade();
     labelCompletedSellOrder = _MockLabelCompletedSellOrderUsecase();
-    when(
-      () => labelCompletedSellOrder.execute(order: any(named: 'order')),
-    ).thenAnswer((_) async => const Ok<void, SellFailure>(null));
+    when(() => labelCompletedSellOrder.execute(order: any(named: 'order')))
+        .thenAnswer((_) async => const Ok<void, SellFailure>(null));
     previewBitcoinFee = _MockPreviewBitcoinFee();
     previewBitcoinFeePresets = _MockPreviewBitcoinFeePresets();
     sellOrder = _MockSellOrder();
@@ -282,22 +280,19 @@ void main() {
     when(() => wallet.network).thenReturn(Network.bitcoinMainnet);
     when(() => sellOrder.orderId).thenReturn('order-1');
     when(() => sellOrder.payinAmount).thenReturn(0.001);
-    when(
-      () => sellOrder.bitcoinAddress,
-    ).thenReturn('bc1q0000000000000000000000000000000000000');
+    when(() => sellOrder.bitcoinAddress)
+        .thenReturn('bc1q0000000000000000000000000000000000000');
     when(() => sellOrder.liquidAddress).thenReturn(null);
     when(() => sellOrder.payinMethod).thenReturn(OrderPaymentMethod.bitcoin);
     // The deposit-address pinning compares orders through this getter; the
     // default order carries the creation-time address.
-    when(
-      () => sellOrder.toAddress,
-    ).thenReturn('bc1q0000000000000000000000000000000000000');
+    when(() => sellOrder.toAddress)
+        .thenReturn('bc1q0000000000000000000000000000000000000');
     // The post-broadcast completion only succeeds once the exchange sees the
     // payin; default to seen, tests that need otherwise re-stub it.
     when(() => sellOrder.payinStatus).thenReturn(OrderPayinStatus.inProgress);
-    when(
-      () => sellOrder.confirmationDeadline,
-    ).thenReturn(DateTime.now().add(const Duration(minutes: 5)));
+    when(() => sellOrder.confirmationDeadline)
+        .thenReturn(DateTime.now().add(const Duration(minutes: 5)));
 
     when(
       () => prepareSellBitcoinPayin.execute(
@@ -334,12 +329,10 @@ void main() {
         network: app.Network.bitcoinMainnet,
       ),
     ).thenAnswer((_) async => Ok<String, SellFailure>(expectedTxid));
-    when(
-      () => labelsFacade.store(any()),
-    ).thenAnswer((_) async => Ok<Label, LabelFailure>(_FakeLabel()));
-    when(
-      () => loadSellContext.networkFees(isLiquid: any(named: 'isLiquid')),
-    ).thenAnswer((_) async => Ok<FeeOptions, SellFailure>(feeOptions));
+    when(() => labelsFacade.store(any()))
+        .thenAnswer((_) async => Ok<Label, LabelFailure>(_FakeLabel()));
+    when(() => loadSellContext.networkFees(isLiquid: any(named: 'isLiquid')))
+        .thenAnswer((_) async => Ok<FeeOptions, SellFailure>(feeOptions));
 
     bloc = _SeedableSellBloc(
       loadSellContextUsecase: loadSellContext,
@@ -409,41 +402,34 @@ void main() {
   );
 
   group('Sell preparation lifecycle', () {
-    test(
-      'opens preparation before the dependency finishes and ignores duplicate selection',
-      () async {
-        bloc.seed(
-          SellWalletSelectionState(
-            userSummary: userSummary,
-            bitcoinUnit: BitcoinUnit.sats,
-            orderAmount: const FiatAmount(50),
-            fiatCurrency: FiatCurrency.cad,
-          ),
-        );
-        final response = Completer<Result<double, SellFailure>>();
-        when(
-          () => loadSellContext.satsToCurrency(currencyCode: 'CAD'),
-        ).thenAnswer((_) => response.future);
-        final opened = bloc.stream.firstWhere(
-          (s) => s is SellPreparingPaymentState,
-        );
-        bloc.add(SellEvent.walletSelected(wallet: wallet));
-        final preparing = await opened as SellPreparingPaymentState;
-        expect(preparing.selectedWallet, same(wallet));
-        bloc.add(SellEvent.walletSelected(wallet: wallet));
-        await Future<void>.delayed(Duration.zero);
-        verify(
-          () => loadSellContext.satsToCurrency(currencyCode: 'CAD'),
-        ).called(1);
-        final failed = bloc.stream.firstWhere(
-          (s) => s is SellPreparingPaymentState && s.error != null,
-        );
-        response.complete(
-          const Err(SellUnexpectedFailure('dependency failed')),
-        );
-        expect((await failed as SellPreparingPaymentState).error, isNotNull);
-      },
-    );
+    test('opens preparation before the dependency finishes and ignores duplicate selection', () async {
+      bloc.seed(
+        SellWalletSelectionState(
+          userSummary: userSummary,
+          bitcoinUnit: BitcoinUnit.sats,
+          orderAmount: const FiatAmount(50),
+          fiatCurrency: FiatCurrency.cad,
+        ),
+      );
+      final response = Completer<Result<double, SellFailure>>();
+      when(() => loadSellContext.satsToCurrency(currencyCode: 'CAD'))
+          .thenAnswer((_) => response.future);
+      final opened = bloc.stream.firstWhere(
+        (s) => s is SellPreparingPaymentState,
+      );
+      bloc.add(SellEvent.walletSelected(wallet: wallet));
+      final preparing = await opened as SellPreparingPaymentState;
+      expect(preparing.selectedWallet, same(wallet));
+      bloc.add(SellEvent.walletSelected(wallet: wallet));
+      await Future<void>.delayed(Duration.zero);
+      verify(() => loadSellContext.satsToCurrency(currencyCode: 'CAD'))
+          .called(1);
+      final failed = bloc.stream.firstWhere(
+        (s) => s is SellPreparingPaymentState && s.error != null,
+      );
+      response.complete(const Err(SellUnexpectedFailure('dependency failed')));
+      expect((await failed as SellPreparingPaymentState).error, isNotNull);
+    });
 
     test(
       'back discards a late failure without reopening confirmation',
@@ -457,9 +443,8 @@ void main() {
           ),
         );
         final response = Completer<Result<double, SellFailure>>();
-        when(
-          () => loadSellContext.satsToCurrency(currencyCode: 'CAD'),
-        ).thenAnswer((_) => response.future);
+        when(() => loadSellContext.satsToCurrency(currencyCode: 'CAD'))
+            .thenAnswer((_) => response.future);
         final opened = bloc.stream.firstWhere(
           (s) => s is SellPreparingPaymentState,
         );
@@ -572,54 +557,49 @@ void main() {
       expect((bloc.state as SellPaymentState).isPayjoinEnabled, isTrue);
     });
 
-    test(
-      'does not report success while a Payjoin is only requested',
-      () async {
-        const bip21 =
-            'bitcoin:bc1q0000000000000000000000000000000000000'
-            '?amount=0.001&pj=https://payjo.in/session';
-        when(() => sellOrder.payjoinBip21).thenReturn(bip21);
-        when(
-          () => sendWithPayjoin.execute(
-            walletId: any(named: 'walletId'),
-            network: any(named: 'network'),
-            bip21: any(named: 'bip21'),
-            unsignedOriginalPsbt: any(named: 'unsignedOriginalPsbt'),
-            amountSat: any(named: 'amountSat'),
-            networkFeesSatPerVb: any(named: 'networkFeesSatPerVb'),
-            expireAfterSec: any(named: 'expireAfterSec'),
+    test('does not report success while a Payjoin is only requested', () async {
+      const bip21 =
+          'bitcoin:bc1q0000000000000000000000000000000000000'
+          '?amount=0.001&pj=https://payjo.in/session';
+      when(() => sellOrder.payjoinBip21).thenReturn(bip21);
+      when(
+        () => sendWithPayjoin.execute(
+          walletId: any(named: 'walletId'),
+          network: any(named: 'network'),
+          bip21: any(named: 'bip21'),
+          unsignedOriginalPsbt: any(named: 'unsignedOriginalPsbt'),
+          amountSat: any(named: 'amountSat'),
+          networkFeesSatPerVb: any(named: 'networkFeesSatPerVb'),
+          expireAfterSec: any(named: 'expireAfterSec'),
+        ),
+      ).thenAnswer(
+        (_) async => Ok<PayjoinSenderSession, SellFailure>(
+          PayjoinSenderSession(
+            status: PayjoinStatus.requested,
+            uri: bip21,
+            network: BitcoinNetwork.mainnet,
+            walletId: 'wallet-1',
+            originalTransactionId: expectedTxid,
+            amount: Sats.fromInt(100000),
+            createdAt: DateTime(2026),
+            expiresAt: DateTime(2026).add(const Duration(minutes: 5)),
           ),
-        ).thenAnswer(
-          (_) async => Ok<PayjoinSenderSession, SellFailure>(
-            PayjoinSenderSession(
-              status: PayjoinStatus.requested,
-              uri: bip21,
-              network: BitcoinNetwork.mainnet,
-              walletId: 'wallet-1',
-              originalTransactionId: expectedTxid,
-              amount: Sats.fromInt(100000),
-              createdAt: DateTime(2026),
-              expiresAt: DateTime(2026).add(const Duration(minutes: 5)),
-            ),
-          ),
-        );
+        ),
+      );
 
-        // The order fetch must succeed, otherwise the premature success this test
-        // guards against is hidden by a failing fetch rather than absent.
-        when(
-          () => loadSellContext.order(orderId: any(named: 'orderId')),
-        ).thenAnswer((_) async => Ok<Order, SellFailure>(sellOrder));
+      // The order fetch must succeed, otherwise the premature success this test
+      // guards against is hidden by a failing fetch rather than absent.
+      when(() => loadSellContext.order(orderId: any(named: 'orderId')))
+          .thenAnswer((_) async => Ok<Order, SellFailure>(sellOrder));
 
-        bloc.add(const SellEvent.sendPaymentConfirmed());
-        // Long enough to outlast the post-broadcast order fetch delay.
-        await Future<void>.delayed(const Duration(seconds: 6));
+      bloc.add(const SellEvent.sendPaymentConfirmed());
+      // Long enough to outlast the post-broadcast order fetch delay.
+      await Future<void>.delayed(const Duration(seconds: 6));
 
-        // Nothing is on the wire yet: the session is still negotiating, and its
-        // original transaction is only broadcast if that negotiation fails.
-        expect(bloc.state, isA<SellPaymentState>());
-      },
-      timeout: const Timeout(Duration(seconds: 15)),
-    );
+      // Nothing is on the wire yet: the session is still negotiating, and its
+      // original transaction is only broadcast if that negotiation fails.
+      expect(bloc.state, isA<SellPaymentState>());
+    }, timeout: const Timeout(Duration(seconds: 15)));
 
     test('a failed Payjoin start whose session persisted is adopted, '
         'not surfaced as a retryable error', () async {
@@ -722,72 +702,67 @@ void main() {
       verifyNever(() => watchPayjoin.execute(any()));
     });
 
-    test(
-      'a completed Payjoin settles the sale with its txid',
-      () async {
-        const bip21 =
-            'bitcoin:bc1q0000000000000000000000000000000000000'
-            '?amount=0.001&pj=https://payjo.in/session';
-        const payjoinTxid =
-            'aaaa1111c0ea01904322222851b2e702d37651be2644f4757cc4421f39261b55';
-        when(() => sellOrder.payjoinBip21).thenReturn(bip21);
-        when(
-          () => loadSellContext.order(orderId: any(named: 'orderId')),
-        ).thenAnswer((_) async => Ok<Order, SellFailure>(sellOrder));
-        when(
-          () => sendWithPayjoin.execute(
-            walletId: any(named: 'walletId'),
-            network: any(named: 'network'),
-            bip21: any(named: 'bip21'),
-            unsignedOriginalPsbt: any(named: 'unsignedOriginalPsbt'),
-            amountSat: any(named: 'amountSat'),
-            networkFeesSatPerVb: any(named: 'networkFeesSatPerVb'),
-            expireAfterSec: any(named: 'expireAfterSec'),
+    test('a completed Payjoin settles the sale with its txid', () async {
+      const bip21 =
+          'bitcoin:bc1q0000000000000000000000000000000000000'
+          '?amount=0.001&pj=https://payjo.in/session';
+      const payjoinTxid =
+          'aaaa1111c0ea01904322222851b2e702d37651be2644f4757cc4421f39261b55';
+      when(() => sellOrder.payjoinBip21).thenReturn(bip21);
+      when(() => loadSellContext.order(orderId: any(named: 'orderId')))
+          .thenAnswer((_) async => Ok<Order, SellFailure>(sellOrder));
+      when(
+        () => sendWithPayjoin.execute(
+          walletId: any(named: 'walletId'),
+          network: any(named: 'network'),
+          bip21: any(named: 'bip21'),
+          unsignedOriginalPsbt: any(named: 'unsignedOriginalPsbt'),
+          amountSat: any(named: 'amountSat'),
+          networkFeesSatPerVb: any(named: 'networkFeesSatPerVb'),
+          expireAfterSec: any(named: 'expireAfterSec'),
+        ),
+      ).thenAnswer(
+        (_) async => Ok<PayjoinSenderSession, SellFailure>(
+          PayjoinSenderSession(
+            status: PayjoinStatus.requested,
+            uri: bip21,
+            network: BitcoinNetwork.mainnet,
+            walletId: 'wallet-1',
+            originalTransactionId: expectedTxid,
+            amount: Sats.fromInt(100000),
+            createdAt: DateTime(2026),
+            expiresAt: DateTime(2026).add(const Duration(minutes: 5)),
           ),
-        ).thenAnswer(
-          (_) async => Ok<PayjoinSenderSession, SellFailure>(
+        ),
+      );
+      when(() => watchPayjoin.execute(bip21)).thenAnswer(
+        (_) => Stream.value(
+          Ok<PayjoinSession, SellFailure>(
             PayjoinSenderSession(
-              status: PayjoinStatus.requested,
+              status: PayjoinStatus.completed,
               uri: bip21,
               network: BitcoinNetwork.mainnet,
               walletId: 'wallet-1',
               originalTransactionId: expectedTxid,
+              transactionId: payjoinTxid,
               amount: Sats.fromInt(100000),
               createdAt: DateTime(2026),
               expiresAt: DateTime(2026).add(const Duration(minutes: 5)),
             ),
           ),
-        );
-        when(() => watchPayjoin.execute(bip21)).thenAnswer(
-          (_) => Stream.value(
-            Ok<PayjoinSession, SellFailure>(
-              PayjoinSenderSession(
-                status: PayjoinStatus.completed,
-                uri: bip21,
-                network: BitcoinNetwork.mainnet,
-                walletId: 'wallet-1',
-                originalTransactionId: expectedTxid,
-                transactionId: payjoinTxid,
-                amount: Sats.fromInt(100000),
-                createdAt: DateTime(2026),
-                expiresAt: DateTime(2026).add(const Duration(minutes: 5)),
-              ),
-            ),
-          ),
-        );
+        ),
+      );
 
-        bloc.add(const SellEvent.sendPaymentConfirmed());
-        final settled = await bloc.stream.firstWhere(
-          (state) => state is SellPaymentState && state.isPayinBroadcast,
-        );
+      bloc.add(const SellEvent.sendPaymentConfirmed());
+      final settled = await bloc.stream.firstWhere(
+        (state) => state is SellPaymentState && state.isPayinBroadcast,
+      );
 
-        // The payjoin transaction is the one that reached the chain, so it is the
-        // txid the sale must carry — not the original it replaced.
-        expect((settled as SellPaymentState).payinBroadcastTxid, payjoinTxid);
-        await bloc.stream.firstWhere((state) => state is SellSuccessState);
-      },
-      timeout: const Timeout(Duration(seconds: 20)),
-    );
+      // The payjoin transaction is the one that reached the chain, so it is the
+      // txid the sale must carry — not the original it replaced.
+      expect((settled as SellPaymentState).payinBroadcastTxid, payjoinTxid);
+      await bloc.stream.firstWhere((state) => state is SellSuccessState);
+    }, timeout: const Timeout(Duration(seconds: 20)));
 
     test(
       'a sale settled without a recorded proposal says so in the log',
@@ -800,9 +775,8 @@ void main() {
             'bitcoin:bc1q0000000000000000000000000000000000000'
             '?amount=0.001&pj=https://payjo.in/session';
         when(() => sellOrder.payjoinBip21).thenReturn(bip21);
-        when(
-          () => loadSellContext.order(orderId: any(named: 'orderId')),
-        ).thenAnswer((_) async => Ok<Order, SellFailure>(sellOrder));
+        when(() => loadSellContext.order(orderId: any(named: 'orderId')))
+            .thenAnswer((_) async => Ok<Order, SellFailure>(sellOrder));
         PayjoinSenderSession session(PayjoinStatus status) =>
             PayjoinSenderSession(
               status: status,
@@ -909,13 +883,11 @@ void main() {
           final updates =
               StreamController<Result<PayjoinSession, SellFailure>>();
           addTearDown(updates.close);
-          when(
-            () => watchPayjoin.execute(bip21),
-          ).thenAnswer((_) => updates.stream);
+          when(() => watchPayjoin.execute(bip21))
+              .thenAnswer((_) => updates.stream);
           final retry = Completer<Result<PayjoinSession, SellFailure>>();
-          when(
-            () => retryPayjoin.execute(bip21),
-          ).thenAnswer((_) => retry.future);
+          when(() => retryPayjoin.execute(bip21))
+              .thenAnswer((_) => retry.future);
 
           bloc.add(const SellEvent.sendPaymentConfirmed());
           await untilCalled(() => watchPayjoin.execute(bip21));
@@ -927,8 +899,7 @@ void main() {
           expect(
             paused.error,
             isA<SellPayjoinPausedFailure>(),
-            reason:
-                'A paused retained proposal must expose localized recoverable feedback rather than an indefinite confirming spinner',
+            reason: 'A paused retained proposal must expose localized recoverable feedback rather than an indefinite confirming spinner',
           );
 
           expect(paused.pausedPayjoinSession?.id, bip21);
@@ -1096,9 +1067,8 @@ void main() {
             ),
           ),
         );
-        when(
-          () => loadSellContext.order(orderId: any(named: 'orderId')),
-        ).thenThrow(GetOrderException('dns failure'));
+        when(() => loadSellContext.order(orderId: any(named: 'orderId')))
+            .thenThrow(GetOrderException('dns failure'));
 
         bloc.add(const SellEvent.sendPaymentConfirmed());
         await untilCalled(() => watchPayjoin.execute(bip21));
@@ -1136,9 +1106,8 @@ void main() {
       () async {
         // The post-broadcast order fetch fails, which used to re-enable Confirm
         // with the transaction already on the wire (#2522).
-        when(
-          () => loadSellContext.order(orderId: any(named: 'orderId')),
-        ).thenThrow(GetOrderException('dns failure'));
+        when(() => loadSellContext.order(orderId: any(named: 'orderId')))
+            .thenThrow(GetOrderException('dns failure'));
 
         bloc.add(const SellEvent.sendPaymentConfirmed());
         await bloc.stream.firstWhere(
@@ -1185,12 +1154,10 @@ void main() {
       () async {
         final refreshedOrder = _MockSellOrder();
         when(() => refreshedOrder.orderId).thenReturn('order-1');
-        when(
-          () => refreshedOrder.payinStatus,
-        ).thenReturn(OrderPayinStatus.inProgress);
-        when(
-          () => loadSellContext.order(orderId: any(named: 'orderId')),
-        ).thenAnswer((_) async => Ok<Order, SellFailure>(refreshedOrder));
+        when(() => refreshedOrder.payinStatus)
+            .thenReturn(OrderPayinStatus.inProgress);
+        when(() => loadSellContext.order(orderId: any(named: 'orderId')))
+            .thenAnswer((_) async => Ok<Order, SellFailure>(refreshedOrder));
 
         bloc.add(const SellEvent.sendPaymentConfirmed());
         final successState = await bloc.stream.firstWhere(
@@ -1211,15 +1178,13 @@ void main() {
       // window — where the poll used to emit its pre-await snapshot and re-arm
       // Confirm with the transaction already sent (#2522).
       final pollFetch = Completer<Result<Order, SellFailure>>();
-      when(
-        () => loadSellContext.order(orderId: any(named: 'orderId')),
-      ).thenAnswer((_) => pollFetch.future);
+      when(() => loadSellContext.order(orderId: any(named: 'orderId')))
+          .thenAnswer((_) => pollFetch.future);
 
       final polledOrder = _MockSellOrder();
       when(() => polledOrder.orderId).thenReturn('order-1');
-      when(
-        () => polledOrder.payinStatus,
-      ).thenReturn(OrderPayinStatus.awaitingPayment);
+      when(() => polledOrder.payinStatus)
+          .thenReturn(OrderPayinStatus.awaitingPayment);
 
       bloc.add(const SellEvent.pollOrderStatus());
       await Future<void>.delayed(const Duration(milliseconds: 50));
@@ -1246,9 +1211,8 @@ void main() {
   test(
     'the price-lock refresh leaves a confirmation in flight alone',
     () async {
-      when(
-        () => loadSellContext.order(orderId: any(named: 'orderId')),
-      ).thenThrow(GetOrderException('dns failure'));
+      when(() => loadSellContext.order(orderId: any(named: 'orderId')))
+          .thenThrow(GetOrderException('dns failure'));
 
       bloc.add(const SellEvent.sendPaymentConfirmed());
       await bloc.stream.firstWhere(
@@ -1276,9 +1240,8 @@ void main() {
     // The countdown fires onTimeout once, and _onOrderRefreshTimePassed skipped
     // that one refresh because a confirmation was in flight. Nothing else would
     // ask again, so the bloc has to.
-    when(
-      () => sellOrder.confirmationDeadline,
-    ).thenReturn(DateTime.now().subtract(const Duration(seconds: 1)));
+    when(() => sellOrder.confirmationDeadline)
+        .thenReturn(DateTime.now().subtract(const Duration(seconds: 1)));
     when(
       () => prepareSellBitcoinPayin.execute(
         walletId: any(named: 'walletId'),
@@ -1295,9 +1258,8 @@ void main() {
     // previews still describe this order.
     when(() => refreshedOrder.payinAmount).thenReturn(0.001);
     // A benign refresh keeps the deposit address the order was created with.
-    when(
-      () => refreshedOrder.toAddress,
-    ).thenReturn('bc1q0000000000000000000000000000000000000');
+    when(() => refreshedOrder.toAddress)
+        .thenReturn('bc1q0000000000000000000000000000000000000');
     when(
       () => refreshSellOrder.execute(
         orderId: any(named: 'orderId'),
@@ -1339,12 +1301,10 @@ void main() {
         );
 
     setUp(() {
-      when(
-        () => sellOrder.confirmationDeadline,
-      ).thenReturn(DateTime.now().subtract(const Duration(minutes: 1)));
-      when(
-        refreshCall,
-      ).thenAnswer((_) async => Ok<SellOrder, SellFailure>(sellOrder));
+      when(() => sellOrder.confirmationDeadline)
+          .thenReturn(DateTime.now().subtract(const Duration(minutes: 1)));
+      when(refreshCall)
+          .thenAnswer((_) async => Ok<SellOrder, SellFailure>(sellOrder));
     });
 
     // The scheduler's timers must be born inside the fake zone, so the bloc
@@ -1404,9 +1364,8 @@ void main() {
       final replacement = _MockSellOrder();
       when(() => replacement.orderId).thenReturn('order-2');
       when(() => replacement.payinAmount).thenReturn(0.002);
-      when(
-        () => replacement.confirmationDeadline,
-      ).thenReturn(DateTime.now().add(const Duration(minutes: 5)));
+      when(() => replacement.confirmationDeadline)
+          .thenReturn(DateTime.now().add(const Duration(minutes: 5)));
       bloc.seed(
         (bloc.state as SellPaymentState).copyWith(sellOrder: replacement),
       );
@@ -1433,9 +1392,8 @@ void main() {
         final replacement = _MockSellOrder();
         when(() => replacement.orderId).thenReturn('order-2');
         when(() => replacement.payinAmount).thenReturn(0.002);
-        when(
-          () => replacement.confirmationDeadline,
-        ).thenReturn(clock.now().subtract(const Duration(seconds: 1)));
+        when(() => replacement.confirmationDeadline)
+            .thenReturn(clock.now().subtract(const Duration(seconds: 1)));
         bloc.seed(
           (bloc.state as SellPaymentState).copyWith(sellOrder: replacement),
         );
@@ -1463,9 +1421,8 @@ void main() {
     });
 
     test('a failed refresh has a deferred successor', () {
-      when(
-        refreshCall,
-      ).thenAnswer((_) async => const Err(SellUnexpectedFailure('offline')));
+      when(refreshCall)
+          .thenAnswer((_) async => const Err(SellUnexpectedFailure('offline')));
       return inFakeTime((time) {
         bloc.add(const SellEvent.orderRefreshTimePassed());
         time.flushMicrotasks();
@@ -1480,9 +1437,8 @@ void main() {
       // The countdown widget fires up to a second early; the bloc no longer
       // listens to it and arms its own timer at the instant the lock lapses.
       return inFakeTime((time) {
-        when(
-          () => sellOrder.confirmationDeadline,
-        ).thenReturn(clock.now().add(const Duration(milliseconds: 500)));
+        when(() => sellOrder.confirmationDeadline)
+            .thenReturn(clock.now().add(const Duration(milliseconds: 500)));
         bloc.add(const SellEvent.orderRefreshTimePassed());
         time.flushMicrotasks();
         verify(refreshCall).called(1);
@@ -1536,9 +1492,8 @@ void main() {
       when(() => order.orderId).thenReturn('order-1');
       when(() => order.orderStatus).thenReturn(status);
       when(() => order.payinStatus).thenReturn(payin);
-      when(
-        () => order.toAddress,
-      ).thenReturn('bc1q0000000000000000000000000000000000000');
+      when(() => order.toAddress)
+          .thenReturn('bc1q0000000000000000000000000000000000000');
       return order;
     }
 
@@ -1552,16 +1507,15 @@ void main() {
     test('an expired order after the payin lets the user leave without '
         'paying again', () async {
       seedBroadcast();
-      when(
-        () => loadSellContext.order(orderId: any(named: 'orderId')),
-      ).thenAnswer(
-        (_) async => Ok<Order, SellFailure>(
-          polled(
-            status: OrderStatus.expired,
-            payin: OrderPayinStatus.notStarted,
-          ),
-        ),
-      );
+      when(() => loadSellContext.order(orderId: any(named: 'orderId')))
+          .thenAnswer(
+            (_) async => Ok<Order, SellFailure>(
+              polled(
+                status: OrderStatus.expired,
+                payin: OrderPayinStatus.notStarted,
+              ),
+            ),
+          );
 
       expect((bloc.state as SellPaymentState).canLeavePaymentScreen, isFalse);
       bloc.add(const SellEvent.pollOrderStatus());
@@ -1589,14 +1543,12 @@ void main() {
 
     test('an old order poll cannot overwrite a replacement order', () async {
       final poll = Completer<Result<Order, SellFailure>>();
-      when(
-        () => loadSellContext.order(orderId: any(named: 'orderId')),
-      ).thenAnswer((_) => poll.future);
+      when(() => loadSellContext.order(orderId: any(named: 'orderId')))
+          .thenAnswer((_) => poll.future);
       final replacementOrder = _MockSellOrder();
       when(() => replacementOrder.orderId).thenReturn('order-2');
-      when(
-        () => replacementOrder.toAddress,
-      ).thenReturn('bc1q0000000000000000000000000000000000000');
+      when(() => replacementOrder.toAddress)
+          .thenReturn('bc1q0000000000000000000000000000000000000');
 
       bloc.add(const SellEvent.pollOrderStatus());
       await untilCalled(() => loadSellContext.order(orderId: 'order-1'));
@@ -1622,9 +1574,8 @@ void main() {
       () async {
         seedBroadcast();
         final read = Completer<Result<Order, SellFailure>>();
-        when(
-          () => loadSellContext.order(orderId: any(named: 'orderId')),
-        ).thenAnswer((_) => read.future);
+        when(() => loadSellContext.order(orderId: any(named: 'orderId')))
+            .thenAnswer((_) => read.future);
         final replacementOrder = _MockSellOrder();
         when(() => replacementOrder.orderId).thenReturn('order-2');
 
@@ -1662,16 +1613,15 @@ void main() {
         log = Logger.replace(directory: directory);
         await log.ensureLogsExist(writeDiagnosticContext: false);
         seedBroadcast();
-        when(
-          () => loadSellContext.order(orderId: any(named: 'orderId')),
-        ).thenAnswer(
-          (_) async => Ok<Order, SellFailure>(
-            polled(
-              status: OrderStatus.expired,
-              payin: OrderPayinStatus.notStarted,
-            ),
-          ),
-        );
+        when(() => loadSellContext.order(orderId: any(named: 'orderId')))
+            .thenAnswer(
+              (_) async => Ok<Order, SellFailure>(
+                polled(
+                  status: OrderStatus.expired,
+                  payin: OrderPayinStatus.notStarted,
+                ),
+              ),
+            );
 
         bloc.add(const SellEvent.pollOrderStatus());
         await Future<void>.delayed(const Duration(milliseconds: 50));
@@ -1690,16 +1640,15 @@ void main() {
       'leaving a payin reported past its deadline stops watching it',
       () async {
         seedBroadcast();
-        when(
-          () => loadSellContext.order(orderId: any(named: 'orderId')),
-        ).thenAnswer(
-          (_) async => Ok<Order, SellFailure>(
-            polled(
-              status: OrderStatus.expired,
-              payin: OrderPayinStatus.notStarted,
-            ),
-          ),
-        );
+        when(() => loadSellContext.order(orderId: any(named: 'orderId')))
+            .thenAnswer(
+              (_) async => Ok<Order, SellFailure>(
+                polled(
+                  status: OrderStatus.expired,
+                  payin: OrderPayinStatus.notStarted,
+                ),
+              ),
+            );
         bloc.add(const SellEvent.pollOrderStatus());
         await Future<void>.delayed(const Duration(milliseconds: 50));
 
@@ -1728,12 +1677,11 @@ void main() {
           payin: OrderPayinStatus.inProgress,
         );
         var reads = 0;
-        when(
-          () => loadSellContext.order(orderId: any(named: 'orderId')),
-        ).thenAnswer(
-          (_) async =>
-              Ok<Order, SellFailure>(reads++ == 0 ? expired : accepted),
-        );
+        when(() => loadSellContext.order(orderId: any(named: 'orderId')))
+            .thenAnswer(
+              (_) async =>
+                  Ok<Order, SellFailure>(reads++ == 0 ? expired : accepted),
+            );
 
         bloc.add(const SellEvent.pollOrderStatus());
         await Future<void>.delayed(const Duration(milliseconds: 50));
@@ -1747,9 +1695,8 @@ void main() {
       bloc.seed(
         (bloc.state as SellPaymentState).copyWith(isPayjoinEnabled: false),
       );
-      when(
-        () => sellOrder.confirmationDeadline,
-      ).thenReturn(DateTime.now().subtract(const Duration(seconds: 1)));
+      when(() => sellOrder.confirmationDeadline)
+          .thenReturn(DateTime.now().subtract(const Duration(seconds: 1)));
 
       bloc.add(const SellEvent.sendPaymentConfirmed());
       await Future<void>.delayed(const Duration(milliseconds: 100));
@@ -1774,9 +1721,8 @@ void main() {
       final order = _MockSellOrder();
       when(() => order.orderId).thenReturn('order-1');
       when(() => order.payinAmount).thenReturn(0.001);
-      when(
-        () => order.toAddress,
-      ).thenReturn('bc1qattacker00000000000000000000000000000');
+      when(() => order.toAddress)
+          .thenReturn('bc1qattacker00000000000000000000000000000');
       return order;
     }
 
@@ -1818,9 +1764,8 @@ void main() {
         // A new price lock moves the payin amount — that part of the refresh
         // must keep working.
         when(() => refreshedOrder.payinAmount).thenReturn(0.002);
-        when(
-          () => refreshedOrder.toAddress,
-        ).thenReturn('bc1q0000000000000000000000000000000000000');
+        when(() => refreshedOrder.toAddress)
+            .thenReturn('bc1q0000000000000000000000000000000000000');
         when(
           () => refreshSellOrder.execute(
             orderId: any(named: 'orderId'),
@@ -1842,12 +1787,10 @@ void main() {
       // The periodic order poll is a second adoption path for a tampered
       // order: it merges the fetched order into the live payment state.
       final tampered = tamperedOrder();
-      when(
-        () => tampered.payinStatus,
-      ).thenReturn(OrderPayinStatus.awaitingPayment);
-      when(
-        () => loadSellContext.order(orderId: any(named: 'orderId')),
-      ).thenAnswer((_) async => Ok<Order, SellFailure>(tampered));
+      when(() => tampered.payinStatus)
+          .thenReturn(OrderPayinStatus.awaitingPayment);
+      when(() => loadSellContext.order(orderId: any(named: 'orderId')))
+          .thenAnswer((_) async => Ok<Order, SellFailure>(tampered));
 
       bloc.add(const SellEvent.pollOrderStatus());
       await Future<void>.delayed(const Duration(milliseconds: 50));
@@ -1861,12 +1804,10 @@ void main() {
       'a changed address is refused even when the poll reports progress',
       () async {
         final tampered = tamperedOrder();
-        when(
-          () => tampered.payinStatus,
-        ).thenReturn(OrderPayinStatus.inProgress);
-        when(
-          () => loadSellContext.order(orderId: any(named: 'orderId')),
-        ).thenAnswer((_) async => Ok<Order, SellFailure>(tampered));
+        when(() => tampered.payinStatus)
+            .thenReturn(OrderPayinStatus.inProgress);
+        when(() => loadSellContext.order(orderId: any(named: 'orderId')))
+            .thenAnswer((_) async => Ok<Order, SellFailure>(tampered));
 
         bloc.add(const SellEvent.pollOrderStatus());
         await Future<void>.delayed(const Duration(milliseconds: 50));
@@ -1891,9 +1832,8 @@ void main() {
           SellDepositAddressChangedFailure(),
         ),
       );
-      when(
-        () => loadSellContext.order(orderId: any(named: 'orderId')),
-      ).thenAnswer((_) async => Ok<Order, SellFailure>(sellOrder));
+      when(() => loadSellContext.order(orderId: any(named: 'orderId')))
+          .thenAnswer((_) async => Ok<Order, SellFailure>(sellOrder));
 
       bloc.add(const SellEvent.orderRefreshTimePassed());
       await Future<void>.delayed(const Duration(milliseconds: 50));
@@ -1944,9 +1884,8 @@ void main() {
     Future<Completer<Result<FeeOptions, SellFailure>>>
     recalculationParkedPastSuccess() async {
       final feeFetch = Completer<Result<FeeOptions, SellFailure>>();
-      when(
-        () => loadSellContext.networkFees(isLiquid: any(named: 'isLiquid')),
-      ).thenAnswer((_) => feeFetch.future);
+      when(() => loadSellContext.networkFees(isLiquid: any(named: 'isLiquid')))
+          .thenAnswer((_) => feeFetch.future);
 
       bloc.add(const SellEvent.feeOptionSelected(FeeSelection.economic));
       await Future<void>.delayed(const Duration(milliseconds: 50));
@@ -2007,68 +1946,58 @@ void main() {
       },
     );
 
-    test(
-      'the payin is built at the selected preset, not Fastest',
-      () async {
-        // Nothing must complete the order — the assertion is about the rate the
-        // build was asked for.
-        when(
-          () => loadSellContext.order(orderId: any(named: 'orderId')),
-        ).thenThrow(GetOrderException('dns failure'));
+    test('the payin is built at the selected preset, not Fastest', () async {
+      // Nothing must complete the order — the assertion is about the rate the
+      // build was asked for.
+      when(() => loadSellContext.order(orderId: any(named: 'orderId')))
+          .thenThrow(GetOrderException('dns failure'));
 
-        bloc.add(const SellEvent.feeOptionSelected(FeeSelection.economic));
-        final recalculated = await awaitRecalculatedFee();
-        expect(recalculated.selectedFeeOption, FeeSelection.economic);
+      bloc.add(const SellEvent.feeOptionSelected(FeeSelection.economic));
+      final recalculated = await awaitRecalculatedFee();
+      expect(recalculated.selectedFeeOption, FeeSelection.economic);
 
-        bloc.add(const SellEvent.sendPaymentConfirmed());
-        await bloc.stream.firstWhere(
-          (state) => state is SellPaymentState && state.isPayinBroadcast,
-        );
+      bloc.add(const SellEvent.sendPaymentConfirmed());
+      await bloc.stream.firstWhere(
+        (state) => state is SellPaymentState && state.isPayinBroadcast,
+      );
 
-        // Both the estimate rebuild and the broadcast build used Economic; the
-        // hardcoded Fastest rate must appear nowhere.
-        expect(capturedBuildFees(), everyElement(equals(feeOptions.economic)));
-        await Future<void>.delayed(const Duration(seconds: 6));
-      },
-      timeout: const Timeout(Duration(seconds: 60)),
-    );
+      // Both the estimate rebuild and the broadcast build used Economic; the
+      // hardcoded Fastest rate must appear nowhere.
+      expect(capturedBuildFees(), everyElement(equals(feeOptions.economic)));
+      await Future<void>.delayed(const Duration(seconds: 6));
+    }, timeout: const Timeout(Duration(seconds: 60)));
 
-    test(
-      'a typed custom rate is committed on dismissal and paid',
-      () async {
-        when(
-          () => loadSellContext.order(orderId: any(named: 'orderId')),
-        ).thenThrow(GetOrderException('dns failure'));
-        final customFee = NetworkFee.relativeFromSatPerVbyte(3);
+    test('a typed custom rate is committed on dismissal and paid', () async {
+      when(() => loadSellContext.order(orderId: any(named: 'orderId')))
+          .thenThrow(GetOrderException('dns failure'));
+      final customFee = NetworkFee.relativeFromSatPerVbyte(3);
 
-        // Typing arms the rate without rebuilding; dismissing the modal is what
-        // applies it.
-        bloc.add(SellEvent.customFeeArmed(customFee));
-        await bloc.stream.firstWhere(
-          (state) =>
-              state is SellPaymentState &&
-              state.selectedFeeOption == FeeSelection.custom,
-        );
-        // Arming only deselects the preset tiles; the rebuild waits for the
-        // commit on dismissal.
-        verifyNoBuilds();
+      // Typing arms the rate without rebuilding; dismissing the modal is what
+      // applies it.
+      bloc.add(SellEvent.customFeeArmed(customFee));
+      await bloc.stream.firstWhere(
+        (state) =>
+            state is SellPaymentState &&
+            state.selectedFeeOption == FeeSelection.custom,
+      );
+      // Arming only deselects the preset tiles; the rebuild waits for the
+      // commit on dismissal.
+      verifyNoBuilds();
 
-        bloc.add(const SellEvent.customFeeFinalized());
-        final committed = await awaitRecalculatedFee();
-        expect(committed.selectedFeeOption, FeeSelection.custom);
-        expect(committed.customFee, customFee);
-        expect(committed.armPriorSelection, isNull);
+      bloc.add(const SellEvent.customFeeFinalized());
+      final committed = await awaitRecalculatedFee();
+      expect(committed.selectedFeeOption, FeeSelection.custom);
+      expect(committed.customFee, customFee);
+      expect(committed.armPriorSelection, isNull);
 
-        bloc.add(const SellEvent.sendPaymentConfirmed());
-        await bloc.stream.firstWhere(
-          (state) => state is SellPaymentState && state.isPayinBroadcast,
-        );
+      bloc.add(const SellEvent.sendPaymentConfirmed());
+      await bloc.stream.firstWhere(
+        (state) => state is SellPaymentState && state.isPayinBroadcast,
+      );
 
-        expect(capturedBuildFees(), everyElement(equals(customFee)));
-        await Future<void>.delayed(const Duration(seconds: 6));
-      },
-      timeout: const Timeout(Duration(seconds: 60)),
-    );
+      expect(capturedBuildFees(), everyElement(equals(customFee)));
+      await Future<void>.delayed(const Duration(seconds: 6));
+    }, timeout: const Timeout(Duration(seconds: 60)));
 
     test(
       'a custom rate below the relay floor rolls back on dismissal',
@@ -2094,46 +2023,39 @@ void main() {
       },
     );
 
-    test(
-      'fee selection is inert once the payin is broadcast',
-      () async {
-        when(
-          () => loadSellContext.order(orderId: any(named: 'orderId')),
-        ).thenThrow(GetOrderException('dns failure'));
+    test('fee selection is inert once the payin is broadcast', () async {
+      when(() => loadSellContext.order(orderId: any(named: 'orderId')))
+          .thenThrow(GetOrderException('dns failure'));
 
-        bloc.add(const SellEvent.sendPaymentConfirmed());
-        await bloc.stream.firstWhere(
-          (state) => state is SellPaymentState && state.isPayinBroadcast,
-        );
+      bloc.add(const SellEvent.sendPaymentConfirmed());
+      await bloc.stream.firstWhere(
+        (state) => state is SellPaymentState && state.isPayinBroadcast,
+      );
 
-        // Changing the fee now would rebuild under a transaction already on the
-        // wire (#2522), so every fee event is dropped.
-        bloc.add(const SellEvent.feeOptionSelected(FeeSelection.slow));
-        bloc.add(
-          SellEvent.customFeeArmed(NetworkFee.relativeFromSatPerVbyte(9)),
-        );
-        bloc.add(const SellEvent.presetFeesPreviewRequested());
-        await Future<void>.delayed(const Duration(milliseconds: 200));
+      // Changing the fee now would rebuild under a transaction already on the
+      // wire (#2522), so every fee event is dropped.
+      bloc.add(const SellEvent.feeOptionSelected(FeeSelection.slow));
+      bloc.add(SellEvent.customFeeArmed(NetworkFee.relativeFromSatPerVbyte(9)));
+      bloc.add(const SellEvent.presetFeesPreviewRequested());
+      await Future<void>.delayed(const Duration(milliseconds: 200));
 
-        final state = bloc.state as SellPaymentState;
-        expect(state.selectedFeeOption, FeeSelection.fastest);
-        expect(state.customFee, isNull);
-        expect(state.payinBroadcastTxid, expectedTxid);
-        verifyNever(
-          () => previewBitcoinFeePresets.execute(
-            presets: any(named: 'presets'),
-            walletId: any(named: 'walletId'),
-            recipients: any(named: 'recipients'),
-            replaceByFee: any(named: 'replaceByFee'),
-            selectedInputs: any(named: 'selectedInputs'),
-          ),
-        );
-        // Only the one build that produced the broadcast transaction.
-        expect(capturedBuildFees(), hasLength(1));
-        await Future<void>.delayed(const Duration(seconds: 6));
-      },
-      timeout: const Timeout(Duration(seconds: 60)),
-    );
+      final state = bloc.state as SellPaymentState;
+      expect(state.selectedFeeOption, FeeSelection.fastest);
+      expect(state.customFee, isNull);
+      expect(state.payinBroadcastTxid, expectedTxid);
+      verifyNever(
+        () => previewBitcoinFeePresets.execute(
+          presets: any(named: 'presets'),
+          walletId: any(named: 'walletId'),
+          recipients: any(named: 'recipients'),
+          replaceByFee: any(named: 'replaceByFee'),
+          selectedInputs: any(named: 'selectedInputs'),
+        ),
+      );
+      // Only the one build that produced the broadcast transaction.
+      expect(capturedBuildFees(), hasLength(1));
+      await Future<void>.delayed(const Duration(seconds: 6));
+    }, timeout: const Timeout(Duration(seconds: 60)));
 
     /// Prices the three preset tiles the way an opened modal does.
     void stubPresetPreviews() {

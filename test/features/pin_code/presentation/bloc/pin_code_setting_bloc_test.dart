@@ -25,9 +25,8 @@ void main() {
   group('backup gate fails closed', () {
     PinCodeSettingBloc buildBloc(MockCheckBackupUsecase checkBackup) {
       final isPinCodeSet = MockIsPinCodeSetUsecase();
-      when(
-        () => isPinCodeSet.execute(),
-      ).thenAnswer((_) async => const Ok(false));
+      when(() => isPinCodeSet.execute())
+          .thenAnswer((_) async => const Ok(false));
       return PinCodeSettingBloc(
         setPinCodeUsecase: MockSetPinCodeUsecase(),
         deletePinCodeUsecase: MockDeletePinCodeUsecase(),
@@ -71,9 +70,8 @@ void main() {
 
   test('initialization emits failure when the keychain is locked', () async {
     final isPinCodeSet = MockIsPinCodeSetUsecase();
-    when(
-      () => isPinCodeSet.execute(),
-    ).thenAnswer((_) async => const Err(PinCodeKeychainLockedFailure()));
+    when(() => isPinCodeSet.execute())
+        .thenAnswer((_) async => const Err(PinCodeKeychainLockedFailure()));
     final bloc = PinCodeSettingBloc(
       setPinCodeUsecase: MockSetPinCodeUsecase(),
       deletePinCodeUsecase: MockDeletePinCodeUsecase(),
@@ -102,9 +100,8 @@ void main() {
     await bloc.stream.firstWhere(
       (state) => state.status == PinCodeSettingStatus.unlock,
     );
-    when(
-      () => isPinCodeSet.execute(),
-    ).thenAnswer((_) async => const Err(PinCodeKeychainLockedFailure()));
+    when(() => isPinCodeSet.execute())
+        .thenAnswer((_) async => const Err(PinCodeKeychainLockedFailure()));
 
     bloc.add(const PinCodeSettingStarted());
     await bloc.stream.firstWhere(

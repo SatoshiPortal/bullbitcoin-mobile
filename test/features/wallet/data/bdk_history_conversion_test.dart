@@ -171,9 +171,8 @@ void main() {
         history.failConversion = failConversion;
         if (failConversion) {
           await expectLater(
-            BdkWalletDatasource(
-              readWallet: (_) async => history,
-            ).getTransactions(wallet: wallet),
+            BdkWalletDatasource(readWallet: (_) async => history)
+                .getTransactions(wallet: wallet),
             throwsStateError,
           );
           expect(history.ownedIds.every((id) => id.disposals == 1), isTrue);

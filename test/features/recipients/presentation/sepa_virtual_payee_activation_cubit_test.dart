@@ -20,13 +20,12 @@ void main() {
   setUp(() {
     usecase = _MockWatchSepaVirtualPayeeActivationUsecase();
     streams = [];
-    when(
-      () => usecase.execute(recipientId: any(named: 'recipientId')),
-    ).thenAnswer((_) {
-      final controller = StreamController<_Event>();
-      streams.add(controller);
-      return controller.stream;
-    });
+    when(() => usecase.execute(recipientId: any(named: 'recipientId')))
+        .thenAnswer((_) {
+          final controller = StreamController<_Event>();
+          streams.add(controller);
+          return controller.stream;
+        });
   });
 
   SepaVirtualPayeeActivationCubit build() => SepaVirtualPayeeActivationCubit(

@@ -13,6 +13,7 @@ import 'package:mocktail/mocktail.dart';
 
 import '../sp_cubit_harness.dart';
 import '../sp_test_streams.dart';
+
 import 'package:bb_mobile/features/sp/domain/entities/sp_wallet_data.dart';
 
 void main() {
@@ -56,12 +57,10 @@ void main() {
     revokeUsecase = harness.revokeUsecase;
     generateUsecase = harness.generateUsecase;
 
-    when(
-      () => loadUsecase.execute(),
-    ).thenAnswer((_) async => Ok<SpWalletData, SpFailure>(buildData()));
-    when(
-      () => watchUsecase.execute(),
-    ).thenAnswer((_) => openSpNotificationStream());
+    when(() => loadUsecase.execute())
+        .thenAnswer((_) async => Ok<SpWalletData, SpFailure>(buildData()));
+    when(() => watchUsecase.execute())
+        .thenAnswer((_) => openSpNotificationStream());
 
     cubit = buildCubit();
   });
@@ -298,9 +297,8 @@ void main() {
 
   group('revokeWallet', () {
     test('delegates to the revoke usecase', () async {
-      when(
-        () => revokeUsecase.execute(),
-      ).thenAnswer((_) async => const Ok(null));
+      when(() => revokeUsecase.execute())
+          .thenAnswer((_) async => const Ok(null));
 
       final revoked = await cubit.revokeWallet();
 
@@ -311,9 +309,8 @@ void main() {
     test(
       'returns false and surfaces the error when the usecase returns Err',
       () async {
-        when(
-          () => revokeUsecase.execute(),
-        ).thenAnswer((_) async => const Err(SpUnexpected('delete failed')));
+        when(() => revokeUsecase.execute())
+            .thenAnswer((_) async => const Err(SpUnexpected('delete failed')));
 
         final revoked = await cubit.revokeWallet();
 

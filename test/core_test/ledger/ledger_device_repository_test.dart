@@ -36,9 +36,8 @@ void main() {
 
   group('LedgerDeviceRepositoryImpl (scan policy)', () {
     test('turns an empty scan into a no-devices failure', () async {
-      when(
-        () => datasource.scanDevices(deviceType: any(named: 'deviceType')),
-      ).thenAnswer((_) async => <LedgerDeviceModel>[]);
+      when(() => datasource.scanDevices(deviceType: any(named: 'deviceType')))
+          .thenAnswer((_) async => <LedgerDeviceModel>[]);
 
       final result = await repository.scanDevices();
 
@@ -46,14 +45,13 @@ void main() {
     });
 
     test('turns an ambiguous scan into a multiple-devices failure', () async {
-      when(
-        () => datasource.scanDevices(deviceType: any(named: 'deviceType')),
-      ).thenAnswer(
-        (_) async => [
-          device.toModel(),
-          device.copyWith(id: 'device-2').toModel(),
-        ],
-      );
+      when(() => datasource.scanDevices(deviceType: any(named: 'deviceType')))
+          .thenAnswer(
+            (_) async => [
+              device.toModel(),
+              device.copyWith(id: 'device-2').toModel(),
+            ],
+          );
 
       final result = await repository.scanDevices();
 
@@ -61,9 +59,8 @@ void main() {
     });
 
     test('returns the single device on an unambiguous scan', () async {
-      when(
-        () => datasource.scanDevices(deviceType: any(named: 'deviceType')),
-      ).thenAnswer((_) async => [device.toModel()]);
+      when(() => datasource.scanDevices(deviceType: any(named: 'deviceType')))
+          .thenAnswer((_) async => [device.toModel()]);
 
       final result = await repository.scanDevices();
 
@@ -75,9 +72,8 @@ void main() {
   group('LedgerDeviceRepositoryImpl (the sanitization boundary)', () {
     test('maps an uninitialized transport to a no-connection failure, '
         'not a generic one', () async {
-      when(
-        () => datasource.connectDevice(any()),
-      ).thenThrow(const ConnectionTypeNotInitializedLedgerException());
+      when(() => datasource.connectDevice(any()))
+          .thenThrow(const ConnectionTypeNotInitializedLedgerException());
 
       final result = await repository.connectDevice(device);
 
@@ -85,9 +81,8 @@ void main() {
     });
 
     test('maps a semantic LedgerException to its typed failure', () async {
-      when(
-        () => datasource.connectDevice(any()),
-      ).thenThrow(const PermissionDeniedLedgerException());
+      when(() => datasource.connectDevice(any()))
+          .thenThrow(const PermissionDeniedLedgerException());
 
       final result = await repository.connectDevice(device);
 
@@ -210,9 +205,8 @@ void main() {
     });
 
     test('getMasterFingerprint returns Ok with the datasource value', () async {
-      when(
-        () => datasource.getMasterFingerprint(any()),
-      ).thenAnswer((_) async => 'abcd1234');
+      when(() => datasource.getMasterFingerprint(any()))
+          .thenAnswer((_) async => 'abcd1234');
 
       final result = await repository.getMasterFingerprint(device);
 

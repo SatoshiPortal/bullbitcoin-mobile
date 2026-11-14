@@ -265,21 +265,18 @@ void main() {
     expect(reporter.calls, 0);
   });
 
-  test(
-    'recoverable write and delete failures persist without invoking the reporter',
-    () async {
-      storage.writeFailure = Exception(_sensitive);
-      expect(
-        await repository.saveApiKey(_credential(), isTestnet: true) is Err,
-        isTrue,
-      );
-      expect(await repository.deleteApiKey(isTestnet: true) is Err, isTrue);
-      final rows = (await log.readLogs())
-          .map((line) => line.split('\t'))
-          .toList();
-      expect(reporter.calls, 0);
-      expect(rows.where((row) => row[1] == 'WARNING').length, 2);
-      expect(rows.toString(), isNot(contains(_sensitive)));
-    },
-  );
+  test('recoverable write and delete failures persist without invoking the reporter', () async {
+    storage.writeFailure = Exception(_sensitive);
+    expect(
+      await repository.saveApiKey(_credential(), isTestnet: true) is Err,
+      isTrue,
+    );
+    expect(await repository.deleteApiKey(isTestnet: true) is Err, isTrue);
+    final rows = (await log.readLogs())
+        .map((line) => line.split('\t'))
+        .toList();
+    expect(reporter.calls, 0);
+    expect(rows.where((row) => row[1] == 'WARNING').length, 2);
+    expect(rows.toString(), isNot(contains(_sensitive)));
+  });
 }

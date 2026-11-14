@@ -52,17 +52,15 @@ void main() {
   }
 
   test('a completed sync round is Ok', () async {
-    when(
-      () => coordinator.sync(trigger: any(named: 'trigger')),
-    ).thenAnswer((_) async {});
+    when(() => coordinator.sync(trigger: any(named: 'trigger')))
+        .thenAnswer((_) async {});
 
     expect(await usecase.execute(), isA<Ok<void, WalletFailure>>());
   });
 
   test('forwards the trigger it was given', () async {
-    when(
-      () => coordinator.sync(trigger: any(named: 'trigger')),
-    ).thenAnswer((_) async {});
+    when(() => coordinator.sync(trigger: any(named: 'trigger')))
+        .thenAnswer((_) async {});
 
     // The result is asserted too because `execute` is `@useResult` — the
     // annotation is doing its job here and discarding it is a warning.

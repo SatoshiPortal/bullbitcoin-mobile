@@ -1,5 +1,6 @@
 import 'package:primitives/primitives.dart';
 import 'package:meta/meta.dart';
+
 import '../../transaction_sync.dart';
 
 /// Integration seam for lane A. Called in the isolate holding the lock, with

@@ -15,21 +15,18 @@ Result<ExchangeApiKey, ExchangeApiKeyFailure> _create(String key) =>
     );
 
 void main() {
-  test(
-    'a valid credential retains its fields without exposing the key in diagnostics',
-    () {
-      const key = 'synthetic-key_+/=';
-      switch (_create(key)) {
-        case Ok(:final value):
-          expect(value.id, 'id');
-          expect(value.key, key);
-          expect(value.isActive, isTrue);
-          expect(value.toString(), isNot(contains(key)));
-        case Err():
-          fail('Expected a valid credential');
-      }
-    },
-  );
+  test('a valid credential retains its fields without exposing the key in diagnostics', () {
+    const key = 'synthetic-key_+/=';
+    switch (_create(key)) {
+      case Ok(:final value):
+        expect(value.id, 'id');
+        expect(value.key, key);
+        expect(value.isActive, isTrue);
+        expect(value.toString(), isNot(contains(key)));
+      case Err():
+        fail('Expected a valid credential');
+    }
+  });
 
   for (final key in [
     '',

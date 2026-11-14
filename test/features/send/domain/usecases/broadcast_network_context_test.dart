@@ -1,8 +1,10 @@
 import '../../../../frozen_outpoints_fixture.dart';
+
 import 'package:primitives/primitives.dart' show BitcoinUnit;
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_utxo_repository.dart';
 import 'package:bb_mobile/core/blockchain/domain/repositories/liquid_blockchain_repository.dart';
 import 'package:bb_mobile/features/send/domain/usecases/broadcast_liquid_transaction_usecase.dart';
+
 import 'dart:async';
 
 import 'package:bb_mobile/features/send/data/bitcoin_blockchain_repository.dart';
@@ -168,9 +170,8 @@ void main() {
           isDevModeEnabled: false,
         ),
       );
-      when(
-        () => blockchain.broadcastPsbt(_signedPublicTest, network: network),
-      ).thenAnswer((_) async => 'txid');
+      when(() => blockchain.broadcastPsbt(_signedPublicTest, network: network))
+          .thenAnswer((_) async => 'txid');
       final usecase = BroadcastBitcoinTransactionUsecase(
         bitcoinBlockchainRepository: blockchain,
         settingsRepository: settings,

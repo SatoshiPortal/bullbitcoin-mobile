@@ -42,9 +42,8 @@ void main() {
     dismiss = _MockDismissAnnouncementUsecase();
     watchAppUpdate = _MockWatchAppUpdateAnnouncementUsecase();
     appUpdateController = StreamController<bool>.broadcast();
-    when(
-      () => watchAppUpdate.execute(),
-    ).thenAnswer((_) => appUpdateController.stream);
+    when(() => watchAppUpdate.execute())
+        .thenAnswer((_) => appUpdateController.stream);
     addTearDown(appUpdateController.close);
   });
 
@@ -73,9 +72,8 @@ void main() {
   test(
     'dismiss records the dismissal then refreshes the visible list',
     () async {
-      when(
-        () => dismiss.execute(any()),
-      ).thenAnswer((_) async => const Ok<void, AnnouncementsFailure>(null));
+      when(() => dismiss.execute(any()))
+          .thenAnswer((_) async => const Ok<void, AnnouncementsFailure>(null));
       when(() => getVisible.execute()).thenAnswer(
         (_) async =>
             Ok<List<Announcement>, AnnouncementsFailure>([_announcement()]),

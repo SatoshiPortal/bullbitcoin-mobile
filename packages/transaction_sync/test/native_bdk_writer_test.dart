@@ -1,4 +1,5 @@
 import 'package:transaction_sync/src/write/native_write_session.dart';
+
 import 'dart:io';
 
 import 'package:primitives/primitives.dart';

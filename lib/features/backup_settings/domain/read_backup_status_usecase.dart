@@ -5,6 +5,7 @@ import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.da
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:bull_recoverbull/bull_recoverbull.dart' as rb;
 import 'package:primitives/primitives.dart';
+
 import 'backup_settings_failure.dart';
 
 final class BackupStatusSummary {

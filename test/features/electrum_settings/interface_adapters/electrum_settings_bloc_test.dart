@@ -1,4 +1,5 @@
 import 'package:bb_mobile/features/electrum_settings/interface_adapters/presenters/view_models/electrum_server_view_model.dart';
+
 import 'dart:async';
 
 import 'package:bb_mobile/core/electrum/application/dtos/electrum_server_dto.dart';
@@ -90,23 +91,22 @@ void main() {
         network: ElectrumServerNetwork.bitcoinMainnet,
       ),
     ).thenAnswer((_) async => const Ok([]));
-    when(
-      () => load.execute(any(), onUpdate: any(named: 'onUpdate')),
-    ).thenAnswer(
-      (_) async => Ok(
-        LoadElectrumServerDataResponse(
-          servers: [],
-          serverStatuses: {},
-          settings: ElectrumSettingsDto(
-            stopGap: 20,
-            timeout: 10,
-            retry: 3,
-            validateDomain: true,
-            network: ElectrumServerNetwork.bitcoinMainnet,
+    when(() => load.execute(any(), onUpdate: any(named: 'onUpdate')))
+        .thenAnswer(
+          (_) async => Ok(
+            LoadElectrumServerDataResponse(
+              servers: [],
+              serverStatuses: {},
+              settings: ElectrumSettingsDto(
+                stopGap: 20,
+                timeout: 10,
+                retry: 3,
+                validateDomain: true,
+                network: ElectrumServerNetwork.bitcoinMainnet,
+              ),
+            ),
           ),
-        ),
-      ),
-    );
+        );
     final bloc = ElectrumSettingsBloc(
       loadElectrumServerDataUsecase: load,
       addCustomServerUsecase: add,
@@ -174,15 +174,14 @@ void main() {
         serverStatuses: {server.url: ElectrumServerStatus.online},
         settings: unknownResponse.settings,
       );
-      when(
-        () => load.execute(any(), onUpdate: any(named: 'onUpdate')),
-      ).thenAnswer((invocation) async {
-        final onUpdate =
-            invocation.namedArguments[#onUpdate]
-                as void Function(LoadElectrumServerDataResponse)?;
-        onUpdate?.call(unknownResponse);
-        return Ok(onlineResponse);
-      });
+      when(() => load.execute(any(), onUpdate: any(named: 'onUpdate')))
+          .thenAnswer((invocation) async {
+            final onUpdate =
+                invocation.namedArguments[#onUpdate]
+                    as void Function(LoadElectrumServerDataResponse)?;
+            onUpdate?.call(unknownResponse);
+            return Ok(onlineResponse);
+          });
       final bloc = ElectrumSettingsBloc(
         loadElectrumServerDataUsecase: load,
         addCustomServerUsecase: _MockAddCustomServerUsecase(),
@@ -246,18 +245,16 @@ void main() {
           Result<LoadElectrumServerDataResponse, core.ElectrumFailure>
         >();
     late void Function(LoadElectrumServerDataResponse) onUpdate;
-    when(
-      () => load.execute(any(), onUpdate: any(named: 'onUpdate')),
-    ).thenAnswer((invocation) {
-      onUpdate =
-          invocation.namedArguments[#onUpdate]
-              as void Function(LoadElectrumServerDataResponse);
-      onUpdate(oldResponse);
-      return loadResult.future;
-    });
-    when(
-      () => delete.execute(any()),
-    ).thenAnswer((_) async => const Ok<void, core.ElectrumFailure>(null));
+    when(() => load.execute(any(), onUpdate: any(named: 'onUpdate')))
+        .thenAnswer((invocation) {
+          onUpdate =
+              invocation.namedArguments[#onUpdate]
+                  as void Function(LoadElectrumServerDataResponse);
+          onUpdate(oldResponse);
+          return loadResult.future;
+        });
+    when(() => delete.execute(any()))
+        .thenAnswer((_) async => const Ok<void, core.ElectrumFailure>(null));
     when(() => settingsRepository.fetch()).thenAnswer(
       (_) async => const SettingsEntity(
         environment: Environment.mainnet,

@@ -11,6 +11,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart' show BitcoinUnit, Sats;
 
 import '../../../coins/wallet_utxo_fixture.dart';
+
 import 'package:bb_mobile/features/send/presentation/send_wallet_view.dart';
 
 /// Stubs the wallet properties read by [SendState] balance and fee math.
@@ -542,12 +543,11 @@ void main() {
   group('SendState.willAttemptPayjoin', () {
     Bip21PaymentRequest bip21WithPj({String pj = 'https://payjo.in'}) =>
         PaymentRequest.bip21(
-              network: Network.bitcoinMainnet,
-              uri: 'bitcoin:bc1qtest?pj=$pj',
-              address: 'bc1qtest',
-              pj: pj,
-            )
-            as Bip21PaymentRequest;
+          network: Network.bitcoinMainnet,
+          uri: 'bitcoin:bc1qtest?pj=$pj',
+          address: 'bc1qtest',
+          pj: pj,
+        ) as Bip21PaymentRequest;
 
     test('the sender opt-out defeats an otherwise-available payjoin, and '
         'isPayjoinAvailable stays true so the toggle keeps rendering', () {
@@ -754,9 +754,8 @@ void main() {
         isTrue,
       );
       expect(
-        const SendState(
-          failure: SendTransactionConfirmationFailure(),
-        ).hasBroadcastFailure,
+        const SendState(failure: SendTransactionConfirmationFailure())
+            .hasBroadcastFailure,
         isFalse,
       );
       expect(
@@ -767,16 +766,14 @@ void main() {
 
     test('frozenBalanceHint only fires for a shortfall with frozen coins', () {
       expect(
-        const SendState(
-          failure: SendInsufficientBalanceFailure(),
-        ).frozenBalanceHint,
+        const SendState(failure: SendInsufficientBalanceFailure())
+            .frozenBalanceHint,
         isNull,
         reason: 'nothing frozen means no Manage coins hint',
       );
       expect(
-        const SendState(
-          failure: SendTransactionBuildFailure(),
-        ).frozenBalanceHint,
+        const SendState(failure: SendTransactionBuildFailure())
+            .frozenBalanceHint,
         isNull,
       );
     });

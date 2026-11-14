@@ -30,9 +30,8 @@ void main() {
   test('every word count the type allows is honoured', () async {
     for (final count in MnemonicLength.values) {
       final secret = ok(
-        await secretsWith(
-          FakeSecureStoragePlatform(),
-        ).generate(wordCount: count),
+        await secretsWith(FakeSecureStoragePlatform())
+            .generate(wordCount: count),
       );
       expect(secret.info.wordCount, count.words, reason: count.name);
     }

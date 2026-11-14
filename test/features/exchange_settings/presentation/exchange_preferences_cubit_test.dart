@@ -78,9 +78,8 @@ void main() {
 
   test('save sends the edited preferences', () async {
     final cubit = await buildLoaded();
-    when(
-      () => updatePreferences.execute(any()),
-    ).thenAnswer((_) async => const Ok(null));
+    when(() => updatePreferences.execute(any()))
+        .thenAnswer((_) async => const Ok(null));
 
     cubit.updateLanguage('FR');
     await cubit.savePreferences();

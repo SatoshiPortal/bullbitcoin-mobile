@@ -740,9 +740,8 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
       // persisted status is still in progress: it already knows the
       // negotiated txid, and the sender may have broadcast it while this
       // wallet was waiting for its background watcher.
-      broadcastTxId = (await _syncBroadcastTransactionForPayjoin(
-        payjoin,
-      ))?.txId;
+      broadcastTxId = (await _syncBroadcastTransactionForPayjoin(payjoin))
+          ?.txId;
     }
     if (broadcastTxId != null) {
       // Reset so _loadDetailsByWalletTxId re-arms its own payjoin watcher

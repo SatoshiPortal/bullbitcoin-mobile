@@ -306,9 +306,8 @@ void main() {
     late Secret secret;
     await tester.runAsync(() async {
       secret = ok(
-        await Secrets(
-          scratchDirectory: () async => '/tmp',
-        ).fetch(Fingerprint('00000000')),
+        await Secrets(scratchDirectory: () async => '/tmp')
+            .fetch(Fingerprint('00000000')),
       );
     });
 

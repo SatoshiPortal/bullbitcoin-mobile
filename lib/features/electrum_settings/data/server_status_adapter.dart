@@ -10,15 +10,14 @@ import 'package:bull_logger/bull_logger.dart';
 import 'package:bull_sdk/bdk.dart' as bdk;
 import 'package:bull_tor/tor.dart';
 
-typedef BdkElectrumProbe =
-    Future<void> Function({
-      required String url,
-      required String? socks5,
-      required int timeout,
-      required int retry,
-      required bool validateDomain,
-      required bool isMainnet,
-    });
+typedef BdkElectrumProbe = Future<void> Function({
+  required String url,
+  required String? socks5,
+  required int timeout,
+  required int retry,
+  required bool validateDomain,
+  required bool isMainnet,
+});
 
 class ServerStatusAdapter implements ServerStatusPort {
   /// Bitcoin pizza day — first real-world BTC purchase, May 22 2010.

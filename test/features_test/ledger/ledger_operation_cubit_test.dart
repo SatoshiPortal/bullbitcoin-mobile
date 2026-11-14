@@ -46,12 +46,10 @@ void main() {
     disconnect = _MockDisconnectLedgerDeviceUsecase();
     disposeConnections = _MockDisposeLedgerConnectionsUsecase();
 
-    when(
-      () => disposeConnections.execute(),
-    ).thenAnswer((_) async => const Ok<void, LedgerFailure>(null));
-    when(
-      () => disconnect.execute(any()),
-    ).thenAnswer((_) async => const Ok<void, LedgerFailure>(null));
+    when(() => disposeConnections.execute())
+        .thenAnswer((_) async => const Ok<void, LedgerFailure>(null));
+    when(() => disconnect.execute(any()))
+        .thenAnswer((_) async => const Ok<void, LedgerFailure>(null));
   });
 
   LedgerOperationCubit buildCubit() => LedgerOperationCubit(
@@ -62,9 +60,8 @@ void main() {
   );
 
   void stubScan(Result<List<LedgerDeviceEntity>, LedgerFailure> result) {
-    when(
-      () => scan.execute(deviceType: any(named: 'deviceType')),
-    ).thenAnswer((_) async => result);
+    when(() => scan.execute(deviceType: any(named: 'deviceType')))
+        .thenAnswer((_) async => result);
   }
 
   void stubConnect(Result<void, LedgerFailure> result) {

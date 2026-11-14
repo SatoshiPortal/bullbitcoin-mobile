@@ -16,9 +16,8 @@ void main() {
   tearDownAll(BullSdk.dispose);
 
   test('does not classify a Liquid regtest address as mainnet', () async {
-    when(
-      () => sdk.lwkApiTypesAddressValidate(addressString: address),
-    ).thenAnswer((_) async => lwk.LiquidNetwork.regtest);
+    when(() => sdk.lwkApiTypesAddressValidate(addressString: address))
+        .thenAnswer((_) async => lwk.LiquidNetwork.regtest);
 
     await expectLater(
       PaymentRequest.parse(address),

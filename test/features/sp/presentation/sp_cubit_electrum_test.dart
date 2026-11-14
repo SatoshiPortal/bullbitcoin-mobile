@@ -13,6 +13,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
 import '../sp_cubit_harness.dart';
+
 import 'package:bb_mobile/features/sp/domain/entities/sp_wallet_data.dart';
 
 void main() {
@@ -47,12 +48,10 @@ void main() {
     scanUsecase = harness.scanUsecase;
     notifController = StreamController<SpNotification>.broadcast();
 
-    when(
-      () => loadUsecase.execute(),
-    ).thenAnswer((_) async => Ok<SpWalletData, SpFailure>(buildData()));
-    when(
-      () => watchUsecase.execute(),
-    ).thenAnswer((_) => notifController.stream);
+    when(() => loadUsecase.execute())
+        .thenAnswer((_) async => Ok<SpWalletData, SpFailure>(buildData()));
+    when(() => watchUsecase.execute())
+        .thenAnswer((_) => notifController.stream);
 
     cubit = harness.build();
   });

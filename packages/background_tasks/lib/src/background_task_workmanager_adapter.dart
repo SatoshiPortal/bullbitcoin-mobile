@@ -4,8 +4,9 @@ import 'package:workmanager/workmanager.dart';
 import 'background_task_runner.dart';
 import 'background_task.dart';
 
-typedef BackgroundTaskBootstrap =
-    Future<BackgroundTaskRunner> Function(BackgroundTask task);
+typedef BackgroundTaskBootstrap = Future<BackgroundTaskRunner> Function(
+  BackgroundTask task,
+);
 typedef BackgroundTaskDispatcher = void Function();
 
 abstract interface class BackgroundTaskScheduler {

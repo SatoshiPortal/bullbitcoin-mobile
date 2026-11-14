@@ -112,27 +112,26 @@ FiatPaymentOrder _order({
   String beneficiaryName = 'Alice',
 }) {
   return Order.fiatPayment(
-        orderId: 'order-1',
-        orderType: OrderType.fiatPayment,
-        message: OrderMessage(code: '', message: ''),
-        orderNumber: 1,
-        payinAmount: 0.001,
-        payinCurrency: 'LBTC',
-        payoutAmount: 125.0,
-        payoutCurrency: 'CAD',
-        payinMethod: OrderPaymentMethod.liquid,
-        payoutMethod: OrderPaymentMethod.bankTransfer,
-        orderStatus: OrderStatus.inProgress,
-        payinStatus: payinStatus,
-        payoutStatus: OrderPayoutStatus.notStarted,
-        // Ahead of the clock: a payin is never sent on a lapsed quote.
-        confirmationDeadline: DateTime.now().add(const Duration(minutes: 5)),
-        createdAt: DateTime(2026, 1, 1),
-        liquidAddress: 'lq1address',
-        beneficiaryName: beneficiaryName,
-        isTestnet: false,
-      )
-      as FiatPaymentOrder;
+    orderId: 'order-1',
+    orderType: OrderType.fiatPayment,
+    message: OrderMessage(code: '', message: ''),
+    orderNumber: 1,
+    payinAmount: 0.001,
+    payinCurrency: 'LBTC',
+    payoutAmount: 125.0,
+    payoutCurrency: 'CAD',
+    payinMethod: OrderPaymentMethod.liquid,
+    payoutMethod: OrderPaymentMethod.bankTransfer,
+    orderStatus: OrderStatus.inProgress,
+    payinStatus: payinStatus,
+    payoutStatus: OrderPayoutStatus.notStarted,
+    // Ahead of the clock: a payin is never sent on a lapsed quote.
+    confirmationDeadline: DateTime.now().add(const Duration(minutes: 5)),
+    createdAt: DateTime(2026, 1, 1),
+    liquidAddress: 'lq1address',
+    beneficiaryName: beneficiaryName,
+    isTestnet: false,
+  ) as FiatPaymentOrder;
 }
 
 const _userSummary = UserSummary(
@@ -222,9 +221,8 @@ void main() {
         walletId: any(named: 'walletId'),
       ),
     ).thenAnswer((_) async => const Ok<String, PayFailure>('signed-pset'));
-    when(
-      () => broadcastPayin.liquid(any(), walletId: any(named: 'walletId')),
-    ).thenAnswer((_) async => const Ok<String, PayFailure>('txid'));
+    when(() => broadcastPayin.liquid(any(), walletId: any(named: 'walletId')))
+        .thenAnswer((_) async => const Ok<String, PayFailure>('txid'));
   });
 
   // The handler waits 5s after broadcasting to let the backend register the

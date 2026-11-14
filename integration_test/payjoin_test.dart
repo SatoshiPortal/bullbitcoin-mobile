@@ -235,125 +235,115 @@ Future<void> main({bool isInitialized = false}) async {
       );
     });
 
-    test(
-      'funded testnet wallets complete a Payjoin',
-      () async {
-        receiverWallet = _wallet(
-          await walletRepository.getWallet(receiverWallet.id),
-        );
-        senderWallet = _wallet(
-          await walletRepository.getWallet(senderWallet.id),
-        );
-        expect(receiverWallet.balanceSat, greaterThan(BigInt.zero));
-        expect(senderWallet.balanceSat, greaterThan(BigInt.zero));
+    test('funded testnet wallets complete a Payjoin', () async {
+      receiverWallet = _wallet(
+        await walletRepository.getWallet(receiverWallet.id),
+      );
+      senderWallet = _wallet(await walletRepository.getWallet(senderWallet.id));
+      expect(receiverWallet.balanceSat, greaterThan(BigInt.zero));
+      expect(senderWallet.balanceSat, greaterThan(BigInt.zero));
 
-        await consolidateUtxos(receiverWallet.id);
-        await consolidateUtxos(senderWallet.id);
+      await consolidateUtxos(receiverWallet.id);
+      await consolidateUtxos(senderWallet.id);
 
-        final address = await addressRepository.generateNewReceiveAddress(
+      final address = await addressRepository.generateNewReceiveAddress(
+        walletId: receiverWallet.id,
+      );
+      final receiverResult = await receiverRole.start(
+        StartPayjoinReceiver(
           walletId: receiverWallet.id,
-        );
-        final receiverResult = await receiverRole.start(
-          StartPayjoinReceiver(
-            walletId: receiverWallet.id,
-            network: BitcoinNetwork.testnet,
-            address: address.address,
-            amount: Sats.fromInt(10000),
-          ),
-        );
-        final receiver = switch (receiverResult) {
-          Ok(:final value) => value,
-          Err(:final failure) => throw failure,
-        };
-        final uri = Uri.parse(receiver.pjUri);
-        expect(uri.scheme, 'bitcoin');
-        expect(uri.path, address.address);
-        expect(uri.queryParameters, contains('pj'));
+          network: BitcoinNetwork.testnet,
+          address: address.address,
+          amount: Sats.fromInt(10000),
+        ),
+      );
+      final receiver = switch (receiverResult) {
+        Ok(:final value) => value,
+        Err(:final failure) => throw failure,
+      };
+      final uri = Uri.parse(receiver.pjUri);
+      expect(uri.scheme, 'bitcoin');
+      expect(uri.path, address.address);
+      expect(uri.queryParameters, contains('pj'));
 
-        const feeRate = testnetFeeRate;
-        final preparationResult = await prepareBitcoinSend.execute(
+      const feeRate = testnetFeeRate;
+      final preparationResult = await prepareBitcoinSend.execute(
+        walletId: senderWallet.id,
+        recipients: [
+          BitcoinTransactionRecipient.fixed(
+            address: address.address,
+            amountSat: Sats.fromInt(10000),
+          ),
+        ],
+        networkFee: NetworkFee.relativeFromSatPerVbyte(feeRate),
+      );
+      final prepared = switch (preparationResult) {
+        Ok(:final value) => value,
+        Err(:final failure) => fail(
+          'Bitcoin preparation failed: ${failure.runtimeType}',
+        ),
+      };
+      final senderResult = await senderRole.start(
+        StartPayjoinSender(
           walletId: senderWallet.id,
-          recipients: [
-            BitcoinTransactionRecipient.fixed(
-              address: address.address,
-              amountSat: Sats.fromInt(10000),
-            ),
-          ],
-          networkFee: NetworkFee.relativeFromSatPerVbyte(feeRate),
-        );
-        final prepared = switch (preparationResult) {
-          Ok(:final value) => value,
-          Err(:final failure) => fail(
-            'Bitcoin preparation failed: ${failure.runtimeType}',
-          ),
-        };
-        final senderResult = await senderRole.start(
-          StartPayjoinSender(
-            walletId: senderWallet.id,
-            network: BitcoinNetwork.testnet,
-            bip21Uri: receiver.pjUri,
-            unsignedOriginalPsbt: prepared.unsignedPsbt,
-            amount: Sats.fromInt(10000),
-            feeRate: FeeRate(feeRate),
-          ),
-        );
-        final sender = switch (senderResult) {
-          Ok(:final value) => value,
-          Err(:final failure) => throw failure,
-        };
+          network: BitcoinNetwork.testnet,
+          bip21Uri: receiver.pjUri,
+          unsignedOriginalPsbt: prepared.unsignedPsbt,
+          amount: Sats.fromInt(10000),
+          feeRate: FeeRate(feeRate),
+        ),
+      );
+      final sender = switch (senderResult) {
+        Ok(:final value) => value,
+        Err(:final failure) => throw failure,
+      };
 
-        final completed = await sessions
-            .watch(sessionIds: {sender.id})
-            .where(
-              (result) => switch (result) {
-                Ok(:final value) => value.status == PayjoinStatus.completed,
-                Err() => false,
-              },
-            )
-            .first
-            .timeout(const Duration(seconds: 300));
-        expect(completed, isA<Ok<PayjoinSession, PayjoinFailure>>());
-      },
-      timeout: const Timeout(Duration(seconds: 330)),
-    );
+      final completed = await sessions
+          .watch(sessionIds: {sender.id})
+          .where(
+            (result) => switch (result) {
+              Ok(:final value) => value.status == PayjoinStatus.completed,
+              Err() => false,
+            },
+          )
+          .first
+          .timeout(const Duration(seconds: 300));
+      expect(completed, isA<Ok<PayjoinSession, PayjoinFailure>>());
+    }, timeout: const Timeout(Duration(seconds: 330)));
 
-    test(
-      'a receiver expires when no sender submits a request',
-      () async {
-        final address = await addressRepository.generateNewReceiveAddress(
+    test('a receiver expires when no sender submits a request', () async {
+      final address = await addressRepository.generateNewReceiveAddress(
+        walletId: receiverWallet.id,
+      );
+      final receiverResult = await receiverRole.start(
+        StartPayjoinReceiver(
           walletId: receiverWallet.id,
-        );
-        final receiverResult = await receiverRole.start(
-          StartPayjoinReceiver(
-            walletId: receiverWallet.id,
-            network: BitcoinNetwork.testnet,
-            address: address.address,
-            amount: Sats.fromInt(10000),
-            expiresAt: DateTime.now().add(
-              PayjoinPolicy.minimumSessionLifetime + const Duration(seconds: 1),
-            ),
+          network: BitcoinNetwork.testnet,
+          address: address.address,
+          amount: Sats.fromInt(10000),
+          expiresAt: DateTime.now().add(
+            PayjoinPolicy.minimumSessionLifetime + const Duration(seconds: 1),
           ),
-        );
-        final receiver = switch (receiverResult) {
-          Ok(:final value) => value,
-          Err(:final failure) => throw failure,
-        };
+        ),
+      );
+      final receiver = switch (receiverResult) {
+        Ok(:final value) => value,
+        Err(:final failure) => throw failure,
+      };
 
-        final expired = await sessions
-            .watch(sessionIds: {receiver.id})
-            .where(
-              (result) => switch (result) {
-                Ok(:final value) => value.status == PayjoinStatus.expired,
-                Err() => false,
-              },
-            )
-            .first
-            .timeout(const Duration(seconds: 240));
+      final expired = await sessions
+          .watch(sessionIds: {receiver.id})
+          .where(
+            (result) => switch (result) {
+              Ok(:final value) => value.status == PayjoinStatus.expired,
+              Err() => false,
+            },
+          )
+          .first
+          .timeout(const Duration(seconds: 240));
 
-        expect(expired, isA<Ok<PayjoinSession, PayjoinFailure>>());
-      },
-      timeout: const Timeout(Duration(seconds: 270)),
-    );
+      expect(expired, isA<Ok<PayjoinSession, PayjoinFailure>>());
+    }, timeout: const Timeout(Duration(seconds: 270)));
   }, skip: hasFixtures ? null : fixtureSkip);
 }
 

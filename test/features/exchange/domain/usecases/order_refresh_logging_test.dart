@@ -80,9 +80,8 @@ void main() {
         );
         final Object result;
         if (feature == 'pay') {
-          result = await GetPayOrderUsecase(
-            getOrderUsecase: getOrder,
-          ).execute(orderId: orderId);
+          result = await GetPayOrderUsecase(getOrderUsecase: getOrder)
+              .execute(orderId: orderId);
         } else {
           result = await LoadSellContextUsecase(
             getExchangeUserSummaryUsecase: _Summary(),

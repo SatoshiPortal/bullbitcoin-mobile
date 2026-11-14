@@ -206,9 +206,9 @@ void main() {
           lines.single,
           contains('scope=headless source=balance read=hydrate'),
         );
-        final held = RegExp(
-          r'held_ms=(\d+)',
-        ).firstMatch(lines.single)?.group(1);
+        final held = RegExp(r'held_ms=(\d+)')
+            .firstMatch(lines.single)
+            ?.group(1);
         expect(held, isNotNull);
         expect(int.tryParse(held ?? ''), greaterThanOrEqualTo(1000));
         expect(lines.single, isNot(contains(key.id)));

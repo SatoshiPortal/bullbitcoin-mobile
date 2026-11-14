@@ -1,4 +1,5 @@
 import 'package:primitives/primitives.dart';
+
 import '../entities/encrypted_vault.dart';
 import '../entities/recoverbull_flow.dart';
 import '../entities/vault_completion.dart';

@@ -1,4 +1,5 @@
 import 'package:bb_mobile/features/wallet/domain/network_x.dart';
+
 import 'dart:async';
 
 import 'package:bb_mobile/core/electrum/domain/errors/electrum_fallback_exception.dart';

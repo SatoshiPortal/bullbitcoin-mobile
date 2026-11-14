@@ -28,9 +28,8 @@ void main() {
     );
 
     platform = _FakeBlePlatform();
-    when(
-      () => platform.getBluetoothAvailabilityState(),
-    ).thenAnswer((_) async => AvailabilityState.poweredOn);
+    when(() => platform.getBluetoothAvailabilityState())
+        .thenAnswer((_) async => AvailabilityState.poweredOn);
     when(() => platform.scanStream).thenAnswer((_) => scanController.stream);
     when(() => platform.stopScan()).thenAnswer((_) async {});
     UniversalBle.setInstance(platform);

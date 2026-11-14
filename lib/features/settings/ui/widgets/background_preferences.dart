@@ -1,9 +1,11 @@
 import '../../presentation/settings_failure_l10n.dart';
+
 import 'package:background_tasks/background_tasks.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
 import '../../presentation/bloc/background_preferences_cubit.dart';
 
 class BackgroundPreferences extends StatelessWidget {

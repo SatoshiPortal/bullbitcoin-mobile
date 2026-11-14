@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:primitives/primitives.dart' show BitcoinNetwork, Ok;
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_started_wallet_syncs_usecase.dart';
@@ -46,15 +47,12 @@ void main() {
       ),
     );
     var localTransactions = [pending];
-    when(
-      () => read.execute(walletId: null),
-    ).thenAnswer((_) async => Ok(localTransactions));
-    when(
-      () => started.execute(walletId: null),
-    ).thenAnswer((_) => const Stream.empty());
-    when(
-      () => finished.execute(walletId: null),
-    ).thenAnswer((_) => finishes.stream);
+    when(() => read.execute(walletId: null))
+        .thenAnswer((_) async => Ok(localTransactions));
+    when(() => started.execute(walletId: null))
+        .thenAnswer((_) => const Stream.empty());
+    when(() => finished.execute(walletId: null))
+        .thenAnswer((_) => finishes.stream);
     when(() => labels.execute(any())).thenAnswer(
       (call) async => call.positionalArguments.first as List<Transaction>,
     );

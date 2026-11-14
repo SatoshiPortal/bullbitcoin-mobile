@@ -79,9 +79,8 @@ void main() {
   });
 
   test('a wallet asked for by id with an unreadable network fails', () async {
-    when(
-      () => metadata.fetch('unreadable'),
-    ).thenAnswer((_) async => unreadable);
+    when(() => metadata.fetch('unreadable'))
+        .thenAnswer((_) async => unreadable);
 
     await expectLater(
       repository.getWalletTransactions(walletId: 'unreadable'),

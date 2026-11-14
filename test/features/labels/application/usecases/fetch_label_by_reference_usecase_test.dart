@@ -20,9 +20,8 @@ void main() {
   group('FetchLabelByReferenceUsecase', () {
     test('maps a repository failure to a sanitized LabelFailure '
         'without leaking the raw exception', () async {
-      when(
-        () => repository.fetchByReference(any()),
-      ).thenThrow(Exception('drift failure exposing an on-chain reference'));
+      when(() => repository.fetchByReference(any()))
+          .thenThrow(Exception('drift failure exposing an on-chain reference'));
 
       final result = await usecase.execute('some-address');
 
@@ -34,9 +33,8 @@ void main() {
     });
 
     test('returns Ok with the mapped labels on success', () async {
-      when(
-        () => repository.fetchByReference(any()),
-      ).thenAnswer((_) async => []);
+      when(() => repository.fetchByReference(any()))
+          .thenAnswer((_) async => []);
 
       final result = await usecase.execute('some-address');
 

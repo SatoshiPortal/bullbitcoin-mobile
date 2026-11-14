@@ -10,9 +10,8 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   group('Security audit #2609 Sentry scrub ordering', () {
     test('source minimizes breadcrumbs before guarded frame scrubbing', () {
-      final source = File(
-        'packages/bull_reporting/lib/src/report.dart',
-      ).readAsStringSync();
+      final source = File('packages/bull_reporting/lib/src/report.dart')
+          .readAsStringSync();
       final frameMutation = source.indexOf('f.vars.clear()');
       final breadcrumbScrub = source.indexOf('event.breadcrumbs =');
 

@@ -1,6 +1,7 @@
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/wallet/data/bdk_wallet_datasource.dart'
     show NetworkX;
+
 import 'dart:typed_data';
 
 import 'package:bb_mobile/core/transactions/domain/entities/bitcoin_transaction.dart';

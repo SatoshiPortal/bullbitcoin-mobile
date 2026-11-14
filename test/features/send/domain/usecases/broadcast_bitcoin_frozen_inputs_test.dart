@@ -1,4 +1,5 @@
 import 'dart:io';
+
 import 'package:bb_mobile/features/send/domain/broadcast_failure.dart';
 import 'package:bb_mobile/features/send/data/bitcoin_blockchain_repository.dart';
 import 'package:bb_mobile/features/send/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
@@ -93,9 +94,8 @@ void main() {
         currencyCode: 'CAD',
       ),
     );
-    when(
-      () => blockchain.broadcastPsbt(any(), network: Network.bitcoinMainnet),
-    ).thenAnswer((_) async => 'txid');
+    when(() => blockchain.broadcastPsbt(any(), network: Network.bitcoinMainnet))
+        .thenAnswer((_) async => 'txid');
     when(
       () => blockchain.broadcastTransaction(
         any(),
@@ -195,14 +195,12 @@ void main() {
 
     test('refuses when the frozen store cannot be read', () async {
       final failing = _MockWalletUtxoRepository();
-      when(
-        failing.getAllFrozenOutpoints,
-      ).thenThrow(const FileSystemException('store unavailable'));
+      when(failing.getAllFrozenOutpoints)
+          .thenThrow(const FileSystemException('store unavailable'));
 
       await expectLater(
-        usecase(
-          walletUtxoRepository: failing,
-        ).execute(psbt, isPsbt: true, network: Network.bitcoinMainnet),
+        usecase(walletUtxoRepository: failing)
+            .execute(psbt, isPsbt: true, network: Network.bitcoinMainnet),
         throwsA(isA<BroadcastTransactionException>()),
       );
       verifyNothingBroadcast();

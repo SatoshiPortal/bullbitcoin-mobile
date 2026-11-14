@@ -20,9 +20,9 @@ Future<void> configureSqliteTestTiming() async {
         uri.resolve(method).replace(queryParameters: parameters),
       );
       final response = await request.close();
-      final body =
-          jsonDecode(await utf8.decoder.bind(response).join())
-              as Map<String, dynamic>;
+      final body = jsonDecode(
+        await utf8.decoder.bind(response).join(),
+      ) as Map<String, dynamic>;
       final result = body['result'];
       if (result is! Map<String, dynamic>) {
         throw StateError('VM service $method failed');

@@ -22,6 +22,7 @@ import 'package:bb_mobile/features/sp/domain/usecases/set_sp_auto_scan_usecase.d
 import 'package:mocktail/mocktail.dart';
 
 import 'sp_fakes.dart';
+
 import 'package:bb_mobile/features/sp/domain/entities/sp_wallet_data.dart';
 
 /// Parameterized [SpWalletData] builder shared by the SP cubit + UI tests. A
@@ -113,12 +114,10 @@ class SpCubitHarness {
     // Default: a re-establish (only fired when the notification stream closes)
     // finds no wallet, so the watcher does not re-subscribe. Tests override it.
     when(() => ensureUsecase.execute()).thenAnswer((_) async => const Ok(null));
-    when(
-      () => resyncUsecase.execute(),
-    ).thenAnswer((_) async => const Ok<void, SpFailure>(null));
-    when(
-      () => restampUsecase.execute(),
-    ).thenReturn(const Ok<void, SpFailure>(null));
+    when(() => resyncUsecase.execute())
+        .thenAnswer((_) async => const Ok<void, SpFailure>(null));
+    when(() => restampUsecase.execute())
+        .thenReturn(const Ok<void, SpFailure>(null));
     return SpCubit(
       loadSpWalletDataUsecase: loadUsecase,
       restampSpPaymentTimesUsecase: restampUsecase,

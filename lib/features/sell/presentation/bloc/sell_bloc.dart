@@ -1,5 +1,6 @@
 import 'package:bb_mobile/features/sell/domain/retry_payjoin_proposal_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/network_x.dart';
+
 import 'dart:async';
 
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
@@ -1354,8 +1355,7 @@ class SellBloc extends Bloc<SellEvent, SellState>
         }
         if (latestOrder is! SellOrder && latestOrder is! FiatPaymentOrder) {
           log.severe(
-            error:
-                'Expected a sell payin order but received a different order type',
+            error: 'Expected a sell payin order but received a different order type',
             trace: StackTrace.current,
           );
           return;

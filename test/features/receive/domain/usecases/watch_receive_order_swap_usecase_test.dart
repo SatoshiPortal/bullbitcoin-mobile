@@ -22,9 +22,9 @@ void main() {
         ),
       );
 
-      final first = await WatchReceiveOrderSwapUsecase(
-        swaps,
-      ).execute('order-1').first;
+      final first = await WatchReceiveOrderSwapUsecase(swaps)
+          .execute('order-1')
+          .first;
 
       switch (first) {
         case Ok():
@@ -51,9 +51,9 @@ void main() {
       ),
     );
 
-    final first = await WatchReceiveOrderSwapUsecase(
-      swaps,
-    ).execute('order-1').first;
+    final first = await WatchReceiveOrderSwapUsecase(swaps)
+        .execute('order-1')
+        .first;
 
     switch (first) {
       case Ok():
@@ -78,9 +78,9 @@ void main() {
       ),
     );
 
-    final first = await WatchReceiveOrderSwapUsecase(
-      swaps,
-    ).execute('order-1').first;
+    final first = await WatchReceiveOrderSwapUsecase(swaps)
+        .execute('order-1')
+        .first;
 
     switch (first) {
       case Ok():

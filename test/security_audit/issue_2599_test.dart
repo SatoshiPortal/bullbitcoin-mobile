@@ -10,9 +10,8 @@ void main() {
     test(
       'sensitive files use Documents and backup exclusion is configured',
       () {
-        final sqlite = File(
-          'lib/core/storage/sqlite_database.dart',
-        ).readAsStringSync();
+        final sqlite = File('lib/core/storage/sqlite_database.dart')
+            .readAsStringSync();
         final initialization = File('lib/init.dart').readAsStringSync();
         final walletComposition = File(
           'lib/features/wallet/wallet_locator.dart',

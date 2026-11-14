@@ -33,19 +33,17 @@ void main() {
       directory: PayjoinConstants.serverUrls.first.toString(),
       ohttpKeys: pdk.OhttpKeys.decode(bytes: base64Decode(_ohttpKeys)),
     ).withExpiration(expirationSecs: 1).build().save(persister: persister);
-    final model =
-        PayjoinModel.receiver(
-              id: '0123456789abcdef',
-              address: address,
-              isTestnet: true,
-              receiver: persister.toJson(),
-              walletId: 'w1',
-              pjUri: initialized.pjUri().asString(),
-              maxFeeRateSatPerVb: BigInt.from(10),
-              createdAt: DateTime.now().millisecondsSinceEpoch ~/ 1000,
-              expireAfterSec: 600,
-            )
-            as PayjoinReceiverModel;
+    final model = PayjoinModel.receiver(
+      id: '0123456789abcdef',
+      address: address,
+      isTestnet: true,
+      receiver: persister.toJson(),
+      walletId: 'w1',
+      pjUri: initialized.pjUri().asString(),
+      maxFeeRateSatPerVb: BigInt.from(10),
+      createdAt: DateTime.now().millisecondsSinceEpoch ~/ 1000,
+      expireAfterSec: 600,
+    ) as PayjoinReceiverModel;
     await Future<void>.delayed(const Duration(milliseconds: 1500));
 
     fakeAsync((clock) {

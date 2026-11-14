@@ -32,9 +32,8 @@ void main() {
 
     test('labels a completed order', () async {
       final order = orderWith(OrderStatus.completed);
-      when(
-        () => facade.labelCompletedExchangeOrders(any()),
-      ).thenAnswer((_) async {});
+      when(() => facade.labelCompletedExchangeOrders(any()))
+          .thenAnswer((_) async {});
 
       expect(await usecase.execute(order: order), isA<Ok<void, BuyFailure>>());
       verify(() => facade.labelCompletedExchangeOrders([order])).called(1);
@@ -60,9 +59,8 @@ void main() {
 
     test('a labelling failure is a sanitized value, not a throw', () async {
       final order = orderWith(OrderStatus.completed);
-      when(
-        () => facade.labelCompletedExchangeOrders(any()),
-      ).thenThrow(Exception('label store unavailable: db path /secret'));
+      when(() => facade.labelCompletedExchangeOrders(any()))
+          .thenThrow(Exception('label store unavailable: db path /secret'));
 
       final result = await usecase.execute(order: order);
 
@@ -89,9 +87,8 @@ void main() {
         minimumAmount: Sats.fromInt(1000),
         sessionLifetime: const Duration(hours: 1),
       );
-      when(
-        policy.load,
-      ).thenAnswer((_) async => Ok<PayjoinPolicy, PayjoinFailure>(value));
+      when(policy.load)
+          .thenAnswer((_) async => Ok<PayjoinPolicy, PayjoinFailure>(value));
 
       final result = await GetBuyPayjoinEnabledUsecase(policy).execute();
 

@@ -1,8 +1,10 @@
 import 'package:meta/meta.dart';
+
 import 'domain/local_notification.dart';
 import 'domain/notifications_failure.dart';
 import 'notifications_facade.dart';
 import 'wallet_payment_notification_identity.dart';
+
 import 'package:primitives/primitives.dart';
 
 import 'wallet_sync_completion.dart';

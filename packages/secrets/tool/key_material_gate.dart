@@ -87,9 +87,8 @@ List<String> productionDartFiles(String root) {
         ))
           if (file is File &&
               file.path.endsWith('.dart') &&
-              !RegExp(
-                r'\.(g|freezed|gr|config|mocks|steps)\.dart$',
-              ).hasMatch(file.path) &&
+              !RegExp(r'\.(g|freezed|gr|config|mocks|steps)\.dart$')
+                  .hasMatch(file.path) &&
               !file.path
                   .split(Platform.pathSeparator)
                   .any(
@@ -219,9 +218,8 @@ bool _isTestingLibrary(String uri) =>
     uri == 'package:secrets/testing.dart' ||
     uri.startsWith('package:secrets/src/testing/') ||
     (!uri.contains(':') &&
-        RegExp(
-          r'(^|/)secrets/lib/(testing\.dart$|src/testing/)',
-        ).hasMatch(Uri.parse(uri).normalizePath().path));
+        RegExp(r'(^|/)secrets/lib/(testing\.dart$|src/testing/)')
+            .hasMatch(Uri.parse(uri).normalizePath().path));
 
 String? materialSymbol(Element element) {
   final uri = element.library?.uri.toString();

@@ -26,16 +26,14 @@ void main() {
       unlockCooldown: UnlockCooldown(),
     );
 
-    when(
-      () => attemptsRepository.getLockedUntil(),
-    ).thenAnswer((_) async => const Ok(null));
+    when(() => attemptsRepository.getLockedUntil())
+        .thenAnswer((_) async => const Ok(null));
     when(() => timeoutCalculator.calculateTimeout(any())).thenReturn(0);
   });
 
   test('returns Ok with success=true when no prior failed attempts', () async {
-    when(
-      () => attemptsRepository.getFailedUnlockAttempts(),
-    ).thenAnswer((_) async => const Ok(0));
+    when(() => attemptsRepository.getFailedUnlockAttempts())
+        .thenAnswer((_) async => const Ok(0));
 
     final result = await usecase.execute();
 
@@ -49,9 +47,8 @@ void main() {
   test(
     'restores a bounded remaining cooldown from the persisted timestamp',
     () async {
-      when(
-        () => attemptsRepository.getFailedUnlockAttempts(),
-      ).thenAnswer((_) async => const Ok(4));
+      when(() => attemptsRepository.getFailedUnlockAttempts())
+          .thenAnswer((_) async => const Ok(4));
       when(() => attemptsRepository.getLockedUntil()).thenAnswer(
         (_) async => Ok(DateTime.now().add(const Duration(seconds: 22))),
       );
@@ -70,9 +67,8 @@ void main() {
   test(
     'an expired wall-clock lockout falls back to the calculated timeout',
     () async {
-      when(
-        () => attemptsRepository.getFailedUnlockAttempts(),
-      ).thenAnswer((_) async => const Ok(4));
+      when(() => attemptsRepository.getFailedUnlockAttempts())
+          .thenAnswer((_) async => const Ok(4));
       when(() => attemptsRepository.getLockedUntil()).thenAnswer(
         (_) async => Ok(DateTime.now().subtract(const Duration(minutes: 1))),
       );
@@ -84,17 +80,14 @@ void main() {
     },
   );
 
-  test(
-    'returns Err(AppUnlockUnexpectedFailure) when repository fails — no raw leak',
-    () async {
-      when(() => attemptsRepository.getFailedUnlockAttempts()).thenAnswer(
-        (_) async => const Err(AppUnlockUnexpectedFailure('storage error')),
-      );
+  test('returns Err(AppUnlockUnexpectedFailure) when repository fails — no raw leak', () async {
+    when(() => attemptsRepository.getFailedUnlockAttempts()).thenAnswer(
+      (_) async => const Err(AppUnlockUnexpectedFailure('storage error')),
+    );
 
-      final result = await usecase.execute();
+    final result = await usecase.execute();
 
-      expect(result, isA<Err>());
-      expect((result as Err).failure, isA<AppUnlockUnexpectedFailure>());
-    },
-  );
+    expect(result, isA<Err>());
+    expect((result as Err).failure, isA<AppUnlockUnexpectedFailure>());
+  });
 }

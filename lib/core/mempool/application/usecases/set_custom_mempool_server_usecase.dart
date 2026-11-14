@@ -58,9 +58,8 @@ class SetCustomMempoolServerUsecase {
       request.url,
       enableSsl: request.enableSsl,
     );
-    final defaultServer = (await _serverRepository.fetchDefaultServer(
-      network,
-    )).fold((s) => s, (_) => null);
+    final defaultServer = (await _serverRepository.fetchDefaultServer(network))
+        .fold((s) => s, (_) => null);
     if (defaultServer != null) {
       final defaultUrl = NormalizedMempoolUrl(
         defaultServer.url,

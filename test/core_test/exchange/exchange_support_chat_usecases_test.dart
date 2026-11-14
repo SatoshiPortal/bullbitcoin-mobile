@@ -44,9 +44,8 @@ void main() {
     });
 
     test('maps a missing API key to NotAuthenticatedFailure', () async {
-      when(
-        () => apiDatasource.getUserSummary(),
-      ).thenThrow(const ExchangeAuthenticationException());
+      when(() => apiDatasource.getUserSummary())
+          .thenThrow(const ExchangeAuthenticationException());
 
       final result = await repository.getMessages();
 
@@ -147,9 +146,8 @@ void main() {
           testnetRepository: testnetRepo,
           settingsRepository: settingsRepository,
         );
-        when(
-          () => settingsRepository.fetch(),
-        ).thenThrow(Exception('storage locked'));
+        when(() => settingsRepository.fetch())
+            .thenThrow(Exception('storage locked'));
 
         final result = await usecase.execute(page: 1, pageSize: 10);
 
@@ -189,9 +187,8 @@ void main() {
           testnetRepository: testnetRepo,
           settingsRepository: settingsRepository,
         );
-        when(
-          () => mainnetRepo.getMessageAttachment(any()),
-        ).thenAnswer((_) async => const Err(LoadAttachmentFailure('raw')));
+        when(() => mainnetRepo.getMessageAttachment(any()))
+            .thenAnswer((_) async => const Err(LoadAttachmentFailure('raw')));
 
         final result = await usecase.execute('a1');
 

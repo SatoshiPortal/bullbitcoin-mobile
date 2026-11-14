@@ -206,9 +206,8 @@ void main() {
     });
 
     test('a successful write does move the displayed value', () async {
-      when(
-        () => setBitcoinUnit.execute(any()),
-      ).thenAnswer((_) async => const Ok(null));
+      when(() => setBitcoinUnit.execute(any()))
+          .thenAnswer((_) async => const Ok(null));
 
       await cubit.toggleSatsUnit(false);
 

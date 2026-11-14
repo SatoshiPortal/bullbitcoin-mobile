@@ -48,9 +48,8 @@ void main() {
       when(() => embedded.sessions).thenReturn(sessions);
       when(() => sessions.open()).thenAnswer((_) async => session);
 
-      final route = await MempoolTorSessionAdapter(
-        () => tor,
-      ).open(serverUrl: 'https://hidden.onion');
+      final route = await MempoolTorSessionAdapter(() => tor)
+          .open(serverUrl: 'https://hidden.onion');
 
       expect(route?.endpoint.port, 9050);
       await route?.close();
@@ -60,9 +59,8 @@ void main() {
 
     test('does not open a session for clearnet', () async {
       final tor = _MockTor();
-      final route = await MempoolTorSessionAdapter(
-        () => tor,
-      ).open(serverUrl: 'https://example.com');
+      final route = await MempoolTorSessionAdapter(() => tor)
+          .open(serverUrl: 'https://example.com');
 
       expect(route, isNull);
       verifyNever(() => tor.embedded);

@@ -54,9 +54,8 @@ void main() {
     test('contains returns a failure rather than throwing', () async {
       // It used to return a bare Future, so the exception escaped
       // uncaught — with the word in it.
-      final result = await secretsWith(
-        FakeSecureStoragePlatform(),
-      ).contains(words: wrongChecksum);
+      final result = await secretsWith(FakeSecureStoragePlatform())
+          .contains(words: wrongChecksum);
 
       expect(result, isA<Err<bool, SecretFailure>>());
       final failure = (result as Err<bool, SecretFailure>).failure;
@@ -64,40 +63,33 @@ void main() {
     });
 
     test('import fails without naming the word', () async {
-      final result = await secretsWith(
-        FakeSecureStoragePlatform(),
-      ).import(words: wrongChecksum);
+      final result = await secretsWith(FakeSecureStoragePlatform())
+          .import(words: wrongChecksum);
 
       final failure = (result as Err<Secret, SecretFailure>).failure;
       expect(failure.logMessage, isNot(contains('zebra')));
     });
 
-    test(
-      'reading a corrupt entry never quotes it back',
-      () async {
-        // The stored value is the secret itself, so a decode failure must
-        // not be echoed.
-        final storage = FakeSecureStoragePlatform(
-          entries: {
-            'seed_73c5da0a': jsonEncode({
-              'mnemonicWords': ['abandon', 'zebra'],
-              'passphrase': 'hunter2',
-              'runtimeType': 'mnemonic',
-            }),
-          },
-        );
+    test('reading a corrupt entry never quotes it back', () async {
+      // The stored value is the secret itself, so a decode failure must
+      // not be echoed.
+      final storage = FakeSecureStoragePlatform(
+        entries: {
+          'seed_73c5da0a': jsonEncode({
+            'mnemonicWords': ['abandon', 'zebra'],
+            'passphrase': 'hunter2',
+            'runtimeType': 'mnemonic',
+          }),
+        },
+      );
 
-        final result = await secretsWith(
-          storage,
-        ).fetch(Fingerprint('73c5da0a'));
+      final result = await secretsWith(storage).fetch(Fingerprint('73c5da0a'));
 
-        final failure = (result as Err<Secret, SecretFailure>).failure;
-        for (final secret in ['zebra', 'hunter2', 'abandon']) {
-          expect(failure.logMessage, isNot(contains(secret)), reason: secret);
-        }
-      },
-      timeout: const Timeout(Duration(seconds: 20)),
-    );
+      final failure = (result as Err<Secret, SecretFailure>).failure;
+      for (final secret in ['zebra', 'hunter2', 'abandon']) {
+        expect(failure.logMessage, isNot(contains(secret)), reason: secret);
+      }
+    }, timeout: const Timeout(Duration(seconds: 20)));
   });
 
   test('a corrupt entry is skipped, not surfaced as a wallet', () async {
@@ -147,9 +139,9 @@ void redactionOfStoredContent() {
         entries: {storageKey: jsonEncode(envelope)},
       )..install();
 
-      final result = await Secrets(
-        scratchDirectory: () async => '/tmp',
-      ).databaseKeys(module: 'probe').getOrCreate(name: 'main');
+      final result = await Secrets(scratchDirectory: () async => '/tmp')
+          .databaseKeys(module: 'probe')
+          .getOrCreate(name: 'main');
 
       final failure = (result as Err<DatabaseKey, SecretFailure>).failure;
       expect(failure, isA<DatabaseKeyCorruptFailure>());
@@ -176,9 +168,8 @@ void redactionOfStoredContent() {
         },
       ).install();
 
-      final result = await Secrets(
-        scratchDirectory: () async => '/tmp',
-      ).fetch(Fingerprint('00000000'));
+      final result = await Secrets(scratchDirectory: () async => '/tmp')
+          .fetch(Fingerprint('00000000'));
 
       final failure = (result as Err<Secret, SecretFailure>).failure;
       expect(failure, isA<FetchSecretFailure>());
@@ -186,20 +177,17 @@ void redactionOfStoredContent() {
     },
   );
 
-  test(
-    'a thrown object that is neither an Exception nor an Error is a failure by type',
-    () async {
-      // bull_sdk's generated BoltzError is a plain class carrying a foreign
-      // message; nothing about it said which branch would catch it.
-      final result = await boundary<void>(
-        () async => throw const _ForeignError('zebra is the sentinel'),
-        orElse: UseSecretFailure.new,
-      );
-      final failure = err(result);
-      expect(failure, isA<UseSecretFailure>());
-      expect(failure.logMessage, '_ForeignError');
-    },
-  );
+  test('a thrown object that is neither an Exception nor an Error is a failure by type', () async {
+    // bull_sdk's generated BoltzError is a plain class carrying a foreign
+    // message; nothing about it said which branch would catch it.
+    final result = await boundary<void>(
+      () async => throw const _ForeignError('zebra is the sentinel'),
+      orElse: UseSecretFailure.new,
+    );
+    final failure = err(result);
+    expect(failure, isA<UseSecretFailure>());
+    expect(failure.logMessage, '_ForeignError');
+  });
 
   group('an Error is not a failure, but it is redacted all the same', () {
     // Rule 11: an `Error` is a programmer bug and keeps propagating to the

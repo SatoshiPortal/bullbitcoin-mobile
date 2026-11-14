@@ -9,9 +9,8 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   group('Security audit #2632 raw swap errors', () {
     test('chain-swap failure stores the raw exception string', () {
-      final source = File(
-        'lib/features/send/presentation/bloc/send_cubit.dart',
-      ).readAsStringSync();
+      final source = File('lib/features/send/presentation/bloc/send_cubit.dart')
+          .readAsStringSync();
       expect(
         source,
         isNot(

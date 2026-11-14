@@ -1,5 +1,7 @@
 import 'package:meta/meta.dart';
+
 import 'notifications_failure.dart';
+
 import 'package:primitives/primitives.dart';
 
 /// The OS permission to show the app's notifications.

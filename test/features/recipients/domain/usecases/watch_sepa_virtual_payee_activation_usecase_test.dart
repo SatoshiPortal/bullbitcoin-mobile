@@ -57,9 +57,8 @@ void main() {
 
   setUp(() {
     environment = _MockGetRecipientsEnvironmentUsecase();
-    when(
-      () => environment.execute(),
-    ).thenAnswer((_) async => const Ok(Environment.testnet));
+    when(() => environment.execute())
+        .thenAnswer((_) async => const Ok(Environment.testnet));
   });
 
   Future<List<Result<SepaVirtualPayeeStatus, RecipientsFailure>>> run(

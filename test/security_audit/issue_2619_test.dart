@@ -8,9 +8,8 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   group('Security audit #2619 fee request timeouts', () {
     test('default Dio builder configures bounded timeouts', () {
-      final source = File(
-        'lib/core/fees/data/fees_datasource.dart',
-      ).readAsStringSync();
+      final source = File('lib/core/fees/data/fees_datasource.dart')
+          .readAsStringSync();
       expect(source, contains('connectTimeout:'));
       expect(source, contains('sendTimeout:'));
       expect(source, contains('receiveTimeout:'));

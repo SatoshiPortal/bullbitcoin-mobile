@@ -1,8 +1,11 @@
 import 'package:transaction_sync/transaction_sync.dart' show WalletRevision;
+
 import '../domain/wallet_spend_failure.dart';
+
 import 'package:transaction_sync/write.dart' show BitcoinSpendStatus;
 import 'package:transaction_sync/read.dart' show validateAddress;
 import 'package:bb_mobile/core/wallet/data/models/bitcoin_transaction_recipient_model.dart';
+
 import 'dart:typed_data';
 
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
@@ -79,14 +82,12 @@ class BitcoinWalletRepository implements BitcoinSendPort {
         }
       }
 
-      final wallet =
-          WalletModel.publicBdk(
-                externalDescriptor: metadata.externalPublicDescriptor,
-                internalDescriptor: metadata.internalPublicDescriptor,
-                network: metadata.network,
-                id: metadata.id,
-              )
-              as PublicBdkWalletModel;
+      final wallet = WalletModel.publicBdk(
+        externalDescriptor: metadata.externalPublicDescriptor,
+        internalDescriptor: metadata.internalPublicDescriptor,
+        network: metadata.network,
+        id: metadata.id,
+      ) as PublicBdkWalletModel;
 
       // D7 defense in depth: a frozen coin must never be spendable. BDK's
       // documented semantics are the opposite — a manually added utxo
@@ -231,14 +232,12 @@ class BitcoinWalletRepository implements BitcoinSendPort {
       throw Exception('Wallet $walletId is not a Bitcoin wallet');
     }
 
-    final wallet =
-        WalletModel.publicBdk(
-              externalDescriptor: metadata.externalPublicDescriptor,
-              internalDescriptor: metadata.internalPublicDescriptor,
-              network: metadata.network,
-              id: metadata.id,
-            )
-            as PublicBdkWalletModel;
+    final wallet = WalletModel.publicBdk(
+      externalDescriptor: metadata.externalPublicDescriptor,
+      internalDescriptor: metadata.internalPublicDescriptor,
+      network: metadata.network,
+      id: metadata.id,
+    ) as PublicBdkWalletModel;
 
     final isFromWallet = await _bdkWallet.isMine(script, wallet: wallet);
 
@@ -260,14 +259,12 @@ class BitcoinWalletRepository implements BitcoinSendPort {
       throw Exception('Wallet $walletId is not a Bitcoin wallet');
     }
 
-    final wallet =
-        WalletModel.publicBdk(
-              externalDescriptor: metadata.externalPublicDescriptor,
-              internalDescriptor: metadata.internalPublicDescriptor,
-              network: metadata.network,
-              id: metadata.id,
-            )
-            as PublicBdkWalletModel;
+    final wallet = WalletModel.publicBdk(
+      externalDescriptor: metadata.externalPublicDescriptor,
+      internalDescriptor: metadata.internalPublicDescriptor,
+      network: metadata.network,
+      id: metadata.id,
+    ) as PublicBdkWalletModel;
 
     final isFromWallet = await _bdkWallet.areAddressesMine(
       addresses,
@@ -401,14 +398,12 @@ class BitcoinWalletRepository implements BitcoinSendPort {
     // Building an RBF replacement needs the wallet's UTXO set, not its
     // key: the public descriptors are enough. Signing happens after,
     // inside `secrets`.
-    final wallet =
-        WalletModel.publicBdk(
-              externalDescriptor: metadata.externalPublicDescriptor,
-              internalDescriptor: metadata.internalPublicDescriptor,
-              network: metadata.network,
-              id: metadata.id,
-            )
-            as PublicBdkWalletModel;
+    final wallet = WalletModel.publicBdk(
+      externalDescriptor: metadata.externalPublicDescriptor,
+      internalDescriptor: metadata.internalPublicDescriptor,
+      network: metadata.network,
+      id: metadata.id,
+    ) as PublicBdkWalletModel;
 
     final psbt = await _bdkWallet.createUnsignedReplaceByFeePsbt(
       wallet: wallet,

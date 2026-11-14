@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'notification_destination.dart';
 import 'notifications_failure.dart';
+
 import 'package:primitives/primitives.dart';
 
 final class NotificationPayloadCodec {

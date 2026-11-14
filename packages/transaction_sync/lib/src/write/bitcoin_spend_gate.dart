@@ -1,4 +1,5 @@
 import 'package:primitives/primitives.dart';
+
 import '../../transaction_sync.dart';
 import 'bitcoin_spend_gate_store.dart';
 import 'revision_store.dart';

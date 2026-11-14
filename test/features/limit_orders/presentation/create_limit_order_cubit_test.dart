@@ -76,9 +76,9 @@ void main() {
 
   blocTest<CreateLimitOrderCubit, CreateLimitOrderState>(
     'loads the creation context and initializes the target',
-    setUp: () => when(
-      () => loadCreation.execute(),
-    ).thenAnswer((_) async => Ok(creationContext)),
+    setUp: () =>
+        when(() => loadCreation.execute())
+            .thenAnswer((_) async => Ok(creationContext)),
     build: buildCubit,
     act: (cubit) => cubit.load(),
     verify: (cubit) {
@@ -93,9 +93,9 @@ void main() {
 
   blocTest<CreateLimitOrderCubit, CreateLimitOrderState>(
     'setting the limit price recomputes the discount',
-    setUp: () => when(
-      () => loadCreation.execute(),
-    ).thenAnswer((_) async => Ok(creationContext)),
+    setUp: () =>
+        when(() => loadCreation.execute())
+            .thenAnswer((_) async => Ok(creationContext)),
     build: buildCubit,
     act: (cubit) async {
       await cubit.load();
@@ -109,9 +109,9 @@ void main() {
 
   blocTest<CreateLimitOrderCubit, CreateLimitOrderState>(
     'setting the discount recomputes the limit price',
-    setUp: () => when(
-      () => loadCreation.execute(),
-    ).thenAnswer((_) async => Ok(creationContext)),
+    setUp: () =>
+        when(() => loadCreation.execute())
+            .thenAnswer((_) async => Ok(creationContext)),
     build: buildCubit,
     act: (cubit) async {
       await cubit.load();
@@ -125,9 +125,9 @@ void main() {
 
   blocTest<CreateLimitOrderCubit, CreateLimitOrderState>(
     'flags an amount below the on-chain minimum for a bitcoin destination',
-    setUp: () => when(
-      () => loadCreation.execute(),
-    ).thenAnswer((_) async => Ok(creationContext)),
+    setUp: () =>
+        when(() => loadCreation.execute())
+            .thenAnswer((_) async => Ok(creationContext)),
     build: buildCubit,
     act: (cubit) async {
       await cubit.load();
@@ -143,9 +143,9 @@ void main() {
 
   blocTest<CreateLimitOrderCubit, CreateLimitOrderState>(
     'does not leave the wallet step while an amount violates a limit',
-    setUp: () => when(
-      () => loadCreation.execute(),
-    ).thenAnswer((_) async => Ok(creationContext)),
+    setUp: () =>
+        when(() => loadCreation.execute())
+            .thenAnswer((_) async => Ok(creationContext)),
     build: buildCubit,
     act: (cubit) async {
       await cubit.load();
@@ -161,9 +161,9 @@ void main() {
 
   blocTest<CreateLimitOrderCubit, CreateLimitOrderState>(
     'clears the violation for an in-range amount',
-    setUp: () => when(
-      () => loadCreation.execute(),
-    ).thenAnswer((_) async => Ok(creationContext)),
+    setUp: () =>
+        when(() => loadCreation.execute())
+            .thenAnswer((_) async => Ok(creationContext)),
     build: buildCubit,
     act: (cubit) async {
       await cubit.load();
@@ -191,9 +191,8 @@ void main() {
   blocTest<CreateLimitOrderCubit, CreateLimitOrderState>(
     'refreshes the rate after changing currency',
     setUp: () {
-      when(
-        () => loadCreation.execute(),
-      ).thenAnswer((_) async => Ok(creationContext));
+      when(() => loadCreation.execute())
+          .thenAnswer((_) async => Ok(creationContext));
       when(() => getRate.execute('USD')).thenAnswer(
         (_) async => Ok(
           LimitOrderRate(
@@ -220,9 +219,8 @@ void main() {
   blocTest<CreateLimitOrderCubit, CreateLimitOrderState>(
     'progresses through the form and creates an order',
     setUp: () {
-      when(
-        () => loadCreation.execute(),
-      ).thenAnswer((_) async => Ok(creationContext));
+      when(() => loadCreation.execute())
+          .thenAnswer((_) async => Ok(creationContext));
       when(
         () => create.execute(
           limitPrice: 99000,
@@ -261,9 +259,8 @@ void main() {
   blocTest<CreateLimitOrderCubit, CreateLimitOrderState>(
     'keeps the confirmation step when creation fails',
     setUp: () {
-      when(
-        () => loadCreation.execute(),
-      ).thenAnswer((_) async => Ok(creationContext));
+      when(() => loadCreation.execute())
+          .thenAnswer((_) async => Ok(creationContext));
       when(
         () => create.execute(
           limitPrice: 99000,
@@ -304,12 +301,10 @@ void main() {
     test('keeps the confirmed default destination after a stale app-wallet '
         '${fails ? 'failure' : 'success'}', () async {
       final pending = Completer<Result<String, LimitOrdersFailure>>();
-      when(
-        () => loadCreation.execute(),
-      ).thenAnswer((_) async => Ok(creationContext));
-      when(
-        () => resolveAddress.execute('w-btc'),
-      ).thenAnswer((_) => pending.future);
+      when(() => loadCreation.execute())
+          .thenAnswer((_) async => Ok(creationContext));
+      when(() => resolveAddress.execute('w-btc'))
+          .thenAnswer((_) => pending.future);
       when(
         () => create.execute(
           limitPrice: 99000,
@@ -355,9 +350,8 @@ void main() {
     test('keeps a default wallet after stale Lightning validation '
         'returns $staleAddress', () async {
       final pending = Completer<String?>();
-      when(
-        () => validateLnAddress.execute('old@example.com'),
-      ).thenAnswer((_) => pending.future);
+      when(() => validateLnAddress.execute('old@example.com'))
+          .thenAnswer((_) => pending.future);
       final cubit = buildCubit();
       addTearDown(cubit.close);
       final validating = cubit.setLightningAddress('old@example.com');
@@ -374,12 +368,10 @@ void main() {
       'validation', () async {
     final pendingWallet = Completer<Result<String, LimitOrdersFailure>>();
     final pendingLightning = Completer<String?>();
-    when(
-      () => resolveAddress.execute('w-btc'),
-    ).thenAnswer((_) => pendingWallet.future);
-    when(
-      () => validateLnAddress.execute('new@example.com'),
-    ).thenAnswer((_) => pendingLightning.future);
+    when(() => resolveAddress.execute('w-btc'))
+        .thenAnswer((_) => pendingWallet.future);
+    when(() => validateLnAddress.execute('new@example.com'))
+        .thenAnswer((_) => pendingLightning.future);
     final cubit = buildCubit();
     addTearDown(cubit.close);
     final resolving = cubit.selectAppWallet(
@@ -399,12 +391,10 @@ void main() {
   test('keeps the latest Lightning address when validations finish '
       'out of order', () async {
     final pending = Completer<String?>();
-    when(
-      () => validateLnAddress.execute('old@example.com'),
-    ).thenAnswer((_) => pending.future);
-    when(
-      () => validateLnAddress.execute('new@example.com'),
-    ).thenAnswer((_) async => 'new@example.com');
+    when(() => validateLnAddress.execute('old@example.com'))
+        .thenAnswer((_) => pending.future);
+    when(() => validateLnAddress.execute('new@example.com'))
+        .thenAnswer((_) async => 'new@example.com');
     final cubit = buildCubit();
     addTearDown(cubit.close);
     final oldValidation = cubit.setLightningAddress('old@example.com');
@@ -418,9 +408,9 @@ void main() {
 
   blocTest<CreateLimitOrderCubit, CreateLimitOrderState>(
     'selectAppWallet derives a receive address and sets the destination',
-    setUp: () => when(
-      () => resolveAddress.execute('w-btc'),
-    ).thenAnswer((_) async => const Ok('bc1qderived')),
+    setUp: () =>
+        when(() => resolveAddress.execute('w-btc'))
+            .thenAnswer((_) async => const Ok('bc1qderived')),
     build: buildCubit,
     act: (cubit) =>
         cubit.selectAppWallet(appWallet('w-btc', Network.bitcoinMainnet)),
@@ -450,9 +440,9 @@ void main() {
 
   blocTest<CreateLimitOrderCubit, CreateLimitOrderState>(
     'accepts a valid lightning address as the destination',
-    setUp: () => when(
-      () => validateLnAddress.execute('sats@bullbitcoin.com'),
-    ).thenAnswer((_) async => 'sats@bullbitcoin.com'),
+    setUp: () =>
+        when(() => validateLnAddress.execute('sats@bullbitcoin.com'))
+            .thenAnswer((_) async => 'sats@bullbitcoin.com'),
     build: buildCubit,
     act: (cubit) => cubit.setLightningAddress('sats@bullbitcoin.com'),
     verify: (cubit) {
@@ -464,9 +454,9 @@ void main() {
 
   blocTest<CreateLimitOrderCubit, CreateLimitOrderState>(
     'rejects an invoice or otherwise invalid lightning address',
-    setUp: () => when(
-      () => validateLnAddress.execute(any()),
-    ).thenAnswer((_) async => null),
+    setUp: () =>
+        when(() => validateLnAddress.execute(any()))
+            .thenAnswer((_) async => null),
     build: buildCubit,
     act: (cubit) => cubit.setLightningAddress('lnbc1invoice'),
     verify: (cubit) {

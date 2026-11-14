@@ -15,9 +15,8 @@ void main() {
 
   setUp(() {
     policy = _MockPayjoinPolicyAccess();
-    when(
-      () => policy.setMinimumAmount(any()),
-    ).thenAnswer((_) async => Ok(PayjoinPolicy.defaults()));
+    when(() => policy.setMinimumAmount(any()))
+        .thenAnswer((_) async => Ok(PayjoinPolicy.defaults()));
     usecase = SetPayjoinMinAmountUsecase(payjoinPolicy: policy);
   });
 

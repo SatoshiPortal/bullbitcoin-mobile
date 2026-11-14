@@ -1,6 +1,8 @@
 import '../../../frozen_outpoints_fixture.dart';
+
 import 'package:bb_mobile/features/wallet/domain/wallet.dart' as app;
 import 'package:bb_mobile/core/bbqr/bbqr.dart';
+
 import 'dart:io';
 
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
@@ -261,9 +263,9 @@ void main() {
       'cHNidP8BAKQCAAAAA6DLc9RAdKwWQb/7Nrq1FyAtDQ3e0w5E4LkLpcrwBL0aAAAAAAD9////78NG2vqjywKaa0QHfo6C44o1+odXeWZ43FfHy4bLdxABAAAAAP3///8rhueJha90HzgJ6alnJ1uvi0Zbq0JQoXnwDb0Cjn79DwAAAAAA/f///wHWCBAAAAAAABYAFDraKFKubXzlSvRQy8V4X+TwKhLXAAAAAAAiAgIv4ZP089Gh3DcLFcr/Om6kI99LFHsT5XO9/AqiYPn5S0cwRAIgMJcGjoczA/ht/oTuE30a5StXa9l72t5+jayaURudfnECIGw+ymYS2RDszHL+KXRuoiNjvAUiIIKE7wa7+RKORevBAQAiAgJnXJ8+nIC4cTUtC795s+zlThrpxrAJRLHpGYkEQyw1x0cwRAIgH5pFuC079UUXzPJU1ya57Lak9Yc4NkAttmOEsNphd/cCIBnVkzO/wVfD5dxWKXbqdHazwUirh2zcY1MIH1skRqkbAQAiAgMUAdnwr2UVz6AhNBI5j6an4wHRGVX3uhSLaWy2qS70xkcwRAIgVrv+vZ9iG1njv8wrSCuhhLIlkMRqk4lxnHBRMHTzVWUCIELRLHVXUTyL0rFWA8aNADWjkOB/pepeQst7u2GryIylAQAA';
 
   test('finalizes a SeedSigner-trimmed PSBT before broadcasting', () async {
-    final signedTrimmedPsbt = bdk.Psbt(
-      psbtBase64: firstSignedTrimmedPsbt,
-    ).combine(other: bdk.Psbt(psbtBase64: secondSignedTrimmedPsbt)).serialize();
+    final signedTrimmedPsbt = bdk.Psbt(psbtBase64: firstSignedTrimmedPsbt)
+        .combine(other: bdk.Psbt(psbtBase64: secondSignedTrimmedPsbt))
+        .serialize();
     final broadcast = _MockBroadcastBitcoinTransactionUsecase();
     when(
       () => broadcast.execute(
