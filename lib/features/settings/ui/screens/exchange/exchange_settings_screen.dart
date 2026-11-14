@@ -31,13 +31,7 @@ class ExchangeSettingsScreen extends StatelessWidget {
         false;
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          isSuperuser
-              ? context.loc.settingsExchangeSettingsTitle
-              : context.loc.settingsAccountSettingsTitle,
-        ),
-      ),
+      appBar: AppBar(title: Text(context.loc.settingsExchangeSettingsTitle)),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(

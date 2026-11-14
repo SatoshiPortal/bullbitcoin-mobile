@@ -218,43 +218,43 @@
   "@coreSwapsLnSendFailed": {
     "description": "Status message for failed Lightning send swap"
   },
-  "coreSwapsChainPending": "Transfer is not yet initialized.",
+  "coreSwapsChainPending": "Swap is not yet initialized.",
   "@coreSwapsChainPending": {
     "description": "Status message for pending chain swap"
   },
-  "coreSwapsChainPaid": "Waiting for transfer provider's payment to receive confirmation. This may take a while to complete.",
+  "coreSwapsChainPaid": "Waiting for swap provider's payment to receive confirmation. This may take a while to complete.",
   "@coreSwapsChainPaid": {
     "description": "Status message for paid chain swap"
   },
-  "coreSwapsChainClaimable": "Transfer is ready to be claimed.",
+  "coreSwapsChainClaimable": "Swap is ready to be claimed.",
   "@coreSwapsChainClaimable": {
     "description": "Status message for claimable chain swap"
   },
-  "coreSwapsChainRefundable": "Transfer is ready to be refunded.",
+  "coreSwapsChainRefundable": "Swap is ready to be refunded.",
   "@coreSwapsChainRefundable": {
     "description": "Status message for refundable chain swap"
   },
-  "coreSwapsChainCanCoop": "Transfer will complete momentarily.",
+  "coreSwapsChainCanCoop": "Swap will complete momentarily.",
   "@coreSwapsChainCanCoop": {
     "description": "Status message for chain swap that can complete cooperatively"
   },
-  "coreSwapsChainCompletedRefunded": "Transfer has been refunded.",
+  "coreSwapsChainCompletedRefunded": "Swap has been refunded.",
   "@coreSwapsChainCompletedRefunded": {
     "description": "Status message for chain swap completed via refund"
   },
-  "coreSwapsChainCompletedSuccess": "Transfer is completed successfully.",
+  "coreSwapsChainCompletedSuccess": "Swap is completed successfully.",
   "@coreSwapsChainCompletedSuccess": {
     "description": "Status message for successfully completed chain swap"
   },
-  "coreSwapsChainExpired": "Transfer Expired",
+  "coreSwapsChainExpired": "Swap Expired",
   "@coreSwapsChainExpired": {
     "description": "Status message for expired chain swap"
   },
-  "coreSwapsChainFailedRefunding": "Transfer will be refunded shortly.",
+  "coreSwapsChainFailedRefunding": "Swap will be refunded shortly.",
   "@coreSwapsChainFailedRefunding": {
     "description": "Status message for failed chain swap that will be refunded"
   },
-  "coreSwapsChainFailed": "Transfer Failed.",
+  "coreSwapsChainFailed": "Swap Failed.",
   "@coreSwapsChainFailed": {
     "description": "Status message for failed chain swap"
   },
@@ -1600,7 +1600,7 @@
   "@receiveSwapId": {
     "description": "Label for the swap identifier in a receive transaction"
   },
-  "receiveTransferFee": "Transfer Fee",
+  "receiveTransferFee": "Swap Fee",
   "@receiveTransferFee": {
     "description": "Label for the transfer fee in a receive transaction"
   },
@@ -2627,7 +2627,7 @@
   "@transactionDetailTitle": {
     "description": "Title for transaction details screen"
   },
-  "transactionDetailTransferProgress": "Transfer Progress",
+  "transactionDetailTransferProgress": "Swap Progress",
   "@transactionDetailTransferProgress": {
     "description": "Title for ongoing transfer details"
   },
@@ -2651,7 +2651,7 @@
   "@transactionFilterReceive": {
     "description": "Filter option to show only received transactions"
   },
-  "transactionFilterTransfer": "Transfer",
+  "transactionFilterTransfer": "Swap",
   "@transactionFilterTransfer": {
     "description": "Filter option to show only transfer/swap transactions"
   },
@@ -2715,11 +2715,11 @@
   "@transactionStatusPending": {
     "description": "Status label for pending transactions"
   },
-  "transactionStatusTransferCompleted": "Transfer Completed",
+  "transactionStatusTransferCompleted": "Swap Completed",
   "@transactionStatusTransferCompleted": {
     "description": "Status label for completed transfers"
   },
-  "transactionStatusTransferInProgress": "Transfer In Progress",
+  "transactionStatusTransferInProgress": "Swap In Progress",
   "@transactionStatusTransferInProgress": {
     "description": "Status label for transfers in progress"
   },
@@ -2731,7 +2731,7 @@
   "@transactionStatusPaymentRefunded": {
     "description": "Status label for refunded payments"
   },
-  "transactionStatusTransferFailed": "Transfer Failed",
+  "transactionStatusTransferFailed": "Swap Failed",
   "@transactionStatusTransferFailed": {
     "description": "Status label for failed transfers"
   },
@@ -2739,7 +2739,7 @@
   "@transactionStatusSwapFailed": {
     "description": "Status label for failed swaps"
   },
-  "transactionStatusTransferExpired": "Transfer Expired",
+  "transactionStatusTransferExpired": "Swap Expired",
   "@transactionStatusTransferExpired": {
     "description": "Status label for expired transfers"
   },
@@ -2803,7 +2803,7 @@
   "@transactionSwapProgressInProgress": {
     "description": "Generic swap progress step: in progress"
   },
-  "transactionSwapStatusTransferStatus": "Transfer Status",
+  "transactionSwapStatusTransferStatus": "Swap Status",
   "@transactionSwapStatusTransferStatus": {
     "description": "Header for transfer status section"
   },
@@ -2863,7 +2863,7 @@
   "@transactionSwapDescLnSendDefault": {
     "description": "Default description for Lightning send swap"
   },
-  "transactionSwapDescChainPending": "Your transfer has been created but not initiated yet.",
+  "transactionSwapDescChainPending": "Your swap has been created but not initiated yet.",
   "@transactionSwapDescChainPending": {
     "description": "Description for pending chain swap"
   },
@@ -2871,27 +2871,27 @@
   "@transactionSwapDescChainPaid": {
     "description": "Description for paid chain swap"
   },
-  "transactionSwapDescChainClaimable": "The lockup transaction has been confirmed. You are now claiming the funds to complete your transfer.",
+  "transactionSwapDescChainClaimable": "The lockup transaction has been confirmed. You are now claiming the funds to complete your swap.",
   "@transactionSwapDescChainClaimable": {
     "description": "Description for claimable chain swap"
   },
-  "transactionSwapDescChainRefundable": "The transfer will be refunded. Your funds will be returned to your wallet automatically.",
+  "transactionSwapDescChainRefundable": "The swap will be refunded. Your funds will be returned to your wallet automatically.",
   "@transactionSwapDescChainRefundable": {
     "description": "Description for refundable chain swap"
   },
-  "transactionSwapDescChainCompleted": "Your transfer has been completed successfully! The funds should now be available in your wallet.",
+  "transactionSwapDescChainCompleted": "Your swap has been completed successfully! The funds should now be available in your wallet.",
   "@transactionSwapDescChainCompleted": {
     "description": "Description for completed chain swap"
   },
-  "transactionSwapDescChainFailed": "There was an issue with your transfer. Please contact support if funds have not been returned within 24 hours.",
+  "transactionSwapDescChainFailed": "There was an issue with your swap. Please contact support if funds have not been returned within 24 hours.",
   "@transactionSwapDescChainFailed": {
     "description": "Description for failed chain swap"
   },
-  "transactionSwapDescChainExpired": "This transfer has expired. Your funds will be automatically returned to your wallet.",
+  "transactionSwapDescChainExpired": "This swap has expired. Your funds will be automatically returned to your wallet.",
   "@transactionSwapDescChainExpired": {
     "description": "Description for expired chain swap"
   },
-  "transactionSwapDescChainDefault": "Your transfer is in progress. This process is automated and may take some time to complete.",
+  "transactionSwapDescChainDefault": "Your swap is in progress. This process is automated and may take some time to complete.",
   "@transactionSwapDescChainDefault": {
     "description": "Default description for chain swap"
   },
@@ -2899,11 +2899,11 @@
   "@transactionSwapInfoFailedExpired": {
     "description": "Additional info for failed or expired swaps"
   },
-  "transactionSwapInfoChainDelay": "On-chain transfers may take some time to complete due to blockchain confirmation times.",
+  "transactionSwapInfoChainDelay": "On-chain swaps may take some time to complete due to blockchain confirmation times.",
   "@transactionSwapInfoChainDelay": {
     "description": "Additional info about chain transfer delays"
   },
-  "transactionSwapInfoClaimableTransfer": "The transfer will be completed automatically within a few seconds. If not, you can attempt a manual claim by clicking the \"Retry Transfer Claim\" button.",
+  "transactionSwapInfoClaimableTransfer": "The swap will be completed automatically within a few seconds. If not, you can attempt a manual claim by clicking the \"Retry Swap Claim\" button.",
   "@transactionSwapInfoClaimableTransfer": {
     "description": "Additional info for claimable transfers"
   },
@@ -2911,7 +2911,7 @@
   "@transactionSwapInfoClaimableSwap": {
     "description": "Additional info for claimable swaps"
   },
-  "transactionSwapInfoRefundableTransfer": "This transfer will be refunded automatically within a few seconds. If not, you can attempt a manual refund by clicking the \"Retry Transfer Refund\" button.",
+  "transactionSwapInfoRefundableTransfer": "This swap will be refunded automatically within a few seconds. If not, you can attempt a manual refund by clicking the \"Retry Swap Refund\" button.",
   "@transactionSwapInfoRefundableTransfer": {
     "description": "Additional info for refundable transfers"
   },
@@ -2919,11 +2919,11 @@
   "@transactionSwapInfoRefundableSwap": {
     "description": "Additional info for refundable swaps"
   },
-  "transactionListOngoingTransfersTitle": "Ongoing Transfers",
+  "transactionListOngoingTransfersTitle": "Ongoing Swaps",
   "@transactionListOngoingTransfersTitle": {
     "description": "Title for ongoing transfers section"
   },
-  "transactionListOngoingTransfersDescription": "These transfers are currently in progress. Your funds are secure and will be available when the transfer completes.",
+  "transactionListOngoingTransfersDescription": "These swaps are currently in progress. Your funds are secure and will be available when the swap completes.",
   "@transactionListOngoingTransfersDescription": {
     "description": "Description for ongoing transfers section"
   },
@@ -3119,7 +3119,7 @@
   "@transactionDetailLabelCompletedAt": {
     "description": "Label for completion time"
   },
-  "transactionDetailLabelTransferId": "Transfer ID",
+  "transactionDetailLabelTransferId": "Swap ID",
   "@transactionDetailLabelTransferId": {
     "description": "Label for transfer ID"
   },
@@ -3127,7 +3127,7 @@
   "@transactionDetailLabelSwapId": {
     "description": "Label for swap ID"
   },
-  "transactionDetailLabelTransferStatus": "Transfer status",
+  "transactionDetailLabelTransferStatus": "Swap status",
   "@transactionDetailLabelTransferStatus": {
     "description": "Label for transfer status"
   },
@@ -3147,7 +3147,7 @@
   "@transactionDetailLabelBitcoinTxId": {
     "description": "Label for Bitcoin transaction ID"
   },
-  "transactionDetailLabelTransferFees": "Transfer fees",
+  "transactionDetailLabelTransferFees": "Swap fees",
   "@transactionDetailLabelTransferFees": {
     "description": "Label for transfer fees"
   },
@@ -3159,7 +3159,7 @@
   "@transactionDetailLabelSendNetworkFee": {
     "description": "Label for send network fee"
   },
-  "transactionDetailLabelTransferFee": "Transfer Fee",
+  "transactionDetailLabelTransferFee": "Swap Fee",
   "@transactionDetailLabelTransferFee": {
     "description": "Label for transfer fee (Boltz fee)"
   },
@@ -4527,27 +4527,27 @@
   "@dcaWalletLiquidSubtitle": {
     "description": "Subtitle/description for Liquid wallet option"
   },
-  "swapInternalTransferTitle": "Internal Transfer",
+  "swapInternalTransferTitle": "Internal Swap",
   "@swapInternalTransferTitle": {
     "description": "AppBar title on the amount entry page"
   },
-  "swapConfirmTransferTitle": "Confirm Transfer",
+  "swapConfirmTransferTitle": "Confirm Swap",
   "@swapConfirmTransferTitle": {
     "description": "AppBar title on the confirmation page"
   },
-  "swapInfoDescription": "Transfer Bitcoin seamlessly between your wallets. Only keep funds in the Instant Payment Wallet for day-to-day spending.",
+  "swapInfoDescription": "Swap Bitcoin seamlessly between your wallets. Only keep funds in the Instant Payment Wallet for day-to-day spending.",
   "@swapInfoDescription": {
     "description": "Information banner text on amount page"
   },
-  "swapTransferFrom": "Transfer from",
+  "swapTransferFrom": "Swap from",
   "@swapTransferFrom": {
     "description": "Label for source wallet dropdown"
   },
-  "swapTransferTo": "Transfer to",
+  "swapTransferTo": "Swap to",
   "@swapTransferTo": {
     "description": "Label for destination wallet dropdown"
   },
-  "swapTransferAmount": "Transfer amount",
+  "swapTransferAmount": "Swap amount",
   "@swapTransferAmount": {
     "description": "Label for amount input field"
   },
@@ -4579,35 +4579,35 @@
   "@swapGoHomeButton": {
     "description": "Button to return home from progress page"
   },
-  "swapTransferPendingTitle": "Transfer Pending",
+  "swapTransferPendingTitle": "Swap Pending",
   "@swapTransferPendingTitle": {
     "description": "Title during pending swap status"
   },
-  "swapTransferPendingMessage": "The transfer is in progress. Bitcoin transactions can take a while to confirm. You can return home and wait.",
+  "swapTransferPendingMessage": "The swap is in progress. Bitcoin transactions can take a while to confirm. You can return home and wait.",
   "@swapTransferPendingMessage": {
     "description": "Message shown during pending swap"
   },
-  "swapTransferCompletedTitle": "Transfer completed",
+  "swapTransferCompletedTitle": "Swap completed",
   "@swapTransferCompletedTitle": {
     "description": "Title when swap completes successfully"
   },
-  "swapTransferCompletedMessage": "Wow, you waited! The transfer has completed successfully.",
+  "swapTransferCompletedMessage": "Wow, you waited! The swap has completed successfully.",
   "@swapTransferCompletedMessage": {
     "description": "Success message after transfer completion"
   },
-  "swapTransferRefundInProgressTitle": "Transfer Refund In Progress",
+  "swapTransferRefundInProgressTitle": "Swap Refund In Progress",
   "@swapTransferRefundInProgressTitle": {
     "description": "Title when swap is being refunded"
   },
-  "swapTransferRefundInProgressMessage": "There was an error with the transfer. Your refund is in progress.",
+  "swapTransferRefundInProgressMessage": "There was an error with the swap. Your refund is in progress.",
   "@swapTransferRefundInProgressMessage": {
     "description": "Message during refund process"
   },
-  "swapTransferRefundedTitle": "Transfer Refunded",
+  "swapTransferRefundedTitle": "Swap Refunded",
   "@swapTransferRefundedTitle": {
     "description": "Title when swap has been refunded"
   },
-  "swapTransferRefundedMessage": "The transfer has been successfully refunded.",
+  "swapTransferRefundedMessage": "The swap has been successfully refunded.",
   "@swapTransferRefundedMessage": {
     "description": "Refund completion message"
   },
@@ -4645,11 +4645,11 @@
   "@swapErrorInsufficientFunds": {
     "description": "Error when transaction cannot be built due to insufficient funds"
   },
-  "swapTransferTitle": "Transfer",
+  "swapTransferTitle": "Swap",
   "@swapTransferTitle": {
     "description": "AppBar title on the main swap page"
   },
-  "swapExternalTransferLabel": "External Transfer",
+  "swapExternalTransferLabel": "External Swap",
   "@swapExternalTransferLabel": {
     "description": "Label for external transfer toggle"
   },
@@ -4717,15 +4717,15 @@
       }
     }
   },
-  "swapValidationSelectFromWallet": "Please select a wallet to transfer from",
+  "swapValidationSelectFromWallet": "Please select a wallet to swap from",
   "@swapValidationSelectFromWallet": {
     "description": "Validation error when no source wallet selected"
   },
-  "swapValidationSelectToWallet": "Please select a wallet to transfer to",
+  "swapValidationSelectToWallet": "Please select a wallet to swap to",
   "@swapValidationSelectToWallet": {
     "description": "Validation error when no destination wallet selected"
   },
-  "swapDoNotUninstallWarning": "Do not uninstall the app until the transfer completes!",
+  "swapDoNotUninstallWarning": "Do not uninstall the app until the swap completes!",
   "@swapDoNotUninstallWarning": {
     "description": "Warning message during pending transfer"
   },
@@ -4842,11 +4842,11 @@
   "@pinStatusSettingUpDescription": {
     "description": "Status screen description during PIN save/delete operations"
   },
-  "autoswapSettingsTitle": "Auto Transfer Settings",
+  "autoswapSettingsTitle": "Auto Swap Settings",
   "@autoswapSettingsTitle": {
     "description": "Main header/title of the auto swap settings bottom sheet"
   },
-  "autoswapEnableToggleLabel": "Enable Auto Transfer",
+  "autoswapEnableToggleLabel": "Enable Auto Swap",
   "@autoswapEnableToggleLabel": {
     "description": "Label for the main toggle switch to enable/disable auto transfer feature"
   },
@@ -4854,7 +4854,7 @@
   "@autoswapMaxBalanceLabel": {
     "description": "Label for amount threshold input field"
   },
-  "autoswapMaxBalanceInfoText": "When wallet balance exceeds double this amount, auto-transfer will trigger to reduce balance to this level",
+  "autoswapMaxBalanceInfoText": "When wallet balance exceeds double this amount, auto-swap will trigger to reduce balance to this level",
   "@autoswapMaxBalanceInfoText": {
     "description": "Help text explaining how the max balance threshold works"
   },
@@ -4866,11 +4866,11 @@
   "@autoswapTriggerAtBalanceInfoText": {
     "description": "Info text explaining when autoswap will trigger"
   },
-  "autoswapMaxFeeLabel": "Max Transfer Fee",
+  "autoswapMaxFeeLabel": "Max Swap Fee",
   "@autoswapMaxFeeLabel": {
     "description": "Label for fee threshold percentage input field"
   },
-  "autoswapMaxFeeInfoText": "If total transfer fee is above the set percentage, the auto-transfer will be blocked",
+  "autoswapMaxFeeInfoText": "If total swap fee is above the set percentage, the auto-swap will be blocked",
   "@autoswapMaxFeeInfoText": {
     "description": "Help text explaining how the max fee threshold works"
   },
@@ -4902,11 +4902,11 @@
   "@autoswapAlwaysBlockLabel": {
     "description": "Label for toggle to always block high fee transfers"
   },
-  "autoswapAlwaysBlockInfoEnabled": "When enabled, auto-transfers with fees above the set limit will always be blocked",
+  "autoswapAlwaysBlockInfoEnabled": "When enabled, auto-swaps with fees above the set limit will always be blocked",
   "@autoswapAlwaysBlockInfoEnabled": {
     "description": "Help text when always block is enabled"
   },
-  "autoswapAlwaysBlockInfoDisabled": "When disabled, you will be given the option to allow an auto-transfer that is blocked due to high fees",
+  "autoswapAlwaysBlockInfoDisabled": "When disabled, you will be given the option to allow an auto-swap that is blocked due to high fees",
   "@autoswapAlwaysBlockInfoDisabled": {
     "description": "Help text when always block is disabled"
   },
@@ -6343,7 +6343,7 @@
   "@sendSendNetworkFee": {
     "description": "Label for network fee on send side of swap"
   },
-  "sendTransferFee": "Transfer Fee",
+  "sendTransferFee": "Swap Fee",
   "@sendTransferFee": {
     "description": "Label for total swap transfer fee"
   },
@@ -9742,11 +9742,11 @@
   "@sellSendPaymentInsufficientBalance": {
     "description": "Insufficient balance error"
   },
-  "swapTitle": "Internal Transfer",
+  "swapTitle": "Internal Swap",
   "@swapTitle": {
     "description": "AppBar title for swap/internal transfer screen"
   },
-  "swapInfoBanner": "Transfer Bitcoin seamlessly between your wallets. Only keep funds in the Instant Payment Wallet for day-to-day spending.",
+  "swapInfoBanner": "Swap Bitcoin seamlessly between your wallets. Only keep funds in the Instant Payment Wallet for day-to-day spending.",
   "@swapInfoBanner": {
     "description": "Info banner on swap amount screen"
   },
@@ -9758,43 +9758,43 @@
   "@swapContinue": {
     "description": "Continue button on swap amount screen"
   },
-  "swapConfirmTitle": "Confirm Transfer",
+  "swapConfirmTitle": "Confirm Swap",
   "@swapConfirmTitle": {
     "description": "AppBar title for swap confirmation screen"
   },
-  "swapProgressTitle": "Internal Transfer",
+  "swapProgressTitle": "Internal Swap",
   "@swapProgressTitle": {
     "description": "AppBar title for swap progress screen"
   },
-  "swapProgressPending": "Transfer Pending",
+  "swapProgressPending": "Swap Pending",
   "@swapProgressPending": {
     "description": "Pending transfer status"
   },
-  "swapProgressPendingMessage": "The transfer is in progress. Bitcoin transactions can take a while to confirm. You can return home and wait.",
+  "swapProgressPendingMessage": "The swap is in progress. Bitcoin transactions can take a while to confirm. You can return home and wait.",
   "@swapProgressPendingMessage": {
     "description": "Pending transfer message"
   },
-  "swapProgressCompleted": "Transfer completed",
+  "swapProgressCompleted": "Swap completed",
   "@swapProgressCompleted": {
     "description": "Completed transfer status"
   },
-  "swapProgressCompletedMessage": "Wow, you waited! The transfer has completed sucessfully.",
+  "swapProgressCompletedMessage": "Wow, you waited! The swap has completed sucessfully.",
   "@swapProgressCompletedMessage": {
     "description": "Completed transfer message"
   },
-  "swapProgressRefundInProgress": "Transfer Refund In Progress",
+  "swapProgressRefundInProgress": "Swap Refund In Progress",
   "@swapProgressRefundInProgress": {
     "description": "Refund in progress status"
   },
-  "swapProgressRefundMessage": "There was an error with the transfer. Your refund is in progress.",
+  "swapProgressRefundMessage": "There was an error with the swap. Your refund is in progress.",
   "@swapProgressRefundMessage": {
     "description": "Refund in progress message"
   },
-  "swapProgressRefunded": "Transfer Refunded",
+  "swapProgressRefunded": "Swap Refunded",
   "@swapProgressRefunded": {
     "description": "Refunded transfer status"
   },
-  "swapProgressRefundedMessage": "The transfer has been sucessfully refunded.",
+  "swapProgressRefundedMessage": "The swap has been sucessfully refunded.",
   "@swapProgressRefundedMessage": {
     "description": "Refunded transfer message"
   },
@@ -9802,11 +9802,11 @@
   "@swapProgressGoHome": {
     "description": "Go home button on progress screen"
   },
-  "autoswapTitle": "Auto Transfer Settings",
+  "autoswapTitle": "Auto Swap Settings",
   "@autoswapTitle": {
     "description": "Header title for auto transfer settings bottom sheet"
   },
-  "autoswapEnable": "Enable Auto Transfer",
+  "autoswapEnable": "Enable Auto Swap",
   "@autoswapEnable": {
     "description": "Toggle label to enable auto transfer"
   },
@@ -9814,15 +9814,15 @@
   "@autoswapMaxBalance": {
     "description": "Field label for max balance threshold"
   },
-  "autoswapMaxBalanceInfo": "When wallet balance exceeds double this amount, auto-transfer will trigger to reduce balance to this level",
+  "autoswapMaxBalanceInfo": "When wallet balance exceeds double this amount, auto-swap will trigger to reduce balance to this level",
   "@autoswapMaxBalanceInfo": {
     "description": "Info tooltip for max balance field"
   },
-  "autoswapMaxFee": "Max Transfer Fee",
+  "autoswapMaxFee": "Max Swap Fee",
   "@autoswapMaxFee": {
     "description": "Field label for max fee threshold"
   },
-  "autoswapMaxFeeInfo": "If total transfer fee is above the set percentage, the auto-transfer will be blocked",
+  "autoswapMaxFeeInfo": "If total swap fee is above the set percentage, the auto-swap will be blocked",
   "@autoswapMaxFeeInfo": {
     "description": "Info tooltip for max fee field"
   },
@@ -9830,11 +9830,11 @@
   "@autoswapAlwaysBlock": {
     "description": "Toggle label for always block high fees"
   },
-  "autoswapAlwaysBlockEnabledInfo": "When enabled, auto-transfers with fees above the set limit will always be blocked",
+  "autoswapAlwaysBlockEnabledInfo": "When enabled, auto-swaps with fees above the set limit will always be blocked",
   "@autoswapAlwaysBlockEnabledInfo": {
     "description": "Info text when always block is enabled"
   },
-  "autoswapAlwaysBlockDisabledInfo": "When disabled, you will be given the option to allow an auto-transfer that is blocked due to high fees",
+  "autoswapAlwaysBlockDisabledInfo": "When disabled, you will be given the option to allow an auto-swap that is blocked due to high fees",
   "@autoswapAlwaysBlockDisabledInfo": {
     "description": "Info text when always block is disabled"
   },
@@ -11055,15 +11055,15 @@
   "@coreScreensConfirmSend": {
     "description": "Title for confirm send action"
   },
-  "coreScreensExternalTransfer": "External Transfer",
+  "coreScreensExternalTransfer": "External Swap",
   "@coreScreensExternalTransfer": {
     "description": "Title for external transfer action"
   },
-  "coreScreensInternalTransfer": "Internal Transfer",
+  "coreScreensInternalTransfer": "Internal Swap",
   "@coreScreensInternalTransfer": {
     "description": "Title for internal transfer action"
   },
-  "coreScreensConfirmTransfer": "Confirm Transfer",
+  "coreScreensConfirmTransfer": "Confirm Swap",
   "@coreScreensConfirmTransfer": {
     "description": "Title for confirm transfer action"
   },
@@ -11087,7 +11087,7 @@
   "@coreScreensFeePriorityLabel": {
     "description": "Label for fee priority field"
   },
-  "coreScreensTransferIdLabel": "Transfer ID",
+  "coreScreensTransferIdLabel": "Swap ID",
   "@coreScreensTransferIdLabel": {
     "description": "Label for transfer ID field"
   },
@@ -11095,7 +11095,7 @@
   "@coreScreensTotalFeesLabel": {
     "description": "Label for total fees field"
   },
-  "coreScreensTransferFeeLabel": "Transfer Fee",
+  "coreScreensTransferFeeLabel": "Swap Fee",
   "@coreScreensTransferFeeLabel": {
     "description": "Label for transfer fee field"
   },
@@ -11539,7 +11539,7 @@
   "@wizardJourneyTip4": {
     "description": "Tip 4 on the wizard journey page"
   },
-  "wizardJourneyTip5": "Transfer between Bitcoin and Liquid with no KYC",
+  "wizardJourneyTip5": "Swap between Bitcoin and Liquid with no KYC",
   "@wizardJourneyTip5": {
     "description": "Tip 5 on the wizard journey page"
   },
@@ -12076,7 +12076,7 @@
   "@homeActionPay": {
     "description": "Label for the Pay action button on the wallet home screen"
   },
-  "homeActionTransfer": "Transfer",
+  "homeActionTransfer": "Swap",
   "@homeActionTransfer": {
     "description": "Label for the Transfer action button on the wallet home screen"
   },
@@ -12795,11 +12795,11 @@
   "@sendUnconfidentialLiquidWarningDescription": {
     "description": "Liquid send confirm: warning body when the destination address does not support Confidential Transactions"
   },
-  "swapUnderReviewTitle": "Transfer under review",
+  "swapUnderReviewTitle": "Swap under review",
   "@swapUnderReviewTitle": {
     "description": "Title shown when a swap payin requires manual review"
   },
-  "swapUnderReviewDescription": "This transfer requires a manual review. Contact support for assistance. If you do not have a support account, you only need to create one; KYC is not required.",
+  "swapUnderReviewDescription": "This swap requires a manual review. Contact support for assistance. If you do not have a support account, you only need to create one; KYC is not required.",
   "@swapUnderReviewDescription": {
     "description": "Explanation and no-KYC guidance for a swap under review"
   },
@@ -12807,7 +12807,7 @@
   "@swapUnderReviewContactSupport": {
     "description": "Button opening support for a swap under review"
   },
-  "swapUnderReviewSupportMessage": "Transfer under review\nOrder ID: {orderId}\nRequest ID: {requestId}\nOrder number: {orderNumber}",
+  "swapUnderReviewSupportMessage": "Swap under review\nOrder ID: {orderId}\nRequest ID: {requestId}\nOrder number: {orderNumber}",
   "@swapUnderReviewSupportMessage": {
     "description": "Prefilled support message containing swap identifiers",
     "placeholders": {
@@ -13299,7 +13299,7 @@
   "@torTitle": {
     "description": "Short title for Tor configuration entry points"
   },
-  "bitcoinSettingsAutoTransferTitle": "Auto Transfer",
+  "bitcoinSettingsAutoTransferTitle": "Auto Swap",
   "@bitcoinSettingsAutoTransferTitle": {
     "description": "Bitcoin settings list entry for automatic transfers"
   },
@@ -13695,289 +13695,133 @@
     "description": "Shown when a signed PSBT cannot be finalized before broadcast"
   },
   "limitOrdersTitle": "Limit orders",
-  "@limitOrdersTitle": {
-    "description": "Title for the Limit Orders feature"
-  },
+  "@limitOrdersTitle": {"description": "Title for the Limit Orders feature"},
   "limitOrdersDashboardDescription": "Buy bitcoin automatically if your target price is reached.",
-  "@limitOrdersDashboardDescription": {
-    "description": "Description on the Exchange dashboard Limit Orders card"
-  },
+  "@limitOrdersDashboardDescription": {"description": "Description on the Exchange dashboard Limit Orders card"},
   "limitOrdersOpen": "Open a limit order",
-  "@limitOrdersOpen": {
-    "description": "Action that starts the Limit Order creation flow"
-  },
+  "@limitOrdersOpen": {"description": "Action that starts the Limit Order creation flow"},
   "limitOrdersActiveTitle": "Active limit orders",
-  "@limitOrdersActiveTitle": {
-    "description": "Heading above active Limit Orders"
-  },
+  "@limitOrdersActiveTitle": {"description": "Heading above active Limit Orders"},
   "limitOrdersCreateNew": "Create new",
-  "@limitOrdersCreateNew": {
-    "description": "Action to create another Limit Order"
-  },
+  "@limitOrdersCreateNew": {"description": "Action to create another Limit Order"},
   "limitOrdersMaximumActiveHint": "Cancel an active order before creating another one.",
-  "@limitOrdersMaximumActiveHint": {
-    "description": "Shown when the five-active-Limit-Order cap has been reached"
-  },
+  "@limitOrdersMaximumActiveHint": {"description": "Shown when the five-active-Limit-Order cap has been reached"},
   "limitOrdersBuyAt": "Buy at {price}",
-  "@limitOrdersBuyAt": {
-    "description": "Summary of a Limit Order target price",
-    "placeholders": {
-      "price": {
-        "type": "String"
-      }
-    }
-  },
+  "@limitOrdersBuyAt": {"description": "Summary of a Limit Order target price", "placeholders": {"price": {"type": "String"}}},
   "limitOrdersCancelAll": "Cancel all",
-  "@limitOrdersCancelAll": {
-    "description": "Action to cancel all active Limit Orders"
-  },
+  "@limitOrdersCancelAll": {"description": "Action to cancel all active Limit Orders"},
   "limitOrdersCancelAllTitle": "Cancel all active limit orders?",
-  "@limitOrdersCancelAllTitle": {
-    "description": "Title of the cancel-all Limit Orders confirmation"
-  },
+  "@limitOrdersCancelAllTitle": {"description": "Title of the cancel-all Limit Orders confirmation"},
   "limitOrdersCancelAllMessage": "This is permanent. None of these orders will execute after cancellation.",
-  "@limitOrdersCancelAllMessage": {
-    "description": "Warning shown before all active Limit Orders are cancelled"
-  },
+  "@limitOrdersCancelAllMessage": {"description": "Warning shown before all active Limit Orders are cancelled"},
   "limitOrdersDialogConfirm": "Confirm",
-  "@limitOrdersDialogConfirm": {
-    "description": "Confirmation action in Limit Order dialogs"
-  },
+  "@limitOrdersDialogConfirm": {"description": "Confirmation action in Limit Order dialogs"},
   "limitOrdersDone": "Done",
-  "@limitOrdersDone": {
-    "description": "Closes a completed Limit Order screen"
-  },
+  "@limitOrdersDone": {"description": "Closes a completed Limit Order screen"},
   "limitOrdersIntroTitle": "Open a limit order",
-  "@limitOrdersIntroTitle": {
-    "description": "Title of the Limit Order introduction step"
-  },
+  "@limitOrdersIntroTitle": {"description": "Title of the Limit Order introduction step"},
   "limitOrdersIntroDescription": "Choose a lower bitcoin price and an amount to buy from your Bull Bitcoin balance.",
-  "@limitOrdersIntroDescription": {
-    "description": "Description of how Limit Orders work"
-  },
+  "@limitOrdersIntroDescription": {"description": "Description of how Limit Orders work"},
   "limitOrdersIntroBulletPrice": "Your order remains active until the target index price is reached.",
-  "@limitOrdersIntroBulletPrice": {
-    "description": "Limit Order introduction bullet about the target price"
-  },
+  "@limitOrdersIntroBulletPrice": {"description": "Limit Order introduction bullet about the target price"},
   "limitOrdersIntroBulletBalance": "The purchase uses the selected fiat balance when the order executes.",
-  "@limitOrdersIntroBulletBalance": {
-    "description": "Limit Order introduction bullet about account balance"
-  },
+  "@limitOrdersIntroBulletBalance": {"description": "Limit Order introduction bullet about account balance"},
   "limitOrdersIntroBulletExecution": "Bitcoin is sent to the default wallet you select.",
-  "@limitOrdersIntroBulletExecution": {
-    "description": "Limit Order introduction bullet about payout"
-  },
+  "@limitOrdersIntroBulletExecution": {"description": "Limit Order introduction bullet about payout"},
   "limitOrdersTargetTitle": "Choose your target price",
-  "@limitOrdersTargetTitle": {
-    "description": "Title of the Limit Order target-price step"
-  },
+  "@limitOrdersTargetTitle": {"description": "Title of the Limit Order target-price step"},
   "limitOrdersPaymentMethod": "Payment method",
-  "@limitOrdersPaymentMethod": {
-    "description": "Label for the fiat balance used by a Limit Order"
-  },
+  "@limitOrdersPaymentMethod": {"description": "Label for the fiat balance used by a Limit Order"},
   "limitOrdersCurrentPrice": "Current index price",
-  "@limitOrdersCurrentPrice": {
-    "description": "Label for the current Bitcoin index price"
-  },
+  "@limitOrdersCurrentPrice": {"description": "Label for the current Bitcoin index price"},
   "limitOrdersTargetPrice": "Target price",
-  "@limitOrdersTargetPrice": {
-    "description": "Label for the Limit Order target price"
-  },
+  "@limitOrdersTargetPrice": {"description": "Label for the Limit Order target price"},
   "limitOrdersDiscount": "Discount from current price",
-  "@limitOrdersDiscount": {
-    "description": "Label for the Limit Order discount percentage"
-  },
+  "@limitOrdersDiscount": {"description": "Label for the Limit Order discount percentage"},
   "limitOrdersAmountTitle": "Set the amount",
-  "@limitOrdersAmountTitle": {
-    "description": "Title of the Limit Order fiat-amount step"
-  },
+  "@limitOrdersAmountTitle": {"description": "Title of the Limit Order fiat-amount step"},
   "limitOrdersAvailableBalance": "Available: {amount}",
-  "@limitOrdersAvailableBalance": {
-    "description": "Available fiat balance",
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
+  "@limitOrdersAvailableBalance": {"description": "Available fiat balance", "placeholders": {"amount": {"type": "String"}}},
   "limitOrdersFiatAmount": "Amount",
-  "@limitOrdersFiatAmount": {
-    "description": "Label for the Limit Order fiat amount"
-  },
+  "@limitOrdersFiatAmount": {"description": "Label for the Limit Order fiat amount"},
   "limitOrdersEstimatedBitcoin": "Estimated bitcoin: {amount}",
-  "@limitOrdersEstimatedBitcoin": {
-    "description": "Estimated bitcoin amount for a Limit Order",
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
+  "@limitOrdersEstimatedBitcoin": {"description": "Estimated bitcoin amount for a Limit Order", "placeholders": {"amount": {"type": "String"}}},
   "limitOrdersWalletTitle": "Choose a payout wallet",
-  "@limitOrdersWalletTitle": {
-    "description": "Title of the Limit Order wallet-selection step"
-  },
+  "@limitOrdersWalletTitle": {"description": "Title of the Limit Order wallet-selection step"},
   "limitOrdersWalletDescription": "Bitcoin will be sent to this default wallet when the order executes.",
-  "@limitOrdersWalletDescription": {
-    "description": "Explains the Limit Order payout wallet"
-  },
+  "@limitOrdersWalletDescription": {"description": "Explains the Limit Order payout wallet"},
   "limitOrdersNoDefaultWallets": "Add a default Bitcoin, Lightning, or Liquid wallet before creating a limit order.",
-  "@limitOrdersNoDefaultWallets": {
-    "description": "Shown when no default payout wallet is configured"
-  },
+  "@limitOrdersNoDefaultWallets": {"description": "Shown when no default payout wallet is configured"},
   "limitOrdersManageDefaultWallets": "Manage default wallets",
-  "@limitOrdersManageDefaultWallets": {
-    "description": "Opens default-wallet settings from Limit Orders"
-  },
+  "@limitOrdersManageDefaultWallets": {"description": "Opens default-wallet settings from Limit Orders"},
   "limitOrdersWalletBitcoin": "Bitcoin address",
-  "@limitOrdersWalletBitcoin": {
-    "description": "Bitcoin on-chain Limit Order payout option"
-  },
+  "@limitOrdersWalletBitcoin": {"description": "Bitcoin on-chain Limit Order payout option"},
   "limitOrdersWalletLightning": "Lightning address",
-  "@limitOrdersWalletLightning": {
-    "description": "Lightning Limit Order payout option"
-  },
+  "@limitOrdersWalletLightning": {"description": "Lightning Limit Order payout option"},
   "limitOrdersWalletLiquid": "Liquid address",
-  "@limitOrdersWalletLiquid": {
-    "description": "Liquid Limit Order payout option"
-  },
+  "@limitOrdersWalletLiquid": {"description": "Liquid Limit Order payout option"},
   "limitOrdersConfirmationTitle": "Confirm limit order",
-  "@limitOrdersConfirmationTitle": {
-    "description": "Title of the Limit Order confirmation step"
-  },
+  "@limitOrdersConfirmationTitle": {"description": "Title of the Limit Order confirmation step"},
   "limitOrdersEstimatedBuyPrice": "Estimated buy price",
-  "@limitOrdersEstimatedBuyPrice": {
-    "description": "Estimated user buy price after spread"
-  },
+  "@limitOrdersEstimatedBuyPrice": {"description": "Estimated user buy price after spread"},
   "limitOrdersBalancePayment": "{currency} balance",
-  "@limitOrdersBalancePayment": {
-    "description": "Fiat balance used to fund the order",
-    "placeholders": {
-      "currency": {
-        "type": "String"
-      }
-    }
-  },
+  "@limitOrdersBalancePayment": {"description": "Fiat balance used to fund the order", "placeholders": {"currency": {"type": "String"}}},
   "limitOrdersTermsNotice": "By confirming, you agree to the Bull Bitcoin terms. The final buy price includes your account spread.",
-  "@limitOrdersTermsNotice": {
-    "description": "Terms and spread notice before creating a Limit Order"
-  },
+  "@limitOrdersTermsNotice": {"description": "Terms and spread notice before creating a Limit Order"},
   "limitOrdersConfirm": "Confirm",
-  "@limitOrdersConfirm": {
-    "description": "Creates the Limit Order"
-  },
+  "@limitOrdersConfirm": {"description": "Creates the Limit Order"},
   "limitOrdersCreatedTitle": "Limit order active",
-  "@limitOrdersCreatedTitle": {
-    "description": "Title shown after a Limit Order is created"
-  },
+  "@limitOrdersCreatedTitle": {"description": "Title shown after a Limit Order is created"},
   "limitOrdersCreatedMessage": "Your order will buy {amount} when the index price reaches {price}.",
-  "@limitOrdersCreatedMessage": {
-    "description": "Success summary after creating a Limit Order",
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      },
-      "price": {
-        "type": "String"
-      }
-    }
-  },
+  "@limitOrdersCreatedMessage": {"description": "Success summary after creating a Limit Order", "placeholders": {"amount": {"type": "String"}, "price": {"type": "String"}}},
   "limitOrdersBackToExchange": "Back to Exchange",
-  "@limitOrdersBackToExchange": {
-    "description": "Returns from Limit Order success to the Exchange dashboard"
-  },
+  "@limitOrdersBackToExchange": {"description": "Returns from Limit Order success to the Exchange dashboard"},
   "limitOrderDetailsTitle": "Limit order details",
-  "@limitOrderDetailsTitle": {
-    "description": "Title of the Limit Order details screen"
-  },
+  "@limitOrderDetailsTitle": {"description": "Title of the Limit Order details screen"},
   "limitOrderDetailsStatus": "Status",
-  "@limitOrderDetailsStatus": {
-    "description": "Limit Order status label"
-  },
+  "@limitOrderDetailsStatus": {"description": "Limit Order status label"},
   "limitOrderDetailsNumber": "Order number",
-  "@limitOrderDetailsNumber": {
-    "description": "Limit Order number label"
-  },
+  "@limitOrderDetailsNumber": {"description": "Limit Order number label"},
   "limitOrderDetailsAddress": "Payout address",
-  "@limitOrderDetailsAddress": {
-    "description": "Limit Order payout address label"
-  },
+  "@limitOrderDetailsAddress": {"description": "Limit Order payout address label"},
   "limitOrderDetailsCreated": "Created",
-  "@limitOrderDetailsCreated": {
-    "description": "Limit Order creation date label"
-  },
+  "@limitOrderDetailsCreated": {"description": "Limit Order creation date label"},
   "limitOrderDetailsExpires": "Expires",
-  "@limitOrderDetailsExpires": {
-    "description": "Limit Order expiry date label"
-  },
+  "@limitOrderDetailsExpires": {"description": "Limit Order expiry date label"},
   "limitOrderCancel": "Cancel limit order",
-  "@limitOrderCancel": {
-    "description": "Action to cancel one active Limit Order"
-  },
+  "@limitOrderCancel": {"description": "Action to cancel one active Limit Order"},
   "limitOrderCancelTitle": "Cancel this limit order?",
-  "@limitOrderCancelTitle": {
-    "description": "Title of the single Limit Order cancellation dialog"
-  },
+  "@limitOrderCancelTitle": {"description": "Title of the single Limit Order cancellation dialog"},
   "limitOrderCancelMessage": "Cancellation is permanent and this order will no longer execute.",
-  "@limitOrderCancelMessage": {
-    "description": "Warning before one Limit Order is cancelled"
-  },
+  "@limitOrderCancelMessage": {"description": "Warning before one Limit Order is cancelled"},
   "limitOrderStatusActive": "Active",
-  "@limitOrderStatusActive": {
-    "description": "Active Limit Order status"
-  },
+  "@limitOrderStatusActive": {"description": "Active Limit Order status"},
   "limitOrderStatusExecuted": "Executed",
-  "@limitOrderStatusExecuted": {
-    "description": "Executed Limit Order status"
-  },
+  "@limitOrderStatusExecuted": {"description": "Executed Limit Order status"},
   "limitOrderStatusCancelled": "Cancelled",
-  "@limitOrderStatusCancelled": {
-    "description": "Cancelled Limit Order status"
-  },
+  "@limitOrderStatusCancelled": {"description": "Cancelled Limit Order status"},
   "limitOrderStatusExpired": "Expired",
-  "@limitOrderStatusExpired": {
-    "description": "Expired Limit Order status"
-  },
+  "@limitOrderStatusExpired": {"description": "Expired Limit Order status"},
   "limitOrderStatusFailed": "Failed",
-  "@limitOrderStatusFailed": {
-    "description": "Failed or unknown Limit Order status"
-  },
+  "@limitOrderStatusFailed": {"description": "Failed or unknown Limit Order status"},
   "limitOrdersAccountUnavailableError": "Your Bull Bitcoin account or balances could not be loaded. Please try again.",
-  "@limitOrdersAccountUnavailableError": {
-    "description": "Shown when Limit Order account data is unavailable"
-  },
+  "@limitOrdersAccountUnavailableError": {"description": "Shown when Limit Order account data is unavailable"},
   "limitOrdersMaximumActiveError": "You already have five active limit orders. Cancel one before creating another.",
-  "@limitOrdersMaximumActiveError": {
-    "description": "Shown when the backend rejects a sixth active Limit Order"
-  },
+  "@limitOrdersMaximumActiveError": {"description": "Shown when the backend rejects a sixth active Limit Order"},
   "limitOrderNotFoundError": "This limit order could not be found.",
-  "@limitOrderNotFoundError": {
-    "description": "Shown when a Limit Order no longer exists"
-  },
+  "@limitOrderNotFoundError": {"description": "Shown when a Limit Order no longer exists"},
   "limitOrderInvalidAddressError": "The selected payout address is not valid.",
-  "@limitOrderInvalidAddressError": {
-    "description": "Shown when the backend rejects a Limit Order payout address"
-  },
+  "@limitOrderInvalidAddressError": {"description": "Shown when the backend rejects a Limit Order payout address"},
   "limitOrderInvalidTargetError": "Choose a target price below the current index price.",
-  "@limitOrderInvalidTargetError": {
-    "description": "Shown for an invalid Limit Order target price"
-  },
+  "@limitOrderInvalidTargetError": {"description": "Shown for an invalid Limit Order target price"},
   "limitOrderInvalidAmountError": "Enter an amount greater than zero and no more than your available balance.",
-  "@limitOrderInvalidAmountError": {
-    "description": "Shown for an invalid Limit Order fiat amount"
-  },
+  "@limitOrderInvalidAmountError": {"description": "Shown for an invalid Limit Order fiat amount"},
   "limitOrdersLoadError": "Limit orders could not be loaded. Please try again.",
-  "@limitOrdersLoadError": {
-    "description": "Shown when Limit Orders cannot be loaded"
-  },
+  "@limitOrdersLoadError": {"description": "Shown when Limit Orders cannot be loaded"},
   "limitOrderCreationError": "The limit order could not be created. Please try again.",
-  "@limitOrderCreationError": {
-    "description": "Shown when a Limit Order cannot be created"
-  },
+  "@limitOrderCreationError": {"description": "Shown when a Limit Order cannot be created"},
   "limitOrderCancellationError": "The limit order could not be cancelled. Please try again.",
-  "@limitOrderCancellationError": {
-    "description": "Shown when one or all Limit Orders cannot be cancelled"
-  },
+  "@limitOrderCancellationError": {"description": "Shown when one or all Limit Orders cannot be cancelled"},
   "limitOrdersYourWalletsTitle": "Your wallets",
   "@limitOrdersYourWalletsTitle": {
     "description": "Section title for choosing an in-app wallet as the limit-order payout destination"
@@ -15195,6 +15039,14 @@
   "@replaceByFeeUnverifiableTransaction": {
     "description": "Shown on the fee-bump screen when the original transaction's signatures could not be verified (not proof of manipulation); the bump is refused."
   },
+  "viewerCopyLinkDisclosePayjoin": "Copy link (disclose Payjoin)",
+  "@viewerCopyLinkDisclosePayjoin": {
+    "description": "Button to copy a block explorer link for a Payjoin transaction that discloses which inputs and outputs belong to the sender and the recipient"
+  },
+  "viewerViewInExplorerDisclosePayjoin": "View in explorer (disclose Payjoin)",
+  "@viewerViewInExplorerDisclosePayjoin": {
+    "description": "Button to open a Payjoin transaction in the block explorer with a link that discloses which inputs and outputs belong to the sender and the recipient"
+  },
   "recoverbullVaultPassphraseNotIncluded": "Your wallet has a passphrase, and this vault does not contain it. Keep the passphrase with your backup: the vault alone restores a different wallet.",
   "@recoverbullVaultPassphraseNotIncluded": {
     "description": "Warning shown after creating a vault for a wallet that has a BIP39 passphrase, since the vault format carries the words only"
@@ -15227,58 +15079,6 @@
   "appStartupRestoreMismatch": "This recovery phrase belongs to another wallet. Enter the phrase of the wallet on this device.",
   "@appStartupRestoreMismatch": {
     "description": "App startup restore: the entered recovery phrase does not match the wallet whose secret is missing"
-  },
-  "walletDiscoveryButton": "Scan for missing transactions",
-  "@walletDiscoveryButton": {
-    "description": "Button requesting a full discovery scan of this wallet"
-  },
-  "walletDiscoverySucceeded": "Wallet scan complete",
-  "@walletDiscoverySucceeded": {
-    "description": "Confirmation after a manual wallet discovery scan"
-  },
-  "walletDiscoveryFailed": "Unable to complete the wallet scan. Please try again.",
-  "@walletDiscoveryFailed": {
-    "description": "Recoverable failure of a manual wallet discovery scan"
-  },
-  "backgroundSyncTitle": "Background synchronization",
-  "@backgroundSyncTitle": {},
-  "backgroundSyncDescription": "Check for incoming payments while the app is closed. Your system may delay checks.",
-  "@backgroundSyncDescription": {},
-  "backgroundSyncOff": "Off",
-  "@backgroundSyncOff": {},
-  "backgroundSyncMinutes": "Every {count} minutes",
-  "@backgroundSyncMinutes": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "backgroundSyncHours": "{count, plural, =1{Every hour} other{Every {count} hours}}",
-  "@backgroundSyncHours": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "backgroundNotificationsTitle": "Payment notifications",
-  "@backgroundNotificationsTitle": {},
-  "backgroundNotificationsAllowed": "Allowed by system settings",
-  "@backgroundNotificationsAllowed": {},
-  "backgroundNotificationsDenied": "Not allowed by system settings",
-  "@backgroundNotificationsDenied": {},
-  "backgroundNotificationsRequest": "Allow notifications",
-  "@backgroundNotificationsRequest": {},
-  "backgroundNotificationsSettings": "Open notification settings",
-  "@backgroundNotificationsSettings": {},
-  "backgroundPaymentCount": "{count, plural, =1{You received a payment} other{You received {count} payments}}",
-  "@backgroundPaymentCount": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
   },
   "mnemonicLanguageLabel": "Recovery phrase language",
   "@mnemonicLanguageLabel": {
@@ -15338,50 +15138,6 @@
   "@importMnemonicScanUnavailable": {
     "description": "ImportMnemonic: generic message when the scan of one wallet type failed for an unexpected reason; the import stays possible"
   },
-  "viewerCopyLinkDisclosePayjoin": "Copy link (disclose Payjoin)",
-  "@viewerCopyLinkDisclosePayjoin": {
-    "description": "Button to copy a block explorer link for a Payjoin transaction that discloses which inputs and outputs belong to the sender and the recipient"
-  },
-  "viewerViewInExplorerDisclosePayjoin": "View in explorer (disclose Payjoin)",
-  "@viewerViewInExplorerDisclosePayjoin": {
-    "description": "Button to open a Payjoin transaction in the block explorer with a link that discloses which inputs and outputs belong to the sender and the recipient"
-  },
-  "electrumRegtest": "Regtest",
-  "@electrumRegtest": {
-    "description": "Local regression test network for developers"
-  },
-  "networkFeatureUnavailable": "This feature is unavailable on the selected network.",
-  "@networkFeatureUnavailable": {
-    "description": "Refusal when a service does not support the active network"
-  },
-  "networkSelectorTitle": "Network",
-  "@networkSelectorTitle": {
-    "description": "Developer-only choice of mainnet, testnet or regtest"
-  },
-  "networkWalletSetupTitle": "No wallets on this network",
-  "@networkWalletSetupTitle": {
-    "description": "Empty-network wallet setup heading"
-  },
-  "networkWalletReuseSecret": "Reuse an existing wallet secret",
-  "@networkWalletReuseSecret": {
-    "description": "Create wallets on the selected network with an existing secret"
-  },
-  "walletSpendAwaitingObservation": "Spending is unavailable until this wallet is synced and has seen its previous payments on the network. Refresh the wallet or use Scan for missing transactions, then try again.",
-  "@walletSpendAwaitingObservation": {
-    "description": "Bitcoin wallet spend gate. No timeout releases a payment: a sync must see it, or prove it can no longer confirm. A payment no sync ever sees keeps the wallet blocked, so the text promises no end."
-  },
-  "walletSpendReplacementUnavailable": "Fee bumping is unavailable until this wallet sees the payment on the network. Refresh the wallet, then try again.",
-  "@walletSpendReplacementUnavailable": {
-    "description": "RBF is refused only while the tracked Bitcoin broadcast it replaces has not been observed by a sync."
-  },
-  "sendPayjoinSpendPaused": "This Payjoin payment is paused because the wallet cannot safely continue. Its inputs remain reserved. Refresh the wallet or use Scan for missing transactions, then retry this proposal while it is still valid. If it has expired, check the payment in Transactions before taking further action.",
-  "@sendPayjoinSpendPaused": {
-    "description": "A retained Payjoin proposal cannot proceed; keep reservations and retry the same proposal only."
-  },
-  "walletSpendBusy": "The wallet is busy. Try again in a moment.",
-  "@walletSpendBusy": {
-    "description": "Bitcoin spend refused only because another wallet operation, usually a sync, holds the wallet. Retrying shortly works; it says nothing about previous payments."
-  },
   "sendRemainingBalance": "Send remaining balance",
   "@sendRemainingBalance": {
     "description": "Toggle label that assigns the balance left after fixed outputs and fees to a recipient"
@@ -15432,6 +15188,106 @@
   "@sendSelectedCoinsLabel": {
     "description": "Label for the amount available from manually selected transaction inputs"
   },
+  "passphraseShow": "Show passphrase",
+  "@passphraseShow": {
+    "description": "Accessible name of the button that reveals the typed passphrase"
+  },
+  "passphraseHide": "Hide passphrase",
+  "@passphraseHide": {
+    "description": "Accessible name of the button that hides the typed passphrase"
+    },
+  "coreScreensOutputsExceedInputs": "Outputs exceed inputs: this transaction is invalid and the network will reject it.",
+  "@coreScreensOutputsExceedInputs": {
+    "description": "Transaction review alert when a Bitcoin transaction's outputs exceed its inputs"
+  },
+  "walletDiscoveryButton": "Scan for missing transactions",
+  "@walletDiscoveryButton": {
+    "description": "Button requesting a full discovery scan of this wallet"
+  },
+  "walletDiscoverySucceeded": "Wallet scan complete",
+  "@walletDiscoverySucceeded": {
+    "description": "Confirmation after a manual wallet discovery scan"
+  },
+  "walletDiscoveryFailed": "Unable to complete the wallet scan. Please try again.",
+  "@walletDiscoveryFailed": {
+    "description": "Recoverable failure of a manual wallet discovery scan"
+  },
+  "backgroundSyncTitle": "Background synchronization",
+  "@backgroundSyncTitle": {},
+  "backgroundSyncDescription": "Check for incoming payments while the app is closed. Your system may delay checks.",
+  "@backgroundSyncDescription": {},
+  "backgroundSyncOff": "Off",
+  "@backgroundSyncOff": {},
+  "backgroundSyncMinutes": "Every {count} minutes",
+  "@backgroundSyncMinutes": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "backgroundSyncHours": "{count, plural, =1{Every hour} other{Every {count} hours}}",
+  "@backgroundSyncHours": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "backgroundNotificationsTitle": "Payment notifications",
+  "@backgroundNotificationsTitle": {},
+  "backgroundNotificationsAllowed": "Allowed by system settings",
+  "@backgroundNotificationsAllowed": {},
+  "backgroundNotificationsDenied": "Not allowed by system settings",
+  "@backgroundNotificationsDenied": {},
+  "backgroundNotificationsRequest": "Allow notifications",
+  "@backgroundNotificationsRequest": {},
+  "backgroundNotificationsSettings": "Open notification settings",
+  "@backgroundNotificationsSettings": {},
+  "backgroundPaymentCount": "{count, plural, =1{You received a payment} other{You received {count} payments}}",
+  "@backgroundPaymentCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "electrumRegtest": "Regtest",
+  "@electrumRegtest": {
+    "description": "Local regression test network for developers"
+  },
+  "networkFeatureUnavailable": "This feature is unavailable on the selected network.",
+  "@networkFeatureUnavailable": {
+    "description": "Refusal when a service does not support the active network"
+  },
+  "networkSelectorTitle": "Network",
+  "@networkSelectorTitle": {
+    "description": "Developer-only choice of mainnet, testnet or regtest"
+  },
+  "networkWalletSetupTitle": "No wallets on this network",
+  "@networkWalletSetupTitle": {
+    "description": "Empty-network wallet setup heading"
+  },
+  "networkWalletReuseSecret": "Reuse an existing wallet secret",
+  "@networkWalletReuseSecret": {
+    "description": "Create wallets on the selected network with an existing secret"
+  },
+  "walletSpendAwaitingObservation": "Spending is unavailable until this wallet is synced and has seen its previous payments on the network. Refresh the wallet or use Scan for missing transactions, then try again.",
+  "@walletSpendAwaitingObservation": {
+    "description": "Bitcoin wallet spend gate. No timeout releases a payment: a sync must see it, or prove it can no longer confirm. A payment no sync ever sees keeps the wallet blocked, so the text promises no end."
+  },
+  "walletSpendReplacementUnavailable": "Fee bumping is unavailable until this wallet sees the payment on the network. Refresh the wallet, then try again.",
+  "@walletSpendReplacementUnavailable": {
+    "description": "RBF is refused only while the tracked Bitcoin broadcast it replaces has not been observed by a sync."
+  },
+  "sendPayjoinSpendPaused": "This Payjoin payment is paused because the wallet cannot safely continue. Its inputs remain reserved. Refresh the wallet or use Scan for missing transactions, then retry this proposal while it is still valid. If it has expired, check the payment in Transactions before taking further action.",
+  "@sendPayjoinSpendPaused": {
+    "description": "A retained Payjoin proposal cannot proceed; keep reservations and retry the same proposal only."
+  },
+  "walletSpendBusy": "The wallet is busy. Try again in a moment.",
+  "@walletSpendBusy": {
+    "description": "Bitcoin spend refused only because another wallet operation, usually a sync, holds the wallet. Retrying shortly works; it says nothing about previous payments."
+  },
   "broadcastSignedTxErrorAlreadyInChain": "This transaction is already in the blockchain. There is nothing left to broadcast.",
   "@broadcastSignedTxErrorAlreadyInChain": {
     "description": "Broadcast Transaction error when the node reports the transaction is already confirmed (bitcoind -27)"
@@ -15447,22 +15303,6 @@
   "broadcastSignedTxErrorNetworkNotEnabled": "Broadcasting on this network is not enabled in the current settings.",
   "@broadcastSignedTxErrorNetworkNotEnabled": {
     "description": "Broadcast Transaction error when the app refuses locally to broadcast on a network the settings do not enable"
-  },
-  "coreScreensOutputsExceedInputs": "Outputs exceed inputs: this transaction is invalid and the network will reject it.",
-  "@coreScreensOutputsExceedInputs": {
-    "description": "Transaction review alert when a Bitcoin transaction's outputs exceed its inputs"
-  },
-  "passphraseShow": "Show passphrase",
-  "@passphraseShow": {
-    "description": "Accessible name of the button that reveals the typed passphrase"
-  },
-  "passphraseHide": "Hide passphrase",
-  "@passphraseHide": {
-    "description": "Accessible name of the button that hides the typed passphrase"
-  },
-  "coreScreensOutputsExceedInputs": "Outputs exceed inputs: this transaction is invalid and the network will reject it.",
-  "@coreScreensOutputsExceedInputs": {
-    "description": "Transaction review alert when a Bitcoin transaction's outputs exceed its inputs"
   },
   "passphraseOption": "I have a passphrase",
   "@passphraseOption": {},
