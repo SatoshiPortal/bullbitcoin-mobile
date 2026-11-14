@@ -146,12 +146,19 @@ final class RunWalletSyncJobsUsecase {
       try {
         stop = await _optedOut(run) || spent();
       } catch (_) {
-        // A failed preference read must not leave a claim without a writer.
+        // A failed preference read must not leave a claim without a writer; the rethrow already retries.
         await _release(claim);
         rethrow;
       }
       if (stop) {
-        await _release(claim);
+        final released = await _release(claim);
+        // Opt-out keeps its policy; a claim still leased without a writer is retried.
+        if (released case Err(
+          failure: final failure,
+        ) when failure is! BackgroundTasksClaimLostFailure && !run.stopped) {
+          run.stopped = true;
+          return true;
+        }
         break;
       }
       handled.add(claim.key);
@@ -327,10 +334,17 @@ final class RunWalletSyncJobsUsecase {
     }
   }
 
-  Future<void> _release(WalletSyncJobClaim claim) async {
-    if (await _queue.release(claim) case Err()) {
-      _log(BackgroundLogLevel.warning, 'Background claim release failed');
+  Future<Result<void, BackgroundTasksFailure>> _release(
+    WalletSyncJobClaim claim,
+  ) async {
+    final released = await _queue.release(claim);
+    if (released case Err(:final failure)) {
+      _log(
+        BackgroundLogLevel.warning,
+        'Background claim release failed: category=${failure is BackgroundTasksClaimLostFailure ? 'claim_lost' : 'queue_storage'}',
+      );
     }
+    return released;
   }
 
   Future<bool> _optedOut(_Run run) async {
