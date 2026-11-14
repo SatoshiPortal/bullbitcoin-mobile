@@ -118,13 +118,29 @@ void main() {
 
   test('network is part of lock identity', () {
     final first = WriterLock.acquire(directory.path, _key) as Ok;
-    final second =
-        WriterLock.acquire(
-              directory.path,
-              WalletKey(id: _key.id, network: LiquidNetwork.mainnet),
-            )
-            as Ok;
+    final second = WriterLock.acquire(
+      directory.path,
+      WalletKey(id: _key.id, network: LiquidNetwork.mainnet),
+    ) as Ok;
     (first.value as WriterLock).release();
     (second.value as WriterLock).release();
+  });
+
+  test('a released holder cannot release a replacement lease', () {
+    final first = WriterLock.acquire(directory.path, _key) as Ok;
+    final original = first.value as WriterLock;
+    original.release();
+    original.release();
+
+    final second = WriterLock.acquire(directory.path, _key) as Ok;
+    final replacement = second.value as WriterLock;
+    addTearDown(replacement.release);
+    original.release();
+
+    final blocked = WriterLock.acquire(directory.path, _key) as Err;
+    expect(blocked.failure, isA<TransactionSyncBusyFailure>());
+    replacement.release();
+    final third = WriterLock.acquire(directory.path, _key) as Ok;
+    (third.value as WriterLock).release();
   });
 }
