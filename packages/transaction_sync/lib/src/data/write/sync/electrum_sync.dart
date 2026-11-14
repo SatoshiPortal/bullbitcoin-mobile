@@ -61,6 +61,9 @@ final class ElectrumSync {
       ? _active.isNotEmpty
       : _active.keys.any((key) => key.id == walletId);
 
+  /// Recoverable outcomes are a [Result]; an unexpected [Exception] becomes a
+  /// storage failure. Anything else thrown, a programmer [Error] above all,
+  /// completes this future, and every caller joined to it, with that error.
   @useResult
   Future<Result<SyncCompletion, TransactionSyncFailure>> execute(
     PublicWalletDescriptor descriptor, {
@@ -83,7 +86,10 @@ final class ElectrumSync {
     _active[key] = completer.future;
     unawaited(() async {
       try {
-        if (previous != null) await previous;
+        // A failed predecessor, whatever it threw, never cancels a queued pass.
+        if (previous != null) {
+          await previous.then<void>((_) {}, onError: (Object _) {});
+        }
         final watch = Stopwatch()..start();
         final runId = ++_runSequence;
         final context =
@@ -130,20 +136,21 @@ final class ElectrumSync {
         }
         _finished.add(SyncFinished(key, result));
         completer.complete(result);
-      } catch (error) {
-        if (_failures[key] != 'storage') {
-          log.severe(
-            message: 'Electrum sync unexpected failure reason=${reason.name}',
-            error: 'storage',
-            trace: StackTrace.empty,
-          );
-        }
-        _failures[key] = 'storage';
+      } on Exception {
         const result = Err<SyncCompletion, TransactionSyncFailure>(
           TransactionSyncStorageFailure(),
         );
-        _finished.add(SyncFinished(key, result));
         completer.complete(result);
+        _unexpected(key, reason);
+        _finished.add(SyncFinished(key, result));
+      } catch (error, trace) {
+        // Not a recoverable failure: every waiting caller receives the error
+        // itself, and indicators still learn that the pass ended.
+        completer.completeError(error, trace);
+        _unexpected(key, reason);
+        _finished.add(
+          SyncFinished(key, const Err(TransactionSyncStorageFailure())),
+        );
       } finally {
         if (identical(_active[key], completer.future)) {
           unawaited(_active.remove(key));
@@ -151,6 +158,18 @@ final class ElectrumSync {
       }
     }());
     return completer.future;
+  }
+
+  /// Logged once per wallet until a pass succeeds; no foreign detail.
+  void _unexpected(WalletKey key, SyncReason reason) {
+    if (_failures[key] != 'storage') {
+      log.severe(
+        message: 'Electrum sync unexpected failure reason=${reason.name}',
+        error: 'storage',
+        trace: StackTrace.empty,
+      );
+    }
+    _failures[key] = 'storage';
   }
 
   Future<Result<SyncCompletion, TransactionSyncFailure>> _run(

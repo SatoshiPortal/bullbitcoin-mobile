@@ -690,6 +690,6 @@ final class _ThrowingPolicy implements WalletConnectionPort {
     operation,
     required bool Function(TransactionSyncFailure) mayRetry,
   }) async {
-    throw StateError('sensitive error detail');
+    throw const FormatException('sensitive error detail');
   }
 }
