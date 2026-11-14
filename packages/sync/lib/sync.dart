@@ -51,3 +51,10 @@ export 'src/data/codec/liquid_codec.dart'
         liquidAddressNetwork,
         maxEncodedLiquidPsetLength,
         maxLiquidTransactionBytes;
+export 'src/data/chain/electrum_chain.dart'
+    show
+        bitcoinTransactionKnown,
+        broadcastBitcoinTransaction,
+        broadcastLiquidTransaction,
+        estimateBitcoinFees,
+        probeBitcoinServer;

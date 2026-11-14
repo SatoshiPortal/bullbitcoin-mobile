@@ -21,6 +21,10 @@ sealed class SyncFailure extends Failure {
     SyncClosedFailure() => 'closed',
     SyncInvalidTransactionFailure() => 'invalid_transaction',
     SyncNotFinalizableFailure() => 'not_finalizable',
+    SyncBroadcastRejectedFailure() => 'rejected',
+    SyncAlreadyInChainFailure() => 'already_in_chain',
+    SyncOutcomeUnknownFailure() => 'outcome_unknown',
+    SyncUnrecognizedReplyFailure() => 'unrecognized_reply',
   };
 }
 
@@ -90,4 +94,28 @@ final class SyncInvalidTransactionFailure extends SyncChainFailure {
 /// A signer's PSBT, combined with the one it was given, cannot be finalized.
 final class SyncNotFinalizableFailure extends SyncChainFailure {
   const SyncNotFinalizableFailure();
+}
+
+/// The node refused the transaction (bitcoind -26): it was not relayed by the
+/// server that answered.
+final class SyncBroadcastRejectedFailure extends SyncChainFailure {
+  const SyncBroadcastRejectedFailure();
+}
+
+/// The node already has the transaction in a block (bitcoind -27).
+final class SyncAlreadyInChainFailure extends SyncChainFailure {
+  const SyncAlreadyInChainFailure();
+}
+
+/// No single cause is established: an unclassified reply, an unexpected
+/// native error, or servers that disagreed. The transaction may have been
+/// relayed; never treat this as a rejection.
+final class SyncOutcomeUnknownFailure extends SyncChainFailure {
+  const SyncOutcomeUnknownFailure();
+}
+
+/// The server answered a lookup with an error it does not word as an absence,
+/// such as bitcoind without a transaction index.
+final class SyncUnrecognizedReplyFailure extends SyncChainFailure {
+  const SyncUnrecognizedReplyFailure();
 }
